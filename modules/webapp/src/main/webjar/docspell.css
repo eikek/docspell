@@ -1,0 +1,9 @@
+/* Docspell CSS */
+
+body {
+    background: #fff;
+}
+
+.invisible {
+    display: none !important;
+}

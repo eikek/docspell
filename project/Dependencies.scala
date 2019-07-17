@@ -3,21 +3,21 @@ import sbt._
 object Dependencies {
 
   val BetterMonadicForVersion = "0.3.0"
-  val BitpeaceVersion = "0.4.0-M1"
-  val CirceVersion = "0.11.1"
+  val BitpeaceVersion = "0.4.0-M2"
+  val CirceVersion = "0.12.0-M4"
   val DoobieVersion = "0.8.0-M1"
   val FastparseVersion = "2.1.3"
-  val FlywayVersion = "5.2.4"
+  val FlywayVersion = "6.0.0-beta2"
   val Fs2Version = "1.1.0-M1"
   val H2Version = "1.4.199"
-  val Http4sVersion = "0.20.1"
-  val KindProjectorVersion = "0.9.10"
-  val Log4sVersion = "1.7.0"
+  val Http4sVersion = "0.21.0-M2"
+  val KindProjectorVersion = "0.10.3"
+  val Log4sVersion = "1.8.2"
   val LogbackVersion = "1.2.3"
-  val MariaDbVersion = "2.3.0"
+  val MariaDbVersion = "2.4.2"
   val MiniTestVersion = "2.5.0"
   val PostgresVersion = "42.2.6"
-  val PureConfigVersion = "0.11.0"
+  val PureConfigVersion = "0.11.1"
   val SqliteVersion = "3.28.0"
   val TikaVersion = "1.20"
   val javaxMailVersion = "1.6.2"
@@ -46,7 +46,7 @@ object Dependencies {
   )
 
   val logging = Seq(
-    "ch.qos.logback" % "logback-classic" % LogbackVersion
+    "ch.qos.logback" % "logback-classic" % LogbackVersion % Runtime
   )
 
   // https://github.com/melrief/pureconfig
@@ -109,7 +109,13 @@ object Dependencies {
     "io.monix" %% "minitest-laws" % MiniTestVersion
   ).map(_ % Test)
 
-  val kindProjectorPlugin = "org.spire-math" %% "kind-projector" % KindProjectorVersion
+  val kindProjectorPlugin = "org.typelevel" %% "kind-projector" % KindProjectorVersion
   val betterMonadicFor = "com.olegpy" %% "better-monadic-for" % BetterMonadicForVersion
+
+  val webjars = Seq(
+    "swagger-ui" -> "3.22.2",
+    "Semantic-UI" -> "2.4.1",
+    "jquery" -> "3.4.1"
+  ).map({case (a, v) => "org.webjars" % a % v })
 
 }

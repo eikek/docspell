@@ -1,0 +1,25 @@
+openapi: 3.0.0
+
+info:
+  title: Docspell
+  version: 0.1.0-SNAPSHOT
+
+servers:
+  - url: /api/v1
+    description: Current host
+
+paths:
+
+components:
+  schemas:
+    Failure:
+      description: A failure.
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
