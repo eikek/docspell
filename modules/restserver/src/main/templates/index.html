@@ -1,0 +1,31 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="mobile-web-app-capable" content="yes">
+
+        <title>{{ flags.appName }}</title>
+        {{# cssUrls }}
+        <link rel="stylesheet" href="{{.}}"/>
+        {{/ cssUrls }}
+        {{# jsUrls }}
+        <script type="application/javascript" src="{{.}}"></script>
+        {{/ jsUrls}}
+
+    </head>
+
+    <body>
+        <div id="docspell-app">
+        </div>
+
+        <script type="application/javascript">
+         var storedAccount = localStorage.getItem('account');
+         var account = storedAccount ? JSON.parse(storedAccount) : null;
+         var elmFlags = {
+             "account": account,
+             "config": {{{flagsJson}}}
+         };
+        </script>
+        <script type="application/javascript" src="{{appExtraJs}}"></script>
+    </body>
+
+</html>

@@ -1,0 +1,35 @@
+openapi: 3.0.0
+
+info:
+  title: Docspell JOEX
+  version: 0.1.0-SNAPSHOT
+
+servers:
+  - url: /api/v1
+    description: Current host
+
+paths:
+
+components:
+  schemas:
+    VersionInfo:
+      description: |
+        Information about the software.
+      required:
+        - version
+        - builtAtMillis
+        - builtAtString
+        - gitCommit
+        - gitVersion
+      properties:
+        version:
+          type: string
+        builtAtMillis:
+          type: integer
+          format: int64
+        builtAtString:
+          type: string
+        gitCommit:
+          type: string
+        gitVersion:
+          type: string
