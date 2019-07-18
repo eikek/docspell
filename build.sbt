@@ -75,6 +75,14 @@ val debianSettings = Seq(
   bashScriptExtraDefines += """addJava "-Dconfig.file=${app_home}/../conf/docspell.conf""""
 )
 
+val buildInfoSettings = Seq(
+  buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion, gitHeadCommit, gitHeadCommitDate, gitUncommittedChanges, gitDescribedVersion),
+  buildInfoOptions += BuildInfoOption.ToJson,
+  buildInfoOptions += BuildInfoOption.BuildTime
+)
+
+
+
 val common = project.in(file("modules/common")).
   settings(sharedSettings).
   settings(testSettings).
@@ -127,12 +135,14 @@ val joexapi = project.in(file("modules/joexapi")).
   )
 
 val joex = project.in(file("modules/joex")).
-    enablePlugins(JavaServerAppPackaging
-      , DebianPlugin
-      , SystemdPlugin).
+  enablePlugins(BuildInfoPlugin
+    , JavaServerAppPackaging
+    , DebianPlugin
+    , SystemdPlugin).
   settings(sharedSettings).
   settings(testSettings).
   settings(debianSettings).
+  settings(buildInfoSettings).
   settings(
     name := "docspell-joex",
     libraryDependencies ++=
@@ -143,7 +153,8 @@ val joex = project.in(file("modules/joex")).
       Dependencies.loggingApi ++
       Dependencies.logging,
     addCompilerPlugin(Dependencies.kindProjectorPlugin),
-    addCompilerPlugin(Dependencies.betterMonadicFor)
+    addCompilerPlugin(Dependencies.betterMonadicFor),
+    buildInfoPackage := "docspell.joex"
   ).dependsOn(store, joexapi, restapi)
 
 val backend = project.in(file("modules/backend")).
@@ -171,12 +182,14 @@ val webapp = project.in(file("modules/webapp")).
   )
 
 val restserver = project.in(file("modules/restserver")).
-    enablePlugins(JavaServerAppPackaging
+  enablePlugins(BuildInfoPlugin
+    , JavaServerAppPackaging
     , DebianPlugin
     , SystemdPlugin).
   settings(sharedSettings).
   settings(testSettings).
   settings(debianSettings).
+  settings(buildInfoSettings).
   settings(
     name := "docspell-restserver",
     libraryDependencies ++=
@@ -186,7 +199,8 @@ val restserver = project.in(file("modules/restserver")).
       Dependencies.loggingApi ++
       Dependencies.logging,
     addCompilerPlugin(Dependencies.kindProjectorPlugin),
-    addCompilerPlugin(Dependencies.betterMonadicFor)
+    addCompilerPlugin(Dependencies.betterMonadicFor),
+    buildInfoPackage := "docspell.restserver"
   ).dependsOn(restapi, joexapi, backend, webapp)
 
 val root = project.in(file(".")).

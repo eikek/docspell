@@ -1,4 +1,4 @@
-package docspell.joex
+package docspell.restserver
 
 import cats.effect.{ExitCode, IO, IOApp}
 import cats.implicits._
@@ -33,6 +33,6 @@ object Main extends IOApp {
     }
 
     val cfg = Config.default
-    JoexServer.stream[IO](cfg).compile.drain.as(ExitCode.Success)
+    RestServer.stream[IO](cfg).compile.drain.as(ExitCode.Success)
   }
 }

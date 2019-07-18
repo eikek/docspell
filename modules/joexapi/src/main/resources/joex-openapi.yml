@@ -12,14 +12,24 @@ paths:
 
 components:
   schemas:
-    Failure:
-      description: A failure.
+    VersionInfo:
+      description: |
+        Information about the software.
       required:
-        - code
-        - message
+        - version
+        - builtAtMillis
+        - builtAtString
+        - gitCommit
+        - gitVersion
       properties:
-        code:
+        version:
+          type: string
+        builtAtMillis:
           type: integer
-          format: int32
-        message:
+          format: int64
+        builtAtString:
+          type: string
+        gitCommit:
+          type: string
+        gitVersion:
           type: string
