@@ -98,10 +98,38 @@ val store = project.in(file("modules/store")).
       Dependencies.loggingApi
   )
 
+val restapi = project.in(file("modules/restapi")).
+  enablePlugins(OpenApiSchema).
+  settings(sharedSettings).
+  settings(testSettings).
+  settings(
+    name := "docspell-restapi",
+    libraryDependencies ++=
+      Dependencies.circe,
+    openapiTargetLanguage := Language.Scala,
+    openapiPackage := Pkg("docspell.restapi.model"),
+    openapiSpec := (Compile/resourceDirectory).value/"docspell-openapi.yml",
+    openapiScalaConfig := ScalaConfig().withJson(ScalaJson.circeSemiauto)
+  )
+
+val joexapi = project.in(file("modules/joexapi")).
+  enablePlugins(OpenApiSchema).
+  settings(sharedSettings).
+  settings(testSettings).
+  settings(
+    name := "docspell-joexapi",
+    libraryDependencies ++=
+      Dependencies.circe,
+    openapiTargetLanguage := Language.Scala,
+    openapiPackage := Pkg("docspell.joexapi.model"),
+    openapiSpec := (Compile/resourceDirectory).value/"joex-openapi.yml",
+    openapiScalaConfig := ScalaConfig().withJson(ScalaJson.circeSemiauto)
+  )
+
 val joex = project.in(file("modules/joex")).
     enablePlugins(JavaServerAppPackaging
-    , DebianPlugin
-    , SystemdPlugin).
+      , DebianPlugin
+      , SystemdPlugin).
   settings(sharedSettings).
   settings(testSettings).
   settings(debianSettings).
@@ -109,9 +137,14 @@ val joex = project.in(file("modules/joex")).
     name := "docspell-joex",
     libraryDependencies ++=
       Dependencies.fs2 ++
+      Dependencies.http4s ++
+      Dependencies.circe ++
+      Dependencies.pureconfig ++
       Dependencies.loggingApi ++
-      Dependencies.logging
-  ).dependsOn(store)
+      Dependencies.logging,
+    addCompilerPlugin(Dependencies.kindProjectorPlugin),
+    addCompilerPlugin(Dependencies.betterMonadicFor)
+  ).dependsOn(store, joexapi, restapi)
 
 val backend = project.in(file("modules/backend")).
   settings(sharedSettings).
@@ -137,20 +170,6 @@ val webapp = project.in(file("modules/webapp")).
     addCompilerPlugin(Dependencies.betterMonadicFor),
   )
 
-val restspec = project.in(file("modules/restspec")).
-  enablePlugins(OpenApiSchema).
-  settings(sharedSettings).
-  settings(testSettings).
-  settings(
-    name := "docspell-restspec",
-    libraryDependencies ++=
-      Dependencies.circe,
-    openapiTargetLanguage := Language.Scala,
-    openapiPackage := Pkg("docspell.restspec.model"),
-    openapiSpec := (Compile/resourceDirectory).value/"docspell-openapi.yml",
-    openapiScalaConfig := ScalaConfig().withJson(ScalaJson.circeSemiauto)
-  )
-
 val restserver = project.in(file("modules/restserver")).
     enablePlugins(JavaServerAppPackaging
     , DebianPlugin
@@ -168,14 +187,14 @@ val restserver = project.in(file("modules/restserver")).
       Dependencies.logging,
     addCompilerPlugin(Dependencies.kindProjectorPlugin),
     addCompilerPlugin(Dependencies.betterMonadicFor)
-  ).dependsOn(restspec, backend, webapp)
+  ).dependsOn(restapi, joexapi, backend, webapp)
 
 val root = project.in(file(".")).
   settings(sharedSettings).
   settings(
     name := "docspell-root"
   ).
-  aggregate(common, store, joex, backend, webapp, restspec, restserver)
+  aggregate(common, store, joexapi, joex, backend, webapp, restapi, restserver)
 
 
 def copyWebjarResources(src: Seq[File], base: File, artifact: String, version: String, logger: Logger): Seq[File] = {
