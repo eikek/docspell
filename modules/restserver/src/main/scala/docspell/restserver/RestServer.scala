@@ -8,17 +8,21 @@ import fs2.Stream
 import org.http4s.server.middleware.Logger
 import org.http4s.server.Router
 
+import docspell.restserver.webapp._
+
 object RestServer {
 
-  def stream[F[_]: ConcurrentEffect](cfg: Config)
-    (implicit T: Timer[F]): Stream[F, Nothing] = {
+  def stream[F[_]: ConcurrentEffect](cfg: Config, blocker: Blocker)
+    (implicit T: Timer[F], CS: ContextShift[F]): Stream[F, Nothing] = {
 
     val app = for {
       restApp  <- RestAppImpl.create[F](cfg)
       _        <- Resource.liftF(restApp.init)
 
       httpApp = Router(
-        "/api/info" -> InfoRoutes(cfg)
+        "/api/info" -> InfoRoutes(cfg),
+        "/app/assets" -> WebjarRoutes.appRoutes[F](blocker, cfg),
+        "/app" -> TemplateRoutes[F](blocker, cfg)
       ).orNotFound
 
       // With Middlewares in place

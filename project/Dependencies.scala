@@ -22,7 +22,7 @@ object Dependencies {
   val TikaVersion = "1.20"
   val javaxMailVersion = "1.6.2"
   val dnsJavaVersion = "2.1.9"
-  val YamuscaVersion = "0.5.1"
+  val YamuscaVersion = "0.6.0-M2"
 
 
   val fs2 = Seq(

@@ -1,7 +1,7 @@
 /* Docspell JS */
 
 var elmApp = Elm.Main.init({
-    node: document.getElementById("attentive-app"),
+    node: document.getElementById("docspell-app"),
     flags: elmFlags
 });
 

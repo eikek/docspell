@@ -50,10 +50,6 @@ val webjarSettings = Seq(
       , streams.value.log
     )
   }).taskValue,
-  Compile/sourceGenerators += (Def.task {
-    createWebjarSource(Dependencies.webjars, (Compile/sourceManaged).value)
-  }).taskValue,
-  Compile/unmanagedResourceDirectories ++= Seq((Compile/resourceDirectory).value.getParentFile/"templates"),
   watchSources += Watched.WatchSource(
     (Compile / sourceDirectory).value/"webjar"
       , FileFilter.globFilter("*.js") || FileFilter.globFilter("*.css")
@@ -168,17 +164,16 @@ val backend = project.in(file("modules/backend")).
   ).dependsOn(store)
 
 val webapp = project.in(file("modules/webapp")).
+  enablePlugins(OpenApiSchema).
   settings(sharedSettings).
-  settings(testSettings).
   settings(elmSettings).
   settings(webjarSettings).
   settings(
     name := "docspell-webapp",
-    libraryDependencies ++=
-      Dependencies.http4s ++
-      Dependencies.circe,
-    addCompilerPlugin(Dependencies.kindProjectorPlugin),
-    addCompilerPlugin(Dependencies.betterMonadicFor),
+    openapiTargetLanguage := Language.Elm,
+    openapiPackage := Pkg("Api.Model"),
+    openapiSpec := (restapi/Compile/resourceDirectory).value/"docspell-openapi.yml",
+    openapiElmConfig := ElmConfig().withJson(ElmJson.decodePipeline)
   )
 
 val restserver = project.in(file("modules/restserver")).
@@ -196,11 +191,17 @@ val restserver = project.in(file("modules/restserver")).
       Dependencies.http4s ++
       Dependencies.circe ++
       Dependencies.pureconfig ++
+      Dependencies.yamusca ++
+      Dependencies.webjars ++
       Dependencies.loggingApi ++
       Dependencies.logging,
     addCompilerPlugin(Dependencies.kindProjectorPlugin),
     addCompilerPlugin(Dependencies.betterMonadicFor),
-    buildInfoPackage := "docspell.restserver"
+    buildInfoPackage := "docspell.restserver",
+    Compile/sourceGenerators += (Def.task {
+      createWebjarSource(Dependencies.webjars, (Compile/sourceManaged).value)
+    }).taskValue,
+    Compile/unmanagedResourceDirectories ++= Seq((Compile/resourceDirectory).value.getParentFile/"templates")
   ).dependsOn(restapi, joexapi, backend, webapp)
 
 val root = project.in(file(".")).
@@ -245,7 +246,7 @@ def compileElm(logger: Logger, wd: File, outBase: File, artifact: String, versio
 def createWebjarSource(wj: Seq[ModuleID], out: File): Seq[File] = {
   val target = out/"Webjars.scala"
   val fields = wj.map(m => s"""val ${m.name.toLowerCase.filter(_ != '-')} = "/${m.name}/${m.revision}" """).mkString("\n\n")
-  val content = s"""package docspell.webapp
+  val content = s"""package docspell.restserver.webapp
     |object Webjars {
     |$fields
     |}

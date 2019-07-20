@@ -9,9 +9,96 @@ servers:
     description: Current host
 
 paths:
+  /open/auth/login:
+    post:
+      summary: Authenticate with account name and password.
+      description: |
+        Authenticate with account name and password. The account name
+        is comprised of the collective id and user id separated by
+        slash, backslash or whitespace.
+
+        If successful, an authentication token is returned that can be
+        used for subsequent calls to protected routes.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserPass"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResult"
+  /sec/auth/session:
+    post:
+      summary: Authentication with a token
+      description: |
+        Authenticate with a token. This can be used to get a new
+        authentication token based on another valid one.
+      security:
+        - authTokenHeader: []
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResult"
+  /sec/auth/logout:
+    post:
+      summary: Logout.
+      description: |
+        This route informs the server about a logout. This is not
+        strictly necessary.
+      security:
+        - authTokenHeader: []
+      responses:
+        200:
+          description: Ok
 
 components:
   schemas:
+    UserPass:
+      description: |
+        Account name and password.
+      required:
+        - account
+        - password
+      properties:
+        account:
+          type: string
+        password:
+          type: string
+    AuthResult:
+      description: |
+        The response to a authentication request.
+      required:
+        - collective
+        - user
+        - success
+        - message
+        - validMs
+      properties:
+        collective:
+          type: string
+        user:
+          type: string
+        success:
+          type: boolean
+        message:
+          type: string
+        token:
+          description: |
+            The authentication token that should be used for
+            subsequent requests to secured endpoints.
+          type: string
+        validMs:
+          description: |
+            How long the token is valid in ms.
+          type: integer
+          format: int64
     VersionInfo:
       description: |
         Information about the software.
@@ -33,3 +120,8 @@ components:
           type: string
         gitVersion:
           type: string
+  securitySchemes:
+    authTokenHeader:
+      type: apiKey
+      in: header
+      name: X-Docspell-Auth

@@ -1,9 +1,36 @@
 /* Docspell CSS */
 
-body {
+.default-layout {
     background: #fff;
+    height: 100vh;
 }
+
+.default-layout .main-content {
+    margin-top: 45px;
+}
+
+.login-layout {
+    background: #aaa;
+    height: 101vh;
+}
+
+.login-layout .login-view {
+    background: #fff;
+    position: relative;
+    top: 20vh;
+}
+
 
 .invisible {
     display: none !important;
+}
+
+@media (min-height: 320px) {
+  .ui.footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
+    font-size: x-small;
+  }
 }

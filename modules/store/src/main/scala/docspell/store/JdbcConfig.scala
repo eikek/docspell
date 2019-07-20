@@ -5,8 +5,11 @@ case class JdbcConfig(url: String
   , password: String
 ) {
 
+  val dbmsName: Option[String] =
+    JdbcConfig.extractDbmsName(url)
+
   def driverClass =
-    JdbcConfig.extractDbmsName(url) match {
+    dbmsName match {
       case Some("mariadb") =>
         "org.mariadb.jdbc.Driver"
       case Some("postgresql") =>
@@ -27,7 +30,7 @@ object JdbcConfig {
   private[this] val jdbcRegex = "jdbc\\:([^\\:]+)\\:.*".r
   def extractDbmsName(jdbcUrl: String): Option[String] =
     jdbcUrl match {
-      case jdbcRegex(n) => Some(n)
+      case jdbcRegex(n) => Some(n.toLowerCase)
       case _ => None
     }
 }

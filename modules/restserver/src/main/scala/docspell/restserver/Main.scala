@@ -1,6 +1,6 @@
 package docspell.restserver
 
-import cats.effect.{ExitCode, IO, IOApp}
+import cats.effect._
 import cats.implicits._
 import scala.concurrent.ExecutionContext
 import java.util.concurrent.Executors
@@ -11,6 +11,7 @@ object Main extends IOApp {
   private[this] val logger = getLogger
 
   val blockingEc: ExecutionContext = ExecutionContext.fromExecutor(Executors.newCachedThreadPool)
+  val blocker = Blocker.liftExecutionContext(blockingEc)
 
   def run(args: List[String]) = {
     args match {
@@ -33,6 +34,6 @@ object Main extends IOApp {
     }
 
     val cfg = Config.default
-    RestServer.stream[IO](cfg).compile.drain.as(ExitCode.Success)
+    RestServer.stream[IO](cfg, blocker).compile.drain.as(ExitCode.Success)
   }
 }
