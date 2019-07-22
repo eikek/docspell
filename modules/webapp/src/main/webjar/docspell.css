@@ -1,28 +1,106 @@
 /* Docspell CSS */
+/* https://www.color-hex.com/color/f0f8ff
+ * https://www.color-hex.com/color-palette/1637
+ */
 
 .default-layout {
     background: #fff;
-    height: 100vh;
+/*    height: 100vh; */
 }
 
 .default-layout .main-content {
     margin-top: 45px;
 }
 
-.login-layout {
-    background: #aaa;
+.default-layout .top-menu {
+    background: aliceblue;
+    box-shadow: 1px 1px 0px 0px black;
+}
+
+.default-layout .ui.multiple.search.dropdown>input.search {
+    width: 3.5em;
+}
+
+.default-layout .job-log {
+    background: #181819;
+    color: white;
+    font-size: smaller;
+    overflow: auto;
+    padding: 0.5em;
+    font-family: monospace,monospace;
+}
+
+.default-layout .job-log>.debug {
+    color: rgba(255,255,255,0.5);
+}
+.default-layout .job-log>.error {
+    color: rgba(255,0,0,0.9);
+}
+.default-layout .job-log>.warn {
+    color: rgba(255,255,0,0.9);
+}
+
+.default-layout .main-content>.grid {
+    margin-top: 0;
+}
+
+.default-layout .dropzone.dragging {
+    background: aliceblue;
+}
+
+.ui.search.dropdown.open {
+    z-index: 20;
+}
+
+.ui.grid>.ablue.column, .ui.grid>.ablue.row, .ui.grid>.row>.ablue.column {
+    background: aliceblue;
+}
+
+.ui.ablue.menu, .ui.menu .ablue.item {
+    background-color: aliceblue;
+}
+
+.ui.ablue-comp.menu, .ui.menu .ablue-comp.item {
+    background-color: #fff7f0;
+}
+.ui.ablue-comp.header {
+    background-color: #fff7f0;
+}
+
+.ui.ablue-shade.menu, .ui.menu .ablue-shade.item {
+    background-color: #d8dfe5;
+}
+
+span.small-info {
+    font-size: smaller;
+    color: rgba(0,0,0,0.6);
+}
+
+.placeholder-message {
+    color: rgba(0,0,0,0.4);
+}
+
+.login-layout, .register-layout, .newinvite-layout {
+    background: #708090;
     height: 101vh;
 }
 
-.login-layout .login-view {
+.login-layout .login-view, .register-layout .register-view, .newinvite-view {
     background: #fff;
     position: relative;
     top: 20vh;
 }
 
-
 .invisible {
     display: none !important;
+}
+
+.no-margin {
+    margin: 0 !important;
+}
+
+.no-border {
+    border: 0 !important;
 }
 
 @media (min-height: 320px) {
@@ -31,6 +109,118 @@
     bottom: 0;
     width: 100%;
     text-align: center;
-    font-size: x-small;
+    font-size: smaller;
+    font-family: monospace;
+    height: 20px;
   }
 }
+
+
+
+/* Datepicker
+   From: https://github.com/CurrySoftware/elm-datepicker/blob/3.1.0/css/elm-datepicker.css
+   License: BSD-3-Clause
+*/
+.elm-datepicker--container {
+  position: relative; }
+
+.elm-datepicker--input:focus {
+  outline: 0; }
+
+.elm-datepicker--picker {
+  position: absolute;
+  border: 1px solid #CCC;
+  z-index: 10;
+  background-color: white; }
+
+.elm-datepicker--picker-header,
+.elm-datepicker--weekdays {
+  background: #F2F2F2; }
+
+.elm-datepicker--picker-header {
+  display: flex;
+  align-items: center;
+  background: aliceblue; }
+
+.elm-datepicker--prev-container,
+.elm-datepicker--next-container {
+  flex: 0 1 auto;
+  cursor: pointer; }
+
+.elm-datepicker--month-container {
+  flex: 1 1 auto;
+  padding: 0.5em;
+  display: flex;
+  flex-direction: column; }
+
+.elm-datepicker--month,
+.elm-datepicker--year {
+  flex: 1 1 auto;
+  cursor: default;
+  text-align: center; }
+
+.elm-datepicker--year {
+  font-size: 0.6em;
+  font-weight: 700; }
+
+.elm-datepicker--prev,
+.elm-datepicker--next {
+  border: 6px solid transparent;
+  background-color: inherit;
+  display: block;
+  width: 0;
+  height: 0;
+  padding: 0 0.2em; }
+
+.elm-datepicker--prev {
+  border-right-color: #AAA; }
+  .elm-datepicker--prev:hover {
+    border-right-color: #BBB; }
+
+.elm-datepicker--next {
+  border-left-color: #AAA; }
+  .elm-datepicker--next:hover {
+    border-left-color: #BBB; }
+
+.elm-datepicker--table {
+  border-spacing: 0;
+  border-collapse: collapse;
+  font-size: 0.8em; }
+  .elm-datepicker--table td {
+    width: 2em;
+    height: 2em;
+    text-align: center; }
+
+.elm-datepicker--row {
+  border-top: 1px solid #F2F2F2; }
+
+.elm-datepicker--dow {
+  border-bottom: 1px solid #CCC;
+  cursor: default; }
+
+.elm-datepicker--day {
+  cursor: pointer; }
+  .elm-datepicker--day:hover {
+    background: #F2F2F2; }
+
+.elm-datepicker--disabled {
+  cursor: default;
+  color: #DDD; }
+  .elm-datepicker--disabled:hover {
+    background: inherit; }
+
+.elm-datepicker--picked {
+  color: white;
+  background: darkblue; }
+  .elm-datepicker--picked:hover {
+    background: darkblue; }
+
+.elm-datepicker--today {
+  font-weight: bold; }
+
+.elm-datepicker--other-month {
+  color: #AAA; }
+.elm-datepicker--other-month.elm-datepicker--disabled {
+  color: #EEE; }
+.elm-datepicker--other-month.elm-datepicker--picked {
+  color: white; }

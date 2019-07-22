@@ -1,0 +1,48 @@
+options:
+  - title: Home
+    url: index.html
+
+  - title: Getit
+    url: getit.html
+
+  - title: Documentation
+    url: doc.html
+
+    nested_options:
+     - title: Installation
+       url: doc/install.html
+
+     - title: Configuring
+       url: doc/configure.html
+
+     - title: Adding Meta Data
+       url: doc/metadata.html
+
+     - title: Uploads
+       url: doc/uploading.html
+
+     - title: Processing Queue
+       url: doc/processing.html
+
+     - title: Find and Review
+       url: doc/curate.html
+
+     - title: Joex
+       url: doc/joex.html
+
+  - title: Development
+    url: dev.html
+
+    nested_options:
+      - tite: ADRs
+        url: dev/adr.html
+
+  - title: Api
+    url: api.html
+
+    nested_options:
+     - title: REST Api Doc
+       url: openapi/docspell-openapi.html
+
+     - title: REST OpenApi Spec
+       url: openapi/docspell-openapi.yml

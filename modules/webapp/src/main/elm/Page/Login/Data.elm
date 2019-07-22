@@ -1,6 +1,7 @@
 module Page.Login.Data exposing (..)
 
 import Http
+import Page exposing (Page(..))
 import Api.Model.AuthResult exposing (AuthResult)
 
 type alias Model =
@@ -9,8 +10,8 @@ type alias Model =
     , result: Maybe AuthResult
     }
 
-empty: Model
-empty =
+emptyModel: Model
+emptyModel =
     { username = ""
     , password = ""
     , result = Nothing

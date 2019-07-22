@@ -2,16 +2,23 @@ package docspell.restserver
 
 import cats.effect._
 import cats.implicits._
+
 import scala.concurrent.ExecutionContext
 import java.util.concurrent.Executors
 import java.nio.file.{Files, Paths}
+
+import docspell.common.{Banner, ThreadFactories}
 import org.log4s._
 
 object Main extends IOApp {
   private[this] val logger = getLogger
 
-  val blockingEc: ExecutionContext = ExecutionContext.fromExecutor(Executors.newCachedThreadPool)
+  val blockingEc: ExecutionContext = ExecutionContext.fromExecutor(Executors.newCachedThreadPool(
+    ThreadFactories.ofName("docspell-restserver-blocking")))
   val blocker = Blocker.liftExecutionContext(blockingEc)
+
+  val connectEC: ExecutionContext = ExecutionContext.fromExecutorService(Executors.newFixedThreadPool(5,
+    ThreadFactories.ofName("docspell-dbconnect")))
 
   def run(args: List[String]) = {
     args match {
@@ -33,7 +40,14 @@ object Main extends IOApp {
         }
     }
 
-    val cfg = Config.default
-    RestServer.stream[IO](cfg, blocker).compile.drain.as(ExitCode.Success)
+    val cfg = ConfigFile.loadConfig
+    val banner = Banner("REST Server"
+      , BuildInfo.version
+      , BuildInfo.gitHeadCommit
+      , cfg.backend.jdbc.url
+      , Option(System.getProperty("config.file"))
+      , cfg.appId, cfg.baseUrl)
+    logger.info(s"\n${banner.render("***>")}")
+    RestServer.stream[IO](cfg, connectEC, blockingEc, blocker).compile.drain.as(ExitCode.Success)
   }
 }

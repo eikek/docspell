@@ -1,16 +1,23 @@
 package docspell.joex
 
-import cats.effect.{ExitCode, IO, IOApp}
+import cats.effect.{Blocker, ExitCode, IO, IOApp}
 import cats.implicits._
+
 import scala.concurrent.ExecutionContext
 import java.util.concurrent.Executors
 import java.nio.file.{Files, Paths}
+
+import docspell.common.{Banner, ThreadFactories}
 import org.log4s._
 
 object Main extends IOApp {
   private[this] val logger = getLogger
 
-  val blockingEc: ExecutionContext = ExecutionContext.fromExecutor(Executors.newCachedThreadPool)
+  val blockingEc: ExecutionContext = ExecutionContext.fromExecutor(
+    Executors.newCachedThreadPool(ThreadFactories.ofName("docspell-joex-blocking")))
+  val blocker = Blocker.liftExecutionContext(blockingEc)
+  val connectEC: ExecutionContext = ExecutionContext.fromExecutorService(
+    Executors.newFixedThreadPool(5, ThreadFactories.ofName("docspell-joex-dbconnect")))
 
   def run(args: List[String]) = {
     args match {
@@ -32,7 +39,14 @@ object Main extends IOApp {
         }
     }
 
-    val cfg = Config.default
-    JoexServer.stream[IO](cfg).compile.drain.as(ExitCode.Success)
+    val cfg = ConfigFile.loadConfig
+    val banner = Banner("JOEX"
+      , BuildInfo.version
+      , BuildInfo.gitHeadCommit
+      , cfg.jdbc.url
+      , Option(System.getProperty("config.file"))
+      , cfg.appId, cfg.baseUrl)
+    logger.info(s"\n${banner.render("***>")}")
+    JoexServer.stream[IO](cfg, connectEC, blocker).compile.drain.as(ExitCode.Success)
   }
 }

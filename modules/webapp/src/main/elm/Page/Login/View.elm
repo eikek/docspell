@@ -3,7 +3,7 @@ module Page.Login.View exposing (view)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput, onSubmit)
-
+import Page exposing (Page(..))
 import Page.Login.Data exposing (..)
 
 view: Model -> Html Msg
@@ -11,31 +11,51 @@ view model =
     div [class "login-page"]
         [div [class "ui centered grid"]
              [div [class "row"]
-                  [div [class "eight wide column ui segment login-view"]
-                       [h1 [class "ui dividing header"][text "Sign in to Docspell"]
-                       ,Html.form [class "ui large error form", onSubmit Authenticate]
+                  [div [class "six wide column ui segment login-view"]
+                       [h1 [class "ui center aligned icon header"]
+                            [i [class "umbrella icon"][]
+                            ,div [class "content"]
+                                 [text "Sign in to Docspell"
+                                 ]
+                            ]
+                       ,Html.form [class "ui large error raised form segment", onSubmit Authenticate]
                            [div [class "field"]
                                 [label [][text "Username"]
-                                ,input [type_ "text"
-                                       ,onInput SetUsername
-                                       ,value model.username
-                                       ][]
+                                ,div [class "ui left icon input"]
+                                     [input [type_ "text"
+                                            ,onInput SetUsername
+                                            ,value model.username
+                                            ,placeholder "Collective / Login"
+                                            ,autofocus True
+                                            ][]
+                                     ,i [class "user icon"][]
+                                     ]
                                 ]
                            ,div [class "field"]
                                [label [][text "Password"]
-                               ,input [type_ "password"
-                                      ,onInput SetPassword
-                                      ,value model.password
-                                      ][]
+                               ,div [class "ui left icon input"]
+                                    [input [type_ "password"
+                                           ,onInput SetPassword
+                                           ,value model.password
+                                           ,placeholder "Password"
+                                           ][]
+                                    ,i [class "lock icon"][]
+                                    ]
                                ]
-                           ,button [class "ui primary button"
+                           ,button [class "ui primary fluid button"
                                    ,type_ "submit"
-                                   ,onClick Authenticate
                                    ]
                                 [text "Login"
                                 ]
                            ]
                        ,(resultMessage model)
+                       ,div[class "ui very basic right aligned segment"]
+                           [text "No account? "
+                           ,a [class "ui icon link", Page.href RegisterPage]
+                              [i [class "edit icon"][]
+                              ,text "Sign up!"
+                              ]
+                           ]
                        ]
                   ]
              ]

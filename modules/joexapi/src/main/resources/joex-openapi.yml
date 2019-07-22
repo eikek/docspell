@@ -9,9 +9,162 @@ servers:
     description: Current host
 
 paths:
+  /api/info:
+    get:
+      tag: [ Api Info ]
+      summary: Get basic information about this software.
+      description: |
+        Returns the version and project name and other properties of the build.
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VersionInfo"
+  /api/v1/notify:
+    post:
+      tag: [ Job Executor ]
+      summary: Notify the job executor.
+      description: |
+        Notifies the job executor to wake up and look for jobs in th queue.
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+  /api/v1/running:
+    get:
+      tag: [ Job Executor ]
+      summary: Get a list of currently executing jobs.
+      description: |
+        Returns all jobs this executor is currently executing.
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JobList"
+  /api/v1/shutdownAndExit:
+    post:
+      tag: [ Job Executor ]
+      summary: Stops this component and exits.
+      description: |
+        Gracefully stops the scheduler and also stops the process.
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+  /api/v1/job/{id}:
+    get:
+      tag: [ Current Jobs ]
+      summary: Get a job by its id.
+      description: |
+        Returns details about a job given the id.
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JobAndLogs"
+  /api/v1/job/{id}/cancel:
+    post:
+      tag: [ Current Jobs ]
+      summary: Request to cancel a running job.
+      description: |
+        Requests to cancel the running job. This will try to cancel
+        the execution but it is not guaranteed that it can immediately
+        abort. The job is then removed from the queue.
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
 
 components:
   schemas:
+    JobAndLog:
+      description: |
+        Some more details about the job.
+      required:
+        - job
+        - logs
+      properties:
+        job:
+          $ref: "#/components/schemas/Job"
+        logs:
+          type: array
+          items:
+            $ref: "#/components/schemas/JobLogEvent"
+    JobLogEvent:
+      description: |
+        A log output line.
+      required:
+        - time
+        - level
+        - message
+      properties:
+        time:
+          description: DateTime
+          type: integer
+          format: date-time
+        level:
+          type: string
+          format: loglevel
+        message:
+          type: string
+    JobList:
+      description: |
+        A list of jobs.
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Job"
+    Job:
+      description: |
+        Data about a running job.
+      required:
+        - id
+        - name
+        - submitted
+        - priority
+        - retries
+        - progress
+        - started
+      properties:
+        id:
+          type: string
+          format: ident
+        name:
+          type: string
+        submitted:
+          description: DateTime
+          type: integer
+          format: date-time
+        priority:
+          type: integer
+          format: priority
+        retries:
+          type: integer
+          format: int32
+        progress:
+          type: integer
+          format: int32
+        started:
+          description: DateTime
+          type: integer
+          format: date-time
     VersionInfo:
       description: |
         Information about the software.
@@ -32,4 +185,15 @@ components:
         gitCommit:
           type: string
         gitVersion:
+          type: string
+    BasicResult:
+      description: |
+        Some basic result of an operation.
+      required:
+        - success
+        - message
+      properties:
+        success:
+          type: boolean
+        message:
           type: string

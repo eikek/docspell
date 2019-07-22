@@ -9,6 +9,7 @@ import Html.Events exposing (..)
 
 import Api
 import Ports
+import Page
 import Data.Flags exposing (Flags)
 import App.Data exposing (..)
 import App.Update exposing (..)
@@ -36,7 +37,9 @@ init : Flags -> Url -> Key -> (Model, Cmd Msg)
 init flags url key =
     let
         im = App.Data.init key url flags
-        (m, cmd) = App.Update.initPage im im.page
+        page = checkPage flags im.page
+        (m, cmd) = if im.page == page then App.Update.initPage im page
+                   else (im, Page.goto page)
         sessionCheck =
             case m.flags.account of
                 Just acc -> Api.loginSession flags SessionCheckResp
@@ -46,8 +49,8 @@ init flags url key =
 
 viewDoc: Model -> Document Msg
 viewDoc model =
-    { title = model.flags.config.appName
-    , body = [ (view model) ]
+    { title = model.flags.config.appName ++ ": " ++ (Page.pageName model.page)
+    , body = [ (view  model) ]
     }
 
 -- SUBSCRIPTIONS
@@ -55,4 +58,4 @@ viewDoc model =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Sub.none
+    model.subs

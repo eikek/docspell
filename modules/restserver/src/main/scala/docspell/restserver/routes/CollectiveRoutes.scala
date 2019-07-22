@@ -1,0 +1,52 @@
+package docspell.restserver.routes
+
+import cats.effect._
+import cats.implicits._
+import docspell.backend.BackendApp
+import docspell.backend.auth.AuthToken
+import docspell.restapi.model._
+import docspell.restserver.Config
+import docspell.restserver.conv.Conversions
+import docspell.restserver.http4s.ResponseGenerator
+import org.http4s.HttpRoutes
+import org.http4s.circe.CirceEntityEncoder._
+import org.http4s.circe.CirceEntityDecoder._
+import org.http4s.dsl.Http4sDsl
+
+object CollectiveRoutes {
+
+  def apply[F[_]: Effect](backend: BackendApp[F], cfg: Config, user: AuthToken): HttpRoutes[F] = {
+    val dsl = new Http4sDsl[F] with ResponseGenerator[F] {}
+    import dsl._
+
+    HttpRoutes.of {
+      case GET -> Root / "insights" =>
+        for {
+          ins  <- backend.collective.insights(user.account.collective)
+          resp <- Ok(Conversions.mkItemInsights(ins))
+        } yield resp
+
+      case req@POST -> Root / "settings" =>
+        for {
+          settings  <- req.as[CollectiveSettings]
+          res       <- backend.collective.updateLanguage(user.account.collective, settings.language)
+          resp      <- Ok(Conversions.basicResult(res, "Language updated."))
+        } yield resp
+
+      case GET -> Root / "settings" =>
+        for {
+          collDb  <- backend.collective.find(user.account.collective)
+          sett    = collDb.map(c => CollectiveSettings(c.language))
+          resp  <- sett.toResponse()
+        } yield resp
+
+      case GET -> Root =>
+        for {
+          collDb  <- backend.collective.find(user.account.collective)
+          coll = collDb.map(c => Collective(c.id, c.state, c.created))
+          resp  <- coll.toResponse()
+        } yield resp
+    }
+  }
+
+}

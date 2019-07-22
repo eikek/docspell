@@ -1,6 +1,8 @@
 package docspell.store
 
-case class JdbcConfig(url: String
+import docspell.common.LenientUri
+
+case class JdbcConfig(url: LenientUri
   , user: String
   , password: String
 ) {
@@ -24,13 +26,16 @@ case class JdbcConfig(url: String
         sys.error("No JDBC url specified")
     }
 
+  override def toString: String =
+    s"JdbcConfig($url, $user, ***)"
 }
 
 object JdbcConfig {
-  private[this] val jdbcRegex = "jdbc\\:([^\\:]+)\\:.*".r
-  def extractDbmsName(jdbcUrl: String): Option[String] =
-    jdbcUrl match {
-      case jdbcRegex(n) => Some(n.toLowerCase)
-      case _ => None
+  def extractDbmsName(jdbcUrl: LenientUri): Option[String] =
+    jdbcUrl.scheme.head match {
+      case "jdbc" =>
+        jdbcUrl.scheme.tail.headOption
+      case _ =>
+        None
     }
 }

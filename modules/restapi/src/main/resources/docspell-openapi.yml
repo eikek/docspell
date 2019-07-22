@@ -3,14 +3,30 @@ openapi: 3.0.0
 info:
   title: Docspell
   version: 0.1.0-SNAPSHOT
+  description: |
+    This is the remote API to Docspell, a personal document organizer.
 
 servers:
   - url: /api/v1
     description: Current host
 
 paths:
+  /api/info/version:
+    get:
+      tags: [ Information ]
+      summary: Get version information.
+      description: |
+        Returns information about this software.
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VersionInfo"
   /open/auth/login:
     post:
+      tags: [ Authentication ]
       summary: Authenticate with account name and password.
       description: |
         Authenticate with account name and password. The account name
@@ -31,8 +47,142 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/AuthResult"
+  /open/upload/item/{id}:
+    post:
+      tags: [ Upload ]
+      summary: Upload files to docspell.
+      description: |
+        Upload a file to docspell for processing. The id is a *source
+        id* configured by a collective. Files are submitted for
+        processing which eventually resuts in an item in the inbox of
+        the corresponding collective.
+
+        The request must be a `multipart/form-data` request, where the
+        first part has name `meta`, is optional and may contain upload
+        metadata as JSON. Checkout the structure `ItemUploadMeta` at
+        the end if it is not shown here. Other parts specify the
+        files. Multiple files can be specified, but at least on is
+        required.
+
+        The upload meta data can be used to tell, whether multiple
+        files are one item, or if each file should become a single
+        item. By default, each file will be a one item.
+
+        Only certain file types are supported:
+
+        * application/pdf
+
+        Support for more types might be added.
+      parameters:
+        - $ref: "#/components/parameters/id"
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                meta:
+                  $ref: "#/components/schemas/ItemUploadMeta"
+                file:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+  /sec/upload:
+    post:
+      tags: [ Upload ]
+      summary: Upload files to docspell.
+      description: |
+        Upload files to docspell for processing. This route is meant
+        for authenticated users that upload files to their account.
+
+        Everything else is the same as with the
+        `/open/upload/item/{id}` endpoint.
+
+        The request must be a "multipart/form-data" request, where the
+        first part is optional and may contain upload metadata as
+        JSON. Other parts specify the files. Multiple files can be
+        specified, but at least on is required.
+
+        The upload meta data can be used to tell, whether multiple
+        files are one item, or if each file should become a single
+        item. By default, each file will be a one item.
+
+        Only certain file types are supported:
+
+        * application/pdf
+
+        Support for more types might be added.
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                meta:
+                  $ref: "#/components/schemas/ItemUploadMeta"
+                file:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+  /open/signup/register:
+    post:
+      tags: [ Registration ]
+      summary: Register a new account.
+      description: |
+        Create a new account by creating a collective and user.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Registration"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+  /open/signup/newinvite:
+    post:
+      tags: [ Registration ]
+      summary: Generate a new invite.
+      description: |
+        When signup mode is set to "invite", docspell requires an
+        invitation key when signing up. These keys can be created
+        here. Creating such keys requires an admin role, and since
+        docspell has no such concept, a password from the
+        configuration file is required for this action.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GenInvite"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InviteResult"
   /sec/auth/session:
     post:
+      tags: [ Authentication ]
       summary: Authentication with a token
       description: |
         Authenticate with a token. This can be used to get a new
@@ -48,6 +198,7 @@ paths:
                 $ref: "#/components/schemas/AuthResult"
   /sec/auth/logout:
     post:
+      tags: [ Authentication ]
       summary: Logout.
       description: |
         This route informs the server about a logout. This is not
@@ -57,9 +208,1801 @@ paths:
       responses:
         200:
           description: Ok
+  /sec/tag:
+    get:
+      tags: [ Tags ]
+      summary: Get a list of tags
+      description: |
+        Return a list of all configured tags.
+      security:
+        - authTokenHeader: []
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TagList"
+    post:
+      tags: [ Tags ]
+      summary: Create a new tag.
+      description: |
+        Create a new tag. If a tag with this name already exists, an
+        error is returned. The id in the input structure is ignored.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Tag"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+    put:
+      tags: [ Tags ]
+      summary: Change an existing tag.
+      description: |
+        Changes an existing tag. The tag is looked up by its id and
+        all properties are changed as given.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Tag"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+  /sec/tag/{id}:
+    delete:
+      tags: [ Tags ]
+      summary: Delete a tag.
+      description: |
+        Deletes a tag. This also removes this tags from all items.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+  /sec/organization:
+    get:
+      tags: [ Organization ]
+      summary: Get a list of organizations.
+      description: |
+        Return a list of all organizations. Only name and id are returned.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/full"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/ReferenceList"
+                  - $ref: "#/components/schemas/OrganizationList"
+    post:
+      tags: [ Organization ]
+      summary: Create a new organization.
+      description: |
+        Create a new organizaion. If an organization with this name already exists, an
+        error is returned. The id attribute of the request structure is ignored.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Organization"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+    put:
+      tags: [ Organization ]
+      summary: Change an existing organization.
+      description: |
+        Changes an existing organization. The organization is looked up by its id and
+        all properties are changed as given.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Organization"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+  /sec/organization/{id}:
+    get:
+      tags: [ Organization ]
+      summary: Get a list of organizations.
+      description: |
+        Return details about an organization.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Organization"
+    delete:
+      tags: [ Organization ]
+      summary: Delete a organization by its id.
+      description: |
+        Deletes an organization.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+  /sec/person:
+    get:
+      tags: [ Person ]
+      summary: Get a list of persons.
+      description: |
+        Return a list of all persons. Only name and id are returned.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/full"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/ReferenceList"
+                  - $ref: "#/components/schemas/PersonList"
+    post:
+      tags: [ Person ]
+      summary: Create a new person.
+      description: |
+        Create a new organizaion. If an person with this name already exists, an
+        error is returned. The id attribute of the request structure is ignored.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Person"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+    put:
+      tags: [ Person ]
+      summary: Change an existing person.
+      description: |
+        Changes an existing person. The person is looked up by its id and
+        all properties are changed as given.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Person"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+  /sec/person/{id}:
+    get:
+      tags: [ Person ]
+      summary: Get person details.
+      description: |
+        Return details about an person.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Person"
+    delete:
+      tags: [ Person ]
+      summary: Delete a person by its id.
+      description: |
+        Deletes an person.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+  /sec/equipment:
+    get:
+      tags: [ Equipment ]
+      summary: Get a list of equipments
+      description: |
+        Return a list of all configured equipments.
+      security:
+        - authTokenHeader: []
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EquipmentList"
+    post:
+      tags: [ Equipment ]
+      summary: Create a new equipment.
+      description: |
+        Create a new equipment. If a equipment with this name already
+        exists, an error is returned.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Equipment"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+    put:
+      tags: [ Equipment ]
+      summary: Change an existing equipment.
+      description: |
+        Changes an existing equipment. The equipment is looked up by
+        its id and all properties are changed as given.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Equipment"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+  /sec/equipment/{id}:
+    delete:
+      tags: [ Equipment ]
+      summary: Delete a equipment.
+      description: |
+        Deletes a equipment. This also removes this equipments from
+        all items.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+  /sec/collective:
+    get:
+      tags: [ Collective ]
+      summary: Get information about your collective
+      description: |
+        Return some information about the current collective.
+      security:
+        - authTokenHeader: []
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Collective"
+  /sec/collective/settings:
+    get:
+      tags: [ Collective ]
+      summary: Get collective settings
+      description: |
+        Return the settings of a collective.
+      security:
+        - authTokenHeader: []
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CollectiveSettings"
+    post:
+      tags: [ Collective ]
+      summary: Set document language of the collective
+      description: |
+        Updates settings for a collective, which currently is just the
+        document language.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CollectiveSettings"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Collective"
+  /sec/collective/insights:
+    get:
+      tags: [ Collective ]
+      summary: Get some insights regarding your items.
+      description: |
+        Returns some information about how many items there are, how
+        much space they occupy etc.
+      security:
+        - authTokenHeader: []
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ItemInsights"
+  /sec/user:
+    get:
+      tags: [ Collective ]
+      summary: Get a list of collective users.
+      description: |
+        Return a list of all users of the collective.
+      security:
+        - authTokenHeader: []
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserList"
+    post:
+      tags: [ Collective ]
+      summary: Create a new collective user.
+      description: |
+        Create a new collective user. If a user with this name already
+        exists, an error is returned.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+    put:
+      tags: [ Collective ]
+      summary: Change an existing user.
+      description: |
+        Changes an existing user. The user is looked up by
+        its id and all properties are changed as given.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+  /sec/user/{id}:
+    delete:
+      tags: [ Collective ]
+      summary: Delete a user.
+      description: |
+        Deletes a user.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+  /sec/user/changePassword:
+    post:
+      tags: [ Collective ]
+      summary: Change the password.
+      description: |
+        Allows users to change their password.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PasswordChange"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+  /sec/source:
+    get:
+      tags: [ Source ]
+      summary: Get a list of sources
+      description: |
+        Return a list of all configured sources.
+      security:
+        - authTokenHeader: []
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SourceList"
+    post:
+      tags: [ Source ]
+      summary: Create a new source.
+      description: |
+        Create a new source. If a source with this name already
+        exists, an error is returned.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Source"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+    put:
+      tags: [ Source ]
+      summary: Change an existing source.
+      description: |
+        Changes an existing source. The source is looked up by
+        its id and all properties are changed as given.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Source"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+  /sec/source/{id}:
+    delete:
+      tags: [ Source ]
+      summary: Delete a source.
+      description: |
+        Deletes a source. This also removes this sources from
+        all items.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
 
+  /sec/item/search:
+    post:
+      tags: [ Item ]
+      summary: Search for items.
+      description: |
+        Search for items given a search form. The results are grouped
+        by month by default.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ItemSearch"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ItemLightList"
+  /sec/item/{id}:
+    get:
+      tags: [ Item ]
+      summary: Get details about an item.
+      description: |
+        Get detailed information about an item.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ItemDetail"
+    delete:
+      tags: [ Item ]
+      summary: Delete an item.
+      description: |
+        Delete an item and all its data permanently.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+  /sec/item/{id}/tags:
+    post:
+      tags: [ Item ]
+      summary: Set new set of tags.
+      description: |
+        Update the tags associated to an item.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReferenceList"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+  /sec/item/{id}/direction:
+    post:
+      tags: [ Item ]
+      summary: Set the direction of an item.
+      description: |
+        Update the direction of an item.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DirectionValue"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+  /sec/item/{id}/corrOrg:
+    post:
+      tags: [ Item ]
+      summary: Set the correspondent organization of an item.
+      description: |
+        Update the correspondent organization of an item.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OptionalId"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+  /sec/item/{id}/corrPerson:
+    post:
+      tags: [ Item ]
+      summary: Set the correspondent person of an item.
+      description: |
+        Update the correspondent person of an item.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OptionalId"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+  /sec/item/{id}/concPerson:
+    post:
+      tags: [ Item ]
+      summary: Set the concerning person of an item.
+      description: |
+        Update the concerning person of an item.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OptionalId"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+  /sec/item/{id}/concEquipment:
+    post:
+      tags: [ Item ]
+      summary: Set the concering equipment of an item.
+      description: |
+        Update the concering equipment of an item.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OptionalId"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+  /sec/item/{id}/notes:
+    post:
+      tags: [ Item ]
+      summary: Set notes of an item.
+      description: |
+        Update the notes of an item.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OptionalText"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+  /sec/item/{id}/name:
+    post:
+      tags: [ Item ]
+      summary: Set the name of an item.
+      description: |
+        Update the name of an item.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OptionalText"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+  /sec/item/{id}/confirm:
+    post:
+      tags: [ Item ]
+      summary: Confirms the current meta data of an item.
+      description: |
+        An item is initially in state "created". The user can confirm
+        the associated data to put it in state "confirmed".
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+  /sec/item/{id}/unconfirm:
+    post:
+      tags: [ Item ]
+      summary: Puts an item back to created state.
+      description: |
+        If an item is confirmed it can be set back to created to
+        appear as new.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+  /sec/item/{id}/date:
+    post:
+      tags: [ Item ]
+      summary: Sets the item date.
+      description: |
+        Sets the date of an item.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OptionalDate"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+  /sec/item/{id}/duedate:
+    post:
+      tags: [ Item ]
+      summary: Sets the items due date.
+      description: |
+        Sets the due date of an item.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OptionalDate"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+  /sec/item/{id}/proposals:
+    get:
+      tags: [ Item ]
+      summary: Get a list of proposals for this item.
+      description: |
+        During text processing, a list of possible meta data has been
+        extracted from each attachment that may be a match to this
+        item. This is returned here, without duplicates.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ItemProposals"
+
+  /sec/attachment/{id}:
+    get:
+      tags: [ Attachment ]
+      summary: Get an attachment file.
+      description: |
+        Get the binary file belonging to the attachment with the given id.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+  /sec/attachment/{id}/meta:
+    get:
+      tags: [ Attachment ]
+      summary: Get the attachment's meta data.
+      description: |
+        Get meta data for this attachment. The meta data has been
+        extracted from the contents.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AttachmentMeta"
+  /sec/queue/state:
+    get:
+      tags: [ Job Queue ]
+      summary: Get complete state of job queue.
+      description: |
+        Get the current state of the job qeue. The job qeue contains
+        all processing tasks and other long-running operations. All
+        users/collectives share processing resources.
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JobQueueState"
+  /sec/queue/{id}/cancel:
+    post:
+      tags: [ Job Queue ]
+      summary: Cancel a job.
+      description: |
+        Tries to cancel a job and remove it from the queue. If the job
+        is running, a cancel request is send to the corresponding joex
+        instance. Otherwise the job is removed from the queue.
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
 components:
   schemas:
+    GenInvite:
+      description: |
+        A request to generate a new invitation key.
+      required:
+        - password
+      properties:
+        password:
+          type: string
+          format: password
+    InviteResult:
+      description: |
+        The result when requesting new invitation keys.
+      required:
+        - success
+        - message
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        key:
+          type: string
+          format: ident
+    ItemInsights:
+      description: |
+        Information about the items in docspell.
+      required:
+        - incomingCount
+        - outgoingCount
+        - itemSize
+        - tagCloud
+      properties:
+        incomingCount:
+          type: integer
+          format: int32
+        outgoingCount:
+          type: integer
+          format: int32
+        itemSize:
+          type: integer
+          format: int64
+        tagCloud:
+          $ref: "#/components/schemas/TagCloud"
+    TagCloud:
+      description: |
+        A tag "cloud"
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/NameCount"
+    NameCount:
+      description: |
+        Generic structure for counting something.
+      required:
+        - name
+        - count
+      properties:
+        name:
+          type: string
+        count:
+          type: integer
+          format: int32
+    AttachmentMeta:
+      description: |
+        Extracted meta data of an attachment.
+      required:
+        - content
+        - labels
+        - proposals
+      properties:
+        content:
+          type: string
+        labels:
+          type: array
+          items:
+            $ref: "#/components/schemas/Label"
+        proposals:
+          $ref: "#/components/schemas/ItemProposals"
+    ItemProposals:
+      description: |
+        Metadata that has been suggested to an item.
+      required:
+        - corrOrg
+        - corrPerson
+        - concPerson
+        - concEquipment
+        - itemDate
+        - dueDate
+      properties:
+        corrOrg:
+          type: array
+          items:
+            $ref: "#/components/schemas/IdName"
+        corrPerson:
+          type: array
+          items:
+            $ref: "#/components/schemas/IdName"
+        concPerson:
+          type: array
+          items:
+            $ref: "#/components/schemas/IdName"
+        concEquipment:
+          type: array
+          items:
+            $ref: "#/components/schemas/IdName"
+        itemDate:
+          type: array
+          items:
+            type: integer
+            format: date-time
+        dueDate:
+          type: array
+          items:
+            type: integer
+            format: date-time
+    Label:
+      description: |
+        Extracted label.
+      required:
+        - labelType
+        - label
+        - beginPos
+        - endPos
+      properties:
+        labelType:
+          type: string
+          format: nertag
+        label:
+          type: string
+        beginPos:
+          type: integer
+          format: int32
+        endPos:
+          type: integer
+          format: int32
+    OptionalDate:
+      description: |
+        Structure for sending an optional datetime value.
+      properties:
+        date:
+          type: integer
+          format: date-time
+    OptionalText:
+      description: |
+        Structure for sending optional text.
+      properties:
+        text:
+          type: string
+    OptionalId:
+      description: |
+        Structure for sending optional ids.
+      properties:
+        id:
+          type: string
+          format: ident
+    DirectionValue:
+      description: |
+        A direction.
+      required:
+        - direction
+      properties:
+        direction:
+          type: string
+          format: direction
+    ItemDetail:
+      description: |
+        Detailed information about an item.
+      required:
+        - id
+        - direction
+        - name
+        - source
+        - state
+        - created
+        - updated
+        - attachments
+        - tags
+      properties:
+        id:
+          type: string
+          format: ident
+        direction:
+          type: string
+          format: direction
+          enum:
+            - incoming
+            - outgoing
+        name:
+          type: string
+        source:
+          type: string
+        state:
+          type: string
+          format: itemstate
+        created:
+          type: integer
+          format: date-time
+        updated:
+          type: integer
+          format: date-time
+        itemDate:
+          type: integer
+          format: date-time
+        corrOrg:
+          $ref: "#/components/schemas/IdName"
+        corrPerson:
+          $ref: "#/components/schemas/IdName"
+        concPerson:
+          $ref: "#/components/schemas/IdName"
+        concEquipment:
+          $ref: "#/components/schemas/IdName"
+        inReplyTo:
+          $ref: "#/components/schemas/IdName"
+        dueDate:
+          type: integer
+          format: date-time
+        notes:
+          type: string
+        attachments:
+          type: array
+          items:
+            $ref: "#/components/schemas/Attachment"
+        tags:
+          type: array
+          items:
+            $ref: "#/components/schemas/Tag"
+    Attachment:
+      description: |
+        Information about an attachment to an item.
+      required:
+        - id
+        - size
+        - contentType
+      properties:
+        id:
+          type: string
+          format: ident
+        name:
+          type: string
+        size:
+          type: integer
+          format: int64
+        contentType:
+          type: string
+          format: mimetype
+    Registration:
+      description: |
+        Data for registering a new account.
+      required:
+        - collectiveName
+        - login
+        - password
+      properties:
+        collectiveName:
+          type: string
+          format: ident
+        login:
+          type: string
+          format: ident
+        password:
+          type: string
+          format: password
+        invite:
+          type: string
+          format: ident
+    JobQueueState:
+      description: |
+        Contains all information about the job queue.
+      required:
+        - progress
+        - completed
+        - queued
+      properties:
+        progress:
+          type: array
+          items:
+            $ref: "#/components/schemas/JobDetail"
+        completed:
+          type: array
+          items:
+            $ref: "#/components/schemas/JobDetail"
+        queued:
+          type: array
+          items:
+            $ref: "#/components/schemas/JobDetail"
+    JobDetail:
+      description: |
+        Details about a job.
+      required:
+        - id
+        - name
+        - submitted
+        - priority
+        - state
+        - retries
+        - logs
+        - progress
+      properties:
+        id:
+          type: string
+          format: ident
+        name:
+          type: string
+        submitted:
+          description: DateTime
+          type: integer
+          format: date-time
+        priority:
+          type: string
+          format: priority
+        state:
+          type: string
+          format: jobstate
+          enum:
+            - waiting
+            - scheduled
+            - running
+            - stuck
+            - failed
+            - canceled
+            - success
+        retries:
+          type: integer
+          format: int32
+        logs:
+          type: array
+          items:
+            $ref: "#/components/schemas/JobLogEvent"
+        progress:
+          type: integer
+          format: int32
+        worker:
+          type: string
+          format: ident
+        started:
+          description: DateTime
+          type: integer
+          format: date-time
+        finished:
+          type: integer
+          format: date-time
+    JobLogEvent:
+      description: |
+        A log output line.
+      required:
+        - time
+        - level
+        - message
+      properties:
+        time:
+          description: DateTime
+          type: integer
+          format: date-time
+        level:
+          type: string
+          format: loglevel
+        message:
+          type: string
+    PasswordChange:
+      description: |
+        Change the password, by given the old and new one.
+      required:
+        - currentPassword
+        - newPassword
+      properties:
+        currentPassword:
+          type: string
+          format: password
+        newPassword:
+          type: string
+          format: password
+    UserList:
+      description: |
+        A list of users.
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/User"
+    User:
+      description: |
+        A user of a collective.
+      required:
+        - login
+        - state
+        - loginCount
+        - created
+      properties:
+        login:
+          type: string
+          format: ident
+        state:
+          type: string
+          format: userstate
+          enum:
+            - active
+            - disabled
+        password:
+          type: string
+          format: password
+        email:
+          type: string
+        lastLogin:
+          description: DateTime
+          type: integer
+          format: date-time
+        loginCount:
+          type: integer
+          format: int32
+        created:
+          description: DateTime
+          type: integer
+          format: date-time
+    ItemUploadMeta:
+      description: |
+        Meta information for an item upload. The user can specify some
+        structured information with a binary file.
+
+        Additional metadata is not required. However, you have to
+        specifiy whether the corresponding files should become one
+        single item or if an item is created for each file.
+      required:
+        - multiple
+      properties:
+        multiple:
+          type: boolean
+          default: true
+        direction:
+          type: string
+          format: direction
+    Collective:
+      description: |
+        Information about a collective.
+      required:
+        - id
+        - state
+        - created
+      properties:
+        id:
+          type: string
+          format: ident
+        state:
+          type: string
+          format: collectivestate
+        created:
+          description: DateTime
+          type: integer
+          format: date-time
+    CollectiveSettings:
+      description: |
+        Settings for a collective.
+      required:
+        - language
+      properties:
+        language:
+          type: string
+          format: language
+    SourceList:
+      description: |
+        A list of sources.
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Source"
+    Source:
+      description: |
+        Data about a Source. A source defines the endpoint where
+        docspell receives files.
+      required:
+        - id
+        - abbrev
+        - counter
+        - enabled
+        - priority
+        - created
+      properties:
+        id:
+          type: string
+          format: ident
+        abbrev:
+          type: string
+        description:
+          type: string
+        counter:
+          type: integer
+          format: int32
+        enabled:
+          type: boolean
+        priority:
+          type: string
+          format: priority
+        created:
+          description: DateTime
+          type: integer
+          format: date-time
+    EquipmentList:
+      description: |
+        A list of equipments.
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Equipment"
+    Equipment:
+      description: |
+        Some "thing" that occurs in documents.
+      required:
+        - id
+        - name
+        - created
+      properties:
+        id:
+          type: string
+          format: ident
+        name:
+          type: string
+        created:
+          description: DateTime
+          type: integer
+          format: date-time
+    ReferenceList:
+      description:
+        Listing of items.
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/IdName"
+    Person:
+      description: |
+        Basic information about a person.
+      required:
+        - id
+        - name
+        - address
+        - contacts
+        - created
+        - concerning
+      properties:
+        id:
+          type: string
+          format: ident
+        name:
+          type: string
+        address:
+          $ref: "#/components/schemas/Address"
+        contacts:
+          type: array
+          items:
+            $ref: "#/components/schemas/Contact"
+        notes:
+          type: string
+        concerning:
+          type: boolean
+          description: |
+            Whether this person should be used to create suggestions
+            for the "concerning person" association.
+        created:
+          description: DateTime
+          type: integer
+          format: date-time
+    PersonList:
+      description: |
+        A list of persons.
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Person"
+    Organization:
+      description: |
+        An organisation.
+      required:
+        - id
+        - name
+        - address
+        - contacts
+        - created
+      properties:
+        id:
+          type: string
+          format: ident
+        name:
+          type: string
+        address:
+          $ref: "#/components/schemas/Address"
+        contacts:
+          type: array
+          items:
+            $ref: "#/components/schemas/Contact"
+        notes:
+          type: string
+        created:
+          description: DateTime
+          type: integer
+          format: date-time
+    OrganizationList:
+      description: |
+        A list of full organization values.
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Organization"
+    Address:
+      description: |
+        Postal address information.
+      required:
+        - street
+        - zip
+        - city
+        - country
+      properties:
+        street:
+          type: string
+        zip:
+          type: string
+        city:
+          type: string
+        country:
+          type: string
+    Contact:
+      description: |
+        Contact information.
+      required:
+        - id
+        - value
+        - kind
+      properties:
+        id:
+          type: string
+          format: ident
+        value:
+          type: string
+        kind:
+          type: string
+          format: contactkind
+          enum:
+            - phone
+            - mobile
+            - website
+            - fax
+            - docspell
+            - email
+    ItemLightList:
+      description: |
+        A list of item details.
+      required:
+        - groups
+      properties:
+        groups:
+          type: array
+          items:
+            $ref: "#/components/schemas/ItemLightGroup"
+    ItemLightGroup:
+      description: |
+        A group of items.
+      required:
+        - name
+        - items
+      properties:
+        name:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/ItemLight"
+    ItemSearch:
+      description: |
+        A structure for a search form.
+      required:
+        - tagsInclude
+        - tagsExclude
+        - inbox
+      properties:
+        tagsInclude:
+          type: array
+          items:
+            type: string
+            format: ident
+        tagsExclude:
+          type: array
+          items:
+            type: string
+            format: ident
+        inbox:
+          type: boolean
+        direction:
+          type: string
+          format: direction
+          enum:
+            - incoming
+            - outgoing
+        name:
+          type: string
+        corrOrg:
+          type: string
+          format: ident
+        corrPerson:
+          type: string
+          format: ident
+        concPerson:
+          type: string
+          format: ident
+        concEquip:
+          type: string
+          format: ident
+        dateFrom:
+          type: integer
+          format: date-time
+        dateUntil:
+          type: integer
+          format: date-time
+        dueDateFrom:
+          type: integer
+          format: date-time
+        dueDateUntil:
+          type: integer
+          format: date-time
+    ItemLight:
+      description: |
+        An item with only a few important properties.
+      required:
+        - id
+        - name
+        - state
+        - date
+        - source
+        - fileCount
+      properties:
+        id:
+          type: string
+          format: ident
+        name:
+          type: string
+        state:
+          type: string
+          format: itemstate
+        date:
+          type: integer
+          format: date-time
+        dueDate:
+          type: integer
+          format: date-time
+        source:
+          type: string
+        direction:
+          type: string
+          enum:
+            - incoming
+            - outgoing
+        corrOrg:
+          $ref: "#/components/schemas/IdName"
+        corrPerson:
+          $ref: "#/components/schemas/IdName"
+        concPerson:
+          $ref: "#/components/schemas/IdName"
+        concEquip:
+          $ref: "#/components/schemas/IdName"
+        fileCount:
+          type: integer
+          format: int32
+    IdName:
+      description: |
+        The identifier and a human readable name of some entity.
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: string
+          format: ident
+        name:
+          type: string
+    BasicResult:
+      description: |
+        Some basic result of an operation.
+      required:
+        - success
+        - message
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+    Tag:
+      description: |
+        A tag used to annotate items. A tag may have a category which
+        groups tags together.
+      required:
+        - id
+        - name
+        - created
+      properties:
+        id:
+          type: string
+          format: ident
+        name:
+          type: string
+        category:
+          type: string
+        created:
+          type: integer
+          format: date-time
+    TagList:
+      description: |
+        A list of tags.
+      required:
+        - count
+        - items
+      properties:
+        count:
+          type: integer
+          format: int32
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tag'
     UserPass:
       description: |
         Account name and password.
@@ -125,3 +2068,18 @@ components:
       type: apiKey
       in: header
       name: X-Docspell-Auth
+  parameters:
+    id:
+      name: id
+      in: path
+      description: A identifier
+      required: true
+      schema:
+        type: string
+    full:
+      name: full
+      in: query
+      description: Whether to list full data or just name and id.
+      required: false
+      schema:
+        type: boolean

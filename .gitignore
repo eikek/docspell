@@ -1,3 +1,5 @@
 target/
 dev.conf
 elm-stuff
+result
+_site/

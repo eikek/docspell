@@ -7,9 +7,7 @@ import org.http4s._
 import org.http4s.headers._
 import org.http4s.HttpRoutes
 import org.http4s.dsl.Http4sDsl
-import org.slf4j._
-import _root_.io.circe._
-import _root_.io.circe.generic.semiauto._
+import org.log4s._
 import _root_.io.circe.syntax._
 import yamusca.imports._
 import yamusca.implicits._
@@ -19,7 +17,7 @@ import java.util.concurrent.atomic.AtomicReference
 import docspell.restserver.{BuildInfo, Config}
 
 object TemplateRoutes {
-  private[this] val logger = LoggerFactory.getLogger(getClass)
+  private[this] val logger = getLogger
 
   val `text/html` = new MediaType("text", "html")
 
@@ -78,27 +76,16 @@ object TemplateRoutes {
   object DocData {
 
     def apply(cfg: Config): DocData =
-      DocData("/app/assets" + Webjars.swaggerui, s"/app/assets/${BuildInfo.name}/${BuildInfo.version}/openapi.yml")
+      DocData("/app/assets" + Webjars.swaggerui, s"/app/assets/${BuildInfo.name}/${BuildInfo.version}/docspell-openapi.yml")
 
     implicit def yamuscaValueConverter: ValueConverter[DocData] =
       ValueConverter.deriveConverter[DocData]
   }
 
-  case class Flags(appName: String, baseUrl: String)
-
-  object Flags {
-    def apply(cfg: Config): Flags =
-      Flags(cfg.appName, cfg.baseUrl)
-
-    implicit val jsonEncoder: Encoder[Flags] =
-      deriveEncoder[Flags]
-    implicit def yamuscaValueConverter: ValueConverter[Flags] =
-      ValueConverter.deriveConverter[Flags]
-  }
-
   case class IndexData(flags: Flags
     , cssUrls: Seq[String]
     , jsUrls: Seq[String]
+    , faviconBase: String
     , appExtraJs: String
     , flagsJson: String)
 
@@ -115,9 +102,9 @@ object TemplateRoutes {
           "/app/assets" + Webjars.semanticui + "/semantic.min.js",
           s"/app/assets/docspell-webapp/${BuildInfo.version}/docspell-app.js"
         )
-        ,
-        s"/app/assets/docspell-webapp/${BuildInfo.version}/docspell.js"
-          , Flags(cfg).asJson.spaces2 )
+        , s"/app/assets/docspell-webapp/${BuildInfo.version}/favicon"
+        , s"/app/assets/docspell-webapp/${BuildInfo.version}/docspell.js"
+        , Flags(cfg).asJson.spaces2 )
 
     implicit def yamuscaValueConverter: ValueConverter[IndexData] =
       ValueConverter.deriveConverter[IndexData]

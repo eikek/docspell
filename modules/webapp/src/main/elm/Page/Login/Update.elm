@@ -9,8 +9,8 @@ import Api.Model.UserPass exposing (UserPass)
 import Api.Model.AuthResult exposing (AuthResult)
 import Util.Http
 
-update: Flags -> Msg -> Model -> (Model, Cmd Msg, Maybe AuthResult)
-update flags msg model =
+update: Maybe Page -> Flags -> Msg -> Model -> (Model, Cmd Msg, Maybe AuthResult)
+update referrer flags msg model =
     case msg of
         SetUsername str ->
             ({model | username = str}, Cmd.none, Nothing)
@@ -21,19 +21,22 @@ update flags msg model =
             (model, Api.login flags (UserPass model.username model.password) AuthResp, Nothing)
 
         AuthResp (Ok lr) ->
-            if lr.success
-            then ({model|result = Just lr, password = ""}, setAccount lr, Just lr)
-            else ({model|result = Just lr, password = ""}, Ports.removeAccount "", Just lr)
+            let
+                gotoRef = Maybe.withDefault HomePage referrer |> Page.goto
+            in
+                if lr.success
+                then ({model|result = Just lr, password = ""}, Cmd.batch [setAccount lr, gotoRef], Just lr)
+                else ({model|result = Just lr, password = ""}, Ports.removeAccount (), Just lr)
 
         AuthResp (Err err) ->
             let
                 empty = Api.Model.AuthResult.empty
                 lr = {empty|message = Util.Http.errorToString err}
             in
-                ({model|password = "", result = Just lr}, Ports.removeAccount "", Just empty)
+                ({model|password = "", result = Just lr}, Ports.removeAccount (), Just empty)
 
 setAccount: AuthResult -> Cmd msg
 setAccount result =
     if result.success
     then Ports.setAccount result
-    else Ports.removeAccount ""
+    else Ports.removeAccount ()

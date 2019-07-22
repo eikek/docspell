@@ -6,8 +6,34 @@ var elmApp = Elm.Main.init({
 });
 
 elmApp.ports.initElements.subscribe(function() {
-    console.log("Initialsing elements …");
-    $('.ui.dropdown').dropdown();
-    $('.ui.checkbox').checkbox();
-    $('.ui.accordion').accordion();
+//    console.log("Initialsing elements …");
+//    $('.ui.dropdown').dropdown();
+//    $('.ui.checkbox').checkbox();
+//    $('.ui.accordion').accordion();
+});
+
+elmApp.ports.setAccount.subscribe(function(authResult) {
+    console.log("Add account from local storage");
+    localStorage.setItem("account", JSON.stringify(authResult));
+});
+
+elmApp.ports.removeAccount.subscribe(function() {
+    console.log("Remove account from local storage");
+    localStorage.removeItem("account");
+});
+
+elmApp.ports.setProgress.subscribe(function(input) {
+    var id = input[0];
+    var percent = input[1];
+    setTimeout(function () {
+        $("#"+id).progress({percent: percent});
+    }, 100);
+});
+
+elmApp.ports.setAllProgress.subscribe(function(input) {
+    var id = input[0];
+    var percent = input[1];
+    setTimeout(function () {
+        $("."+id).progress({percent: percent});
+    }, 100);
 });

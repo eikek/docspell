@@ -3,10 +3,98 @@ module Api exposing (..)
 import Http
 import Task
 import Util.Http as Http2
+import Util.File
+import Json.Encode as JsonEncode
+import File exposing (File)
 import Data.Flags exposing (Flags)
-import Api.Model.UserPass exposing (UserPass)
 import Api.Model.AuthResult exposing (AuthResult)
+import Api.Model.BasicResult exposing (BasicResult)
+import Api.Model.Collective exposing (Collective)
+import Api.Model.CollectiveSettings exposing (CollectiveSettings)
+import Api.Model.DirectionValue exposing (DirectionValue)
+import Api.Model.Equipment exposing (Equipment)
+import Api.Model.EquipmentList exposing (EquipmentList)
+import Api.Model.GenInvite exposing (GenInvite)
+import Api.Model.InviteResult exposing (InviteResult)
+import Api.Model.ItemDetail exposing (ItemDetail)
+import Api.Model.ItemInsights exposing (ItemInsights)
+import Api.Model.ItemLightList exposing (ItemLightList)
+import Api.Model.ItemProposals exposing (ItemProposals)
+import Api.Model.ItemSearch exposing (ItemSearch)
+import Api.Model.ItemUploadMeta exposing (ItemUploadMeta)
+import Api.Model.JobQueueState exposing (JobQueueState)
+import Api.Model.OptionalDate exposing (OptionalDate)
+import Api.Model.OptionalId exposing (OptionalId)
+import Api.Model.OptionalText exposing (OptionalText)
+import Api.Model.Organization exposing (Organization)
+import Api.Model.OrganizationList exposing (OrganizationList)
+import Api.Model.PasswordChange exposing (PasswordChange)
+import Api.Model.Person exposing (Person)
+import Api.Model.PersonList exposing (PersonList)
+import Api.Model.ReferenceList exposing (ReferenceList)
+import Api.Model.Registration exposing (Registration)
+import Api.Model.Source exposing (Source)
+import Api.Model.SourceList exposing (SourceList)
+import Api.Model.Tag exposing (Tag)
+import Api.Model.TagList exposing (TagList)
+import Api.Model.User exposing (User)
+import Api.Model.UserList exposing (UserList)
+import Api.Model.UserPass exposing (UserPass)
 import Api.Model.VersionInfo exposing (VersionInfo)
+
+upload: Flags -> Maybe String -> ItemUploadMeta -> List File -> (String -> (Result Http.Error BasicResult) -> msg) -> List (Cmd msg)
+upload flags sourceId meta files receive =
+    let
+        metaStr = JsonEncode.encode 0 (Api.Model.ItemUploadMeta.encode meta)
+        mkReq file =
+            let
+                fid = Util.File.makeFileId file
+                path = Maybe.map ((++) "/api/v1/open/upload/item/") sourceId
+                       |> Maybe.withDefault "/api/v1/sec/upload/item"
+            in
+                Http2.authPostTrack
+                    { url = flags.config.baseUrl ++ path
+                    , account = getAccount flags
+                    , body = Http.multipartBody <|
+                             [Http.stringPart "meta" metaStr, Http.filePart "file[]" file]
+                    , expect = Http.expectJson (receive fid) Api.Model.BasicResult.decoder
+                    , tracker = fid
+                    }
+    in
+        List.map mkReq files
+
+uploadSingle: Flags -> Maybe String -> ItemUploadMeta -> String -> List File -> ((Result Http.Error BasicResult) -> msg) -> Cmd msg
+uploadSingle flags sourceId meta track files receive =
+    let
+        metaStr = JsonEncode.encode 0 (Api.Model.ItemUploadMeta.encode meta)
+        fileParts = List.map (\f -> Http.filePart "file[]" f) files
+        allParts = (Http.stringPart "meta" metaStr)  :: fileParts
+        path = Maybe.map ((++) "/api/v1/open/upload/item/") sourceId
+               |> Maybe.withDefault "/api/v1/sec/upload/item"
+    in
+        Http2.authPostTrack
+            { url = flags.config.baseUrl ++ path
+            , account = getAccount flags
+            , body = Http.multipartBody allParts
+            , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+            , tracker = track
+            }
+
+register: Flags -> Registration -> ((Result Http.Error BasicResult) -> msg) -> Cmd msg
+register flags reg receive =
+    Http.post
+        { url = flags.config.baseUrl ++ "/api/v1/open/signup/register"
+        , body = Http.jsonBody (Api.Model.Registration.encode reg)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+newInvite: Flags -> GenInvite -> ((Result Http.Error InviteResult) -> msg) -> Cmd msg
+newInvite flags req receive =
+    Http.post
+        { url = flags.config.baseUrl ++ "/api/v1/open/signup/newinvite"
+        , body = Http.jsonBody (Api.Model.GenInvite.encode req)
+        , expect = Http.expectJson receive Api.Model.InviteResult.decoder
+        }
 
 login: Flags -> UserPass -> ((Result Http.Error AuthResult) -> msg) -> Cmd msg
 login flags up receive =
@@ -48,7 +136,7 @@ refreshSession flags receive =
             if acc.success && acc.validMs > 30000
             then
                 let
-                    delay = acc.validMs - 30000 |> toFloat
+                    delay = Debug.log "Refresh session in " (acc.validMs - 30000) |> toFloat
                 in
                     Http2.executeIn delay receive (refreshSessionTask flags)
             else Cmd.none
@@ -66,6 +154,452 @@ refreshSessionTask flags =
         , resolver = Http2.jsonResolver Api.Model.AuthResult.decoder
         , timeout = Nothing
         }
+
+
+getInsights: Flags -> ((Result Http.Error ItemInsights) -> msg) -> Cmd msg
+getInsights flags receive =
+    Http2.authGet
+        { url = flags.config.baseUrl ++ "/api/v1/sec/collective/insights"
+        , account = getAccount flags
+        , expect = Http.expectJson receive Api.Model.ItemInsights.decoder
+        }
+
+getCollective: Flags -> ((Result Http.Error Collective) -> msg) -> Cmd msg
+getCollective flags receive =
+    Http2.authGet
+        { url = flags.config.baseUrl ++ "/api/v1/sec/collective"
+        , account = getAccount flags
+        , expect = Http.expectJson receive Api.Model.Collective.decoder
+        }
+
+getCollectiveSettings: Flags -> ((Result Http.Error CollectiveSettings) -> msg) -> Cmd msg
+getCollectiveSettings flags receive =
+    Http2.authGet
+        { url = flags.config.baseUrl ++ "/api/v1/sec/collective/settings"
+        , account = getAccount flags
+        , expect = Http.expectJson receive Api.Model.CollectiveSettings.decoder
+        }
+
+setCollectiveSettings: Flags -> CollectiveSettings -> ((Result Http.Error BasicResult) -> msg) -> Cmd msg
+setCollectiveSettings flags settings receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/collective/settings"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.CollectiveSettings.encode settings)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+-- Tags
+
+getTags: Flags -> ((Result Http.Error TagList) -> msg) -> Cmd msg
+getTags flags receive =
+    Http2.authGet
+        { url = flags.config.baseUrl ++ "/api/v1/sec/tag"
+        , account = getAccount flags
+        , expect = Http.expectJson receive Api.Model.TagList.decoder
+        }
+
+postTag: Flags -> Tag -> ((Result Http.Error BasicResult) -> msg) -> Cmd msg
+postTag flags tag receive =
+    let
+        params =
+            { url = flags.config.baseUrl ++ "/api/v1/sec/tag"
+            , account = getAccount flags
+            , body = Http.jsonBody (Api.Model.Tag.encode tag)
+            , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+            }
+    in
+        if tag.id == "" then Http2.authPost params
+        else Http2.authPut params
+
+deleteTag: Flags -> String -> ((Result Http.Error BasicResult) -> msg) -> Cmd msg
+deleteTag flags tag receive =
+    Http2.authDelete
+        { url = flags.config.baseUrl ++ "/api/v1/sec/tag/" ++ tag
+        , account = getAccount flags
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+-- Equipments
+
+getEquipments: Flags -> ((Result Http.Error EquipmentList) -> msg) -> Cmd msg
+getEquipments flags receive =
+    Http2.authGet
+        { url = flags.config.baseUrl ++ "/api/v1/sec/equipment"
+        , account = getAccount flags
+        , expect = Http.expectJson receive Api.Model.EquipmentList.decoder
+        }
+
+postEquipment: Flags -> Equipment -> ((Result Http.Error BasicResult) -> msg) -> Cmd msg
+postEquipment flags equip receive =
+    let
+        params =
+            { url = flags.config.baseUrl ++ "/api/v1/sec/equipment"
+            , account = getAccount flags
+            , body = Http.jsonBody (Api.Model.Equipment.encode equip)
+            , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+            }
+    in
+        if equip.id == "" then Http2.authPost params
+        else Http2.authPut params
+
+deleteEquip: Flags -> String -> ((Result Http.Error BasicResult) -> msg) -> Cmd msg
+deleteEquip flags equip receive =
+    Http2.authDelete
+        { url = flags.config.baseUrl ++ "/api/v1/sec/equipment/" ++ equip
+        , account = getAccount flags
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+-- Organization
+
+getOrgLight:  Flags -> ((Result Http.Error ReferenceList) -> msg) -> Cmd msg
+getOrgLight flags receive =
+    Http2.authGet
+        { url = flags.config.baseUrl ++ "/api/v1/sec/organization"
+        , account = getAccount flags
+        , expect = Http.expectJson receive Api.Model.ReferenceList.decoder
+        }
+
+getOrganizations: Flags -> ((Result Http.Error OrganizationList) -> msg) -> Cmd msg
+getOrganizations flags receive =
+    Http2.authGet
+        { url = flags.config.baseUrl ++ "/api/v1/sec/organization?full=true"
+        , account = getAccount flags
+        , expect = Http.expectJson receive Api.Model.OrganizationList.decoder
+        }
+
+postOrg: Flags -> Organization -> ((Result Http.Error BasicResult) -> msg) -> Cmd msg
+postOrg flags org receive =
+    let
+        params =
+            { url = flags.config.baseUrl ++ "/api/v1/sec/organization"
+            , account = getAccount flags
+            , body = Http.jsonBody (Api.Model.Organization.encode org)
+            , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+            }
+    in
+        if org.id == "" then Http2.authPost params
+        else Http2.authPut params
+
+deleteOrg: Flags -> String -> ((Result Http.Error BasicResult) -> msg) -> Cmd msg
+deleteOrg flags org receive =
+    Http2.authDelete
+        { url = flags.config.baseUrl ++ "/api/v1/sec/organization/" ++ org
+        , account = getAccount flags
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+-- Person
+
+
+getPersonsLight:  Flags -> ((Result Http.Error ReferenceList) -> msg) -> Cmd msg
+getPersonsLight flags receive =
+    Http2.authGet
+        { url = flags.config.baseUrl ++ "/api/v1/sec/person?full=false"
+        , account = getAccount flags
+        , expect = Http.expectJson receive Api.Model.ReferenceList.decoder
+        }
+
+getPersons: Flags -> ((Result Http.Error PersonList) -> msg) -> Cmd msg
+getPersons flags receive =
+    Http2.authGet
+        { url = flags.config.baseUrl ++ "/api/v1/sec/person?full=true"
+        , account = getAccount flags
+        , expect = Http.expectJson receive Api.Model.PersonList.decoder
+        }
+
+postPerson: Flags -> Person -> ((Result Http.Error BasicResult) -> msg) -> Cmd msg
+postPerson flags person receive =
+    let
+        params =
+            { url = flags.config.baseUrl ++ "/api/v1/sec/person"
+            , account = getAccount flags
+            , body = Http.jsonBody (Api.Model.Person.encode person)
+            , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+            }
+    in
+        if person.id == "" then Http2.authPost params
+        else Http2.authPut params
+
+deletePerson: Flags -> String -> ((Result Http.Error BasicResult) -> msg) -> Cmd msg
+deletePerson flags person receive =
+    Http2.authDelete
+        { url = flags.config.baseUrl ++ "/api/v1/sec/person/" ++ person
+        , account = getAccount flags
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+--- Sources
+
+getSources: Flags -> ((Result Http.Error SourceList) -> msg) -> Cmd msg
+getSources flags receive =
+    Http2.authGet
+        { url = flags.config.baseUrl ++ "/api/v1/sec/source"
+        , account = getAccount flags
+        , expect = Http.expectJson receive Api.Model.SourceList.decoder
+        }
+
+postSource: Flags -> Source -> ((Result Http.Error BasicResult) -> msg) -> Cmd msg
+postSource flags source receive =
+    let
+        params =
+            { url = flags.config.baseUrl ++ "/api/v1/sec/source"
+            , account = getAccount flags
+            , body = Http.jsonBody (Api.Model.Source.encode source)
+            , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+            }
+    in
+        if source.id == "" then Http2.authPost params
+        else Http2.authPut params
+
+deleteSource: Flags -> String -> ((Result Http.Error BasicResult) -> msg) -> Cmd msg
+deleteSource flags src receive =
+    Http2.authDelete
+        { url = flags.config.baseUrl ++ "/api/v1/sec/source/" ++ src
+        , account = getAccount flags
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+-- Users
+
+getUsers: Flags -> ((Result Http.Error UserList) -> msg) -> Cmd msg
+getUsers flags receive =
+    Http2.authGet
+        { url = flags.config.baseUrl ++ "/api/v1/sec/user"
+        , account = getAccount flags
+        , expect = Http.expectJson receive Api.Model.UserList.decoder
+        }
+
+postNewUser: Flags -> User -> ((Result Http.Error BasicResult) -> msg) -> Cmd msg
+postNewUser flags user receive =
+    Http2.authPost
+    { url = flags.config.baseUrl ++ "/api/v1/sec/user"
+    , account = getAccount flags
+    , body = Http.jsonBody (Api.Model.User.encode user)
+    , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+    }
+
+putUser: Flags -> User -> ((Result Http.Error BasicResult) -> msg) -> Cmd msg
+putUser flags user receive =
+    Http2.authPut
+        { url = flags.config.baseUrl ++ "/api/v1/sec/user"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.User.encode user)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+changePassword: Flags -> PasswordChange -> ((Result Http.Error BasicResult) -> msg) -> Cmd msg
+changePassword flags cp receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/user/changePassword"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.PasswordChange.encode cp)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+deleteUser: Flags -> String -> ((Result Http.Error BasicResult) -> msg) -> Cmd msg
+deleteUser flags user receive =
+    Http2.authDelete
+        { url = flags.config.baseUrl ++ "/api/v1/sec/user/" ++ user
+        , account = getAccount flags
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+-- Job Queue
+
+cancelJob: Flags -> String -> ((Result Http.Error BasicResult) -> msg) -> Cmd msg
+cancelJob flags jobid receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/queue/" ++ jobid ++ "/cancel"
+        , account = getAccount flags
+        , body = Http.emptyBody
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+getJobQueueState: Flags -> ((Result Http.Error JobQueueState) -> msg) -> Cmd msg
+getJobQueueState flags receive =
+    Http2.authGet
+        { url = flags.config.baseUrl ++ "/api/v1/sec/queue/state"
+        , account = getAccount flags
+        , expect = Http.expectJson receive Api.Model.JobQueueState.decoder
+        }
+
+
+getJobQueueStateIn: Flags -> Float -> ((Result Http.Error JobQueueState) -> msg) -> Cmd msg
+getJobQueueStateIn flags delay receive =
+    case flags.account of
+        Just acc ->
+            if acc.success && delay > 100
+            then
+                let
+                    _ = Debug.log "Refresh job qeue state in " delay
+                in
+                    Http2.executeIn delay receive (getJobQueueStateTask flags)
+            else Cmd.none
+        Nothing ->
+            Cmd.none
+
+getJobQueueStateTask: Flags -> Task.Task Http.Error JobQueueState
+getJobQueueStateTask flags =
+    Http2.authTask
+        { url = flags.config.baseUrl ++ "/api/v1/sec/queue/state"
+        , method = "GET"
+        , headers = []
+        , account = getAccount flags
+        , body = Http.emptyBody
+        , resolver = Http2.jsonResolver Api.Model.JobQueueState.decoder
+        , timeout = Nothing
+        }
+
+-- Item
+
+itemSearch: Flags -> ItemSearch -> ((Result Http.Error ItemLightList) -> msg) -> Cmd msg
+itemSearch flags search receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/item/search"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.ItemSearch.encode search)
+        , expect = Http.expectJson receive Api.Model.ItemLightList.decoder
+        }
+
+itemDetail: Flags -> String -> ((Result Http.Error ItemDetail) -> msg) -> Cmd msg
+itemDetail flags id receive =
+    Http2.authGet
+        { url = flags.config.baseUrl ++ "/api/v1/sec/item/" ++ id
+        , account = getAccount flags
+        , expect = Http.expectJson receive Api.Model.ItemDetail.decoder
+        }
+
+setTags: Flags -> String -> ReferenceList -> ((Result Http.Error BasicResult) -> msg) -> Cmd msg
+setTags flags item tags receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/item/" ++ item ++ "/tags"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.ReferenceList.encode tags)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+setDirection: Flags -> String -> DirectionValue -> ((Result Http.Error BasicResult) -> msg) -> Cmd msg
+setDirection flags item dir receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/item/" ++ item ++ "/direction"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.DirectionValue.encode dir)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+setCorrOrg: Flags -> String -> OptionalId -> ((Result Http.Error BasicResult) -> msg) -> Cmd msg
+setCorrOrg flags item id receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/item/" ++ item ++ "/corrOrg"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.OptionalId.encode id)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+setCorrPerson: Flags -> String -> OptionalId -> ((Result Http.Error BasicResult) -> msg) -> Cmd msg
+setCorrPerson flags item id receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/item/" ++ item ++ "/corrPerson"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.OptionalId.encode id)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+setConcPerson: Flags -> String -> OptionalId -> ((Result Http.Error BasicResult) -> msg) -> Cmd msg
+setConcPerson flags item id receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/item/" ++ item ++ "/concPerson"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.OptionalId.encode id)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+setConcEquip: Flags -> String -> OptionalId -> ((Result Http.Error BasicResult) -> msg) -> Cmd msg
+setConcEquip flags item id receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/item/" ++ item ++ "/concEquipment"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.OptionalId.encode id)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+setItemName: Flags -> String -> OptionalText -> ((Result Http.Error BasicResult) -> msg) -> Cmd msg
+setItemName flags item text receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/item/" ++ item ++ "/name"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.OptionalText.encode text)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+setItemNotes: Flags -> String -> OptionalText -> ((Result Http.Error BasicResult) -> msg) -> Cmd msg
+setItemNotes flags item text receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/item/" ++ item ++ "/notes"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.OptionalText.encode text)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+setItemDate: Flags -> String -> OptionalDate -> ((Result Http.Error BasicResult) -> msg) -> Cmd msg
+setItemDate flags item date receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/item/" ++ item ++ "/date"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.OptionalDate.encode date)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+setItemDueDate: Flags -> String -> OptionalDate -> ((Result Http.Error BasicResult) -> msg) -> Cmd msg
+setItemDueDate flags item date receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/item/" ++ item ++ "/duedate"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.OptionalDate.encode date)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+setConfirmed: Flags -> String -> ((Result Http.Error BasicResult) -> msg) -> Cmd msg
+setConfirmed flags item receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/item/" ++ item ++ "/confirm"
+        , account = getAccount flags
+        , body = Http.emptyBody
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+setUnconfirmed: Flags -> String -> ((Result Http.Error BasicResult) -> msg) -> Cmd msg
+setUnconfirmed flags item receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/item/" ++ item ++ "/unconfirm"
+        , account = getAccount flags
+        , body = Http.emptyBody
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+deleteItem: Flags -> String -> ((Result Http.Error BasicResult) -> msg) -> Cmd msg
+deleteItem flags item receive =
+    Http2.authDelete
+        { url = flags.config.baseUrl ++ "/api/v1/sec/item/" ++ item
+        , account = getAccount flags
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+getItemProposals: Flags -> String -> ((Result Http.Error ItemProposals) -> msg) -> Cmd msg
+getItemProposals flags item receive =
+    Http2.authGet
+        { url = flags.config.baseUrl ++ "/api/v1/sec/item/" ++ item ++ "/proposals"
+        , account = getAccount flags
+        , expect = Http.expectJson receive Api.Model.ItemProposals.decoder
+        }
+
+
+-- Helper
 
 getAccount: Flags -> AuthResult
 getAccount flags =

@@ -5,6 +5,7 @@ import Api.Model.AuthResult exposing (AuthResult)
 type alias Config =
     { appName: String
     , baseUrl: String
+    , signupMode: String
     }
 
 type alias Flags =
@@ -20,3 +21,7 @@ getToken flags =
 withAccount: Flags -> AuthResult -> Flags
 withAccount flags acc =
     { flags | account = Just acc }
+
+withoutAccount: Flags -> Flags
+withoutAccount flags =
+    { flags | account = Nothing }

@@ -1,38 +1,76 @@
+package docspell.build
+
 import sbt._
 
 object Dependencies {
 
-  val BetterMonadicForVersion = "0.3.0"
-  val BitpeaceVersion = "0.4.0-M2"
-  val CirceVersion = "0.12.0-M4"
-  val DoobieVersion = "0.8.0-M1"
+  val BcryptVersion = "0.4"
+  val BetterMonadicForVersion = "0.3.1"
+  val BitpeaceVersion = "0.4.0-M2" // 0.4.0
+  val CirceVersion = "0.12.1"
+  val DoobieVersion = "0.8.0-RC1" // 0.8.2
   val FastparseVersion = "2.1.3"
-  val FlywayVersion = "6.0.0-beta2"
-  val Fs2Version = "1.1.0-M1"
+  val FlywayVersion = "6.0.3"
+  val Fs2Version = "1.1.0-M1"  // 2.0.0
   val H2Version = "1.4.199"
-  val Http4sVersion = "0.21.0-M2"
+  val Http4sVersion = "0.21.0-M4" // waiting for new version supporting cats2/fs2-2
   val KindProjectorVersion = "0.10.3"
   val Log4sVersion = "1.8.2"
   val LogbackVersion = "1.2.3"
-  val MariaDbVersion = "2.4.2"
-  val MiniTestVersion = "2.5.0"
-  val PostgresVersion = "42.2.6"
-  val PureConfigVersion = "0.11.1"
+  val MariaDbVersion = "2.4.4"
+  val MiniTestVersion = "2.7.0"
+  val PostgresVersion = "42.2.8"
+  val PureConfigVersion = "0.12.0"
   val SqliteVersion = "3.28.0"
-  val TikaVersion = "1.20"
+  val StanfordNlpVersion = "3.9.2"
+  val TikaVersion = "1.22"
   val javaxMailVersion = "1.6.2"
   val dnsJavaVersion = "2.1.9"
-  val YamuscaVersion = "0.6.0-M2"
+  val YamuscaVersion = "0.6.0"
 
+  val stanfordNlpCore = Seq(
+    "edu.stanford.nlp" % "stanford-corenlp" % StanfordNlpVersion excludeAll(
+      ExclusionRule("com.io7m.xom", "xom"),
+      ExclusionRule("javax.servlet", "javax.servlet-api"),
+      ExclusionRule("org.apache.lucene", "lucene-queryparser"),
+      ExclusionRule("org.apache.lucene", "lucene-queries"),
+      ExclusionRule("org.apache.lucene", "lucene-analyzers-common"),
+      ExclusionRule("org.apache.lucene", "lucene-core"),
+      ExclusionRule("com.sun.xml.bind", "jaxb-impl"),
+      ExclusionRule("com.sun.xml.bind", "jaxb-core"),
+      ExclusionRule("javax.xml.bind", "jaxb-api"),
+      ExclusionRule("de.jollyday", "jollyday"),
+      ExclusionRule("com.apple", "AppleJavaExtensions"),
+      ExclusionRule("org.glassfish", "javax.json")
+    )
+  )
+
+  val stanfordNlpModels = Seq(
+    "edu.stanford.nlp" % "stanford-corenlp" % StanfordNlpVersion classifier "models-german",
+    "edu.stanford.nlp" % "stanford-corenlp" % StanfordNlpVersion classifier "models-english"
+  )
+
+  val tika = Seq(
+    "org.apache.tika" % "tika-core" % TikaVersion
+  )
+
+  val bcrypt = Seq(
+    "org.mindrot" % "jbcrypt" % BcryptVersion
+  )
 
   val fs2 = Seq(
-    "co.fs2" %% "fs2-core" % Fs2Version
+    "co.fs2" %% "fs2-core" % Fs2Version,
+    "co.fs2" %% "fs2-io" % Fs2Version
   )
 
   val http4s = Seq(
     "org.http4s" %% "http4s-blaze-server" % Http4sVersion,
     "org.http4s" %% "http4s-circe"        % Http4sVersion,
     "org.http4s" %% "http4s-dsl"          % Http4sVersion,
+  )
+  
+  val http4sClient = Seq(
+    "org.http4s" %% "http4s-blaze-client" % Http4sVersion
   )
 
   val circe = Seq(
@@ -46,7 +84,7 @@ object Dependencies {
   )
 
   val logging = Seq(
-    "ch.qos.logback" % "logback-classic" % LogbackVersion % Runtime
+    "ch.qos.logback" % "logback-classic" % LogbackVersion
   )
 
   // https://github.com/melrief/pureconfig
@@ -113,7 +151,7 @@ object Dependencies {
   val betterMonadicFor = "com.olegpy" %% "better-monadic-for" % BetterMonadicForVersion
 
   val webjars = Seq(
-    "swagger-ui" -> "3.22.2",
+    "swagger-ui" -> "3.23.8",
     "Semantic-UI" -> "2.4.1",
     "jquery" -> "3.4.1"
   ).map({case (a, v) => "org.webjars" % a % v })

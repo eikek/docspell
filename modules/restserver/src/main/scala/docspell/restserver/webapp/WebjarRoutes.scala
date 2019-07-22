@@ -22,7 +22,7 @@ object WebjarRoutes {
   }
 
   def assetFilter(asset: WebjarAsset): Boolean =
-    List(".js", ".css", ".html", ".jpg", ".png", ".eot", ".woff", ".woff2", ".svg", ".otf", ".ttf", ".yml").
+    List(".js", ".css", ".html", ".json", ".jpg", ".png", ".eot", ".woff", ".woff2", ".svg", ".otf", ".ttf", ".yml", ".xml").
       exists(e => asset.asset.endsWith(e))
 
 }

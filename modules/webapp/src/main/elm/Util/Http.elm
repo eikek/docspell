@@ -14,6 +14,7 @@ authReq: {url: String
          ,headers: List Http.Header
          ,body: Http.Body
          ,expect: Http.Expect msg
+         ,tracker: Maybe String
          } -> Cmd msg
 authReq req =
     Http.request
@@ -23,7 +24,7 @@ authReq req =
         , expect = req.expect
         , body = req.body
         , timeout = Nothing
-        , tracker = Nothing
+        , tracker = req.tracker
         }
 
 authPost: {url: String
@@ -39,6 +40,40 @@ authPost req =
         , expect = req.expect
         , method = "POST"
         , headers = []
+        , tracker = Nothing
+        }
+
+authPostTrack: {url: String
+               ,account: AuthResult
+               ,body: Http.Body
+               ,expect: Http.Expect msg
+               ,tracker: String
+               } -> Cmd msg
+authPostTrack req =
+    authReq
+        { url = req.url
+        , account = req.account
+        , body = req.body
+        , expect = req.expect
+        , method = "POST"
+        , headers = []
+        , tracker = Just req.tracker
+        }
+
+authPut: {url: String
+         ,account: AuthResult
+         ,body: Http.Body
+         ,expect: Http.Expect msg
+         } -> Cmd msg
+authPut req =
+    authReq
+        { url = req.url
+        , account = req.account
+        , body = req.body
+        , expect = req.expect
+        , method = "PUT"
+        , headers = []
+        , tracker = Nothing
         }
 
 authGet: {url: String
@@ -53,6 +88,22 @@ authGet req =
         , expect = req.expect
         , method = "GET"
         , headers = []
+        , tracker = Nothing
+        }
+
+authDelete: {url: String
+            ,account: AuthResult
+            ,expect: Http.Expect msg
+            } -> Cmd msg
+authDelete req =
+    authReq
+        { url = req.url
+        , account = req.account
+        , body = Http.emptyBody
+        , expect = req.expect
+        , method = "DELETE"
+        , headers = []
+        , tracker = Nothing
         }
 
 
