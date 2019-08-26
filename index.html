@@ -1,0 +1,56 @@
+<html><head><title>Docspell: Home</title><meta charset="utf-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="eikek" /><meta name="description" content="Stow away your paper documents" /><meta name="og:image" content="/docspell/img/poster.png" /><meta name="image" property="og:image" content="/docspell/img/poster.png" /><meta name="og:title" content="Docspell: Home" /><meta name="title" property="og:title" content="Docspell: Home" /><meta name="og:site_name" content="Docspell" /><meta name="og:url" content="" /><meta name="og:type" content="website" /><meta name="og:description" content="Stow away your paper documents" /><link rel="icon" type="image/png" href="/docspell/img/favicon.png" /><meta name="twitter:title" content="Docspell: Home" /><meta name="twitter:image" content="/docspell/img/poster.png" /><meta name="twitter:description" content="Stow away your paper documents" /><meta name="twitter:card" content="summary_large_image" /><link rel="icon" type="image/png" sizes="96x96" href="/docspell/img/favicon.png" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" /><link rel="stylesheet" href="/docspell/highlight/styles/default.css" /><link rel="stylesheet" href="/docspell/css/style.css" /><link rel="stylesheet" href="/docspell/css/palette.css" /><link rel="stylesheet" href="/docspell/css/codemirror.css" /><link rel="stylesheet" href="/docspell/css/docspell.css" /></head><body><header id="site-header"><div class="navbar-wrapper"><div class="container"><div class="row"><div class="col-xs-6"><a href="/docspell/" class="brand"><div class="icon-wrapper"><span>Docspell</span></div></a></div><div class="col-xs-6"><nav class="text-right"><ul class=""><li><a href="https://github.com/eikek/docspell"><i class="fa fa-github"></i><span class="hidden-xs">GitHub</span></a></li></ul></nav></div></div></div></div><div class="jumbotron"><div class="container"><h1 class="text-center">Stow away your paper documents</h1><h2></h2><p class="text-center"><a href="https://github.com/eikek/docspell" class="btn btn-outline-inverse">View on GitHub</a></p></div></div><div><ul class="horizontalNav">     <li><a class=" active " href="/docspell/">Home</a></li>  <li><a class="" href="/docspell/getit.html">Get it</a></li>  <li><a class="" href="/docspell/install.html">Install</a></li>  <li><a class="" href="/docspell/user.html">User Documentation</a></li>  <li><a class="" href="/docspell/api.html">Api</a></li> </ul></div></header><main id="site-main"><section class="use"><div class="container"><div id="content"><h1 id="-but-find-them-if-you-need">… but find them if you need</h1>
+
+<p>The everyday life has to deal with quite some amount of papers that
+are getting to us via postal mail. Some of them are important, we
+should keep them. But most you’ll never need again. And once in a
+while we are forced to dig out this one document….</p>
+
+<p>Docspell can help out here. It aids in stowing the document away: scan
+it and throw the paper away (most of the time anyways). And it helps
+getting them back out: the text is analyzed and documents are
+automatically tagged. This process is not 100%, but it works quite
+well.</p>
+
+<p>Docspell consists of two parts: The <em>REST server</em> that provides a REST
+api and a web application. The <em>job executor</em> (short <em>joex</em>),
+processes the documents (extracts the text and analyzes it). You can
+run multiple rest servers and job executors to share the work across
+machines. It also requires a SQL database, but can run with a
+file-based one such as H2.</p>
+
+<h2 id="how-it-works">How it works</h2>
+
+<p>This is the basic concept:</p>
+
+<ul>
+  <li>You have to “maintain” a kind of address book. It should list the
+name of the correspondents and the concerning people/things.</li>
+  <li>Push your documents to docspell. There are some ways which are
+described in the <a href="user.html">user documentation</a>.</li>
+  <li>Docspell then analyzes the contents and tries to find matches within
+your address book. It can detect the correspondent and often enough
+a concerning person or thing. It will then associate this data to
+your documents.</li>
+  <li>You can then inspect what docspell has done and correct it. If
+docspell has found more than one suggestions, they will be given to
+you. Very often the correct one is just one click away.</li>
+</ul>
+
+<p>If your documents are tagged that way, it shouldn’t be hard to find
+them. Addtional to the things docspell tries to find, you can tag and
+“by hand”, too.</p>
+
+<h2 id="license">License</h2>
+
+<p>This project is distributed under the
+<a href="http://www.gnu.org/licenses/gpl-3.0.html">GPLv3</a></p>
+</div></div></section><section class="technologies"><div class="container"><div class="row">
+            <div class="col-md-4"><div class="first-icon-wrapper"></div><h3>Scala + Elm</h3><p>Backend is in Scala with Cats/Fs2, Webapp in Elm</p></div>
+          
+            <div class="col-md-4"><div class="second-icon-wrapper"></div><h3>Unpaper + Tesseract</h3><p>Text is extracted using OCR provided by tesseract</p></div>
+          
+            <div class="col-md-4"><div class="third-icon-wrapper"></div><h3>Stanford NLP</h3><p>Documents are analyzed using Stanford NLP classifiers</p></div>
+          </div></div></section></main><footer id="site-footer"><div class="container"><div class="row"><div class="col-xs-6"><p>Docspell is designed and developed by <a href="" target="_blank">eikek</a></p></div><div class="col-xs-6"><p class="text-right"><a href="https://github.com/eikek/docspell"><span class="fa fa-github"></span>View on GitHub</a></p></div></div><div class="row"><div class="col-xs-6">
+<p>&copy; 2019 <a href="https://github.com/eikek/docspell">Docspell, v0.1.0-SNAPSHOT</a></p>
+</div></div><script src="/docspell/highlight/highlight.pack.js"></script><script>hljs.initHighlighting();
+              </script></div></footer></body></html>
