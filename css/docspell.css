@@ -3,3 +3,12 @@
     background-repeat: no-repeat;
     background-size: 100% 800px;
 }
+
+.content-wrapper h1, .h1 {
+    border-bottom: 1px solid #d8dfe5;
+    padding-bottom: 0.8rem;
+}
+
+body {
+    font-size: 1.75em;
+}
