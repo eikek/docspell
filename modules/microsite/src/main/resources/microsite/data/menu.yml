@@ -30,6 +30,9 @@ options:
      - title: Joex
        url: doc/joex.html
 
+     - title: Tools
+       url: doc/tools.html
+
   - title: Development
     url: dev.html
 
