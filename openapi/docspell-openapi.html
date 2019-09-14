@@ -991,7 +991,7 @@
       "$ref" : "#/components/schemas/IdName"
     },
     "dueDate" : {
-      "type" : "string",
+      "type" : "integer",
       "format" : "date-time"
     },
     "notes" : {
@@ -1048,7 +1048,12 @@
       "format" : "itemstate"
     },
     "date" : {
-      "type" : "string"
+      "type" : "integer",
+      "format" : "date-time"
+    },
+    "dueDate" : {
+      "type" : "integer",
+      "format" : "date-time"
     },
     "source" : {
       "type" : "string"
@@ -1104,7 +1109,7 @@
   "description" : "A list of item details.\n"
 };
             defs.ItemProposals = {
-  "required" : [ "concEquipment", "concPerson", "corrOrg", "corrPerson" ],
+  "required" : [ "concEquipment", "concPerson", "corrOrg", "corrPerson", "dueDate", "itemDate" ],
   "properties" : {
     "corrOrg" : {
       "type" : "array",
@@ -1128,6 +1133,20 @@
       "type" : "array",
       "items" : {
         "$ref" : "#/components/schemas/IdName"
+      }
+    },
+    "itemDate" : {
+      "type" : "array",
+      "items" : {
+        "type" : "integer",
+        "format" : "date-time"
+      }
+    },
+    "dueDate" : {
+      "type" : "array",
+      "items" : {
+        "type" : "integer",
+        "format" : "date-time"
       }
     }
   },
@@ -1182,6 +1201,14 @@
       "format" : "date-time"
     },
     "dateUntil" : {
+      "type" : "integer",
+      "format" : "date-time"
+    },
+    "dueDateFrom" : {
+      "type" : "integer",
+      "format" : "date-time"
+    },
+    "dueDateUntil" : {
       "type" : "integer",
       "format" : "date-time"
     }
@@ -1770,6 +1797,9 @@
                     </li>
                     <li data-group="Item" data-name="secItemIdDirectionPost" class="">
                       <a href="#api-Item-secItemIdDirectionPost">secItemIdDirectionPost</a>
+                    </li>
+                    <li data-group="Item" data-name="secItemIdDuedatePost" class="">
+                      <a href="#api-Item-secItemIdDuedatePost">secItemIdDuedatePost</a>
                     </li>
                     <li data-group="Item" data-name="secItemIdGet" class="">
                       <a href="#api-Item-secItemIdGet">secItemIdGet</a>
@@ -10890,6 +10920,390 @@ except ApiException as e:
                                     </script>
                                   </div>
                                   <input id='responses-secItemIdDirectionPost-200-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
+                    <div id="api-Item-secItemIdDuedatePost">
+                      <article id="api-Item-secItemIdDuedatePost-0" data-group="User" data-name="secItemIdDuedatePost" data-version="0">
+                        <div class="pull-left">
+                          <h1>secItemIdDuedatePost</h1>
+                          <p>Sets the items due date.</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked">Sets the due date of an item.
+</p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="post"><code><span class="pln">/sec/item/{id}/duedate</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-Item-secItemIdDuedatePost-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-Item-secItemIdDuedatePost-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Item-secItemIdDuedatePost-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-Item-secItemIdDuedatePost-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-Item-secItemIdDuedatePost-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-Item-secItemIdDuedatePost-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-Item-secItemIdDuedatePost-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-Item-secItemIdDuedatePost-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-Item-secItemIdDuedatePost-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-Item-secItemIdDuedatePost-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-Item-secItemIdDuedatePost-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-Item-secItemIdDuedatePost-0-curl">
+                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/item/{id}/duedate"</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-Item-secItemIdDuedatePost-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.ItemApi;
+
+import java.io.File;
+import java.util.*;
+
+public class ItemApiExample {
+
+    public static void main(String[] args) {
+        ApiClient defaultClient = Configuration.getDefaultApiClient();
+
+        // Configure API key authorization: authTokenHeader
+        ApiKeyAuth authTokenHeader = (ApiKeyAuth) defaultClient.getAuthentication("authTokenHeader");
+        authTokenHeader.setApiKey("YOUR API KEY");
+        // Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+        //authTokenHeader.setApiKeyPrefix("Token");
+
+        ItemApi apiInstance = new ItemApi();
+        String id = id_example; // String | A identifier
+        OptionalDate body = ; // OptionalDate | 
+        try {
+            BasicResult result = apiInstance.secItemIdDuedatePost(id, body);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling ItemApi#secItemIdDuedatePost");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Item-secItemIdDuedatePost-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.ItemApi;
+
+public class ItemApiExample {
+
+    public static void main(String[] args) {
+        ItemApi apiInstance = new ItemApi();
+        String id = id_example; // String | A identifier
+        OptionalDate body = ; // OptionalDate | 
+        try {
+            BasicResult result = apiInstance.secItemIdDuedatePost(id, body);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling ItemApi#secItemIdDuedatePost");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-Item-secItemIdDuedatePost-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-Item-secItemIdDuedatePost-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
+// Configure API key authorization: (authentication scheme: authTokenHeader)
+[apiConfig setApiKey:@"YOUR_API_KEY" forApiKeyIdentifier:@"X-Docspell-Auth"];
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+//[apiConfig setApiKeyPrefix:@"Bearer" forApiKeyIdentifier:@"X-Docspell-Auth"];
+String *id = id_example; // A identifier
+OptionalDate *body = ; //  (optional)
+
+ItemApi *apiInstance = [[ItemApi alloc] init];
+
+// Sets the items due date.
+[apiInstance secItemIdDuedatePostWith:id
+    body:body
+              completionHandler: ^(BasicResult output, NSError* error) {
+                            if (output) {
+                                NSLog(@"%@", output);
+                            }
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Item-secItemIdDuedatePost-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var Docspell = require('docspell');
+var defaultClient = Docspell.ApiClient.instance;
+
+// Configure API key authorization: authTokenHeader
+var authTokenHeader = defaultClient.authentications['authTokenHeader'];
+authTokenHeader.apiKey = "YOUR API KEY"
+// Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+//authTokenHeader.apiKeyPrefix['X-Docspell-Auth'] = "Token"
+
+var api = new Docspell.ItemApi()
+var id = id_example; // {{String}} A identifier
+
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+};
+api.secItemIdDuedatePost(id, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-Item-secItemIdDuedatePost-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-Item-secItemIdDuedatePost-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class secItemIdDuedatePostExample
+    {
+        public void main()
+        {
+
+            // Configure API key authorization: authTokenHeader
+            Configuration.Default.ApiKey.Add("X-Docspell-Auth", "YOUR_API_KEY");
+            // Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+            // Configuration.Default.ApiKeyPrefix.Add("X-Docspell-Auth", "Bearer");
+
+            var apiInstance = new ItemApi();
+            var id = id_example;  // String | A identifier
+            var body = new OptionalDate(); // OptionalDate |  (optional) 
+
+            try
+            {
+                // Sets the items due date.
+                BasicResult result = apiInstance.secItemIdDuedatePost(id, body);
+                Debug.WriteLine(result);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling ItemApi.secItemIdDuedatePost: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Item-secItemIdDuedatePost-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+// Configure API key authorization: authTokenHeader
+Swagger\Client\Configuration::getDefaultConfiguration()->setApiKey('X-Docspell-Auth', 'YOUR_API_KEY');
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+// Swagger\Client\Configuration::getDefaultConfiguration()->setApiKeyPrefix('X-Docspell-Auth', 'Bearer');
+
+$api_instance = new Swagger\Client\ApiItemApi();
+$id = id_example; // String | A identifier
+$body = ; // OptionalDate | 
+
+try {
+    $result = $api_instance->secItemIdDuedatePost($id, $body);
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling ItemApi->secItemIdDuedatePost: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Item-secItemIdDuedatePost-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::ItemApi;
+
+# Configure API key authorization: authTokenHeader
+$WWW::SwaggerClient::Configuration::api_key->{'X-Docspell-Auth'} = 'YOUR_API_KEY';
+# uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+#$WWW::SwaggerClient::Configuration::api_key_prefix->{'X-Docspell-Auth'} = "Bearer";
+
+my $api_instance = WWW::SwaggerClient::ItemApi->new();
+my $id = id_example; # String | A identifier
+my $body = WWW::SwaggerClient::Object::OptionalDate->new(); # OptionalDate | 
+
+eval { 
+    my $result = $api_instance->secItemIdDuedatePost(id => $id, body => $body);
+    print Dumper($result);
+};
+if ($@) {
+    warn "Exception when calling ItemApi->secItemIdDuedatePost: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Item-secItemIdDuedatePost-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# Configure API key authorization: authTokenHeader
+swagger_client.configuration.api_key['X-Docspell-Auth'] = 'YOUR_API_KEY'
+# Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+# swagger_client.configuration.api_key_prefix['X-Docspell-Auth'] = 'Bearer'
+
+# create an instance of the API class
+api_instance = swagger_client.ItemApi()
+id = id_example # String | A identifier
+body =  # OptionalDate |  (optional)
+
+try: 
+    # Sets the items due date.
+    api_response = api_instance.sec_item_id_duedate_post(id, body=body)
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling ItemApi->secItemIdDuedatePost: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+                            <div class="methodsubtabletitle">Path parameters</div>
+                            <table id="methodsubtable">
+                                <tr>
+                                  <th width="150px">Name</th>
+                                  <th>Description</th>
+                                </tr>
+                                  <tr><td style="width:150px;">id*</td>
+                                  <td>
+                                  
+                                  
+                                      <div id="d2e199_secItemIdDuedatePost_id">
+                                          <div class="json-schema-view">
+                                              <div class="primitive">
+                                                  <span class="type">
+                                                      String
+                                                  </span>
+                                  
+                                                      <div class="inner description">
+                                                          A identifier
+                                                      </div>
+                                              </div>
+                                                  <div class="inner required">
+                                                      Required
+                                                  </div>
+                                          </div>
+                                      </div>
+                                  </td>
+                                  </tr>
+                            </table>
+
+
+                            <div class="methodsubtabletitle">Body parameters</div>
+                            <table id="methodsubtable">
+                              <tr>
+                                <th width="150px">Name</th>
+                                <th>Description</th>
+                              </tr>
+                                <tr><td style="width:150px;">body </td>
+                                <td>
+                                
+                                
+                                <script>
+                                $(document).ready(function() {
+                                  var schemaWrapper = {
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/OptionalDate"
+      }
+    }
+  }
+};
+                                  var schema = schemaWrapper.content["application/json"].schema;
+                                  if (schema.$ref != null) {
+                                    schema = defsParser.$refs.get(schema.$ref);
+                                  } else {
+                                    schemaWrapper.components = {};
+                                    schemaWrapper.components.schemas = Object.assign({}, defs);
+                                    $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                      console.log(err);
+                                    });
+                                  }
+                                
+                                  var view = new JSONSchemaView(schema,2,{isBodyParam: true});
+                                  var result = $('#d2e199_secItemIdDuedatePost_body');
+                                  result.empty();
+                                  result.append(view.render());
+                                });
+                                </script>
+                                <div id="d2e199_secItemIdDuedatePost_body"></div>
+                                </td>
+                                </tr>
+                            </table>
+
+
+
+                          <h2>Responses</h2>
+                            <h3> Status: 200 - Ok </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-secItemIdDuedatePost-200-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-secItemIdDuedatePost-200-schema">
+                                  <div id='responses-secItemIdDuedatePost-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "Ok",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/BasicResult"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-secItemIdDuedatePost-200-schema-data').val(stringify(schema));
+                                        var result = $('#responses-secItemIdDuedatePost-200-schema-200');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-secItemIdDuedatePost-200-schema-data' type='hidden' value=''></input>
                                 </div>
                             </div>
 

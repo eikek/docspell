@@ -1057,6 +1057,28 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BasicResult"
+  /sec/item/{id}/duedate:
+    post:
+      tags: [ Item ]
+      summary: Sets the items due date.
+      description: |
+        Sets the due date of an item.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OptionalDate"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
   /sec/item/{id}/proposals:
     get:
       tags: [ Item ]
@@ -1236,6 +1258,8 @@ components:
         - corrPerson
         - concPerson
         - concEquipment
+        - itemDate
+        - dueDate
       properties:
         corrOrg:
           type: array
@@ -1253,6 +1277,16 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/IdName"
+        itemDate:
+          type: array
+          items:
+            type: integer
+            format: date-time
+        dueDate:
+          type: array
+          items:
+            type: integer
+            format: date-time
     Label:
       description: |
         Extracted label.
@@ -1352,7 +1386,7 @@ components:
         inReplyTo:
           $ref: "#/components/schemas/IdName"
         dueDate:
-          type: string
+          type: integer
           format: date-time
         notes:
           type: string
@@ -1864,6 +1898,12 @@ components:
         dateUntil:
           type: integer
           format: date-time
+        dueDateFrom:
+          type: integer
+          format: date-time
+        dueDateUntil:
+          type: integer
+          format: date-time
     ItemLight:
       description: |
         An item with only a few important properties.
@@ -1884,7 +1924,11 @@ components:
           type: string
           format: itemstate
         date:
-          type: string
+          type: integer
+          format: date-time
+        dueDate:
+          type: integer
+          format: date-time
         source:
           type: string
         direction:

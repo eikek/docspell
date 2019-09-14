@@ -1,0 +1,158 @@
+<html><head><title>Docspell: Joex - Job Executor</title><meta charset="utf-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="eikek" /><meta name="description" content="Docspell – A Document Organizer" /><meta name="og:image" content="/docspell/img/poster.png" /><meta name="image" property="og:image" content="/docspell/img/poster.png" /><meta name="og:title" content="Docspell: Joex - Job Executor" /><meta name="title" property="og:title" content="Docspell: Joex - Job Executor" /><meta name="og:site_name" content="Docspell" /><meta name="og:url" content="" /><meta name="og:type" content="website" /><meta name="og:description" content="Docspell – A Document Organizer" /><link rel="icon" type="image/png" href="/docspell/img/favicon.png" /><meta name="twitter:title" content="Docspell: Joex - Job Executor" /><meta name="twitter:image" content="/docspell/img/poster.png" /><meta name="twitter:description" content="Docspell – A Document Organizer" /><meta name="twitter:card" content="summary_large_image" /><link rel="icon" type="image/png" sizes="96x96" href="/docspell/img/favicon.png" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" /><link rel="stylesheet" href="/docspell/highlight/styles/default.css" /><link rel="stylesheet" href="/docspell/css/style.css" /><link rel="stylesheet" href="/docspell/css/palette.css" /><link rel="stylesheet" href="/docspell/css/codemirror.css" /><link rel="stylesheet" href="/docspell/css/docspell.css" /></head><body class="docs"><div id="wrapper"><div id="sidebar-wrapper"><ul id="sidebar" class="sidebar-nav"><li class="sidebar-brand"><a href="/docspell/" class="brand"><div class="brand-wrapper"><span>Docspell</span></div></a></li> <li><a href="/docspell/index.html" class="">Home</a></li> <li><a href="/docspell/getit.html" class="">Getit</a></li> <li><a href="/docspell/doc.html" class="">Documentation</a> <ul class="sub_section"> <li><a href="/docspell/doc/install.html" class="">Installation</a></li> <li><a href="/docspell/doc/configure.html" class="">Configuring</a></li> <li><a href="/docspell/doc/metadata.html" class="">Adding Meta Data</a></li> <li><a href="/docspell/doc/uploading.html" class="">Uploads</a></li> <li><a href="/docspell/doc/processing.html" class="">Processing Queue</a></li> <li><a href="/docspell/doc/curate.html" class="">Find and Review</a></li> <li><a href="/docspell/doc/joex.html" class="">Joex</a></li></ul></li> <li><a href="/docspell/dev.html" class="">Development</a> <ul class="sub_section"> <li><a href="/docspell/dev/adr.html" class=""></a></li></ul></li> <li><a href="/docspell/api.html" class="">Api</a> <ul class="sub_section"> <li><a href="/docspell/openapi/docspell-openapi.html" class="">REST Api Doc</a></li> <li><a href="/docspell/openapi/docspell-openapi.yml" class="">REST OpenApi Spec</a></li></ul></li></ul></div><div id="page-content-wrapper"><div class="nav"><div class="container-fluid"><div class="row"><div class="col-lg-12"><div class="action-menu pull-left clearfix"><a href="#menu-toggle" id="menu-toggle"><i class="fa fa-bars" aria-hidden="true"></i></a></div><ul class="pull-right"><li id="gh-eyes-item" class="hidden-xs"><a href="https://github.com/eikek/docspell"><i class="fa fa-eye"></i><span>WATCH<span id="eyes" class="label label-default">--</span></span></a></li><li id="gh-stars-item" class="hidden-xs"><a href="https://github.com/eikek/docspell"><i class="fa fa-star-o"></i><span>STARS<span id="stars" class="label label-default">--</span></span></a></li></ul></div></div></div></div><div id="content" data-github-owner="eikek" data-github-repo="docspell"><div class="content-wrapper"><section><h1 id="job-executor">Job Executor</h1>
+
+<h2 id="context-and-problem-statement">Context and Problem Statement</h2>
+
+<p>Docspell is a multi-user application. When processing user’s
+documents, there must be some thought on how to distribute all the
+processing jobs on a much more restricted set of resources. There
+maybe 100 users but only 4 cores that can process documents at a
+time. Doing simply FIFO is not enough since it provides a very unfair
+distribution. The first user who submits 20 documents will then occupy
+all cores for quite some time and all other users would need to wait.</p>
+
+<p>This tries to find a more fair distribution among the users (strictly
+meaning collectives here) of docspell.</p>
+
+<p>The job executor is a separate component that will run in its own
+process. It takes the next job from the “queue” and executes the
+associated task. This is used to run the document processing jobs
+(text extraction, text analysis etc).</p>
+
+<ol>
+  <li>
+    <p>The task execution should survive restarts. State and task code
+must be recreated from some persisted state.</p>
+  </li>
+  <li>
+    <p>The processing should be fair with respect to collectives.</p>
+  </li>
+  <li>
+    <p>It must be possible to run many job executors, possibly on
+different machines. This can be used to quickly enable more
+processing power and removing it once the peak is over.</p>
+  </li>
+  <li>
+    <p>Task execution can fail and it should be able to retry those
+tasks. Reasons are that errors may be temporarily (for example
+talking to a third party service), and to enable repairing without
+stopping the job executor. Some errors might be easily repaired (a
+program was not installed or whatever). In such a case it is good
+to know that the task will be retried later.</p>
+  </li>
+</ol>
+
+<h2 id="considered-options">Considered Options</h2>
+
+<p>In contrast to other ADRs this is just some sketching of thoughts for
+the current implementation.</p>
+
+<ol>
+  <li>
+    <p>Job description are serialized and written to the database into a
+table. This becomes the queue. Tasks are identified by names and a
+job executor implementation must have a map of names to code to
+lookup the task to perform. The tasks arguments are serialized into
+a string and written to the database. Tasks must decode the
+string. This can be conveniently done using JSON and the provided
+circe decoders.</p>
+  </li>
+  <li>
+    <p>To provide a fair execution jobs are organized into groups. When a
+new job is requested from the queue, first a group is selected
+using a round-robin strategy. This should ensure good enough
+fairness among groups. A group maps to a collective. Within the
+group a job is then selected based on priority, submitted time
+(fifo) and job state (see notes about stuck jobs).</p>
+  </li>
+  <li>
+    <p>Allowing multiple job executors means that when getting the next
+job can fail due to simultaneous running transactions. It is
+retried until it succeeds. Taking a job puts in into <em>scheduled</em>
+state. Each job executor has a unique (manually supplied) id and
+jobs are marked with that id once it is handed to the executor.</p>
+  </li>
+  <li>
+    <p>When a task fails, its state is updated to state <em>stuck</em>. Stuck
+jobs are retried in the future. The queue prefers to return stuck
+jobs that are due at the specific point in time ignoring the
+priority hint.</p>
+  </li>
+</ol>
+
+<h3 id="more-details">More Details</h3>
+
+<p>A job has these properties</p>
+
+<ul>
+  <li>id (something random)</li>
+  <li>group</li>
+  <li>taskname (to choose task to run)</li>
+  <li>submitted-date</li>
+  <li>worker (the id of the job executor)</li>
+  <li>state, one of: waiting, scheduled, running, stuck, cancelled,
+failed, success
+    <ul>
+      <li>waiting: job has been inserted into the queue</li>
+      <li>scheduled: job has been handed over to some executore and is
+marked with the job executor id</li>
+      <li>running: a task is currently executing</li>
+      <li>stuck: a task has failed and is being retried eventually</li>
+      <li>cancelled: task has finished and there was a cancel request</li>
+      <li>failed: task has failed, execeeded the retries</li>
+      <li>success: task has completed successfully</li>
+    </ul>
+  </li>
+</ul>
+
+<p>The queue has a <code class="highlighter-rouge">take</code> or <code class="highlighter-rouge">nextJob</code> operation that takes the worker-id
+and a priority hint and goes roughly like this:</p>
+
+<ul>
+  <li>select the next group using round-robin strategy</li>
+  <li>select all jobs with that group, where
+    <ul>
+      <li>state is stuck and waiting time has elapsed</li>
+      <li>state is waiting and have the given priority if possible</li>
+    </ul>
+  </li>
+  <li>jobs are ordered by submitted time, but stuck jobs whose waiting
+time elapsed are preferred</li>
+</ul>
+
+<p>There are two priorities within a group: high and low. A configured
+counting scheme determines when to select certain priority. For
+example, counting scheme of <code class="highlighter-rouge">(2,1)</code> would select two high priority
+jobs and then 1 low priority job. The <code class="highlighter-rouge">take</code> operation tries to prefer
+this priority but falls back to the other if no job with this priority
+is available.</p>
+
+<p>A group corresponds to a collective. Then all collectives get
+(roughly) equal treatment.</p>
+
+<p>Once there are no jobs in the queue the executor goes into sleep and
+must be waked to run again. If a job is submitted, the executors are
+notified.</p>
+
+<h3 id="stuck-jobs">Stuck Jobs</h3>
+
+<p>A job is going into <em>stuck</em> state, if the task has failed. In this
+state, the task is rerun after a while until a maximum retry count is
+reached.</p>
+
+<p>The problem is how to notify all executors when the waiting time has
+elapsed. If one executor puts a job into stuck state, it means that
+all others should start looking into the queue again after <code class="highlighter-rouge">x</code>
+minutes. It would be possible to tell all existing executors to
+schedule themselves to wake up in the future, but this would miss all
+executors that show up later.</p>
+
+<p>The waiting time is increased exponentially after each retry (<code class="highlighter-rouge">2 ^
+retry</code>) and it is meant as the minimum waiting time. So it is ok if
+all executors wakeup periodically and check for new work. Most of the
+time this should not be necessary and is just a fallback if only stuck
+jobs are in the queue and nothing is submitted for a long time. If the
+system is used, jobs get submitted once in a while and would awake all
+executors.</p>
+</section></div></div></div></div><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script><script src="/docspell/highlight/highlight.pack.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/json.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/javascript.min.js"></script><script>hljs.configure({languages:['scala','java','bash','json','javascript']});
+hljs.initHighlighting();
+              </script><script src="/docspell/js/main.js"></script></body></html>

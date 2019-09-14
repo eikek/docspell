@@ -1,0 +1,235 @@
+<html><head><title>Docspell: Encryption</title><meta charset="utf-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="eikek" /><meta name="description" content="Docspell – A Document Organizer" /><meta name="og:image" content="/docspell/img/poster.png" /><meta name="image" property="og:image" content="/docspell/img/poster.png" /><meta name="og:title" content="Docspell: Encryption" /><meta name="title" property="og:title" content="Docspell: Encryption" /><meta name="og:site_name" content="Docspell" /><meta name="og:url" content="" /><meta name="og:type" content="website" /><meta name="og:description" content="Docspell – A Document Organizer" /><link rel="icon" type="image/png" href="/docspell/img/favicon.png" /><meta name="twitter:title" content="Docspell: Encryption" /><meta name="twitter:image" content="/docspell/img/poster.png" /><meta name="twitter:description" content="Docspell – A Document Organizer" /><meta name="twitter:card" content="summary_large_image" /><link rel="icon" type="image/png" sizes="96x96" href="/docspell/img/favicon.png" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" /><link rel="stylesheet" href="/docspell/highlight/styles/default.css" /><link rel="stylesheet" href="/docspell/css/style.css" /><link rel="stylesheet" href="/docspell/css/palette.css" /><link rel="stylesheet" href="/docspell/css/codemirror.css" /><link rel="stylesheet" href="/docspell/css/docspell.css" /></head><body class="docs"><div id="wrapper"><div id="sidebar-wrapper"><ul id="sidebar" class="sidebar-nav"><li class="sidebar-brand"><a href="/docspell/" class="brand"><div class="brand-wrapper"><span>Docspell</span></div></a></li> <li><a href="/docspell/index.html" class="">Home</a></li> <li><a href="/docspell/getit.html" class="">Getit</a></li> <li><a href="/docspell/doc.html" class="">Documentation</a> <ul class="sub_section"> <li><a href="/docspell/doc/install.html" class="">Installation</a></li> <li><a href="/docspell/doc/configure.html" class="">Configuring</a></li> <li><a href="/docspell/doc/metadata.html" class="">Adding Meta Data</a></li> <li><a href="/docspell/doc/uploading.html" class="">Uploads</a></li> <li><a href="/docspell/doc/processing.html" class="">Processing Queue</a></li> <li><a href="/docspell/doc/curate.html" class="">Find and Review</a></li> <li><a href="/docspell/doc/joex.html" class="">Joex</a></li></ul></li> <li><a href="/docspell/dev.html" class="">Development</a> <ul class="sub_section"> <li><a href="/docspell/dev/adr.html" class=""></a></li></ul></li> <li><a href="/docspell/api.html" class="">Api</a> <ul class="sub_section"> <li><a href="/docspell/openapi/docspell-openapi.html" class="">REST Api Doc</a></li> <li><a href="/docspell/openapi/docspell-openapi.yml" class="">REST OpenApi Spec</a></li></ul></li></ul></div><div id="page-content-wrapper"><div class="nav"><div class="container-fluid"><div class="row"><div class="col-lg-12"><div class="action-menu pull-left clearfix"><a href="#menu-toggle" id="menu-toggle"><i class="fa fa-bars" aria-hidden="true"></i></a></div><ul class="pull-right"><li id="gh-eyes-item" class="hidden-xs"><a href="https://github.com/eikek/docspell"><i class="fa fa-eye"></i><span>WATCH<span id="eyes" class="label label-default">--</span></span></a></li><li id="gh-stars-item" class="hidden-xs"><a href="https://github.com/eikek/docspell"><i class="fa fa-star-o"></i><span>STARS<span id="stars" class="label label-default">--</span></span></a></li></ul></div></div></div></div><div id="content" data-github-owner="eikek" data-github-repo="docspell"><div class="content-wrapper"><section><h1 id="encryption">Encryption</h1>
+
+<h2 id="context-and-problem-statement">Context and Problem Statement</h2>
+
+<p>Since docspell may store important documents, it should be possible to
+encrypt them on the server. It should be (almost) transparent to the
+user, for example, a user must be able to login and download a file in
+clear form. That is, the server must also decrypt them.</p>
+
+<p>Then all users of a collective should have access to the files. This
+requires to share the key among users of a collective.</p>
+
+<p>But, even when files are encrypted, the associated meta data is not!
+So especially access to the database would allow to see tags,
+associated persons and correspondents of documents.</p>
+
+<p>So in short, encryption means:</p>
+
+<ul>
+  <li>file contents (the blobs and extracted text) is encrypted</li>
+  <li>metadata is not</li>
+  <li>secret keys are stored at the server (protected by a passphrase),
+such that files can be downloaded in clear form</li>
+</ul>
+
+<h2 id="decision-drivers">Decision Drivers</h2>
+
+<ul>
+  <li>major driver is to provide most possible privacy for users</li>
+  <li>even at the expense of less features; currently I think that the
+associated meta data is enough for finding documents (i.e. full text
+search is not needed)</li>
+</ul>
+
+<h2 id="considered-options">Considered Options</h2>
+
+<p>It is clear, that only blobs (file contents) can be encrypted, but not
+the associated metadata.</p>
+
+<h3 id="public-key-encryption-pke">Public Key Encryption (PKE)</h3>
+
+<p>With PKE that the server can automatically encrypt files using
+publicly available key data. It wouldn’t require a user to provide a
+passphrase for encryption, only for decryption.</p>
+
+<p>This would allows for first processing files (extracting text, doing
+text analyisis) and encrypting them afterwards.</p>
+
+<p>The public and secret keys are stored at the database. The secret key
+must be protected, obviously. This can be done by encrypting the
+passphrase to the secret key using each users login password. If a
+user logs in, he or she must provide the correct password. Using this
+password, the private key can be unlocked. This requires to store the
+private key passphrase encrypted with every users password in the
+database. So the whole security then depends on users password
+quality.</p>
+
+<p>There are plenty of other difficulties with this approach (how about
+password change, new secret keys, adding users etc). Details for a
+possible implementation are outlined below.</p>
+
+<p>Using this kind of encryption would protect the data against offline
+attacks and also for accidental leakage (for example, if a bug in the
+software would access a file of another user).</p>
+
+<h3 id="no-encryption">No Encryption</h3>
+
+<p>If only the blobs are encrypted, against which type of attack would it
+provide protection?</p>
+
+<p>The users must still trust the server. First, in order to provide the
+wanted features (document processing), the server must see the file
+contents. Then, it will receive and serve files in clear form, so it
+has access to them anyways.</p>
+
+<p>With that in mind, the “only” security feature is to protect against
+“stolen database” attacks. If the database is somehow leaked, the
+attackers would only see the metadata, but not real documents. It also
+protects against leakage, maybe caused by a pogramming error.</p>
+
+<p>But the downside is, that it increases complexity <em>a lot</em>. And since
+this is a personal tool, created in rare spare time, it must be asked
+if it is worth the effort.</p>
+
+<h2 id="decision-outcome">Decision Outcome</h2>
+
+<p>No encryption, because of its complexity.</p>
+
+<p>For now, this tool is only meant for “self deployment” and personal
+use. If it is used commercially, this decision <em>must</em> be reconsidered.</p>
+
+<h2 id="details-for-pke-option">Details for PKE option</h2>
+
+<p>Using PKE means a keystore must be managed with public and secret
+keys. The server needs access to the secret keys in order to supply
+decrypted data to the user. So the user password is <em>the</em> one secret
+that unlocks all data.</p>
+
+<p>In docspell, a <em>collective</em> is the owner of the data. The keystore
+belongs to the collective. And multiple users belong to a collective
+and thus they all need somehow access to its private keys.</p>
+
+<p>A collective admin controls the keystore. It is possible to add new
+keys and set a <em>current key</em>, the one used for encrypting
+documents. Keys cannot be removed, otherwise data encrypted by those
+keys would be lost. It is recommended to create new keys once in a
+while.</p>
+
+<h3 id="how-it-works">How it works</h3>
+
+<p>When the collective admin initialises the keystore, another password –
+the keystore password – must be supplied. This password is used to
+protect the private key and it is required for decrypting. The
+collective admin needs to keep this password secure. Other users of
+the collective don’t need to know it explicitely.</p>
+
+<p>Now there are two (at least) problems:</p>
+
+<ol>
+  <li>All user must somehow get access to the keystore password in order
+to decrypt documents.</li>
+  <li>It should not be necessary to provide this to every request that
+needs to decrypt data.</li>
+</ol>
+
+<p>For the first point, the user password is used to symmetrically
+encrypt the keystore password KP into KP<sub>U</sub>. The result is
+stored in the database in the <code class="highlighter-rouge">KeystorePass</code> table. Now the server
+only needs the user password to unlock the keystore password. The
+second point is addressed by generating temporary “session” passwords
+as described below.</p>
+
+<h4 id="login">Login</h4>
+
+<p>The user logs in with username and password, so the server can unlock
+the keystore password KP by decrypting KP<sub>U</sub>. The server then
+generates a random password and uses it to encrypt the keystore
+password into KP<sub>R</sub>. This result is also stored in the
+database together with an expiry date. The random password is
+encrypted with the server’s secret password and the result is send to
+the client as an authenticator.</p>
+
+<p>The client must send this authenticator with subsequent requests. If
+the server can decrypt the data and use the result to successfully
+decrypt KP<sub>R</sub>, the user session is valid and the server has
+access to the private keys for this request.</p>
+
+<p>Since there are multiple keys with different passwords, the
+authenticator must contain KP<sub>R</sub> for all keystore
+passwords. Since they are all send in one token, the same random
+password is used to encrypt all of them.</p>
+
+<p>If the attacker has access to a database dump, only KP<sub>U</sub> and
+KP<sub>R</sub> are visible. Either the user password or the temporary
+password is required to access the private keys. Therefore it is
+important, that <em>all</em> user passwords are secure, because all of them
+encrypt the same value. The server periodically removes KP<sub>R</sub>
+that have expired.</p>
+
+<p>The temporary passwords could be sniffed from the traffic if the
+server secret is also known (which is not unlikely if the attacker
+already has the database). But since they are only used for a short
+time, it is hopefully unlikely that the sniffed passwords would
+decrypt any KP<sub>R</sub> in the database. However, decrypting just
+one is already enough to access KP! To mitigate this scenario a
+little, the sever secrets and keystore passwords should rotate as
+well. Collective admins can generate new key pairs from time to time,
+so not all the data is gone in such a scenario.</p>
+
+<h4 id="adding-a-user">Adding a User</h4>
+
+<p>A collective admin can add users by creating their account. Doing so
+requires the admin to enter the keystore passwords (maybe multiple, if
+multiple secret keys exist) to grant the new user access to the
+documents. A new account is created with a random password, encrypted
+using the server’s secret. This is then returned to the collective
+admin.</p>
+
+<p>The collective admin can send this password to the new user, who can
+finally activate his account by providing this random password, an
+email address (optional) and a new password.</p>
+
+<p>The email address is not required, but recommended. It can make
+administration of users easier.</p>
+
+<h4 id="generating-new-keys">Generating new keys</h4>
+
+<p>As mentioned above, new key pairs can be added to the keystore of a
+collective. This step requires interaction with <em>all</em> users of the
+collective, since their passwords are required to compute
+KP<sub>U</sub> for the new keystore password.</p>
+
+<p>For each user, a random password is generated to encrypt the new
+keystore password. It is stored in the database. The random password,
+encrypted with the server secret, is handed to the collective
+admin. The collective admin needs to pass this to each user, who then
+needs to activate it by providing their password.</p>
+
+<h4 id="revoking-keys">Revoking keys</h4>
+
+<p>Revoking keys is not yet possible in the OpenPGP sense. Instead, the
+collective admin can select which key should be used for
+encryption. All other keys stay in the keystore since they may be
+required to decrypt (old) data.</p>
+
+<p>For all incoming documents, the selected key is used for encryption.</p>
+
+<h4 id="initialising-the-keystore">Initialising the keystore</h4>
+
+<p>A collective starts out with encryption disabled. This is because the
+collective admin needs to provide a password. When the keystore is
+first created, it is the same as generating new keys; in other words
+it is generating the first key. All users must interact in order to
+activate their access to encrypted data.</p>
+
+<h4 id="reactivation-of-users">Reactivation of users</h4>
+
+<p>If a new key is generated and a user misses to update his or her
+account in time, the collective admin can initiate a new random
+password so the user can try again.</p>
+
+<p>This can be done for one keystore passwords or for all. In the latter
+case, all KP<sub>U</sub> are deleted and set a new
+KP<sub>R</sub>. That means, this user as instantly no access to any
+encrypted content until he or she activates the account.</p>
+
+<h4 id="password-change">Password change</h4>
+
+<p>A user can change his or her password as usual. It requires to supply
+the old and new password (which is a good practice anyways). Since
+both passwords are supplied, new KP<sub>U</sub> values can be
+computed.</p>
+</section></div></div></div></div><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script><script src="/docspell/highlight/highlight.pack.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/json.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/javascript.min.js"></script><script>hljs.configure({languages:['scala','java','bash','json','javascript']});
+hljs.initHighlighting();
+              </script><script src="/docspell/js/main.js"></script></body></html>

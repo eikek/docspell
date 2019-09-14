@@ -1,4 +1,4 @@
-<html><head><title>Docspell: Joex</title><meta charset="utf-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="eikek" /><meta name="description" content="Docspell – A shelter for digital paper" /><meta name="og:image" content="/docspell/img/poster.png" /><meta name="image" property="og:image" content="/docspell/img/poster.png" /><meta name="og:title" content="Docspell: Joex" /><meta name="title" property="og:title" content="Docspell: Joex" /><meta name="og:site_name" content="Docspell" /><meta name="og:url" content="" /><meta name="og:type" content="website" /><meta name="og:description" content="Docspell – A shelter for digital paper" /><link rel="icon" type="image/png" href="/docspell/img/favicon.png" /><meta name="twitter:title" content="Docspell: Joex" /><meta name="twitter:image" content="/docspell/img/poster.png" /><meta name="twitter:description" content="Docspell – A shelter for digital paper" /><meta name="twitter:card" content="summary_large_image" /><link rel="icon" type="image/png" sizes="96x96" href="/docspell/img/favicon.png" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" /><link rel="stylesheet" href="/docspell/highlight/styles/default.css" /><link rel="stylesheet" href="/docspell/css/style.css" /><link rel="stylesheet" href="/docspell/css/palette.css" /><link rel="stylesheet" href="/docspell/css/codemirror.css" /><link rel="stylesheet" href="/docspell/css/docspell.css" /></head><body class="docs"><div id="wrapper"><div id="sidebar-wrapper"><ul id="sidebar" class="sidebar-nav"><li class="sidebar-brand"><a href="/docspell/" class="brand"><div class="brand-wrapper"><span>Docspell</span></div></a></li> <li><a href="/docspell/index.html" class="">Home</a></li> <li><a href="/docspell/getit.html" class="">Getit</a></li> <li><a href="/docspell/doc.html" class="">Documentation</a> <ul class="sub_section"> <li><a href="/docspell/doc/install.html" class="">Installation</a></li> <li><a href="/docspell/doc/configure.html" class="">Configuring</a></li> <li><a href="/docspell/doc/metadata.html" class="">Adding Meta Data</a></li> <li><a href="/docspell/doc/uploading.html" class="">Uploads</a></li> <li><a href="/docspell/doc/processing.html" class="">Processing Queue</a></li> <li><a href="/docspell/doc/curate.html" class="">Find and Review</a></li> <li><a href="/docspell/doc/joex.html" class=" active ">Joex</a></li> <li><a href="/docspell/doc/dev.html" class="">Development</a></li></ul></li> <li><a href="/docspell/api.html" class="">Api</a> <ul class="sub_section"> <li><a href="/docspell/openapi/docspell-openapi.html" class="">REST Api Doc</a></li> <li><a href="/docspell/openapi/docspell-openapi.yml" class="">REST OpenApi Spec</a></li></ul></li></ul></div><div id="page-content-wrapper"><div class="nav"><div class="container-fluid"><div class="row"><div class="col-lg-12"><div class="action-menu pull-left clearfix"><a href="#menu-toggle" id="menu-toggle"><i class="fa fa-bars" aria-hidden="true"></i></a></div><ul class="pull-right"><li id="gh-eyes-item" class="hidden-xs"><a href="https://github.com/eikek/docspell"><i class="fa fa-eye"></i><span>WATCH<span id="eyes" class="label label-default">--</span></span></a></li><li id="gh-stars-item" class="hidden-xs"><a href="https://github.com/eikek/docspell"><i class="fa fa-star-o"></i><span>STARS<span id="stars" class="label label-default">--</span></span></a></li></ul></div></div></div></div><div id="content" data-github-owner="eikek" data-github-repo="docspell"><div class="content-wrapper"><section><h1 id="joex">Joex</h1>
+<html><head><title>Docspell: Joex</title><meta charset="utf-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="eikek" /><meta name="description" content="Docspell – A Document Organizer" /><meta name="og:image" content="/docspell/img/poster.png" /><meta name="image" property="og:image" content="/docspell/img/poster.png" /><meta name="og:title" content="Docspell: Joex" /><meta name="title" property="og:title" content="Docspell: Joex" /><meta name="og:site_name" content="Docspell" /><meta name="og:url" content="" /><meta name="og:type" content="website" /><meta name="og:description" content="Docspell – A Document Organizer" /><link rel="icon" type="image/png" href="/docspell/img/favicon.png" /><meta name="twitter:title" content="Docspell: Joex" /><meta name="twitter:image" content="/docspell/img/poster.png" /><meta name="twitter:description" content="Docspell – A Document Organizer" /><meta name="twitter:card" content="summary_large_image" /><link rel="icon" type="image/png" sizes="96x96" href="/docspell/img/favicon.png" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" /><link rel="stylesheet" href="/docspell/highlight/styles/default.css" /><link rel="stylesheet" href="/docspell/css/style.css" /><link rel="stylesheet" href="/docspell/css/palette.css" /><link rel="stylesheet" href="/docspell/css/codemirror.css" /><link rel="stylesheet" href="/docspell/css/docspell.css" /></head><body class="docs"><div id="wrapper"><div id="sidebar-wrapper"><ul id="sidebar" class="sidebar-nav"><li class="sidebar-brand"><a href="/docspell/" class="brand"><div class="brand-wrapper"><span>Docspell</span></div></a></li> <li><a href="/docspell/index.html" class="">Home</a></li> <li><a href="/docspell/getit.html" class="">Getit</a></li> <li><a href="/docspell/doc.html" class="">Documentation</a> <ul class="sub_section"> <li><a href="/docspell/doc/install.html" class="">Installation</a></li> <li><a href="/docspell/doc/configure.html" class="">Configuring</a></li> <li><a href="/docspell/doc/metadata.html" class="">Adding Meta Data</a></li> <li><a href="/docspell/doc/uploading.html" class="">Uploads</a></li> <li><a href="/docspell/doc/processing.html" class="">Processing Queue</a></li> <li><a href="/docspell/doc/curate.html" class="">Find and Review</a></li> <li><a href="/docspell/doc/joex.html" class=" active ">Joex</a></li></ul></li> <li><a href="/docspell/dev.html" class="">Development</a> <ul class="sub_section"> <li><a href="/docspell/dev/adr.html" class=""></a></li></ul></li> <li><a href="/docspell/api.html" class="">Api</a> <ul class="sub_section"> <li><a href="/docspell/openapi/docspell-openapi.html" class="">REST Api Doc</a></li> <li><a href="/docspell/openapi/docspell-openapi.yml" class="">REST OpenApi Spec</a></li></ul></li></ul></div><div id="page-content-wrapper"><div class="nav"><div class="container-fluid"><div class="row"><div class="col-lg-12"><div class="action-menu pull-left clearfix"><a href="#menu-toggle" id="menu-toggle"><i class="fa fa-bars" aria-hidden="true"></i></a></div><ul class="pull-right"><li id="gh-eyes-item" class="hidden-xs"><a href="https://github.com/eikek/docspell"><i class="fa fa-eye"></i><span>WATCH<span id="eyes" class="label label-default">--</span></span></a></li><li id="gh-stars-item" class="hidden-xs"><a href="https://github.com/eikek/docspell"><i class="fa fa-star-o"></i><span>STARS<span id="stars" class="label label-default">--</span></span></a></li></ul></div></div></div></div><div id="content" data-github-owner="eikek" data-github-repo="docspell"><div class="content-wrapper"><section><h1 id="joex">Joex</h1>
 
 <p>Joex is short for <em>Job Executor</em> and it is the component managing long
 running tasks in docspell. One of these long running tasks is the file
@@ -37,13 +37,13 @@ jobs and then 1 low priority job, then starting over. If no such job
 exists, its falls back to the other priority.</p>
 
 <p>The priority can be set on a <em>Source</em> (see
-<a href="uploading.html">uploads</a>). When uploading through the web application
-will always use priority <em>high</em>. The idea is that while logged in,
-jobs are more important that those submitted when not logged in.</p>
+<a href="uploading.html">uploads</a>). Uploading through the web application will
+always use priority <em>high</em>. The idea is that while logged in, jobs are
+more important that those submitted when not logged in.</p>
 
 <h2 id="scheduler-config">Scheduler Config</h2>
 
-<p>The relevant part of the config file regarding the scheduler as shown
+<p>The relevant part of the config file regarding the scheduler is shown
 below with some explanations.</p>
 
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docspell.joex {
@@ -80,7 +80,7 @@ below with some explanations.</p>
 </code></pre></div></div>
 
 <p>The <code class="highlighter-rouge">pool-size</code> setting deterimens how many jobs run in parallel. You
-need to play with this setting on your machine to find out optimal
+need to play with this setting on your machine to find an optimal
 value.</p>
 
 <p>The <code class="highlighter-rouge">counting-scheme</code> determines for all collectives how to select
@@ -106,6 +106,44 @@ stuck, and joex is not notified externally it could miss to
 retry. Also, since networks are not reliable, a notification may not
 reach a joex component. This periodic wakup is just to ensure that
 jobs are eventually run.</p>
+
+<h2 id="starting-on-demand">Starting on demand</h2>
+
+<p>The job executor and rest server can be started multiple times. This
+is especially useful for the job executor. For example, when
+submitting a lot of files in a short time, you can simply startup more
+job executors on other computers on your network. Maybe use your
+laptop to help with processing for a while.</p>
+
+<p>You have to make sure, that all connect to the same database, and that
+all have unique <code class="highlighter-rouge">app-id</code>s.</p>
+
+<p>Once the files have been processced you can stop the additional
+executors.</p>
+
+<h2 id="shutting-down">Shutting down</h2>
+
+<p>If a job executor is sleeping and not executing any jobs, you can just
+quit using SIGTERM or <code class="highlighter-rouge">Ctrl-C</code> when running in a terminal. But if
+there are jobs currently executing, it is advisable to initiate a
+graceful shutdown. The job executor will then stop taking new jobs
+from the queue but it will wait until all running jobs have completed
+before shutting down.</p>
+
+<p>This can be done by sending a http POST request to the api of this job
+executor:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl -XPOST "http://localhost:7878/api/v1/shutdownAndExit"
+</code></pre></div></div>
+
+<p>If joex receives this request it will immediately stop taking new jobs
+and it will quit when all running jobs are done.</p>
+
+<p>If a job executor gets terminated while there are running jobs, the
+jobs are still in the current state marked to be executed by this job
+executor. In order to fix this, start the job executor again. It will
+search all jobs that are marked with its id and put them back into
+waiting state. Then send a graceful shutdown request as shown above.</p>
 </section></div></div></div></div><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script><script src="/docspell/highlight/highlight.pack.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/json.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/javascript.min.js"></script><script>hljs.configure({languages:['scala','java','bash','json','javascript']});
 hljs.initHighlighting();
               </script><script src="/docspell/js/main.js"></script></body></html>
