@@ -14,8 +14,11 @@ view flags model =
              [div [class "row"]
                   [div [class "six wide column ui segment register-view"]
                        [h1 [class "ui cener aligned icon header"]
-                           [i [class "umbrella icon"][]
-                           ,text "Sign up @ Docspell"
+                           [img [class "ui image"
+                                ,src "assets/docspell-webapp/0.1.0-SNAPSHOT/img/logo-96.png"][]
+                           ,div [class "content"]
+                                [text "Sign up @ Docspell"
+                                ]
                            ]
                        ,Html.form [class "ui large error form raised segment", onSubmit RegisterSubmit]
                            [div [class "required field"]

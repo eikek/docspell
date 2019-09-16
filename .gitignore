@@ -1,3 +1,4 @@
+#artwork/*.png
 target/
 dev.conf
 elm-stuff

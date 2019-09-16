@@ -59,10 +59,12 @@ defaultLayout model =
                    [ a [class "header item narrow-item"
                        ,Page.href HomePage
                        ]
-                         [i [classList [("umbrella icon", True)
-                                       ]]
-                              []
-                         ,text model.flags.config.appName]
+                         [img [class "image"
+                              ,src "assets/docspell-webapp/0.1.0-SNAPSHOT/img/logo-96.png"][]
+                         ,div [class "content"]
+                              [text model.flags.config.appName
+                              ]
+                         ]
                    , (loginInfo model)
                    ]
               ]
@@ -150,7 +152,9 @@ loginInfo model =
                                      ]
                           ]
                          [menuEntry model HomePage
-                            [i [class "umbrella icon"][]
+                            [img [class "image icon"
+                                 ,src "assets/docspell-webapp/0.1.0-SNAPSHOT/img/logo-mc-96.png"
+                                 ][]
                             ,text "Items"
                             ]
                          ,div [class "divider"][]

@@ -15,8 +15,12 @@ view flags model =
              [div [class "row"]
                   [div [class "eight wide column ui segment newinvite-view"]
                        [h1 [class "ui cener aligned icon header"]
-                           [i [class "umbrella icon"][]
-                           ,text "Create new invitations"
+                           [img [class "ui image"
+                                ,src "assets/docspell-webapp/0.1.0-SNAPSHOT/img/logo-96.png"
+                                ][]
+                           ,div [class "content"]
+                                [text "Create new invitations"
+                                ]
                            ]
                        ,inviteMessage flags
                        ,Html.form [classList [("ui large form raised segment",  True)

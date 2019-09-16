@@ -13,7 +13,9 @@ view model =
              [div [class "row"]
                   [div [class "six wide column ui segment login-view"]
                        [h1 [class "ui center aligned icon header"]
-                            [i [class "umbrella icon"][]
+                            [img [class "ui image"
+                                 ,src "assets/docspell-webapp/0.1.0-SNAPSHOT/img/logo-96.png"
+                                 ][]
                             ,div [class "content"]
                                  [text "Sign in to Docspell"
                                  ]

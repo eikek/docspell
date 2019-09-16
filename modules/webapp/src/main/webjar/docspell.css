@@ -17,6 +17,17 @@
     box-shadow: 1px 1px 0px 0px black;
 }
 
+.default-layout .top-menu a.header.item img {
+    width: 24px;
+    height: 24px;
+}
+.default-layout .top-menu a.header.item .content {
+    margin-left: 0.5em;
+}
+.default-layout a.icon.item img.image.icon {
+    width: 18.75px;
+}
+
 .default-layout .ui.multiple.search.dropdown>input.search {
     width: 3.5em;
 }

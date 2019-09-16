@@ -10,7 +10,7 @@ for integrating docspell.
 
 ## consumedir
 
-The `consumerdir` is a bash script that works in two modes:
+The `consumerdir.sh` is a bash script that works in two modes:
 
 - Go through all files in given directories (non recursively) and sent
   each to docspell.
@@ -31,15 +31,39 @@ files. For this the `sha256sum` command is required.
 Example for watching two directories:
 
 ``` bash
-./tools/consumedir.sh --path ~/Downloads --path ~/pdfs/ -m /var/run/consumedir -dv http://localhost:7880/api/v1/open/upload/item/5DxhjkvWf9S-CkWqF3Kr892-WgoCspFWDo7-XBykwCyAUxQ
+./tools/consumedir.sh --path ~/Downloads --path ~/pdfs -m /var/run/consumedir -dv http://localhost:7880/api/v1/open/upload/item/5DxhjkvWf9S-CkWqF3Kr892-WgoCspFWDo7-XBykwCyAUxQ
 ```
 
 The script by default watches the given directories. If the `-o`
 option is used, it will instead go through these directories and
 upload all pdf files in there.
 
-Example for uploading all immediatly:
+Example for uploading all immediatly (the same as above only with `-o`
+added):
 
 ``` bash
 ./tools/consumedir.sh -o --path ~/Downloads --path ~/pdfs/ -m /var/run/consumedir -dv http://localhost:7880/api/v1/open/upload/item/5DxhjkvWf9S-CkWqF3Kr892-WgoCspFWDo7-XBykwCyAUxQ
 ```
+
+
+### Systemd
+
+The script can be used with systemd to run as a service. This is an
+example unit file:
+
+```
+[Unit]
+After=networking.target
+Description=Docspell Consumedir
+
+[Service]
+Environment="PATH=/set/a/path"
+
+ExecStartPre=mkdir -p /var/run/consumedir && chown -R someuser /var/run/consumedir
+ExecStart=/bin/su -s /bin/bash someuser -c "consumedir.sh --path '/a/path/' -m '/var/run/consumedir' 'http://localhost:7880/api/v1/open/upload/item/5DxhjkvWf9S-CkWqF3Kr892-WgoCspFWDo7-XBykwCyAUxQ'"
+```
+
+This unit file is just an example, it needs some fiddling. It assumes
+an existing user `someuser` that is used to run this service. The url
+`http://localhost:7880/api/v1/open/upload/...` is an anonymous upload
+url as described [here](./uploading.html).
