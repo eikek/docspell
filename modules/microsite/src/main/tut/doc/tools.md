@@ -67,3 +67,41 @@ This unit file is just an example, it needs some fiddling. It assumes
 an existing user `someuser` that is used to run this service. The url
 `http://localhost:7880/api/v1/open/upload/...` is an anonymous upload
 url as described [here](./uploading.html).
+
+
+## ds.sh
+
+A bash script to quickly upload files from the command line. It reads
+a configuration file containing the URLs to upload to. Then each file
+given to the script will be uploaded to al URLs in the config.
+
+The config file is expected in
+`$XDG_CONFIG_HOME/docspell/ds.conf`. `$XDG_CONFIG_HOME` defaults to
+`~/.config`.
+
+The config file contains lines with key-value pairs, separated by an
+`=` sign. Lines starting with `#` are ignored. Example:
+
+```
+# Config file
+url.1 = http://localhost:7880/api/v1/open/upload/item/5DxhjkvWf9S-CkWqF3Kr892-WgoCspFWDo7-XBykwCyAUxQ
+url.2 = http://localhost:7880/api/v1/open/upload/item/6DxhjkvWf9S-CkWqF3Kr892-WgoCspFWDo7-XBykwCyAUxQ
+```
+
+The key must start with `url`.
+
+### Usage
+
+The `-h` option shows a help overview.
+
+The script takes a list of files as arguments. It checks the file
+types and will raise an error (and quit) if a file is included that is
+not a PDF. The `-s` option can be used to skip them instead.
+
+The `-c` option allows to specifiy a different config file.
+
+Example:
+
+``` bash
+./ds.sh ~/Downloads/*.pdf
+```

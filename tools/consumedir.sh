@@ -97,7 +97,7 @@ info() {
 
 upload() {
     tf=$($MKTEMP_CMD) rc=0
-    $CURL_CMD -s -o "$tf" -w "%{http_code}" -XPOST -F file=@"$1" "$2" | (2>&1 1>/dev/null grep 200)
+    $CURL_CMD -# -o "$tf" --stderr "$tf" -w "%{http_code}" -XPOST -F file=@"$1" "$2" | (2>&1 1>/dev/null grep 200)
     rc=$(expr $rc + $?)
     cat $tf | (2>&1 1>/dev/null grep '{"success":true')
     rc=$(expr $rc + $?)
