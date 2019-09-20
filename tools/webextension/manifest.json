@@ -1,0 +1,36 @@
+{
+
+    "manifest_version": 2,
+    "name": "__MSG_extensionName__",
+    "description": "__MSG_extensionDescription__",
+    "version": "1.0",
+
+    "permissions": [
+        "notifications",
+        "downloads",
+        "contextMenus",
+        "nativeMessaging"
+    ],
+
+
+    "browser_specific_settings": {
+        "gecko": {
+            "id": "docspell@eikek.github.io",
+            "strict_min_version": "50.0"
+        }
+    },
+
+    "description": "Downloads a file and pushes it to docspell.",
+
+    "icons": {
+        "48": "icons/logo-48.png",
+        "96": "icons/logo-96.png"
+    },
+
+    "background": {
+        "scripts": [
+            "docspell.js"
+        ]
+    },
+    "default_locale": "en"
+}

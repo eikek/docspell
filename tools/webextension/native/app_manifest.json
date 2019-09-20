@@ -1,0 +1,7 @@
+{
+  "name": "docspell",
+  "description": "Docspell Uploads",
+  "path": "/usr/local/share/docspell/native.py",
+  "type": "stdio",
+  "allowed_extensions": [ "docspell@eikek.github.io" ]
+}

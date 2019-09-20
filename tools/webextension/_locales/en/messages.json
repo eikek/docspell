@@ -1,0 +1,25 @@
+{
+  "extensionName": {
+    "message": "Docspell Upload Helper",
+    "description": "Name of the extension"
+  },
+
+  "extensionDescription": {
+    "message": "Copies files from the browser to Docspell.",
+    "description": "Description of the extension."
+  },
+
+  "notificationTitle": {
+    "message": "Docspell Response",
+    "description": "Title of the click notification."
+  },
+
+  "notificationSuccess": {
+    "message": "The file has been uploaded to Docspell.",
+    "description": "Tells the user about the success of the upload."
+  },
+  "notificationFailure": {
+    "message": "The file could not be uploaded to Docspell. Maybe it's not a PDF file?",
+    "description": "Tells the user about the failure of the upload."
+  }
+}
