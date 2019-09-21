@@ -12,3 +12,7 @@
 body {
     font-size: 1.75em;
 }
+
+h4 {
+    text-decoration: underline;
+}

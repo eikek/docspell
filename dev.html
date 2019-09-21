@@ -2,13 +2,16 @@
 
 <h2 id="building">Building</h2>
 
-<p><a href="https://scala-sbt.org">Sbt</a> is used to build the application. You
-need to install it. Then clone the sources and run:</p>
+<p><a href="https://scala-sbt.org">Sbt</a> is used to build the application. Clone
+the sources and run:</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sbt make-zip
-</code></pre></div></div>
+<ul>
+  <li><code class="highlighter-rouge">make</code> to compile all sources (Elm + Scala)</li>
+  <li><code class="highlighter-rouge">make-zip</code> to create zip packages</li>
+  <li><code class="highlighter-rouge">make-deb</code> to create debian packages</li>
+</ul>
 
-<p>to generate the zip files. They can then be found in</p>
+<p>The zip files can be found afterwards in:</p>
 
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>modules/restserver/target/universal
 modules/joex/target/universal
@@ -23,20 +26,20 @@ and then run:</p>
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sbt:docspell-root&gt; restserver/reStart
 </code></pre></div></div>
 
-<p>once this started up, type:</p>
+<p>This starts a REST server. Once this started up, type:</p>
 
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sbt:docspell-root&gt; joex/reStart
 </code></pre></div></div>
 
-<p>and a rest-server and a job executor is running. Prefixing the commads
-with <code class="highlighter-rouge">~</code>, results in recompile+restart once a source file is modified.</p>
+<p>if also a joex component is required. Prefixing the commads with <code class="highlighter-rouge">~</code>,
+results in recompile+restart once a source file is modified.</p>
 
 <h2 id="custom-config-file">Custom config file</h2>
 
 <p>The sbt build is setup such that a file <code class="highlighter-rouge">dev.conf</code> in the root of the
 source tree is picked up as config file, if it exists. So you can
 create a custom config file for development. For example, a custom
-database is setup this way:</p>
+database for development may be setup this way:</p>
 
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>#jdbcurl = "jdbc:h2:///home/dev/workspace/projects/docspell/local/docspell-demo.db;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;AUTO_SERVER=TRUE"
 jdbcurl = "jdbc:postgresql://localhost:5432/docspelldev"
@@ -66,7 +69,7 @@ docspell.joex {
 
 <h2 id="adrs">ADRs</h2>
 
-<p>Some information about certain details can be found in the few
+<p>Some early information about certain details can be found in the few
 <a href="https://adr.github.io/">ADR</a> that exist:</p>
 
 <ul>

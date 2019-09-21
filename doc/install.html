@@ -7,8 +7,6 @@ start, refer to <a href="../getit.html">this page</a>.</p>
 run on Windows and MacOS machines, too (ghostscript and tesseract are
 available on these systems). But I’ve never tried.</p>
 
-<h2 id="multiple-components">Multiple Components</h2>
-
 <p>Docspell consists of two components that are started in separate
 processes:</p>
 
@@ -54,27 +52,23 @@ build using JDK 8. But a later version of Java should work as well.</p>
 <p>The next tools are only required on machines running the <em>Joex</em>
 component.</p>
 
-<h3 id="ghostscript">Ghostscript</h3>
+<h3 id="external-tools-for-joex">External Tools for Joex</h3>
 
-<p><a href="http://pages.cs.wisc.edu/~ghost/">Ghostscript</a> (the <code class="highlighter-rouge">gs</code> command) is
-used to extract/convert PDF files into images that are then fed to
-ocr. It is available on most GNU/Linux distributions.</p>
-
-<h3 id="unpaper">Unpaper</h3>
-
-<p><a href="https://github.com/Flameeyes/unpaper">Unpaper</a> is a program that
+<ul>
+  <li><a href="http://pages.cs.wisc.edu/~ghost/">Ghostscript</a> (the <code class="highlighter-rouge">gs</code> command)
+is used to extract/convert PDF files into images that are then fed
+to ocr. It is available on most GNU/Linux distributions.</li>
+  <li><a href="https://github.com/Flameeyes/unpaper">Unpaper</a> is a program that
 pre-processes images to yield better results when doing ocr. If this
 is not installed, docspell tries without it. However, it is
 recommended to install, because it <a href="https://github.com/tesseract-ocr/tesseract/wiki/ImproveQuality">improves text
 extraction</a>
-(at the expense of a longer runtime).</p>
-
-<h3 id="tesseract">Tesseract</h3>
-
-<p><a href="https://github.com/tesseract-ocr/tesseract">Tesseract</a> is the tool
+(at the expense of a longer runtime).</li>
+  <li><a href="https://github.com/tesseract-ocr/tesseract">Tesseract</a> is the tool
 doing the OCR (converts images into text). It is a widely used open
 source OCR engine. Tesseract 3 and 4 should work with docspell; you
-can adopt the command line in the configuration file, if necessary.</p>
+can adopt the command line in the configuration file, if necessary.</li>
+</ul>
 
 <h3 id="example-debian">Example Debian</h3>
 

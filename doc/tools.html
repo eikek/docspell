@@ -153,9 +153,9 @@ alternatives:</p>
 
 <ol>
   <li>Open firefox and type <code class="highlighter-rouge">about:debugging</code> in the addressbar. Then
-click on <em>‘Load Temporary Add-on…’</em> and select any file from this
-folder. The extension is now installed. The downside is, that the
-extension will be removed once firefox is closed.</li>
+click on <em>‘Load Temporary Add-on…’</em> and select the
+<code class="highlighter-rouge">manifest.json</code> file. The extension is now installed. The downside
+is, that the extension will be removed once firefox is closed.</li>
   <li>Use Firefox ESR, which allows to install Add-ons not signed by
 Mozilla. But it has to be configured: Open firefox and type
 <code class="highlighter-rouge">about:config</code> in the address bar. Search for key
@@ -164,12 +164,14 @@ described on the last paragraph on <a href="https://support.mozilla.org/en-US/kb
 page</a>.</li>
 </ol>
 
-<p>Now there should be a context menu entry, when you right click on a
-file. The add-on will download this file normally using the browser
-and then send the path to the file to the <code class="highlighter-rouge">native.py</code> script. This
-script will in turn call <code class="highlighter-rouge">ds.sh</code> which finally uploads it to Docspell.</p>
+<p>When you right click on a file link, there should be a context menu
+entry <em>‘Docspell Upload Helper’</em>. The add-on will download this file
+using the browser and then send the file path to the <code class="highlighter-rouge">native.py</code>
+script. This script will in turn call <code class="highlighter-rouge">ds.sh</code> which finally uploads it
+to your configured URLs.</p>
 
-<p>Open the Add-ons page (Ctrl+Shift+A), the new add-on should be there.</p>
+<p>Open the Add-ons page (<code class="highlighter-rouge">Ctrl</code>+<code class="highlighter-rouge">Shift</code>+<code class="highlighter-rouge">A</code>), the new add-on should be
+there.</p>
 </section></div></div></div></div><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script><script src="/docspell/highlight/highlight.pack.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/json.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/javascript.min.js"></script><script>hljs.configure({languages:['scala','java','bash','json','javascript']});
 hljs.initHighlighting();
               </script><script src="/docspell/js/main.js"></script></body></html>

@@ -49,9 +49,9 @@ url:</p>
 
 <h3 id="login">Login</h3>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ curl -X POST -d '{"account": "eike/eike", "password": "test"}' http://localhost:7880/api/v1/open/auth/login
-{"collective":"eike"
-,"user":"eike"
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ curl -X POST -d '{"account": "smith", "password": "test"}' http://localhost:7880/api/v1/open/auth/login
+{"collective":"smith"
+,"user":"smith"
 ,"success":true
 ,"message":"Login successful"
 ,"token":"1568142350115-ZWlrZS9laWtl-$2a$10$rGZUFDAVNIKh4Tj6u6tlI.-O2euwCvmBT0TlyDmIHR1ZsLQPAI="
@@ -62,8 +62,8 @@ url:</p>
 <h3 id="get-new-token">Get new token</h3>
 
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ curl -XPOST -H 'X-Docspell-Auth: 1568142350115-ZWlrZS9laWtl-$2a$10$rGZUFDAVNIKh4Tj6u6tlI.-O2euwCvmBT0TlyDmIHR1ZsLQPAI=' http://localhost:7880/api/v1/sec/auth/session
-{"collective":"eike"
-,"user":"eike"
+{"collective":"smith"
+,"user":"smith"
 ,"success":true
 ,"message":"Login successful"
 ,"token":"1568142446077-ZWlrZS9laWtl-$2a$10$3B0teJ9rMpsBJPzHfZZPoO-WeA1bkfEONBN8fyzWE8DeaAHtUc="
