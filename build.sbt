@@ -285,7 +285,7 @@ val microsite = project.in(file("modules/microsite")).
     scalacOptions -= "-Yno-imports",
     scalacOptions ~= { _ filterNot (_ startsWith "-Ywarn") },
     scalacOptions ~= { _ filterNot (_ startsWith "-Xlint") },
-    scalaVersion := "2.12.9",
+    scalaVersion := "2.12.10",
     skip in publish := true,
     micrositeFooterText := Some(
       """

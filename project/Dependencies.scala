@@ -6,14 +6,14 @@ object Dependencies {
 
   val BcryptVersion = "0.4"
   val BetterMonadicForVersion = "0.3.1"
-  val BitpeaceVersion = "0.4.0-M2" // 0.4.0
+  val BitpeaceVersion = "0.4.0"
   val CirceVersion = "0.12.1"
-  val DoobieVersion = "0.8.0-RC1" // 0.8.2
+  val DoobieVersion = "0.8.2"
   val FastparseVersion = "2.1.3"
   val FlywayVersion = "6.0.3"
-  val Fs2Version = "1.1.0-M1"  // 2.0.0
+  val Fs2Version = "2.0.1"
   val H2Version = "1.4.199"
-  val Http4sVersion = "0.21.0-M4" // waiting for new version supporting cats2/fs2-2
+  val Http4sVersion = "0.21.0-M5"
   val KindProjectorVersion = "0.10.3"
   val Log4sVersion = "1.8.2"
   val LogbackVersion = "1.2.3"
