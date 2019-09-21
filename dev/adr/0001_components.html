@@ -1,12 +1,10 @@
-<html><head><title>Docspell: Components</title><meta charset="utf-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="eikek" /><meta name="description" content="Docspell – A Document Organizer" /><meta name="og:image" content="/docspell/img/poster.png" /><meta name="image" property="og:image" content="/docspell/img/poster.png" /><meta name="og:title" content="Docspell: Components" /><meta name="title" property="og:title" content="Docspell: Components" /><meta name="og:site_name" content="Docspell" /><meta name="og:url" content="" /><meta name="og:type" content="website" /><meta name="og:description" content="Docspell – A Document Organizer" /><link rel="icon" type="image/png" href="/docspell/img/favicon.png" /><meta name="twitter:title" content="Docspell: Components" /><meta name="twitter:image" content="/docspell/img/poster.png" /><meta name="twitter:description" content="Docspell – A Document Organizer" /><meta name="twitter:card" content="summary_large_image" /><link rel="icon" type="image/png" sizes="96x96" href="/docspell/img/favicon.png" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" /><link rel="stylesheet" href="/docspell/highlight/styles/default.css" /><link rel="stylesheet" href="/docspell/css/style.css" /><link rel="stylesheet" href="/docspell/css/palette.css" /><link rel="stylesheet" href="/docspell/css/codemirror.css" /><link rel="stylesheet" href="/docspell/css/docspell.css" /></head><body class="docs"><div id="wrapper"><div id="sidebar-wrapper"><ul id="sidebar" class="sidebar-nav"><li class="sidebar-brand"><a href="/docspell/" class="brand"><div class="brand-wrapper"><span>Docspell</span></div></a></li> <li><a href="/docspell/index.html" class="">Home</a></li> <li><a href="/docspell/getit.html" class="">Getit</a></li> <li><a href="/docspell/doc.html" class="">Documentation</a> <ul class="sub_section"> <li><a href="/docspell/doc/install.html" class="">Installation</a></li> <li><a href="/docspell/doc/configure.html" class="">Configuring</a></li> <li><a href="/docspell/doc/metadata.html" class="">Adding Meta Data</a></li> <li><a href="/docspell/doc/uploading.html" class="">Uploads</a></li> <li><a href="/docspell/doc/processing.html" class="">Processing Queue</a></li> <li><a href="/docspell/doc/curate.html" class="">Find and Review</a></li> <li><a href="/docspell/doc/joex.html" class="">Joex</a></li></ul></li> <li><a href="/docspell/dev.html" class="">Development</a> <ul class="sub_section"> <li><a href="/docspell/dev/adr.html" class=""></a></li></ul></li> <li><a href="/docspell/api.html" class="">Api</a> <ul class="sub_section"> <li><a href="/docspell/openapi/docspell-openapi.html" class="">REST Api Doc</a></li> <li><a href="/docspell/openapi/docspell-openapi.yml" class="">REST OpenApi Spec</a></li></ul></li></ul></div><div id="page-content-wrapper"><div class="nav"><div class="container-fluid"><div class="row"><div class="col-lg-12"><div class="action-menu pull-left clearfix"><a href="#menu-toggle" id="menu-toggle"><i class="fa fa-bars" aria-hidden="true"></i></a></div><ul class="pull-right"><li id="gh-eyes-item" class="hidden-xs"><a href="https://github.com/eikek/docspell"><i class="fa fa-eye"></i><span>WATCH<span id="eyes" class="label label-default">--</span></span></a></li><li id="gh-stars-item" class="hidden-xs"><a href="https://github.com/eikek/docspell"><i class="fa fa-star-o"></i><span>STARS<span id="stars" class="label label-default">--</span></span></a></li></ul></div></div></div></div><div id="content" data-github-owner="eikek" data-github-repo="docspell"><div class="content-wrapper"><section><h1 id="components">Components</h1>
+<html><head><title>Docspell: Components</title><meta charset="utf-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="eikek" /><meta name="description" content="Docspell – A Document Organizer" /><meta name="og:image" content="/docspell/img/poster.png" /><meta name="image" property="og:image" content="/docspell/img/poster.png" /><meta name="og:title" content="Docspell: Components" /><meta name="title" property="og:title" content="Docspell: Components" /><meta name="og:site_name" content="Docspell" /><meta name="og:url" content="" /><meta name="og:type" content="website" /><meta name="og:description" content="Docspell – A Document Organizer" /><link rel="icon" type="image/png" href="/docspell/img/favicon.png" /><meta name="twitter:title" content="Docspell: Components" /><meta name="twitter:image" content="/docspell/img/poster.png" /><meta name="twitter:description" content="Docspell – A Document Organizer" /><meta name="twitter:card" content="summary_large_image" /><link rel="icon" type="image/png" sizes="96x96" href="/docspell/img/favicon.png" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" /><link rel="stylesheet" href="/docspell/highlight/styles/default.css" /><link rel="stylesheet" href="/docspell/css/style.css" /><link rel="stylesheet" href="/docspell/css/palette.css" /><link rel="stylesheet" href="/docspell/css/codemirror.css" /><link rel="stylesheet" href="/docspell/css/docspell.css" /></head><body class="docs"><div id="wrapper"><div id="sidebar-wrapper"><ul id="sidebar" class="sidebar-nav"><li class="sidebar-brand"><a href="/docspell/" class="brand"><div class="brand-wrapper"><span>Docspell</span></div></a></li> <li><a href="/docspell/index.html" class="">Home</a></li> <li><a href="/docspell/getit.html" class="">Getit</a></li> <li><a href="/docspell/doc.html" class="">Documentation</a> <ul class="sub_section"> <li><a href="/docspell/doc/install.html" class="">Installation</a></li> <li><a href="/docspell/doc/configure.html" class="">Configuring</a></li> <li><a href="/docspell/doc/metadata.html" class="">Adding Meta Data</a></li> <li><a href="/docspell/doc/uploading.html" class="">Uploads</a></li> <li><a href="/docspell/doc/processing.html" class="">Processing Queue</a></li> <li><a href="/docspell/doc/curate.html" class="">Find and Review</a></li> <li><a href="/docspell/doc/joex.html" class="">Joex</a></li> <li><a href="/docspell/doc/tools.html" class="">Tools</a></li></ul></li> <li><a href="/docspell/dev.html" class="">Development</a> <ul class="sub_section"> <li><a href="/docspell/dev/adr.html" class=""></a></li></ul></li> <li><a href="/docspell/api.html" class="">Api</a> <ul class="sub_section"> <li><a href="/docspell/openapi/docspell-openapi.html" class="">REST Api Doc</a></li> <li><a href="/docspell/openapi/docspell-openapi.yml" class="">REST OpenApi Spec</a></li></ul></li></ul></div><div id="page-content-wrapper"><div class="nav"><div class="container-fluid"><div class="row"><div class="col-lg-12"><div class="action-menu pull-left clearfix"><a href="#menu-toggle" id="menu-toggle"><i class="fa fa-bars" aria-hidden="true"></i></a></div><ul class="pull-right"><li id="gh-eyes-item" class="hidden-xs"><a href="https://github.com/eikek/docspell"><i class="fa fa-eye"></i><span>WATCH<span id="eyes" class="label label-default">--</span></span></a></li><li id="gh-stars-item" class="hidden-xs"><a href="https://github.com/eikek/docspell"><i class="fa fa-star-o"></i><span>STARS<span id="stars" class="label label-default">--</span></span></a></li></ul></div></div></div></div><div id="content" data-github-owner="eikek" data-github-repo="docspell"><div class="content-wrapper"><section><h1 id="components">Components</h1>
 
 <h2 id="context-and-problem-statement">Context and Problem Statement</h2>
 
 <p>How should the application be structured into its main components? The
 goal is to be able to have multiple rest servers/webapps and multiple
 document processor components working togehter.</p>
-
-<h2 id="considered-options">Considered Options</h2>
 
 <h2 id="decision-outcome">Decision Outcome</h2>
 
@@ -27,31 +25,20 @@ on the <code class="highlighter-rouge">store</code> module. It provides the code
 submitted as jobs. If no jobs are in the queue, the joex “sleeps”
 and must be waked via an external request.</p>
 
-<p>The main reason for this module is to provide the document processing
-code.</p>
+<p>It provides the document processing code.</p>
 
 <p>It provides a http rest server to get insight into the joex state
 and also to be notified for new jobs.</p>
 
 <h3 id="backend">backend</h3>
 
-<p>This is the heart of the application. It provides all the logic,
-except document processing, as a set of “operations”. An operation can
-be directly mapped to a rest endpoint. An operation is roughly this:</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>A -&gt; F[Either[E, B]]
-</code></pre></div></div>
-
-<p>First, it can fail and so there is some sort of either type to encode
-failure. It also is inside a <code class="highlighter-rouge">F</code> context, since it may run impure
-code, e.g. database calls. The input value <code class="highlighter-rouge">A</code> can be obtained by
-amending the user input from a rest call with additional data from the
-database corresponding to the current user (for example the public key
-or some preference setting).</p>
+<p>It provides all the logic, except document processing, as a set of
+“operations”. An operation can be directly mapped to a rest
+endpoint.</p>
 
 <p>It is designed as a library.</p>
 
-<h3 id="rest-spec">rest spec</h3>
+<h3 id="rest-api">rest api</h3>
 
 <p>This module contains the specification for the rest server as an
 <code class="highlighter-rouge">openapi.yml</code> file. It is packaged as a scala library that also

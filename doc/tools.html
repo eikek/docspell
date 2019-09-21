@@ -1,0 +1,168 @@
+<html><head><title>Docspell: Tools</title><meta charset="utf-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="eikek" /><meta name="description" content="Docspell – A Document Organizer" /><meta name="og:image" content="/docspell/img/poster.png" /><meta name="image" property="og:image" content="/docspell/img/poster.png" /><meta name="og:title" content="Docspell: Tools" /><meta name="title" property="og:title" content="Docspell: Tools" /><meta name="og:site_name" content="Docspell" /><meta name="og:url" content="" /><meta name="og:type" content="website" /><meta name="og:description" content="Docspell – A Document Organizer" /><link rel="icon" type="image/png" href="/docspell/img/favicon.png" /><meta name="twitter:title" content="Docspell: Tools" /><meta name="twitter:image" content="/docspell/img/poster.png" /><meta name="twitter:description" content="Docspell – A Document Organizer" /><meta name="twitter:card" content="summary_large_image" /><link rel="icon" type="image/png" sizes="96x96" href="/docspell/img/favicon.png" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" /><link rel="stylesheet" href="/docspell/highlight/styles/default.css" /><link rel="stylesheet" href="/docspell/css/style.css" /><link rel="stylesheet" href="/docspell/css/palette.css" /><link rel="stylesheet" href="/docspell/css/codemirror.css" /><link rel="stylesheet" href="/docspell/css/docspell.css" /></head><body class="docs"><div id="wrapper"><div id="sidebar-wrapper"><ul id="sidebar" class="sidebar-nav"><li class="sidebar-brand"><a href="/docspell/" class="brand"><div class="brand-wrapper"><span>Docspell</span></div></a></li> <li><a href="/docspell/index.html" class="">Home</a></li> <li><a href="/docspell/getit.html" class="">Getit</a></li> <li><a href="/docspell/doc.html" class="">Documentation</a> <ul class="sub_section"> <li><a href="/docspell/doc/install.html" class="">Installation</a></li> <li><a href="/docspell/doc/configure.html" class="">Configuring</a></li> <li><a href="/docspell/doc/metadata.html" class="">Adding Meta Data</a></li> <li><a href="/docspell/doc/uploading.html" class="">Uploads</a></li> <li><a href="/docspell/doc/processing.html" class="">Processing Queue</a></li> <li><a href="/docspell/doc/curate.html" class="">Find and Review</a></li> <li><a href="/docspell/doc/joex.html" class="">Joex</a></li> <li><a href="/docspell/doc/tools.html" class=" active ">Tools</a></li></ul></li> <li><a href="/docspell/dev.html" class="">Development</a> <ul class="sub_section"> <li><a href="/docspell/dev/adr.html" class=""></a></li></ul></li> <li><a href="/docspell/api.html" class="">Api</a> <ul class="sub_section"> <li><a href="/docspell/openapi/docspell-openapi.html" class="">REST Api Doc</a></li> <li><a href="/docspell/openapi/docspell-openapi.yml" class="">REST OpenApi Spec</a></li></ul></li></ul></div><div id="page-content-wrapper"><div class="nav"><div class="container-fluid"><div class="row"><div class="col-lg-12"><div class="action-menu pull-left clearfix"><a href="#menu-toggle" id="menu-toggle"><i class="fa fa-bars" aria-hidden="true"></i></a></div><ul class="pull-right"><li id="gh-eyes-item" class="hidden-xs"><a href="https://github.com/eikek/docspell"><i class="fa fa-eye"></i><span>WATCH<span id="eyes" class="label label-default">--</span></span></a></li><li id="gh-stars-item" class="hidden-xs"><a href="https://github.com/eikek/docspell"><i class="fa fa-star-o"></i><span>STARS<span id="stars" class="label label-default">--</span></span></a></li></ul></div></div></div></div><div id="content" data-github-owner="eikek" data-github-repo="docspell"><div class="content-wrapper"><section><h1 id="tools">Tools</h1>
+
+<p>The <code class="highlighter-rouge">tools/</code> folder contains some scripts and other resources intented
+for integrating docspell.</p>
+
+<h2 id="consumedir">consumedir</h2>
+
+<p>The <code class="highlighter-rouge">consumerdir.sh</code> is a bash script that works in two modes:</p>
+
+<ul>
+  <li>Go through all files in given directories (non recursively) and sent
+each to docspell.</li>
+  <li>Watch one or more directories for new files and upload them to
+docspell.</li>
+</ul>
+
+<p>It can watch or go through one or more directories. Files can be
+uploaded to multiple urls.</p>
+
+<p>Run the script with the <code class="highlighter-rouge">-h</code> option, to see a short help text. The
+help text will also show the values for any given option.</p>
+
+<p>The script requires <code class="highlighter-rouge">curl</code> for uploading. It requires the
+<code class="highlighter-rouge">inotifywait</code> command if directories should be watched for new
+files. If the <code class="highlighter-rouge">-m</code> option is used, the script will skip duplicate
+files. For this the <code class="highlighter-rouge">sha256sum</code> command is required.</p>
+
+<p>Example for watching two directories:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>./tools/consumedir.sh <span class="nt">--path</span> ~/Downloads <span class="nt">--path</span> ~/pdfs <span class="nt">-m</span> /var/run/consumedir <span class="nt">-dv</span> http://localhost:7880/api/v1/open/upload/item/5DxhjkvWf9S-CkWqF3Kr892-WgoCspFWDo7-XBykwCyAUxQ
+</code></pre></div></div>
+
+<p>The script by default watches the given directories. If the <code class="highlighter-rouge">-o</code>
+option is used, it will instead go through these directories and
+upload all pdf files in there.</p>
+
+<p>Example for uploading all immediatly (the same as above only with <code class="highlighter-rouge">-o</code>
+added):</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>./tools/consumedir.sh <span class="nt">-o</span> <span class="nt">--path</span> ~/Downloads <span class="nt">--path</span> ~/pdfs/ <span class="nt">-m</span> /var/run/consumedir <span class="nt">-dv</span> http://localhost:7880/api/v1/open/upload/item/5DxhjkvWf9S-CkWqF3Kr892-WgoCspFWDo7-XBykwCyAUxQ
+</code></pre></div></div>
+
+<h3 id="systemd">Systemd</h3>
+
+<p>The script can be used with systemd to run as a service. This is an
+example unit file:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[Unit]
+After=networking.target
+Description=Docspell Consumedir
+
+[Service]
+Environment="PATH=/set/a/path"
+
+ExecStartPre=mkdir -p /var/run/consumedir &amp;&amp; chown -R someuser /var/run/consumedir
+ExecStart=/bin/su -s /bin/bash someuser -c "consumedir.sh --path '/a/path/' -m '/var/run/consumedir' 'http://localhost:7880/api/v1/open/upload/item/5DxhjkvWf9S-CkWqF3Kr892-WgoCspFWDo7-XBykwCyAUxQ'"
+</code></pre></div></div>
+
+<p>This unit file is just an example, it needs some fiddling. It assumes
+an existing user <code class="highlighter-rouge">someuser</code> that is used to run this service. The url
+<code class="highlighter-rouge">http://localhost:7880/api/v1/open/upload/...</code> is an anonymous upload
+url as described <a href="./uploading.html">here</a>.</p>
+
+<h2 id="dssh">ds.sh</h2>
+
+<p>A bash script to quickly upload files from the command line. It reads
+a configuration file containing the URLs to upload to. Then each file
+given to the script will be uploaded to al URLs in the config.</p>
+
+<p>The config file is expected in
+<code class="highlighter-rouge">$XDG_CONFIG_HOME/docspell/ds.conf</code>. <code class="highlighter-rouge">$XDG_CONFIG_HOME</code> defaults to
+<code class="highlighter-rouge">~/.config</code>.</p>
+
+<p>The config file contains lines with key-value pairs, separated by an
+<code class="highlighter-rouge">=</code> sign. Lines starting with <code class="highlighter-rouge">#</code> are ignored. Example:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code># Config file
+url.1 = http://localhost:7880/api/v1/open/upload/item/5DxhjkvWf9S-CkWqF3Kr892-WgoCspFWDo7-XBykwCyAUxQ
+url.2 = http://localhost:7880/api/v1/open/upload/item/6DxhjkvWf9S-CkWqF3Kr892-WgoCspFWDo7-XBykwCyAUxQ
+</code></pre></div></div>
+
+<p>The key must start with <code class="highlighter-rouge">url</code>.</p>
+
+<h3 id="usage">Usage</h3>
+
+<p>The <code class="highlighter-rouge">-h</code> option shows a help overview.</p>
+
+<p>The script takes a list of files as arguments. It checks the file
+types and will raise an error (and quit) if a file is included that is
+not a PDF. The <code class="highlighter-rouge">-s</code> option can be used to skip them instead.</p>
+
+<p>The <code class="highlighter-rouge">-c</code> option allows to specifiy a different config file.</p>
+
+<p>Example:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>./ds.sh ~/Downloads/<span class="k">*</span>.pdf
+</code></pre></div></div>
+
+<h2 id="webextension-for-docspell">Webextension for Docspell</h2>
+
+<p>Idea: Inside the browser click on a PDF and send it to docspell. It is
+downloaded in the context of your current page. Then handed to an
+application that pushes it to docspell. There is a browser add-on
+implementing this in <code class="highlighter-rouge">tools/webextension</code>. This add-on only works with
+firefox.</p>
+
+<h3 id="install">Install</h3>
+
+<p>This is a bit complicated, since you need to install external tools
+and the web extension. Both work together.</p>
+
+<h4 id="install-dssh">Install <code class="highlighter-rouge">ds.sh</code></h4>
+
+<p>First install the <code class="highlighter-rouge">ds.sh</code> tool somewhere, maybe <code class="highlighter-rouge">/usr/local/bin</code> as
+described above.</p>
+
+<h4 id="install-the-native-part">Install the native part</h4>
+
+<p>Then install the “native” part of the web extension:</p>
+
+<p>Copy or symlink the <code class="highlighter-rouge">native.py</code> script into some known location. For
+example:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">ln</span> <span class="nt">-s</span> ~/docspell-checkout/tools/webextension/native/native.py /usr/local/share/docspell/native.py
+</code></pre></div></div>
+
+<p>Then copy the <code class="highlighter-rouge">app_manifest.json</code> to
+<code class="highlighter-rouge">$HOME/.mozilla/native-messaging-hosts/docspell.json</code>. For example:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cp</span> ~/docspell-checkout/tools/webextension/native/app_manifest.json  ~/.mozilla/native-messaging-hosts/docspell.json
+</code></pre></div></div>
+
+<p>See
+<a href="https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Native_manifests#Manifest_location">here</a>
+for details.</p>
+
+<p>And you might want to modify this json file, so the path to the
+<code class="highlighter-rouge">native.py</code> script is correct (it must be absolute).</p>
+
+<p>If the <code class="highlighter-rouge">ds.sh</code> script is in your <code class="highlighter-rouge">$PATH</code>, then this should
+work. Otherwise, edit the <code class="highlighter-rouge">native.py</code> script and change the path to
+the tool. Or create a file <code class="highlighter-rouge">$HOME/.config/docspell/ds.cmd</code> whose
+content is the path to the <code class="highlighter-rouge">ds.sh</code> script.</p>
+
+<h4 id="install-the-extension">Install the extension</h4>
+
+<p>There are two ways: a temporary or “normal” extension. Normal
+extensions must be signed by firefox to make them install. This can be
+done at their
+<a href="https://addons.mozilla.org/en-US/developers/addon/submit/">“AMO”</a>
+site. A zip file of all files except the <code class="highlighter-rouge">native/</code> directory must be
+created.</p>
+
+<p>The temporary extension is a way around this. Open firefox and type
+<code class="highlighter-rouge">about:debugging</code> in the addressbar. Then click on “Load Temporary
+Add-on…” and select any file from this folder. The extension is now
+installed. The downside is, that the extension will be removed once
+firefox is closed.</p>
+
+<p>Now there should be a context menu entry, when you right click on a
+file. The add-on will download this file normally using the browser
+and then send the path to the file to the <code class="highlighter-rouge">native.py</code> script. This
+script will in turn call <code class="highlighter-rouge">ds.sh</code> which finally uploads it to Docspell.</p>
+
+<p>Open the Add-ons page (Ctrl+Shift+A), the new add-on should be there.</p>
+</section></div></div></div></div><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script><script src="/docspell/highlight/highlight.pack.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/json.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/javascript.min.js"></script><script>hljs.configure({languages:['scala','java','bash','json','javascript']});
+hljs.initHighlighting();
+              </script><script src="/docspell/js/main.js"></script></body></html>
