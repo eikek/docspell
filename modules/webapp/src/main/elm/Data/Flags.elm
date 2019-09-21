@@ -6,6 +6,7 @@ type alias Config =
     { appName: String
     , baseUrl: String
     , signupMode: String
+    , docspellAssetPath: String
     }
 
 type alias Flags =

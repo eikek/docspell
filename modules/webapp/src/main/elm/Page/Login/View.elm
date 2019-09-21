@@ -5,16 +5,17 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput, onSubmit)
 import Page exposing (Page(..))
 import Page.Login.Data exposing (..)
+import Data.Flags exposing (Flags)
 
-view: Model -> Html Msg
-view model =
+view: Flags -> Model -> Html Msg
+view flags model =
     div [class "login-page"]
         [div [class "ui centered grid"]
              [div [class "row"]
                   [div [class "six wide column ui segment login-view"]
                        [h1 [class "ui center aligned icon header"]
                             [img [class "ui image"
-                                 ,src "assets/docspell-webapp/0.1.0-SNAPSHOT/img/logo-96.png"
+                                 ,src (flags.config.docspellAssetPath ++ "/img/logo-96.png")
                                  ][]
                             ,div [class "content"]
                                  [text "Sign in to Docspell"

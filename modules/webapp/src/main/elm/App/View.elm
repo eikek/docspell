@@ -60,7 +60,7 @@ defaultLayout model =
                        ,Page.href HomePage
                        ]
                          [img [class "image"
-                              ,src "assets/docspell-webapp/0.1.0-SNAPSHOT/img/logo-96.png"][]
+                              ,src (model.flags.config.docspellAssetPath ++ "/img/logo-96.png")][]
                          ,div [class "content"]
                               [text model.flags.config.appName
                               ]
@@ -123,7 +123,7 @@ viewManageData model =
 
 viewLogin: Model -> Html Msg
 viewLogin model =
-    Html.map LoginMsg (Page.Login.View.view model.loginModel)
+    Html.map LoginMsg (Page.Login.View.view model.flags model.loginModel)
 
 viewHome: Model -> Html Msg
 viewHome model =
@@ -153,7 +153,7 @@ loginInfo model =
                           ]
                          [menuEntry model HomePage
                             [img [class "image icon"
-                                 ,src "assets/docspell-webapp/0.1.0-SNAPSHOT/img/logo-mc-96.png"
+                                 ,src (model.flags.config.docspellAssetPath ++ "/img/logo-mc-96.png")
                                  ][]
                             ,text "Items"
                             ]

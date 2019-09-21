@@ -16,7 +16,7 @@ view flags model =
                   [div [class "eight wide column ui segment newinvite-view"]
                        [h1 [class "ui cener aligned icon header"]
                            [img [class "ui image"
-                                ,src "assets/docspell-webapp/0.1.0-SNAPSHOT/img/logo-96.png"
+                                ,src (flags.config.docspellAssetPath ++ "/img/logo-96.png")
                                 ][]
                            ,div [class "content"]
                                 [text "Create new invitations"

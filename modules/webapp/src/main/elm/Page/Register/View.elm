@@ -15,7 +15,7 @@ view flags model =
                   [div [class "six wide column ui segment register-view"]
                        [h1 [class "ui cener aligned icon header"]
                            [img [class "ui image"
-                                ,src "assets/docspell-webapp/0.1.0-SNAPSHOT/img/logo-96.png"][]
+                                ,src (flags.config.docspellAssetPath ++ "/img/logo-96.png")][]
                            ,div [class "content"]
                                 [text "Sign up @ Docspell"
                                 ]
