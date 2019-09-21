@@ -144,18 +144,23 @@ content is the path to the <code class="highlighter-rouge">ds.sh</code> script.<
 
 <h4 id="install-the-extension">Install the extension</h4>
 
-<p>There are two ways: a temporary or “normal” extension. Normal
-extensions must be signed by firefox to make them install. This can be
-done at their
-<a href="https://addons.mozilla.org/en-US/developers/addon/submit/">“AMO”</a>
-site. A zip file of all files except the <code class="highlighter-rouge">native/</code> directory must be
-created.</p>
+<p>An extension file can be build using the <code class="highlighter-rouge">make-xpi.sh</code> script. But
+installing it in “standard” firefox won’t work, because <a href="">Mozilla
+requires extensions to be signed by them</a>. This means creating an
+account and going through some process…. So here are two alternatives:</p>
 
-<p>The temporary extension is a way around this. Open firefox and type
-<code class="highlighter-rouge">about:debugging</code> in the addressbar. Then click on “Load Temporary
-Add-on…” and select any file from this folder. The extension is now
-installed. The downside is, that the extension will be removed once
-firefox is closed.</p>
+<ol>
+  <li>Open firefox and type <code class="highlighter-rouge">about:debugging</code> in the addressbar. Then
+click on <em>‘Load Temporary Add-on…’</em> and select any file from this
+folder. The extension is now installed. The downside is, that the
+extension will be removed once firefox is closed.</li>
+  <li>Use Firefox ESR, which allows to install Add-ons not signed by
+Mozilla. But it has to be configured: Open firefox and type
+<code class="highlighter-rouge">about:config</code> in the address bar. Search for key
+<code class="highlighter-rouge">xpinstall.signatures.required</code> and set it to <code class="highlighter-rouge">false</code>. This is
+described on the last paragraph on <a href="https://support.mozilla.org/en-US/kb/add-on-signing-in-firefox">this
+page</a>.</li>
+</ol>
 
 <p>Now there should be a context menu entry, when you right click on a
 file. The add-on will download this file normally using the browser
