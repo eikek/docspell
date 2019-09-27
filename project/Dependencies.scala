@@ -10,7 +10,7 @@ object Dependencies {
   val CirceVersion = "0.12.1"
   val DoobieVersion = "0.8.2"
   val FastparseVersion = "2.1.3"
-  val FlywayVersion = "6.0.3"
+  val FlywayVersion = "6.0.4"
   val Fs2Version = "2.0.1"
   val H2Version = "1.4.199"
   val Http4sVersion = "0.21.0-M5"
