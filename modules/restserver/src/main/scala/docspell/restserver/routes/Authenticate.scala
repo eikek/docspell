@@ -15,7 +15,7 @@ object Authenticate {
   def authenticateRequest[F[_]: Effect](auth: String => F[Login.Result])(req: Request[F]): F[Login.Result] =
     CookieData.authenticator(req) match {
       case Right(str) => auth(str)
-      case Left(err) => Login.Result.invalidAuth.pure[F]
+      case Left(_) => Login.Result.invalidAuth.pure[F]
     }
 
 

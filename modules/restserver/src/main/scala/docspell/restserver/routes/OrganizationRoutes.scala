@@ -4,19 +4,18 @@ import cats.effect._
 import cats.implicits._
 import docspell.backend.BackendApp
 import docspell.backend.auth.AuthToken
-import org.http4s.HttpRoutes
-import org.http4s.dsl.Http4sDsl
-import org.http4s.circe.CirceEntityEncoder._
-import org.http4s.circe.CirceEntityDecoder._
-import docspell.restapi.model._
-import docspell.restserver.Config
-import docspell.restserver.conv.Conversions._
-import ParamDecoder._
 import docspell.common.Ident
+import docspell.restapi.model._
+import docspell.restserver.conv.Conversions._
+import docspell.restserver.routes.ParamDecoder._
+import org.http4s.HttpRoutes
+import org.http4s.circe.CirceEntityDecoder._
+import org.http4s.circe.CirceEntityEncoder._
+import org.http4s.dsl.Http4sDsl
 
 object OrganizationRoutes {
 
-  def apply[F[_]: Effect](backend: BackendApp[F], cfg: Config, user: AuthToken): HttpRoutes[F] = {
+  def apply[F[_]: Effect](backend: BackendApp[F], user: AuthToken): HttpRoutes[F] = {
     val dsl = new Http4sDsl[F]{}
     import dsl._
 

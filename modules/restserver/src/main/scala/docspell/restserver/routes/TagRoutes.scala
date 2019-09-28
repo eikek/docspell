@@ -6,7 +6,6 @@ import docspell.backend.BackendApp
 import docspell.backend.auth.AuthToken
 import docspell.common.Ident
 import docspell.restapi.model._
-import docspell.restserver.Config
 import docspell.restserver.conv.Conversions._
 import docspell.restserver.http4s.ResponseGenerator
 import org.http4s.HttpRoutes
@@ -16,7 +15,7 @@ import org.http4s.dsl.Http4sDsl
 
 object TagRoutes {
 
-  def apply[F[_]: Effect](backend: BackendApp[F], cfg: Config, user: AuthToken): HttpRoutes[F] = {
+  def apply[F[_]: Effect](backend: BackendApp[F], user: AuthToken): HttpRoutes[F] = {
     val dsl = new Http4sDsl[F] with ResponseGenerator[F] {}
     import dsl._
 

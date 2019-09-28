@@ -36,7 +36,7 @@ object TemplateRoutes {
       case GET -> Root / "doc" =>
         for {
           templ  <- docTemplate
-          resp   <- Ok(DocData(cfg).render(templ), `Content-Type`(`text/html`))
+          resp   <- Ok(DocData().render(templ), `Content-Type`(`text/html`))
         } yield resp
     }
   }
@@ -51,7 +51,7 @@ object TemplateRoutes {
   }
 
   def loadUrl[F[_]: Sync](url: URL, blocker: Blocker)(implicit C: ContextShift[F]): F[String] =
-    Stream.bracket(Sync[F].delay(url.openStream))(in => Sync[F].delay(in.close)).
+    Stream.bracket(Sync[F].delay(url.openStream))(in => Sync[F].delay(in.close())).
       flatMap(in => io.readInputStream(in.pure[F], 64 * 1024, blocker, false)).
       through(text.utf8Decode).
       compile.fold("")(_ + _)
@@ -75,7 +75,7 @@ object TemplateRoutes {
   case class DocData(swaggerRoot: String, openapiSpec: String)
   object DocData {
 
-    def apply(cfg: Config): DocData =
+    def apply(): DocData =
       DocData("/app/assets" + Webjars.swaggerui, s"/app/assets/${BuildInfo.name}/${BuildInfo.version}/docspell-openapi.yml")
 
     implicit def yamuscaValueConverter: ValueConverter[DocData] =

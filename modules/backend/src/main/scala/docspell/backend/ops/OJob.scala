@@ -61,7 +61,7 @@ object OJob {
           jobm  = job.filter(canDelete)
           del  <- jobm.traverse(j => RJob.delete(j.id))
         } yield del match {
-          case Some(n) => Right(JobCancelResult.Removed: JobCancelResult)
+          case Some(_) => Right(JobCancelResult.Removed: JobCancelResult)
           case None => Left(mustCancel(job))
         }
 

@@ -243,7 +243,7 @@ trait Conversions {
 
   def newUser[F[_]: Sync](u: User, cid: Ident): F[RUser] =
     timeId.map { case (id, now) =>
-      RUser(id, u.login, cid, u.password.getOrElse(Password.empty), u.state, u.email, u.loginCount, u.lastLogin, u.created)
+      RUser(id, u.login, cid, u.password.getOrElse(Password.empty), u.state, u.email, 0, None, now)
     }
 
   def changeUser(u: User, cid: Ident): RUser =

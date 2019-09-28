@@ -7,11 +7,9 @@ import org.http4s.server.staticcontent.webjarService
 import org.http4s.server.staticcontent.NoopCacheStrategy
 import org.http4s.server.staticcontent.WebjarService.{WebjarAsset, Config => WebjarConfig}
 
-import docspell.restserver.Config
-
 object WebjarRoutes {
 
-  def appRoutes[F[_]: Effect](blocker: Blocker, cfg: Config)(implicit C: ContextShift[F]): HttpRoutes[F] = {
+  def appRoutes[F[_]: Effect](blocker: Blocker)(implicit C: ContextShift[F]): HttpRoutes[F] = {
     webjarService(
       WebjarConfig(
         filter = assetFilter,

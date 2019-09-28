@@ -57,7 +57,7 @@ object Login {
           if (at.sigInvalid(config.serverSecret)) Result.invalidAuth.pure[F]
           else if (at.isExpired(config.sessionValid)) Result.invalidTime.pure[F]
           else Result.ok(at).pure[F]
-        case Left(err) =>
+        case Left(_) =>
           Result.invalidAuth.pure[F]
       }
 
@@ -73,7 +73,7 @@ object Login {
             res   <- if (data.exists(check(up.pass))) okResult
                      else Result.invalidAuth.pure[F]
           } yield res
-        case Left(err) =>
+        case Left(_) =>
           Result.invalidAuth.pure[F]
       }
     }

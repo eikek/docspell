@@ -11,7 +11,7 @@ case class ProcessItemArgs(meta: ProcessMeta, files: List[File]) {
       case Nil => s"${meta.sourceAbbrev}: No files"
       case n :: Nil => n
       case n1 :: n2 :: Nil => s"$n1, $n2"
-      case more => s"${files.size} files from ${meta.sourceAbbrev}"
+      case _ => s"${files.size} files from ${meta.sourceAbbrev}"
     }
   }
 

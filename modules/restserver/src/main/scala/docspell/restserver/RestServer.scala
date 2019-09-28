@@ -2,14 +2,14 @@ package docspell.restserver
 
 import cats.effect._
 import docspell.backend.auth.AuthToken
-import org.http4s.server.blaze.BlazeServerBuilder
-import org.http4s.implicits._
-import fs2.Stream
-import org.http4s.server.middleware.Logger
-import org.http4s.server.Router
-import docspell.restserver.webapp._
 import docspell.restserver.routes._
+import docspell.restserver.webapp._
+import fs2.Stream
 import org.http4s.HttpRoutes
+import org.http4s.implicits._
+import org.http4s.server.Router
+import org.http4s.server.blaze.BlazeServerBuilder
+import org.http4s.server.middleware.Logger
 
 import scala.concurrent.ExecutionContext
 
@@ -22,12 +22,12 @@ object RestServer {
       restApp  <- RestAppImpl.create[F](cfg, connectEC, httpClientEc, blocker)
 
       httpApp = Router(
-        "/api/info" -> routes.InfoRoutes(cfg),
+        "/api/info" -> routes.InfoRoutes(),
         "/api/v1/open/" -> openRoutes(cfg, restApp),
         "/api/v1/sec/" -> Authenticate(restApp.backend.login, cfg.auth) {
           token => securedRoutes(cfg, restApp, token)
         },
-        "/app/assets" -> WebjarRoutes.appRoutes[F](blocker, cfg),
+        "/app/assets" -> WebjarRoutes.appRoutes[F](blocker),
         "/app" -> TemplateRoutes[F](blocker, cfg)
       ).orNotFound
 
@@ -47,16 +47,16 @@ object RestServer {
   def securedRoutes[F[_]: Effect](cfg: Config, restApp: RestApp[F], token: AuthToken): HttpRoutes[F] =
     Router(
       "auth" -> LoginRoutes.session(restApp.backend.login, cfg),
-      "tag" -> TagRoutes(restApp.backend, cfg, token),
-      "equipment" -> EquipmentRoutes(restApp.backend, cfg, token),
-      "organization" -> OrganizationRoutes(restApp.backend, cfg, token),
-      "person" -> PersonRoutes(restApp.backend, cfg, token),
-      "source" -> SourceRoutes(restApp.backend, cfg, token),
-      "user" -> UserRoutes(restApp.backend, cfg, token),
-      "collective" -> CollectiveRoutes(restApp.backend, cfg, token),
-      "queue" -> JobQueueRoutes(restApp.backend, cfg, token),
-      "item" -> ItemRoutes(restApp.backend, cfg, token),
-      "attachment" -> AttachmentRoutes(restApp.backend, cfg, token),
+      "tag" -> TagRoutes(restApp.backend, token),
+      "equipment" -> EquipmentRoutes(restApp.backend, token),
+      "organization" -> OrganizationRoutes(restApp.backend, token),
+      "person" -> PersonRoutes(restApp.backend, token),
+      "source" -> SourceRoutes(restApp.backend, token),
+      "user" -> UserRoutes(restApp.backend, token),
+      "collective" -> CollectiveRoutes(restApp.backend, token),
+      "queue" -> JobQueueRoutes(restApp.backend, token),
+      "item" -> ItemRoutes(restApp.backend, token),
+      "attachment" -> AttachmentRoutes(restApp.backend, token),
       "upload" -> UploadRoutes.secured(restApp.backend, cfg, token)
     )
 

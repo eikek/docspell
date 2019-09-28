@@ -10,14 +10,14 @@ val sharedSettings = Seq(
     "-deprecation",
     "-encoding", "UTF-8",
     "-language:higherKinds",
-    "-language:postfixOps",
     "-feature",
     "-Werror", // fail when there are warnings
     "-unchecked",
     "-Xlint:_",
-    "-Ywarn-dead-code",
-    "-Ywarn-numeric-widen",
-    "-Ywarn-value-discard"
+    "-Wdead-code",
+    "-Wunused",
+    "-Wvalue-discard",
+    "-Wnumeric-widen"
   ),
   scalacOptions in (Compile, console) :=
     (scalacOptions.value.filter(o => !o.contains("Xlint")) ++ Seq("-Xlint:_,-unused")),

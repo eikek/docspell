@@ -10,7 +10,6 @@ import org.http4s.dsl.Http4sDsl
 import org.http4s.circe.CirceEntityEncoder._
 import org.http4s.circe.CirceEntityDecoder._
 import docspell.restapi.model._
-import docspell.restserver.Config
 import docspell.common.syntax.all._
 import docspell.restserver.conv.Conversions
 import org.log4s._
@@ -18,7 +17,7 @@ import org.log4s._
 object ItemRoutes {
   private[this] val logger = getLogger
 
-  def apply[F[_]: Effect](backend: BackendApp[F], cfg: Config, user: AuthToken): HttpRoutes[F] = {
+  def apply[F[_]: Effect](backend: BackendApp[F], user: AuthToken): HttpRoutes[F] = {
     val dsl = new Http4sDsl[F]{}
     import dsl._
 
@@ -40,13 +39,13 @@ object ItemRoutes {
           resp   <- result.map(r => Ok(r)).getOrElse(NotFound(BasicResult(false, "Not found.")))
         } yield resp
 
-      case req@POST -> Root / Ident(id) / "confirm" =>
+      case POST -> Root / Ident(id) / "confirm" =>
         for {
           res  <- backend.item.setState(id, ItemState.Confirmed, user.account.collective)
           resp <- Ok(Conversions.basicResult(res, "Item data confirmed"))
         } yield resp
 
-      case req@POST -> Root / Ident(id) / "unconfirm" =>
+      case POST -> Root / Ident(id) / "unconfirm" =>
         for {
           res  <- backend.item.setState(id, ItemState.Created, user.account.collective)
           resp <- Ok(Conversions.basicResult(res, "Item back to created."))

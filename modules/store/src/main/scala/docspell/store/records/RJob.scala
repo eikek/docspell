@@ -109,7 +109,7 @@ object RJob {
   def setScheduled(jobId: Ident, workerId: Ident): ConnectionIO[Int] = {
     for {
       _   <- incrementRetries(jobId)
-      n   <- updateRow(table, and(id is jobId, or(worker isNull, worker is workerId), state isOneOf Seq[JobState](JobState.Waiting, JobState.Stuck)), commas(
+      n   <- updateRow(table, and(id is jobId, or(worker.isNull, worker is workerId), state isOneOf Seq[JobState](JobState.Waiting, JobState.Stuck)), commas(
         state setTo (JobState.Scheduled: JobState),
         worker setTo workerId
       )).update.run

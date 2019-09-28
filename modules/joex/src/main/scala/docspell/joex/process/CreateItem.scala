@@ -25,9 +25,9 @@ object CreateItem {
 
       def fileMetas(itemId: Ident, now: Timestamp) = Stream.emits(ctx.args.files).
         flatMap(f => ctx.store.bitpeace.get(f.fileMetaId.id).map(fm => (f, fm))).
-        collect({ case (f, Some(fm)) if validFiles.contains(fm.mimetype.baseType) => (f, fm) }).
+        collect({ case (f, Some(fm)) if validFiles.contains(fm.mimetype.baseType) => f }).
         zipWithIndex.
-        evalMap({ case ((f, fm), index) =>
+        evalMap({ case (f, index) =>
             Ident.randomId[F].map(id => RAttachment(id, itemId, f.fileMetaId, index.toInt, now, f.name))
         }).
         compile.toVector
@@ -64,7 +64,11 @@ object CreateItem {
     }
 
   private def logDifferences[F[_]: Sync](ctx: Context[F, ProcessItemArgs], saved: Vector[RAttachment], saveCount: Int): F[Unit] =
-    ctx.logger.info("TODO log diffs")
+    if (ctx.args.files.size != saved.size) {
+      ctx.logger.warn(s"Not all given files (${ctx.args.files.size}) have been stored. Files retained: ${saved.size}; saveCount=$saveCount")
+    } else {
+      ().pure[F]
+    }
 
   private def storeItemError[F[_]: Sync](ctx: Context[F, ProcessItemArgs]): F[Unit] = {
     val msg = "Inserting item failed. DB returned 0 update count!"

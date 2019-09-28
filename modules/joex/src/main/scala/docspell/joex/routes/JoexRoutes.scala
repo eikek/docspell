@@ -1,18 +1,18 @@
 package docspell.joex.routes
 
-import cats.implicits._
 import cats.effect._
+import cats.implicits._
 import docspell.common.{Duration, Ident, Timestamp}
-import docspell.joex.{Config, JoexApp}
+import docspell.joex.JoexApp
 import docspell.joexapi.model._
 import docspell.store.records.{RJob, RJobLog}
 import org.http4s.HttpRoutes
-import org.http4s.dsl.Http4sDsl
 import org.http4s.circe.CirceEntityEncoder._
+import org.http4s.dsl.Http4sDsl
 
 object JoexRoutes {
 
-  def apply[F[_]: ConcurrentEffect: Timer](cfg: Config, app: JoexApp[F]): HttpRoutes[F] = {
+  def apply[F[_]: ConcurrentEffect: Timer](app: JoexApp[F]): HttpRoutes[F] = {
     val dsl = new Http4sDsl[F]{}
     import dsl._
     HttpRoutes.of[F] {

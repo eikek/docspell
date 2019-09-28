@@ -12,13 +12,12 @@ import org.http4s.dsl.Http4sDsl
 import org.http4s.headers._
 import org.http4s.circe.CirceEntityEncoder._
 import docspell.restapi.model._
-import docspell.restserver.Config
 import docspell.restserver.conv.Conversions
 import org.http4s.headers.ETag.EntityTag
 
 object AttachmentRoutes {
 
-  def apply[F[_]: Effect](backend: BackendApp[F], cfg: Config, user: AuthToken): HttpRoutes[F] = {
+  def apply[F[_]: Effect](backend: BackendApp[F], user: AuthToken): HttpRoutes[F] = {
     val dsl = new Http4sDsl[F]{}
     import dsl._
 

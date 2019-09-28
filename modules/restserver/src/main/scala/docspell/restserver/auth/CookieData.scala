@@ -11,9 +11,10 @@ case class CookieData(auth: AuthToken) {
   def asString: String = auth.asString
 
   def asCookie(cfg: Config): ResponseCookie = {
-    val domain = "" //cfg.baseUrl.hostAndPort
-    val sec = false //cfg.baseUrl.protocol.exists(_.endsWith("s"))
-    ResponseCookie(CookieData.cookieName, asString, domain = Some(domain), path = Some("/api/v1"), httpOnly = true, secure = sec)
+    val domain = cfg.baseUrl.host
+    val sec = cfg.baseUrl.scheme.exists(_.endsWith("s"))
+    val path = cfg.baseUrl.path/"api"/"v1"/"sec"
+    ResponseCookie(CookieData.cookieName, asString, domain = domain, path = Some(path.asString), httpOnly = true, secure = sec)
   }
 }
 object CookieData {

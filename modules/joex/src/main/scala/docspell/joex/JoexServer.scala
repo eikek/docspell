@@ -27,8 +27,8 @@ object JoexServer {
       joexApp  <- JoexAppImpl.create[F](cfg, signal, connectEC, blocker)
 
       httpApp = Router(
-        "/api/info" -> InfoRoutes(cfg),
-        "/api/v1" -> JoexRoutes(cfg, joexApp)
+        "/api/info" -> InfoRoutes(),
+        "/api/v1" -> JoexRoutes(joexApp)
       ).orNotFound
 
       // With Middlewares in place

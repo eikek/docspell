@@ -39,6 +39,13 @@ case class LenientUri(scheme: NonEmptyList[String]
       rethrow.
       flatMap(url => fs2.io.readInputStream(Sync[F].delay(url.openStream()), chunkSize, blocker, true))
 
+  def host: Option[String] =
+    authority.
+      map(a => a.indexOf(':') match {
+        case -1 => a
+        case n => a.substring(0, n)
+      })
+
   def asString: String = {
     val schemePart = scheme.toList.mkString(":")
     val authPart = authority.map(a => s"//$a").getOrElse("")
