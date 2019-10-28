@@ -7,26 +7,26 @@ object Dependencies {
   val BcryptVersion = "0.4"
   val BetterMonadicForVersion = "0.3.1"
   val BitpeaceVersion = "0.4.0"
-  val CirceVersion = "0.12.1"
-  val DoobieVersion = "0.8.2"
+  val CirceVersion = "0.12.3"
+  val DoobieVersion = "0.8.4"
   val FastparseVersion = "2.1.3"
-  val FlywayVersion = "6.0.4"
+  val FlywayVersion = "6.0.7"
   val Fs2Version = "2.0.1"
-  val H2Version = "1.4.199"
+  val H2Version = "1.4.200"
   val Http4sVersion = "0.21.0-M5"
   val KindProjectorVersion = "0.10.3"
   val Log4sVersion = "1.8.2"
   val LogbackVersion = "1.2.3"
-  val MariaDbVersion = "2.4.4"
+  val MariaDbVersion = "2.5.1"
   val MiniTestVersion = "2.7.0"
   val PostgresVersion = "42.2.8"
-  val PureConfigVersion = "0.12.0"
+  val PureConfigVersion = "0.12.1"
   val SqliteVersion = "3.28.0"
   val StanfordNlpVersion = "3.9.2"
   val TikaVersion = "1.22"
   val javaxMailVersion = "1.6.2"
   val dnsJavaVersion = "2.1.9"
-  val YamuscaVersion = "0.6.0"
+  val YamuscaVersion = "0.6.1"
 
   val stanfordNlpCore = Seq(
     "edu.stanford.nlp" % "stanford-corenlp" % StanfordNlpVersion excludeAll(
@@ -151,7 +151,7 @@ object Dependencies {
   val betterMonadicFor = "com.olegpy" %% "better-monadic-for" % BetterMonadicForVersion
 
   val webjars = Seq(
-    "swagger-ui" -> "3.23.8",
+    "swagger-ui" -> "3.24.0",
     "Semantic-UI" -> "2.4.1",
     "jquery" -> "3.4.1"
   ).map({case (a, v) => "org.webjars" % a % v })
