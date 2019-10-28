@@ -21,11 +21,15 @@ view flags model =
                                  [text "Sign in to Docspell"
                                  ]
                             ]
-                       ,Html.form [class "ui large error raised form segment", onSubmit Authenticate]
+                       ,Html.form [ class "ui large error raised form segment"
+                                  , onSubmit Authenticate
+                                  , autocomplete False
+                                  ]
                            [div [class "field"]
                                 [label [][text "Username"]
                                 ,div [class "ui left icon input"]
                                      [input [type_ "text"
+                                            ,autocomplete False
                                             ,onInput SetUsername
                                             ,value model.username
                                             ,placeholder "Collective / Login"
@@ -38,6 +42,7 @@ view flags model =
                                [label [][text "Password"]
                                ,div [class "ui left icon input"]
                                     [input [type_ "password"
+                                           ,autocomplete False
                                            ,onInput SetPassword
                                            ,value model.password
                                            ,placeholder "Password"

@@ -762,7 +762,10 @@ renderEditForm model =
                  ]
              ,div [class "field"]
                   [div [class "ui action input"]
-                       [textarea [rows 7, onInput SetNotes][Maybe.withDefault "" model.notesModel |> text]
+                       [textarea [ rows 6
+                                 , autocomplete False
+                                 , onInput SetNotes
+                                 ][Maybe.withDefault "" model.notesModel |> text]
                        ,button [class "ui icon button", onClick SaveNotes]
                            [i [class "save outline icon"][]
                            ]

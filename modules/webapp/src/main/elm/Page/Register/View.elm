@@ -20,11 +20,15 @@ view flags model =
                                 [text "Sign up @ Docspell"
                                 ]
                            ]
-                       ,Html.form [class "ui large error form raised segment", onSubmit RegisterSubmit]
+                       ,Html.form [ class "ui large error form raised segment"
+                                  , onSubmit RegisterSubmit
+                                  , autocomplete False
+                                  ]
                            [div [class "required field"]
                                 [label [][text "Collective ID"]
                                 ,div [class "ui left icon input"]
                                      [input [type_ "text"
+                                            ,autocomplete False
                                             ,onInput SetCollId
                                             ,value model.collId
                                             ,autofocus True
@@ -36,6 +40,7 @@ view flags model =
                                 [label [][text "User Login"]
                                 ,div [class "ui left icon input"]
                                      [input [type_ "text"
+                                            ,autocomplete False
                                             ,onInput SetLogin
                                             ,value model.login
                                             ][]
@@ -47,6 +52,7 @@ view flags model =
                                 [label [][text "Password"]
                                 ,div [class "ui left icon action input"]
                                     [input [type_ <| if model.showPass1 then "text" else "password"
+                                           ,autocomplete False
                                            ,onInput SetPass1
                                            ,value model.pass1
                                            ][]
@@ -61,6 +67,7 @@ view flags model =
                                 [label [][text "Password (repeat)"]
                                 ,div [class "ui left icon action input"]
                                     [input [type_ <| if model.showPass2 then "text" else "password"
+                                           ,autocomplete False
                                            ,onInput SetPass2
                                            ,value model.pass2
                                            ][]
@@ -76,6 +83,7 @@ view flags model =
                                [label [][text "Invitation Key"]
                                ,div [class "ui left icon input"]
                                     [input [type_ "text"
+                                           ,autocomplete False
                                            ,onInput SetInvite
                                            ,model.invite |> Maybe.withDefault "" |> value
                                            ][]
