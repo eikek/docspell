@@ -37,7 +37,7 @@ object LoginRoutes {
           flatMap(res => makeResponse(dsl, cfg, res, ""))
 
       case POST -> Root / "logout" =>
-        Ok().map(_.addCookie(ResponseCookie(CookieData.cookieName, "", maxAge = Some(-1))))
+        Ok().map(_.addCookie(CookieData.deleteCookie(cfg)))
     }
   }
 

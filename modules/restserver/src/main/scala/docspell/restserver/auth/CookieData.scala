@@ -34,4 +34,16 @@ object CookieData {
   def fromHeader[F[_]](req: Request[F]): Either[String, String] = {
     req.headers.get(CaseInsensitiveString(headerName)).map(_.value).toRight("Couldn't find an authenticator")
   }
+
+  def deleteCookie(cfg: Config): ResponseCookie =
+    ResponseCookie(
+      cookieName,
+      "",
+      domain = cfg.baseUrl.host,
+      path = Some(cfg.baseUrl.path / "api" / "v1" / "sec").map(_.asString),
+      httpOnly = true,
+      secure = cfg.baseUrl.scheme.exists(_.endsWith("s")),
+      maxAge = Some(-1)
+    )
+
 }
