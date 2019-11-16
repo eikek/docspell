@@ -18,7 +18,7 @@ import App.View exposing (..)
 
 -- MAIN
 
-
+main: Program Flags Model Msg
 main =
   Browser.application
     { init = init
@@ -42,7 +42,7 @@ init flags url key =
                    else (im, Page.goto page)
         sessionCheck =
             case m.flags.account of
-                Just acc -> Api.loginSession flags SessionCheckResp
+                Just _ -> Api.loginSession flags SessionCheckResp
                 Nothing -> Cmd.none
     in
         (m, Cmd.batch [ cmd, Ports.initElements(), Api.versionInfo flags VersionResp, sessionCheck ])

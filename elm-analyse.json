@@ -1,0 +1,5 @@
+{
+    "excludedPaths": [
+        "modules/webapp/target/elm-src"
+    ]
+}

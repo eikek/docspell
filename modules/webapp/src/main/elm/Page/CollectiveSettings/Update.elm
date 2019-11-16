@@ -4,7 +4,6 @@ import Api
 import Api.Model.BasicResult exposing (BasicResult)
 import Page.CollectiveSettings.Data exposing (..)
 import Data.Flags exposing (Flags)
-import Data.Language
 import Comp.SourceManage
 import Comp.UserManage
 import Comp.Settings

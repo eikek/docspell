@@ -31,13 +31,6 @@ emptyModel =
     , value = ""
     }
 
-makeModel: List Contact -> Model
-makeModel contacts =
-    let
-        em = emptyModel
-    in
-    { em | items = contacts }
-
 getContacts: Model -> List Contact
 getContacts model =
     List.filter (\c -> c.value /= "") model.items
@@ -108,13 +101,13 @@ view model =
                         ]
              ]
              [div [class "ui vertical secondary fluid menu"]
-                  (List.map (renderItem model) model.items)
+                  (List.map renderItem model.items)
              ]
         ]
 
 
-renderItem: Model -> Contact -> Html Msg
-renderItem model contact =
+renderItem: Contact -> Html Msg
+renderItem contact =
     div [class "link item", onClick (Select contact) ]
         [i [class "delete icon"][]
         ,div [class "ui blue label"]
