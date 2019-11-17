@@ -4,10 +4,12 @@ import cats.implicits._
 import cats.effect.{Effect, Resource}
 import docspell.backend.PasswordCrypt
 import docspell.backend.ops.OCollective.RegisterData
+import docspell.common.syntax.all._
 import docspell.common._
 import docspell.store.{AddResult, Store}
 import docspell.store.records.{RCollective, RInvitation, RUser}
 import doobie.free.connection.ConnectionIO
+import org.log4s.getLogger
 
 trait OSignup[F[_]] {
 
@@ -17,6 +19,7 @@ trait OSignup[F[_]] {
 }
 
 object OSignup {
+  private[this] val logger = getLogger
 
   def apply[F[_]:Effect](store: Store[F]): Resource[F, OSignup[F]] =
     Resource.pure(new OSignup[F] {
@@ -47,12 +50,33 @@ object OSignup {
                   ok   <- store.transact(RInvitation.useInvite(inv, min))
                   res  <- if (ok) addUser(data).map(SignupResult.fromAddResult)
                           else SignupResult.invalidInvitationKey.pure[F]
+                  _ <- if (retryInvite(res))
+                        logger.fdebug(s"Adding account failed ($res). Allow retry with invite.") *> store
+                          .transact(
+                            RInvitation.insert(RInvitation(inv, now))
+                          )
+                      else 0.pure[F]
                 } yield res
               case None =>
                 SignupResult.invalidInvitationKey.pure[F]
             }
         }
       }
+
+      private def retryInvite(res: SignupResult): Boolean =
+        res match {
+          case SignupResult.CollectiveExists =>
+            true
+          case SignupResult.InvalidInvitationKey =>
+            false
+          case SignupResult.SignupClosed =>
+            true
+          case SignupResult.Failure(_) =>
+            true
+          case SignupResult.Success =>
+            false
+        }
+
 
       private def addUser(data: RegisterData): F[AddResult] = {
         def toRecords: F[(RCollective, RUser)] =
