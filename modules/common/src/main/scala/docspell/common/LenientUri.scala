@@ -8,6 +8,7 @@ import cats.data.NonEmptyList
 import cats.effect.{Blocker, ContextShift, Sync}
 import docspell.common.LenientUri.Path
 import io.circe.{Decoder, Encoder}
+import scodec.bits.ByteVector
 
 /** A URI.
   *
@@ -166,19 +167,28 @@ object LenientUri {
     }
   }
 
-  private[this] val delims: Set[Char] = ":/?#[]@".toSet
+  private[this] val delims: Set[Char] = ",/?:@&=+$# %".toSet
 
-  private def percentEncode(s: String): String =
-    s.flatMap(c => if (delims.contains(c)) s"%${c.toInt.toHexString}" else c.toString)
+  private def percent(s: String): String =
+    "%" + ByteVector.encodeUtf8(s).
+      fold(throw _, identity).
+      toHex
 
-  private def percentDecode(s: String): String =
+  def percentEncode(s: String): String =
+    s.flatMap(c =>
+      if (delims.contains(c)) percent(c.toString) else c.toString)
+
+  def percentDecode(s: String): String =
     if (!s.contains("%")) s
-    else s.foldLeft(("", "")) { case ((acc, res), c) =>
-        if (acc.length == 2) ("", res :+ Integer.parseInt(acc.drop(1) :+ c, 16).toChar)
-        else if (acc.startsWith("%")) (acc :+ c, res)
-        else if (c == '%') ("%", res)
-        else (acc, res :+ c)
-    }._2
+    else
+      s.foldLeft(("", ByteVector.empty)) {
+          case ((acc, res), c) =>
+            if (acc.length == 2) ("", res ++ ByteVector.fromValidHex(acc.drop(1) + c))
+            else if (acc.startsWith("%")) (acc :+ c, res)
+            else if (c == '%') ("%", res)
+            else (acc, res :+ c.toByte)
+        }
+        ._2.decodeUtf8.fold(throw _, identity)
 
   private def stripLeading(s: String, c: Char): String =
     if (s.length > 0 && s.charAt(0) == c) s.substring(1)
