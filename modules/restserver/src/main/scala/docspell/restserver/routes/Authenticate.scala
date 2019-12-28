@@ -26,7 +26,7 @@ object Authenticate {
     val authUser = getUser[F](S.loginSession(cfg))
 
     val onFailure: AuthedRoutes[String, F] =
-      Kleisli(req => OptionT.liftF(Forbidden(req.authInfo)))
+      Kleisli(req => OptionT.liftF(Forbidden(req.context)))
 
     val middleware: AuthMiddleware[F, AuthToken] =
       AuthMiddleware(authUser, onFailure)
@@ -41,12 +41,12 @@ object Authenticate {
     val authUser = getUser[F](S.loginSession(cfg))
 
     val onFailure: AuthedRoutes[String, F] =
-      Kleisli(req => OptionT.liftF(Forbidden(req.authInfo)))
+      Kleisli(req => OptionT.liftF(Forbidden(req.context)))
 
     val middleware: AuthMiddleware[F, AuthToken] =
       AuthMiddleware(authUser, onFailure)
 
-    middleware(AuthedRoutes(authReq => f(authReq.authInfo).run(authReq.req)))
+    middleware(AuthedRoutes(authReq => f(authReq.context).run(authReq.req)))
   }
 
   private def getUser[F[_]: Effect](auth: String => F[Login.Result]): Kleisli[F, Request[F], Either[String, AuthToken]] =

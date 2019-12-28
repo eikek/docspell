@@ -1,4 +1,3 @@
-
 CREATE TABLE "filemeta" (
   "id" varchar(254) not null primary key,
   "timestamp" varchar(40) not null,

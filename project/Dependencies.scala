@@ -6,26 +6,24 @@ object Dependencies {
 
   val BcryptVersion = "0.4"
   val BetterMonadicForVersion = "0.3.1"
-  val BitpeaceVersion = "0.4.0"
+  val BitpeaceVersion = "0.4.1"
   val CirceVersion = "0.12.3"
-  val DoobieVersion = "0.8.6"
+  val DoobieVersion = "0.8.7"
   val FastparseVersion = "2.1.3"
-  val FlywayVersion = "6.0.8"
+  val FlywayVersion = "6.1.3"
   val Fs2Version = "2.1.0"
   val H2Version = "1.4.200"
-  val Http4sVersion = "0.21.0-M5"
+  val Http4sVersion = "0.21.0-M6"
   val KindProjectorVersion = "0.10.3"
   val Log4sVersion = "1.8.2"
   val LogbackVersion = "1.2.3"
-  val MariaDbVersion = "2.5.1"
+  val MariaDbVersion = "2.5.2"
   val MiniTestVersion = "2.7.0"
-  val PostgresVersion = "42.2.8"
-  val PureConfigVersion = "0.12.1"
-  val SqliteVersion = "3.28.0"
+  val PostgresVersion = "42.2.9"
+  val PureConfigVersion = "0.12.2"
+  val SqliteVersion = "3.30.1"
   val StanfordNlpVersion = "3.9.2"
-  val TikaVersion = "1.22"
-  val javaxMailVersion = "1.6.2"
-  val dnsJavaVersion = "2.1.9"
+  val TikaVersion = "1.23"
   val YamuscaVersion = "0.6.1"
 
   val stanfordNlpCore = Seq(
@@ -130,12 +128,6 @@ object Dependencies {
     "org.flywaydb" % "flyway-core" % FlywayVersion
   )
 
-  val javaxMail = Seq(
-    "javax.mail" % "javax.mail-api" % javaxMailVersion,
-    "com.sun.mail" % "javax.mail" % javaxMailVersion,
-    "dnsjava" % "dnsjava" % dnsJavaVersion intransitive()
-  )
-
   val yamusca = Seq(
     "com.github.eikek" %% "yamusca-core" % YamuscaVersion
   )
@@ -151,7 +143,7 @@ object Dependencies {
   val betterMonadicFor = "com.olegpy" %% "better-monadic-for" % BetterMonadicForVersion
 
   val webjars = Seq(
-    "swagger-ui" -> "3.24.0",
+    "swagger-ui" -> "3.24.3",
     "Semantic-UI" -> "2.4.1",
     "jquery" -> "3.4.1"
   ).map({case (a, v) => "org.webjars" % a % v })
