@@ -3,6 +3,7 @@ import scala.sys.process._
 import com.typesafe.sbt.SbtGit.GitKeys._
 import docspell.build._
 
+
 val elmCompileMode = settingKey[ElmCompileMode]("How to compile elm sources")
 
 val sharedSettings = Seq(
@@ -282,14 +283,11 @@ val restserver = project.in(file("modules/restserver")).
 
 val microsite = project.in(file("modules/microsite")).
   enablePlugins(MicrositesPlugin).
+  disablePlugins(ReleasePlugin).
   settings(sharedSettings).
   settings(
     name := "docspell-microsite",
     publishArtifact := false,
-    scalacOptions -= "-Yno-imports",
-    scalacOptions ~= { _ filterNot (_ startsWith "-Ywarn") },
-    scalacOptions ~= { _ filterNot (_ startsWith "-Xlint") },
-    scalaVersion := "2.12.10",
     skip in publish := true,
     micrositeFooterText := Some(
       """
@@ -297,27 +295,24 @@ val microsite = project.in(file("modules/microsite")).
         |""".stripMargin
     ),
     micrositeName := "Docspell",
-    micrositeDescription := "Docspell – A Document Organizer",
+    micrositeDescription := "A (PDF) Document Organizer",
+    micrositeDocumentationUrl := "/docspell/getit.html",
+    micrositeDocumentationLabelDescription := "Download",
+    micrositeFavicons := Seq(microsites.MicrositeFavicon("favicon.png", "96x96")),
     micrositeBaseUrl := "/docspell",
     micrositeAuthor := "eikek",
     micrositeGithubOwner := "eikek",
     micrositeGithubRepo := "docspell",
     micrositeGitterChannel := false,
-    micrositeFavicons := Seq(microsites.MicrositeFavicon("favicon.png", "96x96")),
     micrositeShareOnSocial := false,
     micrositeHighlightLanguages ++= Seq("json", "javascript"),
-    micrositePalette := Map(
-      "brand-primary"     -> "#5d000a", // link color
-      "brand-secondary"   -> "#172651", //sidebar background
-      "brand-tertiary"    -> "#495680", //main brand background
-      "gray-dark"         -> "#050913", //header font color
-      "gray"              -> "#131f43", //font color
-      "gray-light"        -> "#E3E2E3",
-      "gray-lighter"      -> "#f8fbff", //body background
-      "white-color"       -> "#FFFFFF"),
-    fork in tut := true,
-    scalacOptions in Tut ~= (_.filterNot(Set("-Ywarn-unused-import", "-Ywarn-dead-code", "-Werror"))),
-    resourceGenerators in Tut += Def.task {
+    micrositeEditButton := Some(microsites.MicrositeEditButton("Improve this page", "/edit/master/modules/microsite/docs/{{ page.path }}")),
+    fork in run := true,
+    micrositeCompilingDocsTool := WithMdoc,
+    mdocVariables := Map(
+      "VERSION" -> version.value
+    ),
+    Compile/resourceGenerators += Def.task {
       val conf1 = (resourceDirectory in (restserver, Compile)).value / "reference.conf"
       val conf2 = (resourceDirectory in (joex, Compile)).value / "reference.conf"      
       val out1 = resourceManaged.value/"main"/"jekyll"/"_includes"/"server.conf"
@@ -334,14 +329,12 @@ val microsite = project.in(file("modules/microsite")).
       IO.copy(Seq(oa1 -> oaout))
       Seq(out1, out2, oaout)
     }.taskValue,
-    resourceGenerators in Tut += Def.task {
+    Compile/resourceGenerators += Def.task {
       val staticDoc = (restapi/Compile/openapiStaticDoc).value
       val target = resourceManaged.value/"main"/"jekyll"/"openapi"/"docspell-openapi.html"
       IO.copy(Seq(staticDoc -> target))
       Seq(target)
-    }.taskValue,
-    micrositeCompilingDocsTool := WithTut //WithMdoc
-//    mdocIn                     := sourceDirectory.value / "main" / "tut"
+    }.taskValue
   )
 
 val root = project.in(file(".")).
@@ -357,8 +350,7 @@ val root = project.in(file(".")).
     , backend
     , webapp
     , restapi
-    , restserver
-    , microsite)
+    , restserver)
 
 
 

@@ -1,12 +1,9 @@
 ---
-layout: home
-position: 1
-section: home
-title: Home
-technologies:
- - first: ["Scala + Elm", "Backend is in Scala with Cats/Fs2, Webapp in Elm"]
- - second: ["Unpaper + Tesseract", "Text is extracted using OCR provided by tesseract"]
- - third: ["Stanford NLP", "Documents are analyzed using Stanford NLP classifiers"]
+layout: homeFeatures
+features:
+ - first: ["Stow documents away", "Most of the time documents (emails, postal mail) are received or created. It should be fast to stow them away, knowing that they can be found if necessary."]
+ - second: ["Semi-Automatic Tagging", "Documents are analyzed and tagged automatically. “Semi–”, because it may not always be correct; results can be reviewed and corrected."]
+ - third: ["Find them", "If there is a document needed, you can search for it. Usually, restricting to a date range and a correspondent will result in only a few documents to sift through. Alternatively, you can add your own tags, names etc to better match your workflow."]
 ---
 
 # A Document Organizer

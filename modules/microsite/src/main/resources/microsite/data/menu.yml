@@ -2,7 +2,10 @@ options:
   - title: Home
     url: index.html
 
-  - title: Getit
+  - title: Demo
+    url: demo.html
+
+  - title: Quickstart
     url: getit.html
 
   - title: Documentation

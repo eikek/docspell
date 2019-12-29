@@ -99,7 +99,7 @@ span.small-info {
 .login-layout .login-view, .register-layout .register-view, .newinvite-view {
     background: #fff;
     position: relative;
-    top: 20vh;
+    top: 2vh;
 }
 
 .invisible {

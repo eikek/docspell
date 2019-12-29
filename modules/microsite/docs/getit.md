@@ -1,12 +1,6 @@
 ---
-layout: home
-position: 3
-section: quickstart
+layout: docs
 title: Quickstart
-technologies:
- - first: ["Scala + Elm", "Backend is in Scala with Cats/Fs2, Webapp in Elm"]
- - second: ["Unpaper + Tesseract", "Text is extracted using OCR provided by tesseract"]
- - third: ["Stanford NLP", "Documents are analyzed using Stanford NLP classifiers"]
 ---
 
 ## Download
