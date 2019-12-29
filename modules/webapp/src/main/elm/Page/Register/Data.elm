@@ -1,23 +1,29 @@
-module Page.Register.Data exposing (..)
+module Page.Register.Data exposing
+    ( Model
+    , Msg(..)
+    , emptyModel
+    )
 
-import Http
 import Api.Model.BasicResult exposing (BasicResult)
+import Http
+
 
 type alias Model =
-    { result: Maybe BasicResult
-    , collId: String
-    , login: String
-    , pass1: String
-    , pass2: String
-    , showPass1: Bool
-    , showPass2: Bool
-    , errorMsg: List String
-    , loading: Bool
-    , successMsg: String
-    , invite: Maybe String
+    { result : Maybe BasicResult
+    , collId : String
+    , login : String
+    , pass1 : String
+    , pass2 : String
+    , showPass1 : Bool
+    , showPass2 : Bool
+    , errorMsg : List String
+    , loading : Bool
+    , successMsg : String
+    , invite : Maybe String
     }
 
-emptyModel: Model
+
+emptyModel : Model
 emptyModel =
     { result = Nothing
     , collId = ""
@@ -31,6 +37,7 @@ emptyModel =
     , loading = False
     , invite = Nothing
     }
+
 
 type Msg
     = SetCollId String

@@ -1,4 +1,10 @@
-module Data.ContactType exposing (..)
+module Data.ContactType exposing
+    ( ContactType(..)
+    , all
+    , fromString
+    , toString
+    )
+
 
 type ContactType
     = Phone
@@ -9,28 +15,54 @@ type ContactType
     | Website
 
 
-fromString: String -> Maybe ContactType
+fromString : String -> Maybe ContactType
 fromString str =
     case String.toLower str of
-        "phone" -> Just Phone
-        "mobile" -> Just Mobile
-        "fax" -> Just Fax
-        "email" -> Just Email
-        "docspell" -> Just Docspell
-        "website" -> Just Website
-        _ -> Nothing
+        "phone" ->
+            Just Phone
 
-toString: ContactType -> String
+        "mobile" ->
+            Just Mobile
+
+        "fax" ->
+            Just Fax
+
+        "email" ->
+            Just Email
+
+        "docspell" ->
+            Just Docspell
+
+        "website" ->
+            Just Website
+
+        _ ->
+            Nothing
+
+
+toString : ContactType -> String
 toString ct =
     case ct of
-        Phone -> "Phone"
-        Mobile -> "Mobile"
-        Fax -> "Fax"
-        Email -> "Email"
-        Docspell -> "Docspell"
-        Website -> "Website"
+        Phone ->
+            "Phone"
 
-all: List ContactType
+        Mobile ->
+            "Mobile"
+
+        Fax ->
+            "Fax"
+
+        Email ->
+            "Email"
+
+        Docspell ->
+            "Docspell"
+
+        Website ->
+            "Website"
+
+
+all : List ContactType
 all =
     [ Mobile
     , Phone

@@ -1,24 +1,25 @@
-module Page exposing ( Page(..)
-                     , href
-                     , goto
-                     , pageToString
-                     , pageFromString
-                     , pageName
-                     , loginPage
-                     , loginPageReferrer
-                     , uploadId
-                     , fromUrl
-                     , isSecured
-                     , isOpen
-                     )
+module Page exposing
+    ( Page(..)
+    , fromUrl
+    , goto
+    , href
+    , isOpen
+    , isSecured
+    , loginPage
+    , loginPageReferrer
+    , pageFromString
+    , pageName
+    , pageToString
+    , uploadId
+    )
 
-import Url exposing (Url)
-import Url.Parser as Parser exposing ((</>), (<?>), Parser, oneOf, s, string)
-import Url.Parser.Query as Query
+import Browser.Navigation as Nav
 import Html exposing (Attribute)
 import Html.Attributes as Attr
-import Browser.Navigation as Nav
+import Url exposing (Url)
+import Url.Parser as Parser exposing ((</>), Parser, oneOf, s, string)
 import Util.Maybe
+
 
 type Page
     = HomePage
@@ -32,108 +33,178 @@ type Page
     | NewInvitePage
 
 
-isSecured: Page -> Bool
+isSecured : Page -> Bool
 isSecured page =
     case page of
-        HomePage -> True
-        LoginPage _ -> False
-        ManageDataPage -> True
-        CollectiveSettingPage -> True
-        UserSettingPage -> True
-        QueuePage -> True
-        RegisterPage -> False
-        NewInvitePage -> False
+        HomePage ->
+            True
+
+        LoginPage _ ->
+            False
+
+        ManageDataPage ->
+            True
+
+        CollectiveSettingPage ->
+            True
+
+        UserSettingPage ->
+            True
+
+        QueuePage ->
+            True
+
+        RegisterPage ->
+            False
+
+        NewInvitePage ->
+            False
+
         UploadPage arg ->
             Util.Maybe.isEmpty arg
 
-isOpen: Page -> Bool
+
+isOpen : Page -> Bool
 isOpen page =
     not (isSecured page)
 
-loginPage: Page -> Page
+
+loginPage : Page -> Page
 loginPage p =
     case p of
-        LoginPage _ -> LoginPage Nothing
-        _ -> LoginPage (Just (pageToString p |> String.dropLeft 2))
+        LoginPage _ ->
+            LoginPage Nothing
+
+        _ ->
+            LoginPage (Just (pageToString p |> String.dropLeft 2))
 
 
-pageName: Page -> String
+pageName : Page -> String
 pageName page =
     case page of
-        HomePage -> "Home"
-        LoginPage _ -> "Login"
-        ManageDataPage -> "Manage Data"
-        CollectiveSettingPage -> "Collective Settings"
-        UserSettingPage -> "User Settings"
-        QueuePage -> "Processing"
-        RegisterPage -> "Register"
-        NewInvitePage -> "New Invite"
+        HomePage ->
+            "Home"
+
+        LoginPage _ ->
+            "Login"
+
+        ManageDataPage ->
+            "Manage Data"
+
+        CollectiveSettingPage ->
+            "Collective Settings"
+
+        UserSettingPage ->
+            "User Settings"
+
+        QueuePage ->
+            "Processing"
+
+        RegisterPage ->
+            "Register"
+
+        NewInvitePage ->
+            "New Invite"
+
         UploadPage arg ->
             case arg of
-                Just _ -> "Anonymous Upload"
-                Nothing -> "Upload"
+                Just _ ->
+                    "Anonymous Upload"
 
-loginPageReferrer: Page -> Maybe Page
+                Nothing ->
+                    "Upload"
+
+
+loginPageReferrer : Page -> Maybe Page
 loginPageReferrer page =
     case page of
-        LoginPage r -> Maybe.andThen pageFromString r
-        _ -> Nothing
+        LoginPage r ->
+            Maybe.andThen pageFromString r
 
-uploadId: Page -> Maybe String
+        _ ->
+            Nothing
+
+
+uploadId : Page -> Maybe String
 uploadId page =
     case page of
-        UploadPage id -> id
-        _ -> Nothing
+        UploadPage id ->
+            id
 
-pageToString: Page -> String
+        _ ->
+            Nothing
+
+
+pageToString : Page -> String
 pageToString page =
     case page of
-        HomePage -> "#/home"
+        HomePage ->
+            "#/home"
+
         LoginPage referer ->
             Maybe.map (\p -> "/" ++ p) referer
                 |> Maybe.withDefault ""
                 |> (++) "#/login"
-        ManageDataPage -> "#/manageData"
-        CollectiveSettingPage -> "#/collectiveSettings"
-        UserSettingPage -> "#/userSettings"
-        QueuePage -> "#/queue"
-        RegisterPage -> "#/register"
+
+        ManageDataPage ->
+            "#/manageData"
+
+        CollectiveSettingPage ->
+            "#/collectiveSettings"
+
+        UserSettingPage ->
+            "#/userSettings"
+
+        QueuePage ->
+            "#/queue"
+
+        RegisterPage ->
+            "#/register"
+
         UploadPage sourceId ->
             Maybe.map (\id -> "/" ++ id) sourceId
                 |> Maybe.withDefault ""
                 |> (++) "#/upload"
-        NewInvitePage -> "#/newinvite"
 
-pageFromString: String -> Maybe Page
+        NewInvitePage ->
+            "#/newinvite"
+
+
+pageFromString : String -> Maybe Page
 pageFromString str =
     let
-        url = Url.Url Url.Http "" Nothing str Nothing Nothing
+        url =
+            Url.Url Url.Http "" Nothing str Nothing Nothing
     in
-        Parser.parse parser url
+    Parser.parse parser url
 
-href: Page -> Attribute msg
+
+href : Page -> Attribute msg
 href page =
     Attr.href (pageToString page)
 
-goto: Page -> Cmd msg
+
+goto : Page -> Cmd msg
 goto page =
     Nav.load (pageToString page)
 
-parser: Parser (Page -> a) a
+
+parser : Parser (Page -> a) a
 parser =
     oneOf
-    [ Parser.map HomePage (oneOf [s"", s "home"])
-    , Parser.map (\s -> LoginPage (Just s)) (s "login" </> string)
-    , Parser.map (LoginPage Nothing) (s "login")
-    , Parser.map ManageDataPage (s "manageData")
-    , Parser.map CollectiveSettingPage (s "collectiveSettings")
-    , Parser.map UserSettingPage (s "userSettings")
-    , Parser.map QueuePage (s "queue")
-    , Parser.map RegisterPage (s "register")
-    , Parser.map (\s -> UploadPage (Just s)) (s "upload" </> string)
-    , Parser.map (UploadPage Nothing) (s "upload")
-    , Parser.map NewInvitePage (s "newinvite")
-    ]
+        [ Parser.map HomePage (oneOf [ s "", s "home" ])
+        , Parser.map (\s -> LoginPage (Just s)) (s "login" </> string)
+        , Parser.map (LoginPage Nothing) (s "login")
+        , Parser.map ManageDataPage (s "manageData")
+        , Parser.map CollectiveSettingPage (s "collectiveSettings")
+        , Parser.map UserSettingPage (s "userSettings")
+        , Parser.map QueuePage (s "queue")
+        , Parser.map RegisterPage (s "register")
+        , Parser.map (\s -> UploadPage (Just s)) (s "upload" </> string)
+        , Parser.map (UploadPage Nothing) (s "upload")
+        , Parser.map NewInvitePage (s "newinvite")
+        ]
+
 
 fromUrl : Url -> Maybe Page
 fromUrl url =

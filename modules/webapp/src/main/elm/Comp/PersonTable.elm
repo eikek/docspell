@@ -1,81 +1,88 @@
-module Comp.PersonTable exposing ( Model
-                              , emptyModel
-                              , Msg(..)
-                              , view
-                              , update)
+module Comp.PersonTable exposing
+    ( Model
+    , Msg(..)
+    , emptyModel
+    , update
+    , view
+    )
 
+import Api.Model.Person exposing (Person)
+import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Data.Flags exposing (Flags)
-import Api.Model.Person exposing (Person)
-import Api.Model.Address exposing (Address)
-import Api.Model.Contact exposing (Contact)
 import Util.Address
 import Util.Contact
 
+
 type alias Model =
-    { equips: List Person
-    , selected: Maybe Person
+    { equips : List Person
+    , selected : Maybe Person
     }
 
-emptyModel: Model
+
+emptyModel : Model
 emptyModel =
     { equips = []
     , selected = Nothing
     }
+
 
 type Msg
     = SetPersons (List Person)
     | Select Person
     | Deselect
 
-update: Flags -> Msg -> Model -> (Model, Cmd Msg)
+
+update : Flags -> Msg -> Model -> ( Model, Cmd Msg )
 update flags msg model =
     case msg of
         SetPersons list ->
-            ({model | equips = list, selected = Nothing }, Cmd.none)
+            ( { model | equips = list, selected = Nothing }, Cmd.none )
 
         Select equip ->
-            ({model | selected = Just equip}, Cmd.none)
+            ( { model | selected = Just equip }, Cmd.none )
 
         Deselect ->
-            ({model | selected = Nothing}, Cmd.none)
+            ( { model | selected = Nothing }, Cmd.none )
 
 
-view: Model -> Html Msg
+view : Model -> Html Msg
 view model =
-    table [class "ui selectable table"]
-        [thead []
-             [tr []
-                  [th [class "collapsing"][text "Name"]
-                  ,th [class "collapsing"][text "Concerning"]
-                  ,th [][text "Address"]
-                  ,th [][text "Contact"]
-                  ]
-             ]
-        ,tbody []
+    table [ class "ui selectable table" ]
+        [ thead []
+            [ tr []
+                [ th [ class "collapsing" ] [ text "Name" ]
+                , th [ class "collapsing" ] [ text "Concerning" ]
+                , th [] [ text "Address" ]
+                , th [] [ text "Contact" ]
+                ]
+            ]
+        , tbody []
             (List.map (renderPersonLine model) model.equips)
         ]
 
-renderPersonLine: Model -> Person -> Html Msg
+
+renderPersonLine : Model -> Person -> Html Msg
 renderPersonLine model person =
-    tr [classList [("active", model.selected == Just person)]
-       ,onClick (Select person)
-       ]
-        [td [class "collapsing"]
-             [text person.name
-             ]
-        ,td [class "collapsing"]
-            [if person.concerning then
-                 i [class "check square outline icon"][]
-             else
-                 i [class "minus square outline icon"][]
+    tr
+        [ classList [ ( "active", model.selected == Just person ) ]
+        , onClick (Select person)
+        ]
+        [ td [ class "collapsing" ]
+            [ text person.name
             ]
-        ,td []
-            [Util.Address.toString person.address |> text
+        , td [ class "collapsing" ]
+            [ if person.concerning then
+                i [ class "check square outline icon" ] []
+
+              else
+                i [ class "minus square outline icon" ] []
             ]
-        ,td []
-            [Util.Contact.toString person.contacts |> text
+        , td []
+            [ Util.Address.toString person.address |> text
+            ]
+        , td []
+            [ Util.Contact.toString person.contacts |> text
             ]
         ]

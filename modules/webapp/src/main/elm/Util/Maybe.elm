@@ -1,23 +1,40 @@
-module Util.Maybe exposing (..)
+module Util.Maybe exposing
+    ( isEmpty
+    , nonEmpty
+    , or
+    , withDefault
+    )
 
-nonEmpty: Maybe a -> Bool
+
+nonEmpty : Maybe a -> Bool
 nonEmpty ma =
-    Maybe.map (\_ -> True) ma
-        |> Maybe.withDefault False
+    not (isEmpty ma)
 
-isEmpty: Maybe a -> Bool
+
+isEmpty : Maybe a -> Bool
 isEmpty ma =
-    not (nonEmpty ma)
+    ma == Nothing
 
-withDefault: Maybe a -> Maybe a -> Maybe a
+
+withDefault : Maybe a -> Maybe a -> Maybe a
 withDefault ma1 ma2 =
-    if isEmpty ma2 then ma1 else ma2
+    if isEmpty ma2 then
+        ma1
 
-or: List (Maybe a) -> Maybe a
+    else
+        ma2
+
+
+or : List (Maybe a) -> Maybe a
 or listma =
     case listma of
-        [] -> Nothing
+        [] ->
+            Nothing
+
         el :: els ->
             case el of
-                Just _ -> el
-                Nothing -> or els
+                Just _ ->
+                    el
+
+                Nothing ->
+                    or els

@@ -1,4 +1,9 @@
-module Util.Time exposing (..)
+module Util.Time exposing
+    ( formatDate
+    , formatDateShort
+    , formatDateTime
+    , formatIsoDateTime
+    )
 
 import DateFormat
 import Time exposing (Posix, Zone, utc)
@@ -16,7 +21,8 @@ dateFormatter =
         , DateFormat.yearNumber
         ]
 
-dateFormatterShort: Zone -> Posix -> String
+
+dateFormatterShort : Zone -> Posix -> String
 dateFormatterShort =
     DateFormat.format
         [ DateFormat.yearNumber
@@ -26,7 +32,8 @@ dateFormatterShort =
         , DateFormat.dayOfMonthFixed
         ]
 
-timeFormatter: Zone -> Posix -> String
+
+timeFormatter : Zone -> Posix -> String
 timeFormatter =
     DateFormat.format
         [ DateFormat.hourMilitaryNumber
@@ -34,7 +41,8 @@ timeFormatter =
         , DateFormat.minuteFixed
         ]
 
-isoDateTimeFormatter: Zone -> Posix -> String
+
+isoDateTimeFormatter : Zone -> Posix -> String
 isoDateTimeFormatter =
     DateFormat.format
         [ DateFormat.yearNumber
@@ -51,37 +59,49 @@ isoDateTimeFormatter =
         ]
 
 
-timeZone: Zone
+timeZone : Zone
 timeZone =
     utc
 
-{- Format millis into "Wed, 10. Jan 2018, 18:57"
--}
-formatDateTime: Int -> String
-formatDateTime millis =
-    (formatDate millis) ++ ", " ++ (formatTime millis)
 
-formatIsoDateTime: Int -> String
+
+{- Format millis into "Wed, 10. Jan 2018, 18:57" -}
+
+
+formatDateTime : Int -> String
+formatDateTime millis =
+    formatDate millis ++ ", " ++ formatTime millis
+
+
+formatIsoDateTime : Int -> String
 formatIsoDateTime millis =
     Time.millisToPosix millis
         |> isoDateTimeFormatter timeZone
 
+
+
 {- Format millis into "18:57". The current time (not the duration of
    the millis).
 -}
-formatTime: Int -> String
+
+
+formatTime : Int -> String
 formatTime millis =
     Time.millisToPosix millis
         |> timeFormatter timeZone
 
-{- Format millis into "Wed, 10. Jan 2018"
--}
-formatDate: Int -> String
+
+
+{- Format millis into "Wed, 10. Jan 2018" -}
+
+
+formatDate : Int -> String
 formatDate millis =
     Time.millisToPosix millis
         |> dateFormatter timeZone
 
-formatDateShort: Int -> String
+
+formatDateShort : Int -> String
 formatDateShort millis =
     Time.millisToPosix millis
         |> dateFormatterShort timeZone

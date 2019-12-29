@@ -5,13 +5,6 @@ var elmApp = Elm.Main.init({
     flags: elmFlags
 });
 
-elmApp.ports.initElements.subscribe(function() {
-//    console.log("Initialsing elements …");
-//    $('.ui.dropdown').dropdown();
-//    $('.ui.checkbox').checkbox();
-//    $('.ui.accordion').accordion();
-});
-
 elmApp.ports.setAccount.subscribe(function(authResult) {
     console.log("Add account from local storage");
     localStorage.setItem("account", JSON.stringify(authResult));

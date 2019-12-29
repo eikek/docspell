@@ -1,28 +1,39 @@
-module Data.Flags exposing (..)
+module Data.Flags exposing
+    ( Config
+    , Flags
+    , getToken
+    , withAccount
+    , withoutAccount
+    )
 
 import Api.Model.AuthResult exposing (AuthResult)
 
+
 type alias Config =
-    { appName: String
-    , baseUrl: String
-    , signupMode: String
-    , docspellAssetPath: String
+    { appName : String
+    , baseUrl : String
+    , signupMode : String
+    , docspellAssetPath : String
     }
+
 
 type alias Flags =
-    { account: Maybe AuthResult
-    , config: Config
+    { account : Maybe AuthResult
+    , config : Config
     }
 
-getToken: Flags -> Maybe String
+
+getToken : Flags -> Maybe String
 getToken flags =
     flags.account
         |> Maybe.andThen (\a -> a.token)
 
-withAccount: Flags -> AuthResult -> Flags
+
+withAccount : Flags -> AuthResult -> Flags
 withAccount flags acc =
     { flags | account = Just acc }
 
-withoutAccount: Flags -> Flags
+
+withoutAccount : Flags -> Flags
 withoutAccount flags =
     { flags | account = Nothing }

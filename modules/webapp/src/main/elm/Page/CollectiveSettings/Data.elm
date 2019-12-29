@@ -1,24 +1,30 @@
-module Page.CollectiveSettings.Data exposing (..)
+module Page.CollectiveSettings.Data exposing
+    ( Model
+    , Msg(..)
+    , Tab(..)
+    , emptyModel
+    )
 
-import Http
-import Comp.SourceManage
-import Comp.UserManage
-import Comp.Settings
-import Data.Language
 import Api.Model.BasicResult exposing (BasicResult)
 import Api.Model.CollectiveSettings exposing (CollectiveSettings)
 import Api.Model.ItemInsights exposing (ItemInsights)
+import Comp.Settings
+import Comp.SourceManage
+import Comp.UserManage
+import Http
+
 
 type alias Model =
-    { currentTab: Maybe Tab
-    , sourceModel: Comp.SourceManage.Model
-    , userModel: Comp.UserManage.Model
-    , settingsModel: Comp.Settings.Model
-    , insights: ItemInsights
-    , submitResult: Maybe BasicResult
+    { currentTab : Maybe Tab
+    , sourceModel : Comp.SourceManage.Model
+    , userModel : Comp.UserManage.Model
+    , settingsModel : Comp.Settings.Model
+    , insights : ItemInsights
+    , submitResult : Maybe BasicResult
     }
 
-emptyModel: Model
+
+emptyModel : Model
 emptyModel =
     { currentTab = Just InsightsTab
     , sourceModel = Comp.SourceManage.emptyModel
@@ -28,11 +34,13 @@ emptyModel =
     , submitResult = Nothing
     }
 
+
 type Tab
     = SourceTab
     | UserTab
     | InsightsTab
     | SettingsTab
+
 
 type Msg
     = SetTab Tab

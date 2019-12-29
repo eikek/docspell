@@ -1,21 +1,28 @@
-module Page.Login.Data exposing (..)
+module Page.Login.Data exposing
+    ( Model
+    , Msg(..)
+    , emptyModel
+    )
 
+import Api.Model.AuthResult exposing (AuthResult)
 import Http
 import Page exposing (Page(..))
-import Api.Model.AuthResult exposing (AuthResult)
+
 
 type alias Model =
-    { username: String
-    , password: String
-    , result: Maybe AuthResult
+    { username : String
+    , password : String
+    , result : Maybe AuthResult
     }
 
-emptyModel: Model
+
+emptyModel : Model
 emptyModel =
     { username = ""
     , password = ""
     , result = Nothing
     }
+
 
 type Msg
     = SetUsername String

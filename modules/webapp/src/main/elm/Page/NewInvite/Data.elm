@@ -1,12 +1,21 @@
-module Page.NewInvite.Data exposing (..)
+module Page.NewInvite.Data exposing
+    ( Model
+    , Msg(..)
+    , State(..)
+    , emptyModel
+    , isFailed
+    , isSuccess
+    )
 
-import Http
 import Api.Model.InviteResult exposing (InviteResult)
+import Http
+
 
 type alias Model =
-    { password: String
-    , result: State
+    { password : String
+    , result : State
     }
+
 
 type State
     = Empty
@@ -14,23 +23,32 @@ type State
     | Success InviteResult
 
 
-isFailed: State -> Bool
+isFailed : State -> Bool
 isFailed state =
     case state of
-        Failed _ -> True
-        _ -> False
+        Failed _ ->
+            True
 
-isSuccess: State -> Bool
+        _ ->
+            False
+
+
+isSuccess : State -> Bool
 isSuccess state =
     case state of
-        Success _ -> True
-        _ -> False
+        Success _ ->
+            True
 
-emptyModel: Model
+        _ ->
+            False
+
+
+emptyModel : Model
 emptyModel =
     { password = ""
     , result = Empty
     }
+
 
 type Msg
     = SetPassword String

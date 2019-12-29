@@ -1,35 +1,53 @@
-module Page.Upload.Data exposing (..)
+module Page.Upload.Data exposing
+    ( Model
+    , Msg(..)
+    , emptyModel
+    , hasErrors
+    , isCompleted
+    , isDone
+    , isError
+    , isIdle
+    , isLoading
+    , isSuccessAll
+    , uploadAllTracker
+    )
 
+import Api.Model.BasicResult exposing (BasicResult)
+import Comp.Dropzone
+import File exposing (File)
 import Http
 import Set exposing (Set)
-import File exposing (File)
-import Api.Model.BasicResult exposing (BasicResult)
 import Util.File exposing (makeFileId)
-import Comp.Dropzone
+
 
 type alias Model =
-    { incoming: Bool
-    , singleItem: Bool
-    , files: List File
-    , completed: Set String
-    , errored: Set String
-    , loading: Set String
-    , dropzone: Comp.Dropzone.Model
+    { incoming : Bool
+    , singleItem : Bool
+    , files : List File
+    , completed : Set String
+    , errored : Set String
+    , loading : Set String
+    , dropzone : Comp.Dropzone.Model
     }
 
-dropzoneSettings: Comp.Dropzone.Settings
+
+dropzoneSettings : Comp.Dropzone.Settings
 dropzoneSettings =
     let
-        ds = Comp.Dropzone.defaultSettings
+        ds =
+            Comp.Dropzone.defaultSettings
     in
-        {ds | classList = (\m -> [("ui attached blue placeholder segment dropzone", True)
-                                 ,("dragging", m.hover)
-                                 ,("disabled", not m.active)
-                                 ])
-        }
+    { ds
+        | classList =
+            \m ->
+                [ ( "ui attached blue placeholder segment dropzone", True )
+                , ( "dragging", m.hover )
+                , ( "disabled", not m.active )
+                ]
+    }
 
 
-emptyModel: Model
+emptyModel : Model
 emptyModel =
     { incoming = True
     , singleItem = False
@@ -39,6 +57,7 @@ emptyModel =
     , loading = Set.empty
     , dropzone = Comp.Dropzone.init dropzoneSettings
     }
+
 
 type Msg
     = SubmitUpload
@@ -50,42 +69,50 @@ type Msg
     | DropzoneMsg Comp.Dropzone.Msg
 
 
-isLoading: Model -> File -> Bool
+isLoading : Model -> File -> Bool
 isLoading model file =
-    Set.member (makeFileId file)model.loading
+    Set.member (makeFileId file) model.loading
 
-isCompleted: Model -> File -> Bool
+
+isCompleted : Model -> File -> Bool
 isCompleted model file =
-    Set.member (makeFileId file)model.completed
+    Set.member (makeFileId file) model.completed
 
-isError: Model -> File -> Bool
+
+isError : Model -> File -> Bool
 isError model file =
     Set.member (makeFileId file) model.errored
 
-isIdle: Model -> File -> Bool
+
+isIdle : Model -> File -> Bool
 isIdle model file =
     not (isLoading model file || isCompleted model file || isError model file)
 
-uploadAllTracker: String
+
+uploadAllTracker : String
 uploadAllTracker =
     "upload-all"
 
-isInitial: Model -> Bool
-isInitial model =
-    Set.isEmpty model.loading &&
-        Set.isEmpty model.completed &&
-        Set.isEmpty model.errored
 
-isDone: Model -> Bool
+isInitial : Model -> Bool
+isInitial model =
+    Set.isEmpty model.loading
+        && Set.isEmpty model.completed
+        && Set.isEmpty model.errored
+
+
+isDone : Model -> Bool
 isDone model =
     List.map makeFileId model.files
         |> List.all (\id -> Set.member id model.completed || Set.member id model.errored)
 
-isSuccessAll: Model -> Bool
+
+isSuccessAll : Model -> Bool
 isSuccessAll model =
     List.map makeFileId model.files
         |> List.all (\id -> Set.member id model.completed)
 
-hasErrors: Model -> Bool
+
+hasErrors : Model -> Bool
 hasErrors model =
     not (Set.isEmpty model.errored)

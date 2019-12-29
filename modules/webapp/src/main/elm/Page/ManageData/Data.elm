@@ -1,19 +1,26 @@
-module Page.ManageData.Data exposing (..)
+module Page.ManageData.Data exposing
+    ( Model
+    , Msg(..)
+    , Tab(..)
+    , emptyModel
+    )
 
-import Comp.TagManage
 import Comp.EquipmentManage
 import Comp.OrgManage
 import Comp.PersonManage
+import Comp.TagManage
+
 
 type alias Model =
-    { currentTab: Maybe Tab
-    , tagManageModel: Comp.TagManage.Model
-    , equipManageModel: Comp.EquipmentManage.Model
-    , orgManageModel: Comp.OrgManage.Model
-    , personManageModel: Comp.PersonManage.Model
+    { currentTab : Maybe Tab
+    , tagManageModel : Comp.TagManage.Model
+    , equipManageModel : Comp.EquipmentManage.Model
+    , orgManageModel : Comp.OrgManage.Model
+    , personManageModel : Comp.PersonManage.Model
     }
 
-emptyModel: Model
+
+emptyModel : Model
 emptyModel =
     { currentTab = Nothing
     , tagManageModel = Comp.TagManage.emptyModel
@@ -22,11 +29,13 @@ emptyModel =
     , personManageModel = Comp.PersonManage.emptyModel
     }
 
+
 type Tab
     = TagTab
     | EquipTab
     | OrgTab
     | PersonTab
+
 
 type Msg
     = SetTab Tab
