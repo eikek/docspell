@@ -3,6 +3,8 @@ import scala.sys.process._
 import com.typesafe.sbt.SbtGit.GitKeys._
 import docspell.build._
 
+val elmCompileMode = settingKey[ElmCompileMode]("How to compile elm sources")
+
 val sharedSettings = Seq(
   organization := "com.github.eikek",
   scalaVersion := "2.13.1",
@@ -31,12 +33,14 @@ val testSettings = Seq(
 )
 
 val elmSettings = Seq(
+  elmCompileMode := ElmCompileMode.Debug,
   Compile/resourceGenerators += Def.task {
     compileElm(streams.value.log
       , (Compile/baseDirectory).value
       , (Compile/resourceManaged).value
       , name.value
-      , version.value)
+      , version.value
+      , elmCompileMode.value)
   }.taskValue,
   watchSources += Watched.WatchSource(
     (Compile/sourceDirectory).value/"elm"
@@ -381,10 +385,11 @@ def copyWebjarResources(src: Seq[File], base: File, artifact: String, version: S
   }
 }
 
-def compileElm(logger: Logger, wd: File, outBase: File, artifact: String, version: String): Seq[File] = {
+def compileElm(logger: Logger, wd: File, outBase: File, artifact: String, version: String, mode: ElmCompileMode): Seq[File] = {
   logger.info("Compile elm files ...")
   val target = outBase/"META-INF"/"resources"/"webjars"/artifact/version/"docspell-app.js"
-  val proc = Process(Seq("elm", "make", "--output", target.toString) ++ Seq(wd/"src"/"main"/"elm"/"Main.elm").map(_.toString), Some(wd))
+  val cmd = Seq("elm", "make") ++ mode.flags ++ Seq("--output", target.toString)
+  val proc = Process(cmd ++ Seq(wd/"src"/"main"/"elm"/"Main.elm").map(_.toString), Some(wd))
   val out = proc.!!
   logger.info(out)
   Seq(target)

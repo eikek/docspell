@@ -1,5 +1,8 @@
 {
     "excludedPaths": [
-        "modules/webapp/target/elm-src"
-    ]
+        "modules/webapp/target/elm-src/"
+    ],
+    "checks" : {
+        "ImportAll": false
+    }
 }
