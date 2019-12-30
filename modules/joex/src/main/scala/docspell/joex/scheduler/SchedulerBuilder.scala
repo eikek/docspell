@@ -7,13 +7,14 @@ import docspell.store.Store
 import docspell.store.queue.JobQueue
 import fs2.concurrent.SignallingRef
 
-case class SchedulerBuilder[F[_]: ConcurrentEffect : ContextShift](
-  config: SchedulerConfig
-    , tasks: JobTaskRegistry[F]
-    , store: Store[F]
-    , blocker: Blocker
-    , queue: Resource[F, JobQueue[F]]
-    , logSink: LogSink[F]) {
+case class SchedulerBuilder[F[_]: ConcurrentEffect: ContextShift](
+    config: SchedulerConfig,
+    tasks: JobTaskRegistry[F],
+    store: Store[F],
+    blocker: Blocker,
+    queue: Resource[F, JobQueue[F]],
+    logSink: LogSink[F]
+) {
 
   def withConfig(cfg: SchedulerConfig): SchedulerBuilder[F] =
     copy(config = cfg)
@@ -33,7 +34,6 @@ case class SchedulerBuilder[F[_]: ConcurrentEffect : ContextShift](
   def withLogSink(sink: LogSink[F]): SchedulerBuilder[F] =
     copy(logSink = sink)
 
-
   def serve: Resource[F, Scheduler[F]] =
     resource.evalMap(sch => ConcurrentEffect[F].start(sch.start.compile.drain).map(_ => sch))
 
@@ -45,22 +45,25 @@ case class SchedulerBuilder[F[_]: ConcurrentEffect : ContextShift](
       perms  <- Resource.liftF(Semaphore(config.poolSize.toLong))
     } yield new SchedulerImpl[F](config, blocker, jq, tasks, store, logSink, state, waiter, perms)
 
-    scheduler.evalTap(_.init).
-      map(s => s: Scheduler[F])
+    scheduler.evalTap(_.init).map(s => s: Scheduler[F])
   }
 
 }
 
 object SchedulerBuilder {
 
-  def apply[F[_]: ConcurrentEffect : ContextShift]( config: SchedulerConfig
-                                                  , blocker: Blocker
-                                                  , store: Store[F]): SchedulerBuilder[F] =
-    new SchedulerBuilder[F](config
-      , JobTaskRegistry.empty[F]
-      , store
-      , blocker
-      , JobQueue(store)
-      , LogSink.db[F](store))
+  def apply[F[_]: ConcurrentEffect: ContextShift](
+      config: SchedulerConfig,
+      blocker: Blocker,
+      store: Store[F]
+  ): SchedulerBuilder[F] =
+    new SchedulerBuilder[F](
+      config,
+      JobTaskRegistry.empty[F],
+      store,
+      blocker,
+      JobQueue(store),
+      LogSink.db[F](store)
+    )
 
 }

@@ -1,5 +1,3 @@
 package docspell.store.impl
 
-
-object Implicits extends DoobieMeta
-  with DoobieSyntax
+object Implicits extends DoobieMeta with DoobieSyntax

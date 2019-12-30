@@ -17,7 +17,6 @@ trait OEquipment[F[_]] {
   def delete(id: Ident, collective: Ident): F[AddResult]
 }
 
-
 object OEquipment {
 
   def apply[F[_]: Effect](store: Store[F]): Resource[F, OEquipment[F]] =
@@ -43,12 +42,10 @@ object OEquipment {
 
       def delete(id: Ident, collective: Ident): F[AddResult] = {
         val io = for {
-          n0  <- RItem.removeConcEquip(collective, id)
-          n1  <- REquipment.delete(id, collective)
+          n0 <- RItem.removeConcEquip(collective, id)
+          n1 <- REquipment.delete(id, collective)
         } yield n0 + n1
-        store.transact(io).
-          attempt.
-          map(AddResult.fromUpdate)
+        store.transact(io).attempt.map(AddResult.fromUpdate)
       }
     })
 }

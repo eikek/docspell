@@ -12,23 +12,26 @@ import org.log4s._
 object QLogin {
   private[this] val logger = getLogger
 
-  case class Data( account: AccountId
-                 , password: Password
-                 , collectiveState: CollectiveState
-                 , userState: UserState)
+  case class Data(
+      account: AccountId,
+      password: Password,
+      collectiveState: CollectiveState,
+      userState: UserState
+  )
 
   def findUser(acc: AccountId): ConnectionIO[Option[Data]] = {
-    val ucid = UC.cid.prefix("u")
-    val login = UC.login.prefix("u")
-    val pass = UC.password.prefix("u")
+    val ucid   = UC.cid.prefix("u")
+    val login  = UC.login.prefix("u")
+    val pass   = UC.password.prefix("u")
     val ustate = UC.state.prefix("u")
     val cstate = CC.state.prefix("c")
-    val ccid = CC.id.prefix("c")
+    val ccid   = CC.id.prefix("c")
 
     val sql = selectSimple(
-      List(ucid,login,pass,cstate,ustate),
+      List(ucid, login, pass, cstate, ustate),
       RUser.table ++ fr"u, " ++ RCollective.table ++ fr"c",
-      and(ucid is ccid, login is acc.user, ucid is acc.collective))
+      and(ucid.is(ccid), login.is(acc.user), ucid.is(acc.collective))
+    )
 
     logger.trace(s"SQL : $sql")
     sql.query[Data].option

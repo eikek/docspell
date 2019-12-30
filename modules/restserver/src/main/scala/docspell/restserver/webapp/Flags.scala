@@ -8,14 +8,21 @@ import docspell.backend.signup.{Config => SignupConfig}
 import yamusca.imports._
 import yamusca.implicits._
 
-case class Flags( appName: String
-                , baseUrl: LenientUri
-                , signupMode: SignupConfig.Mode
-                , docspellAssetPath: String)
+case class Flags(
+    appName: String,
+    baseUrl: LenientUri,
+    signupMode: SignupConfig.Mode,
+    docspellAssetPath: String
+)
 
 object Flags {
   def apply(cfg: Config): Flags =
-    Flags(cfg.appName, cfg.baseUrl, cfg.backend.signup.mode, s"assets/docspell-webapp/${BuildInfo.version}")
+    Flags(
+      cfg.appName,
+      cfg.baseUrl,
+      cfg.backend.signup.mode,
+      s"assets/docspell-webapp/${BuildInfo.version}"
+    )
 
   implicit val jsonEncoder: Encoder[Flags] =
     deriveEncoder[Flags]

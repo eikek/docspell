@@ -22,11 +22,9 @@ object ContactAnnotateSpec extends SimpleTestSuite {
 
     val labels = Contact.annotate(text)
     assertEquals(labels.size, 2)
-    assertEquals(labels(0),
-      NerLabel("john.smith@example.com", NerTag.Email, 25, 47))
+    assertEquals(labels(0), NerLabel("john.smith@example.com", NerTag.Email, 25, 47))
     assertEquals(text.substring(25, 47).toLowerCase, "john.smith@example.com")
-    assertEquals(labels(1),
-      NerLabel("example.com", NerTag.Website, 308, 319))
+    assertEquals(labels(1), NerLabel("example.com", NerTag.Website, 308, 319))
     assertEquals(text.substring(308, 319).toLowerCase, "example.com")
   }
 }

@@ -41,8 +41,6 @@ object OSource {
       }
 
       def delete(id: Ident, collective: Ident): F[AddResult] =
-        store.transact(RSource.delete(id, collective)).
-          attempt.
-          map(AddResult.fromUpdate)
+        store.transact(RSource.delete(id, collective)).attempt.map(AddResult.fromUpdate)
     })
 }

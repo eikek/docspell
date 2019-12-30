@@ -7,20 +7,21 @@ import fs2.Stream
 import scala.concurrent.ExecutionContext
 
 object TestFiles {
-  val blocker = Blocker.liftExecutionContext(ExecutionContext.global)
+  val blocker     = Blocker.liftExecutionContext(ExecutionContext.global)
   implicit val CS = IO.contextShift(ExecutionContext.global)
 
-
   val letterSourceDE: Stream[IO, Byte] =
-    LenientUri.fromJava(getClass.getResource("/letter-de-source.pdf")).
-      readURL[IO](16 * 1024, blocker)
+    LenientUri
+      .fromJava(getClass.getResource("/letter-de-source.pdf"))
+      .readURL[IO](16 * 1024, blocker)
 
   val letterSourceEN: Stream[IO, Byte] =
-    LenientUri.fromJava(getClass.getResource("/letter-en-source.pdf")).
-      readURL[IO](16 * 1024, blocker)
+    LenientUri
+      .fromJava(getClass.getResource("/letter-en-source.pdf"))
+      .readURL[IO](16 * 1024, blocker)
 
-
-  val letterDEText = """Max Mustermann
+  val letterDEText =
+    """Max Mustermann
                |
                |Lilienweg 21
                |
@@ -52,7 +53,8 @@ object TestFiles {
                |Max Mustermann
                |""".stripMargin.trim
 
-  val letterENText = """Derek Jeter
+  val letterENText =
+    """Derek Jeter
                        |
                        |123 Elm Ave.
                        |

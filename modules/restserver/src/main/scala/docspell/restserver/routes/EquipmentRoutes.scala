@@ -15,7 +15,7 @@ import org.http4s.dsl.Http4sDsl
 object EquipmentRoutes {
 
   def apply[F[_]: Effect](backend: BackendApp[F], user: AuthToken): HttpRoutes[F] = {
-    val dsl = new Http4sDsl[F]{}
+    val dsl = new Http4sDsl[F] {}
     import dsl._
 
     HttpRoutes.of {
@@ -36,12 +36,12 @@ object EquipmentRoutes {
       case req @ PUT -> Root =>
         for {
           data  <- req.as[Equipment]
-          equip  = changeEquipment(data, user.account.collective)
+          equip = changeEquipment(data, user.account.collective)
           res   <- backend.equipment.update(equip)
           resp  <- Ok(basicResult(res, "Equipment updated."))
         } yield resp
 
-      case DELETE -> Root / Ident(id)  =>
+      case DELETE -> Root / Ident(id) =>
         for {
           del  <- backend.equipment.delete(id, user.account.collective)
           resp <- Ok(basicResult(del, "Equipment deleted."))

@@ -21,7 +21,7 @@ object Direction {
     str.toLowerCase match {
       case "incoming" => Right(Incoming)
       case "outgoing" => Right(Outgoing)
-      case _ => Left(s"No direction: $str")
+      case _          => Left(s"No direction: $str")
     }
 
   def unsafe(str: String): Direction =

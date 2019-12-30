@@ -13,24 +13,32 @@ import scala.concurrent.ExecutionContext
 import org.log4s._
 
 object OJoex {
-  private [this] val logger = getLogger
+  private[this] val logger = getLogger
 
-  def notifyAll[F[_]: ConcurrentEffect](store: Store[F], clientExecutionContext: ExecutionContext): F[Unit] = {
+  def notifyAll[F[_]: ConcurrentEffect](
+      store: Store[F],
+      clientExecutionContext: ExecutionContext
+  ): F[Unit] =
     for {
       nodes <- store.transact(RNode.findAll(NodeType.Joex))
       _     <- nodes.toList.traverse(notifyJoex[F](clientExecutionContext))
     } yield ()
-  }
 
-  def cancelJob[F[_]: ConcurrentEffect](jobId: Ident, worker: Ident, store: Store[F], clientEc: ExecutionContext): F[Boolean] =
+  def cancelJob[F[_]: ConcurrentEffect](
+      jobId: Ident,
+      worker: Ident,
+      store: Store[F],
+      clientEc: ExecutionContext
+  ): F[Boolean] =
     for {
-      node  <- store.transact(RNode.findById(worker))
+      node   <- store.transact(RNode.findById(worker))
       cancel <- node.traverse(joexCancel(clientEc)(_, jobId))
     } yield cancel.getOrElse(false)
 
-
-  private def joexCancel[F[_]: ConcurrentEffect](ec: ExecutionContext)(node: RNode, job: Ident): F[Boolean] = {
-    val notifyUrl = node.url/"api"/"v1"/"job"/job.id/"cancel"
+  private def joexCancel[F[_]: ConcurrentEffect](
+      ec: ExecutionContext
+  )(node: RNode, job: Ident): F[Boolean] = {
+    val notifyUrl = node.url / "api" / "v1" / "job" / job.id / "cancel"
     BlazeClientBuilder[F](ec).resource.use { client =>
       val req = Request[F](POST, Uri.unsafeFromString(notifyUrl.asString))
       client.expect[String](req).map(_ => true)
@@ -38,7 +46,7 @@ object OJoex {
   }
 
   private def notifyJoex[F[_]: ConcurrentEffect](ec: ExecutionContext)(node: RNode): F[Unit] = {
-    val notifyUrl = node.url/"api"/"v1"/"notify"
+    val notifyUrl = node.url / "api" / "v1" / "notify"
     val execute = BlazeClientBuilder[F](ec).resource.use { client =>
       val req = Request[F](POST, Uri.unsafeFromString(notifyUrl.asString))
       client.expect[String](req).map(_ => ())

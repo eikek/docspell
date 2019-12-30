@@ -11,7 +11,6 @@ object ConfigFile {
   def loadConfig: Config =
     ConfigSource.default.at("docspell.joex").loadOrThrow[Config]
 
-
   object Implicits {
     implicit val countingSchemeReader: ConfigReader[CountingScheme] =
       ConfigReader[String].emap(reason(CountingScheme.readString))

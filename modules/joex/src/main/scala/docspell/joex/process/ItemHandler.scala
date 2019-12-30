@@ -10,14 +10,13 @@ import docspell.text.ocr.{Config => OcrConfig}
 
 object ItemHandler {
   def onCancel[F[_]: Sync: ContextShift]: Task[F, ProcessItemArgs, Unit] =
-    logWarn("Now cancelling. Deleting potentially created data.").
-      flatMap(_ => deleteByFileIds)
+    logWarn("Now cancelling. Deleting potentially created data.").flatMap(_ => deleteByFileIds)
 
   def apply[F[_]: Sync: ContextShift](cfg: OcrConfig): Task[F, ProcessItemArgs, Unit] =
-    CreateItem[F].
-      flatMap(itemStateTask(ItemState.Processing)).
-      flatMap(safeProcess[F](cfg)).
-      map(_ => ())
+    CreateItem[F]
+      .flatMap(itemStateTask(ItemState.Processing))
+      .flatMap(safeProcess[F](cfg))
+      .map(_ => ())
 
   def itemStateTask[F[_]: Sync, A](state: ItemState)(data: ItemData): Task[F, A, ItemData] =
     Task { ctx =>
@@ -26,26 +25,25 @@ object ItemHandler {
 
   def isLastRetry[F[_]: Sync, A](ctx: Context[F, A]): F[Boolean] =
     for {
-      current  <- ctx.store.transact(RJob.getRetries(ctx.jobId))
-      last     = ctx.config.retries == current.getOrElse(0)
+      current <- ctx.store.transact(RJob.getRetries(ctx.jobId))
+      last    = ctx.config.retries == current.getOrElse(0)
     } yield last
 
-
-  def safeProcess[F[_]: Sync: ContextShift](cfg: OcrConfig)(data: ItemData): Task[F, ProcessItemArgs, ItemData] =
+  def safeProcess[F[_]: Sync: ContextShift](
+      cfg: OcrConfig
+  )(data: ItemData): Task[F, ProcessItemArgs, ItemData] =
     Task(isLastRetry[F, ProcessItemArgs] _).flatMap {
       case true =>
-        ProcessItem[F](cfg)(data).
-          attempt.flatMap({
+        ProcessItem[F](cfg)(data).attempt.flatMap({
           case Right(d) =>
             Task.pure(d)
           case Left(ex) =>
-            logWarn[F]("Processing failed on last retry. Creating item but without proposals.").
-              flatMap(_ => itemStateTask(ItemState.Created)(data)).
-              andThen(_ => Sync[F].raiseError(ex))
+            logWarn[F]("Processing failed on last retry. Creating item but without proposals.")
+              .flatMap(_ => itemStateTask(ItemState.Created)(data))
+              .andThen(_ => Sync[F].raiseError(ex))
         })
       case false =>
-        ProcessItem[F](cfg)(data).
-          flatMap(itemStateTask(ItemState.Created))
+        ProcessItem[F](cfg)(data).flatMap(itemStateTask(ItemState.Created))
     }
 
   def deleteByFileIds[F[_]: Sync: ContextShift]: Task[F, ProcessItemArgs, Unit] =

@@ -12,7 +12,7 @@ object ConfigFile {
     ConfigSource.default.at("docspell.server").loadOrThrow[Config]
 
   object Implicits {
-    implicit val  signupModeReader: ConfigReader[SignupConfig.Mode] =
+    implicit val signupModeReader: ConfigReader[SignupConfig.Mode] =
       ConfigReader[String].emap(reason(SignupConfig.Mode.fromString))
   }
 }

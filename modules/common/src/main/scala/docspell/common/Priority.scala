@@ -16,17 +16,15 @@ object Priority {
 
   case object Low extends Priority
 
-
   def fromString(str: String): Either[String, Priority] =
     str.toLowerCase match {
       case "high" => Right(High)
-      case "low" => Right(Low)
-      case _ => Left(s"Invalid priority: $str")
+      case "low"  => Right(Low)
+      case _      => Left(s"Invalid priority: $str")
     }
 
   def unsafe(str: String): Priority =
     fromString(str).fold(sys.error, identity)
-
 
   def fromInt(n: Int): Priority =
     if (n <= toInt(Low)) Low
@@ -34,7 +32,7 @@ object Priority {
 
   def toInt(p: Priority): Int =
     p match {
-      case Low => 0
+      case Low  => 0
       case High => 10
     }
 

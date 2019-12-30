@@ -22,15 +22,19 @@ object UserRoutes {
     HttpRoutes.of {
       case req @ POST -> Root / "changePassword" =>
         for {
-          data   <- req.as[PasswordChange]
-          res    <- backend.collective.changePassword(user.account, data.currentPassword, data.newPassword)
-          resp   <- Ok(basicResult(res))
+          data <- req.as[PasswordChange]
+          res <- backend.collective.changePassword(
+                  user.account,
+                  data.currentPassword,
+                  data.newPassword
+                )
+          resp <- Ok(basicResult(res))
         } yield resp
 
       case GET -> Root =>
         for {
-          all  <- backend.collective.listUser(user.account.collective)
-          res  <- Ok(UserList(all.map(mkUser).toList))
+          all <- backend.collective.listUser(user.account.collective)
+          res <- Ok(UserList(all.map(mkUser).toList))
         } yield res
 
       case req @ POST -> Root =>
@@ -51,7 +55,7 @@ object UserRoutes {
 
       case DELETE -> Root / Ident(id) =>
         for {
-          ar  <- backend.collective.deleteUser(id, user.account.collective)
+          ar   <- backend.collective.deleteUser(id, user.account.collective)
           resp <- Ok(basicResult(ar, "User deleted."))
         } yield resp
     }

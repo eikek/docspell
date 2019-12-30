@@ -19,15 +19,15 @@ object PersonRoutes {
   private[this] val logger = getLogger
 
   def apply[F[_]: Effect](backend: BackendApp[F], user: AuthToken): HttpRoutes[F] = {
-    val dsl = new Http4sDsl[F]{}
+    val dsl = new Http4sDsl[F] {}
     import dsl._
 
     HttpRoutes.of {
-      case GET -> Root :? FullQueryParamMatcher(full)  =>
+      case GET -> Root :? FullQueryParamMatcher(full) =>
         if (full.getOrElse(false)) {
           for {
-            data  <- backend.organization.findAllPerson(user.account)
-            resp  <- Ok(PersonList(data.map(mkPerson).toList))
+            data <- backend.organization.findAllPerson(user.account)
+            resp <- Ok(PersonList(data.map(mkPerson).toList))
           } yield resp
         } else {
           for {
@@ -41,7 +41,7 @@ object PersonRoutes {
           data   <- req.as[Person]
           newPer <- newPerson(data, user.account.collective)
           added  <- backend.organization.addPerson(newPer)
-          resp  <- Ok(basicResult(added, "New person saved."))
+          resp   <- Ok(basicResult(added, "New person saved."))
         } yield resp
 
       case req @ PUT -> Root =>
@@ -52,11 +52,11 @@ object PersonRoutes {
           resp   <- Ok(basicResult(update, "Person updated."))
         } yield resp
 
-      case DELETE -> Root / Ident(id)  =>
+      case DELETE -> Root / Ident(id) =>
         for {
-          _       <- logger.fdebug(s"Deleting person ${id.id}")
-          delOrg  <- backend.organization.deletePerson(id, user.account.collective)
-          resp    <- Ok(basicResult(delOrg, "Person deleted."))
+          _      <- logger.fdebug(s"Deleting person ${id.id}")
+          delOrg <- backend.organization.deletePerson(id, user.account.collective)
+          resp   <- Ok(basicResult(delOrg, "Person deleted."))
         } yield resp
     }
   }

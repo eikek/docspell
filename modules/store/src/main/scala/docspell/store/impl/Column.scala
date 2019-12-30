@@ -24,7 +24,7 @@ case class Column(name: String, ns: String = "", alias: String = "") {
 
   def is[A: Put](ov: Option[A]): Fragment = ov match {
     case Some(v) => f ++ fr" = $v"
-    case None => fr"is null"
+    case None    => fr"is null"
   }
 
   def is(c: Column): Fragment =
@@ -42,7 +42,7 @@ case class Column(name: String, ns: String = "", alias: String = "") {
   def isOrDiscard[A: Put](value: Option[A]): Fragment =
     value match {
       case Some(v) => is(v)
-      case None => Fragment.empty
+      case None    => Fragment.empty
     }
 
   def isOneOf[A: Put](values: Seq[A]): Fragment = {

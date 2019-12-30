@@ -20,11 +20,12 @@ object FlywayMigrate {
     }
 
     logger.info(s"Using migration locations: $locations")
-    val fw = Flyway.configure().
-      cleanDisabled(true).
-      dataSource(jdbc.url.asString, jdbc.user, jdbc.password).
-      locations(locations: _*).
-      load()
+    val fw = Flyway
+      .configure()
+      .cleanDisabled(true)
+      .dataSource(jdbc.url.asString, jdbc.user, jdbc.password)
+      .locations(locations: _*)
+      .load()
 
     fw.repair()
     fw.migrate()

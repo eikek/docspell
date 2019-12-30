@@ -11,8 +11,8 @@ sealed trait LogLevel { self: Product =>
 object LogLevel {
 
   case object Debug extends LogLevel { val toInt = 0 }
-  case object Info extends LogLevel { val toInt = 1 }
-  case object Warn extends LogLevel { val toInt = 2 }
+  case object Info  extends LogLevel { val toInt = 1 }
+  case object Warn  extends LogLevel { val toInt = 2 }
   case object Error extends LogLevel { val toInt = 3 }
 
   def fromInt(n: Int): LogLevel =
@@ -26,12 +26,12 @@ object LogLevel {
 
   def fromString(str: String): Either[String, LogLevel] =
     str.toLowerCase match {
-      case "debug" => Right(Debug)
-      case "info" => Right(Info)
-      case "warn" => Right(Warn)
+      case "debug"   => Right(Debug)
+      case "info"    => Right(Info)
+      case "warn"    => Right(Warn)
       case "warning" => Right(Warn)
-      case "error" => Right(Error)
-      case _ => Left(s"Invalid log-level: $str")
+      case "error"   => Right(Error)
+      case _         => Left(s"Invalid log-level: $str")
     }
 
   def unsafeString(str: String): LogLevel =

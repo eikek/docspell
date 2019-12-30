@@ -6,12 +6,23 @@ import fs2.Stream
 
 object TextExtract {
 
-  def extract[F[_]: Sync: ContextShift](in: Stream[F, Byte], blocker: Blocker, lang: String, config: Config): Stream[F, String] =
+  def extract[F[_]: Sync: ContextShift](
+      in: Stream[F, Byte],
+      blocker: Blocker,
+      lang: String,
+      config: Config
+  ): Stream[F, String] =
     extractOCR(in, blocker, lang, config)
 
-  def extractOCR[F[_]: Sync: ContextShift](in: Stream[F, Byte], blocker: Blocker, lang: String, config: Config): Stream[F, String] =
-    Stream.eval(TikaMimetype.detect(in)).
-      flatMap({
+  def extractOCR[F[_]: Sync: ContextShift](
+      in: Stream[F, Byte],
+      blocker: Blocker,
+      lang: String,
+      config: Config
+  ): Stream[F, String] =
+    Stream
+      .eval(TikaMimetype.detect(in))
+      .flatMap({
         case mt if !config.isAllowed(mt) =>
           raiseError(s"File `$mt` not allowed")
 

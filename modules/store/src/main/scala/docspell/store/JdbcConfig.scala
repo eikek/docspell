@@ -2,10 +2,7 @@ package docspell.store
 
 import docspell.common.LenientUri
 
-case class JdbcConfig(url: LenientUri
-  , user: String
-  , password: String
-) {
+case class JdbcConfig(url: LenientUri, user: String, password: String) {
 
   val dbmsName: Option[String] =
     JdbcConfig.extractDbmsName(url)

@@ -2,6 +2,4 @@ package docspell.common
 
 import java.time.LocalDate
 
-case class NerDateLabel(date: LocalDate, label: NerLabel) {
-
-}
+case class NerDateLabel(date: LocalDate, label: NerLabel) {}

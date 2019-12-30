@@ -22,8 +22,8 @@ object SourceRoutes {
     HttpRoutes.of {
       case GET -> Root =>
         for {
-          all  <- backend.source.findAll(user.account)
-          res  <- Ok(SourceList(all.map(mkSource).toList))
+          all <- backend.source.findAll(user.account)
+          res <- Ok(SourceList(all.map(mkSource).toList))
         } yield res
 
       case req @ POST -> Root =>
@@ -37,12 +37,12 @@ object SourceRoutes {
       case req @ PUT -> Root =>
         for {
           data    <- req.as[Source]
-          src     =  changeSource(data, user.account.collective)
+          src     = changeSource(data, user.account.collective)
           updated <- backend.source.update(src)
           resp    <- Ok(basicResult(updated, "Source updated."))
         } yield resp
 
-      case DELETE -> Root / Ident(id)  =>
+      case DELETE -> Root / Ident(id) =>
         for {
           del  <- backend.source.delete(id, user.account.collective)
           resp <- Ok(basicResult(del, "Source deleted."))

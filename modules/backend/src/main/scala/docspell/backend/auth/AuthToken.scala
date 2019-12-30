@@ -50,14 +50,13 @@ object AuthToken {
         Left("Invalid authenticator")
     }
 
-  def user[F[_]: Sync](accountId: AccountId, key: ByteVector): F[AuthToken] = {
+  def user[F[_]: Sync](accountId: AccountId, key: ByteVector): F[AuthToken] =
     for {
       salt   <- Common.genSaltString[F]
       millis = Instant.now.toEpochMilli
-      cd = AuthToken(millis, accountId, salt, "")
-      sig = sign(cd, key)
+      cd     = AuthToken(millis, accountId, salt, "")
+      sig    = sign(cd, key)
     } yield cd.copy(sig = sig)
-  }
 
   private def sign(cd: AuthToken, key: ByteVector): String = {
     val raw = cd.millis.toString + cd.account.asString + cd.salt

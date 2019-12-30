@@ -26,9 +26,14 @@ object UploadRoutes {
       case req @ POST -> Root / "item" =>
         for {
           multipart <- req.as[Multipart[F]]
-          updata    <- readMultipart(multipart, logger, Priority.High, cfg.backend.files.validMimeTypes)
-          result    <- backend.upload.submit(updata, user.account)
-          res  <- Ok(basicResult(result))
+          updata <- readMultipart(
+                     multipart,
+                     logger,
+                     Priority.High,
+                     cfg.backend.files.validMimeTypes
+                   )
+          result <- backend.upload.submit(updata, user.account)
+          res    <- Ok(basicResult(result))
         } yield res
 
     }
@@ -39,12 +44,12 @@ object UploadRoutes {
     import dsl._
 
     HttpRoutes.of {
-      case req @ POST -> Root / "item" / Ident(id)=>
+      case req @ POST -> Root / "item" / Ident(id) =>
         for {
           multipart <- req.as[Multipart[F]]
           updata    <- readMultipart(multipart, logger, Priority.Low, cfg.backend.files.validMimeTypes)
           result    <- backend.upload.submit(updata, id)
-          res  <- Ok(basicResult(result))
+          res       <- Ok(basicResult(result))
         } yield res
     }
   }

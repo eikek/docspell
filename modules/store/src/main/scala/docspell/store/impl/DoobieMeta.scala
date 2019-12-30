@@ -21,7 +21,9 @@ trait DoobieMeta {
   })
 
   def jsonMeta[A](implicit d: Decoder[A], e: Encoder[A]): Meta[A] =
-    Meta[String].imap(str => str.parseJsonAs[A].fold(ex => throw ex, identity))(a => e.apply(a).noSpaces)
+    Meta[String].imap(str => str.parseJsonAs[A].fold(ex => throw ex, identity))(a =>
+      e.apply(a).noSpaces
+    )
 
   implicit val metaCollectiveState: Meta[CollectiveState] =
     Meta[String].imap(CollectiveState.unsafe)(CollectiveState.asString)
@@ -45,7 +47,9 @@ trait DoobieMeta {
     Meta[String].imap(JobState.unsafe)(_.name)
 
   implicit val metaDirection: Meta[Direction] =
-    Meta[Boolean].imap(flag => if (flag) Direction.Incoming: Direction else Direction.Outgoing: Direction)(d => Direction.isIncoming(d))
+    Meta[Boolean].imap(flag =>
+      if (flag) Direction.Incoming: Direction else Direction.Outgoing: Direction
+    )(d => Direction.isIncoming(d))
 
   implicit val metaPriority: Meta[Priority] =
     Meta[Int].imap(Priority.fromInt)(Priority.toInt)

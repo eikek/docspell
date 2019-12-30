@@ -14,10 +14,12 @@ object Main extends IOApp {
   private[this] val logger = getLogger
 
   val blockingEc: ExecutionContext = ExecutionContext.fromExecutor(
-    Executors.newCachedThreadPool(ThreadFactories.ofName("docspell-joex-blocking")))
+    Executors.newCachedThreadPool(ThreadFactories.ofName("docspell-joex-blocking"))
+  )
   val blocker = Blocker.liftExecutionContext(blockingEc)
   val connectEC: ExecutionContext = ExecutionContext.fromExecutorService(
-    Executors.newFixedThreadPool(5, ThreadFactories.ofName("docspell-joex-dbconnect")))
+    Executors.newFixedThreadPool(5, ThreadFactories.ofName("docspell-joex-dbconnect"))
+  )
 
   def run(args: List[String]) = {
     args match {
@@ -40,12 +42,15 @@ object Main extends IOApp {
     }
 
     val cfg = ConfigFile.loadConfig
-    val banner = Banner("JOEX"
-      , BuildInfo.version
-      , BuildInfo.gitHeadCommit
-      , cfg.jdbc.url
-      , Option(System.getProperty("config.file"))
-      , cfg.appId, cfg.baseUrl)
+    val banner = Banner(
+      "JOEX",
+      BuildInfo.version,
+      BuildInfo.gitHeadCommit,
+      cfg.jdbc.url,
+      Option(System.getProperty("config.file")),
+      cfg.appId,
+      cfg.baseUrl
+    )
     logger.info(s"\n${banner.render("***>")}")
     JoexServer.stream[IO](cfg, connectEC, blocker).compile.drain.as(ExitCode.Success)
   }

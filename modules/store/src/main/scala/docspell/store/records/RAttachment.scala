@@ -7,50 +7,59 @@ import docspell.common._
 import docspell.store.impl._
 import docspell.store.impl.Implicits._
 
-case class RAttachment( id: Ident
-                      , itemId: Ident
-                      , fileId: Ident
-                      , position: Int
-                      , created: Timestamp
-                      , name: Option[String]) {
-
-}
+case class RAttachment(
+    id: Ident,
+    itemId: Ident,
+    fileId: Ident,
+    position: Int,
+    created: Timestamp,
+    name: Option[String]
+) {}
 
 object RAttachment {
 
   val table = fr"attachment"
 
   object Columns {
-    val id = Column("attachid")
-    val itemId = Column("itemid")
-    val fileId = Column("filemetaid")
+    val id       = Column("attachid")
+    val itemId   = Column("itemid")
+    val fileId   = Column("filemetaid")
     val position = Column("position")
-    val created = Column("created")
-    val name = Column("name")
-    val all = List(id, itemId, fileId, position, created, name)
+    val created  = Column("created")
+    val name     = Column("name")
+    val all      = List(id, itemId, fileId, position, created, name)
   }
   import Columns._
 
   def insert(v: RAttachment): ConnectionIO[Int] =
-    insertRow(table, all, fr"${v.id},${v.itemId},${v.fileId.id},${v.position},${v.created},${v.name}").update.run
+    insertRow(
+      table,
+      all,
+      fr"${v.id},${v.itemId},${v.fileId.id},${v.position},${v.created},${v.name}"
+    ).update.run
 
   def findById(attachId: Ident): ConnectionIO[Option[RAttachment]] =
-    selectSimple(all, table, id is attachId).query[RAttachment].option
+    selectSimple(all, table, id.is(attachId)).query[RAttachment].option
 
-  def findByIdAndCollective(attachId: Ident, collective: Ident): ConnectionIO[Option[RAttachment]] = {
-    selectSimple(all.map(_.prefix("a")), table ++ fr"a," ++ RItem.table ++ fr"i", and(
-      fr"a.itemid = i.itemid",
-      id.prefix("a") is attachId,
-      RItem.Columns.cid.prefix("i") is collective
-    )).query[RAttachment].option
-  }
+  def findByIdAndCollective(attachId: Ident, collective: Ident): ConnectionIO[Option[RAttachment]] =
+    selectSimple(
+      all.map(_.prefix("a")),
+      table ++ fr"a," ++ RItem.table ++ fr"i",
+      and(
+        fr"a.itemid = i.itemid",
+        id.prefix("a").is(attachId),
+        RItem.Columns.cid.prefix("i").is(collective)
+      )
+    ).query[RAttachment].option
 
   def findByItem(id: Ident): ConnectionIO[Vector[RAttachment]] =
-    selectSimple(all, table, itemId is id).query[RAttachment].to[Vector]
+    selectSimple(all, table, itemId.is(id)).query[RAttachment].to[Vector]
 
   def findByItemAndCollective(id: Ident, coll: Ident): ConnectionIO[Vector[RAttachment]] = {
     val q = selectSimple(all.map(_.prefix("a")), table ++ fr"a", Fragment.empty) ++
-      fr"INNER JOIN" ++ RItem.table ++ fr"i ON" ++ RItem.Columns.id.prefix("i").is(itemId.prefix("a")) ++
+      fr"INNER JOIN" ++ RItem.table ++ fr"i ON" ++ RItem.Columns.id
+      .prefix("i")
+      .is(itemId.prefix("a")) ++
       fr"WHERE" ++ and(itemId.prefix("a").is(id), RItem.Columns.cid.prefix("i").is(coll))
     q.query[RAttachment].to[Vector]
   }
@@ -65,7 +74,7 @@ object RAttachment {
   def delete(attachId: Ident): ConnectionIO[Int] =
     for {
       n0 <- RAttachmentMeta.delete(attachId)
-      n1 <- deleteFrom(table, id is attachId).update.run
+      n1 <- deleteFrom(table, id.is(attachId)).update.run
     } yield n0 + n1
 
 }

@@ -21,22 +21,29 @@ trait JobQueue[F[_]] {
 object JobQueue {
   private[this] val logger = getLogger
 
-  def apply[F[_] : Effect](store: Store[F]): Resource[F, JobQueue[F]] =
+  def apply[F[_]: Effect](store: Store[F]): Resource[F, JobQueue[F]] =
     Resource.pure(new JobQueue[F] {
 
-      def nextJob(prio: Ident => F[Priority], worker: Ident, retryPause: Duration): F[Option[RJob]] =
+      def nextJob(
+          prio: Ident => F[Priority],
+          worker: Ident,
+          retryPause: Duration
+      ): F[Option[RJob]] =
         logger.fdebug("Select next job") *> QJob.takeNextJob(store)(prio, worker, retryPause)
 
       def insert(job: RJob): F[Unit] =
-        store.transact(RJob.insert(job)).
-          flatMap({ n =>
-            if (n != 1) Effect[F].raiseError(new Exception(s"Inserting job failed. Update count: $n"))
+        store
+          .transact(RJob.insert(job))
+          .flatMap({ n =>
+            if (n != 1)
+              Effect[F].raiseError(new Exception(s"Inserting job failed. Update count: $n"))
             else ().pure[F]
           })
 
       def insertAll(jobs: Seq[RJob]): F[Unit] =
-        jobs.toList.traverse(j => insert(j).attempt).
-          map(_.foreach {
+        jobs.toList
+          .traverse(j => insert(j).attempt)
+          .map(_.foreach {
             case Right(()) =>
             case Left(ex) =>
               logger.error(ex)("Could not insert job. Skipping it.")

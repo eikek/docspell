@@ -19,7 +19,9 @@ trait DoobieSyntax {
     commas(fa :: fas.toList)
 
   def and(fs: Seq[Fragment]): Fragment =
-    Fragment.const(" (") ++ fs.filter(f => !isEmpty(f)).reduce(_ ++ Fragment.const(" AND ") ++ _) ++ Fragment.const(") ")
+    Fragment.const(" (") ++ fs
+      .filter(f => !isEmpty(f))
+      .reduce(_ ++ Fragment.const(" AND ") ++ _) ++ Fragment.const(") ")
 
   def and(f0: Fragment, fs: Fragment*): Fragment =
     and(f0 :: fs.toList)
@@ -48,8 +50,9 @@ trait DoobieSyntax {
 
   def insertRows(table: Fragment, cols: List[Column], vals: List[Fragment]): Fragment =
     Fragment.const("INSERT INTO ") ++ table ++ Fragment.const(" (") ++
-      commas(cols.map(_.f)) ++ Fragment.const(") VALUES ") ++ commas(vals.map(f => sql"(" ++ f ++ sql")"))
-
+      commas(cols.map(_.f)) ++ Fragment.const(") VALUES ") ++ commas(
+      vals.map(f => sql"(" ++ f ++ sql")")
+    )
 
   def selectSimple(cols: Seq[Column], table: Fragment, where: Fragment): Fragment =
     selectSimple(commas(cols.map(_.f)), table, where)
@@ -62,7 +65,6 @@ trait DoobieSyntax {
     Fragment.const("SELECT DISTINCT(") ++ commas(cols.map(_.f)) ++
       Fragment.const(") FROM ") ++ table ++ this.where(where)
 
-
 //  def selectJoinCollective(cols: Seq[Column], fkCid: Column, table: Fragment, wh: Fragment): Fragment =
 //    selectSimple(cols.map(_.prefix("a"))
 //      , table ++ fr"a," ++ RCollective.table ++ fr"b"
@@ -70,11 +72,12 @@ trait DoobieSyntax {
 //        else and(wh, fkCid.prefix("a") is RCollective.Columns.id.prefix("b")))
 
   def selectCount(col: Column, table: Fragment, where: Fragment): Fragment =
-    Fragment.const("SELECT COUNT(") ++ col.f ++ Fragment.const(") FROM ") ++ table ++ this.where(where)
+    Fragment.const("SELECT COUNT(") ++ col.f ++ Fragment.const(") FROM ") ++ table ++ this.where(
+      where
+    )
 
-  def deleteFrom(table: Fragment, where: Fragment): Fragment = {
+  def deleteFrom(table: Fragment, where: Fragment): Fragment =
     fr"DELETE FROM" ++ table ++ this.where(where)
-  }
 
   def withCTE(ps: (String, Fragment)*): Fragment = {
     val subsel: Seq[Fragment] = ps.map(p => Fragment.const(p._1) ++ fr"AS (" ++ p._2 ++ fr")")

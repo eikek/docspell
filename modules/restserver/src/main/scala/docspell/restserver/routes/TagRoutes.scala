@@ -28,21 +28,21 @@ object TagRoutes {
 
       case req @ POST -> Root =>
         for {
-          data  <- req.as[Tag]
-          tag   <- newTag(data, user.account.collective)
-          res   <- backend.tag.add(tag)
-          resp  <- Ok(basicResult(res, "Tag successfully created."))
+          data <- req.as[Tag]
+          tag  <- newTag(data, user.account.collective)
+          res  <- backend.tag.add(tag)
+          resp <- Ok(basicResult(res, "Tag successfully created."))
         } yield resp
 
       case req @ PUT -> Root =>
         for {
-          data  <- req.as[Tag]
-          tag   = changeTag(data, user.account.collective)
-          res   <- backend.tag.update(tag)
-          resp  <- Ok(basicResult(res, "Tag successfully updated."))
+          data <- req.as[Tag]
+          tag  = changeTag(data, user.account.collective)
+          res  <- backend.tag.update(tag)
+          resp <- Ok(basicResult(res, "Tag successfully updated."))
         } yield resp
 
-      case DELETE -> Root / Ident(id)  =>
+      case DELETE -> Root / Ident(id) =>
         for {
           del  <- backend.tag.delete(id, user.account.collective)
           resp <- Ok(basicResult(del, "Tag successfully deleted."))

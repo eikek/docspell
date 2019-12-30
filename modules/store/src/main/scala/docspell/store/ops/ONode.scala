@@ -18,7 +18,7 @@ trait ONode[F[_]] {
 object ONode {
   private[this] val logger = getLogger
 
-  def apply[F[_] : Effect](store: Store[F]): Resource[F, ONode[F]] =
+  def apply[F[_]: Effect](store: Store[F]): Resource[F, ONode[F]] =
     Resource.pure(new ONode[F] {
 
       def register(appId: Ident, nodeType: NodeType, uri: LenientUri): F[Unit] =

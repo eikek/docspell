@@ -30,9 +30,7 @@ object Timestamp {
   def current[F[_]: Sync]: F[Timestamp] =
     Sync[F].delay(Timestamp(Instant.now))
 
-
-
-  implicit  val encodeTimestamp: Encoder[Timestamp] =
+  implicit val encodeTimestamp: Encoder[Timestamp] =
     BaseJsonCodecs.encodeInstantEpoch.contramap(_.value)
 
   implicit val decodeTimestamp: Decoder[Timestamp] =

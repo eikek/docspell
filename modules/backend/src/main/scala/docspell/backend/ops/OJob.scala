@@ -21,9 +21,9 @@ object OJob {
 
   sealed trait JobCancelResult
   object JobCancelResult {
-    case object Removed extends JobCancelResult
+    case object Removed         extends JobCancelResult
     case object CancelRequested extends JobCancelResult
-    case object JobNotFound extends JobCancelResult
+    case object JobNotFound     extends JobCancelResult
   }
 
   case class JobDetail(job: RJob, logs: Vector[RJobLog])
@@ -36,15 +36,19 @@ object OJob {
       jobs.filter(_.job.state == JobState.Running)
   }
 
-  def apply[F[_]: ConcurrentEffect](store: Store[F], clientEC: ExecutionContext): Resource[F, OJob[F]] =
+  def apply[F[_]: ConcurrentEffect](
+      store: Store[F],
+      clientEC: ExecutionContext
+  ): Resource[F, OJob[F]] =
     Resource.pure(new OJob[F] {
 
-      def queueState(collective: Ident, maxResults: Int): F[CollectiveQueueState] = {
-        store.transact(QJob.queueStateSnapshot(collective).take(maxResults.toLong)).
-          map(t => JobDetail(t._1, t._2)).
-          compile.toVector.
-          map(CollectiveQueueState)
-      }
+      def queueState(collective: Ident, maxResults: Int): F[CollectiveQueueState] =
+        store
+          .transact(QJob.queueStateSnapshot(collective).take(maxResults.toLong))
+          .map(t => JobDetail(t._1, t._2))
+          .compile
+          .toVector
+          .map(CollectiveQueueState)
 
       def cancelJob(id: Ident, collective: Ident): F[JobCancelResult] = {
         def mustCancel(job: Option[RJob]): Option[(RJob, Ident)] =
@@ -58,26 +62,27 @@ object OJob {
 
         val tryDelete = for {
           job  <- RJob.findByIdAndGroup(id, collective)
-          jobm  = job.filter(canDelete)
+          jobm = job.filter(canDelete)
           del  <- jobm.traverse(j => RJob.delete(j.id))
         } yield del match {
           case Some(_) => Right(JobCancelResult.Removed: JobCancelResult)
-          case None => Left(mustCancel(job))
+          case None    => Left(mustCancel(job))
         }
 
         def tryCancel(job: RJob, worker: Ident): F[JobCancelResult] =
-          OJoex.cancelJob(job.id, worker, store, clientEC).
-            map(flag => if (flag) JobCancelResult.CancelRequested else JobCancelResult.JobNotFound)
+          OJoex
+            .cancelJob(job.id, worker, store, clientEC)
+            .map(flag => if (flag) JobCancelResult.CancelRequested else JobCancelResult.JobNotFound)
 
         for {
-          tryDel  <- store.transact(tryDelete)
-          result  <- tryDel  match {
-            case Right(r) => r.pure[F]
-            case Left(Some((job, worker))) =>
-              tryCancel(job, worker)
-            case Left(None) =>
-              (JobCancelResult.JobNotFound: OJob.JobCancelResult).pure[F]
-          }
+          tryDel <- store.transact(tryDelete)
+          result <- tryDel match {
+                     case Right(r) => r.pure[F]
+                     case Left(Some((job, worker))) =>
+                       tryCancel(job, worker)
+                     case Left(None) =>
+                       (JobCancelResult.JobNotFound: OJob.JobCancelResult).pure[F]
+                   }
         } yield result
       }
     })

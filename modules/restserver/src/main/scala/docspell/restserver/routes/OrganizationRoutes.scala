@@ -16,15 +16,15 @@ import org.http4s.dsl.Http4sDsl
 object OrganizationRoutes {
 
   def apply[F[_]: Effect](backend: BackendApp[F], user: AuthToken): HttpRoutes[F] = {
-    val dsl = new Http4sDsl[F]{}
+    val dsl = new Http4sDsl[F] {}
     import dsl._
 
     HttpRoutes.of {
       case GET -> Root :? FullQueryParamMatcher(full) =>
         if (full.getOrElse(false)) {
           for {
-            data  <- backend.organization.findAllOrg(user.account)
-            resp  <- Ok(OrganizationList(data.map(mkOrg).toList))
+            data <- backend.organization.findAllOrg(user.account)
+            resp <- Ok(OrganizationList(data.map(mkOrg).toList))
           } yield resp
         } else {
           for {
@@ -38,7 +38,7 @@ object OrganizationRoutes {
           data   <- req.as[Organization]
           newOrg <- newOrg(data, user.account.collective)
           added  <- backend.organization.addOrg(newOrg)
-          resp  <- Ok(basicResult(added, "New organization saved."))
+          resp   <- Ok(basicResult(added, "New organization saved."))
         } yield resp
 
       case req @ PUT -> Root =>
@@ -49,10 +49,10 @@ object OrganizationRoutes {
           resp   <- Ok(basicResult(update, "Organization updated."))
         } yield resp
 
-      case DELETE -> Root / Ident(id)  =>
+      case DELETE -> Root / Ident(id) =>
         for {
-          delOrg  <- backend.organization.deleteOrg(id, user.account.collective)
-          resp    <- Ok(basicResult(delOrg, "Organization deleted."))
+          delOrg <- backend.organization.deleteOrg(id, user.account.collective)
+          resp   <- Ok(basicResult(delOrg, "Organization deleted."))
         } yield resp
     }
   }

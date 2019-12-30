@@ -13,28 +13,40 @@ object LinkProposal {
       val proposals = MetaProposalList.flatten(data.metas.map(_.proposals))
 
       ctx.logger.info(s"Starting linking proposals") *>
-      MetaProposalType.all.
-        traverse(applyValue(data, proposals, ctx)).
-        map(result => ctx.logger.info(s"Results from proposal processing: $result")).
-        map(_ => data)
+        MetaProposalType.all
+          .traverse(applyValue(data, proposals, ctx))
+          .map(result => ctx.logger.info(s"Results from proposal processing: $result"))
+          .map(_ => data)
     }
 
-  def applyValue[F[_]: Sync](data: ItemData, proposalList: MetaProposalList, ctx: Context[F, ProcessItemArgs])(mpt: MetaProposalType): F[Result] = {
+  def applyValue[F[_]: Sync](
+      data: ItemData,
+      proposalList: MetaProposalList,
+      ctx: Context[F, ProcessItemArgs]
+  )(mpt: MetaProposalType): F[Result] =
     proposalList.find(mpt) match {
       case None =>
         Result.noneFound(mpt).pure[F]
       case Some(a) if a.isSingleValue =>
         ctx.logger.info(s"Found one candidate for ${a.proposalType}") *>
-          setItemMeta(data.item.id, ctx, a.proposalType, a.values.head.ref.id).
-            map(_ => Result.single(mpt))
+          setItemMeta(data.item.id, ctx, a.proposalType, a.values.head.ref.id).map(_ =>
+            Result.single(mpt)
+          )
       case Some(a) =>
-        ctx.logger.info(s"Found many (${a.size}, ${a.values.map(_.ref.id.id)}) candidates for ${a.proposalType}. Setting first.") *>
-          setItemMeta(data.item.id, ctx, a.proposalType, a.values.head.ref.id).
-            map(_ => Result.multiple(mpt))
+        ctx.logger.info(
+          s"Found many (${a.size}, ${a.values.map(_.ref.id.id)}) candidates for ${a.proposalType}. Setting first."
+        ) *>
+          setItemMeta(data.item.id, ctx, a.proposalType, a.values.head.ref.id).map(_ =>
+            Result.multiple(mpt)
+          )
     }
-  }
 
-  def setItemMeta[F[_]: Sync](itemId: Ident, ctx: Context[F, ProcessItemArgs], mpt: MetaProposalType, value: Ident): F[Int] =
+  def setItemMeta[F[_]: Sync](
+      itemId: Ident,
+      ctx: Context[F, ProcessItemArgs],
+      mpt: MetaProposalType,
+      value: Ident
+  ): F[Int] =
     mpt match {
       case MetaProposalType.CorrOrg =>
         ctx.logger.debug(s"Updating item organization with: ${value.id}") *>
@@ -54,18 +66,17 @@ object LinkProposal {
         ctx.logger.debug(s"Not linking document date suggestion ${value.id}").map(_ => 0)
     }
 
-
   sealed trait Result {
     def proposalType: MetaProposalType
   }
   object Result {
 
-    case class NoneFound(proposalType: MetaProposalType) extends Result
-    case class SingleResult(proposalType: MetaProposalType) extends Result
+    case class NoneFound(proposalType: MetaProposalType)      extends Result
+    case class SingleResult(proposalType: MetaProposalType)   extends Result
     case class MultipleResult(proposalType: MetaProposalType) extends Result
 
     def noneFound(proposalType: MetaProposalType): Result = NoneFound(proposalType)
-    def single(proposalType: MetaProposalType): Result = SingleResult(proposalType)
-    def multiple(proposalType: MetaProposalType): Result = MultipleResult(proposalType)
+    def single(proposalType: MetaProposalType): Result    = SingleResult(proposalType)
+    def multiple(proposalType: MetaProposalType): Result  = MultipleResult(proposalType)
   }
 }

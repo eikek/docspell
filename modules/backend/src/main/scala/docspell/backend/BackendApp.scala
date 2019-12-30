@@ -27,38 +27,44 @@ trait BackendApp[F[_]] {
 
 object BackendApp {
 
-  def create[F[_]: ConcurrentEffect](cfg: Config, store: Store[F], httpClientEc: ExecutionContext): Resource[F, BackendApp[F]] =
+  def create[F[_]: ConcurrentEffect](
+      cfg: Config,
+      store: Store[F],
+      httpClientEc: ExecutionContext
+  ): Resource[F, BackendApp[F]] =
     for {
-      queue       <- JobQueue(store)
-      loginImpl   <- Login[F](store)
-      signupImpl  <- OSignup[F](store)
-      collImpl    <- OCollective[F](store)
-      sourceImpl  <- OSource[F](store)
-      tagImpl     <- OTag[F](store)
-      equipImpl   <- OEquipment[F](store)
-      orgImpl     <- OOrganization(store)
-      uploadImpl  <- OUpload(store, queue, cfg, httpClientEc)
-      nodeImpl    <- ONode(store)
-      jobImpl     <- OJob(store, httpClientEc)
-      itemImpl    <- OItem(store)
+      queue      <- JobQueue(store)
+      loginImpl  <- Login[F](store)
+      signupImpl <- OSignup[F](store)
+      collImpl   <- OCollective[F](store)
+      sourceImpl <- OSource[F](store)
+      tagImpl    <- OTag[F](store)
+      equipImpl  <- OEquipment[F](store)
+      orgImpl    <- OOrganization(store)
+      uploadImpl <- OUpload(store, queue, cfg, httpClientEc)
+      nodeImpl   <- ONode(store)
+      jobImpl    <- OJob(store, httpClientEc)
+      itemImpl   <- OItem(store)
     } yield new BackendApp[F] {
-      val login: Login[F] = loginImpl
-      val signup: OSignup[F] = signupImpl
+      val login: Login[F]            = loginImpl
+      val signup: OSignup[F]         = signupImpl
       val collective: OCollective[F] = collImpl
-      val source = sourceImpl
-      val tag = tagImpl
-      val equipment = equipImpl
-      val organization = orgImpl
-      val upload = uploadImpl
-      val node = nodeImpl
-      val job = jobImpl
-      val item = itemImpl
+      val source                     = sourceImpl
+      val tag                        = tagImpl
+      val equipment                  = equipImpl
+      val organization               = orgImpl
+      val upload                     = uploadImpl
+      val node                       = nodeImpl
+      val job                        = jobImpl
+      val item                       = itemImpl
     }
 
-  def apply[F[_]: ConcurrentEffect: ContextShift](cfg: Config
-                                       , connectEC: ExecutionContext
-                                       , httpClientEc: ExecutionContext
-                                       , blocker: Blocker): Resource[F, BackendApp[F]] =
+  def apply[F[_]: ConcurrentEffect: ContextShift](
+      cfg: Config,
+      connectEC: ExecutionContext,
+      httpClientEc: ExecutionContext,
+      blocker: Blocker
+  ): Resource[F, BackendApp[F]] =
     for {
       store   <- Store.create(cfg.jdbc, connectEC, blocker)
       backend <- create(cfg, store, httpClientEc)

@@ -12,7 +12,7 @@ case class MimeType(primary: String, sub: String) {
 
   def matches(other: MimeType): Boolean =
     primary == other.primary &&
-      (sub == other.sub || sub == "*" )
+      (sub == other.sub || sub == "*")
 }
 
 object MimeType {
@@ -26,9 +26,10 @@ object MimeType {
   def image(sub: String): MimeType =
     MimeType("image", partFromString(sub).throwLeft)
 
-  private[this] val validChars: Set[Char] = (('A' to 'Z') ++ ('a' to 'z') ++ ('0' to '9') ++ "*-").toSet
+  private[this] val validChars: Set[Char] =
+    (('A' to 'Z') ++ ('a' to 'z') ++ ('0' to '9') ++ "*-").toSet
 
-  def parse(str: String): Either[String, MimeType] = {
+  def parse(str: String): Either[String, MimeType] =
     str.indexOf('/') match {
       case -1 => Left(s"Invalid MIME type: $str")
       case n =>
@@ -37,7 +38,6 @@ object MimeType {
           sub  <- partFromString(str.substring(n + 1))
         } yield MimeType(prim.toLowerCase, sub.toLowerCase)
     }
-  }
 
   def unsafe(str: String): MimeType =
     parse(str).throwLeft
@@ -47,12 +47,12 @@ object MimeType {
     else Left(s"Invalid identifier: $s. Allowed chars: ${validChars.mkString}")
 
   val octetStream = application("octet-stream")
-  val pdf = application("pdf")
-  val png = image("png")
-  val jpeg = image("jpeg")
-  val tiff = image("tiff")
-  val html = text("html")
-  val plain = text("plain")
+  val pdf         = application("pdf")
+  val png         = image("png")
+  val jpeg        = image("jpeg")
+  val tiff        = image("tiff")
+  val html        = text("html")
+  val plain       = text("plain")
 
   implicit val jsonEncoder: Encoder[MimeType] =
     Encoder.encodeString.contramap(_.asString)

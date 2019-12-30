@@ -36,13 +36,15 @@ object OOrganization {
 
   case class PersonAndContacts(person: RPerson, contacts: Seq[RContact])
 
-  def apply[F[_] : Effect](store: Store[F]): Resource[F, OOrganization[F]] =
+  def apply[F[_]: Effect](store: Store[F]): Resource[F, OOrganization[F]] =
     Resource.pure(new OOrganization[F] {
 
       def findAllOrg(account: AccountId): F[Vector[OrgAndContacts]] =
-        store.transact(QOrganization.findOrgAndContact(account.collective, _.name)).
-          map({ case (org, cont) => OrgAndContacts(org, cont) }).
-          compile.toVector
+        store
+          .transact(QOrganization.findOrgAndContact(account.collective, _.name))
+          .map({ case (org, cont) => OrgAndContacts(org, cont) })
+          .compile
+          .toVector
 
       def findAllOrgRefs(account: AccountId): F[Vector[IdRef]] =
         store.transact(ROrganization.findAllRef(account.collective, _.name))
@@ -54,9 +56,11 @@ object OOrganization {
         QOrganization.updateOrg(s.org, s.contacts, s.org.cid)(store)
 
       def findAllPerson(account: AccountId): F[Vector[PersonAndContacts]] =
-        store.transact(QOrganization.findPersonAndContact(account.collective, _.name)).
-          map({ case (person, cont) => PersonAndContacts(person, cont) }).
-          compile.toVector
+        store
+          .transact(QOrganization.findPersonAndContact(account.collective, _.name))
+          .map({ case (person, cont) => PersonAndContacts(person, cont) })
+          .compile
+          .toVector
 
       def findAllPersonRefs(account: AccountId): F[Vector[IdRef]] =
         store.transact(RPerson.findAllRef(account.collective, _.name))
@@ -68,14 +72,13 @@ object OOrganization {
         QOrganization.updatePerson(s.person, s.contacts, s.person.cid)(store)
 
       def deleteOrg(orgId: Ident, collective: Ident): F[AddResult] =
-        store.transact(QOrganization.deleteOrg(orgId, collective)).
-          attempt.
-          map(AddResult.fromUpdate)
+        store.transact(QOrganization.deleteOrg(orgId, collective)).attempt.map(AddResult.fromUpdate)
 
       def deletePerson(personId: Ident, collective: Ident): F[AddResult] =
-        store.transact(QOrganization.deletePerson(personId, collective)).
-          attempt.
-          map(AddResult.fromUpdate)
+        store
+          .transact(QOrganization.deletePerson(personId, collective))
+          .attempt
+          .map(AddResult.fromUpdate)
 
     })
 }

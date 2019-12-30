@@ -20,13 +20,16 @@ case class JobTask[F[_]](name: Ident, task: Task[F, String, Unit], onCancel: Tas
 
 object JobTask {
 
-  def json[F[_]: Sync, A](name: Ident, task: Task[F, A, Unit], onCancel: Task[F, A, Unit])
-                         (implicit D: Decoder[A]): JobTask[F] = {
+  def json[F[_]: Sync, A](name: Ident, task: Task[F, A, Unit], onCancel: Task[F, A, Unit])(
+      implicit D: Decoder[A]
+  ): JobTask[F] = {
     val convert: String => F[A] =
-      str => str.parseJsonAs[A] match {
-        case Right(a) => a.pure[F]
-        case Left(ex) => Sync[F].raiseError(new Exception(s"Cannot parse task arguments: $str", ex))
-      }
+      str =>
+        str.parseJsonAs[A] match {
+          case Right(a) => a.pure[F]
+          case Left(ex) =>
+            Sync[F].raiseError(new Exception(s"Cannot parse task arguments: $str", ex))
+        }
 
     JobTask(name, task.contramap(convert), onCancel.contramap(convert))
   }

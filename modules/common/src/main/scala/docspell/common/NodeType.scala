@@ -10,13 +10,13 @@ sealed trait NodeType { self: Product =>
 object NodeType {
 
   case object Restserver extends NodeType
-  case object Joex extends NodeType
+  case object Joex       extends NodeType
 
   def fromString(str: String): Either[String, NodeType] =
     str.toLowerCase match {
       case "restserver" => Right(Restserver)
-      case "joex" => Right(Joex)
-      case _ => Left(s"Invalid node type: $str")
+      case "joex"       => Right(Joex)
+      case _            => Left(s"Invalid node type: $str")
     }
 
   def unsafe(str: String): NodeType =

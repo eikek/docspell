@@ -44,12 +44,22 @@ object LogSink {
     LogSink(_.evalMap(e => logInternal(e)))
 
   def db[F[_]: Sync](store: Store[F]): LogSink[F] =
-    LogSink(_.evalMap(ev => for {
-      id     <- Ident.randomId[F]
-      joblog  = RJobLog(id, ev.jobId, ev.level, ev.time, ev.msg + ev.ex.map(th => ": "+ th.getMessage).getOrElse(""))
-      _      <- logInternal(ev)
-      _      <- store.transact(RJobLog.insert(joblog))
-    } yield ()))
+    LogSink(
+      _.evalMap(ev =>
+        for {
+          id <- Ident.randomId[F]
+          joblog = RJobLog(
+            id,
+            ev.jobId,
+            ev.level,
+            ev.time,
+            ev.msg + ev.ex.map(th => ": " + th.getMessage).getOrElse("")
+          )
+          _ <- logInternal(ev)
+          _ <- store.transact(RJobLog.insert(joblog))
+        } yield ()
+      )
+    )
 
   def dbAndLog[F[_]: Concurrent](store: Store[F]): LogSink[F] = {
     val s: Stream[F, Pipe[F, LogEvent, Unit]] =

@@ -20,20 +20,23 @@ object File {
 
   def deleteDirectory[F[_]: Sync](dir: Path): F[Int] = Sync[F].delay {
     val count = new AtomicInteger(0)
-    Files.walkFileTree(dir, new SimpleFileVisitor[Path]() {
-      override def visitFile(file: Path, attrs: BasicFileAttributes): FileVisitResult = {
-        Files.deleteIfExists(file)
-        count.incrementAndGet()
-        FileVisitResult.CONTINUE
-      }
-      override def postVisitDirectory(dir: Path, e: IOException): FileVisitResult =
-        Option(e) match {
-          case Some(ex) => throw ex
-          case None =>
-            Files.deleteIfExists(dir)
-            FileVisitResult.CONTINUE
+    Files.walkFileTree(
+      dir,
+      new SimpleFileVisitor[Path]() {
+        override def visitFile(file: Path, attrs: BasicFileAttributes): FileVisitResult = {
+          Files.deleteIfExists(file)
+          count.incrementAndGet()
+          FileVisitResult.CONTINUE
         }
-    })
+        override def postVisitDirectory(dir: Path, e: IOException): FileVisitResult =
+          Option(e) match {
+            case Some(ex) => throw ex
+            case None =>
+              Files.deleteIfExists(dir)
+              FileVisitResult.CONTINUE
+          }
+      }
+    )
     count.get
   }
 
@@ -44,12 +47,14 @@ object File {
     if (Files.isDirectory(path)) deleteDirectory(path)
     else deleteFile(path).map(_ => 1)
 
-  def withTempDir[F[_]: Sync, A](parent: Path, prefix: String)
-    (f: Path => Stream[F, A]): Stream[F, A] =
+  def withTempDir[F[_]: Sync, A](parent: Path, prefix: String)(
+      f: Path => Stream[F, A]
+  ): Stream[F, A] =
     Stream.bracket(mkTempDir(parent, prefix))(p => delete(p).map(_ => ())).flatMap(f)
 
   def listFiles[F[_]: Sync](pred: Path => Boolean, dir: Path): F[List[Path]] = Sync[F].delay {
-    val javaList = Files.list(dir).filter(p => pred(p)).collect(java.util.stream.Collectors.toList())
+    val javaList =
+      Files.list(dir).filter(p => pred(p)).collect(java.util.stream.Collectors.toList())
     javaList.asScala.toList.sortBy(_.getFileName.toString)
   }
 

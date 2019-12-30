@@ -18,10 +18,10 @@ object LoginRoutes {
     import dsl._
 
     HttpRoutes.of[F] {
-      case req@POST -> Root / "login" =>
+      case req @ POST -> Root / "login" =>
         for {
-          up <- req.as[UserPass]
-          res <- S.loginUserPass(cfg.auth)(Login.UserPass(up.account, up.password))
+          up   <- req.as[UserPass]
+          res  <- S.loginUserPass(cfg.auth)(Login.UserPass(up.account, up.password))
           resp <- makeResponse(dsl, cfg, res, up.account)
         } yield resp
     }
@@ -33,22 +33,36 @@ object LoginRoutes {
 
     HttpRoutes.of[F] {
       case req @ POST -> Root / "session" =>
-        Authenticate.authenticateRequest(S.loginSession(cfg.auth))(req).
-          flatMap(res => makeResponse(dsl, cfg, res, ""))
+        Authenticate
+          .authenticateRequest(S.loginSession(cfg.auth))(req)
+          .flatMap(res => makeResponse(dsl, cfg, res, ""))
 
       case POST -> Root / "logout" =>
         Ok().map(_.addCookie(CookieData.deleteCookie(cfg)))
     }
   }
 
-  def makeResponse[F[_]: Effect](dsl: Http4sDsl[F], cfg: Config, res: Login.Result, account: String): F[Response[F]] = {
+  def makeResponse[F[_]: Effect](
+      dsl: Http4sDsl[F],
+      cfg: Config,
+      res: Login.Result,
+      account: String
+  ): F[Response[F]] = {
     import dsl._
     res match {
       case Login.Result.Ok(token) =>
         for {
           cd <- AuthToken.user(token.account, cfg.auth.serverSecret).map(CookieData.apply)
-          resp <- Ok(AuthResult(token.account.collective.id, token.account.user.id, true, "Login successful", Some(cd.asString), cfg.auth.sessionValid.millis)).
-            map(_.addCookie(cd.asCookie(cfg)))
+          resp <- Ok(
+                   AuthResult(
+                     token.account.collective.id,
+                     token.account.user.id,
+                     true,
+                     "Login successful",
+                     Some(cd.asString),
+                     cfg.auth.sessionValid.millis
+                   )
+                 ).map(_.addCookie(cd.asCookie(cfg)))
         } yield resp
       case _ =>
         Ok(AuthResult("", account, false, "Login failed.", None, 0L))

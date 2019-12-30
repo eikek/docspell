@@ -17,7 +17,6 @@ trait OTag[F[_]] {
   def delete(id: Ident, collective: Ident): F[AddResult]
 }
 
-
 object OTag {
 
   def apply[F[_]: Effect](store: Store[F]): Resource[F, OTag[F]] =
@@ -47,10 +46,7 @@ object OTag {
           n0     <- optTag.traverse(t => RTagItem.deleteTag(t.tagId))
           n1     <- optTag.traverse(t => RTag.delete(t.tagId, collective))
         } yield n0.getOrElse(0) + n1.getOrElse(0)
-        store.transact(io).
-          attempt.
-          map(AddResult.fromUpdate)
+        store.transact(io).attempt.map(AddResult.fromUpdate)
       }
     })
 }
-

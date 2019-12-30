@@ -6,14 +6,13 @@ import ProcessItemArgs._
 
 case class ProcessItemArgs(meta: ProcessMeta, files: List[File]) {
 
-  def makeSubject: String = {
+  def makeSubject: String =
     files.flatMap(_.name) match {
-      case Nil => s"${meta.sourceAbbrev}: No files"
-      case n :: Nil => n
+      case Nil             => s"${meta.sourceAbbrev}: No files"
+      case n :: Nil        => n
       case n1 :: n2 :: Nil => s"$n1, $n2"
-      case _ => s"${files.size} files from ${meta.sourceAbbrev}"
+      case _               => s"${files.size} files from ${meta.sourceAbbrev}"
     }
-  }
 
 }
 
@@ -21,11 +20,13 @@ object ProcessItemArgs {
 
   val taskName = Ident.unsafe("process-item")
 
-  case class ProcessMeta( collective: Ident
-                        , language: Language
-                        , direction: Option[Direction]
-                        , sourceAbbrev: String
-                        , validFileTypes: Seq[MimeType])
+  case class ProcessMeta(
+      collective: Ident,
+      language: Language,
+      direction: Option[Direction],
+      sourceAbbrev: String,
+      validFileTypes: Seq[MimeType]
+  )
 
   object ProcessMeta {
     implicit val jsonEncoder: Encoder[ProcessMeta] = deriveEncoder[ProcessMeta]

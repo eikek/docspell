@@ -12,14 +12,17 @@ import org.http4s.server._
 
 object Authenticate {
 
-  def authenticateRequest[F[_]: Effect](auth: String => F[Login.Result])(req: Request[F]): F[Login.Result] =
+  def authenticateRequest[F[_]: Effect](
+      auth: String => F[Login.Result]
+  )(req: Request[F]): F[Login.Result] =
     CookieData.authenticator(req) match {
       case Right(str) => auth(str)
-      case Left(_) => Login.Result.invalidAuth.pure[F]
+      case Left(_)    => Login.Result.invalidAuth.pure[F]
     }
 
-
-  def of[F[_]: Effect](S: Login[F], cfg: Login.Config)(pf: PartialFunction[AuthedRequest[F, AuthToken], F[Response[F]]]): HttpRoutes[F] = {
+  def of[F[_]: Effect](S: Login[F], cfg: Login.Config)(
+      pf: PartialFunction[AuthedRequest[F, AuthToken], F[Response[F]]]
+  ): HttpRoutes[F] = {
     val dsl: Http4sDsl[F] = new Http4sDsl[F] {}
     import dsl._
 
@@ -34,7 +37,9 @@ object Authenticate {
     middleware(AuthedRoutes.of(pf))
   }
 
-  def apply[F[_]: Effect](S: Login[F], cfg: Login.Config)(f: AuthToken => HttpRoutes[F]): HttpRoutes[F] = {
+  def apply[F[_]: Effect](S: Login[F], cfg: Login.Config)(
+      f: AuthToken => HttpRoutes[F]
+  ): HttpRoutes[F] = {
     val dsl: Http4sDsl[F] = new Http4sDsl[F] {}
     import dsl._
 
@@ -49,6 +54,8 @@ object Authenticate {
     middleware(AuthedRoutes(authReq => f(authReq.context).run(authReq.req)))
   }
 
-  private def getUser[F[_]: Effect](auth: String => F[Login.Result]): Kleisli[F, Request[F], Either[String, AuthToken]] =
+  private def getUser[F[_]: Effect](
+      auth: String => F[Login.Result]
+  ): Kleisli[F, Request[F], Either[String, AuthToken]] =
     Kleisli(r => authenticateRequest(auth)(r).map(_.toEither))
 }

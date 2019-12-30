@@ -10,18 +10,18 @@ sealed trait ItemState { self: Product =>
 
 object ItemState {
 
-  case object Premature extends ItemState
+  case object Premature  extends ItemState
   case object Processing extends ItemState
-  case object Created extends ItemState
-  case object Confirmed extends ItemState
+  case object Created    extends ItemState
+  case object Confirmed  extends ItemState
 
   def fromString(str: String): Either[String, ItemState] =
     str.toLowerCase match {
-      case "premature" => Right(Premature)
+      case "premature"  => Right(Premature)
       case "processing" => Right(Processing)
-      case "created" => Right(Created)
-      case "confirmed" => Right(Confirmed)
-      case _ => Left(s"Invalid item state: $str")
+      case "created"    => Right(Created)
+      case "confirmed"  => Right(Confirmed)
+      case _            => Left(s"Invalid item state: $str")
     }
 
   def unsafe(str: String): ItemState =
@@ -32,4 +32,3 @@ object ItemState {
   implicit val jsonEncoder: Encoder[ItemState] =
     Encoder.encodeString.contramap(_.name)
 }
-

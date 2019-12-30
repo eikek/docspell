@@ -10,7 +10,8 @@ import doobie._
 import doobie.implicits._
 
 final class StoreImpl[F[_]: Effect](jdbc: JdbcConfig, xa: Transactor[F]) extends Store[F] {
-  val bitpeaceCfg = BitpeaceConfig("filemeta", "filechunk", TikaMimetypeDetect, Ident.randomId[F].map(_.id))
+  val bitpeaceCfg =
+    BitpeaceConfig("filemeta", "filechunk", TikaMimetypeDetect, Ident.randomId[F].map(_.id))
 
   def migrate: F[Int] =
     FlywayMigrate.run[F](jdbc)
@@ -24,14 +25,14 @@ final class StoreImpl[F[_]: Effect](jdbc: JdbcConfig, xa: Transactor[F]) extends
   def bitpeace: Bitpeace[F] =
     Bitpeace(bitpeaceCfg, xa)
 
-  def add(insert: ConnectionIO[Int], exists: ConnectionIO[Boolean]): F[AddResult] = {
+  def add(insert: ConnectionIO[Int], exists: ConnectionIO[Boolean]): F[AddResult] =
     for {
       save  <- transact(insert).attempt
       exist <- save.swap.traverse(ex => transact(exists).map(b => (ex, b)))
     } yield exist.swap match {
       case Right(_) => AddResult.Success
-      case Left((_, true)) => AddResult.EntityExists("Adding failed, because the entity already exists.")
+      case Left((_, true)) =>
+        AddResult.EntityExists("Adding failed, because the entity already exists.")
       case Left((ex, _)) => AddResult.Failure(ex)
     }
-  }
 }

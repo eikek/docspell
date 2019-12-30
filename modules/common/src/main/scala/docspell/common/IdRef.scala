@@ -3,9 +3,7 @@ package docspell.common
 import io.circe._
 import io.circe.generic.semiauto._
 
-case class IdRef(id: Ident, name: String) {
-
-}
+case class IdRef(id: Ident, name: String) {}
 
 object IdRef {
 

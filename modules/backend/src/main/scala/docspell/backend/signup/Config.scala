@@ -20,10 +20,10 @@ object Config {
 
     def fromString(str: String): Either[String, Mode] =
       str.toLowerCase match {
-        case "open" => Right(Open)
+        case "open"   => Right(Open)
         case "invite" => Right(Invite)
         case "closed" => Right(Closed)
-        case _ => Left(s"Invalid signup mode: $str")
+        case _        => Left(s"Invalid signup mode: $str")
       }
     def unsafe(str: String): Mode =
       fromString(str).fold(sys.error, identity)
@@ -34,7 +34,7 @@ object Config {
       Decoder.decodeString.emap(fromString)
   }
 
-  def open: Mode = Mode.Open
+  def open: Mode   = Mode.Open
   def invite: Mode = Mode.Invite
   def closed: Mode = Mode.Closed
 

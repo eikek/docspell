@@ -15,7 +15,6 @@ object TestSplitterSpec extends SimpleTestSuite {
 
     val words = TextSplitter.splitToken(text, " \t\r\n".toSet).toVector
 
-
     assertEquals(words.size, 31)
     assertEquals(words(13), Word("bitte", 109, 114))
     assertEquals(text.substring(109, 114).toLowerCase, "bitte")

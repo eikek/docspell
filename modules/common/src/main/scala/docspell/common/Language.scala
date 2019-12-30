@@ -31,13 +31,11 @@ object Language {
 
   def fromString(str: String): Either[String, Language] = {
     val lang = str.toLowerCase
-    all.find(_.allNames.contains(lang)).
-      toRight(s"Unsupported or invalid language: $str")
+    all.find(_.allNames.contains(lang)).toRight(s"Unsupported or invalid language: $str")
   }
 
   def unsafe(str: String): Language =
     fromString(str).fold(sys.error, identity)
-
 
   implicit val jsonDecoder: Decoder[Language] =
     Decoder.decodeString.emap(fromString)

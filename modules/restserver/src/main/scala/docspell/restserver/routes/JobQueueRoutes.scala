@@ -19,15 +19,15 @@ object JobQueueRoutes {
     HttpRoutes.of {
       case GET -> Root / "state" =>
         for {
-          js  <- backend.job.queueState(user.account.collective, 200)
+          js   <- backend.job.queueState(user.account.collective, 200)
           res  = Conversions.mkJobQueueState(js)
           resp <- Ok(res)
         } yield resp
 
       case POST -> Root / Ident(id) / "cancel" =>
         for {
-          result  <- backend.job.cancelJob(id, user.account.collective)
-          resp    <- Ok(Conversions.basicResult(result))
+          result <- backend.job.cancelJob(id, user.account.collective)
+          resp   <- Ok(Conversions.basicResult(result))
         } yield resp
     }
   }

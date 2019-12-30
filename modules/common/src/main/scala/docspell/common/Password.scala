@@ -4,7 +4,7 @@ import io.circe.{Decoder, Encoder}
 
 final class Password(val pass: String) extends AnyVal {
 
-  def isEmpty: Boolean= pass.isEmpty
+  def isEmpty: Boolean = pass.isEmpty
 
   override def toString: String =
     if (pass.isEmpty) "<empty>" else "***"

@@ -24,11 +24,11 @@ trait Task[F[_], A, B] {
   def mapF[C](f: F[B] => F[C]): Task[F, A, C] =
     Task(Task.toKleisli(this).mapF(f))
 
-  def attempt(implicit F: ApplicativeError[F,Throwable]): Task[F, A, Either[Throwable, B]] =
+  def attempt(implicit F: ApplicativeError[F, Throwable]): Task[F, A, Either[Throwable, B]] =
     mapF(_.attempt)
 
-  def contramap[C](f: C => F[A])(implicit F: FlatMap[F]): Task[F, C, B] = {
-    ctxc: Context[F, C] => f(ctxc.args).flatMap(a => run(ctxc.map(_ => a)))
+  def contramap[C](f: C => F[A])(implicit F: FlatMap[F]): Task[F, C, B] = { ctxc: Context[F, C] =>
+    f(ctxc.args).flatMap(a => run(ctxc.map(_ => a)))
   }
 }
 
@@ -45,7 +45,6 @@ object Task {
 
   def apply[F[_], A, B](k: Kleisli[F, Context[F, A], B]): Task[F, A, B] =
     c => k.run(c)
-
 
   def toKleisli[F[_], A, B](t: Task[F, A, B]): Kleisli[F, Context[F, A], B] =
     Kleisli(t.run)
