@@ -25,3 +25,7 @@
 .docs h4 {
     text-decoration: underline;
 }
+
+.docs .thumbnail img {
+    width: 100%;
+}

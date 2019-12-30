@@ -139,44 +139,51 @@ pageToString : Page -> String
 pageToString page =
     case page of
         HomePage ->
-            "#/home"
+            "/app/home"
 
         LoginPage referer ->
             Maybe.map (\p -> "/" ++ p) referer
                 |> Maybe.withDefault ""
-                |> (++) "#/login"
+                |> (++) "/app/login"
 
         ManageDataPage ->
-            "#/manageData"
+            "/app/managedata"
 
         CollectiveSettingPage ->
-            "#/collectiveSettings"
+            "/app/csettings"
 
         UserSettingPage ->
-            "#/userSettings"
+            "/app/usettings"
 
         QueuePage ->
-            "#/queue"
+            "/app/queue"
 
         RegisterPage ->
-            "#/register"
+            "/app/register"
 
         UploadPage sourceId ->
             Maybe.map (\id -> "/" ++ id) sourceId
                 |> Maybe.withDefault ""
-                |> (++) "#/upload"
+                |> (++) "/app/upload"
 
         NewInvitePage ->
-            "#/newinvite"
+            "/app/newinvite"
 
 
 pageFromString : String -> Maybe Page
 pageFromString str =
     let
+        urlNormed =
+            if String.startsWith str "http" then
+                str
+
+            else
+                "http://somehost" ++ str
+
         url =
-            Url.Url Url.Http "" Nothing str Nothing Nothing
+            Url.fromString urlNormed
     in
-    Parser.parse parser url
+    Maybe.andThen (Parser.parse parser) url
 
 
 href : Page -> Attribute msg
@@ -189,24 +196,28 @@ goto page =
     Nav.load (pageToString page)
 
 
+pathPrefix : String
+pathPrefix =
+    "app"
+
+
 parser : Parser (Page -> a) a
 parser =
     oneOf
-        [ Parser.map HomePage (oneOf [ s "", s "home" ])
-        , Parser.map (\s -> LoginPage (Just s)) (s "login" </> string)
-        , Parser.map (LoginPage Nothing) (s "login")
-        , Parser.map ManageDataPage (s "manageData")
-        , Parser.map CollectiveSettingPage (s "collectiveSettings")
-        , Parser.map UserSettingPage (s "userSettings")
-        , Parser.map QueuePage (s "queue")
-        , Parser.map RegisterPage (s "register")
-        , Parser.map (\s -> UploadPage (Just s)) (s "upload" </> string)
-        , Parser.map (UploadPage Nothing) (s "upload")
-        , Parser.map NewInvitePage (s "newinvite")
+        [ Parser.map HomePage (oneOf [ Parser.top, s pathPrefix </> s "home" ])
+        , Parser.map (\s -> LoginPage (Just s)) (s pathPrefix </> s "login" </> string)
+        , Parser.map (LoginPage Nothing) (s pathPrefix </> s "login")
+        , Parser.map ManageDataPage (s pathPrefix </> s "managedata")
+        , Parser.map CollectiveSettingPage (s pathPrefix </> s "csettings")
+        , Parser.map UserSettingPage (s pathPrefix </> s "usettings")
+        , Parser.map QueuePage (s pathPrefix </> s "queue")
+        , Parser.map RegisterPage (s pathPrefix </> s "register")
+        , Parser.map (\s -> UploadPage (Just s)) (s pathPrefix </> s "upload" </> string)
+        , Parser.map (UploadPage Nothing) (s pathPrefix </> s "upload")
+        , Parser.map NewInvitePage (s pathPrefix </> s "newinvite")
         ]
 
 
 fromUrl : Url -> Maybe Page
 fromUrl url =
-    { url | path = Maybe.withDefault "" url.fragment, fragment = Nothing }
-        |> Parser.parse parser
+    Parser.parse parser url

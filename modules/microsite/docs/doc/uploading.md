@@ -53,7 +53,7 @@ Example screenshot:
 
 This example shows a source with name "test". It defines two urls:
 
-- `/app#/upload/<id>`
+- `/app/upload/<id>`
 - `/api/v1/open/upload/item/<id>`
 
 The first points to a web page where everyone could upload files into
@@ -66,7 +66,7 @@ files (which is used by the first url).
 For example, this url can be used to upload files with curl:
 
 ``` bash
-$ curl -XPOST -F file=@test.pdf http://localhost:7880/api/v1/open/upload/item/5DxhjkvWf9S-CkWqF3Kr892-WgoCspFWDo7-XBykwCyAUxQ
+$ curl -XPOST -F file=@test.pdf http://localhost:7880/api/v1/open/upload/item/CqpFTb7UmGe-9nMVPZSmnwc-AHH6nWFh52t-M1JFQ9y7cdH
 {"success":true,"message":"Files submitted."}
 ```
 
@@ -126,5 +126,5 @@ uploading two files with meta data:
 curl -XPOST -F meta='{"multiple":false, "direction": "outgoing"}' \
             -F file=@letter-en-source.pdf \
             -F file=@letter-de-source.pdf \
-            http://localhost:7880/api/v1/open/upload/item/5DxhjkvWf9S-CkWqF3Kr892-WgoCspFWDo7-XBykwCyAUxQ
+            http://localhost:7880/api/v1/open/upload/item/CqpFTb7UmGe-9nMVPZSmnwc-AHH6nWFh52t-M1JFQ9y7cdH
 ```

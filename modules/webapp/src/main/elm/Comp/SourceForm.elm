@@ -188,7 +188,7 @@ urlInfoMessage flags model =
                 ]
             , p []
                 [ text "This source defines URLs that can be used by anyone to send files to "
-                , text "you. There is a web page that you can share or tha API url can be used "
+                , text "you. There is a web page that you can share or the API url can be used "
                 , text "with other clients."
                 ]
             , dl [ class "ui list" ]
@@ -196,7 +196,7 @@ urlInfoMessage flags model =
                 , dd []
                     [ let
                         url =
-                            flags.config.baseUrl ++ "/app#/upload/" ++ model.source.id
+                            flags.config.baseUrl ++ "/app/upload/" ++ model.source.id
                       in
                       a [ href url, target "_blank" ] [ code [] [ text url ] ]
                     ]
