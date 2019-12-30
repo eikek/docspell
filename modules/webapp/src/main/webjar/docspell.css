@@ -59,6 +59,12 @@
     background: aliceblue;
 }
 
+.default-layout .ui.fluid.container.item-detail-page {
+    padding-top: 1em;
+    padding-left: 1em;
+    padding-right: 1em;
+}
+
 .ui.search.dropdown.open {
     z-index: 20;
 }

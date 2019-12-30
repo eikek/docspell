@@ -6,7 +6,9 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Page exposing (Page(..))
 import Page.CollectiveSettings.View
+import Page.Home.Data
 import Page.Home.View
+import Page.ItemDetail.View
 import Page.Login.View
 import Page.ManageData.View
 import Page.NewInvite.View
@@ -105,9 +107,21 @@ defaultLayout model =
 
                 NewInvitePage ->
                     viewNewInvite model
+
+                ItemDetailPage id ->
+                    viewItemDetail id model
             ]
         , footer model
         ]
+
+
+viewItemDetail : String -> Model -> Html Msg
+viewItemDetail id model =
+    let
+        inav =
+            Page.Home.Data.itemNav id model.homeModel
+    in
+    Html.map ItemDetailMsg (Page.ItemDetail.View.view inav model.itemDetailModel)
 
 
 viewNewInvite : Model -> Html Msg

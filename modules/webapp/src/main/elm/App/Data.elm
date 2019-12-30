@@ -15,6 +15,7 @@ import Http
 import Page exposing (Page(..))
 import Page.CollectiveSettings.Data
 import Page.Home.Data
+import Page.ItemDetail.Data
 import Page.Login.Data
 import Page.ManageData.Data
 import Page.NewInvite.Data
@@ -39,6 +40,7 @@ type alias Model =
     , registerModel : Page.Register.Data.Model
     , uploadModel : Page.Upload.Data.Model
     , newInviteModel : Page.NewInvite.Data.Model
+    , itemDetailModel : Page.ItemDetail.Data.Model
     , navMenuOpen : Bool
     , subs : Sub Msg
     }
@@ -64,6 +66,7 @@ init key url flags =
     , registerModel = Page.Register.Data.emptyModel
     , uploadModel = Page.Upload.Data.emptyModel
     , newInviteModel = Page.NewInvite.Data.emptyModel
+    , itemDetailModel = Page.ItemDetail.Data.emptyModel
     , navMenuOpen = False
     , subs = Sub.none
     }
@@ -82,6 +85,7 @@ type Msg
     | RegisterMsg Page.Register.Data.Msg
     | UploadMsg Page.Upload.Data.Msg
     | NewInviteMsg Page.NewInvite.Data.Msg
+    | ItemDetailMsg Page.ItemDetail.Data.Msg
     | Logout
     | LogoutResp (Result Http.Error ())
     | SessionCheckResp (Result Http.Error AuthResult)

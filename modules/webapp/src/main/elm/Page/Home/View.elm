@@ -42,7 +42,7 @@ view model =
                         Html.map ItemListMsg (Comp.ItemList.view model.itemListModel)
 
                 Detail ->
-                    Html.map ItemDetailMsg (Comp.ItemDetail.view model.itemDetailModel)
+                    div [] []
             ]
         ]
 

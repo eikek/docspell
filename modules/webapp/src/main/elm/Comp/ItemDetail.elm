@@ -1,7 +1,6 @@
 module Comp.ItemDetail exposing
     ( Model
     , Msg(..)
-    , UserNav(..)
     , emptyModel
     , update
     , view
@@ -20,6 +19,7 @@ import Api.Model.OptionalText exposing (OptionalText)
 import Api.Model.ReferenceList exposing (ReferenceList)
 import Api.Model.Tag exposing (Tag)
 import Api.Model.TagList exposing (TagList)
+import Browser.Navigation as Nav
 import Comp.DatePicker
 import Comp.Dropdown exposing (isDropdownChangeMsg)
 import Comp.YesNoDimmer
@@ -31,6 +31,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Http
 import Markdown
+import Page exposing (Page(..))
 import Util.Maybe
 import Util.Size
 import Util.String
@@ -49,6 +50,7 @@ type alias Model =
     , concEquipModel : Comp.Dropdown.Model IdName
     , nameModel : String
     , notesModel : Maybe String
+    , notesHidden : Bool
     , deleteConfirm : Comp.YesNoDimmer.Model
     , itemDatePicker : DatePicker
     , itemDate : Maybe Int
@@ -76,7 +78,11 @@ emptyModel =
             }
     , directionModel =
         Comp.Dropdown.makeSingleList
-            { makeOption = \entry -> { value = Data.Direction.toString entry, text = Data.Direction.toString entry }
+            { makeOption =
+                \entry ->
+                    { value = Data.Direction.toString entry
+                    , text = Data.Direction.toString entry
+                    }
             , options = Data.Direction.all
             , placeholder = "Choose a direction…"
             , selected = Nothing
@@ -103,6 +109,7 @@ emptyModel =
             }
     , nameModel = ""
     , notesModel = Nothing
+    , notesHidden = False
     , deleteConfirm = Comp.YesNoDimmer.emptyModel
     , itemDatePicker = Comp.DatePicker.emptyModel
     , itemDate = Nothing
@@ -112,26 +119,12 @@ emptyModel =
     }
 
 
-type UserNav
-    = NavBack
-    | NavPrev
-    | NavNext
-    | NavNone
-    | NavNextOrBack
-
-
-noNav : ( Model, Cmd Msg ) -> ( Model, Cmd Msg, UserNav )
-noNav ( model, cmd ) =
-    ( model, cmd, NavNone )
-
-
 type Msg
     = ToggleMenu
     | ReloadItem
     | Init
     | SetItem ItemDetail
     | SetActiveAttachment Int
-    | NavClick UserNav
     | TagDropdownMsg (Comp.Dropdown.Msg Tag)
     | DirDropdownMsg (Comp.Dropdown.Msg Direction)
     | OrgDropdownMsg (Comp.Dropdown.Msg IdName)
@@ -145,6 +138,7 @@ type Msg
     | SetName String
     | SaveName
     | SetNotes String
+    | ToggleNotes
     | SaveNotes
     | ConfirmItem
     | UnconfirmItem
@@ -281,8 +275,8 @@ setDueDate flags model date =
     Api.setItemDueDate flags model.item.id (OptionalDate date) SaveResp
 
 
-update : Flags -> Msg -> Model -> ( Model, Cmd Msg, UserNav )
-update flags msg model =
+update : Nav.Key -> Flags -> Maybe String -> Msg -> Model -> ( Model, Cmd Msg )
+update key flags next msg model =
     case msg of
         Init ->
             let
@@ -295,16 +289,17 @@ update flags msg model =
                 , Cmd.map ItemDatePickerMsg dpc
                 , Cmd.map DueDatePickerMsg dpc
                 ]
-            , NavNone
             )
 
         SetItem item ->
             let
-                ( m1, c1, _ ) =
-                    update flags (TagDropdownMsg (Comp.Dropdown.SetSelection item.tags)) model
+                ( m1, c1 ) =
+                    update key flags next (TagDropdownMsg (Comp.Dropdown.SetSelection item.tags)) model
 
-                ( m2, c2, _ ) =
-                    update flags
+                ( m2, c2 ) =
+                    update key
+                        flags
+                        next
                         (DirDropdownMsg
                             (Comp.Dropdown.SetSelection
                                 (Data.Direction.fromString item.direction
@@ -315,8 +310,10 @@ update flags msg model =
                         )
                         m1
 
-                ( m3, c3, _ ) =
-                    update flags
+                ( m3, c3 ) =
+                    update key
+                        flags
+                        next
                         (OrgDropdownMsg
                             (Comp.Dropdown.SetSelection
                                 (item.corrOrg
@@ -327,8 +324,10 @@ update flags msg model =
                         )
                         m2
 
-                ( m4, c4, _ ) =
-                    update flags
+                ( m4, c4 ) =
+                    update key
+                        flags
+                        next
                         (CorrPersonMsg
                             (Comp.Dropdown.SetSelection
                                 (item.corrPerson
@@ -339,8 +338,10 @@ update flags msg model =
                         )
                         m3
 
-                ( m5, c5, _ ) =
-                    update flags
+                ( m5, c5 ) =
+                    update key
+                        flags
+                        next
                         (ConcPersonMsg
                             (Comp.Dropdown.SetSelection
                                 (item.concPerson
@@ -358,26 +359,28 @@ update flags msg model =
                     else
                         Cmd.none
             in
-            ( { m5 | item = item, nameModel = item.name, notesModel = item.notes, itemDate = item.itemDate, dueDate = item.dueDate }
+            ( { m5
+                | item = item
+                , nameModel = item.name
+                , notesModel = item.notes
+                , itemDate = item.itemDate
+                , dueDate = item.dueDate
+              }
             , Cmd.batch [ c1, c2, c3, c4, c5, getOptions flags, proposalCmd ]
             )
-                |> noNav
 
         SetActiveAttachment pos ->
-            ( { model | visibleAttach = pos }, Cmd.none, NavNone )
-
-        NavClick nav ->
-            ( model, Cmd.none, nav )
+            ( { model | visibleAttach = pos }, Cmd.none )
 
         ToggleMenu ->
-            ( { model | menuOpen = not model.menuOpen }, Cmd.none, NavNone )
+            ( { model | menuOpen = not model.menuOpen }, Cmd.none )
 
         ReloadItem ->
             if model.item.id == "" then
-                ( model, Cmd.none, NavNone )
+                ( model, Cmd.none )
 
             else
-                ( model, Api.itemDetail flags model.item.id GetItemResp, NavNone )
+                ( model, Api.itemDetail flags model.item.id GetItemResp )
 
         TagDropdownMsg m ->
             let
@@ -394,7 +397,7 @@ update flags msg model =
                     else
                         Cmd.none
             in
-            ( newModel, Cmd.batch [ save, Cmd.map TagDropdownMsg c2 ], NavNone )
+            ( newModel, Cmd.batch [ save, Cmd.map TagDropdownMsg c2 ] )
 
         DirDropdownMsg m ->
             let
@@ -411,7 +414,7 @@ update flags msg model =
                     else
                         Cmd.none
             in
-            ( newModel, Cmd.batch [ save, Cmd.map DirDropdownMsg c2 ] ) |> noNav
+            ( newModel, Cmd.batch [ save, Cmd.map DirDropdownMsg c2 ] )
 
         OrgDropdownMsg m ->
             let
@@ -431,7 +434,7 @@ update flags msg model =
                     else
                         Cmd.none
             in
-            ( newModel, Cmd.batch [ save, Cmd.map OrgDropdownMsg c2 ] ) |> noNav
+            ( newModel, Cmd.batch [ save, Cmd.map OrgDropdownMsg c2 ] )
 
         CorrPersonMsg m ->
             let
@@ -451,7 +454,7 @@ update flags msg model =
                     else
                         Cmd.none
             in
-            ( newModel, Cmd.batch [ save, Cmd.map CorrPersonMsg c2 ] ) |> noNav
+            ( newModel, Cmd.batch [ save, Cmd.map CorrPersonMsg c2 ] )
 
         ConcPersonMsg m ->
             let
@@ -471,7 +474,7 @@ update flags msg model =
                     else
                         Cmd.none
             in
-            ( newModel, Cmd.batch [ save, Cmd.map ConcPersonMsg c2 ] ) |> noNav
+            ( newModel, Cmd.batch [ save, Cmd.map ConcPersonMsg c2 ] )
 
         ConcEquipMsg m ->
             let
@@ -491,13 +494,13 @@ update flags msg model =
                     else
                         Cmd.none
             in
-            ( newModel, Cmd.batch [ save, Cmd.map ConcEquipMsg c2 ] ) |> noNav
+            ( newModel, Cmd.batch [ save, Cmd.map ConcEquipMsg c2 ] )
 
         SetName str ->
-            ( { model | nameModel = str }, Cmd.none ) |> noNav
+            ( { model | nameModel = str }, Cmd.none )
 
         SaveName ->
-            ( model, setName flags model ) |> noNav
+            ( model, setName flags model )
 
         SetNotes str ->
             ( { model
@@ -510,16 +513,20 @@ update flags msg model =
               }
             , Cmd.none
             )
-                |> noNav
+
+        ToggleNotes ->
+            ( { model | notesHidden = not model.notesHidden }
+            , Cmd.none
+            )
 
         SaveNotes ->
-            ( model, setNotes flags model ) |> noNav
+            ( model, setNotes flags model )
 
         ConfirmItem ->
-            ( model, Api.setConfirmed flags model.item.id SaveResp ) |> noNav
+            ( model, Api.setConfirmed flags model.item.id SaveResp )
 
         UnconfirmItem ->
-            ( model, Api.setUnconfirmed flags model.item.id SaveResp ) |> noNav
+            ( model, Api.setUnconfirmed flags model.item.id SaveResp )
 
         ItemDatePickerMsg m ->
             let
@@ -532,13 +539,13 @@ update flags msg model =
                         newModel =
                             { model | itemDatePicker = dp, itemDate = Just (Comp.DatePicker.midOfDay date) }
                     in
-                    ( newModel, setDate flags newModel newModel.itemDate ) |> noNav
+                    ( newModel, setDate flags newModel newModel.itemDate )
 
                 _ ->
-                    ( { model | itemDatePicker = dp }, Cmd.none ) |> noNav
+                    ( { model | itemDatePicker = dp }, Cmd.none )
 
         RemoveDate ->
-            ( { model | itemDate = Nothing }, setDate flags model Nothing ) |> noNav
+            ( { model | itemDate = Nothing }, setDate flags model Nothing )
 
         DueDatePickerMsg m ->
             let
@@ -551,13 +558,13 @@ update flags msg model =
                         newModel =
                             { model | dueDatePicker = dp, dueDate = Just (Comp.DatePicker.midOfDay date) }
                     in
-                    ( newModel, setDueDate flags newModel newModel.dueDate ) |> noNav
+                    ( newModel, setDueDate flags newModel newModel.dueDate )
 
                 _ ->
-                    ( { model | dueDatePicker = dp }, Cmd.none ) |> noNav
+                    ( { model | dueDatePicker = dp }, Cmd.none )
 
         RemoveDueDate ->
-            ( { model | dueDate = Nothing }, setDueDate flags model Nothing ) |> noNav
+            ( { model | dueDate = Nothing }, setDueDate flags model Nothing )
 
         YesNoMsg m ->
             let
@@ -571,67 +578,67 @@ update flags msg model =
                     else
                         Cmd.none
             in
-            ( { model | deleteConfirm = cm }, cmd ) |> noNav
+            ( { model | deleteConfirm = cm }, cmd )
 
         RequestDelete ->
-            update flags (YesNoMsg Comp.YesNoDimmer.activate) model
+            update key flags next (YesNoMsg Comp.YesNoDimmer.activate) model
 
         SetCorrOrgSuggestion idname ->
-            ( model, setCorrOrg flags model (Just idname) ) |> noNav
+            ( model, setCorrOrg flags model (Just idname) )
 
         SetCorrPersonSuggestion idname ->
-            ( model, setCorrPerson flags model (Just idname) ) |> noNav
+            ( model, setCorrPerson flags model (Just idname) )
 
         SetConcPersonSuggestion idname ->
-            ( model, setConcPerson flags model (Just idname) ) |> noNav
+            ( model, setConcPerson flags model (Just idname) )
 
         SetConcEquipSuggestion idname ->
-            ( model, setConcEquip flags model (Just idname) ) |> noNav
+            ( model, setConcEquip flags model (Just idname) )
 
         SetItemDateSuggestion date ->
-            ( model, setDate flags model (Just date) ) |> noNav
+            ( model, setDate flags model (Just date) )
 
         SetDueDateSuggestion date ->
-            ( model, setDueDate flags model (Just date) ) |> noNav
+            ( model, setDueDate flags model (Just date) )
 
         GetTagsResp (Ok tags) ->
             let
                 tagList =
                     Comp.Dropdown.SetOptions tags.items
 
-                ( m1, c1, _ ) =
-                    update flags (TagDropdownMsg tagList) model
+                ( m1, c1 ) =
+                    update key flags next (TagDropdownMsg tagList) model
             in
-            ( m1, c1 ) |> noNav
+            ( m1, c1 )
 
         GetTagsResp (Err _) ->
-            ( model, Cmd.none ) |> noNav
+            ( model, Cmd.none )
 
         GetOrgResp (Ok orgs) ->
             let
                 opts =
                     Comp.Dropdown.SetOptions orgs.items
             in
-            update flags (OrgDropdownMsg opts) model
+            update key flags next (OrgDropdownMsg opts) model
 
         GetOrgResp (Err _) ->
-            ( model, Cmd.none ) |> noNav
+            ( model, Cmd.none )
 
         GetPersonResp (Ok ps) ->
             let
                 opts =
                     Comp.Dropdown.SetOptions ps.items
 
-                ( m1, c1, _ ) =
-                    update flags (CorrPersonMsg opts) model
+                ( m1, c1 ) =
+                    update key flags next (CorrPersonMsg opts) model
 
-                ( m2, c2, _ ) =
-                    update flags (ConcPersonMsg opts) m1
+                ( m2, c2 ) =
+                    update key flags next (ConcPersonMsg opts) m1
             in
-            ( m2, Cmd.batch [ c1, c2 ] ) |> noNav
+            ( m2, Cmd.batch [ c1, c2 ] )
 
         GetPersonResp (Err _) ->
-            ( model, Cmd.none ) |> noNav
+            ( model, Cmd.none )
 
         GetEquipResp (Ok equips) ->
             let
@@ -641,42 +648,47 @@ update flags msg model =
                             equips.items
                         )
             in
-            update flags (ConcEquipMsg opts) model
+            update key flags next (ConcEquipMsg opts) model
 
         GetEquipResp (Err _) ->
-            ( model, Cmd.none ) |> noNav
+            ( model, Cmd.none )
 
         SaveResp (Ok res) ->
             if res.success then
-                ( model, Api.itemDetail flags model.item.id GetItemResp ) |> noNav
+                ( model, Api.itemDetail flags model.item.id GetItemResp )
 
             else
-                ( model, Cmd.none ) |> noNav
+                ( model, Cmd.none )
 
         SaveResp (Err _) ->
-            ( model, Cmd.none ) |> noNav
+            ( model, Cmd.none )
 
         DeleteResp (Ok res) ->
             if res.success then
-                ( model, Cmd.none, NavNextOrBack )
+                case next of
+                    Just id ->
+                        ( model, Page.set key (ItemDetailPage id) )
+
+                    Nothing ->
+                        ( model, Page.set key HomePage )
 
             else
-                ( model, Cmd.none ) |> noNav
+                ( model, Cmd.none )
 
         DeleteResp (Err _) ->
-            ( model, Cmd.none ) |> noNav
+            ( model, Cmd.none )
 
         GetItemResp (Ok item) ->
-            update flags (SetItem item) model
+            update key flags next (SetItem item) model
 
         GetItemResp (Err _) ->
-            ( model, Cmd.none ) |> noNav
+            ( model, Cmd.none )
 
         GetProposalResp (Ok ip) ->
-            ( { model | itemProposals = ip }, Cmd.none ) |> noNav
+            ( { model | itemProposals = ip }, Cmd.none )
 
         GetProposalResp (Err _) ->
-            ( model, Cmd.none ) |> noNav
+            ( model, Cmd.none )
 
 
 
@@ -692,21 +704,38 @@ actionInputDatePicker =
     { ds | containerClassList = [ ( "ui action input", True ) ] }
 
 
-view : Model -> Html Msg
-view model =
+view : { prev : Maybe String, next : Maybe String } -> Model -> Html Msg
+view inav model =
     div []
-        [ div
+        [ renderItemInfo model
+        , div
             [ classList
                 [ ( "ui ablue-comp menu", True )
                 ]
             ]
-            [ a [ class "item", href "", onClick (NavClick NavBack) ]
+            [ a [ class "item", Page.href HomePage ]
                 [ i [ class "arrow left icon" ] []
                 ]
-            , a [ class "item", href "", onClick (NavClick NavPrev) ]
+            , a
+                [ classList
+                    [ ( "item", True )
+                    , ( "disabled", inav.prev == Nothing )
+                    ]
+                , Maybe.map ItemDetailPage inav.prev
+                    |> Maybe.map Page.href
+                    |> Maybe.withDefault (href "#")
+                ]
                 [ i [ class "caret square left outline icon" ] []
                 ]
-            , a [ class "item", href "", onClick (NavClick NavNext) ]
+            , a
+                [ classList
+                    [ ( "item", True )
+                    , ( "disabled", inav.next == Nothing )
+                    ]
+                , Maybe.map ItemDetailPage inav.next
+                    |> Maybe.map Page.href
+                    |> Maybe.withDefault (href "#")
+                ]
                 [ i [ class "caret square right outline icon" ] []
                 ]
             , a
@@ -722,9 +751,10 @@ view model =
                 ]
             ]
         , div [ class "ui grid" ]
-            [ div
+            [ Html.map YesNoMsg (Comp.YesNoDimmer.view model.deleteConfirm)
+            , div
                 [ classList
-                    [ ( "six wide column", True )
+                    [ ( "four wide column", True )
                     , ( "invisible", not model.menuOpen )
                     ]
                 ]
@@ -736,17 +766,17 @@ view model =
                 )
             , div
                 [ classList
-                    [ ( "ten", model.menuOpen )
+                    [ ( "twelve", model.menuOpen )
                     , ( "sixteen", not model.menuOpen )
                     , ( "wide column", True )
                     ]
                 ]
               <|
                 List.concat
-                    [ [ renderItemInfo model ]
-                    , [ renderAttachmentsTabMenu model ]
+                    [ renderNotes model
+                    , [ renderAttachmentsTabMenu model
+                      ]
                     , renderAttachmentsTabBody model
-                    , renderNotes model
                     , renderIdInfo model
                     ]
             ]
@@ -776,11 +806,31 @@ renderNotes model =
             []
 
         Just str ->
-            [ h3 [ class "ui header" ]
-                [ text "Notes"
+            if model.notesHidden then
+                [ div [ class "ui segment" ]
+                    [ a
+                        [ class "ui top left attached label"
+                        , onClick ToggleNotes
+                        , href "#"
+                        ]
+                        [ i [ class "eye icon" ] []
+                        , text "Show notes…"
+                        ]
+                    ]
                 ]
-            , Markdown.toHtml [ class "item-notes" ] str
-            ]
+
+            else
+                [ div [ class "ui segment" ]
+                    [ Markdown.toHtml [ class "item-notes" ] str
+                    , a
+                        [ class "ui right corner label"
+                        , onClick ToggleNotes
+                        , href "#"
+                        ]
+                        [ i [ class "delete icon" ] []
+                        ]
+                    ]
+                ]
 
 
 renderAttachmentsTabMenu : Model -> Html Msg
@@ -829,12 +879,6 @@ renderAttachmentsTabBody model =
 renderItemInfo : Model -> Html Msg
 renderItemInfo model =
     let
-        name =
-            div [ class "item" ]
-                [ i [ class (Data.Direction.iconFromString model.item.direction) ] []
-                , text model.item.name
-                ]
-
         date =
             div [ class "item" ]
                 [ Maybe.withDefault model.item.created model.item.itemDate
@@ -876,7 +920,7 @@ renderItemInfo model =
                 ]
     in
     div [ class "ui fluid container" ]
-        ([ h2 [ class "ui header" ]
+        (h2 [ class "ui header" ]
             [ i [ class (Data.Direction.iconFromString model.item.direction) ] []
             , div [ class "content" ]
                 [ text model.item.name
@@ -905,8 +949,7 @@ renderItemInfo model =
                     ]
                 ]
             ]
-         ]
-            ++ renderTags model
+            :: renderTags model
         )
 
 
@@ -973,8 +1016,7 @@ renderEditButtons model =
 renderEditForm : Model -> Html Msg
 renderEditForm model =
     div [ class "ui attached segment" ]
-        [ Html.map YesNoMsg (Comp.YesNoDimmer.view model.deleteConfirm)
-        , div [ class "ui form" ]
+        [ div [ class "ui form" ]
             [ div [ class "field" ]
                 [ label []
                     [ i [ class "tags icon" ] []
@@ -986,7 +1028,12 @@ renderEditForm model =
                 [ label [] [ text "Name" ]
                 , div [ class "ui action input" ]
                     [ input [ type_ "text", value model.nameModel, onInput SetName ] []
-                    , button [ class "ui icon button", onClick SaveName ] [ i [ class "save outline icon" ] [] ]
+                    , button
+                        [ class "ui icon button"
+                        , onClick SaveName
+                        ]
+                        [ i [ class "save outline icon" ] []
+                        ]
                     ]
                 ]
             , div [ class "field" ]
@@ -996,7 +1043,12 @@ renderEditForm model =
             , div [ class " field" ]
                 [ label [] [ text "Date" ]
                 , div [ class "ui action input" ]
-                    [ Html.map ItemDatePickerMsg (Comp.DatePicker.viewTime model.itemDate actionInputDatePicker model.itemDatePicker)
+                    [ Html.map ItemDatePickerMsg
+                        (Comp.DatePicker.viewTime
+                            model.itemDate
+                            actionInputDatePicker
+                            model.itemDatePicker
+                        )
                     , a [ class "ui icon button", href "", onClick RemoveDate ]
                         [ i [ class "trash alternate outline icon" ] []
                         ]
@@ -1006,7 +1058,12 @@ renderEditForm model =
             , div [ class " field" ]
                 [ label [] [ text "Due Date" ]
                 , div [ class "ui action input" ]
-                    [ Html.map DueDatePickerMsg (Comp.DatePicker.viewTime model.dueDate actionInputDatePicker model.dueDatePicker)
+                    [ Html.map DueDatePickerMsg
+                        (Comp.DatePicker.viewTime
+                            model.dueDate
+                            actionInputDatePicker
+                            model.dueDatePicker
+                        )
                     , a [ class "ui icon button", href "", onClick RemoveDueDate ]
                         [ i [ class "trash alternate outline icon" ] [] ]
                     ]

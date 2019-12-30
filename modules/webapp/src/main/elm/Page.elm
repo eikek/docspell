@@ -10,6 +10,7 @@ module Page exposing
     , pageFromString
     , pageName
     , pageToString
+    , set
     , uploadId
     )
 
@@ -31,6 +32,7 @@ type Page
     | RegisterPage
     | UploadPage (Maybe String)
     | NewInvitePage
+    | ItemDetailPage String
 
 
 isSecured : Page -> Bool
@@ -62,6 +64,9 @@ isSecured page =
 
         UploadPage arg ->
             Util.Maybe.isEmpty arg
+
+        ItemDetailPage _ ->
+            True
 
 
 isOpen : Page -> Bool
@@ -113,6 +118,9 @@ pageName page =
 
                 Nothing ->
                     "Upload"
+
+        ItemDetailPage _ ->
+            "Item"
 
 
 loginPageReferrer : Page -> Maybe Page
@@ -169,6 +177,9 @@ pageToString page =
         NewInvitePage ->
             "/app/newinvite"
 
+        ItemDetailPage id ->
+            "/app/item/" ++ id
+
 
 pageFromString : String -> Maybe Page
 pageFromString str =
@@ -189,6 +200,11 @@ pageFromString str =
 href : Page -> Attribute msg
 href page =
     Attr.href (pageToString page)
+
+
+set : Nav.Key -> Page -> Cmd msg
+set key page =
+    Nav.pushUrl key (pageToString page)
 
 
 goto : Page -> Cmd msg
@@ -215,6 +231,7 @@ parser =
         , Parser.map (\s -> UploadPage (Just s)) (s pathPrefix </> s "upload" </> string)
         , Parser.map (UploadPage Nothing) (s pathPrefix </> s "upload")
         , Parser.map NewInvitePage (s pathPrefix </> s "newinvite")
+        , Parser.map ItemDetailPage (s pathPrefix </> s "item" </> string)
         ]
 
 

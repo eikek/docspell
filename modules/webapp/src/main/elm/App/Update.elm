@@ -13,6 +13,8 @@ import Page.CollectiveSettings.Data
 import Page.CollectiveSettings.Update
 import Page.Home.Data
 import Page.Home.Update
+import Page.ItemDetail.Data
+import Page.ItemDetail.Update
 import Page.Login.Data
 import Page.Login.Update
 import Page.ManageData.Data
@@ -70,6 +72,9 @@ updateWithSub msg model =
 
         NewInviteMsg m ->
             updateNewInvite m model |> noSub
+
+        ItemDetailMsg m ->
+            updateItemDetail m model |> noSub
 
         VersionResp (Ok info) ->
             ( { model | version = info }, Cmd.none ) |> noSub
@@ -170,6 +175,20 @@ updateWithSub msg model =
             ( { model | navMenuOpen = not model.navMenuOpen }, Cmd.none, Sub.none )
 
 
+updateItemDetail : Page.ItemDetail.Data.Msg -> Model -> ( Model, Cmd Msg )
+updateItemDetail lmsg model =
+    let
+        inav =
+            Page.Home.Data.itemNav model.itemDetailModel.detail.item.id model.homeModel
+
+        ( lm, lc ) =
+            Page.ItemDetail.Update.update model.key model.flags inav.next lmsg model.itemDetailModel
+    in
+    ( { model | itemDetailModel = lm }
+    , Cmd.map ItemDetailMsg lc
+    )
+
+
 updateNewInvite : Page.NewInvite.Data.Msg -> Model -> ( Model, Cmd Msg )
 updateNewInvite lmsg model =
     let
@@ -265,7 +284,7 @@ updateHome : Page.Home.Data.Msg -> Model -> ( Model, Cmd Msg )
 updateHome lmsg model =
     let
         ( lm, lc ) =
-            Page.Home.Update.update model.flags lmsg model.homeModel
+            Page.Home.Update.update model.key model.flags lmsg model.homeModel
     in
     ( { model | homeModel = lm }
     , Cmd.map HomeMsg lc
@@ -320,6 +339,9 @@ initPage model page =
 
         NewInvitePage ->
             updateQueue Page.Queue.Data.StopRefresh model
+
+        ItemDetailPage id ->
+            updateItemDetail (Page.ItemDetail.Data.Init id) model
 
 
 noSub : ( Model, Cmd Msg ) -> ( Model, Cmd Msg, Sub Msg )
