@@ -53,7 +53,7 @@ Example screenshot:
 
 This example shows a source with name "test". It defines two urls:
 
-- `/app/index.html#/upload/<id>`
+- `/app#/upload/<id>`
 - `/api/v1/open/upload/item/<id>`
 
 The first points to a web page where everyone could upload files into

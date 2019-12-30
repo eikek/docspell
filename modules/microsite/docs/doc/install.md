@@ -150,8 +150,8 @@ $ ./docspell-joex*/bin/docspell-joex /path/to/joex-config.conf
 ```
 
 After starting the rest server, you can reach the web application at
-path `/app/index.html`, so using default values it would be
-`http://localhost:7880/app/index.html`.
+path `/app`, so using default values it would be
+`http://localhost:7880/app`.
 
 You should be able to create a new account and sign in. Check the
 [configuration page](configure.html) to further customize docspell.

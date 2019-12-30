@@ -22,17 +22,18 @@ object RestServer {
       blocker: Blocker
   )(implicit T: Timer[F], CS: ContextShift[F]): Stream[F, Nothing] = {
 
+    val templates = TemplateRoutes[F](blocker, cfg)
     val app = for {
       restApp <- RestAppImpl.create[F](cfg, connectEC, httpClientEc, blocker)
-
       httpApp = Router(
         "/api/info"     -> routes.InfoRoutes(),
         "/api/v1/open/" -> openRoutes(cfg, restApp),
         "/api/v1/sec/" -> Authenticate(restApp.backend.login, cfg.auth) { token =>
           securedRoutes(cfg, restApp, token)
         },
+        "/api/doc" -> templates.doc,
         "/app/assets" -> WebjarRoutes.appRoutes[F](blocker),
-        "/app"        -> TemplateRoutes[F](blocker, cfg)
+        "/app"        -> templates.app
       ).orNotFound
 
       finalHttpApp = Logger.httpApp(logHeaders = false, logBody = false)(httpApp)

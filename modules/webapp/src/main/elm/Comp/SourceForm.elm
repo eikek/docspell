@@ -196,7 +196,7 @@ urlInfoMessage flags model =
                 , dd []
                     [ let
                         url =
-                            flags.config.baseUrl ++ "/app/index.html#/upload/" ++ model.source.id
+                            flags.config.baseUrl ++ "/app#/upload/" ++ model.source.id
                       in
                       a [ href url, target "_blank" ] [ code [] [ text url ] ]
                     ]

@@ -42,7 +42,7 @@ really required, but improves OCR.
    $ ./docspell-joex*/bin/docspell-joex
    ```
    in the other.
-4. Point your browser to: <http://localhost:7880/app/index.html>
+4. Point your browser to: <http://localhost:7880/app>
 5. Register a new account, sign in and try it.
 
 Check the [documentation](doc.html) for more information on how to use

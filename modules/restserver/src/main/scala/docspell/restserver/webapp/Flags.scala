@@ -21,7 +21,7 @@ object Flags {
       cfg.appName,
       cfg.baseUrl,
       cfg.backend.signup.mode,
-      s"assets/docspell-webapp/${BuildInfo.version}"
+      s"/app/assets/docspell-webapp/${BuildInfo.version}"
     )
 
   implicit val jsonEncoder: Encoder[Flags] =

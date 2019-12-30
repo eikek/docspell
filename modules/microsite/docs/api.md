@@ -45,7 +45,7 @@ server. If it is deployed at `http://localhost:7880`, then check this
 url:
 
 ```
-http://localhost:7880/app/doc
+http://localhost:7880/api/doc
 ```
 
 ## Examples

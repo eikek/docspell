@@ -21,25 +21,36 @@ object TemplateRoutes {
 
   val `text/html` = new MediaType("text", "html")
 
+  trait InnerRoutes[F[_]] {
+    def doc: HttpRoutes[F]
+    def app: HttpRoutes[F]
+  }
+
   def apply[F[_]: Effect](blocker: Blocker, cfg: Config)(
       implicit C: ContextShift[F]
-  ): HttpRoutes[F] = {
+  ): InnerRoutes[F] = {
     val indexTemplate = memo(loadResource("/index.html").flatMap(loadTemplate(_, blocker)))
     val docTemplate   = memo(loadResource("/doc.html").flatMap(loadTemplate(_, blocker)))
 
     val dsl = new Http4sDsl[F] {}
     import dsl._
-    HttpRoutes.of[F] {
-      case GET -> Root / "index.html" =>
-        for {
-          templ <- indexTemplate
-          resp  <- Ok(IndexData(cfg).render(templ), `Content-Type`(`text/html`))
-        } yield resp
-      case GET -> Root / "doc" =>
-        for {
-          templ <- docTemplate
-          resp  <- Ok(DocData().render(templ), `Content-Type`(`text/html`))
-        } yield resp
+    new InnerRoutes[F] {
+      def doc =
+        HttpRoutes.of[F] {
+          case GET -> Root  =>
+            for {
+              templ <- docTemplate
+              resp  <- Ok(DocData().render(templ), `Content-Type`(`text/html`))
+            } yield resp
+        }
+      def app =
+        HttpRoutes.of[F] {
+          case GET -> _ =>
+            for {
+              templ <- indexTemplate
+              resp  <- Ok(IndexData(cfg).render(templ), `Content-Type`(`text/html`))
+            } yield resp
+        }
     }
   }
 
