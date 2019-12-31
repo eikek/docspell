@@ -4,6 +4,10 @@
     background-size: 100% 800px;
 }
 
+.features-image {
+    max-height: 250px;
+}
+
 .docs #sidebar-wrapper .sidebar-nav .sidebar-nav-item.open>a, .docs #sidebar-wrapper .sidebar-nav .sidebar-nav-item.open button {
     background: #495680;
 }
