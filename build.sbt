@@ -122,10 +122,6 @@ val openapiScalaSettings = Seq(
     }))
 )
 
-val reStartSettings = Seq(
-  javaOptions in reStart ++= Seq(s"-Dconfig.file=${(LocalRootProject/baseDirectory).value/"dev.conf"}")
-)
-
 // --- Modules
 
 val common = project.in(file("modules/common")).
@@ -217,7 +213,7 @@ val joex = project.in(file("modules/joex")).
     addCompilerPlugin(Dependencies.kindProjectorPlugin),
     addCompilerPlugin(Dependencies.betterMonadicFor),
     buildInfoPackage := "docspell.joex",
-    reStart/javaOptions ++= Seq(s"-Dconfig.file=${(LocalRootProject/baseDirectory).value/"dev.conf"}")
+    reStart/javaOptions ++= Seq(s"-Dconfig.file=${(LocalRootProject/baseDirectory).value/"local"/"dev.conf"}")
   ).dependsOn(store, text, joexapi, restapi)
 
 val backend = project.in(file("modules/backend")).
@@ -278,7 +274,7 @@ val restserver = project.in(file("modules/restserver")).
         , streams.value.log)
     }.taskValue,
     Compile/unmanagedResourceDirectories ++= Seq((Compile/resourceDirectory).value.getParentFile/"templates"),
-    reStart/javaOptions ++= Seq(s"-Dconfig.file=${(LocalRootProject/baseDirectory).value/"dev.conf"}")
+    reStart/javaOptions ++= Seq(s"-Dconfig.file=${(LocalRootProject/baseDirectory).value/"local"/"dev.conf"}")
   ).dependsOn(restapi, joexapi, backend, webapp)
 
 val microsite = project.in(file("modules/microsite")).
@@ -401,7 +397,7 @@ def createWebjarSource(wj: Seq[ModuleID], out: File): Seq[File] = {
 }
 
 
-addCommandAlias("make", ";root/openapiCodegen ;root/test:compile")
+addCommandAlias("make", ";set webapp/elmCompileMode := ElmCompileMode.Production ;root/openapiCodegen ;root/test:compile")
 addCommandAlias("make-zip", ";restserver/universal:packageBin ;joex/universal:packageBin")
 addCommandAlias("make-deb", ";restserver/debian:packageBin ;joex/debian:packageBin")
-addCommandAlias("make-pkg", ";make-zip ;make-deb")
+addCommandAlias("make-pkg", ";clean ;make ;make-zip ;make-deb")

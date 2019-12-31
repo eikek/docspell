@@ -7,6 +7,8 @@ import docspell.common.Timestamp
 
 import docspell.common._
 import doobie._
+//import doobie.implicits.javatime._
+import doobie.implicits.legacy.instant._
 import doobie.util.log.Success
 import io.circe.{Decoder, Encoder}
 import docspell.common.syntax.all._

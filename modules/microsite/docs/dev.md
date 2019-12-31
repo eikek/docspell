@@ -15,6 +15,7 @@ the sources and run:
 - `make` to compile all sources (Elm + Scala)
 - `make-zip` to create zip packages
 - `make-deb` to create debian packages
+- `make-pkg` for a clean compile + building all packages (zip + deb)
 
 The zip files can be found afterwards in:
 
@@ -46,10 +47,10 @@ results in recompile+restart once a source file is modified.
 
 ## Custom config file
 
-The sbt build is setup such that a file `dev.conf` in the root of the
-source tree is picked up as config file, if it exists. So you can
-create a custom config file for development. For example, a custom
-database for development may be setup this way:
+The sbt build is setup such that a file `dev.conf` in the directory
+`local` (at root of the source tree) is picked up as config file, if
+it exists. So you can create a custom config file for development. For
+example, a custom database for development may be setup this way:
 
 ```
 #jdbcurl = "jdbc:h2:///home/dev/workspace/projects/docspell/local/docspell-demo.db;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;AUTO_SERVER=TRUE"
