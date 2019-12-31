@@ -123,6 +123,7 @@ type Msg
     | GetEquipResp (Result Http.Error EquipmentList)
     | GetPersonResp (Result Http.Error ReferenceList)
     | SetName String
+    | ResetForm
 
 
 makeTagModel : Comp.Dropdown.Model Tag
@@ -215,6 +216,13 @@ update flags msg model =
                     , Cmd.map FromDueDateMsg dpc
                     ]
                 )
+
+        ResetForm ->
+            let
+                next =
+                    update flags Init emptyModel
+            in
+            { next | stateChange = True }
 
         GetTagsResp (Ok tags) ->
             let

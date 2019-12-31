@@ -33,6 +33,7 @@ emptyModel =
 type Msg
     = Init
     | SearchMenuMsg Comp.SearchMenu.Msg
+    | ResetSearch
     | ItemListMsg Comp.ItemList.Msg
     | ItemSearchResp (Result Http.Error ItemLightList)
     | DoSearch

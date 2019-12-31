@@ -21,6 +21,13 @@ view model =
                 , div [ class "right floated menu" ]
                     [ a
                         [ class "item"
+                        , onClick ResetSearch
+                        , href "#"
+                        ]
+                        [ i [ class "undo icon" ] []
+                        ]
+                    , a
+                        [ class "item"
                         , onClick DoSearch
                         , href ""
                         ]

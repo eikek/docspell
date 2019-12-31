@@ -21,6 +21,9 @@ update key flags msg model =
                 ]
                 model
 
+        ResetSearch ->
+            update key flags (SearchMenuMsg Comp.SearchMenu.ResetForm) model
+
         SearchMenuMsg m ->
             let
                 nextState =
