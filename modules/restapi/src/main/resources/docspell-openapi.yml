@@ -47,6 +47,26 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/AuthResult"
+  /open/checkfile/{id}/{checksum}:
+    get:
+      tags: [ Upload ]
+      summary: Check if a file is in docspell.
+      description: |
+        Checks if a file with the given SHA-256 checksum is in
+        docspell. The id is a *source id* configured by a collective.
+
+        The result shows all items that contains a file with the given
+        checksum.
+      parameters:
+        - $ref: "#/components/parameters/id"
+        - $ref: "#/components/parameters/checksum"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CheckFileResult"
   /open/upload/item/{id}:
     post:
       tags: [ Upload ]
@@ -95,6 +115,25 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BasicResult"
+  /sec/checkfile/{checksum}:
+    get:
+      tags: [ Upload ]
+      summary: Check if a file is in docspell.
+      description: |
+        Checks if a file with the given SHA-256 checksum is in
+        docspell.
+
+        The result shows all items that contains a file with the given
+        checksum.
+      parameters:
+        - $ref: "#/components/parameters/checksum"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CheckFileResult"
   /sec/upload:
     post:
       tags: [ Upload ]
@@ -1169,6 +1208,46 @@ paths:
                 $ref: "#/components/schemas/BasicResult"
 components:
   schemas:
+    CheckFileResult:
+      description: |
+        Results when searching for file checksums.
+      required:
+        - exists
+        - items
+      properties:
+        exists:
+          type: boolean
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/BasicItem"
+    BasicItem:
+      description: |
+        Basic properties about an item.
+      required:
+        - id
+        - name
+        - direction
+        - state
+        - created
+      properties:
+        id:
+          type: string
+          format: ident
+        name:
+          type: string
+        direction:
+          type: string
+          format: direction
+        state:
+          type: string
+          format: itemstate
+        created:
+          type: integer
+          format: date-time
+        itemDate:
+          type: integer
+          format: date-time
     GenInvite:
       description: |
         A request to generate a new invitation key.
@@ -2083,3 +2162,10 @@ components:
       required: false
       schema:
         type: boolean
+    checksum:
+      name: checksum
+      in: path
+      description: A SHA-256 checksum
+      required: true
+      schema:
+        type: string

@@ -31,7 +31,7 @@ object RestServer {
         "/api/v1/sec/" -> Authenticate(restApp.backend.login, cfg.auth) { token =>
           securedRoutes(cfg, restApp, token)
         },
-        "/api/doc" -> templates.doc,
+        "/api/doc"    -> templates.doc,
         "/app/assets" -> WebjarRoutes.appRoutes[F](blocker),
         "/app"        -> templates.app
       ).orNotFound
@@ -68,13 +68,15 @@ object RestServer {
       "queue"        -> JobQueueRoutes(restApp.backend, token),
       "item"         -> ItemRoutes(restApp.backend, token),
       "attachment"   -> AttachmentRoutes(restApp.backend, token),
-      "upload"       -> UploadRoutes.secured(restApp.backend, cfg, token)
+      "upload"       -> UploadRoutes.secured(restApp.backend, cfg, token),
+      "checkfile"    -> CheckFileRoutes.secured(restApp.backend, token)
     )
 
   def openRoutes[F[_]: Effect](cfg: Config, restApp: RestApp[F]): HttpRoutes[F] =
     Router(
-      "auth"   -> LoginRoutes.login(restApp.backend.login, cfg),
-      "signup" -> RegisterRoutes(restApp.backend, cfg),
-      "upload" -> UploadRoutes.open(restApp.backend, cfg)
+      "auth"      -> LoginRoutes.login(restApp.backend.login, cfg),
+      "signup"    -> RegisterRoutes(restApp.backend, cfg),
+      "upload"    -> UploadRoutes.open(restApp.backend, cfg),
+      "checkfile" -> CheckFileRoutes.open(restApp.backend)
     )
 }

@@ -20,8 +20,8 @@ if [[ ${PIPESTATUS[0]} -ne 4 ]]; then
     exit 1
 fi
 
-OPTIONS=om:hdp:v
-LONGOPTS=once,memorize:,help,delete,path:,verbose
+OPTIONS=omhdp:v
+LONGOPTS=once,distinct,help,delete,path:,verbose
 
 ! PARSED=$(getopt --options=$OPTIONS --longoptions=$LONGOPTS --name "$0" -- "$@")
 if [[ ${PIPESTATUS[0]} -ne 0 ]]; then
@@ -34,7 +34,7 @@ fi
 eval set -- "$PARSED"
 
 declare -a watchdir
-help=n verbose=n delete=n once=n memodir=
+help=n verbose=n delete=n once=n distinct=n
 while true; do
     case "$1" in
         -h|--help)
@@ -57,9 +57,9 @@ while true; do
             watchdir+=("$2")
             shift 2
             ;;
-        -m|--memorize)
-            memodir="$2"
-            shift 2
+        -m|--distinct)
+            distinct=y
+            shift
             ;;
         --)
             shift
@@ -71,6 +71,36 @@ while true; do
             ;;
     esac
 done
+
+
+showUsage() {
+    echo "Upload files in a directory"
+    echo ""
+    echo "Usage: $0 [options] url url ..."
+    echo
+    echo "Options:"
+    echo "  -v | --verbose          Print more to stdout. (value: $verbose)"
+    echo "  -d | --delete           Delete the file if successfully uploaded. (value: $delete)"
+    echo "  -p | --path <dir>       The directories to watch. This is required. (value: ${watchdir[@]})"
+    echo "  -h | --help             Prints this help text. (value: $help)"
+    echo "  -m | --distinct         Optional. Upload only if the file doesn't already exist. (value: $distinct)"
+    echo "  -o | --once             Instead of watching, upload all (pdf) files in that dir. (value: $once)"
+    echo ""
+    echo "Arguments:"
+    echo "  A list of URLs to upload the files to."
+    echo ""
+    echo "Example: Watch directory"
+    echo "$0 --path ~/Downloads -m -dv http://localhost:7880/api/v1/open/upload/item/abcde-12345-abcde-12345"
+    echo ""
+    echo "Example: Upload all files in a directory"
+    echo "$0 --path ~/Downloads -m -dv --once http://localhost:7880/api/v1/open/upload/item/abcde-12345-abcde-12345"
+    echo ""
+}
+
+if [ "$help" = "y" ]; then
+    showUsage
+    exit 0
+fi
 
 # handle non-option arguments
 if [[ $# -eq 0 ]]; then
@@ -117,15 +147,22 @@ checksum() {
     $SHA256_CMD "$1" | cut -d' ' -f1 | xargs
 }
 
+checkFile() {
+    local url=$(echo "$1" | sed 's,upload/item,checkfile,g')
+    local file="$2"
+    trace "Check file: $url/$(checksum "$file")"
+    $CURL_CMD -XGET -s "$url/$(checksum "$file")" | (2>&1 1>/dev/null grep '"exists":true')
+}
+
 process() {
     file="$1"
     info "---- Processing $file ----------"
     declare -i curlrc=0
     set +e
     for url in $urls; do
-        if [ -n "$memodir" ] && [ -f "$memodir/.docspell-consume" ]; then
+        if [ "$distinct" = "y" ]; then
             trace "- Checking if $file has been uploaded to $url already"
-            cat "$memodir/.docspell-consume" | grep "$url" | (2>&1 1>/dev/null grep "$(checksum "$file")")
+            checkFile "$url" "$file"
             if [ $? -eq 0 ]; then
                 info "- Skipping file '$file' because it has been uploaded in the past."
                 continue
@@ -137,13 +174,6 @@ process() {
         curlrc=$(expr $curlrc + $rc)
         if [ $rc -ne 0 ]; then
             trace "Upload to '$url' failed!"
-        else
-            if [ -n "$memodir" ]; then
-                trace "- Adding file '$file' to list of uploaded files for '$url'"
-                set +C
-                echo "$(checksum "$file") : $url" >> "$memodir/.docspell-consume"
-                set -C
-            fi
         fi
     done
     set -e
@@ -162,37 +192,6 @@ process() {
         fi
     fi
 }
-
-showUsage() {
-    echo "Upload files in a directory"
-    echo ""
-    echo "Usage: $0 [options] url url ..."
-    echo
-    echo "Options:"
-    echo "  -v | --verbose          Print more to stdout. (value: $verbose)"
-    echo "  -d | --delete           Delete the file if successfully uploaded. (value: $delete)"
-    echo "  -p | --path <dir>       The directories to watch. This is required. (value: ${watchdir[@]})"
-    echo "  -h | --help             Prints this help text. (value: $help)"
-    echo "  -m | --memorize <dir>   Optional directory (writable) to store checksums of"
-    echo "                          uploaded files. This is used to skip duplicates. (value: $memodir)"
-    echo "  -o | --once             Instead of watching, upload all (pdf) files in that dir. (value: $once)"
-    echo ""
-    echo "Arguments:"
-    echo "  A list of URLs to upload the files to."
-    echo ""
-    echo "Example: Watch directory"
-    echo "$0 --path ~/Downloads -m ~/ -dv http://localhost:7880/api/v1/open/upload/item/abcde-12345-abcde-12345"
-    echo ""
-    echo "Example: Upload all files in a directory"
-    echo "$0 --path ~/Downloads -m ~/ -dv --once http://localhost:7880/api/v1/open/upload/item/abcde-12345-abcde-12345"
-    echo ""
-}
-
-
-if [ "$help" = "y" ]; then
-    showUsage
-    exit 0
-fi
 
 if [ "$once" = "y" ]; then
     info "Uploading all files in '$watchdir'."

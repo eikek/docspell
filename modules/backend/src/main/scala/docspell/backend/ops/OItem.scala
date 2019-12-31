@@ -1,6 +1,7 @@
 package docspell.backend.ops
 
 import fs2.Stream
+import cats.data.OptionT
 import cats.implicits._
 import cats.effect.{Effect, Resource}
 import doobie._
@@ -11,6 +12,7 @@ import OItem.{AttachmentData, ItemData, ListItem, Query}
 import bitpeace.{FileMeta, RangeDef}
 import docspell.common.{Direction, Ident, ItemState, MetaProposalList, Timestamp}
 import docspell.store.records.{RAttachment, RAttachmentMeta, RItem, RTagItem}
+import docspell.store.records.RSource
 
 trait OItem[F[_]] {
 
@@ -47,6 +49,11 @@ trait OItem[F[_]] {
   def delete(itemId: Ident, collective: Ident): F[Int]
 
   def findAttachmentMeta(id: Ident, collective: Ident): F[Option[RAttachmentMeta]]
+
+  def findByFileCollective(checksum: String, collective: Ident): F[Vector[RItem]]
+
+  def findByFileSource(checksum: String, sourceId: Ident): F[Vector[RItem]]
+
 }
 
 object OItem {
@@ -163,5 +170,15 @@ object OItem {
 
       def findAttachmentMeta(id: Ident, collective: Ident): F[Option[RAttachmentMeta]] =
         store.transact(QAttachment.getAttachmentMeta(id, collective))
+
+      def findByFileCollective(checksum: String, collective: Ident): F[Vector[RItem]] =
+        store.transact(QItem.findByChecksum(checksum, collective))
+
+      def findByFileSource(checksum: String, sourceId: Ident): F[Vector[RItem]] =
+        store.transact((for {
+          coll <- OptionT(RSource.findCollective(sourceId))
+          items <- OptionT.liftF(QItem.findByChecksum(checksum, coll))
+        } yield items).getOrElse(Vector.empty))
+
     })
 }

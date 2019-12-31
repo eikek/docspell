@@ -23,6 +23,7 @@ CURL_CMD="curl"
 FILE_CMD="file"
 GREP_CMD="grep"
 MKTEMP_CMD="mktemp"
+SHA256_CMD="sha256sum"
 
 ! getopt --test > /dev/null
 if [[ ${PIPESTATUS[0]} -ne 4 ]]; then
@@ -78,7 +79,17 @@ info() {
     echo "$1"
 }
 
-upload() {
+checksum() {
+    $SHA256_CMD "$1" | cut -d' ' -f1 | xargs
+}
+
+checkFile() {
+    local url=$(echo "$1" | sed 's,upload/item,checkfile,g')
+    local file="$2"
+    $CURL_CMD -XGET -s "$url/$(checksum "$file")" | (2>&1 1>/dev/null grep '"exists":true')
+}
+
+upload_file() {
     tf=$($MKTEMP_CMD) rc=0
     $CURL_CMD -# -o "$tf" --stderr "$tf" -w "%{http_code}" -XPOST -F file=@"$1" "$2" | (2>&1 1>/dev/null grep 200)
     rc=$(expr $rc + $?)
@@ -93,6 +104,16 @@ upload() {
     else
         rm "$tf"
         return 0
+    fi
+}
+
+upload() {
+    checkFile "$2" "$1"
+    if [ $? -eq 0 ]; then
+        info "File already exists at url $2"
+        return 0
+    else
+        upload_file "$1" "$2"
     fi
 }
 
@@ -162,7 +183,7 @@ for file in $*; do
             set +e
             upload "$file" "$url"
             set -e
-            if [ "$delete" = "y" ] && [ $rc -eq 0 ]; then
+            if [ "$delete" = "y" ] && [ $? -eq 0 ]; then
                 info "Deleting file: $file"
                 rm -f "$file"
             fi

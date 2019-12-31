@@ -239,6 +239,19 @@ object QItem {
     q.query[RItem].to[Vector]
   }
 
+  def findByChecksum(checksum: String, collective: Ident): ConnectionIO[Vector[RItem]] = {
+    val IC    = RItem.Columns.all.map(_.prefix("i"))
+    val aItem = RAttachment.Columns.itemId.prefix("a")
+    val iId   = RItem.Columns.id.prefix("i")
+    val iColl = RItem.Columns.cid.prefix("i")
+
+    val from = RItem.table ++ fr"i INNER JOIN" ++ RAttachment.table ++ fr"a ON" ++ aItem.is(iId) ++
+      fr"INNER JOIN filemeta m ON m.id = a.filemetaid"
+    selectSimple(IC, from, and(fr"m.checksum = $checksum", iColl.is(collective)))
+      .query[RItem]
+      .to[Vector]
+  }
+
   private def queryWildcard(value: String): String = {
     def prefix(n: String) =
       if (n.startsWith("*")) s"%${n.substring(1)}"
