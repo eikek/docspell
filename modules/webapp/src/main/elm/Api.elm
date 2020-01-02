@@ -279,10 +279,10 @@ setCollectiveSettings flags settings receive =
 -- Tags
 
 
-getTags : Flags -> (Result Http.Error TagList -> msg) -> Cmd msg
-getTags flags receive =
+getTags : Flags -> String -> (Result Http.Error TagList -> msg) -> Cmd msg
+getTags flags query receive =
     Http2.authGet
-        { url = flags.config.baseUrl ++ "/api/v1/sec/tag"
+        { url = flags.config.baseUrl ++ "/api/v1/sec/tag?q=" ++ Url.percentEncode query
         , account = getAccount flags
         , expect = Http.expectJson receive Api.Model.TagList.decoder
         }

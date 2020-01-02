@@ -206,7 +206,7 @@ update flags msg model =
             noChange
                 ( { model | untilDateModel = dp, fromDateModel = dp, untilDueDateModel = dp, fromDueDateModel = dp }
                 , Cmd.batch
-                    [ Api.getTags flags GetTagsResp
+                    [ Api.getTags flags "" GetTagsResp
                     , Api.getOrgLight flags GetOrgResp
                     , Api.getEquipments flags GetEquipResp
                     , Api.getPersonsLight flags GetPersonResp

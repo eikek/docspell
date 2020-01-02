@@ -16,7 +16,7 @@ import Comp.YesNoDimmer
 import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick, onSubmit)
+import Html.Events exposing (onClick, onInput, onSubmit)
 import Http
 import Util.Http
 import Util.Maybe
@@ -59,6 +59,7 @@ type Msg
     | SubmitResp (Result Http.Error BasicResult)
     | YesNoMsg Comp.YesNoDimmer.Msg
     | RequestDelete
+    | SetQuery String
 
 
 update : Flags -> Msg -> Model -> ( Model, Cmd Msg )
@@ -101,7 +102,7 @@ update flags msg model =
             ( { model | tagFormModel = m2 }, Cmd.map FormMsg c2 )
 
         LoadTags ->
-            ( { model | loading = True }, Api.getTags flags TagResp )
+            ( { model | loading = True }, Api.getTags flags "" TagResp )
 
         TagResp (Ok tags) ->
             let
@@ -186,6 +187,9 @@ update flags msg model =
             in
             ( { model | deleteConfirm = cm }, cmd )
 
+        SetQuery str ->
+            ( model, Api.getTags flags str TagResp )
+
 
 view : Model -> Html Msg
 view model =
@@ -199,9 +203,33 @@ view model =
 viewTable : Model -> Html Msg
 viewTable model =
     div []
-        [ button [ class "ui basic button", onClick InitNewTag ]
-            [ i [ class "plus icon" ] []
-            , text "Create new"
+        [ div [ class "ui secondary menu" ]
+            [ div [ class "ui container" ]
+                [ div [ class "fitted-item" ]
+                    [ div [ class "ui icon input" ]
+                        [ input
+                            [ type_ "text"
+                            , onInput SetQuery
+                            , placeholder "Search…"
+                            ]
+                            []
+                        , i [ class "ui search icon" ]
+                            []
+                        ]
+                    ]
+                , div [ class "right menu" ]
+                    [ div [ class "fitted-item" ]
+                        [ a
+                            [ class "ui primary button"
+                            , href "#"
+                            , onClick InitNewTag
+                            ]
+                            [ i [ class "plus icon" ] []
+                            , text "New Tag"
+                            ]
+                        ]
+                    ]
+                ]
             ]
         , Html.map TableMsg (Comp.TagTable.view model.tagTableModel)
         , div

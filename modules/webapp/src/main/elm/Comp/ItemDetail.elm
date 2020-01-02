@@ -167,7 +167,7 @@ type Msg
 getOptions : Flags -> Cmd Msg
 getOptions flags =
     Cmd.batch
-        [ Api.getTags flags GetTagsResp
+        [ Api.getTags flags "" GetTagsResp
         , Api.getOrgLight flags GetOrgResp
         , Api.getPersonsLight flags GetPersonResp
         , Api.getEquipments flags GetEquipResp
