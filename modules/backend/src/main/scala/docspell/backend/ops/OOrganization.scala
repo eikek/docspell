@@ -9,17 +9,17 @@ import OOrganization._
 import docspell.store.queries.QOrganization
 
 trait OOrganization[F[_]] {
-  def findAllOrg(account: AccountId): F[Vector[OrgAndContacts]]
+  def findAllOrg(account: AccountId, query: Option[String]): F[Vector[OrgAndContacts]]
 
-  def findAllOrgRefs(account: AccountId): F[Vector[IdRef]]
+  def findAllOrgRefs(account: AccountId, nameQuery: Option[String]): F[Vector[IdRef]]
 
   def addOrg(s: OrgAndContacts): F[AddResult]
 
   def updateOrg(s: OrgAndContacts): F[AddResult]
 
-  def findAllPerson(account: AccountId): F[Vector[PersonAndContacts]]
+  def findAllPerson(account: AccountId, query: Option[String]): F[Vector[PersonAndContacts]]
 
-  def findAllPersonRefs(account: AccountId): F[Vector[IdRef]]
+  def findAllPersonRefs(account: AccountId, nameQuery: Option[String]): F[Vector[IdRef]]
 
   def addPerson(s: PersonAndContacts): F[AddResult]
 
@@ -39,15 +39,15 @@ object OOrganization {
   def apply[F[_]: Effect](store: Store[F]): Resource[F, OOrganization[F]] =
     Resource.pure(new OOrganization[F] {
 
-      def findAllOrg(account: AccountId): F[Vector[OrgAndContacts]] =
+      def findAllOrg(account: AccountId, query: Option[String]): F[Vector[OrgAndContacts]] =
         store
-          .transact(QOrganization.findOrgAndContact(account.collective, _.name))
+          .transact(QOrganization.findOrgAndContact(account.collective, query, _.name))
           .map({ case (org, cont) => OrgAndContacts(org, cont) })
           .compile
           .toVector
 
-      def findAllOrgRefs(account: AccountId): F[Vector[IdRef]] =
-        store.transact(ROrganization.findAllRef(account.collective, _.name))
+      def findAllOrgRefs(account: AccountId, nameQuery: Option[String]): F[Vector[IdRef]] =
+        store.transact(ROrganization.findAllRef(account.collective, nameQuery, _.name))
 
       def addOrg(s: OrgAndContacts): F[AddResult] =
         QOrganization.addOrg(s.org, s.contacts, s.org.cid)(store)
@@ -55,15 +55,15 @@ object OOrganization {
       def updateOrg(s: OrgAndContacts): F[AddResult] =
         QOrganization.updateOrg(s.org, s.contacts, s.org.cid)(store)
 
-      def findAllPerson(account: AccountId): F[Vector[PersonAndContacts]] =
+      def findAllPerson(account: AccountId, query: Option[String]): F[Vector[PersonAndContacts]] =
         store
-          .transact(QOrganization.findPersonAndContact(account.collective, _.name))
+          .transact(QOrganization.findPersonAndContact(account.collective, query, _.name))
           .map({ case (person, cont) => PersonAndContacts(person, cont) })
           .compile
           .toVector
 
-      def findAllPersonRefs(account: AccountId): F[Vector[IdRef]] =
-        store.transact(RPerson.findAllRef(account.collective, _.name))
+      def findAllPersonRefs(account: AccountId, nameQuery: Option[String]): F[Vector[IdRef]] =
+        store.transact(RPerson.findAllRef(account.collective, nameQuery, _.name))
 
       def addPerson(s: PersonAndContacts): F[AddResult] =
         QOrganization.addPerson(s.person, s.contacts, s.person.cid)(store)

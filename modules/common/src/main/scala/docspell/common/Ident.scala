@@ -3,14 +3,17 @@ package docspell.common
 import java.security.SecureRandom
 import java.util.UUID
 
+import cats.Eq
+import cats.implicits._
 import cats.effect.Sync
 import io.circe.{Decoder, Encoder}
 import scodec.bits.ByteVector
 
-case class Ident(id: String) {
-}
+case class Ident(id: String) {}
 
 object Ident {
+  implicit val identEq: Eq[Ident] =
+    Eq.by(_.id)
 
   val chars: Set[Char] = (('A' to 'Z') ++ ('a' to 'z') ++ ('0' to '9') ++ "-_").toSet
 
@@ -45,8 +48,6 @@ object Ident {
 
   def unapply(arg: String): Option[Ident] =
     fromString(arg).toOption
-
-
 
   implicit val encodeIdent: Encoder[Ident] =
     Encoder.encodeString.contramap(_.id)

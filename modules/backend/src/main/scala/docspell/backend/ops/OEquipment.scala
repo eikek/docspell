@@ -8,7 +8,7 @@ import docspell.store.records.{REquipment, RItem}
 
 trait OEquipment[F[_]] {
 
-  def findAll(account: AccountId): F[Vector[REquipment]]
+  def findAll(account: AccountId, nameQuery: Option[String]): F[Vector[REquipment]]
 
   def add(s: REquipment): F[AddResult]
 
@@ -21,8 +21,8 @@ object OEquipment {
 
   def apply[F[_]: Effect](store: Store[F]): Resource[F, OEquipment[F]] =
     Resource.pure(new OEquipment[F] {
-      def findAll(account: AccountId): F[Vector[REquipment]] =
-        store.transact(REquipment.findAll(account.collective, _.name))
+      def findAll(account: AccountId, nameQuery: Option[String]): F[Vector[REquipment]] =
+        store.transact(REquipment.findAll(account.collective, nameQuery, _.name))
 
       def add(e: REquipment): F[AddResult] = {
         def insert = REquipment.insert(e)

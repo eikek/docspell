@@ -65,8 +65,16 @@ object RTag {
     sql.query[Int].unique.map(_ > 0)
   }
 
-  def findAll(coll: Ident, order: Columns.type => Column): ConnectionIO[Vector[RTag]] = {
-    val sql = selectSimple(all, table, cid.is(coll)) ++ orderBy(order(Columns).f)
+  def findAll(
+      coll: Ident,
+      nameQ: Option[String],
+      order: Columns.type => Column
+  ): ConnectionIO[Vector[RTag]] = {
+    val q = Seq(cid.is(coll)) ++ (nameQ match {
+      case Some(str) => Seq(name.lowerLike(s"%${str.toLowerCase}%"))
+      case None      => Seq.empty
+    })
+    val sql = selectSimple(all, table, and(q)) ++ orderBy(order(Columns).f)
     sql.query[RTag].to[Vector]
   }
 

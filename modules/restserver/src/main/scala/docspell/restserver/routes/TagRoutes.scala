@@ -20,9 +20,10 @@ object TagRoutes {
     import dsl._
 
     HttpRoutes.of {
-      case GET -> Root =>
+      case req @ GET -> Root =>
+        val q = req.params.get("q").map(_.trim).filter(_.nonEmpty)
         for {
-          all  <- backend.tag.findAll(user.account)
+          all  <- backend.tag.findAll(user.account, q)
           resp <- Ok(TagList(all.size, all.map(mkTag).toList))
         } yield resp
 

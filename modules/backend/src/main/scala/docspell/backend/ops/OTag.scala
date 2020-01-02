@@ -8,7 +8,7 @@ import docspell.store.records.{RTag, RTagItem}
 
 trait OTag[F[_]] {
 
-  def findAll(account: AccountId): F[Vector[RTag]]
+  def findAll(account: AccountId, nameQuery: Option[String]): F[Vector[RTag]]
 
   def add(s: RTag): F[AddResult]
 
@@ -21,8 +21,8 @@ object OTag {
 
   def apply[F[_]: Effect](store: Store[F]): Resource[F, OTag[F]] =
     Resource.pure(new OTag[F] {
-      def findAll(account: AccountId): F[Vector[RTag]] =
-        store.transact(RTag.findAll(account.collective, _.name))
+      def findAll(account: AccountId, nameQuery: Option[String]): F[Vector[RTag]] =
+        store.transact(RTag.findAll(account.collective, nameQuery, _.name))
 
       def add(t: RTag): F[AddResult] = {
         def insert = RTag.insert(t)

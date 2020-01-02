@@ -20,15 +20,16 @@ object OrganizationRoutes {
     import dsl._
 
     HttpRoutes.of {
-      case GET -> Root :? FullQueryParamMatcher(full) =>
+      case req @ GET -> Root :? FullQueryParamMatcher(full) =>
+        val q = req.params.get("q").map(_.trim).filter(_.nonEmpty)
         if (full.getOrElse(false)) {
           for {
-            data <- backend.organization.findAllOrg(user.account)
+            data <- backend.organization.findAllOrg(user.account, q)
             resp <- Ok(OrganizationList(data.map(mkOrg).toList))
           } yield resp
         } else {
           for {
-            data <- backend.organization.findAllOrgRefs(user.account)
+            data <- backend.organization.findAllOrgRefs(user.account, q)
             resp <- Ok(ReferenceList(data.map(mkIdName).toList))
           } yield resp
         }

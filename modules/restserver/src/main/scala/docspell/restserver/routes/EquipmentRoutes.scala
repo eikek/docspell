@@ -19,9 +19,10 @@ object EquipmentRoutes {
     import dsl._
 
     HttpRoutes.of {
-      case GET -> Root =>
+      case req @ GET -> Root =>
+        val q = req.params.get("q").map(_.trim).filter(_.nonEmpty)
         for {
-          data <- backend.equipment.findAll(user.account)
+          data <- backend.equipment.findAll(user.account, q)
           resp <- Ok(EquipmentList(data.map(mkEquipment).toList))
         } yield resp
 

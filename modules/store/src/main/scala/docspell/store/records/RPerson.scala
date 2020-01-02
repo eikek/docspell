@@ -1,6 +1,7 @@
 package docspell.store.records
 
 import fs2.Stream
+import cats.Eq
 import doobie._
 import doobie.implicits._
 import docspell.common.{IdRef, _}
@@ -21,6 +22,8 @@ case class RPerson(
 ) {}
 
 object RPerson {
+  implicit val personEq: Eq[RPerson] =
+    Eq.by(_.pid)
 
   val table = fr"person"
 
@@ -116,8 +119,16 @@ object RPerson {
     sql.query[RPerson].stream
   }
 
-  def findAllRef(coll: Ident, order: Columns.type => Column): ConnectionIO[Vector[IdRef]] = {
-    val sql = selectSimple(List(pid, name), table, cid.is(coll)) ++ orderBy(order(Columns).f)
+  def findAllRef(
+      coll: Ident,
+      nameQ: Option[String],
+      order: Columns.type => Column
+  ): ConnectionIO[Vector[IdRef]] = {
+    val q = Seq(cid.is(coll)) ++ (nameQ match {
+      case Some(str) => Seq(name.lowerLike(s"%${str.toLowerCase}%"))
+      case None      => Seq.empty
+    })
+    val sql = selectSimple(List(pid, name), table, and(q)) ++ orderBy(order(Columns).f)
     sql.query[IdRef].to[Vector]
   }
 

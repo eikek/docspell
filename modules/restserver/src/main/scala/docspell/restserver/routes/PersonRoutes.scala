@@ -23,15 +23,16 @@ object PersonRoutes {
     import dsl._
 
     HttpRoutes.of {
-      case GET -> Root :? FullQueryParamMatcher(full) =>
+      case req @ GET -> Root :? FullQueryParamMatcher(full) =>
+        val q = req.params.get("q").map(_.trim).filter(_.nonEmpty)
         if (full.getOrElse(false)) {
           for {
-            data <- backend.organization.findAllPerson(user.account)
+            data <- backend.organization.findAllPerson(user.account, q)
             resp <- Ok(PersonList(data.map(mkPerson).toList))
           } yield resp
         } else {
           for {
-            data <- backend.organization.findAllPersonRefs(user.account)
+            data <- backend.organization.findAllPersonRefs(user.account, q)
             resp <- Ok(ReferenceList(data.map(mkIdName).toList))
           } yield resp
         }

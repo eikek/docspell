@@ -1,5 +1,6 @@
 package docspell.store.records
 
+import cats.Eq
 import fs2.Stream
 import doobie._
 import doobie.implicits._
@@ -20,6 +21,8 @@ case class ROrganization(
 ) {}
 
 object ROrganization {
+  implicit val orgEq: Eq[ROrganization] =
+    Eq.by[ROrganization, Ident](_.oid)
 
   val table = fr"organization"
 
@@ -105,8 +108,16 @@ object ROrganization {
     sql.query[ROrganization].stream
   }
 
-  def findAllRef(coll: Ident, order: Columns.type => Column): ConnectionIO[Vector[IdRef]] = {
-    val sql = selectSimple(List(oid, name), table, cid.is(coll)) ++ orderBy(order(Columns).f)
+  def findAllRef(
+      coll: Ident,
+      nameQ: Option[String],
+      order: Columns.type => Column
+  ): ConnectionIO[Vector[IdRef]] = {
+    val q = Seq(cid.is(coll)) ++ (nameQ match {
+      case Some(str) => Seq(name.lowerLike(s"%${str.toLowerCase}%"))
+      case None      => Seq.empty
+    })
+    val sql = selectSimple(List(oid, name), table, and(q)) ++ orderBy(order(Columns).f)
     sql.query[IdRef].to[Vector]
   }
 

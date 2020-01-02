@@ -255,6 +255,8 @@ paths:
         Return a list of all configured tags.
       security:
         - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/q"
       responses:
         200:
           description: Ok
@@ -329,6 +331,7 @@ paths:
         - authTokenHeader: []
       parameters:
         - $ref: "#/components/parameters/full"
+        - $ref: "#/components/parameters/q"
       responses:
         200:
           description: Ok
@@ -421,6 +424,7 @@ paths:
         - authTokenHeader: []
       parameters:
         - $ref: "#/components/parameters/full"
+        - $ref: "#/components/parameters/q"
       responses:
         200:
           description: Ok
@@ -511,6 +515,8 @@ paths:
         Return a list of all configured equipments.
       security:
         - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/q"
       responses:
         200:
           description: Ok
@@ -2167,5 +2173,12 @@ components:
       in: path
       description: A SHA-256 checksum
       required: true
+      schema:
+        type: string
+    q:
+      name: q
+      in: query
+      description: A query string.
+      required: false
       schema:
         type: string
