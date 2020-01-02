@@ -208,7 +208,7 @@ update flags msg model =
                 , Cmd.batch
                     [ Api.getTags flags "" GetTagsResp
                     , Api.getOrgLight flags GetOrgResp
-                    , Api.getEquipments flags GetEquipResp
+                    , Api.getEquipments flags "" GetEquipResp
                     , Api.getPersonsLight flags GetPersonResp
                     , Cmd.map UntilDateMsg dpc
                     , Cmd.map FromDateMsg dpc

@@ -318,10 +318,10 @@ deleteTag flags tag receive =
 -- Equipments
 
 
-getEquipments : Flags -> (Result Http.Error EquipmentList -> msg) -> Cmd msg
-getEquipments flags receive =
+getEquipments : Flags -> String -> (Result Http.Error EquipmentList -> msg) -> Cmd msg
+getEquipments flags query receive =
     Http2.authGet
-        { url = flags.config.baseUrl ++ "/api/v1/sec/equipment"
+        { url = flags.config.baseUrl ++ "/api/v1/sec/equipment?q=" ++ Url.percentEncode query
         , account = getAccount flags
         , expect = Http.expectJson receive Api.Model.EquipmentList.decoder
         }

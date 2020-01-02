@@ -170,7 +170,7 @@ getOptions flags =
         [ Api.getTags flags "" GetTagsResp
         , Api.getOrgLight flags GetOrgResp
         , Api.getPersonsLight flags GetPersonResp
-        , Api.getEquipments flags GetEquipResp
+        , Api.getEquipments flags "" GetEquipResp
         ]
 
 
