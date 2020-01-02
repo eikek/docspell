@@ -365,10 +365,10 @@ getOrgLight flags receive =
         }
 
 
-getOrganizations : Flags -> (Result Http.Error OrganizationList -> msg) -> Cmd msg
-getOrganizations flags receive =
+getOrganizations : Flags -> String -> (Result Http.Error OrganizationList -> msg) -> Cmd msg
+getOrganizations flags query receive =
     Http2.authGet
-        { url = flags.config.baseUrl ++ "/api/v1/sec/organization?full=true"
+        { url = flags.config.baseUrl ++ "/api/v1/sec/organization?full=true&q=" ++ query
         , account = getAccount flags
         , expect = Http.expectJson receive Api.Model.OrganizationList.decoder
         }
