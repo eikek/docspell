@@ -29,6 +29,7 @@ type alias Model =
     , formError : Maybe String
     , loading : Bool
     , deleteConfirm : Comp.YesNoDimmer.Model
+    , query : String
     }
 
 
@@ -45,6 +46,7 @@ emptyModel =
     , formError = Nothing
     , loading = False
     , deleteConfirm = Comp.YesNoDimmer.emptyModel
+    , query = ""
     }
 
 
@@ -188,7 +190,11 @@ update flags msg model =
             ( { model | deleteConfirm = cm }, cmd )
 
         SetQuery str ->
-            ( model, Api.getEquipments flags str EquipmentResp )
+            let
+                m =
+                    { model | query = str }
+            in
+            ( m, Api.getEquipments flags str EquipmentResp )
 
 
 view : Model -> Html Msg
@@ -210,6 +216,7 @@ viewTable model =
                         [ input
                             [ type_ "text"
                             , onInput SetQuery
+                            , value model.query
                             , placeholder "Search…"
                             ]
                             []

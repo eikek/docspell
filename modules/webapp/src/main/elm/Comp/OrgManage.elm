@@ -29,6 +29,7 @@ type alias Model =
     , formError : Maybe String
     , loading : Bool
     , deleteConfirm : Comp.YesNoDimmer.Model
+    , query : String
     }
 
 
@@ -45,6 +46,7 @@ emptyModel =
     , formError = Nothing
     , loading = False
     , deleteConfirm = Comp.YesNoDimmer.emptyModel
+    , query = ""
     }
 
 
@@ -102,7 +104,7 @@ update flags msg model =
             ( { model | formModel = m2 }, Cmd.map FormMsg c2 )
 
         LoadOrgs ->
-            ( { model | loading = True }, Api.getOrganizations flags "" OrgResp )
+            ( { model | loading = True }, Api.getOrganizations flags model.query OrgResp )
 
         OrgResp (Ok orgs) ->
             let
@@ -188,7 +190,11 @@ update flags msg model =
             ( { model | deleteConfirm = cm }, cmd )
 
         SetQuery str ->
-            ( model, Api.getOrganizations flags str OrgResp )
+            let
+                m =
+                    { model | query = str }
+            in
+            ( m, Api.getOrganizations flags str OrgResp )
 
 
 view : Model -> Html Msg
@@ -210,6 +216,7 @@ viewTable model =
                         [ input
                             [ type_ "text"
                             , onInput SetQuery
+                            , value model.query
                             , placeholder "Search…"
                             ]
                             []
