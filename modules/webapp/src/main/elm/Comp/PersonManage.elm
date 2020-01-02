@@ -203,7 +203,7 @@ view model =
 viewTable : Model -> Html Msg
 viewTable model =
     div []
-        [ div [ class "ui secondary menu" ]
+        [ div [ class "ui secondary menu container" ]
             [ div [ class "ui container" ]
                 [ div [ class "fitted-item" ]
                     [ div [ class "ui icon input" ]
