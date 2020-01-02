@@ -94,6 +94,7 @@ import File exposing (File)
 import Http
 import Json.Encode as JsonEncode
 import Task
+import Url
 import Util.File
 import Util.Http as Http2
 
@@ -368,7 +369,7 @@ getOrgLight flags receive =
 getOrganizations : Flags -> String -> (Result Http.Error OrganizationList -> msg) -> Cmd msg
 getOrganizations flags query receive =
     Http2.authGet
-        { url = flags.config.baseUrl ++ "/api/v1/sec/organization?full=true&q=" ++ query
+        { url = flags.config.baseUrl ++ "/api/v1/sec/organization?full=true&q=" ++ Url.percentEncode query
         , account = getAccount flags
         , expect = Http.expectJson receive Api.Model.OrganizationList.decoder
         }
@@ -413,10 +414,10 @@ getPersonsLight flags receive =
         }
 
 
-getPersons : Flags -> (Result Http.Error PersonList -> msg) -> Cmd msg
-getPersons flags receive =
+getPersons : Flags -> String -> (Result Http.Error PersonList -> msg) -> Cmd msg
+getPersons flags query receive =
     Http2.authGet
-        { url = flags.config.baseUrl ++ "/api/v1/sec/person?full=true"
+        { url = flags.config.baseUrl ++ "/api/v1/sec/person?full=true&q=" ++ Url.percentEncode query
         , account = getAccount flags
         , expect = Http.expectJson receive Api.Model.PersonList.decoder
         }
