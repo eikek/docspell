@@ -18,13 +18,14 @@ import Browser.Navigation as Nav
 import Html exposing (Attribute)
 import Html.Attributes as Attr
 import Url exposing (Url)
-import Url.Parser as Parser exposing ((</>), Parser, oneOf, s, string)
+import Url.Parser as Parser exposing ((</>), (<?>), Parser, oneOf, s, string)
+import Url.Parser.Query as Query
 import Util.Maybe
 
 
 type Page
     = HomePage
-    | LoginPage (Maybe String)
+    | LoginPage (Maybe Page)
     | ManageDataPage
     | CollectiveSettingPage
     | UserSettingPage
@@ -81,7 +82,7 @@ loginPage p =
             LoginPage Nothing
 
         _ ->
-            LoginPage (Just (pageToString p |> String.dropLeft 2))
+            LoginPage (Just p)
 
 
 pageName : Page -> String
@@ -127,7 +128,7 @@ loginPageReferrer : Page -> Maybe Page
 loginPageReferrer page =
     case page of
         LoginPage r ->
-            Maybe.andThen pageFromString r
+            r
 
         _ ->
             Nothing
@@ -150,9 +151,15 @@ pageToString page =
             "/app/home"
 
         LoginPage referer ->
-            Maybe.map (\p -> "/" ++ p) referer
-                |> Maybe.withDefault ""
-                |> (++) "/app/login"
+            case referer of
+                Just (LoginPage _) ->
+                    "/app/login"
+
+                Just p ->
+                    "/app/login?r=" ++ pageToString p
+
+                Nothing ->
+                    "/app/login"
 
         ManageDataPage ->
             "/app/managedata"
@@ -221,8 +228,7 @@ parser : Parser (Page -> a) a
 parser =
     oneOf
         [ Parser.map HomePage (oneOf [ Parser.top, s pathPrefix </> s "home" ])
-        , Parser.map (\s -> LoginPage (Just s)) (s pathPrefix </> s "login" </> string)
-        , Parser.map (LoginPage Nothing) (s pathPrefix </> s "login")
+        , Parser.map LoginPage (s pathPrefix </> s "login" <?> pageQuery)
         , Parser.map ManageDataPage (s pathPrefix </> s "managedata")
         , Parser.map CollectiveSettingPage (s pathPrefix </> s "csettings")
         , Parser.map UserSettingPage (s pathPrefix </> s "usettings")
@@ -238,3 +244,22 @@ parser =
 fromUrl : Url -> Maybe Page
 fromUrl url =
     Parser.parse parser url
+
+
+fromString : String -> Maybe Page
+fromString str =
+    let
+        url =
+            Url Url.Http "localhost" Nothing str Nothing Nothing
+    in
+    fromUrl url
+
+
+pageQuery : Query.Parser (Maybe Page)
+pageQuery =
+    let
+        parsePage ms =
+            Maybe.andThen fromString ms
+    in
+    Query.string "r"
+        |> Query.map parsePage
