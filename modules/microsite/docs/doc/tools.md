@@ -31,7 +31,7 @@ files. For this the `sha256sum` command is required.
 Example for watching two directories:
 
 ``` bash
-./tools/consumedir.sh --path ~/Downloads --path ~/pdfs -m /var/run/consumedir -dv http://localhost:7880/api/v1/open/upload/item/5DxhjkvWf9S-CkWqF3Kr892-WgoCspFWDo7-XBykwCyAUxQ
+./tools/consumedir.sh --path ~/Downloads --path ~/pdfs -m -dv http://localhost:7880/api/v1/open/upload/item/5DxhjkvWf9S-CkWqF3Kr892-WgoCspFWDo7-XBykwCyAUxQ
 ```
 
 The script by default watches the given directories. If the `-o`
@@ -42,7 +42,7 @@ Example for uploading all immediatly (the same as above only with `-o`
 added):
 
 ``` bash
-./tools/consumedir.sh -o --path ~/Downloads --path ~/pdfs/ -m /var/run/consumedir -dv http://localhost:7880/api/v1/open/upload/item/5DxhjkvWf9S-CkWqF3Kr892-WgoCspFWDo7-XBykwCyAUxQ
+./tools/consumedir.sh -o --path ~/Downloads --path ~/pdfs/ -m -dv http://localhost:7880/api/v1/open/upload/item/5DxhjkvWf9S-CkWqF3Kr892-WgoCspFWDo7-XBykwCyAUxQ
 ```
 
 
@@ -59,8 +59,7 @@ Description=Docspell Consumedir
 [Service]
 Environment="PATH=/set/a/path"
 
-ExecStartPre=mkdir -p /var/run/consumedir && chown -R someuser /var/run/consumedir
-ExecStart=/bin/su -s /bin/bash someuser -c "consumedir.sh --path '/a/path/' -m '/var/run/consumedir' 'http://localhost:7880/api/v1/open/upload/item/5DxhjkvWf9S-CkWqF3Kr892-WgoCspFWDo7-XBykwCyAUxQ'"
+ExecStart=/bin/su -s /bin/bash someuser -c "consumedir.sh --path '/a/path/' -m 'http://localhost:7880/api/v1/open/upload/item/5DxhjkvWf9S-CkWqF3Kr892-WgoCspFWDo7-XBykwCyAUxQ'"
 ```
 
 This unit file is just an example, it needs some fiddling. It assumes
