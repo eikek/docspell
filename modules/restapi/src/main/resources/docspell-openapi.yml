@@ -1212,8 +1212,172 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BasicResult"
+  /sec/email/settings:
+    get:
+      tags: [ E-Mail ]
+      summary: List email settings for current user.
+      description: |
+        List all available e-mail settings for the current user.
+        E-Mail settings specify smtp connections that can be used to
+        sent e-mails.
+
+        Multiple e-mail settings can be specified, they are
+        distinguished by their `name`.
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmailSettingsList"
+    post:
+      tags: [ E-Mail ]
+      summary: Create new email settings
+      description: |
+        Create new e-mail settings.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EmailSettings"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+  /sec/email/settings/{name}:
+    parameters:
+      - $ref: "#/components/parameters/name"
+    get:
+      tags: [ E-Mail ]
+      summary: Return specific email settings by name.
+      description: |
+        Return the stored e-mail settings for the given connection
+        name.
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmailSettings"
+    put:
+      tags: [ E-Mail ]
+      summary: Change specific email settings.
+      description: |
+        Changes all settings for the connection with the given `name`.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EmailSettings"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+    delete:
+      tags: [ E-Mail ]
+      summary: Delete e-mail settings.
+      description: |
+        Deletes the e-mail settings with the specified `name`.
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
+  /sec/email/send/{name}/{id}:
+    post:
+      tags: [ E-Mail ]
+      summary: Send an email.
+      description: |
+        Sends an email as specified with all attachments of the item
+        with `id` as mail attachments. If the item has no attachments,
+        then the mail is sent without any. If the item's attachments
+        exceed a specific size, the mail will not be sent.
+      parameters:
+        - $ref: "#/components/parameters/name"
+        - $ref: "#/components/parameters/id"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SimpleMail"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
 components:
   schemas:
+    SimpleMail:
+      description: |
+        A simple e-mail.
+      required:
+        - recipients
+        - subject
+        - body
+      properties:
+        recipients:
+          type: array
+          items:
+            type: string
+        subject:
+          type: string
+        body:
+          type: string
+    EmailSettingsList:
+      description: |
+        A list of user email settings.
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/EmailSettings"
+    EmailSettings:
+      description: |
+        SMTP settings for sending mail.
+      required:
+        - name
+        - smtpHost
+        - smtpPort
+        - smtpUser
+        - smtpPassword
+        - from
+        - sslType
+        - certificateCheck
+      properties:
+        name:
+          type: string
+          format: ident
+        smtpHost:
+          type: string
+        smtpPort:
+          type: integer
+          format: int32
+        smtpUser:
+          type: string
+        smtpPassword:
+          type: string
+          format: password
+        from:
+          type: string
+        sslType:
+          type: string
+        certificateCheck:
+          type: boolean
     CheckFileResult:
       description: |
         Results when searching for file checksums.
@@ -2157,7 +2321,7 @@ components:
     id:
       name: id
       in: path
-      description: A identifier
+      description: An identifier
       required: true
       schema:
         type: string
@@ -2180,5 +2344,12 @@ components:
       in: query
       description: A query string.
       required: false
+      schema:
+        type: string
+    name:
+      name: name
+      in: path
+      description: An e-mail connection name
+      required: true
       schema:
         type: string

@@ -12,6 +12,8 @@ import doobie.implicits.legacy.instant._
 import doobie.util.log.Success
 import io.circe.{Decoder, Encoder}
 import docspell.common.syntax.all._
+import emil.{MailAddress, SSLType}
+import emil.javamail.syntax._
 
 trait DoobieMeta {
 
@@ -88,9 +90,31 @@ trait DoobieMeta {
 
   implicit val metaLanguage: Meta[Language] =
     Meta[String].imap(Language.unsafe)(_.iso3)
+
+  implicit val sslType: Meta[SSLType] =
+    Meta[String].imap(DoobieMeta.readSSLType)(DoobieMeta.sslTypeString)
+
+  implicit val mailAddress: Meta[MailAddress] =
+    Meta[String].imap(str => MailAddress.parse(str).fold(sys.error, identity))(_.asUnicodeString)
 }
 
 object DoobieMeta extends DoobieMeta {
   import org.log4s._
   private val logger = getLogger
+
+  private def readSSLType(str: String): SSLType =
+    str.toLowerCase match {
+      case "ssl"      => SSLType.SSL
+      case "starttls" => SSLType.StartTLS
+      case "none"     => SSLType.NoEncryption
+      case _          => sys.error(s"Invalid ssl-type: $str")
+    }
+
+  private def sslTypeString(st: SSLType): String =
+    st match {
+      case SSLType.SSL          => "ssl"
+      case SSLType.StartTLS     => "starttls"
+      case SSLType.NoEncryption => "none"
+    }
+
 }

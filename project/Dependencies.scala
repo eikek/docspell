@@ -9,6 +9,7 @@ object Dependencies {
   val BitpeaceVersion = "0.4.2"
   val CirceVersion = "0.12.3"
   val DoobieVersion = "0.8.8"
+  val EmilVersion = "0.1.1"
   val FastparseVersion = "2.1.3"
   val FlywayVersion = "6.1.3"
   val Fs2Version = "2.1.0"
@@ -25,6 +26,11 @@ object Dependencies {
   val StanfordNlpVersion = "3.9.2"
   val TikaVersion = "1.23"
   val YamuscaVersion = "0.6.1"
+
+  val emil = Seq(
+    "com.github.eikek" %% "emil-common" % EmilVersion,
+    "com.github.eikek" %% "emil-javamail" % EmilVersion    
+  )
 
   val stanfordNlpCore = Seq(
     "edu.stanford.nlp" % "stanford-corenlp" % StanfordNlpVersion excludeAll(
