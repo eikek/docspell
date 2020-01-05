@@ -57,19 +57,20 @@ object RestServer {
       token: AuthToken
   ): HttpRoutes[F] =
     Router(
-      "auth"         -> LoginRoutes.session(restApp.backend.login, cfg),
-      "tag"          -> TagRoutes(restApp.backend, token),
-      "equipment"    -> EquipmentRoutes(restApp.backend, token),
-      "organization" -> OrganizationRoutes(restApp.backend, token),
-      "person"       -> PersonRoutes(restApp.backend, token),
-      "source"       -> SourceRoutes(restApp.backend, token),
-      "user"         -> UserRoutes(restApp.backend, token),
-      "collective"   -> CollectiveRoutes(restApp.backend, token),
-      "queue"        -> JobQueueRoutes(restApp.backend, token),
-      "item"         -> ItemRoutes(restApp.backend, token),
-      "attachment"   -> AttachmentRoutes(restApp.backend, token),
-      "upload"       -> UploadRoutes.secured(restApp.backend, cfg, token),
-      "checkfile"    -> CheckFileRoutes.secured(restApp.backend, token)
+      "auth"           -> LoginRoutes.session(restApp.backend.login, cfg),
+      "tag"            -> TagRoutes(restApp.backend, token),
+      "equipment"      -> EquipmentRoutes(restApp.backend, token),
+      "organization"   -> OrganizationRoutes(restApp.backend, token),
+      "person"         -> PersonRoutes(restApp.backend, token),
+      "source"         -> SourceRoutes(restApp.backend, token),
+      "user"           -> UserRoutes(restApp.backend, token),
+      "collective"     -> CollectiveRoutes(restApp.backend, token),
+      "queue"          -> JobQueueRoutes(restApp.backend, token),
+      "item"           -> ItemRoutes(restApp.backend, token),
+      "attachment"     -> AttachmentRoutes(restApp.backend, token),
+      "upload"         -> UploadRoutes.secured(restApp.backend, cfg, token),
+      "checkfile"      -> CheckFileRoutes.secured(restApp.backend, token),
+      "email/settings" -> MailSettingsRoutes(restApp.backend, token)
     )
 
   def openRoutes[F[_]: Effect](cfg: Config, restApp: RestApp[F]): HttpRoutes[F] =

@@ -23,6 +23,7 @@ trait BackendApp[F[_]] {
   def node: ONode[F]
   def job: OJob[F]
   def item: OItem[F]
+  def mail: OMail[F]
 }
 
 object BackendApp {
@@ -45,6 +46,7 @@ object BackendApp {
       nodeImpl   <- ONode(store)
       jobImpl    <- OJob(store, httpClientEc)
       itemImpl   <- OItem(store)
+      mailImpl   <- OMail(store)
     } yield new BackendApp[F] {
       val login: Login[F]            = loginImpl
       val signup: OSignup[F]         = signupImpl
@@ -57,6 +59,7 @@ object BackendApp {
       val node                       = nodeImpl
       val job                        = jobImpl
       val item                       = itemImpl
+      val mail                       = mailImpl
     }
 
   def apply[F[_]: ConcurrentEffect: ContextShift](

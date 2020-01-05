@@ -1,5 +1,6 @@
 module Util.Maybe exposing
-    ( isEmpty
+    ( fromString
+    , isEmpty
     , nonEmpty
     , or
     , withDefault
@@ -38,3 +39,16 @@ or listma =
 
                 Nothing ->
                     or els
+
+
+fromString : String -> Maybe String
+fromString str =
+    let
+        s =
+            String.trim str
+    in
+    if s == "" then
+        Nothing
+
+    else
+        Just str

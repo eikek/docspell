@@ -1222,7 +1222,10 @@ paths:
         sent e-mails.
 
         Multiple e-mail settings can be specified, they are
-        distinguished by their `name`.
+        distinguished by their `name`. The query `q` parameter does a
+        simple substring search in the connection name.
+      parameters:
+        - $ref: "#/components/parameters/q"
       responses:
         200:
           description: Ok
@@ -1352,12 +1355,9 @@ components:
       required:
         - name
         - smtpHost
-        - smtpPort
-        - smtpUser
-        - smtpPassword
         - from
         - sslType
-        - certificateCheck
+        - ignoreCertificates
       properties:
         name:
           type: string
@@ -1374,9 +1374,11 @@ components:
           format: password
         from:
           type: string
+        replyTo:
+          type: string
         sslType:
           type: string
-        certificateCheck:
+        ignoreCertificates:
           type: boolean
     CheckFileResult:
       description: |
