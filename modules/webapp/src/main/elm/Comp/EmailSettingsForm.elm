@@ -4,6 +4,7 @@ module Comp.EmailSettingsForm exposing
     , emptyModel
     , getSettings
     , init
+    , isValid
     , update
     , view
     )
@@ -40,7 +41,7 @@ emptyModel =
     { settings = Api.Model.EmailSettings.empty
     , name = ""
     , host = ""
-    , portField = Comp.IntField.init (Just 0) Nothing "SMTP Port"
+    , portField = Comp.IntField.init (Just 0) Nothing True "SMTP Port"
     , portNum = Nothing
     , user = Nothing
     , passField = Comp.PasswordInput.init
@@ -63,7 +64,7 @@ init ems =
     { settings = ems
     , name = ems.name
     , host = ems.smtpHost
-    , portField = Comp.IntField.init (Just 0) Nothing "SMTP Port"
+    , portField = Comp.IntField.init (Just 0) Nothing True "SMTP Port"
     , portNum = ems.smtpPort
     , user = ems.smtpUser
     , passField = Comp.PasswordInput.init
@@ -184,7 +185,7 @@ view model =
                 ]
             ]
         , div [ class "fields" ]
-            [ div [ class "fifteen wide required field" ]
+            [ div [ class "thirteen wide required field" ]
                 [ label [] [ text "SMTP Host" ]
                 , input
                     [ type_ "text"
@@ -194,7 +195,11 @@ view model =
                     ]
                     []
                 ]
-            , Html.map PortMsg (Comp.IntField.view model.portNum model.portField)
+            , Html.map PortMsg
+                (Comp.IntField.view model.portNum
+                    "three wide field"
+                    model.portField
+                )
             ]
         , div [ class "two fields" ]
             [ div [ class "field" ]

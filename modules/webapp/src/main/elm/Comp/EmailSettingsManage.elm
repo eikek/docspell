@@ -18,6 +18,8 @@ import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
+import Http
+import Util.Http
 
 
 type alias Model =
@@ -43,9 +45,9 @@ emptyModel =
     }
 
 
-init : ( Model, Cmd Msg )
-init =
-    ( emptyModel, Cmd.none )
+init : Flags -> ( Model, Cmd Msg )
+init flags =
+    ( emptyModel, Api.getMailSettings flags "" MailSettingsResp )
 
 
 type ViewMode
@@ -61,6 +63,10 @@ type Msg
     | YesNoMsg Comp.YesNoDimmer.Msg
     | RequestDelete
     | SetViewMode ViewMode
+    | Submit
+    | SubmitResp (Result Http.Error BasicResult)
+    | LoadSettings
+    | MailSettingsResp (Result Http.Error EmailSettingsList)
 
 
 update : Flags -> Msg -> Model -> ( Model, Cmd Msg )
@@ -84,8 +90,27 @@ update flags msg model =
             let
                 ( tm, tc ) =
                     Comp.EmailSettingsTable.update m model.tableModel
+
+                m2 =
+                    { model
+                        | tableModel = tm
+                        , viewMode = Maybe.map (\_ -> Form) tm.selected |> Maybe.withDefault Table
+                        , formError =
+                            if tm.selected /= Nothing then
+                                Nothing
+
+                            else
+                                model.formError
+                        , formModel =
+                            case tm.selected of
+                                Just ems ->
+                                    Comp.EmailSettingsForm.init ems
+
+                                Nothing ->
+                                    model.formModel
+                    }
             in
-            ( { model | tableModel = tm }, Cmd.map TableMsg tc )
+            ( m2, Cmd.map TableMsg tc )
 
         FormMsg m ->
             let
@@ -95,20 +120,83 @@ update flags msg model =
             ( { model | formModel = fm }, Cmd.map FormMsg fc )
 
         SetQuery str ->
-            ( { model | query = str }, Cmd.none )
+            let
+                m =
+                    { model | query = str }
+            in
+            ( m, Api.getMailSettings flags str MailSettingsResp )
 
         YesNoMsg m ->
             let
                 ( dm, flag ) =
                     Comp.YesNoDimmer.update m model.deleteConfirm
+
+                ( mid, _ ) =
+                    Comp.EmailSettingsForm.getSettings model.formModel
+
+                cmd =
+                    case ( flag, mid ) of
+                        ( True, Just name ) ->
+                            Api.deleteMailSettings flags name SubmitResp
+
+                        _ ->
+                            Cmd.none
             in
-            ( { model | deleteConfirm = dm }, Cmd.none )
+            ( { model | deleteConfirm = dm }, cmd )
 
         RequestDelete ->
-            ( model, Cmd.none )
+            update flags (YesNoMsg Comp.YesNoDimmer.activate) model
 
         SetViewMode m ->
             ( { model | viewMode = m }, Cmd.none )
+
+        Submit ->
+            let
+                ( mid, ems ) =
+                    Comp.EmailSettingsForm.getSettings model.formModel
+
+                valid =
+                    Comp.EmailSettingsForm.isValid model.formModel
+            in
+            if valid then
+                ( { model | loading = True }, Api.createMailSettings flags mid ems SubmitResp )
+
+            else
+                ( { model | formError = Just "Please fill required fields." }, Cmd.none )
+
+        LoadSettings ->
+            ( { model | loading = True }, Api.getMailSettings flags model.query MailSettingsResp )
+
+        SubmitResp (Ok res) ->
+            if res.success then
+                let
+                    ( m2, c2 ) =
+                        update flags (SetViewMode Table) model
+
+                    ( m3, c3 ) =
+                        update flags LoadSettings m2
+                in
+                ( { m3 | loading = False }, Cmd.batch [ c2, c3 ] )
+
+            else
+                ( { model | formError = Just res.message, loading = False }, Cmd.none )
+
+        SubmitResp (Err err) ->
+            ( { model | formError = Just (Util.Http.errorToString err), loading = False }, Cmd.none )
+
+        MailSettingsResp (Ok ems) ->
+            let
+                m2 =
+                    { model
+                        | viewMode = Table
+                        , loading = False
+                        , tableModel = Comp.EmailSettingsTable.init ems.items
+                    }
+            in
+            ( m2, Cmd.none )
+
+        MailSettingsResp (Err _) ->
+            ( { model | loading = False }, Cmd.none )
 
 
 view : Model -> Html Msg
@@ -171,10 +259,18 @@ viewForm model =
             [ Maybe.withDefault "" model.formError |> text
             ]
         , div [ class "ui divider" ] []
-        , button [ class "ui primary button" ]
+        , button
+            [ class "ui primary button"
+            , onClick Submit
+            , href "#"
+            ]
             [ text "Submit"
             ]
-        , a [ class "ui secondary button", onClick (SetViewMode Table), href "" ]
+        , a
+            [ class "ui secondary button"
+            , onClick (SetViewMode Table)
+            , href ""
+            ]
             [ text "Cancel"
             ]
         , if model.formModel.settings.name /= "" then

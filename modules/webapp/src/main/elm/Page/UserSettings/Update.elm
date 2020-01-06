@@ -13,8 +13,20 @@ update flags msg model =
             let
                 m =
                     { model | currentTab = Just t }
+
+                ( m2, cmd ) =
+                    case t of
+                        EmailSettingsTab ->
+                            let
+                                ( em, c ) =
+                                    Comp.EmailSettingsManage.init flags
+                            in
+                            ( { m | emailSettingsModel = em }, Cmd.map EmailSettingsMsg c )
+
+                        ChangePassTab ->
+                            ( m, Cmd.none )
             in
-            ( m, Cmd.none )
+            ( m2, cmd )
 
         ChangePassMsg m ->
             let

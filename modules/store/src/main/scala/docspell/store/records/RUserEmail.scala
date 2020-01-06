@@ -57,7 +57,7 @@ object RUserEmail {
       now
     )
 
-  def apply(
+  def fromAccount(
       accId: AccountId,
       name: Ident,
       smtpHost: String,
@@ -130,17 +130,21 @@ object RUserEmail {
     ).update.run
 
   def update(eId: Ident, v: RUserEmail): ConnectionIO[Int] =
-    updateRow(table, id.is(eId), commas(
-      name.setTo(v.name),
-      smtpHost.setTo(v.smtpHost),
-      smtpPort.setTo(v.smtpPort),
-      smtpUser.setTo(v.smtpUser),
-      smtpPass.setTo(v.smtpPassword),
-      smtpSsl.setTo(v.smtpSsl),
-      smtpCertCheck.setTo(v.smtpCertCheck),
-      mailFrom.setTo(v.mailFrom),
-      mailReplyTo.setTo(v.mailReplyTo)
-    )).update.run
+    updateRow(
+      table,
+      id.is(eId),
+      commas(
+        name.setTo(v.name),
+        smtpHost.setTo(v.smtpHost),
+        smtpPort.setTo(v.smtpPort),
+        smtpUser.setTo(v.smtpUser),
+        smtpPass.setTo(v.smtpPassword),
+        smtpSsl.setTo(v.smtpSsl),
+        smtpCertCheck.setTo(v.smtpCertCheck),
+        mailFrom.setTo(v.mailFrom),
+        mailReplyTo.setTo(v.mailReplyTo)
+      )
+    ).update.run
 
   def findByUser(userId: Ident): ConnectionIO[Vector[RUserEmail]] =
     selectSimple(all, table, uid.is(userId)).query[RUserEmail].to[Vector]
@@ -162,7 +166,7 @@ object RUserEmail {
       case None                => Seq.empty
     })
 
-    selectSimple(all, from, and(cond)).query[RUserEmail]
+    (selectSimple(all.map(_.prefix("m")), from, and(cond)) ++ orderBy(mName.f)).query[RUserEmail]
   }
 
   def findByAccount(
@@ -173,6 +177,20 @@ object RUserEmail {
 
   def getByName(accId: AccountId, name: Ident): ConnectionIO[Option[RUserEmail]] =
     findByAccount0(accId, Some(name.id), true).option
+
+  def delete(accId: AccountId, connName: Ident): ConnectionIO[Int] = {
+    val uId    = RUser.Columns.uid
+    val uColl  = RUser.Columns.cid
+    val uLogin = RUser.Columns.login
+    val cond   = Seq(uColl.is(accId.collective), uLogin.is(accId.user))
+
+    deleteFrom(
+      table,
+      fr"uid in (" ++ selectSimple(Seq(uId), RUser.table, and(cond)) ++ fr") AND" ++ name.is(
+        connName
+      )
+    ).update.run
+  }
 
   def exists(accId: AccountId, name: Ident): ConnectionIO[Boolean] =
     getByName(accId, name).map(_.isDefined)

@@ -88,6 +88,10 @@
     background-color: #d8dfe5;
 }
 
+.ui.selectable.pointer.table tr {
+    cursor: pointer;
+}
+
 span.small-info {
     font-size: smaller;
     color: rgba(0,0,0,0.6);

@@ -11,6 +11,7 @@ type alias Model =
     , label : String
     , error : Maybe String
     , lastInput : String
+    , optional : Bool
     }
 
 
@@ -18,26 +19,27 @@ type Msg
     = SetValue String
 
 
-init : Maybe Int -> Maybe Int -> String -> Model
-init min max label =
+init : Maybe Int -> Maybe Int -> Bool -> String -> Model
+init min max opt label =
     { min = min
     , max = max
     , label = label
     , error = Nothing
     , lastInput = ""
+    , optional = opt
     }
 
 
 tooLow : Model -> Int -> Bool
 tooLow model n =
     Maybe.map ((<) n) model.min
-        |> Maybe.withDefault False
+        |> Maybe.withDefault (not model.optional)
 
 
 tooHigh : Model -> Int -> Bool
 tooHigh model n =
     Maybe.map ((>) n) model.max
-        |> Maybe.withDefault False
+        |> Maybe.withDefault (not model.optional)
 
 
 update : Msg -> Model -> ( Model, Maybe Int )
@@ -75,16 +77,20 @@ update msg model =
                         ( { m | error = Nothing }, Just n )
 
                 Nothing ->
-                    ( { m | error = Just ("'" ++ str ++ "' is not a valid number!") }
-                    , Nothing
-                    )
+                    if model.optional && String.trim str == "" then
+                        ( { m | error = Nothing }, Nothing )
+
+                    else
+                        ( { m | error = Just ("'" ++ str ++ "' is not a valid number!") }
+                        , Nothing
+                        )
 
 
-view : Maybe Int -> Model -> Html Msg
-view nval model =
+view : Maybe Int -> String -> Model -> Html Msg
+view nval classes model =
     div
         [ classList
-            [ ( "field", True )
+            [ ( classes, True )
             , ( "error", model.error /= Nothing )
             ]
         ]

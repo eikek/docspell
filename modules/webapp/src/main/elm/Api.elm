@@ -1,8 +1,10 @@
 module Api exposing
     ( cancelJob
     , changePassword
+    , createMailSettings
     , deleteEquip
     , deleteItem
+    , deleteMailSettings
     , deleteOrg
     , deletePerson
     , deleteSource
@@ -15,6 +17,7 @@ module Api exposing
     , getItemProposals
     , getJobQueueState
     , getJobQueueStateIn
+    , getMailSettings
     , getOrgLight
     , getOrganizations
     , getPersons
@@ -60,6 +63,8 @@ import Api.Model.BasicResult exposing (BasicResult)
 import Api.Model.Collective exposing (Collective)
 import Api.Model.CollectiveSettings exposing (CollectiveSettings)
 import Api.Model.DirectionValue exposing (DirectionValue)
+import Api.Model.EmailSettings exposing (EmailSettings)
+import Api.Model.EmailSettingsList exposing (EmailSettingsList)
 import Api.Model.Equipment exposing (Equipment)
 import Api.Model.EquipmentList exposing (EquipmentList)
 import Api.Model.GenInvite exposing (GenInvite)
@@ -97,6 +102,57 @@ import Task
 import Url
 import Util.File
 import Util.Http as Http2
+
+
+
+--- Mail Settings
+
+
+deleteMailSettings : Flags -> String -> (Result Http.Error BasicResult -> msg) -> Cmd msg
+deleteMailSettings flags name receive =
+    Http2.authDelete
+        { url = flags.config.baseUrl ++ "/api/v1/sec/email/settings/" ++ name
+        , account = getAccount flags
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+getMailSettings : Flags -> String -> (Result Http.Error EmailSettingsList -> msg) -> Cmd msg
+getMailSettings flags query receive =
+    Http2.authGet
+        { url = flags.config.baseUrl ++ "/api/v1/sec/email/settings?q=" ++ Url.percentEncode query
+        , account = getAccount flags
+        , expect = Http.expectJson receive Api.Model.EmailSettingsList.decoder
+        }
+
+
+createMailSettings :
+    Flags
+    -> Maybe String
+    -> EmailSettings
+    -> (Result Http.Error BasicResult -> msg)
+    -> Cmd msg
+createMailSettings flags mname ems receive =
+    case mname of
+        Just en ->
+            Http2.authPut
+                { url = flags.config.baseUrl ++ "/api/v1/sec/email/settings/" ++ en
+                , account = getAccount flags
+                , body = Http.jsonBody (Api.Model.EmailSettings.encode ems)
+                , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+                }
+
+        Nothing ->
+            Http2.authPost
+                { url = flags.config.baseUrl ++ "/api/v1/sec/email/settings"
+                , account = getAccount flags
+                , body = Http.jsonBody (Api.Model.EmailSettings.encode ems)
+                , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+                }
+
+
+
+--- Upload
 
 
 upload : Flags -> Maybe String -> ItemUploadMeta -> List File -> (String -> Result Http.Error BasicResult -> msg) -> List (Cmd msg)
