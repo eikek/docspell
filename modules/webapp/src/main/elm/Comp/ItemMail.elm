@@ -42,8 +42,14 @@ type Msg
     | Send
 
 
+type alias MailInfo =
+    { conn : String
+    , mail : SimpleMail
+    }
+
+
 type FormAction
-    = FormSend SimpleMail
+    = FormSend MailInfo
     | FormCancel
     | FormNone
 
@@ -132,14 +138,19 @@ update msg model =
             ( model, FormCancel )
 
         Send ->
-            let
-                rec =
-                    String.split "," model.receiver
+            case ( model.formError, Comp.Dropdown.getSelected model.connectionModel ) of
+                ( Nothing, conn :: [] ) ->
+                    let
+                        rec =
+                            String.split "," model.receiver
 
-                sm =
-                    SimpleMail rec model.subject model.body model.attachAll []
-            in
-            ( model, FormSend sm )
+                        sm =
+                            SimpleMail rec model.subject model.body model.attachAll []
+                    in
+                    ( model, FormSend { conn = conn, mail = sm } )
+
+                _ ->
+                    ( model, FormNone )
 
 
 isValid : Model -> Bool

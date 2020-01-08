@@ -70,6 +70,7 @@ object RestServer {
       "attachment"     -> AttachmentRoutes(restApp.backend, token),
       "upload"         -> UploadRoutes.secured(restApp.backend, cfg, token),
       "checkfile"      -> CheckFileRoutes.secured(restApp.backend, token),
+      "email/send"     -> MailSendRoutes(restApp.backend, token),
       "email/settings" -> MailSettingsRoutes(restApp.backend, token)
     )
 

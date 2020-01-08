@@ -40,6 +40,7 @@ module Api exposing
     , putUser
     , refreshSession
     , register
+    , sendMail
     , setCollectiveSettings
     , setConcEquip
     , setConcPerson
@@ -86,6 +87,7 @@ import Api.Model.Person exposing (Person)
 import Api.Model.PersonList exposing (PersonList)
 import Api.Model.ReferenceList exposing (ReferenceList)
 import Api.Model.Registration exposing (Registration)
+import Api.Model.SimpleMail exposing (SimpleMail)
 import Api.Model.Source exposing (Source)
 import Api.Model.SourceList exposing (SourceList)
 import Api.Model.Tag exposing (Tag)
@@ -102,6 +104,24 @@ import Task
 import Url
 import Util.File
 import Util.Http as Http2
+
+
+
+--- Mail Send
+
+
+sendMail :
+    Flags
+    -> { conn : String, item : String, mail : SimpleMail }
+    -> (Result Http.Error BasicResult -> msg)
+    -> Cmd msg
+sendMail flags opts receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/email/send/" ++ opts.conn ++ "/" ++ opts.item
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.SimpleMail.encode opts.mail)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
 
 
 

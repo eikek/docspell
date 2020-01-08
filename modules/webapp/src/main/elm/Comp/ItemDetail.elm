@@ -33,6 +33,7 @@ import Html.Events exposing (onClick, onInput)
 import Http
 import Markdown
 import Page exposing (Page(..))
+import Util.Http
 import Util.Maybe
 import Util.Size
 import Util.String
@@ -60,6 +61,7 @@ type alias Model =
     , dueDatePicker : DatePicker
     , itemMail : Comp.ItemMail.Model
     , mailOpen : Bool
+    , mailSendResult : Maybe BasicResult
     }
 
 
@@ -121,6 +123,7 @@ emptyModel =
     , dueDatePicker = Comp.DatePicker.emptyModel
     , itemMail = Comp.ItemMail.emptyModel
     , mailOpen = False
+    , mailSendResult = Nothing
     }
 
 
@@ -165,6 +168,7 @@ type Msg
     | RemoveDate
     | ItemMailMsg Comp.ItemMail.Msg
     | ToggleMail
+    | SendMailResp (Result Http.Error BasicResult)
 
 
 
@@ -714,15 +718,48 @@ update key flags next msg model =
                     ( { model
                         | itemMail = Comp.ItemMail.clear im
                         , mailOpen = False
+                        , mailSendResult = Nothing
                       }
                     , Cmd.none
                     )
 
                 Comp.ItemMail.FormSend sm ->
-                    Debug.todo "implement send"
+                    let
+                        mail =
+                            { item = model.item.id
+                            , mail = sm.mail
+                            , conn = sm.conn
+                            }
+                    in
+                    ( model, Api.sendMail flags mail SendMailResp )
 
         ToggleMail ->
             ( { model | mailOpen = not model.mailOpen }, Cmd.none )
+
+        SendMailResp (Ok br) ->
+            let
+                mm =
+                    if br.success then
+                        Comp.ItemMail.clear model.itemMail
+
+                    else
+                        model.itemMail
+            in
+            ( { model
+                | itemMail = mm
+                , mailSendResult = Just br
+              }
+            , Cmd.none
+            )
+
+        SendMailResp (Err err) ->
+            let
+                errmsg =
+                    Util.Http.errorToString err
+            in
+            ( { model | mailSendResult = Just (BasicResult False errmsg) }
+            , Cmd.none
+            )
 
 
 
@@ -793,7 +830,7 @@ view inav model =
                 , onClick ToggleMail
                 , href "#"
                 ]
-                [ i [ class "mail icon" ] []
+                [ i [ class "mail outline icon" ] []
                 ]
             ]
         , renderMailForm model
@@ -1258,4 +1295,23 @@ renderMailForm model =
             [ text "Send this item via E-Mail"
             ]
         , Html.map ItemMailMsg (Comp.ItemMail.view model.itemMail)
+        , div
+            [ classList
+                [ ( "ui message", True )
+                , ( "error"
+                  , Maybe.map .success model.mailSendResult
+                        |> Maybe.map not
+                        |> Maybe.withDefault False
+                  )
+                , ( "success"
+                  , Maybe.map .success model.mailSendResult
+                        |> Maybe.withDefault False
+                  )
+                , ( "invisible hidden", model.mailSendResult == Nothing )
+                ]
+            ]
+            [ Maybe.map .message model.mailSendResult
+                |> Maybe.withDefault ""
+                |> text
+            ]
         ]

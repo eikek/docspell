@@ -1,5 +1,6 @@
 package docspell.store
 
+import cats.implicits._
 import emil._
 import emil.javamail.syntax._
 
@@ -28,6 +29,9 @@ object EmilUtil {
 
   def unsafeReadMailAddress(str: String): MailAddress =
     readMailAddress(str).fold(sys.error, identity)
+
+  def readMultipleAddresses(str: String): Either[String, List[MailAddress]] =
+    str.split(',').toList.map(_.trim).traverse(readMailAddress)
 
   def mailAddressString(ma: MailAddress): String =
     ma.asUnicodeString

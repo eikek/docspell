@@ -8,6 +8,7 @@ import emil.{MailAddress, SSLType}
 import docspell.common._
 import docspell.store._
 import docspell.store.records.RUserEmail
+import OMail.{ItemMail, SmtpSettings}
 
 trait OMail[F[_]] {
 
@@ -15,14 +16,30 @@ trait OMail[F[_]] {
 
   def findSettings(accId: AccountId, name: Ident): OptionT[F, RUserEmail]
 
-  def createSettings(accId: AccountId, data: OMail.SmtpSettings): F[AddResult]
+  def createSettings(accId: AccountId, data: SmtpSettings): F[AddResult]
 
   def updateSettings(accId: AccountId, name: Ident, data: OMail.SmtpSettings): F[Int]
 
   def deleteSettings(accId: AccountId, name: Ident): F[Int]
+
+  def sendMail(accId: AccountId, name: Ident, m: ItemMail): F[SendResult]
 }
 
 object OMail {
+
+  case class ItemMail(
+      item: Ident,
+      subject: String,
+      recipients: List[MailAddress],
+      body: String,
+      attach: AttachSelection
+  )
+
+  sealed trait AttachSelection
+  object AttachSelection {
+    case object All                       extends AttachSelection
+    case class Selected(ids: List[Ident]) extends AttachSelection
+  }
 
   case class SmtpSettings(
       name: Ident,
@@ -79,5 +96,8 @@ object OMail {
 
       def deleteSettings(accId: AccountId, name: Ident): F[Int] =
         store.transact(RUserEmail.delete(accId, name))
+
+      def sendMail(accId: AccountId, name: Ident, m: ItemMail): F[SendResult] =
+        Effect[F].pure(SendResult.Failure(new Exception("not implemented")))
     })
 }

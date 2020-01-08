@@ -93,6 +93,9 @@ trait DoobieMeta {
 
   implicit val mailAddress: Meta[MailAddress] =
     Meta[String].imap(EmilUtil.unsafeReadMailAddress)(EmilUtil.mailAddressString)
+
+  implicit def mailAddressList: Meta[List[MailAddress]] =
+    ???
 }
 
 object DoobieMeta extends DoobieMeta {

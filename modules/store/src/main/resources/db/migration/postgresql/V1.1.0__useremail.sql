@@ -14,3 +14,17 @@ CREATE TABLE "useremail" (
   unique ("uid", "name"),
   foreign key ("uid") references "user_"("uid")
 );
+
+CREATE TABLE "sentmail" (
+  "id" varchar(254) not null primary key,
+  "uid" varchar(254) not null,
+  "item_id" varchar(254) not null,
+  "message_id" varchar(254) not null,
+  "sender" varchar(254) not null,
+  "subject" varchar(254) not null,
+  "recipients" varchar(254) not null,
+  "body" text not null,
+  "created" timestamp not null,
+  foreign key("uid") references "user_"("uid"),
+  foreign key("item_id") references "item"("itemid")
+);
