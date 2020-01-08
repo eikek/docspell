@@ -76,7 +76,10 @@ init ems =
             { makeOption = \s -> { value = Data.SSLType.toString s, text = Data.SSLType.label s }
             , placeholder = ""
             , options = Data.SSLType.all
-            , selected = Data.SSLType.fromString ems.sslType
+            , selected =
+                Data.SSLType.fromString ems.sslType
+                    |> Maybe.withDefault Data.SSLType.None
+                    |> Just
             }
     , ignoreCertificates = ems.ignoreCertificates
     }

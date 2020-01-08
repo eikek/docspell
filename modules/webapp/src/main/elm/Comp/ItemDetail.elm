@@ -22,6 +22,7 @@ import Api.Model.TagList exposing (TagList)
 import Browser.Navigation as Nav
 import Comp.DatePicker
 import Comp.Dropdown exposing (isDropdownChangeMsg)
+import Comp.ItemMail
 import Comp.YesNoDimmer
 import Data.Direction exposing (Direction)
 import Data.Flags exposing (Flags)
@@ -57,6 +58,8 @@ type alias Model =
     , itemProposals : ItemProposals
     , dueDate : Maybe Int
     , dueDatePicker : DatePicker
+    , itemMail : Comp.ItemMail.Model
+    , mailOpen : Bool
     }
 
 
@@ -116,6 +119,8 @@ emptyModel =
     , itemProposals = Api.Model.ItemProposals.empty
     , dueDate = Nothing
     , dueDatePicker = Comp.DatePicker.emptyModel
+    , itemMail = Comp.ItemMail.emptyModel
+    , mailOpen = False
     }
 
 
@@ -158,6 +163,8 @@ type Msg
     | GetProposalResp (Result Http.Error ItemProposals)
     | RemoveDueDate
     | RemoveDate
+    | ItemMailMsg Comp.ItemMail.Msg
+    | ToggleMail
 
 
 
@@ -282,12 +289,16 @@ update key flags next msg model =
             let
                 ( dp, dpc ) =
                     Comp.DatePicker.init
+
+                ( im, ic ) =
+                    Comp.ItemMail.init flags
             in
-            ( { model | itemDatePicker = dp, dueDatePicker = dp }
+            ( { model | itemDatePicker = dp, dueDatePicker = dp, itemMail = im }
             , Cmd.batch
                 [ getOptions flags
                 , Cmd.map ItemDatePickerMsg dpc
                 , Cmd.map DueDatePickerMsg dpc
+                , Cmd.map ItemMailMsg ic
                 ]
             )
 
@@ -690,6 +701,29 @@ update key flags next msg model =
         GetProposalResp (Err _) ->
             ( model, Cmd.none )
 
+        ItemMailMsg m ->
+            let
+                ( im, fa ) =
+                    Comp.ItemMail.update m model.itemMail
+            in
+            case fa of
+                Comp.ItemMail.FormNone ->
+                    ( { model | itemMail = im }, Cmd.none )
+
+                Comp.ItemMail.FormCancel ->
+                    ( { model
+                        | itemMail = Comp.ItemMail.clear im
+                        , mailOpen = False
+                      }
+                    , Cmd.none
+                    )
+
+                Comp.ItemMail.FormSend sm ->
+                    Debug.todo "implement send"
+
+        ToggleMail ->
+            ( { model | mailOpen = not model.mailOpen }, Cmd.none )
+
 
 
 -- view
@@ -711,6 +745,7 @@ view inav model =
         , div
             [ classList
                 [ ( "ui ablue-comp menu", True )
+                , ( "top attached", model.mailOpen )
                 ]
             ]
             [ a [ class "item", Page.href HomePage ]
@@ -743,13 +778,25 @@ view inav model =
                     [ ( "toggle item", True )
                     , ( "active", model.menuOpen )
                     ]
-                , title "Expand Menu"
+                , title "Edit item"
                 , onClick ToggleMenu
                 , href ""
                 ]
                 [ i [ class "edit icon" ] []
                 ]
+            , a
+                [ classList
+                    [ ( "toggle item", True )
+                    , ( "active", model.mailOpen )
+                    ]
+                , title "Send Mail"
+                , onClick ToggleMail
+                , href "#"
+                ]
+                [ i [ class "mail icon" ] []
+                ]
             ]
+        , renderMailForm model
         , div [ class "ui grid" ]
             [ Html.map YesNoMsg (Comp.YesNoDimmer.view model.deleteConfirm)
             , div
@@ -1197,3 +1244,18 @@ renderDueDateSuggestions model =
         Util.Time.formatDate
         (List.take 5 model.itemProposals.dueDate)
         SetDueDateSuggestion
+
+
+renderMailForm : Model -> Html Msg
+renderMailForm model =
+    div
+        [ classList
+            [ ( "ui bottom attached segment", True )
+            , ( "invisible hidden", not model.mailOpen )
+            ]
+        ]
+        [ h4 [ class "ui header" ]
+            [ text "Send this item via E-Mail"
+            ]
+        , Html.map ItemMailMsg (Comp.ItemMail.view model.itemMail)
+        ]

@@ -65,6 +65,12 @@
     padding-right: 1em;
 }
 
+label span.muted {
+    font-size: smaller;
+    color: rgba(0,0,0,0.6);
+    margin-left: 0.5em;
+}
+
 .ui.search.dropdown.open {
     z-index: 20;
 }

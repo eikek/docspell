@@ -1325,11 +1325,18 @@ components:
   schemas:
     SimpleMail:
       description: |
-        A simple e-mail.
+        A simple e-mail related to an item.
+
+        The mail may contain the item attachments as mail attachments.
+        If all item attachments should be send, set
+        `addAllAttachments` to `true`. Otherwise set it to `false` and
+        specify a list of file-ids that you want to include.
       required:
         - recipients
         - subject
         - body
+        - addAllAttachments
+        - attachmentIds
       properties:
         recipients:
           type: array
@@ -1339,6 +1346,13 @@ components:
           type: string
         body:
           type: string
+        addAllAttachments:
+          type: boolean
+        attachemntIds:
+          type: array
+          items:
+            type: string
+            format: ident
     EmailSettingsList:
       description: |
         A list of user email settings.
