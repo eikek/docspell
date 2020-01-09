@@ -11,7 +11,6 @@ import emil.MailAddress
 case class RSentMail(
     id: Ident,
     uid: Ident,
-    itemId: Ident,
     messageId: String,
     sender: MailAddress,
     subject: String,
@@ -27,7 +26,6 @@ object RSentMail {
   object Columns {
     val id            = Column("id")
     val uid           = Column("uid")
-    val itemId          = Column("item_id")
     val messageId      = Column("message_id")
     val sender      = Column("sender")
     val subject      = Column("subject")
@@ -38,7 +36,6 @@ object RSentMail {
     val all = List(
       id,
       uid,
-      itemId,
       messageId,
       sender,
       subject,
@@ -54,7 +51,7 @@ object RSentMail {
     insertRow(
       table,
       all,
-      sql"${v.id},${v.uid},${v.itemId},${v.messageId},${v.sender},${v.subject},${v.recipients},${v.body},${v.created}"
+      sql"${v.id},${v.uid},${v.messageId},${v.sender},${v.subject},${v.recipients},${v.body},${v.created}"
     ).update.run
 
   def findByUser(userId: Ident): Stream[ConnectionIO, RSentMail] =
