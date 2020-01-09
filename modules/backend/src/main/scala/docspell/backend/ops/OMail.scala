@@ -1,14 +1,22 @@
 package docspell.backend.ops
 
+import fs2.Stream
 import cats.effect._
 import cats.implicits._
 import cats.data.OptionT
-import emil.{MailAddress, SSLType}
+import emil._
+import emil.javamail.syntax._
 
 import docspell.common._
 import docspell.store._
 import docspell.store.records.RUserEmail
 import OMail.{ItemMail, SmtpSettings}
+import docspell.store.records.RAttachment
+import bitpeace.FileMeta
+import bitpeace.RangeDef
+import docspell.store.records.RItem
+import docspell.store.records.RSentMail
+import docspell.store.records.RSentMailItem
 
 trait OMail[F[_]] {
 
@@ -35,10 +43,19 @@ object OMail {
       attach: AttachSelection
   )
 
-  sealed trait AttachSelection
+  sealed trait AttachSelection {
+    def filter(v: Vector[(RAttachment, FileMeta)]): Vector[(RAttachment, FileMeta)]
+  }
   object AttachSelection {
-    case object All                       extends AttachSelection
-    case class Selected(ids: List[Ident]) extends AttachSelection
+    case object All extends AttachSelection {
+      def filter(v: Vector[(RAttachment, FileMeta)]): Vector[(RAttachment, FileMeta)] = v
+    }
+    case class Selected(ids: List[Ident]) extends AttachSelection {
+      def filter(v: Vector[(RAttachment, FileMeta)]): Vector[(RAttachment, FileMeta)] = {
+        val set = ids.toSet
+        v.filter(set contains _._1.id)
+      }
+    }
   }
 
   case class SmtpSettings(
@@ -68,7 +85,7 @@ object OMail {
       )
   }
 
-  def apply[F[_]: Effect](store: Store[F]): Resource[F, OMail[F]] =
+  def apply[F[_]: Effect](store: Store[F], emil: Emil[F]): Resource[F, OMail[F]] =
     Resource.pure(new OMail[F] {
       def getSettings(accId: AccountId, nameQ: Option[String]): F[Vector[RUserEmail]] =
         store.transact(RUserEmail.findByAccount(accId, nameQ))
@@ -97,7 +114,71 @@ object OMail {
       def deleteSettings(accId: AccountId, name: Ident): F[Int] =
         store.transact(RUserEmail.delete(accId, name))
 
-      def sendMail(accId: AccountId, name: Ident, m: ItemMail): F[SendResult] =
-        Effect[F].pure(SendResult.Failure(new Exception("not implemented")))
+      def sendMail(accId: AccountId, name: Ident, m: ItemMail): F[SendResult] = {
+
+        val getSettings: OptionT[F, RUserEmail] =
+          OptionT(store.transact(RUserEmail.getByName(accId, name)))
+
+        def createMail(sett: RUserEmail): OptionT[F, Mail[F]] = {
+          import _root_.emil.builder._
+
+          for {
+            _ <- OptionT.liftF(store.transact(RItem.existsById(m.item))).filter(identity)
+            ras <- OptionT.liftF(
+              store.transact(RAttachment.findByItemAndCollectiveWithMeta(m.item, accId.collective))
+            )
+          } yield {
+            val addAttach = m.attach.filter(ras).map { a =>
+              Attach[F](Stream.emit(a._2).through(store.bitpeace.fetchData2(RangeDef.all)))
+                .withFilename(a._1.name)
+                .withLength(a._2.length)
+                .withMimeType(_root_.emil.MimeType.parse(a._2.mimetype.asString).toOption)
+            }
+            val fields: Seq[Trans[F]] = Seq(
+              From(sett.mailFrom),
+              Tos(m.recipients),
+              Subject(m.subject),
+              TextBody[F](m.body)
+            )
+
+            MailBuilder.fromSeq[F](fields).addAll(addAttach).build
+          }
+        }
+
+        def sendMail(cfg: MailConfig, mail: Mail[F]): F[Either[SendResult, String]] =
+          emil(cfg).send(mail).map(_.head).attempt.map(_.left.map(SendResult.SendFailure))
+
+        def storeMail(msgId: String, cfg: RUserEmail): F[Either[SendResult, Ident]] = {
+          val save = for {
+            data <- RSentMail.forItem(
+              m.item,
+              accId,
+              msgId,
+              cfg.mailFrom,
+              m.subject,
+              m.recipients,
+              m.body
+            )
+            _ <- OptionT.liftF(RSentMail.insert(data._1))
+            _ <- OptionT.liftF(RSentMailItem.insert(data._2))
+          } yield data._1.id
+
+          store.transact(save.value).attempt.map {
+            case Right(Some(id)) => Right(id)
+            case Right(None) =>
+              Left(SendResult.StoreFailure(new Exception(s"Could not find user to save mail.")))
+            case Left(ex) => Left(SendResult.StoreFailure(ex))
+          }
+        }
+
+        (for {
+          mailCfg <- getSettings
+          mail    <- createMail(mailCfg)
+          mid     <- OptionT.liftF(sendMail(mailCfg.toMailConfig, mail))
+          res     <- mid.traverse(id => OptionT.liftF(storeMail(id, mailCfg)))
+          conv = res.fold(identity, _.fold(identity, id => SendResult.Success(id)))
+        } yield conv).getOrElse(SendResult.NotFound)
+      }
+
     })
 }

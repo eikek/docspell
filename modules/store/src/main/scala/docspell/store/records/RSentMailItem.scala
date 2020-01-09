@@ -17,12 +17,15 @@ case class RSentMailItem(
 
 object RSentMailItem {
 
-  def create[F[_]: Sync](itemId: Ident, sentmailId: Ident, created: Option[Timestamp] = None): F[RSentMailItem] =
+  def apply[F[_]: Sync](
+      itemId: Ident,
+      sentmailId: Ident,
+      created: Option[Timestamp] = None
+  ): F[RSentMailItem] =
     for {
-      id <- Ident.randomId[F]
+      id  <- Ident.randomId[F]
       now <- created.map(_.pure[F]).getOrElse(Timestamp.current[F])
     } yield RSentMailItem(id, itemId, sentmailId, now)
-
 
   val table = fr"sentmailitem"
 

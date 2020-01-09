@@ -95,7 +95,9 @@ trait DoobieMeta {
     Meta[String].imap(EmilUtil.unsafeReadMailAddress)(EmilUtil.mailAddressString)
 
   implicit def mailAddressList: Meta[List[MailAddress]] =
-    ???
+    Meta[String].imap(str => str.split(',').toList.map(_.trim).map(EmilUtil.unsafeReadMailAddress))(
+      lma => lma.map(EmilUtil.mailAddressString).mkString(",")
+    )
 }
 
 object DoobieMeta extends DoobieMeta {

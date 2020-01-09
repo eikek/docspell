@@ -8,6 +8,8 @@
   </appender>
 
   <logger name="docspell" level="debug" />
+  <logger name="emil" level="debug"/>
+
   <root level="INFO">
     <appender-ref ref="STDOUT" />
   </root>

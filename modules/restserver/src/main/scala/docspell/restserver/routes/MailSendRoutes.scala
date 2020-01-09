@@ -46,7 +46,11 @@ object MailSendRoutes {
     res match {
       case SendResult.Success(_) =>
         BasicResult(true, "Mail sent.")
-      case SendResult.Failure(ex) =>
+      case SendResult.SendFailure(ex) =>
         BasicResult(false, s"Mail sending failed: ${ex.getMessage}")
+      case SendResult.StoreFailure(ex) =>
+        BasicResult(false, s"Mail was sent, but could not be store to database: ${ex.getMessage}")
+      case SendResult.NotFound =>
+        BasicResult(false, s"There was no mail-connection or item found.")
     }
 }

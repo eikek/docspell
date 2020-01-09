@@ -8,7 +8,7 @@ import cats.data.OptionT
 import docspell.common._
 import docspell.store.impl.Column
 import docspell.store.impl.Implicits._
-import emil.{MailAddress, SSLType}
+import emil.{MailAddress, MailConfig, SSLType}
 
 case class RUserEmail(
     id: Ident,
@@ -23,7 +23,19 @@ case class RUserEmail(
     mailFrom: MailAddress,
     mailReplyTo: Option[MailAddress],
     created: Timestamp
-) {}
+) {
+
+  def toMailConfig: MailConfig = {
+    val port = smtpPort.map(p => s":$p").getOrElse("")
+    MailConfig(
+      s"smtp://$smtpHost$port",
+      smtpUser.getOrElse(""),
+      smtpPassword.map(_.pass).getOrElse(""),
+      smtpSsl,
+      !smtpCertCheck
+    )
+  }
+}
 
 object RUserEmail {
 

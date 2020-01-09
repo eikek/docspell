@@ -9,6 +9,7 @@ import docspell.store.ops.ONode
 import docspell.store.queue.JobQueue
 
 import scala.concurrent.ExecutionContext
+import emil.javamail.JavaMailEmil
 
 trait BackendApp[F[_]] {
 
@@ -28,10 +29,11 @@ trait BackendApp[F[_]] {
 
 object BackendApp {
 
-  def create[F[_]: ConcurrentEffect](
+  def create[F[_]: ConcurrentEffect: ContextShift](
       cfg: Config,
       store: Store[F],
-      httpClientEc: ExecutionContext
+    httpClientEc: ExecutionContext,
+    blocker: Blocker
   ): Resource[F, BackendApp[F]] =
     for {
       queue      <- JobQueue(store)
@@ -46,7 +48,7 @@ object BackendApp {
       nodeImpl   <- ONode(store)
       jobImpl    <- OJob(store, httpClientEc)
       itemImpl   <- OItem(store)
-      mailImpl   <- OMail(store)
+      mailImpl   <- OMail(store, JavaMailEmil(blocker))
     } yield new BackendApp[F] {
       val login: Login[F]            = loginImpl
       val signup: OSignup[F]         = signupImpl
@@ -70,6 +72,6 @@ object BackendApp {
   ): Resource[F, BackendApp[F]] =
     for {
       store   <- Store.create(cfg.jdbc, connectEC, blocker)
-      backend <- create(cfg, store, httpClientEc)
+      backend <- create(cfg, store, httpClientEc, blocker)
     } yield backend
 }
