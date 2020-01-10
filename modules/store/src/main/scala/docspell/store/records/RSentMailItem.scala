@@ -52,4 +52,6 @@ object RSentMailItem {
       sql"${v.id},${v.itemId},${v.sentMailId},${v.created}"
     ).update.run
 
+  def deleteMail(mailId: Ident): ConnectionIO[Int] =
+    deleteFrom(table, sentMailId.is(mailId)).update.run
 }

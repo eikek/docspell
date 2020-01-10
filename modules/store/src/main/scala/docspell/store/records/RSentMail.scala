@@ -16,6 +16,7 @@ case class RSentMail(
     uid: Ident,
     messageId: String,
     sender: MailAddress,
+    connName: Ident,
     subject: String,
     recipients: List[MailAddress],
     body: String,
@@ -28,6 +29,7 @@ object RSentMail {
       uid: Ident,
       messageId: String,
       sender: MailAddress,
+      connName: Ident,
       subject: String,
       recipients: List[MailAddress],
       body: String
@@ -35,23 +37,25 @@ object RSentMail {
     for {
       id  <- Ident.randomId[F]
       now <- Timestamp.current[F]
-    } yield RSentMail(id, uid, messageId, sender, subject, recipients, body, now)
+    } yield RSentMail(id, uid, messageId, sender, connName, subject, recipients, body, now)
 
   def forItem(
       itemId: Ident,
       accId: AccountId,
       messageId: String,
       sender: MailAddress,
+      connName: Ident,
       subject: String,
       recipients: List[MailAddress],
       body: String
   ): OptionT[ConnectionIO, (RSentMail, RSentMailItem)] =
     for {
       user <- OptionT(RUser.findByAccount(accId))
-      sm <- OptionT.liftF(RSentMail[ConnectionIO](user.uid, messageId, sender, subject, recipients, body))
+      sm <- OptionT.liftF(
+        RSentMail[ConnectionIO](user.uid, messageId, sender, connName, subject, recipients, body)
+      )
       si <- OptionT.liftF(RSentMailItem[ConnectionIO](itemId, sm.id, Some(sm.created)))
     } yield (sm, si)
-
 
   val table = fr"sentmail"
 
@@ -60,6 +64,7 @@ object RSentMail {
     val uid        = Column("uid")
     val messageId  = Column("message_id")
     val sender     = Column("sender")
+    val connName   = Column("conn_name")
     val subject    = Column("subject")
     val recipients = Column("recipients")
     val body       = Column("body")
@@ -70,6 +75,7 @@ object RSentMail {
       uid,
       messageId,
       sender,
+      connName,
       subject,
       recipients,
       body,
@@ -83,10 +89,12 @@ object RSentMail {
     insertRow(
       table,
       all,
-      sql"${v.id},${v.uid},${v.messageId},${v.sender},${v.subject},${v.recipients},${v.body},${v.created}"
+      sql"${v.id},${v.uid},${v.messageId},${v.sender},${v.connName},${v.subject},${v.recipients},${v.body},${v.created}"
     ).update.run
 
   def findByUser(userId: Ident): Stream[ConnectionIO, RSentMail] =
     selectSimple(all, table, uid.is(userId)).query[RSentMail].stream
 
+  def delete(mailId: Ident): ConnectionIO[Int] =
+    deleteFrom(table, id.is(mailId)).update.run
 }

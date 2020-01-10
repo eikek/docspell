@@ -71,7 +71,8 @@ object RestServer {
       "upload"         -> UploadRoutes.secured(restApp.backend, cfg, token),
       "checkfile"      -> CheckFileRoutes.secured(restApp.backend, token),
       "email/send"     -> MailSendRoutes(restApp.backend, token),
-      "email/settings" -> MailSettingsRoutes(restApp.backend, token)
+      "email/settings" -> MailSettingsRoutes(restApp.backend, token),
+      "email/sent"     -> SentMailRoutes(restApp.backend, token)
     )
 
   def openRoutes[F[_]: Effect](cfg: Config, restApp: RestApp[F]): HttpRoutes[F] =

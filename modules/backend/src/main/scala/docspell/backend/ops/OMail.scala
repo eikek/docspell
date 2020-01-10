@@ -6,17 +6,13 @@ import cats.implicits._
 import cats.data.OptionT
 import emil._
 import emil.javamail.syntax._
+import bitpeace.{FileMeta, RangeDef}
 
 import docspell.common._
 import docspell.store._
-import docspell.store.records.RUserEmail
-import OMail.{ItemMail, SmtpSettings}
-import docspell.store.records.RAttachment
-import bitpeace.FileMeta
-import bitpeace.RangeDef
-import docspell.store.records.RItem
-import docspell.store.records.RSentMail
-import docspell.store.records.RSentMailItem
+import docspell.store.records._
+import docspell.store.queries.QMails
+import OMail.{ItemMail, Sent, SmtpSettings}
 
 trait OMail[F[_]] {
 
@@ -31,9 +27,31 @@ trait OMail[F[_]] {
   def deleteSettings(accId: AccountId, name: Ident): F[Int]
 
   def sendMail(accId: AccountId, name: Ident, m: ItemMail): F[SendResult]
+
+  def getSentMailsForItem(accId: AccountId, itemId: Ident): F[Vector[Sent]]
+
+  def getSentMail(accId: AccountId, mailId: Ident): OptionT[F, Sent]
+
+  def deleteSentMail(accId: AccountId, mailId: Ident): F[Int]
 }
 
 object OMail {
+
+  case class Sent(
+      id: Ident,
+      senderLogin: Ident,
+      connectionName: Ident,
+      recipients: List[MailAddress],
+      subject: String,
+      body: String,
+      created: Timestamp
+  )
+
+  object Sent {
+
+    def create(r: RSentMail, login: Ident): Sent =
+      Sent(r.id, login, r.connName, r.recipients, r.subject, r.body, r.created)
+  }
 
   case class ItemMail(
       item: Ident,
@@ -155,6 +173,7 @@ object OMail {
               accId,
               msgId,
               cfg.mailFrom,
+              name,
               m.subject,
               m.recipients,
               m.body
@@ -180,5 +199,17 @@ object OMail {
         } yield conv).getOrElse(SendResult.NotFound)
       }
 
+      def getSentMailsForItem(accId: AccountId, itemId: Ident): F[Vector[Sent]] =
+        store
+          .transact(QMails.findMails(accId.collective, itemId))
+          .map(_.map(t => Sent.create(t._1, t._2)))
+
+      def getSentMail(accId: AccountId, mailId: Ident): OptionT[F, Sent] =
+        OptionT(store.transact(QMails.findMail(accId.collective, mailId))).map(t =>
+          Sent.create(t._1, t._2)
+        )
+
+      def deleteSentMail(accId: AccountId, mailId: Ident): F[Int] =
+        store.transact(QMails.delete(accId.collective, mailId))
     })
 }

@@ -65,12 +65,6 @@ trait DoobieSyntax {
     Fragment.const("SELECT DISTINCT(") ++ commas(cols.map(_.f)) ++
       Fragment.const(") FROM ") ++ table ++ this.where(where)
 
-//  def selectJoinCollective(cols: Seq[Column], fkCid: Column, table: Fragment, wh: Fragment): Fragment =
-//    selectSimple(cols.map(_.prefix("a"))
-//      , table ++ fr"a," ++ RCollective.table ++ fr"b"
-//      , if (isEmpty(wh)) fkCid.prefix("a") is RCollective.Columns.id.prefix("b")
-//        else and(wh, fkCid.prefix("a") is RCollective.Columns.id.prefix("b")))
-
   def selectCount(col: Column, table: Fragment, where: Fragment): Fragment =
     Fragment.const("SELECT COUNT(") ++ col.f ++ Fragment.const(") FROM ") ++ table ++ this.where(
       where

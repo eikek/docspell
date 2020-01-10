@@ -125,6 +125,8 @@ paths:
 
         The result shows all items that contains a file with the given
         checksum.
+      security:
+        - authTokenHeader: []
       parameters:
         - $ref: "#/components/parameters/checksum"
       responses:
@@ -159,6 +161,8 @@ paths:
         * application/pdf
 
         Support for more types might be added.
+      security:
+        - authTokenHeader: []
       requestBody:
         content:
           multipart/form-data:
@@ -1188,6 +1192,8 @@ paths:
         Get the current state of the job qeue. The job qeue contains
         all processing tasks and other long-running operations. All
         users/collectives share processing resources.
+      security:
+        - authTokenHeader: []
       responses:
         200:
           description: Ok
@@ -1203,6 +1209,8 @@ paths:
         Tries to cancel a job and remove it from the queue. If the job
         is running, a cancel request is send to the corresponding joex
         instance. Otherwise the job is removed from the queue.
+      security:
+        - authTokenHeader: []
       parameters:
         - $ref: "#/components/parameters/id"
       responses:
@@ -1224,6 +1232,8 @@ paths:
         Multiple e-mail settings can be specified, they are
         distinguished by their `name`. The query `q` parameter does a
         simple substring search in the connection name.
+      security:
+        - authTokenHeader: []
       parameters:
         - $ref: "#/components/parameters/q"
       responses:
@@ -1238,6 +1248,8 @@ paths:
       summary: Create new email settings
       description: |
         Create new e-mail settings.
+      security:
+        - authTokenHeader: []
       requestBody:
         content:
           application/json:
@@ -1259,6 +1271,8 @@ paths:
       description: |
         Return the stored e-mail settings for the given connection
         name.
+      security:
+        - authTokenHeader: []
       responses:
         200:
           description: Ok
@@ -1271,6 +1285,8 @@ paths:
       summary: Change specific email settings.
       description: |
         Changes all settings for the connection with the given `name`.
+      security:
+        - authTokenHeader: []
       requestBody:
         content:
           application/json:
@@ -1288,6 +1304,8 @@ paths:
       summary: Delete e-mail settings.
       description: |
         Deletes the e-mail settings with the specified `name`.
+      security:
+        - authTokenHeader: []
       responses:
         200:
           description: Ok
@@ -1301,10 +1319,11 @@ paths:
       tags: [ E-Mail ]
       summary: Send an email.
       description: |
-        Sends an email as specified with all attachments of the item
-        with `id` as mail attachments. If the item has no attachments,
-        then the mail is sent without any. If the item's attachments
-        exceed a specific size, the mail will not be sent.
+        Sends an email as specified in the body of the request.
+
+        The item's attachment are added to the mail if requested.
+      security:
+        - authTokenHeader: []
       parameters:
         - $ref: "#/components/parameters/name"
         - $ref: "#/components/parameters/id"
@@ -1320,9 +1339,100 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BasicResult"
+  /sec/email/sent/item/{id}:
+    get:
+      tags: [ E-Mail ]
+      summary: Get sent mail related to an item
+      description: |
+        Return all mails that have been sent related to the item with
+        id `id`.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SentMails"
+  /sec/email/sent/mail/{mailId}:
+    parameters:
+      - $ref: "#/components/parameters/mailId"
+    get:
+      tags: [ E-Mail ]
+      summary: Get sent single mail related to an item
+      description: |
+        Return one mail with the given id.
+      security:
+        - authTokenHeader: []
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SentMail"
+    delete:
+      tags: [ E-Mail ]
+      summary: Delete a sent mail.
+      description: |
+        Delete a sent mail.
+      security:
+        - authTokenHeader: []
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
 
 components:
   schemas:
+    SentMails:
+      description: |
+        A list of sent mails.
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/SentMail"
+    SentMail:
+      description: |
+        A mail that has been sent previously related to an item.
+      required:
+        - id
+        - sender
+        - connection
+        - recipients
+        - subject
+        - body
+        - created
+      properties:
+        id:
+          type: string
+          format: ident
+        sender:
+          type: string
+          format: ident
+        connection:
+          type: string
+          format: ident
+        recipients:
+          type: array
+          items:
+            type: string
+        subject:
+          type: string
+        body:
+          type: string
+        created:
+          type: integer
+          format: date-time
     SimpleMail:
       description: |
         A simple e-mail related to an item.
@@ -1330,7 +1440,8 @@ components:
         The mail may contain the item attachments as mail attachments.
         If all item attachments should be send, set
         `addAllAttachments` to `true`. Otherwise set it to `false` and
-        specify a list of file-ids that you want to include.
+        specify a list of file-ids that you want to include. This list
+        is ignored, if `addAllAttachments` is set to `true`.
       required:
         - recipients
         - subject
@@ -2366,6 +2477,13 @@ components:
       name: name
       in: path
       description: An e-mail connection name
+      required: true
+      schema:
+        type: string
+    mailId:
+      name: mailId
+      in: path
+      description: The id of a sent mail.
       required: true
       schema:
         type: string

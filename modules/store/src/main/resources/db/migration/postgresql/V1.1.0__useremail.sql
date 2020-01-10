@@ -20,6 +20,7 @@ CREATE TABLE "sentmail" (
   "uid" varchar(254) not null,
   "message_id" varchar(254) not null,
   "sender" varchar(254) not null,
+  "conn_name" varchar(254) not null,
   "subject" varchar(254) not null,
   "recipients" varchar(254) not null,
   "body" text not null,
