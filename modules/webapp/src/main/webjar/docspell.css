@@ -107,6 +107,10 @@ span.small-info {
     color: rgba(0,0,0,0.4);
 }
 
+.mail-body {
+    white-space: pre;
+}
+
 .login-layout, .register-layout, .newinvite-layout {
     background: #708090;
     height: 101vh;

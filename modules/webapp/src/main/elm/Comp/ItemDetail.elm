@@ -17,12 +17,14 @@ import Api.Model.OptionalDate exposing (OptionalDate)
 import Api.Model.OptionalId exposing (OptionalId)
 import Api.Model.OptionalText exposing (OptionalText)
 import Api.Model.ReferenceList exposing (ReferenceList)
+import Api.Model.SentMails exposing (SentMails)
 import Api.Model.Tag exposing (Tag)
 import Api.Model.TagList exposing (TagList)
 import Browser.Navigation as Nav
 import Comp.DatePicker
 import Comp.Dropdown exposing (isDropdownChangeMsg)
 import Comp.ItemMail
+import Comp.SentMails
 import Comp.YesNoDimmer
 import Data.Direction exposing (Direction)
 import Data.Flags exposing (Flags)
@@ -62,6 +64,8 @@ type alias Model =
     , itemMail : Comp.ItemMail.Model
     , mailOpen : Bool
     , mailSendResult : Maybe BasicResult
+    , sentMails : Comp.SentMails.Model
+    , sentMailsOpen : Bool
     }
 
 
@@ -124,6 +128,8 @@ emptyModel =
     , itemMail = Comp.ItemMail.emptyModel
     , mailOpen = False
     , mailSendResult = Nothing
+    , sentMails = Comp.SentMails.init
+    , sentMailsOpen = False
     }
 
 
@@ -169,6 +175,9 @@ type Msg
     | ItemMailMsg Comp.ItemMail.Msg
     | ToggleMail
     | SendMailResp (Result Http.Error BasicResult)
+    | SentMailsMsg Comp.SentMails.Msg
+    | ToggleSentMails
+    | SentMailsResp (Result Http.Error SentMails)
 
 
 
@@ -269,11 +278,7 @@ setNotes flags model =
         text =
             OptionalText model.notesModel
     in
-    if model.notesModel == Nothing then
-        Cmd.none
-
-    else
-        Api.setItemNotes flags model.item.id text SaveResp
+    Api.setItemNotes flags model.item.id text SaveResp
 
 
 setDate : Flags -> Model -> Maybe Int -> Cmd Msg
@@ -303,6 +308,7 @@ update key flags next msg model =
                 , Cmd.map ItemDatePickerMsg dpc
                 , Cmd.map DueDatePickerMsg dpc
                 , Cmd.map ItemMailMsg ic
+                , Api.getSentMails flags model.item.id SentMailsResp
                 ]
             )
 
@@ -381,11 +387,20 @@ update key flags next msg model =
                 , itemDate = item.itemDate
                 , dueDate = item.dueDate
               }
-            , Cmd.batch [ c1, c2, c3, c4, c5, getOptions flags, proposalCmd ]
+            , Cmd.batch
+                [ c1
+                , c2
+                , c3
+                , c4
+                , c5
+                , getOptions flags
+                , proposalCmd
+                , Api.getSentMails flags item.id SentMailsResp
+                ]
             )
 
         SetActiveAttachment pos ->
-            ( { model | visibleAttach = pos }, Cmd.none )
+            ( { model | visibleAttach = pos, sentMailsOpen = False }, Cmd.none )
 
         ToggleMenu ->
             ( { model | menuOpen = not model.menuOpen }, Cmd.none )
@@ -518,14 +533,7 @@ update key flags next msg model =
             ( model, setName flags model )
 
         SetNotes str ->
-            ( { model
-                | notesModel =
-                    if str == "" then
-                        Nothing
-
-                    else
-                        Just str
-              }
+            ( { model | notesModel = Util.Maybe.fromString str }
             , Cmd.none
             )
 
@@ -749,7 +757,11 @@ update key flags next msg model =
                 | itemMail = mm
                 , mailSendResult = Just br
               }
-            , Cmd.none
+            , if br.success then
+                Api.itemDetail flags model.item.id GetItemResp
+
+              else
+                Cmd.none
             )
 
         SendMailResp (Err err) ->
@@ -760,6 +772,26 @@ update key flags next msg model =
             ( { model | mailSendResult = Just (BasicResult False errmsg) }
             , Cmd.none
             )
+
+        SentMailsMsg m ->
+            let
+                sm =
+                    Comp.SentMails.update m model.sentMails
+            in
+            ( { model | sentMails = sm }, Cmd.none )
+
+        ToggleSentMails ->
+            ( { model | sentMailsOpen = not model.sentMailsOpen, visibleAttach = -1 }, Cmd.none )
+
+        SentMailsResp (Ok list) ->
+            let
+                sm =
+                    Comp.SentMails.initMails list.items
+            in
+            ( { model | sentMails = sm }, Cmd.none )
+
+        SentMailsResp (Err err) ->
+            ( model, Cmd.none )
 
 
 
@@ -911,7 +943,7 @@ renderNotes model =
                         , onClick ToggleNotes
                         , href "#"
                         ]
-                        [ i [ class "delete icon" ] []
+                        [ i [ class "eye slash icon" ] []
                         ]
                     ]
                 ]
@@ -919,6 +951,23 @@ renderNotes model =
 
 renderAttachmentsTabMenu : Model -> Html Msg
 renderAttachmentsTabMenu model =
+    let
+        mailTab =
+            if Comp.SentMails.isEmpty model.sentMails then
+                []
+
+            else
+                [ div
+                    [ classList
+                        [ ( "right item", True )
+                        , ( "active", model.sentMailsOpen )
+                        ]
+                    , onClick ToggleSentMails
+                    ]
+                    [ text "E-Mails"
+                    ]
+                ]
+    in
     div [ class "ui top attached tabular menu" ]
         (List.indexedMap
             (\pos ->
@@ -937,11 +986,31 @@ renderAttachmentsTabMenu model =
                         ]
             )
             model.item.attachments
+            ++ mailTab
         )
 
 
 renderAttachmentsTabBody : Model -> List (Html Msg)
 renderAttachmentsTabBody model =
+    let
+        mailTab =
+            if Comp.SentMails.isEmpty model.sentMails then
+                []
+
+            else
+                [ div
+                    [ classList
+                        [ ( "ui attached tab segment", True )
+                        , ( "active", model.sentMailsOpen )
+                        ]
+                    ]
+                    [ h3 [ class "ui header" ]
+                        [ text "Sent E-Mails"
+                        ]
+                    , Html.map SentMailsMsg (Comp.SentMails.view model.sentMails)
+                    ]
+                ]
+    in
     List.indexedMap
         (\pos ->
             \a ->
@@ -958,6 +1027,7 @@ renderAttachmentsTabBody model =
                     ]
         )
         model.item.attachments
+        ++ mailTab
 
 
 renderItemInfo : Model -> Html Msg

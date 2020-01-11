@@ -22,6 +22,7 @@ module Api exposing
     , getOrganizations
     , getPersons
     , getPersonsLight
+    , getSentMails
     , getSources
     , getTags
     , getUsers
@@ -87,6 +88,7 @@ import Api.Model.Person exposing (Person)
 import Api.Model.PersonList exposing (PersonList)
 import Api.Model.ReferenceList exposing (ReferenceList)
 import Api.Model.Registration exposing (Registration)
+import Api.Model.SentMails exposing (SentMails)
 import Api.Model.SimpleMail exposing (SimpleMail)
 import Api.Model.Source exposing (Source)
 import Api.Model.SourceList exposing (SourceList)
@@ -104,6 +106,23 @@ import Task
 import Url
 import Util.File
 import Util.Http as Http2
+
+
+
+--- Get Sent Mails
+
+
+getSentMails :
+    Flags
+    -> String
+    -> (Result Http.Error SentMails -> msg)
+    -> Cmd msg
+getSentMails flags item receive =
+    Http2.authGet
+        { url = flags.config.baseUrl ++ "/api/v1/sec/email/sent/item/" ++ item
+        , account = getAccount flags
+        , expect = Http.expectJson receive Api.Model.SentMails.decoder
+        }
 
 
 
