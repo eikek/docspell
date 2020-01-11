@@ -209,31 +209,29 @@ view model =
 viewTable : Model -> Html Msg
 viewTable model =
     div []
-        [ div [ class "ui secondary menu container" ]
-            [ div [ class "ui container" ]
-                [ div [ class "fitted-item" ]
-                    [ div [ class "ui icon input" ]
-                        [ input
-                            [ type_ "text"
-                            , onInput SetQuery
-                            , value model.query
-                            , placeholder "Search…"
-                            ]
-                            []
-                        , i [ class "ui search icon" ]
-                            []
+        [ div [ class "ui secondary menu" ]
+            [ div [ class "horizontally fitted item" ]
+                [ div [ class "ui icon input" ]
+                    [ input
+                        [ type_ "text"
+                        , onInput SetQuery
+                        , value model.query
+                        , placeholder "Search…"
                         ]
+                        []
+                    , i [ class "ui search icon" ]
+                        []
                     ]
-                , div [ class "right menu" ]
-                    [ div [ class "fitted-item" ]
-                        [ a
-                            [ class "ui primary button"
-                            , href "#"
-                            , onClick InitNewTag
-                            ]
-                            [ i [ class "plus icon" ] []
-                            , text "New Tag"
-                            ]
+                ]
+            , div [ class "right menu" ]
+                [ div [ class "item" ]
+                    [ a
+                        [ class "ui primary button"
+                        , href "#"
+                        , onClick InitNewTag
+                        ]
+                        [ i [ class "plus icon" ] []
+                        , text "New Tag"
                         ]
                     ]
                 ]
