@@ -87,13 +87,3 @@ collective name and your user name. By default it is separated by a
 slash `/`, for example `smith/john`. If your user name is the same as
 the collective name, you can omit one; so `smith/smith` can be
 abbreviated to just `smith`.
-
-
-## Limitations
-
-* Docspell currently supports only PDF files.
-* The PDF view relies on the browsers capabilities. Sadly, not all
-  browsers can display PDF files. Some may require extra plugins. And
-  it's especially sad, that mobile browsers wont't display the
-  files. It works with the major desktop browsers (firefox, chromium),
-  though.

@@ -4,6 +4,10 @@
     background-size: 100% 800px;
 }
 
+.thumbnail {
+    border: 1px solid #aaa;
+}
+
 .features-image {
     max-height: 250px;
 }

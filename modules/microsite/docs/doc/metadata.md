@@ -56,7 +56,7 @@ Document processing uses the following properties:
 - websites
 - e-mails
 
-The website an e-mails can be added as contact information. If these
+The website and e-mails can be added as contact information. If these
 three are present, you should get good matches from docspell. All
 other fields of an organization and person are not used during
 document processing. They might be useful when using this as a real

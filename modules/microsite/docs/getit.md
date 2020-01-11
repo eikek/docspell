@@ -45,5 +45,5 @@ really required, but improves OCR.
 4. Point your browser to: <http://localhost:7880/app>
 5. Register a new account, sign in and try it.
 
-Check the [documentation](doc.html) for more information on how to use
-docspell.
+Check the [early demo video](demo) to see the basic idea. Refer to the
+[documentation](doc.html) for more information on how to use docspell.

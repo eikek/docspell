@@ -8,6 +8,9 @@ options:
   - title: Quickstart
     url: getit.html
 
+  - title: Features/Limitations
+    url: features.html
+
   - title: Documentation
     url: doc.html
 
@@ -29,6 +32,9 @@ options:
 
      - title: Find and Review
        url: doc/curate.html
+
+     - title: Send via E-Mail
+       url: doc/mailitem.html
 
      - title: Joex
        url: doc/joex.html
