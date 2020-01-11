@@ -32,7 +32,7 @@ object Ident {
 
   def fromString(s: String): Either[String, Ident] =
     if (s.forall(chars.contains)) Right(new Ident(s))
-    else Left(s"Invalid identifier: $s. Allowed chars: ${chars.mkString}")
+    else Left(s"Invalid identifier: '$s'. Allowed chars: ${chars.toList.sorted.mkString}")
 
   def fromBytes(bytes: ByteVector): Ident =
     unsafe(bytes.toBase58)

@@ -96,15 +96,15 @@ object ItemRoutes {
       case req @ POST -> Root / Ident(id) / "notes" =>
         for {
           text <- req.as[OptionalText]
-          res  <- backend.item.setNotes(id, text.text, user.account.collective)
-          resp <- Ok(Conversions.basicResult(res, "Concerned equipment updated"))
+          res  <- backend.item.setNotes(id, text.text.notEmpty, user.account.collective)
+          resp <- Ok(Conversions.basicResult(res, "Notes updated"))
         } yield resp
 
       case req @ POST -> Root / Ident(id) / "name" =>
         for {
           text <- req.as[OptionalText]
-          res  <- backend.item.setName(id, text.text.getOrElse(""), user.account.collective)
-          resp <- Ok(Conversions.basicResult(res, "Concerned equipment updated"))
+          res  <- backend.item.setName(id, text.text.notEmpty.getOrElse(""), user.account.collective)
+          resp <- Ok(Conversions.basicResult(res, "Name updated"))
         } yield resp
 
       case req @ POST -> Root / Ident(id) / "duedate" =>
@@ -137,5 +137,11 @@ object ItemRoutes {
           resp <- Ok(res)
         } yield resp
     }
+  }
+
+
+  final implicit class OptionString(opt: Option[String]) {
+    def notEmpty: Option[String] =
+      opt.map(_.trim).filter(_.nonEmpty)
   }
 }
