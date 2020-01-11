@@ -395,7 +395,9 @@ viewSingle model =
                 ]
 
         renderDefault =
-            [ List.head model.selected |> Maybe.map renderClosed |> Maybe.withDefault (renderPlaceholder model)
+            [ List.head model.selected
+                |> Maybe.map renderClosed
+                |> Maybe.withDefault (renderPlaceholder model)
             , renderMenu model
             ]
 

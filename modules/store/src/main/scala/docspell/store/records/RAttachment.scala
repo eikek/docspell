@@ -64,6 +64,26 @@ object RAttachment {
     q.query[RAttachment].to[Vector]
   }
 
+  def findByItemAndCollectiveWithMeta(
+      id: Ident,
+      coll: Ident
+  ): ConnectionIO[Vector[(RAttachment, FileMeta)]] = {
+    import bitpeace.sql._
+
+    val cols      = all.map(_.prefix("a")) ++ RFileMeta.Columns.all.map(_.prefix("m"))
+    val afileMeta = fileId.prefix("a")
+    val aItem     = itemId.prefix("a")
+    val mId       = RFileMeta.Columns.id.prefix("m")
+    val iId       = RItem.Columns.id.prefix("i")
+    val iColl     = RItem.Columns.cid.prefix("i")
+
+    val from = table ++ fr"a INNER JOIN" ++ RFileMeta.table ++ fr"m ON" ++ afileMeta.is(mId) ++
+      fr"INNER JOIN" ++ RItem.table ++ fr"i ON" ++ aItem.is(iId)
+    val cond = Seq(aItem.is(id), iColl.is(coll))
+
+    selectSimple(cols, from, and(cond)).query[(RAttachment, FileMeta)].to[Vector]
+  }
+
   def findByItemWithMeta(id: Ident): ConnectionIO[Vector[(RAttachment, FileMeta)]] = {
     import bitpeace.sql._
 

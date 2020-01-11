@@ -15,7 +15,7 @@ object Ident {
   implicit val identEq: Eq[Ident] =
     Eq.by(_.id)
 
-  val chars: Set[Char] = (('A' to 'Z') ++ ('a' to 'z') ++ ('0' to '9') ++ "-_").toSet
+  val chars: Set[Char] = (('A' to 'Z') ++ ('a' to 'z') ++ ('0' to '9') ++ "-_.").toSet
 
   def randomUUID[F[_]: Sync]: F[Ident] =
     Sync[F].delay(unsafe(UUID.randomUUID.toString))
@@ -32,7 +32,7 @@ object Ident {
 
   def fromString(s: String): Either[String, Ident] =
     if (s.forall(chars.contains)) Right(new Ident(s))
-    else Left(s"Invalid identifier: $s. Allowed chars: ${chars.mkString}")
+    else Left(s"Invalid identifier: '$s'. Allowed chars: ${chars.toList.sorted.mkString}")
 
   def fromBytes(bytes: ByteVector): Ident =
     unsafe(bytes.toBase58)

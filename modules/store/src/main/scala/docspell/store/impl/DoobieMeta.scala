@@ -2,16 +2,15 @@ package docspell.store.impl
 
 import java.time.format.DateTimeFormatter
 import java.time.{Instant, LocalDate}
-
-import docspell.common.Timestamp
-
-import docspell.common._
+import io.circe.{Decoder, Encoder}
 import doobie._
-//import doobie.implicits.javatime._
 import doobie.implicits.legacy.instant._
 import doobie.util.log.Success
-import io.circe.{Decoder, Encoder}
+import emil.{MailAddress, SSLType}
+
+import docspell.common._
 import docspell.common.syntax.all._
+import docspell.store.EmilUtil
 
 trait DoobieMeta {
 
@@ -88,9 +87,21 @@ trait DoobieMeta {
 
   implicit val metaLanguage: Meta[Language] =
     Meta[String].imap(Language.unsafe)(_.iso3)
+
+  implicit val sslType: Meta[SSLType] =
+    Meta[String].imap(EmilUtil.unsafeReadSSLType)(EmilUtil.sslTypeString)
+
+  implicit val mailAddress: Meta[MailAddress] =
+    Meta[String].imap(EmilUtil.unsafeReadMailAddress)(EmilUtil.mailAddressString)
+
+  implicit def mailAddressList: Meta[List[MailAddress]] =
+    Meta[String].imap(str => str.split(',').toList.map(_.trim).map(EmilUtil.unsafeReadMailAddress))(
+      lma => lma.map(EmilUtil.mailAddressString).mkString(",")
+    )
 }
 
 object DoobieMeta extends DoobieMeta {
   import org.log4s._
   private val logger = getLogger
+
 }

@@ -262,4 +262,7 @@ object RItem {
 
   def deleteByIdAndCollective(itemId: Ident, coll: Ident): ConnectionIO[Int] =
     deleteFrom(table, and(id.is(itemId), cid.is(coll))).update.run
+
+  def existsById(itemId: Ident): ConnectionIO[Boolean] =
+    selectCount(id, table, id.is(itemId)).query[Int].unique.map(_ > 0)
 }

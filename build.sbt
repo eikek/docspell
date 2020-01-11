@@ -148,7 +148,8 @@ val store = project.in(file("modules/store")).
       Dependencies.fs2 ++
       Dependencies.databases ++
       Dependencies.flyway ++
-      Dependencies.loggingApi
+      Dependencies.loggingApi ++
+      Dependencies.emil
   ).dependsOn(common)
 
 val text = project.in(file("modules/text")).
@@ -225,7 +226,8 @@ val backend = project.in(file("modules/backend")).
       Dependencies.loggingApi ++
       Dependencies.fs2 ++
       Dependencies.bcrypt ++
-      Dependencies.http4sClient
+      Dependencies.http4sClient ++
+      Dependencies.emil
   ).dependsOn(store)
 
 val webapp = project.in(file("modules/webapp")).

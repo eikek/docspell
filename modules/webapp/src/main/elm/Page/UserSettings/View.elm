@@ -1,6 +1,7 @@
 module Page.UserSettings.View exposing (view)
 
 import Comp.ChangePasswordForm
+import Comp.EmailSettingsManage
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
@@ -17,12 +18,21 @@ view model =
                 ]
             , div [ class "ui attached fluid segment" ]
                 [ div [ class "ui fluid vertical secondary menu" ]
-                    [ div
+                    [ a
                         [ classActive (model.currentTab == Just ChangePassTab) "link icon item"
                         , onClick (SetTab ChangePassTab)
+                        , href "#"
                         ]
                         [ i [ class "user secret icon" ] []
                         , text "Change Password"
+                        ]
+                    , a
+                        [ classActive (model.currentTab == Just EmailSettingsTab) "link icon item"
+                        , onClick (SetTab EmailSettingsTab)
+                        , href "#"
+                        ]
+                        [ i [ class "mail icon" ] []
+                        , text "E-Mail Settings"
                         ]
                     ]
                 ]
@@ -33,11 +43,26 @@ view model =
                     Just ChangePassTab ->
                         viewChangePassword model
 
+                    Just EmailSettingsTab ->
+                        viewEmailSettings model
+
                     Nothing ->
                         []
                 )
             ]
         ]
+
+
+viewEmailSettings : Model -> List (Html Msg)
+viewEmailSettings model =
+    [ h2 [ class "ui header" ]
+        [ i [ class "mail icon" ] []
+        , div [ class "content" ]
+            [ text "E-Mail Settings"
+            ]
+        ]
+    , Html.map EmailSettingsMsg (Comp.EmailSettingsManage.view model.emailSettingsModel)
+    ]
 
 
 viewChangePassword : Model -> List (Html Msg)
