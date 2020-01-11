@@ -9,6 +9,7 @@ module Comp.ChangePasswordForm exposing
 import Api
 import Api.Model.BasicResult exposing (BasicResult)
 import Api.Model.PasswordChange exposing (PasswordChange)
+import Comp.PasswordInput
 import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -18,12 +19,12 @@ import Util.Http
 
 
 type alias Model =
-    { current : String
-    , newPass1 : String
-    , newPass2 : String
-    , showCurrent : Bool
-    , showPass1 : Bool
-    , showPass2 : Bool
+    { currentModel : Comp.PasswordInput.Model
+    , current : Maybe String
+    , pass1Model : Comp.PasswordInput.Model
+    , newPass1 : Maybe String
+    , pass2Model : Comp.PasswordInput.Model
+    , newPass2 : Maybe String
     , errors : List String
     , loading : Bool
     , successMsg : String
@@ -33,12 +34,12 @@ type alias Model =
 emptyModel : Model
 emptyModel =
     validateModel
-        { current = ""
-        , newPass1 = ""
-        , newPass2 = ""
-        , showCurrent = False
-        , showPass1 = False
-        , showPass2 = False
+        { current = Nothing
+        , currentModel = Comp.PasswordInput.init
+        , newPass1 = Nothing
+        , pass1Model = Comp.PasswordInput.init
+        , newPass2 = Nothing
+        , pass2Model = Comp.PasswordInput.init
         , errors = []
         , loading = False
         , successMsg = ""
@@ -46,12 +47,9 @@ emptyModel =
 
 
 type Msg
-    = SetCurrent String
-    | SetNew1 String
-    | SetNew2 String
-    | ToggleShowPass1
-    | ToggleShowPass2
-    | ToggleShowCurrent
+    = SetCurrent Comp.PasswordInput.Msg
+    | SetNew1 Comp.PasswordInput.Msg
+    | SetNew2 Comp.PasswordInput.Msg
     | Submit
     | SubmitResp (Result Http.Error BasicResult)
 
@@ -59,12 +57,12 @@ type Msg
 validate : Model -> List String
 validate model =
     List.concat
-        [ if model.newPass1 /= "" && model.newPass2 /= "" && model.newPass1 /= model.newPass2 then
+        [ if model.newPass1 /= Nothing && model.newPass2 /= Nothing && model.newPass1 /= model.newPass2 then
             [ "New passwords do not match." ]
 
           else
             []
-        , if model.newPass1 == "" || model.newPass2 == "" || model.current == "" then
+        , if model.newPass1 == Nothing || model.newPass2 == Nothing || model.current == Nothing then
             [ "Please fill in required fields." ]
 
           else
@@ -96,23 +94,32 @@ validateModel model =
 update : Flags -> Msg -> Model -> ( Model, Cmd Msg )
 update flags msg model =
     case msg of
-        SetCurrent s ->
-            ( validateModel { model | current = s }, Cmd.none )
+        SetCurrent m ->
+            let
+                ( pm, pw ) =
+                    Comp.PasswordInput.update m model.currentModel
+            in
+            ( validateModel { model | currentModel = pm, current = pw }
+            , Cmd.none
+            )
 
-        SetNew1 s ->
-            ( validateModel { model | newPass1 = s }, Cmd.none )
+        SetNew1 m ->
+            let
+                ( pm, pw ) =
+                    Comp.PasswordInput.update m model.pass1Model
+            in
+            ( validateModel { model | newPass1 = pw, pass1Model = pm }
+            , Cmd.none
+            )
 
-        SetNew2 s ->
-            ( validateModel { model | newPass2 = s }, Cmd.none )
-
-        ToggleShowCurrent ->
-            ( { model | showCurrent = not model.showCurrent }, Cmd.none )
-
-        ToggleShowPass1 ->
-            ( { model | showPass1 = not model.showPass1 }, Cmd.none )
-
-        ToggleShowPass2 ->
-            ( { model | showPass2 = not model.showPass2 }, Cmd.none )
+        SetNew2 m ->
+            let
+                ( pm, pw ) =
+                    Comp.PasswordInput.update m model.pass2Model
+            in
+            ( validateModel { model | newPass2 = pw, pass2Model = pm }
+            , Cmd.none
+            )
 
         Submit ->
             let
@@ -120,10 +127,14 @@ update flags msg model =
                     validate model
 
                 cp =
-                    PasswordChange model.current model.newPass1
+                    PasswordChange
+                        (Maybe.withDefault "" model.current)
+                        (Maybe.withDefault "" model.newPass1)
             in
             if List.isEmpty valid then
-                ( { model | loading = True, errors = [], successMsg = "" }, Api.changePassword flags cp SubmitResp )
+                ( { model | loading = True, errors = [], successMsg = "" }
+                , Api.changePassword flags cp SubmitResp
+                )
 
             else
                 ( model, Cmd.none )
@@ -131,20 +142,35 @@ update flags msg model =
         SubmitResp (Ok res) ->
             let
                 em =
-                    { emptyModel | errors = [], successMsg = "Password has been changed." }
+                    { emptyModel
+                        | errors = []
+                        , successMsg = "Password has been changed."
+                    }
             in
             if res.success then
                 ( em, Cmd.none )
 
             else
-                ( { model | errors = [ res.message ], loading = False, successMsg = "" }, Cmd.none )
+                ( { model
+                    | errors = [ res.message ]
+                    , loading = False
+                    , successMsg = ""
+                  }
+                , Cmd.none
+                )
 
         SubmitResp (Err err) ->
             let
                 str =
                     Util.Http.errorToString err
             in
-            ( { model | errors = [ str ], loading = False, successMsg = "" }, Cmd.none )
+            ( { model
+                | errors = [ str ]
+                , loading = False
+                , successMsg = ""
+              }
+            , Cmd.none
+            )
 
 
 
@@ -162,75 +188,30 @@ view model =
         ]
         [ div
             [ classList
-                [ ( "field", True )
-                , ( "error", model.current == "" )
+                [ ( "required field", True )
+                , ( "error", model.current == Nothing )
                 ]
             ]
-            [ label [] [ text "Current Password*" ]
-            , div [ class "ui action input" ]
-                [ input
-                    [ type_ <|
-                        if model.showCurrent then
-                            "text"
-
-                        else
-                            "password"
-                    , onInput SetCurrent
-                    , value model.current
-                    ]
-                    []
-                , button [ class "ui icon button", onClick ToggleShowCurrent ]
-                    [ i [ class "eye icon" ] []
-                    ]
-                ]
+            [ label [] [ text "Current Password" ]
+            , Html.map SetCurrent (Comp.PasswordInput.view model.current model.currentModel)
             ]
         , div
             [ classList
-                [ ( "field", True )
-                , ( "error", model.newPass1 == "" )
+                [ ( "required field", True )
+                , ( "error", model.newPass1 == Nothing )
                 ]
             ]
-            [ label [] [ text "New Password*" ]
-            , div [ class "ui action input" ]
-                [ input
-                    [ type_ <|
-                        if model.showPass1 then
-                            "text"
-
-                        else
-                            "password"
-                    , onInput SetNew1
-                    , value model.newPass1
-                    ]
-                    []
-                , button [ class "ui icon button", onClick ToggleShowPass1 ]
-                    [ i [ class "eye icon" ] []
-                    ]
-                ]
+            [ label [] [ text "New Password" ]
+            , Html.map SetNew1 (Comp.PasswordInput.view model.newPass1 model.pass1Model)
             ]
         , div
             [ classList
-                [ ( "field", True )
-                , ( "error", model.newPass2 == "" )
+                [ ( "required field", True )
+                , ( "error", model.newPass2 == Nothing )
                 ]
             ]
-            [ label [] [ text "New Password (repeat)*" ]
-            , div [ class "ui action input" ]
-                [ input
-                    [ type_ <|
-                        if model.showPass2 then
-                            "text"
-
-                        else
-                            "password"
-                    , onInput SetNew2
-                    , value model.newPass2
-                    ]
-                    []
-                , button [ class "ui icon button", onClick ToggleShowPass2 ]
-                    [ i [ class "eye icon" ] []
-                    ]
-                ]
+            [ label [] [ text "New Password (repeat)" ]
+            , Html.map SetNew2 (Comp.PasswordInput.view model.newPass2 model.pass2Model)
             ]
         , div [ class "ui horizontal divider" ] []
         , div [ class "ui success message" ]
