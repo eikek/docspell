@@ -39,6 +39,9 @@ case class Column(name: String, ns: String = "", alias: String = "") {
   def isIn(values: Seq[Fragment]): Fragment =
     f ++ fr"IN (" ++ commas(values) ++ fr")"
 
+  def isIn(frag: Fragment): Fragment =
+    f ++ fr"IN (" ++ frag ++ fr")"
+
   def isOrDiscard[A: Put](value: Option[A]): Fragment =
     value match {
       case Some(v) => is(v)

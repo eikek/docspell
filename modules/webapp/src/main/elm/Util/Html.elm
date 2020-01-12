@@ -18,6 +18,7 @@ type KeyCode
     | Left
     | Right
     | Enter
+    | Space
 
 
 intToKeyCode : Int -> Maybe KeyCode
@@ -37,6 +38,9 @@ intToKeyCode code =
 
         13 ->
             Just Enter
+
+        32 ->
+            Just Space
 
         _ ->
             Nothing

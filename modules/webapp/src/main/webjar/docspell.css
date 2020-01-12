@@ -29,8 +29,12 @@
 }
 
 .default-layout .ui.multiple.search.dropdown>input.search {
-    width: 3.5em;
+    width: auto;
 }
+/* .default-layout .ui.multiple.search.dropdown>input.search.long-search { */
+/*     width: auto; */
+/* } */
+
 
 .default-layout .job-log {
     background: #181819;
@@ -109,6 +113,10 @@ span.small-info {
 
 .mail-body {
     white-space: pre;
+}
+
+.ui.form textarea.search {
+    border: 0;
 }
 
 .login-layout, .register-layout, .newinvite-layout {

@@ -1,10 +1,11 @@
 package docspell.backend.ops
 
+import fs2.Stream
 import cats.implicits._
 import cats.effect.{Effect, Resource}
 import docspell.common._
 import docspell.store.{AddResult, Store}
-import docspell.store.records.{RCollective, RUser}
+import docspell.store.records.{RCollective, RContact, RUser}
 import OCollective._
 import docspell.backend.PasswordCrypt
 import docspell.store.queries.QCollective
@@ -30,6 +31,13 @@ trait OCollective[F[_]] {
       current: Password,
       newPass: Password
   ): F[PassChangeResult]
+
+  def getContacts(
+      collective: Ident,
+      query: Option[String],
+      kind: Option[ContactKind]
+  ): Stream[F, RContact]
+
 }
 
 object OCollective {
@@ -119,5 +127,13 @@ object OCollective {
 
         store.transact(q)
       }
+
+      def getContacts(
+          collective: Ident,
+          query: Option[String],
+          kind: Option[ContactKind]
+      ): Stream[F, RContact] =
+        store.transact(QCollective.getContacts(collective, query, kind))
+
     })
 }

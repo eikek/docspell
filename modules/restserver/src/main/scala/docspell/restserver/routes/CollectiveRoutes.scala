@@ -6,7 +6,7 @@ import docspell.backend.BackendApp
 import docspell.backend.auth.AuthToken
 import docspell.restapi.model._
 import docspell.restserver.conv.Conversions
-import docspell.restserver.http4s.ResponseGenerator
+import docspell.restserver.http4s._
 import org.http4s.HttpRoutes
 import org.http4s.circe.CirceEntityDecoder._
 import org.http4s.circe.CirceEntityEncoder._
@@ -37,6 +37,16 @@ object CollectiveRoutes {
           collDb <- backend.collective.find(user.account.collective)
           sett   = collDb.map(c => CollectiveSettings(c.language))
           resp   <- sett.toResponse()
+        } yield resp
+
+      case GET -> Root / "contacts" :? QueryParam.QueryOpt(q) +& QueryParam.ContactKindOpt(kind) =>
+        for {
+          res <- backend.collective
+                  .getContacts(user.account.collective, q.map(_.q), kind)
+                  .take(50)
+                  .compile
+                  .toList
+          resp <- Ok(ContactList(res.map(Conversions.mkContact)))
         } yield resp
 
       case GET -> Root =>

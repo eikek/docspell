@@ -12,6 +12,7 @@ module Api exposing
     , deleteUser
     , getCollective
     , getCollectiveSettings
+    , getContacts
     , getEquipments
     , getInsights
     , getItemProposals
@@ -64,6 +65,7 @@ import Api.Model.AuthResult exposing (AuthResult)
 import Api.Model.BasicResult exposing (BasicResult)
 import Api.Model.Collective exposing (Collective)
 import Api.Model.CollectiveSettings exposing (CollectiveSettings)
+import Api.Model.ContactList exposing (ContactList)
 import Api.Model.DirectionValue exposing (DirectionValue)
 import Api.Model.EmailSettings exposing (EmailSettings)
 import Api.Model.EmailSettingsList exposing (EmailSettingsList)
@@ -98,6 +100,7 @@ import Api.Model.User exposing (User)
 import Api.Model.UserList exposing (UserList)
 import Api.Model.UserPass exposing (UserPass)
 import Api.Model.VersionInfo exposing (VersionInfo)
+import Data.ContactType exposing (ContactType)
 import Data.Flags exposing (Flags)
 import File exposing (File)
 import Http
@@ -367,6 +370,48 @@ setCollectiveSettings flags settings receive =
         , account = getAccount flags
         , body = Http.jsonBody (Api.Model.CollectiveSettings.encode settings)
         , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+getContacts :
+    Flags
+    -> Maybe ContactType
+    -> Maybe String
+    -> (Result Http.Error ContactList -> msg)
+    -> Cmd msg
+getContacts flags kind q receive =
+    let
+        pk =
+            case kind of
+                Just k ->
+                    [ "kind=" ++ Data.ContactType.toString k ]
+
+                Nothing ->
+                    []
+
+        pq =
+            case q of
+                Just str ->
+                    [ "q=" ++ str ]
+
+                Nothing ->
+                    []
+
+        params =
+            pk ++ pq
+
+        query =
+            case String.join "&" params of
+                "" ->
+                    ""
+
+                str ->
+                    "?" ++ str
+    in
+    Http2.authGet
+        { url = flags.config.baseUrl ++ "/api/v1/sec/collective/contacts" ++ query
+        , account = getAccount flags
+        , expect = Http.expectJson receive Api.Model.ContactList.decoder
         }
 
 

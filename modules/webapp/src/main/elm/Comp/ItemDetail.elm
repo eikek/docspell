@@ -715,12 +715,12 @@ update key flags next msg model =
 
         ItemMailMsg m ->
             let
-                ( im, fa ) =
-                    Comp.ItemMail.update m model.itemMail
+                ( im, ic, fa ) =
+                    Comp.ItemMail.update flags m model.itemMail
             in
             case fa of
                 Comp.ItemMail.FormNone ->
-                    ( { model | itemMail = im }, Cmd.none )
+                    ( { model | itemMail = im }, Cmd.map ItemMailMsg ic )
 
                 Comp.ItemMail.FormCancel ->
                     ( { model
@@ -728,7 +728,7 @@ update key flags next msg model =
                         , mailOpen = False
                         , mailSendResult = Nothing
                       }
-                    , Cmd.none
+                    , Cmd.map ItemMailMsg ic
                     )
 
                 Comp.ItemMail.FormSend sm ->
@@ -739,7 +739,12 @@ update key flags next msg model =
                             , conn = sm.conn
                             }
                     in
-                    ( model, Api.sendMail flags mail SendMailResp )
+                    ( model
+                    , Cmd.batch
+                        [ Cmd.map ItemMailMsg ic
+                        , Api.sendMail flags mail SendMailResp
+                        ]
+                    )
 
         ToggleMail ->
             ( { model | mailOpen = not model.mailOpen }, Cmd.none )

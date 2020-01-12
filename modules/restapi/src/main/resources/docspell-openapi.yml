@@ -652,6 +652,25 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ItemInsights"
+  /sec/collective/contacts:
+    get:
+      tags: [ Collective ]
+      summary: Return a list of contacts.
+      description: |
+        Return a list of all contacts available from the collectives
+        address book.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/q"
+        - $ref: "#/components/parameters/contactKind"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContactList"
   /sec/user:
     get:
       tags: [ Collective ]
@@ -2182,6 +2201,16 @@ components:
           type: string
         country:
           type: string
+    ContactList:
+      description: |
+        A list of contacts.
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Contact"
     Contact:
       description: |
         Contact information.
@@ -2485,5 +2514,13 @@ components:
       in: path
       description: The id of a sent mail.
       required: true
+      schema:
+        type: string
+    contactKind:
+      name: kind
+      in: query
+      required: false
+      description: |
+        One of the available contact kinds.
       schema:
         type: string

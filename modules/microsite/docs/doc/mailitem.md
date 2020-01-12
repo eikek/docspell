@@ -68,8 +68,12 @@ form:
   <img src="../img/mail-item-1.jpg">
 </div>
 
-Then write the mail. Multiple recipients may be specified by
-separating their addresses by comma.
+Then write the mail. Multiple recipients may be specified. The input
+field shows completion proposals from all contacts in your address
+book (from organizations and persons). Choose an address by pressing
+*Enter* or by clicking a proposal from the list. The proposal list can
+be iterated by the *Up* and *Down* arrows. You can type in any
+address, of course, it doesn't need to match a proposal.
 
 If you have multiple mail settings defined, you can choose in the top
 dropdown which account to use for sending.
@@ -77,7 +81,7 @@ dropdown which account to use for sending.
 The last checkbox allows to choose whether docspell should add all
 attachments of the item to the mail. If it is unchecked, no
 attachments will be added. It is currently not possible to pick
-attachments, it's all or nothing.
+specific attachments, it's all or nothing.
 
 Clicking *Cancel* will delete the inputs and close the mail form, but
 clicking the envelope icon again, will only close the form without

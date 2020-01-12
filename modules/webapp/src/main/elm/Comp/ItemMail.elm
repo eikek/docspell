@@ -13,6 +13,7 @@ import Api
 import Api.Model.EmailSettingsList exposing (EmailSettingsList)
 import Api.Model.SimpleMail exposing (SimpleMail)
 import Comp.Dropdown
+import Comp.EmailInput
 import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -24,7 +25,8 @@ import Util.Http
 type alias Model =
     { connectionModel : Comp.Dropdown.Model String
     , subject : String
-    , receiver : String
+    , recipients : List String
+    , recipientsModel : Comp.EmailInput.Model
     , body : String
     , attachAll : Bool
     , formError : Maybe String
@@ -33,7 +35,7 @@ type alias Model =
 
 type Msg
     = SetSubject String
-    | SetReceiver String
+    | RecipientMsg Comp.EmailInput.Msg
     | SetBody String
     | ConnMsg (Comp.Dropdown.Msg String)
     | ConnResp (Result Http.Error EmailSettingsList)
@@ -62,7 +64,8 @@ emptyModel =
             , placeholder = "Select connection..."
             }
     , subject = ""
-    , receiver = ""
+    , recipients = []
+    , recipientsModel = Comp.EmailInput.init
     , body = ""
     , attachAll = True
     , formError = Nothing
@@ -78,22 +81,29 @@ clear : Model -> Model
 clear model =
     { model
         | subject = ""
-        , receiver = ""
+        , recipients = []
         , body = ""
     }
 
 
-update : Msg -> Model -> ( Model, FormAction )
-update msg model =
+update : Flags -> Msg -> Model -> ( Model, Cmd Msg, FormAction )
+update flags msg model =
     case msg of
         SetSubject str ->
-            ( { model | subject = str }, FormNone )
+            ( { model | subject = str }, Cmd.none, FormNone )
 
-        SetReceiver str ->
-            ( { model | receiver = str }, FormNone )
+        RecipientMsg m ->
+            let
+                ( em, ec, rec ) =
+                    Comp.EmailInput.update flags model.recipients m model.recipientsModel
+            in
+            ( { model | recipients = rec, recipientsModel = em }
+            , Cmd.map RecipientMsg ec
+            , FormNone
+            )
 
         SetBody str ->
-            ( { model | body = str }, FormNone )
+            ( { model | body = str }, Cmd.none, FormNone )
 
         ConnMsg m ->
             let
@@ -101,10 +111,10 @@ update msg model =
                     --TODO dropdown doesn't use cmd!!
                     Comp.Dropdown.update m model.connectionModel
             in
-            ( { model | connectionModel = cm }, FormNone )
+            ( { model | connectionModel = cm }, Cmd.none, FormNone )
 
         ToggleAttachAll ->
-            ( { model | attachAll = not model.attachAll }, FormNone )
+            ( { model | attachAll = not model.attachAll }, Cmd.none, FormNone )
 
         ConnResp (Ok list) ->
             let
@@ -128,35 +138,33 @@ update msg model =
                     else
                         Nothing
               }
+            , Cmd.none
             , FormNone
             )
 
         ConnResp (Err err) ->
-            ( { model | formError = Just (Util.Http.errorToString err) }, FormNone )
+            ( { model | formError = Just (Util.Http.errorToString err) }, Cmd.none, FormNone )
 
         Cancel ->
-            ( model, FormCancel )
+            ( model, Cmd.none, FormCancel )
 
         Send ->
             case ( model.formError, Comp.Dropdown.getSelected model.connectionModel ) of
                 ( Nothing, conn :: [] ) ->
                     let
-                        rec =
-                            String.split "," model.receiver
-
                         sm =
-                            SimpleMail rec model.subject model.body model.attachAll []
+                            SimpleMail model.recipients model.subject model.body model.attachAll []
                     in
-                    ( model, FormSend { conn = conn, mail = sm } )
+                    ( model, Cmd.none, FormSend { conn = conn, mail = sm } )
 
                 _ ->
-                    ( model, FormNone )
+                    ( model, Cmd.none, FormNone )
 
 
 isValid : Model -> Bool
 isValid model =
-    model.receiver
-        /= ""
+    model.recipients
+        /= []
         && model.subject
         /= ""
         && model.body
@@ -182,16 +190,9 @@ view model =
             ]
         , div [ class "field" ]
             [ label []
-                [ text "Receiver(s)"
-                , span [ class "muted" ]
-                    [ text "Separate multiple recipients by comma" ]
+                [ text "Recipient(s)"
                 ]
-            , input
-                [ type_ "text"
-                , onInput SetReceiver
-                , value model.receiver
-                ]
-                []
+            , Html.map RecipientMsg (Comp.EmailInput.view model.recipients model.recipientsModel)
             ]
         , div [ class "field" ]
             [ label [] [ text "Subject" ]

@@ -1,10 +1,12 @@
 package docspell.store.queries
 
+import fs2.Stream
 import doobie._
 import doobie.implicits._
 import docspell.common.{Direction, Ident}
 import docspell.store.impl.Implicits._
-import docspell.store.records.{RAttachment, RItem, RTag, RTagItem}
+import docspell.store.records._
+import docspell.common.ContactKind
 
 object QCollective {
 
@@ -50,4 +52,38 @@ object QCollective {
     } yield InsightData(n0, n1, n2.getOrElse(0), Map.from(n3))
   }
 
+  def getContacts(
+      coll: Ident,
+      query: Option[String],
+      kind: Option[ContactKind]
+  ): Stream[ConnectionIO, RContact] = {
+    val RO = ROrganization
+    val RP = RPerson
+    val RC = RContact
+
+    val orgCond  = selectSimple(Seq(RO.Columns.oid), RO.table, RO.Columns.cid.is(coll))
+    val persCond = selectSimple(Seq(RP.Columns.pid), RP.table, RP.Columns.cid.is(coll))
+    val queryCond = query match {
+      case Some(q) =>
+        Seq(RC.Columns.value.lowerLike(s"%${q.toLowerCase}%"))
+      case None =>
+        Seq.empty
+    }
+    val kindCond = kind match {
+      case Some(k) =>
+        Seq(RC.Columns.kind.is(k))
+      case None =>
+        Seq.empty
+    }
+
+    val q = selectSimple(
+      RC.Columns.all,
+      RC.table,
+      and(
+        Seq(or(RC.Columns.orgId.isIn(orgCond), RC.Columns.personId.isIn(persCond))) ++ queryCond ++ kindCond
+      )
+    ) ++ orderBy(RC.Columns.value.f)
+
+    q.query[RContact].stream
+  }
 }
