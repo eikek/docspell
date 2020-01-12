@@ -7,7 +7,7 @@ title: Quickstart
 
 You can download pre-compiled binaries from the [Release
 Page](https://github.com/eikek/docspell/releases). There are `deb`
-packages and a generic zip files.
+packages and generic zip files.
 
 You need to download the two files:
 

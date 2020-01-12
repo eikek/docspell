@@ -38,5 +38,7 @@ must be maintained manually. But usually, this data doesn't grow as
 fast as the documents. After a while there is a quite complete address
 book and only once in a while it has to be revisited.
 
-The [documentation](https://eikek.github.io/docspell/) provides for
+## Documentation
+
+The [documentation site](https://eikek.github.io/docspell/) provides
 more information.
