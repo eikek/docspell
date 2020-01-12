@@ -64,6 +64,7 @@ type alias Model =
     , dueDatePicker : DatePicker
     , itemMail : Comp.ItemMail.Model
     , mailOpen : Bool
+    , mailSending : Bool
     , mailSendResult : Maybe BasicResult
     , sentMails : Comp.SentMails.Model
     , sentMailsOpen : Bool
@@ -128,6 +129,7 @@ emptyModel =
     , dueDatePicker = Comp.DatePicker.emptyModel
     , itemMail = Comp.ItemMail.emptyModel
     , mailOpen = False
+    , mailSending = False
     , mailSendResult = Nothing
     , sentMails = Comp.SentMails.init
     , sentMailsOpen = False
@@ -740,7 +742,7 @@ update key flags next msg model =
                             , conn = sm.conn
                             }
                     in
-                    ( model
+                    ( { model | mailSending = True }
                     , Cmd.batch
                         [ Cmd.map ItemMailMsg ic
                         , Api.sendMail flags mail SendMailResp
@@ -748,7 +750,23 @@ update key flags next msg model =
                     )
 
         ToggleMail ->
-            ( { model | mailOpen = not model.mailOpen }, Cmd.none )
+            let
+                newOpen =
+                    not model.mailOpen
+
+                sendResult =
+                    if newOpen then
+                        model.mailSendResult
+
+                    else
+                        Nothing
+            in
+            ( { model
+                | mailOpen = newOpen
+                , mailSendResult = sendResult
+              }
+            , Cmd.none
+            )
 
         SendMailResp (Ok br) ->
             let
@@ -761,6 +779,7 @@ update key flags next msg model =
             in
             ( { model
                 | itemMail = mm
+                , mailSending = False
                 , mailSendResult = Just br
               }
             , if br.success then
@@ -775,7 +794,10 @@ update key flags next msg model =
                 errmsg =
                     Util.Http.errorToString err
             in
-            ( { model | mailSendResult = Just (BasicResult False errmsg) }
+            ( { model
+                | mailSendResult = Just (BasicResult False errmsg)
+                , mailSending = False
+              }
             , Cmd.none
             )
 
@@ -1393,7 +1415,17 @@ renderMailForm model =
             , ( "invisible hidden", not model.mailOpen )
             ]
         ]
-        [ h4 [ class "ui header" ]
+        [ div
+            [ classList
+                [ ( "ui dimmer", True )
+                , ( "active", model.mailSending )
+                ]
+            ]
+            [ div [ class "ui text loader" ]
+                [ text "Sending …"
+                ]
+            ]
+        , h4 [ class "ui header" ]
             [ text "Send this item via E-Mail"
             ]
         , Html.map ItemMailMsg (Comp.ItemMail.view model.itemMail)
