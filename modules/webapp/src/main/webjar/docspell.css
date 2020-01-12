@@ -29,11 +29,11 @@
 }
 
 .default-layout .ui.multiple.search.dropdown>input.search {
+    width: 3.5em;
+}
+.default-layout .ui.multiple.search.dropdown>input.search.long-search {
     width: auto;
 }
-/* .default-layout .ui.multiple.search.dropdown>input.search.long-search { */
-/*     width: auto; */
-/* } */
 
 
 .default-layout .job-log {

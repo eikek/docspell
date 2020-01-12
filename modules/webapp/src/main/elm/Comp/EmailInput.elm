@@ -142,7 +142,7 @@ view values model =
         (List.map renderValue values
             ++ [ input
                     [ type_ "text"
-                    , class "search"
+                    , class "search long-search"
                     , placeholder "Recipients…"
                     , onKeyUp KeyPress
                     , onInput SetInput
