@@ -152,7 +152,11 @@ view flags model =
             ]
         , div [ class "field" ]
             [ label [] [ text "Description" ]
-            , textarea [ onInput SetDescr ] [ model.description |> Maybe.withDefault "" |> text ]
+            , textarea
+                [ onInput SetDescr
+                , model.description |> Maybe.withDefault "" |> value
+                ]
+                []
             ]
         , div [ class "inline field" ]
             [ div [ class "ui checkbox" ]

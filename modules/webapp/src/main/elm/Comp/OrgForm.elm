@@ -136,6 +136,10 @@ view model =
             [ text "Notes"
             ]
         , div [ class "field" ]
-            [ textarea [ onInput SetNotes ] [ Maybe.withDefault "" model.notes |> text ]
+            [ textarea
+                [ onInput SetNotes
+                , Maybe.withDefault "" model.notes |> value
+                ]
+                []
             ]
         ]

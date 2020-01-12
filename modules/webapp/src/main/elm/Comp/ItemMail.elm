@@ -205,8 +205,11 @@ view model =
             ]
         , div [ class "field" ]
             [ label [] [ text "Body" ]
-            , textarea [ onInput SetBody ]
-                [ text model.body ]
+            , textarea
+                [ onInput SetBody
+                , value model.body
+                ]
+                []
             ]
         , div [ class "inline field" ]
             [ div [ class "ui checkbox" ]
