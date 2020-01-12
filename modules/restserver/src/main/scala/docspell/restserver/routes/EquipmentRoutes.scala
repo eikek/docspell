@@ -2,15 +2,17 @@ package docspell.restserver.routes
 
 import cats.effect._
 import cats.implicits._
+import org.http4s.HttpRoutes
+import org.http4s.circe.CirceEntityDecoder._
+import org.http4s.circe.CirceEntityEncoder._
+import org.http4s.dsl.Http4sDsl
+
 import docspell.backend.BackendApp
 import docspell.backend.auth.AuthToken
 import docspell.common.Ident
 import docspell.restapi.model._
 import docspell.restserver.conv.Conversions._
-import org.http4s.HttpRoutes
-import org.http4s.circe.CirceEntityDecoder._
-import org.http4s.circe.CirceEntityEncoder._
-import org.http4s.dsl.Http4sDsl
+import docspell.restserver.http4s.QueryParam
 
 object EquipmentRoutes {
 
@@ -19,10 +21,9 @@ object EquipmentRoutes {
     import dsl._
 
     HttpRoutes.of {
-      case req @ GET -> Root =>
-        val q = req.params.get("q").map(_.trim).filter(_.nonEmpty)
+      case GET -> Root :? QueryParam.QueryOpt(q) =>
         for {
-          data <- backend.equipment.findAll(user.account, q)
+          data <- backend.equipment.findAll(user.account, q.map(_.q))
           resp <- Ok(EquipmentList(data.map(mkEquipment).toList))
         } yield resp
 

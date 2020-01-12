@@ -17,6 +17,7 @@ import docspell.restapi.model._
 import docspell.store.records.RUserEmail
 import docspell.store.EmilUtil
 import docspell.restserver.conv.Conversions
+import docspell.restserver.http4s.QueryParam
 
 object MailSettingsRoutes {
 
@@ -25,10 +26,9 @@ object MailSettingsRoutes {
     import dsl._
 
     HttpRoutes.of {
-      case req @ GET -> Root =>
-        val q = req.params.get("q").map(_.trim).filter(_.nonEmpty)
+      case GET -> Root :? QueryParam.QueryOpt(q) =>
         for {
-          list <- backend.mail.getSettings(user.account, q)
+          list <- backend.mail.getSettings(user.account, q.map(_.q))
           res = list.map(convert)
           resp <- Ok(EmailSettingsList(res.toList))
         } yield resp

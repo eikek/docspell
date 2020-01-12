@@ -7,7 +7,7 @@ import docspell.backend.auth.AuthToken
 import docspell.common.Ident
 import docspell.restapi.model._
 import docspell.restserver.conv.Conversions._
-import docspell.restserver.routes.ParamDecoder._
+import docspell.restserver.http4s.QueryParam
 import org.http4s.HttpRoutes
 import org.http4s.circe.CirceEntityDecoder._
 import org.http4s.circe.CirceEntityEncoder._
@@ -20,16 +20,15 @@ object OrganizationRoutes {
     import dsl._
 
     HttpRoutes.of {
-      case req @ GET -> Root :? FullQueryParamMatcher(full) =>
-        val q = req.params.get("q").map(_.trim).filter(_.nonEmpty)
+      case GET -> Root :? QueryParam.FullOpt(full) +& QueryParam.QueryOpt(q) =>
         if (full.getOrElse(false)) {
           for {
-            data <- backend.organization.findAllOrg(user.account, q)
+            data <- backend.organization.findAllOrg(user.account, q.map(_.q))
             resp <- Ok(OrganizationList(data.map(mkOrg).toList))
           } yield resp
         } else {
           for {
-            data <- backend.organization.findAllOrgRefs(user.account, q)
+            data <- backend.organization.findAllOrgRefs(user.account, q.map(_.q))
             resp <- Ok(ReferenceList(data.map(mkIdName).toList))
           } yield resp
         }

@@ -7,7 +7,7 @@ import docspell.backend.auth.AuthToken
 import docspell.common.Ident
 import docspell.restapi.model._
 import docspell.restserver.conv.Conversions._
-import docspell.restserver.http4s.ResponseGenerator
+import docspell.restserver.http4s._
 import org.http4s.HttpRoutes
 import org.http4s.circe.CirceEntityDecoder._
 import org.http4s.circe.CirceEntityEncoder._
@@ -20,10 +20,9 @@ object TagRoutes {
     import dsl._
 
     HttpRoutes.of {
-      case req @ GET -> Root =>
-        val q = req.params.get("q").map(_.trim).filter(_.nonEmpty)
+      case GET -> Root :? QueryParam.QueryOpt(q) =>
         for {
-          all  <- backend.tag.findAll(user.account, q)
+          all  <- backend.tag.findAll(user.account, q.map(_.q))
           resp <- Ok(TagList(all.size, all.map(mkTag).toList))
         } yield resp
 

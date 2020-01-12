@@ -17,6 +17,12 @@ object QueryParam {
     QueryParamDecoder[String].map(s => QueryString(s.trim.toLowerCase))
 
 
+  // implicit val booleanDecoder: QueryParamDecoder[Boolean] =
+  //   QueryParamDecoder.fromUnsafeCast(qp => Option(qp.value).exists(_.equalsIgnoreCase("true")))(
+  //     "Boolean"
+  //   )
+
+  object FullOpt extends OptionalQueryParamDecoderMatcher[Boolean]("full")
 
   object ContactKindOpt extends OptionalQueryParamDecoderMatcher[ContactKind]("kind")
 
