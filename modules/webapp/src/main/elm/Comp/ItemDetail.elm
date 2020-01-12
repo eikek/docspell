@@ -7,6 +7,7 @@ module Comp.ItemDetail exposing
     )
 
 import Api
+import Api.Model.Attachment exposing (Attachment)
 import Api.Model.BasicResult exposing (BasicResult)
 import Api.Model.DirectionValue exposing (DirectionValue)
 import Api.Model.EquipmentList exposing (EquipmentList)
@@ -984,15 +985,55 @@ renderAttachmentsTabMenu model =
                             ]
                         , onClick (SetActiveAttachment pos)
                         ]
-                        [ a.name |> Maybe.withDefault "No Name" |> text
-                        , text " ("
-                        , text (Util.Size.bytesReadable Util.Size.B (toFloat a.size))
-                        , text ")"
+                        [ Maybe.map (Util.String.ellipsis 20) a.name
+                            |> Maybe.withDefault "No Name"
+                            |> text
                         ]
             )
             model.item.attachments
             ++ mailTab
         )
+
+
+renderAttachmentView : Model -> Int -> Attachment -> Html Msg
+renderAttachmentView model pos attach =
+    let
+        fileUrl =
+            "/api/v1/sec/attachment/" ++ attach.id
+
+        attachName =
+            Maybe.withDefault "No name" attach.name
+    in
+    div
+        [ classList
+            [ ( "ui attached tab segment", True )
+            , ( "active", pos == model.visibleAttach )
+            ]
+        ]
+        [ div [ class "ui small secondary menu" ]
+            [ div [ class "horizontally fitted item" ]
+                [ i [ class "file outline icon" ] []
+                , text attachName
+                , text " ("
+                , text (Util.Size.bytesReadable Util.Size.B (toFloat attach.size))
+                , text ")"
+                ]
+            , div [ class "right menu" ]
+                [ a
+                    [ class "item"
+                    , title "Download to disk"
+                    , download attachName
+                    , href fileUrl
+                    ]
+                    [ i [ class "download icon" ] []
+                    ]
+                ]
+            ]
+        , div [ class "ui 4:3 embed doc-embed" ]
+            [ embed [ src fileUrl, type_ attach.contentType ]
+                []
+            ]
+        ]
 
 
 renderAttachmentsTabBody : Model -> List (Html Msg)
@@ -1016,22 +1057,7 @@ renderAttachmentsTabBody model =
                     ]
                 ]
     in
-    List.indexedMap
-        (\pos ->
-            \a ->
-                div
-                    [ classList
-                        [ ( "ui attached tab segment", True )
-                        , ( "active", pos == model.visibleAttach )
-                        ]
-                    ]
-                    [ div [ class "ui 4:3 embed doc-embed" ]
-                        [ embed [ src ("/api/v1/sec/attachment/" ++ a.id), type_ a.contentType ]
-                            []
-                        ]
-                    ]
-        )
-        model.item.attachments
+    List.indexedMap (renderAttachmentView model) model.item.attachments
         ++ mailTab
 
 
@@ -1166,7 +1192,7 @@ renderEditButtons model =
             , text "Unconfirm"
             ]
         , button [ class "ui negative button", onClick RequestDelete ]
-            [ i [ class "delete icon" ] []
+            [ i [ class "trash icon" ] []
             , text "Delete"
             ]
         ]
