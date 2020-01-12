@@ -1,18 +1,39 @@
-.jumbotron {
+#masthead {
     background: url(../img/back-master-small.jpg);
     background-repeat: no-repeat;
     background-size: 100% 800px;
 }
 
-.content-wrapper h1, .h1 {
-    border-bottom: 1px solid #d8dfe5;
-    padding-bottom: 0.8rem;
+.thumbnail {
+    border: 1px solid #aaa;
 }
 
-body {
-    font-size: 1.75em;
+.features-image {
+    max-height: 250px;
 }
 
-h4 {
+.docs #sidebar-wrapper .sidebar-nav .sidebar-nav-item.open>a, .docs #sidebar-wrapper .sidebar-nav .sidebar-nav-item.open button {
+    background: #495680;
+}
+.docs #sidebar-wrapper .sidebar-nav .sidebar-nav-item .sub-section {
+    background: #172651;
+}
+.docs #sidebar-wrapper .sidebar-nav .sidebar-nav-item .sub-section a.active {
+    font-weight: bold;
+}
+.docs #sidebar-wrapper {
+    background: #172651;
+}
+
+.docs #sidebar-wrapper #sidebar-brand {
+    background: #495680;
+
+}
+
+.docs h4 {
     text-decoration: underline;
+}
+
+.docs .thumbnail img {
+    width: 100%;
 }
