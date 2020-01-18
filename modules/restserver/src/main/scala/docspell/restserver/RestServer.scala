@@ -1,11 +1,13 @@
 package docspell.restserver
 
 import cats.effect._
+import cats.data.{Kleisli, OptionT}
 import docspell.backend.auth.AuthToken
 import docspell.restserver.routes._
 import docspell.restserver.webapp._
 import fs2.Stream
-import org.http4s.HttpRoutes
+import org.http4s._
+import org.http4s.headers.Location
 import org.http4s.implicits._
 import org.http4s.server.Router
 import org.http4s.server.blaze.BlazeServerBuilder
@@ -33,7 +35,8 @@ object RestServer {
         },
         "/api/doc"    -> templates.doc,
         "/app/assets" -> WebjarRoutes.appRoutes[F](blocker),
-        "/app"        -> templates.app
+        "/app"        -> templates.app,
+        "/"           -> redirectTo("/app")
       ).orNotFound
 
       finalHttpApp = Logger.httpApp(logHeaders = false, logBody = false)(httpApp)
@@ -81,5 +84,16 @@ object RestServer {
       "signup"    -> RegisterRoutes(restApp.backend, cfg),
       "upload"    -> UploadRoutes.open(restApp.backend, cfg),
       "checkfile" -> CheckFileRoutes.open(restApp.backend)
+    )
+
+  def redirectTo[F[_]: Effect](path: String): HttpRoutes[F] =
+    Kleisli(_ =>
+      OptionT.pure(
+        Response[F](
+          Status.SeeOther,
+          body = Stream.empty,
+          headers = Headers.of(Location(Uri(path = path)))
+        )
+      )
     )
 }
