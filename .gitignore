@@ -4,3 +4,4 @@ dev.conf
 elm-stuff
 result
 _site/
+*.qcow2
