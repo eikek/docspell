@@ -15,6 +15,7 @@ the sources and run:
 - `make` to compile all sources (Elm + Scala)
 - `make-zip` to create zip packages
 - `make-deb` to create debian packages
+- `make-tools` to create a zip containing the script in `tools/`
 - `make-pkg` for a clean compile + building all packages (zip + deb)
 
 The zip files can be found afterwards in:

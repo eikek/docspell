@@ -3,7 +3,7 @@ import scala.sys.process._
 import com.typesafe.sbt.SbtGit.GitKeys._
 import docspell.build._
 
-
+val toolsPackage = taskKey[Seq[File]]("Package the scripts/extension tools")
 val elmCompileMode = settingKey[ElmCompileMode]("How to compile elm sources")
 
 val sharedSettings = Seq(
@@ -22,6 +22,12 @@ val sharedSettings = Seq(
     "-Wvalue-discard",
     "-Wnumeric-widen"
   ),
+  LocalRootProject/toolsPackage := {
+    val v = version.value
+    val logger = streams.value.log
+    val dir = (LocalRootProject/baseDirectory).value / "tools"
+    packageTools(logger, dir, v)
+  },
   scalacOptions in (Compile, console) :=
     (scalacOptions.value.filter(o => !o.contains("Xlint")) ++ Seq("-Xlint:_,-unused")),
   scalacOptions in (Test, console) :=
@@ -398,8 +404,38 @@ def createWebjarSource(wj: Seq[ModuleID], out: File): Seq[File] = {
   Seq(target)
 }
 
+def packageTools(logger: Logger, dir: File, version: String): Seq[File] = {
+  val target = dir/"target"
+  IO.delete(target)
+  IO.createDirectory(target)
+  val archive = target/s"docspell-tools-${version}.zip"
+  logger.info(s"Packaging tools to $archive ...")
+  val webext = target/"docspell-firefox-extension.xpi"
+  val wx = dir/"webextension"
+  IO.zip(Seq(
+    wx/"_locales/de/messages.json" -> "_locales/de/messages.json",
+    wx/"_locales/en/messages.json" -> "_locales/en/messages.json",
+    wx/"docspell.js" -> "docspell.js",
+    wx/"icons"/"logo-48.png" -> "icons/logo-48.png",
+    wx/"icons"/"logo-96.png" -> "icons/logo-96.png",
+    wx/"manifest.json" -> "manifest.json"
+  ), webext)
+
+  IO.zip(Seq(
+    webext -> s"docspell-tools-${version}/firefox/docspell-extension.xpi",
+    wx/"native/app_manifest.json" ->s"docspell-tools-${version}/firefox/native/app_manifest.json",
+    wx/"native/native.py" ->s"docspell-tools-${version}/firefox/native/native.py",
+    dir/"ds.sh" -> s"docspell-tools-${version}/ds.sh",
+    dir/"consumedir.sh" -> s"docspell-tools-${version}/consumedir.sh"
+  ), archive)
+
+  Seq(archive)
+}
+
+// --- aliases
 
 addCommandAlias("make", ";set webapp/elmCompileMode := ElmCompileMode.Production ;root/openapiCodegen ;root/test:compile")
 addCommandAlias("make-zip", ";restserver/universal:packageBin ;joex/universal:packageBin")
 addCommandAlias("make-deb", ";restserver/debian:packageBin ;joex/debian:packageBin")
-addCommandAlias("make-pkg", ";clean ;make ;make-zip ;make-deb")
+addCommandAlias("make-tools", ";root/toolsPackage")
+addCommandAlias("make-pkg", ";clean ;make ;make-zip ;make-deb ;make-tools")
