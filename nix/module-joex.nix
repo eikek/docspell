@@ -9,6 +9,54 @@ let
        ${builtins.toJSON cfg}
   }}
   '';
+  defaults = {
+    app-id = "joex1";
+    base-url = "http://localhost:7878";
+    bind = {
+      address = "localhost";
+      port = 7878;
+    };
+    jdbc = {
+      url = "jdbc:h2:///tmp/docspell-demo.db;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;AUTO_SERVER=TRUE";
+      user = "sa";
+      password = "";
+    };
+    scheduler = {
+      pool-size = 2;
+      counting-scheme = "4,1";
+      retries = 5;
+      retry-delay = "1 minute";
+      log-buffer-size = 500;
+      wakeup-period = "30 minutes";
+    };
+    extraction = {
+      page-range = {
+        begin = 10;
+      };
+      ghostscript =  {
+        working-dir = "/tmp/docspell-extraction";
+        command = {
+          program = "${pkgs.ghostscript}/bin/gs";
+          args = [ "-dNOPAUSE" "-dBATCH" "-dSAFER" "-sDEVICE=tiffscaled8" "-sOutputFile={{outfile}}" "{{infile}}" ];
+          timeout = "5 minutes";
+        };
+      };
+      unpaper = {
+        command = {
+          program = "${pkgs.unpaper}/bin/unpaper";
+          args = [ "{{infile}}" "{{outfile}}" ];
+          timeout = "5 minutes";
+        };
+      };
+      tesseract = {
+        command= {
+          program = "${pkgs.tesseract4}/bin/tesseract";
+          args = ["{{file}}" "stdout" "-l" "{{lang}}" ];
+          timeout = "5 minutes";
+        };
+      };
+    };
+  };
 in {
 
   ## interface
@@ -30,13 +78,13 @@ in {
 
       app-id = mkOption {
         type = types.str;
-        default = "docspell-joex1";
+        default = defaults.app-id;
         description = "The node id. Must be unique across all docspell nodes.";
       };
 
       base-url = mkOption {
         type = types.str;
-        default = "http://localhost:7878";
+        default = defaults.base-url;
         description = "The base url where attentive is deployed.";
       };
 
@@ -45,20 +93,17 @@ in {
           options = {
             address = mkOption {
               type = types.str;
-              default = "localhost";
+              default = defaults.bind.address;
               description = "The address to bind the REST server to.";
             };
             port = mkOption {
               type = types.int;
-              default = 7878;
+              default = defaults.bind.port;
               description = "The port to bind the REST server";
             };
           };
         });
-        default = {
-          address = "localhost";
-          port = 7878;
-        };
+        default = defaults.bind;
         description = "Address and port bind the rest server.";
       };
 
@@ -67,7 +112,7 @@ in {
           options = {
             url = mkOption {
               type = types.str;
-              default = "jdbc:h2:///tmp/docspell-demo.db;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;AUTO_SERVER=TRUE";
+              default = defaults.jdbc.url;
               description = ''
                 The URL to the database. By default a file-based database is
                 used. It should also work with mariadb and postgresql.
@@ -81,21 +126,17 @@ in {
             };
             user = mkOption {
               type = types.str;
-              default = "sa";
+              default = defaults.jdbc.user;
               description = "The user name to connect to the database.";
             };
             password = mkOption {
               type = types.str;
-              default = "";
+              default = defaults.jdbc.password;
               description = "The password to connect to the database.";
             };
           };
         });
-        default = {
-          url = "jdbc:h2:///tmp/docspell-demo.db;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;AUTO_SERVER=TRUE";
-          user = "sa";
-          password = "";
-        };
+        default = defaults.jdbc;
         description = "Database connection settings";
       };
 
@@ -104,12 +145,12 @@ in {
           options = {
             pool-size = mkOption {
               type = types.int;
-              default = 2;
+              default = defaults.scheduler.pool-size;
               description = "Number of processing allowed in parallel.";
             };
             counting-scheme = mkOption {
               type = types.str;
-              default = "4,1";
+              default = defaults.scheduler.counting-scheme;
               description = ''
                 A counting scheme determines the ratio of how high- and low-prio
                 jobs are run. For example: 4,1 means run 4 high prio jobs, then
@@ -118,7 +159,7 @@ in {
             };
             retries = mkOption {
               type = types.int;
-              default = 5;
+              default = defaults.scheduler.retries;
               description = ''
                 How often a failed job should be retried until it enters failed
                 state. If a job fails, it becomes "stuck" and will be retried
@@ -127,7 +168,7 @@ in {
             };
             retry-delay = mkOption {
               type = types.str;
-              default = "1 minute";
+              default = defaults.scheduler.retry-delay;
               description = ''
                 The delay until the next try is performed for a failed job. This
                 delay is increased exponentially with the number of retries.
@@ -135,14 +176,14 @@ in {
             };
             log-buffer-size = mkOption {
               type = types.int;
-              default = 500;
+              default = defaults.scheduler.log-buffer-size;
               description = ''
                 The queue size of log statements from a job.
               '';
             };
             wakeup-period = mkOption {
               type = types.str;
-              default = "30 minutes";
+              default = defaults.scheduler.wakeup-period;
               description = ''
                 If no job is left in the queue, the scheduler will wait until a
                 notify is requested (using the REST interface). To also retry
@@ -151,36 +192,11 @@ in {
             };
           };
         });
-        default = {
-          pool-size = 2;
-          counting-scheme = "4,1";
-          retries = 5;
-          retry-delay = "1 minute";
-          log-buffer-size = 500;
-          wakeup-period = "30 minutes";
-        };
+        default = defaults.scheduler;
         description = "Settings for the scheduler";
       };
 
-      extraction =
-        let
-          gsdefaults =  {
-            program = "${pkgs.ghostscript}/bin/gs";
-            args = [ "-dNOPAUSE" "-dBATCH" "-dSAFER" "-sDEVICE=tiffscaled8" "-sOutputFile={{outfile}}" "{{infile}}" ];
-            timeout = "5 minutes";
-          };
-          unpaperdefaults = {
-            program = "${pkgs.unpaper}/bin/unpaper";
-            args = [ "{{infile}}" "{{outfile}}" ];
-            timeout = "5 minutes";
-          };
-          tesseractdefaults = {
-            program = "${pkgs.tesseract4}/bin/tesseract";
-            args = ["{{file}}" "stdout" "-l" "{{lang}}" ];
-            timeout = "5 minutes";
-          };
-        in
-        mkOption {
+      extraction = mkOption {
         type = types.submodule({
           options = {
             page-range = mkOption {
@@ -188,14 +204,12 @@ in {
                 options = {
                   begin = mkOption {
                     type = types.int;
-                    default = 10;
+                    default = defaults.extraction.page-range.begin;
                     description = "Specifies the first N pages of a file to process.";
                   };
                 };
               });
-              default = {
-                begin = 10;
-              };
+              default = defaults.extraction.page-range;
               description = ''
                 Defines what pages to process. If a PDF with 600 pages is
                 submitted, it is probably not necessary to scan through all of
@@ -215,7 +229,7 @@ in {
                 options = {
                   working-dir = mkOption {
                     type = types.str;
-                    default = "/tmp/docspell-extraction";
+                    default = defaults.extraction.ghostscript.working-dir;
                     description = "Directory where the extraction processes can put their temp files";
                   };
                   command = mkOption {
@@ -223,30 +237,27 @@ in {
                       options = {
                         program = mkOption {
                           type = types.str;
-                          default = gsdefaults.program;
+                          default = defaults.extraction.ghostscript.command.program;
                           description = "The path to the executable.";
                         };
                         args = mkOption {
                           type = types.listOf types.str;
-                          default = gsdefaults.args;
+                          default = defaults.extraction.ghostscript.command.args;
                           description = "The arguments to the program";
                         };
                         timeout = mkOption {
                           type = types.str;
-                          default = gsdefaults.timeout;
+                          default = defaults.extraction.ghostscript.command.timeout;
                           description = "The timeout when executing the command";
                         };
                       };
                     });
-                    default = gsdefaults;
+                    default = defaults.extraction.ghostscript.command;
                     description = "The system command";
                   };
                 };
               });
-              default = {
-                command = gsdefaults;
-                working-dir = "/tmp/docspell-extraction";
-              };
+              default = defaults.extraction.ghostscript;
               description = "The ghostscript command.";
             };
             unpaper = mkOption {
@@ -257,29 +268,27 @@ in {
                       options = {
                         program = mkOption {
                           type = types.str;
-                          default = unpaperdefaults.program;
+                          default = defaults.extraction.unpaper.command.program;
                           description = "The path to the executable.";
                         };
                         args = mkOption {
                           type = types.listOf types.str;
-                          default = unpaperdefaults.args;
+                          default = defaults.extraction.unpaper.command.args;
                           description = "The arguments to the program";
                         };
                         timeout = mkOption {
                           type = types.str;
-                          default = unpaperdefaults.timeout;
+                          default = defaults.extraction.unpaper.command.timeout;
                           description = "The timeout when executing the command";
                         };
                       };
                     });
-                    default = unpaperdefaults;
+                    default = defaults.extraction.unpaper.command;
                     description = "The system command";
                   };
                 };
               });
-              default = {
-                command = unpaperdefaults;
-              };
+              default = defaults.extraction.unpaper;
               description = "The unpaper command.";
             };
             tesseract = mkOption {
@@ -290,42 +299,32 @@ in {
                       options = {
                         program = mkOption {
                           type = types.str;
-                          default = tesseractdefaults.program;
+                          default = defaults.extraction.tesseract.command.program;
                           description = "The path to the executable.";
                         };
                         args = mkOption {
                           type = types.listOf types.str;
-                          default = tesseractdefaults.args;
+                          default = defaults.extraction.tesseract.command.args;
                           description = "The arguments to the program";
                         };
                         timeout = mkOption {
                           type = types.str;
-                          default = tesseractdefaults.timeout;
+                          default = defaults.extraction.tesseract.command.timeout;
                           description = "The timeout when executing the command";
                         };
                       };
                     });
-                    default = tesseractdefaults;
+                    default = defaults.extraction.tesseract.command;
                     description = "The system command";
                   };
                 };
               });
-              default = {
-                command = tesseractdefaults;
-              };
+              default = defaults.extraction.tesseract;
               description = "The tesseract command.";
             };
           };
         });
-        default = {
-          page-range = {
-            begin = 10;
-          };
-          ghostscript = {
-            command = gsdefaults;
-            working-dir = "/tmp/docspell-extraction";
-          };
-        };
+        default = defaults.extraction;
         description = ''
           Configuration of text extraction
 
