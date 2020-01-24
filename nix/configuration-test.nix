@@ -39,7 +39,11 @@ in
     urls = ["http://localhost:7880/api/v1/open/upload/item/blabla"];
   };
 
-  environment.systemPackages = [ pkgs.docspell.tools pkgs.jq ];
+  environment.systemPackages =
+    [ pkgs.docspell.tools
+      pkgs.docspell.server
+      pkgs.docspell.joex pkgs.jq
+    ];
 
   services.xserver = {
     enable = false;

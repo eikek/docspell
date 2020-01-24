@@ -314,7 +314,8 @@ val microsite = project.in(file("modules/microsite")).
     fork in run := true,
     micrositeCompilingDocsTool := WithMdoc,
     mdocVariables := Map(
-      "VERSION" -> version.value
+      "VERSION" -> version.value,
+      "PVERSION" -> version.value.replace('.', '_')
     ),
     Compile/resourceGenerators += Def.task {
       val conf1 = (resourceDirectory in (restserver, Compile)).value / "reference.conf"

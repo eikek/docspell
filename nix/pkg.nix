@@ -17,11 +17,11 @@ in
     buildPhase = "true";
 
     installPhase = ''
-      mkdir -p $out/{bin,program}
-      cp -R * $out/program/
+      mkdir -p $out/{bin,docspell-restserver-${cfg.version}}
+      cp -R * $out/docspell-restserver-${cfg.version}/
       cat > $out/bin/docspell-restserver <<-EOF
       #!${bash}/bin/bash
-      $out/program/bin/docspell-restserver -java-home ${jre8_headless} "\$@"
+      $out/docspell-restserver-${cfg.version}/bin/docspell-restserver -java-home ${jre8_headless} "\$@"
       EOF
       chmod 755 $out/bin/docspell-restserver
     '';
@@ -39,11 +39,11 @@ in
     buildPhase = "true";
 
     installPhase = ''
-      mkdir -p $out/{bin,program}
-      cp -R * $out/program/
+      mkdir -p $out/{bin,docspell-joex-${cfg.version}}
+      cp -R * $out/docspell-joex-${cfg.version}/
       cat > $out/bin/docspell-joex <<-EOF
       #!${bash}/bin/bash
-      $out/program/bin/docspell-joex -java-home ${jre8_headless} "\$@"
+      $out/docspell-joex-${cfg.version}/bin/docspell-joex -java-home ${jre8_headless} "\$@"
       EOF
       chmod 755 $out/bin/docspell-joex
     '';
