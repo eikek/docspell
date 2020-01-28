@@ -1,6 +1,5 @@
-version: {stdenv, fetchzip, file, curl, inotifyTools, fetchurl, jre8_headless, bash}:
+cfg: {stdenv, fetchzip, file, curl, inotifyTools, fetchurl, jre8_headless, bash}:
 let
-#  version = "0.2.0";
   meta = with stdenv.lib; {
     description = "Docspell helps to organize and archive your paper documents.";
     homepage = https://github.com/eikek/docspell;
@@ -9,23 +8,20 @@ let
   };
 in
 { server = stdenv.mkDerivation rec {
-    name = "docspell-server-${version}";
+    name = "docspell-server-${cfg.version}";
 
-     src = fetchzip {
-       url = "https://github.com/eikek/docspell/releases/download/v${version}/docspell-restserver-${version}.zip";
-       sha256 = "1mpyd66pcsd2q4wx9vszldqlamz9qgv6abrxh7xwzw23np61avy5";
-     };
+     src = fetchzip cfg.server;
 
     buildInputs = [ jre8_headless ];
 
     buildPhase = "true";
 
     installPhase = ''
-      mkdir -p $out/{bin,program}
-      cp -R * $out/program/
+      mkdir -p $out/{bin,docspell-restserver-${cfg.version}}
+      cp -R * $out/docspell-restserver-${cfg.version}/
       cat > $out/bin/docspell-restserver <<-EOF
       #!${bash}/bin/bash
-      $out/program/bin/docspell-restserver -java-home ${jre8_headless} "\$@"
+      $out/docspell-restserver-${cfg.version}/bin/docspell-restserver -java-home ${jre8_headless} "\$@"
       EOF
       chmod 755 $out/bin/docspell-restserver
     '';
@@ -34,23 +30,20 @@ in
   };
 
   joex = stdenv.mkDerivation rec {
-    name = "docspell-joex-${version}";
+    name = "docspell-joex-${cfg.version}";
 
-     src = fetchzip {
-       url = "https://github.com/eikek/docspell/releases/download/v${version}/docspell-joex-${version}.zip";
-       sha256 = "1ycfcfcv24vvkdbzvnahj500gb5l9vdls4bxq0jd1zn72p4z765f";
-     };
+    src = fetchzip cfg.joex;
 
     buildInputs = [ jre8_headless ];
 
     buildPhase = "true";
 
     installPhase = ''
-      mkdir -p $out/{bin,program}
-      cp -R * $out/program/
+      mkdir -p $out/{bin,docspell-joex-${cfg.version}}
+      cp -R * $out/docspell-joex-${cfg.version}/
       cat > $out/bin/docspell-joex <<-EOF
       #!${bash}/bin/bash
-      $out/program/bin/docspell-joex -java-home ${jre8_headless} "\$@"
+      $out/docspell-joex-${cfg.version}/bin/docspell-joex -java-home ${jre8_headless} "\$@"
       EOF
       chmod 755 $out/bin/docspell-joex
     '';
@@ -58,13 +51,10 @@ in
     inherit meta;
   };
 
-  tools = stdenv.mkDerivation rec {
-    name = "docspell-tools-${version}";
+  tools = stdenv.mkDerivation {
+    name = "docspell-tools-${cfg.version}";
 
-    src = fetchzip {
-      url = "https://github.com/eikek/docspell/releases/download/v${version}/docspell-tools-${version}.zip";
-      sha256 = "0hd93rlnnrq8xj7knp38x1jj2mv4y5lvbcv968bzk5f1az51qsvg";
-    };
+    src = fetchzip cfg.tools;
 
     buildPhase = "true";
 

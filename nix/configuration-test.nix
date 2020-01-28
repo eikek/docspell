@@ -20,7 +20,7 @@ in
         let
           callPackage = pkgs.lib.callPackageWith(custom // pkgs);
           custom = {
-            docspell = callPackage (docspell.pkg "0.2.0") {};
+            docspell = callPackage docspell.currentPkg {};
           };
         in custom;
     };
@@ -38,6 +38,12 @@ in
     watchDirs = ["/tmp/test"];
     urls = ["http://localhost:7880/api/v1/open/upload/item/blabla"];
   };
+
+  environment.systemPackages =
+    [ pkgs.docspell.tools
+      pkgs.docspell.server
+      pkgs.docspell.joex pkgs.jq
+    ];
 
   services.xserver = {
     enable = false;

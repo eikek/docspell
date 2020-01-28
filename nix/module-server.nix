@@ -196,11 +196,7 @@ in {
                   };
                 };
               });
-              default = {
-                mode = "closed";
-                newInvitePassword = "";
-                inviteTime = "3 days";
-              };
+              default = defaults.backend.signup;
               description = "Registration settings";
             };
             files = mkOption {
