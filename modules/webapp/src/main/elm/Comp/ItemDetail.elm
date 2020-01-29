@@ -818,7 +818,7 @@ update key flags next msg model =
             in
             ( { model | sentMails = sm }, Cmd.none )
 
-        SentMailsResp (Err err) ->
+        SentMailsResp (Err _) ->
             ( model, Cmd.none )
 
 

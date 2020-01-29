@@ -65,7 +65,7 @@ openAllGroups model =
 
 
 update : Flags -> Msg -> Model -> ( Model, Cmd Msg, Maybe ItemLight )
-update flags msg model =
+update _ msg model =
     case msg of
         SetResults list ->
             let
@@ -209,7 +209,7 @@ renderItemTable model items =
 
 
 renderItemLine : Model -> ItemLight -> Html Msg
-renderItemLine model item =
+renderItemLine _ item =
     let
         dirIcon =
             i [ class (Data.Direction.iconFromMaybe item.direction) ] []

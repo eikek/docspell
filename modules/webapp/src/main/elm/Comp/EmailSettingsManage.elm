@@ -9,7 +9,7 @@ module Comp.EmailSettingsManage exposing
 
 import Api
 import Api.Model.BasicResult exposing (BasicResult)
-import Api.Model.EmailSettings exposing (EmailSettings)
+import Api.Model.EmailSettings
 import Api.Model.EmailSettingsList exposing (EmailSettingsList)
 import Comp.EmailSettingsForm
 import Comp.EmailSettingsTable

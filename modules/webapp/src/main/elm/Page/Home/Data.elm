@@ -6,7 +6,6 @@ module Page.Home.Data exposing
     , itemNav
     )
 
-import Api.Model.ItemDetail exposing (ItemDetail)
 import Api.Model.ItemLightList exposing (ItemLightList)
 import Comp.ItemList
 import Comp.SearchMenu

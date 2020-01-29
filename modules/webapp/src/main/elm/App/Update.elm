@@ -130,9 +130,6 @@ updateWithSub msg model =
             case req of
                 Internal url ->
                     let
-                        newPage =
-                            Page.fromUrl url
-
                         isCurrent =
                             Page.fromUrl url
                                 |> Maybe.map (\p -> p == model.page)

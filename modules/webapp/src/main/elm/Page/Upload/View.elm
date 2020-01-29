@@ -48,7 +48,7 @@ view mid model =
 
 
 renderErrorMsg : Model -> Html Msg
-renderErrorMsg model =
+renderErrorMsg _ =
     div [ class "row" ]
         [ div [ class "sixteen wide column" ]
             [ div [ class "ui large error message" ]
@@ -63,7 +63,7 @@ renderErrorMsg model =
 
 
 renderSuccessMsg : Bool -> Model -> Html Msg
-renderSuccessMsg public model =
+renderSuccessMsg public _ =
     div [ class "row" ]
         [ div [ class "sixteen wide column" ]
             [ div [ class "ui large success message" ]

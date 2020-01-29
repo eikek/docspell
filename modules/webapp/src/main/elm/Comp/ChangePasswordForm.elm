@@ -13,7 +13,7 @@ import Comp.PasswordInput
 import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick, onInput)
+import Html.Events exposing (onClick)
 import Http
 import Util.Http
 

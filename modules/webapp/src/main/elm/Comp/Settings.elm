@@ -58,7 +58,7 @@ type Msg
 
 
 update : Flags -> Msg -> Model -> ( Model, Cmd Msg, Maybe CollectiveSettings )
-update flags msg model =
+update _ msg model =
     case msg of
         LangDropdownMsg m ->
             let

@@ -94,13 +94,6 @@ uploadAllTracker =
     "upload-all"
 
 
-isInitial : Model -> Bool
-isInitial model =
-    Set.isEmpty model.loading
-        && Set.isEmpty model.completed
-        && Set.isEmpty model.errored
-
-
 isDone : Model -> Bool
 isDone model =
     List.map makeFileId model.files

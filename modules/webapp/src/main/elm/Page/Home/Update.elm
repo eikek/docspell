@@ -2,7 +2,6 @@ module Page.Home.Update exposing (update)
 
 import Api
 import Browser.Navigation as Nav
-import Comp.ItemDetail
 import Comp.ItemList
 import Comp.SearchMenu
 import Data.Flags exposing (Flags)

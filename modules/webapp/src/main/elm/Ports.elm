@@ -1,4 +1,9 @@
-port module Ports exposing (..)
+port module Ports exposing
+    ( removeAccount
+    , setAccount
+    , setAllProgress
+    , setProgress
+    )
 
 import Api.Model.AuthResult exposing (AuthResult)
 

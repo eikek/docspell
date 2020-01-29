@@ -108,7 +108,7 @@ update flags msg model =
         ConnMsg m ->
             let
                 ( cm, _ ) =
-                    --TODO dropdown doesn't use cmd!!
+                    -- dropdown doesn't use cmd!!
                     Comp.Dropdown.update m model.connectionModel
             in
             ( { model | connectionModel = cm }, Cmd.none, FormNone )

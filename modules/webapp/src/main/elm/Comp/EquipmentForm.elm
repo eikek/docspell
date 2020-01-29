@@ -44,7 +44,7 @@ type Msg
 
 
 update : Flags -> Msg -> Model -> ( Model, Cmd Msg )
-update flags msg model =
+update _ msg model =
     case msg of
         SetEquipment t ->
             ( { model | equipment = t, name = t.name }, Cmd.none )

@@ -149,8 +149,8 @@ view values model =
                     ]
                     [ text model.input
                     ]
+               , renderMenu model
                ]
-            ++ [ renderMenu model ]
         )
 
 

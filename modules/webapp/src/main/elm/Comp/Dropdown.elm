@@ -278,15 +278,6 @@ selectActive model =
             model
 
 
-clearActive : Model a -> Model a
-clearActive model =
-    { model | available = List.map (\e -> { e | active = False }) model.available }
-
-
-
--- TODO enhance update function to return this info
-
-
 isDropdownChangeMsg : Msg a -> Bool
 isDropdownChangeMsg cm =
     case cm of

@@ -91,7 +91,7 @@ type Msg
 
 
 update : Flags -> Msg -> Model -> ( Model, Cmd Msg )
-update flags msg model =
+update _ msg model =
     case msg of
         SetUser t ->
             let

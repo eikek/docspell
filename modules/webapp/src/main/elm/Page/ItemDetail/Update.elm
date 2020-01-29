@@ -35,5 +35,5 @@ update key flags next msg model =
             in
             update key flags next (ItemDetailMsg lmsg) model
 
-        ItemResp (Err err) ->
+        ItemResp (Err _) ->
             ( model, Cmd.none )

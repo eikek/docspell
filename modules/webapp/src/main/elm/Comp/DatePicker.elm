@@ -16,7 +16,7 @@ module Comp.DatePicker exposing
 import Date exposing (Date)
 import DatePicker exposing (DateEvent, DatePicker, Settings)
 import Html exposing (Html)
-import Time exposing (Month(..), Posix, Zone, utc)
+import Time exposing (Month(..), utc)
 
 
 type alias Msg =

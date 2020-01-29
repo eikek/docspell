@@ -192,10 +192,10 @@ jsonResolver decoder =
                 Http.NetworkError_ ->
                     Err Http.NetworkError
 
-                Http.BadStatus_ metadata body ->
+                Http.BadStatus_ metadata _ ->
                     Err (Http.BadStatus metadata.statusCode)
 
-                Http.GoodStatus_ metadata body ->
+                Http.GoodStatus_ _ body ->
                     case D.decodeString decoder body of
                         Ok value ->
                             Ok value

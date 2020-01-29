@@ -34,7 +34,7 @@ type Msg
 
 
 update : Flags -> Msg -> Model -> ( Model, Cmd Msg )
-update flags msg model =
+update _ msg model =
     case msg of
         SetSources list ->
             ( { model | sources = list, selected = Nothing }, Cmd.none )

@@ -1,4 +1,12 @@
-module Comp.SentMails exposing (..)
+module Comp.SentMails exposing
+    ( Model
+    , Msg
+    , init
+    , initMails
+    , isEmpty
+    , update
+    , view
+    )
 
 import Api.Model.SentMail exposing (SentMail)
 import Html exposing (..)

@@ -12,9 +12,6 @@ crazyEncode str =
     let
         b64 =
             Base64.encode str
-
-        len =
-            String.length b64
     in
     case String.right 2 b64 |> String.toList of
         '=' :: '=' :: [] ->

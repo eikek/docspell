@@ -1,6 +1,5 @@
 module Page.Home.View exposing (view)
 
-import Comp.ItemDetail
 import Comp.ItemList
 import Comp.SearchMenu
 import Html exposing (..)

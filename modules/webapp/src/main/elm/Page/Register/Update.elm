@@ -106,7 +106,7 @@ update flags msg model =
             , cmd
             )
 
-        SubmitResp (Err err) ->
+        SubmitResp (Err _) ->
             ( model, Cmd.none )
 
 
