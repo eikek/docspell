@@ -25,6 +25,7 @@ import Browser.Navigation as Nav
 import Comp.DatePicker
 import Comp.Dropdown exposing (isDropdownChangeMsg)
 import Comp.ItemMail
+import Comp.MarkdownInput
 import Comp.SentMails
 import Comp.YesNoDimmer
 import Data.Direction exposing (Direction)
@@ -55,7 +56,7 @@ type alias Model =
     , concEquipModel : Comp.Dropdown.Model IdName
     , nameModel : String
     , notesModel : Maybe String
-    , notesHidden : Bool
+    , notesField : NotesField
     , deleteConfirm : Comp.YesNoDimmer.Model
     , itemDatePicker : DatePicker
     , itemDate : Maybe Int
@@ -69,6 +70,25 @@ type alias Model =
     , sentMails : Comp.SentMails.Model
     , sentMailsOpen : Bool
     }
+
+
+type NotesField
+    = ViewNotes
+    | EditNotes Comp.MarkdownInput.Model
+    | HideNotes
+
+
+isEditNotes : NotesField -> Bool
+isEditNotes field =
+    case field of
+        EditNotes _ ->
+            True
+
+        ViewNotes ->
+            False
+
+        HideNotes ->
+            False
 
 
 emptyModel : Model
@@ -120,7 +140,7 @@ emptyModel =
             }
     , nameModel = ""
     , notesModel = Nothing
-    , notesHidden = False
+    , notesField = ViewNotes
     , deleteConfirm = Comp.YesNoDimmer.emptyModel
     , itemDatePicker = Comp.DatePicker.emptyModel
     , itemDate = Nothing
@@ -156,6 +176,8 @@ type Msg
     | SaveName
     | SetNotes String
     | ToggleNotes
+    | ToggleEditNotes
+    | NotesEditMsg Comp.MarkdownInput.Msg
     | SaveNotes
     | ConfirmItem
     | UnconfirmItem
@@ -387,6 +409,7 @@ update key flags next msg model =
                 | item = item
                 , nameModel = item.name
                 , notesModel = item.notes
+                , notesField = ViewNotes
                 , itemDate = item.itemDate
                 , dueDate = item.dueDate
               }
@@ -541,9 +564,42 @@ update key flags next msg model =
             )
 
         ToggleNotes ->
-            ( { model | notesHidden = not model.notesHidden }
+            ( { model
+                | notesField =
+                    if model.notesField == ViewNotes then
+                        HideNotes
+
+                    else
+                        ViewNotes
+              }
             , Cmd.none
             )
+
+        ToggleEditNotes ->
+            ( { model
+                | notesField =
+                    if isEditNotes model.notesField then
+                        ViewNotes
+
+                    else
+                        EditNotes Comp.MarkdownInput.init
+              }
+            , Cmd.none
+            )
+
+        NotesEditMsg lm ->
+            case model.notesField of
+                EditNotes em ->
+                    let
+                        ( lm2, str ) =
+                            Comp.MarkdownInput.update (Maybe.withDefault "" model.notesModel) lm em
+                    in
+                    ( { model | notesField = EditNotes lm2, notesModel = Util.Maybe.fromString str }
+                    , Cmd.none
+                    )
+
+                _ ->
+                    ( model, Cmd.none )
 
         SaveNotes ->
             ( model, setNotes flags model )
@@ -945,36 +1001,73 @@ renderIdInfo model =
 
 renderNotes : Model -> List (Html Msg)
 renderNotes model =
-    case model.item.notes of
-        Nothing ->
-            []
+    case model.notesField of
+        HideNotes ->
+            case model.item.notes of
+                Nothing ->
+                    []
 
-        Just str ->
-            if model.notesHidden then
-                [ div [ class "ui segment" ]
+                Just str ->
+                    [ div [ class "ui segment" ]
+                        [ a
+                            [ class "ui top left attached label"
+                            , onClick ToggleNotes
+                            , href "#"
+                            ]
+                            [ i [ class "eye icon" ] []
+                            , text "Show notes…"
+                            ]
+                        ]
+                    ]
+
+        ViewNotes ->
+            case model.item.notes of
+                Nothing ->
+                    []
+
+                Just str ->
+                    [ div [ class "ui segment" ]
+                        [ Markdown.toHtml [ class "item-notes" ] str
+                        , a
+                            [ class "ui left corner label"
+                            , onClick ToggleNotes
+                            , href "#"
+                            ]
+                            [ i [ class "eye slash icon" ] []
+                            ]
+                        , a
+                            [ class "ui right corner label"
+                            , onClick ToggleEditNotes
+                            , href "#"
+                            ]
+                            [ i [ class "edit icon" ] []
+                            ]
+                        ]
+                    ]
+
+        EditNotes mm ->
+            [ div [ class "ui segment" ]
+                [ Html.map NotesEditMsg (Comp.MarkdownInput.view (Maybe.withDefault "" model.notesModel) mm)
+                , div [ class "ui secondary menu" ]
                     [ a
-                        [ class "ui top left attached label"
-                        , onClick ToggleNotes
+                        [ class "link item"
                         , href "#"
+                        , onClick SaveNotes
                         ]
-                        [ i [ class "eye icon" ] []
-                        , text "Show notes…"
+                        [ i [ class "save outline icon" ] []
+                        , text "Save"
                         ]
-                    ]
-                ]
-
-            else
-                [ div [ class "ui segment" ]
-                    [ Markdown.toHtml [ class "item-notes" ] str
                     , a
-                        [ class "ui right corner label"
-                        , onClick ToggleNotes
+                        [ class "link item"
                         , href "#"
+                        , onClick ToggleEditNotes
                         ]
-                        [ i [ class "eye slash icon" ] []
+                        [ i [ class "cancel icon" ] []
+                        , text "Cancel"
                         ]
                     ]
                 ]
+            ]
 
 
 renderAttachmentsTabMenu : Model -> Html Msg
@@ -1329,7 +1422,7 @@ renderEditForm model =
                         , Maybe.withDefault "" model.notesModel |> value
                         ]
                         []
-                    , button [ class "ui icon button", onClick SaveNotes ]
+                    , button [ class "ui icon button", onClick ToggleEditNotes ]
                         [ i [ class "save outline icon" ] []
                         ]
                     ]

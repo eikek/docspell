@@ -35,6 +35,28 @@
     width: auto;
 }
 
+.default-layout .ui.segment .item-notes {
+    padding: 0 1em;
+}
+
+.markdown-preview {
+    overflow: auto;
+    max-height: 300px;
+}
+.markdown-split > textarea.markdown-editor {
+    height: 100%;
+    max-height: 300px;
+    width: 100%;
+    border: 0;
+    border-right: 1px solid #00000060
+}
+textarea.markdown-editor {
+    height: 100%;
+    max-height: 300px;
+    width: 100%;
+    border: 0;
+    min-height: 10em;
+}
 
 .default-layout .job-log {
     background: #181819;
