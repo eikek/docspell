@@ -134,7 +134,7 @@ span.small-info {
 }
 
 .mail-body {
-    white-space: pre;
+    white-space: pre-wrap;
 }
 
 .ui.form textarea.search {
