@@ -76,7 +76,7 @@ object OCollective {
   }
 
   def apply[F[_]: Effect](store: Store[F]): Resource[F, OCollective[F]] =
-    Resource.pure(new OCollective[F] {
+    Resource.pure[F, OCollective[F]](new OCollective[F] {
       def find(name: Ident): F[Option[RCollective]] =
         store.transact(RCollective.findById(name))
 

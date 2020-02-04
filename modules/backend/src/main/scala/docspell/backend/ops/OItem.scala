@@ -70,7 +70,7 @@ object OItem {
   case class AttachmentData[F[_]](ra: RAttachment, meta: FileMeta, data: Stream[F, Byte])
 
   def apply[F[_]: Effect](store: Store[F]): Resource[F, OItem[F]] =
-    Resource.pure(new OItem[F] {
+    Resource.pure[F, OItem[F]](new OItem[F] {
 
       def findItem(id: Ident, collective: Ident): F[Option[ItemData]] =
         store.transact(QItem.findItem(id)).map(opt => opt.flatMap(_.filterCollective(collective)))

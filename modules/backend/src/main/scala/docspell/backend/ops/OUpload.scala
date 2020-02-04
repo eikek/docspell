@@ -57,7 +57,7 @@ object OUpload {
       cfg: Config,
       httpClientEC: ExecutionContext
   ): Resource[F, OUpload[F]] =
-    Resource.pure(new OUpload[F] {
+    Resource.pure[F, OUpload[F]](new OUpload[F] {
 
       def submit(data: OUpload.UploadData[F], account: AccountId): F[OUpload.UploadResult] =
         for {

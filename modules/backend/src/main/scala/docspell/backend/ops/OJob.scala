@@ -40,7 +40,7 @@ object OJob {
       store: Store[F],
       clientEC: ExecutionContext
   ): Resource[F, OJob[F]] =
-    Resource.pure(new OJob[F] {
+    Resource.pure[F, OJob[F]](new OJob[F] {
 
       def queueState(collective: Ident, maxResults: Int): F[CollectiveQueueState] =
         store

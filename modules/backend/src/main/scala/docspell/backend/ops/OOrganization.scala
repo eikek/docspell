@@ -37,7 +37,7 @@ object OOrganization {
   case class PersonAndContacts(person: RPerson, contacts: Seq[RContact])
 
   def apply[F[_]: Effect](store: Store[F]): Resource[F, OOrganization[F]] =
-    Resource.pure(new OOrganization[F] {
+    Resource.pure[F, OOrganization[F]](new OOrganization[F] {
 
       def findAllOrg(account: AccountId, query: Option[String]): F[Vector[OrgAndContacts]] =
         store

@@ -22,7 +22,7 @@ object OSignup {
   private[this] val logger = getLogger
 
   def apply[F[_]: Effect](store: Store[F]): Resource[F, OSignup[F]] =
-    Resource.pure(new OSignup[F] {
+    Resource.pure[F, OSignup[F]](new OSignup[F] {
 
       def newInvite(cfg: Config)(password: Password): F[NewInviteResult] =
         if (cfg.mode == Config.Mode.Invite) {

@@ -104,7 +104,7 @@ object OMail {
   }
 
   def apply[F[_]: Effect](store: Store[F], emil: Emil[F]): Resource[F, OMail[F]] =
-    Resource.pure(new OMail[F] {
+    Resource.pure[F, OMail[F]](new OMail[F] {
       def getSettings(accId: AccountId, nameQ: Option[String]): F[Vector[RUserEmail]] =
         store.transact(RUserEmail.findByAccount(accId, nameQ))
 

@@ -20,7 +20,7 @@ trait OSource[F[_]] {
 object OSource {
 
   def apply[F[_]: Effect](store: Store[F]): Resource[F, OSource[F]] =
-    Resource.pure(new OSource[F] {
+    Resource.pure[F, OSource[F]](new OSource[F] {
       def findAll(account: AccountId): F[Vector[RSource]] =
         store.transact(RSource.findAll(account.collective, _.abbrev))
 
