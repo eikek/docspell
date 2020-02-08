@@ -32,8 +32,6 @@ considering docspell at the moment. Hopefully they will be resolved
 eventually….
 
 - Only PDF files possible for now.
-- The PDF view in the Web-UI relies on the browsers capabilities.
-  Sadly, not all browsers can display PDF files. Some may require
-  extra plugins. And it's especially sad, that mobile browsers wont't
-  display the files. It works with the major desktop browsers
-  (firefox, chromium), though.
+- No fulltext search implemented. This currently has very low
+  priority, because I myself never needed it. Open an issue if you
+  find it important.

@@ -1202,7 +1202,9 @@ renderAttachmentView model pos attach =
                 , ( "invisible hidden", isAttachMetaOpen model attach.id )
                 ]
             ]
-            [ embed [ src fileUrl, type_ attach.contentType ]
+            [ iframe
+                [ src (fileUrl ++ "/view")
+                ]
                 []
             ]
         , div
