@@ -423,7 +423,7 @@ view model =
                 ]
             ]
         , div [ class "field" ]
-            [ label [] [ text "Name" ]
+            [ label [] [ text "Name or Notes" ]
             , input
                 [ type_ "text"
                 , onInput SetName
