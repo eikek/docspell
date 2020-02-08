@@ -131,6 +131,7 @@ val openapiScalaSettings = Seq(
 // --- Modules
 
 val common = project.in(file("modules/common")).
+  disablePlugins(RevolverPlugin).
   settings(sharedSettings).
   settings(testSettings).
   settings(
@@ -143,6 +144,7 @@ val common = project.in(file("modules/common")).
   )
 
 val store = project.in(file("modules/store")).
+  disablePlugins(RevolverPlugin).
   settings(sharedSettings).
   settings(testSettings).
   settings(
@@ -159,6 +161,7 @@ val store = project.in(file("modules/store")).
   ).dependsOn(common)
 
 val text = project.in(file("modules/text")).
+  disablePlugins(RevolverPlugin).
   enablePlugins(NerModelsPlugin).
   settings(sharedSettings).
   settings(testSettings).
@@ -172,6 +175,7 @@ val text = project.in(file("modules/text")).
   ).dependsOn(common)
   
 val restapi = project.in(file("modules/restapi")).
+  disablePlugins(RevolverPlugin).
   enablePlugins(OpenApiSchema).
   settings(sharedSettings).
   settings(testSettings).
@@ -186,6 +190,7 @@ val restapi = project.in(file("modules/restapi")).
   ).dependsOn(common)
 
 val joexapi = project.in(file("modules/joexapi")).
+  disablePlugins(RevolverPlugin).
   enablePlugins(OpenApiSchema).
   settings(sharedSettings).
   settings(testSettings).
@@ -224,6 +229,7 @@ val joex = project.in(file("modules/joex")).
   ).dependsOn(store, text, joexapi, restapi)
 
 val backend = project.in(file("modules/backend")).
+  disablePlugins(RevolverPlugin).
   settings(sharedSettings).
   settings(testSettings).
   settings(
@@ -237,6 +243,7 @@ val backend = project.in(file("modules/backend")).
   ).dependsOn(store)
 
 val webapp = project.in(file("modules/webapp")).
+  disablePlugins(RevolverPlugin).
   enablePlugins(OpenApiSchema).
   settings(sharedSettings).
   settings(elmSettings).
@@ -286,6 +293,7 @@ val restserver = project.in(file("modules/restserver")).
   ).dependsOn(restapi, joexapi, backend, webapp)
 
 val microsite = project.in(file("modules/microsite")).
+  disablePlugins(RevolverPlugin).
   enablePlugins(MicrositesPlugin).
   disablePlugins(ReleasePlugin).
   settings(sharedSettings).

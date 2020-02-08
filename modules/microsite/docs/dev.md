@@ -45,6 +45,12 @@ sbt:docspell-root> joex/reStart
 if also a joex component is required. Prefixing the commads with `~`,
 results in recompile+restart once a source file is modified.
 
+It is possible to start both in the root project:
+
+```
+sbt:docspell-root> reStart
+```
+
 
 ## Custom config file
 
