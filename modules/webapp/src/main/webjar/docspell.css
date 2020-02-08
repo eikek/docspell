@@ -39,6 +39,15 @@
     padding: 0 1em;
 }
 
+.default-layout .extracted-text {
+    font-family: monospace;
+    white-space: pre-wrap;
+    max-height: 20rem;
+    overflow: scroll;
+    background: floralwhite;
+    padding: 0.8em;
+}
+
 .markdown-preview {
     overflow: auto;
     max-height: 300px;

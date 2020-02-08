@@ -10,6 +10,7 @@ module Api exposing
     , deleteSource
     , deleteTag
     , deleteUser
+    , getAttachmentMeta
     , getCollective
     , getCollectiveSettings
     , getContacts
@@ -61,6 +62,7 @@ module Api exposing
     , versionInfo
     )
 
+import Api.Model.AttachmentMeta exposing (AttachmentMeta)
 import Api.Model.AuthResult exposing (AuthResult)
 import Api.Model.BasicResult exposing (BasicResult)
 import Api.Model.Collective exposing (Collective)
@@ -109,6 +111,23 @@ import Task
 import Url
 import Util.File
 import Util.Http as Http2
+
+
+
+--- Attachment Metadata
+
+
+getAttachmentMeta :
+    Flags
+    -> String
+    -> (Result Http.Error AttachmentMeta -> msg)
+    -> Cmd msg
+getAttachmentMeta flags id receive =
+    Http2.authGet
+        { url = flags.config.baseUrl ++ "/api/v1/sec/attachment/" ++ id ++ "/meta"
+        , account = getAccount flags
+        , expect = Http.expectJson receive Api.Model.AttachmentMeta.decoder
+        }
 
 
 

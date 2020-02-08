@@ -22,6 +22,7 @@ import Api.Model.SentMails exposing (SentMails)
 import Api.Model.Tag exposing (Tag)
 import Api.Model.TagList exposing (TagList)
 import Browser.Navigation as Nav
+import Comp.AttachmentMeta
 import Comp.DatePicker
 import Comp.Dropdown exposing (isDropdownChangeMsg)
 import Comp.ItemMail
@@ -31,6 +32,7 @@ import Comp.YesNoDimmer
 import Data.Direction exposing (Direction)
 import Data.Flags exposing (Flags)
 import DatePicker exposing (DatePicker)
+import Dict exposing (Dict)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
@@ -69,6 +71,8 @@ type alias Model =
     , mailSendResult : Maybe BasicResult
     , sentMails : Comp.SentMails.Model
     , sentMailsOpen : Bool
+    , attachMeta : Dict String Comp.AttachmentMeta.Model
+    , attachMetaOpen : Bool
     }
 
 
@@ -153,6 +157,8 @@ emptyModel =
     , mailSendResult = Nothing
     , sentMails = Comp.SentMails.init
     , sentMailsOpen = False
+    , attachMeta = Dict.empty
+    , attachMetaOpen = False
     }
 
 
@@ -203,6 +209,8 @@ type Msg
     | SentMailsMsg Comp.SentMails.Msg
     | ToggleSentMails
     | SentMailsResp (Result Http.Error SentMails)
+    | AttachMetaClick String
+    | AttachMetaMsg String Comp.AttachmentMeta.Msg
 
 
 
@@ -877,6 +885,39 @@ update key flags next msg model =
         SentMailsResp (Err _) ->
             ( model, Cmd.none )
 
+        AttachMetaClick id ->
+            case Dict.get id model.attachMeta of
+                Just _ ->
+                    ( { model | attachMetaOpen = not model.attachMetaOpen }
+                    , Cmd.none
+                    )
+
+                Nothing ->
+                    let
+                        ( am, ac ) =
+                            Comp.AttachmentMeta.init flags id
+
+                        nextMeta =
+                            Dict.insert id am model.attachMeta
+                    in
+                    ( { model | attachMeta = nextMeta, attachMetaOpen = True }
+                    , Cmd.map (AttachMetaMsg id) ac
+                    )
+
+        AttachMetaMsg id lmsg ->
+            case Dict.get id model.attachMeta of
+                Just cm ->
+                    let
+                        am =
+                            Comp.AttachmentMeta.update lmsg cm
+                    in
+                    ( { model | attachMeta = Dict.insert id am model.attachMeta }
+                    , Cmd.none
+                    )
+
+                Nothing ->
+                    ( model, Cmd.none )
+
 
 
 -- view
@@ -1007,7 +1048,7 @@ renderNotes model =
                 Nothing ->
                     []
 
-                Just str ->
+                Just _ ->
                     [ div [ class "ui segment" ]
                         [ a
                             [ class "ui top left attached label"
@@ -1135,6 +1176,17 @@ renderAttachmentView model pos attach =
                 ]
             , div [ class "right menu" ]
                 [ a
+                    [ classList
+                        [ ( "toggle item", True )
+                        , ( "active", isAttachMetaOpen model attach.id )
+                        ]
+                    , title "Show extracted data"
+                    , onClick (AttachMetaClick attach.id)
+                    , href "#"
+                    ]
+                    [ i [ class "info icon" ] []
+                    ]
+                , a
                     [ class "item"
                     , title "Download to disk"
                     , download attachName
@@ -1144,11 +1196,35 @@ renderAttachmentView model pos attach =
                     ]
                 ]
             ]
-        , div [ class "ui 4:3 embed doc-embed" ]
+        , div
+            [ classList
+                [ ( "ui 4:3 embed doc-embed", True )
+                , ( "invisible hidden", isAttachMetaOpen model attach.id )
+                ]
+            ]
             [ embed [ src fileUrl, type_ attach.contentType ]
                 []
             ]
+        , div
+            [ classList
+                [ ( "ui basic segment", True )
+                , ( "invisible hidden", not (isAttachMetaOpen model attach.id) )
+                ]
+            ]
+            [ case Dict.get attach.id model.attachMeta of
+                Just am ->
+                    Html.map (AttachMetaMsg attach.id)
+                        (Comp.AttachmentMeta.view am)
+
+                Nothing ->
+                    span [] []
+            ]
         ]
+
+
+isAttachMetaOpen : Model -> String -> Bool
+isAttachMetaOpen model id =
+    model.attachMetaOpen && (Dict.get id model.attachMeta /= Nothing)
 
 
 renderAttachmentsTabBody : Model -> List (Html Msg)
