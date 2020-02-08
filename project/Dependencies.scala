@@ -26,6 +26,10 @@ object Dependencies {
   val StanfordNlpVersion = "3.9.2"
   val TikaVersion = "1.23"
   val YamuscaVersion = "0.6.1"
+  val SwaggerUIVersion = "3.24.3"
+  val SemanticUIVersion = "2.4.1"
+  val JQueryVersion = "3.4.1"
+  val ViewerJSVersion = "0.5.8"
 
   val emil = Seq(
     "com.github.eikek" %% "emil-common" % EmilVersion,
@@ -149,9 +153,10 @@ object Dependencies {
   val betterMonadicFor = "com.olegpy" %% "better-monadic-for" % BetterMonadicForVersion
 
   val webjars = Seq(
-    "swagger-ui" -> "3.24.3",
-    "Semantic-UI" -> "2.4.1",
-    "jquery" -> "3.4.1"
-  ).map({case (a, v) => "org.webjars" % a % v })
+    "org.webjars" % "swagger-ui" % SwaggerUIVersion,
+    "org.webjars" % "Semantic-UI"% SemanticUIVersion,
+    "org.webjars" % "jquery" % JQueryVersion,
+    "org.webjars" % "viewerjs" % ViewerJSVersion
+  )
 
 }

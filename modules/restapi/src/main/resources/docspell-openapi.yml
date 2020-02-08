@@ -1168,6 +1168,32 @@ paths:
                 $ref: "#/components/schemas/ItemProposals"
 
   /sec/attachment/{id}:
+    head:
+      tags: [ Attachment ]
+      summary: Get an attachment file.
+      description: |
+        Get the binary file belonging to the attachment with the given id.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        200:
+          description: Ok
+          headers:
+            Content-Type:
+              schema:
+                type: string
+            Content-Length:
+              schema:
+                type: integer
+                format: int64
+            ETag:
+              schema:
+                type: string
+            Content-Disposition:
+              schema:
+                type: string
     get:
       tags: [ Attachment ]
       summary: Get an attachment file.
@@ -1203,6 +1229,27 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/AttachmentMeta"
+  /sec/attachment/{id}/view:
+    get:
+      tags: [ Attachment ]
+      summary: A preview of the attachment
+      description: |
+        This provides a preview of the attachment. It currently uses a
+        third-party javascript library (viewerjs) to display the
+        preview. This works by redirecting to the viewerjs url with
+        the attachment url as parameter. Note that the resulting url
+        that is redirected to is not stable. It may change from
+        version to version. This route, however, is meant to provide a
+        stable url for the preview.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        303:
+          description: See Other
+        200:
+          description: Ok
   /sec/queue/state:
     get:
       tags: [ Job Queue ]
