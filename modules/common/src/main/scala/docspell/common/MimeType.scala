@@ -27,7 +27,7 @@ object MimeType {
     MimeType("image", partFromString(sub).throwLeft)
 
   private[this] val validChars: Set[Char] =
-    (('A' to 'Z') ++ ('a' to 'z') ++ ('0' to '9') ++ "*-").toSet
+    (('A' to 'Z') ++ ('a' to 'z') ++ ('0' to '9') ++ "*-.").toSet
 
   def parse(str: String): Either[String, MimeType] =
     str.indexOf('/') match {
@@ -44,7 +44,7 @@ object MimeType {
 
   private def partFromString(s: String): Either[String, String] =
     if (s.forall(validChars.contains)) Right(s)
-    else Left(s"Invalid identifier: $s. Allowed chars: ${validChars.mkString}")
+    else Left(s"Invalid identifier: $s. Allowed chars: ${validChars.toList.sorted.mkString}")
 
   val octetStream = application("octet-stream")
   val pdf         = application("pdf")

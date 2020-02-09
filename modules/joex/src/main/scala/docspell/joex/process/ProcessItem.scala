@@ -10,7 +10,8 @@ object ProcessItem {
   def apply[F[_]: Sync: ContextShift](
       cfg: OcrConfig
   )(item: ItemData): Task[F, ProcessItemArgs, ItemData] =
-    TextExtraction(cfg, item)
+    ConvertPdf(item)
+      .flatMap(TextExtraction(cfg, _))
       .flatMap(Task.setProgress(25))
       .flatMap(TextAnalysis[F])
       .flatMap(Task.setProgress(50))

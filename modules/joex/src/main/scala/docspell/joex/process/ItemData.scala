@@ -8,7 +8,8 @@ case class ItemData(
     item: RItem,
     attachments: Vector[RAttachment],
     metas: Vector[RAttachmentMeta],
-    dateLabels: Vector[AttachmentDates]
+    dateLabels: Vector[AttachmentDates],
+    originFile: Map[Ident, Ident]
 ) {
 
   def findMeta(attachId: Ident): Option[RAttachmentMeta] =

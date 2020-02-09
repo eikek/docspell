@@ -1,7 +1,12 @@
 package docspell.store.records
 
+import bitpeace.FileMeta
+import doobie._
 import doobie.implicits._
+
+import docspell.common._
 import docspell.store.impl._
+import docspell.store.impl.Implicits._
 
 object RFileMeta {
 
@@ -18,5 +23,11 @@ object RFileMeta {
 
     val all = List(id, timestamp, mimetype, length, checksum, chunks, chunksize)
 
+  }
+
+  def findById(fid: Ident): ConnectionIO[Option[FileMeta]] = {
+    import bitpeace.sql._
+
+    selectSimple(Columns.all, table, Columns.id.is(fid)).query[FileMeta].option
   }
 }

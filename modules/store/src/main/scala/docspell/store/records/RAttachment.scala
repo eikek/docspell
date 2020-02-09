@@ -41,6 +41,20 @@ object RAttachment {
   def findById(attachId: Ident): ConnectionIO[Option[RAttachment]] =
     selectSimple(all, table, id.is(attachId)).query[RAttachment].option
 
+  def findMeta(attachId: Ident): ConnectionIO[Option[FileMeta]] = {
+    import bitpeace.sql._
+
+    val cols = RFileMeta.Columns.all.map(_.prefix("m"))
+    val aId = id.prefix("a")
+    val aFileMeta = fileId.prefix("a")
+    val mId = RFileMeta.Columns.id.prefix("m")
+
+    val from = table ++ fr"a INNER JOIN" ++ RFileMeta.table ++ fr"m ON" ++ aFileMeta.is(mId)
+    val cond = aId.is(attachId)
+
+    selectSimple(cols, from, cond).query[FileMeta].option
+  }
+
   def findByIdAndCollective(attachId: Ident, collective: Ident): ConnectionIO[Option[RAttachment]] =
     selectSimple(
       all.map(_.prefix("a")),
