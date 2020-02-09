@@ -23,7 +23,7 @@ object SentMailRoutes {
     HttpRoutes.of {
       case GET -> Root / "item" / Ident(id) =>
         for {
-          all <- backend.mail.getSentMailsForItem(user.account, id)
+          all  <- backend.mail.getSentMailsForItem(user.account, id)
           resp <- Ok(SentMails(all.map(convert).toList))
         } yield resp
 
@@ -35,7 +35,7 @@ object SentMailRoutes {
 
       case DELETE -> Root / "mail" / Ident(mailId) =>
         for {
-          n <- backend.mail.deleteSentMail(user.account, mailId)
+          n    <- backend.mail.deleteSentMail(user.account, mailId)
           resp <- Ok(BasicResult(n > 0, s"Mails deleted: $n"))
         } yield resp
     }

@@ -51,8 +51,8 @@ case class LenientUri(
   def open[F[_]: Sync]: Either[String, Resource[F, HttpURLConnection]] =
     toJavaUrl.map { url =>
       Resource
-        .make(Sync[F].delay(url.openConnection().asInstanceOf[HttpURLConnection]))(
-          conn => Sync[F].delay(conn.disconnect())
+        .make(Sync[F].delay(url.openConnection().asInstanceOf[HttpURLConnection]))(conn =>
+          Sync[F].delay(conn.disconnect())
         )
     }
 
@@ -61,17 +61,16 @@ case class LenientUri(
       .emit(Either.catchNonFatal(new URL(asString)))
       .covary[F]
       .rethrow
-      .flatMap(
-        url => fs2.io.readInputStream(Sync[F].delay(url.openStream()), chunkSize, blocker, true)
+      .flatMap(url =>
+        fs2.io.readInputStream(Sync[F].delay(url.openStream()), chunkSize, blocker, true)
       )
 
   def host: Option[String] =
-    authority.map(
-      a =>
-        a.indexOf(':') match {
-          case -1 => a
-          case n  => a.substring(0, n)
-        }
+    authority.map(a =>
+      a.indexOf(':') match {
+        case -1 => a
+        case n  => a.substring(0, n)
+      }
     )
 
   def asString: String = {

@@ -32,8 +32,8 @@ object BackendApp {
   def create[F[_]: ConcurrentEffect: ContextShift](
       cfg: Config,
       store: Store[F],
-    httpClientEc: ExecutionContext,
-    blocker: Blocker
+      httpClientEc: ExecutionContext,
+      blocker: Blocker
   ): Resource[F, BackendApp[F]] =
     for {
       queue      <- JobQueue(store)

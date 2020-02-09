@@ -19,9 +19,9 @@ object AccountId {
         case n if n > 0 && input.length > 2 =>
           val coll = input.substring(0, n)
           val user = input.substring(n + 1)
-          Ident.fromString(coll).
-            flatMap(collId => Ident.fromString(user).
-              map(userId => AccountId(collId, userId)))
+          Ident
+            .fromString(coll)
+            .flatMap(collId => Ident.fromString(user).map(userId => AccountId(collId, userId)))
         case _ =>
           invalid
       }

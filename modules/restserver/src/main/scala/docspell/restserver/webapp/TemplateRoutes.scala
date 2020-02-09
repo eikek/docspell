@@ -37,7 +37,7 @@ object TemplateRoutes {
     new InnerRoutes[F] {
       def doc =
         HttpRoutes.of[F] {
-          case GET -> Root  =>
+          case GET -> Root =>
             for {
               templ <- docTemplate
               resp  <- Ok(DocData().render(templ), `Content-Type`(`text/html`))

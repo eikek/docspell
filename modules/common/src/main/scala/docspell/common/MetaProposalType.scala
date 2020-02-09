@@ -10,25 +10,25 @@ sealed trait MetaProposalType { self: Product =>
 
 object MetaProposalType {
 
-  case object CorrOrg extends MetaProposalType
+  case object CorrOrg    extends MetaProposalType
   case object CorrPerson extends MetaProposalType
   case object ConcPerson extends MetaProposalType
-  case object ConcEquip extends MetaProposalType
-  case object DocDate extends MetaProposalType
-  case object DueDate extends MetaProposalType
+  case object ConcEquip  extends MetaProposalType
+  case object DocDate    extends MetaProposalType
+  case object DueDate    extends MetaProposalType
 
   val all: List[MetaProposalType] =
     List(CorrOrg, CorrPerson, ConcPerson, ConcEquip)
 
   def fromString(str: String): Either[String, MetaProposalType] =
     str.toLowerCase match {
-      case "corrorg" => Right(CorrOrg)
+      case "corrorg"    => Right(CorrOrg)
       case "corrperson" => Right(CorrPerson)
       case "concperson" => Right(ConcPerson)
-      case "concequip" => Right(ConcEquip)
-      case "docdate" => Right(DocDate)
-      case "duedate" => Right(DueDate)
-      case _ => Left(s"Invalid item-proposal-type: $str")
+      case "concequip"  => Right(ConcEquip)
+      case "docdate"    => Right(DocDate)
+      case "duedate"    => Right(DueDate)
+      case _            => Left(s"Invalid item-proposal-type: $str")
     }
 
   def unsafe(str: String): MetaProposalType =

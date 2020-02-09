@@ -16,7 +16,6 @@ object QueryParam {
   implicit val queryStringDecoder: QueryParamDecoder[QueryString] =
     QueryParamDecoder[String].map(s => QueryString(s.trim.toLowerCase))
 
-
   // implicit val booleanDecoder: QueryParamDecoder[Boolean] =
   //   QueryParamDecoder.fromUnsafeCast(qp => Option(qp.value).exists(_.equalsIgnoreCase("true")))(
   //     "Boolean"

@@ -24,13 +24,13 @@ object MailSendRoutes {
     HttpRoutes.of {
       case req @ POST -> Root / Ident(name) / Ident(id) =>
         for {
-          in <- req.as[SimpleMail]
+          in   <- req.as[SimpleMail]
           mail = convertIn(id, in)
-          res <- mail.traverse(m => backend.mail.sendMail(user.account, name, m))
+          res  <- mail.traverse(m => backend.mail.sendMail(user.account, name, m))
           resp <- res.fold(
-            err => Ok(BasicResult(false, s"Invalid mail data: $err")),
-            res => Ok(convertOut(res))
-          )
+                   err => Ok(BasicResult(false, s"Invalid mail data: $err")),
+                   res => Ok(convertOut(res))
+                 )
         } yield resp
     }
   }
@@ -39,7 +39,7 @@ object MailSendRoutes {
     for {
       rec     <- s.recipients.traverse(EmilUtil.readMailAddress)
       fileIds <- s.attachmentIds.traverse(Ident.fromString)
-      sel = if (s.addAllAttachments) AttachSelection.All else AttachSelection.Selected(fileIds)
+      sel     = if (s.addAllAttachments) AttachSelection.All else AttachSelection.Selected(fileIds)
     } yield ItemMail(item, s.subject, rec, s.body, sel)
 
   def convertOut(res: SendResult): BasicResult =

@@ -5,11 +5,11 @@ import java.nio.file.{Path, Paths}
 import docspell.common._
 
 case class Config(
-  allowedContentTypes: Set[MimeType]
-    , ghostscript: Config.Ghostscript
-    , pageRange: Config.PageRange
-    , unpaper: Config.Unpaper
-    , tesseract: Config.Tesseract
+    allowedContentTypes: Set[MimeType],
+    ghostscript: Config.Ghostscript,
+    pageRange: Config.PageRange,
+    unpaper: Config.Unpaper,
+    tesseract: Config.Tesseract
 ) {
 
   def isAllowed(mt: MimeType): Boolean =
@@ -22,7 +22,7 @@ object Config {
   case class Command(program: String, args: Seq[String], timeout: Duration) {
 
     def mapArgs(f: String => String): Command =
-      Command(program, args map f, timeout)
+      Command(program, args.map(f), timeout)
 
     def toCmd: List[String] =
       program :: args.toList
@@ -44,23 +44,23 @@ object Config {
     ),
     pageRange = PageRange(10),
     ghostscript = Ghostscript(
-      Command("gs", Seq("-dNOPAUSE"
-        , "-dBATCH"
-        , "-dSAFER"
-        , "-sDEVICE=tiffscaled8"
-        , "-sOutputFile={{outfile}}"
-        , "{{infile}}"),
-      Duration.seconds(30)),
-      Paths.get(System.getProperty("java.io.tmpdir")).
-        resolve("docspell-extraction")),
-    unpaper = Unpaper(Command("unpaper"
-      , Seq("{{infile}}", "{{outfile}}")
-      , Duration.seconds(30))),
+      Command(
+        "gs",
+        Seq(
+          "-dNOPAUSE",
+          "-dBATCH",
+          "-dSAFER",
+          "-sDEVICE=tiffscaled8",
+          "-sOutputFile={{outfile}}",
+          "{{infile}}"
+        ),
+        Duration.seconds(30)
+      ),
+      Paths.get(System.getProperty("java.io.tmpdir")).resolve("docspell-extraction")
+    ),
+    unpaper = Unpaper(Command("unpaper", Seq("{{infile}}", "{{outfile}}"), Duration.seconds(30))),
     tesseract = Tesseract(
-      Command("tesseract", Seq("{{file}}"
-        , "stdout"
-        , "-l"
-        , "{{lang}}"),
-      Duration.minutes(1)))
+      Command("tesseract", Seq("{{file}}", "stdout", "-l", "{{lang}}"), Duration.minutes(1))
+    )
   )
 }

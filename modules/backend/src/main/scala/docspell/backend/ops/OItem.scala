@@ -176,7 +176,7 @@ object OItem {
 
       def findByFileSource(checksum: String, sourceId: Ident): F[Vector[RItem]] =
         store.transact((for {
-          coll <- OptionT(RSource.findCollective(sourceId))
+          coll  <- OptionT(RSource.findCollective(sourceId))
           items <- OptionT.liftF(QItem.findByChecksum(checksum, coll))
         } yield items).getOrElse(Vector.empty))
 

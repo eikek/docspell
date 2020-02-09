@@ -14,23 +14,28 @@ import java.net.URL
 import scala.util.Using
 
 object StanfordNerClassifier {
-  private [this] val logger = getLogger
+  private[this] val logger = getLogger
 
-  lazy val germanNerClassifier = makeClassifier(Language.German)
+  lazy val germanNerClassifier  = makeClassifier(Language.German)
   lazy val englishNerClassifier = makeClassifier(Language.English)
 
   def nerAnnotate(lang: Language)(text: String): Vector[NerLabel] = {
     val nerClassifier = lang match {
       case Language.English => englishNerClassifier
-      case Language.German => germanNerClassifier
+      case Language.German  => germanNerClassifier
     }
-    nerClassifier.classify(text).asScala.flatMap(a => a.asScala).
-      collect(Function.unlift(label => {
+    nerClassifier
+      .classify(text)
+      .asScala
+      .flatMap(a => a.asScala)
+      .collect(Function.unlift { label =>
         val tag = label.get(classOf[CoreAnnotations.AnswerAnnotation])
-        NerTag.fromString(Option(tag).getOrElse("")).toOption.
-          map(t => NerLabel(label.word(), t, label.beginPosition(), label.endPosition()))
-      })).
-      toVector
+        NerTag
+          .fromString(Option(tag).getOrElse(""))
+          .toOption
+          .map(t => NerLabel(label.word(), t, label.beginPosition(), label.endPosition()))
+      })
+      .toVector
   }
 
   private def makeClassifier(lang: Language): AbstractSequenceClassifier[CoreLabel] = {
@@ -48,7 +53,9 @@ object StanfordNerClassifier {
 
     check(lang match {
       case Language.German =>
-        getClass.getResource("/edu/stanford/nlp/models/ner/german.conll.germeval2014.hgc_175m_600.crf.ser.gz")
+        getClass.getResource(
+          "/edu/stanford/nlp/models/ner/german.conll.germeval2014.hgc_175m_600.crf.ser.gz"
+        )
       case Language.English =>
         getClass.getResource("/edu/stanford/nlp/models/ner/english.all.3class.distsim.crf.ser.gz")
     })

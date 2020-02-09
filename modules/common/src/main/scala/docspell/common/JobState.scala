@@ -10,48 +10,41 @@ sealed trait JobState { self: Product =>
 object JobState {
 
   /** Waiting for being executed. */
-  case object Waiting extends JobState {
-  }
+  case object Waiting extends JobState {}
 
   /** A scheduler has picked up this job and will pass it to the next
     * free slot. */
-  case object Scheduled extends JobState {
-  }
+  case object Scheduled extends JobState {}
 
   /** Is currently executing */
-  case object Running extends JobState {
-  }
+  case object Running extends JobState {}
 
   /** Finished with failure and is being retried. */
-  case object Stuck extends JobState {
-  }
+  case object Stuck extends JobState {}
 
   /** Finished finally with a failure */
-  case object Failed extends JobState {
-  }
+  case object Failed extends JobState {}
 
   /** Finished by cancellation. */
-  case object Cancelled extends JobState {
-  }
+  case object Cancelled extends JobState {}
 
   /** Finished with success */
-  case object Success extends JobState {
-  }
+  case object Success extends JobState {}
 
-  val all: Set[JobState] = Set(Waiting, Scheduled, Running, Stuck, Failed, Cancelled, Success)
+  val all: Set[JobState]    = Set(Waiting, Scheduled, Running, Stuck, Failed, Cancelled, Success)
   val queued: Set[JobState] = Set(Waiting, Scheduled, Stuck)
-  val done: Set[JobState] = Set(Failed, Cancelled, Success)
+  val done: Set[JobState]   = Set(Failed, Cancelled, Success)
 
   def parse(str: String): Either[String, JobState] =
     str.toLowerCase match {
-      case "waiting" => Right(Waiting)
+      case "waiting"   => Right(Waiting)
       case "scheduled" => Right(Scheduled)
-      case "running" => Right(Running)
-      case "stuck" => Right(Stuck)
-      case "failed" => Right(Failed)
+      case "running"   => Right(Running)
+      case "stuck"     => Right(Stuck)
+      case "failed"    => Right(Failed)
       case "cancelled" => Right(Cancelled)
-      case "success" => Right(Success)
-      case _ => Left(s"Not a job state: $str")
+      case "success"   => Right(Success)
+      case _           => Left(s"Not a job state: $str")
     }
 
   def unsafe(str: String): JobState =
@@ -59,7 +52,6 @@ object JobState {
 
   def asString(state: JobState): String =
     state.name
-
 
   implicit val jobStateEncoder: Encoder[JobState] =
     Encoder.encodeString.contramap(_.name)

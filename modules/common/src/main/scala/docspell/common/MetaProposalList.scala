@@ -8,13 +8,11 @@ import io.circe.generic.semiauto._
 
 case class MetaProposalList private (proposals: List[MetaProposal]) {
 
-  def isEmpty: Boolean = proposals.isEmpty
+  def isEmpty: Boolean  = proposals.isEmpty
   def nonEmpty: Boolean = proposals.nonEmpty
 
-  def hasResults(mt: MetaProposalType, mts: MetaProposalType*): Boolean = {
-    (mts :+ mt).map(mtp => proposals.exists(_.proposalType == mtp)).
-      reduce(_ && _)
-  }
+  def hasResults(mt: MetaProposalType, mts: MetaProposalType*): Boolean =
+    (mts :+ mt).map(mtp => proposals.exists(_.proposalType == mtp)).reduce(_ && _)
 
   def hasResultsAll: Boolean =
     proposals.map(_.proposalType).toSet == MetaProposalType.all.toSet
@@ -23,7 +21,7 @@ case class MetaProposalList private (proposals: List[MetaProposal]) {
     proposals.foldLeft(Set.empty[MetaProposalType])(_ + _.proposalType)
 
   def fillEmptyFrom(ml: MetaProposalList): MetaProposalList = {
-    val list = ml.proposals.foldLeft(proposals){ (mine, mp) =>
+    val list = ml.proposals.foldLeft(proposals) { (mine, mp) =>
       if (hasResults(mp.proposalType)) mine
       else mp :: mine
     }
@@ -48,21 +46,24 @@ object MetaProposalList {
     fromSeq1(mt, refs.map(ref => Candidate(ref, Set(label))))
 
   def fromSeq1(mt: MetaProposalType, refs: Seq[Candidate]): MetaProposalList =
-    NonEmptyList.fromList(refs.toList).
-      map(nl => MetaProposalList.of(MetaProposal(mt, nl))).
-      getOrElse(empty)
+    NonEmptyList
+      .fromList(refs.toList)
+      .map(nl => MetaProposalList.of(MetaProposal(mt, nl)))
+      .getOrElse(empty)
 
-  def fromMap(m: Map[MetaProposalType, MetaProposal]): MetaProposalList = {
+  def fromMap(m: Map[MetaProposalType, MetaProposal]): MetaProposalList =
     new MetaProposalList(m.toList.map({ case (k, v) => v.copy(proposalType = k) }))
-  }
 
   def flatten(ml: Seq[MetaProposalList]): MetaProposalList = {
     val init: Map[MetaProposalType, MetaProposal] = Map.empty
 
-    def updateMap(map: Map[MetaProposalType, MetaProposal], mp: MetaProposal): Map[MetaProposalType, MetaProposal] =
+    def updateMap(
+        map: Map[MetaProposalType, MetaProposal],
+        mp: MetaProposal
+    ): Map[MetaProposalType, MetaProposal] =
       map.get(mp.proposalType) match {
         case Some(mp0) => map.updated(mp.proposalType, mp0.addIdRef(mp.values.toList))
-        case None => map.updated(mp.proposalType, mp)
+        case None      => map.updated(mp.proposalType, mp)
       }
 
     val merged = ml.foldLeft(init) { (map, el) =>

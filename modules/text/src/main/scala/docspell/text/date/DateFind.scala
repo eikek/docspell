@@ -10,16 +10,22 @@ import scala.util.Try
 
 object DateFind {
 
-  def findDates(text: String, lang: Language): Stream[Pure, NerDateLabel] = {
-    TextSplitter.splitToken(text, " \t.,\n\r/".toSet).
-      sliding(3).
-      filter(_.length == 3).
-      map(q => SimpleDate.fromParts(q.toList, lang).
-        map(sd => NerDateLabel(sd.toLocalDate,
-          NerLabel(text.substring(q(0).begin, q(2).end), NerTag.Date, q(0).begin, q(1).end)))).
-      collect({ case Some(d) => d })
-  }
-
+  def findDates(text: String, lang: Language): Stream[Pure, NerDateLabel] =
+    TextSplitter
+      .splitToken(text, " \t.,\n\r/".toSet)
+      .sliding(3)
+      .filter(_.length == 3)
+      .map(q =>
+        SimpleDate
+          .fromParts(q.toList, lang)
+          .map(sd =>
+            NerDateLabel(
+              sd.toLocalDate,
+              NerLabel(text.substring(q(0).begin, q(2).end), NerTag.Date, q(0).begin, q(1).end)
+            )
+          )
+      )
+      .collect({ case Some(d) => d })
 
   private case class SimpleDate(year: Int, month: Int, day: Int) {
     def toLocalDate: LocalDate =
@@ -27,13 +33,13 @@ object DateFind {
   }
 
   private object SimpleDate {
-    val p0 = readYear >> readMonth >> readDay map {
+    val p0 = (readYear >> readMonth >> readDay).map {
       case ((y, m), d) => SimpleDate(y, m, d)
     }
-    val p1 = readDay >> readMonth >> readYear map {
+    val p1 = (readDay >> readMonth >> readYear).map {
       case ((d, m), y) => SimpleDate(y, m, d)
     }
-    val p2 = readMonth >> readDay >> readYear map {
+    val p2 = (readMonth >> readDay >> readYear).map {
       case ((m, d), y) => SimpleDate(y, m, d)
     }
 
@@ -46,14 +52,14 @@ object DateFind {
       p.read(parts).toOption
     }
 
-
-    def readYear: Reader[Int] = {
-      Reader.readFirst(w => w.value.length match {
-        case 2 => Try(w.value.toInt).filter(n => n >= 0).toOption
-        case 4 => Try(w.value.toInt).filter(n => n > 1000).toOption
-        case _ => None
-      })
-    }
+    def readYear: Reader[Int] =
+      Reader.readFirst(w =>
+        w.value.length match {
+          case 2 => Try(w.value.toInt).filter(n => n >= 0).toOption
+          case 4 => Try(w.value.toInt).filter(n => n > 1000).toOption
+          case _ => None
+        }
+      )
 
     def readMonth: Reader[Int] =
       Reader.readFirst(w => Some(months.indexWhere(_.contains(w.value))).filter(_ > 0).map(_ + 1))
@@ -69,10 +75,12 @@ object DateFind {
         Reader(read.andThen(_.map(f)))
 
       def or(other: Reader[A]): Reader[A] =
-        Reader(words => read(words) match {
-          case Result.Failure => other.read(words)
-          case s @ Result.Success(_, _) => s
-        })
+        Reader(words =>
+          read(words) match {
+            case Result.Failure           => other.read(words)
+            case s @ Result.Success(_, _) => s
+          }
+        )
     }
 
     object Reader {
@@ -81,11 +89,10 @@ object DateFind {
 
       def readFirst[A](f: Word => Option[A]): Reader[A] =
         Reader({
-          case Nil => Result.Failure
+          case Nil     => Result.Failure
           case a :: as => f(a).map(value => Result.Success(value, as)).getOrElse(Result.Failure)
         })
     }
-
 
     sealed trait Result[+A] {
       def toOption: Option[A]
@@ -95,14 +102,14 @@ object DateFind {
 
     object Result {
       final case class Success[A](value: A, rest: List[Word]) extends Result[A] {
-        val toOption = Some(value)
+        val toOption                     = Some(value)
         def map[B](f: A => B): Result[B] = Success(f(value), rest)
         def next[B](r: Reader[B]): Result[(A, B)] =
           r.read(rest).map(b => (value, b))
       }
       final case object Failure extends Result[Nothing] {
-        val toOption = None
-        def map[B](f: Nothing => B): Result[B] = this
+        val toOption                                    = None
+        def map[B](f: Nothing => B): Result[B]          = this
         def next[B](r: Reader[B]): Result[(Nothing, B)] = this
       }
     }

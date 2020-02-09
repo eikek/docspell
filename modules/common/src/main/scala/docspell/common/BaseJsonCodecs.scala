@@ -12,5 +12,4 @@ object BaseJsonCodecs {
   implicit val decodeInstantEpoch: Decoder[Instant] =
     Decoder.decodeLong.map(Instant.ofEpochMilli)
 
-
 }

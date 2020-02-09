@@ -11,7 +11,7 @@ private[text] object Tld {
   /**
     * Some selected TLDs.
     */
-  private [this] val known = List(
+  private[this] val known = List(
     ".com",
     ".org",
     ".net",

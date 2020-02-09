@@ -49,6 +49,6 @@ object Duration {
   def stopTime[F[_]: Sync]: F[F[Duration]] =
     for {
       now <- Timestamp.current[F]
-      end  = Timestamp.current[F]
+      end = Timestamp.current[F]
     } yield end.map(e => Duration.millis(e.toMillis - now.toMillis))
 }

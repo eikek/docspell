@@ -139,8 +139,7 @@ object ItemRoutes {
     }
   }
 
-
-  final implicit class OptionString(opt: Option[String]) {
+  implicit final class OptionString(opt: Option[String]) {
     def notEmpty: Option[String] =
       opt.map(_.trim).filter(_.nonEmpty)
   }
