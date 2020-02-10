@@ -7,6 +7,7 @@ import cats.effect._
 import cats.data.OptionT
 
 import docspell.common._
+import docspell.convert._
 import docspell.joex.scheduler._
 import docspell.store.records._
 
@@ -27,17 +28,17 @@ import docspell.store.records._
 object ConvertPdf {
 
   def apply[F[_]: Sync: ContextShift](
+      cfg: ConvertConfig,
       item: ItemData
   ): Task[F, ProcessItemArgs, ItemData] =
     Task { ctx =>
-
       // get mimetype
       //   try to convert
       //   save to db
       //   update file_id of RAttachment
 
       def convert(ra: RAttachment) =
-        findMime(ctx)(ra).flatMap(m => convertSafe(ctx)(ra, m))
+        findMime(ctx)(ra).flatMap(m => convertSafe(cfg, ctx)(ra, m))
 
       for {
         ras <- item.attachments.traverse(convert)
@@ -51,10 +52,12 @@ object ConvertPdf {
       .getOrElse(Mimetype.`application/octet-stream`)
 
   def convertSafe[F[_]: Sync](
+      cfg: ConvertConfig,
       ctx: Context[F, ProcessItemArgs]
-  )(ra: RAttachment, mime: Mimetype): F[RAttachment] = {
-
-    ctx.logger.info(s"File ${ra.name} has mime ${mime.asString}").
-      map(_ => ra)
-  }
+  )(ra: RAttachment, mime: Mimetype): F[RAttachment] =
+    Conversion.create[F](cfg).use { conv =>
+      ctx.logger
+        .info(s"File ${ra.name} has mime ${mime.asString}. conv=$conv")
+        .map(_ => ra)
+    }
 }

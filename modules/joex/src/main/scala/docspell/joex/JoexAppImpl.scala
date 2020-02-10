@@ -55,7 +55,7 @@ object JoexAppImpl {
               .withTask(
                 JobTask.json(
                   ProcessItemArgs.taskName,
-                  ItemHandler[F](cfg.extraction),
+                  ItemHandler[F](cfg),
                   ItemHandler.onCancel[F]
                 )
               )

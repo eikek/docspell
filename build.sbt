@@ -173,6 +173,17 @@ val text = project.in(file("modules/text")).
       Dependencies.tika ++
       Dependencies.stanfordNlpCore
   ).dependsOn(common)
+
+val convert = project.in(file("modules/convert")).
+  disablePlugins(RevolverPlugin).
+  settings(sharedSettings).
+  settings(testSettings).
+  settings(
+    name := "docspell-convert",
+    libraryDependencies ++=
+      Dependencies.pdfbox ++
+      Dependencies.flexmark
+  ).dependsOn(common)
   
 val restapi = project.in(file("modules/restapi")).
   disablePlugins(RevolverPlugin).
@@ -226,7 +237,7 @@ val joex = project.in(file("modules/joex")).
     addCompilerPlugin(Dependencies.betterMonadicFor),
     buildInfoPackage := "docspell.joex",
     reStart/javaOptions ++= Seq(s"-Dconfig.file=${(LocalRootProject/baseDirectory).value/"local"/"dev.conf"}")
-  ).dependsOn(store, text, joexapi, restapi)
+  ).dependsOn(store, text, convert, joexapi, restapi)
 
 val backend = project.in(file("modules/backend")).
   disablePlugins(RevolverPlugin).
@@ -357,6 +368,7 @@ val root = project.in(file(".")).
   ).
   aggregate(common
     , text
+    , convert
     , store
     , joexapi
     , joex

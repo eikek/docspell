@@ -11,6 +11,7 @@ object Dependencies {
   val DoobieVersion = "0.8.8"
   val EmilVersion = "0.2.0"
   val FastparseVersion = "2.1.3"
+  val FlexmarkVersion = "0.60.2"
   val FlywayVersion = "6.2.2"
   val Fs2Version = "2.2.2"
   val H2Version = "1.4.200"
@@ -20,6 +21,7 @@ object Dependencies {
   val LogbackVersion = "1.2.3"
   val MariaDbVersion = "2.5.4"
   val MiniTestVersion = "2.7.0"
+  val PdfboxVersion = "2.0.18"
   val PostgresVersion = "42.2.10"
   val PureConfigVersion = "0.12.2"
   val SqliteVersion = "3.30.1"
@@ -30,6 +32,24 @@ object Dependencies {
   val SemanticUIVersion = "2.4.1"
   val JQueryVersion = "3.4.1"
   val ViewerJSVersion = "0.5.8"
+  
+  // https://github.com/vsch/flexmark-java
+  // BSD 2-Clause
+  val flexmark = Seq(
+    "com.vladsch.flexmark" % "flexmark" % FlexmarkVersion,
+    "com.vladsch.flexmark" % "flexmark-ext-tables" % FlexmarkVersion,
+    "com.vladsch.flexmark" % "flexmark-ext-gfm-strikethrough" % FlexmarkVersion
+  ).map(_.excludeAll(
+    ExclusionRule("junit"),
+    ExclusionRule("hamcrest-core")
+  ))
+
+  val pdfbox = Seq(
+    "org.apache.pdfbox" % "pdfbox" % PdfboxVersion excludeAll(
+      ExclusionRule("commons-logging"),
+      ExclusionRule("org.bouncycastle")
+    )
+  )
 
   val emil = Seq(
     "com.github.eikek" %% "emil-common" % EmilVersion,

@@ -3,16 +3,16 @@ package docspell.joex.process
 import cats.implicits._
 import cats.effect.{ContextShift, Sync}
 import docspell.common.{ItemState, ProcessItemArgs}
+import docspell.joex.Config
 import docspell.joex.scheduler.{Context, Task}
 import docspell.store.queries.QItem
 import docspell.store.records.{RItem, RJob}
-import docspell.text.ocr.{Config => OcrConfig}
 
 object ItemHandler {
   def onCancel[F[_]: Sync: ContextShift]: Task[F, ProcessItemArgs, Unit] =
     logWarn("Now cancelling. Deleting potentially created data.").flatMap(_ => deleteByFileIds)
 
-  def apply[F[_]: Sync: ContextShift](cfg: OcrConfig): Task[F, ProcessItemArgs, Unit] =
+  def apply[F[_]: Sync: ContextShift](cfg: Config): Task[F, ProcessItemArgs, Unit] =
     CreateItem[F]
       .flatMap(itemStateTask(ItemState.Processing))
       .flatMap(safeProcess[F](cfg))
@@ -30,7 +30,7 @@ object ItemHandler {
     } yield last
 
   def safeProcess[F[_]: Sync: ContextShift](
-      cfg: OcrConfig
+      cfg: Config
   )(data: ItemData): Task[F, ProcessItemArgs, ItemData] =
     Task(isLastRetry[F, ProcessItemArgs] _).flatMap {
       case true =>
