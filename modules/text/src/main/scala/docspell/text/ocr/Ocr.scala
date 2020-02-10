@@ -5,6 +5,7 @@ import java.nio.file.Path
 import cats.effect.{Blocker, ContextShift, Sync}
 import fs2.Stream
 import org.log4s._
+import docspell.common._
 
 object Ocr {
   private[this] val logger = getLogger
@@ -93,7 +94,7 @@ object Ocr {
     */
   private[text] def runGhostscriptFile[F[_]: Sync: ContextShift](
       pdf: Path,
-      ghostscript: Config.Command,
+      ghostscript: SystemCommand.Config,
       wd: Path,
       blocker: Blocker
   ): Stream[F, Path] = {
@@ -121,7 +122,7 @@ object Ocr {
     */
   private[text] def runUnpaperFile[F[_]: Sync: ContextShift](
       img: Path,
-      unpaper: Config.Command,
+      unpaper: SystemCommand.Config,
       wd: Path,
       blocker: Blocker
   ): Stream[F, Path] = {

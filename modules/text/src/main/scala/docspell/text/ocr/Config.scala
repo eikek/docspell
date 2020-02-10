@@ -19,21 +19,9 @@ case class Config(
 object Config {
   case class PageRange(begin: Int)
 
-  case class Command(program: String, args: Seq[String], timeout: Duration) {
-
-    def mapArgs(f: String => String): Command =
-      Command(program, args.map(f), timeout)
-
-    def toCmd: List[String] =
-      program :: args.toList
-
-    lazy val cmdString: String =
-      toCmd.mkString(" ")
-  }
-
-  case class Ghostscript(command: Command, workingDir: Path)
-  case class Tesseract(command: Command)
-  case class Unpaper(command: Command)
+  case class Ghostscript(command: SystemCommand.Config, workingDir: Path)
+  case class Tesseract(command: SystemCommand.Config)
+  case class Unpaper(command: SystemCommand.Config)
 
   val default = Config(
     allowedContentTypes = Set(
@@ -44,7 +32,7 @@ object Config {
     ),
     pageRange = PageRange(10),
     ghostscript = Ghostscript(
-      Command(
+      SystemCommand.Config(
         "gs",
         Seq(
           "-dNOPAUSE",
@@ -58,9 +46,9 @@ object Config {
       ),
       Paths.get(System.getProperty("java.io.tmpdir")).resolve("docspell-extraction")
     ),
-    unpaper = Unpaper(Command("unpaper", Seq("{{infile}}", "{{outfile}}"), Duration.seconds(30))),
+    unpaper = Unpaper(SystemCommand.Config("unpaper", Seq("{{infile}}", "{{outfile}}"), Duration.seconds(30))),
     tesseract = Tesseract(
-      Command("tesseract", Seq("{{file}}", "stdout", "-l", "{{lang}}"), Duration.minutes(1))
+      SystemCommand.Config("tesseract", Seq("{{file}}", "stdout", "-l", "{{lang}}"), Duration.minutes(1))
     )
   )
 }

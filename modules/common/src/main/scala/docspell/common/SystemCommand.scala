@@ -1,4 +1,4 @@
-package docspell.text.ocr
+package docspell.common
 
 import java.io.InputStream
 import java.nio.file.Path
@@ -11,13 +11,24 @@ import scala.jdk.CollectionConverters._
 import docspell.common.syntax.all._
 
 object SystemCommand {
-
   private[this] val logger = getLogger
+
+  final case class Config(program: String, args: Seq[String], timeout: Duration) {
+
+    def mapArgs(f: String => String): Config =
+      Config(program, args.map(f), timeout)
+
+    def toCmd: List[String] =
+      program :: args.toList
+
+    lazy val cmdString: String =
+      toCmd.mkString(" ")
+  }
 
   final case class Result(rc: Int, stdout: String, stderr: String)
 
   def exec[F[_]: Sync: ContextShift](
-      cmd: Config.Command,
+      cmd: Config,
       blocker: Blocker,
       wd: Option[Path] = None,
       stdin: Stream[F, Byte] = Stream.empty
@@ -40,7 +51,7 @@ object SystemCommand {
     }
 
   def execSuccess[F[_]: Sync: ContextShift](
-      cmd: Config.Command,
+      cmd: Config,
       blocker: Blocker,
       wd: Option[Path] = None,
       stdin: Stream[F, Byte] = Stream.empty
@@ -55,7 +66,7 @@ object SystemCommand {
       else Stream.emit(r)
     }
 
-  private def startProcess[F[_]: Sync, A](cmd: Config.Command, wd: Option[Path])(
+  private def startProcess[F[_]: Sync, A](cmd: Config, wd: Option[Path])(
       f: Process => Stream[F, A]
   ): Stream[F, A] = {
     val log = logger.fdebug(s"Running external command: ${cmd.cmdString}")
@@ -93,7 +104,7 @@ object SystemCommand {
   ): F[Unit] =
     data.through(io.writeOutputStream(Sync[F].delay(proc.getOutputStream), blocker)).compile.drain
 
-  private def timeoutError[F[_]: Sync](proc: Process, cmd: Config.Command): F[Unit] =
+  private def timeoutError[F[_]: Sync](proc: Process, cmd: Config): F[Unit] =
     Sync[F].delay(proc.destroyForcibly()).attempt *> {
       Sync[F].raiseError(
         new Exception(s"Command `${cmd.cmdString}` timed out (${cmd.timeout.formatExact})")
