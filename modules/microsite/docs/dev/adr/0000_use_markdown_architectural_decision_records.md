@@ -1,3 +1,8 @@
+---
+layout: docs
+title: Use Markdown Architectural Decision Records
+---
+
 # Use Markdown Architectural Decision Records
 
 ## Context and Problem Statement
