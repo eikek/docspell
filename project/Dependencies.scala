@@ -22,6 +22,7 @@ object Dependencies {
   val MariaDbVersion = "2.5.4"
   val MiniTestVersion = "2.7.0"
   val PdfboxVersion = "2.0.18"
+  val PoiVersion = "4.1.1"
   val PostgresVersion = "42.2.10"
   val PureConfigVersion = "0.12.2"
   val SqliteVersion = "3.30.1"
@@ -32,7 +33,16 @@ object Dependencies {
   val SemanticUIVersion = "2.4.1"
   val JQueryVersion = "3.4.1"
   val ViewerJSVersion = "0.5.8"
-  
+
+
+  val poi = Seq(
+    "org.apache.poi" % "poi" % PoiVersion,
+    "org.apache.poi" % "poi-ooxml" % PoiVersion,
+  ).map(_.excludeAll(
+    ExclusionRule("commons-logging"),
+    ExclusionRule("log4j")
+  ))
+
   // https://github.com/vsch/flexmark-java
   // BSD 2-Clause
   val flexmark = Seq(

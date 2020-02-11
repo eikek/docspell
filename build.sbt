@@ -143,6 +143,16 @@ val common = project.in(file("modules/common")).
       Dependencies.pureconfig.map(_ % "optional")
   )
 
+// Some example files for testing
+// https://file-examples.com/index.php/sample-documents-download/sample-doc-download/
+val exampleFiles = project.in(file("modules/example-files")).
+  disablePlugins(RevolverPlugin).
+  settings(sharedSettings).
+  settings(testSettings).
+  settings(
+    name := "docspell-examplefiles"
+  )
+
 val store = project.in(file("modules/store")).
   disablePlugins(RevolverPlugin).
   settings(sharedSettings).
@@ -171,8 +181,9 @@ val text = project.in(file("modules/text")).
     libraryDependencies ++=
       Dependencies.fs2 ++
       Dependencies.tika ++
-      Dependencies.stanfordNlpCore
-  ).dependsOn(common)
+      Dependencies.stanfordNlpCore ++
+      Dependencies.poi
+  ).dependsOn(common, exampleFiles % "compile->compile;test->test")
 
 val convert = project.in(file("modules/convert")).
   disablePlugins(RevolverPlugin).
@@ -183,7 +194,7 @@ val convert = project.in(file("modules/convert")).
     libraryDependencies ++=
       Dependencies.pdfbox ++
       Dependencies.flexmark
-  ).dependsOn(common)
+  ).dependsOn(common, exampleFiles % "compile->compile;test->test")
   
 val restapi = project.in(file("modules/restapi")).
   disablePlugins(RevolverPlugin).
@@ -369,6 +380,7 @@ val root = project.in(file(".")).
   aggregate(common
     , text
     , convert
+    , exampleFiles
     , store
     , joexapi
     , joex
