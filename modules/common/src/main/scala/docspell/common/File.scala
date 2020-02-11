@@ -1,12 +1,12 @@
-package docspell.text.ocr
+package docspell.common
 
-import cats.implicits._
-import scala.jdk.CollectionConverters._
 import java.io.IOException
 import java.nio.file.attribute.BasicFileAttributes
 import java.nio.file.{FileVisitResult, Files, Path, SimpleFileVisitor}
 import java.util.concurrent.atomic.AtomicInteger
+import scala.jdk.CollectionConverters._
 
+import cats.implicits._
 import cats.effect.Sync
 import fs2.Stream
 
