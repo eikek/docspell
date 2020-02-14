@@ -150,8 +150,34 @@ val exampleFiles = project.in(file("modules/example-files")).
   settings(sharedSettings).
   settings(testSettings).
   settings(
-    name := "docspell-examplefiles"
-  )
+    name := "docspell-examplefiles",
+    libraryDependencies ++=
+      Dependencies.tika,
+    Test / sourceGenerators += Def.task {
+      val base = (Test/resourceDirectory).value
+      val files = (base ** (_.isFile)) pair sbt.io.Path.relativeTo(base)
+      val lines = files.toList.map(_._2).map(s => {
+        val ident = s.replaceAll("[^a-zA-Z0-9_]+", "_")
+        ident -> s"""val $ident = createUrl("${s}")"""
+      })
+      val content = s"""package docspell.examplefiles
+
+object ExampleFiles extends ExampleFilesSupport {
+
+${lines.map(_._2).mkString("\n")}
+
+val all = List(
+${lines.map(_._1).mkString(",\n")}
+)
+
+}
+"""
+      val target = (Test/sourceManaged).value/"scala"/"ExampleFiles.scala"
+      IO.createDirectory(target.getParentFile)
+      IO.write(target, content)
+      Seq(target)
+    }.taskValue
+  ).dependsOn(common)
 
 val store = project.in(file("modules/store")).
   disablePlugins(RevolverPlugin).
@@ -180,9 +206,7 @@ val text = project.in(file("modules/text")).
     name := "docspell-text",
     libraryDependencies ++=
       Dependencies.fs2 ++
-      Dependencies.tika ++
-      Dependencies.stanfordNlpCore ++
-      Dependencies.poi
+      Dependencies.stanfordNlpCore 
   ).dependsOn(common, exampleFiles % "compile->compile;test->test")
 
 val convert = project.in(file("modules/convert")).
