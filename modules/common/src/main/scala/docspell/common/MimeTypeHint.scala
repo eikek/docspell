@@ -1,4 +1,4 @@
-package docspell.text.ocr
+package docspell.common
 
 case class MimeTypeHint(filename: Option[String], advertised: Option[String]) {}
 

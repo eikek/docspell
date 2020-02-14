@@ -1,6 +1,8 @@
 package docspell.text.ocr
 
 import cats.effect.IO
+import docspell.common._
+import docspell.files._
 import docspell.text.TestFiles
 import minitest.SimpleTestSuite
 
@@ -27,5 +29,14 @@ object TextExtractionSuite extends SimpleTestSuite {
       .unsafeRunSync()
 
     assertEquals(extract.trim, expect.trim)
+  }
+
+  test("find mimetypes") {
+    docspell.examplefiles.ExampleFiles.
+      all.foreach { url =>
+        TikaMimetype.detect(url.readURL[IO](8192, blocker), MimeTypeHint.none).
+          map(mt => println(url.asString + ": " + mt.asString)).
+          unsafeRunSync
+      }
   }
 }

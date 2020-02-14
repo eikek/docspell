@@ -1,7 +1,8 @@
 package docspell.text.ocr
 
 import cats.effect.{Blocker, ContextShift, Sync}
-import docspell.common.MimeType
+import docspell.common._
+import docspell.files._
 import fs2.Stream
 
 object TextExtract {
@@ -21,7 +22,7 @@ object TextExtract {
       config: Config
   ): Stream[F, String] =
     Stream
-      .eval(TikaMimetype.detect(in))
+      .eval(TikaMimetype.detect(in, MimeTypeHint.none))
       .flatMap({
         case mt if !config.isAllowed(mt) =>
           raiseError(s"File `$mt` not allowed")

@@ -1,8 +1,8 @@
-package docspell.text.ocr
+package docspell.files
 
 import cats.implicits._
 import cats.effect.Sync
-import docspell.common.MimeType
+import docspell.common._
 import fs2.Stream
 import org.apache.tika.config.TikaConfig
 import org.apache.tika.metadata.{HttpHeaders, Metadata, TikaMetadataKeys}
@@ -35,7 +35,7 @@ object TikaMimetype {
   private def fromBytes(bv: Array[Byte], hint: MimeTypeHint): MimeType =
     convert(tika.detect(new java.io.ByteArrayInputStream(bv), makeMetadata(hint)))
 
-  def detect[F[_]: Sync](data: Stream[F, Byte]): F[MimeType] =
-    data.take(1024).compile.toVector.map(bytes => fromBytes(bytes.toArray, MimeTypeHint.none))
+  def detect[F[_]: Sync](data: Stream[F, Byte], hint: MimeTypeHint): F[MimeType] =
+    data.take(64).compile.toVector.map(bytes => fromBytes(bytes.toArray, hint))
 
 }
