@@ -1,4 +1,4 @@
-package docspell.examplefiles
+package docspell.files
 
 import docspell.common._
 

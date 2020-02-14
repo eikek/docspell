@@ -145,12 +145,12 @@ val common = project.in(file("modules/common")).
 
 // Some example files for testing
 // https://file-examples.com/index.php/sample-documents-download/sample-doc-download/
-val exampleFiles = project.in(file("modules/example-files")).
+val exampleFiles = project.in(file("modules/files")).
   disablePlugins(RevolverPlugin).
   settings(sharedSettings).
   settings(testSettings).
   settings(
-    name := "docspell-examplefiles",
+    name := "docspell-files",
     libraryDependencies ++=
       Dependencies.tika,
     Test / sourceGenerators += Def.task {
@@ -160,7 +160,7 @@ val exampleFiles = project.in(file("modules/example-files")).
         val ident = s.replaceAll("[^a-zA-Z0-9_]+", "_")
         ident -> s"""val $ident = createUrl("${s}")"""
       })
-      val content = s"""package docspell.examplefiles
+      val content = s"""package docspell.files
 
 object ExampleFiles extends ExampleFilesSupport {
 
