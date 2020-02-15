@@ -1,0 +1,29 @@
+    Max Mustermann
+    Lilienweg 21
+    12345 Nebendorf
+    E-Mail: max.muster@gmail.com
+
+Max Mustermann, Lilienweg 21, 12345 Nebendorf
+
+
+EasyCare AG<br>
+Abteilung Buchhaltung<br>
+Ackerweg 12<br>
+12346 Ulmen<br>
+
+
+Nebendorf, 3. September 2019
+## Sehr geehrte Damen und Herren,
+
+hiermit kündige ich meine Mitgliedschaft in der Kranken- und
+Pflegeversicherung zum *nächstmöglichen* Termin.
+
+Bitte senden Sie mir innerhalb der gesetzlichen Frist von **14 Tagen**
+eine Kündigungsbestätigung zu.
+
+
+Vielen Dank im Vorraus!
+
+Mit freundlichen Grüßen
+
+Max Mustermann

@@ -32,7 +32,7 @@ object TextExtractionSuite extends SimpleTestSuite {
   }
 
   test("find mimetypes") {
-    docspell.examplefiles.ExampleFiles.
+    ExampleFiles.
       all.foreach { url =>
         TikaMimetype.detect(url.readURL[IO](8192, blocker), MimeTypeHint.none).
           map(mt => println(url.asString + ": " + mt.asString)).
