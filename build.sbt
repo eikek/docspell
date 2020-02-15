@@ -145,14 +145,14 @@ val common = project.in(file("modules/common")).
 
 // Some example files for testing
 // https://file-examples.com/index.php/sample-documents-download/sample-doc-download/
-val exampleFiles = project.in(file("modules/files")).
+val files = project.in(file("modules/files")).
   disablePlugins(RevolverPlugin).
   settings(sharedSettings).
   settings(testSettings).
   settings(
     name := "docspell-files",
     libraryDependencies ++=
-      Dependencies.tika,
+      Dependencies.tika ,
     Test / sourceGenerators += Def.task {
       val base = (Test/resourceDirectory).value
       val files = (base ** (_.isFile)) pair sbt.io.Path.relativeTo(base)
@@ -196,18 +196,17 @@ val store = project.in(file("modules/store")).
       Dependencies.emil
   ).dependsOn(common)
 
-val text = project.in(file("modules/text")).
+val extract = project.in(file("modules/extract")).
   disablePlugins(RevolverPlugin).
-  enablePlugins(NerModelsPlugin).
   settings(sharedSettings).
   settings(testSettings).
-  settings(NerModelsPlugin.nerClassifierSettings).
   settings(
-    name := "docspell-text",
+    name := "docspell-extract",
     libraryDependencies ++=
       Dependencies.fs2 ++
-      Dependencies.stanfordNlpCore 
-  ).dependsOn(common, exampleFiles % "compile->compile;test->test")
+      Dependencies.pdfbox ++
+      Dependencies.poi
+  ).dependsOn(common, files % "compile->compile;test->test")
 
 val convert = project.in(file("modules/convert")).
   disablePlugins(RevolverPlugin).
@@ -216,9 +215,21 @@ val convert = project.in(file("modules/convert")).
   settings(
     name := "docspell-convert",
     libraryDependencies ++=
-      Dependencies.pdfbox ++
       Dependencies.flexmark
-  ).dependsOn(common, exampleFiles % "compile->compile;test->test")
+  ).dependsOn(common, files % "compile->compile;test->test")
+
+val analysis = project.in(file("modules/analysis")).
+  disablePlugins(RevolverPlugin).
+  enablePlugins(NerModelsPlugin).
+  settings(sharedSettings).
+  settings(testSettings).
+  settings(NerModelsPlugin.nerClassifierSettings).
+  settings(
+    name := "docspell-analysis",
+    libraryDependencies ++=
+      Dependencies.fs2 ++
+      Dependencies.stanfordNlpCore
+  ).dependsOn(common, files % "test->test")
   
 val restapi = project.in(file("modules/restapi")).
   disablePlugins(RevolverPlugin).
@@ -272,7 +283,7 @@ val joex = project.in(file("modules/joex")).
     addCompilerPlugin(Dependencies.betterMonadicFor),
     buildInfoPackage := "docspell.joex",
     reStart/javaOptions ++= Seq(s"-Dconfig.file=${(LocalRootProject/baseDirectory).value/"local"/"dev.conf"}")
-  ).dependsOn(store, text, convert, joexapi, restapi)
+  ).dependsOn(store, extract, convert, analysis, joexapi, restapi)
 
 val backend = project.in(file("modules/backend")).
   disablePlugins(RevolverPlugin).
@@ -402,9 +413,10 @@ val root = project.in(file(".")).
     name := "docspell-root"
   ).
   aggregate(common
-    , text
+    , extract
     , convert
-    , exampleFiles
+    , analysis
+    , files
     , store
     , joexapi
     , joex

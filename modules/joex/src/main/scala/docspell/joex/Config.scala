@@ -3,7 +3,7 @@ package docspell.joex
 import docspell.common.{Ident, LenientUri}
 import docspell.joex.scheduler.SchedulerConfig
 import docspell.store.JdbcConfig
-import docspell.text.ocr.{Config => OcrConfig}
+import docspell.extract.ocr.{Config => OcrConfig}
 import docspell.convert.ConvertConfig
 
 case class Config(

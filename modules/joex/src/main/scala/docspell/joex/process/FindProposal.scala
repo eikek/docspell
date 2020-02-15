@@ -5,11 +5,11 @@ import java.time.ZoneId
 import cats.{Applicative, FlatMap}
 import cats.implicits._
 import cats.effect.Sync
+import docspell.analysis.contact._
 import docspell.common.MetaProposal.Candidate
 import docspell.common._
 import docspell.joex.scheduler.{Context, Task}
-import docspell.store.records.{RAttachmentMeta, REquipment, ROrganization, RPerson}
-import docspell.text.contact.Domain
+import docspell.store.records._
 
 /** Super simple approach to find corresponding meta data to an item
   * by looking up values from NER in the users address book.

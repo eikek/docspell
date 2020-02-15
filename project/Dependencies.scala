@@ -25,6 +25,7 @@ object Dependencies {
   val PoiVersion = "4.1.1"
   val PostgresVersion = "42.2.10"
   val PureConfigVersion = "0.12.2"
+  val Slf4jVersion = "1.7.30"
   val SqliteVersion = "3.30.1"
   val StanfordNlpVersion = "3.9.2"
   val TikaVersion = "1.23"
@@ -38,6 +39,8 @@ object Dependencies {
   val poi = Seq(
     "org.apache.poi" % "poi" % PoiVersion,
     "org.apache.poi" % "poi-ooxml" % PoiVersion,
+    "org.slf4j" % "slf4j-log4j12" % Slf4jVersion,
+    "org.slf4j" % "slf4j-jcl" % Slf4jVersion
   ).map(_.excludeAll(
     ExclusionRule("commons-logging"),
     ExclusionRule("log4j")
@@ -54,11 +57,17 @@ object Dependencies {
     ExclusionRule("hamcrest-core")
   ))
 
+  val twelvemonkeys = Seq(
+    "com.twelvemonkeys.imageio" % "imageio-jpeg" % "3.5",
+    "com.twelvemonkeys.imageio" % "imageio-tiff" % "3.5"
+  )
+
   val pdfbox = Seq(
     "org.apache.pdfbox" % "pdfbox" % PdfboxVersion excludeAll(
       ExclusionRule("commons-logging"),
       ExclusionRule("org.bouncycastle")
-    )
+    ),
+    "org.slf4j" % "slf4j-jcl" % Slf4jVersion    
   )
 
   val emil = Seq(
