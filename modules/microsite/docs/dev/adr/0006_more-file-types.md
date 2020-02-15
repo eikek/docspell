@@ -119,7 +119,16 @@ office documents, common images, plain text (i.e. markdown) and html
 should be supported. In terms of file extensions: `doc`, `docx`,
 `xls`, `xlsx`, `odt`, `md`, `html`, `txt`, `jpg`, `png`, `tif`.
 
+There is always the preference to use jvm internal libraries in order
+to be more platform independent and to reduce external dependencies.
+But this is not always possible (like doing OCR).
 
+- Office documents (`doc`, `docx`, `xls`, `xlsx`, `odt`, `ods`):
+  unoconv (see [ADR 9](0009_convert_office_docs))
+- HTML (`html`): wkhtmltopdf (see [ADR 7](0007_convert_html_files))
+- Text/Markdown (`txt`, `md`): Java-Lib flexmark + wkhtmltopdf
+- Images (`jpg`, `png`, `tif`): Tesseract (see [ADR
+  10](0010_convert_image_files))
 
 ## Links
 
