@@ -1,7 +1,7 @@
 package docspell.analysis.nlp
 
 import minitest.SimpleTestSuite
-import docspell.analysis.TestFiles
+import docspell.files.TestFiles
 import docspell.common._
 
 object TextAnalyserSuite extends SimpleTestSuite {
@@ -12,25 +12,23 @@ object TextAnalyserSuite extends SimpleTestSuite {
       NerLabel("Derek", NerTag.Person, 0, 5),
       NerLabel("Jeter", NerTag.Person, 6, 11),
       NerLabel("Treesville", NerTag.Person, 27, 37),
-      NerLabel("Derek", NerTag.Person, 69, 74),
-      NerLabel("Jeter", NerTag.Person, 75, 80),
-      NerLabel("Treesville", NerTag.Location, 96, 106),
-      NerLabel("M.", NerTag.Person, 142, 144),
-      NerLabel("Leat", NerTag.Person, 145, 149),
-      NerLabel("Syrup", NerTag.Organization, 160, 165),
-      NerLabel("Production", NerTag.Organization, 166, 176),
-      NerLabel("Old", NerTag.Organization, 177, 180),
-      NerLabel("Sticky", NerTag.Organization, 181, 187),
-      NerLabel("Pancake", NerTag.Organization, 188, 195),
-      NerLabel("Company", NerTag.Organization, 196, 203),
-      NerLabel("Maple", NerTag.Location, 208, 213),
-      NerLabel("Lane", NerTag.Location, 214, 218),
-      NerLabel("Forest", NerTag.Location, 220, 226),
-      NerLabel("Hemptown", NerTag.Location, 241, 249),
-      NerLabel("Little", NerTag.Organization, 349, 355),
-      NerLabel("League", NerTag.Organization, 356, 362),
-      NerLabel("Derek", NerTag.Person, 1119, 1124),
-      NerLabel("Jeter", NerTag.Person, 1125, 1130)
+      NerLabel("Derek", NerTag.Person, 68, 73),
+      NerLabel("Jeter", NerTag.Person, 74, 79),
+      NerLabel("Treesville", NerTag.Location, 95, 105),
+      NerLabel("Syrup", NerTag.Organization, 159, 164),
+      NerLabel("Production", NerTag.Organization, 165, 175),
+      NerLabel("Old", NerTag.Organization, 176, 179),
+      NerLabel("Sticky", NerTag.Organization, 180, 186),
+      NerLabel("Pancake", NerTag.Organization, 187, 194),
+      NerLabel("Company", NerTag.Organization, 195, 202),
+      NerLabel("Maple", NerTag.Location, 207, 212),
+      NerLabel("Lane", NerTag.Location, 213, 217),
+      NerLabel("Forest", NerTag.Location, 219, 225),
+      NerLabel("Hemptown", NerTag.Location, 239, 247),
+      NerLabel("Little", NerTag.Organization, 347, 353),
+      NerLabel("League", NerTag.Organization, 354, 360),
+      NerLabel("Derek", NerTag.Person, 1117, 1122),
+      NerLabel("Jeter", NerTag.Person, 1123, 1128)
     )
     assertEquals(labels, expect)
   }

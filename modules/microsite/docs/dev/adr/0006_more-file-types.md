@@ -112,7 +112,7 @@ If conversion is not supported for the input file, it is skipped. If
 conversion fails, the error is propagated to let the retry mechanism
 take care.
 
-### What types?
+#### What types?
 
 Which file types should be supported? At a first step, all major
 office documents, common images, plain text (i.e. markdown) and html
@@ -123,6 +123,12 @@ There is always the preference to use jvm internal libraries in order
 to be more platform independent and to reduce external dependencies.
 But this is not always possible (like doing OCR).
 
+<div class="thumbnail">
+  <img src="./img/process-files.png" title="Overview processing files">
+</div>
+
+#### Conversion
+
 - Office documents (`doc`, `docx`, `xls`, `xlsx`, `odt`, `ods`):
   unoconv (see [ADR 9](0009_convert_office_docs))
 - HTML (`html`): wkhtmltopdf (see [ADR 7](0007_convert_html_files))
@@ -130,9 +136,19 @@ But this is not always possible (like doing OCR).
 - Images (`jpg`, `png`, `tif`): Tesseract (see [ADR
   10](0010_convert_image_files))
 
+#### Text Extraction
+
+- Office documents (`doc`, `docx`, `xls`, `xlsx`): Apache Poi
+- Office documends (`odt`, `ods`): Apache Tika (including the sources)
+- HTML: not supported, extract text from converted PDF
+- Images (`jpg`, `png`, `tif`): Tesseract
+- Text/Markdown: n.a.
+- PDF: Apache PDFBox or Tesseract
+
 ## Links
 
 * [Convert HTML Files](0007_convert_html_files)
 * [Convert Plain Text](0008_convert_plain_text)
 * [Convert Office Documents](0009_convert_office_docs)
 * [Convert Image Files](0010_convert_image_files)
+* [Extract Text from Files](0011_extract_text)

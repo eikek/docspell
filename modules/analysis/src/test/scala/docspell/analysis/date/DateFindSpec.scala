@@ -1,6 +1,6 @@
 package docspell.analysis.date
 
-import docspell.analysis.TestFiles
+import docspell.files.TestFiles
 import minitest.SimpleTestSuite
 import docspell.common.Language
 

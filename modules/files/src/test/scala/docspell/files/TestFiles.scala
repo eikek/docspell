@@ -1,8 +1,7 @@
-package docspell.extract
+package docspell.files
 
-import fs2.Stream
 import cats.effect.{Blocker, IO}
-import docspell.files._
+import fs2.Stream
 
 import scala.concurrent.ExecutionContext
 
@@ -12,19 +11,19 @@ object TestFiles {
 
   val letterSourceDE: Stream[IO, Byte] =
     ExampleFiles.letter_de_pdf
-      .readURL[IO](16 * 1024, blocker)
+      .readURL[IO](8 * 1024, blocker)
 
   val letterSourceEN: Stream[IO, Byte] =
     ExampleFiles.letter_en_pdf
-      .readURL[IO](16 * 1024, blocker)
+      .readURL[IO](8 * 1024, blocker)
 
   lazy val letterDEText =
     ExampleFiles.letter_de_txt
-      .readText[IO](16 * 1024, blocker)
+      .readText[IO](8 * 1024, blocker)
       .unsafeRunSync
 
   lazy val letterENText =
     ExampleFiles.letter_en_txt
-      .readText[IO](16 * 1024, blocker)
+      .readText[IO](8 * 1024, blocker)
       .unsafeRunSync
 }

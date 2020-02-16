@@ -36,15 +36,20 @@ object Dependencies {
   val ViewerJSVersion = "0.5.8"
 
 
+  val jclOverSlf4j = Seq(
+    "org.slf4j" % "jcl-over-slf4j" % Slf4jVersion
+  )
+  val julOverSlf4j = Seq(
+    "org.slf4j" % "jul-to-slf4j" % Slf4jVersion
+  )
+
   val poi = Seq(
     "org.apache.poi" % "poi" % PoiVersion,
     "org.apache.poi" % "poi-ooxml" % PoiVersion,
-    "org.slf4j" % "slf4j-log4j12" % Slf4jVersion,
-    "org.slf4j" % "slf4j-jcl" % Slf4jVersion
+    "org.apache.poi" % "poi-scratchpad" % PoiVersion,
   ).map(_.excludeAll(
-    ExclusionRule("commons-logging"),
-    ExclusionRule("log4j")
-  ))
+    ExclusionRule("commons-logging")
+  )) ++ jclOverSlf4j
 
   // https://github.com/vsch/flexmark-java
   // BSD 2-Clause
@@ -57,18 +62,17 @@ object Dependencies {
     ExclusionRule("hamcrest-core")
   ))
 
-  val twelvemonkeys = Seq(
-    "com.twelvemonkeys.imageio" % "imageio-jpeg" % "3.5",
-    "com.twelvemonkeys.imageio" % "imageio-tiff" % "3.5"
-  )
+  // val twelvemonkeys = Seq(
+  //   "com.twelvemonkeys.imageio" % "imageio-jpeg" % "3.5",
+  //   "com.twelvemonkeys.imageio" % "imageio-tiff" % "3.5"
+  // )
 
   val pdfbox = Seq(
-    "org.apache.pdfbox" % "pdfbox" % PdfboxVersion excludeAll(
-      ExclusionRule("commons-logging"),
-      ExclusionRule("org.bouncycastle")
-    ),
-    "org.slf4j" % "slf4j-jcl" % Slf4jVersion    
-  )
+    "org.apache.pdfbox" % "pdfbox" % PdfboxVersion excludeAll (
+      ExclusionRule("org.bouncycastle"),
+      ExclusionRule("commons-logging")
+    )
+  ) ++ jclOverSlf4j
 
   val emil = Seq(
     "com.github.eikek" %% "emil-common" % EmilVersion,
@@ -99,6 +103,12 @@ object Dependencies {
 
   val tika = Seq(
     "org.apache.tika" % "tika-core" % TikaVersion
+  )
+  val commonsIO = Seq(
+    "commons-io" % "commons-io" % "2.6"
+  )
+  val tikaParser = Seq(
+    "org.apache.tika" % "tika-parsers" % TikaVersion
   )
 
   val bcrypt = Seq(

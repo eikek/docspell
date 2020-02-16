@@ -205,7 +205,9 @@ val extract = project.in(file("modules/extract")).
     libraryDependencies ++=
       Dependencies.fs2 ++
       Dependencies.pdfbox ++
-      Dependencies.poi
+      Dependencies.poi ++
+      Dependencies.commonsIO ++
+      Dependencies.julOverSlf4j
   ).dependsOn(common, files % "compile->compile;test->test")
 
 val convert = project.in(file("modules/convert")).
