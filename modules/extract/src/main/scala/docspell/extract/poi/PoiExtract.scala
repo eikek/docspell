@@ -21,22 +21,25 @@ import docspell.files.TikaMimetype
 object PoiExtract {
 
   def get[F[_]: Sync](data: Stream[F, Byte], hint: MimeTypeHint): F[Either[Throwable, String]] =
-    TikaMimetype.detect(data, hint).flatMap {
-      case PoiTypes.doc =>
+    TikaMimetype.detect(data, hint).flatMap(mt => get(data, mt))
+
+  def get[F[_]: Sync](data: Stream[F, Byte], mime: MimeType): F[Either[Throwable, String]] =
+    mime match {
+      case PoiType.doc =>
         getDoc(data)
-      case PoiTypes.xls =>
+      case PoiType.xls =>
         getXls(data)
-      case PoiTypes.xlsx =>
+      case PoiType.xlsx =>
         getXlsx(data)
-      case PoiTypes.docx =>
+      case PoiType.docx =>
         getDocx(data)
-      case PoiTypes.msoffice =>
+      case PoiType.msoffice =>
         EitherT(getDoc[F](data))
           .recoverWith({
             case _ => EitherT(getXls[F](data))
           })
           .value
-      case PoiTypes.ooxml =>
+      case PoiType.ooxml =>
         EitherT(getDocx[F](data))
           .recoverWith({
             case _ => EitherT(getXlsx[F](data))

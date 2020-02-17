@@ -11,7 +11,7 @@ object TextExtract {
       in: Stream[F, Byte],
       blocker: Blocker,
       lang: String,
-      config: Config
+      config: OcrConfig
   ): Stream[F, String] =
     extractOCR(in, blocker, lang, config)
 
@@ -19,7 +19,7 @@ object TextExtract {
       in: Stream[F, Byte],
       blocker: Blocker,
       lang: String,
-      config: Config
+      config: OcrConfig
   ): Stream[F, String] =
     Stream
       .eval(TikaMimetype.detect(in, MimeTypeHint.none))

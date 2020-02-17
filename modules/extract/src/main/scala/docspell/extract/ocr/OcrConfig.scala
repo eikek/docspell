@@ -4,26 +4,29 @@ import java.nio.file.{Path, Paths}
 
 import docspell.common._
 
-case class Config(
+case class OcrConfig(
     allowedContentTypes: Set[MimeType],
-    ghostscript: Config.Ghostscript,
-    pageRange: Config.PageRange,
-    unpaper: Config.Unpaper,
-    tesseract: Config.Tesseract
+    ghostscript: OcrConfig.Ghostscript,
+    pageRange: OcrConfig.PageRange,
+    unpaper: OcrConfig.Unpaper,
+    tesseract: OcrConfig.Tesseract
 ) {
 
   def isAllowed(mt: MimeType): Boolean =
     allowedContentTypes contains mt
 }
 
-object Config {
+object OcrConfig {
+
   case class PageRange(begin: Int)
 
   case class Ghostscript(command: SystemCommand.Config, workingDir: Path)
+
   case class Tesseract(command: SystemCommand.Config)
+
   case class Unpaper(command: SystemCommand.Config)
 
-  val default = Config(
+  val default = OcrConfig(
     allowedContentTypes = Set(
       MimeType.pdf,
       MimeType.png,
@@ -46,9 +49,12 @@ object Config {
       ),
       Paths.get(System.getProperty("java.io.tmpdir")).resolve("docspell-extraction")
     ),
-    unpaper = Unpaper(SystemCommand.Config("unpaper", Seq("{{infile}}", "{{outfile}}"), Duration.seconds(30))),
+    unpaper = Unpaper(
+      SystemCommand.Config("unpaper", Seq("{{infile}}", "{{outfile}}"), Duration.seconds(30))
+    ),
     tesseract = Tesseract(
-      SystemCommand.Config("tesseract", Seq("{{file}}", "stdout", "-l", "{{lang}}"), Duration.minutes(1))
+      SystemCommand
+        .Config("tesseract", Seq("{{file}}", "stdout", "-l", "{{lang}}"), Duration.minutes(1))
     )
   )
 }

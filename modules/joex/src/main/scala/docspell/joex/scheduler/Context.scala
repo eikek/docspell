@@ -3,7 +3,7 @@ package docspell.joex.scheduler
 import cats.Functor
 import cats.effect.{Blocker, Concurrent}
 import cats.implicits._
-import docspell.common.Ident
+import docspell.common._
 import docspell.store.Store
 import docspell.store.records.RJob
 import docspell.common.syntax.all._

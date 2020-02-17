@@ -10,7 +10,7 @@ object TextExtractionSuite extends SimpleTestSuite {
   test("extract english pdf") {
     ignore()
     val text = TextExtract
-      .extract[IO](letterSourceEN, blocker, "eng", Config.default)
+      .extract[IO](letterSourceEN, blocker, "eng", OcrConfig.default)
       .compile
       .lastOrError
       .unsafeRunSync()
@@ -21,7 +21,7 @@ object TextExtractionSuite extends SimpleTestSuite {
     ignore()
     val expect = TestFiles.letterDEText
     val extract = TextExtract
-      .extract[IO](letterSourceDE, blocker, "deu", Config.default)
+      .extract[IO](letterSourceDE, blocker, "deu", OcrConfig.default)
       .compile
       .lastOrError
       .unsafeRunSync()

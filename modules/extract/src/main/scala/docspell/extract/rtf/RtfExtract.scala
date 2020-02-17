@@ -4,12 +4,15 @@ import java.io.{ByteArrayInputStream, InputStream}
 
 import cats.implicits._
 import cats.effect.Sync
+import docspell.common.MimeType
 import fs2.Stream
 import javax.swing.text.rtf.RTFEditorKit
 
 import scala.util.Try
 
 object RtfExtract {
+
+  val rtfType = MimeType.application("rtf")
 
   def get(is: InputStream): Either[Throwable, String] =
     Try {

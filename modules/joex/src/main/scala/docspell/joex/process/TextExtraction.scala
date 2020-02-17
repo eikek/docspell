@@ -7,7 +7,7 @@ import docspell.common._
 import docspell.joex.scheduler.{Context, Task}
 import docspell.store.Store
 import docspell.store.records.{RAttachment, RAttachmentMeta}
-import docspell.extract.ocr.{TextExtract, Config => OcrConfig}
+import docspell.extract.ocr.{TextExtract, OcrConfig => OcrConfig}
 
 object TextExtraction {
 

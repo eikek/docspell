@@ -48,6 +48,7 @@ object MimeType {
 
   val octetStream = application("octet-stream")
   val pdf         = application("pdf")
+  val zip         = application("zip")
   val png         = image("png")
   val jpeg        = image("jpeg")
   val tiff        = image("tiff")

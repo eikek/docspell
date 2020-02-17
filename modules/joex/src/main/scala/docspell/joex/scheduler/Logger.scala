@@ -5,17 +5,6 @@ import cats.effect.{Concurrent, Sync}
 import docspell.common._
 import fs2.concurrent.Queue
 
-trait Logger[F[_]] {
-
-  def trace(msg: => String): F[Unit]
-  def debug(msg: => String): F[Unit]
-  def info(msg: => String): F[Unit]
-  def warn(msg: => String): F[Unit]
-  def error(ex: Throwable)(msg: => String): F[Unit]
-  def error(msg: => String): F[Unit]
-
-}
-
 object Logger {
 
   def create[F[_]: Sync](jobId: Ident, jobInfo: String, q: Queue[F, LogEvent]): Logger[F] =

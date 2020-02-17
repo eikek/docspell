@@ -16,7 +16,7 @@ object Ocr {
       pdf: Stream[F, Byte],
       blocker: Blocker,
       lang: String,
-      config: Config
+      config: OcrConfig
   ): Stream[F, String] =
     File.withTempDir(config.ghostscript.workingDir, "extractpdf") { wd =>
       runGhostscript(pdf, config, wd, blocker)
@@ -32,7 +32,7 @@ object Ocr {
       img: Stream[F, Byte],
       blocker: Blocker,
       lang: String,
-      config: Config
+      config: OcrConfig
   ): Stream[F, String] =
     runTesseractStdin(img, blocker, lang, config)
 
@@ -40,7 +40,7 @@ object Ocr {
       pdf: Path,
       blocker: Blocker,
       lang: String,
-      config: Config
+      config: OcrConfig
   ): Stream[F, String] =
     File.withTempDir(config.ghostscript.workingDir, "extractpdf") { wd =>
       runGhostscriptFile(pdf, config.ghostscript.command, wd, blocker)
@@ -54,7 +54,7 @@ object Ocr {
       img: Path,
       blocker: Blocker,
       lang: String,
-      config: Config
+      config: OcrConfig
   ): Stream[F, String] =
     runTesseractFile(img, blocker, lang, config)
 
@@ -62,10 +62,10 @@ object Ocr {
     * files are stored to a temporary location on disk and returned.
     */
   private[extract] def runGhostscript[F[_]: Sync: ContextShift](
-      pdf: Stream[F, Byte],
-      cfg: Config,
-      wd: Path,
-      blocker: Blocker
+                                                                 pdf: Stream[F, Byte],
+                                                                 cfg: OcrConfig,
+                                                                 wd: Path,
+                                                                 blocker: Blocker
   ): Stream[F, Path] = {
     val xargs =
       if (cfg.pageRange.begin > 0)
@@ -150,7 +150,7 @@ object Ocr {
       img: Path,
       blocker: Blocker,
       lang: String,
-      config: Config
+      config: OcrConfig
   ): Stream[F, String] =
     // tesseract cannot cope with absolute filenames
     // so use the parent as working dir
@@ -168,7 +168,7 @@ object Ocr {
       img: Stream[F, Byte],
       blocker: Blocker,
       lang: String,
-      config: Config
+      config: OcrConfig
   ): Stream[F, String] = {
     val cmd = config.tesseract.command
       .mapArgs(replace(Map("{{file}}" -> "stdin", "{{lang}}" -> fixLanguage(lang))))
