@@ -4,11 +4,10 @@ import java.io.IOException
 import java.nio.file.attribute.BasicFileAttributes
 import java.nio.file.{FileVisitResult, Files, Path, SimpleFileVisitor}
 import java.util.concurrent.atomic.AtomicInteger
-import scala.jdk.CollectionConverters._
 
+import scala.jdk.CollectionConverters._
 import cats.implicits._
-import cats.effect.Sync
-import fs2.Stream
+import cats.effect.{Blocker, ContextShift, Resource, Sync}
 
 object File {
 
@@ -40,6 +39,9 @@ object File {
     count.get
   }
 
+  def existsNonEmpty[F[_]: Sync](file: Path, minSize: Long = 0): F[Boolean] =
+    Sync[F].delay(Files.exists(file) && Files.size(file) > minSize)
+
   def deleteFile[F[_]: Sync](file: Path): F[Unit] =
     Sync[F].delay(Files.deleteIfExists(file)).map(_ => ())
 
@@ -47,10 +49,8 @@ object File {
     if (Files.isDirectory(path)) deleteDirectory(path)
     else deleteFile(path).map(_ => 1)
 
-  def withTempDir[F[_]: Sync, A](parent: Path, prefix: String)(
-      f: Path => Stream[F, A]
-  ): Stream[F, A] =
-    Stream.bracket(mkTempDir(parent, prefix))(p => delete(p).map(_ => ())).flatMap(f)
+  def withTempDir[F[_]: Sync](parent: Path, prefix: String): Resource[F, Path] =
+    Resource.make(mkTempDir(parent, prefix))(p => delete(p).map(_ => ()))
 
   def listFiles[F[_]: Sync](pred: Path => Boolean, dir: Path): F[List[Path]] = Sync[F].delay {
     val javaList =
@@ -58,4 +58,6 @@ object File {
     javaList.asScala.toList.sortBy(_.getFileName.toString)
   }
 
+  def readAll[F[_]: Sync: ContextShift](file: Path, blocker: Blocker, chunkSize: Int) =
+    fs2.io.file.readAll(file, blocker, chunkSize)
 }

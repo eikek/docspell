@@ -28,7 +28,7 @@ object TextExtract {
           raiseError(s"File `$mt` not allowed")
 
         case MimeType.pdf =>
-          Ocr.extractPdf(in, blocker, lang, config)
+          Stream.eval(Ocr.extractPdf(in, blocker, lang, config)).unNoneTerminate
 
         case mt if mt.primary == "image" =>
           Ocr.extractImage(in, blocker, lang, config)

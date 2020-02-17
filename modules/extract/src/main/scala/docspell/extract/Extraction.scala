@@ -29,14 +29,10 @@ object Extraction {
           dataType: DataType,
           lang: Language
       ): F[ExtractResult] = {
-        val mime = dataType match {
-          case DataType.Exact(mt)  => mt.pure[F]
-          case DataType.Hint(hint) => TikaMimetype.detect(data, hint)
-        }
-        mime.flatMap {
+        TikaMimetype.resolve(dataType, data).flatMap {
           case MimeType.pdf =>
             PdfExtract
-              .get(data, blocker, lang, 5, cfg.ocr, logger)
+              .get(data, blocker, lang, cfg.pdf.minTextLen, cfg.ocr, logger)
               .map(ExtractResult.fromEither)
 
           case PoiType(mt) =>

@@ -17,13 +17,15 @@ object Ocr {
       blocker: Blocker,
       lang: String,
       config: OcrConfig
-  ): Stream[F, String] =
-    File.withTempDir(config.ghostscript.workingDir, "extractpdf") { wd =>
+  ): F[Option[String]] =
+    File.withTempDir(config.ghostscript.workingDir, "extractpdf").use { wd =>
       runGhostscript(pdf, config, wd, blocker)
         .flatMap({ tmpImg =>
           runTesseractFile(tmpImg, blocker, lang, config)
         })
-        .fold1(_ + "\n\n\n" + _)
+        .fold1(_ + "\n\n\n" + _).
+        compile.
+        last
     }
 
   /** Extract the text from the given image file
@@ -41,13 +43,15 @@ object Ocr {
       blocker: Blocker,
       lang: String,
       config: OcrConfig
-  ): Stream[F, String] =
-    File.withTempDir(config.ghostscript.workingDir, "extractpdf") { wd =>
+  ): F[Option[String]] =
+    File.withTempDir(config.ghostscript.workingDir, "extractpdf").use { wd =>
       runGhostscriptFile(pdf, config.ghostscript.command, wd, blocker)
         .flatMap({ tif =>
           runTesseractFile(tif, blocker, lang, config)
         })
-        .fold1(_ + "\n\n\n" + _)
+        .fold1(_ + "\n\n\n" + _).
+        compile.
+        last
     }
 
   def extractImageFile[F[_]: Sync: ContextShift](

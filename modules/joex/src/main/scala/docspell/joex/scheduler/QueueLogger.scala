@@ -5,7 +5,7 @@ import cats.effect.{Concurrent, Sync}
 import docspell.common._
 import fs2.concurrent.Queue
 
-object Logger {
+object QueueLogger {
 
   def create[F[_]: Sync](jobId: Ident, jobInfo: String, q: Queue[F, LogEvent]): Logger[F] =
     new Logger[F] {

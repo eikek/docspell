@@ -43,7 +43,7 @@ object PdfExtract {
           if (str.length >= stripMinLen) str.pure[F].attempt
           else
             logger
-              .info(s"Stripping text from PDF is very small (${str.length}). Trying with OCR.") *>
+              .info(s"Stripped text from PDF is small (${str.length}). Trying with OCR.") *>
               runOcr.flatMap(ocrStr => chooseResult(ocrStr, str)).attempt
       )
     } yield res

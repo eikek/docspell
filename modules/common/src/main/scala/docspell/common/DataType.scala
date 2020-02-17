@@ -1,6 +1,4 @@
-package docspell.extract
-
-import docspell.common.{MimeType, MimeTypeHint}
+package docspell.common
 
 sealed trait DataType {
 

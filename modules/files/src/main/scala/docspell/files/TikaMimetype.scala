@@ -38,4 +38,9 @@ object TikaMimetype {
   def detect[F[_]: Sync](data: Stream[F, Byte], hint: MimeTypeHint): F[MimeType] =
     data.take(64).compile.toVector.map(bytes => fromBytes(bytes.toArray, hint))
 
+  def resolve[F[_]: Sync](dt: DataType, data: Stream[F, Byte]): F[MimeType] =
+    dt match {
+      case DataType.Exact(mt)  => mt.pure[F]
+      case DataType.Hint(hint) => TikaMimetype.detect(data, hint)
+    }
 }
