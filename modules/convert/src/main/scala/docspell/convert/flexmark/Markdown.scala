@@ -40,8 +40,10 @@ object Markdown {
       map(str => toHtml(str, cfg))
 
   private def wrapHtml(body: String, cfg: MarkdownConfig): String = {
-    s"""<html>
+    s"""<!DOCTYPE html>
+       |<html>
        |<head>
+       |<meta charset="utf-8"/>
        |<style>
        |${cfg.internalCss}
        |</style>

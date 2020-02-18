@@ -51,11 +51,11 @@ object ConvertPdf {
       .map(_.mimetype)
       .getOrElse(Mimetype.`application/octet-stream`)
 
-  def convertSafe[F[_]: Sync](
+  def convertSafe[F[_]: Sync: ContextShift](
       cfg: ConvertConfig,
       ctx: Context[F, ProcessItemArgs]
   )(ra: RAttachment, mime: Mimetype): F[RAttachment] =
-    Conversion.create[F](cfg).use { conv =>
+    Conversion.create[F](cfg, ctx.blocker,ctx.logger).use { conv =>
       ctx.logger
         .info(s"File ${ra.name} has mime ${mime.asString}. conv=$conv")
         .map(_ => ra)

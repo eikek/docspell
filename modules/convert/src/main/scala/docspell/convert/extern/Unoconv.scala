@@ -4,15 +4,15 @@ import cats.effect._
 import fs2.Pipe
 import docspell.common._
 
-object WkHtmlPdf {
+object Unoconv {
 
   def toPDF[F[_]: Sync: ContextShift](
-      cfg: WkHtmlPdfConfig,
+      cfg: UnoconvConfig,
       chunkSize: Int,
       blocker: Blocker,
       logger: Logger[F],
   ): Pipe[F, Byte, Byte] =
-    ExternConv.toPDF[F]("wkhtmltopdf", cfg.cmd, cfg.workingDir, chunkSize, blocker, logger)
+    ExternConv.toPDFviaFile[F]("unoconv", cfg.cmd, cfg.workingDir, chunkSize, blocker, logger)
 
 
 }

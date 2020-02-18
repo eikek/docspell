@@ -17,6 +17,9 @@ object File {
   def mkTempDir[F[_]: Sync](parent: Path, prefix: String): F[Path] =
     mkDir(parent).map(p => Files.createTempDirectory(p, prefix))
 
+  def mkTempFile[F[_]: Sync](parent: Path, prefix: String, suffix: Option[String] = None): F[Path] =
+    mkDir(parent).map(p => Files.createTempFile(p, prefix, suffix.orNull))
+
   def deleteDirectory[F[_]: Sync](dir: Path): F[Int] = Sync[F].delay {
     val count = new AtomicInteger(0)
     Files.walkFileTree(

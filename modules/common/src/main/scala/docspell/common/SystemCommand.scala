@@ -1,12 +1,15 @@
 package docspell.common
 
 import java.io.InputStream
+import java.lang.ProcessBuilder.Redirect
 import java.nio.file.Path
 import java.util.concurrent.TimeUnit
+
 import cats.implicits._
 import cats.effect.{Blocker, ContextShift, Sync}
 import fs2.{Stream, io, text}
 import org.log4s.getLogger
+
 import scala.jdk.CollectionConverters._
 import docspell.common.syntax.all._
 
@@ -33,7 +36,7 @@ object SystemCommand {
       wd: Option[Path] = None,
       stdin: Stream[F, Byte] = Stream.empty
   ): Stream[F, Result] =
-    startProcess(cmd, wd) { proc =>
+    startProcess(cmd, wd, stdin) { proc =>
       Stream.eval {
         for {
           _    <- writeToProcess(stdin, proc, blocker)
@@ -66,15 +69,20 @@ object SystemCommand {
       else Stream.emit(r)
     }
 
-  private def startProcess[F[_]: Sync, A](cmd: Config, wd: Option[Path])(
+  private def startProcess[F[_]: Sync, A](cmd: Config, wd: Option[Path], stdin: Stream[F, Byte])(
       f: Process => Stream[F, A]
   ): Stream[F, A] = {
     val log = logger.fdebug(s"Running external command: ${cmd.cmdString}")
-    val proc = log *> Sync[F].delay {
+    val hasStdin = stdin.take(1).compile.last.map(_.isDefined)
+    val proc = log *> hasStdin.flatMap(flag => Sync[F].delay {
       val pb = new ProcessBuilder(cmd.toCmd.asJava)
+        .redirectInput(if (flag) Redirect.PIPE else Redirect.INHERIT)
+        .redirectError(Redirect.PIPE)
+        .redirectOutput(Redirect.PIPE)
+
       wd.map(_.toFile).foreach(pb.directory)
       pb.start()
-    }
+    })
     Stream
       .bracket(proc)(p =>
         logger.fdebug(s"Closing process: `${cmd.cmdString}`").map { _ =>
