@@ -13,50 +13,28 @@ object ExternConv {
       cmdCfg: SystemCommand.Config,
       wd: Path,
       chunkSize: Int,
+      useStdin: Boolean,
       blocker: Blocker,
       logger: Logger[F]
   ): Pipe[F, Byte, Byte] =
     in =>
       Stream.resource(File.withTempDir[F](wd, s"docspell-$name")).flatMap { dir =>
-        val out = dir.resolve("out.pdf")
+        val inFile = dir.resolve("infile").toAbsolutePath.normalize
+        val out = dir.resolve("out.pdf").toAbsolutePath.normalize
         val sysCfg =
-          cmdCfg.mapArgs(_.replace("{{outfile}}", out.toAbsolutePath.normalize.toString))
-
-        SystemCommand
-          .execSuccess[F](sysCfg, blocker, logger, Some(dir), in)
-          .flatMap(result =>
-            logResult(name, result, logger) ++ readResult[F](
-              out,
-              result,
-              blocker,
-              chunkSize,
-              logger
-            )
-          )
-      }
-
-  def toPDFviaFile[F[_]: Sync: ContextShift](
-      name: String,
-      cmdCfg: SystemCommand.Config,
-      wd: Path,
-      chunkSize: Int,
-      blocker: Blocker,
-      logger: Logger[F]
-  ): Pipe[F, Byte, Byte] =
-    in =>
-      Stream.resource(File.withTempDir[F](wd, s"docspell-$name")).flatMap { dir =>
-        val inFile = dir.resolve("infile")
-        val out    = dir.resolve("out.pdf")
-        val sysCfg =
-          cmdCfg.mapArgs(
-            _.replace("{{outfile}}", out.toAbsolutePath.normalize.toString)
-              .replace("{{infile}}", inFile.toAbsolutePath.normalize.toString)
+          cmdCfg.replace(
+            Map("{{outfile}}" -> out.toString) ++
+              (if (!useStdin) Map("{{infile}}" -> inFile.toString)
+              else Map.empty)
           )
 
-        (Stream.eval(logger.debug(s"Storing input to file ${inFile} for running $name")).drain ++
-          Stream.eval(storeFile(in, inFile, blocker))).flatMap { _ =>
+        val createInput: Pipe[F, Byte, Unit] =
+          if (useStdin) _ => Stream.emit(())
+          else storeDataToFile(name, blocker, logger, inFile)
+
+        in.through(createInput).flatMap { _ =>
           SystemCommand
-            .execSuccess[F](sysCfg, blocker, logger, Some(dir))
+            .execSuccess[F](sysCfg, blocker, logger, Some(dir), if (useStdin) in else Stream.empty)
             .flatMap(result =>
               logResult(name, result, logger) ++ readResult[F](
                 out,
@@ -69,7 +47,7 @@ object ExternConv {
         }
       }
 
-  private def readResult[F[_]: Sync: ContextShift](
+  def readResult[F[_]: Sync: ContextShift](
       out: Path,
       result: SystemCommand.Result,
       blocker: Blocker,
@@ -90,6 +68,11 @@ object ExternConv {
           new Exception(s"Command result=${result.rc}. No output file found.")
         )
     }
+
+  private def storeDataToFile[F[_]: Sync: ContextShift](name: String, blocker: Blocker, logger: Logger[F], inFile: Path): Pipe[F, Byte, Unit] =
+    in =>
+      Stream.eval(logger.debug(s"Storing input to file ${inFile} for running $name")).drain ++
+        Stream.eval(storeFile(in, inFile, blocker))
 
   private def logResult[F[_]: Sync](
       name: String,

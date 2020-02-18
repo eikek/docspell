@@ -12,7 +12,7 @@ object WkHtmlPdf {
       blocker: Blocker,
       logger: Logger[F],
   ): Pipe[F, Byte, Byte] =
-    ExternConv.toPDF[F]("wkhtmltopdf", cfg.cmd, cfg.workingDir, chunkSize, blocker, logger)
+    ExternConv.toPDF[F]("wkhtmltopdf", cfg.cmd, cfg.workingDir, chunkSize, true, blocker, logger)
 
 
 }

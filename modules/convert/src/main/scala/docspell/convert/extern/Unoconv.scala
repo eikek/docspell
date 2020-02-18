@@ -12,7 +12,7 @@ object Unoconv {
       blocker: Blocker,
       logger: Logger[F],
   ): Pipe[F, Byte, Byte] =
-    ExternConv.toPDFviaFile[F]("unoconv", cfg.cmd, cfg.workingDir, chunkSize, blocker, logger)
+    ExternConv.toPDF[F]("unoconv", cfg.cmd, cfg.workingDir, chunkSize, false, blocker, logger)
 
 
 }
