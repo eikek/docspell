@@ -6,17 +6,17 @@ import docspell.common._
 
 trait Conversion[F[_]] {
 
-  def toPDF(inType: MimeType): Pipe[F, Byte, Byte]
+  def toPDF[A](in: Stream[F, Byte], dataType: DataType, handler: Pipe[F, Byte, A]): F[ConversionResult[F]]
 
 }
 
 object Conversion {
 
-  def create[F[_]: Sync](cfg: ConvertConfig): Resource[F, Conversion[F]] =
+  def create[F[_]: Sync: ContextShift](cfg: ConvertConfig, blocker: Blocker, logger: Logger[F]): Resource[F, Conversion[F]] =
     Resource.pure(new Conversion[F] {
 
-      def toPDF(inType: MimeType): Pipe[F, Byte, Byte] = {
-        println(cfg)
+      def toPDF[A](in: Stream[F, Byte], dataType: DataType, handler: Pipe[F, Byte, A]): F[ConversionResult[F]] = {
+        println(s"$cfg $blocker $logger")
         ???
       }
 

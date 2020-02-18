@@ -1,16 +1,19 @@
 package docspell.extract.ocr
 
 import cats.effect.IO
+import docspell.common.Logger
 import docspell.files.TestFiles
 import minitest.SimpleTestSuite
 
 object TextExtractionSuite extends SimpleTestSuite {
   import TestFiles._
 
+  val logger = Logger.log4s[IO](org.log4s.getLogger)
+
   test("extract english pdf") {
     ignore()
     val text = TextExtract
-      .extract[IO](letterSourceEN, blocker, "eng", OcrConfig.default)
+      .extract[IO](letterSourceEN, blocker, logger, "eng", OcrConfig.default)
       .compile
       .lastOrError
       .unsafeRunSync()
@@ -21,7 +24,7 @@ object TextExtractionSuite extends SimpleTestSuite {
     ignore()
     val expect = TestFiles.letterDEText
     val extract = TextExtract
-      .extract[IO](letterSourceDE, blocker, "deu", OcrConfig.default)
+      .extract[IO](letterSourceDE, blocker, logger, "deu", OcrConfig.default)
       .compile
       .lastOrError
       .unsafeRunSync()

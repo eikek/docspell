@@ -8,13 +8,10 @@ import java.util.concurrent.TimeUnit
 import cats.implicits._
 import cats.effect.{Blocker, ContextShift, Sync}
 import fs2.{Stream, io, text}
-import org.log4s.getLogger
 
 import scala.jdk.CollectionConverters._
-import docspell.common.syntax.all._
 
 object SystemCommand {
-  private[this] val logger = getLogger
 
   final case class Config(program: String, args: Seq[String], timeout: Duration) {
 
@@ -33,17 +30,18 @@ object SystemCommand {
   def exec[F[_]: Sync: ContextShift](
       cmd: Config,
       blocker: Blocker,
+      logger: Logger[F],
       wd: Option[Path] = None,
       stdin: Stream[F, Byte] = Stream.empty
   ): Stream[F, Result] =
-    startProcess(cmd, wd, stdin) { proc =>
+    startProcess(cmd, wd, logger, stdin) { proc =>
       Stream.eval {
         for {
           _    <- writeToProcess(stdin, proc, blocker)
           term <- Sync[F].delay(proc.waitFor(cmd.timeout.seconds, TimeUnit.SECONDS))
-          _ <- if (term) logger.fdebug(s"Command `${cmd.cmdString}` finished: ${proc.exitValue}")
+          _ <- if (term) logger.debug(s"Command `${cmd.cmdString}` finished: ${proc.exitValue}")
               else
-                logger.fwarn(
+                logger.warn(
                   s"Command `${cmd.cmdString}` did not finish in ${cmd.timeout.formatExact}!"
                 )
           _   <- if (!term) timeoutError(proc, cmd) else Sync[F].pure(())
@@ -56,10 +54,11 @@ object SystemCommand {
   def execSuccess[F[_]: Sync: ContextShift](
       cmd: Config,
       blocker: Blocker,
+      logger: Logger[F],
       wd: Option[Path] = None,
       stdin: Stream[F, Byte] = Stream.empty
   ): Stream[F, Result] =
-    exec(cmd, blocker, wd, stdin).flatMap { r =>
+    exec(cmd, blocker, logger, wd, stdin).flatMap { r =>
       if (r.rc != 0)
         Stream.raiseError[F](
           new Exception(
@@ -69,10 +68,10 @@ object SystemCommand {
       else Stream.emit(r)
     }
 
-  private def startProcess[F[_]: Sync, A](cmd: Config, wd: Option[Path], stdin: Stream[F, Byte])(
+  private def startProcess[F[_]: Sync, A](cmd: Config, wd: Option[Path], logger: Logger[F], stdin: Stream[F, Byte])(
       f: Process => Stream[F, A]
   ): Stream[F, A] = {
-    val log = logger.fdebug(s"Running external command: ${cmd.cmdString}")
+    val log = logger.debug(s"Running external command: ${cmd.cmdString}")
     val hasStdin = stdin.take(1).compile.last.map(_.isDefined)
     val proc = log *> hasStdin.flatMap(flag => Sync[F].delay {
       val pb = new ProcessBuilder(cmd.toCmd.asJava)
@@ -85,7 +84,7 @@ object SystemCommand {
     })
     Stream
       .bracket(proc)(p =>
-        logger.fdebug(s"Closing process: `${cmd.cmdString}`").map { _ =>
+        logger.debug(s"Closing process: `${cmd.cmdString}`").map { _ =>
           p.destroy()
         }
       )

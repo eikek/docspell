@@ -48,14 +48,15 @@ object TextExtraction {
       ocrConfig: OcrConfig,
       lang: Language,
       store: Store[F],
-      blocker: Blocker
+      blocker: Blocker,
+      logger: Logger[F]
   )(fileId: Ident): F[Option[String]] = {
     val data = store.bitpeace
       .get(fileId.id)
       .unNoneTerminate
       .through(store.bitpeace.fetchData2(RangeDef.all))
 
-    TextExtract.extract(data, blocker, lang.iso3, ocrConfig).compile.last
+    TextExtract.extract(data, blocker, logger, lang.iso3, ocrConfig).compile.last
   }
 
   private def extractTextFallback[F[_]: Sync: ContextShift](
@@ -68,7 +69,7 @@ object TextExtraction {
         ctx.logger.error(s"Cannot extract text").map(_ => None)
 
       case id :: rest =>
-        extractText[F](ocrConfig, lang, ctx.store, ctx.blocker)(id).
+        extractText[F](ocrConfig, lang, ctx.store, ctx.blocker, ctx.logger)(id).
           recoverWith({
             case ex =>
               ctx.logger.warn(s"Cannot extract text: ${ex.getMessage}. Try with converted file").

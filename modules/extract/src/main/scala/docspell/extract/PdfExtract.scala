@@ -19,7 +19,7 @@ object PdfExtract {
   ): F[Either[Throwable, String]] = {
 
     val runOcr =
-      TextExtract.extractOCR(in, blocker, lang.iso3, ocrCfg).compile.lastOrError
+      TextExtract.extractOCR(in, blocker, logger, lang.iso3, ocrCfg).compile.lastOrError
 
     def chooseResult(ocrStr: String, strippedStr: String) =
       if (ocrStr.length > strippedStr.length)

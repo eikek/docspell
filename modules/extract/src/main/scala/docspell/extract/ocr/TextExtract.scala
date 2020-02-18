@@ -10,14 +10,16 @@ object TextExtract {
   def extract[F[_]: Sync: ContextShift](
       in: Stream[F, Byte],
       blocker: Blocker,
+      logger: Logger[F],
       lang: String,
       config: OcrConfig
   ): Stream[F, String] =
-    extractOCR(in, blocker, lang, config)
+    extractOCR(in, blocker, logger, lang, config)
 
   def extractOCR[F[_]: Sync: ContextShift](
       in: Stream[F, Byte],
       blocker: Blocker,
+      logger: Logger[F],
       lang: String,
       config: OcrConfig
   ): Stream[F, String] =
@@ -28,10 +30,10 @@ object TextExtract {
           raiseError(s"File `$mt` not allowed")
 
         case MimeType.pdf =>
-          Stream.eval(Ocr.extractPdf(in, blocker, lang, config)).unNoneTerminate
+          Stream.eval(Ocr.extractPdf(in, blocker, logger, lang, config)).unNoneTerminate
 
         case mt if mt.primary == "image" =>
-          Ocr.extractImage(in, blocker, lang, config)
+          Ocr.extractImage(in, blocker, logger, lang, config)
 
         case mt =>
           raiseError(s"File `$mt` not supported")

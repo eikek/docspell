@@ -46,7 +46,7 @@ object Extraction {
 
           case OcrType(_) =>
             TextExtract
-              .extractOCR(data, blocker, lang.iso3, cfg.ocr)
+              .extractOCR(data, blocker, logger, lang.iso3, cfg.ocr)
               .compile
               .lastOrError
               .attempt

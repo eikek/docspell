@@ -23,7 +23,7 @@ object ExternConv {
           cmdCfg.mapArgs(_.replace("{{outfile}}", out.toAbsolutePath.normalize.toString))
 
         SystemCommand
-          .execSuccess[F](sysCfg, blocker, Some(dir), in)
+          .execSuccess[F](sysCfg, blocker, logger, Some(dir), in)
           .flatMap(result =>
             logResult(name, result, logger) ++ readResult[F](
               out,
@@ -56,7 +56,7 @@ object ExternConv {
         (Stream.eval(logger.debug(s"Storing input to file ${inFile} for running $name")).drain ++
           Stream.eval(storeFile(in, inFile, blocker))).flatMap { _ =>
           SystemCommand
-            .execSuccess[F](sysCfg, blocker, Some(dir))
+            .execSuccess[F](sysCfg, blocker, logger, Some(dir))
             .flatMap(result =>
               logResult(name, result, logger) ++ readResult[F](
                 out,
