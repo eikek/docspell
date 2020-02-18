@@ -32,6 +32,7 @@ object Dependencies {
   val YamuscaVersion = "0.6.1"
   val SwaggerUIVersion = "3.25.0"
   val SemanticUIVersion = "2.4.1"
+  val TwelveMonkeysVersion = "3.5"
   val JQueryVersion = "3.4.1"
   val ViewerJSVersion = "0.5.8"
 
@@ -62,10 +63,10 @@ object Dependencies {
     ExclusionRule("hamcrest-core")
   ))
 
-  // val twelvemonkeys = Seq(
-  //   "com.twelvemonkeys.imageio" % "imageio-jpeg" % "3.5",
-  //   "com.twelvemonkeys.imageio" % "imageio-tiff" % "3.5"
-  // )
+  val twelvemonkeys = Seq(
+    "com.twelvemonkeys.imageio" % "imageio-jpeg" % TwelveMonkeysVersion,
+    "com.twelvemonkeys.imageio" % "imageio-tiff" % TwelveMonkeysVersion
+  )
 
   val pdfbox = Seq(
     "org.apache.pdfbox" % "pdfbox" % PdfboxVersion excludeAll (

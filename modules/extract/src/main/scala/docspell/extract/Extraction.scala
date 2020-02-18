@@ -9,6 +9,7 @@ import docspell.extract.poi.{PoiExtract, PoiType}
 import docspell.extract.rtf.RtfExtract
 import fs2.Stream
 import docspell.files.TikaMimetype
+import docspell.files.ImageSize
 
 trait Extraction[F[_]] {
 
@@ -44,13 +45,28 @@ object Extraction {
           case OdfType(_) =>
             OdfExtract.get(data).map(ExtractResult.fromEither)
 
-          case OcrType(_) =>
-            TextExtract
+          case OcrType(mt) =>
+            val doExtract = TextExtract
               .extractOCR(data, blocker, logger, lang.iso3, cfg.ocr)
               .compile
               .lastOrError
               .attempt
               .map(ExtractResult.fromEither)
+
+            ImageSize.get(data).flatMap {
+              case Some(dim) =>
+                if (dim.product > cfg.maxImageSize) {
+                  logger.info(s"Image size (${dim.product}) is too large (max ${cfg.maxImageSize}).") *>
+                  ExtractResult.failure(new Exception(
+                    s"Image size (${dim.width}x${dim.height}) is too large (max ${cfg.maxImageSize}).")
+                  ).pure[F]
+                } else {
+                  doExtract
+                }
+              case None =>
+                logger.info(s"Cannot read image data from ${mt.asString}. Extracting anyways.") *>
+                doExtract
+            }
 
           case OdfType.container =>
             logger.info(s"File detected as ${OdfType.container}. Try to read as OpenDocument file.") *>

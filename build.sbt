@@ -152,7 +152,7 @@ val files = project.in(file("modules/files")).
   settings(
     name := "docspell-files",
     libraryDependencies ++=
-      Dependencies.tika ,
+      Dependencies.tika,
     Test / sourceGenerators += Def.task {
       val base = (Test/resourceDirectory).value
       val files = (base ** (_.isFile)) pair sbt.io.Path.relativeTo(base)
@@ -204,6 +204,7 @@ val extract = project.in(file("modules/extract")).
     name := "docspell-extract",
     libraryDependencies ++=
       Dependencies.fs2 ++
+      Dependencies.twelvemonkeys ++      
       Dependencies.pdfbox ++
       Dependencies.poi ++
       Dependencies.commonsIO ++
@@ -217,7 +218,8 @@ val convert = project.in(file("modules/convert")).
   settings(
     name := "docspell-convert",
     libraryDependencies ++=
-      Dependencies.flexmark
+      Dependencies.flexmark ++
+      Dependencies.twelvemonkeys
   ).dependsOn(common, files % "compile->compile;test->test")
 
 val analysis = project.in(file("modules/analysis")).

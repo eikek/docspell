@@ -1,5 +1,8 @@
 package docspell.files
 
+import java.io.BufferedInputStream
+import java.nio.file.{Files, Path}
+
 import cats.implicits._
 import cats.effect.Sync
 import docspell.common._
@@ -7,6 +10,8 @@ import fs2.Stream
 import org.apache.tika.config.TikaConfig
 import org.apache.tika.metadata.{HttpHeaders, Metadata, TikaMetadataKeys}
 import org.apache.tika.mime.MediaType
+
+import scala.util.Using
 
 object TikaMimetype {
   private val tika = new TikaConfig().getDetector
@@ -43,4 +48,12 @@ object TikaMimetype {
       case DataType.Exact(mt)  => mt.pure[F]
       case DataType.Hint(hint) => TikaMimetype.detect(data, hint)
     }
+
+  def detect[F[_]: Sync](file: Path): F[MimeType] =
+    Sync[F].delay {
+      val hint = MimeTypeHint.filename(file.getFileName.toString)
+      Using(new BufferedInputStream(Files.newInputStream(file), 64))({ in =>
+        convert(tika.detect(in, makeMetadata(hint)))
+      }).toEither
+    }.rethrow
 }

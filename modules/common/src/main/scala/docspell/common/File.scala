@@ -6,8 +6,9 @@ import java.nio.file.{FileVisitResult, Files, Path, SimpleFileVisitor}
 import java.util.concurrent.atomic.AtomicInteger
 
 import scala.jdk.CollectionConverters._
+import fs2.Stream
 import cats.implicits._
-import cats.effect.{Blocker, ContextShift, Resource, Sync}
+import cats.effect._
 
 object File {
 
@@ -42,6 +43,9 @@ object File {
     count.get
   }
 
+  def exists[F[_]: Sync](file: Path): F[Boolean] =
+    Sync[F].delay(Files.exists(file))
+
   def existsNonEmpty[F[_]: Sync](file: Path, minSize: Long = 0): F[Boolean] =
     Sync[F].delay(Files.exists(file) && Files.size(file) > minSize)
 
@@ -61,6 +65,11 @@ object File {
     javaList.asScala.toList.sortBy(_.getFileName.toString)
   }
 
-  def readAll[F[_]: Sync: ContextShift](file: Path, blocker: Blocker, chunkSize: Int) =
+  def readAll[F[_]: Sync: ContextShift](file: Path, blocker: Blocker, chunkSize: Int): Stream[F, Byte] =
     fs2.io.file.readAll(file, blocker, chunkSize)
+
+  def readText[F[_]: Sync: ContextShift](file: Path, blocker: Blocker): F[String] =
+    readAll[F](file, blocker, 8192).
+      through(fs2.text.utf8Decode).
+      compile.foldMonoid
 }
