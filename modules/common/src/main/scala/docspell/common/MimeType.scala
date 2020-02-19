@@ -27,7 +27,7 @@ object MimeType {
     MimeType("image", partFromString(sub).throwLeft)
 
   private[this] val validChars: Set[Char] =
-    (('A' to 'Z') ++ ('a' to 'z') ++ ('0' to '9') ++ "*-.").toSet
+    (('A' to 'Z') ++ ('a' to 'z') ++ ('0' to '9') ++ "*-.+").toSet
 
   def parse(str: String): Either[String, MimeType] =
     str.indexOf('/') match {
