@@ -12,6 +12,7 @@ object Tesseract {
 
   def toPDF[F[_]: Sync: ContextShift, A](
       cfg: TesseractConfig,
+      lang: Language,
       chunkSize: Int,
       blocker: Blocker,
       logger: Logger[F]
@@ -20,7 +21,7 @@ object Tesseract {
     val reader: (Path, SystemCommand.Result) => F[ConversionResult[F]] =
       ExternConv.readResultTesseract[F](outBase, blocker, chunkSize, logger)
 
-    ExternConv.toPDF[F, A]("tesseract", cfg.cmd, cfg.workingDir, false, blocker, logger, reader)(in, handler)
+    ExternConv.toPDF[F, A]("tesseract", cfg.cmd.replace(Map("{{lang}}" -> lang.iso3)), cfg.workingDir, false, blocker, logger, reader)(in, handler)
   }
 
 }

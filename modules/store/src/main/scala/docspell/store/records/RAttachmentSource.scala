@@ -41,4 +41,6 @@ object RAttachmentSource {
   def findById(attachId: Ident): ConnectionIO[Option[RAttachmentSource]] =
     selectSimple(all, table, id.is(attachId)).query[RAttachmentSource].option
 
+  def delete(attachId: Ident): ConnectionIO[Int] =
+    deleteFrom(table, id.is(attachId)).update.run
 }

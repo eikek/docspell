@@ -13,7 +13,7 @@ import docspell.files.{ImageSize, TikaMimetype}
 
 trait Conversion[F[_]] {
 
-  def toPDF[A](dataType: DataType, handler: Handler[F, A])(in: Stream[F, Byte]): F[A]
+  def toPDF[A](dataType: DataType, lang: Language, handler: Handler[F, A])(in: Stream[F, Byte]): F[A]
 
 }
 
@@ -26,7 +26,7 @@ object Conversion {
   ): Resource[F, Conversion[F]] =
     Resource.pure(new Conversion[F] {
 
-      def toPDF[A](dataType: DataType, handler: Handler[F, A])(in: Stream[F, Byte]): F[A] =
+      def toPDF[A](dataType: DataType, lang: Language, handler: Handler[F, A])(in: Stream[F, Byte]): F[A] =
         TikaMimetype.resolve(dataType, in).flatMap {
           case MimeType.pdf =>
             handler.run(ConversionResult.successPdf(in))
@@ -55,14 +55,14 @@ object Conversion {
                       )
                     )
                 } else {
-                  Tesseract.toPDF(cfg.tesseract, cfg.chunkSize, blocker, logger)(in, handler)
+                  Tesseract.toPDF(cfg.tesseract, lang, cfg.chunkSize, blocker, logger)(in, handler)
                 }
 
               case None =>
                 logger.info(
                   s"Cannot read image when determining size for ${mt.asString}. Converting anyways."
                 ) *>
-                  Tesseract.toPDF(cfg.tesseract, cfg.chunkSize, blocker, logger)(in, handler)
+                  Tesseract.toPDF(cfg.tesseract, lang, cfg.chunkSize, blocker, logger)(in, handler)
             }
 
           case Office(_) =>
@@ -109,4 +109,13 @@ object Conversion {
     def unapply(m: MimeType): Option[MimeType] =
       Some(m).filter(all.contains)
   }
+
+  def unapply(mt: MimeType): Option[MimeType] =
+    mt match {
+      case Office(_) => Some(mt)
+      case Texts(_) => Some(mt)
+      case Images(_) => Some(mt)
+      case MimeType.html => Some(mt)
+      case _ => None
+    }
 }

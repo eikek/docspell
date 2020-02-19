@@ -8,11 +8,16 @@ import docspell.store.impl._
 import docspell.store.impl.Implicits._
 
 case class RAttachmentMeta(
-    id: Ident,
+    id: Ident, //same as RAttachment.id
     content: Option[String],
     nerlabels: List[NerLabel],
     proposals: MetaProposalList
-) {}
+) {
+
+  def setContentIfEmpty(txt: Option[String]): RAttachmentMeta =
+    if (content.forall(_.trim.isEmpty)) copy(content = txt)
+    else this
+}
 
 object RAttachmentMeta {
   def empty(attachId: Ident) = RAttachmentMeta(attachId, None, Nil, MetaProposalList.empty)

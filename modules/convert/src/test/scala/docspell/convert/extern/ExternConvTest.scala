@@ -89,7 +89,7 @@ object ExternConvTest extends SimpleTestSuite with FileChecks {
             val tessCfg = TesseractConfig(cfg, target)
             val (pdf, txt) =
               Tesseract
-                .toPDF[IO, (Path, Path)](tessCfg, 8192, blocker, logger)(
+                .toPDF[IO, (Path, Path)](tessCfg, Language.German, 8192, blocker, logger)(
                   ExampleFiles.camera_letter_en_jpg.readURL[IO](8192, blocker),
                   storePdfTxtHandler(dir.resolve("test.pdf"), dir.resolve("test.txt"))
                 )

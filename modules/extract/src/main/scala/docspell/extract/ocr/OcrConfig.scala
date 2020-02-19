@@ -5,15 +5,12 @@ import java.nio.file.{Path, Paths}
 import docspell.common._
 
 case class OcrConfig(
-    allowedContentTypes: Set[MimeType],
-    ghostscript: OcrConfig.Ghostscript,
+                      maxImageSize: Int,
+                      ghostscript: OcrConfig.Ghostscript,
     pageRange: OcrConfig.PageRange,
     unpaper: OcrConfig.Unpaper,
     tesseract: OcrConfig.Tesseract
 ) {
-
-  def isAllowed(mt: MimeType): Boolean =
-    allowedContentTypes contains mt
 }
 
 object OcrConfig {
@@ -27,12 +24,7 @@ object OcrConfig {
   case class Unpaper(command: SystemCommand.Config)
 
   val default = OcrConfig(
-    allowedContentTypes = Set(
-      MimeType.pdf,
-      MimeType.png,
-      MimeType.jpeg,
-      MimeType.tiff
-    ),
+    maxImageSize = 3000 * 3000,
     pageRange = PageRange(10),
     ghostscript = Ghostscript(
       SystemCommand.Config(

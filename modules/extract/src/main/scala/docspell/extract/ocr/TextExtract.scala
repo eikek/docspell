@@ -26,9 +26,6 @@ object TextExtract {
     Stream
       .eval(TikaMimetype.detect(in, MimeTypeHint.none))
       .flatMap({
-        case mt if !config.isAllowed(mt) =>
-          raiseError(s"File `$mt` not allowed")
-
         case MimeType.pdf =>
           Stream.eval(Ocr.extractPdf(in, blocker, logger, lang, config)).unNoneTerminate
 

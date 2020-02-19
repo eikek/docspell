@@ -55,10 +55,10 @@ object Extraction {
 
             ImageSize.get(data).flatMap {
               case Some(dim) =>
-                if (dim.product > cfg.maxImageSize) {
-                  logger.info(s"Image size (${dim.product}) is too large (max ${cfg.maxImageSize}).") *>
+                if (dim.product > cfg.ocr.maxImageSize) {
+                  logger.info(s"Image size (${dim.product}) is too large (max ${cfg.ocr.maxImageSize}).") *>
                   ExtractResult.failure(new Exception(
-                    s"Image size (${dim.width}x${dim.height}) is too large (max ${cfg.maxImageSize}).")
+                    s"Image size (${dim.width}x${dim.height}) is too large (max ${cfg.ocr.maxImageSize}).")
                   ).pure[F]
                 } else {
                   doExtract
@@ -71,6 +71,12 @@ object Extraction {
           case OdfType.container =>
             logger.info(s"File detected as ${OdfType.container}. Try to read as OpenDocument file.") *>
               OdfExtract.get(data).map(ExtractResult.fromEither)
+
+          case mt@MimeType("text", sub) if !sub.contains("html") =>
+            logger.info(s"File detected as ${mt.asString}. Returning itself as text.") *>
+            data.through(fs2.text.utf8Decode).compile.last.map { txt =>
+              ExtractResult.success(txt.getOrElse("").trim)
+            }
 
           case mt =>
             ExtractResult.unsupportedFormat(mt).pure[F]

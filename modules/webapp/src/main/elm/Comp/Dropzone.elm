@@ -35,7 +35,7 @@ type alias Settings =
 defaultSettings : Settings
 defaultSettings =
     { classList = \_ -> [ ( "ui placeholder segment", True ) ]
-    , contentTypes = [ "application/pdf" ]
+    , contentTypes = []
     }
 
 
@@ -148,7 +148,11 @@ filterMime settings files =
         pred f =
             List.member (File.mime f) settings.contentTypes
     in
-    List.filter pred files
+    if settings.contentTypes == [] then
+        files
+
+    else
+        List.filter pred files
 
 
 dropDecoder : D.Decoder Msg

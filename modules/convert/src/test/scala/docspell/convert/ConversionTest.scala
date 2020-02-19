@@ -150,7 +150,7 @@ object ConversionTest extends SimpleTestSuite with FileChecks {
           val load     = uri.readURL[IO](8192, blocker)
           val dataType = DataType.filename(uri.path.segments.last)
           logger.info(s"Processing file ${uri.path.asString}") *>
-            conv.toPDF(dataType, handler(index))(load)
+            conv.toPDF(dataType, Language.German, handler(index))(load)
       })
 
   def commandsExist: Boolean =

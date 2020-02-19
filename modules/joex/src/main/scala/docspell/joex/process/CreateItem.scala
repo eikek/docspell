@@ -1,5 +1,6 @@
 package docspell.joex.process
 
+import bitpeace.FileMeta
 import cats.implicits._
 import cats.effect.Sync
 import cats.data.OptionT
@@ -22,13 +23,15 @@ object CreateItem {
 
   def createNew[F[_]: Sync]: Task[F, ProcessItemArgs, ItemData] =
     Task { ctx =>
-      val validFiles = ctx.args.meta.validFileTypes.map(_.asString).toSet
+      def isValidFile(fm: FileMeta) =
+        ctx.args.meta.validFileTypes.isEmpty ||
+        ctx.args.meta.validFileTypes.map(_.asString).toSet.contains(fm.mimetype.baseType)
 
       def fileMetas(itemId: Ident, now: Timestamp) =
         Stream
           .emits(ctx.args.files)
           .flatMap(f => ctx.store.bitpeace.get(f.fileMetaId.id).map(fm => (f, fm)))
-          .collect({ case (f, Some(fm)) if validFiles.contains(fm.mimetype.baseType) => f })
+          .collect({ case (f, Some(fm)) if isValidFile(fm) => f })
           .zipWithIndex
           .evalMap({
             case (f, index) =>
