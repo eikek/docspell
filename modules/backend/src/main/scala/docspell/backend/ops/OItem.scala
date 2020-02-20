@@ -8,11 +8,10 @@ import doobie._
 import doobie.implicits._
 import docspell.store.{AddResult, Store}
 import docspell.store.queries.{QAttachment, QItem}
-import OItem.{AttachmentData, ItemData, ListItem, Query}
+import OItem.{AttachmentData, AttachmentSourceData, ItemData, ListItem, Query}
 import bitpeace.{FileMeta, RangeDef}
 import docspell.common.{Direction, Ident, ItemState, MetaProposalList, Timestamp}
-import docspell.store.records.{RAttachment, RAttachmentMeta, RItem, RTagItem}
-import docspell.store.records.RSource
+import docspell.store.records.{RAttachment, RAttachmentMeta, RAttachmentSource, RItem, RSource, RTagItem}
 
 trait OItem[F[_]] {
 
@@ -21,6 +20,8 @@ trait OItem[F[_]] {
   def findItems(q: Query, maxResults: Int): F[Vector[ListItem]]
 
   def findAttachment(id: Ident, collective: Ident): F[Option[AttachmentData[F]]]
+
+  def findAttachmentSource(id: Ident, collective: Ident): F[Option[AttachmentSourceData[F]]]
 
   def setTags(item: Ident, tagIds: List[Ident], collective: Ident): F[AddResult]
 
@@ -67,7 +68,20 @@ object OItem {
   type ItemData = QItem.ItemData
   val ItemData = QItem.ItemData
 
+  trait BinaryData[F[_]] {
+    def data: Stream[F, Byte]
+    def name: Option[String]
+    def meta: FileMeta
+  }
   case class AttachmentData[F[_]](ra: RAttachment, meta: FileMeta, data: Stream[F, Byte])
+    extends BinaryData[F] {
+    val name = ra.name
+  }
+
+  case class AttachmentSourceData[F[_]](rs: RAttachmentSource, meta: FileMeta, data: Stream[F, Byte])
+  extends BinaryData[F] {
+    val name = rs.name
+  }
 
   def apply[F[_]: Effect](store: Store[F]): Resource[F, OItem[F]] =
     Resource.pure[F, OItem[F]](new OItem[F] {
@@ -100,6 +114,9 @@ object OItem {
             case None =>
               (None: Option[AttachmentData[F]]).pure[F]
           })
+
+      def findAttachmentSource(id: Ident, collective: Ident): F[Option[AttachmentSourceData[F]]] =
+        ???
 
       def setTags(item: Ident, tagIds: List[Ident], collective: Ident): F[AddResult] = {
         val db = for {
