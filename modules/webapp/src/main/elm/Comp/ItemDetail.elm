@@ -1176,6 +1176,14 @@ renderAttachmentView model pos attach =
                 ]
             , div [ class "right menu" ]
                 [ a
+                    [ class "item"
+                    , title "Goto Original file"
+                    , href (fileUrl ++ "/original")
+                    , target "_new"
+                    ]
+                    [ i [ class "external square alternate icon" ] []
+                    ]
+                , a
                     [ classList
                         [ ( "toggle item", True )
                         , ( "active", isAttachMetaOpen model attach.id )
@@ -1188,7 +1196,7 @@ renderAttachmentView model pos attach =
                     ]
                 , a
                     [ class "item"
-                    , title "Download to disk"
+                    , title "Download PDF to disk"
                     , download attachName
                     , href fileUrl
                     ]
