@@ -43,4 +43,20 @@ object RAttachmentSource {
 
   def delete(attachId: Ident): ConnectionIO[Int] =
     deleteFrom(table, id.is(attachId)).update.run
+
+  def findByIdAndCollective(attachId: Ident, collective: Ident): ConnectionIO[Option[RAttachmentSource]] = {
+    val bId = RAttachment.Columns.id.prefix("b")
+    val aId = Columns.id.prefix("a")
+    val bItem = RAttachment.Columns.itemId.prefix("b")
+    val iId = RItem.Columns.id.prefix("i")
+    val iColl = RItem.Columns.cid.prefix("i")
+
+    val from = table ++ fr"a INNER JOIN" ++
+      RAttachment.table ++ fr"b ON" ++ aId.is(bId) ++
+      fr"INNER JOIN" ++ RItem.table ++ fr"i ON" ++ bItem.is(iId)
+
+    val where = and(aId.is(attachId), bId.is(attachId), iColl.is(collective))
+
+    selectSimple(all.map(_.prefix("a")), from, where).query[RAttachmentSource].option
+  }
 }
