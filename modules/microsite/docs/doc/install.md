@@ -68,18 +68,27 @@ component.
   extraction](https://github.com/tesseract-ocr/tesseract/wiki/ImproveQuality)
   (at the expense of a longer runtime).
 - [Tesseract](https://github.com/tesseract-ocr/tesseract) is the tool
-  doing the OCR (converts images into text). It is a widely used open
-  source OCR engine. Tesseract 3 and 4 should work with docspell; you
-  can adopt the command line in the configuration file, if necessary.
+  doing the OCR (converts images into text). It can also convert
+  images into pdf files. It is a widely used open source OCR engine.
+  Tesseract 3 and 4 should work with docspell; you can adopt the
+  command line in the configuration file, if necessary.
+- [Unoconv](https://github.com/unoconv/unoconv) is used to convert
+  office documents into PDF files. It uses libreoffice/openoffice.
+- [wkhtmltopdf](https://wkhtmltopdf.org/) is used to convert HTML into
+  PDF files.
 
+The performance of `unoconv` can be improved by starting `unoconv -l`
+in a separate process. This runs a libreoffice/openoffice listener
+therefore avoids starting one each time `unoconv` is called.
 
 ### Example Debian
 
 On Debian this should install all joex requirements:
 
 ``` bash
-sudo apt-get install ghostscript tesseract-ocr tesseract-ocr-deu tesseract-ocr-eng unpaper
+sudo apt-get install ghostscript tesseract-ocr tesseract-ocr-deu tesseract-ocr-eng unpaper unoconv wkhtmltopdf
 ```
+
 
 ## Database
 
@@ -203,12 +212,15 @@ work is done by the joex components.
 ### Joex
 
 Running the joex component on the Raspberry Pi is possible, but will
-result in long processing times. Tested on a RPi model 3 (4 cores, 1G
-RAM) processing a PDF (scanned with 300dpi) with two pages took
-9:52. You can speed it up considerably by uninstalling the `unpaper`
-command, because this step takes quite long. This, of course, reduces
-the quality of OCR. But without `unpaper` the same sample pdf was then
-processed in 1:24, a speedup of 8 minutes.
+result in long processing times for OCR. Files that don't require OCR
+are no problem.
+
+Tested on a RPi model 3 (4 cores, 1G RAM) processing a PDF (scanned
+with 300dpi) with two pages took 9:52. You can speed it up
+considerably by uninstalling the `unpaper` command, because this step
+takes quite long. This, of course, reduces the quality of OCR. But
+without `unpaper` the same sample pdf was then processed in 1:24, a
+speedup of 8 minutes.
 
 You should limit the joex pool size to 1 and, depending on your model
 and the amount of RAM, set a heap size of at least 500M

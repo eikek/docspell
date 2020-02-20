@@ -18,11 +18,20 @@ You need to download the two files:
 ## Prerequisite
 
 Install Java (use your package manager or look
-[here](https://adoptopenjdk.net/)),
-[tesseract](https://github.com/tesseract-ocr/tesseract),
-[ghostscript](http://pages.cs.wisc.edu/~ghost/) and possibly
-[unpaper](https://github.com/Flameeyes/unpaper). The last is not
-really required, but improves OCR.
+[here](https://adoptopenjdk.net/)).
+
+OCR functionality requires the following tools:
+
+- [tesseract](https://github.com/tesseract-ocr/tesseract),
+- [ghostscript](http://pages.cs.wisc.edu/~ghost/) and possibly
+- [unpaper](https://github.com/Flameeyes/unpaper).
+
+The last is not really required, but improves OCR.
+
+PDF conversion requires the following tools:
+
+- [unoconv](https://github.com/unoconv/unoconv)
+- [wkhtmltopdf](https://wkhtmltopdf.org/)
 
 
 ## Running
