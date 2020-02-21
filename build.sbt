@@ -364,11 +364,11 @@ val microsite = project.in(file("modules/microsite")).
     skip in publish := true,
     micrositeFooterText := Some(
       """
-        |<p>&copy; 2019 <a href="https://github.com/eikek/docspell">Docspell, v{{site.version}}</a></p>
+        |<p>&copy; 2020 <a href="https://github.com/eikek/docspell">Docspell, v{{site.version}}</a></p>
         |""".stripMargin
     ),
     micrositeName := "Docspell",
-    micrositeDescription := "A (PDF) Document Organizer",
+    micrositeDescription := "Auto-tagging Document Organizer",
     micrositeDocumentationUrl := "/docspell/getit.html",
     micrositeDocumentationLabelDescription := "Quickstart",
     micrositeFavicons := Seq(microsites.MicrositeFavicon("favicon.png", "96x96")),

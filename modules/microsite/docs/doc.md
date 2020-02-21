@@ -38,6 +38,10 @@ be maintained manually. But usually, this data doesn't grow as fast as
 the documents. After a while there is a quite complete address book
 and only once in a while it has to be revisited.
 
+Besides extracting the text from documents to analyze, docspell also
+converts all files into PDF files. This unifies the different formats
+your documents may be in originally and makes them more accessible
+from other systems and the future.
 
 ## Terms
 
