@@ -8,22 +8,22 @@ import doobie.implicits._
 import docspell.common.{Ident, MetaProposalList}
 import docspell.store.Store
 import docspell.store.impl.Implicits._
-import docspell.store.records.{RAttachment, RAttachmentMeta, RItem}
+import docspell.store.records.{RAttachment, RAttachmentMeta, RAttachmentSource, RItem}
 
 object QAttachment {
 
   def deleteById[F[_]: Sync](store: Store[F])(attachId: Ident, coll: Ident): F[Int] =
     for {
-      raOpt <- store.transact(RAttachment.findByIdAndCollective(attachId, coll))
-      n     <- raOpt.traverse(_ => store.transact(RAttachment.delete(attachId)))
-      f <- Stream
-            .emit(raOpt)
-            .unNoneTerminate
-            .map(_.fileId.id)
+      raFile <- store.transact(RAttachment.findByIdAndCollective(attachId, coll)).map(_.map(_.fileId))
+      rsFile <- store.transact(RAttachmentSource.findById(attachId)).map(_.map(_.fileId))
+      n     <- store.transact(RAttachment.delete(attachId))
+      f <- Stream.emits(raFile.toSeq ++ rsFile.toSeq)
+            .map(_.id)
             .flatMap(store.bitpeace.delete)
+            .map(flag => if (flag) 1 else 0)
             .compile
             .last
-    } yield n.getOrElse(0) + f.map(_ => 1).getOrElse(0)
+    } yield n + f.getOrElse(0)
 
   def deleteAttachment[F[_]: Sync](store: Store[F])(ra: RAttachment): F[Int] =
     for {

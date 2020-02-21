@@ -59,4 +59,6 @@ object RAttachmentSource {
 
     selectSimple(all.map(_.prefix("a")), from, where).query[RAttachmentSource].option
   }
+
+
 }
