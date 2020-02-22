@@ -17,11 +17,11 @@ object Tesseract {
       blocker: Blocker,
       logger: Logger[F]
   )(in: Stream[F, Byte], handler: Handler[F, A]): F[A] = {
-    val outBase = cfg.cmd.args.tail.headOption.getOrElse("out")
+    val outBase = cfg.command.args.tail.headOption.getOrElse("out")
     val reader: (Path, SystemCommand.Result) => F[ConversionResult[F]] =
       ExternConv.readResultTesseract[F](outBase, blocker, chunkSize, logger)
 
-    ExternConv.toPDF[F, A]("tesseract", cfg.cmd.replace(Map("{{lang}}" -> lang.iso3)), cfg.workingDir, false, blocker, logger, reader)(in, handler)
+    ExternConv.toPDF[F, A]("tesseract", cfg.command.replace(Map("{{lang}}" -> lang.iso3)), cfg.workingDir, false, blocker, logger, reader)(in, handler)
   }
 
 }

@@ -19,7 +19,7 @@ object WkHtmlPdf {
     val reader: (Path, SystemCommand.Result) => F[ConversionResult[F]] =
       ExternConv.readResult[F](blocker, chunkSize, logger)
 
-    ExternConv.toPDF[F, A]("wkhtmltopdf", cfg.cmd, cfg.workingDir, true, blocker, logger, reader)(in, handler)
+    ExternConv.toPDF[F, A]("wkhtmltopdf", cfg.command, cfg.workingDir, true, blocker, logger, reader)(in, handler)
   }
 
 }

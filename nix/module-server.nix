@@ -34,7 +34,7 @@ let
       };
       files = {
         chunk-size = 524288;
-        valid-mime-types = ["application/pdf"];
+        valid-mime-types = [];
       };
     };
   };

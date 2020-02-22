@@ -154,7 +154,7 @@ object ConversionTest extends SimpleTestSuite with FileChecks {
       })
 
   def commandsExist: Boolean =
-    commandExists(convertConfig.unoconv.cmd.program) &&
-      commandExists(convertConfig.wkhtmlpdf.cmd.program) &&
-      commandExists(convertConfig.tesseract.cmd.program)
+    commandExists(convertConfig.unoconv.command.program) &&
+      commandExists(convertConfig.wkhtmlpdf.command.program) &&
+      commandExists(convertConfig.tesseract.command.program)
 }

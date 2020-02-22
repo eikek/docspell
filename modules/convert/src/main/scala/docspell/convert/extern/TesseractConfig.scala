@@ -4,4 +4,4 @@ import java.nio.file.Path
 
 import docspell.common.SystemCommand
 
-case class TesseractConfig (cmd: SystemCommand.Config, workingDir: Path)
+case class TesseractConfig (command: SystemCommand.Config, workingDir: Path)

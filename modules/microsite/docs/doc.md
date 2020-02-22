@@ -72,7 +72,7 @@ multiple files, which are called **attachments**. And an item has
 - a **direction**: one of "incoming" or "outgoing"
 - a **name**: some item name, defaults to the file name of the
   attachments
-- some **notes**: arbitraty descriptive text. You can use markdown
+- some **notes**: arbitrary descriptive text. You can use markdown
   here, which is appropriately formatted in the web application.
 
 ### Collective

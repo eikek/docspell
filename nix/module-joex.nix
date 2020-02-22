@@ -30,30 +30,74 @@ let
       wakeup-period = "30 minutes";
     };
     extraction = {
-      page-range = {
-        begin = 10;
+      pdf = {
+        min-text-len = 10;
       };
-      ghostscript =  {
-        working-dir = "/tmp/docspell-extraction";
-        command = {
-          program = "${pkgs.ghostscript}/bin/gs";
-          args = [ "-dNOPAUSE" "-dBATCH" "-dSAFER" "-sDEVICE=tiffscaled8" "-sOutputFile={{outfile}}" "{{infile}}" ];
-          timeout = "5 minutes";
+
+      ocr = {
+        max-image-size = 14000000;
+        page-range = {
+          begin = 10;
+        };
+        ghostscript =  {
+          working-dir = "/tmp/docspell-extraction";
+          command = {
+            program = "${pkgs.ghostscript}/bin/gs";
+            args = [ "-dNOPAUSE" "-dBATCH" "-dSAFER" "-sDEVICE=tiffscaled8" "-sOutputFile={{outfile}}" "{{infile}}" ];
+            timeout = "5 minutes";
+          };
+        };
+        unpaper = {
+          command = {
+            program = "${pkgs.unpaper}/bin/unpaper";
+            args = [ "{{infile}}" "{{outfile}}" ];
+            timeout = "5 minutes";
+          };
+        };
+        tesseract = {
+          command= {
+            program = "${pkgs.tesseract4}/bin/tesseract";
+            args = ["{{file}}" "stdout" "-l" "{{lang}}" ];
+            timeout = "5 minutes";
+          };
         };
       };
-      unpaper = {
-        command = {
-          program = "${pkgs.unpaper}/bin/unpaper";
-          args = [ "{{infile}}" "{{outfile}}" ];
-          timeout = "5 minutes";
-        };
+    };
+    convert = {
+      chunk-size = 524288;
+      max-image-size = 14000000;
+
+      markdown = {
+        internal-css = ''
+            body { padding: 2em 5em; }
+          '';
       };
+
+      wkhtmlpdf = {
+        command = {
+          program = "${pkgs.wkhtmltopdf}/bin/wkhtmltopdf";
+          args = ["-s" "A4" "--encoding" "UTF-8" "-" "{{outfile}}"];
+          timeout = "2 minutes";
+        };
+        working-dir = "/tmp/docspell-convert";
+      };
+
       tesseract = {
-        command= {
+        command = {
           program = "${pkgs.tesseract4}/bin/tesseract";
-          args = ["{{file}}" "stdout" "-l" "{{lang}}" ];
+          args = ["{{infile}}" "out" "-l" "{{lang}}" "pdf" "txt"];
           timeout = "5 minutes";
         };
+        working-dir = "/tmp/docspell-convert";
+      };
+
+      unoconv = {
+        command = {
+          program = "${pkgs.unoconv}/bin/unoconv";
+          args = ["-f" "pdf" "-o" "{{outfile}}" "{{infile}}"];
+          timeout = "2 minutes";
+        };
+        working-dir = "/tmp/docspell-convert";
       };
     };
   };
@@ -199,128 +243,164 @@ in {
       extraction = mkOption {
         type = types.submodule({
           options = {
-            page-range = mkOption {
+            pdf = mkOption {
               type = types.submodule({
                 options = {
-                  begin = mkOption {
+                  min-text-len = mkOption {
                     type = types.int;
-                    default = defaults.extraction.page-range.begin;
-                    description = "Specifies the first N pages of a file to process.";
+                    default = defaults.extraction.pdf.min-text-len;
+                    description = ''
+                      For PDF files it is first tried to read the text parts of the
+                      PDF. But PDFs can be complex documents and they may contain text
+                      and images. If the returned text is shorter than the value
+                      below, OCR is run afterwards. Then both extracted texts are
+                      compared and the longer will be used.
+                    '';
                   };
                 };
               });
-              default = defaults.extraction.page-range;
-              description = ''
-                Defines what pages to process. If a PDF with 600 pages is
-                submitted, it is probably not necessary to scan through all of
-                them. This would take a long time and occupy resources for no
-                value. The first few pages should suffice. The default is first
-                10 pages.
+              default = defaults.extraction.pdf;
+              description = "Settings for PDF extraction";
+            };
+            ocr = mkOption {
+              type = types.submodule({
+                options = {
+                  max-image-size = mkOption {
+                    type = types.int;
+                    default = defaults.extraction.ocr.max-image-size;
+                    description = ''
+                      Images greater than this size are skipped. Note that every
+                      image is loaded completely into memory for doing OCR.
+                    '';
+                  };
+                  page-range = mkOption {
+                    type = types.submodule({
+                      options = {
+                        begin = mkOption {
+                          type = types.int;
+                          default = defaults.extraction.page-range.begin;
+                          description = "Specifies the first N pages of a file to process.";
+                        };
+                      };
+                    });
+                    default = defaults.extraction.page-range;
+                    description = ''
+                      Defines what pages to process. If a PDF with 600 pages is
+                      submitted, it is probably not necessary to scan through all of
+                      them. This would take a long time and occupy resources for no
+                      value. The first few pages should suffice. The default is first
+                      10 pages.
 
-                If you want all pages being processed, set this number to -1.
+                      If you want all pages being processed, set this number to -1.
 
-                Note: if you change the ghostscript command below, be aware that
-                this setting (if not -1) will add another parameter to the
-                beginning of the command.
-              '';
-            };
-            ghostscript = mkOption {
-              type = types.submodule({
-                options = {
-                  working-dir = mkOption {
-                    type = types.str;
-                    default = defaults.extraction.ghostscript.working-dir;
-                    description = "Directory where the extraction processes can put their temp files";
+                      Note: if you change the ghostscript command below, be aware that
+                      this setting (if not -1) will add another parameter to the
+                      beginning of the command.
+                    '';
                   };
-                  command = mkOption {
+                  ghostscript = mkOption {
                     type = types.submodule({
                       options = {
-                        program = mkOption {
+                        working-dir = mkOption {
                           type = types.str;
-                          default = defaults.extraction.ghostscript.command.program;
-                          description = "The path to the executable.";
+                          default = defaults.extraction.ghostscript.working-dir;
+                          description = "Directory where the extraction processes can put their temp files";
                         };
-                        args = mkOption {
-                          type = types.listOf types.str;
-                          default = defaults.extraction.ghostscript.command.args;
-                          description = "The arguments to the program";
-                        };
-                        timeout = mkOption {
-                          type = types.str;
-                          default = defaults.extraction.ghostscript.command.timeout;
-                          description = "The timeout when executing the command";
+                        command = mkOption {
+                          type = types.submodule({
+                            options = {
+                              program = mkOption {
+                                type = types.str;
+                                default = defaults.extraction.ghostscript.command.program;
+                                description = "The path to the executable.";
+                              };
+                              args = mkOption {
+                                type = types.listOf types.str;
+                                default = defaults.extraction.ghostscript.command.args;
+                                description = "The arguments to the program";
+                              };
+                              timeout = mkOption {
+                                type = types.str;
+                                default = defaults.extraction.ghostscript.command.timeout;
+                                description = "The timeout when executing the command";
+                              };
+                            };
+                          });
+                          default = defaults.extraction.ghostscript.command;
+                          description = "The system command";
                         };
                       };
                     });
-                    default = defaults.extraction.ghostscript.command;
-                    description = "The system command";
+                    default = defaults.extraction.ghostscript;
+                    description = "The ghostscript command.";
                   };
-                };
-              });
-              default = defaults.extraction.ghostscript;
-              description = "The ghostscript command.";
-            };
-            unpaper = mkOption {
-              type = types.submodule({
-                options = {
-                  command = mkOption {
+                  unpaper = mkOption {
                     type = types.submodule({
                       options = {
-                        program = mkOption {
-                          type = types.str;
-                          default = defaults.extraction.unpaper.command.program;
-                          description = "The path to the executable.";
-                        };
-                        args = mkOption {
-                          type = types.listOf types.str;
-                          default = defaults.extraction.unpaper.command.args;
-                          description = "The arguments to the program";
-                        };
-                        timeout = mkOption {
-                          type = types.str;
-                          default = defaults.extraction.unpaper.command.timeout;
-                          description = "The timeout when executing the command";
+                        command = mkOption {
+                          type = types.submodule({
+                            options = {
+                              program = mkOption {
+                                type = types.str;
+                                default = defaults.extraction.unpaper.command.program;
+                                description = "The path to the executable.";
+                              };
+                              args = mkOption {
+                                type = types.listOf types.str;
+                                default = defaults.extraction.unpaper.command.args;
+                                description = "The arguments to the program";
+                              };
+                              timeout = mkOption {
+                                type = types.str;
+                                default = defaults.extraction.unpaper.command.timeout;
+                                description = "The timeout when executing the command";
+                              };
+                            };
+                          });
+                          default = defaults.extraction.unpaper.command;
+                          description = "The system command";
                         };
                       };
                     });
-                    default = defaults.extraction.unpaper.command;
-                    description = "The system command";
+                    default = defaults.extraction.unpaper;
+                    description = "The unpaper command.";
                   };
-                };
-              });
-              default = defaults.extraction.unpaper;
-              description = "The unpaper command.";
-            };
-            tesseract = mkOption {
-              type = types.submodule({
-                options = {
-                  command = mkOption {
+                  tesseract = mkOption {
                     type = types.submodule({
                       options = {
-                        program = mkOption {
-                          type = types.str;
-                          default = defaults.extraction.tesseract.command.program;
-                          description = "The path to the executable.";
-                        };
-                        args = mkOption {
-                          type = types.listOf types.str;
-                          default = defaults.extraction.tesseract.command.args;
-                          description = "The arguments to the program";
-                        };
-                        timeout = mkOption {
-                          type = types.str;
-                          default = defaults.extraction.tesseract.command.timeout;
-                          description = "The timeout when executing the command";
+                        command = mkOption {
+                          type = types.submodule({
+                            options = {
+                              program = mkOption {
+                                type = types.str;
+                                default = defaults.extraction.tesseract.command.program;
+                                description = "The path to the executable.";
+                              };
+                              args = mkOption {
+                                type = types.listOf types.str;
+                                default = defaults.extraction.tesseract.command.args;
+                                description = "The arguments to the program";
+                              };
+                              timeout = mkOption {
+                                type = types.str;
+                                default = defaults.extraction.tesseract.command.timeout;
+                                description = "The timeout when executing the command";
+                              };
+                            };
+                          });
+                          default = defaults.extraction.tesseract.command;
+                          description = "The system command";
                         };
                       };
                     });
-                    default = defaults.extraction.tesseract.command;
-                    description = "The system command";
+                    default = defaults.extraction.tesseract;
+                    description = "The tesseract command.";
                   };
+
                 };
               });
-              default = defaults.extraction.tesseract;
-              description = "The tesseract command.";
+              default = defaults.extraction.ocr;
+              description = "";
             };
           };
         });
@@ -334,6 +414,182 @@ in {
           ocr, which will be done by tesseract. All these programs must be
           available in your PATH or the absolute path can be specified
           below.
+        '';
+      };
+
+      convert = mkOption {
+        type = types.submodule({
+          options = {
+            chunk-size = mkOption {
+              type = types.int;
+              default = defaults.convert.chunk-size;
+              description = ''
+                The chunk size used when storing files. This should be the same
+                as used with the rest server.
+              '';
+            };
+            max-image-size = mkOption {
+              type = types.int;
+              default = defaults.convert.max-image-size;
+              description = ''
+                When reading images, this is the maximum size. Images that are
+                larger are not processed.
+              '';
+            };
+            markdown = mkOption {
+              type = types.submodule({
+                options = {
+                  internal-css = mkOption {
+                    type = types.str;
+                    default = defaults.convert.markdown.internal-css;
+                    description = ''
+                      The CSS that is used to style the resulting HTML.
+                    '';
+                  };
+                };
+              });
+              default = defaults.convert.markdown;
+              description = ''
+                Settings when processing markdown files (and other text files)
+                to HTML.
+
+                In order to support text formats, text files are first converted
+                to HTML using a markdown processor. The resulting HTML is then
+                converted to a PDF file.
+              '';
+            };
+            wkhtmlpdf = mkOption {
+              type = types.submodule({
+                options = {
+                  working-dir = mkOption {
+                    type = types.str;
+                    default = defaults.convert.wktmlpdf.working-dir;
+                    description = "Directory where the conversion processes can put their temp files";
+                  };
+                  command = mkOption {
+                    type = types.submodule({
+                      options = {
+                        program = mkOption {
+                          type = types.str;
+                          default = defaults.convert.wkhtmlpdf.command.program;
+                          description = "The path to the executable.";
+                        };
+                        args = mkOption {
+                          type = types.listOf types.str;
+                          default = defaults.convert.wkhtmlpdf.command.args;
+                          description = "The arguments to the program";
+                        };
+                        timeout = mkOption {
+                          type = types.str;
+                          default = defaults.convert.wkhtmlpdf.command.timeout;
+                          description = "The timeout when executing the command";
+                        };
+                      };
+                    });
+                    default = defaults.convert.wkhtmlpdf.command;
+                    description = "The system command";
+                  };
+                };
+              });
+              default = defaults.convert.wkhtmlpdf;
+              description = ''
+                To convert HTML files into PDF files, the external tool
+                wkhtmltopdf is used.
+              '';
+            };
+            tesseract = mkOption {
+              type = types.submodule({
+                options = {
+                  working-dir = mkOption {
+                    type = types.str;
+                    default = defaults.convert.tesseract.working-dir;
+                    description = "Directory where the conversion processes can put their temp files";
+                  };
+                  command = mkOption {
+                    type = types.submodule({
+                      options = {
+                        program = mkOption {
+                          type = types.str;
+                          default = defaults.convert.tesseract.command.program;
+                          description = "The path to the executable.";
+                        };
+                        args = mkOption {
+                          type = types.listOf types.str;
+                          default = defaults.convert.tesseract.command.args;
+                          description = "The arguments to the program";
+                        };
+                        timeout = mkOption {
+                          type = types.str;
+                          default = defaults.convert.tesseract.command.timeout;
+                          description = "The timeout when executing the command";
+                        };
+                      };
+                    });
+                    default = defaults.convert.tesseract.command;
+                    description = "The system command";
+                  };
+                };
+              });
+              default = defaults.convert.tesseract;
+              description = ''
+                To convert image files to PDF files, tesseract is used. This
+                also extracts the text in one go.
+              '';
+            };
+            unoconv = mkOption {
+              type = types.submodule({
+                options = {
+                  working-dir = mkOption {
+                    type = types.str;
+                    default = defaults.convert.unoconv.working-dir;
+                    description = "Directory where the conversion processes can put their temp files";
+                  };
+                  command = mkOption {
+                    type = types.submodule({
+                      options = {
+                        program = mkOption {
+                          type = types.str;
+                          default = defaults.convert.unoconv.command.program;
+                          description = "The path to the executable.";
+                        };
+                        args = mkOption {
+                          type = types.listOf types.str;
+                          default = defaults.convert.unoconv.command.args;
+                          description = "The arguments to the program";
+                        };
+                        timeout = mkOption {
+                          type = types.str;
+                          default = defaults.convert.unoconv.command.timeout;
+                          description = "The timeout when executing the command";
+                        };
+                      };
+                    });
+                    default = defaults.convert.unoconv.command;
+                    description = "The system command";
+                  };
+                };
+              });
+              default = defaults.convert.unoconv;
+              description = ''
+                To convert "office" files to PDF files, the external tool
+                unoconv is used. Unoconv uses libreoffice/openoffice for
+                converting. So it supports all formats that are possible to read
+                with libreoffice/openoffic.
+
+                Note: to greatly improve performance, it is recommended to start
+                a libreoffice listener by running `unoconv -l` in a separate
+                process.
+              '';
+            };
+          };
+        });
+        default = defaults.convert;
+        description = ''
+          Configuration for converting files into PDFs.
+
+          Most of it is delegated to external tools, which can be configured
+          below. They must be in the PATH environment or specify the full
+          path below via the `program` key.
         '';
       };
     };

@@ -4,4 +4,4 @@ import java.nio.file.Path
 
 import docspell.common.SystemCommand
 
-case class WkHtmlPdfConfig (cmd: SystemCommand.Config, workingDir: Path)
+case class WkHtmlPdfConfig (command: SystemCommand.Config, workingDir: Path)
