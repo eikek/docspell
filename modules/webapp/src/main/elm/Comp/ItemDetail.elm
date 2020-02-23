@@ -40,6 +40,7 @@ import Http
 import Markdown
 import Page exposing (Page(..))
 import Util.Http
+import Util.List
 import Util.Maybe
 import Util.Size
 import Util.String
@@ -1176,8 +1177,23 @@ renderAttachmentView model pos attach =
                 ]
             , div [ class "right menu" ]
                 [ a
-                    [ class "item"
-                    , title "Goto Original file"
+                    [ classList
+                        [ ( "item", True )
+                        , ( "disabled", not attach.converted )
+                        ]
+                    , title
+                        (if attach.converted then
+                            case Util.List.find (\s -> s.id == attach.id) model.item.sources of
+                                Just src ->
+                                    "Goto original: "
+                                        ++ Maybe.withDefault "<noname>" src.name
+
+                                Nothing ->
+                                    "Goto original file"
+
+                         else
+                            "This is the original file"
+                        )
                     , href (fileUrl ++ "/original")
                     , target "_new"
                     ]
