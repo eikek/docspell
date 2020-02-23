@@ -1844,6 +1844,7 @@ components:
         - created
         - updated
         - attachments
+        - sources
         - tags
       properties:
         id:
@@ -1890,6 +1891,10 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/Attachment"
+        sources:
+          type: array
+          items:
+            $ref: "#/components/schemas/AttachmentSource"
         tags:
           type: array
           items:
@@ -1901,10 +1906,34 @@ components:
         - id
         - size
         - contentType
+        - converted
       properties:
         id:
           type: string
           format: ident
+        name:
+          type: string
+        size:
+          type: integer
+          format: int64
+        contentType:
+          type: string
+          format: mimetype
+        converted:
+          type: boolean
+    AttachmentSource:
+      description: |
+        The source or original file of an attachment.
+      required:
+        - id
+        - size
+        - contentType
+      properties:
+        id:
+          type: string
+          format: ident
+          description: |
+            The id is the attachment id.
         name:
           type: string
         size:

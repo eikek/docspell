@@ -1,5 +1,6 @@
 package docspell.store.records
 
+import bitpeace.FileMeta
 import doobie._
 import doobie.implicits._
 import docspell.common._
@@ -60,5 +61,24 @@ object RAttachmentSource {
     selectSimple(all.map(_.prefix("a")), from, where).query[RAttachmentSource].option
   }
 
+  def findByItemWithMeta(id: Ident): ConnectionIO[Vector[(RAttachmentSource, FileMeta)]] = {
+    import bitpeace.sql._
+
+    val aId = Columns.id.prefix("a")
+    val afileMeta = fileId.prefix("a")
+    val bPos = RAttachment.Columns.position.prefix("b")
+    val bId = RAttachment.Columns.id.prefix("b")
+    val bItem = RAttachment.Columns.itemId.prefix("b")
+    val mId       = RFileMeta.Columns.id.prefix("m")
+
+    val cols = all.map(_.prefix("a")) ++ RFileMeta.Columns.all.map(_.prefix("m"))
+    val from = table ++ fr"a INNER JOIN" ++
+      RFileMeta.table ++ fr"m ON" ++ afileMeta.is(mId) ++ fr"INNER JOIN" ++
+      RAttachment.table ++ fr"b ON" ++ aId.is(bId)
+    val where = bItem.is(id)
+
+    (selectSimple(cols, from, where) ++ orderBy(bPos.asc)).
+      query[(RAttachmentSource, FileMeta)].to[Vector]
+  }
 
 }

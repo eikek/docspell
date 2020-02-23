@@ -84,12 +84,18 @@ trait Conversions {
       data.inReplyTo.map(mkIdName),
       data.item.dueDate,
       data.item.notes,
-      data.attachments.map((mkAttachment _).tupled).toList,
+      data.attachments.map((mkAttachment(data)_).tupled).toList,
+      data.sources.map((mkAttachmentSource _).tupled).toList,
       data.tags.map(mkTag).toList
     )
 
-  def mkAttachment(ra: RAttachment, m: FileMeta): Attachment =
-    Attachment(ra.id, ra.name, m.length, MimeType.unsafe(m.mimetype.asString))
+  def mkAttachment(item: OItem.ItemData)(ra: RAttachment, m: FileMeta): Attachment = {
+    val converted = item.sources.find(_._1.id == ra.id).exists(_._2.checksum != m.checksum)
+    Attachment(ra.id, ra.name, m.length, MimeType.unsafe(m.mimetype.asString), converted)
+  }
+
+  def mkAttachmentSource(ra: RAttachmentSource, m: FileMeta): AttachmentSource =
+    AttachmentSource(ra.id, ra.name, m.length, MimeType.unsafe(m.mimetype.asString))
 
   // item list
 
