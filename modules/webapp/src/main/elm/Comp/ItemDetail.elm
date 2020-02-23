@@ -1134,15 +1134,16 @@ renderAttachmentsTabMenu model =
     div [ class "ui top attached tabular menu" ]
         (List.indexedMap
             (\pos ->
-                \a ->
-                    div
+                \el ->
+                    a
                         [ classList
                             [ ( "item", True )
                             , ( "active", pos == model.visibleAttach )
                             ]
+                        , title (Maybe.withDefault "No Name" el.name)
                         , onClick (SetActiveAttachment pos)
                         ]
-                        [ Maybe.map (Util.String.ellipsis 20) a.name
+                        [ Maybe.map (Util.String.ellipsis 20) el.name
                             |> Maybe.withDefault "No Name"
                             |> text
                         ]
