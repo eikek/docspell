@@ -1525,29 +1525,13 @@ renderEditForm model =
                 [ i [ class "tiny edit icon" ] []
                 , div [ class "content" ]
                     [ text "Notes"
-                    , div [ class "sub header" ]
-                        [ a
-                            [ class "ui link"
-                            , target "_blank"
-                            , href "https://guides.github.com/features/mastering-markdown"
-                            ]
-                            [ text "Markdown"
-                            ]
-                        , text " is supported"
-                        ]
                     ]
                 ]
             , div [ class "field" ]
-                [ div [ class "ui action input" ]
-                    [ textarea
-                        [ rows 6
-                        , autocomplete False
-                        , onInput SetNotes
-                        , Maybe.withDefault "" model.notesModel |> value
-                        ]
-                        []
-                    , button [ class "ui icon button", onClick ToggleEditNotes ]
-                        [ i [ class "save outline icon" ] []
+                [ div [ class "ui input" ]
+                    [ button [ class "ui basic primary fluid button", onClick ToggleEditNotes ]
+                        [ i [ class "edit outline icon" ] []
+                        , text "Toggle Notes Form"
                         ]
                     ]
                 ]
