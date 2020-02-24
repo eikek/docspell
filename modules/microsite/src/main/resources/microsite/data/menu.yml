@@ -21,6 +21,9 @@ options:
      - title: Nix/NixOS
        url: doc/nix
 
+     - title: Reverse Proxy
+       url: doc/reverseproxy
+
      - title: Configuring
        url: doc/configure.html
 
