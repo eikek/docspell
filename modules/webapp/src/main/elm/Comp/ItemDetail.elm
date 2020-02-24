@@ -1283,14 +1283,20 @@ renderItemInfo : Model -> Html Msg
 renderItemInfo model =
     let
         date =
-            div [ class "item" ]
+            div
+                [ class "item"
+                , title "Item Date"
+                ]
                 [ Maybe.withDefault model.item.created model.item.itemDate
                     |> Util.Time.formatDate
                     |> text
                 ]
 
         duedate =
-            div [ class "item" ]
+            div
+                [ class "item"
+                , title "Due Date"
+                ]
                 [ i [ class "bell icon" ] []
                 , Maybe.map Util.Time.formatDate model.item.dueDate
                     |> Maybe.withDefault ""
@@ -1298,7 +1304,10 @@ renderItemInfo model =
                 ]
 
         corr =
-            div [ class "item" ]
+            div
+                [ class "item"
+                , title "Correspondent"
+                ]
                 [ i [ class "envelope outline icon" ] []
                 , List.filterMap identity [ model.item.corrOrg, model.item.corrPerson ]
                     |> List.map .name
@@ -1308,7 +1317,10 @@ renderItemInfo model =
                 ]
 
         conc =
-            div [ class "item" ]
+            div
+                [ class "item"
+                , title "Concerning"
+                ]
                 [ i [ class "comment outline icon" ] []
                 , List.filterMap identity [ model.item.concPerson, model.item.concEquipment ]
                     |> List.map .name
@@ -1318,13 +1330,22 @@ renderItemInfo model =
                 ]
 
         src =
-            div [ class "item" ]
+            div
+                [ class "item"
+                , title "Source"
+                ]
                 [ text model.item.source
                 ]
     in
     div [ class "ui fluid container" ]
-        (h2 [ class "ui header" ]
-            [ i [ class (Data.Direction.iconFromString model.item.direction) ] []
+        (h2
+            [ class "ui header"
+            ]
+            [ i
+                [ class (Data.Direction.iconFromString model.item.direction)
+                , title model.item.direction
+                ]
+                []
             , div [ class "content" ]
                 [ text model.item.name
                 , div
