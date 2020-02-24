@@ -31,15 +31,15 @@ object QCollective {
     val fileSize = sql"""
       select sum(length) from (
       with attachs as
-        (select a.attachid as aid, a.filemetaid as fid
-         from attachment a
-         inner join item i on a.itemid = i.itemid
-         where i.cid = $coll)
-         (select a.fid,m.length from attachs a
-           inner join filemeta m on m.id = a.fid
-          union
-          select a.file_id,m.length from attachment_source a
-           inner join filemeta m on m.id = a.file_id where a.id in (select aid from attachs))
+            (select a.attachid as aid, a.filemetaid as fid
+             from attachment a
+             inner join item i on a.itemid = i.itemid
+             where i.cid = $coll)
+         select a.fid,m.length from attachs a
+         inner join filemeta m on m.id = a.fid
+         union distinct
+         select a.file_id,m.length from attachment_source a
+         inner join filemeta m on m.id = a.file_id where a.id in (select aid from attachs)
       ) as t""".query[Option[Long]].unique
 
 
