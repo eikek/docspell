@@ -40,6 +40,7 @@ import Http
 import Markdown
 import Page exposing (Page(..))
 import Util.Http
+import Util.List
 import Util.Maybe
 import Util.Size
 import Util.String
@@ -1133,15 +1134,16 @@ renderAttachmentsTabMenu model =
     div [ class "ui top attached tabular menu" ]
         (List.indexedMap
             (\pos ->
-                \a ->
-                    div
+                \el ->
+                    a
                         [ classList
                             [ ( "item", True )
                             , ( "active", pos == model.visibleAttach )
                             ]
+                        , title (Maybe.withDefault "No Name" el.name)
                         , onClick (SetActiveAttachment pos)
                         ]
-                        [ Maybe.map (Util.String.ellipsis 20) a.name
+                        [ Maybe.map (Util.String.ellipsis 20) el.name
                             |> Maybe.withDefault "No Name"
                             |> text
                         ]
@@ -1177,6 +1179,29 @@ renderAttachmentView model pos attach =
             , div [ class "right menu" ]
                 [ a
                     [ classList
+                        [ ( "item", True )
+                        , ( "disabled", not attach.converted )
+                        ]
+                    , title
+                        (if attach.converted then
+                            case Util.List.find (\s -> s.id == attach.id) model.item.sources of
+                                Just src ->
+                                    "Goto original: "
+                                        ++ Maybe.withDefault "<noname>" src.name
+
+                                Nothing ->
+                                    "Goto original file"
+
+                         else
+                            "This is the original file"
+                        )
+                    , href (fileUrl ++ "/original")
+                    , target "_new"
+                    ]
+                    [ i [ class "external square alternate icon" ] []
+                    ]
+                , a
+                    [ classList
                         [ ( "toggle item", True )
                         , ( "active", isAttachMetaOpen model attach.id )
                         ]
@@ -1188,7 +1213,7 @@ renderAttachmentView model pos attach =
                     ]
                 , a
                     [ class "item"
-                    , title "Download to disk"
+                    , title "Download PDF to disk"
                     , download attachName
                     , href fileUrl
                     ]
@@ -1258,14 +1283,20 @@ renderItemInfo : Model -> Html Msg
 renderItemInfo model =
     let
         date =
-            div [ class "item" ]
+            div
+                [ class "item"
+                , title "Item Date"
+                ]
                 [ Maybe.withDefault model.item.created model.item.itemDate
                     |> Util.Time.formatDate
                     |> text
                 ]
 
         duedate =
-            div [ class "item" ]
+            div
+                [ class "item"
+                , title "Due Date"
+                ]
                 [ i [ class "bell icon" ] []
                 , Maybe.map Util.Time.formatDate model.item.dueDate
                     |> Maybe.withDefault ""
@@ -1273,7 +1304,10 @@ renderItemInfo model =
                 ]
 
         corr =
-            div [ class "item" ]
+            div
+                [ class "item"
+                , title "Correspondent"
+                ]
                 [ i [ class "envelope outline icon" ] []
                 , List.filterMap identity [ model.item.corrOrg, model.item.corrPerson ]
                     |> List.map .name
@@ -1283,7 +1317,10 @@ renderItemInfo model =
                 ]
 
         conc =
-            div [ class "item" ]
+            div
+                [ class "item"
+                , title "Concerning"
+                ]
                 [ i [ class "comment outline icon" ] []
                 , List.filterMap identity [ model.item.concPerson, model.item.concEquipment ]
                     |> List.map .name
@@ -1293,13 +1330,22 @@ renderItemInfo model =
                 ]
 
         src =
-            div [ class "item" ]
+            div
+                [ class "item"
+                , title "Source"
+                ]
                 [ text model.item.source
                 ]
     in
     div [ class "ui fluid container" ]
-        (h2 [ class "ui header" ]
-            [ i [ class (Data.Direction.iconFromString model.item.direction) ] []
+        (h2
+            [ class "ui header"
+            ]
+            [ i
+                [ class (Data.Direction.iconFromString model.item.direction)
+                , title model.item.direction
+                ]
+                []
             , div [ class "content" ]
                 [ text model.item.name
                 , div
@@ -1479,29 +1525,13 @@ renderEditForm model =
                 [ i [ class "tiny edit icon" ] []
                 , div [ class "content" ]
                     [ text "Notes"
-                    , div [ class "sub header" ]
-                        [ a
-                            [ class "ui link"
-                            , target "_blank"
-                            , href "https://guides.github.com/features/mastering-markdown"
-                            ]
-                            [ text "Markdown"
-                            ]
-                        , text " is supported"
-                        ]
                     ]
                 ]
             , div [ class "field" ]
-                [ div [ class "ui action input" ]
-                    [ textarea
-                        [ rows 6
-                        , autocomplete False
-                        , onInput SetNotes
-                        , Maybe.withDefault "" model.notesModel |> value
-                        ]
-                        []
-                    , button [ class "ui icon button", onClick ToggleEditNotes ]
-                        [ i [ class "save outline icon" ] []
+                [ div [ class "ui input" ]
+                    [ button [ class "ui basic primary fluid button", onClick ToggleEditNotes ]
+                        [ i [ class "edit outline icon" ] []
+                        , text "Toggle Notes Form"
                         ]
                     ]
                 ]

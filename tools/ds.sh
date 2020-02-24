@@ -20,7 +20,6 @@
 set -o errexit -o pipefail -o noclobber -o nounset
 
 CURL_CMD="curl"
-FILE_CMD="file"
 GREP_CMD="grep"
 MKTEMP_CMD="mktemp"
 SHA256_CMD="sha256sum"
@@ -44,7 +43,7 @@ fi
 # read getopt’s output this way to handle the quoting right:
 eval set -- "$PARSED"
 
-delete=n skip=n help=n config="${XDG_CONFIG_HOME:-$HOME/.config}/docspell/ds.conf"
+delete=n help=n config="${XDG_CONFIG_HOME:-$HOME/.config}/docspell/ds.conf"
 while true; do
     case "$1" in
         -h|--help)
@@ -54,10 +53,6 @@ while true; do
         -c|--config)
             config="$2"
             shift 2
-            ;;
-        -s|--skip)
-            skip="y"
-            shift
             ;;
         -d|--delete)
             delete="y"
@@ -124,7 +119,6 @@ showUsage() {
     info ""
     info "Options:"
     info "  -c | --config        Provide a config file. (value: $config)"
-    info "  -s | --skip          Skip non-PDF files. Otherwise an error is raised. (value: $skip)"
     info "  -d | --delete        Delete the files when successfully uploaded (value: $delete)"
     info "  -h | --help          Prints this help text. (value: $help)"
     info ""
@@ -132,16 +126,6 @@ showUsage() {
     info "  One or more PDF files to upload."
     info ""
 }
-
-mimetype() {
-    $FILE_CMD -b --mime-type "$1"
-}
-
-isPdf() {
-    mime=$(mimetype "$1")
-    [ "$mime" = "application/pdf" ]
-}
-
 
 if [ "$help" = "y" ]; then
     showUsage
@@ -154,15 +138,6 @@ if [[ $# -eq 0 ]]; then
     exit 4
 fi
 
-if [ "$skip" = "n" ]; then
-    IFS=$'\n'
-    for file in $*; do
-        if ! isPdf "$file"; then
-            info "Not a PDF file: $file"
-            exit 5
-        fi
-    done
-fi
 
 ## Read the config file
 declare -a urls
@@ -177,18 +152,14 @@ done <<< $($GREP_CMD -v '^#.*' "$config")
 ## Main
 IFS=$'\n'
 for file in $*; do
-    if isPdf "$file"; then
-        for url in "${urls[@]}"; do
-            info "Uploading '$file' to '$url'"
-            set +e
-            upload "$file" "$url"
-            set -e
-            if [ "$delete" = "y" ] && [ $? -eq 0 ]; then
-                info "Deleting file: $file"
-                rm -f "$file"
-            fi
-        done
-    else
-        info "Skipping non-PDF file: $file"
-    fi
+    for url in "${urls[@]}"; do
+        info "Uploading '$file' to '$url'"
+        set +e
+        upload "$file" "$url"
+        set -e
+        if [ "$delete" = "y" ] && [ $? -eq 0 ]; then
+            info "Deleting file: $file"
+            rm -f "$file"
+        fi
+    done
 done

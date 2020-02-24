@@ -8,7 +8,8 @@ case class ItemData(
     item: RItem,
     attachments: Vector[RAttachment],
     metas: Vector[RAttachmentMeta],
-    dateLabels: Vector[AttachmentDates]
+    dateLabels: Vector[AttachmentDates],
+    originFile: Map[Ident, Ident] //maps RAttachment.id -> FileMeta.id
 ) {
 
   def findMeta(attachId: Ident): Option[RAttachmentMeta] =
@@ -16,6 +17,21 @@ case class ItemData(
 
   def findDates(rm: RAttachmentMeta): Vector[NerDateLabel] =
     dateLabels.find(m => m.rm.id == rm.id).map(_.dates).getOrElse(Vector.empty)
+
+  def mapMeta(attachId: Ident, f: RAttachmentMeta => RAttachmentMeta): ItemData = {
+    val item = changeMeta(attachId, f)
+    val next = metas.map(a => if (a.id == attachId) item else a)
+    copy(metas = next)
+  }
+
+  def changeMeta(attachId: Ident, f: RAttachmentMeta => RAttachmentMeta): RAttachmentMeta =
+    f(findOrCreate(attachId))
+
+  def findOrCreate(attachId: Ident): RAttachmentMeta =
+    metas.find(_.id == attachId).getOrElse {
+      RAttachmentMeta.empty(attachId)
+    }
+
 }
 
 object ItemData {

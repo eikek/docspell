@@ -1,5 +1,6 @@
 package docspell.restserver.routes
 
+import bitpeace.FileMeta
 import cats.data.NonEmptyList
 import cats.effect._
 import cats.implicits._
@@ -22,13 +23,13 @@ object AttachmentRoutes {
     val dsl = new Http4sDsl[F] {}
     import dsl._
 
-    def withResponseHeaders(resp: F[Response[F]])(data: OItem.AttachmentData[F]): F[Response[F]] = {
+    def withResponseHeaders(resp: F[Response[F]])(data: OItem.BinaryData[F]): F[Response[F]] = {
       val mt             = MediaType.unsafeParse(data.meta.mimetype.asString)
       val ctype          = `Content-Type`(mt)
       val cntLen: Header = `Content-Length`.unsafeFromLong(data.meta.length)
       val eTag: Header   = ETag(data.meta.checksum)
       val disp: Header =
-        `Content-Disposition`("inline", Map("filename" -> data.ra.name.getOrElse("")))
+        `Content-Disposition`("inline", Map("filename" -> data.name.getOrElse("")))
 
       resp.map(r =>
         if (r.status == NotModified) r.withHeaders(ctype, eTag, disp)
@@ -36,7 +37,7 @@ object AttachmentRoutes {
       )
     }
 
-    def makeByteResp(data: OItem.AttachmentData[F]): F[Response[F]] =
+    def makeByteResp(data: OItem.BinaryData[F]): F[Response[F]] =
       withResponseHeaders(Ok(data.data.take(data.meta.length)))(data)
 
     HttpRoutes.of {
@@ -52,13 +53,34 @@ object AttachmentRoutes {
         for {
           fileData <- backend.item.findAttachment(id, user.account.collective)
           inm      = req.headers.get(`If-None-Match`).flatMap(_.tags)
-          matches  = matchETag(fileData, inm)
+          matches  = matchETag(fileData.map(_.meta), inm)
           resp <- fileData
                    .map({ data =>
                      if (matches) withResponseHeaders(NotModified())(data)
                      else makeByteResp(data)
                    })
                    .getOrElse(NotFound(BasicResult(false, "Not found")))
+        } yield resp
+
+      case HEAD -> Root / Ident(id) / "original" =>
+        for {
+          fileData <- backend.item.findAttachmentSource(id, user.account.collective)
+          resp <- fileData
+            .map(data => withResponseHeaders(Ok())(data))
+            .getOrElse(NotFound(BasicResult(false, "Not found")))
+        } yield resp
+
+      case req @ GET -> Root / Ident(id) / "original" =>
+        for {
+          fileData <- backend.item.findAttachmentSource(id, user.account.collective)
+          inm      = req.headers.get(`If-None-Match`).flatMap(_.tags)
+          matches  = matchETag(fileData.map(_.meta), inm)
+          resp <- fileData
+            .map({ data =>
+              if (matches) withResponseHeaders(NotModified())(data)
+              else makeByteResp(data)
+            })
+            .getOrElse(NotFound(BasicResult(false, "Not found")))
         } yield resp
 
       case GET -> Root / Ident(id) / "view" =>
@@ -78,12 +100,12 @@ object AttachmentRoutes {
   }
 
   private def matchETag[F[_]](
-      fileData: Option[OItem.AttachmentData[F]],
-      noneMatch: Option[NonEmptyList[EntityTag]]
+                               fileData: Option[FileMeta],
+                               noneMatch: Option[NonEmptyList[EntityTag]]
   ): Boolean =
     (fileData, noneMatch) match {
-      case (Some(fd), Some(nm)) =>
-        fd.meta.checksum == nm.head.tag
+      case (Some(meta), Some(nm)) =>
+        meta.checksum == nm.head.tag
       case _ =>
         false
     }

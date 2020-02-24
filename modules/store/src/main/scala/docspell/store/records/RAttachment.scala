@@ -38,8 +38,25 @@ object RAttachment {
       fr"${v.id},${v.itemId},${v.fileId.id},${v.position},${v.created},${v.name}"
     ).update.run
 
+  def updateFileIdAndName(attachId: Ident, fId: Ident, fname: Option[String]): ConnectionIO[Int] =
+    updateRow(table, id.is(attachId), commas(fileId.setTo(fId), name.setTo(fname))).update.run
+
   def findById(attachId: Ident): ConnectionIO[Option[RAttachment]] =
     selectSimple(all, table, id.is(attachId)).query[RAttachment].option
+
+  def findMeta(attachId: Ident): ConnectionIO[Option[FileMeta]] = {
+    import bitpeace.sql._
+
+    val cols = RFileMeta.Columns.all.map(_.prefix("m"))
+    val aId = id.prefix("a")
+    val aFileMeta = fileId.prefix("a")
+    val mId = RFileMeta.Columns.id.prefix("m")
+
+    val from = table ++ fr"a INNER JOIN" ++ RFileMeta.table ++ fr"m ON" ++ aFileMeta.is(mId)
+    val cond = aId.is(attachId)
+
+    selectSimple(cols, from, cond).query[FileMeta].option
+  }
 
   def findByIdAndCollective(attachId: Ident, collective: Ident): ConnectionIO[Option[RAttachment]] =
     selectSimple(
@@ -94,7 +111,8 @@ object RAttachment {
   def delete(attachId: Ident): ConnectionIO[Int] =
     for {
       n0 <- RAttachmentMeta.delete(attachId)
-      n1 <- deleteFrom(table, id.is(attachId)).update.run
-    } yield n0 + n1
+      n1 <- RAttachmentSource.delete(attachId)
+      n2 <- deleteFrom(table, id.is(attachId)).update.run
+    } yield n0 + n1 + n2
 
 }

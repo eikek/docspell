@@ -11,6 +11,7 @@ object Dependencies {
   val DoobieVersion = "0.8.8"
   val EmilVersion = "0.2.0"
   val FastparseVersion = "2.1.3"
+  val FlexmarkVersion = "0.60.2"
   val FlywayVersion = "6.2.4"
   val Fs2Version = "2.2.2"
   val H2Version = "1.4.200"
@@ -20,16 +21,59 @@ object Dependencies {
   val LogbackVersion = "1.2.3"
   val MariaDbVersion = "2.5.4"
   val MiniTestVersion = "2.7.0"
+  val PdfboxVersion = "2.0.18"
+  val PoiVersion = "4.1.1"
   val PostgresVersion = "42.2.10"
   val PureConfigVersion = "0.12.2"
+  val Slf4jVersion = "1.7.30"
   val SqliteVersion = "3.30.1"
   val StanfordNlpVersion = "3.9.2"
   val TikaVersion = "1.23"
   val YamuscaVersion = "0.6.1"
   val SwaggerUIVersion = "3.25.0"
   val SemanticUIVersion = "2.4.1"
+  val TwelveMonkeysVersion = "3.5"
   val JQueryVersion = "3.4.1"
   val ViewerJSVersion = "0.5.8"
+
+
+  val jclOverSlf4j = Seq(
+    "org.slf4j" % "jcl-over-slf4j" % Slf4jVersion
+  )
+  val julOverSlf4j = Seq(
+    "org.slf4j" % "jul-to-slf4j" % Slf4jVersion
+  )
+
+  val poi = Seq(
+    "org.apache.poi" % "poi" % PoiVersion,
+    "org.apache.poi" % "poi-ooxml" % PoiVersion,
+    "org.apache.poi" % "poi-scratchpad" % PoiVersion,
+  ).map(_.excludeAll(
+    ExclusionRule("commons-logging")
+  )) ++ jclOverSlf4j
+
+  // https://github.com/vsch/flexmark-java
+  // BSD 2-Clause
+  val flexmark = Seq(
+    "com.vladsch.flexmark" % "flexmark" % FlexmarkVersion,
+    "com.vladsch.flexmark" % "flexmark-ext-tables" % FlexmarkVersion,
+    "com.vladsch.flexmark" % "flexmark-ext-gfm-strikethrough" % FlexmarkVersion
+  ).map(_.excludeAll(
+    ExclusionRule("junit"),
+    ExclusionRule("hamcrest-core")
+  ))
+
+  val twelvemonkeys = Seq(
+    "com.twelvemonkeys.imageio" % "imageio-jpeg" % TwelveMonkeysVersion,
+    "com.twelvemonkeys.imageio" % "imageio-tiff" % TwelveMonkeysVersion
+  )
+
+  val pdfbox = Seq(
+    "org.apache.pdfbox" % "pdfbox" % PdfboxVersion excludeAll (
+      ExclusionRule("org.bouncycastle"),
+      ExclusionRule("commons-logging")
+    )
+  ) ++ jclOverSlf4j
 
   val emil = Seq(
     "com.github.eikek" %% "emil-common" % EmilVersion,
@@ -60,6 +104,12 @@ object Dependencies {
 
   val tika = Seq(
     "org.apache.tika" % "tika-core" % TikaVersion
+  )
+  val commonsIO = Seq(
+    "commons-io" % "commons-io" % "2.6"
+  )
+  val tikaParser = Seq(
+    "org.apache.tika" % "tika-parsers" % TikaVersion
   )
 
   val bcrypt = Seq(

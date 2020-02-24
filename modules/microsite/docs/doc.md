@@ -6,6 +6,8 @@ title: Documentation
 
 # {{page.title}}
 
+This is the documentation for Docspell @VERSION@.
+
 Docspell assists in organizing large amounts of PDF files that are
 typically scanned paper documents. You can associate tags, set
 correspondends, what a document is concerned with, a name, a date and
@@ -38,6 +40,10 @@ be maintained manually. But usually, this data doesn't grow as fast as
 the documents. After a while there is a quite complete address book
 and only once in a while it has to be revisited.
 
+Besides extracting the text from documents to analyze, docspell also
+converts all files into PDF files. This unifies the different formats
+your documents may be in originally and makes them more accessible
+from other systems and the future.
 
 ## Terms
 
@@ -68,7 +74,7 @@ multiple files, which are called **attachments**. And an item has
 - a **direction**: one of "incoming" or "outgoing"
 - a **name**: some item name, defaults to the file name of the
   attachments
-- some **notes**: arbitraty descriptive text. You can use markdown
+- some **notes**: arbitrary descriptive text. You can use markdown
   here, which is appropriately formatted in the web application.
 
 ### Collective

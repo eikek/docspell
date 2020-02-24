@@ -23,7 +23,8 @@ object QItem {
       concEquip: Option[REquipment],
       inReplyTo: Option[IdRef],
       tags: Vector[RTag],
-      attachments: Vector[(RAttachment, FileMeta)]
+    attachments: Vector[(RAttachment, FileMeta)],
+      sources: Vector[(RAttachmentSource, FileMeta)]
   ) {
 
     def filterCollective(coll: Ident): Option[ItemData] =
@@ -69,14 +70,16 @@ object QItem {
       ]
       .option
     val attachs = RAttachment.findByItemWithMeta(id)
+    val sources = RAttachmentSource.findByItemWithMeta(id)
 
     val tags = RTag.findByItem(id)
 
     for {
       data <- q
       att  <- attachs
+      srcs <- sources
       ts   <- tags
-    } yield data.map(d => ItemData(d._1, d._2, d._3, d._4, d._5, d._6, ts, att))
+    } yield data.map(d => ItemData(d._1, d._2, d._3, d._4, d._5, d._6, ts, att, srcs))
   }
 
   case class ListItem(

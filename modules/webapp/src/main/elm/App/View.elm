@@ -254,6 +254,19 @@ loginInfo model =
                         , div [ class "divider" ] []
                         , a
                             [ class "icon item"
+                            , href "https://eikek.github.io/docspell/doc"
+                            , target "_new"
+                            , title "Opens https://eikek.github.io/docspell/doc"
+                            ]
+                            [ i [ class "help icon" ] []
+                            , text "Help"
+                            , span [ class "ui right floated" ]
+                                [ i [ class "external link icon" ] []
+                                ]
+                            ]
+                        , div [ class "divider" ] []
+                        , a
+                            [ class "icon item"
                             , href ""
                             , onClick Logout
                             ]

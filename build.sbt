@@ -143,6 +143,42 @@ val common = project.in(file("modules/common")).
       Dependencies.pureconfig.map(_ % "optional")
   )
 
+// Some example files for testing
+// https://file-examples.com/index.php/sample-documents-download/sample-doc-download/
+val files = project.in(file("modules/files")).
+  disablePlugins(RevolverPlugin).
+  settings(sharedSettings).
+  settings(testSettings).
+  settings(
+    name := "docspell-files",
+    libraryDependencies ++=
+      Dependencies.tika,
+    Test / sourceGenerators += Def.task {
+      val base = (Test/resourceDirectory).value
+      val files = (base ** (_.isFile)) pair sbt.io.Path.relativeTo(base)
+      val lines = files.toList.map(_._2).map(s => {
+        val ident = s.replaceAll("[^a-zA-Z0-9_]+", "_")
+        ident -> s"""val $ident = createUrl("${s}")"""
+      })
+      val content = s"""package docspell.files
+
+object ExampleFiles extends ExampleFilesSupport {
+
+${lines.map(_._2).mkString("\n")}
+
+val all = List(
+${lines.map(_._1).mkString(",\n")}
+)
+
+}
+"""
+      val target = (Test/sourceManaged).value/"scala"/"ExampleFiles.scala"
+      IO.createDirectory(target.getParentFile)
+      IO.write(target, content)
+      Seq(target)
+    }.taskValue
+  ).dependsOn(common)
+
 val store = project.in(file("modules/store")).
   disablePlugins(RevolverPlugin).
   settings(sharedSettings).
@@ -160,19 +196,44 @@ val store = project.in(file("modules/store")).
       Dependencies.emil
   ).dependsOn(common)
 
-val text = project.in(file("modules/text")).
+val extract = project.in(file("modules/extract")).
+  disablePlugins(RevolverPlugin).
+  settings(sharedSettings).
+  settings(testSettings).
+  settings(
+    name := "docspell-extract",
+    libraryDependencies ++=
+      Dependencies.fs2 ++
+      Dependencies.twelvemonkeys ++      
+      Dependencies.pdfbox ++
+      Dependencies.poi ++
+      Dependencies.commonsIO ++
+      Dependencies.julOverSlf4j
+  ).dependsOn(common, files % "compile->compile;test->test")
+
+val convert = project.in(file("modules/convert")).
+  disablePlugins(RevolverPlugin).
+  settings(sharedSettings).
+  settings(testSettings).
+  settings(
+    name := "docspell-convert",
+    libraryDependencies ++=
+      Dependencies.flexmark ++
+      Dependencies.twelvemonkeys
+  ).dependsOn(common, files % "compile->compile;test->test")
+
+val analysis = project.in(file("modules/analysis")).
   disablePlugins(RevolverPlugin).
   enablePlugins(NerModelsPlugin).
   settings(sharedSettings).
   settings(testSettings).
   settings(NerModelsPlugin.nerClassifierSettings).
   settings(
-    name := "docspell-text",
+    name := "docspell-analysis",
     libraryDependencies ++=
       Dependencies.fs2 ++
-      Dependencies.tika ++
       Dependencies.stanfordNlpCore
-  ).dependsOn(common)
+  ).dependsOn(common, files % "test->test")
   
 val restapi = project.in(file("modules/restapi")).
   disablePlugins(RevolverPlugin).
@@ -226,7 +287,7 @@ val joex = project.in(file("modules/joex")).
     addCompilerPlugin(Dependencies.betterMonadicFor),
     buildInfoPackage := "docspell.joex",
     reStart/javaOptions ++= Seq(s"-Dconfig.file=${(LocalRootProject/baseDirectory).value/"local"/"dev.conf"}")
-  ).dependsOn(store, text, joexapi, restapi)
+  ).dependsOn(store, extract, convert, analysis, joexapi, restapi)
 
 val backend = project.in(file("modules/backend")).
   disablePlugins(RevolverPlugin).
@@ -303,11 +364,11 @@ val microsite = project.in(file("modules/microsite")).
     skip in publish := true,
     micrositeFooterText := Some(
       """
-        |<p>&copy; 2019 <a href="https://github.com/eikek/docspell">Docspell, v{{site.version}}</a></p>
+        |<p>&copy; 2020 <a href="https://github.com/eikek/docspell">Docspell, v{{site.version}}</a></p>
         |""".stripMargin
     ),
     micrositeName := "Docspell",
-    micrositeDescription := "A (PDF) Document Organizer",
+    micrositeDescription := "Auto-tagging Document Organizer",
     micrositeDocumentationUrl := "/docspell/getit.html",
     micrositeDocumentationLabelDescription := "Quickstart",
     micrositeFavicons := Seq(microsites.MicrositeFavicon("favicon.png", "96x96")),
@@ -356,7 +417,10 @@ val root = project.in(file(".")).
     name := "docspell-root"
   ).
   aggregate(common
-    , text
+    , extract
+    , convert
+    , analysis
+    , files
     , store
     , joexapi
     , joex

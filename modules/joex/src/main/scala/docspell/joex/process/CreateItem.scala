@@ -1,12 +1,14 @@
 package docspell.joex.process
 
+import bitpeace.FileMeta
 import cats.implicits._
 import cats.effect.Sync
+import cats.data.OptionT
 import fs2.Stream
 import docspell.common._
 import docspell.joex.scheduler.{Context, Task}
 import docspell.store.queries.QItem
-import docspell.store.records.{RAttachment, RItem}
+import docspell.store.records.{RAttachment, RAttachmentSource, RItem}
 
 /**
   * Task that creates the item.
@@ -21,13 +23,15 @@ object CreateItem {
 
   def createNew[F[_]: Sync]: Task[F, ProcessItemArgs, ItemData] =
     Task { ctx =>
-      val validFiles = ctx.args.meta.validFileTypes.map(_.asString).toSet
+      def isValidFile(fm: FileMeta) =
+        ctx.args.meta.validFileTypes.isEmpty ||
+        ctx.args.meta.validFileTypes.map(_.asString).toSet.contains(fm.mimetype.baseType)
 
       def fileMetas(itemId: Ident, now: Timestamp) =
         Stream
           .emits(ctx.args.files)
           .flatMap(f => ctx.store.bitpeace.get(f.fileMetaId.id).map(fm => (f, fm)))
-          .collect({ case (f, Some(fm)) if validFiles.contains(fm.mimetype.baseType) => f })
+          .collect({ case (f, Some(fm)) if isValidFile(fm) => f })
           .zipWithIndex
           .evalMap({
             case (f, index) =>
@@ -53,12 +57,20 @@ object CreateItem {
         n    <- ctx.store.transact(RItem.insert(it))
         _    <- if (n != 1) storeItemError[F](ctx) else ().pure[F]
         fm   <- fileMetas(it.id, it.created)
-        k    <- fm.traverse(a => ctx.store.transact(RAttachment.insert(a)))
+        k    <- fm.traverse(insertAttachment(ctx))
         _    <- logDifferences(ctx, fm, k.sum)
         dur  <- time
         _    <- ctx.logger.info(s"Creating item finished in ${dur.formatExact}")
-      } yield ItemData(it, fm, Vector.empty, Vector.empty)
+      } yield ItemData(it, fm, Vector.empty, Vector.empty, fm.map(a => a.id -> a.fileId).toMap)
     }
+
+  def insertAttachment[F[_]: Sync](ctx: Context[F, ProcessItemArgs])(ra: RAttachment): F[Int] = {
+    val rs = RAttachmentSource.of(ra)
+    ctx.store.transact(for {
+      n <- RAttachment.insert(ra)
+      _ <- RAttachmentSource.insert(rs)
+    } yield n)
+  }
 
   def findExisting[F[_]: Sync]: Task[F, ProcessItemArgs, Option[ItemData]] =
     Task { ctx =>
@@ -69,12 +81,18 @@ object CreateItem {
         ht <- cand.drop(1).traverse(ri => QItem.delete(ctx.store)(ri.id, ri.cid))
         _ <- if (ht.sum > 0) ctx.logger.warn(s"Removed ${ht.sum} items with same attachments")
             else ().pure[F]
-        rms <- cand.headOption.traverse(ri =>
-                ctx.store.transact(RAttachment.findByItemAndCollective(ri.id, ri.cid))
-              )
-      } yield cand.headOption.map(ri =>
-        ItemData(ri, rms.getOrElse(Vector.empty), Vector.empty, Vector.empty)
-      )
+        rms <- OptionT(
+                cand.headOption.traverse(ri =>
+                  ctx.store.transact(RAttachment.findByItemAndCollective(ri.id, ri.cid))
+                )
+              ).getOrElse(Vector.empty)
+        orig <- rms.traverse(a =>
+                 ctx.store.transact(RAttachmentSource.findById(a.id)).map(s => (a, s))
+               )
+        origMap = orig
+          .map(originFileTuple)
+          .toMap
+      } yield cand.headOption.map(ri => ItemData(ri, rms, Vector.empty, Vector.empty, origMap))
     }
 
   private def logDifferences[F[_]: Sync](
@@ -94,4 +112,8 @@ object CreateItem {
     val msg = "Inserting item failed. DB returned 0 update count!"
     ctx.logger.error(msg) *> Sync[F].raiseError(new Exception(msg))
   }
+
+  //TODO if no source is present, it must be saved!
+  private def originFileTuple(t: (RAttachment, Option[RAttachmentSource])): (Ident, Ident) =
+    t._2.map(s => s.id -> s.fileId).getOrElse(t._1.id -> t._1.fileId)
 }

@@ -3,14 +3,15 @@ package docspell.joex.process
 import cats.effect.{ContextShift, Sync}
 import docspell.common.ProcessItemArgs
 import docspell.joex.scheduler.Task
-import docspell.text.ocr.{Config => OcrConfig}
+import docspell.joex.Config
 
 object ProcessItem {
 
   def apply[F[_]: Sync: ContextShift](
-      cfg: OcrConfig
+      cfg: Config
   )(item: ItemData): Task[F, ProcessItemArgs, ItemData] =
-    TextExtraction(cfg, item)
+    ConvertPdf(cfg.convert, item)
+      .flatMap(TextExtraction(cfg.extraction, _))
       .flatMap(Task.setProgress(25))
       .flatMap(TextAnalysis[F])
       .flatMap(Task.setProgress(50))

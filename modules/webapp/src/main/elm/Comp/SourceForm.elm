@@ -9,7 +9,7 @@ module Comp.SourceForm exposing
     )
 
 import Api.Model.Source exposing (Source)
-import Comp.Dropdown
+import Comp.FixedDropdown
 import Data.Flags exposing (Flags)
 import Data.Priority exposing (Priority)
 import Html exposing (..)
@@ -21,7 +21,8 @@ type alias Model =
     { source : Source
     , abbrev : String
     , description : Maybe String
-    , priority : Comp.Dropdown.Model Priority
+    , priorityModel : Comp.FixedDropdown.Model Priority
+    , priority : Priority
     , enabled : Bool
     }
 
@@ -31,13 +32,11 @@ emptyModel =
     { source = Api.Model.Source.empty
     , abbrev = ""
     , description = Nothing
-    , priority =
-        Comp.Dropdown.makeSingleList
-            { makeOption = \p -> { text = Data.Priority.toName p, value = Data.Priority.toName p }
-            , placeholder = ""
-            , options = Data.Priority.all
-            , selected = Nothing
-            }
+    , priorityModel =
+        Comp.FixedDropdown.initMap
+            Data.Priority.toName
+            Data.Priority.all
+    , priority = Data.Priority.Low
     , enabled = False
     }
 
@@ -57,11 +56,7 @@ getSource model =
         | abbrev = model.abbrev
         , description = model.description
         , enabled = model.enabled
-        , priority =
-            Comp.Dropdown.getSelected model.priority
-                |> List.head
-                |> Maybe.map Data.Priority.toName
-                |> Maybe.withDefault s.priority
+        , priority = Data.Priority.toName model.priority
     }
 
 
@@ -70,7 +65,7 @@ type Msg
     | SetSource Source
     | SetDescr String
     | ToggleEnabled
-    | PrioDropdownMsg (Comp.Dropdown.Msg Priority)
+    | PrioDropdownMsg (Comp.FixedDropdown.Msg Priority)
 
 
 update : Flags -> Msg -> Model -> ( Model, Cmd Msg )
@@ -95,12 +90,8 @@ update _ msg model =
                 , abbrev = t.abbrev
                 , description = t.description
                 , priority =
-                    Comp.Dropdown.makeSingleList
-                        { makeOption = \p -> { text = Data.Priority.toName p, value = Data.Priority.toName p }
-                        , placeholder = ""
-                        , options = Data.Priority.all
-                        , selected = Data.Priority.fromString t.priority
-                        }
+                    Data.Priority.fromString t.priority
+                        |> Maybe.withDefault Data.Priority.Low
                 , enabled = t.enabled
               }
             , Cmd.none
@@ -126,14 +117,25 @@ update _ msg model =
 
         PrioDropdownMsg m ->
             let
-                ( m2, c2 ) =
-                    Comp.Dropdown.update m model.priority
+                ( m2, p2 ) =
+                    Comp.FixedDropdown.update m model.priorityModel
             in
-            ( { model | priority = m2 }, Cmd.map PrioDropdownMsg c2 )
+            ( { model
+                | priorityModel = m2
+                , priority = Maybe.withDefault model.priority p2
+              }
+            , Cmd.none
+            )
 
 
 view : Flags -> Model -> Html Msg
 view flags model =
+    let
+        priorityItem =
+            Comp.FixedDropdown.Item
+                model.priority
+                (Data.Priority.toName model.priority)
+    in
     div [ class "ui form" ]
         [ div
             [ classList
@@ -171,7 +173,11 @@ view flags model =
             ]
         , div [ class "field" ]
             [ label [] [ text "Priority" ]
-            , Html.map PrioDropdownMsg (Comp.Dropdown.view model.priority)
+            , Html.map PrioDropdownMsg
+                (Comp.FixedDropdown.view
+                    (Just priorityItem)
+                    model.priorityModel
+                )
             ]
         , urlInfoMessage flags model
         ]

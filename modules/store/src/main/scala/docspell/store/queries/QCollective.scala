@@ -14,7 +14,6 @@ object QCollective {
 
   def getInsights(coll: Ident): ConnectionIO[InsightData] = {
     val IC = RItem.Columns
-    val AC = RAttachment.Columns
     val TC = RTag.Columns
     val RC = RTagItem.Columns
     val q0 = selectCount(
@@ -28,12 +27,21 @@ object QCollective {
       and(IC.cid.is(coll), IC.incoming.is(Direction.outgoing))
     ).query[Int].unique
 
-    val q2 = fr"SELECT sum(m.length) FROM" ++ RItem.table ++ fr"i" ++
-      fr"INNER JOIN" ++ RAttachment.table ++ fr"a ON" ++ AC.itemId
-      .prefix("a")
-      .is(IC.id.prefix("i")) ++
-      fr"INNER JOIN filemeta m ON m.id =" ++ AC.fileId.prefix("a").f ++
-      fr"WHERE" ++ IC.cid.is(coll)
+
+    val fileSize = sql"""
+      select sum(length) from (
+      with attachs as
+            (select a.attachid as aid, a.filemetaid as fid
+             from attachment a
+             inner join item i on a.itemid = i.itemid
+             where i.cid = $coll)
+         select a.fid,m.length from attachs a
+         inner join filemeta m on m.id = a.fid
+         union distinct
+         select a.file_id,m.length from attachment_source a
+         inner join filemeta m on m.id = a.file_id where a.id in (select aid from attachs)
+      ) as t""".query[Option[Long]].unique
+
 
     val q3 = fr"SELECT" ++ commas(
       TC.name.prefix("t").f,
@@ -47,9 +55,9 @@ object QCollective {
     for {
       n0 <- q0
       n1 <- q1
-      n2 <- q2.query[Option[Long]].unique
+      n2 <- fileSize
       n3 <- q3.query[(String, Int)].to[Vector]
-    } yield InsightData(n0, n1, n2.getOrElse(0), Map.from(n3))
+    } yield InsightData(n0, n1, n2.getOrElse(0L), Map.from(n3))
   }
 
   def getContacts(

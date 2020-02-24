@@ -2,13 +2,13 @@ package docspell.joex.process
 
 import cats.implicits._
 import cats.effect.Sync
-import docspell.common.{Duration, Language, NerLabel, ProcessItemArgs}
+import docspell.analysis.nlp._
+import docspell.analysis.contact._
+import docspell.analysis.date._
+import docspell.common._
 import docspell.joex.process.ItemData.AttachmentDates
 import docspell.joex.scheduler.Task
 import docspell.store.records.RAttachmentMeta
-import docspell.text.contact.Contact
-import docspell.text.date.DateFind
-import docspell.text.nlp.StanfordNerClassifier
 
 object TextAnalysis {
 

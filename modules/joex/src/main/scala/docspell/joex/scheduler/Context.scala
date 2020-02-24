@@ -3,7 +3,7 @@ package docspell.joex.scheduler
 import cats.Functor
 import cats.effect.{Blocker, Concurrent}
 import cats.implicits._
-import docspell.common.Ident
+import docspell.common._
 import docspell.store.Store
 import docspell.store.records.RJob
 import docspell.common.syntax.all._
@@ -52,7 +52,7 @@ object Context {
   ): F[Context[F, A]] =
     for {
       _      <- log.ftrace("Creating logger for task run")
-      logger <- Logger(job.id, job.info, config.logBufferSize, logSink)
+      logger <- QueueLogger(job.id, job.info, config.logBufferSize, logSink)
       _      <- log.ftrace("Logger created, instantiating context")
       ctx    = create[F, A](job, arg, config, logger, store, blocker)
     } yield ctx
