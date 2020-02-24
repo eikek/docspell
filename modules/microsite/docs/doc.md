@@ -6,6 +6,8 @@ title: Documentation
 
 # {{page.title}}
 
+This is the documentation for Docspell @VERSION@.
+
 Docspell assists in organizing large amounts of PDF files that are
 typically scanned paper documents. You can associate tags, set
 correspondends, what a document is concerned with, a name, a date and
