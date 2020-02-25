@@ -20,8 +20,8 @@ object TextAnalysis {
         t <- item.metas.toList.traverse(annotateAttachment[F](ctx.args.meta.language))
         _ <- ctx.logger.debug(s"Storing tags: ${t.map(_._1.copy(content = None))}")
         _ <- t.traverse(m =>
-              ctx.store.transact(RAttachmentMeta.updateLabels(m._1.id, m._1.nerlabels))
-            )
+          ctx.store.transact(RAttachmentMeta.updateLabels(m._1.id, m._1.nerlabels))
+        )
         e <- s
         _ <- ctx.logger.info(s"Text-Analysis finished in ${e.formatExact}")
         v = t.toVector

@@ -12,13 +12,13 @@ object Contact {
   def annotate(text: String): Vector[NerLabel] =
     TextSplitter
       .splitToken[Nothing](text, " \t\r\n".toSet)
-      .map({ token =>
+      .map { token =>
         if (isEmailAddress(token.value))
           NerLabel(token.value, NerTag.Email, token.begin, token.end).some
         else if (isWebsite(token.value))
           NerLabel(token.value, NerTag.Website, token.begin, token.end).some
         else None
-      })
+      }
       .flatMap(_.map(Stream.emit).getOrElse(Stream.empty))
       .toVector
 

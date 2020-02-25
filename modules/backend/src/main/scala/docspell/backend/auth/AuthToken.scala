@@ -52,7 +52,7 @@ object AuthToken {
 
   def user[F[_]: Sync](accountId: AccountId, key: ByteVector): F[AuthToken] =
     for {
-      salt   <- Common.genSaltString[F]
+      salt <- Common.genSaltString[F]
       millis = Instant.now.toEpochMilli
       cd     = AuthToken(millis, accountId, salt, "")
       sig    = sign(cd, key)

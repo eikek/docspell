@@ -103,5 +103,4 @@ object ExternConvTest extends SimpleTestSuite with FileChecks {
     }
   }
 
-
 }

@@ -38,9 +38,9 @@ object QueueLogger {
       sink: LogSink[F]
   ): F[Logger[F]] =
     for {
-      q   <- Queue.circularBuffer[F, LogEvent](bufferSize)
+      q <- Queue.circularBuffer[F, LogEvent](bufferSize)
       log = create(jobId, jobInfo, q)
-      _   <- Concurrent[F].start(q.dequeue.through(sink.receive).compile.drain)
+      _ <- Concurrent[F].start(q.dequeue.through(sink.receive).compile.drain)
     } yield log
 
 }

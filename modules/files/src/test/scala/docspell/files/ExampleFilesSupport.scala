@@ -7,8 +7,7 @@ trait ExampleFilesSupport {
   def createUrl(resource: String): LenientUri =
     Option(getClass.getResource("/" + resource)) match {
       case Some(u) => LenientUri.fromJava(u)
-      case None => sys.error(s"Resource '$resource' not found")
+      case None    => sys.error(s"Resource '$resource' not found")
     }
-
 
 }

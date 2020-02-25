@@ -7,13 +7,13 @@ import docspell.convert.ConvertConfig
 import docspell.extract.ExtractConfig
 
 case class Config(
-                   appId: Ident,
-                   baseUrl: LenientUri,
-                   bind: Config.Bind,
-                   jdbc: JdbcConfig,
-                   scheduler: SchedulerConfig,
-                   extraction: ExtractConfig,
-                   convert: ConvertConfig
+    appId: Ident,
+    baseUrl: LenientUri,
+    bind: Config.Bind,
+    jdbc: JdbcConfig,
+    scheduler: SchedulerConfig,
+    extraction: ExtractConfig,
+    convert: ConvertConfig
 )
 
 object Config {

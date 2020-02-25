@@ -111,10 +111,10 @@ object OCollective {
       ): F[PassChangeResult] = {
         val q = for {
           optUser <- RUser.findByAccount(accountId)
-          check   = optUser.map(_.password).map(p => PasswordCrypt.check(current, p))
+          check = optUser.map(_.password).map(p => PasswordCrypt.check(current, p))
           n <- check
-                .filter(identity)
-                .traverse(_ => RUser.updatePassword(accountId, PasswordCrypt.crypt(newPass)))
+            .filter(identity)
+            .traverse(_ => RUser.updatePassword(accountId, PasswordCrypt.crypt(newPass)))
           res = check match {
             case Some(true) =>
               if (n.getOrElse(0) > 0) PassChangeResult.success else PassChangeResult.updateFailed

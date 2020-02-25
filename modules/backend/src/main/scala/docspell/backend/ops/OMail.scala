@@ -113,10 +113,10 @@ object OMail {
 
       def createSettings(accId: AccountId, s: SmtpSettings): F[AddResult] =
         (for {
-          ru     <- OptionT(store.transact(s.toRecord(accId).value))
+          ru <- OptionT(store.transact(s.toRecord(accId).value))
           ins    = RUserEmail.insert(ru)
           exists = RUserEmail.exists(ru.uid, ru.name)
-          res    <- OptionT.liftF(store.add(ins, exists))
+          res <- OptionT.liftF(store.add(ins, exists))
         } yield res).getOrElse(AddResult.Failure(new Exception("User not found")))
 
       def updateSettings(accId: AccountId, name: Ident, data: SmtpSettings): F[Int] = {
@@ -143,10 +143,10 @@ object OMail {
           for {
             _ <- OptionT.liftF(store.transact(RItem.existsById(m.item))).filter(identity)
             ras <- OptionT.liftF(
-                    store.transact(
-                      RAttachment.findByItemAndCollectiveWithMeta(m.item, accId.collective)
-                    )
-                  )
+              store.transact(
+                RAttachment.findByItemAndCollectiveWithMeta(m.item, accId.collective)
+              )
+            )
           } yield {
             val addAttach = m.attach.filter(ras).map { a =>
               Attach[F](Stream.emit(a._2).through(store.bitpeace.fetchData2(RangeDef.all)))
@@ -171,15 +171,15 @@ object OMail {
         def storeMail(msgId: String, cfg: RUserEmail): F[Either[SendResult, Ident]] = {
           val save = for {
             data <- RSentMail.forItem(
-                     m.item,
-                     accId,
-                     msgId,
-                     cfg.mailFrom,
-                     name,
-                     m.subject,
-                     m.recipients,
-                     m.body
-                   )
+              m.item,
+              accId,
+              msgId,
+              cfg.mailFrom,
+              name,
+              m.subject,
+              m.recipients,
+              m.body
+            )
             _ <- OptionT.liftF(RSentMail.insert(data._1))
             _ <- OptionT.liftF(RSentMailItem.insert(data._2))
           } yield data._1.id
@@ -197,7 +197,7 @@ object OMail {
           mail    <- createMail(mailCfg)
           mid     <- OptionT.liftF(sendMail(mailCfg.toMailConfig, mail))
           res     <- mid.traverse(id => OptionT.liftF(storeMail(id, mailCfg)))
-          conv    = res.fold(identity, _.fold(identity, id => SendResult.Success(id)))
+          conv = res.fold(identity, _.fold(identity, id => SendResult.Success(id)))
         } yield conv).getOrElse(SendResult.NotFound)
       }
 

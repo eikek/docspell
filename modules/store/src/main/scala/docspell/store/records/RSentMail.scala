@@ -52,16 +52,16 @@ object RSentMail {
     for {
       user <- OptionT(RUser.findByAccount(accId))
       sm <- OptionT.liftF(
-             RSentMail[ConnectionIO](
-               user.uid,
-               messageId,
-               sender,
-               connName,
-               subject,
-               recipients,
-               body
-             )
-           )
+        RSentMail[ConnectionIO](
+          user.uid,
+          messageId,
+          sender,
+          connName,
+          subject,
+          recipients,
+          body
+        )
+      )
       si <- OptionT.liftF(RSentMailItem[ConnectionIO](itemId, sm.id, Some(sm.created)))
     } yield (sm, si)
 

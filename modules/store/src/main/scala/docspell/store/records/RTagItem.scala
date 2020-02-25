@@ -33,9 +33,9 @@ object RTagItem {
   def insertItemTags(item: Ident, tags: Seq[Ident]): ConnectionIO[Int] =
     for {
       tagValues <- tags.toList.traverse(id =>
-                    Ident.randomId[ConnectionIO].map(rid => RTagItem(rid, item, id))
-                  )
+        Ident.randomId[ConnectionIO].map(rid => RTagItem(rid, item, id))
+      )
       tagFrag = tagValues.map(v => fr"${v.tagItemId},${v.itemId},${v.tagId}")
-      ins     <- insertRows(table, all, tagFrag).update.run
+      ins <- insertRows(table, all, tagFrag).update.run
     } yield ins
 }

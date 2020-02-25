@@ -14,12 +14,16 @@ object WkHtmlPdf {
       cfg: WkHtmlPdfConfig,
       chunkSize: Int,
       blocker: Blocker,
-      logger: Logger[F],
+      logger: Logger[F]
   )(in: Stream[F, Byte], handler: Handler[F, A]): F[A] = {
     val reader: (Path, SystemCommand.Result) => F[ConversionResult[F]] =
       ExternConv.readResult[F](blocker, chunkSize, logger)
 
-    ExternConv.toPDF[F, A]("wkhtmltopdf", cfg.command, cfg.workingDir, true, blocker, logger, reader)(in, handler)
+    ExternConv
+      .toPDF[F, A]("wkhtmltopdf", cfg.command, cfg.workingDir, true, blocker, logger, reader)(
+        in,
+        handler
+      )
   }
 
 }

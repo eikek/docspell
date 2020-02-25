@@ -27,7 +27,6 @@ object QCollective {
       and(IC.cid.is(coll), IC.incoming.is(Direction.outgoing))
     ).query[Int].unique
 
-
     val fileSize = sql"""
       select sum(length) from (
       with attachs as
@@ -41,7 +40,6 @@ object QCollective {
          select a.file_id,m.length from attachment_source a
          inner join filemeta m on m.id = a.file_id where a.id in (select aid from attachs)
       ) as t""".query[Option[Long]].unique
-
 
     val q3 = fr"SELECT" ++ commas(
       TC.name.prefix("t").f,

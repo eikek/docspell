@@ -34,11 +34,11 @@ object JobQueue {
       def insert(job: RJob): F[Unit] =
         store
           .transact(RJob.insert(job))
-          .flatMap({ n =>
+          .flatMap { n =>
             if (n != 1)
               Effect[F].raiseError(new Exception(s"Inserting job failed. Update count: $n"))
             else ().pure[F]
-          })
+          }
 
       def insertAll(jobs: Seq[RJob]): F[Unit] =
         jobs.toList

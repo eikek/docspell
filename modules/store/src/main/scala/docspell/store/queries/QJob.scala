@@ -21,11 +21,11 @@ object QJob {
     Stream
       .range(0, 10)
       .evalMap(n => takeNextJob1(store)(priority, worker, retryPause, n))
-      .evalTap({ x =>
+      .evalTap { x =>
         if (x.isLeft)
           logger.fdebug[F]("Cannot mark job, probably due to concurrent updates. Will retry.")
         else ().pure[F]
-      })
+      }
       .find(_.isRight)
       .flatMap({
         case Right(job) =>
@@ -50,7 +50,7 @@ object QJob {
       store.transact(for {
         n <- RJob.setScheduled(job.id, worker)
         _ <- if (n == 1) RJobGroupUse.setGroup(RJobGroupUse(worker, job.group))
-            else 0.pure[ConnectionIO]
+        else 0.pure[ConnectionIO]
       } yield if (n == 1) Right(job) else Left(()))
 
     for {
@@ -61,8 +61,8 @@ object QJob {
       prio  <- group.map(priority).getOrElse((Priority.Low: Priority).pure[F])
       _     <- logger.ftrace[F](s"Looking for job of prio $prio")
       job <- group
-              .map(g => store.transact(selectNextJob(g, prio, retryPause, now)))
-              .getOrElse((None: Option[RJob]).pure[F])
+        .map(g => store.transact(selectNextJob(g, prio, retryPause, now)))
+        .getOrElse((None: Option[RJob]).pure[F])
       _   <- logger.ftrace[F](s"Found job: ${job.map(_.info)}")
       res <- job.traverse(j => markJob(j))
     } yield res.map(_.map(_.some)).getOrElse {
@@ -97,7 +97,8 @@ object QJob {
     val sql2 = fr"SELECT min(" ++ jgroup.f ++ fr") as g FROM" ++ RJob.table ++ fr"a" ++
       fr"WHERE" ++ stateCond
 
-    val union = sql"SELECT g FROM ((" ++ sql1 ++ sql") UNION ALL (" ++ sql2 ++ sql")) as t0 WHERE g is not null"
+    val union =
+      sql"SELECT g FROM ((" ++ sql1 ++ sql") UNION ALL (" ++ sql2 ++ sql")) as t0 WHERE g is not null"
 
     union
       .query[Ident]

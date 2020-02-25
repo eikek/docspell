@@ -37,10 +37,10 @@ object EquipmentRoutes {
 
       case req @ PUT -> Root =>
         for {
-          data  <- req.as[Equipment]
+          data <- req.as[Equipment]
           equip = changeEquipment(data, user.account.collective)
-          res   <- backend.equipment.update(equip)
-          resp  <- Ok(basicResult(res, "Equipment updated."))
+          res  <- backend.equipment.update(equip)
+          resp <- Ok(basicResult(res, "Equipment updated."))
         } yield resp
 
       case DELETE -> Root / Ident(id) =>

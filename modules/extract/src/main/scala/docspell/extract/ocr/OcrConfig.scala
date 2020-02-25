@@ -5,13 +5,12 @@ import java.nio.file.{Path, Paths}
 import docspell.common._
 
 case class OcrConfig(
-                      maxImageSize: Int,
-                      ghostscript: OcrConfig.Ghostscript,
+    maxImageSize: Int,
+    ghostscript: OcrConfig.Ghostscript,
     pageRange: OcrConfig.PageRange,
     unpaper: OcrConfig.Unpaper,
     tesseract: OcrConfig.Tesseract
-) {
-}
+) {}
 
 object OcrConfig {
 

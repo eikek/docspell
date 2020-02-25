@@ -61,9 +61,9 @@ object OJob {
           mustCancel(j.some).isEmpty
 
         val tryDelete = for {
-          job  <- RJob.findByIdAndGroup(id, collective)
+          job <- RJob.findByIdAndGroup(id, collective)
           jobm = job.filter(canDelete)
-          del  <- jobm.traverse(j => RJob.delete(j.id))
+          del <- jobm.traverse(j => RJob.delete(j.id))
         } yield del match {
           case Some(_) => Right(JobCancelResult.Removed: JobCancelResult)
           case None    => Left(mustCancel(job))
@@ -77,12 +77,12 @@ object OJob {
         for {
           tryDel <- store.transact(tryDelete)
           result <- tryDel match {
-                     case Right(r) => r.pure[F]
-                     case Left(Some((job, worker))) =>
-                       tryCancel(job, worker)
-                     case Left(None) =>
-                       (JobCancelResult.JobNotFound: OJob.JobCancelResult).pure[F]
-                   }
+            case Right(r) => r.pure[F]
+            case Left(Some((job, worker))) =>
+              tryCancel(job, worker)
+            case Left(None) =>
+              (JobCancelResult.JobNotFound: OJob.JobCancelResult).pure[F]
+          }
         } yield result
       }
     })

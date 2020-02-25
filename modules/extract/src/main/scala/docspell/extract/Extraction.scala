@@ -29,7 +29,7 @@ object Extraction {
           data: Stream[F, Byte],
           dataType: DataType,
           lang: Language
-      ): F[ExtractResult] = {
+      ): F[ExtractResult] =
         TikaMimetype.resolve(dataType, data).flatMap {
           case MimeType.pdf =>
             PdfExtract
@@ -50,39 +50,46 @@ object Extraction {
               .extractOCR(data, blocker, logger, lang.iso3, cfg.ocr)
               .compile
               .lastOrError
+              .map(_.trim)
               .attempt
               .map(ExtractResult.fromEither)
 
             ImageSize.get(data).flatMap {
               case Some(dim) =>
                 if (dim.product > cfg.ocr.maxImageSize) {
-                  logger.info(s"Image size (${dim.product}) is too large (max ${cfg.ocr.maxImageSize}).") *>
-                  ExtractResult.failure(new Exception(
-                    s"Image size (${dim.width}x${dim.height}) is too large (max ${cfg.ocr.maxImageSize}).")
-                  ).pure[F]
+                  logger.info(
+                    s"Image size (${dim.product}) is too large (max ${cfg.ocr.maxImageSize})."
+                  ) *>
+                    ExtractResult
+                      .failure(
+                        new Exception(
+                          s"Image size (${dim.width}x${dim.height}) is too large (max ${cfg.ocr.maxImageSize})."
+                        )
+                      )
+                      .pure[F]
                 } else {
                   doExtract
                 }
               case None =>
                 logger.info(s"Cannot read image data from ${mt.asString}. Extracting anyways.") *>
-                doExtract
+                  doExtract
             }
 
           case OdfType.container =>
-            logger.info(s"File detected as ${OdfType.container}. Try to read as OpenDocument file.") *>
+            logger
+              .info(s"File detected as ${OdfType.container}. Try to read as OpenDocument file.") *>
               OdfExtract.get(data).map(ExtractResult.fromEither)
 
-          case mt@MimeType("text", sub) if !sub.contains("html") =>
+          case mt @ MimeType("text", sub) if !sub.contains("html") =>
             logger.info(s"File detected as ${mt.asString}. Returning itself as text.") *>
-            data.through(fs2.text.utf8Decode).compile.last.map { txt =>
-              ExtractResult.success(txt.getOrElse("").trim)
-            }
+              data.through(fs2.text.utf8Decode).compile.last.map { txt =>
+                ExtractResult.success(txt.getOrElse("").trim)
+              }
 
           case mt =>
             ExtractResult.unsupportedFormat(mt).pure[F]
 
         }
-      }
     }
 
 }

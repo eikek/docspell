@@ -84,7 +84,7 @@ trait Conversions {
       data.inReplyTo.map(mkIdName),
       data.item.dueDate,
       data.item.notes,
-      data.attachments.map((mkAttachment(data)_).tupled).toList,
+      data.attachments.map((mkAttachment(data) _).tupled).toList,
       data.sources.map((mkAttachmentSource _).tupled).toList,
       data.tags.map(mkTag).toList
     )
@@ -204,7 +204,8 @@ trait Conversions {
 
     val files = mp.parts
       .filter(p => p.name.forall(s => !s.equalsIgnoreCase("meta")))
-      .map(p => OUpload.File(p.filename, p.headers.get(`Content-Type`).map(fromContentType), p.body)
+      .map(p =>
+        OUpload.File(p.filename, p.headers.get(`Content-Type`).map(fromContentType), p.body)
       )
     for {
       metaData <- meta

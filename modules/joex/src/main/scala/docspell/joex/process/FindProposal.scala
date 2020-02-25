@@ -95,10 +95,10 @@ object FindProposal {
       labels => self.find(labels).map(f)
 
     def next(f: Finder[F])(implicit F: FlatMap[F], F3: Applicative[F]): Finder[F] =
-      flatMap({ ml0 =>
+      flatMap { ml0 =>
         if (ml0.hasResultsAll) Finder.unit[F](ml0)
         else f.map(ml1 => ml0.fillEmptyFrom(ml1))
-      })
+      }
 
     def nextWhenEmpty(f: Finder[F], mt0: MetaProposalType, mts: MetaProposalType*)(
         implicit F: FlatMap[F],

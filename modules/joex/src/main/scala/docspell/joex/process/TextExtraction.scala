@@ -12,8 +12,8 @@ import docspell.store.records.{RAttachment, RAttachmentMeta, RFileMeta}
 object TextExtraction {
 
   def apply[F[_]: Sync: ContextShift](
-                                       cfg: ExtractConfig,
-                                       item: ItemData
+      cfg: ExtractConfig,
+      item: ItemData
   ): Task[F, ProcessItemArgs, ItemData] =
     Task { ctx =>
       for {
@@ -28,11 +28,11 @@ object TextExtraction {
     }
 
   def extractTextIfEmpty[F[_]: Sync: ContextShift](
-                                                   ctx: Context[F, _],
-                                                   cfg: ExtractConfig,
-                                                   lang: Language,
-                                                   item: ItemData
-                                                  )(ra: RAttachment): F[RAttachmentMeta] = {
+      ctx: Context[F, _],
+      cfg: ExtractConfig,
+      lang: Language,
+      item: ItemData
+  )(ra: RAttachment): F[RAttachmentMeta] = {
     val rm = item.findOrCreate(ra.id)
     rm.content match {
       case Some(_) =>
@@ -50,14 +50,14 @@ object TextExtraction {
       item: ItemData
   )(ra: RAttachment): F[RAttachmentMeta] =
     for {
-      _    <- ctx.logger.debug(s"Extracting text for attachment ${stripAttachmentName(ra)}")
-      dst  <- Duration.stopTime[F]
-      txt  <- extractTextFallback(ctx, cfg, ra, lang)(filesToExtract(item, ra))
+      _   <- ctx.logger.debug(s"Extracting text for attachment ${stripAttachmentName(ra)}")
+      dst <- Duration.stopTime[F]
+      txt <- extractTextFallback(ctx, cfg, ra, lang)(filesToExtract(item, ra))
       meta = item.changeMeta(ra.id, rm => rm.setContentIfEmpty(txt.map(_.trim).filter(_.nonEmpty)))
-      est  <- dst
+      est <- dst
       _ <- ctx.logger.debug(
-            s"Extracting text for attachment ${stripAttachmentName(ra)} finished in ${est.formatExact}"
-          )
+        s"Extracting text for attachment ${stripAttachmentName(ra)} finished in ${est.formatExact}"
+      )
     } yield meta
 
   def extractText[F[_]: Sync: ContextShift](
@@ -76,16 +76,15 @@ object TextExtraction {
         .getOrElse(Mimetype.`application/octet-stream`)
 
     findMime
-        .flatMap(mt =>
-          extr.extractText(data, DataType(MimeType(mt.primary, mt.sub)), lang))
+      .flatMap(mt => extr.extractText(data, DataType(MimeType(mt.primary, mt.sub)), lang))
   }
 
   private def extractTextFallback[F[_]: Sync: ContextShift](
-                                                             ctx: Context[F, _],
-                                                             cfg: ExtractConfig,
-                                                             ra: RAttachment,
-                                                             lang: Language,
-  )(fileIds: List[Ident]): F[Option[String]] = {
+      ctx: Context[F, _],
+      cfg: ExtractConfig,
+      ra: RAttachment,
+      lang: Language
+  )(fileIds: List[Ident]): F[Option[String]] =
     fileIds match {
       case Nil =>
         ctx.logger.error(s"Cannot extract text").map(_ => None)
@@ -99,15 +98,18 @@ object TextExtraction {
               txt.some.pure[F]
 
             case ExtractResult.UnsupportedFormat(mt) =>
-              ctx.logger.warn(s"Cannot extract text from file ${stripAttachmentName(ra)}: unsupported format ${mt.asString}. Try with converted file.").
-                flatMap(_ => extractTextFallback[F](ctx, cfg, ra, lang)(rest))
+              ctx.logger
+                .warn(
+                  s"Cannot extract text from file ${stripAttachmentName(ra)}: unsupported format ${mt.asString}. Try with converted file."
+                )
+                .flatMap(_ => extractTextFallback[F](ctx, cfg, ra, lang)(rest))
 
             case ExtractResult.Failure(ex) =>
-              ctx.logger.warn(s"Cannot extract text: ${ex.getMessage}. Try with converted file").
-                flatMap(_ => extractTextFallback[F](ctx, cfg, ra, lang)(rest))
+              ctx.logger
+                .warn(s"Cannot extract text: ${ex.getMessage}. Try with converted file")
+                .flatMap(_ => extractTextFallback[F](ctx, cfg, ra, lang)(rest))
           })
     }
-  }
 
   /** Returns the fileIds to extract text from. First, the source file
     * is tried. If that fails, the converted file is tried.
@@ -115,7 +117,7 @@ object TextExtraction {
   private def filesToExtract(item: ItemData, ra: RAttachment): List[Ident] =
     item.originFile.get(ra.id) match {
       case Some(sid) => List(sid, ra.fileId).distinct
-      case None => List(ra.fileId)
+      case None      => List(ra.fileId)
     }
 
   private def stripAttachmentName(ra: RAttachment): String =

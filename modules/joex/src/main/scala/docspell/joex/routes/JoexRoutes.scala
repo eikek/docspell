@@ -25,15 +25,15 @@ object JoexRoutes {
       case GET -> Root / "running" =>
         for {
           jobs <- app.scheduler.getRunning
-          jj   = jobs.map(mkJob)
+          jj = jobs.map(mkJob)
           resp <- Ok(JobList(jj.toList))
         } yield resp
 
       case POST -> Root / "shutdownAndExit" =>
         for {
           _ <- ConcurrentEffect[F].start(
-                Timer[F].sleep(Duration.seconds(1).toScala) *> app.initShutdown
-              )
+            Timer[F].sleep(Duration.seconds(1).toScala) *> app.initShutdown
+          )
           resp <- Ok(BasicResult(true, "Shutdown initiated."))
         } yield resp
 
@@ -41,8 +41,8 @@ object JoexRoutes {
         for {
           optJob <- app.scheduler.getRunning.map(_.find(_.id == id))
           optLog <- optJob.traverse(j => app.findLogs(j.id))
-          jAndL  = for { job <- optJob; log <- optLog } yield mkJobLog(job, log)
-          resp   <- jAndL.map(Ok(_)).getOrElse(NotFound(BasicResult(false, "Not found")))
+          jAndL = for { job <- optJob; log <- optLog } yield mkJobLog(job, log)
+          resp <- jAndL.map(Ok(_)).getOrElse(NotFound(BasicResult(false, "Not found")))
         } yield resp
 
       case POST -> Root / "job" / Ident(id) / "cancel" =>

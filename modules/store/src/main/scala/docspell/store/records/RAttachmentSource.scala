@@ -38,18 +38,20 @@ object RAttachmentSource {
   def insert(v: RAttachmentSource): ConnectionIO[Int] =
     insertRow(table, all, fr"${v.id},${v.fileId},${v.name},${v.created}").update.run
 
-
   def findById(attachId: Ident): ConnectionIO[Option[RAttachmentSource]] =
     selectSimple(all, table, id.is(attachId)).query[RAttachmentSource].option
 
   def delete(attachId: Ident): ConnectionIO[Int] =
     deleteFrom(table, id.is(attachId)).update.run
 
-  def findByIdAndCollective(attachId: Ident, collective: Ident): ConnectionIO[Option[RAttachmentSource]] = {
-    val bId = RAttachment.Columns.id.prefix("b")
-    val aId = Columns.id.prefix("a")
+  def findByIdAndCollective(
+      attachId: Ident,
+      collective: Ident
+  ): ConnectionIO[Option[RAttachmentSource]] = {
+    val bId   = RAttachment.Columns.id.prefix("b")
+    val aId   = Columns.id.prefix("a")
     val bItem = RAttachment.Columns.itemId.prefix("b")
-    val iId = RItem.Columns.id.prefix("i")
+    val iId   = RItem.Columns.id.prefix("i")
     val iColl = RItem.Columns.cid.prefix("i")
 
     val from = table ++ fr"a INNER JOIN" ++
@@ -64,11 +66,11 @@ object RAttachmentSource {
   def findByItemWithMeta(id: Ident): ConnectionIO[Vector[(RAttachmentSource, FileMeta)]] = {
     import bitpeace.sql._
 
-    val aId = Columns.id.prefix("a")
+    val aId       = Columns.id.prefix("a")
     val afileMeta = fileId.prefix("a")
-    val bPos = RAttachment.Columns.position.prefix("b")
-    val bId = RAttachment.Columns.id.prefix("b")
-    val bItem = RAttachment.Columns.itemId.prefix("b")
+    val bPos      = RAttachment.Columns.position.prefix("b")
+    val bId       = RAttachment.Columns.id.prefix("b")
+    val bItem     = RAttachment.Columns.itemId.prefix("b")
     val mId       = RFileMeta.Columns.id.prefix("m")
 
     val cols = all.map(_.prefix("a")) ++ RFileMeta.Columns.all.map(_.prefix("m"))
@@ -77,8 +79,9 @@ object RAttachmentSource {
       RAttachment.table ++ fr"b ON" ++ aId.is(bId)
     val where = bItem.is(id)
 
-    (selectSimple(cols, from, where) ++ orderBy(bPos.asc)).
-      query[(RAttachmentSource, FileMeta)].to[Vector]
+    (selectSimple(cols, from, where) ++ orderBy(bPos.asc))
+      .query[(RAttachmentSource, FileMeta)]
+      .to[Vector]
   }
 
 }

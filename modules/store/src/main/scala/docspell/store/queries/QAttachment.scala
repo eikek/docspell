@@ -14,25 +14,32 @@ object QAttachment {
 
   def deleteById[F[_]: Sync](store: Store[F])(attachId: Ident, coll: Ident): F[Int] =
     for {
-      raFile <- store.transact(RAttachment.findByIdAndCollective(attachId, coll)).map(_.map(_.fileId))
-      rsFile <- store.transact(RAttachmentSource.findByIdAndCollective(attachId, coll)).map(_.map(_.fileId))
-      n     <- store.transact(RAttachment.delete(attachId))
-      f <- Stream.emits(raFile.toSeq ++ rsFile.toSeq)
-            .map(_.id)
-            .flatMap(store.bitpeace.delete)
-            .map(flag => if (flag) 1 else 0)
-            .compile
-            .foldMonoid
+      raFile <- store
+        .transact(RAttachment.findByIdAndCollective(attachId, coll))
+        .map(_.map(_.fileId))
+      rsFile <- store
+        .transact(RAttachmentSource.findByIdAndCollective(attachId, coll))
+        .map(_.map(_.fileId))
+      n <- store.transact(RAttachment.delete(attachId))
+      f <- Stream
+        .emits(raFile.toSeq ++ rsFile.toSeq)
+        .map(_.id)
+        .flatMap(store.bitpeace.delete)
+        .map(flag => if (flag) 1 else 0)
+        .compile
+        .foldMonoid
     } yield n + f
 
   def deleteAttachment[F[_]: Sync](store: Store[F])(ra: RAttachment): F[Int] =
     for {
       s <- store.transact(RAttachmentSource.findById(ra.id))
       n <- store.transact(RAttachment.delete(ra.id))
-      f <- Stream.emits(ra.fileId.id +: s.map(_.fileId.id).toSeq).
-        flatMap(store.bitpeace.delete).
-        map(flag => if (flag) 1 else 0).
-        compile.foldMonoid
+      f <- Stream
+        .emits(ra.fileId.id +: s.map(_.fileId.id).toSeq)
+        .flatMap(store.bitpeace.delete)
+        .map(flag => if (flag) 1 else 0)
+        .compile
+        .foldMonoid
     } yield n + f
 
   def deleteItemAttachments[F[_]: Sync](store: Store[F])(itemId: Ident, coll: Ident): F[Int] =

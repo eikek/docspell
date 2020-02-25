@@ -27,8 +27,8 @@ object RestAppImpl {
   ): Resource[F, RestApp[F]] =
     for {
       backend <- BackendApp(cfg.backend, connectEC, httpClientEc, blocker)
-      app     = new RestAppImpl[F](cfg, backend)
-      appR    <- Resource.make(app.init.map(_ => app))(_.shutdown)
+      app = new RestAppImpl[F](cfg, backend)
+      appR <- Resource.make(app.init.map(_ => app))(_.shutdown)
     } yield appR
 
 }

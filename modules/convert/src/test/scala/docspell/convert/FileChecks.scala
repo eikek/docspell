@@ -55,5 +55,4 @@ trait FileChecks {
   def commandExists(cmd: String): Boolean =
     Runtime.getRuntime.exec(Array("which", cmd)).waitFor() == 0
 
-
 }

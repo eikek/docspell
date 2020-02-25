@@ -162,17 +162,17 @@ object RJob {
     for {
       _ <- incrementRetries(jobId)
       n <- updateRow(
-            table,
-            and(
-              id.is(jobId),
-              or(worker.isNull, worker.is(workerId)),
-              state.isOneOf(Seq[JobState](JobState.Waiting, JobState.Stuck))
-            ),
-            commas(
-              state.setTo(JobState.Scheduled: JobState),
-              worker.setTo(workerId)
-            )
-          ).update.run
+        table,
+        and(
+          id.is(jobId),
+          or(worker.isNull, worker.is(workerId)),
+          state.isOneOf(Seq[JobState](JobState.Waiting, JobState.Stuck))
+        ),
+        commas(
+          state.setTo(JobState.Scheduled: JobState),
+          worker.setTo(workerId)
+        )
+      ).update.run
     } yield n
 
   def setSuccess(jobId: Ident, now: Timestamp): ConnectionIO[Int] =

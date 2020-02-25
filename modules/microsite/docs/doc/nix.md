@@ -128,6 +128,9 @@ Please see the `nix/module-server.nix` and `nix/module-joex.nix` files
 for the set of options. The nixos options are modelled after the
 default configuration file.
 
+The modules files are only applicable to the newest version of
+Docspell. If you really need an older version, checkout the
+appropriate commit.
 
 ## NixOs Example
 

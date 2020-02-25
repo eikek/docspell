@@ -81,7 +81,7 @@ object OUpload {
 
       def submit(data: OUpload.UploadData[F], sourceId: Ident): F[OUpload.UploadResult] =
         for {
-          sOpt   <- store.transact(RSource.find(sourceId)).map(_.toRight(UploadResult.NoSource))
+          sOpt <- store.transact(RSource.find(sourceId)).map(_.toRight(UploadResult.NoSource))
           abbrev = sOpt.map(_.abbrev).toOption.getOrElse(data.meta.sourceAbbrev)
           updata = data.copy(meta = data.meta.copy(sourceAbbrev = abbrev))
           accId  = sOpt.map(source => AccountId(source.cid, source.sid))
@@ -131,8 +131,8 @@ object OUpload {
           )
 
         for {
-          id   <- Ident.randomId[F]
-          now  <- Timestamp.current[F]
+          id  <- Ident.randomId[F]
+          now <- Timestamp.current[F]
           jobs = args.map(a => create(id, now, a))
         } yield jobs
 

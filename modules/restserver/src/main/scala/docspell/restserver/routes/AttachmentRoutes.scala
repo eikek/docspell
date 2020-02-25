@@ -45,21 +45,21 @@ object AttachmentRoutes {
         for {
           fileData <- backend.item.findAttachment(id, user.account.collective)
           resp <- fileData
-                   .map(data => withResponseHeaders(Ok())(data))
-                   .getOrElse(NotFound(BasicResult(false, "Not found")))
+            .map(data => withResponseHeaders(Ok())(data))
+            .getOrElse(NotFound(BasicResult(false, "Not found")))
         } yield resp
 
       case req @ GET -> Root / Ident(id) =>
         for {
           fileData <- backend.item.findAttachment(id, user.account.collective)
-          inm      = req.headers.get(`If-None-Match`).flatMap(_.tags)
-          matches  = matchETag(fileData.map(_.meta), inm)
+          inm     = req.headers.get(`If-None-Match`).flatMap(_.tags)
+          matches = matchETag(fileData.map(_.meta), inm)
           resp <- fileData
-                   .map({ data =>
-                     if (matches) withResponseHeaders(NotModified())(data)
-                     else makeByteResp(data)
-                   })
-                   .getOrElse(NotFound(BasicResult(false, "Not found")))
+            .map { data =>
+              if (matches) withResponseHeaders(NotModified())(data)
+              else makeByteResp(data)
+            }
+            .getOrElse(NotFound(BasicResult(false, "Not found")))
         } yield resp
 
       case HEAD -> Root / Ident(id) / "original" =>
@@ -73,13 +73,13 @@ object AttachmentRoutes {
       case req @ GET -> Root / Ident(id) / "original" =>
         for {
           fileData <- backend.item.findAttachmentSource(id, user.account.collective)
-          inm      = req.headers.get(`If-None-Match`).flatMap(_.tags)
-          matches  = matchETag(fileData.map(_.meta), inm)
+          inm     = req.headers.get(`If-None-Match`).flatMap(_.tags)
+          matches = matchETag(fileData.map(_.meta), inm)
           resp <- fileData
-            .map({ data =>
+            .map { data =>
               if (matches) withResponseHeaders(NotModified())(data)
               else makeByteResp(data)
-            })
+            }
             .getOrElse(NotFound(BasicResult(false, "Not found")))
         } yield resp
 
@@ -92,16 +92,16 @@ object AttachmentRoutes {
 
       case GET -> Root / Ident(id) / "meta" =>
         for {
-          rm   <- backend.item.findAttachmentMeta(id, user.account.collective)
-          md   = rm.map(Conversions.mkAttachmentMeta)
+          rm <- backend.item.findAttachmentMeta(id, user.account.collective)
+          md = rm.map(Conversions.mkAttachmentMeta)
           resp <- md.map(Ok(_)).getOrElse(NotFound(BasicResult(false, "Not found.")))
         } yield resp
     }
   }
 
   private def matchETag[F[_]](
-                               fileData: Option[FileMeta],
-                               noneMatch: Option[NonEmptyList[EntityTag]]
+      fileData: Option[FileMeta],
+      noneMatch: Option[NonEmptyList[EntityTag]]
   ): Boolean =
     (fileData, noneMatch) match {
       case (Some(meta), Some(nm)) =>

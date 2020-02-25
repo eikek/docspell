@@ -22,24 +22,22 @@ object Markdown {
     val r = createRenderer()
     Try {
       val reader = new InputStreamReader(is, StandardCharsets.UTF_8)
-      val doc = p.parseReader(reader)
+      val doc    = p.parseReader(reader)
       wrapHtml(r.render(doc), cfg)
     }.toEither
   }
 
-
   def toHtml(md: String, cfg: MarkdownConfig): String = {
-    val p = createParser()
-    val r = createRenderer()
+    val p   = createParser()
+    val r   = createRenderer()
     val doc = p.parse(md)
     wrapHtml(r.render(doc), cfg)
   }
 
   def toHtml[F[_]: Sync](data: Stream[F, Byte], cfg: MarkdownConfig): F[String] =
-    data.through(fs2.text.utf8Decode).compile.foldMonoid.
-      map(str => toHtml(str, cfg))
+    data.through(fs2.text.utf8Decode).compile.foldMonoid.map(str => toHtml(str, cfg))
 
-  private def wrapHtml(body: String, cfg: MarkdownConfig): String = {
+  private def wrapHtml(body: String, cfg: MarkdownConfig): String =
     s"""<!DOCTYPE html>
        |<html>
        |<head>
@@ -53,13 +51,13 @@ object Markdown {
        |</body>
        |</html>
        |""".stripMargin
-  }
 
   private def createParser(): Parser = {
     val opts = new MutableDataSet()
-    opts.set(Parser.EXTENSIONS.asInstanceOf[DataKey[util.Collection[_]]],
-      util.Arrays.asList(TablesExtension.create(),
-        StrikethroughExtension.create()));
+    opts.set(
+      Parser.EXTENSIONS.asInstanceOf[DataKey[util.Collection[_]]],
+      util.Arrays.asList(TablesExtension.create(), StrikethroughExtension.create())
+    );
 
     Parser.builder(opts).build()
   }

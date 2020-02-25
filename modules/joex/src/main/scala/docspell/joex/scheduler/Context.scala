@@ -54,7 +54,7 @@ object Context {
       _      <- log.ftrace("Creating logger for task run")
       logger <- QueueLogger(job.id, job.info, config.logBufferSize, logSink)
       _      <- log.ftrace("Logger created, instantiating context")
-      ctx    = create[F, A](job, arg, config, logger, store, blocker)
+      ctx = create[F, A](job, arg, config, logger, store, blocker)
     } yield ctx
 
   final private class ContextImpl[F[_]: Functor, A](

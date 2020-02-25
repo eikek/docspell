@@ -20,7 +20,9 @@ private[extern] object ExternConv {
       logger: Logger[F],
       reader: (Path, SystemCommand.Result) => F[ConversionResult[F]]
   )(in: Stream[F, Byte], handler: Handler[F, A]): F[A] =
-    Stream.resource(File.withTempDir[F](wd, s"docspell-$name")).flatMap { dir =>
+    Stream
+      .resource(File.withTempDir[F](wd, s"docspell-$name"))
+      .flatMap { dir =>
         val inFile = dir.resolve("infile").toAbsolutePath.normalize
         val out    = dir.resolve("out.pdf").toAbsolutePath.normalize
         val sysCfg =
@@ -40,12 +42,12 @@ private[extern] object ExternConv {
           SystemCommand
             .execSuccess[F](sysCfg, blocker, logger, Some(dir), if (useStdin) in else Stream.empty)
             .evalMap(result =>
-              logResult(name, result, logger).
-                flatMap(_ => reader(out, result)).
-                flatMap(handler.run)
+              logResult(name, result, logger).flatMap(_ => reader(out, result)).flatMap(handler.run)
             )
         }
-      }.compile.lastOrError
+      }
+      .compile
+      .lastOrError
 
   def readResult[F[_]: Sync: ContextShift](
       blocker: Blocker,
@@ -60,9 +62,11 @@ private[extern] object ExternConv {
             successPdf(File.readAll(out, blocker, chunkSize)).pure[F]
 
       case false =>
-        ConversionResult.failure[F](
-          new Exception(s"Command result=${result.rc}. No output file found.")
-        ).pure[F]
+        ConversionResult
+          .failure[F](
+            new Exception(s"Command result=${result.rc}. No output file found.")
+          )
+          .pure[F]
     }
 
   def readResultTesseract[F[_]: Sync: ContextShift](
@@ -75,7 +79,7 @@ private[extern] object ExternConv {
     File.existsNonEmpty[F](outPdf).flatMap {
       case true =>
         val outTxt = out.resolveSibling(s"$outPrefix.txt")
-        File.exists(outTxt).flatMap(txtExists => {
+        File.exists(outTxt).flatMap { txtExists =>
           val pdfData = File.readAll(out, blocker, chunkSize)
           if (result.rc == 0) {
             if (txtExists) successPdfTxt(pdfData, File.readText(outTxt, blocker)).pure[F]
@@ -84,12 +88,14 @@ private[extern] object ExternConv {
             logger.warn(s"Command not successful (rc=${result.rc}), but file exists.") *>
               successPdf(pdfData).pure[F]
           }
-        })
+        }
 
       case false =>
-        ConversionResult.failure[F](
-          new Exception(s"Command result=${result.rc}. No output file found.")
-        ).pure[F]
+        ConversionResult
+          .failure[F](
+            new Exception(s"Command result=${result.rc}. No output file found.")
+          )
+          .pure[F]
     }
   }
 

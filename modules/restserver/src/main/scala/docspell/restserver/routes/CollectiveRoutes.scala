@@ -35,25 +35,25 @@ object CollectiveRoutes {
       case GET -> Root / "settings" =>
         for {
           collDb <- backend.collective.find(user.account.collective)
-          sett   = collDb.map(c => CollectiveSettings(c.language))
-          resp   <- sett.toResponse()
+          sett = collDb.map(c => CollectiveSettings(c.language))
+          resp <- sett.toResponse()
         } yield resp
 
       case GET -> Root / "contacts" :? QueryParam.QueryOpt(q) +& QueryParam.ContactKindOpt(kind) =>
         for {
           res <- backend.collective
-                  .getContacts(user.account.collective, q.map(_.q), kind)
-                  .take(50)
-                  .compile
-                  .toList
+            .getContacts(user.account.collective, q.map(_.q), kind)
+            .take(50)
+            .compile
+            .toList
           resp <- Ok(ContactList(res.map(Conversions.mkContact)))
         } yield resp
 
       case GET -> Root =>
         for {
           collDb <- backend.collective.find(user.account.collective)
-          coll   = collDb.map(c => Collective(c.id, c.state, c.created))
-          resp   <- coll.toResponse()
+          coll = collDb.map(c => Collective(c.id, c.state, c.created))
+          resp <- coll.toResponse()
         } yield resp
     }
   }

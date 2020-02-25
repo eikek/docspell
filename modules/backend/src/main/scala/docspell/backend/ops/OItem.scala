@@ -11,7 +11,14 @@ import docspell.store.queries.{QAttachment, QItem}
 import OItem.{AttachmentData, AttachmentSourceData, ItemData, ListItem, Query}
 import bitpeace.{FileMeta, RangeDef}
 import docspell.common.{Direction, Ident, ItemState, MetaProposalList, Timestamp}
-import docspell.store.records.{RAttachment, RAttachmentMeta, RAttachmentSource, RItem, RSource, RTagItem}
+import docspell.store.records.{
+  RAttachment,
+  RAttachmentMeta,
+  RAttachmentSource,
+  RItem,
+  RSource,
+  RTagItem
+}
 
 trait OItem[F[_]] {
 
@@ -75,14 +82,17 @@ object OItem {
     def fileId: Ident
   }
   case class AttachmentData[F[_]](ra: RAttachment, meta: FileMeta, data: Stream[F, Byte])
-    extends BinaryData[F] {
-    val name = ra.name
+      extends BinaryData[F] {
+    val name   = ra.name
     val fileId = ra.fileId
   }
 
-  case class AttachmentSourceData[F[_]](rs: RAttachmentSource, meta: FileMeta, data: Stream[F, Byte])
-  extends BinaryData[F] {
-    val name = rs.name
+  case class AttachmentSourceData[F[_]](
+      rs: RAttachmentSource,
+      meta: FileMeta,
+      data: Stream[F, Byte]
+  ) extends BinaryData[F] {
+    val name   = rs.name
     val fileId = rs.fileId
   }
 
@@ -131,18 +141,22 @@ object OItem {
 
       private def makeBinaryData[A](fileId: Ident)(f: FileMeta => A): F[Option[A]] =
         store.bitpeace
-        .get(fileId.id).unNoneTerminate.compile.last.map(
-          _.map(m => f(m))
-        )
+          .get(fileId.id)
+          .unNoneTerminate
+          .compile
+          .last
+          .map(
+            _.map(m => f(m))
+          )
 
       def setTags(item: Ident, tagIds: List[Ident], collective: Ident): F[AddResult] = {
         val db = for {
           cid <- RItem.getCollective(item)
           nd <- if (cid.contains(collective)) RTagItem.deleteItemTags(item)
-               else 0.pure[ConnectionIO]
+          else 0.pure[ConnectionIO]
           ni <- if (tagIds.nonEmpty && cid.contains(collective))
-                 RTagItem.insertItemTags(item, tagIds)
-               else 0.pure[ConnectionIO]
+            RTagItem.insertItemTags(item, tagIds)
+          else 0.pure[ConnectionIO]
         } yield nd + ni
 
         store.transact(db).attempt.map(AddResult.fromUpdate)

@@ -37,7 +37,7 @@ object TagRoutes {
       case req @ PUT -> Root =>
         for {
           data <- req.as[Tag]
-          tag  = changeTag(data, user.account.collective)
+          tag = changeTag(data, user.account.collective)
           res  <- backend.tag.update(tag)
           resp <- Ok(basicResult(res, "Tag successfully updated."))
         } yield resp

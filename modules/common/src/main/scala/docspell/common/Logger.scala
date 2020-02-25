@@ -17,7 +17,6 @@ trait Logger[F[_]] {
 
 object Logger {
 
-
   def log4s[F[_]: Sync](log: Log4sLogger): Logger[F] = new Logger[F] {
     def trace(msg: => String): F[Unit] =
       log.ftrace(msg)
