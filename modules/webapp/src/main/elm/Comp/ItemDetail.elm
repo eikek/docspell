@@ -407,6 +407,20 @@ update key flags next msg model =
                         )
                         m4
 
+                ( m6, c6 ) =
+                    update key
+                        flags
+                        next
+                        (ConcEquipMsg
+                            (Comp.Dropdown.SetSelection
+                                (item.concEquipment
+                                    |> Maybe.map List.singleton
+                                    |> Maybe.withDefault []
+                                )
+                            )
+                        )
+                        m5
+
                 proposalCmd =
                     if item.state == "created" then
                         Api.getItemProposals flags item.id GetProposalResp
@@ -414,7 +428,7 @@ update key flags next msg model =
                     else
                         Cmd.none
             in
-            ( { m5
+            ( { m6
                 | item = item
                 , nameModel = item.name
                 , notesModel = item.notes
@@ -428,6 +442,7 @@ update key flags next msg model =
                 , c3
                 , c4
                 , c5
+                , c6
                 , getOptions flags
                 , proposalCmd
                 , Api.getSentMails flags item.id SentMailsResp
