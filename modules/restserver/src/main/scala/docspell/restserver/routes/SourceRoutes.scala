@@ -36,8 +36,8 @@ object SourceRoutes {
 
       case req @ PUT -> Root =>
         for {
-          data    <- req.as[Source]
-          src     = changeSource(data, user.account.collective)
+          data <- req.as[Source]
+          src = changeSource(data, user.account.collective)
           updated <- backend.source.update(src)
           resp    <- Ok(basicResult(updated, "Source updated."))
         } yield resp

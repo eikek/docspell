@@ -66,9 +66,7 @@ case class LenientUri(
       )
 
   def readText[F[_]: Sync: ContextShift](chunkSize: Int, blocker: Blocker): F[String] =
-    readURL[F](chunkSize, blocker).
-      through(fs2.text.utf8Decode).
-      compile.foldMonoid
+    readURL[F](chunkSize, blocker).through(fs2.text.utf8Decode).compile.foldMonoid
 
   def host: Option[String] =
     authority.map(a =>

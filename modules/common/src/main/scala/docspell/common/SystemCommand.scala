@@ -23,7 +23,8 @@ object SystemCommand {
         repl.foldLeft(s) {
           case (res, (k, v)) =>
             res.replace(k, v)
-        })
+        }
+      )
 
     def toCmd: List[String] =
       program :: args.toList
@@ -47,10 +48,10 @@ object SystemCommand {
           _    <- writeToProcess(stdin, proc, blocker)
           term <- Sync[F].delay(proc.waitFor(cmd.timeout.seconds, TimeUnit.SECONDS))
           _ <- if (term) logger.debug(s"Command `${cmd.cmdString}` finished: ${proc.exitValue}")
-              else
-                logger.warn(
-                  s"Command `${cmd.cmdString}` did not finish in ${cmd.timeout.formatExact}!"
-                )
+          else
+            logger.warn(
+              s"Command `${cmd.cmdString}` did not finish in ${cmd.timeout.formatExact}!"
+            )
           _   <- if (!term) timeoutError(proc, cmd) else Sync[F].pure(())
           out <- if (term) inputStreamToString(proc.getInputStream, blocker) else Sync[F].pure("")
           err <- if (term) inputStreamToString(proc.getErrorStream, blocker) else Sync[F].pure("")
@@ -75,25 +76,30 @@ object SystemCommand {
       else Stream.emit(r)
     }
 
-  private def startProcess[F[_]: Sync, A](cmd: Config, wd: Option[Path], logger: Logger[F], stdin: Stream[F, Byte])(
+  private def startProcess[F[_]: Sync, A](
+      cmd: Config,
+      wd: Option[Path],
+      logger: Logger[F],
+      stdin: Stream[F, Byte]
+  )(
       f: Process => Stream[F, A]
   ): Stream[F, A] = {
-    val log = logger.debug(s"Running external command: ${cmd.cmdString}")
+    val log      = logger.debug(s"Running external command: ${cmd.cmdString}")
     val hasStdin = stdin.take(1).compile.last.map(_.isDefined)
-    val proc = log *> hasStdin.flatMap(flag => Sync[F].delay {
-      val pb = new ProcessBuilder(cmd.toCmd.asJava)
-        .redirectInput(if (flag) Redirect.PIPE else Redirect.INHERIT)
-        .redirectError(Redirect.PIPE)
-        .redirectOutput(Redirect.PIPE)
+    val proc = log *> hasStdin.flatMap(flag =>
+      Sync[F].delay {
+        val pb = new ProcessBuilder(cmd.toCmd.asJava)
+          .redirectInput(if (flag) Redirect.PIPE else Redirect.INHERIT)
+          .redirectError(Redirect.PIPE)
+          .redirectOutput(Redirect.PIPE)
 
-      wd.map(_.toFile).foreach(pb.directory)
-      pb.start()
-    })
+        wd.map(_.toFile).foreach(pb.directory)
+        pb.start()
+      }
+    )
     Stream
       .bracket(proc)(p =>
-        logger.debug(s"Closing process: `${cmd.cmdString}`").map { _ =>
-          p.destroy()
-        }
+        logger.debug(s"Closing process: `${cmd.cmdString}`").map(_ => p.destroy())
       )
       .flatMap(f)
   }

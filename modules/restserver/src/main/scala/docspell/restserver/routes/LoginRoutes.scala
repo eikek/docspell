@@ -54,15 +54,15 @@ object LoginRoutes {
         for {
           cd <- AuthToken.user(token.account, cfg.auth.serverSecret).map(CookieData.apply)
           resp <- Ok(
-                   AuthResult(
-                     token.account.collective.id,
-                     token.account.user.id,
-                     true,
-                     "Login successful",
-                     Some(cd.asString),
-                     cfg.auth.sessionValid.millis
-                   )
-                 ).map(_.addCookie(cd.asCookie(cfg)))
+            AuthResult(
+              token.account.collective.id,
+              token.account.user.id,
+              true,
+              "Login successful",
+              Some(cd.asString),
+              cfg.auth.sessionValid.millis
+            )
+          ).map(_.addCookie(cd.asCookie(cfg)))
         } yield resp
       case _ =>
         Ok(AuthResult("", account, false, "Login failed.", None, 0L))

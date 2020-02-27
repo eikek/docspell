@@ -47,10 +47,10 @@ object RAttachment {
   def findMeta(attachId: Ident): ConnectionIO[Option[FileMeta]] = {
     import bitpeace.sql._
 
-    val cols = RFileMeta.Columns.all.map(_.prefix("m"))
-    val aId = id.prefix("a")
+    val cols      = RFileMeta.Columns.all.map(_.prefix("m"))
+    val aId       = id.prefix("a")
     val aFileMeta = fileId.prefix("a")
-    val mId = RFileMeta.Columns.id.prefix("m")
+    val mId       = RFileMeta.Columns.id.prefix("m")
 
     val from = table ++ fr"a INNER JOIN" ++ RFileMeta.table ++ fr"m ON" ++ aFileMeta.is(mId)
     val cond = aId.is(attachId)
@@ -104,7 +104,8 @@ object RAttachment {
   def findByItemWithMeta(id: Ident): ConnectionIO[Vector[(RAttachment, FileMeta)]] = {
     import bitpeace.sql._
 
-    val q = fr"SELECT a.*,m.* FROM" ++ table ++ fr"a, filemeta m WHERE a.filemetaid = m.id AND a.itemid = $id ORDER BY a.position ASC"
+    val q =
+      fr"SELECT a.*,m.* FROM" ++ table ++ fr"a, filemeta m WHERE a.filemetaid = m.id AND a.itemid = $id ORDER BY a.position ASC"
     q.query[(RAttachment, FileMeta)].to[Vector]
   }
 

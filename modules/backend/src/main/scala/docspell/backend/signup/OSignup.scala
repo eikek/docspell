@@ -47,15 +47,16 @@ object OSignup {
                 for {
                   now <- Timestamp.current[F]
                   min = now.minus(cfg.inviteTime)
-                  ok  <- store.transact(RInvitation.useInvite(inv, min))
+                  ok <- store.transact(RInvitation.useInvite(inv, min))
                   res <- if (ok) addUser(data).map(SignupResult.fromAddResult)
-                        else SignupResult.invalidInvitationKey.pure[F]
+                  else SignupResult.invalidInvitationKey.pure[F]
                   _ <- if (retryInvite(res))
-                        logger.fdebug(s"Adding account failed ($res). Allow retry with invite.") *> store
-                          .transact(
-                            RInvitation.insert(RInvitation(inv, now))
-                          )
-                      else 0.pure[F]
+                    logger
+                      .fdebug(s"Adding account failed ($res). Allow retry with invite.") *> store
+                      .transact(
+                        RInvitation.insert(RInvitation(inv, now))
+                      )
+                  else 0.pure[F]
                 } yield res
               case None =>
                 SignupResult.invalidInvitationKey.pure[F]
@@ -81,7 +82,7 @@ object OSignup {
           for {
             id2 <- Ident.randomId[F]
             now <- Timestamp.current[F]
-            c   = RCollective(data.collName, CollectiveState.Active, Language.German, now)
+            c = RCollective(data.collName, CollectiveState.Active, Language.German, now)
             u = RUser(
               id2,
               data.login,

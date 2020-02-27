@@ -68,7 +68,9 @@ object ConvertPdf {
             .through(ctx.store.bitpeace.fetchData2(RangeDef.all))
           val handler = conversionHandler[F](ctx, cfg, ra, item)
           ctx.logger.info(s"Converting file ${ra.name} (${mime.asString}) into a PDF") *>
-            conv.toPDF(DataType(MimeType(mime.primary, mime.sub)), ctx.args.meta.language, handler)(data)
+            conv.toPDF(DataType(MimeType(mime.primary, mime.sub)), ctx.args.meta.language, handler)(
+              data
+            )
       }
     }
 
@@ -107,19 +109,21 @@ object ConvertPdf {
     })
 
   private def storePDF[F[_]: Sync](
-                                    ctx: Context[F, ProcessItemArgs],
-                                    cfg: ConvertConfig,
-                                    ra: RAttachment,
-                                    pdf: Stream[F, Byte]
-                                  ) = {
-    val hint = MimeTypeHint.advertised(MimeType.pdf).withName(ra.name.getOrElse("file.pdf"))
+      ctx: Context[F, ProcessItemArgs],
+      cfg: ConvertConfig,
+      ra: RAttachment,
+      pdf: Stream[F, Byte]
+  ) = {
+    val hint    = MimeTypeHint.advertised(MimeType.pdf).withName(ra.name.getOrElse("file.pdf"))
     val newName = ra.name.map(n => s"$n.pdf")
     ctx.store.bitpeace
       .saveNew(pdf, cfg.chunkSize, MimetypeHint(hint.filename, hint.advertised))
       .compile
       .lastOrError
       .map(fm => Ident.unsafe(fm.id))
-      .flatMap(fmId => ctx.store.transact(RAttachment.updateFileIdAndName(ra.id, fmId, newName)).map(_ => fmId))
+      .flatMap(fmId =>
+        ctx.store.transact(RAttachment.updateFileIdAndName(ra.id, fmId, newName)).map(_ => fmId)
+      )
       .map(fmId => ra.copy(fileId = fmId, name = newName))
   }
 }

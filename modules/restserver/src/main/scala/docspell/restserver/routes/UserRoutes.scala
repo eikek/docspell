@@ -24,10 +24,10 @@ object UserRoutes {
         for {
           data <- req.as[PasswordChange]
           res <- backend.collective.changePassword(
-                  user.account,
-                  data.currentPassword,
-                  data.newPassword
-                )
+            user.account,
+            data.currentPassword,
+            data.newPassword
+          )
           resp <- Ok(basicResult(res))
         } yield resp
 
@@ -47,8 +47,8 @@ object UserRoutes {
 
       case req @ PUT -> Root =>
         for {
-          data   <- req.as[User]
-          nuser  = changeUser(data, user.account.collective)
+          data <- req.as[User]
+          nuser = changeUser(data, user.account.collective)
           update <- backend.collective.update(nuser)
           resp   <- Ok(basicResult(update, "User updated."))
         } yield resp

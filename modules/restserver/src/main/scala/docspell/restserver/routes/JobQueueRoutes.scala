@@ -19,8 +19,8 @@ object JobQueueRoutes {
     HttpRoutes.of {
       case GET -> Root / "state" =>
         for {
-          js   <- backend.job.queueState(user.account.collective, 200)
-          res  = Conversions.mkJobQueueState(js)
+          js <- backend.job.queueState(user.account.collective, 200)
+          res = Conversions.mkJobQueueState(js)
           resp <- Ok(res)
         } yield resp
 

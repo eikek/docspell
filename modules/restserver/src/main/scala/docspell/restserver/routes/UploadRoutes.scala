@@ -28,11 +28,11 @@ object UploadRoutes {
         for {
           multipart <- req.as[Multipart[F]]
           updata <- readMultipart(
-                     multipart,
-                     logger,
-                     Priority.High,
-                     cfg.backend.files.validMimeTypes
-                   )
+            multipart,
+            logger,
+            Priority.High,
+            cfg.backend.files.validMimeTypes
+          )
           result <- backend.upload.submit(updata, user.account)
           res    <- Ok(basicResult(result))
         } yield res

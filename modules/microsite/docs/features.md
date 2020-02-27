@@ -9,7 +9,8 @@ title: Features and Limitations
 - Multiple users per account
 - Handle multiple documents as one unit
 - OCR using [tesseract](https://github.com/tesseract-ocr/tesseract)
-- Conversion to PDF: all files are converted into a PDF file
+- Conversion to PDF: all files are converted into a PDF file, while
+  the original file is preserved
 - Text is analysed to find and attach meta data automatically
 - Manage document processing (cancel jobs, set priorities)
 - Everything available via a documented [REST Api](api)

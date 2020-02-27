@@ -66,9 +66,7 @@ object MetaProposalList {
         case None      => map.updated(mp.proposalType, mp)
       }
 
-    val merged = ml.foldLeft(init) { (map, el) =>
-      el.proposals.foldLeft(map)(updateMap)
-    }
+    val merged = ml.foldLeft(init)((map, el) => el.proposals.foldLeft(map)(updateMap))
 
     fromMap(merged)
   }

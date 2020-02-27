@@ -29,7 +29,7 @@ object MailSettingsRoutes {
       case GET -> Root :? QueryParam.QueryOpt(q) =>
         for {
           list <- backend.mail.getSettings(user.account, q.map(_.q))
-          res  = list.map(convert)
+          res = list.map(convert)
           resp <- Ok(EmailSettingsList(res.toList))
         } yield resp
 
@@ -45,13 +45,13 @@ object MailSettingsRoutes {
           ru = makeSettings(in)
           up <- OptionT.liftF(ru.traverse(r => backend.mail.createSettings(user.account, r)))
           resp <- OptionT.liftF(
-                   Ok(
-                     up.fold(
-                       err => BasicResult(false, err),
-                       ar => Conversions.basicResult(ar, "Mail settings stored.")
-                     )
-                   )
-                 )
+            Ok(
+              up.fold(
+                err => BasicResult(false, err),
+                ar => Conversions.basicResult(ar, "Mail settings stored.")
+              )
+            )
+          )
         } yield resp).getOrElseF(NotFound())
 
       case req @ PUT -> Root / Ident(name) =>
@@ -60,24 +60,24 @@ object MailSettingsRoutes {
           ru = makeSettings(in)
           up <- OptionT.liftF(ru.traverse(r => backend.mail.updateSettings(user.account, name, r)))
           resp <- OptionT.liftF(
-                   Ok(
-                     up.fold(
-                       err => BasicResult(false, err),
-                       n =>
-                         if (n > 0) BasicResult(true, "Mail settings stored.")
-                         else BasicResult(false, "Mail settings could not be saved")
-                     )
-                   )
-                 )
+            Ok(
+              up.fold(
+                err => BasicResult(false, err),
+                n =>
+                  if (n > 0) BasicResult(true, "Mail settings stored.")
+                  else BasicResult(false, "Mail settings could not be saved")
+              )
+            )
+          )
         } yield resp).getOrElseF(NotFound())
 
       case DELETE -> Root / Ident(name) =>
         for {
           n <- backend.mail.deleteSettings(user.account, name)
           resp <- Ok(
-                   if (n > 0) BasicResult(true, "Mail settings removed")
-                   else BasicResult(false, "Mail settings could not be removed")
-                 )
+            if (n > 0) BasicResult(true, "Mail settings removed")
+            else BasicResult(false, "Mail settings could not be removed")
+          )
         } yield resp
     }
 

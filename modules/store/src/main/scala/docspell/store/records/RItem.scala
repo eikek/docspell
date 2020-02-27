@@ -124,140 +124,140 @@ object RItem {
     for {
       t <- currentTime
       n <- updateRow(
-            table,
-            and(id.is(itemId), cid.is(coll)),
-            commas(state.setTo(itemState), updated.setTo(t))
-          ).update.run
+        table,
+        and(id.is(itemId), cid.is(coll)),
+        commas(state.setTo(itemState), updated.setTo(t))
+      ).update.run
     } yield n
 
   def updateDirection(itemId: Ident, coll: Ident, dir: Direction): ConnectionIO[Int] =
     for {
       t <- currentTime
       n <- updateRow(
-            table,
-            and(id.is(itemId), cid.is(coll)),
-            commas(incoming.setTo(dir), updated.setTo(t))
-          ).update.run
+        table,
+        and(id.is(itemId), cid.is(coll)),
+        commas(incoming.setTo(dir), updated.setTo(t))
+      ).update.run
     } yield n
 
   def updateCorrOrg(itemId: Ident, coll: Ident, org: Option[Ident]): ConnectionIO[Int] =
     for {
       t <- currentTime
       n <- updateRow(
-            table,
-            and(id.is(itemId), cid.is(coll)),
-            commas(corrOrg.setTo(org), updated.setTo(t))
-          ).update.run
+        table,
+        and(id.is(itemId), cid.is(coll)),
+        commas(corrOrg.setTo(org), updated.setTo(t))
+      ).update.run
     } yield n
 
   def removeCorrOrg(coll: Ident, currentOrg: Ident): ConnectionIO[Int] =
     for {
       t <- currentTime
       n <- updateRow(
-            table,
-            and(cid.is(coll), corrOrg.is(Some(currentOrg))),
-            commas(corrOrg.setTo(None: Option[Ident]), updated.setTo(t))
-          ).update.run
+        table,
+        and(cid.is(coll), corrOrg.is(Some(currentOrg))),
+        commas(corrOrg.setTo(None: Option[Ident]), updated.setTo(t))
+      ).update.run
     } yield n
 
   def updateCorrPerson(itemId: Ident, coll: Ident, person: Option[Ident]): ConnectionIO[Int] =
     for {
       t <- currentTime
       n <- updateRow(
-            table,
-            and(id.is(itemId), cid.is(coll)),
-            commas(corrPerson.setTo(person), updated.setTo(t))
-          ).update.run
+        table,
+        and(id.is(itemId), cid.is(coll)),
+        commas(corrPerson.setTo(person), updated.setTo(t))
+      ).update.run
     } yield n
 
   def removeCorrPerson(coll: Ident, currentPerson: Ident): ConnectionIO[Int] =
     for {
       t <- currentTime
       n <- updateRow(
-            table,
-            and(cid.is(coll), corrPerson.is(Some(currentPerson))),
-            commas(corrPerson.setTo(None: Option[Ident]), updated.setTo(t))
-          ).update.run
+        table,
+        and(cid.is(coll), corrPerson.is(Some(currentPerson))),
+        commas(corrPerson.setTo(None: Option[Ident]), updated.setTo(t))
+      ).update.run
     } yield n
 
   def updateConcPerson(itemId: Ident, coll: Ident, person: Option[Ident]): ConnectionIO[Int] =
     for {
       t <- currentTime
       n <- updateRow(
-            table,
-            and(id.is(itemId), cid.is(coll)),
-            commas(concPerson.setTo(person), updated.setTo(t))
-          ).update.run
+        table,
+        and(id.is(itemId), cid.is(coll)),
+        commas(concPerson.setTo(person), updated.setTo(t))
+      ).update.run
     } yield n
 
   def removeConcPerson(coll: Ident, currentPerson: Ident): ConnectionIO[Int] =
     for {
       t <- currentTime
       n <- updateRow(
-            table,
-            and(cid.is(coll), concPerson.is(Some(currentPerson))),
-            commas(concPerson.setTo(None: Option[Ident]), updated.setTo(t))
-          ).update.run
+        table,
+        and(cid.is(coll), concPerson.is(Some(currentPerson))),
+        commas(concPerson.setTo(None: Option[Ident]), updated.setTo(t))
+      ).update.run
     } yield n
 
   def updateConcEquip(itemId: Ident, coll: Ident, equip: Option[Ident]): ConnectionIO[Int] =
     for {
       t <- currentTime
       n <- updateRow(
-            table,
-            and(id.is(itemId), cid.is(coll)),
-            commas(concEquipment.setTo(equip), updated.setTo(t))
-          ).update.run
+        table,
+        and(id.is(itemId), cid.is(coll)),
+        commas(concEquipment.setTo(equip), updated.setTo(t))
+      ).update.run
     } yield n
 
   def removeConcEquip(coll: Ident, currentEquip: Ident): ConnectionIO[Int] =
     for {
       t <- currentTime
       n <- updateRow(
-            table,
-            and(cid.is(coll), concEquipment.is(Some(currentEquip))),
-            commas(concPerson.setTo(None: Option[Ident]), updated.setTo(t))
-          ).update.run
+        table,
+        and(cid.is(coll), concEquipment.is(Some(currentEquip))),
+        commas(concPerson.setTo(None: Option[Ident]), updated.setTo(t))
+      ).update.run
     } yield n
 
   def updateNotes(itemId: Ident, coll: Ident, text: Option[String]): ConnectionIO[Int] =
     for {
       t <- currentTime
       n <- updateRow(
-            table,
-            and(id.is(itemId), cid.is(coll)),
-            commas(notes.setTo(text), updated.setTo(t))
-          ).update.run
+        table,
+        and(id.is(itemId), cid.is(coll)),
+        commas(notes.setTo(text), updated.setTo(t))
+      ).update.run
     } yield n
 
   def updateName(itemId: Ident, coll: Ident, itemName: String): ConnectionIO[Int] =
     for {
       t <- currentTime
       n <- updateRow(
-            table,
-            and(id.is(itemId), cid.is(coll)),
-            commas(name.setTo(itemName), updated.setTo(t))
-          ).update.run
+        table,
+        and(id.is(itemId), cid.is(coll)),
+        commas(name.setTo(itemName), updated.setTo(t))
+      ).update.run
     } yield n
 
   def updateDate(itemId: Ident, coll: Ident, date: Option[Timestamp]): ConnectionIO[Int] =
     for {
       t <- currentTime
       n <- updateRow(
-            table,
-            and(id.is(itemId), cid.is(coll)),
-            commas(itemDate.setTo(date), updated.setTo(t))
-          ).update.run
+        table,
+        and(id.is(itemId), cid.is(coll)),
+        commas(itemDate.setTo(date), updated.setTo(t))
+      ).update.run
     } yield n
 
   def updateDueDate(itemId: Ident, coll: Ident, date: Option[Timestamp]): ConnectionIO[Int] =
     for {
       t <- currentTime
       n <- updateRow(
-            table,
-            and(id.is(itemId), cid.is(coll)),
-            commas(dueDate.setTo(date), updated.setTo(t))
-          ).update.run
+        table,
+        and(id.is(itemId), cid.is(coll)),
+        commas(dueDate.setTo(date), updated.setTo(t))
+      ).update.run
     } yield n
 
   def deleteByIdAndCollective(itemId: Ident, coll: Ident): ConnectionIO[Int] =

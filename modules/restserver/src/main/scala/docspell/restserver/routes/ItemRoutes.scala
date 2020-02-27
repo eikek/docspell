@@ -24,8 +24,8 @@ object ItemRoutes {
     HttpRoutes.of {
       case req @ POST -> Root / "search" =>
         for {
-          mask  <- req.as[ItemSearch]
-          _     <- logger.ftrace(s"Got search mask: $mask")
+          mask <- req.as[ItemSearch]
+          _    <- logger.ftrace(s"Got search mask: $mask")
           query = Conversions.mkQuery(mask, user.account.collective)
           _     <- logger.ftrace(s"Running query: $query")
           items <- backend.item.findItems(query, 100)
@@ -34,9 +34,9 @@ object ItemRoutes {
 
       case GET -> Root / Ident(id) =>
         for {
-          item   <- backend.item.findItem(id, user.account.collective)
+          item <- backend.item.findItem(id, user.account.collective)
           result = item.map(Conversions.mkItemDetail)
-          resp   <- result.map(r => Ok(r)).getOrElse(NotFound(BasicResult(false, "Not found.")))
+          resp <- result.map(r => Ok(r)).getOrElse(NotFound(BasicResult(false, "Not found.")))
         } yield resp
 
       case POST -> Root / Ident(id) / "confirm" =>
@@ -125,15 +125,15 @@ object ItemRoutes {
 
       case GET -> Root / Ident(id) / "proposals" =>
         for {
-          ml   <- backend.item.getProposals(id, user.account.collective)
-          ip   = Conversions.mkItemProposals(ml)
+          ml <- backend.item.getProposals(id, user.account.collective)
+          ip = Conversions.mkItemProposals(ml)
           resp <- Ok(ip)
         } yield resp
 
       case DELETE -> Root / Ident(id) =>
         for {
-          n    <- backend.item.delete(id, user.account.collective)
-          res  = BasicResult(n > 0, if (n > 0) "Item deleted" else "Item deletion failed.")
+          n <- backend.item.delete(id, user.account.collective)
+          res = BasicResult(n > 0, if (n > 0) "Item deleted" else "Item deletion failed.")
           resp <- Ok(res)
         } yield resp
     }

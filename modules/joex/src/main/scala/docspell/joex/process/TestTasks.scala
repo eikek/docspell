@@ -11,9 +11,7 @@ object TestTasks {
   private[this] val logger = getLogger
 
   def success[F[_]]: Task[F, ProcessItemArgs, Unit] =
-    Task { ctx =>
-      ctx.logger.info(s"Running task now: ${ctx.args}")
-    }
+    Task(ctx => ctx.logger.info(s"Running task now: ${ctx.args}"))
 
   def failing[F[_]: Sync]: Task[F, ProcessItemArgs, Unit] =
     Task { ctx =>

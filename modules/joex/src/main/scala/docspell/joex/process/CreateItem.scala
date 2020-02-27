@@ -25,7 +25,7 @@ object CreateItem {
     Task { ctx =>
       def isValidFile(fm: FileMeta) =
         ctx.args.meta.validFileTypes.isEmpty ||
-        ctx.args.meta.validFileTypes.map(_.asString).toSet.contains(fm.mimetype.baseType)
+          ctx.args.meta.validFileTypes.map(_.asString).toSet.contains(fm.mimetype.baseType)
 
       def fileMetas(itemId: Ident, now: Timestamp) =
         Stream
@@ -77,18 +77,18 @@ object CreateItem {
       for {
         cand <- ctx.store.transact(QItem.findByFileIds(ctx.args.files.map(_.fileMetaId)))
         _ <- if (cand.nonEmpty) ctx.logger.warn("Found existing item with these files.")
-            else ().pure[F]
+        else ().pure[F]
         ht <- cand.drop(1).traverse(ri => QItem.delete(ctx.store)(ri.id, ri.cid))
         _ <- if (ht.sum > 0) ctx.logger.warn(s"Removed ${ht.sum} items with same attachments")
-            else ().pure[F]
+        else ().pure[F]
         rms <- OptionT(
-                cand.headOption.traverse(ri =>
-                  ctx.store.transact(RAttachment.findByItemAndCollective(ri.id, ri.cid))
-                )
-              ).getOrElse(Vector.empty)
+          cand.headOption.traverse(ri =>
+            ctx.store.transact(RAttachment.findByItemAndCollective(ri.id, ri.cid))
+          )
+        ).getOrElse(Vector.empty)
         orig <- rms.traverse(a =>
-                 ctx.store.transact(RAttachmentSource.findById(a.id)).map(s => (a, s))
-               )
+          ctx.store.transact(RAttachmentSource.findById(a.id)).map(s => (a, s))
+        )
         origMap = orig
           .map(originFileTuple)
           .toMap

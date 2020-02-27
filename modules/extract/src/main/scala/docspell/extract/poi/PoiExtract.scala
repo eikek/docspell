@@ -52,25 +52,25 @@ object PoiExtract {
   def getDocx(is: InputStream): Either[Throwable, String] =
     Try {
       val xt = new XWPFWordExtractor(new XWPFDocument(is))
-      xt.getText.trim
+      Option(xt.getText).map(_.trim).getOrElse("")
     }.toEither
 
   def getDoc(is: InputStream): Either[Throwable, String] =
     Try {
       val xt = new WordExtractor(is)
-      xt.getText.trim
+      Option(xt.getText).map(_.trim).getOrElse("")
     }.toEither
 
   def getXlsx(is: InputStream): Either[Throwable, String] =
     Try {
       val xt = new XSSFExcelExtractor(new XSSFWorkbook(is))
-      xt.getText.trim
+      Option(xt.getText).map(_.trim).getOrElse("")
     }.toEither
 
   def getXls(is: InputStream): Either[Throwable, String] =
     Try {
       val xt = new ExcelExtractor(new HSSFWorkbook(is))
-      xt.getText.trim
+      Option(xt.getText).map(_.trim).getOrElse("")
     }.toEither
 
   def getDocx[F[_]: Sync](data: Stream[F, Byte]): F[Either[Throwable, String]] =

@@ -40,7 +40,7 @@ object Store {
     for {
       xa <- hxa
       st = new StoreImpl[F](jdbc, xa)
-      _  <- Resource.liftF(st.migrate)
+      _ <- Resource.liftF(st.migrate)
     } yield st
   }
 }

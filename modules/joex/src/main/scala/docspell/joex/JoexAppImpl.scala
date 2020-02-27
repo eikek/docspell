@@ -52,15 +52,15 @@ object JoexAppImpl {
       store   <- Store.create(cfg.jdbc, connectEC, blocker)
       nodeOps <- ONode(store)
       sch <- SchedulerBuilder(cfg.scheduler, blocker, store)
-              .withTask(
-                JobTask.json(
-                  ProcessItemArgs.taskName,
-                  ItemHandler[F](cfg),
-                  ItemHandler.onCancel[F]
-                )
-              )
-              .resource
-      app  = new JoexAppImpl(cfg, nodeOps, store, termSignal, sch)
+        .withTask(
+          JobTask.json(
+            ProcessItemArgs.taskName,
+            ItemHandler[F](cfg),
+            ItemHandler.onCancel[F]
+          )
+        )
+        .resource
+      app = new JoexAppImpl(cfg, nodeOps, store, termSignal, sch)
       appR <- Resource.make(app.init.map(_ => app))(_.shutdown)
     } yield appR
 }

@@ -1,3 +1,3 @@
 package docspell.extract
 
-case class PdfConfig (minTextLen: Int)
+case class PdfConfig(minTextLen: Int)

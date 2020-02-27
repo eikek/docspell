@@ -29,13 +29,12 @@ object ImageSize {
   /** Return the image size from its header without reading
     * the whole image into memory.
     */
-  def get[F[_]: Sync](data: Stream[F, Byte]): F[Option[Dimension]] = {
-    data.take(768).compile.to(Array).map(ar => {
+  def get[F[_]: Sync](data: Stream[F, Byte]): F[Option[Dimension]] =
+    data.take(768).compile.to(Array).map { ar =>
       val iis = ImageIO.createImageInputStream(new ByteArrayInputStream(ar))
       if (iis == null) sys.error("no reader given for the array")
       else getDimension(iis)
-    })
-  }
+    }
 
   private def getDimension(in: ImageInputStream): Option[Dimension] =
     ImageIO

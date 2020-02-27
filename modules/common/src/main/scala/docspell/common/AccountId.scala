@@ -26,9 +26,7 @@ object AccountId {
           invalid
       }
 
-    val separated = sepearatorChars.foldRight(invalid) { (c, v) =>
-      v.orElse(parse0(c))
-    }
+    val separated = sepearatorChars.foldRight(invalid)((c, v) => v.orElse(parse0(c)))
 
     separated.orElse(Ident.fromString(str).map(id => AccountId(id, id)))
   }

@@ -23,7 +23,7 @@ object QItem {
       concEquip: Option[REquipment],
       inReplyTo: Option[IdRef],
       tags: Vector[RTag],
-    attachments: Vector[(RAttachment, FileMeta)],
+      attachments: Vector[(RAttachment, FileMeta)],
       sources: Vector[(RAttachmentSource, FileMeta)]
   ) {
 
@@ -39,23 +39,24 @@ object QItem {
     val EC  = REquipment.Columns.all.map(_.prefix("e"))
     val ICC = List(RItem.Columns.id, RItem.Columns.name).map(_.prefix("ref"))
 
-    val cq = selectSimple(IC ++ OC ++ P0C ++ P1C ++ EC ++ ICC, RItem.table ++ fr"i", Fragment.empty) ++
-      fr"LEFT JOIN" ++ ROrganization.table ++ fr"o ON" ++ RItem.Columns.corrOrg
-      .prefix("i")
-      .is(ROrganization.Columns.oid.prefix("o")) ++
-      fr"LEFT JOIN" ++ RPerson.table ++ fr"p0 ON" ++ RItem.Columns.corrPerson
-      .prefix("i")
-      .is(RPerson.Columns.pid.prefix("p0")) ++
-      fr"LEFT JOIN" ++ RPerson.table ++ fr"p1 ON" ++ RItem.Columns.concPerson
-      .prefix("i")
-      .is(RPerson.Columns.pid.prefix("p1")) ++
-      fr"LEFT JOIN" ++ REquipment.table ++ fr"e ON" ++ RItem.Columns.concEquipment
-      .prefix("i")
-      .is(REquipment.Columns.eid.prefix("e")) ++
-      fr"LEFT JOIN" ++ RItem.table ++ fr"ref ON" ++ RItem.Columns.inReplyTo
-      .prefix("i")
-      .is(RItem.Columns.id.prefix("ref")) ++
-      fr"WHERE" ++ RItem.Columns.id.prefix("i").is(id)
+    val cq =
+      selectSimple(IC ++ OC ++ P0C ++ P1C ++ EC ++ ICC, RItem.table ++ fr"i", Fragment.empty) ++
+        fr"LEFT JOIN" ++ ROrganization.table ++ fr"o ON" ++ RItem.Columns.corrOrg
+        .prefix("i")
+        .is(ROrganization.Columns.oid.prefix("o")) ++
+        fr"LEFT JOIN" ++ RPerson.table ++ fr"p0 ON" ++ RItem.Columns.corrPerson
+        .prefix("i")
+        .is(RPerson.Columns.pid.prefix("p0")) ++
+        fr"LEFT JOIN" ++ RPerson.table ++ fr"p1 ON" ++ RItem.Columns.concPerson
+        .prefix("i")
+        .is(RPerson.Columns.pid.prefix("p1")) ++
+        fr"LEFT JOIN" ++ REquipment.table ++ fr"e ON" ++ RItem.Columns.concEquipment
+        .prefix("i")
+        .is(REquipment.Columns.eid.prefix("e")) ++
+        fr"LEFT JOIN" ++ RItem.table ++ fr"ref ON" ++ RItem.Columns.inReplyTo
+        .prefix("i")
+        .is(RItem.Columns.id.prefix("ref")) ++
+        fr"WHERE" ++ RItem.Columns.id.prefix("i").is(id)
 
     val q = cq
       .query[
@@ -235,11 +236,12 @@ object QItem {
   def findByFileIds(fileMetaIds: List[Ident]): ConnectionIO[Vector[RItem]] = {
     val IC = RItem.Columns
     val AC = RAttachment.Columns
-    val q = fr"SELECT DISTINCT" ++ commas(IC.all.map(_.prefix("i").f)) ++ fr"FROM" ++ RItem.table ++ fr"i" ++
-      fr"INNER JOIN" ++ RAttachment.table ++ fr"a ON" ++ AC.itemId
-      .prefix("a")
-      .is(IC.id.prefix("i")) ++
-      fr"WHERE" ++ AC.fileId.isOneOf(fileMetaIds) ++ orderBy(IC.created.prefix("i").asc)
+    val q =
+      fr"SELECT DISTINCT" ++ commas(IC.all.map(_.prefix("i").f)) ++ fr"FROM" ++ RItem.table ++ fr"i" ++
+        fr"INNER JOIN" ++ RAttachment.table ++ fr"a ON" ++ AC.itemId
+        .prefix("a")
+        .is(IC.id.prefix("i")) ++
+        fr"WHERE" ++ AC.fileId.isOneOf(fileMetaIds) ++ orderBy(IC.created.prefix("i").asc)
 
     q.query[RItem].to[Vector]
   }

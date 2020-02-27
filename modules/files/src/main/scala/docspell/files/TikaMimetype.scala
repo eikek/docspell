@@ -52,8 +52,8 @@ object TikaMimetype {
   def detect[F[_]: Sync](file: Path): F[MimeType] =
     Sync[F].delay {
       val hint = MimeTypeHint.filename(file.getFileName.toString)
-      Using(new BufferedInputStream(Files.newInputStream(file), 64))({ in =>
+      Using(new BufferedInputStream(Files.newInputStream(file), 64)) { in =>
         convert(tika.detect(in, makeMetadata(hint)))
-      }).toEither
+      }.toEither
     }.rethrow
 }
