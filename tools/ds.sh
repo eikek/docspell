@@ -15,6 +15,9 @@
 #   url.2=...
 #
 # Lines starting with a `#' are ignored.
+#
+# The `-e|--exists' option allows to skip uploading and only check
+# whether a given file exists in docspell.
 
 # saner programming env: these switches turn some bugs into errors
 set -o errexit -o pipefail -o noclobber -o nounset
@@ -30,8 +33,8 @@ if [[ ${PIPESTATUS[0]} -ne 4 ]]; then
     exit 1
 fi
 
-OPTIONS=c:hsd
-LONGOPTS=config:,help,skip,delete
+OPTIONS=c:hsde
+LONGOPTS=config:,help,skip,delete,exists
 
 ! PARSED=$(getopt --options=$OPTIONS --longoptions=$LONGOPTS --name "$0" -- "$@")
 if [[ ${PIPESTATUS[0]} -ne 0 ]]; then
@@ -43,7 +46,7 @@ fi
 # read getopt’s output this way to handle the quoting right:
 eval set -- "$PARSED"
 
-delete=n help=n config="${XDG_CONFIG_HOME:-$HOME/.config}/docspell/ds.conf"
+exists=n delete=n help=n config="${XDG_CONFIG_HOME:-$HOME/.config}/docspell/ds.conf"
 while true; do
     case "$1" in
         -h|--help)
@@ -56,6 +59,10 @@ while true; do
             ;;
         -d|--delete)
             delete="y"
+            shift
+            ;;
+        -e|--exists)
+            exists=y
             shift
             ;;
         --)
@@ -121,9 +128,10 @@ showUsage() {
     info "  -c | --config        Provide a config file. (value: $config)"
     info "  -d | --delete        Delete the files when successfully uploaded (value: $delete)"
     info "  -h | --help          Prints this help text. (value: $help)"
+    info "  -e | --exists        Checks for the existence of a file instead of uploading (value: $exists)"
     info ""
     info "Arguments:"
-    info "  One or more PDF files to upload."
+    info "  One or more files to check for existence or upload."
     info ""
 }
 
@@ -153,13 +161,21 @@ done <<< $($GREP_CMD -v '^#.*' "$config")
 IFS=$'\n'
 for file in $*; do
     for url in "${urls[@]}"; do
-        info "Uploading '$file' to '$url'"
-        set +e
-        upload "$file" "$url"
-        set -e
-        if [ "$delete" = "y" ] && [ $? -eq 0 ]; then
-            info "Deleting file: $file"
-            rm -f "$file"
+        if [ "$exists" = "y" ]; then
+            if checkFile "$url" "$file"; then
+                info "$url $file: true"
+            else
+                info "$url $file: false"
+            fi
+        else
+            info "Uploading '$file' to '$url'"
+            set +e
+            upload "$file" "$url"
+            set -e
+            if [ "$delete" = "y" ] && [ $? -eq 0 ]; then
+                info "Deleting file: $file"
+                rm -f "$file"
+            fi
         fi
     done
 done
