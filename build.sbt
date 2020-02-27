@@ -2,6 +2,7 @@ import com.github.eikek.sbt.openapi._
 import scala.sys.process._
 import com.typesafe.sbt.SbtGit.GitKeys._
 import docspell.build._
+import microsites.ExtraMdFileConfig
 
 val toolsPackage = taskKey[Seq[File]]("Package the scripts/extension tools")
 val elmCompileMode = settingKey[ElmCompileMode]("How to compile elm sources")
@@ -385,6 +386,13 @@ val microsite = project.in(file("modules/microsite")).
     mdocVariables := Map(
       "VERSION" -> version.value,
       "PVERSION" -> version.value.replace('.', '_')
+    ),
+    micrositeExtraMdFiles := Map(
+      file("Changelog.md") -> ExtraMdFileConfig(
+        "changelog.md",
+        "docs",
+        Map("title" -> "Changelog", "permalink" -> "changelog")
+      )
     ),
     Compile/resourceGenerators += Def.task {
       val conf1 = (resourceDirectory in (restserver, Compile)).value / "reference.conf"

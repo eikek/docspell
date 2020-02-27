@@ -1,12 +1,12 @@
 ---
 layout: docs
-position: 4
 title: Documentation
 ---
 
 # {{page.title}}
 
-This is the documentation for Docspell @VERSION@.
+This is the documentation for Docspell @VERSION@. There is a
+[changelog](changelog).
 
 Docspell assists in organizing large amounts of PDF files that are
 typically scanned paper documents. You can associate tags, set

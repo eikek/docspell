@@ -1,7 +1,9 @@
 #masthead {
     background: url(../img/back-master-small.jpg);
     background-repeat: no-repeat;
-    background-size: 100% 800px;
+    background-size: 100% 100%;
+    animation: none;
+    height: 25vh;
 }
 
 .thumbnail {
@@ -9,7 +11,7 @@
 }
 
 .features-image {
-    max-height: 250px;
+    height: 200px;
 }
 
 .docs #sidebar-wrapper .sidebar-nav .sidebar-nav-item.open>a, .docs #sidebar-wrapper .sidebar-nav .sidebar-nav-item.open button {
