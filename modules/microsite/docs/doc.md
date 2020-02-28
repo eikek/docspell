@@ -5,8 +5,7 @@ title: Documentation
 
 # {{page.title}}
 
-This is the documentation for Docspell @VERSION@. There is a
-[changelog](changelog).
+This is the documentation for Docspell @VERSION@.
 
 Docspell assists in organizing large amounts of PDF files that are
 typically scanned paper documents. You can associate tags, set

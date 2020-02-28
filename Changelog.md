@@ -2,6 +2,8 @@
 
 ## v0.3.0
 
+*Mar. 1, 2020*
+
 - Support for many more document types has been added (including
   images and office documents). All input files are converted into PDF
   files (the original file is preserved).

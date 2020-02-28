@@ -18,14 +18,14 @@ options:
      - title: Installation
        url: doc/install.html
 
+     - title: Configuring
+       url: doc/configure.html
+
      - title: Nix/NixOS
        url: doc/nix
 
      - title: Reverse Proxy
        url: doc/reverseproxy
-
-     - title: Configuring
-       url: doc/configure.html
 
      - title: Adding Meta Data
        url: doc/metadata.html
@@ -47,6 +47,9 @@ options:
 
      - title: Tools
        url: doc/tools.html
+
+  - title: Changelog
+    url : changelog
 
   - title: Development
     url: dev.html

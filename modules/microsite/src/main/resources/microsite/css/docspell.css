@@ -1,3 +1,8 @@
+#site-main {
+    background: floralwhite;
+    padding: 40px 0;
+}
+
 #masthead {
     background: url(../img/back-master-small.jpg);
     background-repeat: no-repeat;
