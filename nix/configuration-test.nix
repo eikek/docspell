@@ -51,6 +51,7 @@ in
 
   networking = {
     hostName = "docspelltest";
+    firewall.allowedTCPPorts = [7880];
   };
 
   system.stateVersion = "19.09";
