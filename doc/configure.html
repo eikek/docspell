@@ -1,4 +1,4 @@
-<html><head><title>Docspell: Configuring</title><meta charset="utf-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="eikek" /><meta name="description" content="A (PDF) Document Organizer" /><meta name="og:image" content="/docspell/img/poster.png" /><meta name="image" property="og:image" content="/docspell/img/poster.png" /><meta name="og:title" content="Docspell: Configuring" /><meta name="title" property="og:title" content="Docspell: Configuring" /><meta name="og:site_name" content="Docspell" /><meta name="og:url" content="" /><meta name="og:type" content="website" /><meta name="og:description" content="A (PDF) Document Organizer" /><link rel="icon" type="image/png" href="/docspell/img/favicon.png" /><meta name="twitter:title" content="Docspell: Configuring" /><meta name="twitter:image" content="/docspell/img/poster.png" /><meta name="twitter:description" content="A (PDF) Document Organizer" /><meta name="twitter:card" content="summary_large_image" /><link rel="icon" type="image/png" sizes="96x96" href="/docspell/img/favicon.png" /><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" /><link rel="stylesheet" href="/docspell/highlight/styles/vs.css" /><link rel="stylesheet" href="/docspell/css/light-style.css" /><link rel="stylesheet" href="/docspell/css/docspell.css" /></head><body class="docs"><div id="wrapper"><div id="sidebar-wrapper"><div id="sidebar-brand"><a href="/docspell/" class="brand"><div class="brand-wrapper"></div><span>Docspell</span></a><button id="main-toggle" class="sidebar-toggle"><span class="close"></span></button></div><div class="sidebar-nav"> <div class="sidebar-nav-item  "><a href="/docspell/index.html" title="Home" class="">Home</a></div> <div class="sidebar-nav-item  "><a href="/docspell/demo.html" title="Demo" class="">Demo</a></div> <div class="sidebar-nav-item  "><a href="/docspell/getit.html" title="Quickstart" class="">Quickstart</a></div> <div class="sidebar-nav-item  "><a href="/docspell/features.html" title="Features/Limitations" class="">Features/Limitations</a></div> <div class="sidebar-nav-item  open"><a href="/docspell/doc.html" title="Documentation" class="drop-nested">Documentation</a><i class="fa fa-angle-right"></i><div class="sub-section"> <a href="/docspell/doc/install.html" title="Installation" class="">Installation</a> <a href="/docspell/doc/configure.html" title="Configuring" class="active">Configuring</a> <a href="/docspell/doc/metadata.html" title="Adding Meta Data" class="">Adding Meta Data</a> <a href="/docspell/doc/uploading.html" title="Uploads" class="">Uploads</a> <a href="/docspell/doc/processing.html" title="Processing Queue" class="">Processing Queue</a> <a href="/docspell/doc/curate.html" title="Find and Review" class="">Find and Review</a> <a href="/docspell/doc/mailitem.html" title="Send via E-Mail" class="">Send via E-Mail</a> <a href="/docspell/doc/joex.html" title="Joex" class="">Joex</a> <a href="/docspell/doc/tools.html" title="Tools" class="">Tools</a></div></div> <div class="sidebar-nav-item  "><a href="/docspell/dev.html" title="Development" class="drop-nested">Development</a><i class="fa fa-angle-right"></i><div class="sub-section"> <a href="/docspell/dev/adr.html" title="" class=""></a></div></div> <div class="sidebar-nav-item  "><a href="/docspell/api.html" title="Api" class="drop-nested">Api</a><i class="fa fa-angle-right"></i><div class="sub-section"> <a href="/docspell/openapi/docspell-openapi.html" title="REST Api Doc" class="">REST Api Doc</a> <a href="/docspell/openapi/docspell-openapi.yml" title="REST OpenApi Spec" class="">REST OpenApi Spec</a></div></div></div></div><div id="page-content-wrapper"><div class="nav"><div class="container-fluid"><div class="row"><div class="col-lg-12"><div class="action-menu pull-left clearfix"><a href="#menu-toggle" id="menu-toggle"><i class="fa fa-bars" aria-hidden="true"></i></a></div><ul class="pull-right"><li id="gh-eyes-item" class="hidden-xs"><a href="https://github.com/eikek/docspell" target="_blank" rel="noopener noreferrer"><i class="fa fa-eye"></i><span>Watchers<span id="eyes" class="label label-default">--</span></span></a></li><li id="gh-stars-item" class="hidden-xs"><a href="https://github.com/eikek/docspell" target="_blank" rel="noopener noreferrer"><i class="fa fa-star-o"></i><span>Stars<span id="stars" class="label label-default">--</span></span></a></li></ul></div></div></div></div><div id="content" data-github-owner="eikek" data-github-repo="docspell"><div class="content-wrapper"><section><h1 id="configuring">Configuring</h1>
+<!DOCTYPE html><html><head><title>Docspell: Configuring</title><meta charset="utf-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="eikek" /><meta name="description" content="Auto-tagging Document Organizer" /><meta name="og:image" content="/docspell/img/poster.png" /><meta name="image" property="og:image" content="/docspell/img/poster.png" /><meta name="og:title" content="Docspell: Configuring" /><meta name="title" property="og:title" content="Docspell: Configuring" /><meta name="og:site_name" content="Docspell" /><meta name="og:url" content="" /><meta name="og:type" content="website" /><meta name="og:description" content="Auto-tagging Document Organizer" /><link rel="icon" type="image/png" href="/docspell/img/favicon.png" /><meta name="twitter:title" content="Docspell: Configuring" /><meta name="twitter:image" content="/docspell/img/poster.png" /><meta name="twitter:description" content="Auto-tagging Document Organizer" /><meta name="twitter:card" content="summary_large_image" /><link rel="icon" type="image/png" sizes="96x96" href="/docspell/img/favicon.png" /><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" /><link rel="stylesheet" href="/docspell/highlight/styles/vs.css" /><link rel="stylesheet" href="/docspell/css/light-style.css" /><link rel="stylesheet" href="/docspell/css/docspell.css" /></head><body class="docs"><div id="wrapper"><div id="sidebar-wrapper"><div id="sidebar-brand"><a href="/docspell/" class="brand"><div class="brand-wrapper"></div><span>Docspell</span></a><button id="main-toggle" class="sidebar-toggle"><span class="close"></span></button></div><div class="sidebar-nav"> <div class="sidebar-nav-item  "><a href="/docspell/index.html" title="Home" class="">Home</a></div> <div class="sidebar-nav-item  "><a href="/docspell/demo.html" title="Demo" class="">Demo</a></div> <div class="sidebar-nav-item  "><a href="/docspell/getit.html" title="Quickstart" class="">Quickstart</a></div> <div class="sidebar-nav-item  "><a href="/docspell/features.html" title="Features/Limitations" class="">Features/Limitations</a></div> <div class="sidebar-nav-item  open"><a href="/docspell/doc.html" title="Documentation" class="drop-nested">Documentation</a><i class="fa fa-angle-right"></i><div class="sub-section"> <a href="/docspell/doc/install.html" title="Installation" class="">Installation</a> <a href="/docspell/doc/configure.html" title="Configuring" class="active">Configuring</a> <a href="/docspell/doc/nix" title="Nix/NixOS" class="">Nix/NixOS</a> <a href="/docspell/doc/reverseproxy" title="Reverse Proxy" class="">Reverse Proxy</a> <a href="/docspell/doc/metadata.html" title="Adding Meta Data" class="">Adding Meta Data</a> <a href="/docspell/doc/uploading.html" title="Uploads" class="">Uploads</a> <a href="/docspell/doc/processing.html" title="Processing Queue" class="">Processing Queue</a> <a href="/docspell/doc/curate.html" title="Find and Review" class="">Find and Review</a> <a href="/docspell/doc/mailitem.html" title="Send via E-Mail" class="">Send via E-Mail</a> <a href="/docspell/doc/joex.html" title="Joex" class="">Joex</a> <a href="/docspell/doc/tools.html" title="Tools" class="">Tools</a></div></div> <div class="sidebar-nav-item  "><a href="/docspell/changelog" title="Changelog" class="">Changelog</a></div> <div class="sidebar-nav-item  "><a href="/docspell/dev.html" title="Development" class="drop-nested">Development</a><i class="fa fa-angle-right"></i><div class="sub-section"> <a href="/docspell/dev/adr.html" title="" class=""></a></div></div> <div class="sidebar-nav-item  "><a href="/docspell/api.html" title="Api" class="drop-nested">Api</a><i class="fa fa-angle-right"></i><div class="sub-section"> <a href="/docspell/openapi/docspell-openapi.html" title="REST Api Doc" class="">REST Api Doc</a> <a href="/docspell/openapi/docspell-openapi.yml" title="REST OpenApi Spec" class="">REST OpenApi Spec</a></div></div></div></div><div id="page-content-wrapper"><div class="nav"><div class="container-fluid"><div class="row"><div class="col-lg-12"><div class="action-menu pull-left clearfix"><a href="#menu-toggle" id="menu-toggle"><i class="fa fa-bars" aria-hidden="true"></i></a></div><ul class="pull-right"><li id="gh-eyes-item" class="hidden-xs"><a href="https://github.com/eikek/docspell" target="_blank" rel="noopener noreferrer"><i class="fa fa-eye"></i><span>Watchers<span id="eyes" class="label label-default">--</span></span></a></li><li id="gh-stars-item" class="hidden-xs"><a href="https://github.com/eikek/docspell" target="_blank" rel="noopener noreferrer"><i class="fa fa-star-o"></i><span>Stars<span id="stars" class="label label-default">--</span></span></a></li></ul></div></div></div></div><div id="content" data-github-owner="eikek" data-github-repo="docspell"><div class="content-wrapper"><section><h1 id="configuring">Configuring</h1>
 
 <p>Docspell’s executable can take one argument – a configuration file. If
 that is not given, the defaults are used. The config file overrides
@@ -222,7 +222,7 @@ docspell.server {
     # The secret for this server that is used to sign the authenicator
     # tokens. If multiple servers are running, all must share the same
     # secret. You can use base64 or hex strings (prefix with b64: and
-    # hex:, respectively)
+    # hex:, respectively).
     server-secret = "hex:caffee"
 
     # How long an authentication token is valid. The web application
@@ -267,9 +267,10 @@ docspell.server {
     }
 
     files {
-      # Defines the chunk size used to store bytes. This will affect
-      # the memory footprint when uploading and downloading files. At
-      # most this amount is loaded into RAM for down- and uploading.
+      # Defines the chunk size (in bytes) used to store the files.
+      # This will affect the memory footprint when uploading and
+      # downloading files. At most this amount is loaded into RAM for
+      # down- and uploading.
       #
       # It also defines the chunk size used for the blobs inside the
       # database.
@@ -278,9 +279,10 @@ docspell.server {
       # The file content types that are considered valid. Docspell
       # will only pass these files to processing. The processing code
       # itself has also checks for which files are supported and which
-      # not. This affects the uploading part and is a first check to
-      # avoid that 'bad' files get into the system.
-      valid-mime-types = [ "application/pdf" ]
+      # not. This affects the uploading part and can be used to
+      # restrict file types that should be handed over to processing.
+      # By default all files are allowed.
+      valid-mime-types = [ ]
     }
   }
 }
@@ -357,67 +359,168 @@ docspell.joex {
   }
 
   # Configuration of text extraction
-  #
-  # Extracting text currently only work for image and pdf files. It
-  # will first runs ghostscript to create a gray image from a
-  # pdf. Then unpaper is run to optimize the image for the upcoming
-  # ocr, which will be done by tesseract. All these programs must be
-  # available in your PATH or the absolute path can be specified
-  # below.
   extraction {
-    allowed-content-types = [ "application/pdf", "image/jpeg", "image/png" ]
-
-    # Defines what pages to process. If a PDF with 600 pages is
-    # submitted, it is probably not necessary to scan through all of
-    # them. This would take a long time and occupy resources for no
-    # value. The first few pages should suffice. The default is first
-    # 10 pages.
-    #
-    # If you want all pages being processed, set this number to -1.
-    #
-    # Note: if you change the ghostscript command below, be aware that
-    # this setting (if not -1) will add another parameter to the
-    # beginning of the command.
-    page-range {
-      begin = 10
+    # For PDF files it is first tried to read the text parts of the
+    # PDF. But PDFs can be complex documents and they may contain text
+    # and images. If the returned text is shorter than the value
+    # below, OCR is run afterwards. Then both extracted texts are
+    # compared and the longer will be used.
+    pdf {
+      min-text-len = 10
     }
 
-    # The ghostscript command.
-    ghostscript {
-      command {
-        program = "gs"
-        args = [ "-dNOPAUSE"
-               , "-dBATCH"
-               , "-dSAFER"
-               , "-sDEVICE=tiffscaled8"
-               , "-sOutputFile={{outfile}}"
-               , "{{infile}}"
-               ]
-        timeout = "5 minutes"
+    # Extracting text using OCR works for image and pdf files. It will
+    # first run ghostscript to create a gray image from a pdf. Then
+    # unpaper is run to optimize the image for the upcoming ocr, which
+    # will be done by tesseract. All these programs must be available
+    # in your PATH or the absolute path can be specified below.
+    ocr {
+
+      # Images greater than this size are skipped. Note that every
+      # image is loaded completely into memory for doing OCR.
+      max-image-size = 14000000
+
+      # Defines what pages to process. If a PDF with 600 pages is
+      # submitted, it is probably not necessary to scan through all of
+      # them. This would take a long time and occupy resources for no
+      # value. The first few pages should suffice. The default is first
+      # 10 pages.
+      #
+      # If you want all pages being processed, set this number to -1.
+      #
+      # Note: if you change the ghostscript command below, be aware that
+      # this setting (if not -1) will add another parameter to the
+      # beginning of the command.
+      page-range {
+        begin = 10
       }
-      working-dir = ${java.io.tmpdir}"/docspell-extraction"
-    }
 
-    # The unpaper command.
-    unpaper {
-      command {
-        program = "unpaper"
-        args = [ "{{infile}}", "{{outfile}}" ]
-        timeout = "5 minutes"
+      # The ghostscript command.
+      ghostscript {
+        command {
+          program = "gs"
+          args = [ "-dNOPAUSE"
+                 , "-dBATCH"
+                 , "-dSAFER"
+                 , "-sDEVICE=tiffscaled8"
+                 , "-sOutputFile={{outfile}}"
+                 , "{{infile}}"
+                 ]
+          timeout = "5 minutes"
+        }
+        working-dir = ${java.io.tmpdir}"/docspell-extraction"
+      }
+
+      # The unpaper command.
+      unpaper {
+        command {
+          program = "unpaper"
+          args = [ "{{infile}}", "{{outfile}}" ]
+          timeout = "5 minutes"
+        }
+      }
+
+      # The tesseract command.
+      tesseract {
+        command {
+          program = "tesseract"
+          args = ["{{file}}"
+                 , "stdout"
+                 , "-l"
+                 , "{{lang}}"
+                 ]
+          timeout = "5 minutes"
+        }
       }
     }
+  }
 
-    # The tesseract command.
-    tesseract {
-      command {
+  # Configuration for converting files into PDFs.
+  #
+  # Most of it is delegated to external tools, which can be configured
+  # below. They must be in the PATH environment or specify the full
+  # path below via the `program` key.
+  convert {
+
+    # The chunk size used when storing files. This should be the same
+    # as used with the rest server.
+    chunk-size = 524288
+
+    # When reading images, this is the maximum size. Images that are
+    # larger are not processed.
+    max-image-size = ${docspell.joex.extraction.ocr.max-image-size}
+
+    # Settings when processing markdown files (and other text files)
+    # to HTML.
+    #
+    # In order to support text formats, text files are first converted
+    # to HTML using a markdown processor. The resulting HTML is then
+    # converted to a PDF file.
+    markdown {
+
+      # The CSS that is used to style the resulting HTML.
+      internal-css = """
+        body { padding: 2em 5em; }
+      """
+    }
+
+    # To convert HTML files into PDF files, the external tool
+    # wkhtmltopdf is used.
+    wkhtmlpdf {
+      command = {
+        program = "wkhtmltopdf"
+        args = [
+          "-s",
+          "A4",
+          "--encoding",
+          "UTF-8",
+          "-",
+          "{{outfile}}"
+        ]
+        timeout = "2 minutes"
+      }
+      working-dir = ${java.io.tmpdir}"/docspell-convert"
+    }
+
+    # To convert image files to PDF files, tesseract is used. This
+    # also extracts the text in one go.
+    tesseract = {
+      command = {
         program = "tesseract"
-        args = ["{{file}}"
-               , "stdout"
-               , "-l"
-               , "{{lang}}"
-               ]
+        args = [
+          "{{infile}}",
+          "out",
+          "-l",
+          "{{lang}}",
+          "pdf",
+          "txt"
+        ]
         timeout = "5 minutes"
       }
+      working-dir = ${java.io.tmpdir}"/docspell-convert"
+    }
+
+    # To convert "office" files to PDF files, the external tool
+    # unoconv is used. Unoconv uses libreoffice/openoffice for
+    # converting. So it supports all formats that are possible to read
+    # with libreoffice/openoffic.
+    #
+    # Note: to greatly improve performance, it is recommended to start
+    # a libreoffice listener by running `unoconv -l` in a separate
+    # process.
+    unoconv = {
+      command = {
+        program = "unoconv"
+        args = [
+          "-f",
+          "pdf",
+          "-o",
+          "{{outfile}}",
+          "{{infile}}"
+        ]
+        timeout = "2 minutes"
+      }
+      working-dir = ${java.io.tmpdir}"/docspell-convert"
     }
   }
 }
@@ -459,6 +562,21 @@ to the executable using this syntax:</p>
 “INFO” will be printed. But the <code class="highlighter-rouge">&lt;logger name="docspell"
 level="debug"&gt;</code> above says, that for loggers with name “docspell”
 statements with level “DEBUG” will be printed, too.</p>
-</section><div class="edit-button"><a href="https://github.com/eikek/docspell/edit/master/modules/microsite/docs/doc/configure.md" target="_blank" rel="noopener noreferrer" class="btn-sm btn-info">Improve this page</a></div></div></div></div></div><script src="/docspell/highlight/highlight.pack.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/json.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/javascript.min.js"></script><script>hljs.configure({languages:['scala','java','bash','json','javascript']});
+</section><div class="edit-button"><a href="https://github.com/eikek/docspell/edit/master/modules/microsite/docs/doc/configure.md" target="_blank" rel="noopener noreferrer" class="btn-sm btn-info">Improve this page</a></div></div></div></div></div><script src="/docspell/highlight/highlight.pack.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/json.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/javascript.min.js"></script><script>
+// For all code blocks, copy the language from the containing div
+// to the inner code tag (where hljs expects it to be)
+const langPrefix = 'language-';
+document.querySelectorAll(`div[class^='${langPrefix}']`).forEach(function(div) {
+  div.classList.forEach(function(cssClass) {
+    if (cssClass.startsWith(langPrefix)) {
+      const lang = cssClass.substring(langPrefix.length);
+      div.querySelectorAll('pre code').forEach(function(code) {
+        code.classList.add(lang);
+      });
+    }
+  });
+});
+
+hljs.configure({languages:['scala','java','bash','json','javascript']});
 hljs.initHighlightingOnLoad();
-              </script><script>console.info('\x57\x65\x62\x73\x69\x74\x65\x20\x62\x75\x69\x6c\x74\x20\x77\x69\x74\x68\x3a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x5f\x5f\x20\x20\x20\x20\x5f\x5f\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x5f\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x5f\x20\x5f\x5f\x0a\x20\x20\x20\x5f\x5f\x5f\x5f\x5f\x2f\x20\x2f\x5f\x20\x20\x2f\x20\x2f\x5f\x20\x20\x20\x20\x20\x20\x5f\x5f\x5f\x5f\x20\x5f\x5f\x5f\x20\x20\x28\x5f\x29\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x20\x20\x5f\x5f\x5f\x5f\x5f\x28\x5f\x29\x20\x2f\x5f\x5f\x5f\x5f\x20\x20\x5f\x5f\x5f\x5f\x5f\x0a\x20\x20\x2f\x20\x5f\x5f\x5f\x2f\x20\x5f\x5f\x20\x5c\x2f\x20\x5f\x5f\x2f\x5f\x5f\x5f\x5f\x5f\x2f\x20\x5f\x5f\x20\x60\x5f\x5f\x20\x5c\x2f\x20\x2f\x20\x5f\x5f\x5f\x2f\x20\x5f\x5f\x5f\x2f\x20\x5f\x5f\x20\x5c\x2f\x20\x5f\x5f\x5f\x2f\x20\x2f\x20\x5f\x5f\x2f\x20\x5f\x20\x5c\x2f\x20\x5f\x5f\x5f\x2f\x0a\x20\x28\x5f\x5f\x20\x20\x29\x20\x2f\x5f\x2f\x20\x2f\x20\x2f\x5f\x2f\x5f\x5f\x5f\x5f\x5f\x2f\x20\x2f\x20\x2f\x20\x2f\x20\x2f\x20\x2f\x20\x2f\x20\x2f\x5f\x5f\x2f\x20\x2f\x20\x20\x2f\x20\x2f\x5f\x2f\x20\x28\x5f\x5f\x20\x20\x29\x20\x2f\x20\x2f\x5f\x2f\x20\x20\x5f\x5f\x28\x5f\x5f\x20\x20\x29\x0a\x2f\x5f\x5f\x5f\x5f\x2f\x5f\x2e\x5f\x5f\x5f\x2f\x5c\x5f\x5f\x2f\x20\x20\x20\x20\x20\x2f\x5f\x2f\x20\x2f\x5f\x2f\x20\x2f\x5f\x2f\x5f\x2f\x5c\x5f\x5f\x5f\x2f\x5f\x2f\x20\x20\x20\x5c\x5f\x5f\x5f\x5f\x2f\x5f\x5f\x5f\x5f\x2f\x5f\x2f\x5c\x5f\x5f\x2f\x5c\x5f\x5f\x5f\x2f\x5f\x5f\x5f\x5f\x2f\x0a\x0a\x68\x74\x74\x70\x73\x3a\x2f\x2f\x34\x37\x64\x65\x67\x2e\x67\x69\x74\x68\x75\x62\x2e\x69\x6f\x2f\x73\x62\x74\x2d\x6d\x69\x63\x72\x6f\x73\x69\x74\x65\x73')</script><script src="/docspell/js/docs.js"></script></body></html>
+      </script><script>console.info('\x57\x65\x62\x73\x69\x74\x65\x20\x62\x75\x69\x6c\x74\x20\x77\x69\x74\x68\x3a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x5f\x5f\x20\x20\x20\x20\x5f\x5f\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x5f\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x5f\x20\x5f\x5f\x0a\x20\x20\x20\x5f\x5f\x5f\x5f\x5f\x2f\x20\x2f\x5f\x20\x20\x2f\x20\x2f\x5f\x20\x20\x20\x20\x20\x20\x5f\x5f\x5f\x5f\x20\x5f\x5f\x5f\x20\x20\x28\x5f\x29\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x20\x20\x5f\x5f\x5f\x5f\x5f\x28\x5f\x29\x20\x2f\x5f\x5f\x5f\x5f\x20\x20\x5f\x5f\x5f\x5f\x5f\x0a\x20\x20\x2f\x20\x5f\x5f\x5f\x2f\x20\x5f\x5f\x20\x5c\x2f\x20\x5f\x5f\x2f\x5f\x5f\x5f\x5f\x5f\x2f\x20\x5f\x5f\x20\x60\x5f\x5f\x20\x5c\x2f\x20\x2f\x20\x5f\x5f\x5f\x2f\x20\x5f\x5f\x5f\x2f\x20\x5f\x5f\x20\x5c\x2f\x20\x5f\x5f\x5f\x2f\x20\x2f\x20\x5f\x5f\x2f\x20\x5f\x20\x5c\x2f\x20\x5f\x5f\x5f\x2f\x0a\x20\x28\x5f\x5f\x20\x20\x29\x20\x2f\x5f\x2f\x20\x2f\x20\x2f\x5f\x2f\x5f\x5f\x5f\x5f\x5f\x2f\x20\x2f\x20\x2f\x20\x2f\x20\x2f\x20\x2f\x20\x2f\x20\x2f\x5f\x5f\x2f\x20\x2f\x20\x20\x2f\x20\x2f\x5f\x2f\x20\x28\x5f\x5f\x20\x20\x29\x20\x2f\x20\x2f\x5f\x2f\x20\x20\x5f\x5f\x28\x5f\x5f\x20\x20\x29\x0a\x2f\x5f\x5f\x5f\x5f\x2f\x5f\x2e\x5f\x5f\x5f\x2f\x5c\x5f\x5f\x2f\x20\x20\x20\x20\x20\x2f\x5f\x2f\x20\x2f\x5f\x2f\x20\x2f\x5f\x2f\x5f\x2f\x5c\x5f\x5f\x5f\x2f\x5f\x2f\x20\x20\x20\x5c\x5f\x5f\x5f\x5f\x2f\x5f\x5f\x5f\x5f\x2f\x5f\x2f\x5c\x5f\x5f\x2f\x5c\x5f\x5f\x5f\x2f\x5f\x5f\x5f\x5f\x2f\x0a\x0a\x68\x74\x74\x70\x73\x3a\x2f\x2f\x34\x37\x64\x65\x67\x2e\x67\x69\x74\x68\x75\x62\x2e\x69\x6f\x2f\x73\x62\x74\x2d\x6d\x69\x63\x72\x6f\x73\x69\x74\x65\x73')</script><script src="/docspell/js/docs.js"></script></body></html>

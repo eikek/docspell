@@ -1,0 +1,113 @@
+<!DOCTYPE html><html><head><title>Docspell: Reverse Proxy</title><meta charset="utf-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="eikek" /><meta name="description" content="Auto-tagging Document Organizer" /><meta name="og:image" content="/docspell/img/poster.png" /><meta name="image" property="og:image" content="/docspell/img/poster.png" /><meta name="og:title" content="Docspell: Reverse Proxy" /><meta name="title" property="og:title" content="Docspell: Reverse Proxy" /><meta name="og:site_name" content="Docspell" /><meta name="og:url" content="" /><meta name="og:type" content="website" /><meta name="og:description" content="Auto-tagging Document Organizer" /><link rel="icon" type="image/png" href="/docspell/img/favicon.png" /><meta name="twitter:title" content="Docspell: Reverse Proxy" /><meta name="twitter:image" content="/docspell/img/poster.png" /><meta name="twitter:description" content="Auto-tagging Document Organizer" /><meta name="twitter:card" content="summary_large_image" /><link rel="icon" type="image/png" sizes="96x96" href="/docspell/img/favicon.png" /><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" /><link rel="stylesheet" href="/docspell/highlight/styles/vs.css" /><link rel="stylesheet" href="/docspell/css/light-style.css" /><link rel="stylesheet" href="/docspell/css/docspell.css" /></head><body class="docs"><div id="wrapper"><div id="sidebar-wrapper"><div id="sidebar-brand"><a href="/docspell/" class="brand"><div class="brand-wrapper"></div><span>Docspell</span></a><button id="main-toggle" class="sidebar-toggle"><span class="close"></span></button></div><div class="sidebar-nav"> <div class="sidebar-nav-item  "><a href="/docspell/index.html" title="Home" class="">Home</a></div> <div class="sidebar-nav-item  "><a href="/docspell/demo.html" title="Demo" class="">Demo</a></div> <div class="sidebar-nav-item  "><a href="/docspell/getit.html" title="Quickstart" class="">Quickstart</a></div> <div class="sidebar-nav-item  "><a href="/docspell/features.html" title="Features/Limitations" class="">Features/Limitations</a></div> <div class="sidebar-nav-item  open"><a href="/docspell/doc.html" title="Documentation" class="drop-nested">Documentation</a><i class="fa fa-angle-right"></i><div class="sub-section"> <a href="/docspell/doc/install.html" title="Installation" class="">Installation</a> <a href="/docspell/doc/configure.html" title="Configuring" class="">Configuring</a> <a href="/docspell/doc/nix" title="Nix/NixOS" class="">Nix/NixOS</a> <a href="/docspell/doc/reverseproxy" title="Reverse Proxy" class="active">Reverse Proxy</a> <a href="/docspell/doc/metadata.html" title="Adding Meta Data" class="">Adding Meta Data</a> <a href="/docspell/doc/uploading.html" title="Uploads" class="">Uploads</a> <a href="/docspell/doc/processing.html" title="Processing Queue" class="">Processing Queue</a> <a href="/docspell/doc/curate.html" title="Find and Review" class="">Find and Review</a> <a href="/docspell/doc/mailitem.html" title="Send via E-Mail" class="">Send via E-Mail</a> <a href="/docspell/doc/joex.html" title="Joex" class="">Joex</a> <a href="/docspell/doc/tools.html" title="Tools" class="">Tools</a></div></div> <div class="sidebar-nav-item  "><a href="/docspell/changelog" title="Changelog" class="">Changelog</a></div> <div class="sidebar-nav-item  "><a href="/docspell/dev.html" title="Development" class="drop-nested">Development</a><i class="fa fa-angle-right"></i><div class="sub-section"> <a href="/docspell/dev/adr.html" title="" class=""></a></div></div> <div class="sidebar-nav-item  "><a href="/docspell/api.html" title="Api" class="drop-nested">Api</a><i class="fa fa-angle-right"></i><div class="sub-section"> <a href="/docspell/openapi/docspell-openapi.html" title="REST Api Doc" class="">REST Api Doc</a> <a href="/docspell/openapi/docspell-openapi.yml" title="REST OpenApi Spec" class="">REST OpenApi Spec</a></div></div></div></div><div id="page-content-wrapper"><div class="nav"><div class="container-fluid"><div class="row"><div class="col-lg-12"><div class="action-menu pull-left clearfix"><a href="#menu-toggle" id="menu-toggle"><i class="fa fa-bars" aria-hidden="true"></i></a></div><ul class="pull-right"><li id="gh-eyes-item" class="hidden-xs"><a href="https://github.com/eikek/docspell" target="_blank" rel="noopener noreferrer"><i class="fa fa-eye"></i><span>Watchers<span id="eyes" class="label label-default">--</span></span></a></li><li id="gh-stars-item" class="hidden-xs"><a href="https://github.com/eikek/docspell" target="_blank" rel="noopener noreferrer"><i class="fa fa-star-o"></i><span>Stars<span id="stars" class="label label-default">--</span></span></a></li></ul></div></div></div></div><div id="content" data-github-owner="eikek" data-github-repo="docspell"><div class="content-wrapper"><section><h1 id="reverse-proxy">Reverse Proxy</h1>
+
+<p>This contains examples for how to use docspell behind a reverse proxy.</p>
+
+<p>For the examples below, assume the following:</p>
+
+<ul>
+  <li>Docspell app is available at <code class="highlighter-rouge">192.168.1.11:7880</code>. If it is running
+on the same machine as the reverse proxy server, you can set
+<code class="highlighter-rouge">localhost:7880</code> instead.</li>
+  <li>The external domain/hostname is <code class="highlighter-rouge">docspell.example.com</code></li>
+</ul>
+
+<h2 id="configuring-docspell">Configuring Docspell</h2>
+
+<p>These settings require a complement config part in the docspell
+configuration file:</p>
+
+<ul>
+  <li>First, if Docspell REST server is on a different machine, you need
+to change the <code class="highlighter-rouge">bind.address</code> setting to be either <code class="highlighter-rouge">0.0.0.0</code> or the
+ip address of the network interface that the reverse proxy server
+connects to.
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docspell.server {
+  # Where the server binds to.
+  bind {
+    address = "192.168.1.11"
+    port = 7880
+  }
+}
+</code></pre></div>    </div>
+    <p>Note that a value of <code class="highlighter-rouge">0.0.0.0</code> instead of <code class="highlighter-rouge">192.168.1.11</code> will bind
+the server to every network interface.</p>
+  </li>
+  <li>Docspell needs to know the external url. The <code class="highlighter-rouge">base-url</code> setting
+must point to the external address. Using above values, it must be
+set to <code class="highlighter-rouge">https://docspell.example.com</code>.
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docspell.server {
+  # This is the base URL this application is deployed to. This is used
+  # to create absolute URLs and to configure the cookie.
+  base-url = "https://docspell.example.com"
+ ...
+}
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<p>Note that this example assumes that the docspell-joex component is on
+the same machine. This page is only related for exposing the REST
+server and web application.</p>
+
+<p>If you have examples for more servers, please let me know or add it to
+this site.</p>
+
+<h2 id="nginx">Nginx</h2>
+
+<p>This defines two servers: one listens for http traffic and redirects
+to the https variant. Additionally it defines the let’s encrypt
+<code class="highlighter-rouge">.well-known</code> folder name.</p>
+
+<p>The https server endpoint is configured with the let’s encrypt
+certificates and acts as a proxy for the application at
+<code class="highlighter-rouge">192.168.1.11:7880</code>.</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>server {
+    listen 0.0.0.0:80 ;
+    listen [::]:80 ;
+    server_name docspell.example.com ;
+    location /.well-known/acme-challenge {
+        root /var/data/nginx/ACME-PUBLIC;
+        auth_basic off;
+    }
+    location / {
+        return 301 https://$host$request_uri;
+    }
+}
+server {
+    listen 0.0.0.0:443 ssl http2 ;
+    listen [::]:443 ssl http2 ;
+    server_name docspell.example.com ;
+    location /.well-known/acme-challenge {
+        root /var/data/nginx/ACME-PUBLIC;
+        auth_basic off;
+    }
+    ssl_certificate /var/lib/acme/docspell.example.com/fullchain.pem;
+    ssl_certificate_key /var/lib/acme/docspell.example.com/key.pem;
+    ssl_trusted_certificate /var/lib/acme/docspell.example.com/full.pem;
+    location / {
+        proxy_pass http://192.168.1.11:7880;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $connection_upgrade;
+    }
+}
+</code></pre></div></div>
+</section><div class="edit-button"><a href="https://github.com/eikek/docspell/edit/master/modules/microsite/docs/doc/reverseproxy.md" target="_blank" rel="noopener noreferrer" class="btn-sm btn-info">Improve this page</a></div></div></div></div></div><script src="/docspell/highlight/highlight.pack.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/json.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/javascript.min.js"></script><script>
+// For all code blocks, copy the language from the containing div
+// to the inner code tag (where hljs expects it to be)
+const langPrefix = 'language-';
+document.querySelectorAll(`div[class^='${langPrefix}']`).forEach(function(div) {
+  div.classList.forEach(function(cssClass) {
+    if (cssClass.startsWith(langPrefix)) {
+      const lang = cssClass.substring(langPrefix.length);
+      div.querySelectorAll('pre code').forEach(function(code) {
+        code.classList.add(lang);
+      });
+    }
+  });
+});
+
+hljs.configure({languages:['scala','java','bash','json','javascript']});
+hljs.initHighlightingOnLoad();
+      </script><script>console.info('\x57\x65\x62\x73\x69\x74\x65\x20\x62\x75\x69\x6c\x74\x20\x77\x69\x74\x68\x3a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x5f\x5f\x20\x20\x20\x20\x5f\x5f\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x5f\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x5f\x20\x5f\x5f\x0a\x20\x20\x20\x5f\x5f\x5f\x5f\x5f\x2f\x20\x2f\x5f\x20\x20\x2f\x20\x2f\x5f\x20\x20\x20\x20\x20\x20\x5f\x5f\x5f\x5f\x20\x5f\x5f\x5f\x20\x20\x28\x5f\x29\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x20\x20\x5f\x5f\x5f\x5f\x5f\x28\x5f\x29\x20\x2f\x5f\x5f\x5f\x5f\x20\x20\x5f\x5f\x5f\x5f\x5f\x0a\x20\x20\x2f\x20\x5f\x5f\x5f\x2f\x20\x5f\x5f\x20\x5c\x2f\x20\x5f\x5f\x2f\x5f\x5f\x5f\x5f\x5f\x2f\x20\x5f\x5f\x20\x60\x5f\x5f\x20\x5c\x2f\x20\x2f\x20\x5f\x5f\x5f\x2f\x20\x5f\x5f\x5f\x2f\x20\x5f\x5f\x20\x5c\x2f\x20\x5f\x5f\x5f\x2f\x20\x2f\x20\x5f\x5f\x2f\x20\x5f\x20\x5c\x2f\x20\x5f\x5f\x5f\x2f\x0a\x20\x28\x5f\x5f\x20\x20\x29\x20\x2f\x5f\x2f\x20\x2f\x20\x2f\x5f\x2f\x5f\x5f\x5f\x5f\x5f\x2f\x20\x2f\x20\x2f\x20\x2f\x20\x2f\x20\x2f\x20\x2f\x20\x2f\x5f\x5f\x2f\x20\x2f\x20\x20\x2f\x20\x2f\x5f\x2f\x20\x28\x5f\x5f\x20\x20\x29\x20\x2f\x20\x2f\x5f\x2f\x20\x20\x5f\x5f\x28\x5f\x5f\x20\x20\x29\x0a\x2f\x5f\x5f\x5f\x5f\x2f\x5f\x2e\x5f\x5f\x5f\x2f\x5c\x5f\x5f\x2f\x20\x20\x20\x20\x20\x2f\x5f\x2f\x20\x2f\x5f\x2f\x20\x2f\x5f\x2f\x5f\x2f\x5c\x5f\x5f\x5f\x2f\x5f\x2f\x20\x20\x20\x5c\x5f\x5f\x5f\x5f\x2f\x5f\x5f\x5f\x5f\x2f\x5f\x2f\x5c\x5f\x5f\x2f\x5c\x5f\x5f\x5f\x2f\x5f\x5f\x5f\x5f\x2f\x0a\x0a\x68\x74\x74\x70\x73\x3a\x2f\x2f\x34\x37\x64\x65\x67\x2e\x67\x69\x74\x68\x75\x62\x2e\x69\x6f\x2f\x73\x62\x74\x2d\x6d\x69\x63\x72\x6f\x73\x69\x74\x65\x73')</script><script src="/docspell/js/docs.js"></script></body></html>

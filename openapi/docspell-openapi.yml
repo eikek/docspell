@@ -2,7 +2,7 @@ openapi: 3.0.0
 
 info:
   title: Docspell
-  version: 0.2.0
+  version: 0.3.0
   description: |
     This is the remote API to Docspell, a personal document organizer.
 
@@ -1168,11 +1168,91 @@ paths:
                 $ref: "#/components/schemas/ItemProposals"
 
   /sec/attachment/{id}:
+    head:
+      tags: [ Attachment ]
+      summary: Get an attachment file.
+      description: |
+        Get information about the binary file belonging to the
+        attachment with the given id.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        200:
+          description: Ok
+          headers:
+            Content-Type:
+              schema:
+                type: string
+            Content-Length:
+              schema:
+                type: integer
+                format: int64
+            ETag:
+              schema:
+                type: string
+            Content-Disposition:
+              schema:
+                type: string
     get:
       tags: [ Attachment ]
       summary: Get an attachment file.
       description: |
-        Get the binary file belonging to the attachment with the given id.
+        Get the binary file belonging to the attachment with the given
+        id.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+  /sec/attachment/{id}/original:
+    head:
+      tags: [ Attachment ]
+      summary: Get an attachment file.
+      description: |
+        Get information about the original binary file of the
+        attachment with the given id.
+
+        If the attachment is a converted PDF file, this route gets the
+        original file as it was uploaded.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        200:
+          description: Ok
+          headers:
+            Content-Type:
+              schema:
+                type: string
+            Content-Length:
+              schema:
+                type: integer
+                format: int64
+            ETag:
+              schema:
+                type: string
+            Content-Disposition:
+              schema:
+                type: string
+    get:
+      tags: [ Attachment ]
+      summary: Get an attachment file.
+      description: |
+        Get the original binary file of the attachment with the given
+        id.
+
+        If the attachment is a converted PDF file, this route gets the
+        original file as it was uploaded.
       security:
         - authTokenHeader: []
       parameters:
@@ -1203,6 +1283,27 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/AttachmentMeta"
+  /sec/attachment/{id}/view:
+    get:
+      tags: [ Attachment ]
+      summary: A preview of the attachment
+      description: |
+        This provides a preview of the attachment. It currently uses a
+        third-party javascript library (viewerjs) to display the
+        preview. This works by redirecting to the viewerjs url with
+        the attachment url as parameter. Note that the resulting url
+        that is redirected to is not stable. It may change from
+        version to version. This route, however, is meant to provide a
+        stable url for the preview.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        303:
+          description: See Other
+        200:
+          description: Ok
   /sec/queue/state:
     get:
       tags: [ Job Queue ]
@@ -1743,6 +1844,7 @@ components:
         - created
         - updated
         - attachments
+        - sources
         - tags
       properties:
         id:
@@ -1789,6 +1891,10 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/Attachment"
+        sources:
+          type: array
+          items:
+            $ref: "#/components/schemas/AttachmentSource"
         tags:
           type: array
           items:
@@ -1800,10 +1906,34 @@ components:
         - id
         - size
         - contentType
+        - converted
       properties:
         id:
           type: string
           format: ident
+        name:
+          type: string
+        size:
+          type: integer
+          format: int64
+        contentType:
+          type: string
+          format: mimetype
+        converted:
+          type: boolean
+    AttachmentSource:
+      description: |
+        The source or original file of an attachment.
+      required:
+        - id
+        - size
+        - contentType
+      properties:
+        id:
+          type: string
+          format: ident
+          description: |
+            The id is the attachment id.
         name:
           type: string
         size:
