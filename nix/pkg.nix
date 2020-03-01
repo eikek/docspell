@@ -1,4 +1,4 @@
-cfg: {stdenv, fetchzip, file, curl, inotifyTools, fetchurl, jre8_headless, bash}:
+cfg: {stdenv, fetchzip, file, curl, inotifyTools, fetchurl, jre8, bash}:
 let
   meta = with stdenv.lib; {
     description = "Docspell helps to organize and archive your paper documents.";
@@ -12,7 +12,7 @@ in
 
      src = fetchzip cfg.server;
 
-    buildInputs = [ jre8_headless ];
+    buildInputs = [ jre8 ];
 
     buildPhase = "true";
 
@@ -21,7 +21,7 @@ in
       cp -R * $out/docspell-restserver-${cfg.version}/
       cat > $out/bin/docspell-restserver <<-EOF
       #!${bash}/bin/bash
-      $out/docspell-restserver-${cfg.version}/bin/docspell-restserver -java-home ${jre8_headless} "\$@"
+      $out/docspell-restserver-${cfg.version}/bin/docspell-restserver -java-home ${jre8} "\$@"
       EOF
       chmod 755 $out/bin/docspell-restserver
     '';
@@ -34,7 +34,7 @@ in
 
     src = fetchzip cfg.joex;
 
-    buildInputs = [ jre8_headless ];
+    buildInputs = [ jre8 ];
 
     buildPhase = "true";
 
@@ -43,7 +43,7 @@ in
       cp -R * $out/docspell-joex-${cfg.version}/
       cat > $out/bin/docspell-joex <<-EOF
       #!${bash}/bin/bash
-      $out/docspell-joex-${cfg.version}/bin/docspell-joex -java-home ${jre8_headless} "\$@"
+      $out/docspell-joex-${cfg.version}/bin/docspell-joex -java-home ${jre8} "\$@"
       EOF
       chmod 755 $out/bin/docspell-joex
     '';
