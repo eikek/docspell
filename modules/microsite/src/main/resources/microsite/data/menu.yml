@@ -6,7 +6,7 @@ options:
     url: demo.html
 
   - title: Quickstart
-    url: getit.html
+    url: getit
 
   - title: Features/Limitations
     url: features.html
