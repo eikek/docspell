@@ -604,20 +604,35 @@ in {
       description = "Docspell user";
     };
 
-    systemd.services.docspell-joex =
-    let
-      cmd = "${pkgs.docspell.joex}/bin/docspell-joex ${configFile}";
-    in
-    {
-      description = "Docspell Joex";
-      after = [ "networking.target" ];
-      wantedBy = [ "multi-user.target" ];
-      path = [ pkgs.gawk ];
-      preStart = ''
-      '';
+    # Setting up a unoconv listener to improve conversion performance
+    systemd.services.unoconv =
+      let
+        cmd = "${pkgs.unoconv}/bin/unoconv --listener -v";
+      in
+        {
+          description = "Unoconv Listener";
+          after = [ "networking.target" ];
+          wantedBy = [ "multi-user.target" ];
+          path = [ pkgs.unoconv ];
+          serviceConfig = {
+            Restart = "always";
+          };
+          script =
+            "${pkgs.su}/bin/su -s ${pkgs.bash}/bin/sh ${user} -c \"${cmd}\"";
+        };
 
-      script =
-        "${pkgs.su}/bin/su -s ${pkgs.bash}/bin/sh ${user} -c \"${cmd}\"";
-    };
+    systemd.services.docspell-joex =
+      let
+        cmd = "${pkgs.docspell.joex}/bin/docspell-joex ${configFile}";
+      in
+        {
+          description = "Docspell Joex";
+          after = [ "networking.target" ];
+          wantedBy = [ "multi-user.target" ];
+          path = [ pkgs.gawk ];
+
+          script =
+            "${pkgs.su}/bin/su -s ${pkgs.bash}/bin/sh ${user} -c \"${cmd}\"";
+        };
   };
 }
