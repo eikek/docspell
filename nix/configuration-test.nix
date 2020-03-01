@@ -28,9 +28,11 @@ in
 
   services.docspell-joex = {
     enable = true;
-    base-url = "http://docspelltest:7878";
+    bind.address = "0.0.0.0";
+    base-url = "http://localhost:7878";
   };
   services.docspell-restserver = {
+    bind.address = "0.0.0.0";
     enable = true;
   };
   services.docspell-consumedir = {
