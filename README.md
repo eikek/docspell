@@ -46,4 +46,10 @@ more information.
 Check the feature list and the quickstart guide to try it out:
 
 - [Features](https://eikek.github.io/docspell/features.html)
-- [Quickstart](https://eikek.github.io/docspell/getit.html)
+- [Quickstart](https://eikek.github.io/docspell/getit)
+
+## Screenshots
+
+![screenshot-1](https://raw.githubusercontent.com/eikek/docspell/master/modules/microsite/src/main/resources/microsite/img/docspell-curate-1.jpg)
+![screenshot-2](https://raw.githubusercontent.com/eikek/docspell/master/modules/microsite/src/main/resources/microsite/img/docspell-curate-2.jpg)
+![screenshot-3](https://raw.githubusercontent.com/eikek/docspell/master/modules/microsite/src/main/resources/microsite/img/processing-queue.jpg)
