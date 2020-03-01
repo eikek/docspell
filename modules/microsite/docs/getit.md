@@ -1,6 +1,7 @@
 ---
 layout: docs
 title: Quickstart
+permalink: getit/
 ---
 
 ## Download

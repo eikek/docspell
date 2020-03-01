@@ -370,7 +370,7 @@ val microsite = project.in(file("modules/microsite")).
     ),
     micrositeName := "Docspell",
     micrositeDescription := "Auto-tagging Document Organizer",
-    micrositeDocumentationUrl := "/docspell/getit.html",
+    micrositeDocumentationUrl := "/docspell/getit",
     micrositeDocumentationLabelDescription := "Quickstart",
     micrositeFavicons := Seq(microsites.MicrositeFavicon("favicon.png", "96x96")),
     micrositeBaseUrl := "/docspell",
