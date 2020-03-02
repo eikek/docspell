@@ -249,12 +249,22 @@ object QItem {
   def findByChecksum(checksum: String, collective: Ident): ConnectionIO[Vector[RItem]] = {
     val IC    = RItem.Columns.all.map(_.prefix("i"))
     val aItem = RAttachment.Columns.itemId.prefix("a")
+    val aId = RAttachment.Columns.id.prefix("a")
+    val aFileId = RAttachment.Columns.fileId.prefix("a")
     val iId   = RItem.Columns.id.prefix("i")
     val iColl = RItem.Columns.cid.prefix("i")
+    val sId = RAttachmentSource.Columns.id.prefix("s")
+    val sFileId = RAttachmentSource.Columns.fileId.prefix("s")
+    val m1Id = RFileMeta.Columns.id.prefix("m1")
+    val m2Id = RFileMeta.Columns.id.prefix("m2")
+    val m1Checksum = RFileMeta.Columns.checksum.prefix("m1")
+    val m2Checksum = RFileMeta.Columns.checksum.prefix("m2")
 
     val from = RItem.table ++ fr"i INNER JOIN" ++ RAttachment.table ++ fr"a ON" ++ aItem.is(iId) ++
-      fr"INNER JOIN filemeta m ON m.id = a.filemetaid"
-    selectSimple(IC, from, and(fr"m.checksum = $checksum", iColl.is(collective)))
+      fr"INNER JOIN" ++ RAttachmentSource.table ++ fr"s ON" ++ aId.is(sId) ++
+      fr"INNER JOIN" ++ RFileMeta.table ++ fr"m1 ON" ++ m1Id.is(aFileId) ++
+      fr"INNER JOIN" ++ RFileMeta.table ++ fr"m2 ON" ++ m2Id.is(sFileId)
+    selectSimple(IC, from, and(or(m1Checksum.is(checksum), m2Checksum.is(checksum)), iColl.is(collective)))
       .query[RItem]
       .to[Vector]
   }
