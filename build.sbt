@@ -260,7 +260,8 @@ val joexapi = project.in(file("modules/joexapi")).
   settings(
     name := "docspell-joexapi",
     libraryDependencies ++=
-      Dependencies.circe,
+      Dependencies.circe ++
+      Dependencies.http4sClient,
     openapiTargetLanguage := Language.Scala,
     openapiPackage := Pkg("docspell.joexapi.model"),
     openapiSpec := (Compile/resourceDirectory).value/"joex-openapi.yml"
@@ -302,7 +303,7 @@ val backend = project.in(file("modules/backend")).
       Dependencies.bcrypt ++
       Dependencies.http4sClient ++
       Dependencies.emil
-  ).dependsOn(store)
+  ).dependsOn(store, joexapi)
 
 val webapp = project.in(file("modules/webapp")).
   disablePlugins(RevolverPlugin).

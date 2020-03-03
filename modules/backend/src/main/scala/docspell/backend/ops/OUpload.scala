@@ -2,7 +2,7 @@ package docspell.backend.ops
 
 import bitpeace.MimetypeHint
 import cats.implicits._
-import cats.effect.{ConcurrentEffect, Effect, Resource}
+import cats.effect._
 import docspell.backend.Config
 import fs2.Stream
 import docspell.common._
@@ -11,8 +11,6 @@ import docspell.store.Store
 import docspell.store.queue.JobQueue
 import docspell.store.records.{RCollective, RJob, RSource}
 import org.log4s._
-
-import scala.concurrent.ExecutionContext
 
 trait OUpload[F[_]] {
 
@@ -51,11 +49,11 @@ object OUpload {
     case object NoSource extends UploadResult
   }
 
-  def apply[F[_]: ConcurrentEffect](
+  def apply[F[_]: Sync](
       store: Store[F],
       queue: JobQueue[F],
       cfg: Config,
-      httpClientEC: ExecutionContext
+      joex: OJoex[F]
   ): Resource[F, OUpload[F]] =
     Resource.pure[F, OUpload[F]](new OUpload[F] {
 
@@ -92,7 +90,7 @@ object OUpload {
         for {
           _ <- logger.fdebug(s"Storing jobs: $jobs")
           _ <- queue.insertAll(jobs)
-          _ <- OJoex.notifyAll(store, httpClientEC)
+          _ <- joex.notifyAllNodes
         } yield UploadResult.Success
 
       private def saveFile(file: File[F]): F[Option[ProcessItemArgs.File]] =
@@ -109,7 +107,7 @@ object OUpload {
             }, id => Some(ProcessItemArgs.File(file.name, id))))
 
       private def checkFileList(files: Seq[ProcessItemArgs.File]): F[Either[UploadResult, Unit]] =
-        Effect[F].pure(if (files.isEmpty) Left(UploadResult.NoFiles) else Right(()))
+        Sync[F].pure(if (files.isEmpty) Left(UploadResult.NoFiles) else Right(()))
 
       private def makeJobs(
           args: Vector[ProcessItemArgs],
