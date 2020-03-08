@@ -28,6 +28,8 @@ case class Timestamp(value: Instant) {
   def atZone(zone: ZoneId): ZonedDateTime =
     value.atZone(zone)
 
+  def atUTC: ZonedDateTime = atZone(Timestamp.UTC)
+
   def asString: String = value.toString
 }
 
@@ -38,6 +40,9 @@ object Timestamp {
 
   def current[F[_]: Sync]: F[Timestamp] =
     Sync[F].delay(Timestamp(Instant.now))
+
+  def from(zd: ZonedDateTime): Timestamp =
+    Timestamp(zd.toInstant)
 
   implicit val encodeTimestamp: Encoder[Timestamp] =
     BaseJsonCodecs.encodeInstantEpoch.contramap(_.value)

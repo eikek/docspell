@@ -13,3 +13,6 @@ CREATE TABLE `periodic_task` (
   `nextrun` timestamp not null,
   `created` timestamp not null
 );
+
+CREATE INDEX `periodic_task_nextrun_idx` ON `periodic_task`(`nextrun`);
+CREATE INDEX `periodic_task_worker_idx` ON `periodic_task`(`worker`);

@@ -94,10 +94,12 @@ final class PeriodicSchedulerImpl[F[_]: ConcurrentEffect: ContextShift](
             .takeNext(config.name)
             .use({
               case Some(pj) =>
-                (if (isTriggered(pj, now)) submitJob(pj)
-                 else scheduleNotify(pj)).map(_ => true)
+                logger
+                  .fdebug(s"Found periodic task '${pj.subject}/${pj.timer.asString}'") *>
+                  (if (isTriggered(pj, now)) submitJob(pj)
+                   else scheduleNotify(pj)).map(_ => true)
               case None =>
-                false.pure[F]
+                logger.fdebug("No periodic task found") *> false.pure[F]
             })
         )
       } yield go

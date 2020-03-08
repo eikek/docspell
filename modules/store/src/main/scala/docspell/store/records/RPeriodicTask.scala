@@ -133,9 +133,33 @@ object RPeriodicTask {
     val sql = insertRow(
       table,
       all,
-      fr"${v.id},${v.enabled},${v.task},${v.group},${v.args},${v.subject},${v.submitter},${v.priority},${v.worker},${v.marked},${v.timer},${v.nextrun},${v.created}"
+      fr"${v.id},${v.enabled},${v.task},${v.group},${v.args}," ++
+        fr"${v.subject},${v.submitter},${v.priority},${v.worker}," ++
+        fr"${v.marked},${v.timer},${v.nextrun},${v.created}"
     )
     sql.update.run
   }
 
+  def update(v: RPeriodicTask): ConnectionIO[Int] = {
+    val sql = updateRow(
+      table,
+      id.is(v.id),
+      commas(
+        enabled.setTo(v.enabled),
+        group.setTo(v.group),
+        args.setTo(v.args),
+        subject.setTo(v.subject),
+        submitter.setTo(v.submitter),
+        priority.setTo(v.priority),
+        worker.setTo(v.worker),
+        marked.setTo(v.marked),
+        timer.setTo(v.timer),
+        nextrun.setTo(v.nextrun)
+      )
+    )
+    sql.update.run
+  }
+
+  def exists(pid: Ident): ConnectionIO[Boolean] =
+    selectCount(id, table, id.is(pid)).query[Int].unique.map(_ > 0)
 }
