@@ -1,7 +1,7 @@
 package docspell.joex
 
 import docspell.common.{Ident, LenientUri}
-import docspell.joex.scheduler.SchedulerConfig
+import docspell.joex.scheduler.{PeriodicSchedulerConfig, SchedulerConfig}
 import docspell.store.JdbcConfig
 import docspell.convert.ConvertConfig
 import docspell.extract.ExtractConfig
@@ -12,6 +12,7 @@ case class Config(
     bind: Config.Bind,
     jdbc: JdbcConfig,
     scheduler: SchedulerConfig,
+    periodicScheduler: PeriodicSchedulerConfig,
     extraction: ExtractConfig,
     convert: ConvertConfig
 )

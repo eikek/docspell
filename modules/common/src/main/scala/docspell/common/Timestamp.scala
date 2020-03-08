@@ -4,6 +4,8 @@ import java.time.{Instant, LocalDate, ZoneId}
 
 import cats.effect.Sync
 import io.circe.{Decoder, Encoder}
+import java.time.LocalDateTime
+import java.time.ZonedDateTime
 
 case class Timestamp(value: Instant) {
 
@@ -17,13 +19,20 @@ case class Timestamp(value: Instant) {
   def minusHours(n: Long): Timestamp =
     Timestamp(value.minusSeconds(n * 60 * 60))
 
-  def toDate: LocalDate =
-    value.atZone(ZoneId.of("UTC")).toLocalDate
+  def toUtcDate: LocalDate =
+    value.atZone(Timestamp.UTC).toLocalDate
+
+  def toUtcDateTime: LocalDateTime =
+    value.atZone(Timestamp.UTC).toLocalDateTime
+
+  def atZone(zone: ZoneId): ZonedDateTime =
+    value.atZone(zone)
 
   def asString: String = value.toString
 }
 
 object Timestamp {
+  val UTC = ZoneId.of("UTC")
 
   val Epoch = Timestamp(Instant.EPOCH)
 

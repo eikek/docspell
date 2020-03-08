@@ -194,7 +194,8 @@ val store = project.in(file("modules/store")).
       Dependencies.databases ++
       Dependencies.flyway ++
       Dependencies.loggingApi ++
-      Dependencies.emil
+      Dependencies.emil ++
+      Dependencies.calev
   ).dependsOn(common)
 
 val extract = project.in(file("modules/extract")).

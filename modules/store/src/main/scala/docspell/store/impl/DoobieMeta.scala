@@ -7,6 +7,7 @@ import doobie._
 import doobie.implicits.legacy.instant._
 import doobie.util.log.Success
 import emil.{MailAddress, SSLType}
+import com.github.eikek.calev.CalEvent
 
 import docspell.common._
 import docspell.common.syntax.all._
@@ -98,6 +99,9 @@ trait DoobieMeta {
     Meta[String].imap(str => str.split(',').toList.map(_.trim).map(EmilUtil.unsafeReadMailAddress))(
       lma => lma.map(EmilUtil.mailAddressString).mkString(",")
     )
+
+  implicit val metaCalEvent: Meta[CalEvent] =
+    Meta[String].timap(CalEvent.unsafe)(_.asString)
 }
 
 object DoobieMeta extends DoobieMeta {

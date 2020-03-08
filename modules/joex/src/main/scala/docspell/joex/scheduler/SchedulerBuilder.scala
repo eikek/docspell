@@ -34,6 +34,9 @@ case class SchedulerBuilder[F[_]: ConcurrentEffect: ContextShift](
   def withLogSink(sink: LogSink[F]): SchedulerBuilder[F] =
     copy(logSink = sink)
 
+  def withQueue(queue: JobQueue[F]): SchedulerBuilder[F] =
+    copy(queue = Resource.pure[F, JobQueue[F]](queue))
+
   def serve: Resource[F, Scheduler[F]] =
     resource.evalMap(sch => ConcurrentEffect[F].start(sch.start.compile.drain).map(_ => sch))
 

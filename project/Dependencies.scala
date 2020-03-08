@@ -7,6 +7,7 @@ object Dependencies {
   val BcryptVersion = "0.4"
   val BetterMonadicForVersion = "0.3.1"
   val BitpeaceVersion = "0.4.3"
+  val CalevVersion = "0.1.0"
   val CirceVersion = "0.13.0"
   val DoobieVersion = "0.8.8"
   val EmilVersion = "0.2.0"
@@ -36,6 +37,11 @@ object Dependencies {
   val JQueryVersion = "3.4.1"
   val ViewerJSVersion = "0.5.8"
 
+
+  val calev = Seq(
+    "com.github.eikek" %% "calev-core" % CalevVersion,
+    "com.github.eikek" %% "calev-fs2" % CalevVersion
+  )
 
   val jclOverSlf4j = Seq(
     "org.slf4j" % "jcl-over-slf4j" % Slf4jVersion
