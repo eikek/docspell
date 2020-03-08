@@ -4,6 +4,7 @@ import fs2._
 import fs2.concurrent.SignallingRef
 import cats.effect._
 
+import docspell.joexapi.client.JoexClient
 import docspell.store.queue._
 
 /** A periodic scheduler takes care to submit periodic tasks to the
@@ -32,14 +33,16 @@ object PeriodicScheduler {
 
   def create[F[_]: ConcurrentEffect: ContextShift](
       cfg: PeriodicSchedulerConfig,
+      sch: Scheduler[F],
       queue: JobQueue[F],
       store: PeriodicTaskStore[F],
+      client: JoexClient[F],
       timer: Timer[F]
   ): Resource[F, PeriodicScheduler[F]] =
     for {
       waiter <- Resource.liftF(SignallingRef(true))
       state  <- Resource.liftF(SignallingRef(PeriodicSchedulerImpl.emptyState[F]))
-      psch = new PeriodicSchedulerImpl[F](cfg, queue, store, waiter, state, timer)
+      psch = new PeriodicSchedulerImpl[F](cfg, sch, queue, store, client, waiter, state, timer)
       _ <- Resource.liftF(psch.init)
     } yield psch
 

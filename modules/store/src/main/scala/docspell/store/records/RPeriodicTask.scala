@@ -8,6 +8,7 @@ import com.github.eikek.calev.CalEvent
 import docspell.common._
 import docspell.store.impl.Column
 import docspell.store.impl.Implicits._
+import io.circe.Encoder
 
 /** A periodic task is a special job description, that shares a few
   * properties of a `RJob`. It must provide all information to create
@@ -62,8 +63,6 @@ object RPeriodicTask {
       subject: String,
       submitter: Ident,
       priority: Priority,
-      worker: Option[Ident],
-      marked: Option[Timestamp],
       timer: CalEvent
   ): F[RPeriodicTask] =
     Ident
@@ -81,8 +80,8 @@ object RPeriodicTask {
               subject,
               submitter,
               priority,
-              worker,
-              marked,
+              None,
+              None,
               timer,
               timer
                 .nextElapse(now.atZone(Timestamp.UTC))
@@ -93,6 +92,18 @@ object RPeriodicTask {
             )
           }
       )
+
+  def createJson[F[_]: Sync, A](
+      enabled: Boolean,
+      task: Ident,
+      group: Ident,
+      args: A,
+      subject: String,
+      submitter: Ident,
+      priority: Priority,
+      timer: CalEvent
+  )(implicit E: Encoder[A]): F[RPeriodicTask] =
+    create[F](enabled, task, group, E(args).noSpaces, subject, submitter, priority, timer)
 
   val table = fr"periodic_task"
 

@@ -9,45 +9,18 @@ import com.github.eikek.fs2calev._
 
 import docspell.common._
 import docspell.common.syntax.all._
+import docspell.joexapi.client.JoexClient
 import docspell.store.queue._
 import docspell.store.records.RPeriodicTask
 
 import PeriodicSchedulerImpl.State
 
-/*
-onStartUp:
-- remove worker value from all of the current
-
-Loop:
-- get earliest pjob
-- if none: stop
-- if triggered:
-  - mark worker, restart loop on fail
-  - submit new job
-    - check for non-final jobs of that name
-    - if exist: log info
-    - if not exist: submit
-  - update next trigger (in both cases)
-  - remove worker
-  - restart loop
-- if future
-  - schedule notify
-  - stop loop
-
-
-onNotify:
-- cancel current scheduled notify
-- start Loop
-
-
-onShutdown:
-- nothing to do
- */
-
 final class PeriodicSchedulerImpl[F[_]: ConcurrentEffect: ContextShift](
     val config: PeriodicSchedulerConfig,
+    sch: Scheduler[F],
     queue: JobQueue[F],
     store: PeriodicTaskStore[F],
+    client: JoexClient[F],
     waiter: SignallingRef[F, Boolean],
     state: SignallingRef[F, State[F]],
     timer: Timer[F]
@@ -91,15 +64,18 @@ final class PeriodicSchedulerImpl[F[_]: ConcurrentEffect: ContextShift](
         _   <- logger.fdebug(s"Looking for next periodic task")
         go <- logThrow("Error getting next task")(
           store
-            .takeNext(config.name)
+            .takeNext(config.name, None)
             .use({
-              case Some(pj) =>
+              case Marked.Found(pj) =>
                 logger
                   .fdebug(s"Found periodic task '${pj.subject}/${pj.timer.asString}'") *>
                   (if (isTriggered(pj, now)) submitJob(pj)
-                   else scheduleNotify(pj)).map(_ => true)
-              case None =>
+                   else scheduleNotify(pj).map(_ => false))
+              case Marked.NotFound =>
                 logger.fdebug("No periodic task found") *> false.pure[F]
+              case Marked.NotMarkable =>
+                logger.fdebug("Periodic job cannot be marked. Trying again.") *> true
+                  .pure[F]
             })
         )
       } yield go
@@ -123,32 +99,44 @@ final class PeriodicSchedulerImpl[F[_]: ConcurrentEffect: ContextShift](
   }
 
   def isTriggered(pj: RPeriodicTask, now: Timestamp): Boolean =
-    pj.timer.contains(now.value)
+    pj.nextrun < now
 
-  def submitJob(pj: RPeriodicTask): F[Unit] =
+  def submitJob(pj: RPeriodicTask): F[Boolean] =
     store
       .findNonFinalJob(pj.id)
       .flatMap({
         case Some(job) =>
           logger.finfo[F](
             s"There is already a job with non-final state '${job.state}' in the queue"
-          )
+          ) *> scheduleNotify(pj) *> false.pure[F]
 
         case None =>
           logger.finfo[F](s"Submitting job for periodic task '${pj.task.id}'") *>
-            pj.toJob.flatMap(queue.insert)
+            pj.toJob.flatMap(queue.insert) *> notifyJoex *> true.pure[F]
       })
 
+  def notifyJoex: F[Unit] =
+    sch.notifyChange *> store.findJoexNodes.flatMap(
+      _.traverse(n => client.notifyJoexIgnoreErrors(n.url)).map(_ => ())
+    )
+
   def scheduleNotify(pj: RPeriodicTask): F[Unit] =
-    ConcurrentEffect[F]
-      .start(
-        CalevFs2
-          .sleep[F](pj.timer)
-          .evalMap(_ => notifyChange)
-          .compile
-          .drain
-      )
-      .flatMap(fb => state.modify(_.setNotify(fb)))
+    Timestamp
+      .current[F]
+      .flatMap(now =>
+        logger.fdebug(
+          s"Scheduling next notify for timer ${pj.timer.asString} -> ${pj.timer.nextElapse(now.toUtcDateTime)}"
+        )
+      ) *>
+      ConcurrentEffect[F]
+        .start(
+          CalevFs2
+            .sleep[F](pj.timer)
+            .evalMap(_ => notifyChange)
+            .compile
+            .drain
+        )
+        .flatMap(fb => state.modify(_.setNotify(fb)))
 
   def cancelNotify: F[Unit] =
     state

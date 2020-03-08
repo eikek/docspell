@@ -2,7 +2,6 @@ package docspell.store.queue
 
 import cats.effect._
 import cats.implicits._
-import fs2.Stream
 import org.log4s.getLogger
 import com.github.eikek.fs2calev._
 import docspell.common._
@@ -20,7 +19,10 @@ trait PeriodicTaskStore[F[_]] {
     * care of unmarking the task after use and updating `nextRun` with
     * the next timestamp.
     */
-  def takeNext(worker: Ident): Resource[F, Option[RPeriodicTask]]
+  def takeNext(
+      worker: Ident,
+      excludeId: Option[Ident]
+  ): Resource[F, Marked[RPeriodicTask]]
 
   def clearMarks(name: Ident): F[Unit]
 
@@ -33,6 +35,8 @@ trait PeriodicTaskStore[F[_]] {
   /** Adds the task only if it not already exists.
     */
   def add(task: RPeriodicTask): F[AddResult]
+
+  def findJoexNodes: F[Vector[RNode]]
 }
 
 object PeriodicTaskStore {
@@ -40,38 +44,37 @@ object PeriodicTaskStore {
 
   def create[F[_]: Sync](store: Store[F]): Resource[F, PeriodicTaskStore[F]] =
     Resource.pure[F, PeriodicTaskStore[F]](new PeriodicTaskStore[F] {
-      println(s"$store")
 
-      def takeNext(worker: Ident): Resource[F, Option[RPeriodicTask]] = {
-        val chooseNext: F[Either[String, Option[RPeriodicTask]]] =
-          getNext.flatMap {
+      def takeNext(
+          worker: Ident,
+          excludeId: Option[Ident]
+      ): Resource[F, Marked[RPeriodicTask]] = {
+        val chooseNext: F[Marked[RPeriodicTask]] =
+          getNext(excludeId).flatMap {
             case Some(pj) =>
               mark(pj.id, worker).map {
-                case true  => Right(Some(pj.copy(worker = worker.some)))
-                case false => Left("Cannot mark periodic task")
+                case true  => Marked.found(pj.copy(worker = worker.some))
+                case false => Marked.notMarkable
               }
             case None =>
-              val result: Either[String, Option[RPeriodicTask]] =
-                Right(None)
-              result.pure[F]
+              Marked.notFound.pure[F]
           }
-        val get =
-          Stream.eval(chooseNext).repeat.take(10).find(_.isRight).compile.lastOrError
-        val r = Resource.make(get)({
-          case Right(Some(pj)) => unmark(pj)
-          case _               => ().pure[F]
+
+        Resource.make(chooseNext)({
+          case Marked.Found(pj) => unmark(pj)
+          case _                => ().pure[F]
         })
-        r.flatMap {
-          case Right(job) => Resource.pure(job)
-          case Left(err)  => Resource.liftF(Sync[F].raiseError(new Exception(err)))
-        }
       }
 
-      def getNext: F[Option[RPeriodicTask]] =
-        store.transact(QPeriodicTask.findNext)
+      def getNext(excl: Option[Ident]): F[Option[RPeriodicTask]] =
+        store.transact(QPeriodicTask.findNext(excl))
 
       def mark(pid: Ident, name: Ident): F[Boolean] =
-        store.transact(QPeriodicTask.setWorker(pid, name)).map(_ > 0)
+        Timestamp
+          .current[F]
+          .flatMap(now =>
+            store.transact(QPeriodicTask.setWorker(pid, name, now)).map(_ > 0)
+          )
 
       def unmark(job: RPeriodicTask): F[Unit] =
         for {
@@ -98,16 +101,15 @@ object PeriodicTaskStore {
 
       def insert(task: RPeriodicTask): F[Unit] = {
         val update = store.transact(RPeriodicTask.update(task))
-        val insertAttempt = store.transact(RPeriodicTask.insert(task))
-          .attempt.map {
-            case Right(n) => n > 0
-            case Left(_) => false
-          }
+        val insertAttempt = store.transact(RPeriodicTask.insert(task)).attempt.map {
+          case Right(n) => n > 0
+          case Left(_)  => false
+        }
 
         for {
-          n1 <- update
+          n1  <- update
           ins <- if (n1 == 0) insertAttempt else true.pure[F]
-          _ <- if (ins) 1.pure[F] else update
+          _   <- if (ins) 1.pure[F] else update
         } yield ()
       }
 
@@ -116,5 +118,9 @@ object PeriodicTaskStore {
         val exists = RPeriodicTask.exists(task.id)
         store.add(insert, exists)
       }
+
+      def findJoexNodes: F[Vector[RNode]] =
+        store.transact(RNode.findAll(NodeType.Joex))
+
     })
 }

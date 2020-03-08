@@ -5,6 +5,7 @@ import docspell.joex.scheduler.{PeriodicSchedulerConfig, SchedulerConfig}
 import docspell.store.JdbcConfig
 import docspell.convert.ConvertConfig
 import docspell.extract.ExtractConfig
+import docspell.joex.hk.HouseKeepingConfig
 
 case class Config(
     appId: Ident,
@@ -13,6 +14,7 @@ case class Config(
     jdbc: JdbcConfig,
     scheduler: SchedulerConfig,
     periodicScheduler: PeriodicSchedulerConfig,
+    houseKeeping: HouseKeepingConfig,
     extraction: ExtractConfig,
     convert: ConvertConfig
 )

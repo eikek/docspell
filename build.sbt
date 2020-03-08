@@ -141,6 +141,7 @@ val common = project.in(file("modules/common")).
       Dependencies.fs2 ++
       Dependencies.circe ++
       Dependencies.loggingApi ++
+      Dependencies.calevCore ++
       Dependencies.pureconfig.map(_ % "optional")
   )
 

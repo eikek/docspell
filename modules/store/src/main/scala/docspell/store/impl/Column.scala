@@ -30,6 +30,9 @@ case class Column(name: String, ns: String = "", alias: String = "") {
   def is(c: Column): Fragment =
     f ++ fr"=" ++ c.f
 
+  def isNot[A: Put](value: A): Fragment =
+    f ++ fr"<> $value"
+
   def isNull: Fragment =
     f ++ fr"is null"
 

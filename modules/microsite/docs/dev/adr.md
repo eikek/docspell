@@ -16,3 +16,4 @@ title: ADRs
   - [0009 Convert Office Files](adr/0009_convert_office_docs)
   - [0010 Convert Image Files](adr/0010_convert_image_files)
   - [0011 Extract Text](adr/0011_extract_text)
+- [0012 Periodic Tasks](adr/0012_periodic_tasks)

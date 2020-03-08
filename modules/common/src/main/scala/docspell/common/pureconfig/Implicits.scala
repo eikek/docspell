@@ -4,6 +4,7 @@ import docspell.common._
 import _root_.pureconfig._
 import _root_.pureconfig.error.{CannotConvert, FailureReason}
 import scodec.bits.ByteVector
+import com.github.eikek.calev.CalEvent
 
 import scala.reflect.ClassTag
 
@@ -30,6 +31,10 @@ object Implicits {
         ByteVector.fromBase64(str.drop(4)).toRight("Invalid Base64 string.")
       else ByteVector.encodeUtf8(str).left.map(ex => s"Invalid utf8 string: ${ex.getMessage}")
     })
+
+  implicit val caleventReader: ConfigReader[CalEvent] =
+    ConfigReader[String].emap(reason(CalEvent.parse))
+
 
   def reason[A: ClassTag](f: String => Either[String, A]): String => Either[FailureReason, A] =
     in =>

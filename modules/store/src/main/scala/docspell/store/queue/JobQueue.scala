@@ -29,7 +29,7 @@ object JobQueue {
           worker: Ident,
           retryPause: Duration
       ): F[Option[RJob]] =
-        logger.fdebug("Select next job") *> QJob.takeNextJob(store)(prio, worker, retryPause)
+        logger.ftrace("Select next job") *> QJob.takeNextJob(store)(prio, worker, retryPause)
 
       def insert(job: RJob): F[Unit] =
         store

@@ -24,13 +24,14 @@ object JoexServer {
   def stream[F[_]: ConcurrentEffect: ContextShift](
       cfg: Config,
       connectEC: ExecutionContext,
+      clientEC: ExecutionContext,
       blocker: Blocker
   )(implicit T: Timer[F]): Stream[F, Nothing] = {
 
     val app = for {
       signal   <- Resource.liftF(SignallingRef[F, Boolean](false))
       exitCode <- Resource.liftF(Ref[F].of(ExitCode.Success))
-      joexApp  <- JoexAppImpl.create[F](cfg, signal, connectEC, blocker)
+      joexApp  <- JoexAppImpl.create[F](cfg, signal, connectEC, clientEC, blocker)
 
       httpApp = Router(
         "/api/info" -> InfoRoutes(),

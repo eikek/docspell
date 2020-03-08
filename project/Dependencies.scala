@@ -38,10 +38,13 @@ object Dependencies {
   val ViewerJSVersion = "0.5.8"
 
 
-  val calev = Seq(
+  val calevCore = Seq(
     "com.github.eikek" %% "calev-core" % CalevVersion,
+  )
+  val calevFs2 = Seq(
     "com.github.eikek" %% "calev-fs2" % CalevVersion
   )
+  val calev = calevFs2 ++ calevCore
 
   val jclOverSlf4j = Seq(
     "org.slf4j" % "jcl-over-slf4j" % Slf4jVersion

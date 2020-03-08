@@ -16,6 +16,9 @@ case class Timestamp(value: Instant) {
   def minus(d: Duration): Timestamp =
     Timestamp(value.minusNanos(d.nanos))
 
+  def - (d: Duration): Timestamp =
+    minus(d)
+
   def minusHours(n: Long): Timestamp =
     Timestamp(value.minusSeconds(n * 60 * 60))
 
@@ -31,6 +34,9 @@ case class Timestamp(value: Instant) {
   def atUTC: ZonedDateTime = atZone(Timestamp.UTC)
 
   def asString: String = value.toString
+
+  def < (other: Timestamp): Boolean =
+    this.value.isBefore(other.value)
 }
 
 object Timestamp {

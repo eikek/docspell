@@ -3,6 +3,7 @@ package docspell.joexapi.client
 import cats.implicits._
 import cats.effect._
 import docspell.common.{Ident, LenientUri}
+import docspell.common.syntax.all._
 import org.http4s.{Method, Request, Uri}
 import org.http4s.client.Client
 import org.http4s.client.blaze.BlazeClientBuilder
@@ -28,21 +29,24 @@ object JoexClient {
     new JoexClient[F] {
       def notifyJoex(base: LenientUri): F[Unit] = {
         val notifyUrl = base / "api" / "v1" / "notify"
-        val req = Request[F](Method.POST, uri(notifyUrl))
-        client.expect[String](req).map(_ => ())
+        val req       = Request[F](Method.POST, uri(notifyUrl))
+        logger.fdebug(s"Notify joex at ${notifyUrl.asString}") *>
+          client.expect[String](req).map(_ => ())
       }
 
       def notifyJoexIgnoreErrors(base: LenientUri): F[Unit] =
         notifyJoex(base).attempt.map {
           case Right(()) => ()
           case Left(ex) =>
-            logger.warn(s"Notifying Joex instance '${base.asString}' failed: ${ex.getMessage}")
+            logger.warn(
+              s"Notifying Joex instance '${base.asString}' failed: ${ex.getMessage}"
+            )
             ()
         }
 
       def cancelJob(base: LenientUri, job: Ident): F[Unit] = {
         val cancelUrl = base / "api" / "v1" / "job" / job.id / "cancel"
-        val req = Request[F](Method.POST, uri(cancelUrl))
+        val req       = Request[F](Method.POST, uri(cancelUrl))
         client.expect[String](req).map(_ => ())
       }
 

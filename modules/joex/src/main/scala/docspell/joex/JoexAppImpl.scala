@@ -3,9 +3,10 @@ package docspell.joex
 import cats.implicits._
 import cats.effect._
 import docspell.common.{Ident, NodeType, ProcessItemArgs}
-import docspell.joex.background._
+import docspell.joex.hk._
 import docspell.joex.process.ItemHandler
 import docspell.joex.scheduler._
+import docspell.joexapi.client.JoexClient
 import docspell.store.Store
 import docspell.store.queue._
 import docspell.store.ops.ONode
@@ -18,6 +19,7 @@ final class JoexAppImpl[F[_]: ConcurrentEffect: ContextShift: Timer](
     cfg: Config,
     nodeOps: ONode[F],
     store: Store[F],
+    pstore: PeriodicTaskStore[F],
     termSignal: SignallingRef[F, Boolean],
     val scheduler: Scheduler[F],
     val periodicScheduler: PeriodicScheduler[F]
@@ -27,6 +29,7 @@ final class JoexAppImpl[F[_]: ConcurrentEffect: ContextShift: Timer](
     val run  = scheduler.start.compile.drain
     val prun = periodicScheduler.start.compile.drain
     for {
+      _ <- HouseKeepingTask.submit(pstore, cfg.houseKeeping.schedule)
       _ <- ConcurrentEffect[F].start(run)
       _ <- ConcurrentEffect[F].start(prun)
       _ <- scheduler.periodicAwake
@@ -52,14 +55,15 @@ object JoexAppImpl {
       cfg: Config,
       termSignal: SignallingRef[F, Boolean],
       connectEC: ExecutionContext,
+      clientEC: ExecutionContext,
       blocker: Blocker
   ): Resource[F, JoexApp[F]] =
     for {
+      client <- JoexClient.resource(clientEC)
       store   <- Store.create(cfg.jdbc, connectEC, blocker)
       queue   <- JobQueue(store)
       pstore  <- PeriodicTaskStore.create(store)
       nodeOps <- ONode(store)
-      psch    <- PeriodicScheduler.create(cfg.periodicScheduler, queue, pstore, Timer[F])
       sch <- SchedulerBuilder(cfg.scheduler, blocker, store)
         .withQueue(queue)
         .withTask(
@@ -71,13 +75,14 @@ object JoexAppImpl {
         )
         .withTask(
           JobTask.json(
-            PeriodicTask.taskName,
-            PeriodicTask[F](cfg),
-            PeriodicTask.onCancel[F]
+            HouseKeepingTask.taskName,
+            HouseKeepingTask[F](cfg),
+            HouseKeepingTask.onCancel[F]
           )
         )
         .resource
-      app = new JoexAppImpl(cfg, nodeOps, store, termSignal, sch, psch)
+      psch    <- PeriodicScheduler.create(cfg.periodicScheduler, sch, queue, pstore, client, Timer[F])
+      app = new JoexAppImpl(cfg, nodeOps, store, pstore, termSignal, sch, psch)
       appR <- Resource.make(app.init.map(_ => app))(_.shutdown)
     } yield appR
 }
