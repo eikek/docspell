@@ -29,7 +29,7 @@ final class JoexAppImpl[F[_]: ConcurrentEffect: ContextShift: Timer](
     val run  = scheduler.start.compile.drain
     val prun = periodicScheduler.start.compile.drain
     for {
-      _ <- HouseKeepingTask.submit(pstore, cfg.houseKeeping.schedule)
+      _ <- scheduleBackgroundTasks
       _ <- ConcurrentEffect[F].start(run)
       _ <- ConcurrentEffect[F].start(prun)
       _ <- scheduler.periodicAwake
@@ -47,6 +47,8 @@ final class JoexAppImpl[F[_]: ConcurrentEffect: ContextShift: Timer](
   def initShutdown: F[Unit] =
     periodicScheduler.shutdown *> scheduler.shutdown(false) *> termSignal.set(true)
 
+  private def scheduleBackgroundTasks: F[Unit] =
+    HouseKeepingTask.periodicTask[F](cfg.houseKeeping.schedule).flatMap(pstore.insert)
 }
 
 object JoexAppImpl {
@@ -59,7 +61,7 @@ object JoexAppImpl {
       blocker: Blocker
   ): Resource[F, JoexApp[F]] =
     for {
-      client <- JoexClient.resource(clientEC)
+      client  <- JoexClient.resource(clientEC)
       store   <- Store.create(cfg.jdbc, connectEC, blocker)
       queue   <- JobQueue(store)
       pstore  <- PeriodicTaskStore.create(store)
@@ -81,7 +83,14 @@ object JoexAppImpl {
           )
         )
         .resource
-      psch    <- PeriodicScheduler.create(cfg.periodicScheduler, sch, queue, pstore, client, Timer[F])
+      psch <- PeriodicScheduler.create(
+        cfg.periodicScheduler,
+        sch,
+        queue,
+        pstore,
+        client,
+        Timer[F]
+      )
       app = new JoexAppImpl(cfg, nodeOps, store, pstore, termSignal, sch, psch)
       appR <- Resource.make(app.init.map(_ => app))(_.shutdown)
     } yield appR

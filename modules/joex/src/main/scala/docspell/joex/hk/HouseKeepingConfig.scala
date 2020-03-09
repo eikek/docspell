@@ -7,11 +7,14 @@ import HouseKeepingConfig._
 
 case class HouseKeepingConfig(
   schedule: CalEvent,
-  cleanupInvites: CleanupInvites
+  cleanupInvites: CleanupInvites,
+  cleanupJobs: CleanupJobs
 )
 
 object HouseKeepingConfig {
 
-  case class CleanupInvites(olderThan: Duration)
+  case class CleanupInvites(enabled: Boolean, olderThan: Duration)
+
+  case class CleanupJobs(enabled: Boolean, olderThan: Duration, deleteBatch: Int)
 
 }

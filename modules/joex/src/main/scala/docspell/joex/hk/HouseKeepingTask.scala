@@ -7,7 +7,6 @@ import com.github.eikek.calev._
 import docspell.common._
 import docspell.joex.Config
 import docspell.joex.scheduler.Task
-import docspell.store.queue._
 import docspell.store.records._
 
 object HouseKeepingTask {
@@ -16,19 +15,17 @@ object HouseKeepingTask {
 
   val taskName: Ident = Ident.unsafe("housekeeping")
 
-  def apply[F[_]: Sync: ContextShift](cfg: Config): Task[F, Unit, Unit] =
-    log[F](_.info(s"Running house-keeping task now"))
-      .flatMap(_ => CleanupInvitesTask(cfg))
+  def apply[F[_]: Sync](cfg: Config): Task[F, Unit, Unit] =
+    Task.log[F](_.info(s"Running house-keeping task now"))
+      .flatMap(_ => CleanupInvitesTask(cfg.houseKeeping.cleanupInvites))
+      .flatMap(_ => CleanupJobsTask(cfg.houseKeeping.cleanupJobs))
 
-  def onCancel[F[_]: Sync: ContextShift]: Task[F, Unit, Unit] =
-    Task(_.logger.warn("Cancelling background task"))
+  def onCancel[F[_]: Sync]: Task[F, Unit, Unit] =
+    Task.log(_.warn("Cancelling house-keeping task"))
 
-  def submit[F[_]: Sync](
-      pstore: PeriodicTaskStore[F],
-      ce: CalEvent
-  ): F[Unit] = {
-    val makeJob =
-      RPeriodicTask.createJson(
+  def periodicTask[F[_]: Sync](ce: CalEvent): F[RPeriodicTask] =
+    RPeriodicTask
+      .createJson(
         true,
         taskName,
         systemGroup,
@@ -38,13 +35,5 @@ object HouseKeepingTask {
         Priority.Low,
         ce
       )
-
-    for {
-      job <- makeJob
-      _   <- pstore.insert(job.copy(id = periodicId)).attempt
-    } yield ()
-  }
-
-  private def log[F[_]](f: Logger[F] => F[Unit]): Task[F, Unit, Unit] =
-    Task(ctx => f(ctx.logger))
+      .map(_.copy(id = periodicId))
 }
