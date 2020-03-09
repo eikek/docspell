@@ -141,6 +141,7 @@ val common = project.in(file("modules/common")).
       Dependencies.fs2 ++
       Dependencies.circe ++
       Dependencies.loggingApi ++
+      Dependencies.calevCore ++
       Dependencies.pureconfig.map(_ % "optional")
   )
 
@@ -194,7 +195,8 @@ val store = project.in(file("modules/store")).
       Dependencies.databases ++
       Dependencies.flyway ++
       Dependencies.loggingApi ++
-      Dependencies.emil
+      Dependencies.emil ++
+      Dependencies.calev
   ).dependsOn(common)
 
 val extract = project.in(file("modules/extract")).
@@ -260,7 +262,8 @@ val joexapi = project.in(file("modules/joexapi")).
   settings(
     name := "docspell-joexapi",
     libraryDependencies ++=
-      Dependencies.circe,
+      Dependencies.circe ++
+      Dependencies.http4sClient,
     openapiTargetLanguage := Language.Scala,
     openapiPackage := Pkg("docspell.joexapi.model"),
     openapiSpec := (Compile/resourceDirectory).value/"joex-openapi.yml"
@@ -302,7 +305,7 @@ val backend = project.in(file("modules/backend")).
       Dependencies.bcrypt ++
       Dependencies.http4sClient ++
       Dependencies.emil
-  ).dependsOn(store)
+  ).dependsOn(store, joexapi)
 
 val webapp = project.in(file("modules/webapp")).
   disablePlugins(RevolverPlugin).

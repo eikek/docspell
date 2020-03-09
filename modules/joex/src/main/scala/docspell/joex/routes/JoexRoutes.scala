@@ -19,7 +19,8 @@ object JoexRoutes {
       case POST -> Root / "notify" =>
         for {
           _    <- app.scheduler.notifyChange
-          resp <- Ok(BasicResult(true, "Scheduler notified."))
+          _    <- app.periodicScheduler.notifyChange
+          resp <- Ok(BasicResult(true, "Schedulers notified."))
         } yield resp
 
       case GET -> Root / "running" =>

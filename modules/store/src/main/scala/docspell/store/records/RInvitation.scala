@@ -46,4 +46,7 @@ object RInvitation {
       _   <- delete(invite)
     } yield inv > 0
   }
+
+  def deleteOlderThan(ts: Timestamp): ConnectionIO[Int] =
+    deleteFrom(table, created.isLt(ts)).update.run
 }

@@ -1,14 +1,12 @@
 package docspell.backend.ops
 
 import cats.implicits._
-import cats.effect.{ConcurrentEffect, Resource}
+import cats.effect._
 import docspell.backend.ops.OJob.{CollectiveQueueState, JobCancelResult}
 import docspell.common.{Ident, JobState}
 import docspell.store.Store
 import docspell.store.queries.QJob
 import docspell.store.records.{RJob, RJobLog}
-
-import scala.concurrent.ExecutionContext
 
 trait OJob[F[_]] {
 
@@ -36,9 +34,9 @@ object OJob {
       jobs.filter(_.job.state == JobState.Running)
   }
 
-  def apply[F[_]: ConcurrentEffect](
+  def apply[F[_]: Sync](
       store: Store[F],
-      clientEC: ExecutionContext
+      joex: OJoex[F]
   ): Resource[F, OJob[F]] =
     Resource.pure[F, OJob[F]](new OJob[F] {
 
@@ -70,8 +68,7 @@ object OJob {
         }
 
         def tryCancel(job: RJob, worker: Ident): F[JobCancelResult] =
-          OJoex
-            .cancelJob(job.id, worker, store, clientEC)
+          joex.cancelJob(job.id, worker)
             .map(flag => if (flag) JobCancelResult.CancelRequested else JobCancelResult.JobNotFound)
 
         for {

@@ -13,10 +13,10 @@ import org.log4s._
 object Main extends IOApp {
   private[this] val logger = getLogger
 
-  val blockingEc: ExecutionContext = ExecutionContext.fromExecutor(
+  val blockingEC: ExecutionContext = ExecutionContext.fromExecutor(
     Executors.newCachedThreadPool(ThreadFactories.ofName("docspell-joex-blocking"))
   )
-  val blocker = Blocker.liftExecutionContext(blockingEc)
+  val blocker = Blocker.liftExecutionContext(blockingEC)
   val connectEC: ExecutionContext = ExecutionContext.fromExecutorService(
     Executors.newFixedThreadPool(5, ThreadFactories.ofName("docspell-joex-dbconnect"))
   )
@@ -52,6 +52,6 @@ object Main extends IOApp {
       cfg.baseUrl
     )
     logger.info(s"\n${banner.render("***>")}")
-    JoexServer.stream[IO](cfg, connectEC, blocker).compile.drain.as(ExitCode.Success)
+    JoexServer.stream[IO](cfg, connectEC, blockingEC, blocker).compile.drain.as(ExitCode.Success)
   }
 }

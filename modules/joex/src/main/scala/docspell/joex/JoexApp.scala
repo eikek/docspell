@@ -1,7 +1,7 @@
 package docspell.joex
 
 import docspell.common.Ident
-import docspell.joex.scheduler.Scheduler
+import docspell.joex.scheduler.{PeriodicScheduler, Scheduler}
 import docspell.store.records.RJobLog
 
 trait JoexApp[F[_]] {
@@ -9,6 +9,8 @@ trait JoexApp[F[_]] {
   def init: F[Unit]
 
   def scheduler: Scheduler[F]
+
+  def periodicScheduler: PeriodicScheduler[F]
 
   def findLogs(jobId: Ident): F[Vector[RJobLog]]
 

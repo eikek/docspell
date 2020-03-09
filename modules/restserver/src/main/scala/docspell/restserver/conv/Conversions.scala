@@ -118,7 +118,7 @@ trait Conversions {
     )
 
   def mkItemList(v: Vector[OItem.ListItem]): ItemLightList = {
-    val groups = v.groupBy(item => item.date.toDate.toString.substring(0, 7))
+    val groups = v.groupBy(item => item.date.toUtcDate.toString.substring(0, 7))
 
     def mkGroup(g: (String, Vector[OItem.ListItem])): ItemLightGroup =
       ItemLightGroup(g._1, g._2.map(mkItemLight).toList)

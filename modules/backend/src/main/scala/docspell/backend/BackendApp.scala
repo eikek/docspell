@@ -25,6 +25,7 @@ trait BackendApp[F[_]] {
   def job: OJob[F]
   def item: OItem[F]
   def mail: OMail[F]
+  def joex: OJoex[F]
 }
 
 object BackendApp {
@@ -44,9 +45,10 @@ object BackendApp {
       tagImpl    <- OTag[F](store)
       equipImpl  <- OEquipment[F](store)
       orgImpl    <- OOrganization(store)
-      uploadImpl <- OUpload(store, queue, cfg, httpClientEc)
+      joexImpl   <- OJoex.create(httpClientEc, store)
+      uploadImpl <- OUpload(store, queue, cfg, joexImpl)
       nodeImpl   <- ONode(store)
-      jobImpl    <- OJob(store, httpClientEc)
+      jobImpl    <- OJob(store, joexImpl)
       itemImpl   <- OItem(store)
       mailImpl   <- OMail(store, JavaMailEmil(blocker))
     } yield new BackendApp[F] {
@@ -62,6 +64,7 @@ object BackendApp {
       val job                        = jobImpl
       val item                       = itemImpl
       val mail                       = mailImpl
+      val joex                       = joexImpl
     }
 
   def apply[F[_]: ConcurrentEffect: ContextShift](
