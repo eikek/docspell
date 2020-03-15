@@ -13,7 +13,7 @@ object Dependencies {
   val EmilVersion = "0.2.0"
   val FastparseVersion = "2.1.3"
   val FlexmarkVersion = "0.60.2"
-  val FlywayVersion = "6.3.0"
+  val FlywayVersion = "6.3.1"
   val Fs2Version = "2.2.2"
   val H2Version = "1.4.200"
   val Http4sVersion = "0.21.1"
