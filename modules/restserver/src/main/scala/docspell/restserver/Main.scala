@@ -4,7 +4,6 @@ import cats.effect._
 import cats.implicits._
 
 import scala.concurrent.ExecutionContext
-import java.util.concurrent.Executors
 import java.nio.file.{Files, Paths}
 
 import docspell.common.{Banner, ThreadFactories}
@@ -13,14 +12,8 @@ import org.log4s._
 object Main extends IOApp {
   private[this] val logger = getLogger
 
-  val blockingEc: ExecutionContext = ExecutionContext.fromExecutor(
-    Executors.newCachedThreadPool(ThreadFactories.ofName("docspell-restserver-blocking"))
-  )
-  val blocker = Blocker.liftExecutionContext(blockingEc)
-
-  val connectEC: ExecutionContext = ExecutionContext.fromExecutorService(
-    Executors.newFixedThreadPool(5, ThreadFactories.ofName("docspell-dbconnect"))
-  )
+  val blockingEC = ThreadFactories.cached[IO](ThreadFactories.ofName("docspell-restserver-blocking"))
+  val connectEC = ThreadFactories.fixed[IO](5, ThreadFactories.ofName("docspell-dbconnect"))
 
   def run(args: List[String]) = {
     args match {
@@ -52,7 +45,17 @@ object Main extends IOApp {
       cfg.appId,
       cfg.baseUrl
     )
+    val pools = for {
+      cec <- connectEC
+      bec <- blockingEC
+      blocker = Blocker.liftExecutorService(bec)
+    } yield Pools(cec, bec, blocker)
+
     logger.info(s"\n${banner.render("***>")}")
-    RestServer.stream[IO](cfg, connectEC, blockingEc, blocker).compile.drain.as(ExitCode.Success)
+    pools.use(p =>
+      RestServer.stream[IO](cfg, p.connectEC, p.clientEC, p.blocker).compile.drain.as(ExitCode.Success)
+    )
   }
+
+  case class Pools(connectEC: ExecutionContext, clientEC: ExecutionContext, blocker: Blocker)
 }
