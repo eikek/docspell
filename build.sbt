@@ -40,6 +40,13 @@ val testSettings = Seq(
   libraryDependencies ++= Dependencies.miniTest ++ Dependencies.logging.map(_ % Test)
 )
 
+lazy val noPublish = Seq(
+  publish := {},
+  publishLocal := {},
+  publishArtifact := false
+)
+
+
 val elmSettings = Seq(
   elmCompileMode := ElmCompileMode.Debug,
   Compile/resourceGenerators += Def.task {
@@ -424,6 +431,7 @@ val microsite = project.in(file("modules/microsite")).
 
 val root = project.in(file(".")).
   settings(sharedSettings).
+  settings(noPublish).
   settings(
     name := "docspell-root"
   ).

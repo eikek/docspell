@@ -16,7 +16,16 @@ object ProcessItem {
       .flatMap(TextAnalysis[F])
       .flatMap(Task.setProgress(50))
       .flatMap(FindProposal[F])
+      .flatMap(EvalProposals[F])
+      .flatMap(SaveProposals[F])
       .flatMap(Task.setProgress(75))
       .flatMap(LinkProposal[F])
       .flatMap(Task.setProgress(99))
+
+  def analysisOnly[F[_]: Sync](item: ItemData): Task[F, ProcessItemArgs, ItemData] =
+    TextAnalysis[F](item)
+      .flatMap(FindProposal[F])
+      .flatMap(EvalProposals[F])
+      .flatMap(SaveProposals[F])
+
 }
