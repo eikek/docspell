@@ -33,14 +33,14 @@ object Context {
   private[this] val log = getLogger
 
   def create[F[_]: Functor, A](
-      job: RJob,
+      jobId: Ident,
       arg: A,
       config: SchedulerConfig,
       log: Logger[F],
       store: Store[F],
       blocker: Blocker
   ): Context[F, A] =
-    new ContextImpl(arg, log, store, blocker, config, job.id)
+    new ContextImpl(arg, log, store, blocker, config, jobId)
 
   def apply[F[_]: Concurrent, A](
       job: RJob,
@@ -54,7 +54,7 @@ object Context {
       _      <- log.ftrace("Creating logger for task run")
       logger <- QueueLogger(job.id, job.info, config.logBufferSize, logSink)
       _      <- log.ftrace("Logger created, instantiating context")
-      ctx = create[F, A](job, arg, config, logger, store, blocker)
+      ctx = create[F, A](job.id, arg, config, logger, store, blocker)
     } yield ctx
 
   final private class ContextImpl[F[_]: Functor, A](

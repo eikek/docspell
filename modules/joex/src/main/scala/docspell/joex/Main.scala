@@ -3,9 +3,8 @@ package docspell.joex
 import cats.effect.{Blocker, ExitCode, IO, IOApp}
 import cats.implicits._
 
-import scala.concurrent.ExecutionContext
-import java.util.concurrent.Executors
 import java.nio.file.{Files, Paths}
+import scala.concurrent.ExecutionContext
 
 import docspell.common.{Banner, ThreadFactories}
 import org.log4s._
@@ -13,13 +12,8 @@ import org.log4s._
 object Main extends IOApp {
   private[this] val logger = getLogger
 
-  val blockingEC: ExecutionContext = ExecutionContext.fromExecutor(
-    Executors.newCachedThreadPool(ThreadFactories.ofName("docspell-joex-blocking"))
-  )
-  val blocker = Blocker.liftExecutionContext(blockingEC)
-  val connectEC: ExecutionContext = ExecutionContext.fromExecutorService(
-    Executors.newFixedThreadPool(5, ThreadFactories.ofName("docspell-joex-dbconnect"))
-  )
+  val blockingEC = ThreadFactories.cached[IO](ThreadFactories.ofName("docspell-joex-blocking"))
+  val connectEC = ThreadFactories.fixed[IO](5, ThreadFactories.ofName("docspell-joex-dbconnect"))
 
   def run(args: List[String]) = {
     args match {
@@ -52,6 +46,15 @@ object Main extends IOApp {
       cfg.baseUrl
     )
     logger.info(s"\n${banner.render("***>")}")
-    JoexServer.stream[IO](cfg, connectEC, blockingEC, blocker).compile.drain.as(ExitCode.Success)
+    val pools = for {
+      cec <- connectEC
+      bec <- blockingEC
+      blocker = Blocker.liftExecutorService(bec)
+    } yield Pools(cec, bec, blocker)
+    pools.use(p =>
+      JoexServer.stream[IO](cfg, p.connectEC, p.clientEC, p.blocker).compile.drain.as(ExitCode.Success)
+    )
   }
+
+  case class Pools(connectEC: ExecutionContext, clientEC: ExecutionContext, blocker: Blocker)
 }

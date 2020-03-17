@@ -24,16 +24,10 @@ object FindProposal {
       ctx.logger.info("Starting find-proposal") *>
         rmas
           .traverse(rm =>
-            processAttachment(rm, data.findDates(rm), ctx).map(ml => rm.copy(proposals = ml))
+            processAttachment(rm, data.findDates(rm), ctx)
+              .map(ml => rm.copy(proposals = ml))
           )
-          .flatMap(rmv =>
-            rmv
-              .traverse(rm =>
-                ctx.logger.debug(s"Storing attachment proposals: ${rm.proposals}") *>
-                  ctx.store.transact(RAttachmentMeta.updateProposals(rm.id, rm.proposals))
-              )
-              .map(_ => data.copy(metas = rmv))
-          )
+          .map(rmv => data.copy(metas = rmv))
     }
 
   def processAttachment[F[_]: Sync](
@@ -56,13 +50,19 @@ object FindProposal {
       val dueDates = MetaProposalList.fromSeq1(
         MetaProposalType.DueDate,
         after.map(ndl =>
-          Candidate(IdRef(Ident.unsafe(ndl.date.toString), ndl.date.toString), Set(ndl.label))
+          Candidate(
+            IdRef(Ident.unsafe(ndl.date.toString), ndl.date.toString),
+            Set(ndl.label)
+          )
         )
       )
       val itemDates = MetaProposalList.fromSeq1(
         MetaProposalType.DocDate,
         before.map(ndl =>
-          Candidate(IdRef(Ident.unsafe(ndl.date.toString), ndl.date.toString), Set(ndl.label))
+          Candidate(
+            IdRef(Ident.unsafe(ndl.date.toString), ndl.date.toString),
+            Set(ndl.label)
+          )
         )
       )
 
@@ -71,13 +71,13 @@ object FindProposal {
 
   def removeDuplicates(labels: List[NerLabel]): List[NerLabel] =
     labels
+      .sortBy(_.startPosition)
       .foldLeft((Set.empty[String], List.empty[NerLabel])) {
         case ((seen, result), el) =>
           if (seen.contains(el.tag.name + el.label.toLowerCase)) (seen, result)
           else (seen + (el.tag.name + el.label.toLowerCase), el :: result)
       }
       ._2
-      .sortBy(_.startPosition)
 
   trait Finder[F[_]] { self =>
     def find(labels: Seq[NerLabel]): F[MetaProposalList]
@@ -91,7 +91,9 @@ object FindProposal {
     def flatMap(f: MetaProposalList => Finder[F])(implicit F: FlatMap[F]): Finder[F] =
       labels => self.find(labels).flatMap(ml => f(ml).find(labels))
 
-    def map(f: MetaProposalList => MetaProposalList)(implicit F: Applicative[F]): Finder[F] =
+    def map(
+        f: MetaProposalList => MetaProposalList
+    )(implicit F: Applicative[F]): Finder[F] =
       labels => self.find(labels).map(f)
 
     def next(f: Finder[F])(implicit F: FlatMap[F], F3: Applicative[F]): Finder[F] =
@@ -118,10 +120,12 @@ object FindProposal {
       _ => value.pure[F]
 
     def searchExact[F[_]: Sync](ctx: Context[F, ProcessItemArgs]): Finder[F] =
-      labels => labels.toList.traverse(nl => search(nl, true, ctx)).map(MetaProposalList.flatten)
+      labels =>
+        labels.toList.traverse(nl => search(nl, true, ctx)).map(MetaProposalList.flatten)
 
     def searchFuzzy[F[_]: Sync](ctx: Context[F, ProcessItemArgs]): Finder[F] =
-      labels => labels.toList.traverse(nl => search(nl, false, ctx)).map(MetaProposalList.flatten)
+      labels =>
+        labels.toList.traverse(nl => search(nl, false, ctx)).map(MetaProposalList.flatten)
   }
 
   private def search[F[_]: Sync](
@@ -154,10 +158,15 @@ object FindProposal {
           val s2 = ctx.store
             .transact(RPerson.findLike(ctx.args.meta.collective, value, false))
             .map(MetaProposalList.from(MetaProposalType.CorrPerson, nt))
-          ctx.logger.debug(s"Looking for persons: $value") *> (for {
+          val s3 =
+            ctx.store
+              .transact(ROrganization.findLike(ctx.args.meta.collective, value))
+              .map(MetaProposalList.from(MetaProposalType.CorrOrg, nt))
+          ctx.logger.debug(s"Looking for persons and organizations: $value") *> (for {
             ml0 <- s1
             ml1 <- s2
-          } yield ml0 |+| ml1)
+            ml2 <- s3
+          } yield ml0 |+| ml1 |+| ml2)
 
         case NerTag.Location =>
           ctx.logger

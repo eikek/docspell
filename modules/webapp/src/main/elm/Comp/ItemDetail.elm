@@ -336,7 +336,7 @@ update key flags next msg model =
                 ( im, ic ) =
                     Comp.ItemMail.init flags
             in
-            ( { model | itemDatePicker = dp, dueDatePicker = dp, itemMail = im }
+            ( { model | itemDatePicker = dp, dueDatePicker = dp, itemMail = im, visibleAttach = 0 }
             , Cmd.batch
                 [ getOptions flags
                 , Cmd.map ItemDatePickerMsg dpc
@@ -435,6 +435,7 @@ update key flags next msg model =
                 , notesField = ViewNotes
                 , itemDate = item.itemDate
                 , dueDate = item.dueDate
+                , visibleAttach = 0
               }
             , Cmd.batch
                 [ c1
@@ -1127,6 +1128,15 @@ renderNotes model =
             ]
 
 
+attachmentVisible : Model -> Int -> Bool
+attachmentVisible model pos =
+    if model.visibleAttach >= List.length model.item.attachments then
+        pos == 0
+
+    else
+        model.visibleAttach == pos
+
+
 renderAttachmentsTabMenu : Model -> Html Msg
 renderAttachmentsTabMenu model =
     let
@@ -1153,9 +1163,10 @@ renderAttachmentsTabMenu model =
                     a
                         [ classList
                             [ ( "item", True )
-                            , ( "active", pos == model.visibleAttach )
+                            , ( "active", attachmentVisible model pos )
                             ]
                         , title (Maybe.withDefault "No Name" el.name)
+                        , href ""
                         , onClick (SetActiveAttachment pos)
                         ]
                         [ Maybe.map (Util.String.ellipsis 20) el.name
@@ -1180,7 +1191,7 @@ renderAttachmentView model pos attach =
     div
         [ classList
             [ ( "ui attached tab segment", True )
-            , ( "active", pos == model.visibleAttach )
+            , ( "active", attachmentVisible model pos )
             ]
         ]
         [ div [ class "ui small secondary menu" ]
