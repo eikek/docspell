@@ -1,5 +1,22 @@
 # Changelog
 
+## v0.4.0 
+
+*unknown*
+
+- Support for archive files. Archives are files that contain other
+  files, like zip files. Docspell now extracts archives and adds the
+  content to an item. The extraction process is recursive, so there
+  may be zip files in zip files. File types supported:
+  - `zip` every file inside is added to one item as attachment
+  - `eml` (RCF822 E-Mail files) E-mails are considered archives, since
+    they may contain multiple files (body and attachments).
+- Periodic Tasks framework: Docspell can now run tasks periodically
+  based on a schedule. This is not yet exposed to the user, but there
+  are some system cleanup jobs to start with. 
+- Improvement of the text analysis. For my test files there was a
+  increase in accuracy by about 10%.
+
 ## v0.3.0
 
 *Mar. 1, 2020*

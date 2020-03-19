@@ -40,7 +40,11 @@ object QItem {
     val ICC = List(RItem.Columns.id, RItem.Columns.name).map(_.prefix("ref"))
 
     val cq =
-      selectSimple(IC ++ OC ++ P0C ++ P1C ++ EC ++ ICC, RItem.table ++ fr"i", Fragment.empty) ++
+      selectSimple(
+        IC ++ OC ++ P0C ++ P1C ++ EC ++ ICC,
+        RItem.table ++ fr"i",
+        Fragment.empty
+      ) ++
         fr"LEFT JOIN" ++ ROrganization.table ++ fr"o ON" ++ RItem.Columns.corrOrg
         .prefix("i")
         .is(ROrganization.Columns.oid.prefix("o")) ++
@@ -179,7 +183,11 @@ object QItem {
     // inclusive tags are AND-ed
     val tagSelectsIncl = q.tagsInclude
       .map(tid =>
-        selectSimple(List(RTagItem.Columns.itemId), RTagItem.table, RTagItem.Columns.tagId.is(tid))
+        selectSimple(
+          List(RTagItem.Columns.itemId),
+          RTagItem.table,
+          RTagItem.Columns.tagId.is(tid)
+        )
       )
       .map(f => sql"(" ++ f ++ sql") ")
 
@@ -207,21 +215,28 @@ object QItem {
       REquipment.Columns.eid.prefix("e1").isOrDiscard(q.concEquip),
       if (q.tagsInclude.isEmpty) Fragment.empty
       else
-        IC.id.prefix("i") ++ sql" IN (" ++ tagSelectsIncl.reduce(_ ++ fr"INTERSECT" ++ _) ++ sql")",
+        IC.id.prefix("i") ++ sql" IN (" ++ tagSelectsIncl
+          .reduce(_ ++ fr"INTERSECT" ++ _) ++ sql")",
       if (q.tagsExclude.isEmpty) Fragment.empty
       else IC.id.prefix("i").f ++ sql" NOT IN (" ++ tagSelectsExcl ++ sql")",
       q.dateFrom
-        .map(d => coalesce(IC.itemDate.prefix("i").f, IC.created.prefix("i").f) ++ fr">= $d")
+        .map(d =>
+          coalesce(IC.itemDate.prefix("i").f, IC.created.prefix("i").f) ++ fr">= $d"
+        )
         .getOrElse(Fragment.empty),
       q.dateTo
-        .map(d => coalesce(IC.itemDate.prefix("i").f, IC.created.prefix("i").f) ++ fr"<= $d")
+        .map(d =>
+          coalesce(IC.itemDate.prefix("i").f, IC.created.prefix("i").f) ++ fr"<= $d"
+        )
         .getOrElse(Fragment.empty),
       q.dueDateFrom.map(d => IC.dueDate.prefix("i").isGt(d)).getOrElse(Fragment.empty),
       q.dueDateTo.map(d => IC.dueDate.prefix("i").isLt(d)).getOrElse(Fragment.empty)
     )
 
-    val order = orderBy(coalesce(IC.itemDate.prefix("i").f, IC.created.prefix("i").f) ++ fr"DESC")
-    val frag  = query ++ fr"WHERE" ++ cond ++ order
+    val order = orderBy(
+      coalesce(IC.itemDate.prefix("i").f, IC.created.prefix("i").f) ++ fr"DESC"
+    )
+    val frag = query ++ fr"WHERE" ++ cond ++ order
     logger.trace(s"List items: $frag")
     frag.query[ListItem].stream
   }
@@ -247,25 +262,39 @@ object QItem {
   }
 
   def findByChecksum(checksum: String, collective: Ident): ConnectionIO[Vector[RItem]] = {
-    val IC    = RItem.Columns.all.map(_.prefix("i"))
-    val aItem = RAttachment.Columns.itemId.prefix("a")
-    val aId = RAttachment.Columns.id.prefix("a")
-    val aFileId = RAttachment.Columns.fileId.prefix("a")
-    val iId   = RItem.Columns.id.prefix("i")
-    val iColl = RItem.Columns.cid.prefix("i")
-    val sId = RAttachmentSource.Columns.id.prefix("s")
-    val sFileId = RAttachmentSource.Columns.fileId.prefix("s")
-    val m1Id = RFileMeta.Columns.id.prefix("m1")
-    val m2Id = RFileMeta.Columns.id.prefix("m2")
+    val IC         = RItem.Columns.all.map(_.prefix("i"))
+    val aItem      = RAttachment.Columns.itemId.prefix("a")
+    val aId        = RAttachment.Columns.id.prefix("a")
+    val aFileId    = RAttachment.Columns.fileId.prefix("a")
+    val iId        = RItem.Columns.id.prefix("i")
+    val iColl      = RItem.Columns.cid.prefix("i")
+    val sId        = RAttachmentSource.Columns.id.prefix("s")
+    val sFileId    = RAttachmentSource.Columns.fileId.prefix("s")
+    val rId        = RAttachmentArchive.Columns.id.prefix("r")
+    val rFileId    = RAttachmentArchive.Columns.fileId.prefix("r")
+    val m1Id       = RFileMeta.Columns.id.prefix("m1")
+    val m2Id       = RFileMeta.Columns.id.prefix("m2")
+    val m3Id       = RFileMeta.Columns.id.prefix("m3")
     val m1Checksum = RFileMeta.Columns.checksum.prefix("m1")
     val m2Checksum = RFileMeta.Columns.checksum.prefix("m2")
+    val m3Checksum = RFileMeta.Columns.checksum.prefix("m3")
 
-    val from = RItem.table ++ fr"i INNER JOIN" ++ RAttachment.table ++ fr"a ON" ++ aItem.is(iId) ++
-      fr"INNER JOIN" ++ RAttachmentSource.table ++ fr"s ON" ++ aId.is(sId) ++
-      fr"INNER JOIN" ++ RFileMeta.table ++ fr"m1 ON" ++ m1Id.is(aFileId) ++
-      fr"INNER JOIN" ++ RFileMeta.table ++ fr"m2 ON" ++ m2Id.is(sFileId)
-    selectSimple(IC, from, and(or(m1Checksum.is(checksum), m2Checksum.is(checksum)), iColl.is(collective)))
-      .query[RItem]
+    val from =
+      RItem.table ++ fr"i INNER JOIN" ++ RAttachment.table ++ fr"a ON" ++ aItem.is(iId) ++
+        fr"INNER JOIN" ++ RAttachmentSource.table ++ fr"s ON" ++ aId.is(sId) ++
+        fr"INNER JOIN" ++ RFileMeta.table ++ fr"m1 ON" ++ m1Id.is(aFileId) ++
+        fr"INNER JOIN" ++ RFileMeta.table ++ fr"m2 ON" ++ m2Id.is(sFileId) ++
+        fr"LEFT OUTER JOIN" ++ RAttachmentArchive.table ++ fr"r ON" ++ aId.is(rId) ++
+        fr"INNER JOIN" ++ RFileMeta.table ++ fr"m3 ON" ++ m3Id.is(rFileId)
+
+    selectSimple(
+      IC,
+      from,
+      and(
+        or(m1Checksum.is(checksum), m2Checksum.is(checksum), m3Checksum.is(checksum)),
+        iColl.is(collective)
+      )
+    ).query[RItem]
       .to[Vector]
   }
 
