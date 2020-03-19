@@ -64,7 +64,7 @@ object CreateItem {
       } yield ItemData(it, fm, Vector.empty, Vector.empty, fm.map(a => a.id -> a.fileId).toMap)
     }
 
-  def insertAttachment[F[_]: Sync](ctx: Context[F, ProcessItemArgs])(ra: RAttachment): F[Int] = {
+  def insertAttachment[F[_]: Sync](ctx: Context[F, _])(ra: RAttachment): F[Int] = {
     val rs = RAttachmentSource.of(ra)
     ctx.store.transact(for {
       n <- RAttachment.insert(ra)

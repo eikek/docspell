@@ -1,23 +1,20 @@
 package docspell.joex.process
 
-import cats.effect.{ContextShift, Sync}
+import cats.effect._
 import docspell.common.ProcessItemArgs
 import docspell.joex.scheduler.Task
 import docspell.joex.Config
 
 object ProcessItem {
 
-  def apply[F[_]: Sync: ContextShift](
+  def apply[F[_]: ConcurrentEffect: ContextShift](
       cfg: Config
   )(item: ItemData): Task[F, ProcessItemArgs, ItemData] =
-    ConvertPdf(cfg.convert, item)
+    ExtractArchive(item)
+      .flatMap(ConvertPdf(cfg.convert, _))
       .flatMap(TextExtraction(cfg.extraction, _))
-      .flatMap(Task.setProgress(25))
-      .flatMap(TextAnalysis[F])
       .flatMap(Task.setProgress(50))
-      .flatMap(FindProposal[F])
-      .flatMap(EvalProposals[F])
-      .flatMap(SaveProposals[F])
+      .flatMap(analysisOnly[F])
       .flatMap(Task.setProgress(75))
       .flatMap(LinkProposal[F])
       .flatMap(Task.setProgress(99))
