@@ -39,6 +39,9 @@ object QCollective {
          union distinct
          select a.file_id,m.length from attachment_source a
          inner join filemeta m on m.id = a.file_id where a.id in (select aid from attachs)
+         union distinct
+         select a.file_id,m.length from attachment_archive a
+         inner join filemeta m on m.id = a.file_id where a.id in (select aid from attachs)
       ) as t""".query[Option[Long]].unique
 
     val q3 = fr"SELECT" ++ commas(
