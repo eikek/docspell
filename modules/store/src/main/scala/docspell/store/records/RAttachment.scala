@@ -41,6 +41,9 @@ object RAttachment {
   def updateFileIdAndName(attachId: Ident, fId: Ident, fname: Option[String]): ConnectionIO[Int] =
     updateRow(table, id.is(attachId), commas(fileId.setTo(fId), name.setTo(fname))).update.run
 
+  def updatePosition(attachId: Ident, pos: Int): ConnectionIO[Int] =
+    updateRow(table, id.is(attachId), position.setTo(pos)).update.run
+
   def findById(attachId: Ident): ConnectionIO[Option[RAttachment]] =
     selectSimple(all, table, id.is(attachId)).query[RAttachment].option
 
