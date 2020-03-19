@@ -28,6 +28,9 @@ title: Features and Limitations
   - Images (jpg, png, tiff)
   - HTML
   - text/* (treated as Markdown)
+  - zip
+  - [eml](https://en.wikipedia.org/wiki/Email#Filename_extensions)
+    (e-mail files in plain text MIME)
 - Tools:
   - Watch a folder: watch folders for changes and send files to docspell
   - Firefox plugin: right click on a link and send the file to docspell

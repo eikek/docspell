@@ -15,7 +15,8 @@ immediately – as long as there are enough resource.
 What is missing, is a component that maintains periodic tasks. The
 reason for this is to have house keeping tasks that run regularily and
 clean up stale or unused data. Later, users should be able to create
-periodic tasks, for example to read e-mails from an inbox.
+periodic tasks, for example to read e-mails from an inbox or to be
+notified of due items.
 
 The problem is again, that it must work with multiple job executor
 instances running at the same time. This is the same pattern as with
@@ -38,14 +39,16 @@ For internal housekeeping tasks, it may suffice to reuse the existing
 `job` queue by adding more fields such that a job may be considered
 periodic. But this conflates with what the `Scheduler` is doing now
 (executing tasks as soon as possible while being bound to some
-resources) with a completely different subject.
+resource limits) with a completely different subject.
 
 There will be a new `PeriodicScheduler` that works on a new table in
 the database that is representing periodic tasks. This table will
-share fields with the `job` table to be able to create `RJob`
-instances. This new component is only taking care of periodically
-submitting jobs to the job queue such that the `Scheduler` will
-eventually pick it up and run it.
+share fields with the `job` table to be able to create `RJob` records.
+This new component is only taking care of periodically submitting jobs
+to the job queue such that the `Scheduler` will eventually pick it up
+and run it. If the tasks cannot run (for example due to resource
+limitation), the periodic scheduler can't do nothing but wait and try
+next time.
 
 ```sql
 CREATE TABLE "periodic_task" (
@@ -65,11 +68,11 @@ CREATE TABLE "periodic_task" (
 );
 ```
 
-Preparing for other features, periodic tasks will be created by users.
-It should be possible to disable/enable them. The next 6 properties
-are needed to insert jobs into the `job` table. The `worker` field
-(and `marked`) are used to mark a periodic job as "being worked on by
-a job executor".
+Preparing for other features, at some point periodic tasks will be
+created by users. It should be possible to disable/enable them. The
+next 6 properties are needed to insert jobs into the `job` table. The
+`worker` field (and `marked`) are used to mark a periodic job as
+"being worked on by a job executor".
 
 The `timer` is the schedule, which is a
 [systemd-like](https://man.cx/systemd.time#heading7) calendar event

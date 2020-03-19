@@ -25,6 +25,15 @@ compete on getting the next job from the queue. After a job finishes
 and no job is waiting in the queue, joex will sleep until notified
 again. It will also periodically notify itself as a fallback.
 
+## Task vs Job
+
+Just for the sake of this document, a task denotes the code that has
+to be executed or the thing that has to be done. It emerges in a job,
+once a task is submitted into the queue from where it will be picked
+up and executed eventually. A job maintains a state and other things,
+while a task is just code.
+
+
 ## Scheduler and Queue
 
 The scheduler is the part that runs and monitors the long running
@@ -115,6 +124,15 @@ reach a joex component. This periodic wakup is just to ensure that
 jobs are eventually run.
 
 
+## Periodic Tasks
+
+The job executor can execute tasks periodically. These tasks are
+stored in the database such that they can be submitted into the job
+queue. Multiple job executors can run at once, only one is ever doing
+something with a task. So a periodic task is never submitted twice. It
+is also not submitted, if a previous task has not finished yet.
+
+
 ## Starting on demand
 
 The job executor and rest server can be started multiple times. This
@@ -128,6 +146,7 @@ all have unique `app-id`s.
 
 Once the files have been processced you can stop the additional
 executors.
+
 
 ## Shutting down
 
