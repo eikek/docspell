@@ -7,6 +7,7 @@ import cats.effect._
 import cats.implicits._
 import fs2.Stream
 import docspell.common._
+import docspell.joex.mail._
 import docspell.joex.scheduler._
 import docspell.store.records._
 import docspell.files.Zip
@@ -74,6 +75,11 @@ object ExtractArchive {
           extractZip(ctx, archive)(ra)
             .flatTap(_ => cleanupParents(ctx, ra, archive))
 
+      case Mimetype("message", "rfc822", _) =>
+        ctx.logger.info(s"Reading e-mail ${ra.name.getOrElse("<noname>")}") *>
+          extractMail(ctx, archive)(ra)
+            .flatTap(_ => cleanupParents(ctx, ra, archive))
+
       case _ =>
         ctx.logger.debug(s"Not an archive: ${mime.asString}") *>
           Extracted.noArchive(ra).pure[F]
@@ -114,28 +120,54 @@ object ExtractArchive {
 
     zipData
       .through(Zip.unzipP[F](8192, ctx.blocker))
-      .flatMap { entry =>
-        val mimeHint = MimetypeHint.filename(entry.name)
-        val fileMeta = ctx.store.bitpeace.saveNew(entry.data, 8192, mimeHint)
-        Stream.eval(ctx.logger.debug(s"Extracted ${entry.name}. Storing as attachment.")) >>
-          fileMeta.evalMap { fm =>
-            Ident.randomId.map { id =>
-              val nra = RAttachment(
-                id,
-                ra.itemId,
-                Ident.unsafe(fm.id),
-                0, //position is updated afterwards
-                ra.created,
-                Option(entry.name).map(_.trim).filter(_.nonEmpty)
-              )
-              val aa = archive.getOrElse(RAttachmentArchive.of(ra)).copy(id = id)
-              Extracted.of(nra, aa)
-            }
-          }
-      }
+      .flatMap(handleEntry(ctx, ra, archive))
       .foldMonoid
       .compile
       .lastOrError
+  }
+
+  def extractMail[F[_]: Sync](
+      ctx: Context[F, _],
+      archive: Option[RAttachmentArchive]
+  )(ra: RAttachment): F[Extracted] = {
+    val email = ctx.store.bitpeace
+      .get(ra.fileId.id)
+      .unNoneTerminate
+      .through(ctx.store.bitpeace.fetchData2(RangeDef.all))
+
+    email
+      .through(ReadMail.readBytesP[F](ctx.logger))
+      .flatMap(handleEntry(ctx, ra, archive))
+      .foldMonoid
+      .compile
+      .lastOrError
+  }
+
+  def handleEntry[F[_]: Sync](
+      ctx: Context[F, _],
+      ra: RAttachment,
+      archive: Option[RAttachmentArchive]
+  )(
+      entry: Binary[F]
+  ): Stream[F, Extracted] = {
+    val mimeHint = MimetypeHint.filename(entry.name).withAdvertised(entry.mime.asString)
+    val fileMeta = ctx.store.bitpeace.saveNew(entry.data, 8192, mimeHint)
+    Stream.eval(ctx.logger.debug(s"Extracted ${entry.name}. Storing as attachment.")) >>
+      fileMeta.evalMap { fm =>
+        Ident.randomId.map { id =>
+          val nra = RAttachment(
+            id,
+            ra.itemId,
+            Ident.unsafe(fm.id),
+            0, //position is updated afterwards
+            ra.created,
+            Option(entry.name).map(_.trim).filter(_.nonEmpty)
+          )
+          val aa = archive.getOrElse(RAttachmentArchive.of(ra)).copy(id = id)
+          Extracted.of(nra, aa)
+        }
+      }
+
   }
 
   def storeAttachment[F[_]: Sync](ctx: Context[F, _])(ra: RAttachment): F[Int] = {
