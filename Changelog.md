@@ -4,10 +4,11 @@
 
 *unknown*
 
-- Support for archive files. Archives are files that contain other
-  files, like zip files. Docspell now extracts archives and adds the
-  content to an item. The extraction process is recursive, so there
-  may be zip files in zip files. File types supported:
+- Support for archive files. Archives, for example zip files, contain
+  the files that should go into docspell. Docspell now extracts
+  archives and adds the content to an item. The extraction process is
+  recursive, so there may be zip files in zip files. File types
+  supported:
   - `zip` every file inside is added to one item as attachment
   - `eml` (RCF822 E-Mail files) E-mails are considered archives, since
     they may contain multiple files (body and attachments).
@@ -16,6 +17,8 @@
   are some system cleanup jobs to start with. 
 - Improvement of the text analysis. For my test files there was a
   increase in accuracy by about 10%.
+- A due date that is found during text analysis is now set on the
+  item. If multiple due dates are found, the earliest one is used.
 
 ## v0.3.0
 
