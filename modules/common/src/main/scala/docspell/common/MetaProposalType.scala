@@ -18,7 +18,7 @@ object MetaProposalType {
   case object DueDate    extends MetaProposalType
 
   val all: List[MetaProposalType] =
-    List(CorrOrg, CorrPerson, ConcPerson, ConcEquip)
+    List(CorrOrg, CorrPerson, ConcPerson, ConcEquip, DocDate, DueDate)
 
   def fromString(str: String): Either[String, MetaProposalType] =
     str.toLowerCase match {

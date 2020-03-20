@@ -1,9 +1,12 @@
 package docspell.common
 
+import cats.implicits._
 import cats.data.NonEmptyList
+import docspell.common._
 import docspell.common.MetaProposal.Candidate
 import io.circe._
 import io.circe.generic.semiauto._
+import java.time.LocalDate
 
 case class MetaProposal(proposalType: MetaProposalType, values: NonEmptyList[Candidate]) {
 
@@ -21,6 +24,12 @@ case class MetaProposal(proposalType: MetaProposalType, values: NonEmptyList[Can
 }
 
 object MetaProposal {
+
+  def parseDate(cand: Candidate): Option[LocalDate] =
+    parseDate(cand.ref.id)
+
+  def parseDate(date: Ident): Option[LocalDate] =
+    Either.catchNonFatal(LocalDate.parse(date.id)).toOption
 
   case class Candidate(ref: IdRef, origin: Set[NerLabel])
   object Candidate {

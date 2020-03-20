@@ -50,20 +50,38 @@ object LinkProposal {
     mpt match {
       case MetaProposalType.CorrOrg =>
         ctx.logger.debug(s"Updating item organization with: ${value.id}") *>
-          ctx.store.transact(RItem.updateCorrOrg(itemId, ctx.args.meta.collective, Some(value)))
+          ctx.store.transact(
+            RItem.updateCorrOrg(itemId, ctx.args.meta.collective, Some(value))
+          )
       case MetaProposalType.ConcPerson =>
         ctx.logger.debug(s"Updating item concerning person with: $value") *>
-          ctx.store.transact(RItem.updateConcPerson(itemId, ctx.args.meta.collective, Some(value)))
+          ctx.store.transact(
+            RItem.updateConcPerson(itemId, ctx.args.meta.collective, Some(value))
+          )
       case MetaProposalType.CorrPerson =>
         ctx.logger.debug(s"Updating item correspondent person with: $value") *>
-          ctx.store.transact(RItem.updateCorrPerson(itemId, ctx.args.meta.collective, Some(value)))
+          ctx.store.transact(
+            RItem.updateCorrPerson(itemId, ctx.args.meta.collective, Some(value))
+          )
       case MetaProposalType.ConcEquip =>
         ctx.logger.debug(s"Updating item concerning equipment with: $value") *>
-          ctx.store.transact(RItem.updateConcEquip(itemId, ctx.args.meta.collective, Some(value)))
+          ctx.store.transact(
+            RItem.updateConcEquip(itemId, ctx.args.meta.collective, Some(value))
+          )
       case MetaProposalType.DocDate =>
         ctx.logger.debug(s"Not linking document date suggestion ${value.id}").map(_ => 0)
       case MetaProposalType.DueDate =>
-        ctx.logger.debug(s"Not linking document date suggestion ${value.id}").map(_ => 0)
+        MetaProposal.parseDate(value) match {
+          case Some(ld) =>
+            val ts = Timestamp.from(ld.atStartOfDay(Timestamp.UTC))
+            ctx.logger.debug(s"Updating item due-date suggestion ${value.id}") *>
+              ctx.store.transact(
+                RItem.updateDueDate(itemId, ctx.args.meta.collective, Some(ts))
+              )
+          case None =>
+            ctx.logger.info(s"Cannot read value '${value.id}' into a date.") *>
+              0.pure[F]
+        }
     }
 
   sealed trait Result {
