@@ -22,7 +22,7 @@ object JobQueue {
   private[this] val logger = getLogger
 
   def apply[F[_]: Effect](store: Store[F]): Resource[F, JobQueue[F]] =
-    Resource.pure(new JobQueue[F] {
+    Resource.pure[F, JobQueue[F]](new JobQueue[F] {
 
       def nextJob(
           prio: Ident => F[Priority],

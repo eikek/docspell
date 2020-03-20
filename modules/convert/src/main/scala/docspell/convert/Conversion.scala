@@ -26,7 +26,7 @@ object Conversion {
       blocker: Blocker,
       logger: Logger[F]
   ): Resource[F, Conversion[F]] =
-    Resource.pure(new Conversion[F] {
+    Resource.pure[F, Conversion[F]](new Conversion[F] {
 
       def toPDF[A](dataType: DataType, lang: Language, handler: Handler[F, A])(
           in: Stream[F, Byte]
