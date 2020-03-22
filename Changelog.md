@@ -19,6 +19,8 @@
   increase in accuracy by about 10%.
 - A due date that is found during text analysis is now set on the
   item. If multiple due dates are found, the earliest one is used.
+- Allow to switch between viewerjs PDF viewer or the browser's builtin
+  viewer.
 
 ### Configuration Changes
 

@@ -35,7 +35,7 @@ import DatePicker exposing (DatePicker)
 import Dict exposing (Dict)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick, onInput)
+import Html.Events exposing (onCheck, onClick, onInput)
 import Http
 import Markdown
 import Page exposing (Page(..))
@@ -74,6 +74,7 @@ type alias Model =
     , sentMailsOpen : Bool
     , attachMeta : Dict String Comp.AttachmentMeta.Model
     , attachMetaOpen : Bool
+    , pdfNativeView : Bool
     }
 
 
@@ -160,6 +161,7 @@ emptyModel =
     , sentMailsOpen = False
     , attachMeta = Dict.empty
     , attachMetaOpen = False
+    , pdfNativeView = False
     }
 
 
@@ -212,6 +214,7 @@ type Msg
     | SentMailsResp (Result Http.Error SentMails)
     | AttachMetaClick String
     | AttachMetaMsg String Comp.AttachmentMeta.Msg
+    | TogglePdfNativeView
 
 
 
@@ -935,6 +938,11 @@ update key flags next msg model =
                 Nothing ->
                     ( model, Cmd.none )
 
+        TogglePdfNativeView ->
+            ( { model | pdfNativeView = not model.pdfNativeView }
+            , Cmd.none
+            )
+
 
 
 -- view
@@ -1206,6 +1214,17 @@ renderAttachmentView model pos attach =
                 , text (Util.Size.bytesReadable Util.Size.B (toFloat attach.size))
                 , text ")"
                 ]
+            , div [ class "item" ]
+                [ div [ class "ui slider checkbox" ]
+                    [ input
+                        [ type_ "checkbox"
+                        , onCheck (\_ -> TogglePdfNativeView)
+                        , checked model.pdfNativeView
+                        ]
+                        []
+                    , label [] [ text "Native view" ]
+                    ]
+                ]
             , div [ class "right menu" ]
                 [ a
                     [ classList
@@ -1234,7 +1253,7 @@ renderAttachmentView model pos attach =
                                     "Goto original file"
 
                          else
-                            "This is the original file"
+                            "The file was not converted."
                         )
                     , href (fileUrl ++ "/original")
                     , target "_new"
@@ -1269,7 +1288,11 @@ renderAttachmentView model pos attach =
                 ]
             ]
             [ iframe
-                [ src (fileUrl ++ "/view")
+                [ if model.pdfNativeView then
+                    src fileUrl
+
+                  else
+                    src (fileUrl ++ "/view")
                 ]
                 []
             ]
