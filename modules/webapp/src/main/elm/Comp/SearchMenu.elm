@@ -60,7 +60,11 @@ emptyModel =
     , tagExclModel = makeTagModel
     , directionModel =
         Comp.Dropdown.makeSingleList
-            { makeOption = \entry -> { value = Data.Direction.toString entry, text = Data.Direction.toString entry }
+            { makeOption =
+                \entry ->
+                    { value = Data.Direction.toString entry
+                    , text = Data.Direction.toString entry
+                    }
             , options = Data.Direction.all
             , placeholder = "Choose a direction…"
             , selected = Nothing
@@ -89,7 +93,7 @@ emptyModel =
             , searchable = \n -> n > 5
             , makeOption = \e -> { value = e.id, text = e.name }
             , labelColor = \_ -> ""
-            , placeholder = "Choosa an equipment"
+            , placeholder = "Choose an equipment"
             }
     , inboxCheckbox = False
     , fromDateModel = Comp.DatePicker.emptyModel
@@ -204,7 +208,12 @@ update flags msg model =
                     Comp.DatePicker.init
             in
             noChange
-                ( { model | untilDateModel = dp, fromDateModel = dp, untilDueDateModel = dp, fromDueDateModel = dp }
+                ( { model
+                    | untilDateModel = dp
+                    , fromDateModel = dp
+                    , untilDueDateModel = dp
+                    , fromDueDateModel = dp
+                  }
                 , Cmd.batch
                     [ Api.getTags flags "" GetTagsResp
                     , Api.getOrgLight flags GetOrgResp
@@ -279,49 +288,77 @@ update flags msg model =
                 ( m2, c2 ) =
                     Comp.Dropdown.update m model.tagInclModel
             in
-            NextState ( { model | tagInclModel = m2 }, Cmd.map TagIncMsg c2 ) (isDropdownChangeMsg m)
+            NextState
+                ( { model | tagInclModel = m2 }
+                , Cmd.map TagIncMsg c2
+                )
+                (isDropdownChangeMsg m)
 
         TagExcMsg m ->
             let
                 ( m2, c2 ) =
                     Comp.Dropdown.update m model.tagExclModel
             in
-            NextState ( { model | tagExclModel = m2 }, Cmd.map TagExcMsg c2 ) (isDropdownChangeMsg m)
+            NextState
+                ( { model | tagExclModel = m2 }
+                , Cmd.map TagExcMsg c2
+                )
+                (isDropdownChangeMsg m)
 
         DirectionMsg m ->
             let
                 ( m2, c2 ) =
                     Comp.Dropdown.update m model.directionModel
             in
-            NextState ( { model | directionModel = m2 }, Cmd.map DirectionMsg c2 ) (isDropdownChangeMsg m)
+            NextState
+                ( { model | directionModel = m2 }
+                , Cmd.map DirectionMsg c2
+                )
+                (isDropdownChangeMsg m)
 
         OrgMsg m ->
             let
                 ( m2, c2 ) =
                     Comp.Dropdown.update m model.orgModel
             in
-            NextState ( { model | orgModel = m2 }, Cmd.map OrgMsg c2 ) (isDropdownChangeMsg m)
+            NextState
+                ( { model | orgModel = m2 }
+                , Cmd.map OrgMsg c2
+                )
+                (isDropdownChangeMsg m)
 
         CorrPersonMsg m ->
             let
                 ( m2, c2 ) =
                     Comp.Dropdown.update m model.corrPersonModel
             in
-            NextState ( { model | corrPersonModel = m2 }, Cmd.map CorrPersonMsg c2 ) (isDropdownChangeMsg m)
+            NextState
+                ( { model | corrPersonModel = m2 }
+                , Cmd.map CorrPersonMsg c2
+                )
+                (isDropdownChangeMsg m)
 
         ConcPersonMsg m ->
             let
                 ( m2, c2 ) =
                     Comp.Dropdown.update m model.concPersonModel
             in
-            NextState ( { model | concPersonModel = m2 }, Cmd.map ConcPersonMsg c2 ) (isDropdownChangeMsg m)
+            NextState
+                ( { model | concPersonModel = m2 }
+                , Cmd.map ConcPersonMsg c2
+                )
+                (isDropdownChangeMsg m)
 
         ConcEquipmentMsg m ->
             let
                 ( m2, c2 ) =
                     Comp.Dropdown.update m model.concEquipmentModel
             in
-            NextState ( { model | concEquipmentModel = m2 }, Cmd.map ConcEquipmentMsg c2 ) (isDropdownChangeMsg m)
+            NextState
+                ( { model | concEquipmentModel = m2 }
+                , Cmd.map ConcEquipmentMsg c2
+                )
+                (isDropdownChangeMsg m)
 
         ToggleInbox ->
             let
@@ -343,7 +380,11 @@ update flags msg model =
                         _ ->
                             Nothing
             in
-            NextState ( { model | fromDateModel = dp, fromDate = nextDate }, Cmd.none ) (model.fromDate /= nextDate)
+            NextState
+                ( { model | fromDateModel = dp, fromDate = nextDate }
+                , Cmd.none
+                )
+                (model.fromDate /= nextDate)
 
         UntilDateMsg m ->
             let
@@ -358,7 +399,11 @@ update flags msg model =
                         _ ->
                             Nothing
             in
-            NextState ( { model | untilDateModel = dp, untilDate = nextDate }, Cmd.none ) (model.untilDate /= nextDate)
+            NextState
+                ( { model | untilDateModel = dp, untilDate = nextDate }
+                , Cmd.none
+                )
+                (model.untilDate /= nextDate)
 
         FromDueDateMsg m ->
             let
@@ -373,7 +418,11 @@ update flags msg model =
                         _ ->
                             Nothing
             in
-            NextState ( { model | fromDueDateModel = dp, fromDueDate = nextDate }, Cmd.none ) (model.fromDueDate /= nextDate)
+            NextState
+                ( { model | fromDueDateModel = dp, fromDueDate = nextDate }
+                , Cmd.none
+                )
+                (model.fromDueDate /= nextDate)
 
         UntilDueDateMsg m ->
             let
@@ -388,7 +437,11 @@ update flags msg model =
                         _ ->
                             Nothing
             in
-            NextState ( { model | untilDueDateModel = dp, untilDueDate = nextDate }, Cmd.none ) (model.untilDueDate /= nextDate)
+            NextState
+                ( { model | untilDueDateModel = dp, untilDueDate = nextDate }
+                , Cmd.none
+                )
+                (model.untilDueDate /= nextDate)
 
         SetName str ->
             let
@@ -399,7 +452,11 @@ update flags msg model =
                     else
                         Just str
             in
-            NextState ( { model | nameModel = next }, Cmd.none ) (model.nameModel /= next)
+            NextState
+                ( { model | nameModel = next }
+                , Cmd.none
+                )
+                (model.nameModel /= next)
 
 
 
