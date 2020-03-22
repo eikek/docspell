@@ -8,17 +8,10 @@ import doobie._
 import doobie.implicits._
 import docspell.store.{AddResult, Store}
 import docspell.store.queries.{QAttachment, QItem}
-import OItem.{AttachmentData, AttachmentSourceData, ItemData, ListItem, Query}
+import OItem.{AttachmentArchiveData, AttachmentData, AttachmentSourceData, ItemData, ListItem, Query}
 import bitpeace.{FileMeta, RangeDef}
 import docspell.common.{Direction, Ident, ItemState, MetaProposalList, Timestamp}
-import docspell.store.records.{
-  RAttachment,
-  RAttachmentMeta,
-  RAttachmentSource,
-  RItem,
-  RSource,
-  RTagItem
-}
+import docspell.store.records._
 
 trait OItem[F[_]] {
 
@@ -29,6 +22,8 @@ trait OItem[F[_]] {
   def findAttachment(id: Ident, collective: Ident): F[Option[AttachmentData[F]]]
 
   def findAttachmentSource(id: Ident, collective: Ident): F[Option[AttachmentSourceData[F]]]
+
+  def findAttachmentArchive(id: Ident, collective: Ident): F[Option[AttachmentArchiveData[F]]]
 
   def setTags(item: Ident, tagIds: List[Ident], collective: Ident): F[AddResult]
 
@@ -96,6 +91,15 @@ object OItem {
     val fileId = rs.fileId
   }
 
+  case class AttachmentArchiveData[F[_]](
+      rs: RAttachmentArchive,
+      meta: FileMeta,
+      data: Stream[F, Byte]
+  ) extends BinaryData[F] {
+    val name   = rs.name
+    val fileId = rs.fileId
+  }
+
   def apply[F[_]: Effect](store: Store[F]): Resource[F, OItem[F]] =
     Resource.pure[F, OItem[F]](new OItem[F] {
 
@@ -137,6 +141,23 @@ object OItem {
 
             case None =>
               (None: Option[AttachmentSourceData[F]]).pure[F]
+          })
+
+      def findAttachmentArchive(id: Ident, collective: Ident): F[Option[AttachmentArchiveData[F]]] =
+        store
+          .transact(RAttachmentArchive.findByIdAndCollective(id, collective))
+          .flatMap({
+            case Some(ra) =>
+              makeBinaryData(ra.fileId) { m =>
+                AttachmentArchiveData[F](
+                  ra,
+                  m,
+                  store.bitpeace.fetchData2(RangeDef.all)(Stream.emit(m))
+                )
+              }
+
+            case None =>
+              (None: Option[AttachmentArchiveData[F]]).pure[F]
           })
 
       private def makeBinaryData[A](fileId: Ident)(f: FileMeta => A): F[Option[A]] =
