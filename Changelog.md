@@ -20,6 +20,24 @@
 - A due date that is found during text analysis is now set on the
   item. If multiple due dates are found, the earliest one is used.
 
+### Configuration Changes
+
+The configuration of the joex component has been changed. 
+
+- new section `docspell.joex.periodic-scheduler` for configuring the
+  periodic scheduler
+- new section `docspell.joex.house-keeping` for configuring
+  house-keeping tasks
+
+### REST Api Changes
+
+The REST Api has some additions:
+
+- new route to retrieve the archive file
+- add field in `ItemDetail` data that refers to the archive files of
+  the attachments
+
+
 ## v0.3.0
 
 *Mar. 1, 2020*
