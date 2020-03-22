@@ -1897,6 +1897,7 @@ components:
         - updated
         - attachments
         - sources
+        - archives
         - tags
       properties:
         id:
@@ -1944,6 +1945,10 @@ components:
           items:
             $ref: "#/components/schemas/Attachment"
         sources:
+          type: array
+          items:
+            $ref: "#/components/schemas/AttachmentSource"
+        archives:
           type: array
           items:
             $ref: "#/components/schemas/AttachmentSource"

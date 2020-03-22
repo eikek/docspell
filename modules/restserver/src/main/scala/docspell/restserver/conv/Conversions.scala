@@ -86,6 +86,7 @@ trait Conversions {
       data.item.notes,
       data.attachments.map((mkAttachment(data) _).tupled).toList,
       data.sources.map((mkAttachmentSource _).tupled).toList,
+      data.archives.map((mkAttachmentArchive _).tupled).toList,
       data.tags.map(mkTag).toList
     )
 
@@ -95,6 +96,9 @@ trait Conversions {
   }
 
   def mkAttachmentSource(ra: RAttachmentSource, m: FileMeta): AttachmentSource =
+    AttachmentSource(ra.id, ra.name, m.length, MimeType.unsafe(m.mimetype.asString))
+
+  def mkAttachmentArchive(ra: RAttachmentArchive, m: FileMeta): AttachmentSource =
     AttachmentSource(ra.id, ra.name, m.length, MimeType.unsafe(m.mimetype.asString))
 
   // item list
