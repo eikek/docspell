@@ -1187,6 +1187,10 @@ renderAttachmentView model pos attach =
 
         attachName =
             Maybe.withDefault "No name" attach.name
+
+        hasArchive =
+            List.map .id model.item.archives
+                |> List.member attach.id
     in
     div
         [ classList
@@ -1204,6 +1208,17 @@ renderAttachmentView model pos attach =
                 ]
             , div [ class "right menu" ]
                 [ a
+                    [ classList
+                        [ ( "item", True )
+                        , ( "invisible", not hasArchive )
+                        ]
+                    , title "Download the original archive file."
+                    , href (fileUrl ++ "/archive")
+                    , target "_new"
+                    ]
+                    [ i [ class "file archive outline icon" ] []
+                    ]
+                , a
                     [ classList
                         [ ( "item", True )
                         , ( "disabled", not attach.converted )
