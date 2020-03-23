@@ -1,8 +1,9 @@
 package docspell.convert.flexmark
 
 import java.io.{InputStream, InputStreamReader}
-import java.nio.charset.StandardCharsets
+import java.nio.charset.Charset
 import java.util
+import scala.util.Try
 
 import cats.effect.Sync
 import cats.implicits._
@@ -13,15 +14,15 @@ import com.vladsch.flexmark.parser.Parser
 import com.vladsch.flexmark.util.data.{DataKey, MutableDataSet}
 import fs2.Stream
 
-import scala.util.Try
+import docspell.common._
 
 object Markdown {
 
-  def toHtml(is: InputStream, cfg: MarkdownConfig): Either[Throwable, String] = {
+  def toHtml(is: InputStream, cfg: MarkdownConfig, cs: Charset): Either[Throwable, String] = {
     val p = createParser()
     val r = createRenderer()
     Try {
-      val reader = new InputStreamReader(is, StandardCharsets.UTF_8)
+      val reader = new InputStreamReader(is, cs)
       val doc    = p.parseReader(reader)
       wrapHtml(r.render(doc), cfg)
     }.toEither
@@ -34,8 +35,8 @@ object Markdown {
     wrapHtml(r.render(doc), cfg)
   }
 
-  def toHtml[F[_]: Sync](data: Stream[F, Byte], cfg: MarkdownConfig): F[String] =
-    data.through(fs2.text.utf8Decode).compile.foldMonoid.map(str => toHtml(str, cfg))
+  def toHtml[F[_]: Sync](data: Stream[F, Byte], cfg: MarkdownConfig, cs: Charset): F[String] =
+    data.through(Binary.decode(cs)).compile.foldMonoid.map(str => toHtml(str, cfg))
 
   private def wrapHtml(body: String, cfg: MarkdownConfig): String =
     s"""<!DOCTYPE html>

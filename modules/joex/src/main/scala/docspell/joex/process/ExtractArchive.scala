@@ -70,7 +70,7 @@ object ExtractArchive {
       archive: Option[RAttachmentArchive]
   )(ra: RAttachment, mime: Mimetype): F[Extracted] =
     mime match {
-      case Mimetype.`application/zip` if ra.name.exists(_.endsWith(".zip")) =>
+      case Mimetype("application", "zip", _) if ra.name.exists(_.endsWith(".zip")) =>
         ctx.logger.info(s"Extracting zip archive ${ra.name.getOrElse("<noname>")}.") *>
           extractZip(ctx, archive)(ra)
             .flatTap(_ => cleanupParents(ctx, ra, archive))

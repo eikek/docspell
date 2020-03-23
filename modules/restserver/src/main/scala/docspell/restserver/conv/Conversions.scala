@@ -448,7 +448,7 @@ trait Conversions {
   // MIME Type
 
   def fromContentType(header: `Content-Type`): MimeType =
-    MimeType(header.mediaType.mainType, header.mediaType.subType)
+    MimeType(header.mediaType.mainType, header.mediaType.subType, header.mediaType.extensions)
 }
 
 object Conversions extends Conversions {

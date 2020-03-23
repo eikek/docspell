@@ -1,0 +1,13 @@
+Docspell
+Copyright 2019-2020
+Licensed under the GPLv3
+
+This software contains portions of code from tika-parser
+https://tika.apache.org
+Copyright (C) Apache Software Foundation (ASF) <https://www.apache.org>
+Licensed under Apache License 2.0
+
+This software contains portions of code from http4s
+https://http4s.org
+Copyright 2013-2018 http4s.org
+Licensed under Apache License 2.0

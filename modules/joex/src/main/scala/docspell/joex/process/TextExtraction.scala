@@ -76,7 +76,7 @@ object TextExtraction {
         .getOrElse(Mimetype.`application/octet-stream`)
 
     findMime
-      .flatMap(mt => extr.extractText(data, DataType(MimeType(mt.primary, mt.sub)), lang))
+      .flatMap(mt => extr.extractText(data, DataType(MimeType(mt.primary, mt.sub, mt.params)), lang))
   }
 
   private def extractTextFallback[F[_]: Sync: ContextShift](

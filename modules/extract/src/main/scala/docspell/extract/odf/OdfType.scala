@@ -14,5 +14,10 @@ object OdfType {
   val all = Set(odt, ods, odtAlias, odsAlias)
 
   def unapply(mt: MimeType): Option[MimeType] =
-    Some(mt).filter(all.contains)
+    Some(mt).map(_.baseType).filter(all.contains)
+
+  object ContainerMatch {
+    def unapply(mt: MimeType): Option[MimeType] =
+      Some(mt).filter(_.matches(container))
+  }
 }

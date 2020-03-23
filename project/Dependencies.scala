@@ -17,6 +17,7 @@ object Dependencies {
   val Fs2Version = "2.3.0"
   val H2Version = "1.4.200"
   val Http4sVersion = "0.21.1"
+  val Icu4jVersion = "66.1"
   val KindProjectorVersion = "0.10.3"
   val Log4sVersion = "1.8.2"
   val LogbackVersion = "1.2.3"
@@ -218,4 +219,7 @@ object Dependencies {
     "org.webjars" % "viewerjs" % ViewerJSVersion
   )
 
+  val icu4j = Seq(
+    "com.ibm.icu" % "icu4j" % Icu4jVersion
+  )
 }

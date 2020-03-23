@@ -14,6 +14,6 @@ object PoiType {
   val all = Set(msoffice, ooxml, docx, xlsx, xls, doc)
 
   def unapply(arg: MimeType): Option[MimeType] =
-    Some(arg).filter(all.contains)
+    Some(arg).map(_.baseType).filter(all.contains)
 
 }

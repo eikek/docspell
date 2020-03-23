@@ -7,6 +7,7 @@ import docspell.common._
 import docspell.convert.FileChecks
 import docspell.files.{ExampleFiles, TestFiles}
 import minitest.SimpleTestSuite
+import java.nio.charset.StandardCharsets
 
 object ExternConvTest extends SimpleTestSuite with FileChecks {
   val blocker     = TestFiles.blocker
@@ -31,7 +32,7 @@ object ExternConvTest extends SimpleTestSuite with FileChecks {
             val wkCfg = WkHtmlPdfConfig(cfg, target)
             val p =
               WkHtmlPdf
-                .toPDF[IO, Path](wkCfg, 8192, blocker, logger)(
+                .toPDF[IO, Path](wkCfg, 8192, StandardCharsets.UTF_8, blocker, logger)(
                   ExampleFiles.letter_de_html.readURL[IO](8192, blocker),
                   storePdfHandler(dir.resolve("test.pdf"))
                 )

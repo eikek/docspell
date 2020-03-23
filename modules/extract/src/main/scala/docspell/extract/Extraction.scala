@@ -31,7 +31,7 @@ object Extraction {
           lang: Language
       ): F[ExtractResult] =
         TikaMimetype.resolve(dataType, data).flatMap {
-          case MimeType.pdf =>
+          case MimeType.PdfMatch(_) =>
             PdfExtract
               .get(data, blocker, lang, cfg.pdf.minTextLen, cfg.ocr, logger)
               .map(ExtractResult.fromEither)
@@ -75,14 +75,15 @@ object Extraction {
                   doExtract
             }
 
-          case OdfType.container =>
+          case OdfType.ContainerMatch(_) =>
             logger
               .info(s"File detected as ${OdfType.container}. Try to read as OpenDocument file.") *>
               OdfExtract.get(data).map(ExtractResult.fromEither)
 
-          case mt @ MimeType("text", sub) if !sub.contains("html") =>
+          case mt @ MimeType("text", sub, _) if !sub.contains("html") =>
+            val cs = mt.charsetOrUtf8
             logger.info(s"File detected as ${mt.asString}. Returning itself as text.") *>
-              data.through(fs2.text.utf8Decode).compile.last.map { txt =>
+              data.through(Binary.decode(cs)).foldMonoid.compile.last.map { txt =>
                 ExtractResult.success(txt.getOrElse("").trim)
               }
 

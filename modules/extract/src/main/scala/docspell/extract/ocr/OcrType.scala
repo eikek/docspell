@@ -12,5 +12,5 @@ object OcrType {
   val all = Set(jpeg, png, tiff, pdf)
 
   def unapply(mt: MimeType): Option[MimeType] =
-    Some(mt).filter(all.contains)
+    Some(mt).map(_.baseType).filter(all.contains)
 }

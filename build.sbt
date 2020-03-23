@@ -161,7 +161,8 @@ val files = project.in(file("modules/files")).
   settings(
     name := "docspell-files",
     libraryDependencies ++=
-      Dependencies.tika,
+      Dependencies.tika ++
+      Dependencies.icu4j,
     Test / sourceGenerators += Def.task {
       val base = (Test/resourceDirectory).value
       val files = (base ** (_.isFile)) pair sbt.io.Path.relativeTo(base)

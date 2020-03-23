@@ -32,18 +32,27 @@ object Conversion {
           in: Stream[F, Byte]
       ): F[A] =
         TikaMimetype.resolve(dataType, in).flatMap {
-          case MimeType.pdf =>
+          case Pdfs(_) =>
             handler.run(ConversionResult.successPdf(in))
 
-          case MimeType.html =>
-            WkHtmlPdf.toPDF(cfg.wkhtmlpdf, cfg.chunkSize, blocker, logger)(in, handler)
+          case mt @ MimeType(_, "html", _) =>
+            val cs = mt.charsetOrUtf8
+            WkHtmlPdf
+              .toPDF(cfg.wkhtmlpdf, cfg.chunkSize, cs, blocker, logger)(in, handler)
 
-          case Texts(_) =>
-            Markdown.toHtml(in, cfg.markdown).flatMap { html =>
+          case mt @ Texts(_) =>
+            val cs = mt.charsetOrUtf8
+            Markdown.toHtml(in, cfg.markdown, cs).flatMap { html =>
               val bytes = Stream
                 .chunk(Chunk.bytes(html.getBytes(StandardCharsets.UTF_8)))
                 .covary[F]
-              WkHtmlPdf.toPDF(cfg.wkhtmlpdf, cfg.chunkSize, blocker, logger)(bytes, handler)
+              WkHtmlPdf.toPDF(
+                cfg.wkhtmlpdf,
+                cfg.chunkSize,
+                StandardCharsets.UTF_8,
+                blocker,
+                logger
+              )(bytes, handler)
             }
 
           case Images(mt) =>
@@ -51,7 +60,9 @@ object Conversion {
               case Some(dim) =>
                 if (dim.product > cfg.maxImageSize) {
                   logger
-                    .info(s"Image size (${dim.product}) is too large (max ${cfg.maxImageSize}).") *>
+                    .info(
+                      s"Image size (${dim.product}) is too large (max ${cfg.maxImageSize})."
+                    ) *>
                     handler.run(
                       ConversionResult.inputMalformed(
                         mt,
@@ -59,14 +70,20 @@ object Conversion {
                       )
                     )
                 } else {
-                  Tesseract.toPDF(cfg.tesseract, lang, cfg.chunkSize, blocker, logger)(in, handler)
+                  Tesseract.toPDF(cfg.tesseract, lang, cfg.chunkSize, blocker, logger)(
+                    in,
+                    handler
+                  )
                 }
 
               case None =>
                 logger.info(
                   s"Cannot read image when determining size for ${mt.asString}. Converting anyways."
                 ) *>
-                  Tesseract.toPDF(cfg.tesseract, lang, cfg.chunkSize, blocker, logger)(in, handler)
+                  Tesseract.toPDF(cfg.tesseract, lang, cfg.chunkSize, blocker, logger)(
+                    in,
+                    handler
+                  )
             }
 
           case Office(_) =>
@@ -90,6 +107,11 @@ object Conversion {
       Some(m).filter(_.primary == "text")
   }
 
+  object Pdfs {
+    def unapply(m: MimeType): Option[MimeType] =
+      Some(m).filter(_.matches(MimeType.pdf))
+  }
+
   object Office {
     val odt      = MimeType.application("vnd.oasis.opendocument.text")
     val ods      = MimeType.application("vnd.oasis.opendocument.spreadsheet")
@@ -97,18 +119,33 @@ object Conversion {
     val odsAlias = MimeType.application("x-vnd.oasis.opendocument.spreadsheet")
     val msoffice = MimeType.application("x-tika-msoffice")
     val ooxml    = MimeType.application("x-tika-ooxml")
-    val docx     = MimeType.application("vnd.openxmlformats-officedocument.wordprocessingml.document")
-    val xlsx     = MimeType.application("vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-    val xls      = MimeType.application("vnd.ms-excel")
-    val doc      = MimeType.application("msword")
-    val rtf      = MimeType.application("rtf")
+    val docx =
+      MimeType.application("vnd.openxmlformats-officedocument.wordprocessingml.document")
+    val xlsx =
+      MimeType.application("vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+    val xls = MimeType.application("vnd.ms-excel")
+    val doc = MimeType.application("msword")
+    val rtf = MimeType.application("rtf")
 
     // without a filename, tika returns application/zip for odt/ods files, since
     // they are just zip files
     val odfContainer = MimeType.zip
 
     val all =
-      Set(odt, ods, odtAlias, odsAlias, msoffice, ooxml, docx, xlsx, xls, doc, rtf, odfContainer)
+      Set(
+        odt,
+        ods,
+        odtAlias,
+        odsAlias,
+        msoffice,
+        ooxml,
+        docx,
+        xlsx,
+        xls,
+        doc,
+        rtf,
+        odfContainer
+      )
 
     def unapply(m: MimeType): Option[MimeType] =
       Some(m).filter(all.contains)

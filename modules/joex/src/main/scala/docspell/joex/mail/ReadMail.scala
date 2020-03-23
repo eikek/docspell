@@ -8,6 +8,7 @@ import emil.javamail.syntax._
 import cats.Applicative
 
 import docspell.common._
+import java.nio.charset.StandardCharsets
 
 object ReadMail {
 
@@ -20,7 +21,7 @@ object ReadMail {
         bytesToMail(s).flatMap(mailToEntries[F](logger))
 
   def bytesToMail[F[_]: Sync](data: Stream[F, Byte]): Stream[F, Mail[F]] =
-    data.through(fs2.text.utf8Decode).foldMonoid.evalMap(read[F])
+    data.through(Binary.decode(StandardCharsets.US_ASCII)).foldMonoid.evalMap(read[F])
 
   def mailToEntries[F[_]: Applicative](
       logger: Logger[F]
@@ -49,7 +50,7 @@ object ReadMail {
 
   implicit class MimeTypeConv(m: emil.MimeType) {
     def toDocspell: MimeType =
-      MimeType(m.primary, m.sub)
+      MimeType(m.primary, m.sub, m.params)
   }
 
   private def bodyType[F[_]](body: MailBody[F]): String =

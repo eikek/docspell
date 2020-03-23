@@ -57,7 +57,7 @@ object ConvertPdf {
   )(ra: RAttachment, mime: Mimetype): F[(RAttachment, Option[RAttachmentMeta])] =
     Conversion.create[F](cfg, ctx.blocker, ctx.logger).use { conv =>
       mime match {
-        case Mimetype.`application/pdf` =>
+        case mt if mt.baseEqual(Mimetype.`application/pdf`) =>
           ctx.logger.info("Not going to convert a PDF file into a PDF.") *>
             (ra, None: Option[RAttachmentMeta]).pure[F]
 
@@ -66,9 +66,10 @@ object ConvertPdf {
             .get(ra.fileId.id)
             .unNoneTerminate
             .through(ctx.store.bitpeace.fetchData2(RangeDef.all))
+          val mt      = MimeType(mime.primary, mime.sub, mime.params)
           val handler = conversionHandler[F](ctx, cfg, ra, item)
           ctx.logger.info(s"Converting file ${ra.name} (${mime.asString}) into a PDF") *>
-            conv.toPDF(DataType(MimeType(mime.primary, mime.sub)), ctx.args.meta.language, handler)(
+            conv.toPDF(DataType(mt), ctx.args.meta.language, handler)(
               data
             )
       }
@@ -104,7 +105,8 @@ object ConvertPdf {
           (ra, None: Option[RAttachmentMeta]).pure[F]
 
       case ConversionResult.Failure(ex) =>
-        ctx.logger.error(s"PDF conversion failed: ${ex.getMessage}. Go without PDF file") *>
+        ctx.logger
+          .error(s"PDF conversion failed: ${ex.getMessage}. Go without PDF file") *>
           (ra, None: Option[RAttachmentMeta]).pure[F]
     })
 
@@ -114,7 +116,8 @@ object ConvertPdf {
       ra: RAttachment,
       pdf: Stream[F, Byte]
   ) = {
-    val hint    = MimeTypeHint.advertised(MimeType.pdf).withName(ra.name.getOrElse("file.pdf"))
+    val hint =
+      MimeTypeHint.advertised(MimeType.pdf).withName(ra.name.getOrElse("file.pdf"))
     val newName = ra.name.map(n => s"$n.pdf")
     ctx.store.bitpeace
       .saveNew(pdf, cfg.chunkSize, MimetypeHint(hint.filename, hint.advertised))
@@ -122,7 +125,9 @@ object ConvertPdf {
       .lastOrError
       .map(fm => Ident.unsafe(fm.id))
       .flatMap(fmId =>
-        ctx.store.transact(RAttachment.updateFileIdAndName(ra.id, fmId, newName)).map(_ => fmId)
+        ctx.store
+          .transact(RAttachment.updateFileIdAndName(ra.id, fmId, newName))
+          .map(_ => fmId)
       )
       .map(fmId => ra.copy(fileId = fmId, name = newName))
   }
