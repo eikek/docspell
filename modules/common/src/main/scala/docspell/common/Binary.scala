@@ -1,8 +1,9 @@
 package docspell.common
 
-import fs2.{Pipe, Stream}
+import fs2.{Chunk, Pipe, Stream}
 import java.nio.charset.Charset
 import java.nio.charset.StandardCharsets
+import scodec.bits.ByteVector
 
 final case class Binary[F[_]](name: String, mime: MimeType, data: Stream[F, Byte]) {
 
@@ -25,8 +26,14 @@ object Binary {
   def text[F[_]](name: String, content: String): Binary[F] =
     utf8(name, content).withMime(MimeType.plain.withUtf8Charset)
 
+  def text[F[_]](name: String, content: ByteVector, cs: Charset): Binary[F] =
+    Binary(name, MimeType.plain.withCharset(cs), Stream.chunk(Chunk.byteVector(content)))
+
   def html[F[_]](name: String, content: String): Binary[F] =
     utf8(name, content).withMime(MimeType.html.withUtf8Charset)
+
+  def html[F[_]](name: String, content: ByteVector, cs: Charset): Binary[F] =
+    Binary(name, MimeType.html.withCharset(cs), Stream.chunk(Chunk.byteVector(content)))
 
   def decode[F[_]](cs: Charset): Pipe[F, Byte, String] =
     if (cs == StandardCharsets.UTF_8) {

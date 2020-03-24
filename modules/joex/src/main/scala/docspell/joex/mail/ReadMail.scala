@@ -28,9 +28,9 @@ object ReadMail {
   )(mail: Mail[F]): Stream[F, Binary[F]] = {
     val bodyEntry: F[Option[Binary[F]]] = mail.body.fold(
       _ => (None: Option[Binary[F]]).pure[F],
-      txt => txt.text.map(c => Binary.text[F]("mail.txt", c).some),
-      html => html.html.map(c => Binary.html[F]("mail.html", c).some),
-      both => both.html.map(c => Binary.html[F]("mail.html", c).some)
+      txt => txt.text.map(c => Binary.text[F]("mail.txt", c.bytes, c.charsetOrUtf8).some),
+      html => html.html.map(c => Binary.html[F]("mail.html", c.bytes, c.charsetOrUtf8).some),
+      both => both.html.map(c => Binary.html[F]("mail.html", c.bytes, c.charsetOrUtf8).some)
     )
 
     Stream.eval(
