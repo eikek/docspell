@@ -7,7 +7,8 @@ import org.http4s._
 import org.http4s.dsl.Http4sDsl
 import org.http4s.circe.CirceEntityEncoder._
 import org.http4s.circe.CirceEntityDecoder._
-import emil.MailAddress
+import emil.{MailAddress, SSLType}
+import emil.javamail.syntax._
 
 import docspell.backend.BackendApp
 import docspell.backend.auth.AuthToken
@@ -15,7 +16,6 @@ import docspell.backend.ops.OMail
 import docspell.common._
 import docspell.restapi.model._
 import docspell.store.records.RUserEmail
-import docspell.store.EmilUtil
 import docspell.restserver.conv.Conversions
 import docspell.restserver.http4s.QueryParam
 
@@ -90,15 +90,15 @@ object MailSettingsRoutes {
       ru.smtpPort,
       ru.smtpUser,
       ru.smtpPassword,
-      EmilUtil.mailAddressString(ru.mailFrom),
-      ru.mailReplyTo.map(EmilUtil.mailAddressString _),
-      EmilUtil.sslTypeString(ru.smtpSsl),
+      ru.mailFrom.asUnicodeString,
+      ru.mailReplyTo.map(_.asUnicodeString),
+      ru.smtpSsl.name,
       !ru.smtpCertCheck
     )
 
   def makeSettings(ems: EmailSettings): Either[String, OMail.SmtpSettings] = {
     def readMail(str: String): Either[String, MailAddress] =
-      EmilUtil.readMailAddress(str).left.map(err => s"E-Mail address '$str' invalid: $err")
+      MailAddress.parse(str).left.map(err => s"E-Mail address '$str' invalid: $err")
 
     def readMailOpt(str: Option[String]): Either[String, Option[MailAddress]] =
       str.traverse(readMail)
@@ -106,7 +106,7 @@ object MailSettingsRoutes {
     for {
       from <- readMail(ems.from)
       repl <- readMailOpt(ems.replyTo)
-      sslt <- EmilUtil.readSSLType(ems.sslType)
+      sslt <- SSLType.fromString(ems.sslType)
     } yield OMail.SmtpSettings(
       ems.name,
       ems.smtpHost,

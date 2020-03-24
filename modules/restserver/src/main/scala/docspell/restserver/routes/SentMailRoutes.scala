@@ -6,13 +6,13 @@ import cats.data.OptionT
 import org.http4s._
 import org.http4s.dsl.Http4sDsl
 import org.http4s.circe.CirceEntityEncoder._
+import emil.javamail.syntax._
 
 import docspell.backend.BackendApp
 import docspell.backend.auth.AuthToken
 import docspell.backend.ops.OMail.Sent
 import docspell.common._
 import docspell.restapi.model._
-import docspell.store.EmilUtil
 
 object SentMailRoutes {
 
@@ -46,7 +46,7 @@ object SentMailRoutes {
       s.id,
       s.senderLogin,
       s.connectionName,
-      s.recipients.map(EmilUtil.mailAddressString),
+      s.recipients.map(_.asUnicodeString),
       s.subject,
       s.body,
       s.created

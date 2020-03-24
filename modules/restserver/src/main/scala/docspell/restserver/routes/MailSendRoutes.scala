@@ -6,6 +6,8 @@ import org.http4s._
 import org.http4s.dsl.Http4sDsl
 import org.http4s.circe.CirceEntityEncoder._
 import org.http4s.circe.CirceEntityDecoder._
+import emil.MailAddress
+import emil.javamail.syntax._
 
 import docspell.backend.BackendApp
 import docspell.backend.auth.AuthToken
@@ -13,7 +15,6 @@ import docspell.backend.ops.OMail.{AttachSelection, ItemMail}
 import docspell.backend.ops.SendResult
 import docspell.common._
 import docspell.restapi.model._
-import docspell.store.EmilUtil
 
 object MailSendRoutes {
 
@@ -37,7 +38,7 @@ object MailSendRoutes {
 
   def convertIn(item: Ident, s: SimpleMail): Either[String, ItemMail] =
     for {
-      rec     <- s.recipients.traverse(EmilUtil.readMailAddress)
+      rec     <- s.recipients.traverse(MailAddress.parse)
       fileIds <- s.attachmentIds.traverse(Ident.fromString)
       sel = if (s.addAllAttachments) AttachSelection.All else AttachSelection.Selected(fileIds)
     } yield ItemMail(item, s.subject, rec, s.body, sel)
