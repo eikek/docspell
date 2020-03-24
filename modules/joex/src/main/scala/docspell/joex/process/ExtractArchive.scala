@@ -126,7 +126,7 @@ object ExtractArchive {
       .lastOrError
   }
 
-  def extractMail[F[_]: Sync](
+  def extractMail[F[_]: ConcurrentEffect: ContextShift](
       ctx: Context[F, _],
       archive: Option[RAttachmentArchive]
   )(ra: RAttachment): F[Extracted] = {

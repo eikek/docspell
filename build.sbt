@@ -204,6 +204,7 @@ val store = project.in(file("modules/store")).
       Dependencies.flyway ++
       Dependencies.loggingApi ++
       Dependencies.emil ++
+      Dependencies.emilDoobie ++
       Dependencies.calev
   ).dependsOn(common)
 
@@ -293,6 +294,7 @@ val joex = project.in(file("modules/joex")).
       Dependencies.http4s ++
       Dependencies.circe ++
       Dependencies.pureconfig ++
+      Dependencies.emilTnef ++
       Dependencies.loggingApi ++
       Dependencies.logging.map(_ % Runtime),
     addCompilerPlugin(Dependencies.kindProjectorPlugin),
