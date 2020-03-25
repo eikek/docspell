@@ -20,12 +20,12 @@ object ReadMail {
   def readBytesP[F[_]: ConcurrentEffect: ContextShift](
       logger: Logger[F]
   ): Pipe[F, Byte, Binary[F]] =
-    s =>
-      Stream.eval(logger.debug(s"Converting e-mail into its parts")) >>
-        bytesToMail(s).flatMap(mailToEntries[F](logger))
+    _.through(bytesToMail(logger)).flatMap(mailToEntries[F](logger))
 
-  def bytesToMail[F[_]: Sync](data: Stream[F, Byte]): Stream[F, Mail[F]] =
-    data.through(Binary.decode(StandardCharsets.US_ASCII)).foldMonoid.evalMap(read[F])
+  def bytesToMail[F[_]: Sync](logger: Logger[F]): Pipe[F, Byte, Mail[F]] =
+    s =>
+      Stream.eval(logger.debug(s"Converting e-mail file...")) >>
+        s.through(Binary.decode(StandardCharsets.US_ASCII)).foldMonoid.evalMap(read[F])
 
   def mailToEntries[F[_]: ConcurrentEffect: ContextShift](
       logger: Logger[F]
@@ -59,19 +59,19 @@ object ReadMail {
   }
 
   private def fixHtml(cnt: BodyContent): BodyContent = {
-    val str = cnt.asString.trim.toLowerCase
+    val str  = cnt.asString.trim.toLowerCase
     val head = htmlHeader(cnt.charsetOrUtf8)
     if (str.startsWith("<html")) cnt
-    else cnt match {
-      case BodyContent.StringContent(s) =>
-        BodyContent(head + s + htmlHeaderEnd)
-      case BodyContent.ByteContent(bv, cs) =>
-        val begin = ByteVector.view(head.getBytes(cnt.charsetOrUtf8))
-        val end = ByteVector.view(htmlHeaderEnd.getBytes(cnt.charsetOrUtf8))
-        BodyContent(begin ++ bv ++ end, cs)
-    }
+    else
+      cnt match {
+        case BodyContent.StringContent(s) =>
+          BodyContent(head + s + htmlHeaderEnd)
+        case BodyContent.ByteContent(bv, cs) =>
+          val begin = ByteVector.view(head.getBytes(cnt.charsetOrUtf8))
+          val end   = ByteVector.view(htmlHeaderEnd.getBytes(cnt.charsetOrUtf8))
+          BodyContent(begin ++ bv ++ end, cs)
+      }
   }
-
 
   implicit class MimeTypeConv(m: emil.MimeType) {
     def toDocspell: MimeType =

@@ -120,7 +120,7 @@ object ExtractArchive {
 
     zipData
       .through(Zip.unzipP[F](8192, ctx.blocker))
-      .flatMap(handleEntry(ctx, ra, archive))
+      .flatMap(handleEntry(ctx, ra, archive, None))
       .foldMonoid
       .compile
       .lastOrError
@@ -130,14 +130,19 @@ object ExtractArchive {
       ctx: Context[F, _],
       archive: Option[RAttachmentArchive]
   )(ra: RAttachment): F[Extracted] = {
-    val email = ctx.store.bitpeace
+    val email: Stream[F, Byte] = ctx.store.bitpeace
       .get(ra.fileId.id)
       .unNoneTerminate
       .through(ctx.store.bitpeace.fetchData2(RangeDef.all))
 
     email
-      .through(ReadMail.readBytesP[F](ctx.logger))
-      .flatMap(handleEntry(ctx, ra, archive))
+      .through(ReadMail.bytesToMail[F](ctx.logger))
+      .flatMap { mail =>
+        val mId = mail.header.messageId
+        ReadMail
+          .mailToEntries(ctx.logger)(mail)
+          .flatMap(handleEntry(ctx, ra, archive, mId))
+      }
       .foldMonoid
       .compile
       .lastOrError
@@ -146,7 +151,8 @@ object ExtractArchive {
   def handleEntry[F[_]: Sync](
       ctx: Context[F, _],
       ra: RAttachment,
-      archive: Option[RAttachmentArchive]
+      archive: Option[RAttachmentArchive],
+      messageId: Option[String]
   )(
       entry: Binary[F]
   ): Stream[F, Extracted] = {
@@ -163,7 +169,7 @@ object ExtractArchive {
             ra.created,
             Option(entry.name).map(_.trim).filter(_.nonEmpty)
           )
-          val aa = archive.getOrElse(RAttachmentArchive.of(ra)).copy(id = id)
+          val aa = archive.getOrElse(RAttachmentArchive.of(ra, messageId)).copy(id = id)
           Extracted.of(nra, aa)
         }
       }

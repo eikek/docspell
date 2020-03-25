@@ -14,6 +14,7 @@ case class RAttachmentArchive(
     id: Ident, //same as RAttachment.id
     fileId: Ident,
     name: Option[String],
+    messageId: Option[String],
     created: Timestamp
 )
 
@@ -25,18 +26,19 @@ object RAttachmentArchive {
     val id      = Column("id")
     val fileId  = Column("file_id")
     val name    = Column("filename")
+    val messageId = Column("message_id")
     val created = Column("created")
 
-    val all = List(id, fileId, name, created)
+    val all = List(id, fileId, name, messageId, created)
   }
 
   import Columns._
 
-  def of(ra: RAttachment): RAttachmentArchive =
-    RAttachmentArchive(ra.id, ra.fileId, ra.name, ra.created)
+  def of(ra: RAttachment, mId: Option[String]): RAttachmentArchive =
+    RAttachmentArchive(ra.id, ra.fileId, ra.name, mId, ra.created)
 
   def insert(v: RAttachmentArchive): ConnectionIO[Int] =
-    insertRow(table, all, fr"${v.id},${v.fileId},${v.name},${v.created}").update.run
+    insertRow(table, all, fr"${v.id},${v.fileId},${v.name},${v.messageId},${v.created}").update.run
 
   def findById(attachId: Ident): ConnectionIO[Option[RAttachmentArchive]] =
     selectSimple(all, table, id.is(attachId)).query[RAttachmentArchive].option
@@ -66,7 +68,9 @@ object RAttachmentArchive {
     selectSimple(all.map(_.prefix("a")), from, where).query[RAttachmentArchive].option
   }
 
-  def findByItemWithMeta(id: Ident): ConnectionIO[Vector[(RAttachmentArchive, FileMeta)]] = {
+  def findByItemWithMeta(
+      id: Ident
+  ): ConnectionIO[Vector[(RAttachmentArchive, FileMeta)]] = {
     import bitpeace.sql._
 
     val aId       = Columns.id.prefix("a")
