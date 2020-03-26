@@ -18,7 +18,11 @@ import docspell.common._
 
 object Markdown {
 
-  def toHtml(is: InputStream, cfg: MarkdownConfig, cs: Charset): Either[Throwable, String] = {
+  def toHtml(
+      is: InputStream,
+      cfg: MarkdownConfig,
+      cs: Charset
+  ): Either[Throwable, String] = {
     val p = createParser()
     val r = createRenderer()
     Try {
@@ -35,7 +39,11 @@ object Markdown {
     wrapHtml(r.render(doc), cfg)
   }
 
-  def toHtml[F[_]: Sync](data: Stream[F, Byte], cfg: MarkdownConfig, cs: Charset): F[String] =
+  def toHtml[F[_]: Sync](
+      data: Stream[F, Byte],
+      cfg: MarkdownConfig,
+      cs: Charset
+  ): F[String] =
     data.through(Binary.decode(cs)).compile.foldMonoid.map(str => toHtml(str, cfg))
 
   private def wrapHtml(body: String, cfg: MarkdownConfig): String =

@@ -113,7 +113,11 @@ object RItem {
   def updateState(itemId: Ident, itemState: ItemState): ConnectionIO[Int] =
     for {
       t <- currentTime
-      n <- updateRow(table, id.is(itemId), commas(state.setTo(itemState), updated.setTo(t))).update.run
+      n <- updateRow(
+        table,
+        id.is(itemId),
+        commas(state.setTo(itemState), updated.setTo(t))
+      ).update.run
     } yield n
 
   def updateStateForCollective(
@@ -160,7 +164,11 @@ object RItem {
       ).update.run
     } yield n
 
-  def updateCorrPerson(itemId: Ident, coll: Ident, person: Option[Ident]): ConnectionIO[Int] =
+  def updateCorrPerson(
+      itemId: Ident,
+      coll: Ident,
+      person: Option[Ident]
+  ): ConnectionIO[Int] =
     for {
       t <- currentTime
       n <- updateRow(
@@ -180,7 +188,11 @@ object RItem {
       ).update.run
     } yield n
 
-  def updateConcPerson(itemId: Ident, coll: Ident, person: Option[Ident]): ConnectionIO[Int] =
+  def updateConcPerson(
+      itemId: Ident,
+      coll: Ident,
+      person: Option[Ident]
+  ): ConnectionIO[Int] =
     for {
       t <- currentTime
       n <- updateRow(
@@ -200,7 +212,11 @@ object RItem {
       ).update.run
     } yield n
 
-  def updateConcEquip(itemId: Ident, coll: Ident, equip: Option[Ident]): ConnectionIO[Int] =
+  def updateConcEquip(
+      itemId: Ident,
+      coll: Ident,
+      equip: Option[Ident]
+  ): ConnectionIO[Int] =
     for {
       t <- currentTime
       n <- updateRow(
@@ -250,7 +266,11 @@ object RItem {
       ).update.run
     } yield n
 
-  def updateDueDate(itemId: Ident, coll: Ident, date: Option[Timestamp]): ConnectionIO[Int] =
+  def updateDueDate(
+      itemId: Ident,
+      coll: Ident,
+      date: Option[Timestamp]
+  ): ConnectionIO[Int] =
     for {
       t <- currentTime
       n <- updateRow(

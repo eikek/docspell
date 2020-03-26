@@ -135,7 +135,9 @@ object Ocr {
       .map(_ => targetFile)
       .handleErrorWith { th =>
         logger
-          .warn(s"Unpaper command failed: ${th.getMessage}. Using input file for text extraction.")
+          .warn(
+            s"Unpaper command failed: ${th.getMessage}. Using input file for text extraction."
+          )
         Stream.emit(img)
       }
   }
@@ -152,10 +154,15 @@ object Ocr {
   ): Stream[F, String] =
     // tesseract cannot cope with absolute filenames
     // so use the parent as working dir
-    runUnpaperFile(img, config.unpaper.command, img.getParent, blocker, logger).flatMap { uimg =>
-      val cmd = config.tesseract.command
-        .replace(Map("{{file}}" -> uimg.getFileName.toString, "{{lang}}" -> fixLanguage(lang)))
-      SystemCommand.execSuccess[F](cmd, blocker, logger, wd = Some(uimg.getParent)).map(_.stdout)
+    runUnpaperFile(img, config.unpaper.command, img.getParent, blocker, logger).flatMap {
+      uimg =>
+        val cmd = config.tesseract.command
+          .replace(
+            Map("{{file}}" -> uimg.getFileName.toString, "{{lang}}" -> fixLanguage(lang))
+          )
+        SystemCommand
+          .execSuccess[F](cmd, blocker, logger, wd = Some(uimg.getParent))
+          .map(_.stdout)
     }
 
   /** Run tesseract on the given image file and return the extracted

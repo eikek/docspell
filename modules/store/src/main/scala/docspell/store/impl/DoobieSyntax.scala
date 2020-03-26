@@ -27,7 +27,9 @@ trait DoobieSyntax {
     and(f0 :: fs.toList)
 
   def or(fs: Seq[Fragment]): Fragment =
-    Fragment.const(" (") ++ fs.reduce(_ ++ Fragment.const(" OR ") ++ _) ++ Fragment.const(") ")
+    Fragment.const(" (") ++ fs.reduce(_ ++ Fragment.const(" OR ") ++ _) ++ Fragment.const(
+      ") "
+    )
   def or(f0: Fragment, fs: Fragment*): Fragment =
     or(f0 :: fs.toList)
 
@@ -42,7 +44,9 @@ trait DoobieSyntax {
     fr"ORDER BY" ++ commas(c0 :: cs.toList)
 
   def updateRow(table: Fragment, where: Fragment, setter: Fragment): Fragment =
-    Fragment.const("UPDATE ") ++ table ++ Fragment.const(" SET ") ++ setter ++ this.where(where)
+    Fragment.const("UPDATE ") ++ table ++ Fragment.const(" SET ") ++ setter ++ this.where(
+      where
+    )
 
   def insertRow(table: Fragment, cols: List[Column], vals: Fragment): Fragment =
     Fragment.const("INSERT INTO ") ++ table ++ Fragment.const(" (") ++
@@ -66,15 +70,17 @@ trait DoobieSyntax {
       Fragment.const(") FROM ") ++ table ++ this.where(where)
 
   def selectCount(col: Column, table: Fragment, where: Fragment): Fragment =
-    Fragment.const("SELECT COUNT(") ++ col.f ++ Fragment.const(") FROM ") ++ table ++ this.where(
-      where
-    )
+    Fragment.const("SELECT COUNT(") ++ col.f ++ Fragment.const(") FROM ") ++ table ++ this
+      .where(
+        where
+      )
 
   def deleteFrom(table: Fragment, where: Fragment): Fragment =
     fr"DELETE FROM" ++ table ++ this.where(where)
 
   def withCTE(ps: (String, Fragment)*): Fragment = {
-    val subsel: Seq[Fragment] = ps.map(p => Fragment.const(p._1) ++ fr"AS (" ++ p._2 ++ fr")")
+    val subsel: Seq[Fragment] =
+      ps.map(p => Fragment.const(p._1) ++ fr"AS (" ++ p._2 ++ fr")")
     fr"WITH" ++ commas(subsel)
   }
 

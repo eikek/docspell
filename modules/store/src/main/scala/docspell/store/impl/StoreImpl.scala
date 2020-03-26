@@ -9,9 +9,15 @@ import docspell.store.{AddResult, JdbcConfig, Store}
 import doobie._
 import doobie.implicits._
 
-final class StoreImpl[F[_]: Effect](jdbc: JdbcConfig, xa: Transactor[F]) extends Store[F] {
+final class StoreImpl[F[_]: Effect](jdbc: JdbcConfig, xa: Transactor[F])
+    extends Store[F] {
   val bitpeaceCfg =
-    BitpeaceConfig("filemeta", "filechunk", TikaMimetypeDetect, Ident.randomId[F].map(_.id))
+    BitpeaceConfig(
+      "filemeta",
+      "filechunk",
+      TikaMimetypeDetect,
+      Ident.randomId[F].map(_.id)
+    )
 
   def migrate: F[Int] =
     FlywayMigrate.run[F](jdbc)

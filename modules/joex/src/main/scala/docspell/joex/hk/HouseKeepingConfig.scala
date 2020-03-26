@@ -6,9 +6,9 @@ import docspell.common._
 import HouseKeepingConfig._
 
 case class HouseKeepingConfig(
-  schedule: CalEvent,
-  cleanupInvites: CleanupInvites,
-  cleanupJobs: CleanupJobs
+    schedule: CalEvent,
+    cleanupInvites: CleanupInvites,
+    cleanupJobs: CleanupJobs
 )
 
 object HouseKeepingConfig {

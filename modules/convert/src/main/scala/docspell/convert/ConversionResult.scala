@@ -43,11 +43,13 @@ object ConversionResult {
   case class SuccessPdf[F[_]](pdf: Stream[F, Byte]) extends ConversionResult[F] {
     val pdfData = pdf
   }
-  case class SuccessPdfTxt[F[_]](pdf: Stream[F, Byte], txt: F[String]) extends ConversionResult[F] {
+  case class SuccessPdfTxt[F[_]](pdf: Stream[F, Byte], txt: F[String])
+      extends ConversionResult[F] {
     val pdfData = pdf
   }
 
-  case class InputMalformed[F[_]](mimeType: MimeType, reason: String) extends ConversionResult[F] {
+  case class InputMalformed[F[_]](mimeType: MimeType, reason: String)
+      extends ConversionResult[F] {
     val pdfData = Stream.empty
   }
 }

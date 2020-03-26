@@ -12,8 +12,10 @@ import org.log4s._
 object Main extends IOApp {
   private[this] val logger = getLogger
 
-  val blockingEC = ThreadFactories.cached[IO](ThreadFactories.ofName("docspell-joex-blocking"))
-  val connectEC = ThreadFactories.fixed[IO](5, ThreadFactories.ofName("docspell-joex-dbconnect"))
+  val blockingEC =
+    ThreadFactories.cached[IO](ThreadFactories.ofName("docspell-joex-blocking"))
+  val connectEC =
+    ThreadFactories.fixed[IO](5, ThreadFactories.ofName("docspell-joex-dbconnect"))
 
   def run(args: List[String]) = {
     args match {
@@ -52,9 +54,17 @@ object Main extends IOApp {
       blocker = Blocker.liftExecutorService(bec)
     } yield Pools(cec, bec, blocker)
     pools.use(p =>
-      JoexServer.stream[IO](cfg, p.connectEC, p.clientEC, p.blocker).compile.drain.as(ExitCode.Success)
+      JoexServer
+        .stream[IO](cfg, p.connectEC, p.clientEC, p.blocker)
+        .compile
+        .drain
+        .as(ExitCode.Success)
     )
   }
 
-  case class Pools(connectEC: ExecutionContext, clientEC: ExecutionContext, blocker: Blocker)
+  case class Pools(
+      connectEC: ExecutionContext,
+      clientEC: ExecutionContext,
+      blocker: Blocker
+  )
 }

@@ -63,7 +63,9 @@ object RAttachmentSource {
     selectSimple(all.map(_.prefix("a")), from, where).query[RAttachmentSource].option
   }
 
-  def findByItemWithMeta(id: Ident): ConnectionIO[Vector[(RAttachmentSource, FileMeta)]] = {
+  def findByItemWithMeta(
+      id: Ident
+  ): ConnectionIO[Vector[(RAttachmentSource, FileMeta)]] = {
     import bitpeace.sql._
 
     val aId       = Columns.id.prefix("a")

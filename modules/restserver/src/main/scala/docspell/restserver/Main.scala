@@ -12,8 +12,10 @@ import org.log4s._
 object Main extends IOApp {
   private[this] val logger = getLogger
 
-  val blockingEC = ThreadFactories.cached[IO](ThreadFactories.ofName("docspell-restserver-blocking"))
-  val connectEC = ThreadFactories.fixed[IO](5, ThreadFactories.ofName("docspell-dbconnect"))
+  val blockingEC =
+    ThreadFactories.cached[IO](ThreadFactories.ofName("docspell-restserver-blocking"))
+  val connectEC =
+    ThreadFactories.fixed[IO](5, ThreadFactories.ofName("docspell-dbconnect"))
 
   def run(args: List[String]) = {
     args match {
@@ -53,9 +55,17 @@ object Main extends IOApp {
 
     logger.info(s"\n${banner.render("***>")}")
     pools.use(p =>
-      RestServer.stream[IO](cfg, p.connectEC, p.clientEC, p.blocker).compile.drain.as(ExitCode.Success)
+      RestServer
+        .stream[IO](cfg, p.connectEC, p.clientEC, p.blocker)
+        .compile
+        .drain
+        .as(ExitCode.Success)
     )
   }
 
-  case class Pools(connectEC: ExecutionContext, clientEC: ExecutionContext, blocker: Blocker)
+  case class Pools(
+      connectEC: ExecutionContext,
+      clientEC: ExecutionContext,
+      blocker: Blocker
+  )
 }

@@ -50,7 +50,8 @@ final class SchedulerImpl[F[_]: ConcurrentEffect: ContextShift](
   def requestCancel(jobId: Ident): F[Boolean] =
     state.get.flatMap(_.cancelRequest(jobId) match {
       case Some(ct) => ct.map(_ => true)
-      case None     => logger.fwarn(s"Job ${jobId.id} not found, cannot cancel.").map(_ => false)
+      case None =>
+        logger.fwarn(s"Job ${jobId.id} not found, cannot cancel.").map(_ => false)
     })
 
   def notifyChange: F[Unit] =
@@ -67,12 +68,15 @@ final class SchedulerImpl[F[_]: ConcurrentEffect: ContextShift](
       .eval(runShutdown)
       .evalMap(_ => logger.finfo("Scheduler is shutting down now."))
       .flatMap(_ =>
-        Stream.eval(state.get) ++ Stream.suspend(state.discrete.takeWhile(_.getRunning.nonEmpty))
+        Stream.eval(state.get) ++ Stream
+          .suspend(state.discrete.takeWhile(_.getRunning.nonEmpty))
       )
       .flatMap { state =>
         if (state.getRunning.isEmpty) Stream.eval(logger.finfo("No jobs running."))
         else
-          Stream.eval(logger.finfo(s"Waiting for ${state.getRunning.size} jobs to finish.")) ++
+          Stream.eval(
+            logger.finfo(s"Waiting for ${state.getRunning.size} jobs to finish.")
+          ) ++
             Stream.emit(state)
       }
 
@@ -86,11 +90,14 @@ final class SchedulerImpl[F[_]: ConcurrentEffect: ContextShift](
   def mainLoop: Stream[F, Nothing] = {
     val body: F[Boolean] =
       for {
-        _    <- permits.available.flatMap(a => logger.fdebug(s"Try to acquire permit ($a free)"))
+        _ <- permits.available.flatMap(a =>
+          logger.fdebug(s"Try to acquire permit ($a free)")
+        )
         _    <- permits.acquire
         _    <- logger.fdebug("New permit acquired")
         down <- state.get.map(_.shutdownRequest)
-        rjob <- if (down) logger.finfo("") *> permits.release *> (None: Option[RJob]).pure[F]
+        rjob <- if (down)
+          logger.finfo("") *> permits.release *> (None: Option[RJob]).pure[F]
         else
           queue.nextJob(
             group => state.modify(_.nextPrio(group, config.countingScheme)),
@@ -151,7 +158,11 @@ final class SchedulerImpl[F[_]: ConcurrentEffect: ContextShift](
     } yield ()
 
   def onStart(job: RJob): F[Unit] =
-    QJob.setRunning(job.id, config.name, store) //also increments retries if current state=stuck
+    QJob.setRunning(
+      job.id,
+      config.name,
+      store
+    ) //also increments retries if current state=stuck
 
   def wrapTask(
       job: RJob,
@@ -159,7 +170,9 @@ final class SchedulerImpl[F[_]: ConcurrentEffect: ContextShift](
       ctx: Context[F, String]
   ): Task[F, String, Unit] =
     task
-      .mapF(fa => onStart(job) *> logger.fdebug("Starting task now") *> blocker.blockOn(fa))
+      .mapF(fa =>
+        onStart(job) *> logger.fdebug("Starting task now") *> blocker.blockOn(fa)
+      )
       .mapF(_.attempt.flatMap({
         case Right(()) =>
           logger.info(s"Job execution successful: ${job.info}")
@@ -196,7 +209,12 @@ final class SchedulerImpl[F[_]: ConcurrentEffect: ContextShift](
           onFinish(job, JobState.Stuck)
       })
 
-  def forkRun(job: RJob, code: F[Unit], onCancel: F[Unit], ctx: Context[F, String]): F[F[Unit]] = {
+  def forkRun(
+      job: RJob,
+      code: F[Unit],
+      onCancel: F[Unit],
+      ctx: Context[F, String]
+  ): F[F[Unit]] = {
     val bfa = blocker.blockOn(code)
     logger.fdebug(s"Forking job ${job.info}") *>
       ConcurrentEffect[F]
@@ -236,10 +254,16 @@ object SchedulerImpl {
     }
 
     def addRunning(job: RJob, token: CancelToken[F]): (State[F], Unit) =
-      (State(counters, cancelled, cancelTokens.updated(job.id, token), shutdownRequest), ())
+      (
+        State(counters, cancelled, cancelTokens.updated(job.id, token), shutdownRequest),
+        ()
+      )
 
     def removeRunning(job: RJob): (State[F], Unit) =
-      (copy(cancelled = cancelled - job.id, cancelTokens = cancelTokens.removed(job.id)), ())
+      (
+        copy(cancelled = cancelled - job.id, cancelTokens = cancelTokens.removed(job.id)),
+        ()
+      )
 
     def markCancelled(job: RJob): (State[F], Unit) =
       (copy(cancelled = cancelled + job.id), ())

@@ -10,15 +10,21 @@ import docspell.store.records.{RItem, RJob}
 
 object ItemHandler {
   def onCancel[F[_]: Sync: ContextShift]: Task[F, ProcessItemArgs, Unit] =
-    logWarn("Now cancelling. Deleting potentially created data.").flatMap(_ => deleteByFileIds)
+    logWarn("Now cancelling. Deleting potentially created data.").flatMap(_ =>
+      deleteByFileIds
+    )
 
-  def apply[F[_]: ConcurrentEffect: ContextShift](cfg: Config): Task[F, ProcessItemArgs, Unit] =
+  def apply[F[_]: ConcurrentEffect: ContextShift](
+      cfg: Config
+  ): Task[F, ProcessItemArgs, Unit] =
     CreateItem[F]
       .flatMap(itemStateTask(ItemState.Processing))
       .flatMap(safeProcess[F](cfg))
       .map(_ => ())
 
-  def itemStateTask[F[_]: Sync, A](state: ItemState)(data: ItemData): Task[F, A, ItemData] =
+  def itemStateTask[F[_]: Sync, A](
+      state: ItemState
+  )(data: ItemData): Task[F, A, ItemData] =
     Task(ctx => ctx.store.transact(RItem.updateState(data.item.id, state)).map(_ => data))
 
   def isLastRetry[F[_]: Sync, A](ctx: Context[F, A]): F[Boolean] =
@@ -36,8 +42,9 @@ object ItemHandler {
           case Right(d) =>
             Task.pure(d)
           case Left(ex) =>
-            logWarn[F]("Processing failed on last retry. Creating item but without proposals.")
-              .flatMap(_ => itemStateTask(ItemState.Created)(data))
+            logWarn[F](
+              "Processing failed on last retry. Creating item but without proposals."
+            ).flatMap(_ => itemStateTask(ItemState.Created)(data))
               .andThen(_ => Sync[F].raiseError(ex))
         })
       case false =>

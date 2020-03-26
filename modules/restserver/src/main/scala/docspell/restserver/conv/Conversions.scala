@@ -91,7 +91,8 @@ trait Conversions {
     )
 
   def mkAttachment(item: OItem.ItemData)(ra: RAttachment, m: FileMeta): Attachment = {
-    val converted = item.sources.find(_._1.id == ra.id).exists(_._2.checksum != m.checksum)
+    val converted =
+      item.sources.find(_._1.id == ra.id).exists(_._2.checksum != m.checksum)
     Attachment(ra.id, ra.name, m.length, MimeType.unsafe(m.mimetype.asString), converted)
   }
 
@@ -107,7 +108,8 @@ trait Conversions {
     OItem.Query(
       coll,
       m.name,
-      if (m.inbox) Seq(ItemState.Created) else Seq(ItemState.Created, ItemState.Confirmed),
+      if (m.inbox) Seq(ItemState.Created)
+      else Seq(ItemState.Created, ItemState.Confirmed),
       m.direction,
       m.corrPerson,
       m.corrOrg,
@@ -127,7 +129,8 @@ trait Conversions {
     def mkGroup(g: (String, Vector[OItem.ListItem])): ItemLightGroup =
       ItemLightGroup(g._1, g._2.map(mkItemLight).toList)
 
-    val gs = groups.map(mkGroup _).toList.sortWith((g1, g2) => g1.name.compareTo(g2.name) >= 0)
+    val gs =
+      groups.map(mkGroup _).toList.sortWith((g1, g2) => g1.name.compareTo(g2.name) >= 0)
     ItemLightList(gs)
   }
 
@@ -203,13 +206,16 @@ trait Conversions {
     val meta: F[(Boolean, UploadMeta)] = mp.parts
       .find(_.name.exists(_.equalsIgnoreCase("meta")))
       .map(p => parseMeta(p.body))
-      .map(fm => fm.map(m => (m.multiple, UploadMeta(m.direction, "webapp", validFileTypes))))
+      .map(fm =>
+        fm.map(m => (m.multiple, UploadMeta(m.direction, "webapp", validFileTypes)))
+      )
       .getOrElse((true, UploadMeta(None, "webapp", validFileTypes)).pure[F])
 
     val files = mp.parts
       .filter(p => p.name.forall(s => !s.equalsIgnoreCase("meta")))
       .map(p =>
-        OUpload.File(p.filename, p.headers.get(`Content-Type`).map(fromContentType), p.body)
+        OUpload
+          .File(p.filename, p.headers.get(`Content-Type`).map(fromContentType), p.body)
       )
     for {
       metaData <- meta
@@ -252,7 +258,10 @@ trait Conversions {
     } yield OOrganization.OrgAndContacts(org, cont)
   }
 
-  def changeOrg[F[_]: Sync](v: Organization, cid: Ident): F[OOrganization.OrgAndContacts] = {
+  def changeOrg[F[_]: Sync](
+      v: Organization,
+      cid: Ident
+  ): F[OOrganization.OrgAndContacts] = {
     def contacts(oid: Ident) =
       v.contacts.traverse(c => newContact(c, oid.some, None))
     for {
@@ -306,7 +315,10 @@ trait Conversions {
     } yield OOrganization.PersonAndContacts(org, cont)
   }
 
-  def changePerson[F[_]: Sync](v: Person, cid: Ident): F[OOrganization.PersonAndContacts] = {
+  def changePerson[F[_]: Sync](
+      v: Person,
+      cid: Ident
+  ): F[OOrganization.PersonAndContacts] = {
     def contacts(pid: Ident) =
       v.contacts.traverse(c => newContact(c, None, pid.some))
     for {
@@ -330,7 +342,11 @@ trait Conversions {
   def mkContact(rc: RContact): Contact =
     Contact(rc.contactId, rc.value, rc.kind)
 
-  def newContact[F[_]: Sync](c: Contact, oid: Option[Ident], pid: Option[Ident]): F[RContact] =
+  def newContact[F[_]: Sync](
+      c: Contact,
+      oid: Option[Ident],
+      pid: Option[Ident]
+  ): F[RContact] =
     timeId.map {
       case (id, now) =>
         RContact(id, c.value, c.kind, pid, oid, now)
@@ -395,7 +411,16 @@ trait Conversions {
     })
 
   def changeSource[F[_]: Sync](s: Source, coll: Ident): RSource =
-    RSource(s.id, coll, s.abbrev, s.description, s.counter, s.enabled, s.priority, s.created)
+    RSource(
+      s.id,
+      coll,
+      s.abbrev,
+      s.description,
+      s.counter,
+      s.enabled,
+      s.priority,
+      s.created
+    )
 
   // equipment
   def mkEquipment(re: REquipment): Equipment =
@@ -422,7 +447,8 @@ trait Conversions {
       case JobCancelResult.JobNotFound => BasicResult(false, "Job not found")
       case JobCancelResult.CancelRequested =>
         BasicResult(true, "Cancel was requested at the job executor")
-      case JobCancelResult.Removed => BasicResult(true, "The job has been removed from the queue.")
+      case JobCancelResult.Removed =>
+        BasicResult(true, "The job has been removed from the queue.")
     }
 
   def basicResult(ar: AddResult, successMsg: String): BasicResult = ar match {
@@ -438,8 +464,9 @@ trait Conversions {
   }
 
   def basicResult(cr: PassChangeResult): BasicResult = cr match {
-    case PassChangeResult.Success      => BasicResult(true, "Password changed.")
-    case PassChangeResult.UpdateFailed => BasicResult(false, "The database update failed.")
+    case PassChangeResult.Success => BasicResult(true, "Password changed.")
+    case PassChangeResult.UpdateFailed =>
+      BasicResult(false, "The database update failed.")
     case PassChangeResult.PasswordMismatch =>
       BasicResult(false, "The current password is incorrect.")
     case PassChangeResult.UserNotFound => BasicResult(false, "User not found.")
@@ -448,7 +475,11 @@ trait Conversions {
   // MIME Type
 
   def fromContentType(header: `Content-Type`): MimeType =
-    MimeType(header.mediaType.mainType, header.mediaType.subType, header.mediaType.extensions)
+    MimeType(
+      header.mediaType.mainType,
+      header.mediaType.subType,
+      header.mediaType.extensions
+    )
 }
 
 object Conversions extends Conversions {

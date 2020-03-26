@@ -149,8 +149,9 @@ object OMail {
             )
           } yield {
             val addAttach = m.attach.filter(ras).map { a =>
-              Attach[F](Stream.emit(a._2).through(store.bitpeace.fetchData2(RangeDef.all)))
-                .withFilename(a._1.name)
+              Attach[F](
+                Stream.emit(a._2).through(store.bitpeace.fetchData2(RangeDef.all))
+              ).withFilename(a._1.name)
                 .withLength(a._2.length)
                 .withMimeType(_root_.emil.MimeType.parse(a._2.mimetype.asString).toOption)
             }
@@ -187,7 +188,10 @@ object OMail {
           store.transact(save.value).attempt.map {
             case Right(Some(id)) => Right(id)
             case Right(None) =>
-              Left(SendResult.StoreFailure(new Exception(s"Could not find user to save mail.")))
+              Left(
+                SendResult
+                  .StoreFailure(new Exception(s"Could not find user to save mail."))
+              )
             case Left(ex) => Left(SendResult.StoreFailure(ex))
           }
         }

@@ -15,7 +15,9 @@ object FlywayMigrate {
         val name = if (dbtype == "h2") "postgresql" else dbtype
         List(s"classpath:db/migration/${name}")
       case None =>
-        logger.warn(s"Cannot read database name from jdbc url: ${jdbc.url}. Go with PostgreSQL")
+        logger.warn(
+          s"Cannot read database name from jdbc url: ${jdbc.url}. Go with PostgreSQL"
+        )
         List("classpath:db/postgresql")
     }
 

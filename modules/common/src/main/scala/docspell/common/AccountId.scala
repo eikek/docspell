@@ -21,7 +21,9 @@ object AccountId {
           val user = input.substring(n + 1)
           Ident
             .fromString(coll)
-            .flatMap(collId => Ident.fromString(user).map(userId => AccountId(collId, userId)))
+            .flatMap(collId =>
+              Ident.fromString(user).map(userId => AccountId(collId, userId))
+            )
         case _ =>
           invalid
       }

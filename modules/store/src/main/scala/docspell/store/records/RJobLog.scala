@@ -6,7 +6,13 @@ import docspell.common._
 import docspell.store.impl.Column
 import docspell.store.impl.Implicits._
 
-case class RJobLog(id: Ident, jobId: Ident, level: LogLevel, created: Timestamp, message: String) {}
+case class RJobLog(
+    id: Ident,
+    jobId: Ident,
+    level: LogLevel,
+    created: Timestamp,
+    message: String
+) {}
 
 object RJobLog {
 
@@ -26,7 +32,9 @@ object RJobLog {
     insertRow(table, all, fr"${v.id},${v.jobId},${v.level},${v.created},${v.message}").update.run
 
   def findLogs(id: Ident): ConnectionIO[Vector[RJobLog]] =
-    (selectSimple(all, table, jobId.is(id)) ++ orderBy(created.asc)).query[RJobLog].to[Vector]
+    (selectSimple(all, table, jobId.is(id)) ++ orderBy(created.asc))
+      .query[RJobLog]
+      .to[Vector]
 
   def deleteAll(job: Ident): ConnectionIO[Int] =
     deleteFrom(table, jobId.is(job)).update.run

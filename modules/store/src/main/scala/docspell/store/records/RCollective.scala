@@ -7,7 +7,12 @@ import doobie._
 import doobie.implicits._
 import fs2.Stream
 
-case class RCollective(id: Ident, state: CollectiveState, language: Language, created: Timestamp)
+case class RCollective(
+    id: Ident,
+    state: CollectiveState,
+    language: Language,
+    created: Timestamp
+)
 
 object RCollective {
 

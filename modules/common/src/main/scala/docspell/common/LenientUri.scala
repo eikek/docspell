@@ -40,7 +40,9 @@ case class LenientUri(
     withQueryPlain(name, URLEncoder.encode(value, "UTF-8"))
 
   def withQueryPlain(name: String, value: String): LenientUri =
-    copy(query = query.map(q => q + "&" + name + "=" + value).orElse(Option(s"$name=$value")))
+    copy(query =
+      query.map(q => q + "&" + name + "=" + value).orElse(Option(s"$name=$value"))
+    )
 
   def withFragment(f: String): LenientUri =
     copy(fragment = Some(f))
@@ -56,7 +58,10 @@ case class LenientUri(
         )
     }
 
-  def readURL[F[_]: Sync: ContextShift](chunkSize: Int, blocker: Blocker): Stream[F, Byte] =
+  def readURL[F[_]: Sync: ContextShift](
+      chunkSize: Int,
+      blocker: Blocker
+  ): Stream[F, Byte] =
     Stream
       .emit(Either.catchNonFatal(new URL(asString)))
       .covary[F]
@@ -135,7 +140,8 @@ object LenientUri {
       case "/" => RootPath
       case ""  => EmptyPath
       case _ =>
-        NonEmptyList.fromList(stripLeading(str, '/').split('/').toList.map(percentDecode)) match {
+        NonEmptyList
+          .fromList(stripLeading(str, '/').split('/').toList.map(percentDecode)) match {
           case Some(nl) => NonEmptyPath(nl)
           case None     => sys.error(s"Invalid url: $str")
         }

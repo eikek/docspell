@@ -40,7 +40,8 @@ object MailSendRoutes {
     for {
       rec     <- s.recipients.traverse(MailAddress.parse)
       fileIds <- s.attachmentIds.traverse(Ident.fromString)
-      sel = if (s.addAllAttachments) AttachSelection.All else AttachSelection.Selected(fileIds)
+      sel = if (s.addAllAttachments) AttachSelection.All
+      else AttachSelection.Selected(fileIds)
     } yield ItemMail(item, s.subject, rec, s.body, sel)
 
   def convertOut(res: SendResult): BasicResult =
@@ -50,7 +51,10 @@ object MailSendRoutes {
       case SendResult.SendFailure(ex) =>
         BasicResult(false, s"Mail sending failed: ${ex.getMessage}")
       case SendResult.StoreFailure(ex) =>
-        BasicResult(false, s"Mail was sent, but could not be store to database: ${ex.getMessage}")
+        BasicResult(
+          false,
+          s"Mail was sent, but could not be store to database: ${ex.getMessage}"
+        )
       case SendResult.NotFound =>
         BasicResult(false, s"There was no mail-connection or item found.")
     }

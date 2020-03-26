@@ -25,7 +25,10 @@ object CreateItem {
     Task { ctx =>
       def isValidFile(fm: FileMeta) =
         ctx.args.meta.validFileTypes.isEmpty ||
-          ctx.args.meta.validFileTypes.map(_.asString).toSet.contains(fm.mimetype.baseType)
+          ctx.args.meta.validFileTypes
+            .map(_.asString)
+            .toSet
+            .contains(fm.mimetype.baseType)
 
       def fileMetas(itemId: Ident, now: Timestamp) =
         Stream
@@ -37,7 +40,9 @@ object CreateItem {
             case (f, index) =>
               Ident
                 .randomId[F]
-                .map(id => RAttachment(id, itemId, f.fileMetaId, index.toInt, now, f.name))
+                .map(id =>
+                  RAttachment(id, itemId, f.fileMetaId, index.toInt, now, f.name)
+                )
           })
           .compile
           .toVector
@@ -51,7 +56,9 @@ object CreateItem {
       )
 
       for {
-        _    <- ctx.logger.info(s"Creating new item with ${ctx.args.files.size} attachment(s)")
+        _ <- ctx.logger.info(
+          s"Creating new item with ${ctx.args.files.size} attachment(s)"
+        )
         time <- Duration.stopTime[F]
         it   <- item
         n    <- ctx.store.transact(RItem.insert(it))
@@ -61,7 +68,13 @@ object CreateItem {
         _    <- logDifferences(ctx, fm, k.sum)
         dur  <- time
         _    <- ctx.logger.info(s"Creating item finished in ${dur.formatExact}")
-      } yield ItemData(it, fm, Vector.empty, Vector.empty, fm.map(a => a.id -> a.fileId).toMap)
+      } yield ItemData(
+        it,
+        fm,
+        Vector.empty,
+        Vector.empty,
+        fm.map(a => a.id -> a.fileId).toMap
+      )
     }
 
   def insertAttachment[F[_]: Sync](ctx: Context[F, _])(ra: RAttachment): F[Int] = {
@@ -79,7 +92,8 @@ object CreateItem {
         _ <- if (cand.nonEmpty) ctx.logger.warn("Found existing item with these files.")
         else ().pure[F]
         ht <- cand.drop(1).traverse(ri => QItem.delete(ctx.store)(ri.id, ri.cid))
-        _ <- if (ht.sum > 0) ctx.logger.warn(s"Removed ${ht.sum} items with same attachments")
+        _ <- if (ht.sum > 0)
+          ctx.logger.warn(s"Removed ${ht.sum} items with same attachments")
         else ().pure[F]
         rms <- OptionT(
           cand.headOption.traverse(ri =>
@@ -92,7 +106,9 @@ object CreateItem {
         origMap = orig
           .map(originFileTuple)
           .toMap
-      } yield cand.headOption.map(ri => ItemData(ri, rms, Vector.empty, Vector.empty, origMap))
+      } yield cand.headOption.map(ri =>
+        ItemData(ri, rms, Vector.empty, Vector.empty, origMap)
+      )
     }
 
   private def logDifferences[F[_]: Sync](
@@ -114,6 +130,8 @@ object CreateItem {
   }
 
   //TODO if no source is present, it must be saved!
-  private def originFileTuple(t: (RAttachment, Option[RAttachmentSource])): (Ident, Ident) =
+  private def originFileTuple(
+      t: (RAttachment, Option[RAttachmentSource])
+  ): (Ident, Ident) =
     t._2.map(s => s.id -> s.fileId).getOrElse(t._1.id -> t._1.fileId)
 }

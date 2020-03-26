@@ -36,7 +36,9 @@ object ItemRoutes {
         for {
           item <- backend.item.findItem(id, user.account.collective)
           result = item.map(Conversions.mkItemDetail)
-          resp <- result.map(r => Ok(r)).getOrElse(NotFound(BasicResult(false, "Not found.")))
+          resp <- result
+            .map(r => Ok(r))
+            .getOrElse(NotFound(BasicResult(false, "Not found.")))
         } yield resp
 
       case POST -> Root / Ident(id) / "confirm" =>
@@ -103,7 +105,11 @@ object ItemRoutes {
       case req @ POST -> Root / Ident(id) / "name" =>
         for {
           text <- req.as[OptionalText]
-          res  <- backend.item.setName(id, text.text.notEmpty.getOrElse(""), user.account.collective)
+          res <- backend.item.setName(
+            id,
+            text.text.notEmpty.getOrElse(""),
+            user.account.collective
+          )
           resp <- Ok(Conversions.basicResult(res, "Name updated"))
         } yield resp
 

@@ -56,25 +56,32 @@ object MimeType {
     def parsePrimary: Either[String, (String, String)] =
       str.indexOf('/') match {
         case -1 => Left(s"Invalid mediatype: $str")
-        case n => Right(str.take(n) -> str.drop(n + 1))
+        case n  => Right(str.take(n) -> str.drop(n + 1))
       }
 
     def parseSub(s: String): Either[String, (String, String)] =
       s.indexOf(';') match {
         case -1 => Right((s, ""))
-        case n => Right((s.take(n), s.drop(n)))
+        case n  => Right((s.take(n), s.drop(n)))
       }
 
     def parseParams(s: String): Map[String, String] =
-      s.split(';').map(_.trim).filter(_.nonEmpty).toList.flatMap(p => p.split("=", 2).toList match {
-        case a :: b :: Nil => Some((a, b))
-        case _ => None
-      }).toMap
+      s.split(';')
+        .map(_.trim)
+        .filter(_.nonEmpty)
+        .toList
+        .flatMap(p =>
+          p.split("=", 2).toList match {
+            case a :: b :: Nil => Some((a, b))
+            case _             => None
+          }
+        )
+        .toMap
 
     for {
       pt <- parsePrimary
       st <- parseSub(pt._2)
-      pa  = parseParams(st._2)
+      pa = parseParams(st._2)
     } yield MimeType(pt._1, st._1, pa)
   }
 

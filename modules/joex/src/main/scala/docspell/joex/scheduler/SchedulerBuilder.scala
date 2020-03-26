@@ -38,7 +38,9 @@ case class SchedulerBuilder[F[_]: ConcurrentEffect: ContextShift](
     copy(queue = Resource.pure[F, JobQueue[F]](queue))
 
   def serve: Resource[F, Scheduler[F]] =
-    resource.evalMap(sch => ConcurrentEffect[F].start(sch.start.compile.drain).map(_ => sch))
+    resource.evalMap(sch =>
+      ConcurrentEffect[F].start(sch.start.compile.drain).map(_ => sch)
+    )
 
   def resource: Resource[F, Scheduler[F]] = {
     val scheduler = for {
@@ -46,7 +48,17 @@ case class SchedulerBuilder[F[_]: ConcurrentEffect: ContextShift](
       waiter <- Resource.liftF(SignallingRef(true))
       state  <- Resource.liftF(SignallingRef(SchedulerImpl.emptyState[F]))
       perms  <- Resource.liftF(Semaphore(config.poolSize.toLong))
-    } yield new SchedulerImpl[F](config, blocker, jq, tasks, store, logSink, state, waiter, perms)
+    } yield new SchedulerImpl[F](
+      config,
+      blocker,
+      jq,
+      tasks,
+      store,
+      logSink,
+      state,
+      waiter,
+      perms
+    )
 
     scheduler.evalTap(_.init).map(s => s: Scheduler[F])
   }

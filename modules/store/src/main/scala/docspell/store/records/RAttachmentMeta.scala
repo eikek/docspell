@@ -20,7 +20,8 @@ case class RAttachmentMeta(
 }
 
 object RAttachmentMeta {
-  def empty(attachId: Ident) = RAttachmentMeta(attachId, None, Nil, MetaProposalList.empty)
+  def empty(attachId: Ident) =
+    RAttachmentMeta(attachId, None, Nil, MetaProposalList.empty)
 
   val table = fr"attachmentmeta"
 

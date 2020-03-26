@@ -57,7 +57,9 @@ object StanfordNerClassifier {
           "/edu/stanford/nlp/models/ner/german.conll.germeval2014.hgc_175m_600.crf.ser.gz"
         )
       case Language.English =>
-        getClass.getResource("/edu/stanford/nlp/models/ner/english.all.3class.distsim.crf.ser.gz")
+        getClass.getResource(
+          "/edu/stanford/nlp/models/ner/english.all.3class.distsim.crf.ser.gz"
+        )
     })
   }
 }

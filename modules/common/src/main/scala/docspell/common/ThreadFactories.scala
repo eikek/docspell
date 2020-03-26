@@ -24,11 +24,18 @@ object ThreadFactories {
   ): Resource[F, ExecutionContextExecutorService] =
     Resource.make(Sync[F].delay(c))(ec => Sync[F].delay(ec.shutdown))
 
-  def cached[F[_]: Sync](tf: ThreadFactory): Resource[F, ExecutionContextExecutorService] =
+  def cached[F[_]: Sync](
+      tf: ThreadFactory
+  ): Resource[F, ExecutionContextExecutorService] =
     executorResource(
       ExecutionContext.fromExecutorService(Executors.newCachedThreadPool(tf))
     )
 
-  def fixed[F[_]: Sync](n: Int, tf: ThreadFactory): Resource[F, ExecutionContextExecutorService] =
-    executorResource(ExecutionContext.fromExecutorService(Executors.newFixedThreadPool(n, tf)))
+  def fixed[F[_]: Sync](
+      n: Int,
+      tf: ThreadFactory
+  ): Resource[F, ExecutionContextExecutorService] =
+    executorResource(
+      ExecutionContext.fromExecutorService(Executors.newFixedThreadPool(n, tf))
+    )
 }

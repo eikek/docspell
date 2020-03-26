@@ -15,7 +15,10 @@ sealed trait AddResult {
 object AddResult {
 
   def fromUpdate(e: Either[Throwable, Int]): AddResult =
-    e.fold(Failure, n => if (n > 0) Success else Failure(new Exception("No rows updated")))
+    e.fold(
+      Failure,
+      n => if (n > 0) Success else Failure(new Exception("No rows updated"))
+    )
 
   case object Success extends AddResult {
     def toEither  = Right(())

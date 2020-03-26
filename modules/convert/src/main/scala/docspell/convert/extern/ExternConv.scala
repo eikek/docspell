@@ -40,9 +40,18 @@ private[extern] object ExternConv {
 
         in.through(createInput).flatMap { _ =>
           SystemCommand
-            .execSuccess[F](sysCfg, blocker, logger, Some(dir), if (useStdin) in else Stream.empty)
+            .execSuccess[F](
+              sysCfg,
+              blocker,
+              logger,
+              Some(dir),
+              if (useStdin) in
+              else Stream.empty
+            )
             .evalMap(result =>
-              logResult(name, result, logger).flatMap(_ => reader(out, result)).flatMap(handler.run)
+              logResult(name, result, logger)
+                .flatMap(_ => reader(out, result))
+                .flatMap(handler.run)
             )
         }
       }
@@ -106,7 +115,9 @@ private[extern] object ExternConv {
       inFile: Path
   ): Pipe[F, Byte, Unit] =
     in =>
-      Stream.eval(logger.debug(s"Storing input to file ${inFile} for running $name")).drain ++
+      Stream
+        .eval(logger.debug(s"Storing input to file ${inFile} for running $name"))
+        .drain ++
         Stream.eval(storeFile(in, inFile, blocker))
 
   private def logResult[F[_]: Sync](

@@ -19,7 +19,15 @@ object Unoconv {
     val reader: (Path, SystemCommand.Result) => F[ConversionResult[F]] =
       ExternConv.readResult[F](blocker, chunkSize, logger)
 
-    ExternConv.toPDF[F, A]("unoconv", cfg.command, cfg.workingDir, false, blocker, logger, reader)(
+    ExternConv.toPDF[F, A](
+      "unoconv",
+      cfg.command,
+      cfg.workingDir,
+      false,
+      blocker,
+      logger,
+      reader
+    )(
       in,
       handler
     )

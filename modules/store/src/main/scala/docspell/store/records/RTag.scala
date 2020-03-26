@@ -29,7 +29,11 @@ object RTag {
 
   def insert(v: RTag): ConnectionIO[Int] = {
     val sql =
-      insertRow(table, all, fr"${v.tagId},${v.collective},${v.name},${v.category},${v.created}")
+      insertRow(
+        table,
+        all,
+        fr"${v.tagId},${v.collective},${v.name},${v.category},${v.created}"
+      )
     sql.update.run
   }
 

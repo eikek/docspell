@@ -26,17 +26,25 @@ object Implicits {
 
   implicit val byteVectorReader: ConfigReader[ByteVector] =
     ConfigReader[String].emap(reason { str =>
-      if (str.startsWith("hex:")) ByteVector.fromHex(str.drop(4)).toRight("Invalid hex value.")
+      if (str.startsWith("hex:"))
+        ByteVector.fromHex(str.drop(4)).toRight("Invalid hex value.")
       else if (str.startsWith("b64:"))
         ByteVector.fromBase64(str.drop(4)).toRight("Invalid Base64 string.")
-      else ByteVector.encodeUtf8(str).left.map(ex => s"Invalid utf8 string: ${ex.getMessage}")
+      else
+        ByteVector
+          .encodeUtf8(str)
+          .left
+          .map(ex => s"Invalid utf8 string: ${ex.getMessage}")
     })
 
   implicit val caleventReader: ConfigReader[CalEvent] =
     ConfigReader[String].emap(reason(CalEvent.parse))
 
-
-  def reason[A: ClassTag](f: String => Either[String, A]): String => Either[FailureReason, A] =
+  def reason[A: ClassTag](
+      f: String => Either[String, A]
+  ): String => Either[FailureReason, A] =
     in =>
-      f(in).left.map(str => CannotConvert(in, implicitly[ClassTag[A]].runtimeClass.toString, str))
+      f(in).left.map(str =>
+        CannotConvert(in, implicitly[ClassTag[A]].runtimeClass.toString, str)
+      )
 }

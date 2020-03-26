@@ -49,7 +49,9 @@ object JoexRoutes {
       case POST -> Root / "job" / Ident(id) / "cancel" =>
         for {
           flag <- app.scheduler.requestCancel(id)
-          resp <- Ok(BasicResult(flag, if (flag) "Cancel request submitted" else "Job not found"))
+          resp <- Ok(
+            BasicResult(flag, if (flag) "Cancel request submitted" else "Job not found")
+          )
         } yield resp
     }
   }

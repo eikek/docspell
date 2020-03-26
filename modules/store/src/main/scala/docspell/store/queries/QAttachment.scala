@@ -52,7 +52,7 @@ object QAttachment {
         .foldMonoid
     } yield n + f
 
-  def deleteArchive[F[_]: Sync](store: Store[F])(attachId: Ident): F[Int] = {
+  def deleteArchive[F[_]: Sync](store: Store[F])(attachId: Ident): F[Int] =
     (for {
       aa <- OptionT(store.transact(RAttachmentArchive.findById(attachId)))
       n  <- OptionT.liftF(store.transact(RAttachmentArchive.deleteAll(aa.fileId)))
@@ -64,7 +64,6 @@ object QAttachment {
           .drain
       )
     } yield n).getOrElse(0)
-  }
 
   def deleteItemAttachments[F[_]: Sync](
       store: Store[F]

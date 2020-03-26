@@ -34,7 +34,10 @@ object OJoex {
         } yield cancel.isDefined
     })
 
-  def create[F[_]: ConcurrentEffect](ec: ExecutionContext, store: Store[F]): Resource[F, OJoex[F]] =
+  def create[F[_]: ConcurrentEffect](
+      ec: ExecutionContext,
+      store: Store[F]
+  ): Resource[F, OJoex[F]] =
     JoexClient.resource(ec).flatMap(client => apply(client, store))
 
 }

@@ -16,7 +16,7 @@ case class Timestamp(value: Instant) {
   def minus(d: Duration): Timestamp =
     Timestamp(value.minusNanos(d.nanos))
 
-  def - (d: Duration): Timestamp =
+  def -(d: Duration): Timestamp =
     minus(d)
 
   def minusHours(n: Long): Timestamp =
@@ -35,7 +35,7 @@ case class Timestamp(value: Instant) {
 
   def asString: String = value.toString
 
-  def < (other: Timestamp): Boolean =
+  def <(other: Timestamp): Boolean =
     this.value.isBefore(other.value)
 }
 

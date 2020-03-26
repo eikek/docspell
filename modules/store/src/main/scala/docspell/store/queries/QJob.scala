@@ -17,13 +17,19 @@ object QJob {
 
   def takeNextJob[F[_]: Effect](
       store: Store[F]
-  )(priority: Ident => F[Priority], worker: Ident, retryPause: Duration): F[Option[RJob]] =
+  )(
+      priority: Ident => F[Priority],
+      worker: Ident,
+      retryPause: Duration
+  ): F[Option[RJob]] =
     Stream
       .range(0, 10)
       .evalMap(n => takeNextJob1(store)(priority, worker, retryPause, n))
       .evalTap { x =>
         if (x.isLeft)
-          logger.fdebug[F]("Cannot mark job, probably due to concurrent updates. Will retry.")
+          logger.fdebug[F](
+            "Cannot mark job, probably due to concurrent updates. Will retry."
+          )
         else ().pure[F]
       }
       .find(_.isRight)
@@ -54,7 +60,9 @@ object QJob {
       } yield if (n == 1) Right(job) else Left(()))
 
     for {
-      _     <- logger.ftrace[F](s"About to take next job (worker ${worker.id}), try $currentTry")
+      _ <- logger.ftrace[F](
+        s"About to take next job (worker ${worker.id}), try $currentTry"
+      )
       now   <- Timestamp.current[F]
       group <- store.transact(selectNextGroup(worker, now, retryPause))
       _     <- logger.ftrace[F](s"Choose group ${group.map(_.id)}")
@@ -66,7 +74,8 @@ object QJob {
       _   <- logger.ftrace[F](s"Found job: ${job.map(_.info)}")
       res <- job.traverse(j => markJob(j))
     } yield res.map(_.map(_.some)).getOrElse {
-      if (group.isDefined) Left(()) // if a group was found, but no job someone else was faster
+      if (group.isDefined)
+        Left(()) // if a group was found, but no job someone else was faster
       else Right(None)
     }
   }
@@ -103,7 +112,9 @@ object QJob {
     union
       .query[Ident]
       .to[List]
-      .map(_.headOption) // either one or two results, but may be empty if RJob table is empty
+      .map(
+        _.headOption
+      ) // either one or two results, but may be empty if RJob table is empty
   }
 
   def selectNextJob(
@@ -119,15 +130,19 @@ object QJob {
     val waiting: JobState = JobState.Waiting
     val stuck: JobState   = JobState.Stuck
 
-    val stuckTrigger = coalesce(JC.startedmillis.f, sql"${now.toMillis}") ++ fr"+" ++ power2(
-      JC.retries
-    ) ++ fr"* ${initialPause.millis}"
+    val stuckTrigger =
+      coalesce(JC.startedmillis.f, sql"${now.toMillis}") ++ fr"+" ++ power2(
+        JC.retries
+      ) ++ fr"* ${initialPause.millis}"
     val sql = selectSimple(
       JC.all,
       RJob.table,
       and(
         JC.group.is(group),
-        or(JC.state.is(waiting), and(JC.state.is(stuck), stuckTrigger ++ fr"< ${now.toMillis}"))
+        or(
+          JC.state.is(waiting),
+          and(JC.state.is(stuck), stuckTrigger ++ fr"< ${now.toMillis}")
+        )
       )
     ) ++
       orderBy(JC.state.asc, psort, JC.submitted.asc) ++
@@ -189,7 +204,9 @@ object QJob {
   def findAll[F[_]: Effect](ids: Seq[Ident], store: Store[F]): F[Vector[RJob]] =
     store.transact(RJob.findFromIds(ids))
 
-  def queueStateSnapshot(collective: Ident): Stream[ConnectionIO, (RJob, Vector[RJobLog])] = {
+  def queueStateSnapshot(
+      collective: Ident
+  ): Stream[ConnectionIO, (RJob, Vector[RJobLog])] = {
     val JC                     = RJob.Columns
     val waiting: Set[JobState] = Set(JobState.Waiting, JobState.Stuck, JobState.Scheduled)
     val running: Set[JobState] = Set(JobState.Running)

@@ -34,7 +34,7 @@ object TextAnalysis {
     for {
       list0 <- stanfordNer[F](lang, rm)
       list1 <- contactNer[F](rm)
-      list = list0 ++ list1
+      list  = list0 ++ list1
       spans = NerLabelSpan.build(list.toSeq)
       dates <- dateNer[F](rm, lang)
     } yield (rm.copy(nerlabels = (spans ++ list ++ dates.toNerLabel).toList), dates)
@@ -48,11 +48,14 @@ object TextAnalysis {
     rm.content.map(Contact.annotate).getOrElse(Vector.empty)
   }
 
-  def dateNer[F[_]: Sync](rm: RAttachmentMeta, lang: Language): F[AttachmentDates] = Sync[F].delay {
-    AttachmentDates(
-      rm,
-      rm.content.map(txt => DateFind.findDates(txt, lang).toVector).getOrElse(Vector.empty)
-    )
-  }
+  def dateNer[F[_]: Sync](rm: RAttachmentMeta, lang: Language): F[AttachmentDates] =
+    Sync[F].delay {
+      AttachmentDates(
+        rm,
+        rm.content
+          .map(txt => DateFind.findDates(txt, lang).toVector)
+          .getOrElse(Vector.empty)
+      )
+    }
 
 }

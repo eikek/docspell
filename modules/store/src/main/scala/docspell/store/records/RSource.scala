@@ -86,7 +86,10 @@ object RSource {
   def findCollective(sourceId: Ident): ConnectionIO[Option[Ident]] =
     selectSimple(List(cid), table, sid.is(sourceId)).query[Ident].option
 
-  def findAll(coll: Ident, order: Columns.type => Column): ConnectionIO[Vector[RSource]] = {
+  def findAll(
+      coll: Ident,
+      order: Columns.type => Column
+  ): ConnectionIO[Vector[RSource]] = {
     val sql = selectSimple(all, table, cid.is(coll)) ++ orderBy(order(Columns).f)
     sql.query[RSource].to[Vector]
   }

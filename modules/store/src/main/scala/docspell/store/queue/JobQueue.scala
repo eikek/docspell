@@ -15,7 +15,11 @@ trait JobQueue[F[_]] {
 
   def insertAll(jobs: Seq[RJob]): F[Unit]
 
-  def nextJob(prio: Ident => F[Priority], worker: Ident, retryPause: Duration): F[Option[RJob]]
+  def nextJob(
+      prio: Ident => F[Priority],
+      worker: Ident,
+      retryPause: Duration
+  ): F[Option[RJob]]
 }
 
 object JobQueue {
@@ -29,14 +33,16 @@ object JobQueue {
           worker: Ident,
           retryPause: Duration
       ): F[Option[RJob]] =
-        logger.ftrace("Select next job") *> QJob.takeNextJob(store)(prio, worker, retryPause)
+        logger
+          .ftrace("Select next job") *> QJob.takeNextJob(store)(prio, worker, retryPause)
 
       def insert(job: RJob): F[Unit] =
         store
           .transact(RJob.insert(job))
           .flatMap { n =>
             if (n != 1)
-              Effect[F].raiseError(new Exception(s"Inserting job failed. Update count: $n"))
+              Effect[F]
+                .raiseError(new Exception(s"Inserting job failed. Update count: $n"))
             else ().pure[F]
           }
 

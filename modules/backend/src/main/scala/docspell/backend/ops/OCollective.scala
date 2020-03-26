@@ -58,7 +58,12 @@ object OCollective {
     def updateFailed: PassChangeResult     = UpdateFailed
   }
 
-  case class RegisterData(collName: Ident, login: Ident, password: Password, invite: Option[Ident])
+  case class RegisterData(
+      collName: Ident,
+      login: Ident,
+      password: Password,
+      invite: Option[Ident]
+  )
 
   sealed trait RegisterResult {
     def toEither: Either[Throwable, Unit]
@@ -117,7 +122,8 @@ object OCollective {
             .traverse(_ => RUser.updatePassword(accountId, PasswordCrypt.crypt(newPass)))
           res = check match {
             case Some(true) =>
-              if (n.getOrElse(0) > 0) PassChangeResult.success else PassChangeResult.updateFailed
+              if (n.getOrElse(0) > 0) PassChangeResult.success
+              else PassChangeResult.updateFailed
             case Some(false) =>
               PassChangeResult.passwordMismatch
             case None =>

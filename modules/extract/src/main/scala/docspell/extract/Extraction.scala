@@ -13,7 +13,11 @@ import docspell.files.ImageSize
 
 trait Extraction[F[_]] {
 
-  def extractText(data: Stream[F, Byte], dataType: DataType, lang: Language): F[ExtractResult]
+  def extractText(
+      data: Stream[F, Byte],
+      dataType: DataType,
+      lang: Language
+  ): F[ExtractResult]
 
 }
 
@@ -71,13 +75,17 @@ object Extraction {
                   doExtract
                 }
               case None =>
-                logger.info(s"Cannot read image data from ${mt.asString}. Extracting anyways.") *>
+                logger.info(
+                  s"Cannot read image data from ${mt.asString}. Extracting anyways."
+                ) *>
                   doExtract
             }
 
           case OdfType.ContainerMatch(_) =>
             logger
-              .info(s"File detected as ${OdfType.container}. Try to read as OpenDocument file.") *>
+              .info(
+                s"File detected as ${OdfType.container}. Try to read as OpenDocument file."
+              ) *>
               OdfExtract.get(data).map(ExtractResult.fromEither)
 
           case mt @ MimeType("text", sub, _) if !sub.contains("html") =>

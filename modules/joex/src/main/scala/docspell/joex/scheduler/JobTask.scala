@@ -16,11 +16,19 @@ import io.circe.Decoder
   * convenience constructor that uses circe to decode json into some
   * type A.
   */
-case class JobTask[F[_]](name: Ident, task: Task[F, String, Unit], onCancel: Task[F, String, Unit])
+case class JobTask[F[_]](
+    name: Ident,
+    task: Task[F, String, Unit],
+    onCancel: Task[F, String, Unit]
+)
 
 object JobTask {
 
-  def json[F[_]: Sync, A](name: Ident, task: Task[F, A, Unit], onCancel: Task[F, A, Unit])(
+  def json[F[_]: Sync, A](
+      name: Ident,
+      task: Task[F, A, Unit],
+      onCancel: Task[F, A, Unit]
+  )(
       implicit D: Decoder[A]
   ): JobTask[F] = {
     val convert: String => F[A] =

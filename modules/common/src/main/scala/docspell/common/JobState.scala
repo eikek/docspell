@@ -31,7 +31,8 @@ object JobState {
   /** Finished with success */
   case object Success extends JobState {}
 
-  val all: Set[JobState]    = Set(Waiting, Scheduled, Running, Stuck, Failed, Cancelled, Success)
+  val all: Set[JobState] =
+    Set(Waiting, Scheduled, Running, Stuck, Failed, Cancelled, Success)
   val queued: Set[JobState] = Set(Waiting, Scheduled, Stuck)
   val done: Set[JobState]   = Set(Failed, Cancelled, Success)
 

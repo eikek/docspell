@@ -9,7 +9,9 @@ import org.http4s.server.staticcontent.WebjarService.{WebjarAsset, Config => Web
 
 object WebjarRoutes {
 
-  def appRoutes[F[_]: Effect](blocker: Blocker)(implicit C: ContextShift[F]): HttpRoutes[F] =
+  def appRoutes[F[_]: Effect](
+      blocker: Blocker
+  )(implicit C: ContextShift[F]): HttpRoutes[F] =
     webjarService(
       WebjarConfig(
         filter = assetFilter,

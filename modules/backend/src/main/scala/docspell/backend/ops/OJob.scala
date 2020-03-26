@@ -52,7 +52,9 @@ object OJob {
         def mustCancel(job: Option[RJob]): Option[(RJob, Ident)] =
           for {
             worker <- job.flatMap(_.worker)
-            job    <- job.filter(j => j.state == JobState.Scheduled || j.state == JobState.Running)
+            job <- job.filter(j =>
+              j.state == JobState.Scheduled || j.state == JobState.Running
+            )
           } yield (job, worker)
 
         def canDelete(j: RJob): Boolean =
@@ -68,8 +70,11 @@ object OJob {
         }
 
         def tryCancel(job: RJob, worker: Ident): F[JobCancelResult] =
-          joex.cancelJob(job.id, worker)
-            .map(flag => if (flag) JobCancelResult.CancelRequested else JobCancelResult.JobNotFound)
+          joex
+            .cancelJob(job.id, worker)
+            .map(flag =>
+              if (flag) JobCancelResult.CancelRequested else JobCancelResult.JobNotFound
+            )
 
         for {
           tryDel <- store.transact(tryDelete)

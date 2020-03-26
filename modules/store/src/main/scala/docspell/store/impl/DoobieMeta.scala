@@ -88,7 +88,6 @@ trait DoobieMeta extends EmilDoobieMeta {
   implicit val metaLanguage: Meta[Language] =
     Meta[String].imap(Language.unsafe)(_.iso3)
 
-
   implicit val metaCalEvent: Meta[CalEvent] =
     Meta[String].timap(CalEvent.unsafe)(_.asString)
 }

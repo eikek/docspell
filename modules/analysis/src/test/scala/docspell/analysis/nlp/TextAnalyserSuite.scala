@@ -7,7 +7,8 @@ import docspell.common._
 object TextAnalyserSuite extends SimpleTestSuite {
 
   test("find english ner labels") {
-    val labels = StanfordNerClassifier.nerAnnotate(Language.English)(TestFiles.letterENText)
+    val labels =
+      StanfordNerClassifier.nerAnnotate(Language.English)(TestFiles.letterENText)
     val expect = Vector(
       NerLabel("Derek", NerTag.Person, 0, 5),
       NerLabel("Jeter", NerTag.Person, 6, 11),
@@ -34,7 +35,8 @@ object TextAnalyserSuite extends SimpleTestSuite {
   }
 
   test("find german ner labels") {
-    val labels = StanfordNerClassifier.nerAnnotate(Language.German)(TestFiles.letterDEText)
+    val labels =
+      StanfordNerClassifier.nerAnnotate(Language.German)(TestFiles.letterDEText)
     val expect = Vector(
       NerLabel("Max", NerTag.Person, 0, 3),
       NerLabel("Mustermann", NerTag.Person, 4, 14),

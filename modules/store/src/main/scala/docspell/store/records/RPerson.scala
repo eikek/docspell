@@ -71,7 +71,10 @@ object RPerson {
   }
 
   def existsByName(coll: Ident, pname: String): ConnectionIO[Boolean] =
-    selectCount(pid, table, and(cid.is(coll), name.is(pname))).query[Int].unique.map(_ > 0)
+    selectCount(pid, table, and(cid.is(coll), name.is(pname)))
+      .query[Int]
+      .unique
+      .map(_ > 0)
 
   def findById(id: Ident): ConnectionIO[Option[RPerson]] = {
     val sql = selectSimple(all, table, cid.is(id))
@@ -103,7 +106,9 @@ object RPerson {
     val CC = RContact.Columns
     val q = fr"SELECT DISTINCT" ++ commas(pid.prefix("p").f, name.prefix("p").f) ++
       fr"FROM" ++ table ++ fr"p" ++
-      fr"INNER JOIN" ++ RContact.table ++ fr"c ON" ++ CC.personId.prefix("c").is(pid.prefix("p")) ++
+      fr"INNER JOIN" ++ RContact.table ++ fr"c ON" ++ CC.personId
+      .prefix("c")
+      .is(pid.prefix("p")) ++
       fr"WHERE" ++ and(
       cid.prefix("p").is(coll),
       CC.kind.prefix("c").is(contactKind),
@@ -114,7 +119,10 @@ object RPerson {
     q.query[IdRef].to[Vector]
   }
 
-  def findAll(coll: Ident, order: Columns.type => Column): Stream[ConnectionIO, RPerson] = {
+  def findAll(
+      coll: Ident,
+      order: Columns.type => Column
+  ): Stream[ConnectionIO, RPerson] = {
     val sql = selectSimple(all, table, cid.is(coll)) ++ orderBy(order(Columns).f)
     sql.query[RPerson].stream
   }

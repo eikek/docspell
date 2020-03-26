@@ -32,7 +32,8 @@ object RUser {
     val lastLogin  = Column("lastlogin")
     val created    = Column("created")
 
-    val all = List(uid, login, cid, password, state, email, loginCount, lastLogin, created)
+    val all =
+      List(uid, login, cid, password, state, email, loginCount, lastLogin, created)
   }
 
   import Columns._

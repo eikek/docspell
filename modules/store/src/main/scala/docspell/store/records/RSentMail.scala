@@ -37,7 +37,17 @@ object RSentMail {
     for {
       id  <- Ident.randomId[F]
       now <- Timestamp.current[F]
-    } yield RSentMail(id, uid, messageId, sender, connName, subject, recipients, body, now)
+    } yield RSentMail(
+      id,
+      uid,
+      messageId,
+      sender,
+      connName,
+      subject,
+      recipients,
+      body,
+      now
+    )
 
   def forItem(
       itemId: Ident,

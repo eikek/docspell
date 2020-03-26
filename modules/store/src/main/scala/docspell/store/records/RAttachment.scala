@@ -38,7 +38,11 @@ object RAttachment {
       fr"${v.id},${v.itemId},${v.fileId.id},${v.position},${v.created},${v.name}"
     ).update.run
 
-  def updateFileIdAndName(attachId: Ident, fId: Ident, fname: Option[String]): ConnectionIO[Int] =
+  def updateFileIdAndName(
+      attachId: Ident,
+      fId: Ident,
+      fname: Option[String]
+  ): ConnectionIO[Int] =
     updateRow(table, id.is(attachId), commas(fileId.setTo(fId), name.setTo(fname))).update.run
 
   def updatePosition(attachId: Ident, pos: Int): ConnectionIO[Int] =
@@ -55,13 +59,17 @@ object RAttachment {
     val aFileMeta = fileId.prefix("a")
     val mId       = RFileMeta.Columns.id.prefix("m")
 
-    val from = table ++ fr"a INNER JOIN" ++ RFileMeta.table ++ fr"m ON" ++ aFileMeta.is(mId)
+    val from =
+      table ++ fr"a INNER JOIN" ++ RFileMeta.table ++ fr"m ON" ++ aFileMeta.is(mId)
     val cond = aId.is(attachId)
 
     selectSimple(cols, from, cond).query[FileMeta].option
   }
 
-  def findByIdAndCollective(attachId: Ident, collective: Ident): ConnectionIO[Option[RAttachment]] =
+  def findByIdAndCollective(
+      attachId: Ident,
+      collective: Ident
+  ): ConnectionIO[Option[RAttachment]] =
     selectSimple(
       all.map(_.prefix("a")),
       table ++ fr"a," ++ RItem.table ++ fr"i",
@@ -75,7 +83,10 @@ object RAttachment {
   def findByItem(id: Ident): ConnectionIO[Vector[RAttachment]] =
     selectSimple(all, table, itemId.is(id)).query[RAttachment].to[Vector]
 
-  def findByItemAndCollective(id: Ident, coll: Ident): ConnectionIO[Vector[RAttachment]] = {
+  def findByItemAndCollective(
+      id: Ident,
+      coll: Ident
+  ): ConnectionIO[Vector[RAttachment]] = {
     val q = selectSimple(all.map(_.prefix("a")), table ++ fr"a", Fragment.empty) ++
       fr"INNER JOIN" ++ RItem.table ++ fr"i ON" ++ RItem.Columns.id
       .prefix("i")
@@ -97,8 +108,9 @@ object RAttachment {
     val iId       = RItem.Columns.id.prefix("i")
     val iColl     = RItem.Columns.cid.prefix("i")
 
-    val from = table ++ fr"a INNER JOIN" ++ RFileMeta.table ++ fr"m ON" ++ afileMeta.is(mId) ++
-      fr"INNER JOIN" ++ RItem.table ++ fr"i ON" ++ aItem.is(iId)
+    val from =
+      table ++ fr"a INNER JOIN" ++ RFileMeta.table ++ fr"m ON" ++ afileMeta.is(mId) ++
+        fr"INNER JOIN" ++ RItem.table ++ fr"i ON" ++ aItem.is(iId)
     val cond = Seq(aItem.is(id), iColl.is(coll))
 
     selectSimple(cols, from, and(cond)).query[(RAttachment, FileMeta)].to[Vector]

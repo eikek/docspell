@@ -28,7 +28,10 @@ object OSignup {
         if (cfg.mode == Config.Mode.Invite) {
           if (cfg.newInvitePassword.isEmpty || cfg.newInvitePassword != password)
             NewInviteResult.passwordMismatch.pure[F]
-          else store.transact(RInvitation.insertNew).map(ri => NewInviteResult.success(ri.id))
+          else
+            store
+              .transact(RInvitation.insertNew)
+              .map(ri => NewInviteResult.success(ri.id))
         } else {
           Effect[F].pure(NewInviteResult.invitationClosed)
         }

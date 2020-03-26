@@ -33,13 +33,21 @@ object NerLabelSpanTest extends SimpleTestSuite {
     )
 
     val spans = NerLabelSpan.build(labels)
-    assertEquals(spans, Vector(
-      NerLabel("Derek Jeter", NerTag.Person, 0, 11),
-      NerLabel("Derek Jeter", NerTag.Person, 68, 79),
-      NerLabel("Syrup Production Old Sticky Pancake Company", NerTag.Organization, 162, 205),
-      NerLabel("Maple Lane", NerTag.Location, 210, 220),
-      NerLabel("Little League", NerTag.Organization, 351, 364),
-      NerLabel("Derek Jeter", NerTag.Person, 1121, 1132)
-    ))
+    assertEquals(
+      spans,
+      Vector(
+        NerLabel("Derek Jeter", NerTag.Person, 0, 11),
+        NerLabel("Derek Jeter", NerTag.Person, 68, 79),
+        NerLabel(
+          "Syrup Production Old Sticky Pancake Company",
+          NerTag.Organization,
+          162,
+          205
+        ),
+        NerLabel("Maple Lane", NerTag.Location, 210, 220),
+        NerLabel("Little League", NerTag.Organization, 351, 364),
+        NerLabel("Derek Jeter", NerTag.Person, 1121, 1132)
+      )
+    )
   }
 }

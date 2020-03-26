@@ -19,11 +19,13 @@ object TextExtraction {
       for {
         _     <- ctx.logger.info("Starting text extraction")
         start <- Duration.stopTime[F]
-        txt   <- item.attachments.traverse(extractTextIfEmpty(ctx, cfg, ctx.args.meta.language, item))
-        _     <- ctx.logger.debug("Storing extracted texts")
-        _     <- txt.toList.traverse(rm => ctx.store.transact(RAttachmentMeta.upsert(rm)))
-        dur   <- start
-        _     <- ctx.logger.info(s"Text extraction finished in ${dur.formatExact}")
+        txt <- item.attachments.traverse(
+          extractTextIfEmpty(ctx, cfg, ctx.args.meta.language, item)
+        )
+        _   <- ctx.logger.debug("Storing extracted texts")
+        _   <- txt.toList.traverse(rm => ctx.store.transact(RAttachmentMeta.upsert(rm)))
+        dur <- start
+        _   <- ctx.logger.info(s"Text extraction finished in ${dur.formatExact}")
       } yield item.copy(metas = txt)
     }
 
@@ -53,7 +55,10 @@ object TextExtraction {
       _   <- ctx.logger.debug(s"Extracting text for attachment ${stripAttachmentName(ra)}")
       dst <- Duration.stopTime[F]
       txt <- extractTextFallback(ctx, cfg, ra, lang)(filesToExtract(item, ra))
-      meta = item.changeMeta(ra.id, rm => rm.setContentIfEmpty(txt.map(_.trim).filter(_.nonEmpty)))
+      meta = item.changeMeta(
+        ra.id,
+        rm => rm.setContentIfEmpty(txt.map(_.trim).filter(_.nonEmpty))
+      )
       est <- dst
       _ <- ctx.logger.debug(
         s"Extracting text for attachment ${stripAttachmentName(ra)} finished in ${est.formatExact}"
@@ -76,7 +81,9 @@ object TextExtraction {
         .getOrElse(Mimetype.`application/octet-stream`)
 
     findMime
-      .flatMap(mt => extr.extractText(data, DataType(MimeType(mt.primary, mt.sub, mt.params)), lang))
+      .flatMap(mt =>
+        extr.extractText(data, DataType(MimeType(mt.primary, mt.sub, mt.params)), lang)
+      )
   }
 
   private def extractTextFallback[F[_]: Sync: ContextShift](

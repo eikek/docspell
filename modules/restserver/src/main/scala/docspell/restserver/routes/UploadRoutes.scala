@@ -19,7 +19,11 @@ import org.log4s._
 object UploadRoutes {
   private[this] val logger = getLogger
 
-  def secured[F[_]: Effect](backend: BackendApp[F], cfg: Config, user: AuthToken): HttpRoutes[F] = {
+  def secured[F[_]: Effect](
+      backend: BackendApp[F],
+      cfg: Config,
+      user: AuthToken
+  ): HttpRoutes[F] = {
     val dsl = new Http4sDsl[F] with ResponseGenerator[F] {}
     import dsl._
 
@@ -51,9 +55,14 @@ object UploadRoutes {
       case req @ POST -> Root / "item" / Ident(id) =>
         for {
           multipart <- req.as[Multipart[F]]
-          updata    <- readMultipart(multipart, logger, Priority.Low, cfg.backend.files.validMimeTypes)
-          result    <- backend.upload.submit(updata, id)
-          res       <- Ok(basicResult(result))
+          updata <- readMultipart(
+            multipart,
+            logger,
+            Priority.Low,
+            cfg.backend.files.validMimeTypes
+          )
+          result <- backend.upload.submit(updata, id)
+          res    <- Ok(basicResult(result))
         } yield res
 
       case GET -> Root / "checkfile" / Ident(id) / checksum =>

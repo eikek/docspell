@@ -41,11 +41,16 @@ object OcrConfig {
       Paths.get(System.getProperty("java.io.tmpdir")).resolve("docspell-extraction")
     ),
     unpaper = Unpaper(
-      SystemCommand.Config("unpaper", Seq("{{infile}}", "{{outfile}}"), Duration.seconds(30))
+      SystemCommand
+        .Config("unpaper", Seq("{{infile}}", "{{outfile}}"), Duration.seconds(30))
     ),
     tesseract = Tesseract(
       SystemCommand
-        .Config("tesseract", Seq("{{file}}", "stdout", "-l", "{{lang}}"), Duration.minutes(1))
+        .Config(
+          "tesseract",
+          Seq("{{file}}", "stdout", "-l", "{{lang}}"),
+          Duration.minutes(1)
+        )
     )
   )
 }

@@ -18,7 +18,11 @@ object File {
   def mkTempDir[F[_]: Sync](parent: Path, prefix: String): F[Path] =
     mkDir(parent).map(p => Files.createTempDirectory(p, prefix))
 
-  def mkTempFile[F[_]: Sync](parent: Path, prefix: String, suffix: Option[String] = None): F[Path] =
+  def mkTempFile[F[_]: Sync](
+      parent: Path,
+      prefix: String,
+      suffix: Option[String] = None
+  ): F[Path] =
     mkDir(parent).map(p => Files.createTempFile(p, prefix, suffix.orNull))
 
   def deleteDirectory[F[_]: Sync](dir: Path): F[Int] = Sync[F].delay {
@@ -26,7 +30,10 @@ object File {
     Files.walkFileTree(
       dir,
       new SimpleFileVisitor[Path]() {
-        override def visitFile(file: Path, attrs: BasicFileAttributes): FileVisitResult = {
+        override def visitFile(
+            file: Path,
+            attrs: BasicFileAttributes
+        ): FileVisitResult = {
           Files.deleteIfExists(file)
           count.incrementAndGet()
           FileVisitResult.CONTINUE
@@ -59,11 +66,12 @@ object File {
   def withTempDir[F[_]: Sync](parent: Path, prefix: String): Resource[F, Path] =
     Resource.make(mkTempDir(parent, prefix))(p => delete(p).map(_ => ()))
 
-  def listFiles[F[_]: Sync](pred: Path => Boolean, dir: Path): F[List[Path]] = Sync[F].delay {
-    val javaList =
-      Files.list(dir).filter(p => pred(p)).collect(java.util.stream.Collectors.toList())
-    javaList.asScala.toList.sortBy(_.getFileName.toString)
-  }
+  def listFiles[F[_]: Sync](pred: Path => Boolean, dir: Path): F[List[Path]] =
+    Sync[F].delay {
+      val javaList =
+        Files.list(dir).filter(p => pred(p)).collect(java.util.stream.Collectors.toList())
+      javaList.asScala.toList.sortBy(_.getFileName.toString)
+    }
 
   def readAll[F[_]: Sync: ContextShift](
       file: Path,

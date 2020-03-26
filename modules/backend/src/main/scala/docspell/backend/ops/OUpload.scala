@@ -57,7 +57,10 @@ object OUpload {
   ): Resource[F, OUpload[F]] =
     Resource.pure[F, OUpload[F]](new OUpload[F] {
 
-      def submit(data: OUpload.UploadData[F], account: AccountId): F[OUpload.UploadResult] =
+      def submit(
+          data: OUpload.UploadData[F],
+          account: AccountId
+      ): F[OUpload.UploadResult] =
         for {
           files <- data.files.traverse(saveFile).map(_.flatten)
           pred  <- checkFileList(files)
@@ -74,12 +77,16 @@ object OUpload {
           job <- pred.traverse(_ => makeJobs(args, account, data.priority, data.tracker))
           _   <- logger.fdebug(s"Storing jobs: $job")
           res <- job.traverse(submitJobs)
-          _   <- store.transact(RSource.incrementCounter(data.meta.sourceAbbrev, account.collective))
+          _ <- store.transact(
+            RSource.incrementCounter(data.meta.sourceAbbrev, account.collective)
+          )
         } yield res.fold(identity, identity)
 
       def submit(data: OUpload.UploadData[F], sourceId: Ident): F[OUpload.UploadResult] =
         for {
-          sOpt <- store.transact(RSource.find(sourceId)).map(_.toRight(UploadResult.NoSource))
+          sOpt <- store
+            .transact(RSource.find(sourceId))
+            .map(_.toRight(UploadResult.NoSource))
           abbrev = sOpt.map(_.abbrev).toOption.getOrElse(data.meta.sourceAbbrev)
           updata = data.copy(meta = data.meta.copy(sourceAbbrev = abbrev))
           accId  = sOpt.map(source => AccountId(source.cid, source.sid))
@@ -106,7 +113,9 @@ object OUpload {
               None
             }, id => Some(ProcessItemArgs.File(file.name, id))))
 
-      private def checkFileList(files: Seq[ProcessItemArgs.File]): F[Either[UploadResult, Unit]] =
+      private def checkFileList(
+          files: Seq[ProcessItemArgs.File]
+      ): F[Either[UploadResult, Unit]] =
         Sync[F].pure(if (files.isEmpty) Left(UploadResult.NoFiles) else Right(()))
 
       private def makeJobs(

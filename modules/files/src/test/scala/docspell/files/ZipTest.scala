@@ -12,19 +12,23 @@ object ZipTest extends SimpleTestSuite {
 
   test("unzip") {
     val zipFile = ExampleFiles.letters_zip.readURL[IO](8192, blocker)
-    val uncomp = zipFile.through(Zip.unzip(8192, blocker))
+    val uncomp  = zipFile.through(Zip.unzip(8192, blocker))
 
-    uncomp.evalMap(entry => {
-      val x = entry.data.map(_ => 1).foldMonoid.compile.lastOrError
-      x.map(size => {
-        if (entry.name.endsWith(".pdf")) {
-          assertEquals(entry.name, "letter-de.pdf")
-          assertEquals(size, 34815)
-        } else {
-          assertEquals(entry.name, "letter-en.txt")
-          assertEquals(size, 1131)
+    uncomp
+      .evalMap { entry =>
+        val x = entry.data.map(_ => 1).foldMonoid.compile.lastOrError
+        x.map { size =>
+          if (entry.name.endsWith(".pdf")) {
+            assertEquals(entry.name, "letter-de.pdf")
+            assertEquals(size, 34815)
+          } else {
+            assertEquals(entry.name, "letter-en.txt")
+            assertEquals(size, 1131)
+          }
         }
-      })
-    }).compile.drain.unsafeRunSync
+      }
+      .compile
+      .drain
+      .unsafeRunSync
   }
 }

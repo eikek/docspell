@@ -23,11 +23,11 @@ object RAttachmentArchive {
   val table = fr"attachment_archive"
 
   object Columns {
-    val id      = Column("id")
-    val fileId  = Column("file_id")
-    val name    = Column("filename")
+    val id        = Column("id")
+    val fileId    = Column("file_id")
+    val name      = Column("filename")
     val messageId = Column("message_id")
-    val created = Column("created")
+    val created   = Column("created")
 
     val all = List(id, fileId, name, messageId, created)
   }

@@ -7,7 +7,11 @@ import fs2.concurrent.Queue
 
 object QueueLogger {
 
-  def create[F[_]: Sync](jobId: Ident, jobInfo: String, q: Queue[F, LogEvent]): Logger[F] =
+  def create[F[_]: Sync](
+      jobId: Ident,
+      jobInfo: String,
+      q: Queue[F, LogEvent]
+  ): Logger[F] =
     new Logger[F] {
       def trace(msg: => String): F[Unit] =
         LogEvent.create[F](jobId, jobInfo, LogLevel.Debug, msg).flatMap(q.enqueue1)

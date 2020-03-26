@@ -15,7 +15,10 @@ object Playing extends IOApp {
 
     val x = for {
       odsm1 <- TikaMimetype
-        .detect(rtf, MimeTypeHint.filename(ExampleFiles.examples_sample_rtf.path.segments.last))
+        .detect(
+          rtf,
+          MimeTypeHint.filename(ExampleFiles.examples_sample_rtf.path.segments.last)
+        )
       odsm2 <- TikaMimetype.detect(rtf, MimeTypeHint.none)
     } yield (odsm1, odsm2)
     println(x.unsafeRunSync())

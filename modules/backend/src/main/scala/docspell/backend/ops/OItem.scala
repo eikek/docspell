@@ -8,7 +8,14 @@ import doobie._
 import doobie.implicits._
 import docspell.store.{AddResult, Store}
 import docspell.store.queries.{QAttachment, QItem}
-import OItem.{AttachmentArchiveData, AttachmentData, AttachmentSourceData, ItemData, ListItem, Query}
+import OItem.{
+  AttachmentArchiveData,
+  AttachmentData,
+  AttachmentSourceData,
+  ItemData,
+  ListItem,
+  Query
+}
 import bitpeace.{FileMeta, RangeDef}
 import docspell.common.{Direction, Ident, ItemState, MetaProposalList, Timestamp}
 import docspell.store.records._
@@ -21,9 +28,15 @@ trait OItem[F[_]] {
 
   def findAttachment(id: Ident, collective: Ident): F[Option[AttachmentData[F]]]
 
-  def findAttachmentSource(id: Ident, collective: Ident): F[Option[AttachmentSourceData[F]]]
+  def findAttachmentSource(
+      id: Ident,
+      collective: Ident
+  ): F[Option[AttachmentSourceData[F]]]
 
-  def findAttachmentArchive(id: Ident, collective: Ident): F[Option[AttachmentArchiveData[F]]]
+  def findAttachmentArchive(
+      id: Ident,
+      collective: Ident
+  ): F[Option[AttachmentArchiveData[F]]]
 
   def setTags(item: Ident, tagIds: List[Ident], collective: Ident): F[AddResult]
 
@@ -45,7 +58,11 @@ trait OItem[F[_]] {
 
   def setItemDate(item: Ident, date: Option[Timestamp], collective: Ident): F[AddResult]
 
-  def setItemDueDate(item: Ident, date: Option[Timestamp], collective: Ident): F[AddResult]
+  def setItemDueDate(
+      item: Ident,
+      date: Option[Timestamp],
+      collective: Ident
+  ): F[AddResult]
 
   def getProposals(item: Ident, collective: Ident): F[MetaProposalList]
 
@@ -104,7 +121,9 @@ object OItem {
     Resource.pure[F, OItem[F]](new OItem[F] {
 
       def findItem(id: Ident, collective: Ident): F[Option[ItemData]] =
-        store.transact(QItem.findItem(id)).map(opt => opt.flatMap(_.filterCollective(collective)))
+        store
+          .transact(QItem.findItem(id))
+          .map(opt => opt.flatMap(_.filterCollective(collective)))
 
       def findItems(q: Query, maxResults: Int): F[Vector[ListItem]] =
         store.transact(QItem.findItems(q).take(maxResults.toLong)).compile.toVector
@@ -126,7 +145,10 @@ object OItem {
               (None: Option[AttachmentData[F]]).pure[F]
           })
 
-      def findAttachmentSource(id: Ident, collective: Ident): F[Option[AttachmentSourceData[F]]] =
+      def findAttachmentSource(
+          id: Ident,
+          collective: Ident
+      ): F[Option[AttachmentSourceData[F]]] =
         store
           .transact(RAttachmentSource.findByIdAndCollective(id, collective))
           .flatMap({
@@ -143,7 +165,10 @@ object OItem {
               (None: Option[AttachmentSourceData[F]]).pure[F]
           })
 
-      def findAttachmentArchive(id: Ident, collective: Ident): F[Option[AttachmentArchiveData[F]]] =
+      def findAttachmentArchive(
+          id: Ident,
+          collective: Ident
+      ): F[Option[AttachmentArchiveData[F]]] =
         store
           .transact(RAttachmentArchive.findByIdAndCollective(id, collective))
           .flatMap({
@@ -183,38 +208,63 @@ object OItem {
         store.transact(db).attempt.map(AddResult.fromUpdate)
       }
 
-      def setDirection(item: Ident, direction: Direction, collective: Ident): F[AddResult] =
+      def setDirection(
+          item: Ident,
+          direction: Direction,
+          collective: Ident
+      ): F[AddResult] =
         store
           .transact(RItem.updateDirection(item, collective, direction))
           .attempt
           .map(AddResult.fromUpdate)
 
       def setCorrOrg(item: Ident, org: Option[Ident], collective: Ident): F[AddResult] =
-        store.transact(RItem.updateCorrOrg(item, collective, org)).attempt.map(AddResult.fromUpdate)
+        store
+          .transact(RItem.updateCorrOrg(item, collective, org))
+          .attempt
+          .map(AddResult.fromUpdate)
 
-      def setCorrPerson(item: Ident, person: Option[Ident], collective: Ident): F[AddResult] =
+      def setCorrPerson(
+          item: Ident,
+          person: Option[Ident],
+          collective: Ident
+      ): F[AddResult] =
         store
           .transact(RItem.updateCorrPerson(item, collective, person))
           .attempt
           .map(AddResult.fromUpdate)
 
-      def setConcPerson(item: Ident, person: Option[Ident], collective: Ident): F[AddResult] =
+      def setConcPerson(
+          item: Ident,
+          person: Option[Ident],
+          collective: Ident
+      ): F[AddResult] =
         store
           .transact(RItem.updateConcPerson(item, collective, person))
           .attempt
           .map(AddResult.fromUpdate)
 
-      def setConcEquip(item: Ident, equip: Option[Ident], collective: Ident): F[AddResult] =
+      def setConcEquip(
+          item: Ident,
+          equip: Option[Ident],
+          collective: Ident
+      ): F[AddResult] =
         store
           .transact(RItem.updateConcEquip(item, collective, equip))
           .attempt
           .map(AddResult.fromUpdate)
 
       def setNotes(item: Ident, notes: Option[String], collective: Ident): F[AddResult] =
-        store.transact(RItem.updateNotes(item, collective, notes)).attempt.map(AddResult.fromUpdate)
+        store
+          .transact(RItem.updateNotes(item, collective, notes))
+          .attempt
+          .map(AddResult.fromUpdate)
 
       def setName(item: Ident, name: String, collective: Ident): F[AddResult] =
-        store.transact(RItem.updateName(item, collective, name)).attempt.map(AddResult.fromUpdate)
+        store
+          .transact(RItem.updateName(item, collective, name))
+          .attempt
+          .map(AddResult.fromUpdate)
 
       def setState(item: Ident, state: ItemState, collective: Ident): F[AddResult] =
         store
@@ -222,10 +272,21 @@ object OItem {
           .attempt
           .map(AddResult.fromUpdate)
 
-      def setItemDate(item: Ident, date: Option[Timestamp], collective: Ident): F[AddResult] =
-        store.transact(RItem.updateDate(item, collective, date)).attempt.map(AddResult.fromUpdate)
+      def setItemDate(
+          item: Ident,
+          date: Option[Timestamp],
+          collective: Ident
+      ): F[AddResult] =
+        store
+          .transact(RItem.updateDate(item, collective, date))
+          .attempt
+          .map(AddResult.fromUpdate)
 
-      def setItemDueDate(item: Ident, date: Option[Timestamp], collective: Ident): F[AddResult] =
+      def setItemDueDate(
+          item: Ident,
+          date: Option[Timestamp],
+          collective: Ident
+      ): F[AddResult] =
         store
           .transact(RItem.updateDueDate(item, collective, date))
           .attempt

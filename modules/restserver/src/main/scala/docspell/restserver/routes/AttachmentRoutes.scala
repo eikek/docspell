@@ -23,7 +23,9 @@ object AttachmentRoutes {
     val dsl = new Http4sDsl[F] {}
     import dsl._
 
-    def withResponseHeaders(resp: F[Response[F]])(data: OItem.BinaryData[F]): F[Response[F]] = {
+    def withResponseHeaders(
+        resp: F[Response[F]]
+    )(data: OItem.BinaryData[F]): F[Response[F]] = {
       val mt             = MediaType.unsafeParse(data.meta.mimetype.asString)
       val ctype          = `Content-Type`(mt)
       val cntLen: Header = `Content-Length`.unsafeFromLong(data.meta.length)
@@ -103,7 +105,6 @@ object AttachmentRoutes {
             }
             .getOrElse(NotFound(BasicResult(false, "Not found")))
         } yield resp
-
 
       case GET -> Root / Ident(id) / "view" =>
         // this route exists to provide a stable url

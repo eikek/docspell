@@ -21,7 +21,12 @@ object DateFind {
           .map(sd =>
             NerDateLabel(
               sd.toLocalDate,
-              NerLabel(text.substring(q.head.begin, q(2).end), NerTag.Date, q.head.begin, q(1).end)
+              NerLabel(
+                text.substring(q.head.begin, q(2).end),
+                NerTag.Date,
+                q.head.begin,
+                q(1).end
+              )
             )
           )
       )
@@ -62,7 +67,9 @@ object DateFind {
       )
 
     def readMonth: Reader[Int] =
-      Reader.readFirst(w => Some(months.indexWhere(_.contains(w.value))).filter(_ > 0).map(_ + 1))
+      Reader.readFirst(w =>
+        Some(months.indexWhere(_.contains(w.value))).filter(_ > 0).map(_ + 1)
+      )
 
     def readDay: Reader[Int] =
       Reader.readFirst(w => Try(w.value.toInt).filter(n => n > 0 && n <= 31).toOption)
@@ -89,8 +96,9 @@ object DateFind {
 
       def readFirst[A](f: Word => Option[A]): Reader[A] =
         Reader({
-          case Nil     => Result.Failure
-          case a :: as => f(a).map(value => Result.Success(value, as)).getOrElse(Result.Failure)
+          case Nil => Result.Failure
+          case a :: as =>
+            f(a).map(value => Result.Success(value, as)).getOrElse(Result.Failure)
         })
     }
 

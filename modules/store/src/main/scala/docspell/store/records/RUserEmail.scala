@@ -178,7 +178,8 @@ object RUserEmail {
       case None                => Seq.empty
     })
 
-    (selectSimple(all.map(_.prefix("m")), from, and(cond)) ++ orderBy(mName.f)).query[RUserEmail]
+    (selectSimple(all.map(_.prefix("m")), from, and(cond)) ++ orderBy(mName.f))
+      .query[RUserEmail]
   }
 
   def findByAccount(
@@ -198,9 +199,10 @@ object RUserEmail {
 
     deleteFrom(
       table,
-      fr"uid in (" ++ selectSimple(Seq(uId), RUser.table, and(cond)) ++ fr") AND" ++ name.is(
-        connName
-      )
+      fr"uid in (" ++ selectSimple(Seq(uId), RUser.table, and(cond)) ++ fr") AND" ++ name
+        .is(
+          connName
+        )
     ).update.run
   }
 
@@ -208,5 +210,8 @@ object RUserEmail {
     getByName(accId, name).map(_.isDefined)
 
   def exists(userId: Ident, connName: Ident): ConnectionIO[Boolean] =
-    selectCount(id, table, and(uid.is(userId), name.is(connName))).query[Int].unique.map(_ > 0)
+    selectCount(id, table, and(uid.is(userId), name.is(connName)))
+      .query[Int]
+      .unique
+      .map(_ > 0)
 }

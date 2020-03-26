@@ -20,10 +20,16 @@ import docspell.files.TikaMimetype
 
 object PoiExtract {
 
-  def get[F[_]: Sync](data: Stream[F, Byte], hint: MimeTypeHint): F[Either[Throwable, String]] =
+  def get[F[_]: Sync](
+      data: Stream[F, Byte],
+      hint: MimeTypeHint
+  ): F[Either[Throwable, String]] =
     TikaMimetype.detect(data, hint).flatMap(mt => get(data, mt))
 
-  def get[F[_]: Sync](data: Stream[F, Byte], mime: MimeType): F[Either[Throwable, String]] =
+  def get[F[_]: Sync](
+      data: Stream[F, Byte],
+      mime: MimeType
+  ): F[Either[Throwable, String]] =
     mime match {
       case PoiType.doc =>
         getDoc(data)

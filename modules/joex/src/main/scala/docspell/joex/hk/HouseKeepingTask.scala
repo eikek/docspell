@@ -16,7 +16,8 @@ object HouseKeepingTask {
   val taskName: Ident = Ident.unsafe("housekeeping")
 
   def apply[F[_]: Sync](cfg: Config): Task[F, Unit, Unit] =
-    Task.log[F](_.info(s"Running house-keeping task now"))
+    Task
+      .log[F](_.info(s"Running house-keeping task now"))
       .flatMap(_ => CleanupInvitesTask(cfg.houseKeeping.cleanupInvites))
       .flatMap(_ => CleanupJobsTask(cfg.houseKeeping.cleanupJobs))
 

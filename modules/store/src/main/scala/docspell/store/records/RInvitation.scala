@@ -40,7 +40,9 @@ object RInvitation {
     deleteFrom(table, id.is(invite)).update.run
 
   def useInvite(invite: Ident, minCreated: Timestamp): ConnectionIO[Boolean] = {
-    val get = selectCount(id, table, and(id.is(invite), created.isGt(minCreated))).query[Int].unique
+    val get = selectCount(id, table, and(id.is(invite), created.isGt(minCreated)))
+      .query[Int]
+      .unique
     for {
       inv <- get
       _   <- delete(invite)

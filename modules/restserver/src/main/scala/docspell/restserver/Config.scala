@@ -18,9 +18,15 @@ case class Config(
 
 object Config {
   val postgres =
-    JdbcConfig(LenientUri.unsafe("jdbc:postgresql://localhost:5432/docspelldev"), "dev", "dev")
+    JdbcConfig(
+      LenientUri.unsafe("jdbc:postgresql://localhost:5432/docspelldev"),
+      "dev",
+      "dev"
+    )
   val h2 = JdbcConfig(
-    LenientUri.unsafe("jdbc:h2:./target/docspelldev.db;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE"),
+    LenientUri.unsafe(
+      "jdbc:h2:./target/docspelldev.db;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE"
+    ),
     "sa",
     ""
   )

@@ -68,7 +68,10 @@ object ROrganization {
   }
 
   def existsByName(coll: Ident, oname: String): ConnectionIO[Boolean] =
-    selectCount(oid, table, and(cid.is(coll), name.is(oname))).query[Int].unique.map(_ > 0)
+    selectCount(oid, table, and(cid.is(coll), name.is(oname)))
+      .query[Int]
+      .unique
+      .map(_ > 0)
 
   def findById(id: Ident): ConnectionIO[Option[ROrganization]] = {
     val sql = selectSimple(all, table, cid.is(id))
@@ -93,7 +96,9 @@ object ROrganization {
     val CC = RContact.Columns
     val q = fr"SELECT DISTINCT" ++ commas(oid.prefix("o").f, name.prefix("o").f) ++
       fr"FROM" ++ table ++ fr"o" ++
-      fr"INNER JOIN" ++ RContact.table ++ fr"c ON" ++ CC.orgId.prefix("c").is(oid.prefix("o")) ++
+      fr"INNER JOIN" ++ RContact.table ++ fr"c ON" ++ CC.orgId
+      .prefix("c")
+      .is(oid.prefix("o")) ++
       fr"WHERE" ++ and(
       cid.prefix("o").is(coll),
       CC.kind.prefix("c").is(contactKind),
@@ -103,7 +108,10 @@ object ROrganization {
     q.query[IdRef].to[Vector]
   }
 
-  def findAll(coll: Ident, order: Columns.type => Column): Stream[ConnectionIO, ROrganization] = {
+  def findAll(
+      coll: Ident,
+      order: Columns.type => Column
+  ): Stream[ConnectionIO, ROrganization] = {
     val sql = selectSimple(all, table, cid.is(coll)) ++ orderBy(order(Columns).f)
     sql.query[ROrganization].stream
   }

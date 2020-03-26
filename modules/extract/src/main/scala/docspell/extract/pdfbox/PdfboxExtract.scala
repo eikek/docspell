@@ -14,7 +14,9 @@ import fs2.Stream
 object PdfboxExtract {
 
   def get[F[_]: Sync](data: Stream[F, Byte]): F[Either[Throwable, String]] =
-    data.compile.to(Array).map(bytes => Using(PDDocument.load(bytes))(readText).toEither.flatten)
+    data.compile
+      .to(Array)
+      .map(bytes => Using(PDDocument.load(bytes))(readText).toEither.flatten)
 
   def get(is: InputStream): Either[Throwable, String] =
     Using(PDDocument.load(is))(readText).toEither.flatten

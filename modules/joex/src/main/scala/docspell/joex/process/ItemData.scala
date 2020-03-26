@@ -24,7 +24,10 @@ case class ItemData(
     copy(metas = next)
   }
 
-  def changeMeta(attachId: Ident, f: RAttachmentMeta => RAttachmentMeta): RAttachmentMeta =
+  def changeMeta(
+      attachId: Ident,
+      f: RAttachmentMeta => RAttachmentMeta
+  ): RAttachmentMeta =
     f(findOrCreate(attachId))
 
   def findOrCreate(attachId: Ident): RAttachmentMeta =

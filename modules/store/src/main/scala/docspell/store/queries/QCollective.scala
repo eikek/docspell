@@ -10,7 +10,12 @@ import docspell.common.ContactKind
 
 object QCollective {
 
-  case class InsightData(incoming: Int, outgoing: Int, bytes: Long, tags: Map[String, Int])
+  case class InsightData(
+      incoming: Int,
+      outgoing: Int,
+      bytes: Long,
+      tags: Map[String, Int]
+  )
 
   def getInsights(coll: Ident): ConnectionIO[InsightData] = {
     val IC = RItem.Columns
@@ -49,7 +54,9 @@ object QCollective {
       fr"count(" ++ RC.itemId.prefix("r").f ++ fr")"
     ) ++
       fr"FROM" ++ RTagItem.table ++ fr"r" ++
-      fr"INNER JOIN" ++ RTag.table ++ fr"t ON" ++ RC.tagId.prefix("r").is(TC.tid.prefix("t")) ++
+      fr"INNER JOIN" ++ RTag.table ++ fr"t ON" ++ RC.tagId
+      .prefix("r")
+      .is(TC.tid.prefix("t")) ++
       fr"WHERE" ++ TC.cid.prefix("t").is(coll) ++
       fr"GROUP BY" ++ TC.name.prefix("t").f
 

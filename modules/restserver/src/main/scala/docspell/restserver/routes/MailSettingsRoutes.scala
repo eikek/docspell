@@ -43,7 +43,9 @@ object MailSettingsRoutes {
         (for {
           in <- OptionT.liftF(req.as[EmailSettings])
           ru = makeSettings(in)
-          up <- OptionT.liftF(ru.traverse(r => backend.mail.createSettings(user.account, r)))
+          up <- OptionT.liftF(
+            ru.traverse(r => backend.mail.createSettings(user.account, r))
+          )
           resp <- OptionT.liftF(
             Ok(
               up.fold(
@@ -58,7 +60,9 @@ object MailSettingsRoutes {
         (for {
           in <- OptionT.liftF(req.as[EmailSettings])
           ru = makeSettings(in)
-          up <- OptionT.liftF(ru.traverse(r => backend.mail.updateSettings(user.account, name, r)))
+          up <- OptionT.liftF(
+            ru.traverse(r => backend.mail.updateSettings(user.account, name, r))
+          )
           resp <- OptionT.liftF(
             Ok(
               up.fold(
