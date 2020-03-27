@@ -22,6 +22,7 @@
 - Allow to switch between viewerjs PDF viewer or the browser's builtin
   viewer.
 - Bug fixes related to handling text files.
+- Add a configurable length limit for text analysis
 
 ### Configuration Changes
 
@@ -31,6 +32,8 @@ The configuration of the joex component has been changed.
   periodic scheduler
 - new section `docspell.joex.house-keeping` for configuring
   house-keeping tasks
+- new section `docspell.joex.text-analysis` for configuring the new
+  size limit
 - The command for running `wkhtmltopdf` changed in that the encoding
   is now added at runtime.
 
