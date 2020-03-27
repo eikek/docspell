@@ -2,9 +2,7 @@ package docspell.joex.process
 
 import cats.implicits._
 import cats.effect.Sync
-import docspell.analysis.nlp._
-import docspell.analysis.contact._
-import docspell.analysis.date._
+import docspell.analysis.{TextAnalyser, TextAnalysisConfig}
 import docspell.common._
 import docspell.joex.process.ItemData.AttachmentDates
 import docspell.joex.scheduler.Task
@@ -12,50 +10,34 @@ import docspell.store.records.RAttachmentMeta
 
 object TextAnalysis {
 
-  def apply[F[_]: Sync](item: ItemData): Task[F, ProcessItemArgs, ItemData] =
+  def apply[F[_]: Sync](
+      cfg: TextAnalysisConfig
+  )(item: ItemData): Task[F, ProcessItemArgs, ItemData] =
     Task { ctx =>
-      for {
-        _ <- ctx.logger.info("Starting text analysis")
-        s <- Duration.stopTime[F]
-        t <- item.metas.toList.traverse(annotateAttachment[F](ctx.args.meta.language))
-        _ <- ctx.logger.debug(s"Storing tags: ${t.map(_._1.copy(content = None))}")
-        _ <- t.traverse(m =>
-          ctx.store.transact(RAttachmentMeta.updateLabels(m._1.id, m._1.nerlabels))
-        )
-        e <- s
-        _ <- ctx.logger.info(s"Text-Analysis finished in ${e.formatExact}")
-        v = t.toVector
-      } yield item.copy(metas = v.map(_._1), dateLabels = v.map(_._2))
+      TextAnalyser.create[F](cfg).use { analyser =>
+        for {
+          _ <- ctx.logger.info("Starting text analysis")
+          s <- Duration.stopTime[F]
+          t <- item.metas.toList
+            .traverse(annotateAttachment[F](ctx.args.meta.language, ctx.logger, analyser))
+          _ <- ctx.logger.debug(s"Storing tags: ${t.map(_._1.copy(content = None))}")
+          _ <- t.traverse(m =>
+            ctx.store.transact(RAttachmentMeta.updateLabels(m._1.id, m._1.nerlabels))
+          )
+          e <- s
+          _ <- ctx.logger.info(s"Text-Analysis finished in ${e.formatExact}")
+          v = t.toVector
+        } yield item.copy(metas = v.map(_._1), dateLabels = v.map(_._2))
+      }
     }
 
   def annotateAttachment[F[_]: Sync](
-      lang: Language
+      lang: Language,
+      logger: Logger[F],
+      analyser: TextAnalyser[F]
   )(rm: RAttachmentMeta): F[(RAttachmentMeta, AttachmentDates)] =
     for {
-      list0 <- stanfordNer[F](lang, rm)
-      list1 <- contactNer[F](rm)
-      list  = list0 ++ list1
-      spans = NerLabelSpan.build(list.toSeq)
-      dates <- dateNer[F](rm, lang)
-    } yield (rm.copy(nerlabels = (spans ++ list ++ dates.toNerLabel).toList), dates)
-
-  def stanfordNer[F[_]: Sync](lang: Language, rm: RAttachmentMeta): F[Vector[NerLabel]] =
-    Sync[F].delay {
-      rm.content.map(StanfordNerClassifier.nerAnnotate(lang)).getOrElse(Vector.empty)
-    }
-
-  def contactNer[F[_]: Sync](rm: RAttachmentMeta): F[Vector[NerLabel]] = Sync[F].delay {
-    rm.content.map(Contact.annotate).getOrElse(Vector.empty)
-  }
-
-  def dateNer[F[_]: Sync](rm: RAttachmentMeta, lang: Language): F[AttachmentDates] =
-    Sync[F].delay {
-      AttachmentDates(
-        rm,
-        rm.content
-          .map(txt => DateFind.findDates(txt, lang).toVector)
-          .getOrElse(Vector.empty)
-      )
-    }
+      labels <- analyser.annotate(logger, lang, rm.content.getOrElse(""))
+    } yield (rm.copy(nerlabels = labels.all.toList), AttachmentDates(rm, labels.dates))
 
 }

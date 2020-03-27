@@ -78,6 +78,9 @@ let
         };
       };
     };
+    text-analysis = {
+      max-length = 10000;
+    };
     convert = {
       chunk-size = 524288;
       max-image-size = 14000000;
@@ -528,6 +531,29 @@ in {
           available in your PATH or the absolute path can be specified
           below.
         '';
+      };
+
+      text-analysis = mkOption {
+        type = types.submodule({
+          options = {
+            max-length = mkOption {
+              type = types.int;
+              default = defaults.text-analysis.max-length;
+              description = ''
+                Maximum length of text to be analysed.
+
+                All text to analyse must fit into RAM. A large document may take
+                too much heap. Also, most important information is at the
+                beginning of a document, so in most cases the first two pages
+                should suffice. Default is 10000, which are about 2-3 pages
+                (a rough guess).
+              '';
+            };
+
+          };
+        });
+        default = defaults.text-analysis;
+        description = "Settings for text analysis";
       };
 
       convert = mkOption {

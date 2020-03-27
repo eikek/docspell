@@ -1,5 +1,6 @@
 package docspell.joex
 
+import docspell.analysis.TextAnalysisConfig
 import docspell.common.{Ident, LenientUri}
 import docspell.joex.scheduler.{PeriodicSchedulerConfig, SchedulerConfig}
 import docspell.store.JdbcConfig
@@ -16,6 +17,7 @@ case class Config(
     periodicScheduler: PeriodicSchedulerConfig,
     houseKeeping: HouseKeepingConfig,
     extraction: ExtractConfig,
+    textAnalysis: TextAnalysisConfig,
     convert: ConvertConfig
 )
 
