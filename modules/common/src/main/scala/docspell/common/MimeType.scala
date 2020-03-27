@@ -32,7 +32,7 @@ case class MimeType(primary: String, sub: String, params: Map[String, String]) {
   def asString: String =
     if (params.isEmpty) s"$primary/$sub"
     else {
-      val parameters = params.toList.map(t => s"${t._1}=${t._2}").mkString(";")
+      val parameters = params.toList.map(t => s"""${t._1}="${t._2}"""").mkString(";")
       s"$primary/$sub; $parameters"
     }
 
