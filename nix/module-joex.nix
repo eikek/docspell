@@ -29,6 +29,21 @@ let
       log-buffer-size = 500;
       wakeup-period = "30 minutes";
     };
+    periodic-scheduler = {
+      wakeup-period = "10 minutes";
+    };
+    house-keeping = {
+      schedule = "Sun *-*-* 00:00:00";
+      cleanup-invites = {
+        enabled = true;
+        older-than = "30 days";
+      };
+      cleanup-jobs = {
+        enabled = true;
+        older-than = "30 days";
+        delete-batch = 100;
+      };
+    };
     extraction = {
       pdf = {
         min-text-len = 10;
@@ -238,6 +253,104 @@ in {
         });
         default = defaults.scheduler;
         description = "Settings for the scheduler";
+      };
+
+      periodic-scheduler = mkOption {
+        type = types.submodule({
+          options = {
+            wakeup-period = mkOption {
+              type = types.str;
+              default = defaults.periodic-scheduler.wakeup-period;
+              description = ''
+                A fallback to start looking for due periodic tasks regularily.
+                Usually joex instances should be notified via REST calls if
+                external processes change tasks. But these requests may get
+                lost.
+              '';
+            };
+          };
+        });
+        default = defaults.periodic-scheduler;
+        description = ''
+          Settings for the periodic scheduler.
+        '';
+      };
+
+      house-keeping = mkOption {
+        type = types.submodule({
+          options = {
+            schedule = mkOption {
+              type = types.str;
+              default = defaults.house-keeping.schedule;
+              description = ''
+                When the house keeping tasks execute. Default is to run every
+                week.
+              '';
+            };
+            cleanup-invites = mkOption {
+              type = types.submodule({
+                options = {
+                  enabled = mkOption {
+                    type = types.bool;
+                    default = defaults.house-keeping.cleanup-invites.enabled;
+                    description = "Whether this task is enabled.";
+                  };
+                  older-than = mkOption {
+                    type = types.str;
+                    default = defaults.house-keeping.cleanup-invites.older-than;
+                    description = "The minimum age of invites to be deleted.";
+                  };
+                };
+              });
+              default = defaults.house-keeping.cleanup-invites;
+              description = ''
+                This task removes invitation keys that have been created but not
+                used. The timespan here must be greater than the `invite-time'
+                setting in the rest server config file.
+              '';
+            };
+            cleanup-jobs = mkOption {
+              type = types.submodule({
+                options = {
+                  enabled = mkOption {
+                    type = types.bool;
+                    default = defaults.house-keeping.cleanup-jobs.enabled;
+                    description = "Whether this task is enabled.";
+                  };
+                  older-than = mkOption {
+                    type = types.str;
+                    default = defaults.house-keeping.cleanup-jobs.older-than;
+                    description = ''
+                      The minimum age of jobs to delete. It is matched against the
+                      `finished' timestamp.
+                    '';
+                  };
+                  delete-batch = mkOption {
+                    type = types.int;
+                    default = defauts.house-keeping.cleanup-jobs.delete-batch;
+                    description = ''
+                      This defines how many jobs are deleted in one transaction.
+                      Since the data to delete may get large, it can be configured
+                      whether more or less memory should be used.
+                    '';
+                  };
+
+                };
+              });
+              default = defaults.house-keeping.cleanup-jobs;
+              description = ''
+                Jobs store their log output in the database. Normally this data
+                is only interesting for some period of time. The processing logs
+                of old files can be removed eventually.
+              '';
+            };
+          };
+        });
+        default = defaults.house-keeping;
+        description = ''
+          Docspell uses periodic house keeping tasks, like cleaning expired
+          invites, that can be configured here.
+        '';
       };
 
       extraction = mkOption {
