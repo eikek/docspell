@@ -99,7 +99,7 @@ object Conversion {
     val all = Set(MimeType.jpeg, MimeType.png, MimeType.tiff)
 
     def unapply(m: MimeType): Option[MimeType] =
-      Some(m).filter(all.contains)
+      Some(m).map(_.baseType).filter(all.contains)
   }
 
   object Texts {
@@ -148,15 +148,14 @@ object Conversion {
       )
 
     def unapply(m: MimeType): Option[MimeType] =
-      Some(m).filter(all.contains)
+      Some(m).map(_.baseType).filter(all.contains)
   }
 
   def unapply(mt: MimeType): Option[MimeType] =
     mt match {
-      case Office(_)     => Some(mt)
-      case Texts(_)      => Some(mt)
-      case Images(_)     => Some(mt)
-      case MimeType.html => Some(mt)
-      case _             => None
+      case Office(_) => Some(mt)
+      case Texts(_)  => Some(mt)
+      case Images(_) => Some(mt)
+      case _         => None
     }
 }
