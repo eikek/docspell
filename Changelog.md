@@ -21,6 +21,7 @@
   item. If multiple due dates are found, the earliest one is used.
 - Allow to switch between viewerjs PDF viewer or the browser's builtin
   viewer.
+- Bug fixes related to handling text files.
 
 ### Configuration Changes
 
@@ -30,6 +31,8 @@ The configuration of the joex component has been changed.
   periodic scheduler
 - new section `docspell.joex.house-keeping` for configuring
   house-keeping tasks
+- The command for running `wkhtmltopdf` changed in that the encoding
+  is now added at runtime.
 
 ### REST Api Changes
 

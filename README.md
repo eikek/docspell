@@ -3,8 +3,8 @@
 [![Build Status](https://travis-ci.org/eikek/docspell.svg?branch=master)](https://travis-ci.org/eikek/docspell)
 [![Scala Steward badge](https://img.shields.io/badge/Scala_Steward-helping-blue.svg?style=flat&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAQCAMAAAARSr4IAAAAVFBMVEUAAACHjojlOy5NWlrKzcYRKjGFjIbp293YycuLa3pYY2LSqql4f3pCUFTgSjNodYRmcXUsPD/NTTbjRS+2jomhgnzNc223cGvZS0HaSD0XLjbaSjElhIr+AAAAAXRSTlMAQObYZgAAAHlJREFUCNdNyosOwyAIhWHAQS1Vt7a77/3fcxxdmv0xwmckutAR1nkm4ggbyEcg/wWmlGLDAA3oL50xi6fk5ffZ3E2E3QfZDCcCN2YtbEWZt+Drc6u6rlqv7Uk0LdKqqr5rk2UCRXOk0vmQKGfc94nOJyQjouF9H/wCc9gECEYfONoAAAAASUVORK5CYII=)](https://scala-steward.org)
 
-# Docspell
 
+# Docspell
 
 Docspell is a personal document organizer. You'll need a scanner to
 convert your papers into PDF files. Docspell can then assist in
@@ -16,6 +16,8 @@ associated with this meta data, you should be able to quickly find
 them later using the search feature. But adding this manually to each
 document is a tedious task. What if most of it could be done
 automatically?
+
+It is provided as a REST server and a web application.
 
 ## How it works
 
@@ -41,6 +43,7 @@ must be maintained manually. But usually, this data doesn't grow as
 fast as the documents. After a while there is a quite complete address
 book and only once in a while it has to be revisited.
 
+
 ## Documentation
 
 The [documentation site](https://eikek.github.io/docspell/) provides
@@ -51,7 +54,11 @@ Check the feature list and the quickstart guide to try it out:
 - [Features](https://eikek.github.io/docspell/features.html)
 - [Quickstart](https://eikek.github.io/docspell/getit)
 
+
 ## Screenshots
+
+Here are some (outdated) screenshots, for getting a first impression
+of the web ui.
 
 ![screenshot-1](https://raw.githubusercontent.com/eikek/docspell/master/modules/microsite/src/main/resources/microsite/img/docspell-curate-1.jpg)
 ![screenshot-2](https://raw.githubusercontent.com/eikek/docspell/master/modules/microsite/src/main/resources/microsite/img/docspell-curate-2.jpg)

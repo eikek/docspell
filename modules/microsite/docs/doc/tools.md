@@ -78,7 +78,7 @@ The config file is expected in
 `$XDG_CONFIG_HOME/docspell/ds.conf`. `$XDG_CONFIG_HOME` defaults to
 `~/.config`.
 
-The config file contains lines with key-value pairs, separated by an
+The config file contains lines with key-value pairs, separated by a
 `=` sign. Lines starting with `#` are ignored. Example:
 
 ```
@@ -87,17 +87,21 @@ url.1 = http://localhost:7880/api/v1/open/upload/item/5DxhjkvWf9S-CkWqF3Kr892-Wg
 url.2 = http://localhost:7880/api/v1/open/upload/item/6DxhjkvWf9S-CkWqF3Kr892-WgoCspFWDo7-XBykwCyAUxQ
 ```
 
-The key must start with `url`.
+The key must start with `url`. The urls should be [anonymous upload
+urls](./uploading.html).
+
 
 ### Usage
 
-The `-h` option shows a help overview.
+- The `-c` option allows to specifiy a different config file.
+- The `-h` option shows a help overview.
+- The `-d` option deletes files after upload was successful
+- The `-e` option can be used to check for file existence in docspell.
+  Instead of uploading, the script only checks whether the file is in
+  docspell or not.
 
-The script takes a list of files as arguments. It checks the file
-types and will raise an error (and quit) if a file is included that is
-not a PDF. The `-s` option can be used to skip them instead.
+The script takes a list of files as arguments.
 
-The `-c` option allows to specifiy a different config file.
 
 Example:
 
@@ -121,8 +125,8 @@ and the web extension. Both work together.
 
 #### Install `ds.sh`
 
-First install the `ds.sh` tool somewhere, maybe `/usr/local/bin` as
-described above.
+First copy the `ds.sh` tool somewhere in your `PATH`, maybe
+`/usr/local/bin` as described above.
 
 
 #### Install the native part

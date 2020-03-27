@@ -6,11 +6,13 @@ title: Features and Limitations
 # Features
 
 - Multi-account application
-- Multiple users per account
+- Multiple users per account (multiple users can access the same
+  account)
 - Handle multiple documents as one unit
 - OCR using [tesseract](https://github.com/tesseract-ocr/tesseract)
-- Conversion to PDF: all files are converted into a PDF file, while
-  the original file is preserved
+- Conversion to PDF: all files are converted into a PDF file
+- Non-destructive: all your uploaded files are never modified and can
+  always be downloaded untouched
 - Text is analysed to find and attach meta data automatically
 - Manage document processing (cancel jobs, set priorities)
 - Everything available via a documented [REST Api](api)
@@ -21,17 +23,19 @@ title: Features and Limitations
   can be scaled-out independently
 - Everything stored in a SQL database: PostgreSQL, MariaDB or H2
 - Files supported:
-  - PDF
-  - common MS Office (doc, docx, xls, xlsx)
-  - OpenDocument (odt, ods)
-  - RichText (rtf)
-  - Images (jpg, png, tiff)
-  - HTML
-  - text/* (treated as Markdown)
-  - zip
-  - [eml](https://en.wikipedia.org/wiki/Email#Filename_extensions)
-    (e-mail files in plain text MIME)
-- Tools:
+  - Documents:
+    - PDF
+    - common MS Office (doc, docx, xls, xlsx)
+    - OpenDocument (odt, ods)
+    - RichText (rtf)
+    - Images (jpg, png, tiff)
+    - HTML
+    - text/* (treated as Markdown)
+  - Archives (extracted automatically, can be nested)
+    - zip
+    - [eml](https://en.wikipedia.org/wiki/Email#Filename_extensions)
+      (e-mail files in plain text MIME)
+- Tooling:
   - Watch a folder: watch folders for changes and send files to docspell
   - Firefox plugin: right click on a link and send the file to docspell
   - Simple CLI for uploading files

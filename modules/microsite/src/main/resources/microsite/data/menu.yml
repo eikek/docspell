@@ -48,9 +48,6 @@ options:
      - title: Tools
        url: doc/tools.html
 
-  - title: Changelog
-    url : changelog
-
   - title: Development
     url: dev.html
 
@@ -67,3 +64,6 @@ options:
 
      - title: REST OpenApi Spec
        url: openapi/docspell-openapi.yml
+
+  - title: Changelog
+    url : changelog

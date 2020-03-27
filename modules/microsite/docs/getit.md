@@ -4,7 +4,7 @@ title: Quickstart
 permalink: getit/
 ---
 
-## Download
+## {{ page.title }}
 
 You can download pre-compiled binaries from the [Release
 Page](https://github.com/eikek/docspell/releases). There are `deb`
