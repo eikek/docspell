@@ -1,4 +1,4 @@
-<!DOCTYPE html><html><head><title>Docspell: Configuring</title><meta charset="utf-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="eikek" /><meta name="description" content="Auto-tagging Document Organizer" /><meta name="og:image" content="/img/poster.png" /><meta name="image" property="og:image" content="/img/poster.png" /><meta name="og:title" content="Docspell: Configuring" /><meta name="title" property="og:title" content="Docspell: Configuring" /><meta name="og:site_name" content="Docspell" /><meta name="og:url" content="" /><meta name="og:type" content="website" /><meta name="og:description" content="Auto-tagging Document Organizer" /><link rel="icon" type="image/png" href="/img/favicon.png" /><meta name="twitter:title" content="Docspell: Configuring" /><meta name="twitter:image" content="/img/poster.png" /><meta name="twitter:description" content="Auto-tagging Document Organizer" /><meta name="twitter:card" content="summary_large_image" /><link rel="icon" type="image/png" sizes="96x96" href="/img/favicon.png" /><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" /><link rel="stylesheet" href="/highlight/styles/vs.css" /><link rel="stylesheet" href="/css/light-style.css" /><link rel="stylesheet" href="/css/docspell.css" /></head><body class="docs"><div id="wrapper"><div id="sidebar-wrapper"><div id="sidebar-brand"><a href="/" class="brand"><div class="brand-wrapper"></div><span>Docspell</span></a><button id="main-toggle" class="sidebar-toggle"><span class="close"></span></button></div><div class="sidebar-nav"> <div class="sidebar-nav-item  "><a href="/index.html" title="Home" class="">Home</a></div> <div class="sidebar-nav-item  "><a href="/demo.html" title="Demo" class="">Demo</a></div> <div class="sidebar-nav-item  "><a href="/getit" title="Quickstart" class="">Quickstart</a></div> <div class="sidebar-nav-item  "><a href="/features.html" title="Features/Limitations" class="">Features/Limitations</a></div> <div class="sidebar-nav-item  open"><a href="/doc.html" title="Documentation" class="drop-nested">Documentation</a><i class="fa fa-angle-right"></i><div class="sub-section"> <a href="/doc/install.html" title="Installation" class="">Installation</a> <a href="/doc/configure.html" title="Configuring" class="active">Configuring</a> <a href="/doc/nix" title="Nix/NixOS" class="">Nix/NixOS</a> <a href="/doc/reverseproxy" title="Reverse Proxy" class="">Reverse Proxy</a> <a href="/doc/metadata.html" title="Adding Meta Data" class="">Adding Meta Data</a> <a href="/doc/uploading.html" title="Uploads" class="">Uploads</a> <a href="/doc/processing.html" title="Processing Queue" class="">Processing Queue</a> <a href="/doc/curate.html" title="Find and Review" class="">Find and Review</a> <a href="/doc/mailitem.html" title="Send via E-Mail" class="">Send via E-Mail</a> <a href="/doc/joex.html" title="Joex" class="">Joex</a> <a href="/doc/tools.html" title="Tools" class="">Tools</a></div></div> <div class="sidebar-nav-item  "><a href="/changelog" title="Changelog" class="">Changelog</a></div> <div class="sidebar-nav-item  "><a href="/dev.html" title="Development" class="drop-nested">Development</a><i class="fa fa-angle-right"></i><div class="sub-section"> <a href="/dev/adr.html" title="" class=""></a></div></div> <div class="sidebar-nav-item  "><a href="/api.html" title="Api" class="drop-nested">Api</a><i class="fa fa-angle-right"></i><div class="sub-section"> <a href="/openapi/docspell-openapi.html" title="REST Api Doc" class="">REST Api Doc</a> <a href="/openapi/docspell-openapi.yml" title="REST OpenApi Spec" class="">REST OpenApi Spec</a></div></div></div></div><div id="page-content-wrapper"><div class="nav"><div class="container-fluid"><div class="row"><div class="col-lg-12"><div class="action-menu pull-left clearfix"><a href="#menu-toggle" id="menu-toggle"><i class="fa fa-bars" aria-hidden="true"></i></a></div><ul class="pull-right"><li id="gh-eyes-item" class="hidden-xs"><a href="https://github.com/eikek/docspell" target="_blank" rel="noopener noreferrer"><i class="fa fa-eye"></i><span>Watchers<span id="eyes" class="label label-default">--</span></span></a></li><li id="gh-stars-item" class="hidden-xs"><a href="https://github.com/eikek/docspell" target="_blank" rel="noopener noreferrer"><i class="fa fa-star-o"></i><span>Stars<span id="stars" class="label label-default">--</span></span></a></li></ul></div></div></div></div><div id="content" data-github-owner="eikek" data-github-repo="docspell"><div class="content-wrapper"><section><h1 id="configuring">Configuring</h1>
+<!DOCTYPE html><html><head><title>Docspell: Configuring</title><meta charset="utf-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="eikek" /><meta name="description" content="Auto-tagging Document Organizer" /><meta name="og:image" content="/img/poster.png" /><meta name="image" property="og:image" content="/img/poster.png" /><meta name="og:title" content="Docspell: Configuring" /><meta name="title" property="og:title" content="Docspell: Configuring" /><meta name="og:site_name" content="Docspell" /><meta name="og:url" content="" /><meta name="og:type" content="website" /><meta name="og:description" content="Auto-tagging Document Organizer" /><link rel="icon" type="image/png" href="/img/favicon.png" /><meta name="twitter:title" content="Docspell: Configuring" /><meta name="twitter:image" content="/img/poster.png" /><meta name="twitter:description" content="Auto-tagging Document Organizer" /><meta name="twitter:card" content="summary_large_image" /><link rel="icon" type="image/png" sizes="96x96" href="/img/favicon.png" /><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" /><link rel="stylesheet" href="/highlight/styles/vs.css" /><link rel="stylesheet" href="/css/light-style.css" /><link rel="stylesheet" href="/css/docspell.css" /></head><body class="docs"><div id="wrapper"><div id="sidebar-wrapper"><div id="sidebar-brand"><a href="/" class="brand"><div class="brand-wrapper"></div><span>Docspell</span></a><button id="main-toggle" class="sidebar-toggle"><span class="close"></span></button></div><div class="sidebar-nav"> <div class="sidebar-nav-item  "><a href="/index.html" title="Home" class="">Home</a></div> <div class="sidebar-nav-item  "><a href="/demo" title="Demo" class="">Demo</a></div> <div class="sidebar-nav-item  "><a href="/getit" title="Quickstart" class="">Quickstart</a></div> <div class="sidebar-nav-item  "><a href="/features" title="Features/Limitations" class="">Features/Limitations</a></div> <div class="sidebar-nav-item  open"><a href="/doc" title="Documentation" class="drop-nested">Documentation</a><i class="fa fa-angle-right"></i><div class="sub-section"> <a href="/doc/install" title="Installation" class="">Installation</a> <a href="/doc/configure" title="Configuring" class="active">Configuring</a> <a href="/doc/nix" title="Nix/NixOS" class="">Nix/NixOS</a> <a href="/doc/reverseproxy" title="Reverse Proxy" class="">Reverse Proxy</a> <a href="/doc/metadata" title="Adding Meta Data" class="">Adding Meta Data</a> <a href="/doc/uploading" title="Uploads" class="">Uploads</a> <a href="/doc/processing" title="Processing Queue" class="">Processing Queue</a> <a href="/doc/curate" title="Find and Review" class="">Find and Review</a> <a href="/doc/mailitem" title="Send via E-Mail" class="">Send via E-Mail</a> <a href="/doc/joex" title="Joex" class="">Joex</a> <a href="/doc/tools" title="Tools" class="">Tools</a></div></div> <div class="sidebar-nav-item  "><a href="/dev" title="Development" class="drop-nested">Development</a><i class="fa fa-angle-right"></i><div class="sub-section"> <a href="/dev/adr" title="ADRs" class="">ADRs</a></div></div> <div class="sidebar-nav-item  "><a href="/api" title="Api" class="drop-nested">Api</a><i class="fa fa-angle-right"></i><div class="sub-section"> <a href="/openapi/docspell-openapi.html" title="REST Api Doc" class="">REST Api Doc</a> <a href="/openapi/docspell-openapi.yml" title="REST OpenApi Spec" class="">REST OpenApi Spec</a></div></div> <div class="sidebar-nav-item  "><a href="/changelog" title="Changelog" class="">Changelog</a></div></div></div><div id="page-content-wrapper"><div class="nav"><div class="container-fluid"><div class="row"><div class="col-lg-12"><div class="action-menu pull-left clearfix"><a href="#menu-toggle" id="menu-toggle"><i class="fa fa-bars" aria-hidden="true"></i></a></div><ul class="pull-right"><li id="gh-eyes-item" class="hidden-xs"><a href="https://github.com/eikek/docspell" target="_blank" rel="noopener noreferrer"><i class="fa fa-eye"></i><span>Watchers<span id="eyes" class="label label-default">--</span></span></a></li><li id="gh-stars-item" class="hidden-xs"><a href="https://github.com/eikek/docspell" target="_blank" rel="noopener noreferrer"><i class="fa fa-star-o"></i><span>Stars<span id="stars" class="label label-default">--</span></span></a></li></ul></div></div></div></div><div id="content" data-github-owner="eikek" data-github-repo="docspell"><div class="content-wrapper"><section><h1 id="configuring">Configuring</h1>
 
 <p>Docspell’s executable can take one argument – a configuration file. If
 that is not given, the defaults are used. The config file overrides
@@ -358,6 +358,58 @@ docspell.joex {
     wakeup-period = "30 minutes"
   }
 
+  periodic-scheduler {
+
+    # Each scheduler needs a unique name. This defaults to the node
+    # name, which must be unique, too.
+    name = ${docspell.joex.app-id}
+
+    # A fallback to start looking for due periodic tasks regularily.
+    # Usually joex instances should be notified via REST calls if
+    # external processes change tasks. But these requests may get
+    # lost.
+    wakeup-period = "10 minutes"
+  }
+
+  # Docspell uses periodic house keeping tasks, like cleaning expired
+  # invites, that can be configured here.
+  house-keeping {
+
+    # When the house keeping tasks execute. Default is to run every
+    # week.
+    schedule = "Sun *-*-* 00:00:00"
+
+    # This task removes invitation keys that have been created but not
+    # used. The timespan here must be greater than the `invite-time'
+    # setting in the rest server config file.
+    cleanup-invites = {
+
+      # Whether this task is enabled.
+      enabled = true
+
+      # The minimum age of invites to be deleted.
+      older-than = "30 days"
+    }
+
+    # Jobs store their log output in the database. Normally this data
+    # is only interesting for some period of time. The processing logs
+    # of old files can be removed eventually.
+    cleanup-jobs = {
+
+      # Whether this task is enabled.
+      enabled = true
+
+      # The minimum age of jobs to delete. It is matched against the
+      # `finished' timestamp.
+      older-than = "30 days"
+
+      # This defines how many jobs are deleted in one transaction.
+      # Since the data to delete may get large, it can be configured
+      # whether more or less memory should be used.
+      delete-batch = "100"
+    }
+  }
+
   # Configuration of text extraction
   extraction {
     # For PDF files it is first tried to read the text parts of the
@@ -435,6 +487,18 @@ docspell.joex {
     }
   }
 
+  # Settings for text analysis
+  text-analysis {
+    # Maximum length of text to be analysed.
+    #
+    # All text to analyse must fit into RAM. A large document may take
+    # too much heap. Also, most important information is at the
+    # beginning of a document, so in most cases the first two pages
+    # should suffice. Default is 10000, which are about 2-3 pages
+    # (just a rough guess, of course).
+    max-length = 10000
+  }
+
   # Configuration for converting files into PDFs.
   #
   # Most of it is delegated to external tools, which can be configured
@@ -473,7 +537,9 @@ docspell.joex {
           "-s",
           "A4",
           "--encoding",
-          "UTF-8",
+          "{{encoding}}",
+          "--load-error-handling", "ignore",
+          "--load-media-error-handling", "ignore",
           "-",
           "{{outfile}}"
         ]

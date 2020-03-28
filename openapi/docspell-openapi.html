@@ -1071,7 +1071,7 @@
   "description" : "The result when requesting new invitation keys.\n"
 };
             defs.ItemDetail = {
-  "required" : [ "attachments", "created", "direction", "id", "name", "source", "sources", "state", "tags", "updated" ],
+  "required" : [ "archives", "attachments", "created", "direction", "id", "name", "source", "sources", "state", "tags", "updated" ],
   "properties" : {
     "id" : {
       "type" : "string",
@@ -1133,6 +1133,12 @@
       }
     },
     "sources" : {
+      "type" : "array",
+      "items" : {
+        "$ref" : "#/components/schemas/AttachmentSource"
+      }
+    },
+    "archives" : {
       "type" : "array",
       "items" : {
         "$ref" : "#/components/schemas/AttachmentSource"
@@ -1921,6 +1927,12 @@
             <li class="nav-fixed nav-header active" data-group="_"><a href="#api-_">API Summary</a></li>
 
                   <li class="nav-header" data-group="Attachment"><a href="#api-Attachment">API Methods - Attachment</a></li>
+                    <li data-group="Attachment" data-name="secAttachmentIdArchiveGet" class="">
+                      <a href="#api-Attachment-secAttachmentIdArchiveGet">secAttachmentIdArchiveGet</a>
+                    </li>
+                    <li data-group="Attachment" data-name="secAttachmentIdArchiveHead" class="">
+                      <a href="#api-Attachment-secAttachmentIdArchiveHead">secAttachmentIdArchiveHead</a>
+                    </li>
                     <li data-group="Attachment" data-name="secAttachmentIdGet" class="">
                       <a href="#api-Attachment-secAttachmentIdGet">secAttachmentIdGet</a>
                     </li>
@@ -2172,7 +2184,7 @@
         <div id="header">
           <div id="api-_">
             <h2 id="welcome-to-apidoc">API and SDK Documentation</h2>
-              <div class="app-desc">Version: 0.4.0-SNAPSHOT</div>
+              <div class="app-desc">Version: 0.5.0-SNAPSHOT</div>
             <hr>
             <div>This is the remote API to Docspell, a personal document organizer.</div>
           </div>
@@ -2180,6 +2192,672 @@
         <div id="sections">
                 <section id="api-Attachment">
                   <h1>Attachment</h1>
+                    <div id="api-Attachment-secAttachmentIdArchiveGet">
+                      <article id="api-Attachment-secAttachmentIdArchiveGet-0" data-group="User" data-name="secAttachmentIdArchiveGet" data-version="0">
+                        <div class="pull-left">
+                          <h1>secAttachmentIdArchiveGet</h1>
+                          <p>Get an attachment archive file.</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked">Get the archive file that was originally uploaded that
+contains the attachment with the given id.
+
+If the attachment was not uploaded as part of an archive, a
+404 is returned.
+</p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="get"><code><span class="pln">/sec/attachment/{id}/archive</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-Attachment-secAttachmentIdArchiveGet-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-Attachment-secAttachmentIdArchiveGet-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Attachment-secAttachmentIdArchiveGet-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-Attachment-secAttachmentIdArchiveGet-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-Attachment-secAttachmentIdArchiveGet-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-Attachment-secAttachmentIdArchiveGet-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-Attachment-secAttachmentIdArchiveGet-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-Attachment-secAttachmentIdArchiveGet-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-Attachment-secAttachmentIdArchiveGet-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-Attachment-secAttachmentIdArchiveGet-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-Attachment-secAttachmentIdArchiveGet-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-Attachment-secAttachmentIdArchiveGet-0-curl">
+                            <pre class="prettyprint"><code class="language-bsh">curl -X GET -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/attachment/{id}/archive"</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-Attachment-secAttachmentIdArchiveGet-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.AttachmentApi;
+
+import java.io.File;
+import java.util.*;
+
+public class AttachmentApiExample {
+
+    public static void main(String[] args) {
+        ApiClient defaultClient = Configuration.getDefaultApiClient();
+
+        // Configure API key authorization: authTokenHeader
+        ApiKeyAuth authTokenHeader = (ApiKeyAuth) defaultClient.getAuthentication("authTokenHeader");
+        authTokenHeader.setApiKey("YOUR API KEY");
+        // Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+        //authTokenHeader.setApiKeyPrefix("Token");
+
+        AttachmentApi apiInstance = new AttachmentApi();
+        String id = id_example; // String | An identifier
+        try {
+            byte[] result = apiInstance.secAttachmentIdArchiveGet(id);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling AttachmentApi#secAttachmentIdArchiveGet");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Attachment-secAttachmentIdArchiveGet-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.AttachmentApi;
+
+public class AttachmentApiExample {
+
+    public static void main(String[] args) {
+        AttachmentApi apiInstance = new AttachmentApi();
+        String id = id_example; // String | An identifier
+        try {
+            byte[] result = apiInstance.secAttachmentIdArchiveGet(id);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling AttachmentApi#secAttachmentIdArchiveGet");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-Attachment-secAttachmentIdArchiveGet-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-Attachment-secAttachmentIdArchiveGet-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
+// Configure API key authorization: (authentication scheme: authTokenHeader)
+[apiConfig setApiKey:@"YOUR_API_KEY" forApiKeyIdentifier:@"X-Docspell-Auth"];
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+//[apiConfig setApiKeyPrefix:@"Bearer" forApiKeyIdentifier:@"X-Docspell-Auth"];
+String *id = id_example; // An identifier
+
+AttachmentApi *apiInstance = [[AttachmentApi alloc] init];
+
+// Get an attachment archive file.
+[apiInstance secAttachmentIdArchiveGetWith:id
+              completionHandler: ^(byte[] output, NSError* error) {
+                            if (output) {
+                                NSLog(@"%@", output);
+                            }
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Attachment-secAttachmentIdArchiveGet-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var Docspell = require('docspell');
+var defaultClient = Docspell.ApiClient.instance;
+
+// Configure API key authorization: authTokenHeader
+var authTokenHeader = defaultClient.authentications['authTokenHeader'];
+authTokenHeader.apiKey = "YOUR API KEY"
+// Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+//authTokenHeader.apiKeyPrefix['X-Docspell-Auth'] = "Token"
+
+var api = new Docspell.AttachmentApi()
+var id = id_example; // {{String}} An identifier
+
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+};
+api.secAttachmentIdArchiveGet(id, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-Attachment-secAttachmentIdArchiveGet-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-Attachment-secAttachmentIdArchiveGet-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class secAttachmentIdArchiveGetExample
+    {
+        public void main()
+        {
+
+            // Configure API key authorization: authTokenHeader
+            Configuration.Default.ApiKey.Add("X-Docspell-Auth", "YOUR_API_KEY");
+            // Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+            // Configuration.Default.ApiKeyPrefix.Add("X-Docspell-Auth", "Bearer");
+
+            var apiInstance = new AttachmentApi();
+            var id = id_example;  // String | An identifier
+
+            try
+            {
+                // Get an attachment archive file.
+                byte[] result = apiInstance.secAttachmentIdArchiveGet(id);
+                Debug.WriteLine(result);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling AttachmentApi.secAttachmentIdArchiveGet: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Attachment-secAttachmentIdArchiveGet-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+// Configure API key authorization: authTokenHeader
+Swagger\Client\Configuration::getDefaultConfiguration()->setApiKey('X-Docspell-Auth', 'YOUR_API_KEY');
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+// Swagger\Client\Configuration::getDefaultConfiguration()->setApiKeyPrefix('X-Docspell-Auth', 'Bearer');
+
+$api_instance = new Swagger\Client\ApiAttachmentApi();
+$id = id_example; // String | An identifier
+
+try {
+    $result = $api_instance->secAttachmentIdArchiveGet($id);
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling AttachmentApi->secAttachmentIdArchiveGet: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Attachment-secAttachmentIdArchiveGet-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::AttachmentApi;
+
+# Configure API key authorization: authTokenHeader
+$WWW::SwaggerClient::Configuration::api_key->{'X-Docspell-Auth'} = 'YOUR_API_KEY';
+# uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+#$WWW::SwaggerClient::Configuration::api_key_prefix->{'X-Docspell-Auth'} = "Bearer";
+
+my $api_instance = WWW::SwaggerClient::AttachmentApi->new();
+my $id = id_example; # String | An identifier
+
+eval { 
+    my $result = $api_instance->secAttachmentIdArchiveGet(id => $id);
+    print Dumper($result);
+};
+if ($@) {
+    warn "Exception when calling AttachmentApi->secAttachmentIdArchiveGet: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Attachment-secAttachmentIdArchiveGet-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# Configure API key authorization: authTokenHeader
+swagger_client.configuration.api_key['X-Docspell-Auth'] = 'YOUR_API_KEY'
+# Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+# swagger_client.configuration.api_key_prefix['X-Docspell-Auth'] = 'Bearer'
+
+# create an instance of the API class
+api_instance = swagger_client.AttachmentApi()
+id = id_example # String | An identifier
+
+try: 
+    # Get an attachment archive file.
+    api_response = api_instance.sec_attachment_id_archive_get(id)
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling AttachmentApi->secAttachmentIdArchiveGet: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+                            <div class="methodsubtabletitle">Path parameters</div>
+                            <table id="methodsubtable">
+                                <tr>
+                                  <th width="150px">Name</th>
+                                  <th>Description</th>
+                                </tr>
+                                  <tr><td style="width:150px;">id*</td>
+                                  <td>
+                                  
+                                  
+                                      <div id="d2e199_secAttachmentIdArchiveGet_id">
+                                          <div class="json-schema-view">
+                                              <div class="primitive">
+                                                  <span class="type">
+                                                      String
+                                                  </span>
+                                  
+                                                      <div class="inner description">
+                                                          An identifier
+                                                      </div>
+                                              </div>
+                                                  <div class="inner required">
+                                                      Required
+                                                  </div>
+                                          </div>
+                                      </div>
+                                  </td>
+                                  </tr>
+                            </table>
+
+
+
+
+
+                          <h2>Responses</h2>
+                            <h3> Status: 200 - Ok </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-secAttachmentIdArchiveGet-200-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-secAttachmentIdArchiveGet-200-schema">
+                                  <div id='responses-secAttachmentIdArchiveGet-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "Ok",
+  "content" : {
+    "application/octet-stream" : {
+      "schema" : {
+        "type" : "string",
+        "format" : "binary",
+        "x-content-type" : "application/octet-stream"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/octet-stream"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-secAttachmentIdArchiveGet-200-schema-data').val(stringify(schema));
+                                        var result = $('#responses-secAttachmentIdArchiveGet-200-schema-200');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-secAttachmentIdArchiveGet-200-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
+                    <div id="api-Attachment-secAttachmentIdArchiveHead">
+                      <article id="api-Attachment-secAttachmentIdArchiveHead-0" data-group="User" data-name="secAttachmentIdArchiveHead" data-version="0">
+                        <div class="pull-left">
+                          <h1>secAttachmentIdArchiveHead</h1>
+                          <p>Get an attachment archive file.</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked">Get information about the archive that contains the attachment
+with the given id.
+
+If the attachment was not uploaded as part of an archive, 404
+is returned.
+</p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="head"><code><span class="pln">/sec/attachment/{id}/archive</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-Attachment-secAttachmentIdArchiveHead-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-Attachment-secAttachmentIdArchiveHead-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Attachment-secAttachmentIdArchiveHead-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-Attachment-secAttachmentIdArchiveHead-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-Attachment-secAttachmentIdArchiveHead-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-Attachment-secAttachmentIdArchiveHead-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-Attachment-secAttachmentIdArchiveHead-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-Attachment-secAttachmentIdArchiveHead-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-Attachment-secAttachmentIdArchiveHead-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-Attachment-secAttachmentIdArchiveHead-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-Attachment-secAttachmentIdArchiveHead-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-Attachment-secAttachmentIdArchiveHead-0-curl">
+                            <pre class="prettyprint"><code class="language-bsh">curl -X HEAD -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/attachment/{id}/archive"</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-Attachment-secAttachmentIdArchiveHead-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.AttachmentApi;
+
+import java.io.File;
+import java.util.*;
+
+public class AttachmentApiExample {
+
+    public static void main(String[] args) {
+        ApiClient defaultClient = Configuration.getDefaultApiClient();
+
+        // Configure API key authorization: authTokenHeader
+        ApiKeyAuth authTokenHeader = (ApiKeyAuth) defaultClient.getAuthentication("authTokenHeader");
+        authTokenHeader.setApiKey("YOUR API KEY");
+        // Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+        //authTokenHeader.setApiKeyPrefix("Token");
+
+        AttachmentApi apiInstance = new AttachmentApi();
+        String id = id_example; // String | An identifier
+        try {
+            apiInstance.secAttachmentIdArchiveHead(id);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling AttachmentApi#secAttachmentIdArchiveHead");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Attachment-secAttachmentIdArchiveHead-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.AttachmentApi;
+
+public class AttachmentApiExample {
+
+    public static void main(String[] args) {
+        AttachmentApi apiInstance = new AttachmentApi();
+        String id = id_example; // String | An identifier
+        try {
+            apiInstance.secAttachmentIdArchiveHead(id);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling AttachmentApi#secAttachmentIdArchiveHead");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-Attachment-secAttachmentIdArchiveHead-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-Attachment-secAttachmentIdArchiveHead-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
+// Configure API key authorization: (authentication scheme: authTokenHeader)
+[apiConfig setApiKey:@"YOUR_API_KEY" forApiKeyIdentifier:@"X-Docspell-Auth"];
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+//[apiConfig setApiKeyPrefix:@"Bearer" forApiKeyIdentifier:@"X-Docspell-Auth"];
+String *id = id_example; // An identifier
+
+AttachmentApi *apiInstance = [[AttachmentApi alloc] init];
+
+// Get an attachment archive file.
+[apiInstance secAttachmentIdArchiveHeadWith:id
+              completionHandler: ^(NSError* error) {
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Attachment-secAttachmentIdArchiveHead-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var Docspell = require('docspell');
+var defaultClient = Docspell.ApiClient.instance;
+
+// Configure API key authorization: authTokenHeader
+var authTokenHeader = defaultClient.authentications['authTokenHeader'];
+authTokenHeader.apiKey = "YOUR API KEY"
+// Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+//authTokenHeader.apiKeyPrefix['X-Docspell-Auth'] = "Token"
+
+var api = new Docspell.AttachmentApi()
+var id = id_example; // {{String}} An identifier
+
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully.');
+  }
+};
+api.secAttachmentIdArchiveHead(id, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-Attachment-secAttachmentIdArchiveHead-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-Attachment-secAttachmentIdArchiveHead-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class secAttachmentIdArchiveHeadExample
+    {
+        public void main()
+        {
+
+            // Configure API key authorization: authTokenHeader
+            Configuration.Default.ApiKey.Add("X-Docspell-Auth", "YOUR_API_KEY");
+            // Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+            // Configuration.Default.ApiKeyPrefix.Add("X-Docspell-Auth", "Bearer");
+
+            var apiInstance = new AttachmentApi();
+            var id = id_example;  // String | An identifier
+
+            try
+            {
+                // Get an attachment archive file.
+                apiInstance.secAttachmentIdArchiveHead(id);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling AttachmentApi.secAttachmentIdArchiveHead: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Attachment-secAttachmentIdArchiveHead-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+// Configure API key authorization: authTokenHeader
+Swagger\Client\Configuration::getDefaultConfiguration()->setApiKey('X-Docspell-Auth', 'YOUR_API_KEY');
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+// Swagger\Client\Configuration::getDefaultConfiguration()->setApiKeyPrefix('X-Docspell-Auth', 'Bearer');
+
+$api_instance = new Swagger\Client\ApiAttachmentApi();
+$id = id_example; // String | An identifier
+
+try {
+    $api_instance->secAttachmentIdArchiveHead($id);
+} catch (Exception $e) {
+    echo 'Exception when calling AttachmentApi->secAttachmentIdArchiveHead: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Attachment-secAttachmentIdArchiveHead-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::AttachmentApi;
+
+# Configure API key authorization: authTokenHeader
+$WWW::SwaggerClient::Configuration::api_key->{'X-Docspell-Auth'} = 'YOUR_API_KEY';
+# uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+#$WWW::SwaggerClient::Configuration::api_key_prefix->{'X-Docspell-Auth'} = "Bearer";
+
+my $api_instance = WWW::SwaggerClient::AttachmentApi->new();
+my $id = id_example; # String | An identifier
+
+eval { 
+    $api_instance->secAttachmentIdArchiveHead(id => $id);
+};
+if ($@) {
+    warn "Exception when calling AttachmentApi->secAttachmentIdArchiveHead: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Attachment-secAttachmentIdArchiveHead-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# Configure API key authorization: authTokenHeader
+swagger_client.configuration.api_key['X-Docspell-Auth'] = 'YOUR_API_KEY'
+# Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+# swagger_client.configuration.api_key_prefix['X-Docspell-Auth'] = 'Bearer'
+
+# create an instance of the API class
+api_instance = swagger_client.AttachmentApi()
+id = id_example # String | An identifier
+
+try: 
+    # Get an attachment archive file.
+    api_instance.sec_attachment_id_archive_head(id)
+except ApiException as e:
+    print("Exception when calling AttachmentApi->secAttachmentIdArchiveHead: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+                            <div class="methodsubtabletitle">Path parameters</div>
+                            <table id="methodsubtable">
+                                <tr>
+                                  <th width="150px">Name</th>
+                                  <th>Description</th>
+                                </tr>
+                                  <tr><td style="width:150px;">id*</td>
+                                  <td>
+                                  
+                                  
+                                      <div id="d2e199_secAttachmentIdArchiveHead_id">
+                                          <div class="json-schema-view">
+                                              <div class="primitive">
+                                                  <span class="type">
+                                                      String
+                                                  </span>
+                                  
+                                                      <div class="inner description">
+                                                          An identifier
+                                                      </div>
+                                              </div>
+                                                  <div class="inner required">
+                                                      Required
+                                                  </div>
+                                          </div>
+                                      </div>
+                                  </td>
+                                  </tr>
+                            </table>
+
+
+
+
+
+                          <h2>Responses</h2>
+                            <h3> Status: 200 - Ok </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="">
+                                  <a data-toggle="tab" href="#responses-secAttachmentIdArchiveHead-200-headers">Headers</a>
+                                </li>
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane" id="responses-secAttachmentIdArchiveHead-200-headers">
+                                    <table>
+                                        <tr>
+                                            <th width="150px">Name</th>
+                                            <th width="100px">Type</th>
+                                            <th width="100px">Format</th>
+                                            <th>Description</th>
+                                        </tr>
+                                        <tr>
+                                            <td>Content-Type</td>
+                                            <td>String</td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Content-Length</td>
+                                            <td>Long</td>
+                                            <td>int64</td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td>ETag</td>
+                                            <td>String</td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Content-Disposition</td>
+                                            <td>String</td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
                     <div id="api-Attachment-secAttachmentIdGet">
                       <article id="api-Attachment-secAttachmentIdGet-0" data-group="User" data-name="secAttachmentIdGet" data-version="0">
                         <div class="pull-left">

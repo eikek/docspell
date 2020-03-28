@@ -2,7 +2,7 @@ openapi: 3.0.0
 
 info:
   title: Docspell
-  version: 0.4.0-SNAPSHOT
+  version: 0.5.0-SNAPSHOT
   description: |
     This is the remote API to Docspell, a personal document organizer.
 
@@ -1265,6 +1265,58 @@ paths:
               schema:
                 type: string
                 format: binary
+  /sec/attachment/{id}/archive:
+    head:
+      tags: [ Attachment ]
+      summary: Get an attachment archive file.
+      description: |
+        Get information about the archive that contains the attachment
+        with the given id.
+
+        If the attachment was not uploaded as part of an archive, 404
+        is returned.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        200:
+          description: Ok
+          headers:
+            Content-Type:
+              schema:
+                type: string
+            Content-Length:
+              schema:
+                type: integer
+                format: int64
+            ETag:
+              schema:
+                type: string
+            Content-Disposition:
+              schema:
+                type: string
+    get:
+      tags: [ Attachment ]
+      summary: Get an attachment archive file.
+      description: |
+        Get the archive file that was originally uploaded that
+        contains the attachment with the given id.
+
+        If the attachment was not uploaded as part of an archive, a
+        404 is returned.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
   /sec/attachment/{id}/meta:
     get:
       tags: [ Attachment ]
@@ -1845,6 +1897,7 @@ components:
         - updated
         - attachments
         - sources
+        - archives
         - tags
       properties:
         id:
@@ -1892,6 +1945,10 @@ components:
           items:
             $ref: "#/components/schemas/Attachment"
         sources:
+          type: array
+          items:
+            $ref: "#/components/schemas/AttachmentSource"
+        archives:
           type: array
           items:
             $ref: "#/components/schemas/AttachmentSource"

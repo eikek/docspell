@@ -1,6 +1,5 @@
 #site-main {
-    background: floralwhite;
-    padding: 40px 0;
+    background: aliceblue;
 }
 
 #masthead {
@@ -8,7 +7,7 @@
     background-repeat: no-repeat;
     background-size: 100% 100%;
     animation: none;
-    height: 25vh;
+    height: 26vh;
 }
 
 .thumbnail {
@@ -17,6 +16,7 @@
 
 .features-image {
     height: 200px;
+    position: relative;
 }
 
 .docs #sidebar-wrapper .sidebar-nav .sidebar-nav-item.open>a, .docs #sidebar-wrapper .sidebar-nav .sidebar-nav-item.open button {

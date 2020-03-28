@@ -1,0 +1,133 @@
+<!DOCTYPE html><html><head><title>Docspell: Periodic Tasks</title><meta charset="utf-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="eikek" /><meta name="description" content="Auto-tagging Document Organizer" /><meta name="og:image" content="/img/poster.png" /><meta name="image" property="og:image" content="/img/poster.png" /><meta name="og:title" content="Docspell: Periodic Tasks" /><meta name="title" property="og:title" content="Docspell: Periodic Tasks" /><meta name="og:site_name" content="Docspell" /><meta name="og:url" content="" /><meta name="og:type" content="website" /><meta name="og:description" content="Auto-tagging Document Organizer" /><link rel="icon" type="image/png" href="/img/favicon.png" /><meta name="twitter:title" content="Docspell: Periodic Tasks" /><meta name="twitter:image" content="/img/poster.png" /><meta name="twitter:description" content="Auto-tagging Document Organizer" /><meta name="twitter:card" content="summary_large_image" /><link rel="icon" type="image/png" sizes="96x96" href="/img/favicon.png" /><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" /><link rel="stylesheet" href="/highlight/styles/vs.css" /><link rel="stylesheet" href="/css/light-style.css" /><link rel="stylesheet" href="/css/docspell.css" /></head><body class="docs"><div id="wrapper"><div id="sidebar-wrapper"><div id="sidebar-brand"><a href="/" class="brand"><div class="brand-wrapper"></div><span>Docspell</span></a><button id="main-toggle" class="sidebar-toggle"><span class="close"></span></button></div><div class="sidebar-nav"> <div class="sidebar-nav-item  "><a href="/index.html" title="Home" class="">Home</a></div> <div class="sidebar-nav-item  "><a href="/demo" title="Demo" class="">Demo</a></div> <div class="sidebar-nav-item  "><a href="/getit" title="Quickstart" class="">Quickstart</a></div> <div class="sidebar-nav-item  "><a href="/features" title="Features/Limitations" class="">Features/Limitations</a></div> <div class="sidebar-nav-item  "><a href="/doc" title="Documentation" class="drop-nested">Documentation</a><i class="fa fa-angle-right"></i><div class="sub-section"> <a href="/doc/install" title="Installation" class="">Installation</a> <a href="/doc/configure" title="Configuring" class="">Configuring</a> <a href="/doc/nix" title="Nix/NixOS" class="">Nix/NixOS</a> <a href="/doc/reverseproxy" title="Reverse Proxy" class="">Reverse Proxy</a> <a href="/doc/metadata" title="Adding Meta Data" class="">Adding Meta Data</a> <a href="/doc/uploading" title="Uploads" class="">Uploads</a> <a href="/doc/processing" title="Processing Queue" class="">Processing Queue</a> <a href="/doc/curate" title="Find and Review" class="">Find and Review</a> <a href="/doc/mailitem" title="Send via E-Mail" class="">Send via E-Mail</a> <a href="/doc/joex" title="Joex" class="">Joex</a> <a href="/doc/tools" title="Tools" class="">Tools</a></div></div> <div class="sidebar-nav-item  "><a href="/dev" title="Development" class="drop-nested">Development</a><i class="fa fa-angle-right"></i><div class="sub-section"> <a href="/dev/adr" title="ADRs" class="">ADRs</a></div></div> <div class="sidebar-nav-item  "><a href="/api" title="Api" class="drop-nested">Api</a><i class="fa fa-angle-right"></i><div class="sub-section"> <a href="/openapi/docspell-openapi.html" title="REST Api Doc" class="">REST Api Doc</a> <a href="/openapi/docspell-openapi.yml" title="REST OpenApi Spec" class="">REST OpenApi Spec</a></div></div> <div class="sidebar-nav-item  "><a href="/changelog" title="Changelog" class="">Changelog</a></div></div></div><div id="page-content-wrapper"><div class="nav"><div class="container-fluid"><div class="row"><div class="col-lg-12"><div class="action-menu pull-left clearfix"><a href="#menu-toggle" id="menu-toggle"><i class="fa fa-bars" aria-hidden="true"></i></a></div><ul class="pull-right"><li id="gh-eyes-item" class="hidden-xs"><a href="https://github.com/eikek/docspell" target="_blank" rel="noopener noreferrer"><i class="fa fa-eye"></i><span>Watchers<span id="eyes" class="label label-default">--</span></span></a></li><li id="gh-stars-item" class="hidden-xs"><a href="https://github.com/eikek/docspell" target="_blank" rel="noopener noreferrer"><i class="fa fa-star-o"></i><span>Stars<span id="stars" class="label label-default">--</span></span></a></li></ul></div></div></div></div><div id="content" data-github-owner="eikek" data-github-repo="docspell"><div class="content-wrapper"><section><h1 id="periodic-tasks">Periodic Tasks</h1>
+
+<h2 id="context-and-problem-statement">Context and Problem Statement</h2>
+
+<p>Currently there is a <code class="highlighter-rouge">Scheduler</code> that consumes tasks off a queue in
+the database. This allows multiple job executors running in parallel
+racing for the next job to execute. This is for executing tasks
+immediately – as long as there are enough resource.</p>
+
+<p>What is missing, is a component that maintains periodic tasks. The
+reason for this is to have house keeping tasks that run regularily and
+clean up stale or unused data. Later, users should be able to create
+periodic tasks, for example to read e-mails from an inbox or to be
+notified of due items.</p>
+
+<p>The problem is again, that it must work with multiple job executor
+instances running at the same time. This is the same pattern as with
+the <code class="highlighter-rouge">Scheduler</code>: it must be ensured that only one task is used at a
+time. Multiple job exectuors must not schedule a perdiodic task more
+than once. If a periodic tasks takes longer than the time between
+runs, it must wait for the next interval.</p>
+
+<h2 id="considered-options">Considered Options</h2>
+
+<ol>
+  <li>Adding a <code class="highlighter-rouge">timer</code> and <code class="highlighter-rouge">nextrun</code> field to the current <code class="highlighter-rouge">job</code> table</li>
+  <li>Creating a separate table for periodic tasks</li>
+</ol>
+
+<h2 id="decision-outcome">Decision Outcome</h2>
+
+<p>The 2. option.</p>
+
+<p>For internal housekeeping tasks, it may suffice to reuse the existing
+<code class="highlighter-rouge">job</code> queue by adding more fields such that a job may be considered
+periodic. But this conflates with what the <code class="highlighter-rouge">Scheduler</code> is doing now
+(executing tasks as soon as possible while being bound to some
+resource limits) with a completely different subject.</p>
+
+<p>There will be a new <code class="highlighter-rouge">PeriodicScheduler</code> that works on a new table in
+the database that is representing periodic tasks. This table will
+share fields with the <code class="highlighter-rouge">job</code> table to be able to create <code class="highlighter-rouge">RJob</code> records.
+This new component is only taking care of periodically submitting jobs
+to the job queue such that the <code class="highlighter-rouge">Scheduler</code> will eventually pick it up
+and run it. If the tasks cannot run (for example due to resource
+limitation), the periodic scheduler can’t do nothing but wait and try
+next time.</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="nv">"periodic_task"</span> <span class="p">(</span>
+  <span class="nv">"id"</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">254</span><span class="p">)</span> <span class="k">not</span> <span class="k">null</span> <span class="k">primary</span> <span class="k">key</span><span class="p">,</span>
+  <span class="nv">"enabled"</span> <span class="nb">boolean</span> <span class="k">not</span> <span class="k">null</span><span class="p">,</span>
+  <span class="nv">"task"</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">254</span><span class="p">)</span> <span class="k">not</span> <span class="k">null</span><span class="p">,</span>
+  <span class="nv">"group_"</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">254</span><span class="p">)</span> <span class="k">not</span> <span class="k">null</span><span class="p">,</span>
+  <span class="nv">"args"</span> <span class="nb">text</span> <span class="k">not</span> <span class="k">null</span><span class="p">,</span>
+  <span class="nv">"subject"</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">254</span><span class="p">)</span> <span class="k">not</span> <span class="k">null</span><span class="p">,</span>
+  <span class="nv">"submitter"</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">254</span><span class="p">)</span> <span class="k">not</span> <span class="k">null</span><span class="p">,</span>
+  <span class="nv">"priority"</span> <span class="nb">int</span> <span class="k">not</span> <span class="k">null</span><span class="p">,</span>
+  <span class="nv">"worker"</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">254</span><span class="p">),</span>
+  <span class="nv">"marked"</span> <span class="nb">timestamp</span><span class="p">,</span>
+  <span class="nv">"timer"</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">254</span><span class="p">)</span> <span class="k">not</span> <span class="k">null</span><span class="p">,</span>
+  <span class="nv">"nextrun"</span> <span class="nb">timestamp</span> <span class="k">not</span> <span class="k">null</span><span class="p">,</span>
+  <span class="nv">"created"</span> <span class="nb">timestamp</span> <span class="k">not</span> <span class="k">null</span>
+<span class="p">);</span>
+</code></pre></div></div>
+
+<p>Preparing for other features, at some point periodic tasks will be
+created by users. It should be possible to disable/enable them. The
+next 6 properties are needed to insert jobs into the <code class="highlighter-rouge">job</code> table. The
+<code class="highlighter-rouge">worker</code> field (and <code class="highlighter-rouge">marked</code>) are used to mark a periodic job as
+“being worked on by a job executor”.</p>
+
+<p>The <code class="highlighter-rouge">timer</code> is the schedule, which is a
+<a href="https://man.cx/systemd.time#heading7">systemd-like</a> calendar event
+string. This is parsed by <a href="https://github.com/eikek/calev">this
+library</a>. The <code class="highlighter-rouge">nextrun</code> field will
+store the timestamp of the next time the task would need to be
+executed. This is needed to query this table for the newest task.</p>
+
+<p>The <code class="highlighter-rouge">PeriodicScheduler</code> works roughly like this:</p>
+
+<p>On startup:</p>
+<ul>
+  <li>Remove stale worker values. If the process has been killed, there
+may be marked tasks which must be cleared now.</li>
+</ul>
+
+<p>Main-Loop:</p>
+<ol>
+  <li>Cancel current scheduled notify (see 4. below)</li>
+  <li>get next (= earliest &amp; enabled) periodic job</li>
+  <li>if none: stop</li>
+  <li>if triggered (= <code class="highlighter-rouge">nextrun &lt;= 'now'</code>):
+    <ul>
+      <li>Mark periodic task. On fail: goto 1.</li>
+      <li>Submit new job into the jobqueue:</li>
+    </ul>
+    <ul>
+      <li>Update <code class="highlighter-rouge">nextrun</code> field</li>
+      <li>Check for non-final jobs of that name. This is required to not
+run the same periodic task multiple times concurrently.
+        <ul>
+          <li>if exist: goto 4.</li>
+          <li>if not exist: submit job
+    - Unmark periodic task</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>if future
+    <ul>
+      <li>schedule notify: notify self to run again next time the task
+ schedule triggers</li>
+    </ul>
+  </li>
+</ol>
+</section><div class="edit-button"><a href="https://github.com/eikek/docspell/edit/master/modules/microsite/docs/dev/adr/0012_periodic_tasks.md" target="_blank" rel="noopener noreferrer" class="btn-sm btn-info">Improve this page</a></div></div></div></div></div><script src="/highlight/highlight.pack.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/json.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/javascript.min.js"></script><script>
+// For all code blocks, copy the language from the containing div
+// to the inner code tag (where hljs expects it to be)
+const langPrefix = 'language-';
+document.querySelectorAll(`div[class^='${langPrefix}']`).forEach(function(div) {
+  div.classList.forEach(function(cssClass) {
+    if (cssClass.startsWith(langPrefix)) {
+      const lang = cssClass.substring(langPrefix.length);
+      div.querySelectorAll('pre code').forEach(function(code) {
+        code.classList.add(lang);
+      });
+    }
+  });
+});
+
+hljs.configure({languages:['scala','java','bash','json','javascript']});
+hljs.initHighlightingOnLoad();
+      </script><script>console.info('\x57\x65\x62\x73\x69\x74\x65\x20\x62\x75\x69\x6c\x74\x20\x77\x69\x74\x68\x3a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x5f\x5f\x20\x20\x20\x20\x5f\x5f\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x5f\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x5f\x20\x5f\x5f\x0a\x20\x20\x20\x5f\x5f\x5f\x5f\x5f\x2f\x20\x2f\x5f\x20\x20\x2f\x20\x2f\x5f\x20\x20\x20\x20\x20\x20\x5f\x5f\x5f\x5f\x20\x5f\x5f\x5f\x20\x20\x28\x5f\x29\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x20\x20\x5f\x5f\x5f\x5f\x5f\x28\x5f\x29\x20\x2f\x5f\x5f\x5f\x5f\x20\x20\x5f\x5f\x5f\x5f\x5f\x0a\x20\x20\x2f\x20\x5f\x5f\x5f\x2f\x20\x5f\x5f\x20\x5c\x2f\x20\x5f\x5f\x2f\x5f\x5f\x5f\x5f\x5f\x2f\x20\x5f\x5f\x20\x60\x5f\x5f\x20\x5c\x2f\x20\x2f\x20\x5f\x5f\x5f\x2f\x20\x5f\x5f\x5f\x2f\x20\x5f\x5f\x20\x5c\x2f\x20\x5f\x5f\x5f\x2f\x20\x2f\x20\x5f\x5f\x2f\x20\x5f\x20\x5c\x2f\x20\x5f\x5f\x5f\x2f\x0a\x20\x28\x5f\x5f\x20\x20\x29\x20\x2f\x5f\x2f\x20\x2f\x20\x2f\x5f\x2f\x5f\x5f\x5f\x5f\x5f\x2f\x20\x2f\x20\x2f\x20\x2f\x20\x2f\x20\x2f\x20\x2f\x20\x2f\x5f\x5f\x2f\x20\x2f\x20\x20\x2f\x20\x2f\x5f\x2f\x20\x28\x5f\x5f\x20\x20\x29\x20\x2f\x20\x2f\x5f\x2f\x20\x20\x5f\x5f\x28\x5f\x5f\x20\x20\x29\x0a\x2f\x5f\x5f\x5f\x5f\x2f\x5f\x2e\x5f\x5f\x5f\x2f\x5c\x5f\x5f\x2f\x20\x20\x20\x20\x20\x2f\x5f\x2f\x20\x2f\x5f\x2f\x20\x2f\x5f\x2f\x5f\x2f\x5c\x5f\x5f\x5f\x2f\x5f\x2f\x20\x20\x20\x5c\x5f\x5f\x5f\x5f\x2f\x5f\x5f\x5f\x5f\x2f\x5f\x2f\x5c\x5f\x5f\x2f\x5c\x5f\x5f\x5f\x2f\x5f\x5f\x5f\x5f\x2f\x0a\x0a\x68\x74\x74\x70\x73\x3a\x2f\x2f\x34\x37\x64\x65\x67\x2e\x67\x69\x74\x68\x75\x62\x2e\x69\x6f\x2f\x73\x62\x74\x2d\x6d\x69\x63\x72\x6f\x73\x69\x74\x65\x73')</script><script src="/js/docs.js"></script></body></html>
