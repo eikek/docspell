@@ -1,6 +1,7 @@
 ---
 layout: docs
 title: Convert Image Files
+permalink: dev/adr/0010_convert_image_files
 ---
 
 # {{ page.title }}

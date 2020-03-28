@@ -1,6 +1,7 @@
 ---
 layout: docs
 title: Extract Text from Files
+permalink: dev/adr/0011_extract_text
 ---
 
 # Extract Text from Files

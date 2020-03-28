@@ -1,20 +1,25 @@
 ---
 layout: docs
 title: Adding Meta Data
+permalink: doc/metadata
 ---
 
 # {{ page.title }}
 
 ## Meta Data
 
-The processing can be controlled implicitely by the provided meta
-data. The *Meta Data* page allows to manage this meta data. You can
-create the following:
+Docspell processes each uploaded file. Processing involves extracting
+archives, extracting text, anlyzing the extracted text and converting
+the file into a pdf. Text is analyzed to find metadata that can be set
+automatically. Docspell compares the extracted text against a set of
+known meta data. The *Meta Data* page allows to manage this meta data.
+You can create the following:
 
 - Tags
 - Organizations
 - Persons
 - Equipments
+
 
 ### Tags
 
@@ -32,7 +37,7 @@ can help to implement some.
 
 The tags are *not* taken into account when processing. Docspell will
 not automatically associate tags to your items. The tags are only
-meant to be used manually.
+meant to be used manually for now.
 
 
 ### Organization and Person

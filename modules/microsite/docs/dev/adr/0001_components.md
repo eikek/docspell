@@ -1,6 +1,7 @@
 ---
 layout: docs
 title: Components
+permalink: dev/adr/0001_components
 ---
 
 # Components

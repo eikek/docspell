@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: Quickstart
-permalink: getit/
+permalink: getit
 ---
 
 ## {{ page.title }}
@@ -56,4 +56,4 @@ PDF conversion requires the following tools:
 5. Register a new account, sign in and try it.
 
 Check the [early demo video](demo) to see the basic idea. Refer to the
-[documentation](doc.html) for more information on how to use docspell.
+[documentation](doc) for more information on how to use docspell.

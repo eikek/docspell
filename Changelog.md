@@ -2,7 +2,7 @@
 
 ## v0.4.0 
 
-*unknown*
+*Mar. 29, 2020*
 
 - Support for archive files. Archives, for example zip files, contain
   the files that should go into docspell. Docspell now extracts

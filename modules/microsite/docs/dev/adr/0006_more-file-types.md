@@ -1,6 +1,7 @@
 ---
 layout: docs
 title: More File Types
+permalink: dev/adr/0006_more-file-types
 ---
 
 # More File Types

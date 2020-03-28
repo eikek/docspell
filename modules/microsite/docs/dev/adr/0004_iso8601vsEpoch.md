@@ -1,6 +1,7 @@
 ---
 layout: docs
 title: ISO8601 vs Millis
+permalink: dev/adr/0004_iso8601vsEpoch
 ---
 
 # ISO8601 vs Millis as Date-Time transfer

@@ -1,6 +1,7 @@
 ---
 layout: docs
 title: Component Interaction
+permalink: dev/adr/0002_component_interaction
 ---
 
 # Component Interaction

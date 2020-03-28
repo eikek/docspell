@@ -1,6 +1,7 @@
 ---
 layout: docs
 title: Periodic Tasks
+permalink: dev/adr/0012_periodic_tasks
 ---
 
 # Periodic Tasks

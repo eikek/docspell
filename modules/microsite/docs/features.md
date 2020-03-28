@@ -1,6 +1,7 @@
 ---
 layout: docs
 title: Features and Limitations
+permalink: features
 ---
 
 # Features

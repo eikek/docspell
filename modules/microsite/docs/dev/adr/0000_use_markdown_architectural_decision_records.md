@@ -1,6 +1,7 @@
 ---
 layout: docs
 title: Use Markdown Architectural Decision Records
+permalink: dev/adr/0000
 ---
 
 # Use Markdown Architectural Decision Records

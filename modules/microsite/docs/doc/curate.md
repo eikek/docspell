@@ -1,6 +1,7 @@
 ---
 layout: docs
 title: Find and Review
+permalink: doc/curate
 ---
 
 # {{page.title}}

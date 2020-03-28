@@ -1,6 +1,7 @@
 ---
 layout: docs
 title: Processing Queue
+permalink: doc/processing
 ---
 
 # {{ page.title }}

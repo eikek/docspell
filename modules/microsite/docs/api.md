@@ -1,6 +1,7 @@
 ---
 layout: docs
 title: Api
+permalink: api
 ---
 
 # {{page.title}}

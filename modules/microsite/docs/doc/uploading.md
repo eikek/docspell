@@ -1,6 +1,7 @@
 ---
 layout: docs
 title: Uploads
+permalink: doc/uploading
 ---
 
 # {{page.title}}

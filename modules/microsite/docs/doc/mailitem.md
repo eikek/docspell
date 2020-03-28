@@ -1,6 +1,7 @@
 ---
 layout: docs
 title: Send items via E-Mail
+permalink: doc/mailitem
 ---
 
 # {{page.title}}

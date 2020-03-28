@@ -1,6 +1,7 @@
 ---
 layout: docs
 title: Joex - Job Executor
+permalink: dev/adr/0005_job-executor
 ---
 
 # Job Executor

@@ -1,6 +1,7 @@
 ---
 layout: docs
 title: Convert Text Files
+permalink: dev/adr/0008_convert_plain_text
 ---
 
 # {{ page.title }}

@@ -1,6 +1,7 @@
 ---
 layout: docs
 title: Archive Files
+permalink: dev/adr/0013_archive_files
 ---
 
 # {{ page.title }}

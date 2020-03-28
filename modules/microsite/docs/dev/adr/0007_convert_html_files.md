@@ -1,6 +1,7 @@
 ---
 layout: docs
 title: Convert HTML Files
+permalink: dev/adr/0007_convert_html_files
 ---
 
 # {{ page.title }}

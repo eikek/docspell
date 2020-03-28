@@ -1,6 +1,7 @@
 ---
 layout: docs
 title: Documentation
+permalink: doc
 ---
 
 # {{page.title}}

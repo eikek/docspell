@@ -1,12 +1,13 @@
 ---
 layout: docs
 title: Installation
+permalink: doc/install
 ---
 
 # {{ page.title }}
 
 This page contains detailed installation instructions. For a quick
-start, refer to [this page](../getit.html).
+start, refer to [this page](../getit).
 
 Docspell has been developed and tested on a GNU/Linux system. It may
 run on Windows and MacOS machines, too (ghostscript and tesseract are
@@ -29,7 +30,7 @@ While this is possible, the simple setup is to start both components
 once on the same machine.
 
 The [download page](https://github.com/eikek/docspell/releases)
-provides pre-compiled packages and the [development page](dev.html)
+provides pre-compiled packages and the [development page](../dev)
 contains build instructions.
 
 
@@ -112,7 +113,7 @@ When using H2, make sure that all components access the same database
 – the jdbc url must point to the same file. Then, it is important to
 add the options
 `;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;AUTO_SERVER=TRUE` at the end
-of the url. See the [default config](configure.html) for an example.
+of the url. See the [config page](configure#jdbc) for an example.
 
 
 ## Installing from ZIP files
@@ -149,9 +150,9 @@ $ ./docspell-joex*/bin/docspell-joex
 This will startup both components using the default configuration. The
 configuration should be adopted to your needs. For example, the
 database connection is configured to use a H2 database in the `/tmp`
-directory. Please refer to the [configuration page](configure.html)
-for how to create a custom config file. Once you have your config
-file, simply pass it as argument to the command:
+directory. Please refer to the [configuration page](configure) for how
+to create a custom config file. Once you have your config file, simply
+pass it as argument to the command:
 
 ```
 $ ./docspell-restserver*/bin/docspell-restserver /path/to/server-config.conf
@@ -163,7 +164,7 @@ path `/app`, so using default values it would be
 `http://localhost:7880/app`.
 
 You should be able to create a new account and sign in. Check the
-[configuration page](configure.html) to further customize docspell.
+[configuration page](configure) to further customize docspell.
 
 
 ### Options

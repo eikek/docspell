@@ -1,6 +1,7 @@
 ---
 layout: docs
 title: Development
+permalink: dev
 ---
 
 
@@ -125,10 +126,3 @@ sets more memory for the vm):
 export QEMU_OPTS="-m 2048"
 ./result/bin/run-docspelltest-vm
 ```
-
-## ADRs
-
-Some early information about certain details can be found in the few
-[ADR](https://adr.github.io/) that exist:
-
-- [ADRs](dev/adr.html)

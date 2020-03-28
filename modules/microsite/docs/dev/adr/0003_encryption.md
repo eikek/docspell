@@ -1,6 +1,7 @@
 ---
 layout: docs
 title: Encryption
+permalink: dev/adr/0003_encryption
 ---
 
 # Encryption

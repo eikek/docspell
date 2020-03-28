@@ -1,6 +1,7 @@
 ---
 layout: docs
 title: Demo
+permalink: demo
 ---
 
 # {{ page.title }}

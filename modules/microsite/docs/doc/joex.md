@@ -1,6 +1,7 @@
 ---
 layout: docs
 title: Joex
+permalink: doc/joex
 ---
 
 # {{ page.title }}
@@ -17,7 +18,7 @@ parallel is limited with respect to the hardware it is running on.
 For larger installations, it is probably better to run several joex
 components on different machines. That works out of the box, as long
 as all components point to the same database and use different
-`app-id`s (see [configuring docspell](./configure.html)).
+`app-id`s (see [configuring docspell](./configure#app-id)).
 
 When files are submitted to docspell, they are stored in the database
 and all known joex components are notified about new work. Then they
@@ -50,10 +51,10 @@ next. The default is `4, 1`, meaning to first select 4 high priority
 jobs and then 1 low priority job, then starting over. If no such job
 exists, its falls back to the other priority.
 
-The priority can be set on a *Source* (see
-[uploads](uploading.html)). Uploading through the web application will
-always use priority *high*. The idea is that while logged in, jobs are
-more important that those submitted when not logged in.
+The priority can be set on a *Source* (see [uploads](uploading)).
+Uploading through the web application will always use priority *high*.
+The idea is that while logged in, jobs are more important that those
+submitted when not logged in.
 
 
 ## Scheduler Config

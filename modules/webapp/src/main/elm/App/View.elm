@@ -254,9 +254,9 @@ loginInfo model =
                         , div [ class "divider" ] []
                         , a
                             [ class "icon item"
-                            , href "https://eikek.github.io/docspell/doc"
+                            , href "https://docspell.org/doc"
                             , target "_new"
-                            , title "Opens https://eikek.github.io/docspell/doc"
+                            , title "Opens https://docspell.org/doc"
                             ]
                             [ i [ class "help icon" ] []
                             , text "Help"

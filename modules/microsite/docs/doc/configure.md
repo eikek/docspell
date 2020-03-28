@@ -1,6 +1,7 @@
 ---
 layout: docs
 title: Configuring
+permalink: doc/configure
 ---
 
 # {{ page.title }}

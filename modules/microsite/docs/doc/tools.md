@@ -1,6 +1,7 @@
 ---
 layout: docs
 title: Tools
+permalink: doc/tools
 ---
 
 # {{ page.title }}
@@ -65,7 +66,7 @@ ExecStart=/bin/su -s /bin/bash someuser -c "consumedir.sh --path '/a/path/' -m '
 This unit file is just an example, it needs some fiddling. It assumes
 an existing user `someuser` that is used to run this service. The url
 `http://localhost:7880/api/v1/open/upload/...` is an anonymous upload
-url as described [here](./uploading.html).
+url as described [here](./uploading#anonymous-upload).
 
 
 ## ds.sh
@@ -88,7 +89,7 @@ url.2 = http://localhost:7880/api/v1/open/upload/item/6DxhjkvWf9S-CkWqF3Kr892-Wg
 ```
 
 The key must start with `url`. The urls should be [anonymous upload
-urls](./uploading.html).
+urls](./uploading#anonymous-upload).
 
 
 ### Usage

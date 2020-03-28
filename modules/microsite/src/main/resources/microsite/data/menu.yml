@@ -3,23 +3,23 @@ options:
     url: index.html
 
   - title: Demo
-    url: demo.html
+    url: demo
 
   - title: Quickstart
     url: getit
 
   - title: Features/Limitations
-    url: features.html
+    url: features
 
   - title: Documentation
-    url: doc.html
+    url: doc
 
     nested_options:
      - title: Installation
-       url: doc/install.html
+       url: doc/install
 
      - title: Configuring
-       url: doc/configure.html
+       url: doc/configure
 
      - title: Nix/NixOS
        url: doc/nix
@@ -28,35 +28,35 @@ options:
        url: doc/reverseproxy
 
      - title: Adding Meta Data
-       url: doc/metadata.html
+       url: doc/metadata
 
      - title: Uploads
-       url: doc/uploading.html
+       url: doc/uploading
 
      - title: Processing Queue
-       url: doc/processing.html
+       url: doc/processing
 
      - title: Find and Review
-       url: doc/curate.html
+       url: doc/curate
 
      - title: Send via E-Mail
-       url: doc/mailitem.html
+       url: doc/mailitem
 
      - title: Joex
-       url: doc/joex.html
+       url: doc/joex
 
      - title: Tools
-       url: doc/tools.html
+       url: doc/tools
 
   - title: Development
-    url: dev.html
+    url: dev
 
     nested_options:
-      - tite: ADRs
-        url: dev/adr.html
+      - title: ADRs
+        url: dev/adr
 
   - title: Api
-    url: api.html
+    url: api
 
     nested_options:
      - title: REST Api Doc

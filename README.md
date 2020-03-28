@@ -46,13 +46,13 @@ book and only once in a while it has to be revisited.
 
 ## Documentation
 
-The [documentation site](https://eikek.github.io/docspell/) provides
-more information.
+The [documentation site](https://docspell.org) provides more
+information.
 
 Check the feature list and the quickstart guide to try it out:
 
-- [Features](https://eikek.github.io/docspell/features.html)
-- [Quickstart](https://eikek.github.io/docspell/getit)
+- [Features](https://docspell.org/features)
+- [Quickstart](https://docspell.org/getit)
 
 
 ## Screenshots
