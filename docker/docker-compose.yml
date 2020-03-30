@@ -1,0 +1,33 @@
+version: '3.7'
+services:
+  restserver:
+    image: eikek0/docspell:restserver-0.4.0
+    container_name: docspell-restserver
+    command: /opt/docspell.conf
+    ports:
+      - "7880:7880"
+    volumes:
+      - ${PWD}/docspell.conf:/opt/docspell.conf
+    depends_on:
+      - db
+  db:
+    image: postgres:11.7
+    container_name: postgres_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=dbuser
+      - POSTGRES_PASSWORD=dbpass
+      - POSTGRES_DB=dbname
+  joex:
+    image: eikek0/docspell:joex-0.4.0
+    container_name: docspell-joex
+    command: /opt/docspell.conf
+    ports:
+      - "7878:7878"
+    volumes:
+      - ${PWD}/docspell.conf:/opt/docspell.conf
+    depends_on:
+      - db
+volumes:
+  postgres_data:
