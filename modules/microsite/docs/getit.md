@@ -4,16 +4,12 @@ title: Quickstart
 permalink: getit
 ---
 
-## {{ page.title }}
+# {{ page.title }}
 
 You can download pre-compiled binaries from the [Release
 Page](https://github.com/eikek/docspell/releases). There are `deb`
-packages and generic zip files.
-
-You need to download the two files:
-
-- [docspell-restserver-{{site.version}}.zip](https://github.com/eikek/docspell/releases/download/v{{site.version}}/docspell-restserver-{{site.version}}.zip)
-- [docspell-joex-{{site.version}}.zip](https://github.com/eikek/docspell/releases/download/v{{site.version}}/docspell-joex-{{site.version}}.zip)
+packages and generic zip files. Alternatively, docspell can be
+installed via [nix](doc/nix) or docker (see below).
 
 
 ## Prerequisite
@@ -35,7 +31,13 @@ PDF conversion requires the following tools:
 - [wkhtmltopdf](https://wkhtmltopdf.org/)
 
 
-## Running
+## Using zip files
+
+You need to download the two files:
+
+- [docspell-restserver-{{site.version}}.zip](https://github.com/eikek/docspell/releases/download/v{{site.version}}/docspell-restserver-{{site.version}}.zip)
+- [docspell-joex-{{site.version}}.zip](https://github.com/eikek/docspell/releases/download/v{{site.version}}/docspell-joex-{{site.version}}.zip)
+
 
 1. Unzip both files:
    ``` bash
@@ -57,3 +59,26 @@ PDF conversion requires the following tools:
 
 Check the [early demo video](demo) to see the basic idea. Refer to the
 [documentation](doc) for more information on how to use docspell.
+
+
+## Docker
+
+There is a [docker-compose](https://docs.docker.com/compose/) setup
+available in the `/docker` folder.
+
+1. Clone the github repository
+   ```bash
+   $ git clone https://github.com/eikek/docspell
+   ```
+2. Change into the `docker` directory:
+   ```bash
+   $ cd docspell/docker
+   ```
+3. Run `docker-compose up`:
+   ```bash
+   $ docker-compose up
+   ```
+4. Goto <http://localhost:7880>, signup and login
+
+The directory contains a file `docspell.conf` that you can
+[modify](configure) as needed.
