@@ -44,6 +44,20 @@ fast as the documents. After a while there is a quite complete address
 book and only once in a while it has to be revisited.
 
 
+## Install
+
+- Install the [provided](https://github.com/eikek/docspell/releases)
+  `deb` file at your debian based system.
+- Download [provided](https://github.com/eikek/docspell/releases) zip
+  file and run the script in `bin/`, as [described
+  here](https://docspell.org/getit#using-zip-files).
+- Using the [nix](https://nixos.org/nix) package manager as [described
+  here](https://docspell.org/doc/nix). A a NixOS module is
+  available, too.
+- Using Docker, as [described
+  here](https://docspell.org/getit#docker).
+
+
 ## Documentation
 
 The [documentation site](https://docspell.org) provides more
