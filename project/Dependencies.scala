@@ -25,7 +25,7 @@ object Dependencies {
   val MiniTestVersion = "2.7.0"
   val PdfboxVersion = "2.0.19"
   val PoiVersion = "4.1.2"
-  val PostgresVersion = "42.2.11"
+  val PostgresVersion = "42.2.12"
   val PureConfigVersion = "0.12.3"
   val Slf4jVersion = "1.7.30"
   val SqliteVersion = "3.30.1"
