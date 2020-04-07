@@ -6,16 +6,13 @@ import fs2.{Pipe, Stream}
 import emil.{MimeType => _, _}
 import emil.javamail.syntax._
 import emil.tnef.TnefExtract
+import emil.markdown._
+import emil.jsoup.HtmlBodyView
 
 import docspell.common._
-import java.nio.charset.StandardCharsets
-import java.nio.charset.Charset
-import scodec.bits.ByteVector
+import docspell.joex.extract.JsoupSanitizer
 
 object ReadMail {
-
-  def read[F[_]: Sync](str: String): F[Mail[F]] =
-    Mail.deserialize(str)
 
   def readBytesP[F[_]: ConcurrentEffect: ContextShift](
       logger: Logger[F]
@@ -25,17 +22,22 @@ object ReadMail {
   def bytesToMail[F[_]: Sync](logger: Logger[F]): Pipe[F, Byte, Mail[F]] =
     s =>
       Stream.eval(logger.debug(s"Converting e-mail file...")) >>
-        s.through(Binary.decode(StandardCharsets.US_ASCII)).foldMonoid.evalMap(read[F])
+        s.through(Mail.readBytes[F])
 
   def mailToEntries[F[_]: ConcurrentEffect: ContextShift](
       logger: Logger[F]
   )(mail: Mail[F]): Stream[F, Binary[F]] = {
-    val bodyEntry: F[Option[Binary[F]]] = mail.body.fold(
-      _ => (None: Option[Binary[F]]).pure[F],
-      txt => txt.text.map(c => Binary.text[F]("mail.txt", c.bytes, c.charsetOrUtf8).some),
-      html => html.html.map(c => makeHtmlBinary(c).some),
-      both => both.html.map(c => makeHtmlBinary(c).some)
-    )
+    val bodyEntry: F[Option[Binary[F]]] =
+      if (mail.body.isEmpty) (None: Option[Binary[F]]).pure[F]
+      else {
+        val markdownCfg = MarkdownConfig.defaultConfig
+        HtmlBodyView(
+          mail.body,
+          Some(mail.header),
+          Some(MarkdownBody.makeHtml(markdownCfg)),
+          Some(JsoupSanitizer.apply)
+        ).map(makeHtmlBinary[F] _).map(b => Some(b))
+      }
 
     Stream.eval(
       logger.debug(
@@ -53,25 +55,8 @@ object ReadMail {
           ))
   }
 
-  private def makeHtmlBinary[F[_]](cnt: BodyContent): Binary[F] = {
-    val c = fixHtml(cnt)
-    Binary.html[F]("mail.html", c.bytes, c.charsetOrUtf8)
-  }
-
-  private def fixHtml(cnt: BodyContent): BodyContent = {
-    val str  = cnt.asString.trim.toLowerCase
-    val head = htmlHeader(cnt.charsetOrUtf8)
-    if (str.startsWith("<html")) cnt
-    else
-      cnt match {
-        case BodyContent.StringContent(s) =>
-          BodyContent(head + s + htmlHeaderEnd)
-        case BodyContent.ByteContent(bv, cs) =>
-          val begin = ByteVector.view(head.getBytes(cnt.charsetOrUtf8))
-          val end   = ByteVector.view(htmlHeaderEnd.getBytes(cnt.charsetOrUtf8))
-          BodyContent(begin ++ bv ++ end, cs)
-      }
-  }
+  private def makeHtmlBinary[F[_]](cnt: BodyContent): Binary[F] =
+    Binary.html[F]("mail.html", cnt.bytes, cnt.charsetOrUtf8)
 
   implicit class MimeTypeConv(m: emil.MimeType) {
     def toDocspell: MimeType =
@@ -85,16 +70,4 @@ object ReadMail {
       _ => "html-body",
       _ => "text-and-html-body"
     )
-
-  private def htmlHeader(cs: Charset): String =
-    s"""<!DOCTYPE html>
-       |<html>
-       |<head>
-       |<meta charset="${cs.name}"/>
-       |</head>
-       |<body>
-       """
-
-  private def htmlHeaderEnd: String =
-    "</body></html>"
 }

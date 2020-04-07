@@ -12,6 +12,8 @@ import docspell.convert._
 import docspell.joex.scheduler._
 import docspell.store.records._
 import docspell.convert.ConversionResult.Handler
+import docspell.convert.SanitizeHtml
+import docspell.joex.extract.JsoupSanitizer
 
 /** Goes through all attachments and creates a PDF version of it where
   * supported.
@@ -35,7 +37,9 @@ object ConvertPdf {
   ): Task[F, ProcessItemArgs, ItemData] =
     Task { ctx =>
       def convert(ra: RAttachment) =
-        findMime(ctx)(ra).flatMap(m => convertSafe(cfg, ctx, item)(ra, m))
+        findMime(ctx)(ra).flatMap(m =>
+          convertSafe(cfg, JsoupSanitizer.clean, ctx, item)(ra, m)
+        )
 
       for {
         ras <- item.attachments.traverse(convert)
@@ -52,10 +56,11 @@ object ConvertPdf {
 
   def convertSafe[F[_]: Sync: ContextShift](
       cfg: ConvertConfig,
+      sanitizeHtml: SanitizeHtml,
       ctx: Context[F, ProcessItemArgs],
       item: ItemData
   )(ra: RAttachment, mime: Mimetype): F[(RAttachment, Option[RAttachmentMeta])] =
-    Conversion.create[F](cfg, ctx.blocker, ctx.logger).use { conv =>
+    Conversion.create[F](cfg, sanitizeHtml, ctx.blocker, ctx.logger).use { conv =>
       mime match {
         case mt if mt.baseEqual(Mimetype.`application/pdf`) =>
           ctx.logger.info("Not going to convert a PDF file into a PDF.") *>

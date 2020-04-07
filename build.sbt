@@ -295,6 +295,9 @@ val joex = project.in(file("modules/joex")).
       Dependencies.circe ++
       Dependencies.pureconfig ++
       Dependencies.emilTnef ++
+      Dependencies.emilMarkdown ++
+      Dependencies.emilJsoup ++
+      Dependencies.jsoup ++
       Dependencies.loggingApi ++
       Dependencies.logging.map(_ % Runtime),
     addCompilerPlugin(Dependencies.kindProjectorPlugin),

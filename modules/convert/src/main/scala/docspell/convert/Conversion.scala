@@ -23,6 +23,7 @@ object Conversion {
 
   def create[F[_]: Sync: ContextShift](
       cfg: ConvertConfig,
+      sanitizeHtml: SanitizeHtml,
       blocker: Blocker,
       logger: Logger[F]
   ): Resource[F, Conversion[F]] =
@@ -38,7 +39,10 @@ object Conversion {
           case mt @ MimeType(_, "html", _) =>
             val cs = mt.charsetOrUtf8
             WkHtmlPdf
-              .toPDF(cfg.wkhtmlpdf, cfg.chunkSize, cs, blocker, logger)(in, handler)
+              .toPDF(cfg.wkhtmlpdf, cfg.chunkSize, cs, sanitizeHtml, blocker, logger)(
+                in,
+                handler
+              )
 
           case mt @ Texts(_) =>
             val cs = mt.charsetOrUtf8
@@ -50,6 +54,7 @@ object Conversion {
                 cfg.wkhtmlpdf,
                 cfg.chunkSize,
                 StandardCharsets.UTF_8,
+                sanitizeHtml,
                 blocker,
                 logger
               )(bytes, handler)

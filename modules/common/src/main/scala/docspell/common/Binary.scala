@@ -1,5 +1,6 @@
 package docspell.common
 
+import cats.effect._
 import fs2.{Chunk, Pipe, Stream}
 import java.nio.charset.Charset
 import java.nio.charset.StandardCharsets
@@ -41,6 +42,9 @@ object Binary {
     } else {
       util.decode[F](cs)
     }
+
+  def loadAllBytes[F[_]: Sync](data: Stream[F, Byte]): F[ByteVector] =
+    data.chunks.map(_.toByteVector).compile.fold(ByteVector.empty)((r, e) => r ++ e)
 
   // This is a copy from org.http4s.util
   // Http4s is licensed under the Apache License 2.0
@@ -85,5 +89,6 @@ object Binary {
       if (chunk.size >= 3 && chunk.take(3) == utf8Bom) {
         chunk.drop(3)
       } else chunk
+
   }
 }

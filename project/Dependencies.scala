@@ -6,11 +6,11 @@ object Dependencies {
 
   val BcryptVersion = "0.4"
   val BetterMonadicForVersion = "0.3.1"
-  val BitpeaceVersion = "0.4.5"
+  val BitpeaceVersion = "0.5.0"
   val CalevVersion = "0.3.0"
   val CirceVersion = "0.13.0"
   val DoobieVersion = "0.9.0"
-  val EmilVersion = "0.4.0"
+  val EmilVersion = "0.5.0"
   val FastparseVersion = "2.1.3"
   val FlexmarkVersion = "0.61.0"
   val FlywayVersion = "6.3.3"
@@ -18,6 +18,7 @@ object Dependencies {
   val H2Version = "1.4.200"
   val Http4sVersion = "0.21.3"
   val Icu4jVersion = "66.1"
+  val JsoupVersion = "1.13.1"
   val KindProjectorVersion = "0.10.3"
   val Log4sVersion = "1.8.2"
   val LogbackVersion = "1.2.3"
@@ -94,6 +95,16 @@ object Dependencies {
   )
   val emilTnef = Seq(
     "com.github.eikek" %% "emil-tnef" % EmilVersion,
+  )
+  val emilMarkdown = Seq(
+    "com.github.eikek" %% "emil-markdown" % EmilVersion,
+  )
+  val emilJsoup = Seq(
+    "com.github.eikek" %% "emil-jsoup" % EmilVersion,
+  )
+
+  val jsoup = Seq(
+    "org.jsoup" % "jsoup" % JsoupVersion
   )
 
   val stanfordNlpCore = Seq(
