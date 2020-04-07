@@ -4,7 +4,7 @@ import java.nio.file.{Path, Paths}
 
 import cats.effect._
 import docspell.common._
-import docspell.convert.FileChecks
+import docspell.convert._
 import docspell.files.{ExampleFiles, TestFiles}
 import minitest.SimpleTestSuite
 import java.nio.charset.StandardCharsets
@@ -12,7 +12,7 @@ import java.nio.charset.StandardCharsets
 object ExternConvTest extends SimpleTestSuite with FileChecks {
   val blocker     = TestFiles.blocker
   implicit val CS = TestFiles.CS
-
+  val utf8 = StandardCharsets.UTF_8
   val logger = Logger.log4s[IO](org.log4s.getLogger)
   val target = Paths.get("target")
 
@@ -32,7 +32,7 @@ object ExternConvTest extends SimpleTestSuite with FileChecks {
             val wkCfg = WkHtmlPdfConfig(cfg, target)
             val p =
               WkHtmlPdf
-                .toPDF[IO, Path](wkCfg, 8192, StandardCharsets.UTF_8, blocker, logger)(
+                .toPDF[IO, Path](wkCfg, 8192, utf8, SanitizeHtml.none, blocker, logger)(
                   ExampleFiles.letter_de_html.readURL[IO](8192, blocker),
                   storePdfHandler(dir.resolve("test.pdf"))
                 )

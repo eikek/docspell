@@ -14,3 +14,10 @@ trait SanitizeHtml {
   def apply(bytes: ByteVector, charset: Option[Charset]): ByteVector
 
 }
+
+object SanitizeHtml {
+
+  val none: SanitizeHtml =
+    (bv, _) => bv
+
+}
