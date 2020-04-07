@@ -10,7 +10,7 @@ object Dependencies {
   val CalevVersion = "0.3.0"
   val CirceVersion = "0.13.0"
   val DoobieVersion = "0.9.0"
-  val EmilVersion = "0.4.0"
+  val EmilVersion = "0.5.0"
   val FastparseVersion = "2.1.3"
   val FlexmarkVersion = "0.61.0"
   val FlywayVersion = "6.3.3"
