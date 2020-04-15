@@ -36,7 +36,7 @@ object Dependencies {
   val SwaggerUIVersion = "3.25.0"
   val SemanticUIVersion = "2.4.1"
   val TwelveMonkeysVersion = "3.5"
-  val JQueryVersion = "3.4.1"
+  val JQueryVersion = "3.5.0"
   val ViewerJSVersion = "0.5.8"
 
 
