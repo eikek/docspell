@@ -4,6 +4,13 @@
 
 *Unknown*
 
+- Fix issues when converting HTML with unkown links. This especially
+  happens with e-mails that contain images to attachments.
+- Fix issues when importing e-mail files:
+  - fixes encoding problems for mails without explicit transfer encoding
+  - add meta info (from, to, subject) to the converted pdf document
+  - clean html mails to remove unwanted content (like javascript)
+- Fix classpath issue with javax.mail vs jakarta.mail
 
 ## v0.4.0 
 
