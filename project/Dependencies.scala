@@ -41,12 +41,14 @@ object Dependencies {
 
 
   val calevCore = Seq(
-    "com.github.eikek" %% "calev-core" % CalevVersion,
+    "com.github.eikek" %% "calev-core" % CalevVersion
   )
   val calevFs2 = Seq(
     "com.github.eikek" %% "calev-fs2" % CalevVersion
   )
-  val calev = calevFs2 ++ calevCore
+  val calevCirce = Seq(
+    "com.github.eikek" %% "calev-circe" % CalevVersion
+  )
 
   val jclOverSlf4j = Seq(
     "org.slf4j" % "jcl-over-slf4j" % Slf4jVersion

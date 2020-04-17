@@ -2,6 +2,7 @@ module Page.UserSettings.View exposing (view)
 
 import Comp.ChangePasswordForm
 import Comp.EmailSettingsManage
+import Comp.NotificationForm
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
@@ -18,22 +19,9 @@ view model =
                 ]
             , div [ class "ui attached fluid segment" ]
                 [ div [ class "ui fluid vertical secondary menu" ]
-                    [ a
-                        [ classActive (model.currentTab == Just ChangePassTab) "link icon item"
-                        , onClick (SetTab ChangePassTab)
-                        , href "#"
-                        ]
-                        [ i [ class "user secret icon" ] []
-                        , text "Change Password"
-                        ]
-                    , a
-                        [ classActive (model.currentTab == Just EmailSettingsTab) "link icon item"
-                        , onClick (SetTab EmailSettingsTab)
-                        , href "#"
-                        ]
-                        [ i [ class "mail icon" ] []
-                        , text "E-Mail Settings"
-                        ]
+                    [ makeTab model ChangePassTab "Change Password" "user secret icon"
+                    , makeTab model EmailSettingsTab "E-Mail Settings" "mail icon"
+                    , makeTab model NotificationTab "Notifications" "bullhorn icon"
                     ]
                 ]
             ]
@@ -46,10 +34,25 @@ view model =
                     Just EmailSettingsTab ->
                         viewEmailSettings model
 
+                    Just NotificationTab ->
+                        viewNotificationForm model
+
                     Nothing ->
                         []
                 )
             ]
+        ]
+
+
+makeTab : Model -> Tab -> String -> String -> Html Msg
+makeTab model tab header icon =
+    a
+        [ classActive (model.currentTab == Just tab) "link icon item"
+        , onClick (SetTab tab)
+        , href "#"
+        ]
+        [ i [ class icon ] []
+        , text header
         ]
 
 
@@ -74,4 +77,16 @@ viewChangePassword model =
             ]
         ]
     , Html.map ChangePassMsg (Comp.ChangePasswordForm.view model.changePassModel)
+    ]
+
+
+viewNotificationForm : Model -> List (Html Msg)
+viewNotificationForm model =
+    [ h2 [ class "ui header" ]
+        [ i [ class "ui bullhorn icon" ] []
+        , div [ class "content" ]
+            [ text "Notification"
+            ]
+        ]
+    , Html.map NotificationMsg (Comp.NotificationForm.view model.notificationModel)
     ]

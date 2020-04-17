@@ -133,6 +133,9 @@ val openapiScalaSettings = Seq(
         field.copy(typeDef = TypeDef("NerTag", Imports("docspell.common.NerTag")))
       case "language" => field =>
         field.copy(typeDef = TypeDef("Language", Imports("docspell.common.Language")))
+      case "calevent" => field =>
+        field.copy(typeDef = TypeDef("CalEvent", Imports("com.github.eikek.calev.CalEvent",
+          "com.github.eikek.calev.circe.CalevCirceCodec._")))
     }))
 )
 
@@ -149,6 +152,7 @@ val common = project.in(file("modules/common")).
       Dependencies.circe ++
       Dependencies.loggingApi ++
       Dependencies.calevCore ++
+      Dependencies.calevCirce ++
       Dependencies.pureconfig.map(_ % "optional")
   )
 
@@ -205,7 +209,8 @@ val store = project.in(file("modules/store")).
       Dependencies.loggingApi ++
       Dependencies.emil ++
       Dependencies.emilDoobie ++
-      Dependencies.calev
+      Dependencies.calevCore ++
+      Dependencies.calevFs2
   ).dependsOn(common)
 
 val extract = project.in(file("modules/extract")).

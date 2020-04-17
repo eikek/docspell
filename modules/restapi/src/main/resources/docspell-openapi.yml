@@ -1560,9 +1560,96 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BasicResult"
+  /sec/notification:
+    get:
+      tags: [ Notification ]
+      summary: Get current notification settings
+      description: |
+        Return the current notification settings of the authenticated
+        user. Users can be notified on due items via e-mail. This is
+        done by periodically querying items.
+      security:
+        - authTokenHeader: []
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotificationData"
+    post:
+      tags: [ Notification ]
+      summary: Change current notification settings
+      description: |
+        Change the current notification settings of the authenticated
+        user.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NotificationSettings"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
 
 components:
   schemas:
+    NotificationSettings:
+      description: |
+        Settings for notifying about due items.
+      required:
+        - id
+        - enabled
+        - smtpConnection
+        - schedule
+        - remindDays
+        - tagsInclude
+        - tagsExclude
+      properties:
+        id:
+          type: string
+          format: ident
+        enabled:
+          type: boolean
+        smtpConnection:
+          type: string
+          format: ident
+        schedule:
+          type: string
+          format: calevent
+        remindDays:
+          type: integer
+          format: int32
+        tagsInclude:
+          type: array
+          items:
+            type: string
+            format: ident
+        tagsExclude:
+          type: array
+          items:
+            type: string
+            format: ident
+    NotificationData:
+      description: |
+        Data for the notification settings.
+      required:
+        - settings
+      properties:
+        settings:
+          $ref: "#/components/schemas/NotificationSettings"
+        nextRun:
+          type: integer
+          format: date-time
+        lastRun:
+          type: integer
+          format: date-time
     SentMails:
       description: |
         A list of sent mails.
