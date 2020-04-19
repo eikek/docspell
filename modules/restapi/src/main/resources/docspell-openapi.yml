@@ -1560,6 +1560,27 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BasicResult"
+  /sec/calevent/check:
+    post:
+      tags: [ Utility ]
+      summary: Check a calendar event string
+      description: |
+        For ui purposes, this route checks a calendar event string and
+        either returns the normal form or an error message.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CalEventCheck"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CalEventCheckResult"
   /sec/usertask/notifydueitems:
     get:
       tags: [ Notification ]
@@ -1600,6 +1621,31 @@ paths:
 
 components:
   schemas:
+    CalEventCheckResult:
+      description: |
+        The result of checking a calendar event string.
+      required:
+        - success
+        - message
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        event:
+          type: string
+          format: calevent
+        next:
+          type: integer
+          format: date-time
+    CalEventCheck:
+      description: |
+        A calendar event.
+      required:
+        - event
+      properties:
+        event:
+          type: string
     NotificationSettings:
       description: |
         Settings for notifying about due items.

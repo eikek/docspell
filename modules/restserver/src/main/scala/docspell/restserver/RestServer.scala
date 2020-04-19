@@ -76,7 +76,8 @@ object RestServer {
       "email/send"              -> MailSendRoutes(restApp.backend, token),
       "email/settings"          -> MailSettingsRoutes(restApp.backend, token),
       "email/sent"              -> SentMailRoutes(restApp.backend, token),
-      "usertask/notifydueitems" -> NotifyDueItemsRoutes(restApp.backend, token)
+      "usertask/notifydueitems" -> NotifyDueItemsRoutes(restApp.backend, token),
+      "calevent/check"          -> CalEventCheckRoutes()
     )
 
   def openRoutes[F[_]: Effect](cfg: Config, restApp: RestApp[F]): HttpRoutes[F] =

@@ -50,6 +50,9 @@ object Timestamp {
   def from(zd: ZonedDateTime): Timestamp =
     Timestamp(zd.toInstant)
 
+  def atUtc(ldt: LocalDateTime): Timestamp =
+    from(ldt.atZone(UTC))
+
   implicit val encodeTimestamp: Encoder[Timestamp] =
     BaseJsonCodecs.encodeInstantEpoch.contramap(_.value)
 
