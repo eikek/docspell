@@ -7,6 +7,7 @@ import docspell.backend.signup.OSignup
 import docspell.store.Store
 import docspell.store.ops.ONode
 import docspell.store.queue.JobQueue
+import docspell.store.usertask.UserTaskStore
 
 import scala.concurrent.ExecutionContext
 import emil.javamail.JavaMailEmil
@@ -26,6 +27,7 @@ trait BackendApp[F[_]] {
   def item: OItem[F]
   def mail: OMail[F]
   def joex: OJoex[F]
+  def userTask: OUserTask[F]
 }
 
 object BackendApp {
@@ -37,20 +39,22 @@ object BackendApp {
       blocker: Blocker
   ): Resource[F, BackendApp[F]] =
     for {
-      queue      <- JobQueue(store)
-      loginImpl  <- Login[F](store)
-      signupImpl <- OSignup[F](store)
-      collImpl   <- OCollective[F](store)
-      sourceImpl <- OSource[F](store)
-      tagImpl    <- OTag[F](store)
-      equipImpl  <- OEquipment[F](store)
-      orgImpl    <- OOrganization(store)
-      joexImpl   <- OJoex.create(httpClientEc, store)
-      uploadImpl <- OUpload(store, queue, cfg, joexImpl)
-      nodeImpl   <- ONode(store)
-      jobImpl    <- OJob(store, joexImpl)
-      itemImpl   <- OItem(store)
-      mailImpl   <- OMail(store, JavaMailEmil(blocker))
+      utStore      <- UserTaskStore(store)
+      queue        <- JobQueue(store)
+      loginImpl    <- Login[F](store)
+      signupImpl   <- OSignup[F](store)
+      collImpl     <- OCollective[F](store)
+      sourceImpl   <- OSource[F](store)
+      tagImpl      <- OTag[F](store)
+      equipImpl    <- OEquipment[F](store)
+      orgImpl      <- OOrganization(store)
+      joexImpl     <- OJoex.create(httpClientEc, store)
+      uploadImpl   <- OUpload(store, queue, cfg, joexImpl)
+      nodeImpl     <- ONode(store)
+      jobImpl      <- OJob(store, joexImpl)
+      itemImpl     <- OItem(store)
+      mailImpl     <- OMail(store, JavaMailEmil(blocker))
+      userTaskImpl <- OUserTask(utStore, joexImpl)
     } yield new BackendApp[F] {
       val login: Login[F]            = loginImpl
       val signup: OSignup[F]         = signupImpl
@@ -65,6 +69,7 @@ object BackendApp {
       val item                       = itemImpl
       val mail                       = mailImpl
       val joex                       = joexImpl
+      val userTask                   = userTaskImpl
     }
 
   def apply[F[_]: ConcurrentEffect: ContextShift](

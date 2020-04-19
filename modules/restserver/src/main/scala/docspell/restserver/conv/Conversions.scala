@@ -472,6 +472,12 @@ trait Conversions {
     case PassChangeResult.UserNotFound => BasicResult(false, "User not found.")
   }
 
+  def basicResult(e: Either[Throwable, _], successMsg: String): BasicResult =
+    e match {
+      case Right(_) => BasicResult(true, successMsg)
+      case Left(ex) => BasicResult(false, ex.getMessage)
+    }
+
   // MIME Type
 
   def fromContentType(header: `Content-Type`): MimeType =

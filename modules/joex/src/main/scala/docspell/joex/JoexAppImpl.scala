@@ -2,7 +2,7 @@ package docspell.joex
 
 import cats.implicits._
 import cats.effect._
-import docspell.common.{Ident, NodeType, ProcessItemArgs}
+import docspell.common._
 import docspell.joex.hk._
 import docspell.joex.process.ItemHandler
 import docspell.joex.scheduler._
@@ -73,6 +73,13 @@ object JoexAppImpl {
             ProcessItemArgs.taskName,
             ItemHandler[F](cfg),
             ItemHandler.onCancel[F]
+          )
+        )
+        .withTask(
+          JobTask.json(
+            NotifyDueItemsArgs.taskName,
+            NotifyDueItemsTask[F],
+            NotifyDueItemsTask.onCancel[F]
           )
         )
         .withTask(

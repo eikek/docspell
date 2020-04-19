@@ -1,0 +1,35 @@
+package docspell.common
+
+import io.circe._, io.circe.generic.semiauto._
+import docspell.common.syntax.all._
+
+/** Arguments to the notification task.
+  *
+  * This tasks queries items with a due date and informs the user via
+  * mail.
+  *
+  * If the structure changes, there must be some database migration to
+  * update or remove the json data of the corresponding task.
+  */
+case class NotifyDueItemsArgs(
+    account: AccountId,
+    smtpConnection: Ident,
+    recipients: List[String],
+    remindDays: Int,
+    tagsInclude: List[Ident],
+    tagsExclude: List[Ident]
+) {}
+
+object NotifyDueItemsArgs {
+
+  val taskName = Ident.unsafe("notify-due-items")
+
+  implicit val jsonEncoder: Encoder[NotifyDueItemsArgs] =
+    deriveEncoder[NotifyDueItemsArgs]
+  implicit val jsonDecoder: Decoder[NotifyDueItemsArgs] =
+    deriveDecoder[NotifyDueItemsArgs]
+
+  def parse(str: String): Either[Throwable, NotifyDueItemsArgs] =
+    str.parseJsonAs[NotifyDueItemsArgs]
+
+}

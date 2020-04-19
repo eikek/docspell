@@ -1,5 +1,7 @@
 package docspell.common
 
+import io.circe._
+
 case class AccountId(collective: Ident, user: Ident) {
 
   def asString =
@@ -32,4 +34,9 @@ object AccountId {
 
     separated.orElse(Ident.fromString(str).map(id => AccountId(id, id)))
   }
+
+  implicit val jsonDecoder: Decoder[AccountId] =
+    Decoder.decodeString.emap(parse)
+  implicit val jsonEncoder: Encoder[AccountId] =
+    Encoder.encodeString.contramap(_.asString)
 }

@@ -1560,10 +1560,10 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BasicResult"
-  /sec/notification:
+  /sec/usertask/notifydueitems:
     get:
       tags: [ Notification ]
-      summary: Get current notification settings
+      summary: Get settings for "Notify Due Items" task
       description: |
         Return the current notification settings of the authenticated
         user. Users can be notified on due items via e-mail. This is
@@ -1579,7 +1579,7 @@ paths:
                 $ref: "#/components/schemas/NotificationData"
     post:
       tags: [ Notification ]
-      summary: Change current notification settings
+      summary: Change current settings for "Notify Due Items" task
       description: |
         Change the current notification settings of the authenticated
         user.
@@ -1607,6 +1607,7 @@ components:
         - id
         - enabled
         - smtpConnection
+        - recipients
         - schedule
         - remindDays
         - tagsInclude
@@ -1620,6 +1621,11 @@ components:
         smtpConnection:
           type: string
           format: ident
+        recipients:
+          type: array
+          items:
+            type: string
+            format: ident
         schedule:
           type: string
           format: calevent

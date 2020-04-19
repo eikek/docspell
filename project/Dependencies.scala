@@ -88,6 +88,9 @@ object Dependencies {
     )
   ) ++ jclOverSlf4j
 
+  val emilCommon = Seq(
+    "com.github.eikek" %% "emil-common" % EmilVersion,
+  )
   val emil = Seq(
     "com.github.eikek" %% "emil-common" % EmilVersion,
     "com.github.eikek" %% "emil-javamail" % EmilVersion    

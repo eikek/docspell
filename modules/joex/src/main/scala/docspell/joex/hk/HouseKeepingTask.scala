@@ -17,12 +17,12 @@ object HouseKeepingTask {
 
   def apply[F[_]: Sync](cfg: Config): Task[F, Unit, Unit] =
     Task
-      .log[F](_.info(s"Running house-keeping task now"))
+      .log[F, Unit](_.info(s"Running house-keeping task now"))
       .flatMap(_ => CleanupInvitesTask(cfg.houseKeeping.cleanupInvites))
       .flatMap(_ => CleanupJobsTask(cfg.houseKeeping.cleanupJobs))
 
   def onCancel[F[_]: Sync]: Task[F, Unit, Unit] =
-    Task.log(_.warn("Cancelling house-keeping task"))
+    Task.log[F, Unit](_.warn("Cancelling house-keeping task"))
 
   def periodicTask[F[_]: Sync](ce: CalEvent): F[RPeriodicTask] =
     RPeriodicTask

@@ -55,6 +55,6 @@ object Task {
   def setProgress[F[_]: Sync, A, B](n: Int)(data: B): Task[F, A, B] =
     Task(_.setProgress(n).map(_ => data))
 
-  def log[F[_]](f: Logger[F] => F[Unit]): Task[F, Unit, Unit] =
+  def log[F[_], A](f: Logger[F] => F[Unit]): Task[F, A, Unit] =
     Task(ctx => f(ctx.logger))
 }
