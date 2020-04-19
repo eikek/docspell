@@ -8,6 +8,7 @@ module Page.UserSettings.Data exposing
 import Comp.ChangePasswordForm
 import Comp.EmailSettingsManage
 import Comp.NotificationForm
+import Data.Flags exposing (Flags)
 
 
 type alias Model =
@@ -18,12 +19,12 @@ type alias Model =
     }
 
 
-emptyModel : Model
-emptyModel =
+emptyModel : Flags -> Model
+emptyModel flags =
     { currentTab = Nothing
     , changePassModel = Comp.ChangePasswordForm.emptyModel
     , emailSettingsModel = Comp.EmailSettingsManage.emptyModel
-    , notificationModel = Comp.NotificationForm.init
+    , notificationModel = Tuple.first (Comp.NotificationForm.init flags)
     }
 
 
@@ -38,3 +39,4 @@ type Msg
     | ChangePassMsg Comp.ChangePasswordForm.Msg
     | EmailSettingsMsg Comp.EmailSettingsManage.Msg
     | NotificationMsg Comp.NotificationForm.Msg
+    | Init

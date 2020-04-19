@@ -10,6 +10,14 @@ import Page.UserSettings.Data exposing (..)
 update : Flags -> Msg -> Model -> ( Model, Cmd Msg )
 update flags msg model =
     case msg of
+        Init ->
+            let
+                cmd =
+                    Cmd.map NotificationMsg
+                        (Tuple.second (Comp.NotificationForm.init flags))
+            in
+            ( model, cmd )
+
         SetTab t ->
             let
                 m =
@@ -28,8 +36,12 @@ update flags msg model =
                             ( m, Cmd.none )
 
                         NotificationTab ->
-                            -- todo: get initial settings
-                            ( m, Cmd.none )
+                            let
+                                initCmd =
+                                    Cmd.map NotificationMsg
+                                        (Tuple.second (Comp.NotificationForm.init flags))
+                            in
+                            ( m, initCmd )
             in
             ( m2, cmd )
 

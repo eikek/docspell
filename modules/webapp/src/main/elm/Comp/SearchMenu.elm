@@ -25,7 +25,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onCheck, onInput)
 import Http
-import Util.Maybe
+import Util.Tag
 import Util.Update
 
 
@@ -56,8 +56,8 @@ type alias Model =
 
 emptyModel : Model
 emptyModel =
-    { tagInclModel = makeTagModel
-    , tagExclModel = makeTagModel
+    { tagInclModel = Util.Tag.makeDropdownModel
+    , tagExclModel = Util.Tag.makeDropdownModel
     , directionModel =
         Comp.Dropdown.makeSingleList
             { makeOption =
@@ -128,23 +128,6 @@ type Msg
     | GetPersonResp (Result Http.Error ReferenceList)
     | SetName String
     | ResetForm
-
-
-makeTagModel : Comp.Dropdown.Model Tag
-makeTagModel =
-    Comp.Dropdown.makeModel
-        { multiple = True
-        , searchable = \n -> n > 4
-        , makeOption = \tag -> { value = tag.id, text = tag.name }
-        , labelColor =
-            \tag ->
-                if Util.Maybe.nonEmpty tag.category then
-                    "basic blue"
-
-                else
-                    ""
-        , placeholder = "Choose a tag…"
-        }
 
 
 getDirection : Model -> Maybe Direction

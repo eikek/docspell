@@ -88,5 +88,16 @@ viewNotificationForm model =
             [ text "Notification"
             ]
         ]
-    , Html.map NotificationMsg (Comp.NotificationForm.view model.notificationModel)
+    , p []
+        [ text "Docspell can notify you once the due dates of your items come closer. "
+        , text "Notification is done via e-mail. You need to provide a connection in "
+        , text "your e-mail settings."
+        ]
+    , p []
+        [ text "Each time this is executed, docspell finds all items that are due in "
+        , em [] [ text "Remind Days" ]
+        , text " days."
+        ]
+    , Html.map NotificationMsg
+        (Comp.NotificationForm.view "segment" model.notificationModel)
     ]
