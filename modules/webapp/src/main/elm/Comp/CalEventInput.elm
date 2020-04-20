@@ -97,7 +97,7 @@ update flags ev msg model =
                 Valid event
 
               else
-                Invalid event
+                Invalid [ res.message ] event
             )
 
         CheckInputMsg event (Err err) ->

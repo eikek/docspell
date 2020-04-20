@@ -7,6 +7,7 @@ module Comp.NotificationForm exposing
     )
 
 import Api
+import Api.Model.BasicResult exposing (BasicResult)
 import Api.Model.EmailSettingsList exposing (EmailSettingsList)
 import Api.Model.NotificationSettings exposing (NotificationSettings)
 import Api.Model.Tag exposing (Tag)
@@ -17,7 +18,7 @@ import Comp.EmailInput
 import Comp.IntField
 import Data.CalEvent exposing (CalEvent)
 import Data.Flags exposing (Flags)
-import Data.Validated exposing (Validated)
+import Data.Validated exposing (Validated(..))
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onCheck, onClick)
@@ -40,6 +41,7 @@ type alias Model =
     , schedule : Validated CalEvent
     , scheduleModel : Comp.CalEventInput.Model
     , formError : Maybe String
+    , submitResp : Maybe BasicResult
     }
 
 
@@ -55,6 +57,7 @@ type Msg
     | ToggleEnabled
     | CalEventMsg Comp.CalEventInput.Msg
     | SetNotificationSettings (Result Http.Error NotificationSettings)
+    | SubmitResp (Result Http.Error BasicResult)
 
 
 initCmd : Flags -> Cmd Msg
@@ -91,12 +94,54 @@ init flags =
       , schedule = initialSchedule
       , scheduleModel = sm
       , formError = Nothing
+      , submitResp = Nothing
       }
     , Cmd.batch
         [ initCmd flags
         , Cmd.map CalEventMsg sc
         ]
     )
+
+
+makeSettings : Model -> Validated NotificationSettings
+makeSettings model =
+    let
+        prev =
+            model.settings
+
+        conn =
+            Comp.Dropdown.getSelected model.connectionModel
+                |> List.head
+                |> Maybe.map Valid
+                |> Maybe.withDefault (Invalid [ "Connection missing" ] "")
+
+        recp =
+            if List.isEmpty model.recipients then
+                Invalid [ "No recipients" ] []
+
+            else
+                Valid model.recipients
+
+        rmdays =
+            Maybe.map Valid model.remindDays
+                |> Maybe.withDefault (Invalid [ "Remind Days is required" ] 0)
+
+        make smtp rec days timer =
+            { prev
+                | smtpConnection = smtp
+                , tagsInclude = Comp.Dropdown.getSelected model.tagInclModel
+                , tagsExclude = Comp.Dropdown.getSelected model.tagExclModel
+                , recipients = rec
+                , remindDays = days
+                , enabled = model.enabled
+                , schedule = Data.CalEvent.makeEvent timer
+            }
+    in
+    Data.Validated.map4 make
+        conn
+        recp
+        rmdays
+        model.schedule
 
 
 update : Flags -> Msg -> Model -> ( Model, Cmd Msg )
@@ -232,6 +277,7 @@ update flags msg model =
                 , remindDays = Just s.remindDays
                 , enabled = s.enabled
                 , schedule = Data.Validated.Unknown newSchedule
+                , scheduleModel = sm
               }
             , Cmd.batch
                 [ nc
@@ -243,7 +289,34 @@ update flags msg model =
             ( { model | formError = Just (Util.Http.errorToString err) }, Cmd.none )
 
         Submit ->
-            ( model, Cmd.none )
+            case makeSettings model of
+                Valid set ->
+                    ( { model | formError = Nothing }
+                    , Api.submitNotifyDueItems flags set SubmitResp
+                    )
+
+                Invalid errs _ ->
+                    let
+                        errMsg =
+                            String.join ", " errs
+                    in
+                    ( { model | formError = Just errMsg }, Cmd.none )
+
+                Unknown _ ->
+                    ( { model | formError = Just "An unknown error occured" }, Cmd.none )
+
+        SubmitResp (Ok res) ->
+            ( { model | submitResp = Just res, formError = Nothing }
+            , Cmd.none
+            )
+
+        SubmitResp (Err err) ->
+            ( { model
+                | formError = Nothing
+                , submitResp = Just (BasicResult False (Util.Http.errorToString err))
+              }
+            , Cmd.none
+            )
 
 
 view : String -> Model -> Html Msg
@@ -252,7 +325,18 @@ view extraClasses model =
         [ classList
             [ ( "ui form", True )
             , ( extraClasses, True )
-            , ( "error", model.formError /= Nothing )
+            , ( "error"
+              , model.formError
+                    /= Nothing
+                    || (Maybe.map .success model.submitResp
+                            |> Maybe.map not
+                            |> Maybe.withDefault False
+                       )
+              )
+            , ( "success"
+              , Maybe.map .success model.submitResp
+                    |> Maybe.withDefault False
+              )
             ]
         ]
         [ div [ class "inline field" ]
@@ -331,8 +415,16 @@ view extraClasses model =
             ]
         , div [ class "ui divider" ] []
         , div [ class "ui error message" ]
-            [ Maybe.withDefault "" model.formError
-                |> text
+            [ case Maybe.map .message model.submitResp of
+                Just txt ->
+                    text txt
+
+                Nothing ->
+                    Maybe.withDefault "" model.formError
+                        |> text
+            ]
+        , div [ class "ui success message" ]
+            [ text "Successfully saved."
             ]
         , button
             [ class "ui primary button"
