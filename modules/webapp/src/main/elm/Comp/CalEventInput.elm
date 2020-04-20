@@ -1,8 +1,8 @@
 module Comp.CalEventInput exposing
     ( Model
     , Msg
-    , from
     , init
+    , initialSchedule
     , update
     , view
     )
@@ -42,49 +42,26 @@ type Msg
     | CheckInputMsg (Result Http.Error CalEventCheckResult)
 
 
-init : Model
-init =
-    { year = "*"
-    , month = "*"
-    , day = "1"
-    , hour = "0"
-    , minute = "0"
-    , weekday = Nothing
-    , event = Nothing
-    , checkResult = Nothing
-    }
+initialSchedule : String
+initialSchedule =
+    "*-*-01 00:00"
 
 
-from : String -> Maybe Model
-from event =
-    case String.split " " event of
-        date :: time :: [] ->
-            let
-                dateParts =
-                    String.split "-" date
-
-                timeParts =
-                    String.split ":" time
-
-                allParts =
-                    dateParts ++ timeParts
-            in
-            case allParts of
-                y :: m :: d :: h :: min :: [] ->
-                    Just
-                        { init
-                            | year = y
-                            , month = m
-                            , day = d
-                            , hour = h
-                            , minute = min
-                        }
-
-                _ ->
-                    Nothing
-
-        _ ->
-            Nothing
+init : Flags -> ( Model, Cmd Msg )
+init flags =
+    let
+        model =
+            { year = "*"
+            , month = "*"
+            , day = "1"
+            , hour = "0"
+            , minute = "0"
+            , weekday = Nothing
+            , event = Nothing
+            , checkResult = Nothing
+            }
+    in
+    ( model, checkInput flags model )
 
 
 toEvent : Model -> String
@@ -315,11 +292,12 @@ view extraClasses model =
                     [ text "Next: "
                     ]
                 , dd []
-                    [ Maybe.andThen .next model.checkResult
-                        |> Maybe.map Util.Time.formatDateTime
-                        |> Maybe.withDefault ""
-                        |> text
-                    ]
+                    (Maybe.map .next model.checkResult
+                        |> Maybe.withDefault []
+                        |> List.map Util.Time.formatDateTime
+                        |> List.map text
+                        |> List.intersperse (br [] [])
+                    )
                 ]
             ]
         ]

@@ -31,10 +31,12 @@ object CalEventCheckRoutes {
     Timestamp.current[F].map { now =>
       CalEvent.parse(str) match {
         case Right(ev) =>
-          val next = ev.nextElapse(now.toUtcDateTime).map(Timestamp.atUtc)
+          val next = ev
+            .nextElapses(now.toUtcDateTime, 2)
+            .map(Timestamp.atUtc)
           CalEventCheckResult(true, "Valid.", ev.some, next)
         case Left(err) =>
-          CalEventCheckResult(false, err, None, None)
+          CalEventCheckResult(false, err, None, Nil)
       }
     }
 }

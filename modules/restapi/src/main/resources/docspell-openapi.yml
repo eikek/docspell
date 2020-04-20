@@ -1636,8 +1636,10 @@ components:
           type: string
           format: calevent
         next:
-          type: integer
-          format: date-time
+          type: array
+          items:
+            type: integer
+            format: date-time
     CalEventCheck:
       description: |
         A calendar event.

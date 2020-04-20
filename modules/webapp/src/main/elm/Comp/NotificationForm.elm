@@ -18,7 +18,7 @@ import Comp.IntField
 import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onCheck, onClick, onInput)
+import Html.Events exposing (onCheck, onClick)
 import Http
 import Util.Http
 import Util.Tag
@@ -62,13 +62,12 @@ initCmd flags =
         ]
 
 
-initialSchedule : String
-initialSchedule =
-    "*-*-1/7 12:00"
-
-
 init : Flags -> ( Model, Cmd Msg )
 init flags =
+    let
+        ( sm, sc ) =
+            Comp.CalEventInput.init flags
+    in
     ( { settings = Api.Model.NotificationSettings.empty
       , connectionModel =
             Comp.Dropdown.makeSingle
@@ -82,13 +81,14 @@ init flags =
       , remindDays = Just 1
       , remindDaysModel = Comp.IntField.init (Just 1) Nothing True "Remind Days"
       , enabled = False
-      , schedule = initialSchedule
-      , scheduleModel =
-            Comp.CalEventInput.from initialSchedule
-                |> Maybe.withDefault Comp.CalEventInput.init
+      , schedule = Comp.CalEventInput.initialSchedule
+      , scheduleModel = sm
       , formError = Nothing
       }
-    , initCmd flags
+    , Cmd.batch
+        [ initCmd flags
+        , Cmd.map CalEventMsg sc
+        ]
     )
 
 
@@ -277,7 +277,9 @@ view extraClasses model =
             , Html.map CalEventMsg
                 (Comp.CalEventInput.view "" model.scheduleModel)
             , span [ class "small-info" ]
-                [ text "Specify how often and when this task should run."
+                [ text "Specify how often and when this task should run. "
+                , text "Use English 3-letter weekdays. Either a single value, "
+                , text "a list or a '*' (meaning all) is allowed for each part."
                 ]
             ]
         , div [ class "ui divider" ] []
