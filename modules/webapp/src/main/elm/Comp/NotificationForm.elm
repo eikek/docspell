@@ -222,10 +222,16 @@ view extraClasses model =
                     []
                 , label [] [ text "Enabled" ]
                 ]
+            , span [ class "small-info" ]
+                [ text "Enable or disable this task."
+                ]
             ]
         , div [ class "required field" ]
             [ label [] [ text "Send via" ]
             , Html.map ConnMsg (Comp.Dropdown.view model.connectionModel)
+            , span [ class "small-info" ]
+                [ text "The SMTP connection to use when sending notification mails."
+                ]
             ]
         , div [ class "required field" ]
             [ label []
@@ -233,14 +239,23 @@ view extraClasses model =
                 ]
             , Html.map RecipientMsg
                 (Comp.EmailInput.view model.recipients model.recipientsModel)
+            , span [ class "small-info" ]
+                [ text "One or more mail addresses, confirm each by pressing 'Return'."
+                ]
             ]
         , div [ class "field" ]
             [ label [] [ text "Tags Include (and)" ]
             , Html.map TagIncMsg (Comp.Dropdown.view model.tagInclModel)
+            , span [ class "small-info" ]
+                [ text "Items must have all tags specified here."
+                ]
             ]
         , div [ class "field" ]
             [ label [] [ text "Tags Exclude (or)" ]
             , Html.map TagExcMsg (Comp.Dropdown.view model.tagExclModel)
+            , span [ class "small-info" ]
+                [ text "Items must not have all tags specified here."
+                ]
             ]
         , Html.map RemindDaysMsg
             (Comp.IntField.view model.remindDays
@@ -261,6 +276,9 @@ view extraClasses model =
                 ]
             , Html.map CalEventMsg
                 (Comp.CalEventInput.view "" model.scheduleModel)
+            , span [ class "small-info" ]
+                [ text "Specify how often and when this task should run."
+                ]
             ]
         , div [ class "ui divider" ] []
         , button
