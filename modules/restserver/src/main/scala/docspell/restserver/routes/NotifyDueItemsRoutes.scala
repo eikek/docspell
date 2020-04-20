@@ -25,7 +25,8 @@ object NotifyDueItemsRoutes {
       case GET -> Root =>
         for {
           task <- ut.getNotifyDueItems(user.account)
-          resp <- Ok(convert(task))
+          res  <- taskToSettings(user.account, backend, task)
+          resp <- Ok(res)
         } yield resp
 
       case req @ POST -> Root =>
@@ -41,9 +42,6 @@ object NotifyDueItemsRoutes {
     }
   }
 
-  def convert(task: UserTask[NotifyDueItemsArgs]): NotificationData =
-    NotificationData(taskToSettings(task), None, None)
-
   def makeTask(
       user: AccountId,
       settings: NotificationSettings
@@ -58,20 +56,34 @@ object NotifyDueItemsRoutes {
         settings.smtpConnection,
         settings.recipients,
         settings.remindDays,
-        settings.tagsInclude.map(Ident.unsafe),
-        settings.tagsExclude.map(Ident.unsafe)
+        settings.tagsInclude.map(_.id),
+        settings.tagsExclude.map(_.id)
       )
     )
 
-  def taskToSettings(task: UserTask[NotifyDueItemsArgs]): NotificationSettings =
-    NotificationSettings(
+  // TODO this should be inside the backend code and not here
+  def taskToSettings[F[_]: Sync](
+      account: AccountId,
+      backend: BackendApp[F],
+      task: UserTask[NotifyDueItemsArgs]
+  ): F[NotificationSettings] =
+    for {
+      tinc <- backend.tag.loadAll(task.args.tagsInclude)
+      texc <- backend.tag.loadAll(task.args.tagsExclude)
+      conn <- backend.mail
+        .getSettings(account, None)
+        .map(
+          _.find(_.name == task.args.smtpConnection)
+            .map(_.name)
+        )
+    } yield NotificationSettings(
       task.id,
       task.enabled,
-      task.args.smtpConnection,
+      conn.getOrElse(Ident.unsafe("none")),
       task.args.recipients,
       task.timer,
       task.args.remindDays,
-      task.args.tagsInclude.map(_.id),
-      task.args.tagsExclude.map(_.id)
+      tinc.map(Conversions.mkTag).toList,
+      texc.map(Conversions.mkTag).toList
     )
 }

@@ -11,6 +11,7 @@
 }
 .calevent-input input.time-input {
     border: 0 !important;
+    font-family: monospace !important;
     text-align: center;
 }
 .calevent-input .separator {
@@ -26,6 +27,7 @@
     font-weight: 600;
     text-align: center;
 }
+
 
 .default-layout .right-float {
     float: right;

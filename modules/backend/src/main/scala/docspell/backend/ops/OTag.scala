@@ -15,6 +15,10 @@ trait OTag[F[_]] {
   def update(s: RTag): F[AddResult]
 
   def delete(id: Ident, collective: Ident): F[AddResult]
+
+  /** Load all tags given their ids. Ids that are not available are ignored.
+    */
+  def loadAll(ids: List[Ident]): F[Vector[RTag]]
 }
 
 object OTag {
@@ -48,5 +52,9 @@ object OTag {
         } yield n0.getOrElse(0) + n1.getOrElse(0)
         store.transact(io).attempt.map(AddResult.fromUpdate)
       }
+
+      def loadAll(ids: List[Ident]): F[Vector[RTag]] =
+        if (ids.isEmpty) Vector.empty.pure[F]
+        else store.transact(RTag.findAllById(ids))
     })
 }

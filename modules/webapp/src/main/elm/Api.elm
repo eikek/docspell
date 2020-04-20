@@ -21,6 +21,7 @@ module Api exposing
     , getJobQueueState
     , getJobQueueStateIn
     , getMailSettings
+    , getNotifyDueItems
     , getOrgLight
     , getOrganizations
     , getPersons
@@ -85,6 +86,7 @@ import Api.Model.ItemProposals exposing (ItemProposals)
 import Api.Model.ItemSearch exposing (ItemSearch)
 import Api.Model.ItemUploadMeta exposing (ItemUploadMeta)
 import Api.Model.JobQueueState exposing (JobQueueState)
+import Api.Model.NotificationSettings exposing (NotificationSettings)
 import Api.Model.OptionalDate exposing (OptionalDate)
 import Api.Model.OptionalId exposing (OptionalId)
 import Api.Model.OptionalText exposing (OptionalText)
@@ -114,6 +116,22 @@ import Task
 import Url
 import Util.File
 import Util.Http as Http2
+
+
+
+--- NotifyDueItems
+
+
+getNotifyDueItems :
+    Flags
+    -> (Result Http.Error NotificationSettings -> msg)
+    -> Cmd msg
+getNotifyDueItems flags receive =
+    Http2.authGet
+        { url = flags.config.baseUrl ++ "/api/v1/sec/usertask/notifydueitems"
+        , account = getAccount flags
+        , expect = Http.expectJson receive Api.Model.NotificationSettings.decoder
+        }
 
 
 

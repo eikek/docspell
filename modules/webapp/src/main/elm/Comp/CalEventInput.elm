@@ -2,7 +2,6 @@ module Comp.CalEventInput exposing
     ( Model
     , Msg
     , init
-    , initialSchedule
     , update
     , view
     )
@@ -10,7 +9,9 @@ module Comp.CalEventInput exposing
 import Api
 import Api.Model.CalEventCheck exposing (CalEventCheck)
 import Api.Model.CalEventCheckResult exposing (CalEventCheckResult)
+import Data.CalEvent exposing (CalEvent)
 import Data.Flags exposing (Flags)
+import Data.Validated exposing (Validated(..))
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)
@@ -21,14 +22,7 @@ import Util.Time
 
 
 type alias Model =
-    { year : String
-    , month : String
-    , day : String
-    , hour : String
-    , minute : String
-    , weekday : Maybe String
-    , event : Maybe String
-    , checkResult : Maybe CalEventCheckResult
+    { checkResult : Maybe CalEventCheckResult
     }
 
 
@@ -39,68 +33,29 @@ type Msg
     | SetHour String
     | SetMinute String
     | SetWeekday String
-    | CheckInputMsg (Result Http.Error CalEventCheckResult)
+    | CheckInputMsg CalEvent (Result Http.Error CalEventCheckResult)
 
 
-initialSchedule : String
-initialSchedule =
-    "*-*-01 00:00"
+init : Flags -> CalEvent -> ( Model, Cmd Msg )
+init flags ev =
+    ( Model Nothing, checkInput flags ev )
 
 
-init : Flags -> ( Model, Cmd Msg )
-init flags =
+checkInput : Flags -> CalEvent -> Cmd Msg
+checkInput flags ev =
     let
-        model =
-            { year = "*"
-            , month = "*"
-            , day = "1"
-            , hour = "0"
-            , minute = "0"
-            , weekday = Nothing
-            , event = Nothing
-            , checkResult = Nothing
-            }
-    in
-    ( model, checkInput flags model )
-
-
-toEvent : Model -> String
-toEvent model =
-    let
-        datetime =
-            model.year
-                ++ "-"
-                ++ model.month
-                ++ "-"
-                ++ model.day
-                ++ " "
-                ++ model.hour
-                ++ ":"
-                ++ model.minute
-    in
-    case model.weekday of
-        Just wd ->
-            wd ++ " " ++ datetime
-
-        Nothing ->
-            datetime
-
-
-checkInput : Flags -> Model -> Cmd Msg
-checkInput flags model =
-    let
-        event =
-            toEvent model
+        eventStr =
+            Data.CalEvent.makeEvent ev
 
         input =
-            CalEventCheck event
+            CalEventCheck eventStr
     in
-    Api.checkCalEvent flags input CheckInputMsg
+    Api.checkCalEvent flags input (CheckInputMsg ev)
 
 
-withCheckInput : Flags -> Model -> ( Model, Cmd Msg, Maybe String )
-withCheckInput flags model =
-    ( model, checkInput flags model, Nothing )
+withCheckInput : Flags -> CalEvent -> Model -> ( Model, Cmd Msg, Validated CalEvent )
+withCheckInput flags ev model =
+    ( model, checkInput flags ev, Unknown ev )
 
 
 isCheckError : Model -> Bool
@@ -110,46 +65,49 @@ isCheckError model =
         |> not
 
 
-update : Flags -> Msg -> Model -> ( Model, Cmd Msg, Maybe String )
-update flags msg model =
+update : Flags -> CalEvent -> Msg -> Model -> ( Model, Cmd Msg, Validated CalEvent )
+update flags ev msg model =
     case msg of
         SetYear str ->
-            withCheckInput flags { model | year = str }
+            withCheckInput flags { ev | year = str } model
 
         SetMonth str ->
-            withCheckInput flags { model | month = str }
+            withCheckInput flags { ev | month = str } model
 
         SetDay str ->
-            withCheckInput flags { model | day = str }
+            withCheckInput flags { ev | day = str } model
 
         SetHour str ->
-            withCheckInput flags { model | hour = str }
+            withCheckInput flags { ev | hour = str } model
 
         SetMinute str ->
-            withCheckInput flags { model | minute = str }
+            withCheckInput flags { ev | minute = str } model
 
         SetWeekday str ->
-            withCheckInput flags { model | weekday = Util.Maybe.fromString str }
+            withCheckInput flags { ev | weekday = Util.Maybe.fromString str } model
 
-        CheckInputMsg (Ok res) ->
+        CheckInputMsg event (Ok res) ->
             let
                 m =
-                    { model
-                        | event = res.event
-                        , checkResult = Just res
-                    }
+                    { model | checkResult = Just res }
             in
-            ( m, Cmd.none, res.event )
+            ( m
+            , Cmd.none
+            , if res.success then
+                Valid event
 
-        CheckInputMsg (Err err) ->
+              else
+                Invalid event
+            )
+
+        CheckInputMsg event (Err err) ->
             let
                 emptyResult =
                     Api.Model.CalEventCheckResult.empty
 
                 m =
                     { model
-                        | event = Nothing
-                        , checkResult =
+                        | checkResult =
                             Just
                                 { emptyResult
                                     | success = False
@@ -157,14 +115,14 @@ update flags msg model =
                                 }
                     }
             in
-            ( m, Cmd.none, Nothing )
+            ( m, Cmd.none, Unknown event )
 
 
-view : String -> Model -> Html Msg
-view extraClasses model =
+view : String -> CalEvent -> Model -> Html Msg
+view extraClasses ev model =
     let
         yearLen =
-            Basics.max 4 (String.length model.year)
+            Basics.max 4 (String.length ev.year)
 
         otherLen str =
             Basics.max 2 (String.length str)
@@ -181,10 +139,10 @@ view extraClasses model =
                     [ type_ "text"
                     , class "time-input"
                     , size
-                        (Maybe.map otherLen model.weekday
+                        (Maybe.map otherLen ev.weekday
                             |> Maybe.withDefault 4
                         )
-                    , Maybe.withDefault "" model.weekday
+                    , Maybe.withDefault "" ev.weekday
                         |> value
                     , onInput SetWeekday
                     ]
@@ -196,7 +154,7 @@ view extraClasses model =
                     [ type_ "text"
                     , class "time-input"
                     , size yearLen
-                    , value model.year
+                    , value ev.year
                     , onInput SetYear
                     ]
                     []
@@ -209,8 +167,8 @@ view extraClasses model =
                 , input
                     [ type_ "text"
                     , class "time-input"
-                    , size (otherLen model.month)
-                    , value model.month
+                    , size (otherLen ev.month)
+                    , value ev.month
                     , onInput SetMonth
                     ]
                     []
@@ -223,8 +181,8 @@ view extraClasses model =
                 , input
                     [ type_ "text"
                     , class "time-input"
-                    , size (otherLen model.day)
-                    , value model.day
+                    , size (otherLen ev.day)
+                    , value ev.day
                     , onInput SetDay
                     ]
                     []
@@ -237,8 +195,8 @@ view extraClasses model =
                 , input
                     [ type_ "text"
                     , class "time-input"
-                    , size (otherLen model.hour)
-                    , value model.hour
+                    , size (otherLen ev.hour)
+                    , value ev.hour
                     , onInput SetHour
                     ]
                     []
@@ -251,8 +209,8 @@ view extraClasses model =
                 , input
                     [ type_ "text"
                     , class "time-input"
-                    , size (otherLen model.minute)
-                    , value model.minute
+                    , size (otherLen ev.minute)
+                    , value ev.minute
                     , onInput SetMinute
                     ]
                     []

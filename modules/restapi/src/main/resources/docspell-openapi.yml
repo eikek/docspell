@@ -1597,7 +1597,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/NotificationData"
+                $ref: "#/components/schemas/NotificationSettings"
     post:
       tags: [ Notification ]
       summary: Change current settings for "Notify Due Items" task
@@ -1683,27 +1683,11 @@ components:
         tagsInclude:
           type: array
           items:
-            type: string
-            format: ident
+            $ref: "#/components/schemas/Tag"
         tagsExclude:
           type: array
           items:
-            type: string
-            format: ident
-    NotificationData:
-      description: |
-        Data for the notification settings.
-      required:
-        - settings
-      properties:
-        settings:
-          $ref: "#/components/schemas/NotificationSettings"
-        nextRun:
-          type: integer
-          format: date-time
-        lastRun:
-          type: integer
-          format: date-time
+            $ref: "#/components/schemas/Tag"
     SentMails:
       description: |
         A list of sent mails.

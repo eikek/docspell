@@ -82,6 +82,11 @@ object RTag {
     sql.query[RTag].to[Vector]
   }
 
+  def findAllById(ids: List[Ident]): ConnectionIO[Vector[RTag]] =
+    selectSimple(all, table, tid.isIn(ids.map(id => sql"$id").toSeq))
+      .query[RTag]
+      .to[Vector]
+
   def findByItem(itemId: Ident): ConnectionIO[Vector[RTag]] = {
     val rcol = all.map(_.prefix("t"))
     (selectSimple(

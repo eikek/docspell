@@ -15,7 +15,9 @@ import Comp.CalEventInput
 import Comp.Dropdown
 import Comp.EmailInput
 import Comp.IntField
+import Data.CalEvent exposing (CalEvent)
 import Data.Flags exposing (Flags)
+import Data.Validated exposing (Validated)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onCheck, onClick)
@@ -35,7 +37,7 @@ type alias Model =
     , remindDays : Maybe Int
     , remindDaysModel : Comp.IntField.Model
     , enabled : Bool
-    , schedule : String
+    , schedule : Validated CalEvent
     , scheduleModel : Comp.CalEventInput.Model
     , formError : Maybe String
     }
@@ -52,6 +54,7 @@ type Msg
     | RemindDaysMsg Comp.IntField.Msg
     | ToggleEnabled
     | CalEventMsg Comp.CalEventInput.Msg
+    | SetNotificationSettings (Result Http.Error NotificationSettings)
 
 
 initCmd : Flags -> Cmd Msg
@@ -59,14 +62,18 @@ initCmd flags =
     Cmd.batch
         [ Api.getMailSettings flags "" ConnResp
         , Api.getTags flags "" GetTagsResp
+        , Api.getNotifyDueItems flags SetNotificationSettings
         ]
 
 
 init : Flags -> ( Model, Cmd Msg )
 init flags =
     let
+        initialSchedule =
+            Data.Validated.Unknown Data.CalEvent.everyMonth
+
         ( sm, sc ) =
-            Comp.CalEventInput.init flags
+            Comp.CalEventInput.init flags Data.CalEvent.everyMonth
     in
     ( { settings = Api.Model.NotificationSettings.empty
       , connectionModel =
@@ -81,7 +88,7 @@ init flags =
       , remindDays = Just 1
       , remindDaysModel = Comp.IntField.init (Just 1) Nothing True "Remind Days"
       , enabled = False
-      , schedule = Comp.CalEventInput.initialSchedule
+      , schedule = initialSchedule
       , scheduleModel = sm
       , formError = Nothing
       }
@@ -98,10 +105,13 @@ update flags msg model =
         CalEventMsg lmsg ->
             let
                 ( cm, cc, cs ) =
-                    Comp.CalEventInput.update flags lmsg model.scheduleModel
+                    Comp.CalEventInput.update flags
+                        (Data.Validated.value model.schedule)
+                        lmsg
+                        model.scheduleModel
             in
             ( { model
-                | schedule = Maybe.withDefault model.schedule cs
+                | schedule = cs
                 , scheduleModel = cm
               }
             , Cmd.map CalEventMsg cc
@@ -141,7 +151,7 @@ update flags msg model =
                 | connectionModel = cm
                 , formError =
                     if names == [] then
-                        Just "No E-Mail connections configured. Goto user settings to add one."
+                        Just "No E-Mail connections configured. Goto E-Mail Settings to add one."
 
                     else
                         Nothing
@@ -199,7 +209,40 @@ update flags msg model =
         ToggleEnabled ->
             ( { model | enabled = not model.enabled }, Cmd.none )
 
-        _ ->
+        SetNotificationSettings (Ok s) ->
+            let
+                ( nm, nc ) =
+                    Util.Update.andThen1
+                        [ update flags (ConnMsg (Comp.Dropdown.SetSelection [ s.smtpConnection ]))
+                        , update flags (TagIncMsg (Comp.Dropdown.SetSelection s.tagsInclude))
+                        , update flags (TagExcMsg (Comp.Dropdown.SetSelection s.tagsExclude))
+                        ]
+                        model
+
+                newSchedule =
+                    Data.CalEvent.fromEvent s.schedule
+                        |> Maybe.withDefault Data.CalEvent.everyMonth
+
+                ( sm, sc ) =
+                    Comp.CalEventInput.init flags newSchedule
+            in
+            ( { nm
+                | settings = s
+                , recipients = s.recipients
+                , remindDays = Just s.remindDays
+                , enabled = s.enabled
+                , schedule = Data.Validated.Unknown newSchedule
+              }
+            , Cmd.batch
+                [ nc
+                , Cmd.map CalEventMsg sc
+                ]
+            )
+
+        SetNotificationSettings (Err err) ->
+            ( { model | formError = Just (Util.Http.errorToString err) }, Cmd.none )
+
+        Submit ->
             ( model, Cmd.none )
 
 
@@ -275,14 +318,22 @@ view extraClasses model =
                     ]
                 ]
             , Html.map CalEventMsg
-                (Comp.CalEventInput.view "" model.scheduleModel)
+                (Comp.CalEventInput.view ""
+                    (Data.Validated.value model.schedule)
+                    model.scheduleModel
+                )
             , span [ class "small-info" ]
                 [ text "Specify how often and when this task should run. "
                 , text "Use English 3-letter weekdays. Either a single value, "
-                , text "a list or a '*' (meaning all) is allowed for each part."
+                , text "a list (ex. 1,2,3), a range (ex. 1..3) or a '*' (meaning all) "
+                , text "is allowed for each part."
                 ]
             ]
         , div [ class "ui divider" ] []
+        , div [ class "ui error message" ]
+            [ Maybe.withDefault "" model.formError
+                |> text
+            ]
         , button
             [ class "ui primary button"
             , onClick Submit
