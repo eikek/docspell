@@ -11,6 +11,7 @@ import Api.Model.EmailSettingsList exposing (EmailSettingsList)
 import Api.Model.NotificationSettings exposing (NotificationSettings)
 import Api.Model.Tag exposing (Tag)
 import Api.Model.TagList exposing (TagList)
+import Comp.CalEventInput
 import Comp.Dropdown
 import Comp.EmailInput
 import Comp.IntField
@@ -34,7 +35,8 @@ type alias Model =
     , remindDays : Maybe Int
     , remindDaysModel : Comp.IntField.Model
     , enabled : Bool
-    , timer : String
+    , schedule : String
+    , scheduleModel : Comp.CalEventInput.Model
     , formError : Maybe String
     }
 
@@ -49,7 +51,7 @@ type Msg
     | GetTagsResp (Result Http.Error TagList)
     | RemindDaysMsg Comp.IntField.Msg
     | ToggleEnabled
-    | SetSchedule String
+    | CalEventMsg Comp.CalEventInput.Msg
 
 
 initCmd : Flags -> Cmd Msg
@@ -58,6 +60,11 @@ initCmd flags =
         [ Api.getMailSettings flags "" ConnResp
         , Api.getTags flags "" GetTagsResp
         ]
+
+
+initialSchedule : String
+initialSchedule =
+    "*-*-1/7 12:00"
 
 
 init : Flags -> ( Model, Cmd Msg )
@@ -75,7 +82,10 @@ init flags =
       , remindDays = Just 1
       , remindDaysModel = Comp.IntField.init (Just 1) Nothing True "Remind Days"
       , enabled = False
-      , timer = "*-*-1/7 12:00"
+      , schedule = initialSchedule
+      , scheduleModel =
+            Comp.CalEventInput.from initialSchedule
+                |> Maybe.withDefault Comp.CalEventInput.init
       , formError = Nothing
       }
     , initCmd flags
@@ -85,8 +95,17 @@ init flags =
 update : Flags -> Msg -> Model -> ( Model, Cmd Msg )
 update flags msg model =
     case msg of
-        SetSchedule str ->
-            ( { model | timer = str }, Cmd.none )
+        CalEventMsg lmsg ->
+            let
+                ( cm, cc, cs ) =
+                    Comp.CalEventInput.update flags lmsg model.scheduleModel
+            in
+            ( { model
+                | schedule = Maybe.withDefault model.schedule cs
+                , scheduleModel = cm
+              }
+            , Cmd.map CalEventMsg cc
+            )
 
         RecipientMsg m ->
             let
@@ -229,13 +248,19 @@ view extraClasses model =
                 model.remindDaysModel
             )
         , div [ class "required field" ]
-            [ label [] [ text "Schedule" ]
-            , input
-                [ type_ "text"
-                , onInput SetSchedule
-                , value model.timer
+            [ label []
+                [ text "Schedule"
+                , a
+                    [ class "right-float"
+                    , href "https://github.com/eikek/calev#what-are-calendar-events"
+                    , target "_blank"
+                    ]
+                    [ i [ class "help icon" ] []
+                    , text "Click here for help"
+                    ]
                 ]
-                []
+            , Html.map CalEventMsg
+                (Comp.CalEventInput.view "" model.scheduleModel)
             ]
         , div [ class "ui divider" ] []
         , button

@@ -3,6 +3,33 @@
  * https://www.color-hex.com/color-palette/1637
  */
 
+.calevent-input {
+    border: 1px solid rgba(34,36,38,.15);
+    display: flex;
+    flex-direction: row;
+    margin: 0 0 1em;
+}
+.calevent-input input.time-input {
+    border: 0 !important;
+    text-align: center;
+}
+.calevent-input .separator {
+    margin-top: auto;
+    margin-bottom: auto;
+    padding-top: 2%;
+}
+.calevent-input label {
+    display: block;
+    margin: 0;
+    padding: 0;
+    font-size: small;
+    font-weight: 600;
+    text-align: center;
+}
+
+.default-layout .right-float {
+    float: right;
+}
 .default-layout {
     background: #fff;
 /*    height: 100vh; */

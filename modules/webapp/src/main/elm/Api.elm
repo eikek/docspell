@@ -1,6 +1,7 @@
 module Api exposing
     ( cancelJob
     , changePassword
+    , checkCalEvent
     , createMailSettings
     , deleteEquip
     , deleteItem
@@ -65,6 +66,8 @@ module Api exposing
 import Api.Model.AttachmentMeta exposing (AttachmentMeta)
 import Api.Model.AuthResult exposing (AuthResult)
 import Api.Model.BasicResult exposing (BasicResult)
+import Api.Model.CalEventCheck exposing (CalEventCheck)
+import Api.Model.CalEventCheckResult exposing (CalEventCheckResult)
 import Api.Model.Collective exposing (Collective)
 import Api.Model.CollectiveSettings exposing (CollectiveSettings)
 import Api.Model.ContactList exposing (ContactList)
@@ -111,6 +114,24 @@ import Task
 import Url
 import Util.File
 import Util.Http as Http2
+
+
+
+--- CalEvent
+
+
+checkCalEvent :
+    Flags
+    -> CalEventCheck
+    -> (Result Http.Error CalEventCheckResult -> msg)
+    -> Cmd msg
+checkCalEvent flags input receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/calevent/check"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.CalEventCheck.encode input)
+        , expect = Http.expectJson receive Api.Model.CalEventCheckResult.decoder
+        }
 
 
 
