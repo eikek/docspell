@@ -27,6 +27,9 @@
     font-weight: 600;
     text-align: center;
 }
+.calevent-input .datetime.separator {
+    margin: 0 1em;
+}
 
 
 .default-layout .right-float {

@@ -40,8 +40,8 @@ type alias Model =
     , enabled : Bool
     , schedule : Validated CalEvent
     , scheduleModel : Comp.CalEventInput.Model
-    , formError : Maybe String
-    , submitResp : Maybe BasicResult
+    , formMsg : Maybe BasicResult
+    , loading : Int
     }
 
 
@@ -93,14 +93,18 @@ init flags =
       , enabled = False
       , schedule = initialSchedule
       , scheduleModel = sm
-      , formError = Nothing
-      , submitResp = Nothing
+      , formMsg = Nothing
+      , loading = 3
       }
     , Cmd.batch
         [ initCmd flags
         , Cmd.map CalEventMsg sc
         ]
     )
+
+
+
+--- Update
 
 
 makeSettings : Model -> Validated NotificationSettings
@@ -194,9 +198,13 @@ update flags msg model =
             in
             ( { model
                 | connectionModel = cm
-                , formError =
+                , loading = model.loading - 1
+                , formMsg =
                     if names == [] then
-                        Just "No E-Mail connections configured. Goto E-Mail Settings to add one."
+                        Just
+                            (BasicResult False
+                                "No E-Mail connections configured. Goto E-Mail Settings to add one."
+                            )
 
                     else
                         Nothing
@@ -205,7 +213,12 @@ update flags msg model =
             )
 
         ConnResp (Err err) ->
-            ( { model | formError = Just (Util.Http.errorToString err) }, Cmd.none )
+            ( { model
+                | formMsg = Just (BasicResult False (Util.Http.errorToString err))
+                , loading = model.loading - 1
+              }
+            , Cmd.none
+            )
 
         TagIncMsg m ->
             let
@@ -234,10 +247,12 @@ update flags msg model =
                 [ update flags (TagIncMsg tagList)
                 , update flags (TagExcMsg tagList)
                 ]
-                model
+                { model | loading = model.loading - 1 }
 
         GetTagsResp (Err _) ->
-            ( model, Cmd.none )
+            ( { model | loading = model.loading - 1 }
+            , Cmd.none
+            )
 
         RemindDaysMsg m ->
             let
@@ -278,6 +293,7 @@ update flags msg model =
                 , enabled = s.enabled
                 , schedule = Data.Validated.Unknown newSchedule
                 , scheduleModel = sm
+                , loading = model.loading - 1
               }
             , Cmd.batch
                 [ nc
@@ -286,12 +302,17 @@ update flags msg model =
             )
 
         SetNotificationSettings (Err err) ->
-            ( { model | formError = Just (Util.Http.errorToString err) }, Cmd.none )
+            ( { model
+                | formMsg = Just (BasicResult False (Util.Http.errorToString err))
+                , loading = model.loading - 1
+              }
+            , Cmd.none
+            )
 
         Submit ->
             case makeSettings model of
                 Valid set ->
-                    ( { model | formError = Nothing }
+                    ( { model | formMsg = Nothing }
                     , Api.submitNotifyDueItems flags set SubmitResp
                     )
 
@@ -300,23 +321,41 @@ update flags msg model =
                         errMsg =
                             String.join ", " errs
                     in
-                    ( { model | formError = Just errMsg }, Cmd.none )
+                    ( { model | formMsg = Just (BasicResult False errMsg) }, Cmd.none )
 
                 Unknown _ ->
-                    ( { model | formError = Just "An unknown error occured" }, Cmd.none )
+                    ( { model | formMsg = Just (BasicResult False "An unknown error occured") }
+                    , Cmd.none
+                    )
 
         SubmitResp (Ok res) ->
-            ( { model | submitResp = Just res, formError = Nothing }
+            ( { model | formMsg = Just res }
             , Cmd.none
             )
 
         SubmitResp (Err err) ->
             ( { model
-                | formError = Nothing
-                , submitResp = Just (BasicResult False (Util.Http.errorToString err))
+                | formMsg = Just (BasicResult False (Util.Http.errorToString err))
               }
             , Cmd.none
             )
+
+
+
+--- View
+
+
+isFormError : Model -> Bool
+isFormError model =
+    Maybe.map .success model.formMsg
+        |> Maybe.map not
+        |> Maybe.withDefault False
+
+
+isFormSuccess : Model -> Bool
+isFormSuccess model =
+    Maybe.map .success model.formMsg
+        |> Maybe.withDefault False
 
 
 view : String -> Model -> Html Msg
@@ -325,21 +364,21 @@ view extraClasses model =
         [ classList
             [ ( "ui form", True )
             , ( extraClasses, True )
-            , ( "error"
-              , model.formError
-                    /= Nothing
-                    || (Maybe.map .success model.submitResp
-                            |> Maybe.map not
-                            |> Maybe.withDefault False
-                       )
-              )
-            , ( "success"
-              , Maybe.map .success model.submitResp
-                    |> Maybe.withDefault False
-              )
+            , ( "error", isFormError model )
+            , ( "success", isFormSuccess model )
             ]
         ]
-        [ div [ class "inline field" ]
+        [ div
+            [ classList
+                [ ( "ui dimmer", True )
+                , ( "active", model.loading > 0 )
+                ]
+            ]
+            [ div [ class "ui text loader" ]
+                [ text "Loading..."
+                ]
+            ]
+        , div [ class "inline field" ]
             [ div [ class "ui checkbox" ]
                 [ input
                     [ type_ "checkbox"
@@ -415,13 +454,9 @@ view extraClasses model =
             ]
         , div [ class "ui divider" ] []
         , div [ class "ui error message" ]
-            [ case Maybe.map .message model.submitResp of
-                Just txt ->
-                    text txt
-
-                Nothing ->
-                    Maybe.withDefault "" model.formError
-                        |> text
+            [ Maybe.map .message model.formMsg
+                |> Maybe.withDefault ""
+                |> text
             ]
         , div [ class "ui success message" ]
             [ text "Successfully saved."

@@ -39,4 +39,3 @@ type Msg
     | ChangePassMsg Comp.ChangePasswordForm.Msg
     | EmailSettingsMsg Comp.EmailSettingsManage.Msg
     | NotificationMsg Comp.NotificationForm.Msg
-    | Init

@@ -325,7 +325,6 @@ initPage model page =
         UserSettingPage ->
             Util.Update.andThen1
                 [ updateQueue Page.Queue.Data.StopRefresh
-                , updateUserSettings Page.UserSettings.Data.Init
                 ]
                 model
 
