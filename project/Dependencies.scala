@@ -30,7 +30,7 @@ object Dependencies {
   val PureConfigVersion = "0.12.3"
   val Slf4jVersion = "1.7.30"
   val SqliteVersion = "3.30.1"
-  val StanfordNlpVersion = "3.9.2"
+  val StanfordNlpVersion = "4.0.0"
   val TikaVersion = "1.24"
   val YamuscaVersion = "0.6.1"
   val SwaggerUIVersion = "3.25.0"
