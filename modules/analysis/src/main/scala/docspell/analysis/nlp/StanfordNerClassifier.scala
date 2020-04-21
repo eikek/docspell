@@ -1,16 +1,12 @@
 package docspell.analysis.nlp
 
-import java.net.URL
-import java.util.zip.GZIPInputStream
+import java.util.{Properties => JProps}
 
 import scala.jdk.CollectionConverters._
-import scala.util.Using
 
 import docspell.common._
 
-import edu.stanford.nlp.ie.AbstractSequenceClassifier
-import edu.stanford.nlp.ie.crf.CRFClassifier
-import edu.stanford.nlp.ling.{CoreAnnotations, CoreLabel}
+import edu.stanford.nlp.pipeline.{CoreDocument, StanfordCoreNLP}
 import org.log4s.getLogger
 
 object StanfordNerClassifier {
@@ -18,48 +14,32 @@ object StanfordNerClassifier {
 
   lazy val germanNerClassifier  = makeClassifier(Language.German)
   lazy val englishNerClassifier = makeClassifier(Language.English)
+  lazy val frenchNerClassifier  = makeClassifier(Language.French)
 
   def nerAnnotate(lang: Language)(text: String): Vector[NerLabel] = {
     val nerClassifier = lang match {
       case Language.English => englishNerClassifier
       case Language.German  => germanNerClassifier
+      case Language.French  => frenchNerClassifier
     }
-    nerClassifier
-      .classify(text)
-      .asScala
-      .flatMap(a => a.asScala)
-      .collect(Function.unlift { label =>
-        val tag = label.get(classOf[CoreAnnotations.AnswerAnnotation])
-        NerTag
-          .fromString(Option(tag).getOrElse(""))
-          .toOption
-          .map(t => NerLabel(label.word(), t, label.beginPosition(), label.endPosition()))
-      })
-      .toVector
+    val doc = new CoreDocument(text)
+    nerClassifier.annotate(doc)
+
+    doc.tokens().asScala.collect(Function.unlift(LabelConverter.toNerLabel)).toVector
   }
 
-  private def makeClassifier(lang: Language): AbstractSequenceClassifier[CoreLabel] = {
+  private def makeClassifier(lang: Language): StanfordCoreNLP = {
     logger.info(s"Creating ${lang.name} Stanford NLP NER classifier...")
-    val ner = classifierResource(lang)
-    Using(new GZIPInputStream(ner.openStream())) { in =>
-      CRFClassifier.getClassifier(in).asInstanceOf[AbstractSequenceClassifier[CoreLabel]]
-    }.fold(throw _, identity)
+    new StanfordCoreNLP(classifierProperties(lang))
   }
 
-  private def classifierResource(lang: Language): URL = {
-    def check(u: URL): URL =
-      if (u == null) sys.error(s"NER model url not found for language ${lang.name}")
-      else u
-
-    check(lang match {
+  private def classifierProperties(lang: Language): JProps =
+    lang match {
       case Language.German =>
-        getClass.getResource(
-          "/edu/stanford/nlp/models/ner/german.conll.germeval2014.hgc_175m_600.crf.ser.gz"
-        )
+        Properties.nerGerman(None, false)
       case Language.English =>
-        getClass.getResource(
-          "/edu/stanford/nlp/models/ner/english.all.3class.distsim.crf.ser.gz"
-        )
-    })
-  }
+        Properties.nerEnglish(None)
+      case Language.French =>
+        Properties.nerFrench(None, false)
+    }
 }

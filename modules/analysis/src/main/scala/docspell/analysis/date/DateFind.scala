@@ -54,6 +54,7 @@ object DateFind {
       val p = lang match {
         case Language.English => p2.or(p0).or(p1)
         case Language.German  => p1.or(p0).or(p2)
+        case Language.French  => p1.or(p0).or(p2)
       }
       p.read(parts).toOption
     }

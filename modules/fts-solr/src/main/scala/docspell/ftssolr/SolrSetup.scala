@@ -80,6 +80,8 @@ object SolrSetup {
             addTextField(l.some)(Field.content_de)
           case l @ Language.English =>
             addTextField(l.some)(Field.content_en)
+          case l @ Language.French =>
+            addTextField(l.some)(Field.content_fr)
         }
 
         cmds0 *> cmds1 *> cntLang *> ().pure[F]
@@ -105,6 +107,9 @@ object SolrSetup {
           case Some(Language.English) =>
             run(DeleteField.command(DeleteField(field))).attempt *>
               run(AddField.command(AddField.textEN(field)))
+          case Some(Language.French) =>
+            run(DeleteField.command(DeleteField(field))).attempt *>
+              run(AddField.command(AddField.textFR(field)))
         }
     }
   }
@@ -138,6 +143,9 @@ object SolrSetup {
 
     def textEN(field: Field): AddField =
       AddField(field, "text_en", true, true, false)
+
+    def textFR(field: Field): AddField =
+      AddField(field, "text_fr", true, true, false)
   }
 
   case class DeleteField(name: Field)
