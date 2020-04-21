@@ -163,6 +163,7 @@ update flags msg model =
             ( { model
                 | schedule = cs
                 , scheduleModel = cm
+                , formMsg = Nothing
               }
             , Cmd.map CalEventMsg cc
             )
@@ -172,17 +173,25 @@ update flags msg model =
                 ( em, ec, rec ) =
                     Comp.EmailInput.update flags model.recipients m model.recipientsModel
             in
-            ( { model | recipients = rec, recipientsModel = em }
+            ( { model
+                | recipients = rec
+                , recipientsModel = em
+                , formMsg = Nothing
+              }
             , Cmd.map RecipientMsg ec
             )
 
         ConnMsg m ->
             let
-                ( cm, _ ) =
-                    -- dropdown doesn't use cmd!!
+                ( cm, cc ) =
                     Comp.Dropdown.update m model.connectionModel
             in
-            ( { model | connectionModel = cm }, Cmd.none )
+            ( { model
+                | connectionModel = cm
+                , formMsg = Nothing
+              }
+            , Cmd.map ConnMsg cc
+            )
 
         ConnResp (Ok list) ->
             let
@@ -226,7 +235,10 @@ update flags msg model =
                 ( m2, c2 ) =
                     Comp.Dropdown.update m model.tagInclModel
             in
-            ( { model | tagInclModel = m2 }
+            ( { model
+                | tagInclModel = m2
+                , formMsg = Nothing
+              }
             , Cmd.map TagIncMsg c2
             )
 
@@ -235,7 +247,10 @@ update flags msg model =
                 ( m2, c2 ) =
                     Comp.Dropdown.update m model.tagExclModel
             in
-            ( { model | tagExclModel = m2 }
+            ( { model
+                | tagExclModel = m2
+                , formMsg = Nothing
+              }
             , Cmd.map TagExcMsg c2
             )
 
@@ -250,8 +265,11 @@ update flags msg model =
                 ]
                 { model | loading = model.loading - 1 }
 
-        GetTagsResp (Err _) ->
-            ( { model | loading = model.loading - 1 }
+        GetTagsResp (Err err) ->
+            ( { model
+                | loading = model.loading - 1
+                , formMsg = Just (BasicResult False (Util.Http.errorToString err))
+              }
             , Cmd.none
             )
 
@@ -263,12 +281,18 @@ update flags msg model =
             ( { model
                 | remindDaysModel = pm
                 , remindDays = val
+                , formMsg = Nothing
               }
             , Cmd.none
             )
 
         ToggleEnabled ->
-            ( { model | enabled = not model.enabled }, Cmd.none )
+            ( { model
+                | enabled = not model.enabled
+                , formMsg = Nothing
+              }
+            , Cmd.none
+            )
 
         SetNotificationSettings (Ok s) ->
             let
@@ -299,6 +323,7 @@ update flags msg model =
                 , enabled = s.enabled
                 , schedule = Data.Validated.Unknown newSchedule
                 , scheduleModel = sm
+                , formMsg = Nothing
                 , loading = model.loading - 1
               }
             , Cmd.batch
