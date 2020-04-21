@@ -79,7 +79,7 @@ object NotifyDueItemsRoutes {
     } yield NotificationSettings(
       task.id,
       task.enabled,
-      conn.getOrElse(Ident.unsafe("none")),
+      conn.getOrElse(Ident.unsafe("")),
       task.args.recipients,
       task.timer,
       task.args.remindDays,

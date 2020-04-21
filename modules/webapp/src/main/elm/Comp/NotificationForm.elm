@@ -24,6 +24,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onCheck, onClick)
 import Http
 import Util.Http
+import Util.Maybe
 import Util.Tag
 import Util.Update
 
@@ -271,9 +272,14 @@ update flags msg model =
 
         SetNotificationSettings (Ok s) ->
             let
+                smtp =
+                    Util.Maybe.fromString s.smtpConnection
+                        |> Maybe.map List.singleton
+                        |> Maybe.withDefault []
+
                 ( nm, nc ) =
                     Util.Update.andThen1
-                        [ update flags (ConnMsg (Comp.Dropdown.SetSelection [ s.smtpConnection ]))
+                        [ update flags (ConnMsg (Comp.Dropdown.SetSelection smtp))
                         , update flags (TagIncMsg (Comp.Dropdown.SetSelection s.tagsInclude))
                         , update flags (TagExcMsg (Comp.Dropdown.SetSelection s.tagsExclude))
                         ]
