@@ -125,6 +125,26 @@ object QItem {
       dueDateTo: Option[Timestamp]
   )
 
+  object Query {
+    def empty(collective: Ident): Query =
+      Query(
+        collective,
+        None,
+        Seq.empty,
+        None,
+        None,
+        None,
+        None,
+        None,
+        Nil,
+        Nil,
+        None,
+        None,
+        None,
+        None
+      )
+  }
+
   def findItems(q: Query): Stream[ConnectionIO, ListItem] = {
     val IC         = RItem.Columns
     val AC         = RAttachment.Columns

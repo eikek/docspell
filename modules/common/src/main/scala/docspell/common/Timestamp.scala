@@ -19,6 +19,12 @@ case class Timestamp(value: Instant) {
   def -(d: Duration): Timestamp =
     minus(d)
 
+  def +(d: Duration): Timestamp =
+    plus(d)
+
+  def plus(d: Duration): Timestamp =
+    Timestamp(value.plusNanos(d.nanos))
+
   def minusHours(n: Long): Timestamp =
     Timestamp(value.minusSeconds(n * 60 * 60))
 
@@ -59,4 +65,6 @@ object Timestamp {
   implicit val decodeTimestamp: Decoder[Timestamp] =
     BaseJsonCodecs.decodeInstantEpoch.map(Timestamp(_))
 
+  implicit val ordering: Ordering[Timestamp] =
+    Ordering.by(_.value)
 }

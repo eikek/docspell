@@ -24,6 +24,9 @@ object ItemState {
       case _            => Left(s"Invalid item state: $str")
     }
 
+  val validStates: Seq[ItemState] =
+    Seq(Created, Confirmed)
+
   def unsafe(str: String): ItemState =
     fromString(str).fold(sys.error, identity)
 

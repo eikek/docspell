@@ -43,6 +43,9 @@ object Duration {
   def hours(n: Long): Duration =
     apply(JDur.ofHours(n))
 
+  def days(n: Long): Duration =
+    apply(JDur.ofDays(n))
+
   def nanos(n: Long): Duration =
     Duration(n)
 

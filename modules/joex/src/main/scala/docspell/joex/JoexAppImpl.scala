@@ -2,6 +2,7 @@ package docspell.joex
 
 import cats.implicits._
 import cats.effect._
+import emil.javamail._
 import docspell.common._
 import docspell.joex.hk._
 import docspell.joex.process.ItemHandler
@@ -12,7 +13,6 @@ import docspell.store.queue._
 import docspell.store.ops.ONode
 import docspell.store.records.RJobLog
 import fs2.concurrent.SignallingRef
-
 import scala.concurrent.ExecutionContext
 
 final class JoexAppImpl[F[_]: ConcurrentEffect: ContextShift: Timer](
@@ -78,7 +78,7 @@ object JoexAppImpl {
         .withTask(
           JobTask.json(
             NotifyDueItemsArgs.taskName,
-            NotifyDueItemsTask[F],
+            NotifyDueItemsTask[F](JavaMailEmil(blocker)),
             NotifyDueItemsTask.onCancel[F]
           )
         )

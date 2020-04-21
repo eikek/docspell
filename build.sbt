@@ -303,6 +303,7 @@ val joex = project.in(file("modules/joex")).
       Dependencies.emilMarkdown ++
       Dependencies.emilJsoup ++
       Dependencies.jsoup ++
+      Dependencies.yamusca ++
       Dependencies.loggingApi ++
       Dependencies.logging.map(_ % Runtime),
     addCompilerPlugin(Dependencies.kindProjectorPlugin),
