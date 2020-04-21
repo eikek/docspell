@@ -54,7 +54,7 @@ object BackendApp {
       jobImpl      <- OJob(store, joexImpl)
       itemImpl     <- OItem(store)
       mailImpl     <- OMail(store, JavaMailEmil(blocker))
-      userTaskImpl <- OUserTask(utStore, joexImpl)
+      userTaskImpl <- OUserTask(utStore, queue, joexImpl)
     } yield new BackendApp[F] {
       val login: Login[F]            = loginImpl
       val signup: OSignup[F]         = signupImpl

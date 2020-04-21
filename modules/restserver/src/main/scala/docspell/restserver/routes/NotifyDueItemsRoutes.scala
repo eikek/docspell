@@ -22,6 +22,17 @@ object NotifyDueItemsRoutes {
     import dsl._
 
     HttpRoutes.of {
+      case req @ POST -> Root / "startonce" =>
+        for {
+          data <- req.as[NotificationSettings]
+          task = makeTask(user.account, data)
+          res <- ut
+            .executeNow(user.account, task)
+            .attempt
+            .map(Conversions.basicResult(_, "Submitted successfully."))
+          resp <- Ok(res)
+        } yield resp
+
       case GET -> Root =>
         for {
           task <- ut.getNotifyDueItems(user.account)
@@ -36,7 +47,7 @@ object NotifyDueItemsRoutes {
           res <- ut
             .submitNotifyDueItems(user.account, task)
             .attempt
-            .map(Conversions.basicResult(_, "Update ok."))
+            .map(Conversions.basicResult(_, "Saved successfully."))
           resp <- Ok(res)
         } yield resp
     }
@@ -61,7 +72,6 @@ object NotifyDueItemsRoutes {
       )
     )
 
-  // TODO this should be inside the backend code and not here
   def taskToSettings[F[_]: Sync](
       account: AccountId,
       backend: BackendApp[F],

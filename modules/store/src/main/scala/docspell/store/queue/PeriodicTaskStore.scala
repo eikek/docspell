@@ -36,6 +36,8 @@ trait PeriodicTaskStore[F[_]] {
     */
   def add(task: RPeriodicTask): F[AddResult]
 
+  /** Find all joex nodes as registered in the database.
+    */
   def findJoexNodes: F[Vector[RNode]]
 }
 

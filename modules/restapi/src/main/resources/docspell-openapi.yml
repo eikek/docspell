@@ -1583,7 +1583,7 @@ paths:
                 $ref: "#/components/schemas/CalEventCheckResult"
   /sec/usertask/notifydueitems:
     get:
-      tags: [ Notification ]
+      tags: [ User Tasks ]
       summary: Get settings for "Notify Due Items" task
       description: |
         Return the current notification settings of the authenticated
@@ -1599,11 +1599,32 @@ paths:
               schema:
                 $ref: "#/components/schemas/NotificationSettings"
     post:
-      tags: [ Notification ]
+      tags: [ User Tasks ]
       summary: Change current settings for "Notify Due Items" task
       description: |
         Change the current notification settings of the authenticated
         user.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NotificationSettings"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+  /sec/usertask/notifydueitems/startonce:
+    post:
+      tags: [ User Tasks ]
+      summary: Start the "Notify Due Items" task once
+      description: |
+        Starts the notify-due-items task just once, discarding the
+        schedule and not updating the periodic task.
       security:
         - authTokenHeader: []
       requestBody:

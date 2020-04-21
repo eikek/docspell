@@ -59,6 +59,7 @@ module Api exposing
     , setItemNotes
     , setTags
     , setUnconfirmed
+    , startOnceNotifyDueItems
     , submitNotifyDueItems
     , upload
     , uploadSingle
@@ -121,6 +122,20 @@ import Util.Http as Http2
 
 
 --- NotifyDueItems
+
+
+startOnceNotifyDueItems :
+    Flags
+    -> NotificationSettings
+    -> (Result Http.Error BasicResult -> msg)
+    -> Cmd msg
+startOnceNotifyDueItems flags settings receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/usertask/notifydueitems/startonce"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.NotificationSettings.encode settings)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
 
 
 submitNotifyDueItems :

@@ -33,13 +33,13 @@ object QUserTask {
 
   def insert(account: AccountId, task: UserTask[String]): ConnectionIO[Int] =
     for {
-      r <- makePeriodicTask(account, task)
+      r <- task.toPeriodicTask[ConnectionIO](account)
       n <- RPeriodicTask.insert(r)
     } yield n
 
   def update(account: AccountId, task: UserTask[String]): ConnectionIO[Int] =
     for {
-      r <- makePeriodicTask(account, task)
+      r <- task.toPeriodicTask[ConnectionIO](account)
       n <- RPeriodicTask.update(r)
     } yield n
 
@@ -68,22 +68,5 @@ object QUserTask {
 
   def makeUserTask(r: RPeriodicTask): UserTask[String] =
     UserTask(r.id, r.task, r.enabled, r.timer, r.args)
-
-  def makePeriodicTask(
-      account: AccountId,
-      t: UserTask[String]
-  ): ConnectionIO[RPeriodicTask] =
-    RPeriodicTask
-      .create[ConnectionIO](
-        t.enabled,
-        t.name,
-        account.collective,
-        t.args,
-        s"${account.user.id}: ${t.name.id}",
-        account.user,
-        Priority.Low,
-        t.timer
-      )
-      .map(r => r.copy(id = t.id))
 
 }

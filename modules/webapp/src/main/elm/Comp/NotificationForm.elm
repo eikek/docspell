@@ -59,6 +59,7 @@ type Msg
     | CalEventMsg Comp.CalEventInput.Msg
     | SetNotificationSettings (Result Http.Error NotificationSettings)
     | SubmitResp (Result Http.Error BasicResult)
+    | StartOnce
 
 
 initCmd : Flags -> Cmd Msg
@@ -147,6 +148,27 @@ makeSettings model =
         recp
         rmdays
         model.schedule
+
+
+withValidSettings : (NotificationSettings -> Cmd Msg) -> Model -> ( Model, Cmd Msg )
+withValidSettings mkcmd model =
+    case makeSettings model of
+        Valid set ->
+            ( { model | formMsg = Nothing }
+            , mkcmd set
+            )
+
+        Invalid errs _ ->
+            let
+                errMsg =
+                    String.join ", " errs
+            in
+            ( { model | formMsg = Just (BasicResult False errMsg) }, Cmd.none )
+
+        Unknown _ ->
+            ( { model | formMsg = Just (BasicResult False "An unknown error occured") }
+            , Cmd.none
+            )
 
 
 update : Flags -> Msg -> Model -> ( Model, Cmd Msg )
@@ -341,23 +363,14 @@ update flags msg model =
             )
 
         Submit ->
-            case makeSettings model of
-                Valid set ->
-                    ( { model | formMsg = Nothing }
-                    , Api.submitNotifyDueItems flags set SubmitResp
-                    )
+            withValidSettings
+                (\set -> Api.submitNotifyDueItems flags set SubmitResp)
+                model
 
-                Invalid errs _ ->
-                    let
-                        errMsg =
-                            String.join ", " errs
-                    in
-                    ( { model | formMsg = Just (BasicResult False errMsg) }, Cmd.none )
-
-                Unknown _ ->
-                    ( { model | formMsg = Just (BasicResult False "An unknown error occured") }
-                    , Cmd.none
-                    )
+        StartOnce ->
+            withValidSettings
+                (\set -> Api.startOnceNotifyDueItems flags set SubmitResp)
+                model
 
         SubmitResp (Ok res) ->
             ( { model | formMsg = Just res }
@@ -484,18 +497,28 @@ view extraClasses model =
                 ]
             ]
         , div [ class "ui divider" ] []
-        , div [ class "ui error message" ]
+        , div
+            [ classList
+                [ ( "ui message", True )
+                , ( "success", isFormSuccess model )
+                , ( "error", isFormError model )
+                , ( "hidden", model.formMsg == Nothing )
+                ]
+            ]
             [ Maybe.map .message model.formMsg
                 |> Maybe.withDefault ""
                 |> text
-            ]
-        , div [ class "ui success message" ]
-            [ text "Successfully saved."
             ]
         , button
             [ class "ui primary button"
             , onClick Submit
             ]
             [ text "Submit"
+            ]
+        , button
+            [ class "ui right floated button"
+            , onClick StartOnce
+            ]
+            [ text "Start Once"
             ]
         ]
