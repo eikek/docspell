@@ -11,6 +11,7 @@ case class MailContext(
     items: List[MailContext.ItemData],
     more: Boolean,
     account: AccountId,
+    username: String,
     itemUri: Option[LenientUri]
 )
 
@@ -20,12 +21,14 @@ object MailContext {
       items: Vector[QItem.ListItem],
       max: Int,
       account: AccountId,
-      itemBaseUri: Option[LenientUri]
+      itemBaseUri: Option[LenientUri],
+      now: Timestamp
   ): MailContext =
     MailContext(
-      items.take(max - 1).map(ItemData.apply).toList.sortBy(_.dueDate),
+      items.take(max - 1).map(ItemData(now)).toList.sortBy(_.dueDate),
       items.sizeCompare(max) >= 0,
       account,
+      account.user.id.capitalize,
       itemBaseUri
     )
 
@@ -34,13 +37,22 @@ object MailContext {
       name: String,
       date: Timestamp,
       dueDate: Option[Timestamp],
-      source: String
+      source: String,
+      overDue: Boolean,
+      dueIn: Option[String]
   )
 
   object ItemData {
 
-    def apply(i: QItem.ListItem): ItemData =
-      ItemData(i.id, i.name, i.date, i.dueDate, i.source)
+    def apply(now: Timestamp)(i: QItem.ListItem): ItemData = {
+      val dueIn = i.dueDate.map(dt => Timestamp.daysBetween(now, dt))
+      val dueInLabel = dueIn.map {
+        case 0 => "**today**"
+        case 1 => "**tomorrow**"
+        case n => s"in $n days"
+      }
+      ItemData(i.id, i.name, i.date, i.dueDate, i.source, dueIn.exists(_ < 0), dueInLabel)
+    }
 
     implicit def yamusca: ValueConverter[ItemData] =
       ValueConverter.deriveConverter[ItemData]

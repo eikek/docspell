@@ -16,7 +16,7 @@ import docspell.joex.notify.MailContext
 import docspell.joex.notify.MailTemplate
 
 object NotifyDueItemsTask {
-  val maxItems: Long = 5
+  val maxItems: Long = 7
   type Args = NotifyDueItemsArgs
 
   def apply[F[_]: Sync](emil: Emil[F]): Task[F, Args, Unit] =
@@ -83,21 +83,23 @@ object NotifyDueItemsTask {
       cfg: RUserEmail,
       args: Args,
       items: Vector[QItem.ListItem]
-  ): F[Mail[F]] = Sync[F].delay {
-    val templateCtx =
-      MailContext.from(items, maxItems.toInt, args.account, args.itemDetailUrl)
-    val md = MailTemplate.render(templateCtx)
-    val recp = args.recipients
-      .map(MailAddress.parse)
-      .map {
-        case Right(ma) => ma
-        case Left(err) => throw new Exception(s"Unable to parse recipient address: $err")
-      }
-    MailBuilder.build(
-      From(cfg.mailFrom),
-      Tos(recp),
-      Subject("Next due items"),
-      MarkdownBody[F](md)
-    )
-  }
+  ): F[Mail[F]] =
+    Timestamp.current[F].map { now =>
+      val templateCtx =
+        MailContext.from(items, maxItems.toInt, args.account, args.itemDetailUrl, now)
+      val md = MailTemplate.render(templateCtx)
+      val recp = args.recipients
+        .map(MailAddress.parse)
+        .map {
+          case Right(ma) => ma
+          case Left(err) =>
+            throw new Exception(s"Unable to parse recipient address: $err")
+        }
+      MailBuilder.build(
+        From(cfg.mailFrom),
+        Tos(recp),
+        Subject("Next due items"),
+        MarkdownBody[F](md)
+      )
+    }
 }

@@ -4,6 +4,7 @@ import java.time.{Instant, LocalDate, ZoneId}
 
 import cats.effect.Sync
 import io.circe.{Decoder, Encoder}
+import java.time.temporal.ChronoUnit
 import java.time.LocalDateTime
 import java.time.ZonedDateTime
 
@@ -58,6 +59,9 @@ object Timestamp {
 
   def atUtc(ldt: LocalDateTime): Timestamp =
     from(ldt.atZone(UTC))
+
+  def daysBetween(ts0: Timestamp, ts1: Timestamp): Long =
+    ChronoUnit.DAYS.between(ts0.toUtcDate, ts1.toUtcDate)
 
   implicit val encodeTimestamp: Encoder[Timestamp] =
     BaseJsonCodecs.encodeInstantEpoch.contramap(_.value)
