@@ -4,6 +4,7 @@ import cats.implicits._
 import cats.effect._
 import com.github.eikek.calev.CalEvent
 import io.circe.Encoder
+
 import docspell.store.queue.JobQueue
 import docspell.store.usertask._
 import docspell.common._
@@ -45,9 +46,9 @@ object OUserTask {
       ): F[Unit] =
         for {
           ptask <- task.encode.toPeriodicTask(account)
-          job <- ptask.toJob
-          _ <- queue.insert(job)
-          _ <- joex.notifyAllNodes
+          job   <- ptask.toJob
+          _     <- queue.insert(job)
+          _     <- joex.notifyAllNodes
         } yield ()
 
       def getNotifyDueItems(account: AccountId): F[UserTask[NotifyDueItemsArgs]] =
@@ -76,8 +77,9 @@ object OUserTask {
           CalEvent.unsafe("*-*-1/7 12:00"),
           NotifyDueItemsArgs(
             account,
-            Ident.unsafe("none"),
+            Ident.unsafe(""),
             Nil,
+            None,
             5,
             Nil,
             Nil

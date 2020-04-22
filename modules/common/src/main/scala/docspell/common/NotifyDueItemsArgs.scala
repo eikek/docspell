@@ -15,6 +15,7 @@ case class NotifyDueItemsArgs(
     account: AccountId,
     smtpConnection: Ident,
     recipients: List[String],
+    itemDetailUrl: Option[LenientUri],
     remindDays: Int,
     tagsInclude: List[Ident],
     tagsExclude: List[Ident]

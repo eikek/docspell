@@ -83,8 +83,9 @@ object NotifyDueItemsTask {
       args: Args,
       items: Vector[QItem.ListItem]
   ): F[Mail[F]] = Sync[F].delay {
-    val templateCtx = MailContext.from(items, maxItems.toInt - 1, args.account)
-    val md          = MailTemplate.render(templateCtx)
+    val templateCtx =
+      MailContext.from(items, maxItems.toInt, args.account, args.itemDetailUrl)
+    val md = MailTemplate.render(templateCtx)
     val recp = args.recipients
       .map(MailAddress.parse)
       .map {

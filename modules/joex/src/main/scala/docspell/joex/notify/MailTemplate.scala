@@ -9,12 +9,20 @@ object MailTemplate {
 
 this is Docspell informing you about due items coming up.
 
+{{#itemUri}}
+{{#items}}
+- [{{name}}]({{itemUri}}/{{id}}), due on *{{dueDate}}*
+  (received on {{date}} via {{source}})
+{{/items}}
+{{/itemUri}}
+{{^itemUri}}
 {{#items}}
 - *{{name}}*, due on *{{dueDate}}*
   (received on {{date}} via {{source}})
 {{/items}}
+{{/itemUri}}
 {{#more}}
-- ...
+- (There are more due items, left out for brevity)
 {{/more}}
 
 

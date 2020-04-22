@@ -13,10 +13,15 @@ import docspell.common._
 import docspell.restapi.model._
 import docspell.store.usertask._
 import docspell.restserver.conv.Conversions
+import docspell.restserver.Config
 
 object NotifyDueItemsRoutes {
 
-  def apply[F[_]: Effect](backend: BackendApp[F], user: AuthToken): HttpRoutes[F] = {
+  def apply[F[_]: Effect](
+      cfg: Config,
+      backend: BackendApp[F],
+      user: AuthToken
+  ): HttpRoutes[F] = {
     val dsl = new Http4sDsl[F] {}
     val ut  = backend.userTask
     import dsl._
@@ -25,7 +30,7 @@ object NotifyDueItemsRoutes {
       case req @ POST -> Root / "startonce" =>
         for {
           data <- req.as[NotificationSettings]
-          task = makeTask(user.account, data)
+          task = makeTask(cfg, user.account, data)
           res <- ut
             .executeNow(user.account, task)
             .attempt
@@ -43,7 +48,7 @@ object NotifyDueItemsRoutes {
       case req @ POST -> Root =>
         for {
           data <- req.as[NotificationSettings]
-          task = makeTask(user.account, data)
+          task = makeTask(cfg, user.account, data)
           res <- ut
             .submitNotifyDueItems(user.account, task)
             .attempt
@@ -54,6 +59,7 @@ object NotifyDueItemsRoutes {
   }
 
   def makeTask(
+      cfg: Config,
       user: AccountId,
       settings: NotificationSettings
   ): UserTask[NotifyDueItemsArgs] =
@@ -66,6 +72,7 @@ object NotifyDueItemsRoutes {
         user,
         settings.smtpConnection,
         settings.recipients,
+        Some(cfg.baseUrl / "app" / "item"),
         settings.remindDays,
         settings.tagsInclude.map(_.id),
         settings.tagsExclude.map(_.id)

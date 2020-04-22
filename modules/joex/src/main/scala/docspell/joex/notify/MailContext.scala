@@ -7,15 +7,26 @@ import docspell.common._
 import docspell.store.queries.QItem
 import docspell.joex.notify.YamuscaConverter._
 
-case class MailContext(items: List[MailContext.ItemData], more: Boolean, account: AccountId)
+case class MailContext(
+    items: List[MailContext.ItemData],
+    more: Boolean,
+    account: AccountId,
+    itemUri: Option[LenientUri]
+)
 
 object MailContext {
 
-  def from(items: Vector[QItem.ListItem], max: Int, account: AccountId): MailContext =
+  def from(
+      items: Vector[QItem.ListItem],
+      max: Int,
+      account: AccountId,
+      itemBaseUri: Option[LenientUri]
+  ): MailContext =
     MailContext(
       items.take(max - 1).map(ItemData.apply).toList.sortBy(_.dueDate),
       items.sizeCompare(max) >= 0,
-      account
+      account,
+      itemBaseUri
     )
 
   case class ItemData(
@@ -34,7 +45,6 @@ object MailContext {
     implicit def yamusca: ValueConverter[ItemData] =
       ValueConverter.deriveConverter[ItemData]
   }
-
 
   implicit val yamusca: ValueConverter[MailContext] =
     ValueConverter.deriveConverter[MailContext]
