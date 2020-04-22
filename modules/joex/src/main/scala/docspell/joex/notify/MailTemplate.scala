@@ -26,7 +26,7 @@ this is Docspell informing you about due items coming up.
 {{/more}}
 
 
-Sincerly,
+Sincerely yours,
 Docspell
 """
 

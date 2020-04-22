@@ -120,7 +120,8 @@ trait Conversions {
       m.dateFrom,
       m.dateUntil,
       m.dueDateFrom,
-      m.dueDateUntil
+      m.dueDateUntil,
+      None
     )
 
   def mkItemList(v: Vector[OItem.ListItem]): ItemLightList = {

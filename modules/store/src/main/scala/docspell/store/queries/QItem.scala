@@ -9,6 +9,7 @@ import doobie.implicits._
 import docspell.common.{IdRef, _}
 import docspell.store.Store
 import docspell.store.records._
+import docspell.store.impl._
 import docspell.store.impl.Implicits._
 import org.log4s._
 
@@ -122,7 +123,8 @@ object QItem {
       dateFrom: Option[Timestamp],
       dateTo: Option[Timestamp],
       dueDateFrom: Option[Timestamp],
-      dueDateTo: Option[Timestamp]
+      dueDateTo: Option[Timestamp],
+      orderAsc: Option[RItem.Columns.type => Column]
   )
 
   object Query {
@@ -138,6 +140,7 @@ object QItem {
         None,
         Nil,
         Nil,
+        None,
         None,
         None,
         None,
@@ -173,7 +176,13 @@ object QItem {
       PC.pid.prefix("p1").f,
       PC.name.prefix("p1").f,
       EC.eid.prefix("e1").f,
-      EC.name.prefix("e1").f
+      EC.name.prefix("e1").f,
+      q.orderAsc match {
+        case Some(co) =>
+          coalesce(co(IC).prefix("i").f, IC.created.prefix("i").f)
+        case None =>
+          IC.created.prefix("i").f
+      }
     )
 
     val withItem   = selectSimple(itemCols, RItem.table, IC.cid.is(q.collective))
@@ -258,9 +267,14 @@ object QItem {
       q.dueDateTo.map(d => IC.dueDate.prefix("i").isLt(d)).getOrElse(Fragment.empty)
     )
 
-    val order = orderBy(
-      coalesce(IC.itemDate.prefix("i").f, IC.created.prefix("i").f) ++ fr"DESC"
-    )
+    val order = q.orderAsc match {
+      case Some(co) =>
+        orderBy(coalesce(co(IC).prefix("i").f, IC.created.prefix("i").f) ++ fr"ASC")
+      case None =>
+        orderBy(
+          coalesce(IC.itemDate.prefix("i").f, IC.created.prefix("i").f) ++ fr"DESC"
+        )
+    }
     val frag = query ++ fr"WHERE" ++ cond ++ order
     logger.trace(s"List items: $frag")
     frag.query[ListItem].stream
