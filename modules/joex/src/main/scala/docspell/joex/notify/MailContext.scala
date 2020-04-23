@@ -39,7 +39,8 @@ object MailContext {
       dueDate: Option[Timestamp],
       source: String,
       overDue: Boolean,
-      dueIn: Option[String]
+      dueIn: Option[String],
+      corrOrg: Option[String]
   )
 
   object ItemData {
@@ -47,11 +48,22 @@ object MailContext {
     def apply(now: Timestamp)(i: QItem.ListItem): ItemData = {
       val dueIn = i.dueDate.map(dt => Timestamp.daysBetween(now, dt))
       val dueInLabel = dueIn.map {
-        case 0 => "**today**"
-        case 1 => "**tomorrow**"
-        case n => s"in $n days"
+        case 0          => "**today**"
+        case 1          => "**tomorrow**"
+        case -1         => s"**yesterday**"
+        case n if n > 0 => s"in $n days"
+        case n if n < 0 => s"${n * -1} days ago"
       }
-      ItemData(i.id, i.name, i.date, i.dueDate, i.source, dueIn.exists(_ < 0), dueInLabel)
+      ItemData(
+        i.id,
+        i.name,
+        i.date,
+        i.dueDate,
+        i.source,
+        dueIn.exists(_ < 0),
+        dueInLabel,
+        i.corrOrg.map(_.name)
+      )
     }
 
     implicit def yamusca: ValueConverter[ItemData] =

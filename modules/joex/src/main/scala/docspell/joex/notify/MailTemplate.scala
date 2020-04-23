@@ -5,22 +5,22 @@ import yamusca.implicits._
 object MailTemplate {
 
   val text = mustache"""
-## Hello {{{ username }}},
+Hello {{{ username }}},
 
 this is Docspell informing you about your next due items coming up.
 
 {{#itemUri}}
 {{#items}}
 - {{#overDue}}**(OVERDUE)** {{/overDue}}[{{name}}]({{itemUri}}/{{id}}),
-  due {{dueIn}} on *{{dueDate}}*
-  (received on {{date}} via {{source}})
+  {{#overDue}}was {{/overDue}}due {{dueIn}} on *{{dueDate}}*; {{#corrOrg}}from {{corrOrg}}{{/corrOrg}}
+  received on {{date}} via {{source}}
 {{/items}}
 {{/itemUri}}
 {{^itemUri}}
 {{#items}}
 - {{#overDue}}**(OVERDUE)** {{/overDue}}*{{name}}*,
-  due {{dueIn}} on *{{dueDate}}*
-  (received on {{date}} via {{source}})
+  {{#overDue}}was {{/overDue}}due {{dueIn}} on *{{dueDate}}*; {{#corrOrg}}from {{corrOrg}}{{/corrOrg}}
+  received on {{date}} via {{source}}
 {{/items}}
 {{/itemUri}}
 {{#more}}
@@ -29,6 +29,7 @@ this is Docspell informing you about your next due items coming up.
 
 
 Sincerely yours,
+
 Docspell
 """
 

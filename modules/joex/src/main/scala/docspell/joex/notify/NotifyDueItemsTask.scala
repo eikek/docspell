@@ -100,7 +100,9 @@ object NotifyDueItemsTask {
         From(cfg.mailFrom),
         Tos(recp),
         Subject("Next due items"),
-        MarkdownBody[F](md)
+        MarkdownBody[F](md).withConfig(
+          MarkdownConfig("body { font-size: 10pt; font-family: sans-serif; }")
+        )
       )
     }
 }
