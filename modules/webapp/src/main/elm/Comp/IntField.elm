@@ -1,8 +1,16 @@
-module Comp.IntField exposing (Model, Msg, init, update, view)
+module Comp.IntField exposing
+    ( Model
+    , Msg
+    , init
+    , update
+    , view
+    , viewWithInfo
+    )
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)
+import Markdown
 
 
 type alias Model =
@@ -87,7 +95,12 @@ update msg model =
 
 
 view : Maybe Int -> String -> Model -> Html Msg
-view nval classes model =
+view =
+    viewWithInfo ""
+
+
+viewWithInfo : String -> Maybe Int -> String -> Model -> Html Msg
+viewWithInfo info nval classes model =
     div
         [ classList
             [ ( classes, True )
@@ -103,6 +116,14 @@ view nval classes model =
             , onInput SetValue
             ]
             []
+        , span
+            [ classList
+                [ ( "small-info", True )
+                , ( "hidden invisible", info == "" )
+                ]
+            ]
+            [ Markdown.toHtml [] info
+            ]
         , div
             [ classList
                 [ ( "ui pointing red basic label", True )

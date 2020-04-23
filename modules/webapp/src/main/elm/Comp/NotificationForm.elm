@@ -481,7 +481,9 @@ view extraClasses model =
                 ]
             ]
         , Html.map RemindDaysMsg
-            (Comp.IntField.view model.remindDays
+            (Comp.IntField.viewWithInfo
+                "Select items with a due date *lower than* `today+remindDays`"
+                model.remindDays
                 "required field"
                 model.remindDaysModel
             )
