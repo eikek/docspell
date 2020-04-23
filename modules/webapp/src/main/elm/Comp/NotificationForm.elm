@@ -38,6 +38,7 @@ type alias Model =
     , recipientsModel : Comp.EmailInput.Model
     , remindDays : Maybe Int
     , remindDaysModel : Comp.IntField.Model
+    , capOverdue : Bool
     , enabled : Bool
     , schedule : Validated CalEvent
     , scheduleModel : Comp.CalEventInput.Model
@@ -56,6 +57,7 @@ type Msg
     | GetTagsResp (Result Http.Error TagList)
     | RemindDaysMsg Comp.IntField.Msg
     | ToggleEnabled
+    | ToggleCapOverdue
     | CalEventMsg Comp.CalEventInput.Msg
     | SetNotificationSettings (Result Http.Error NotificationSettings)
     | SubmitResp (Result Http.Error BasicResult)
@@ -93,6 +95,7 @@ init flags =
       , remindDays = Just 1
       , remindDaysModel = Comp.IntField.init (Just 1) Nothing True "Remind Days"
       , enabled = False
+      , capOverdue = False
       , schedule = initialSchedule
       , scheduleModel = sm
       , formMsg = Nothing
@@ -139,6 +142,7 @@ makeSettings model =
                 , tagsExclude = Comp.Dropdown.getSelected model.tagExclModel
                 , recipients = rec
                 , remindDays = days
+                , capOverdue = model.capOverdue
                 , enabled = model.enabled
                 , schedule = Data.CalEvent.makeEvent timer
             }
@@ -316,6 +320,14 @@ update flags msg model =
             , Cmd.none
             )
 
+        ToggleCapOverdue ->
+            ( { model
+                | capOverdue = not model.capOverdue
+                , formMsg = Nothing
+              }
+            , Cmd.none
+            )
+
         SetNotificationSettings (Ok s) ->
             let
                 smtp =
@@ -343,6 +355,7 @@ update flags msg model =
                 , recipients = s.recipients
                 , remindDays = Just s.remindDays
                 , enabled = s.enabled
+                , capOverdue = s.capOverdue
                 , schedule = Data.Validated.Unknown newSchedule
                 , scheduleModel = sm
                 , formMsg = Nothing
@@ -457,14 +470,14 @@ view extraClasses model =
             [ label [] [ text "Tags Include (and)" ]
             , Html.map TagIncMsg (Comp.Dropdown.view model.tagInclModel)
             , span [ class "small-info" ]
-                [ text "Items must have all tags specified here."
+                [ text "Items must have all the tags specified here."
                 ]
             ]
         , div [ class "field" ]
             [ label [] [ text "Tags Exclude (or)" ]
             , Html.map TagExcMsg (Comp.Dropdown.view model.tagExclModel)
             , span [ class "small-info" ]
-                [ text "Items must not have all tags specified here."
+                [ text "Items must not have any tag specified here."
                 ]
             ]
         , Html.map RemindDaysMsg
@@ -472,6 +485,25 @@ view extraClasses model =
                 "required field"
                 model.remindDaysModel
             )
+        , div [ class "required inline field" ]
+            [ div [ class "ui checkbox" ]
+                [ input
+                    [ type_ "checkbox"
+                    , onCheck (\_ -> ToggleCapOverdue)
+                    , checked model.capOverdue
+                    ]
+                    []
+                , label []
+                    [ text "Cap overdue items"
+                    ]
+                ]
+            , div [ class "small-info" ]
+                [ text "If checked, only items with a due date"
+                , em [] [ text " greater than " ]
+                , code [] [ text "today-remindDays" ]
+                , text " are considered."
+                ]
+            ]
         , div [ class "required field" ]
             [ label []
                 [ text "Schedule"

@@ -73,6 +73,7 @@ object NotifyDueItemsTask {
           states = ItemState.validStates,
           tagsInclude = ctx.args.tagsInclude,
           tagsExclude = ctx.args.tagsExclude,
+          dueDateFrom = ctx.args.daysBack.map(back => now - Duration.days(back.toLong)),
           dueDateTo = Some(now + Duration.days(ctx.args.remindDays.toLong)),
           orderAsc = Some(_.dueDate)
         )

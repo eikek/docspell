@@ -17,6 +17,7 @@ case class NotifyDueItemsArgs(
     recipients: List[String],
     itemDetailUrl: Option[LenientUri],
     remindDays: Int,
+    daysBack: Option[Int],
     tagsInclude: List[Ident],
     tagsExclude: List[Ident]
 ) {}

@@ -1679,6 +1679,7 @@ components:
         - recipients
         - schedule
         - remindDays
+        - capOverdue
         - tagsInclude
         - tagsExclude
       properties:
@@ -1701,6 +1702,17 @@ components:
         remindDays:
           type: integer
           format: int32
+          description: |
+            Used to restrict items by their due dates. All items with
+            a due date lower than (now + remindDays) are searched.
+        capOverdue:
+          type: boolean
+          description: |
+            If this is true, the search is also restricted to due
+            dates greater than `now - remindDays'. Otherwise, due date
+            are not restricted in that direction (only lower than `now
+            + remindDays' applies) and it is expected to restrict it
+            more using custom tags.
         tagsInclude:
           type: array
           items:

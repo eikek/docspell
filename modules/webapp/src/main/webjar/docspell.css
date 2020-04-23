@@ -165,9 +165,12 @@ label span.muted {
     cursor: pointer;
 }
 
-span.small-info {
+.small-info {
     font-size: smaller;
     color: rgba(0,0,0,0.6);
+}
+.small-info code {
+    font-size: smaller;
 }
 
 .placeholder-message {

@@ -74,6 +74,8 @@ object NotifyDueItemsRoutes {
         settings.recipients,
         Some(cfg.baseUrl / "app" / "item"),
         settings.remindDays,
+        if (settings.capOverdue) Some(settings.remindDays)
+        else None,
         settings.tagsInclude.map(_.id),
         settings.tagsExclude.map(_.id)
       )
@@ -100,6 +102,7 @@ object NotifyDueItemsRoutes {
       task.args.recipients,
       task.timer,
       task.args.remindDays,
+      task.args.daysBack.isDefined,
       tinc.map(Conversions.mkTag).toList,
       texc.map(Conversions.mkTag).toList
     )
