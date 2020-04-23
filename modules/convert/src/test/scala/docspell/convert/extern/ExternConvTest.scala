@@ -12,9 +12,9 @@ import java.nio.charset.StandardCharsets
 object ExternConvTest extends SimpleTestSuite with FileChecks {
   val blocker     = TestFiles.blocker
   implicit val CS = TestFiles.CS
-  val utf8 = StandardCharsets.UTF_8
-  val logger = Logger.log4s[IO](org.log4s.getLogger)
-  val target = Paths.get("target")
+  val utf8        = StandardCharsets.UTF_8
+  val logger      = Logger.log4s[IO](org.log4s.getLogger)
+  val target      = Paths.get("target")
 
   test("convert html to pdf") {
     val cfg = SystemCommand.Config(

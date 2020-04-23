@@ -50,7 +50,8 @@ object ConversionTest extends SimpleTestSuite with FileChecks {
     )
   )
 
-  val conversion = Conversion.create[IO](convertConfig, SanitizeHtml.none, blocker, logger)
+  val conversion =
+    Conversion.create[IO](convertConfig, SanitizeHtml.none, blocker, logger)
 
   val bombs = List(
     ExampleFiles.bombs_20K_gray_jpeg,

@@ -23,4 +23,4 @@ before_script:
   - export TZ=Europe/Berlin
 
 script:
-  - sbt ++$TRAVIS_SCALA_VERSION ";project root ;make ;test"
+  - sbt ++$TRAVIS_SCALA_VERSION ";project root ;scalafmtCheckAll ;make ;test"
