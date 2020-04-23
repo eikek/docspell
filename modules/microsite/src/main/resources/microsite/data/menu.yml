@@ -42,6 +42,9 @@ options:
      - title: Send via E-Mail
        url: doc/mailitem
 
+     - title: Notify on due Items
+       url: doc/notifydueitems
+
      - title: Joex
        url: doc/joex
 
