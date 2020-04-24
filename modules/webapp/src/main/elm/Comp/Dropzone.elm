@@ -120,9 +120,6 @@ view model =
             [ i [ class "mouse pointer icon" ] []
             , div [ class "content" ]
                 [ text "Drop files here"
-                , div [ class "sub header" ]
-                    [ text "PDF files only"
-                    ]
                 ]
             ]
         , div [ class "ui horizontal divider" ]
