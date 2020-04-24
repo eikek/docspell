@@ -1,7 +1,6 @@
 package docspell.restserver.webapp
 
 import cats.effect._
-import org.http4s._
 import org.http4s.HttpRoutes
 import org.http4s.server.staticcontent.webjarService
 import org.http4s.server.staticcontent.NoopCacheStrategy

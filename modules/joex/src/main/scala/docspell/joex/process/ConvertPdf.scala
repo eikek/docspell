@@ -1,7 +1,6 @@
 package docspell.joex.process
 
 import bitpeace.{Mimetype, MimetypeHint, RangeDef}
-import cats.implicits._
 import cats.Functor
 import cats.implicits._
 import cats.effect._
