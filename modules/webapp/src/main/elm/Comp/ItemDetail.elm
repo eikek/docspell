@@ -60,7 +60,7 @@ type alias Model =
     , nameModel : String
     , notesModel : Maybe String
     , notesField : NotesField
-    , deleteConfirm : Comp.YesNoDimmer.Model
+    , deleteItemConfirm : Comp.YesNoDimmer.Model
     , itemDatePicker : DatePicker
     , itemDate : Maybe Int
     , itemProposals : ItemProposals
@@ -75,6 +75,7 @@ type alias Model =
     , attachMeta : Dict String Comp.AttachmentMeta.Model
     , attachMetaOpen : Bool
     , pdfNativeView : Bool
+    , deleteAttachConfirm : Comp.YesNoDimmer.Model
     }
 
 
@@ -147,7 +148,7 @@ emptyModel =
     , nameModel = ""
     , notesModel = Nothing
     , notesField = ViewNotes
-    , deleteConfirm = Comp.YesNoDimmer.emptyModel
+    , deleteItemConfirm = Comp.YesNoDimmer.emptyModel
     , itemDatePicker = Comp.DatePicker.emptyModel
     , itemDate = Nothing
     , itemProposals = Api.Model.ItemProposals.empty
@@ -162,6 +163,7 @@ emptyModel =
     , attachMeta = Dict.empty
     , attachMetaOpen = False
     , pdfNativeView = False
+    , deleteAttachConfirm = Comp.YesNoDimmer.emptyModel
     }
 
 
@@ -198,7 +200,7 @@ type Msg
     | SetDueDateSuggestion Int
     | ItemDatePickerMsg Comp.DatePicker.Msg
     | DueDatePickerMsg Comp.DatePicker.Msg
-    | YesNoMsg Comp.YesNoDimmer.Msg
+    | DeleteItemConfirm Comp.YesNoDimmer.Msg
     | RequestDelete
     | SaveResp (Result Http.Error BasicResult)
     | DeleteResp (Result Http.Error BasicResult)
@@ -215,6 +217,9 @@ type Msg
     | AttachMetaClick String
     | AttachMetaMsg String Comp.AttachmentMeta.Msg
     | TogglePdfNativeView
+    | RequestDeleteAttachment String
+    | DeleteAttachConfirm String Comp.YesNoDimmer.Msg
+    | DeleteAttachResp (Result Http.Error BasicResult)
 
 
 
@@ -676,10 +681,10 @@ update key flags next msg model =
         RemoveDueDate ->
             ( { model | dueDate = Nothing }, setDueDate flags model Nothing )
 
-        YesNoMsg m ->
+        DeleteItemConfirm m ->
             let
                 ( cm, confirmed ) =
-                    Comp.YesNoDimmer.update m model.deleteConfirm
+                    Comp.YesNoDimmer.update m model.deleteItemConfirm
 
                 cmd =
                     if confirmed then
@@ -688,10 +693,10 @@ update key flags next msg model =
                     else
                         Cmd.none
             in
-            ( { model | deleteConfirm = cm }, cmd )
+            ( { model | deleteItemConfirm = cm }, cmd )
 
         RequestDelete ->
-            update key flags next (YesNoMsg Comp.YesNoDimmer.activate) model
+            update key flags next (DeleteItemConfirm Comp.YesNoDimmer.activate) model
 
         SetCorrOrgSuggestion idname ->
             ( model, setCorrOrg flags model (Just idname) )
@@ -943,6 +948,37 @@ update key flags next msg model =
             , Cmd.none
             )
 
+        DeleteAttachConfirm attachId lmsg ->
+            let
+                ( cm, confirmed ) =
+                    Comp.YesNoDimmer.update lmsg model.deleteAttachConfirm
+
+                cmd =
+                    if confirmed then
+                        Api.deleteAttachment flags attachId DeleteAttachResp
+
+                    else
+                        Cmd.none
+            in
+            ( { model | deleteAttachConfirm = cm }, cmd )
+
+        DeleteAttachResp (Ok res) ->
+            if res.success then
+                update key flags next ReloadItem model
+
+            else
+                ( model, Cmd.none )
+
+        DeleteAttachResp (Err _) ->
+            ( model, Cmd.none )
+
+        RequestDeleteAttachment id ->
+            update key
+                flags
+                next
+                (DeleteAttachConfirm id Comp.YesNoDimmer.activate)
+                model
+
 
 
 -- view
@@ -1017,7 +1053,7 @@ view inav model =
             ]
         , renderMailForm model
         , div [ class "ui grid" ]
-            [ Html.map YesNoMsg (Comp.YesNoDimmer.view model.deleteConfirm)
+            [ Html.map DeleteItemConfirm (Comp.YesNoDimmer.view model.deleteItemConfirm)
             , div
                 [ classList
                     [ ( "four wide column", True )
@@ -1206,7 +1242,8 @@ renderAttachmentView model pos attach =
             , ( "active", attachmentVisible model pos )
             ]
         ]
-        [ div [ class "ui small secondary menu" ]
+        [ Html.map (DeleteAttachConfirm attach.id) (Comp.YesNoDimmer.view model.deleteAttachConfirm)
+        , div [ class "ui small secondary menu" ]
             [ div [ class "horizontally fitted item" ]
                 [ i [ class "file outline icon" ] []
                 , text attachName
@@ -1227,6 +1264,16 @@ renderAttachmentView model pos attach =
                 ]
             , div [ class "right menu" ]
                 [ a
+                    [ classList
+                        [ ( "item", True )
+                        ]
+                    , title "Delete this file permanently"
+                    , href "#"
+                    , onClick (RequestDeleteAttachment attach.id)
+                    ]
+                    [ i [ class "red trash icon" ] []
+                    ]
+                , a
                     [ classList
                         [ ( "item", True )
                         , ( "invisible", not hasArchive )

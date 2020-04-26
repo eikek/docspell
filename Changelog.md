@@ -4,6 +4,7 @@
 
 *Unknown*
 
+- Allow to delete attachments of an item.
 - Allow to be notified via e-mail for items with a due date. This uses
   the periodic-task framework introduced in the last release.
 - Fix issues when converting HTML with unkown links. This especially

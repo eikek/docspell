@@ -124,6 +124,8 @@ object RAttachment {
     q.query[(RAttachment, FileMeta)].to[Vector]
   }
 
+  /** Deletes the attachment and its related source and meta records.
+    */
   def delete(attachId: Ident): ConnectionIO[Int] =
     for {
       n0 <- RAttachmentMeta.delete(attachId)

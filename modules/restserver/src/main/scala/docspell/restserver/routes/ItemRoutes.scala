@@ -138,7 +138,7 @@ object ItemRoutes {
 
       case DELETE -> Root / Ident(id) =>
         for {
-          n <- backend.item.delete(id, user.account.collective)
+          n <- backend.item.deleteItem(id, user.account.collective)
           res = BasicResult(n > 0, if (n > 0) "Item deleted" else "Item deletion failed.")
           resp <- Ok(res)
         } yield resp

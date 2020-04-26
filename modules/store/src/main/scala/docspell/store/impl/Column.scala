@@ -30,6 +30,9 @@ case class Column(name: String, ns: String = "", alias: String = "") {
   def is(c: Column): Fragment =
     f ++ fr"=" ++ c.f
 
+  def isSubquery(sq: Fragment): Fragment =
+    f ++ fr"=" ++ fr"(" ++ sq ++ fr")"
+
   def isNot[A: Put](value: A): Fragment =
     f ++ fr"<> $value"
 

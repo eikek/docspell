@@ -66,7 +66,7 @@ trait OItem[F[_]] {
 
   def getProposals(item: Ident, collective: Ident): F[MetaProposalList]
 
-  def delete(itemId: Ident, collective: Ident): F[Int]
+  def deleteItem(itemId: Ident, collective: Ident): F[Int]
 
   def findAttachmentMeta(id: Ident, collective: Ident): F[Option[RAttachmentMeta]]
 
@@ -74,6 +74,7 @@ trait OItem[F[_]] {
 
   def findByFileSource(checksum: String, sourceId: Ident): F[Vector[RItem]]
 
+  def deleteAttachment(id: Ident, collective: Ident): F[Int]
 }
 
 object OItem {
@@ -292,7 +293,7 @@ object OItem {
           .attempt
           .map(AddResult.fromUpdate)
 
-      def delete(itemId: Ident, collective: Ident): F[Int] =
+      def deleteItem(itemId: Ident, collective: Ident): F[Int] =
         QItem.delete(store)(itemId, collective)
 
       def getProposals(item: Ident, collective: Ident): F[MetaProposalList] =
@@ -310,5 +311,7 @@ object OItem {
           items <- OptionT.liftF(QItem.findByChecksum(checksum, coll))
         } yield items).getOrElse(Vector.empty))
 
+      def deleteAttachment(id: Ident, collective: Ident): F[Int] =
+        QAttachment.deleteSingleAttachment(store)(id, collective)
     })
 }
