@@ -1520,7 +1520,7 @@ renderEditMenu model =
 
 renderEditButtons : Model -> Html Msg
 renderEditButtons model =
-    div [ class "ui top attached right aligned segment" ]
+    div [ class "ui top attached segment" ]
         [ button
             [ classList
                 [ ( "ui primary button", True )
@@ -1544,6 +1544,16 @@ renderEditButtons model =
         , button [ class "ui negative button", onClick RequestDelete ]
             [ i [ class "trash icon" ] []
             , text "Delete"
+            ]
+        , button
+            [ classList
+                [ ( "ui secondary right floated icon button", True )
+                , ( "basic", model.notesField == HideNotes || model.notesField == ViewNotes )
+                ]
+            , title "Toggle Notes Form"
+            , onClick ToggleEditNotes
+            ]
+            [ i [ class "edit outline icon" ] []
             ]
         ]
 
@@ -1631,20 +1641,6 @@ renderEditForm model =
                 [ label [] [ text "Equipment" ]
                 , Html.map ConcEquipMsg (Comp.Dropdown.view model.concEquipModel)
                 , renderConcEquipSuggestions model
-                ]
-            , h4 [ class "ui dividing header" ]
-                [ i [ class "tiny edit icon" ] []
-                , div [ class "content" ]
-                    [ text "Notes"
-                    ]
-                ]
-            , div [ class "field" ]
-                [ div [ class "ui input" ]
-                    [ button [ class "ui basic primary fluid button", onClick ToggleEditNotes ]
-                        [ i [ class "edit outline icon" ] []
-                        , text "Toggle Notes Form"
-                        ]
-                    ]
                 ]
             ]
         ]
