@@ -1168,6 +1168,28 @@ paths:
                 $ref: "#/components/schemas/ItemProposals"
 
   /sec/attachment/{id}:
+    delete:
+      tags: [ Attachment ]
+      summary: Delete an attachment.
+      description: |
+        Deletes a single attachment with all its related data like
+        file, the original file, extracted text, results from analysis
+        etc.
+
+        If the attachment is part of an archive, the archive is only
+        deleted, if it is the last entry left. Archives are otherwise
+        not deleted, if there are remaining attachments available.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
     head:
       tags: [ Attachment ]
       summary: Get an attachment file.

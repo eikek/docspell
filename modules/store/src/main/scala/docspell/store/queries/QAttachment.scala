@@ -15,28 +15,39 @@ import docspell.common.syntax.all._
 object QAttachment {
   private[this] val logger = org.log4s.getLogger
 
-  def deleteById[F[_]: Sync](store: Store[F])(attachId: Ident, coll: Ident): F[Int] =
+  /** Deletes an attachment, its related source and meta data records.
+    * It will only delete an related archive file, if this is the last
+    * attachment in that archive.
+    */
+  def deleteSingleAttachment[F[_]: Sync](
+      store: Store[F]
+  )(attachId: Ident, coll: Ident): F[Int] = {
+    val loadFiles = for {
+      ra <- RAttachment.findByIdAndCollective(attachId, coll).map(_.map(_.fileId))
+      rs <- RAttachmentSource.findByIdAndCollective(attachId, coll).map(_.map(_.fileId))
+      ne <- RAttachmentArchive.countEntries(attachId)
+    } yield (ra, rs, ne)
+
     for {
-      raFile <- store
-        .transact(RAttachment.findByIdAndCollective(attachId, coll))
-        .map(_.map(_.fileId))
-      rsFile <- store
-        .transact(RAttachmentSource.findByIdAndCollective(attachId, coll))
-        .map(_.map(_.fileId))
-      aaFile <- store
-        .transact(RAttachmentArchive.findByIdAndCollective(attachId, coll))
-        .map(_.map(_.fileId))
+      files <- store.transact(loadFiles)
+      k <- if (files._3 == 1) deleteArchive(store)(attachId)
+      else store.transact(RAttachmentArchive.delete(attachId))
       n <- store.transact(RAttachment.delete(attachId))
       f <- Stream
-        .emits(raFile.toSeq ++ rsFile.toSeq ++ aaFile.toSeq)
+        .emits(files._1.toSeq ++ files._2.toSeq)
         .map(_.id)
         .flatMap(store.bitpeace.delete)
         .map(flag => if (flag) 1 else 0)
         .compile
         .foldMonoid
-    } yield n + f
+    } yield n + k + f
+  }
 
-  def deleteAttachment[F[_]: Sync](store: Store[F])(ra: RAttachment): F[Int] =
+  /** This deletes the attachment and *all* its related files. This used
+    * when deleting an item and should not be used to delete a
+    * *single* attachment where the item should stay.
+    */
+  private def deleteAttachment[F[_]: Sync](store: Store[F])(ra: RAttachment): F[Int] =
     for {
       _ <- logger.fdebug[F](s"Deleting attachment: ${ra.id.id}")
       s <- store.transact(RAttachmentSource.findById(ra.id))

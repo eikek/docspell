@@ -91,4 +91,13 @@ object RAttachmentArchive {
       .to[Vector]
   }
 
+  /** If the given attachment id has an associated archive, this returns
+    * the number of all associated attachments. Returns 0 if there is
+    * no archive for the given attachment.
+    */
+  def countEntries(attachId: Ident): ConnectionIO[Int] = {
+    val qFileId = selectSimple(Seq(fileId), table, id.is(attachId))
+    val q       = selectCount(id, table, fileId.isSubquery(qFileId))
+    q.query[Int].unique
+  }
 }

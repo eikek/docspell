@@ -3,6 +3,7 @@ module Api exposing
     , changePassword
     , checkCalEvent
     , createMailSettings
+    , deleteAttachment
     , deleteEquip
     , deleteItem
     , deleteMailSettings
@@ -179,6 +180,23 @@ checkCalEvent flags input receive =
         , account = getAccount flags
         , body = Http.jsonBody (Api.Model.CalEventCheck.encode input)
         , expect = Http.expectJson receive Api.Model.CalEventCheckResult.decoder
+        }
+
+
+
+--- Delete Attachment
+
+
+deleteAttachment :
+    Flags
+    -> String
+    -> (Result Http.Error BasicResult -> msg)
+    -> Cmd msg
+deleteAttachment flags attachId receive =
+    Http2.authDelete
+        { url = flags.config.baseUrl ++ "/api/v1/sec/attachment/" ++ attachId
+        , account = getAccount flags
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
         }
 
 

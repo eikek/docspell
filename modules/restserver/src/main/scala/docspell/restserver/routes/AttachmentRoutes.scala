@@ -119,6 +119,14 @@ object AttachmentRoutes {
           md = rm.map(Conversions.mkAttachmentMeta)
           resp <- md.map(Ok(_)).getOrElse(NotFound(BasicResult(false, "Not found.")))
         } yield resp
+
+      case DELETE -> Root / Ident(id) =>
+        for {
+          n <- backend.item.deleteAttachment(id, user.account.collective)
+          res = if (n == 0) BasicResult(false, "Attachment not found")
+          else BasicResult(true, "Attachment deleted.")
+          resp <- Ok(res)
+        } yield resp
     }
   }
 
