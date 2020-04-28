@@ -4,9 +4,8 @@ import cats.effect.{Blocker, ExitCode, IO, IOApp}
 import cats.implicits._
 
 import java.nio.file.{Files, Paths}
-import scala.concurrent.ExecutionContext
 
-import docspell.common.{Banner, ThreadFactories}
+import docspell.common.{Banner, Pools, ThreadFactories}
 import org.log4s._
 
 object Main extends IOApp {
@@ -16,6 +15,8 @@ object Main extends IOApp {
     ThreadFactories.cached[IO](ThreadFactories.ofName("docspell-joex-blocking"))
   val connectEC =
     ThreadFactories.fixed[IO](5, ThreadFactories.ofName("docspell-joex-dbconnect"))
+  val restserverEC =
+    ThreadFactories.workSteal[IO](ThreadFactories.ofNameFJ("docspell-joex-server"))
 
   def run(args: List[String]) = {
     args match {
@@ -52,19 +53,14 @@ object Main extends IOApp {
       cec <- connectEC
       bec <- blockingEC
       blocker = Blocker.liftExecutorService(bec)
-    } yield Pools(cec, bec, blocker)
+      rec <- restserverEC
+    } yield Pools(cec, bec, blocker, rec)
     pools.use(p =>
       JoexServer
-        .stream[IO](cfg, p.connectEC, p.clientEC, p.blocker)
+        .stream[IO](cfg, p)
         .compile
         .drain
         .as(ExitCode.Success)
     )
   }
-
-  case class Pools(
-      connectEC: ExecutionContext,
-      clientEC: ExecutionContext,
-      blocker: Blocker
-  )
 }

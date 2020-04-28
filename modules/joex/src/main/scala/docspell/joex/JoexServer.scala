@@ -2,6 +2,7 @@ package docspell.joex
 
 import cats.effect._
 import cats.effect.concurrent.Ref
+import docspell.common.Pools
 import docspell.joex.routes._
 import org.http4s.server.blaze.BlazeServerBuilder
 import org.http4s.implicits._
@@ -10,8 +11,6 @@ import fs2.concurrent.SignallingRef
 import org.http4s.HttpApp
 import org.http4s.server.middleware.Logger
 import org.http4s.server.Router
-
-import scala.concurrent.ExecutionContext
 
 object JoexServer {
 
@@ -23,15 +22,14 @@ object JoexServer {
 
   def stream[F[_]: ConcurrentEffect: ContextShift](
       cfg: Config,
-      connectEC: ExecutionContext,
-      clientEC: ExecutionContext,
-      blocker: Blocker
+      pools: Pools
   )(implicit T: Timer[F]): Stream[F, Nothing] = {
 
     val app = for {
       signal   <- Resource.liftF(SignallingRef[F, Boolean](false))
       exitCode <- Resource.liftF(Ref[F].of(ExitCode.Success))
-      joexApp  <- JoexAppImpl.create[F](cfg, signal, connectEC, clientEC, blocker)
+      joexApp <- JoexAppImpl
+        .create[F](cfg, signal, pools.connectEC, pools.httpClientEC, pools.blocker)
 
       httpApp = Router(
         "/api/info" -> InfoRoutes(),
@@ -46,7 +44,7 @@ object JoexServer {
     Stream
       .resource(app)
       .flatMap(app =>
-        BlazeServerBuilder[F]
+        BlazeServerBuilder[F](pools.restEC)
           .bindHttp(cfg.bind.port, cfg.bind.address)
           .withHttpApp(app.httpApp)
           .withoutBanner

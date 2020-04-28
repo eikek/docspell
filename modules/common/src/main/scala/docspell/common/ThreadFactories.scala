@@ -4,6 +4,9 @@ import java.util.concurrent.atomic.AtomicLong
 import java.util.concurrent.{Executors, ThreadFactory}
 import cats.effect._
 import scala.concurrent._
+import java.util.concurrent.ForkJoinPool
+import java.util.concurrent.ForkJoinPool.ForkJoinWorkerThreadFactory
+import java.util.concurrent.ForkJoinWorkerThread
 
 object ThreadFactories {
 
@@ -14,6 +17,18 @@ object ThreadFactories {
 
       override def newThread(r: Runnable): Thread = {
         val t = Executors.defaultThreadFactory().newThread(r)
+        t.setName(s"$prefix-${counter.getAndIncrement()}")
+        t
+      }
+    }
+
+  def ofNameFJ(prefix: String): ForkJoinWorkerThreadFactory =
+    new ForkJoinWorkerThreadFactory {
+      val tf      = ForkJoinPool.defaultForkJoinWorkerThreadFactory
+      val counter = new AtomicLong(0)
+
+      def newThread(pool: ForkJoinPool): ForkJoinWorkerThread = {
+        val t = tf.newThread(pool)
         t.setName(s"$prefix-${counter.getAndIncrement()}")
         t
       }
@@ -38,4 +53,19 @@ object ThreadFactories {
     executorResource(
       ExecutionContext.fromExecutorService(Executors.newFixedThreadPool(n, tf))
     )
+
+  def workSteal[F[_]: Sync](
+      n: Int,
+      tf: ForkJoinWorkerThreadFactory
+  ): Resource[F, ExecutionContextExecutorService] =
+    executorResource(
+      ExecutionContext.fromExecutorService(
+        new ForkJoinPool(n, tf, null, true)
+      )
+    )
+
+  def workSteal[F[_]: Sync](
+      tf: ForkJoinWorkerThreadFactory
+  ): Resource[F, ExecutionContextExecutorService] =
+    workSteal[F](Runtime.getRuntime().availableProcessors() + 1, tf)
 }

@@ -3,10 +3,9 @@ package docspell.restserver
 import cats.effect._
 import cats.implicits._
 
-import scala.concurrent.ExecutionContext
 import java.nio.file.{Files, Paths}
 
-import docspell.common.{Banner, ThreadFactories}
+import docspell.common.{Banner, Pools, ThreadFactories}
 import org.log4s._
 
 object Main extends IOApp {
@@ -16,6 +15,8 @@ object Main extends IOApp {
     ThreadFactories.cached[IO](ThreadFactories.ofName("docspell-restserver-blocking"))
   val connectEC =
     ThreadFactories.fixed[IO](5, ThreadFactories.ofName("docspell-dbconnect"))
+  val restserverEC =
+    ThreadFactories.workSteal[IO](ThreadFactories.ofNameFJ("docspell-restserver"))
 
   def run(args: List[String]) = {
     args match {
@@ -51,21 +52,16 @@ object Main extends IOApp {
       cec <- connectEC
       bec <- blockingEC
       blocker = Blocker.liftExecutorService(bec)
-    } yield Pools(cec, bec, blocker)
+      rec <- restserverEC
+    } yield Pools(cec, bec, blocker, rec)
 
     logger.info(s"\n${banner.render("***>")}")
     pools.use(p =>
       RestServer
-        .stream[IO](cfg, p.connectEC, p.clientEC, p.blocker)
+        .stream[IO](cfg, p)
         .compile
         .drain
         .as(ExitCode.Success)
     )
   }
-
-  case class Pools(
-      connectEC: ExecutionContext,
-      clientEC: ExecutionContext,
-      blocker: Blocker
-  )
 }

@@ -2,6 +2,7 @@ package docspell.restserver
 
 import cats.effect._
 import cats.data.{Kleisli, OptionT}
+import docspell.common.Pools
 import docspell.backend.auth.AuthToken
 import docspell.restserver.routes._
 import docspell.restserver.webapp._
@@ -13,20 +14,17 @@ import org.http4s.server.Router
 import org.http4s.server.blaze.BlazeServerBuilder
 import org.http4s.server.middleware.Logger
 
-import scala.concurrent.ExecutionContext
-
 object RestServer {
 
   def stream[F[_]: ConcurrentEffect](
       cfg: Config,
-      connectEC: ExecutionContext,
-      httpClientEc: ExecutionContext,
-      blocker: Blocker
+      pools: Pools
   )(implicit T: Timer[F], CS: ContextShift[F]): Stream[F, Nothing] = {
 
-    val templates = TemplateRoutes[F](blocker, cfg)
+    val templates = TemplateRoutes[F](pools.blocker, cfg)
     val app = for {
-      restApp <- RestAppImpl.create[F](cfg, connectEC, httpClientEc, blocker)
+      restApp <- RestAppImpl
+        .create[F](cfg, pools.connectEC, pools.httpClientEC, pools.blocker)
       httpApp = Router(
         "/api/info"     -> routes.InfoRoutes(),
         "/api/v1/open/" -> openRoutes(cfg, restApp),
@@ -34,7 +32,7 @@ object RestServer {
           securedRoutes(cfg, restApp, token)
         },
         "/api/doc"    -> templates.doc,
-        "/app/assets" -> WebjarRoutes.appRoutes[F](blocker),
+        "/app/assets" -> WebjarRoutes.appRoutes[F](pools.blocker),
         "/app"        -> templates.app,
         "/"           -> redirectTo("/app")
       ).orNotFound
@@ -46,7 +44,7 @@ object RestServer {
     Stream
       .resource(app)
       .flatMap(httpApp =>
-        BlazeServerBuilder[F]
+        BlazeServerBuilder[F](pools.restEC)
           .bindHttp(cfg.bind.port, cfg.bind.address)
           .withHttpApp(httpApp)
           .withoutBanner
