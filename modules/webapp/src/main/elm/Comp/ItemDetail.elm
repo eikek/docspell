@@ -1033,7 +1033,7 @@ view inav model =
                     [ ( "toggle item", True )
                     , ( "active", model.menuOpen )
                     ]
-                , title "Edit item"
+                , title "Edit Metadata"
                 , onClick ToggleMenu
                 , href ""
                 ]
@@ -1049,6 +1049,21 @@ view inav model =
                 , href "#"
                 ]
                 [ i [ class "mail outline icon" ] []
+                ]
+            , a
+                [ classList
+                    [ ( "toggle item", True )
+                    , ( "active", isEditNotes model.notesField )
+                    ]
+                , if isEditNotes model.notesField then
+                    title "Cancel editing"
+
+                  else
+                    title "Edit Notes"
+                , onClick ToggleEditNotes
+                , href "#"
+                ]
+                [ i [ class "edit outline icon" ] []
                 ]
             ]
         , renderMailForm model
@@ -1136,13 +1151,6 @@ renderNotes model =
                             , href "#"
                             ]
                             [ i [ class "eye slash icon" ] []
-                            ]
-                        , a
-                            [ class "ui right corner label"
-                            , onClick ToggleEditNotes
-                            , href "#"
-                            ]
-                            [ i [ class "edit icon" ] []
                             ]
                         ]
                     ]
@@ -1544,16 +1552,6 @@ renderEditButtons model =
         , button [ class "ui negative button", onClick RequestDelete ]
             [ i [ class "trash icon" ] []
             , text "Delete"
-            ]
-        , button
-            [ classList
-                [ ( "ui secondary right floated icon button", True )
-                , ( "basic", model.notesField == HideNotes || model.notesField == ViewNotes )
-                ]
-            , title "Toggle Notes Form"
-            , onClick ToggleEditNotes
-            ]
-            [ i [ class "edit outline icon" ] []
             ]
         ]
 
