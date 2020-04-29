@@ -141,6 +141,9 @@ val openapiScalaSettings = Seq(
 
 // --- Modules
 
+// Base module, everything depends on this – including restapi and
+// joexapi modules. This should aim to have least possible
+// dependencies
 val common = project.in(file("modules/common")).
   disablePlugins(RevolverPlugin).
   settings(sharedSettings).

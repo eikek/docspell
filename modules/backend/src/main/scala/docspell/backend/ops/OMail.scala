@@ -158,6 +158,7 @@ object OMail {
             val fields: Seq[Trans[F]] = Seq(
               From(sett.mailFrom),
               Tos(m.recipients),
+              XMailer.emil,
               Subject(m.subject),
               TextBody[F](m.body)
             )
