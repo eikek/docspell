@@ -2,7 +2,7 @@
 
 ## v0.5.0
 
-*Unknown*
+*May 1st, 2020*
 
 - Allow to delete attachments of an item.
 - Allow to be notified via e-mail for items with a due date. This uses
