@@ -2,7 +2,7 @@ openapi: 3.0.0
 
 info:
   title: Docspell
-  version: 0.4.0
+  version: 0.5.0
   description: |
     This is the remote API to Docspell, a personal document organizer.
 
@@ -1168,6 +1168,28 @@ paths:
                 $ref: "#/components/schemas/ItemProposals"
 
   /sec/attachment/{id}:
+    delete:
+      tags: [ Attachment ]
+      summary: Delete an attachment.
+      description: |
+        Deletes a single attachment with all its related data like
+        file, the original file, extracted text, results from analysis
+        etc.
+
+        If the attachment is part of an archive, the archive is only
+        deleted, if it is the last entry left. Archives are otherwise
+        not deleted, if there are remaining attachments available.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
     head:
       tags: [ Attachment ]
       summary: Get an attachment file.
@@ -1560,9 +1582,167 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BasicResult"
+  /sec/calevent/check:
+    post:
+      tags: [ Utility ]
+      summary: Check a calendar event string
+      description: |
+        For ui purposes, this route checks a calendar event string and
+        either returns the normal form or an error message.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CalEventCheck"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CalEventCheckResult"
+  /sec/usertask/notifydueitems:
+    get:
+      tags: [ User Tasks ]
+      summary: Get settings for "Notify Due Items" task
+      description: |
+        Return the current notification settings of the authenticated
+        user. Users can be notified on due items via e-mail. This is
+        done by periodically querying items.
+      security:
+        - authTokenHeader: []
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotificationSettings"
+    post:
+      tags: [ User Tasks ]
+      summary: Change current settings for "Notify Due Items" task
+      description: |
+        Change the current notification settings of the authenticated
+        user.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NotificationSettings"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+  /sec/usertask/notifydueitems/startonce:
+    post:
+      tags: [ User Tasks ]
+      summary: Start the "Notify Due Items" task once
+      description: |
+        Starts the notify-due-items task just once, discarding the
+        schedule and not updating the periodic task.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NotificationSettings"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
 
 components:
   schemas:
+    CalEventCheckResult:
+      description: |
+        The result of checking a calendar event string.
+      required:
+        - success
+        - message
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        event:
+          type: string
+          format: calevent
+        next:
+          type: array
+          items:
+            type: integer
+            format: date-time
+    CalEventCheck:
+      description: |
+        A calendar event.
+      required:
+        - event
+      properties:
+        event:
+          type: string
+    NotificationSettings:
+      description: |
+        Settings for notifying about due items.
+      required:
+        - id
+        - enabled
+        - smtpConnection
+        - recipients
+        - schedule
+        - remindDays
+        - capOverdue
+        - tagsInclude
+        - tagsExclude
+      properties:
+        id:
+          type: string
+          format: ident
+        enabled:
+          type: boolean
+        smtpConnection:
+          type: string
+          format: ident
+        recipients:
+          type: array
+          items:
+            type: string
+            format: ident
+        schedule:
+          type: string
+          format: calevent
+        remindDays:
+          type: integer
+          format: int32
+          description: |
+            Used to restrict items by their due dates. All items with
+            a due date lower than (now + remindDays) are searched.
+        capOverdue:
+          type: boolean
+          description: |
+            If this is true, the search is also restricted to due
+            dates greater than `now - remindDays'. Otherwise, due date
+            are not restricted in that direction (only lower than `now
+            + remindDays' applies) and it is expected to restrict it
+            more using custom tags.
+        tagsInclude:
+          type: array
+          items:
+            $ref: "#/components/schemas/Tag"
+        tagsExclude:
+          type: array
+          items:
+            $ref: "#/components/schemas/Tag"
     SentMails:
       description: |
         A list of sent mails.

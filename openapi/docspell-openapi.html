@@ -869,6 +869,38 @@
     }
   }
 };
+            defs.CalEventCheck = {
+  "required" : [ "event" ],
+  "properties" : {
+    "event" : {
+      "type" : "string"
+    }
+  },
+  "description" : "A calendar event.\n"
+};
+            defs.CalEventCheckResult = {
+  "required" : [ "message", "success" ],
+  "properties" : {
+    "success" : {
+      "type" : "boolean"
+    },
+    "message" : {
+      "type" : "string"
+    },
+    "event" : {
+      "type" : "string",
+      "format" : "calevent"
+    },
+    "next" : {
+      "type" : "array",
+      "items" : {
+        "type" : "integer",
+        "format" : "date-time"
+      }
+    }
+  },
+  "description" : "The result of checking a calendar event string.\n"
+};
             defs.CheckFileResult = {
   "required" : [ "exists", "items" ],
   "properties" : {
@@ -1500,6 +1532,55 @@
   },
   "description" : "Generic structure for counting something.\n"
 };
+            defs.NotificationSettings = {
+  "required" : [ "capOverdue", "enabled", "id", "recipients", "remindDays", "schedule", "smtpConnection", "tagsExclude", "tagsInclude" ],
+  "properties" : {
+    "id" : {
+      "type" : "string",
+      "format" : "ident"
+    },
+    "enabled" : {
+      "type" : "boolean"
+    },
+    "smtpConnection" : {
+      "type" : "string",
+      "format" : "ident"
+    },
+    "recipients" : {
+      "type" : "array",
+      "items" : {
+        "type" : "string",
+        "format" : "ident"
+      }
+    },
+    "schedule" : {
+      "type" : "string",
+      "format" : "calevent"
+    },
+    "remindDays" : {
+      "type" : "integer",
+      "description" : "Used to restrict items by their due dates. All items with\na due date lower than (now + remindDays) are searched.\n",
+      "format" : "int32"
+    },
+    "capOverdue" : {
+      "type" : "boolean",
+      "description" : "If this is true, the search is also restricted to due\ndates greater than `now - remindDays'. Otherwise, due date\nare not restricted in that direction (only lower than `now\n+ remindDays' applies) and it is expected to restrict it\nmore using custom tags.\n"
+    },
+    "tagsInclude" : {
+      "type" : "array",
+      "items" : {
+        "$ref" : "#/components/schemas/Tag"
+      }
+    },
+    "tagsExclude" : {
+      "type" : "array",
+      "items" : {
+        "$ref" : "#/components/schemas/Tag"
+      }
+    }
+  },
+  "description" : "Settings for notifying about due items.\n"
+};
             defs.OptionalDate = {
   "properties" : {
     "date" : {
@@ -1933,6 +2014,9 @@
                     <li data-group="Attachment" data-name="secAttachmentIdArchiveHead" class="">
                       <a href="#api-Attachment-secAttachmentIdArchiveHead">secAttachmentIdArchiveHead</a>
                     </li>
+                    <li data-group="Attachment" data-name="secAttachmentIdDelete" class="">
+                      <a href="#api-Attachment-secAttachmentIdDelete">secAttachmentIdDelete</a>
+                    </li>
                     <li data-group="Attachment" data-name="secAttachmentIdGet" class="">
                       <a href="#api-Attachment-secAttachmentIdGet">secAttachmentIdGet</a>
                     </li>
@@ -2171,6 +2255,20 @@
                     <li data-group="Upload" data-name="secUploadPost" class="">
                       <a href="#api-Upload-secUploadPost">secUploadPost</a>
                     </li>
+                  <li class="nav-header" data-group="UserTasks"><a href="#api-UserTasks">API Methods - UserTasks</a></li>
+                    <li data-group="UserTasks" data-name="secUsertaskNotifydueitemsGet" class="">
+                      <a href="#api-UserTasks-secUsertaskNotifydueitemsGet">secUsertaskNotifydueitemsGet</a>
+                    </li>
+                    <li data-group="UserTasks" data-name="secUsertaskNotifydueitemsPost" class="">
+                      <a href="#api-UserTasks-secUsertaskNotifydueitemsPost">secUsertaskNotifydueitemsPost</a>
+                    </li>
+                    <li data-group="UserTasks" data-name="secUsertaskNotifydueitemsStartoncePost" class="">
+                      <a href="#api-UserTasks-secUsertaskNotifydueitemsStartoncePost">secUsertaskNotifydueitemsStartoncePost</a>
+                    </li>
+                  <li class="nav-header" data-group="Utility"><a href="#api-Utility">API Methods - Utility</a></li>
+                    <li data-group="Utility" data-name="secCaleventCheckPost" class="">
+                      <a href="#api-Utility-secCaleventCheckPost">secCaleventCheckPost</a>
+                    </li>
           </ul>
         </nav>
       </div>
@@ -2184,7 +2282,7 @@
         <div id="header">
           <div id="api-_">
             <h2 id="welcome-to-apidoc">API and SDK Documentation</h2>
-              <div class="app-desc">Version: 0.4.0</div>
+              <div class="app-desc">Version: 0.5.0</div>
             <hr>
             <div>This is the remote API to Docspell, a personal document organizer.</div>
           </div>
@@ -2852,6 +2950,346 @@ except ApiException as e:
                                             <td></td>
                                         </tr>
                                     </table>
+                                </div>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
+                    <div id="api-Attachment-secAttachmentIdDelete">
+                      <article id="api-Attachment-secAttachmentIdDelete-0" data-group="User" data-name="secAttachmentIdDelete" data-version="0">
+                        <div class="pull-left">
+                          <h1>secAttachmentIdDelete</h1>
+                          <p>Delete an attachment.</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked">Deletes a single attachment with all its related data like
+file, the original file, extracted text, results from analysis
+etc.
+
+If the attachment is part of an archive, the archive is only
+deleted, if it is the last entry left. Archives are otherwise
+not deleted, if there are remaining attachments available.
+</p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="delete"><code><span class="pln">/sec/attachment/{id}</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-Attachment-secAttachmentIdDelete-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-Attachment-secAttachmentIdDelete-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Attachment-secAttachmentIdDelete-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-Attachment-secAttachmentIdDelete-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-Attachment-secAttachmentIdDelete-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-Attachment-secAttachmentIdDelete-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-Attachment-secAttachmentIdDelete-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-Attachment-secAttachmentIdDelete-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-Attachment-secAttachmentIdDelete-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-Attachment-secAttachmentIdDelete-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-Attachment-secAttachmentIdDelete-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-Attachment-secAttachmentIdDelete-0-curl">
+                            <pre class="prettyprint"><code class="language-bsh">curl -X DELETE -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/attachment/{id}"</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-Attachment-secAttachmentIdDelete-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.AttachmentApi;
+
+import java.io.File;
+import java.util.*;
+
+public class AttachmentApiExample {
+
+    public static void main(String[] args) {
+        ApiClient defaultClient = Configuration.getDefaultApiClient();
+
+        // Configure API key authorization: authTokenHeader
+        ApiKeyAuth authTokenHeader = (ApiKeyAuth) defaultClient.getAuthentication("authTokenHeader");
+        authTokenHeader.setApiKey("YOUR API KEY");
+        // Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+        //authTokenHeader.setApiKeyPrefix("Token");
+
+        AttachmentApi apiInstance = new AttachmentApi();
+        String id = id_example; // String | An identifier
+        try {
+            BasicResult result = apiInstance.secAttachmentIdDelete(id);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling AttachmentApi#secAttachmentIdDelete");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Attachment-secAttachmentIdDelete-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.AttachmentApi;
+
+public class AttachmentApiExample {
+
+    public static void main(String[] args) {
+        AttachmentApi apiInstance = new AttachmentApi();
+        String id = id_example; // String | An identifier
+        try {
+            BasicResult result = apiInstance.secAttachmentIdDelete(id);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling AttachmentApi#secAttachmentIdDelete");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-Attachment-secAttachmentIdDelete-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-Attachment-secAttachmentIdDelete-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
+// Configure API key authorization: (authentication scheme: authTokenHeader)
+[apiConfig setApiKey:@"YOUR_API_KEY" forApiKeyIdentifier:@"X-Docspell-Auth"];
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+//[apiConfig setApiKeyPrefix:@"Bearer" forApiKeyIdentifier:@"X-Docspell-Auth"];
+String *id = id_example; // An identifier
+
+AttachmentApi *apiInstance = [[AttachmentApi alloc] init];
+
+// Delete an attachment.
+[apiInstance secAttachmentIdDeleteWith:id
+              completionHandler: ^(BasicResult output, NSError* error) {
+                            if (output) {
+                                NSLog(@"%@", output);
+                            }
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Attachment-secAttachmentIdDelete-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var Docspell = require('docspell');
+var defaultClient = Docspell.ApiClient.instance;
+
+// Configure API key authorization: authTokenHeader
+var authTokenHeader = defaultClient.authentications['authTokenHeader'];
+authTokenHeader.apiKey = "YOUR API KEY"
+// Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+//authTokenHeader.apiKeyPrefix['X-Docspell-Auth'] = "Token"
+
+var api = new Docspell.AttachmentApi()
+var id = id_example; // {{String}} An identifier
+
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+};
+api.secAttachmentIdDelete(id, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-Attachment-secAttachmentIdDelete-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-Attachment-secAttachmentIdDelete-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class secAttachmentIdDeleteExample
+    {
+        public void main()
+        {
+
+            // Configure API key authorization: authTokenHeader
+            Configuration.Default.ApiKey.Add("X-Docspell-Auth", "YOUR_API_KEY");
+            // Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+            // Configuration.Default.ApiKeyPrefix.Add("X-Docspell-Auth", "Bearer");
+
+            var apiInstance = new AttachmentApi();
+            var id = id_example;  // String | An identifier
+
+            try
+            {
+                // Delete an attachment.
+                BasicResult result = apiInstance.secAttachmentIdDelete(id);
+                Debug.WriteLine(result);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling AttachmentApi.secAttachmentIdDelete: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Attachment-secAttachmentIdDelete-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+// Configure API key authorization: authTokenHeader
+Swagger\Client\Configuration::getDefaultConfiguration()->setApiKey('X-Docspell-Auth', 'YOUR_API_KEY');
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+// Swagger\Client\Configuration::getDefaultConfiguration()->setApiKeyPrefix('X-Docspell-Auth', 'Bearer');
+
+$api_instance = new Swagger\Client\ApiAttachmentApi();
+$id = id_example; // String | An identifier
+
+try {
+    $result = $api_instance->secAttachmentIdDelete($id);
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling AttachmentApi->secAttachmentIdDelete: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Attachment-secAttachmentIdDelete-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::AttachmentApi;
+
+# Configure API key authorization: authTokenHeader
+$WWW::SwaggerClient::Configuration::api_key->{'X-Docspell-Auth'} = 'YOUR_API_KEY';
+# uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+#$WWW::SwaggerClient::Configuration::api_key_prefix->{'X-Docspell-Auth'} = "Bearer";
+
+my $api_instance = WWW::SwaggerClient::AttachmentApi->new();
+my $id = id_example; # String | An identifier
+
+eval { 
+    my $result = $api_instance->secAttachmentIdDelete(id => $id);
+    print Dumper($result);
+};
+if ($@) {
+    warn "Exception when calling AttachmentApi->secAttachmentIdDelete: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Attachment-secAttachmentIdDelete-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# Configure API key authorization: authTokenHeader
+swagger_client.configuration.api_key['X-Docspell-Auth'] = 'YOUR_API_KEY'
+# Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+# swagger_client.configuration.api_key_prefix['X-Docspell-Auth'] = 'Bearer'
+
+# create an instance of the API class
+api_instance = swagger_client.AttachmentApi()
+id = id_example # String | An identifier
+
+try: 
+    # Delete an attachment.
+    api_response = api_instance.sec_attachment_id_delete(id)
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling AttachmentApi->secAttachmentIdDelete: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+                            <div class="methodsubtabletitle">Path parameters</div>
+                            <table id="methodsubtable">
+                                <tr>
+                                  <th width="150px">Name</th>
+                                  <th>Description</th>
+                                </tr>
+                                  <tr><td style="width:150px;">id*</td>
+                                  <td>
+                                  
+                                  
+                                      <div id="d2e199_secAttachmentIdDelete_id">
+                                          <div class="json-schema-view">
+                                              <div class="primitive">
+                                                  <span class="type">
+                                                      String
+                                                  </span>
+                                  
+                                                      <div class="inner description">
+                                                          An identifier
+                                                      </div>
+                                              </div>
+                                                  <div class="inner required">
+                                                      Required
+                                                  </div>
+                                          </div>
+                                      </div>
+                                  </td>
+                                  </tr>
+                            </table>
+
+
+
+
+
+                          <h2>Responses</h2>
+                            <h3> Status: 200 - Ok </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-secAttachmentIdDelete-200-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-secAttachmentIdDelete-200-schema">
+                                  <div id='responses-secAttachmentIdDelete-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "Ok",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/BasicResult"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-secAttachmentIdDelete-200-schema-data').val(stringify(schema));
+                                        var result = $('#responses-secAttachmentIdDelete-200-schema-200');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-secAttachmentIdDelete-200-schema-data' type='hidden' value=''></input>
                                 </div>
                             </div>
 
@@ -28407,6 +28845,1351 @@ except ApiException as e:
                                     </script>
                                   </div>
                                   <input id='responses-secUploadPost-200-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
+                  </section>
+                <section id="api-UserTasks">
+                  <h1>UserTasks</h1>
+                    <div id="api-UserTasks-secUsertaskNotifydueitemsGet">
+                      <article id="api-UserTasks-secUsertaskNotifydueitemsGet-0" data-group="User" data-name="secUsertaskNotifydueitemsGet" data-version="0">
+                        <div class="pull-left">
+                          <h1>secUsertaskNotifydueitemsGet</h1>
+                          <p>Get settings for &quot;Notify Due Items&quot; task</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked">Return the current notification settings of the authenticated
+user. Users can be notified on due items via e-mail. This is
+done by periodically querying items.
+</p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="get"><code><span class="pln">/sec/usertask/notifydueitems</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-UserTasks-secUsertaskNotifydueitemsGet-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-UserTasks-secUsertaskNotifydueitemsGet-0-java">Java</a></li>
+                          <li class=""><a href="#examples-UserTasks-secUsertaskNotifydueitemsGet-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-UserTasks-secUsertaskNotifydueitemsGet-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-UserTasks-secUsertaskNotifydueitemsGet-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-UserTasks-secUsertaskNotifydueitemsGet-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-UserTasks-secUsertaskNotifydueitemsGet-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-UserTasks-secUsertaskNotifydueitemsGet-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-UserTasks-secUsertaskNotifydueitemsGet-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-UserTasks-secUsertaskNotifydueitemsGet-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-UserTasks-secUsertaskNotifydueitemsGet-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-UserTasks-secUsertaskNotifydueitemsGet-0-curl">
+                            <pre class="prettyprint"><code class="language-bsh">curl -X GET -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/usertask/notifydueitems"</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-UserTasks-secUsertaskNotifydueitemsGet-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.UserTasksApi;
+
+import java.io.File;
+import java.util.*;
+
+public class UserTasksApiExample {
+
+    public static void main(String[] args) {
+        ApiClient defaultClient = Configuration.getDefaultApiClient();
+
+        // Configure API key authorization: authTokenHeader
+        ApiKeyAuth authTokenHeader = (ApiKeyAuth) defaultClient.getAuthentication("authTokenHeader");
+        authTokenHeader.setApiKey("YOUR API KEY");
+        // Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+        //authTokenHeader.setApiKeyPrefix("Token");
+
+        UserTasksApi apiInstance = new UserTasksApi();
+        try {
+            NotificationSettings result = apiInstance.secUsertaskNotifydueitemsGet();
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling UserTasksApi#secUsertaskNotifydueitemsGet");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-UserTasks-secUsertaskNotifydueitemsGet-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.UserTasksApi;
+
+public class UserTasksApiExample {
+
+    public static void main(String[] args) {
+        UserTasksApi apiInstance = new UserTasksApi();
+        try {
+            NotificationSettings result = apiInstance.secUsertaskNotifydueitemsGet();
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling UserTasksApi#secUsertaskNotifydueitemsGet");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-UserTasks-secUsertaskNotifydueitemsGet-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-UserTasks-secUsertaskNotifydueitemsGet-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
+// Configure API key authorization: (authentication scheme: authTokenHeader)
+[apiConfig setApiKey:@"YOUR_API_KEY" forApiKeyIdentifier:@"X-Docspell-Auth"];
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+//[apiConfig setApiKeyPrefix:@"Bearer" forApiKeyIdentifier:@"X-Docspell-Auth"];
+
+UserTasksApi *apiInstance = [[UserTasksApi alloc] init];
+
+// Get settings for "Notify Due Items" task
+[apiInstance secUsertaskNotifydueitemsGetWithCompletionHandler: 
+              ^(NotificationSettings output, NSError* error) {
+                            if (output) {
+                                NSLog(@"%@", output);
+                            }
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-UserTasks-secUsertaskNotifydueitemsGet-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var Docspell = require('docspell');
+var defaultClient = Docspell.ApiClient.instance;
+
+// Configure API key authorization: authTokenHeader
+var authTokenHeader = defaultClient.authentications['authTokenHeader'];
+authTokenHeader.apiKey = "YOUR API KEY"
+// Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+//authTokenHeader.apiKeyPrefix['X-Docspell-Auth'] = "Token"
+
+var api = new Docspell.UserTasksApi()
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+};
+api.secUsertaskNotifydueitemsGet(callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-UserTasks-secUsertaskNotifydueitemsGet-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-UserTasks-secUsertaskNotifydueitemsGet-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class secUsertaskNotifydueitemsGetExample
+    {
+        public void main()
+        {
+
+            // Configure API key authorization: authTokenHeader
+            Configuration.Default.ApiKey.Add("X-Docspell-Auth", "YOUR_API_KEY");
+            // Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+            // Configuration.Default.ApiKeyPrefix.Add("X-Docspell-Auth", "Bearer");
+
+            var apiInstance = new UserTasksApi();
+
+            try
+            {
+                // Get settings for "Notify Due Items" task
+                NotificationSettings result = apiInstance.secUsertaskNotifydueitemsGet();
+                Debug.WriteLine(result);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling UserTasksApi.secUsertaskNotifydueitemsGet: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-UserTasks-secUsertaskNotifydueitemsGet-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+// Configure API key authorization: authTokenHeader
+Swagger\Client\Configuration::getDefaultConfiguration()->setApiKey('X-Docspell-Auth', 'YOUR_API_KEY');
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+// Swagger\Client\Configuration::getDefaultConfiguration()->setApiKeyPrefix('X-Docspell-Auth', 'Bearer');
+
+$api_instance = new Swagger\Client\ApiUserTasksApi();
+
+try {
+    $result = $api_instance->secUsertaskNotifydueitemsGet();
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling UserTasksApi->secUsertaskNotifydueitemsGet: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-UserTasks-secUsertaskNotifydueitemsGet-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::UserTasksApi;
+
+# Configure API key authorization: authTokenHeader
+$WWW::SwaggerClient::Configuration::api_key->{'X-Docspell-Auth'} = 'YOUR_API_KEY';
+# uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+#$WWW::SwaggerClient::Configuration::api_key_prefix->{'X-Docspell-Auth'} = "Bearer";
+
+my $api_instance = WWW::SwaggerClient::UserTasksApi->new();
+
+eval { 
+    my $result = $api_instance->secUsertaskNotifydueitemsGet();
+    print Dumper($result);
+};
+if ($@) {
+    warn "Exception when calling UserTasksApi->secUsertaskNotifydueitemsGet: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-UserTasks-secUsertaskNotifydueitemsGet-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# Configure API key authorization: authTokenHeader
+swagger_client.configuration.api_key['X-Docspell-Auth'] = 'YOUR_API_KEY'
+# Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+# swagger_client.configuration.api_key_prefix['X-Docspell-Auth'] = 'Bearer'
+
+# create an instance of the API class
+api_instance = swagger_client.UserTasksApi()
+
+try: 
+    # Get settings for "Notify Due Items" task
+    api_response = api_instance.sec_usertask_notifydueitems_get()
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling UserTasksApi->secUsertaskNotifydueitemsGet: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+
+
+
+
+
+                          <h2>Responses</h2>
+                            <h3> Status: 200 - Ok </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-secUsertaskNotifydueitemsGet-200-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-secUsertaskNotifydueitemsGet-200-schema">
+                                  <div id='responses-secUsertaskNotifydueitemsGet-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "Ok",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/NotificationSettings"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-secUsertaskNotifydueitemsGet-200-schema-data').val(stringify(schema));
+                                        var result = $('#responses-secUsertaskNotifydueitemsGet-200-schema-200');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-secUsertaskNotifydueitemsGet-200-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
+                    <div id="api-UserTasks-secUsertaskNotifydueitemsPost">
+                      <article id="api-UserTasks-secUsertaskNotifydueitemsPost-0" data-group="User" data-name="secUsertaskNotifydueitemsPost" data-version="0">
+                        <div class="pull-left">
+                          <h1>secUsertaskNotifydueitemsPost</h1>
+                          <p>Change current settings for &quot;Notify Due Items&quot; task</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked">Change the current notification settings of the authenticated
+user.
+</p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="post"><code><span class="pln">/sec/usertask/notifydueitems</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-UserTasks-secUsertaskNotifydueitemsPost-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-UserTasks-secUsertaskNotifydueitemsPost-0-java">Java</a></li>
+                          <li class=""><a href="#examples-UserTasks-secUsertaskNotifydueitemsPost-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-UserTasks-secUsertaskNotifydueitemsPost-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-UserTasks-secUsertaskNotifydueitemsPost-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-UserTasks-secUsertaskNotifydueitemsPost-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-UserTasks-secUsertaskNotifydueitemsPost-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-UserTasks-secUsertaskNotifydueitemsPost-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-UserTasks-secUsertaskNotifydueitemsPost-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-UserTasks-secUsertaskNotifydueitemsPost-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-UserTasks-secUsertaskNotifydueitemsPost-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-UserTasks-secUsertaskNotifydueitemsPost-0-curl">
+                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/usertask/notifydueitems"</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-UserTasks-secUsertaskNotifydueitemsPost-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.UserTasksApi;
+
+import java.io.File;
+import java.util.*;
+
+public class UserTasksApiExample {
+
+    public static void main(String[] args) {
+        ApiClient defaultClient = Configuration.getDefaultApiClient();
+
+        // Configure API key authorization: authTokenHeader
+        ApiKeyAuth authTokenHeader = (ApiKeyAuth) defaultClient.getAuthentication("authTokenHeader");
+        authTokenHeader.setApiKey("YOUR API KEY");
+        // Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+        //authTokenHeader.setApiKeyPrefix("Token");
+
+        UserTasksApi apiInstance = new UserTasksApi();
+        NotificationSettings body = ; // NotificationSettings | 
+        try {
+            BasicResult result = apiInstance.secUsertaskNotifydueitemsPost(body);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling UserTasksApi#secUsertaskNotifydueitemsPost");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-UserTasks-secUsertaskNotifydueitemsPost-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.UserTasksApi;
+
+public class UserTasksApiExample {
+
+    public static void main(String[] args) {
+        UserTasksApi apiInstance = new UserTasksApi();
+        NotificationSettings body = ; // NotificationSettings | 
+        try {
+            BasicResult result = apiInstance.secUsertaskNotifydueitemsPost(body);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling UserTasksApi#secUsertaskNotifydueitemsPost");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-UserTasks-secUsertaskNotifydueitemsPost-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-UserTasks-secUsertaskNotifydueitemsPost-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
+// Configure API key authorization: (authentication scheme: authTokenHeader)
+[apiConfig setApiKey:@"YOUR_API_KEY" forApiKeyIdentifier:@"X-Docspell-Auth"];
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+//[apiConfig setApiKeyPrefix:@"Bearer" forApiKeyIdentifier:@"X-Docspell-Auth"];
+NotificationSettings *body = ; //  (optional)
+
+UserTasksApi *apiInstance = [[UserTasksApi alloc] init];
+
+// Change current settings for "Notify Due Items" task
+[apiInstance secUsertaskNotifydueitemsPostWith:body
+              completionHandler: ^(BasicResult output, NSError* error) {
+                            if (output) {
+                                NSLog(@"%@", output);
+                            }
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-UserTasks-secUsertaskNotifydueitemsPost-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var Docspell = require('docspell');
+var defaultClient = Docspell.ApiClient.instance;
+
+// Configure API key authorization: authTokenHeader
+var authTokenHeader = defaultClient.authentications['authTokenHeader'];
+authTokenHeader.apiKey = "YOUR API KEY"
+// Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+//authTokenHeader.apiKeyPrefix['X-Docspell-Auth'] = "Token"
+
+var api = new Docspell.UserTasksApi()
+
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+};
+api.secUsertaskNotifydueitemsPost(, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-UserTasks-secUsertaskNotifydueitemsPost-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-UserTasks-secUsertaskNotifydueitemsPost-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class secUsertaskNotifydueitemsPostExample
+    {
+        public void main()
+        {
+
+            // Configure API key authorization: authTokenHeader
+            Configuration.Default.ApiKey.Add("X-Docspell-Auth", "YOUR_API_KEY");
+            // Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+            // Configuration.Default.ApiKeyPrefix.Add("X-Docspell-Auth", "Bearer");
+
+            var apiInstance = new UserTasksApi();
+            var body = new NotificationSettings(); // NotificationSettings |  (optional) 
+
+            try
+            {
+                // Change current settings for "Notify Due Items" task
+                BasicResult result = apiInstance.secUsertaskNotifydueitemsPost(body);
+                Debug.WriteLine(result);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling UserTasksApi.secUsertaskNotifydueitemsPost: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-UserTasks-secUsertaskNotifydueitemsPost-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+// Configure API key authorization: authTokenHeader
+Swagger\Client\Configuration::getDefaultConfiguration()->setApiKey('X-Docspell-Auth', 'YOUR_API_KEY');
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+// Swagger\Client\Configuration::getDefaultConfiguration()->setApiKeyPrefix('X-Docspell-Auth', 'Bearer');
+
+$api_instance = new Swagger\Client\ApiUserTasksApi();
+$body = ; // NotificationSettings | 
+
+try {
+    $result = $api_instance->secUsertaskNotifydueitemsPost($body);
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling UserTasksApi->secUsertaskNotifydueitemsPost: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-UserTasks-secUsertaskNotifydueitemsPost-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::UserTasksApi;
+
+# Configure API key authorization: authTokenHeader
+$WWW::SwaggerClient::Configuration::api_key->{'X-Docspell-Auth'} = 'YOUR_API_KEY';
+# uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+#$WWW::SwaggerClient::Configuration::api_key_prefix->{'X-Docspell-Auth'} = "Bearer";
+
+my $api_instance = WWW::SwaggerClient::UserTasksApi->new();
+my $body = WWW::SwaggerClient::Object::NotificationSettings->new(); # NotificationSettings | 
+
+eval { 
+    my $result = $api_instance->secUsertaskNotifydueitemsPost(body => $body);
+    print Dumper($result);
+};
+if ($@) {
+    warn "Exception when calling UserTasksApi->secUsertaskNotifydueitemsPost: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-UserTasks-secUsertaskNotifydueitemsPost-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# Configure API key authorization: authTokenHeader
+swagger_client.configuration.api_key['X-Docspell-Auth'] = 'YOUR_API_KEY'
+# Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+# swagger_client.configuration.api_key_prefix['X-Docspell-Auth'] = 'Bearer'
+
+# create an instance of the API class
+api_instance = swagger_client.UserTasksApi()
+body =  # NotificationSettings |  (optional)
+
+try: 
+    # Change current settings for "Notify Due Items" task
+    api_response = api_instance.sec_usertask_notifydueitems_post(body=body)
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling UserTasksApi->secUsertaskNotifydueitemsPost: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+
+
+                            <div class="methodsubtabletitle">Body parameters</div>
+                            <table id="methodsubtable">
+                              <tr>
+                                <th width="150px">Name</th>
+                                <th>Description</th>
+                              </tr>
+                                <tr><td style="width:150px;">body </td>
+                                <td>
+                                
+                                
+                                <script>
+                                $(document).ready(function() {
+                                  var schemaWrapper = {
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/NotificationSettings"
+      }
+    }
+  }
+};
+                                  var schema = schemaWrapper.content["application/json"].schema;
+                                  if (schema.$ref != null) {
+                                    schema = defsParser.$refs.get(schema.$ref);
+                                  } else {
+                                    schemaWrapper.components = {};
+                                    schemaWrapper.components.schemas = Object.assign({}, defs);
+                                    $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                      console.log(err);
+                                    });
+                                  }
+                                
+                                  var view = new JSONSchemaView(schema,2,{isBodyParam: true});
+                                  var result = $('#d2e199_secUsertaskNotifydueitemsPost_body');
+                                  result.empty();
+                                  result.append(view.render());
+                                });
+                                </script>
+                                <div id="d2e199_secUsertaskNotifydueitemsPost_body"></div>
+                                </td>
+                                </tr>
+                            </table>
+
+
+
+                          <h2>Responses</h2>
+                            <h3> Status: 200 - Ok </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-secUsertaskNotifydueitemsPost-200-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-secUsertaskNotifydueitemsPost-200-schema">
+                                  <div id='responses-secUsertaskNotifydueitemsPost-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "Ok",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/BasicResult"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-secUsertaskNotifydueitemsPost-200-schema-data').val(stringify(schema));
+                                        var result = $('#responses-secUsertaskNotifydueitemsPost-200-schema-200');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-secUsertaskNotifydueitemsPost-200-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
+                    <div id="api-UserTasks-secUsertaskNotifydueitemsStartoncePost">
+                      <article id="api-UserTasks-secUsertaskNotifydueitemsStartoncePost-0" data-group="User" data-name="secUsertaskNotifydueitemsStartoncePost" data-version="0">
+                        <div class="pull-left">
+                          <h1>secUsertaskNotifydueitemsStartoncePost</h1>
+                          <p>Start the &quot;Notify Due Items&quot; task once</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked">Starts the notify-due-items task just once, discarding the
+schedule and not updating the periodic task.
+</p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="post"><code><span class="pln">/sec/usertask/notifydueitems/startonce</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-UserTasks-secUsertaskNotifydueitemsStartoncePost-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-UserTasks-secUsertaskNotifydueitemsStartoncePost-0-java">Java</a></li>
+                          <li class=""><a href="#examples-UserTasks-secUsertaskNotifydueitemsStartoncePost-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-UserTasks-secUsertaskNotifydueitemsStartoncePost-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-UserTasks-secUsertaskNotifydueitemsStartoncePost-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-UserTasks-secUsertaskNotifydueitemsStartoncePost-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-UserTasks-secUsertaskNotifydueitemsStartoncePost-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-UserTasks-secUsertaskNotifydueitemsStartoncePost-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-UserTasks-secUsertaskNotifydueitemsStartoncePost-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-UserTasks-secUsertaskNotifydueitemsStartoncePost-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-UserTasks-secUsertaskNotifydueitemsStartoncePost-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-UserTasks-secUsertaskNotifydueitemsStartoncePost-0-curl">
+                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/usertask/notifydueitems/startonce"</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-UserTasks-secUsertaskNotifydueitemsStartoncePost-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.UserTasksApi;
+
+import java.io.File;
+import java.util.*;
+
+public class UserTasksApiExample {
+
+    public static void main(String[] args) {
+        ApiClient defaultClient = Configuration.getDefaultApiClient();
+
+        // Configure API key authorization: authTokenHeader
+        ApiKeyAuth authTokenHeader = (ApiKeyAuth) defaultClient.getAuthentication("authTokenHeader");
+        authTokenHeader.setApiKey("YOUR API KEY");
+        // Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+        //authTokenHeader.setApiKeyPrefix("Token");
+
+        UserTasksApi apiInstance = new UserTasksApi();
+        NotificationSettings body = ; // NotificationSettings | 
+        try {
+            BasicResult result = apiInstance.secUsertaskNotifydueitemsStartoncePost(body);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling UserTasksApi#secUsertaskNotifydueitemsStartoncePost");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-UserTasks-secUsertaskNotifydueitemsStartoncePost-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.UserTasksApi;
+
+public class UserTasksApiExample {
+
+    public static void main(String[] args) {
+        UserTasksApi apiInstance = new UserTasksApi();
+        NotificationSettings body = ; // NotificationSettings | 
+        try {
+            BasicResult result = apiInstance.secUsertaskNotifydueitemsStartoncePost(body);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling UserTasksApi#secUsertaskNotifydueitemsStartoncePost");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-UserTasks-secUsertaskNotifydueitemsStartoncePost-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-UserTasks-secUsertaskNotifydueitemsStartoncePost-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
+// Configure API key authorization: (authentication scheme: authTokenHeader)
+[apiConfig setApiKey:@"YOUR_API_KEY" forApiKeyIdentifier:@"X-Docspell-Auth"];
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+//[apiConfig setApiKeyPrefix:@"Bearer" forApiKeyIdentifier:@"X-Docspell-Auth"];
+NotificationSettings *body = ; //  (optional)
+
+UserTasksApi *apiInstance = [[UserTasksApi alloc] init];
+
+// Start the "Notify Due Items" task once
+[apiInstance secUsertaskNotifydueitemsStartoncePostWith:body
+              completionHandler: ^(BasicResult output, NSError* error) {
+                            if (output) {
+                                NSLog(@"%@", output);
+                            }
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-UserTasks-secUsertaskNotifydueitemsStartoncePost-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var Docspell = require('docspell');
+var defaultClient = Docspell.ApiClient.instance;
+
+// Configure API key authorization: authTokenHeader
+var authTokenHeader = defaultClient.authentications['authTokenHeader'];
+authTokenHeader.apiKey = "YOUR API KEY"
+// Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+//authTokenHeader.apiKeyPrefix['X-Docspell-Auth'] = "Token"
+
+var api = new Docspell.UserTasksApi()
+
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+};
+api.secUsertaskNotifydueitemsStartoncePost(, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-UserTasks-secUsertaskNotifydueitemsStartoncePost-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-UserTasks-secUsertaskNotifydueitemsStartoncePost-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class secUsertaskNotifydueitemsStartoncePostExample
+    {
+        public void main()
+        {
+
+            // Configure API key authorization: authTokenHeader
+            Configuration.Default.ApiKey.Add("X-Docspell-Auth", "YOUR_API_KEY");
+            // Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+            // Configuration.Default.ApiKeyPrefix.Add("X-Docspell-Auth", "Bearer");
+
+            var apiInstance = new UserTasksApi();
+            var body = new NotificationSettings(); // NotificationSettings |  (optional) 
+
+            try
+            {
+                // Start the "Notify Due Items" task once
+                BasicResult result = apiInstance.secUsertaskNotifydueitemsStartoncePost(body);
+                Debug.WriteLine(result);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling UserTasksApi.secUsertaskNotifydueitemsStartoncePost: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-UserTasks-secUsertaskNotifydueitemsStartoncePost-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+// Configure API key authorization: authTokenHeader
+Swagger\Client\Configuration::getDefaultConfiguration()->setApiKey('X-Docspell-Auth', 'YOUR_API_KEY');
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+// Swagger\Client\Configuration::getDefaultConfiguration()->setApiKeyPrefix('X-Docspell-Auth', 'Bearer');
+
+$api_instance = new Swagger\Client\ApiUserTasksApi();
+$body = ; // NotificationSettings | 
+
+try {
+    $result = $api_instance->secUsertaskNotifydueitemsStartoncePost($body);
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling UserTasksApi->secUsertaskNotifydueitemsStartoncePost: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-UserTasks-secUsertaskNotifydueitemsStartoncePost-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::UserTasksApi;
+
+# Configure API key authorization: authTokenHeader
+$WWW::SwaggerClient::Configuration::api_key->{'X-Docspell-Auth'} = 'YOUR_API_KEY';
+# uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+#$WWW::SwaggerClient::Configuration::api_key_prefix->{'X-Docspell-Auth'} = "Bearer";
+
+my $api_instance = WWW::SwaggerClient::UserTasksApi->new();
+my $body = WWW::SwaggerClient::Object::NotificationSettings->new(); # NotificationSettings | 
+
+eval { 
+    my $result = $api_instance->secUsertaskNotifydueitemsStartoncePost(body => $body);
+    print Dumper($result);
+};
+if ($@) {
+    warn "Exception when calling UserTasksApi->secUsertaskNotifydueitemsStartoncePost: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-UserTasks-secUsertaskNotifydueitemsStartoncePost-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# Configure API key authorization: authTokenHeader
+swagger_client.configuration.api_key['X-Docspell-Auth'] = 'YOUR_API_KEY'
+# Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+# swagger_client.configuration.api_key_prefix['X-Docspell-Auth'] = 'Bearer'
+
+# create an instance of the API class
+api_instance = swagger_client.UserTasksApi()
+body =  # NotificationSettings |  (optional)
+
+try: 
+    # Start the "Notify Due Items" task once
+    api_response = api_instance.sec_usertask_notifydueitems_startonce_post(body=body)
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling UserTasksApi->secUsertaskNotifydueitemsStartoncePost: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+
+
+                            <div class="methodsubtabletitle">Body parameters</div>
+                            <table id="methodsubtable">
+                              <tr>
+                                <th width="150px">Name</th>
+                                <th>Description</th>
+                              </tr>
+                                <tr><td style="width:150px;">body </td>
+                                <td>
+                                
+                                
+                                <script>
+                                $(document).ready(function() {
+                                  var schemaWrapper = {
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/NotificationSettings"
+      }
+    }
+  }
+};
+                                  var schema = schemaWrapper.content["application/json"].schema;
+                                  if (schema.$ref != null) {
+                                    schema = defsParser.$refs.get(schema.$ref);
+                                  } else {
+                                    schemaWrapper.components = {};
+                                    schemaWrapper.components.schemas = Object.assign({}, defs);
+                                    $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                      console.log(err);
+                                    });
+                                  }
+                                
+                                  var view = new JSONSchemaView(schema,2,{isBodyParam: true});
+                                  var result = $('#d2e199_secUsertaskNotifydueitemsStartoncePost_body');
+                                  result.empty();
+                                  result.append(view.render());
+                                });
+                                </script>
+                                <div id="d2e199_secUsertaskNotifydueitemsStartoncePost_body"></div>
+                                </td>
+                                </tr>
+                            </table>
+
+
+
+                          <h2>Responses</h2>
+                            <h3> Status: 200 - Ok </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-secUsertaskNotifydueitemsStartoncePost-200-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-secUsertaskNotifydueitemsStartoncePost-200-schema">
+                                  <div id='responses-secUsertaskNotifydueitemsStartoncePost-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "Ok",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/BasicResult"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-secUsertaskNotifydueitemsStartoncePost-200-schema-data').val(stringify(schema));
+                                        var result = $('#responses-secUsertaskNotifydueitemsStartoncePost-200-schema-200');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-secUsertaskNotifydueitemsStartoncePost-200-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
+                  </section>
+                <section id="api-Utility">
+                  <h1>Utility</h1>
+                    <div id="api-Utility-secCaleventCheckPost">
+                      <article id="api-Utility-secCaleventCheckPost-0" data-group="User" data-name="secCaleventCheckPost" data-version="0">
+                        <div class="pull-left">
+                          <h1>secCaleventCheckPost</h1>
+                          <p>Check a calendar event string</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked">For ui purposes, this route checks a calendar event string and
+either returns the normal form or an error message.
+</p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="post"><code><span class="pln">/sec/calevent/check</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-Utility-secCaleventCheckPost-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-Utility-secCaleventCheckPost-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Utility-secCaleventCheckPost-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-Utility-secCaleventCheckPost-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-Utility-secCaleventCheckPost-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-Utility-secCaleventCheckPost-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-Utility-secCaleventCheckPost-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-Utility-secCaleventCheckPost-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-Utility-secCaleventCheckPost-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-Utility-secCaleventCheckPost-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-Utility-secCaleventCheckPost-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-Utility-secCaleventCheckPost-0-curl">
+                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/calevent/check"</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-Utility-secCaleventCheckPost-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.UtilityApi;
+
+import java.io.File;
+import java.util.*;
+
+public class UtilityApiExample {
+
+    public static void main(String[] args) {
+        ApiClient defaultClient = Configuration.getDefaultApiClient();
+
+        // Configure API key authorization: authTokenHeader
+        ApiKeyAuth authTokenHeader = (ApiKeyAuth) defaultClient.getAuthentication("authTokenHeader");
+        authTokenHeader.setApiKey("YOUR API KEY");
+        // Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+        //authTokenHeader.setApiKeyPrefix("Token");
+
+        UtilityApi apiInstance = new UtilityApi();
+        CalEventCheck body = ; // CalEventCheck | 
+        try {
+            CalEventCheckResult result = apiInstance.secCaleventCheckPost(body);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling UtilityApi#secCaleventCheckPost");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Utility-secCaleventCheckPost-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.UtilityApi;
+
+public class UtilityApiExample {
+
+    public static void main(String[] args) {
+        UtilityApi apiInstance = new UtilityApi();
+        CalEventCheck body = ; // CalEventCheck | 
+        try {
+            CalEventCheckResult result = apiInstance.secCaleventCheckPost(body);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling UtilityApi#secCaleventCheckPost");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-Utility-secCaleventCheckPost-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-Utility-secCaleventCheckPost-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
+// Configure API key authorization: (authentication scheme: authTokenHeader)
+[apiConfig setApiKey:@"YOUR_API_KEY" forApiKeyIdentifier:@"X-Docspell-Auth"];
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+//[apiConfig setApiKeyPrefix:@"Bearer" forApiKeyIdentifier:@"X-Docspell-Auth"];
+CalEventCheck *body = ; //  (optional)
+
+UtilityApi *apiInstance = [[UtilityApi alloc] init];
+
+// Check a calendar event string
+[apiInstance secCaleventCheckPostWith:body
+              completionHandler: ^(CalEventCheckResult output, NSError* error) {
+                            if (output) {
+                                NSLog(@"%@", output);
+                            }
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Utility-secCaleventCheckPost-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var Docspell = require('docspell');
+var defaultClient = Docspell.ApiClient.instance;
+
+// Configure API key authorization: authTokenHeader
+var authTokenHeader = defaultClient.authentications['authTokenHeader'];
+authTokenHeader.apiKey = "YOUR API KEY"
+// Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+//authTokenHeader.apiKeyPrefix['X-Docspell-Auth'] = "Token"
+
+var api = new Docspell.UtilityApi()
+
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+};
+api.secCaleventCheckPost(, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-Utility-secCaleventCheckPost-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-Utility-secCaleventCheckPost-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class secCaleventCheckPostExample
+    {
+        public void main()
+        {
+
+            // Configure API key authorization: authTokenHeader
+            Configuration.Default.ApiKey.Add("X-Docspell-Auth", "YOUR_API_KEY");
+            // Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+            // Configuration.Default.ApiKeyPrefix.Add("X-Docspell-Auth", "Bearer");
+
+            var apiInstance = new UtilityApi();
+            var body = new CalEventCheck(); // CalEventCheck |  (optional) 
+
+            try
+            {
+                // Check a calendar event string
+                CalEventCheckResult result = apiInstance.secCaleventCheckPost(body);
+                Debug.WriteLine(result);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling UtilityApi.secCaleventCheckPost: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Utility-secCaleventCheckPost-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+// Configure API key authorization: authTokenHeader
+Swagger\Client\Configuration::getDefaultConfiguration()->setApiKey('X-Docspell-Auth', 'YOUR_API_KEY');
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+// Swagger\Client\Configuration::getDefaultConfiguration()->setApiKeyPrefix('X-Docspell-Auth', 'Bearer');
+
+$api_instance = new Swagger\Client\ApiUtilityApi();
+$body = ; // CalEventCheck | 
+
+try {
+    $result = $api_instance->secCaleventCheckPost($body);
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling UtilityApi->secCaleventCheckPost: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Utility-secCaleventCheckPost-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::UtilityApi;
+
+# Configure API key authorization: authTokenHeader
+$WWW::SwaggerClient::Configuration::api_key->{'X-Docspell-Auth'} = 'YOUR_API_KEY';
+# uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+#$WWW::SwaggerClient::Configuration::api_key_prefix->{'X-Docspell-Auth'} = "Bearer";
+
+my $api_instance = WWW::SwaggerClient::UtilityApi->new();
+my $body = WWW::SwaggerClient::Object::CalEventCheck->new(); # CalEventCheck | 
+
+eval { 
+    my $result = $api_instance->secCaleventCheckPost(body => $body);
+    print Dumper($result);
+};
+if ($@) {
+    warn "Exception when calling UtilityApi->secCaleventCheckPost: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Utility-secCaleventCheckPost-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# Configure API key authorization: authTokenHeader
+swagger_client.configuration.api_key['X-Docspell-Auth'] = 'YOUR_API_KEY'
+# Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+# swagger_client.configuration.api_key_prefix['X-Docspell-Auth'] = 'Bearer'
+
+# create an instance of the API class
+api_instance = swagger_client.UtilityApi()
+body =  # CalEventCheck |  (optional)
+
+try: 
+    # Check a calendar event string
+    api_response = api_instance.sec_calevent_check_post(body=body)
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling UtilityApi->secCaleventCheckPost: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+
+
+                            <div class="methodsubtabletitle">Body parameters</div>
+                            <table id="methodsubtable">
+                              <tr>
+                                <th width="150px">Name</th>
+                                <th>Description</th>
+                              </tr>
+                                <tr><td style="width:150px;">body </td>
+                                <td>
+                                
+                                
+                                <script>
+                                $(document).ready(function() {
+                                  var schemaWrapper = {
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/CalEventCheck"
+      }
+    }
+  }
+};
+                                  var schema = schemaWrapper.content["application/json"].schema;
+                                  if (schema.$ref != null) {
+                                    schema = defsParser.$refs.get(schema.$ref);
+                                  } else {
+                                    schemaWrapper.components = {};
+                                    schemaWrapper.components.schemas = Object.assign({}, defs);
+                                    $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                      console.log(err);
+                                    });
+                                  }
+                                
+                                  var view = new JSONSchemaView(schema,2,{isBodyParam: true});
+                                  var result = $('#d2e199_secCaleventCheckPost_body');
+                                  result.empty();
+                                  result.append(view.render());
+                                });
+                                </script>
+                                <div id="d2e199_secCaleventCheckPost_body"></div>
+                                </td>
+                                </tr>
+                            </table>
+
+
+
+                          <h2>Responses</h2>
+                            <h3> Status: 200 - Ok </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-secCaleventCheckPost-200-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-secCaleventCheckPost-200-schema">
+                                  <div id='responses-secCaleventCheckPost-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "Ok",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/CalEventCheckResult"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-secCaleventCheckPost-200-schema-data').val(stringify(schema));
+                                        var result = $('#responses-secCaleventCheckPost-200-schema-200');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-secCaleventCheckPost-200-schema-data' type='hidden' value=''></input>
                                 </div>
                             </div>
 
