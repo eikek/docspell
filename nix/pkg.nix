@@ -10,7 +10,7 @@ in
 { server = stdenv.mkDerivation rec {
     name = "docspell-server-${cfg.version}";
 
-     src = fetchzip cfg.server;
+    src = fetchzip cfg.server;
 
     buildInputs = [ jre8 ];
 
