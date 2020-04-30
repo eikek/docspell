@@ -21,6 +21,9 @@ let
       user = "sa";
       password = "";
     };
+    send-mail = {
+      list-id = "";
+    };
     scheduler = {
       pool-size = 2;
       counting-scheme = "4,1";
@@ -200,6 +203,30 @@ in {
         });
         default = defaults.jdbc;
         description = "Database connection settings";
+      };
+
+      send-mail = mkOption {
+        type = types.submodule({
+          options = {
+            list-id = mkOption {
+              type = types.str;
+              default = defaults.send-mail.list-id;
+              description = ''
+                This is used as the List-Id e-mail header when mails are sent
+                from docspell to its users (example: for notification mails). It
+                is not used when sending to external recipients. If it is empty,
+                no such header is added. Using this header is often useful when
+                filtering mails.
+
+                It should be a string in angle brackets. See
+                https://tools.ietf.org/html/rfc2919 for a formal specification
+              '';
+            };
+
+          };
+        });
+        default = defaults.send-mail;
+        description = "Settings for sending mails.";
       };
 
       scheduler = mkOption {

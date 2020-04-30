@@ -6,9 +6,9 @@ in
   imports = docspell.modules;
 
   i18n = {
-    consoleKeyMap = "neo";
     defaultLocale = "en_US.UTF-8";
   };
+  console.keyMap = "neo";
 
   users.users.root = {
     password = "root";
@@ -56,6 +56,6 @@ in
     firewall.allowedTCPPorts = [7880];
   };
 
-  system.stateVersion = "19.09";
+  system.stateVersion = "20.03";
 
 }
