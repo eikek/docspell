@@ -18,7 +18,7 @@ import docspell.store.queries.QUserTask
   * `RPeriodicTask`. A user task is associated to a specific user (not
   * just the collective).
   *
-  * @implNote: The mapping is as follows: The collective is the task
+  * implNote: The mapping is as follows: The collective is the task
   * group. The submitter property contains the username. Once a task
   * is saved to the database, it can only be refernced uniquely by its
   * id. A user may submit multiple same tasks (with different

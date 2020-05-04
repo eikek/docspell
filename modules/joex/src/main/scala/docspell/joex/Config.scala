@@ -1,7 +1,7 @@
 package docspell.joex
 
 import docspell.analysis.TextAnalysisConfig
-import docspell.common.{Ident, LenientUri}
+import docspell.common._
 import docspell.joex.scheduler.{PeriodicSchedulerConfig, SchedulerConfig}
 import docspell.store.JdbcConfig
 import docspell.convert.ConvertConfig
@@ -18,7 +18,8 @@ case class Config(
     houseKeeping: HouseKeepingConfig,
     extraction: ExtractConfig,
     textAnalysis: TextAnalysisConfig,
-    convert: ConvertConfig
+    convert: ConvertConfig,
+    sendMail: MailSendConfig
 )
 
 object Config {

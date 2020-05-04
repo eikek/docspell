@@ -12,6 +12,7 @@ import docspell.store.records._
 import docspell.store.queries.QItem
 import docspell.joex.scheduler.{Context, Task}
 import cats.data.OptionT
+import docspell.joex.mail.EmilHeader
 import docspell.joex.notify.MailContext
 import docspell.joex.notify.MailTemplate
 
@@ -19,7 +20,7 @@ object NotifyDueItemsTask {
   val maxItems: Long = 7
   type Args = NotifyDueItemsArgs
 
-  def apply[F[_]: Sync](emil: Emil[F]): Task[F, Args, Unit] =
+  def apply[F[_]: Sync](cfg: MailSendConfig, emil: Emil[F]): Task[F, Args, Unit] =
     Task { ctx =>
       for {
         _       <- ctx.logger.info("Getting mail configuration")
@@ -27,7 +28,7 @@ object NotifyDueItemsTask {
         _ <- ctx.logger.info(
           s"Searching for items due in ${ctx.args.remindDays} days…."
         )
-        _ <- createMail(mailCfg, ctx)
+        _ <- createMail(cfg, mailCfg, ctx)
           .semiflatMap { mail =>
             for {
               _   <- ctx.logger.info(s"Sending notification mail to ${ctx.args.recipients}")
@@ -56,12 +57,13 @@ object NotifyDueItemsTask {
       }
 
   def createMail[F[_]: Sync](
+      sendCfg: MailSendConfig,
       cfg: RUserEmail,
       ctx: Context[F, Args]
   ): OptionT[F, Mail[F]] =
     for {
       items <- OptionT.liftF(findItems(ctx)).filter(_.nonEmpty)
-      mail  <- OptionT.liftF(makeMail(cfg, ctx.args, items))
+      mail  <- OptionT.liftF(makeMail(sendCfg, cfg, ctx.args, items))
     } yield mail
 
   def findItems[F[_]: Sync](ctx: Context[F, Args]): F[Vector[QItem.ListItem]] =
@@ -81,6 +83,7 @@ object NotifyDueItemsTask {
     } yield res
 
   def makeMail[F[_]: Sync](
+      sendCfg: MailSendConfig,
       cfg: RUserEmail,
       args: Args,
       items: Vector[QItem.ListItem]
@@ -99,7 +102,9 @@ object NotifyDueItemsTask {
       MailBuilder.build(
         From(cfg.mailFrom),
         Tos(recp),
-        Subject("Next due items"),
+        XMailer.emil,
+        Subject("[Docspell] Next due items"),
+        EmilHeader.listId(sendCfg.listId),
         MarkdownBody[F](md).withConfig(
           MarkdownConfig("body { font-size: 10pt; font-family: sans-serif; }")
         )

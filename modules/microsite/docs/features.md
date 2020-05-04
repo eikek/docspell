@@ -20,6 +20,7 @@ permalink: features
 - Web-UI included
 - Create “share-urls” to upload files anonymously
 - Send documents via e-mail
+- E-Mail notification for documents with due dates
 - REST server and document processing are separate applications which
   can be scaled-out independently
 - Everything stored in a SQL database: PostgreSQL, MariaDB or H2

@@ -2,18 +2,27 @@
 
 ## v0.5.0
 
-*Unknown*
+*May 1st, 2020*
 
 - Allow to delete attachments of an item.
 - Allow to be notified via e-mail for items with a due date. This uses
   the periodic-task framework introduced in the last release.
 - Fix issues when converting HTML with unkown links. This especially
   happens with e-mails that contain images to attachments.
-- Fix issues when importing e-mail files:
+- Fix various issues when importing e-mail files, for example:
   - fixes encoding problems for mails without explicit transfer encoding
   - add meta info (from, to, subject) to the converted pdf document
   - clean html mails to remove unwanted content (like javascript)
 - Fix classpath issue with javax.mail vs jakarta.mail
+
+### Configuration Changes
+
+The Joex component has config changes:
+
+- A new section `send-mail` containing a `List-Id` e-mail header to
+  use. Use an empty string (the default) to avoid setting such header.
+  This header is only applied for notification mails.
+
 
 ## v0.4.0 
 

@@ -78,7 +78,7 @@ object JoexAppImpl {
         .withTask(
           JobTask.json(
             NotifyDueItemsArgs.taskName,
-            NotifyDueItemsTask[F](JavaMailEmil(blocker)),
+            NotifyDueItemsTask[F](cfg.sendMail, JavaMailEmil(blocker)),
             NotifyDueItemsTask.onCancel[F]
           )
         )
