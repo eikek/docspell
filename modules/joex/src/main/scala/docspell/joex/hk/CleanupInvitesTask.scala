@@ -11,7 +11,7 @@ object CleanupInvitesTask {
 
   def apply[F[_]: Sync](cfg: HouseKeepingConfig.CleanupInvites): Task[F, Unit, Unit] =
     Task { ctx =>
-      if (cfg.enabled) {
+      if (cfg.enabled)
         for {
           now <- Timestamp.current[F]
           ts = now - cfg.olderThan
@@ -19,8 +19,7 @@ object CleanupInvitesTask {
           n <- ctx.store.transact(RInvitation.deleteOlderThan(ts))
           _ <- ctx.logger.info(s"Removed $n invitations")
         } yield ()
-      } else {
+      else
         ctx.logger.info("CleanupInvites task is disabled in the configuration")
-      }
     }
 }

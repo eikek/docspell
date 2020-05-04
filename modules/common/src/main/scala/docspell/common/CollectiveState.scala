@@ -33,12 +33,13 @@ object CollectiveState {
   def unsafe(str: String): CollectiveState =
     fromString(str).fold(sys.error, identity)
 
-  def asString(state: CollectiveState): String = state match {
-    case Active   => "active"
-    case Blocked  => "blocked"
-    case Closed   => "closed"
-    case ReadOnly => "readonly"
-  }
+  def asString(state: CollectiveState): String =
+    state match {
+      case Active   => "active"
+      case Blocked  => "blocked"
+      case Closed   => "closed"
+      case ReadOnly => "readonly"
+    }
 
   implicit val collectiveStateEncoder: Encoder[CollectiveState] =
     Encoder.encodeString.contramap(CollectiveState.asString)

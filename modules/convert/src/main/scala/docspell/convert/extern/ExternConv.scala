@@ -90,13 +90,12 @@ private[extern] object ExternConv {
         val outTxt = out.resolveSibling(s"$outPrefix.txt")
         File.exists(outTxt).flatMap { txtExists =>
           val pdfData = File.readAll(out, blocker, chunkSize)
-          if (result.rc == 0) {
+          if (result.rc == 0)
             if (txtExists) successPdfTxt(pdfData, File.readText(outTxt, blocker)).pure[F]
             else successPdf(pdfData).pure[F]
-          } else {
+          else
             logger.warn(s"Command not successful (rc=${result.rc}), but file exists.") *>
               successPdf(pdfData).pure[F]
-          }
         }
 
       case false =>

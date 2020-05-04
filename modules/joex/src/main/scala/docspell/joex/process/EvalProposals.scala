@@ -79,8 +79,10 @@ object EvalProposals {
         if (mt == MetaProposalType.CorrOrg) 0.8
         else 1.0
       case NerTag.Person =>
-        if (mt == MetaProposalType.CorrPerson ||
-            mt == MetaProposalType.ConcPerson) 0.8
+        if (
+          mt == MetaProposalType.CorrPerson ||
+          mt == MetaProposalType.ConcPerson
+        ) 0.8
         else 1.0
       case NerTag.Website => 0.5
     }

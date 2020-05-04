@@ -69,16 +69,17 @@ object NotifyDueItemsTask {
   def findItems[F[_]: Sync](ctx: Context[F, Args]): F[Vector[QItem.ListItem]] =
     for {
       now <- Timestamp.current[F]
-      q = QItem.Query
-        .empty(ctx.args.account.collective)
-        .copy(
-          states = ItemState.validStates,
-          tagsInclude = ctx.args.tagsInclude,
-          tagsExclude = ctx.args.tagsExclude,
-          dueDateFrom = ctx.args.daysBack.map(back => now - Duration.days(back.toLong)),
-          dueDateTo = Some(now + Duration.days(ctx.args.remindDays.toLong)),
-          orderAsc = Some(_.dueDate)
-        )
+      q =
+        QItem.Query
+          .empty(ctx.args.account.collective)
+          .copy(
+            states = ItemState.validStates,
+            tagsInclude = ctx.args.tagsInclude,
+            tagsExclude = ctx.args.tagsExclude,
+            dueDateFrom = ctx.args.daysBack.map(back => now - Duration.days(back.toLong)),
+            dueDateTo = Some(now + Duration.days(ctx.args.remindDays.toLong)),
+            orderAsc = Some(_.dueDate)
+          )
       res <- ctx.store.transact(QItem.findItems(q).take(maxItems)).compile.toVector
     } yield res
 

@@ -13,7 +13,7 @@ object CleanupJobsTask {
 
   def apply[F[_]: Sync](cfg: HouseKeepingConfig.CleanupJobs): Task[F, Unit, Unit] =
     Task { ctx =>
-      if (cfg.enabled) {
+      if (cfg.enabled)
         for {
           now <- Timestamp.current[F]
           ts = now - cfg.olderThan
@@ -21,9 +21,8 @@ object CleanupJobsTask {
           n <- deleteDoneJobs(ctx.store, ts, cfg.deleteBatch)
           _ <- ctx.logger.info(s"Removed $n jobs")
         } yield ()
-      } else {
+      else
         ctx.logger.info("CleanupJobs task is disabled in the configuration")
-      }
     }
 
   def deleteDoneJobs[F[_]: Sync](store: Store[F], ts: Timestamp, batch: Int): F[Int] =

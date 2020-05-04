@@ -30,16 +30,18 @@ object QAttachment {
 
     for {
       files <- store.transact(loadFiles)
-      k <- if (files._3 == 1) deleteArchive(store)(attachId)
-      else store.transact(RAttachmentArchive.delete(attachId))
+      k <-
+        if (files._3 == 1) deleteArchive(store)(attachId)
+        else store.transact(RAttachmentArchive.delete(attachId))
       n <- store.transact(RAttachment.delete(attachId))
-      f <- Stream
-        .emits(files._1.toSeq ++ files._2.toSeq)
-        .map(_.id)
-        .flatMap(store.bitpeace.delete)
-        .map(flag => if (flag) 1 else 0)
-        .compile
-        .foldMonoid
+      f <-
+        Stream
+          .emits(files._1.toSeq ++ files._2.toSeq)
+          .map(_.id)
+          .flatMap(store.bitpeace.delete)
+          .map(flag => if (flag) 1 else 0)
+          .compile
+          .foldMonoid
     } yield n + k + f
   }
 
@@ -55,12 +57,13 @@ object QAttachment {
       _ <- logger.fdebug[F](
         s"Deleted $n meta records (source, meta, archive). Deleting binaries now."
       )
-      f <- Stream
-        .emits(ra.fileId.id +: (s.map(_.fileId.id).toSeq))
-        .flatMap(store.bitpeace.delete)
-        .map(flag => if (flag) 1 else 0)
-        .compile
-        .foldMonoid
+      f <-
+        Stream
+          .emits(ra.fileId.id +: (s.map(_.fileId.id).toSeq))
+          .flatMap(store.bitpeace.delete)
+          .map(flag => if (flag) 1 else 0)
+          .compile
+          .foldMonoid
     } yield n + f
 
   def deleteArchive[F[_]: Sync](store: Store[F])(attachId: Ident): F[Int] =
@@ -119,7 +122,9 @@ object QAttachment {
     val IC = RItem.Columns
 
     val q =
-      fr"SELECT" ++ commas(MC.all.map(_.prefix("m").f)) ++ fr"FROM" ++ RItem.table ++ fr"i" ++
+      fr"SELECT" ++ commas(
+        MC.all.map(_.prefix("m").f)
+      ) ++ fr"FROM" ++ RItem.table ++ fr"i" ++
         fr"INNER JOIN" ++ RAttachment.table ++ fr"a ON" ++ IC.id
         .prefix("i")
         .is(AC.itemId.prefix("a")) ++

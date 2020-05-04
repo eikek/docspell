@@ -25,16 +25,15 @@ object OSignup {
     Resource.pure[F, OSignup[F]](new OSignup[F] {
 
       def newInvite(cfg: Config)(password: Password): F[NewInviteResult] =
-        if (cfg.mode == Config.Mode.Invite) {
+        if (cfg.mode == Config.Mode.Invite)
           if (cfg.newInvitePassword.isEmpty || cfg.newInvitePassword != password)
             NewInviteResult.passwordMismatch.pure[F]
           else
             store
               .transact(RInvitation.insertNew)
               .map(ri => NewInviteResult.success(ri.id))
-        } else {
+        else
           Effect[F].pure(NewInviteResult.invitationClosed)
-        }
 
       def register(cfg: Config)(data: RegisterData): F[SignupResult] =
         cfg.mode match {
@@ -51,15 +50,19 @@ object OSignup {
                   now <- Timestamp.current[F]
                   min = now.minus(cfg.inviteTime)
                   ok <- store.transact(RInvitation.useInvite(inv, min))
-                  res <- if (ok) addUser(data).map(SignupResult.fromAddResult)
-                  else SignupResult.invalidInvitationKey.pure[F]
-                  _ <- if (retryInvite(res))
-                    logger
-                      .fdebug(s"Adding account failed ($res). Allow retry with invite.") *> store
-                      .transact(
-                        RInvitation.insert(RInvitation(inv, now))
-                      )
-                  else 0.pure[F]
+                  res <-
+                    if (ok) addUser(data).map(SignupResult.fromAddResult)
+                    else SignupResult.invalidInvitationKey.pure[F]
+                  _ <-
+                    if (retryInvite(res))
+                      logger
+                        .fdebug(
+                          s"Adding account failed ($res). Allow retry with invite."
+                        ) *> store
+                        .transact(
+                          RInvitation.insert(RInvitation(inv, now))
+                        )
+                    else 0.pure[F]
                 } yield res
               case None =>
                 SignupResult.invalidInvitationKey.pure[F]

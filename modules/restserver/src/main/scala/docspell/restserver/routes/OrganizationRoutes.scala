@@ -21,17 +21,16 @@ object OrganizationRoutes {
 
     HttpRoutes.of {
       case GET -> Root :? QueryParam.FullOpt(full) +& QueryParam.QueryOpt(q) =>
-        if (full.getOrElse(false)) {
+        if (full.getOrElse(false))
           for {
             data <- backend.organization.findAllOrg(user.account, q.map(_.q))
             resp <- Ok(OrganizationList(data.map(mkOrg).toList))
           } yield resp
-        } else {
+        else
           for {
             data <- backend.organization.findAllOrgRefs(user.account, q.map(_.q))
             resp <- Ok(ReferenceList(data.map(mkIdName).toList))
           } yield resp
-        }
 
       case req @ POST -> Root =>
         for {

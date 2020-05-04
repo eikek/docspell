@@ -291,7 +291,9 @@ object QItem {
     val IC = RItem.Columns
     val AC = RAttachment.Columns
     val q =
-      fr"SELECT DISTINCT" ++ commas(IC.all.map(_.prefix("i").f)) ++ fr"FROM" ++ RItem.table ++ fr"i" ++
+      fr"SELECT DISTINCT" ++ commas(
+        IC.all.map(_.prefix("i").f)
+      ) ++ fr"FROM" ++ RItem.table ++ fr"i" ++
         fr"INNER JOIN" ++ RAttachment.table ++ fr"a ON" ++ AC.itemId
         .prefix("a")
         .is(IC.id.prefix("i")) ++

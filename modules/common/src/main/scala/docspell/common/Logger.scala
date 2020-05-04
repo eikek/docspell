@@ -17,24 +17,25 @@ trait Logger[F[_]] {
 
 object Logger {
 
-  def log4s[F[_]: Sync](log: Log4sLogger): Logger[F] = new Logger[F] {
-    def trace(msg: => String): F[Unit] =
-      log.ftrace(msg)
+  def log4s[F[_]: Sync](log: Log4sLogger): Logger[F] =
+    new Logger[F] {
+      def trace(msg: => String): F[Unit] =
+        log.ftrace(msg)
 
-    def debug(msg: => String): F[Unit] =
-      log.fdebug(msg)
+      def debug(msg: => String): F[Unit] =
+        log.fdebug(msg)
 
-    def info(msg: => String): F[Unit] =
-      log.finfo(msg)
+      def info(msg: => String): F[Unit] =
+        log.finfo(msg)
 
-    def warn(msg: => String): F[Unit] =
-      log.fwarn(msg)
+      def warn(msg: => String): F[Unit] =
+        log.fwarn(msg)
 
-    def error(ex: Throwable)(msg: => String): F[Unit] =
-      log.ferror(ex)(msg)
+      def error(ex: Throwable)(msg: => String): F[Unit] =
+        log.ferror(ex)(msg)
 
-    def error(msg: => String): F[Unit] =
-      log.ferror(msg)
-  }
+      def error(msg: => String): F[Unit] =
+        log.ferror(msg)
+    }
 
 }

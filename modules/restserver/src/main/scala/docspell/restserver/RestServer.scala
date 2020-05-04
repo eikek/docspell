@@ -23,8 +23,9 @@ object RestServer {
 
     val templates = TemplateRoutes[F](pools.blocker, cfg)
     val app = for {
-      restApp <- RestAppImpl
-        .create[F](cfg, pools.connectEC, pools.httpClientEC, pools.blocker)
+      restApp <-
+        RestAppImpl
+          .create[F](cfg, pools.connectEC, pools.httpClientEC, pools.blocker)
       httpApp = Router(
         "/api/info"     -> routes.InfoRoutes(),
         "/api/v1/open/" -> openRoutes(cfg, restApp),

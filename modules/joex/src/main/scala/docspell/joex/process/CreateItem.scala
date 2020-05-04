@@ -89,12 +89,14 @@ object CreateItem {
     Task { ctx =>
       for {
         cand <- ctx.store.transact(QItem.findByFileIds(ctx.args.files.map(_.fileMetaId)))
-        _ <- if (cand.nonEmpty) ctx.logger.warn("Found existing item with these files.")
-        else ().pure[F]
+        _ <-
+          if (cand.nonEmpty) ctx.logger.warn("Found existing item with these files.")
+          else ().pure[F]
         ht <- cand.drop(1).traverse(ri => QItem.delete(ctx.store)(ri.id, ri.cid))
-        _ <- if (ht.sum > 0)
-          ctx.logger.warn(s"Removed ${ht.sum} items with same attachments")
-        else ().pure[F]
+        _ <-
+          if (ht.sum > 0)
+            ctx.logger.warn(s"Removed ${ht.sum} items with same attachments")
+          else ().pure[F]
         rms <- OptionT(
           cand.headOption.traverse(ri =>
             ctx.store.transact(RAttachment.findByItemAndCollective(ri.id, ri.cid))
@@ -103,9 +105,10 @@ object CreateItem {
         orig <- rms.traverse(a =>
           ctx.store.transact(RAttachmentSource.findById(a.id)).map(s => (a, s))
         )
-        origMap = orig
-          .map(originFileTuple)
-          .toMap
+        origMap =
+          orig
+            .map(originFileTuple)
+            .toMap
       } yield cand.headOption.map(ri =>
         ItemData(ri, rms, Vector.empty, Vector.empty, origMap)
       )
@@ -116,13 +119,12 @@ object CreateItem {
       saved: Vector[RAttachment],
       saveCount: Int
   ): F[Unit] =
-    if (ctx.args.files.size != saved.size) {
+    if (ctx.args.files.size != saved.size)
       ctx.logger.warn(
         s"Not all given files (${ctx.args.files.size}) have been stored. Files retained: ${saved.size}; saveCount=$saveCount"
       )
-    } else {
+    else
       ().pure[F]
-    }
 
   private def storeItemError[F[_]: Sync](ctx: Context[F, ProcessItemArgs]): F[Unit] = {
     val msg = "Inserting item failed. DB returned 0 update count!"

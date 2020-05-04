@@ -38,7 +38,11 @@ object RAttachmentArchive {
     RAttachmentArchive(ra.id, ra.fileId, ra.name, mId, ra.created)
 
   def insert(v: RAttachmentArchive): ConnectionIO[Int] =
-    insertRow(table, all, fr"${v.id},${v.fileId},${v.name},${v.messageId},${v.created}").update.run
+    insertRow(
+      table,
+      all,
+      fr"${v.id},${v.fileId},${v.name},${v.messageId},${v.created}"
+    ).update.run
 
   def findById(attachId: Ident): ConnectionIO[Option[RAttachmentArchive]] =
     selectSimple(all, table, id.is(attachId)).query[RAttachmentArchive].option

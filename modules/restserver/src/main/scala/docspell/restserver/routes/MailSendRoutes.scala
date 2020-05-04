@@ -40,8 +40,9 @@ object MailSendRoutes {
     for {
       rec     <- s.recipients.traverse(MailAddress.parse)
       fileIds <- s.attachmentIds.traverse(Ident.fromString)
-      sel = if (s.addAllAttachments) AttachSelection.All
-      else AttachSelection.Selected(fileIds)
+      sel =
+        if (s.addAllAttachments) AttachSelection.All
+        else AttachSelection.Selected(fileIds)
     } yield ItemMail(item, s.subject, rec, s.body, sel)
 
   def convertOut(res: SendResult): BasicResult =

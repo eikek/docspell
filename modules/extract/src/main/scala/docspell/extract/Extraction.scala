@@ -60,7 +60,7 @@ object Extraction {
 
             ImageSize.get(data).flatMap {
               case Some(dim) =>
-                if (dim.product > cfg.ocr.maxImageSize) {
+                if (dim.product > cfg.ocr.maxImageSize)
                   logger.info(
                     s"Image size (${dim.product}) is too large (max ${cfg.ocr.maxImageSize})."
                   ) *>
@@ -71,9 +71,8 @@ object Extraction {
                         )
                       )
                       .pure[F]
-                } else {
+                else
                   doExtract
-                }
               case None =>
                 logger.info(
                   s"Cannot read image data from ${mt.asString}. Extracting anyways."

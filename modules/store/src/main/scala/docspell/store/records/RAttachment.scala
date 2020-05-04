@@ -43,7 +43,11 @@ object RAttachment {
       fId: Ident,
       fname: Option[String]
   ): ConnectionIO[Int] =
-    updateRow(table, id.is(attachId), commas(fileId.setTo(fId), name.setTo(fname))).update.run
+    updateRow(
+      table,
+      id.is(attachId),
+      commas(fileId.setTo(fId), name.setTo(fname))
+    ).update.run
 
   def updatePosition(attachId: Ident, pos: Int): ConnectionIO[Int] =
     updateRow(table, id.is(attachId), position.setTo(pos)).update.run

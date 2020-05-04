@@ -46,9 +46,10 @@ object AttachmentRoutes {
       case HEAD -> Root / Ident(id) =>
         for {
           fileData <- backend.item.findAttachment(id, user.account.collective)
-          resp <- fileData
-            .map(data => withResponseHeaders(Ok())(data))
-            .getOrElse(NotFound(BasicResult(false, "Not found")))
+          resp <-
+            fileData
+              .map(data => withResponseHeaders(Ok())(data))
+              .getOrElse(NotFound(BasicResult(false, "Not found")))
         } yield resp
 
       case req @ GET -> Root / Ident(id) =>
@@ -56,20 +57,22 @@ object AttachmentRoutes {
           fileData <- backend.item.findAttachment(id, user.account.collective)
           inm     = req.headers.get(`If-None-Match`).flatMap(_.tags)
           matches = matchETag(fileData.map(_.meta), inm)
-          resp <- fileData
-            .map { data =>
-              if (matches) withResponseHeaders(NotModified())(data)
-              else makeByteResp(data)
-            }
-            .getOrElse(NotFound(BasicResult(false, "Not found")))
+          resp <-
+            fileData
+              .map { data =>
+                if (matches) withResponseHeaders(NotModified())(data)
+                else makeByteResp(data)
+              }
+              .getOrElse(NotFound(BasicResult(false, "Not found")))
         } yield resp
 
       case HEAD -> Root / Ident(id) / "original" =>
         for {
           fileData <- backend.item.findAttachmentSource(id, user.account.collective)
-          resp <- fileData
-            .map(data => withResponseHeaders(Ok())(data))
-            .getOrElse(NotFound(BasicResult(false, "Not found")))
+          resp <-
+            fileData
+              .map(data => withResponseHeaders(Ok())(data))
+              .getOrElse(NotFound(BasicResult(false, "Not found")))
         } yield resp
 
       case req @ GET -> Root / Ident(id) / "original" =>
@@ -77,20 +80,22 @@ object AttachmentRoutes {
           fileData <- backend.item.findAttachmentSource(id, user.account.collective)
           inm     = req.headers.get(`If-None-Match`).flatMap(_.tags)
           matches = matchETag(fileData.map(_.meta), inm)
-          resp <- fileData
-            .map { data =>
-              if (matches) withResponseHeaders(NotModified())(data)
-              else makeByteResp(data)
-            }
-            .getOrElse(NotFound(BasicResult(false, "Not found")))
+          resp <-
+            fileData
+              .map { data =>
+                if (matches) withResponseHeaders(NotModified())(data)
+                else makeByteResp(data)
+              }
+              .getOrElse(NotFound(BasicResult(false, "Not found")))
         } yield resp
 
       case HEAD -> Root / Ident(id) / "archive" =>
         for {
           fileData <- backend.item.findAttachmentArchive(id, user.account.collective)
-          resp <- fileData
-            .map(data => withResponseHeaders(Ok())(data))
-            .getOrElse(NotFound(BasicResult(false, "Not found")))
+          resp <-
+            fileData
+              .map(data => withResponseHeaders(Ok())(data))
+              .getOrElse(NotFound(BasicResult(false, "Not found")))
         } yield resp
 
       case req @ GET -> Root / Ident(id) / "archive" =>
@@ -98,12 +103,13 @@ object AttachmentRoutes {
           fileData <- backend.item.findAttachmentArchive(id, user.account.collective)
           inm     = req.headers.get(`If-None-Match`).flatMap(_.tags)
           matches = matchETag(fileData.map(_.meta), inm)
-          resp <- fileData
-            .map { data =>
-              if (matches) withResponseHeaders(NotModified())(data)
-              else makeByteResp(data)
-            }
-            .getOrElse(NotFound(BasicResult(false, "Not found")))
+          resp <-
+            fileData
+              .map { data =>
+                if (matches) withResponseHeaders(NotModified())(data)
+                else makeByteResp(data)
+              }
+              .getOrElse(NotFound(BasicResult(false, "Not found")))
         } yield resp
 
       case GET -> Root / Ident(id) / "view" =>
@@ -123,8 +129,9 @@ object AttachmentRoutes {
       case DELETE -> Root / Ident(id) =>
         for {
           n <- backend.item.deleteAttachment(id, user.account.collective)
-          res = if (n == 0) BasicResult(false, "Attachment not found")
-          else BasicResult(true, "Attachment deleted.")
+          res =
+            if (n == 0) BasicResult(false, "Attachment not found")
+            else BasicResult(true, "Attachment deleted.")
           resp <- Ok(res)
         } yield resp
     }

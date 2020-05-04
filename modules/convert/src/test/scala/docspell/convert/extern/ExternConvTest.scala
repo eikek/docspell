@@ -24,7 +24,7 @@ object ExternConvTest extends SimpleTestSuite with FileChecks {
     )
 
     if (!commandExists(cfg.program)) ignore(s"Command ${cfg.program} not found")
-    else {
+    else
       File
         .withTempDir[IO](target, "wkhtmltopdf")
         .use(dir =>
@@ -42,7 +42,6 @@ object ExternConvTest extends SimpleTestSuite with FileChecks {
           }
         )
         .unsafeRunSync
-    }
   }
 
   test("convert office to pdf") {
@@ -53,7 +52,7 @@ object ExternConvTest extends SimpleTestSuite with FileChecks {
     )
 
     if (!commandExists(cfg.program)) ignore(s"Command ${cfg.program} not found")
-    else {
+    else
       File
         .withTempDir[IO](target, "unoconv")
         .use(dir =>
@@ -71,7 +70,6 @@ object ExternConvTest extends SimpleTestSuite with FileChecks {
           }
         )
         .unsafeRunSync
-    }
   }
 
   test("convert image to pdf") {
@@ -82,7 +80,7 @@ object ExternConvTest extends SimpleTestSuite with FileChecks {
     )
 
     if (!commandExists(cfg.program)) ignore(s"Command ${cfg.program} not found")
-    else {
+    else
       File
         .withTempDir[IO](target, "tesseract")
         .use(dir =>
@@ -101,7 +99,6 @@ object ExternConvTest extends SimpleTestSuite with FileChecks {
           }
         )
         .unsafeRunSync
-    }
   }
 
 }

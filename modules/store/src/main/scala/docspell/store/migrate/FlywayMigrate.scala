@@ -8,28 +8,29 @@ import org.log4s._
 object FlywayMigrate {
   private[this] val logger = getLogger
 
-  def run[F[_]: Sync](jdbc: JdbcConfig): F[Int] = Sync[F].delay {
-    logger.info("Running db migrations...")
-    val locations = jdbc.dbmsName match {
-      case Some(dbtype) =>
-        val name = if (dbtype == "h2") "postgresql" else dbtype
-        List(s"classpath:db/migration/${name}")
-      case None =>
-        logger.warn(
-          s"Cannot read database name from jdbc url: ${jdbc.url}. Go with PostgreSQL"
-        )
-        List("classpath:db/postgresql")
+  def run[F[_]: Sync](jdbc: JdbcConfig): F[Int] =
+    Sync[F].delay {
+      logger.info("Running db migrations...")
+      val locations = jdbc.dbmsName match {
+        case Some(dbtype) =>
+          val name = if (dbtype == "h2") "postgresql" else dbtype
+          List(s"classpath:db/migration/${name}")
+        case None =>
+          logger.warn(
+            s"Cannot read database name from jdbc url: ${jdbc.url}. Go with PostgreSQL"
+          )
+          List("classpath:db/postgresql")
+      }
+
+      logger.info(s"Using migration locations: $locations")
+      val fw = Flyway
+        .configure()
+        .cleanDisabled(true)
+        .dataSource(jdbc.url.asString, jdbc.user, jdbc.password)
+        .locations(locations: _*)
+        .load()
+
+      fw.repair()
+      fw.migrate()
     }
-
-    logger.info(s"Using migration locations: $locations")
-    val fw = Flyway
-      .configure()
-      .cleanDisabled(true)
-      .dataSource(jdbc.url.asString, jdbc.user, jdbc.password)
-      .locations(locations: _*)
-      .load()
-
-    fw.repair()
-    fw.migrate()
-  }
 }

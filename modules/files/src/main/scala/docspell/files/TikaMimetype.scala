@@ -36,24 +36,25 @@ object TikaMimetype {
     md
   }
 
-  private def normalize(in: MimeType): MimeType = in match {
-    case MimeType(_, sub, p) if sub contains "xhtml" =>
-      MimeType.html.copy(params = p)
-    case _ => in
-  }
+  private def normalize(in: MimeType): MimeType =
+    in match {
+      case MimeType(_, sub, p) if sub contains "xhtml" =>
+        MimeType.html.copy(params = p)
+      case _ => in
+    }
 
   private def fromBytes(bv: Array[Byte], hint: MimeTypeHint): MimeType = {
     val mt = convert(
       tika.detect(new java.io.ByteArrayInputStream(bv), makeMetadata(hint))
     )
-    if (mt.primary == "text") {
+    if (mt.primary == "text")
       charsetFromBytes(bv, hint) match {
         case Some(cs) =>
           mt.withCharset(cs)
         case None =>
           mt
       }
-    } else mt
+    else mt
   }
 
   private def charsetFromBytes(bv: Array[Byte], hint: MimeTypeHint): Option[Charset] =

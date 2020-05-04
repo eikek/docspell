@@ -28,8 +28,9 @@ object JoexServer {
     val app = for {
       signal   <- Resource.liftF(SignallingRef[F, Boolean](false))
       exitCode <- Resource.liftF(Ref[F].of(ExitCode.Success))
-      joexApp <- JoexAppImpl
-        .create[F](cfg, signal, pools.connectEC, pools.httpClientEC, pools.blocker)
+      joexApp <-
+        JoexAppImpl
+          .create[F](cfg, signal, pools.connectEC, pools.httpClientEC, pools.blocker)
 
       httpApp = Router(
         "/api/info" -> InfoRoutes(),

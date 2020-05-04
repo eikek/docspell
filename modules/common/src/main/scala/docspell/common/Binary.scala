@@ -37,11 +37,10 @@ object Binary {
     Binary(name, MimeType.html.withCharset(cs), Stream.chunk(Chunk.byteVector(content)))
 
   def decode[F[_]](cs: Charset): Pipe[F, Byte, String] =
-    if (cs == StandardCharsets.UTF_8) {
+    if (cs == StandardCharsets.UTF_8)
       fs2.text.utf8Decode
-    } else {
+    else
       util.decode[F](cs)
-    }
 
   def loadAllBytes[F[_]: Sync](data: Stream[F, Byte]): F[ByteVector] =
     data.chunks.map(_.toByteVector).compile.fold(ByteVector.empty)((r, e) => r ++ e)
@@ -78,17 +77,16 @@ object Binary {
               decoder.decode(byteBuffer, charBuffer, false)
               val nextStream = stream.consChunk(Chunk.byteBuffer(byteBuffer.slice()))
               Pull.output1(charBuffer.flip().toString).as(Some(nextStream))
-            } else {
+            } else
               Pull.output(Chunk.empty[String]).as(Some(stream))
-            }
         }
       }
     }
 
     private def skipByteOrderMark[F[_]](chunk: Chunk[Byte]): Chunk[Byte] =
-      if (chunk.size >= 3 && chunk.take(3) == utf8Bom) {
+      if (chunk.size >= 3 && chunk.take(3) == utf8Bom)
         chunk.drop(3)
-      } else chunk
+      else chunk
 
   }
 }

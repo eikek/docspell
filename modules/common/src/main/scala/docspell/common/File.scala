@@ -25,30 +25,31 @@ object File {
   ): F[Path] =
     mkDir(parent).map(p => Files.createTempFile(p, prefix, suffix.orNull))
 
-  def deleteDirectory[F[_]: Sync](dir: Path): F[Int] = Sync[F].delay {
-    val count = new AtomicInteger(0)
-    Files.walkFileTree(
-      dir,
-      new SimpleFileVisitor[Path]() {
-        override def visitFile(
-            file: Path,
-            attrs: BasicFileAttributes
-        ): FileVisitResult = {
-          Files.deleteIfExists(file)
-          count.incrementAndGet()
-          FileVisitResult.CONTINUE
-        }
-        override def postVisitDirectory(dir: Path, e: IOException): FileVisitResult =
-          Option(e) match {
-            case Some(ex) => throw ex
-            case None =>
-              Files.deleteIfExists(dir)
-              FileVisitResult.CONTINUE
+  def deleteDirectory[F[_]: Sync](dir: Path): F[Int] =
+    Sync[F].delay {
+      val count = new AtomicInteger(0)
+      Files.walkFileTree(
+        dir,
+        new SimpleFileVisitor[Path]() {
+          override def visitFile(
+              file: Path,
+              attrs: BasicFileAttributes
+          ): FileVisitResult = {
+            Files.deleteIfExists(file)
+            count.incrementAndGet()
+            FileVisitResult.CONTINUE
           }
-      }
-    )
-    count.get
-  }
+          override def postVisitDirectory(dir: Path, e: IOException): FileVisitResult =
+            Option(e) match {
+              case Some(ex) => throw ex
+              case None =>
+                Files.deleteIfExists(dir)
+                FileVisitResult.CONTINUE
+            }
+        }
+      )
+      count.get
+    }
 
   def exists[F[_]: Sync](file: Path): F[Boolean] =
     Sync[F].delay(Files.exists(file))

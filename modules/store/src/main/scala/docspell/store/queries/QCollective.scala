@@ -96,7 +96,9 @@ object QCollective {
       RC.Columns.all,
       RC.table,
       and(
-        Seq(or(RC.Columns.orgId.isIn(orgCond), RC.Columns.personId.isIn(persCond))) ++ queryCond ++ kindCond
+        Seq(
+          or(RC.Columns.orgId.isIn(orgCond), RC.Columns.personId.isIn(persCond))
+        ) ++ queryCond ++ kindCond
       )
     ) ++ orderBy(RC.Columns.value.f)
 

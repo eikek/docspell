@@ -199,10 +199,15 @@ trait Conversions {
       body
         .through(fs2.text.utf8Decode)
         .parseJsonAs[ItemUploadMeta]
-        .map(_.fold(ex => {
-          logger.error(ex)("Reading upload metadata failed.")
-          throw ex
-        }, identity))
+        .map(
+          _.fold(
+            ex => {
+              logger.error(ex)("Reading upload metadata failed.")
+              throw ex
+            },
+            identity
+          )
+        )
 
     val meta: F[(Boolean, UploadMeta)] = mp.parts
       .find(_.name.exists(_.equalsIgnoreCase("meta")))
@@ -452,26 +457,30 @@ trait Conversions {
         BasicResult(true, "The job has been removed from the queue.")
     }
 
-  def basicResult(ar: AddResult, successMsg: String): BasicResult = ar match {
-    case AddResult.Success           => BasicResult(true, successMsg)
-    case AddResult.EntityExists(msg) => BasicResult(false, msg)
-    case AddResult.Failure(ex)       => BasicResult(false, s"Internal error: ${ex.getMessage}")
-  }
+  def basicResult(ar: AddResult, successMsg: String): BasicResult =
+    ar match {
+      case AddResult.Success           => BasicResult(true, successMsg)
+      case AddResult.EntityExists(msg) => BasicResult(false, msg)
+      case AddResult.Failure(ex) =>
+        BasicResult(false, s"Internal error: ${ex.getMessage}")
+    }
 
-  def basicResult(ur: OUpload.UploadResult): BasicResult = ur match {
-    case UploadResult.Success  => BasicResult(true, "Files submitted.")
-    case UploadResult.NoFiles  => BasicResult(false, "There were no files to submit.")
-    case UploadResult.NoSource => BasicResult(false, "The source id is not valid.")
-  }
+  def basicResult(ur: OUpload.UploadResult): BasicResult =
+    ur match {
+      case UploadResult.Success  => BasicResult(true, "Files submitted.")
+      case UploadResult.NoFiles  => BasicResult(false, "There were no files to submit.")
+      case UploadResult.NoSource => BasicResult(false, "The source id is not valid.")
+    }
 
-  def basicResult(cr: PassChangeResult): BasicResult = cr match {
-    case PassChangeResult.Success => BasicResult(true, "Password changed.")
-    case PassChangeResult.UpdateFailed =>
-      BasicResult(false, "The database update failed.")
-    case PassChangeResult.PasswordMismatch =>
-      BasicResult(false, "The current password is incorrect.")
-    case PassChangeResult.UserNotFound => BasicResult(false, "User not found.")
-  }
+  def basicResult(cr: PassChangeResult): BasicResult =
+    cr match {
+      case PassChangeResult.Success => BasicResult(true, "Password changed.")
+      case PassChangeResult.UpdateFailed =>
+        BasicResult(false, "The database update failed.")
+      case PassChangeResult.PasswordMismatch =>
+        BasicResult(false, "The current password is incorrect.")
+      case PassChangeResult.UserNotFound => BasicResult(false, "User not found.")
+    }
 
   def basicResult(e: Either[Throwable, _], successMsg: String): BasicResult =
     e match {

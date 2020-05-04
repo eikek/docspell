@@ -18,9 +18,10 @@ object SignupResult {
   def failure(ex: Throwable): SignupResult = Failure(ex)
   def success: SignupResult                = Success
 
-  def fromAddResult(ar: AddResult): SignupResult = ar match {
-    case AddResult.Success         => Success
-    case AddResult.Failure(ex)     => Failure(ex)
-    case AddResult.EntityExists(_) => CollectiveExists
-  }
+  def fromAddResult(ar: AddResult): SignupResult =
+    ar match {
+      case AddResult.Success         => Success
+      case AddResult.Failure(ex)     => Failure(ex)
+      case AddResult.EntityExists(_) => CollectiveExists
+    }
 }

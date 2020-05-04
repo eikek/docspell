@@ -38,28 +38,30 @@ object RegisterRoutes {
     }
   }
 
-  def convert(r: NewInviteResult): InviteResult = r match {
-    case NewInviteResult.Success(id) =>
-      InviteResult(true, "New invitation created.", Some(id))
-    case NewInviteResult.InvitationDisabled =>
-      InviteResult(false, "Signing up is not enabled for invitations.", None)
-    case NewInviteResult.PasswordMismatch =>
-      InviteResult(false, "Password is invalid.", None)
-  }
+  def convert(r: NewInviteResult): InviteResult =
+    r match {
+      case NewInviteResult.Success(id) =>
+        InviteResult(true, "New invitation created.", Some(id))
+      case NewInviteResult.InvitationDisabled =>
+        InviteResult(false, "Signing up is not enabled for invitations.", None)
+      case NewInviteResult.PasswordMismatch =>
+        InviteResult(false, "Password is invalid.", None)
+    }
 
-  def convert(r: SignupResult): BasicResult = r match {
-    case SignupResult.CollectiveExists =>
-      BasicResult(false, "A collective with this name already exists.")
-    case SignupResult.InvalidInvitationKey =>
-      BasicResult(false, "Invalid invitation key.")
-    case SignupResult.SignupClosed =>
-      BasicResult(false, "Sorry, registration is closed.")
-    case SignupResult.Failure(ex) =>
-      logger.error(ex)("Error signing up")
-      BasicResult(false, s"Internal error: ${ex.getMessage}")
-    case SignupResult.Success =>
-      BasicResult(true, "Signup successful")
-  }
+  def convert(r: SignupResult): BasicResult =
+    r match {
+      case SignupResult.CollectiveExists =>
+        BasicResult(false, "A collective with this name already exists.")
+      case SignupResult.InvalidInvitationKey =>
+        BasicResult(false, "Invalid invitation key.")
+      case SignupResult.SignupClosed =>
+        BasicResult(false, "Sorry, registration is closed.")
+      case SignupResult.Failure(ex) =>
+        logger.error(ex)("Error signing up")
+        BasicResult(false, s"Internal error: ${ex.getMessage}")
+      case SignupResult.Success =>
+        BasicResult(true, "Signup successful")
+    }
 
   def convert(r: Registration): RegisterData =
     RegisterData(r.collectiveName, r.login, r.password, r.invite)

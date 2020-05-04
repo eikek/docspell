@@ -9,8 +9,8 @@ trait ResponseGenerator[F[_]] {
   self: Http4sDsl[F] =>
 
   implicit final class EitherResponses[A, B](e: Either[A, B]) {
-    def toResponse(headers: Header*)(
-        implicit F: Applicative[F],
+    def toResponse(headers: Header*)(implicit
+        F: Applicative[F],
         w0: EntityEncoder[F, A],
         w1: EntityEncoder[F, B]
     ): F[Response[F]] =

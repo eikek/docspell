@@ -35,7 +35,11 @@ object RAttachmentMeta {
   import Columns._
 
   def insert(v: RAttachmentMeta): ConnectionIO[Int] =
-    insertRow(table, all, fr"${v.id},${v.content},${v.nerlabels},${v.proposals}").update.run
+    insertRow(
+      table,
+      all,
+      fr"${v.id},${v.content},${v.nerlabels},${v.proposals}"
+    ).update.run
 
   def exists(attachId: Ident): ConnectionIO[Boolean] =
     selectCount(id, table, id.is(attachId)).query[Int].unique.map(_ > 0)

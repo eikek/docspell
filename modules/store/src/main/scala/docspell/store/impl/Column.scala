@@ -22,10 +22,11 @@ case class Column(name: String, ns: String = "", alias: String = "") {
   def is[A: Put](value: A): Fragment =
     f ++ fr" = $value"
 
-  def is[A: Put](ov: Option[A]): Fragment = ov match {
-    case Some(v) => f ++ fr" = $v"
-    case None    => fr"is null"
-  }
+  def is[A: Put](ov: Option[A]): Fragment =
+    ov match {
+      case Some(v) => f ++ fr" = $v"
+      case None    => fr"is null"
+    }
 
   def is(c: Column): Fragment =
     f ++ fr"=" ++ c.f

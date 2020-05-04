@@ -33,8 +33,9 @@ object PdfExtract {
 
     //maybe better: inspect the pdf and decide whether ocr or not
     for {
-      pdfboxRes <- logger.debug("Trying to strip text from pdf using pdfbox.") *> PdfboxExtract
-        .get[F](in)
+      pdfboxRes <-
+        logger.debug("Trying to strip text from pdf using pdfbox.") *> PdfboxExtract
+          .get[F](in)
       res <- pdfboxRes.fold(
         ex =>
           logger.info(
@@ -44,7 +45,9 @@ object PdfExtract {
           if (str.length >= stripMinLen) str.pure[F].attempt
           else
             logger
-              .info(s"Stripped text from PDF is small (${str.length}). Trying with OCR.") *>
+              .info(
+                s"Stripped text from PDF is small (${str.length}). Trying with OCR."
+              ) *>
               runOcr.flatMap(ocrStr => chooseResult(ocrStr, str)).attempt
       )
     } yield res

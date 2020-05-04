@@ -27,8 +27,8 @@ trait OUserTask[F[_]] {
     * executor's queue. It will not update the corresponding periodic
     * task.
     */
-  def executeNow[A](account: AccountId, task: UserTask[A])(
-      implicit E: Encoder[A]
+  def executeNow[A](account: AccountId, task: UserTask[A])(implicit
+      E: Encoder[A]
   ): F[Unit]
 }
 
@@ -41,8 +41,8 @@ object OUserTask {
   ): Resource[F, OUserTask[F]] =
     Resource.pure[F, OUserTask[F]](new OUserTask[F] {
 
-      def executeNow[A](account: AccountId, task: UserTask[A])(
-          implicit E: Encoder[A]
+      def executeNow[A](account: AccountId, task: UserTask[A])(implicit
+          E: Encoder[A]
       ): F[Unit] =
         for {
           ptask <- task.encode.toPeriodicTask(account)

@@ -31,10 +31,10 @@ object NotifyDueItemsRoutes {
         for {
           data <- req.as[NotificationSettings]
           task = makeTask(cfg, user.account, data)
-          res <- ut
-            .executeNow(user.account, task)
-            .attempt
-            .map(Conversions.basicResult(_, "Submitted successfully."))
+          res <-
+            ut.executeNow(user.account, task)
+              .attempt
+              .map(Conversions.basicResult(_, "Submitted successfully."))
           resp <- Ok(res)
         } yield resp
 
@@ -49,10 +49,10 @@ object NotifyDueItemsRoutes {
         for {
           data <- req.as[NotificationSettings]
           task = makeTask(cfg, user.account, data)
-          res <- ut
-            .submitNotifyDueItems(user.account, task)
-            .attempt
-            .map(Conversions.basicResult(_, "Saved successfully."))
+          res <-
+            ut.submitNotifyDueItems(user.account, task)
+              .attempt
+              .map(Conversions.basicResult(_, "Saved successfully."))
           resp <- Ok(res)
         } yield resp
     }
@@ -89,12 +89,13 @@ object NotifyDueItemsRoutes {
     for {
       tinc <- backend.tag.loadAll(task.args.tagsInclude)
       texc <- backend.tag.loadAll(task.args.tagsExclude)
-      conn <- backend.mail
-        .getSettings(account, None)
-        .map(
-          _.find(_.name == task.args.smtpConnection)
-            .map(_.name)
-        )
+      conn <-
+        backend.mail
+          .getSettings(account, None)
+          .map(
+            _.find(_.name == task.args.smtpConnection)
+              .map(_.name)
+          )
     } yield NotificationSettings(
       task.id,
       task.enabled,

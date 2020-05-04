@@ -72,8 +72,9 @@ object OUpload {
             data.meta.sourceAbbrev,
             data.meta.validFileTypes
           )
-          args = if (data.multiple) files.map(f => ProcessItemArgs(meta, List(f)))
-          else Vector(ProcessItemArgs(meta, files.toList))
+          args =
+            if (data.multiple) files.map(f => ProcessItemArgs(meta, List(f)))
+            else Vector(ProcessItemArgs(meta, files.toList))
           job <- pred.traverse(_ => makeJobs(args, account, data.priority, data.tracker))
           _   <- logger.fdebug(s"Storing jobs: $job")
           res <- job.traverse(submitJobs)
@@ -84,9 +85,10 @@ object OUpload {
 
       def submit(data: OUpload.UploadData[F], sourceId: Ident): F[OUpload.UploadResult] =
         for {
-          sOpt <- store
-            .transact(RSource.find(sourceId))
-            .map(_.toRight(UploadResult.NoSource))
+          sOpt <-
+            store
+              .transact(RSource.find(sourceId))
+              .map(_.toRight(UploadResult.NoSource))
           abbrev = sOpt.map(_.abbrev).toOption.getOrElse(data.meta.sourceAbbrev)
           updata = data.copy(meta = data.meta.copy(sourceAbbrev = abbrev))
           accId  = sOpt.map(source => AccountId(source.cid, source.sid))
@@ -108,10 +110,15 @@ object OUpload {
             .lastOrError
             .map(fm => Ident.unsafe(fm.id))
             .attempt
-            .map(_.fold(ex => {
-              logger.warn(ex)(s"Could not store file for processing!")
-              None
-            }, id => Some(ProcessItemArgs.File(file.name, id))))
+            .map(
+              _.fold(
+                ex => {
+                  logger.warn(ex)(s"Could not store file for processing!")
+                  None
+                },
+                id => Some(ProcessItemArgs.File(file.name, id))
+              )
+            )
 
       private def checkFileList(
           files: Seq[ProcessItemArgs.File]

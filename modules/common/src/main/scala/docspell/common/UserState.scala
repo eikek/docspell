@@ -22,10 +22,11 @@ object UserState {
   def unsafe(str: String): UserState =
     fromString(str).fold(sys.error, identity)
 
-  def asString(s: UserState): String = s match {
-    case Active   => "active"
-    case Disabled => "disabled"
-  }
+  def asString(s: UserState): String =
+    s match {
+      case Active   => "active"
+      case Disabled => "disabled"
+    }
 
   implicit val userStateEncoder: Encoder[UserState] =
     Encoder.encodeString.contramap(UserState.asString)

@@ -34,7 +34,11 @@ object RNode {
   import Columns._
 
   def insert(v: RNode): ConnectionIO[Int] =
-    insertRow(table, all, fr"${v.id},${v.nodeType},${v.url},${v.updated},${v.created}").update.run
+    insertRow(
+      table,
+      all,
+      fr"${v.id},${v.nodeType},${v.url},${v.updated},${v.created}"
+    ).update.run
 
   def update(v: RNode): ConnectionIO[Int] =
     updateRow(

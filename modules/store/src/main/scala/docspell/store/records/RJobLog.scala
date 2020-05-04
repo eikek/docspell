@@ -29,7 +29,11 @@ object RJobLog {
   import Columns._
 
   def insert(v: RJobLog): ConnectionIO[Int] =
-    insertRow(table, all, fr"${v.id},${v.jobId},${v.level},${v.created},${v.message}").update.run
+    insertRow(
+      table,
+      all,
+      fr"${v.id},${v.jobId},${v.level},${v.created},${v.message}"
+    ).update.run
 
   def findLogs(id: Ident): ConnectionIO[Vector[RJobLog]] =
     (selectSimple(all, table, jobId.is(id)) ++ orderBy(created.asc))

@@ -38,8 +38,8 @@ trait UserTaskStore[F[_]] {
   /** Return all tasks of the given name and user. The task's arguments
     * are decoded using the given json decoder.
     */
-  def getByName[A](account: AccountId, name: Ident)(
-      implicit D: Decoder[A]
+  def getByName[A](account: AccountId, name: Ident)(implicit
+      D: Decoder[A]
   ): Stream[F, UserTask[A]]
 
   /** Updates or inserts the given task.
@@ -65,8 +65,8 @@ trait UserTaskStore[F[_]] {
     * error is returned. The task's arguments are decoded using the
     * given json decoder.
     */
-  def getOneByName[A](account: AccountId, name: Ident)(
-      implicit D: Decoder[A]
+  def getOneByName[A](account: AccountId, name: Ident)(implicit
+      D: Decoder[A]
   ): OptionT[F, UserTask[A]]
 
   /** Updates or inserts the given task.
@@ -80,8 +80,8 @@ trait UserTaskStore[F[_]] {
     * the user `account`, they will all be removed and the given task
     * inserted!
     */
-  def updateOneTask[A](account: AccountId, ut: UserTask[A])(
-      implicit E: Encoder[A]
+  def updateOneTask[A](account: AccountId, ut: UserTask[A])(implicit
+      E: Encoder[A]
   ): F[UserTask[String]]
 
   /** Delete all tasks of the given user that have name `name'.
@@ -100,16 +100,16 @@ object UserTaskStore {
       def getByNameRaw(account: AccountId, name: Ident): Stream[F, UserTask[String]] =
         store.transact(QUserTask.findByName(account, name))
 
-      def getByName[A](account: AccountId, name: Ident)(
-          implicit D: Decoder[A]
+      def getByName[A](account: AccountId, name: Ident)(implicit
+          D: Decoder[A]
       ): Stream[F, UserTask[A]] =
         getByNameRaw(account, name).flatMap(_.decode match {
           case Right(ua) => Stream.emit(ua)
           case Left(err) => Stream.raiseError[F](new Exception(err))
         })
 
-      def updateTask[A](account: AccountId, ut: UserTask[A])(
-          implicit E: Encoder[A]
+      def updateTask[A](account: AccountId, ut: UserTask[A])(implicit
+          E: Encoder[A]
       ): F[Int] = {
         val exists = QUserTask.exists(ut.id)
         val insert = QUserTask.insert(account, ut.encode)
@@ -142,8 +142,8 @@ object UserTaskStore {
             }
         )
 
-      def getOneByName[A](account: AccountId, name: Ident)(
-          implicit D: Decoder[A]
+      def getOneByName[A](account: AccountId, name: Ident)(implicit
+          D: Decoder[A]
       ): OptionT[F, UserTask[A]] =
         getOneByNameRaw(account, name)
           .semiflatMap(_.decode match {
@@ -151,8 +151,8 @@ object UserTaskStore {
             case Left(err) => Effect[F].raiseError(new Exception(err))
           })
 
-      def updateOneTask[A](account: AccountId, ut: UserTask[A])(
-          implicit E: Encoder[A]
+      def updateOneTask[A](account: AccountId, ut: UserTask[A])(implicit
+          E: Encoder[A]
       ): F[UserTask[String]] =
         getByNameRaw(account, ut.name).compile.toList.flatMap {
           case a :: rest =>

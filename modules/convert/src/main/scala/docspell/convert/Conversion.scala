@@ -63,7 +63,7 @@ object Conversion {
           case Images(mt) =>
             ImageSize.get(in).flatMap {
               case Some(dim) =>
-                if (dim.product > cfg.maxImageSize) {
+                if (dim.product > cfg.maxImageSize)
                   logger
                     .info(
                       s"Image size (${dim.product}) is too large (max ${cfg.maxImageSize})."
@@ -74,12 +74,11 @@ object Conversion {
                         s"Image size (${dim.width}x${dim.height}) is too large (max ${cfg.maxImageSize})."
                       )
                     )
-                } else {
+                else
                   Tesseract.toPDF(cfg.tesseract, lang, cfg.chunkSize, blocker, logger)(
                     in,
                     handler
                   )
-                }
 
               case None =>
                 logger.info(

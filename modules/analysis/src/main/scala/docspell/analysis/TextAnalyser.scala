@@ -49,9 +49,10 @@ object TextAnalyser {
           StanfordNerClassifier.nerAnnotate(lang)(text)
         }
 
-      private def contactNer(text: String): F[Vector[NerLabel]] = Sync[F].delay {
-        Contact.annotate(text)
-      }
+      private def contactNer(text: String): F[Vector[NerLabel]] =
+        Sync[F].delay {
+          Contact.annotate(text)
+        }
 
       private def dateNer(lang: Language, text: String): F[Vector[NerDateLabel]] =
         Sync[F].delay {

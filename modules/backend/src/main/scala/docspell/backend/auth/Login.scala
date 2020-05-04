@@ -71,8 +71,9 @@ object Login {
             for {
               data <- store.transact(QLogin.findUser(acc))
               _    <- Sync[F].delay(logger.trace(s"Account lookup: $data"))
-              res <- if (data.exists(check(up.pass))) okResult
-              else Result.invalidAuth.pure[F]
+              res <-
+                if (data.exists(check(up.pass))) okResult
+                else Result.invalidAuth.pure[F]
             } yield res
           case Left(_) =>
             Result.invalidAuth.pure[F]

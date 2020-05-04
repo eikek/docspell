@@ -31,9 +31,8 @@ object Main extends IOApp {
             if (!Files.exists(path)) {
               logger.info(s"Not using config file '$f' because it doesn't exist")
               System.clearProperty("config.file")
-            } else {
+            } else
               logger.info(s"Using config file from system properties: $f")
-            }
           case _ =>
         }
     }

@@ -18,8 +18,11 @@ object TextAnalysis {
         for {
           _ <- ctx.logger.info("Starting text analysis")
           s <- Duration.stopTime[F]
-          t <- item.metas.toList
-            .traverse(annotateAttachment[F](ctx.args.meta.language, ctx.logger, analyser))
+          t <-
+            item.metas.toList
+              .traverse(
+                annotateAttachment[F](ctx.args.meta.language, ctx.logger, analyser)
+              )
           _ <- ctx.logger.debug(s"Storing tags: ${t.map(_._1.copy(content = None))}")
           _ <- t.traverse(m =>
             ctx.store.transact(RAttachmentMeta.updateLabels(m._1.id, m._1.nerlabels))

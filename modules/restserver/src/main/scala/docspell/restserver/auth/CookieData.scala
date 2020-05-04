@@ -34,9 +34,10 @@ object CookieData {
   def fromCookie[F[_]](req: Request[F]): Either[String, String] =
     for {
       header <- headers.Cookie.from(req.headers).toRight("Cookie parsing error")
-      cookie <- header.values.toList
-        .find(_.name == cookieName)
-        .toRight("Couldn't find the authcookie")
+      cookie <-
+        header.values.toList
+          .find(_.name == cookieName)
+          .toRight("Couldn't find the authcookie")
     } yield cookie.content
 
   def fromHeader[F[_]](req: Request[F]): Either[String, String] =

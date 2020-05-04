@@ -55,8 +55,9 @@ object QJob {
     def markJob(job: RJob): F[Either[Unit, RJob]] =
       store.transact(for {
         n <- RJob.setScheduled(job.id, worker)
-        _ <- if (n == 1) RJobGroupUse.setGroup(RJobGroupUse(worker, job.group))
-        else 0.pure[ConnectionIO]
+        _ <-
+          if (n == 1) RJobGroupUse.setGroup(RJobGroupUse(worker, job.group))
+          else 0.pure[ConnectionIO]
       } yield if (n == 1) Right(job) else Left(()))
 
     for {
@@ -68,9 +69,10 @@ object QJob {
       _     <- logger.ftrace[F](s"Choose group ${group.map(_.id)}")
       prio  <- group.map(priority).getOrElse((Priority.Low: Priority).pure[F])
       _     <- logger.ftrace[F](s"Looking for job of prio $prio")
-      job <- group
-        .map(g => store.transact(selectNextJob(g, prio, retryPause, now)))
-        .getOrElse((None: Option[RJob]).pure[F])
+      job <-
+        group
+          .map(g => store.transact(selectNextJob(g, prio, retryPause, now)))
+          .getOrElse((None: Option[RJob]).pure[F])
       _   <- logger.ftrace[F](s"Found job: ${job.map(_.info)}")
       res <- job.traverse(j => markJob(j))
     } yield res.map(_.map(_.some)).getOrElse {

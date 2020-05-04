@@ -103,7 +103,8 @@ object FindProposal {
       }
 
     def nextWhenEmpty(f: Finder[F], mt0: MetaProposalType, mts: MetaProposalType*)(
-        implicit F: FlatMap[F],
+        implicit
+        F: FlatMap[F],
         F2: Applicative[F]
     ): Finder[F] =
       flatMap { res0 =>
@@ -139,11 +140,11 @@ object FindProposal {
     val minLength =
       if (exact) 2 else 5
 
-    if (value.length < minLength) {
+    if (value.length < minLength)
       ctx.logger
         .debug(s"Skipping too small value '$value' (original '${nt.label}').")
         .map(_ => MetaProposalList.empty)
-    } else
+    else
       nt.tag match {
         case NerTag.Organization =>
           ctx.logger.debug(s"Looking for organizations: $value") *>
@@ -191,9 +192,8 @@ object FindProposal {
               .map(s => s"%$s%")
               .getOrElse(value)
             searchContact(nt, ContactKind.Website, searchString, ctx)
-          } else {
+          } else
             searchContact(nt, ContactKind.Website, value, ctx)
-          }
 
         case NerTag.Date =>
           // There is no database search required for this tag

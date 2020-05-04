@@ -199,11 +199,13 @@ object OItem {
       def setTags(item: Ident, tagIds: List[Ident], collective: Ident): F[AddResult] = {
         val db = for {
           cid <- RItem.getCollective(item)
-          nd <- if (cid.contains(collective)) RTagItem.deleteItemTags(item)
-          else 0.pure[ConnectionIO]
-          ni <- if (tagIds.nonEmpty && cid.contains(collective))
-            RTagItem.insertItemTags(item, tagIds)
-          else 0.pure[ConnectionIO]
+          nd <-
+            if (cid.contains(collective)) RTagItem.deleteItemTags(item)
+            else 0.pure[ConnectionIO]
+          ni <-
+            if (tagIds.nonEmpty && cid.contains(collective))
+              RTagItem.insertItemTags(item, tagIds)
+            else 0.pure[ConnectionIO]
         } yield nd + ni
 
         store.transact(db).attempt.map(AddResult.fromUpdate)

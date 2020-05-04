@@ -28,8 +28,8 @@ object JobTask {
       name: Ident,
       task: Task[F, A, Unit],
       onCancel: Task[F, A, Unit]
-  )(
-      implicit D: Decoder[A]
+  )(implicit
+      D: Decoder[A]
   ): JobTask[F] = {
     val convert: String => F[A] =
       str =>

@@ -28,8 +28,9 @@ object CollectiveRoutes {
       case req @ POST -> Root / "settings" =>
         for {
           settings <- req.as[CollectiveSettings]
-          res <- backend.collective
-            .updateLanguage(user.account.collective, settings.language)
+          res <-
+            backend.collective
+              .updateLanguage(user.account.collective, settings.language)
           resp <- Ok(Conversions.basicResult(res, "Language updated."))
         } yield resp
 
@@ -43,11 +44,12 @@ object CollectiveRoutes {
       case GET -> Root / "contacts" :? QueryParam.QueryOpt(q) +& QueryParam
             .ContactKindOpt(kind) =>
         for {
-          res <- backend.collective
-            .getContacts(user.account.collective, q.map(_.q), kind)
-            .take(50)
-            .compile
-            .toList
+          res <-
+            backend.collective
+              .getContacts(user.account.collective, q.map(_.q), kind)
+              .take(50)
+              .compile
+              .toList
           resp <- Ok(ContactList(res.map(Conversions.mkContact)))
         } yield resp
 

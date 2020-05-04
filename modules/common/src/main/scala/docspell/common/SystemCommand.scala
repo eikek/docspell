@@ -47,17 +47,20 @@ object SystemCommand {
         for {
           _    <- writeToProcess(stdin, proc, blocker)
           term <- Sync[F].delay(proc.waitFor(cmd.timeout.seconds, TimeUnit.SECONDS))
-          _ <- if (term)
-            logger.debug(s"Command `${cmd.cmdString}` finished: ${proc.exitValue}")
-          else
-            logger.warn(
-              s"Command `${cmd.cmdString}` did not finish in ${cmd.timeout.formatExact}!"
-            )
+          _ <-
+            if (term)
+              logger.debug(s"Command `${cmd.cmdString}` finished: ${proc.exitValue}")
+            else
+              logger.warn(
+                s"Command `${cmd.cmdString}` did not finish in ${cmd.timeout.formatExact}!"
+              )
           _ <- if (!term) timeoutError(proc, cmd) else Sync[F].pure(())
-          out <- if (term) inputStreamToString(proc.getInputStream, blocker)
-          else Sync[F].pure("")
-          err <- if (term) inputStreamToString(proc.getErrorStream, blocker)
-          else Sync[F].pure("")
+          out <-
+            if (term) inputStreamToString(proc.getInputStream, blocker)
+            else Sync[F].pure("")
+          err <-
+            if (term) inputStreamToString(proc.getErrorStream, blocker)
+            else Sync[F].pure("")
         } yield Result(proc.exitValue, out, err)
       }
     }

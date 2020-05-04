@@ -81,12 +81,13 @@ object PeriodicTaskStore {
       def unmark(job: RPeriodicTask): F[Unit] =
         for {
           now <- Timestamp.current[F]
-          nextRun <- CalevFs2
-            .nextElapses[F](now.atUTC)(job.timer)
-            .take(1)
-            .compile
-            .last
-            .map(_.map(Timestamp.from))
+          nextRun <-
+            CalevFs2
+              .nextElapses[F](now.atUTC)(job.timer)
+              .take(1)
+              .compile
+              .last
+              .map(_.map(Timestamp.from))
           _ <- store.transact(QPeriodicTask.unsetWorker(job.id, nextRun))
         } yield ()
 

@@ -96,14 +96,15 @@ final class SchedulerImpl[F[_]: ConcurrentEffect: ContextShift](
         _    <- permits.acquire
         _    <- logger.fdebug("New permit acquired")
         down <- state.get.map(_.shutdownRequest)
-        rjob <- if (down)
-          logger.finfo("") *> permits.release *> (None: Option[RJob]).pure[F]
-        else
-          queue.nextJob(
-            group => state.modify(_.nextPrio(group, config.countingScheme)),
-            config.name,
-            config.retryDelay
-          )
+        rjob <-
+          if (down)
+            logger.finfo("") *> permits.release *> (None: Option[RJob]).pure[F]
+          else
+            queue.nextJob(
+              group => state.modify(_.nextPrio(group, config.countingScheme)),
+              config.name,
+              config.retryDelay
+            )
         _ <- logger.fdebug(s"Next job found: ${rjob.map(_.info)}")
         _ <- rjob.map(execute).getOrElse(permits.release)
       } yield rjob.isDefined
@@ -128,9 +129,10 @@ final class SchedulerImpl[F[_]: ConcurrentEffect: ContextShift](
 
   def execute(job: RJob): F[Unit] = {
     val task = for {
-      jobtask <- tasks
-        .find(job.task)
-        .toRight(s"This executor cannot run tasks with name: ${job.task}")
+      jobtask <-
+        tasks
+          .find(job.task)
+          .toRight(s"This executor cannot run tasks with name: ${job.task}")
     } yield jobtask
 
     task match {
