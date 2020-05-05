@@ -15,7 +15,7 @@ import docspell.backend.auth.AuthToken
 import docspell.backend.ops.OMail
 import docspell.common._
 import docspell.restapi.model._
-import docspell.store.records.RUserEmail
+import docspell.store.records.{RUserEmail, RUserImap}
 import docspell.restserver.conv.Conversions
 import docspell.restserver.http4s.QueryParam
 
@@ -26,25 +26,38 @@ object MailSettingsRoutes {
     import dsl._
 
     HttpRoutes.of {
-      case GET -> Root :? QueryParam.QueryOpt(q) =>
+      case GET -> Root / "smtp" :? QueryParam.QueryOpt(q) =>
         for {
-          list <- backend.mail.getSettings(user.account, q.map(_.q))
+          list <- backend.mail.getSmtpSettings(user.account, q.map(_.q))
           res = list.map(convert)
           resp <- Ok(EmailSettingsList(res.toList))
         } yield resp
 
-      case GET -> Root / Ident(name) =>
+      case GET -> Root / "imap" :? QueryParam.QueryOpt(q) =>
+        for {
+          list <- backend.mail.getImapSettings(user.account, q.map(_.q))
+          res = list.map(convert)
+          resp <- Ok(ImapSettingsList(res.toList))
+        } yield resp
+
+      case GET -> Root / "smtp" / Ident(name) =>
         (for {
-          ems  <- backend.mail.findSettings(user.account, name)
+          ems  <- backend.mail.findSmtpSettings(user.account, name)
           resp <- OptionT.liftF(Ok(convert(ems)))
         } yield resp).getOrElseF(NotFound())
 
-      case req @ POST -> Root =>
+      case GET -> Root / "imap" / Ident(name) =>
+        (for {
+          ems  <- backend.mail.findImapSettings(user.account, name)
+          resp <- OptionT.liftF(Ok(convert(ems)))
+        } yield resp).getOrElseF(NotFound())
+
+      case req @ POST -> Root / "smtp" =>
         (for {
           in <- OptionT.liftF(req.as[EmailSettings])
-          ru = makeSettings(in)
+          ru = makeSmtpSettings(in)
           up <- OptionT.liftF(
-            ru.traverse(r => backend.mail.createSettings(user.account, r))
+            ru.traverse(r => backend.mail.createSmtpSettings(user.account, r))
           )
           resp <- OptionT.liftF(
             Ok(
@@ -56,12 +69,29 @@ object MailSettingsRoutes {
           )
         } yield resp).getOrElseF(NotFound())
 
-      case req @ PUT -> Root / Ident(name) =>
+      case req @ POST -> Root / "imap" =>
+        (for {
+          in <- OptionT.liftF(req.as[ImapSettings])
+          ru = makeImapSettings(in)
+          up <- OptionT.liftF(
+            ru.traverse(r => backend.mail.createImapSettings(user.account, r))
+          )
+          resp <- OptionT.liftF(
+            Ok(
+              up.fold(
+                err => BasicResult(false, err),
+                ar => Conversions.basicResult(ar, "Mail settings stored.")
+              )
+            )
+          )
+        } yield resp).getOrElseF(NotFound())
+
+      case req @ PUT -> Root / "smtp" / Ident(name) =>
         (for {
           in <- OptionT.liftF(req.as[EmailSettings])
-          ru = makeSettings(in)
+          ru = makeSmtpSettings(in)
           up <- OptionT.liftF(
-            ru.traverse(r => backend.mail.updateSettings(user.account, name, r))
+            ru.traverse(r => backend.mail.updateSmtpSettings(user.account, name, r))
           )
           resp <- OptionT.liftF(
             Ok(
@@ -75,16 +105,43 @@ object MailSettingsRoutes {
           )
         } yield resp).getOrElseF(NotFound())
 
-      case DELETE -> Root / Ident(name) =>
+      case req @ PUT -> Root / "imap" / Ident(name) =>
+        (for {
+          in <- OptionT.liftF(req.as[ImapSettings])
+          ru = makeImapSettings(in)
+          up <- OptionT.liftF(
+            ru.traverse(r => backend.mail.updateImapSettings(user.account, name, r))
+          )
+          resp <- OptionT.liftF(
+            Ok(
+              up.fold(
+                err => BasicResult(false, err),
+                n =>
+                  if (n > 0) BasicResult(true, "Mail settings stored.")
+                  else BasicResult(false, "Mail settings could not be saved")
+              )
+            )
+          )
+        } yield resp).getOrElseF(NotFound())
+
+      case DELETE -> Root / "smtp" / Ident(name) =>
         for {
-          n <- backend.mail.deleteSettings(user.account, name)
+          n <- backend.mail.deleteSmtpSettings(user.account, name)
+          resp <- Ok(
+            if (n > 0) BasicResult(true, "Mail settings removed")
+            else BasicResult(false, "Mail settings could not be removed")
+          )
+        } yield resp
+
+      case DELETE -> Root / "imap" / Ident(name) =>
+        for {
+          n <- backend.mail.deleteImapSettings(user.account, name)
           resp <- Ok(
             if (n > 0) BasicResult(true, "Mail settings removed")
             else BasicResult(false, "Mail settings could not be removed")
           )
         } yield resp
     }
-
   }
 
   def convert(ru: RUserEmail): EmailSettings =
@@ -100,7 +157,18 @@ object MailSettingsRoutes {
       !ru.smtpCertCheck
     )
 
-  def makeSettings(ems: EmailSettings): Either[String, OMail.SmtpSettings] = {
+  def convert(ru: RUserImap): ImapSettings =
+    ImapSettings(
+      ru.name,
+      ru.imapHost,
+      ru.imapPort,
+      ru.imapUser,
+      ru.imapPassword,
+      ru.imapSsl.name,
+      !ru.imapCertCheck
+    )
+
+  def makeSmtpSettings(ems: EmailSettings): Either[String, OMail.SmtpSettings] = {
     def readMail(str: String): Either[String, MailAddress] =
       MailAddress.parse(str).left.map(err => s"E-Mail address '$str' invalid: $err")
 
@@ -122,6 +190,18 @@ object MailSettingsRoutes {
       from,
       repl
     )
-
   }
+
+  def makeImapSettings(ims: ImapSettings): Either[String, OMail.ImapSettings] =
+    for {
+      sslt <- SSLType.fromString(ims.sslType)
+    } yield OMail.ImapSettings(
+      ims.name,
+      ims.imapHost,
+      ims.imapPort,
+      ims.imapUser,
+      ims.imapPassword,
+      sslt,
+      !ims.ignoreCertificates
+    )
 }

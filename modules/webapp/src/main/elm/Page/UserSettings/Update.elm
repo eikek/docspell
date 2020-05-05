@@ -2,6 +2,7 @@ module Page.UserSettings.Update exposing (update)
 
 import Comp.ChangePasswordForm
 import Comp.EmailSettingsManage
+import Comp.ImapSettingsManage
 import Comp.NotificationForm
 import Data.Flags exposing (Flags)
 import Page.UserSettings.Data exposing (..)
@@ -23,6 +24,13 @@ update flags msg model =
                                     Comp.EmailSettingsManage.init flags
                             in
                             ( { m | emailSettingsModel = em }, Cmd.map EmailSettingsMsg c )
+
+                        ImapSettingsTab ->
+                            let
+                                ( em, c ) =
+                                    Comp.ImapSettingsManage.init flags
+                            in
+                            ( { m | imapSettingsModel = em }, Cmd.map ImapSettingsMsg c )
 
                         ChangePassTab ->
                             ( m, Cmd.none )
@@ -50,6 +58,13 @@ update flags msg model =
                     Comp.EmailSettingsManage.update flags m model.emailSettingsModel
             in
             ( { model | emailSettingsModel = m2 }, Cmd.map EmailSettingsMsg c2 )
+
+        ImapSettingsMsg m ->
+            let
+                ( m2, c2 ) =
+                    Comp.ImapSettingsManage.update flags m model.imapSettingsModel
+            in
+            ( { model | imapSettingsModel = m2 }, Cmd.map ImapSettingsMsg c2 )
 
         NotificationMsg lm ->
             let

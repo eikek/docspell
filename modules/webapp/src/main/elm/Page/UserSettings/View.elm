@@ -2,6 +2,7 @@ module Page.UserSettings.View exposing (view)
 
 import Comp.ChangePasswordForm
 import Comp.EmailSettingsManage
+import Comp.ImapSettingsManage
 import Comp.NotificationForm
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -20,7 +21,8 @@ view model =
             , div [ class "ui attached fluid segment" ]
                 [ div [ class "ui fluid vertical secondary menu" ]
                     [ makeTab model ChangePassTab "Change Password" "user secret icon"
-                    , makeTab model EmailSettingsTab "E-Mail Settings" "mail icon"
+                    , makeTab model EmailSettingsTab "E-Mail Settings (SMTP)" "mail icon"
+                    , makeTab model ImapSettingsTab "E-Mail Settings (IMAP)" "mail icon"
                     , makeTab model NotificationTab "Notifications" "bullhorn icon"
                     ]
                 ]
@@ -36,6 +38,9 @@ view model =
 
                     Just NotificationTab ->
                         viewNotificationForm model
+
+                    Just ImapSettingsTab ->
+                        viewImapSettings model
 
                     Nothing ->
                         []
@@ -61,10 +66,22 @@ viewEmailSettings model =
     [ h2 [ class "ui header" ]
         [ i [ class "mail icon" ] []
         , div [ class "content" ]
-            [ text "E-Mail Settings"
+            [ text "E-Mail Settings (Smtp)"
             ]
         ]
     , Html.map EmailSettingsMsg (Comp.EmailSettingsManage.view model.emailSettingsModel)
+    ]
+
+
+viewImapSettings : Model -> List (Html Msg)
+viewImapSettings model =
+    [ h2 [ class "ui header" ]
+        [ i [ class "mail icon" ] []
+        , div [ class "content" ]
+            [ text "E-Mail Settings (Imap)"
+            ]
+        ]
+    , Html.map ImapSettingsMsg (Comp.ImapSettingsManage.view model.imapSettingsModel)
     ]
 
 

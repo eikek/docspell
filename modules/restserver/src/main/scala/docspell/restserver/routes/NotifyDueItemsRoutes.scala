@@ -91,7 +91,7 @@ object NotifyDueItemsRoutes {
       texc <- backend.tag.loadAll(task.args.tagsExclude)
       conn <-
         backend.mail
-          .getSettings(account, None)
+          .getSmtpSettings(account, None)
           .map(
             _.find(_.name == task.args.smtpConnection)
               .map(_.name)
