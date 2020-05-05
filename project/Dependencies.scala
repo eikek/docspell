@@ -29,7 +29,6 @@ object Dependencies {
   val PostgresVersion = "42.2.12"
   val PureConfigVersion = "0.12.3"
   val Slf4jVersion = "1.7.30"
-  val SqliteVersion = "3.30.1"
   val StanfordNlpVersion = "3.9.2"
   val TikaVersion = "1.24.1"
   val YamuscaVersion = "0.6.1"
@@ -199,10 +198,7 @@ object Dependencies {
   val postgres = Seq(
     "org.postgresql" % "postgresql" % PostgresVersion
   )
-  val sqlite = Seq(
-    "org.xerial" % "sqlite-jdbc" % SqliteVersion
-  )
-  val databases = h2 ++ mariadb ++ postgres ++ sqlite
+  val databases = h2 ++ mariadb ++ postgres
 
   // https://github.com/tpolecat/doobie
   // MIT
