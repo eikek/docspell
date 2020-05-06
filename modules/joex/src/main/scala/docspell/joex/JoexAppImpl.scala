@@ -10,7 +10,7 @@ import docspell.joex.scheduler._
 import docspell.joexapi.client.JoexClient
 import docspell.store.Store
 import docspell.store.queue._
-import docspell.store.ops.ONode
+import docspell.backend.ops.ONode
 import docspell.store.records.RJobLog
 import fs2.concurrent.SignallingRef
 import scala.concurrent.ExecutionContext

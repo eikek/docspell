@@ -1,4 +1,4 @@
-package docspell.store.ops
+package docspell.backend.ops
 
 import cats.effect.{Effect, Resource}
 import cats.implicits._

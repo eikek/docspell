@@ -7,6 +7,10 @@ import microsites.ExtraMdFileConfig
 val toolsPackage = taskKey[Seq[File]]("Package the scripts/extension tools")
 val elmCompileMode = settingKey[ElmCompileMode]("How to compile elm sources")
 
+
+
+// --- Settings
+
 val sharedSettings = Seq(
   organization := "com.github.eikek",
   scalaVersion := "2.13.2",
@@ -45,7 +49,6 @@ lazy val noPublish = Seq(
   publishLocal := {},
   publishArtifact := false
 )
-
 
 val elmSettings = Seq(
   elmCompileMode := ElmCompileMode.Debug,
@@ -138,6 +141,8 @@ val openapiScalaSettings = Seq(
           "com.github.eikek.calev.circe.CalevCirceCodec._")))
     }))
 )
+
+
 
 // --- Modules
 
@@ -286,35 +291,6 @@ val joexapi = project.in(file("modules/joexapi")).
     openapiSpec := (Compile/resourceDirectory).value/"joex-openapi.yml"
   ).dependsOn(common)
 
-val joex = project.in(file("modules/joex")).
-  enablePlugins(BuildInfoPlugin
-    , JavaServerAppPackaging
-    , DebianPlugin
-    , SystemdPlugin).
-  settings(sharedSettings).
-  settings(testSettings).
-  settings(debianSettings("docspell-joex")).
-  settings(buildInfoSettings).
-  settings(
-    name := "docspell-joex",
-    libraryDependencies ++=
-      Dependencies.fs2 ++
-      Dependencies.http4s ++
-      Dependencies.circe ++
-      Dependencies.pureconfig ++
-      Dependencies.emilTnef ++
-      Dependencies.emilMarkdown ++
-      Dependencies.emilJsoup ++
-      Dependencies.jsoup ++
-      Dependencies.yamusca ++
-      Dependencies.loggingApi ++
-      Dependencies.logging.map(_ % Runtime),
-    addCompilerPlugin(Dependencies.kindProjectorPlugin),
-    addCompilerPlugin(Dependencies.betterMonadicFor),
-    buildInfoPackage := "docspell.joex",
-    reStart/javaOptions ++= Seq(s"-Dconfig.file=${(LocalRootProject/baseDirectory).value/"local"/"dev.conf"}")
-  ).dependsOn(store, extract, convert, analysis, joexapi, restapi)
-
 val backend = project.in(file("modules/backend")).
   disablePlugins(RevolverPlugin).
   settings(sharedSettings).
@@ -342,6 +318,39 @@ val webapp = project.in(file("modules/webapp")).
     openapiSpec := (restapi/Compile/resourceDirectory).value/"docspell-openapi.yml",
     openapiElmConfig := ElmConfig().withJson(ElmJson.decodePipeline)
   )
+
+
+
+// --- Application(s)
+
+val joex = project.in(file("modules/joex")).
+  enablePlugins(BuildInfoPlugin
+    , JavaServerAppPackaging
+    , DebianPlugin
+    , SystemdPlugin).
+  settings(sharedSettings).
+  settings(testSettings).
+  settings(debianSettings("docspell-joex")).
+  settings(buildInfoSettings).
+  settings(
+    name := "docspell-joex",
+    libraryDependencies ++=
+      Dependencies.fs2 ++
+      Dependencies.http4s ++
+      Dependencies.circe ++
+      Dependencies.pureconfig ++
+      Dependencies.emilTnef ++
+      Dependencies.emilMarkdown ++
+      Dependencies.emilJsoup ++
+      Dependencies.jsoup ++
+      Dependencies.yamusca ++
+      Dependencies.loggingApi ++
+      Dependencies.logging.map(_ % Runtime),
+    addCompilerPlugin(Dependencies.kindProjectorPlugin),
+    addCompilerPlugin(Dependencies.betterMonadicFor),
+    buildInfoPackage := "docspell.joex",
+    reStart/javaOptions ++= Seq(s"-Dconfig.file=${(LocalRootProject/baseDirectory).value/"local"/"dev.conf"}")
+  ).dependsOn(store, backend, extract, convert, analysis, joexapi, restapi)
 
 val restserver = project.in(file("modules/restserver")).
   enablePlugins(BuildInfoPlugin
@@ -378,6 +387,10 @@ val restserver = project.in(file("modules/restserver")).
     Compile/unmanagedResourceDirectories ++= Seq((Compile/resourceDirectory).value.getParentFile/"templates"),
     reStart/javaOptions ++= Seq(s"-Dconfig.file=${(LocalRootProject/baseDirectory).value/"local"/"dev.conf"}")
   ).dependsOn(restapi, joexapi, backend, webapp)
+
+
+
+// --- Microsite Documentation
 
 val microsite = project.in(file("modules/microsite")).
   disablePlugins(RevolverPlugin).
@@ -464,7 +477,7 @@ val root = project.in(file(".")).
 
 
 
-// --- helpers
+// --- Helpers
 
 def copyWebjarResources(src: Seq[File], base: File, artifact: String, version: String, logger: Logger): Seq[File] = {
   val targetDir = base/"META-INF"/"resources"/"webjars"/artifact/version

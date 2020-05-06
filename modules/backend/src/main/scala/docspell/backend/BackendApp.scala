@@ -5,7 +5,6 @@ import docspell.backend.auth.Login
 import docspell.backend.ops._
 import docspell.backend.signup.OSignup
 import docspell.store.Store
-import docspell.store.ops.ONode
 import docspell.store.queue.JobQueue
 import docspell.store.usertask.UserTaskStore
 
