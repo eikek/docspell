@@ -5,6 +5,7 @@ import cats.effect._
 import emil.javamail._
 import docspell.common._
 import docspell.joex.hk._
+import docspell.joex.notify._
 import docspell.joex.process.ItemHandler
 import docspell.joex.scheduler._
 import docspell.joexapi.client.JoexClient

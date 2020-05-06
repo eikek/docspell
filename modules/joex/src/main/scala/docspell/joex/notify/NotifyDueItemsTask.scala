@@ -1,4 +1,4 @@
-package docspell.joex.hk
+package docspell.joex.notify
 
 import cats.implicits._
 import cats.effect._
@@ -13,8 +13,6 @@ import docspell.store.queries.QItem
 import docspell.joex.scheduler.{Context, Task}
 import cats.data.OptionT
 import docspell.joex.mail.EmilHeader
-import docspell.joex.notify.MailContext
-import docspell.joex.notify.MailTemplate
 
 object NotifyDueItemsTask {
   val maxItems: Long = 7
