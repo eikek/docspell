@@ -4,7 +4,7 @@ import cats.implicits._
 import scala.concurrent.duration.{FiniteDuration, Duration => SDur}
 import java.time.{Duration => JDur}
 import java.util.concurrent.TimeUnit
-
+import io.circe._
 import cats.effect.Sync
 
 case class Duration(nanos: Long) {
@@ -54,4 +54,11 @@ object Duration {
       now <- Timestamp.current[F]
       end = Timestamp.current[F]
     } yield end.map(e => Duration.millis(e.toMillis - now.toMillis))
+
+
+  implicit val jsonEncoder: Encoder[Duration] =
+    Encoder.encodeLong.contramap(_.millis)
+
+  implicit val jsonDecoder: Decoder[Duration] =
+    Decoder.decodeLong.map(Duration.millis)
 }
