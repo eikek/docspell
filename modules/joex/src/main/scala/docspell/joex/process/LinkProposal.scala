@@ -10,7 +10,9 @@ object LinkProposal {
 
   def apply[F[_]: Sync](data: ItemData): Task[F, ProcessItemArgs, ItemData] =
     Task { ctx =>
-      val proposals = MetaProposalList.flatten(data.metas.map(_.proposals))
+      // sort by weight; order of equal weights is not important, just
+      // choose one others are then suggestions
+      val proposals = MetaProposalList.flatten(data.metas.map(_.proposals)).sortByWeights
 
       ctx.logger.info(s"Starting linking proposals") *>
         MetaProposalType.all
@@ -24,7 +26,7 @@ object LinkProposal {
       proposalList: MetaProposalList,
       ctx: Context[F, ProcessItemArgs]
   )(mpt: MetaProposalType): F[Result] =
-    proposalList.find(mpt) match {
+    data.givenMeta.find(mpt).orElse(proposalList.find(mpt)) match {
       case None =>
         Result.noneFound(mpt).pure[F]
       case Some(a) if a.isSingleValue =>

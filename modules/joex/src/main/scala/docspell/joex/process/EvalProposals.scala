@@ -7,7 +7,8 @@ import docspell.common._
 import docspell.joex.scheduler.Task
 import docspell.store.records.RAttachmentMeta
 
-/** Reorders the proposals to put most probable fits first.
+/** Calculate weights for candidates that adds the most likely
+  * candidate a lower number.
   */
 object EvalProposals {
 
@@ -16,24 +17,14 @@ object EvalProposals {
       Timestamp
         .current[F]
         .map { now =>
-          val metas = data.metas.map(reorderCandidates(now.toUtcDate))
+          val metas = data.metas.map(calcCandidateWeight(now.toUtcDate))
           data.copy(metas = metas)
         }
     }
 
-  def reorderCandidates(now: LocalDate)(rm: RAttachmentMeta): RAttachmentMeta = {
-    val list = rm.proposals.getTypes.toList
-      .map(mpt =>
-        rm.proposals.find(mpt) match {
-          case Some(mp) =>
-            val v = mp.values.sortBy(weight(rm, mp, now))
-            Some(mp.copy(values = v))
-          case None =>
-            None
-        }
-      )
-
-    rm.copy(proposals = MetaProposalList(list.flatMap(identity)))
+  def calcCandidateWeight(now: LocalDate)(rm: RAttachmentMeta): RAttachmentMeta = {
+    val list = rm.proposals.change(mp => mp.addWeights(weight(rm, mp, now)))
+    rm.copy(proposals = list.sortByWeights)
   }
 
   def weight(rm: RAttachmentMeta, mp: MetaProposal, ref: LocalDate)(
