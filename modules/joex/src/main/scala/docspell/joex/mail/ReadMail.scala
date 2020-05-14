@@ -35,7 +35,7 @@ object ReadMail {
           mail.body,
           Some(mail.header),
           Some(MarkdownBody.makeHtml(markdownCfg)),
-          Some(JsoupSanitizer.apply)
+          Some(JsoupSanitizer.change)
         ).map(makeHtmlBinary[F] _).map(b => Some(b))
       }
 
