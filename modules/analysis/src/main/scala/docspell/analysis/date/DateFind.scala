@@ -34,7 +34,7 @@ object DateFind {
 
   private case class SimpleDate(year: Int, month: Int, day: Int) {
     def toLocalDate: LocalDate =
-      LocalDate.of(if (year < 100) 1900 + year else year, month, day)
+      LocalDate.of(if (year < 100) 2000 + year else year, month, day)
   }
 
   private object SimpleDate {
