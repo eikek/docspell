@@ -43,6 +43,17 @@ case class MetaProposal(proposalType: MetaProposalType, values: NonEmptyList[Can
 
 object MetaProposal {
 
+  def apply(pt: MetaProposalType, v0: Candidate, vm: Candidate*): MetaProposal =
+    MetaProposal(pt, NonEmptyList.of(v0, vm: _*))
+
+  def docDate(ts: Timestamp, origin: Option[NerLabel]): MetaProposal = {
+    val label = ts.toUtcDate.toString
+    MetaProposal(
+      MetaProposalType.DocDate,
+      Candidate(IdRef(Ident.unsafe(label), label), origin.toSet)
+    )
+  }
+
   def parseDate(cand: Candidate): Option[LocalDate] =
     parseDate(cand.ref.id)
 

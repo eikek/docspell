@@ -5,6 +5,16 @@ import docspell.joex.process.ItemData.AttachmentDates
 import docspell.store.records.{RAttachment, RAttachmentMeta, RItem}
 
 /** Data that is carried across all processing tasks.
+  *
+  * @param item the stored item record
+  * @param attachments the attachments belonging to the item
+  * @param metas the meta data to each attachment; depending on the
+  * state of processing, this may be empty
+  * @param dateLabels a separate list of found dates
+  * @param originFile a mapping from an attachment id to a filemeta-id
+  * containng the source or origin file
+  * @param givenMeta meta data to this item that was not "guessed"
+  * from an attachment but given and thus is always correct
   */
 case class ItemData(
     item: RItem,

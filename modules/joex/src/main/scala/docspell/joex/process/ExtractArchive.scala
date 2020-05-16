@@ -12,6 +12,7 @@ import docspell.joex.scheduler._
 import docspell.store.records._
 import docspell.files.Zip
 import cats.kernel.Monoid
+import emil.Mail
 
 /** Goes through all attachments and extracts archive files, like zip
   * files. The process is recursive, until all archives have been
@@ -56,7 +57,8 @@ object ExtractArchive {
         _ <- naa.traverse(storeArchive(ctx))
       } yield naa.headOption -> item.copy(
         attachments = nra,
-        originFile = item.originFile ++ nra.map(a => a.id -> a.fileId).toMap
+        originFile = item.originFile ++ nra.map(a => a.id -> a.fileId).toMap,
+        givenMeta = item.givenMeta.fillEmptyFrom(Monoid[Extracted].combineAll(ras).meta)
       )
     }
 
@@ -139,14 +141,26 @@ object ExtractArchive {
       .through(ReadMail.bytesToMail[F](ctx.logger))
       .flatMap { mail =>
         val mId = mail.header.messageId
+        val givenMeta =
+          for {
+            _ <- ctx.logger.debug(s"Use mail date for item date: ${mail.header.date}")
+            s <- Sync[F].delay(extractMailMeta(mail))
+          } yield s
+
         ReadMail
           .mailToEntries(ctx.logger)(mail)
-          .flatMap(handleEntry(ctx, ra, archive, mId))
+          .flatMap(handleEntry(ctx, ra, archive, mId)) ++ Stream.eval(givenMeta)
       }
       .foldMonoid
       .compile
       .lastOrError
   }
+
+  def extractMailMeta[F[_]](mail: Mail[F]): Extracted =
+    mail.header.date
+      .map(Timestamp.apply)
+      .map(ts => Extracted.empty.setMeta(MetaProposal.docDate(ts, None)))
+      .getOrElse(Extracted.empty)
 
   def handleEntry[F[_]: Sync](
       ctx: Context[F, _],
@@ -187,18 +201,28 @@ object ExtractArchive {
   def storeArchive[F[_]: Sync](ctx: Context[F, _])(aa: RAttachmentArchive): F[Int] =
     ctx.store.transact(RAttachmentArchive.insert(aa))
 
-  case class Extracted(files: Vector[RAttachment], archives: Vector[RAttachmentArchive]) {
+  case class Extracted(
+      files: Vector[RAttachment],
+      archives: Vector[RAttachmentArchive],
+      meta: MetaProposalList
+  ) {
     def ++(e: Extracted) =
-      Extracted(files ++ e.files, archives ++ e.archives)
+      Extracted(files ++ e.files, archives ++ e.archives, meta.fillEmptyFrom(e.meta))
+
+    def setMeta(m: MetaProposal): Extracted =
+      setMeta(MetaProposalList.of(m))
+
+    def setMeta(ml: MetaProposalList): Extracted =
+      Extracted(files, archives, meta.fillEmptyFrom(ml))
   }
   object Extracted {
-    val empty = Extracted(Vector.empty, Vector.empty)
+    val empty = Extracted(Vector.empty, Vector.empty, MetaProposalList.empty)
 
     def noArchive(ra: RAttachment): Extracted =
-      Extracted(Vector(ra), Vector.empty)
+      Extracted(Vector(ra), Vector.empty, MetaProposalList.empty)
 
     def of(ra: RAttachment, aa: RAttachmentArchive): Extracted =
-      Extracted(Vector(ra), Vector(aa))
+      Extracted(Vector(ra), Vector(aa), MetaProposalList.empty)
 
     implicit val extractedMonoid: Monoid[Extracted] =
       Monoid.instance(empty, _ ++ _)

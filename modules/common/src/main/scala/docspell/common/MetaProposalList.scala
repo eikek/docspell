@@ -38,6 +38,9 @@ case class MetaProposalList private (proposals: List[MetaProposal]) {
   def change(f: MetaProposal => MetaProposal): MetaProposalList =
     new MetaProposalList(proposals.map(f))
 
+  def filter(f: MetaProposal => Boolean): MetaProposalList =
+    new MetaProposalList(proposals.filter(f))
+
   def sortByWeights: MetaProposalList =
     change(_.sortByWeight)
 }

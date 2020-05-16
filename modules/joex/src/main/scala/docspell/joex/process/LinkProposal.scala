@@ -12,7 +12,11 @@ object LinkProposal {
     Task { ctx =>
       // sort by weight; order of equal weights is not important, just
       // choose one others are then suggestions
-      val proposals = MetaProposalList.flatten(data.metas.map(_.proposals)).sortByWeights
+      // doc-date is only set when given explicitely, not from "guessing"
+      val proposals = MetaProposalList
+        .flatten(data.metas.map(_.proposals))
+        .filter(_.proposalType != MetaProposalType.DocDate)
+        .sortByWeights
 
       ctx.logger.info(s"Starting linking proposals") *>
         MetaProposalType.all
@@ -28,7 +32,8 @@ object LinkProposal {
   )(mpt: MetaProposalType): F[Result] =
     data.givenMeta.find(mpt).orElse(proposalList.find(mpt)) match {
       case None =>
-        Result.noneFound(mpt).pure[F]
+        ctx.logger.debug(s"No value for $mpt") *>
+          Result.noneFound(mpt).pure[F]
       case Some(a) if a.isSingleValue =>
         ctx.logger.info(s"Found one candidate for ${a.proposalType}") *>
           setItemMeta(data.item.id, ctx, a.proposalType, a.values.head.ref.id).map(_ =>
@@ -71,7 +76,17 @@ object LinkProposal {
             RItem.updateConcEquip(itemId, ctx.args.meta.collective, Some(value))
           )
       case MetaProposalType.DocDate =>
-        ctx.logger.debug(s"Not linking document date suggestion ${value.id}").map(_ => 0)
+        MetaProposal.parseDate(value) match {
+          case Some(ld) =>
+            val ts = Timestamp.from(ld.atStartOfDay(Timestamp.UTC))
+            ctx.logger.debug(s"Updating item date ${value.id}") *>
+              ctx.store.transact(
+                RItem.updateDate(itemId, ctx.args.meta.collective, Some(ts))
+              )
+          case None =>
+            ctx.logger.info(s"Cannot read value '${value.id}' into a date.") *>
+              0.pure[F]
+        }
       case MetaProposalType.DueDate =>
         MetaProposal.parseDate(value) match {
           case Some(ld) =>

@@ -42,10 +42,12 @@ object MetaProposalListTest extends SimpleTestSuite {
   test("sort by weights") {
     val cand1 = Candidate(IdRef(Ident.unsafe("123"), "name"), Set.empty, Some(0.1))
     val cand2 = Candidate(IdRef(Ident.unsafe("456"), "name"), Set.empty, Some(0.05))
-    val mpl = MetaProposalList.of(
-      MetaProposal(MetaProposalType.CorrOrg, NonEmptyList.of(cand1)),
-      MetaProposal(MetaProposalType.CorrOrg, NonEmptyList.of(cand2))
-    ).sortByWeights
+    val mpl = MetaProposalList
+      .of(
+        MetaProposal(MetaProposalType.CorrOrg, NonEmptyList.of(cand1)),
+        MetaProposal(MetaProposalType.CorrOrg, NonEmptyList.of(cand2))
+      )
+      .sortByWeights
 
     val candidates = mpl.find(MetaProposalType.CorrOrg).get.values
     assertEquals(candidates.head, cand2)
@@ -55,10 +57,12 @@ object MetaProposalListTest extends SimpleTestSuite {
   test("sort by weights: unset is last") {
     val cand1 = Candidate(IdRef(Ident.unsafe("123"), "name"), Set.empty, Some(0.1))
     val cand2 = Candidate(IdRef(Ident.unsafe("456"), "name"), Set.empty)
-    val mpl = MetaProposalList.of(
-      MetaProposal(MetaProposalType.CorrOrg, NonEmptyList.of(cand1)),
-      MetaProposal(MetaProposalType.CorrOrg, NonEmptyList.of(cand2))
-    ).sortByWeights
+    val mpl = MetaProposalList
+      .of(
+        MetaProposal(MetaProposalType.CorrOrg, NonEmptyList.of(cand1)),
+        MetaProposal(MetaProposalType.CorrOrg, NonEmptyList.of(cand2))
+      )
+      .sortByWeights
 
     val candidates = mpl.find(MetaProposalType.CorrOrg).get.values
     assertEquals(candidates.head, cand1)
