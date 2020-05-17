@@ -1,6 +1,6 @@
 module Page.Home.View exposing (view)
 
-import Comp.ItemList
+import Comp.ItemCardList
 import Comp.SearchMenu
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -45,7 +45,7 @@ view model =
                         resultPlaceholder
 
                     else
-                        Html.map ItemListMsg (Comp.ItemList.view model.itemListModel)
+                        Html.map ItemCardListMsg (Comp.ItemCardList.view model.itemListModel)
 
                 Detail ->
                     div [] []

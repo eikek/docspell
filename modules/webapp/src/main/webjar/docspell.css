@@ -132,6 +132,14 @@ textarea.markdown-editor {
     padding-right: 1em;
 }
 
+.default-layout .ui.grid > .column.item-list:not(.row) {
+    padding-top: 0.3em;
+    padding-bottom: 0.6em;
+}
+.default-layout .ui.grid > .column.item-list:not(.row):last-child {
+    padding-bottom: 1.5rem;
+}
+
 label span.muted {
     font-size: smaller;
     color: rgba(0,0,0,0.6);

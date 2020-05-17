@@ -2,7 +2,7 @@ module Page.Home.Update exposing (update)
 
 import Api
 import Browser.Navigation as Nav
-import Comp.ItemList
+import Comp.ItemCardList
 import Comp.SearchMenu
 import Data.Flags exposing (Flags)
 import Page exposing (Page(..))
@@ -40,10 +40,10 @@ update key flags msg model =
             in
             ( m2, Cmd.batch [ c2, Cmd.map SearchMenuMsg (Tuple.second nextState.modelCmd) ] )
 
-        ItemListMsg m ->
+        ItemCardListMsg m ->
             let
                 ( m2, c2, mitem ) =
-                    Comp.ItemList.update flags m model.itemListModel
+                    Comp.ItemCardList.update flags m model.itemListModel
 
                 cmd =
                     case mitem of
@@ -53,14 +53,14 @@ update key flags msg model =
                         Nothing ->
                             Cmd.none
             in
-            ( { model | itemListModel = m2 }, Cmd.batch [ Cmd.map ItemListMsg c2, cmd ] )
+            ( { model | itemListModel = m2 }, Cmd.batch [ Cmd.map ItemCardListMsg c2, cmd ] )
 
         ItemSearchResp (Ok list) ->
             let
                 m =
                     { model | searchInProgress = False, viewMode = Listing }
             in
-            update key flags (ItemListMsg (Comp.ItemList.SetResults list)) m
+            update key flags (ItemCardListMsg (Comp.ItemCardList.SetResults list)) m
 
         ItemSearchResp (Err _) ->
             ( { model | searchInProgress = False }, Cmd.none )
