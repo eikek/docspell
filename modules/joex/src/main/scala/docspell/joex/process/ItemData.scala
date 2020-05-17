@@ -1,15 +1,28 @@
 package docspell.joex.process
 
-import docspell.common.{Ident, NerDateLabel, NerLabel}
+import docspell.common._
 import docspell.joex.process.ItemData.AttachmentDates
 import docspell.store.records.{RAttachment, RAttachmentMeta, RItem}
 
+/** Data that is carried across all processing tasks.
+  *
+  * @param item the stored item record
+  * @param attachments the attachments belonging to the item
+  * @param metas the meta data to each attachment; depending on the
+  * state of processing, this may be empty
+  * @param dateLabels a separate list of found dates
+  * @param originFile a mapping from an attachment id to a filemeta-id
+  * containng the source or origin file
+  * @param givenMeta meta data to this item that was not "guessed"
+  * from an attachment but given and thus is always correct
+  */
 case class ItemData(
     item: RItem,
     attachments: Vector[RAttachment],
     metas: Vector[RAttachmentMeta],
     dateLabels: Vector[AttachmentDates],
-    originFile: Map[Ident, Ident] //maps RAttachment.id -> FileMeta.id
+    originFile: Map[Ident, Ident], // maps RAttachment.id -> FileMeta.id
+    givenMeta: MetaProposalList    // given meta data not associated to a specific attachment
 ) {
 
   def findMeta(attachId: Ident): Option[RAttachmentMeta] =

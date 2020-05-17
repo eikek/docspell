@@ -6,6 +6,10 @@ import docspell.common.MetaProposal.Candidate
 import io.circe._
 import io.circe.generic.semiauto._
 
+/** A list of proposals for meta data to an item.
+  *
+  * The list usually keeps only one value for each `MetaProposalType'.
+  */
 case class MetaProposalList private (proposals: List[MetaProposal]) {
 
   def isEmpty: Boolean  = proposals.isEmpty
@@ -31,6 +35,14 @@ case class MetaProposalList private (proposals: List[MetaProposal]) {
   def find(mpt: MetaProposalType): Option[MetaProposal] =
     proposals.find(_.proposalType == mpt)
 
+  def change(f: MetaProposal => MetaProposal): MetaProposalList =
+    new MetaProposalList(proposals.map(f))
+
+  def filter(f: MetaProposal => Boolean): MetaProposalList =
+    new MetaProposalList(proposals.filter(f))
+
+  def sortByWeights: MetaProposalList =
+    change(_.sortByWeight)
 }
 
 object MetaProposalList {
@@ -54,6 +66,12 @@ object MetaProposalList {
   def fromMap(m: Map[MetaProposalType, MetaProposal]): MetaProposalList =
     new MetaProposalList(m.toList.map({ case (k, v) => v.copy(proposalType = k) }))
 
+  /** Flattens the given list of meta-proposals into a single list,
+    * where each meta-proposal type exists at most once. Candidates to
+    * equal proposal-types are merged together. The candidate's order
+    * is preserved and candidates of proposals are appended as given
+    * by the order of the given `seq'.
+    */
   def flatten(ml: Seq[MetaProposalList]): MetaProposalList = {
     val init: Map[MetaProposalType, MetaProposal] = Map.empty
 
