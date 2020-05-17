@@ -17,6 +17,7 @@ type alias Model =
     , itemListModel : Comp.ItemCardList.Model
     , searchInProgress : Bool
     , viewMode : ViewMode
+    , menuCollapsed : Bool
     }
 
 
@@ -26,6 +27,7 @@ emptyModel =
     , itemListModel = Comp.ItemCardList.init
     , searchInProgress = False
     , viewMode = Listing
+    , menuCollapsed = False
     }
 
 
@@ -36,6 +38,7 @@ type Msg
     | ItemCardListMsg Comp.ItemCardList.Msg
     | ItemSearchResp (Result Http.Error ItemLightList)
     | DoSearch
+    | ToggleSearchMenu
 
 
 type ViewMode

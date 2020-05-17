@@ -68,6 +68,11 @@ update key flags msg model =
         DoSearch ->
             doSearch flags model
 
+        ToggleSearchMenu ->
+            ( { model | menuCollapsed = not model.menuCollapsed }
+            , Cmd.none
+            )
+
 
 doSearch : Flags -> Model -> ( Model, Cmd Msg )
 doSearch flags model =

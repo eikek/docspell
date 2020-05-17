@@ -12,21 +12,33 @@ import Page.Home.Data exposing (..)
 view : Model -> Html Msg
 view model =
     div [ class "home-page ui padded grid" ]
-        [ div [ class "four wide column" ]
-            [ div [ class "ui top attached ablue-comp menu" ]
-                [ h4 [ class "header item" ]
-                    [ text "Search"
+        [ div
+            [ classList
+                [ ( "sixteen wide mobile six wide tablet four wide computer column", True )
+                , ( "invisible hidden", model.menuCollapsed )
+                ]
+            ]
+            [ div
+                [ class "ui top attached ablue-comp menu"
+                ]
+                [ a
+                    [ class "item"
+                    , href "#"
+                    , onClick ToggleSearchMenu
+                    ]
+                    [ i [ class "ui angle down icon" ] []
+                    , text "Search"
                     ]
                 , div [ class "right floated menu" ]
                     [ a
-                        [ class "item"
+                        [ class "icon item"
                         , onClick ResetSearch
                         , href "#"
                         ]
                         [ i [ class "undo icon" ] []
                         ]
                     , a
-                        [ class "item"
+                        [ class "icon item"
                         , onClick DoSearch
                         , href ""
                         ]
@@ -38,8 +50,28 @@ view model =
                 [ Html.map SearchMenuMsg (Comp.SearchMenu.view model.searchMenuModel)
                 ]
             ]
-        , div [ class "twelve wide column" ]
-            [ case model.viewMode of
+        , div
+            [ classList
+                [ ( "sixteen wide mobile ten wide tablet twelve wide computer column", not model.menuCollapsed )
+                , ( "sixteen wide column", model.menuCollapsed )
+                ]
+            ]
+            [ div
+                [ classList
+                    [ ( "invisible hidden", not model.menuCollapsed )
+                    , ( "ui segment container", True )
+                    ]
+                ]
+                [ a
+                    [ class "ui basic large circular label"
+                    , onClick ToggleSearchMenu
+                    , href "#"
+                    ]
+                    [ i [ class "search icon" ] []
+                    , text "Search Menu…"
+                    ]
+                ]
+            , case model.viewMode of
                 Listing ->
                     if model.searchInProgress then
                         resultPlaceholder

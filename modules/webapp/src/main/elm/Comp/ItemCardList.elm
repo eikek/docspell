@@ -79,16 +79,13 @@ view model =
 
 viewGroup : ItemLightGroup -> Html Msg
 viewGroup group =
-    div [] <|
-        List.concat
-            [ [ div [ class "ui horizontal divider" ]
-                    [ text group.name
-                    ]
-              ]
-            , [ div [ class "ui one column grid" ]
-                    (List.map viewItem group.items)
-              ]
+    div [ class "item-group" ]
+        [ div [ class "ui horizontal divider" ]
+            [ text group.name
             ]
+        , div [ class "ui one column grid" ]
+            (List.map viewItem group.items)
+        ]
 
 
 viewItem : ItemLight -> Html Msg
