@@ -13,7 +13,7 @@ view flags model =
     div [ class "register-page" ]
         [ div [ class "ui centered grid" ]
             [ div [ class "row" ]
-                [ div [ class "six wide column ui segment register-view" ]
+                [ div [ class "sixteen wide mobile twelve wide tablet six wide computer column" ]
                     [ h1 [ class "ui cener aligned icon header" ]
                         [ img
                             [ class "ui image"

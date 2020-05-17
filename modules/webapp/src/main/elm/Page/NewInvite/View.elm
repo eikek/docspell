@@ -12,7 +12,7 @@ view flags model =
     div [ class "newinvite-page" ]
         [ div [ class "ui centered grid" ]
             [ div [ class "row" ]
-                [ div [ class "eight wide column ui segment newinvite-view" ]
+                [ div [ class "sixteen wide mobile fourteen wide tablet eight wide computer column" ]
                     [ h1 [ class "ui cener aligned icon header" ]
                         [ img
                             [ class "ui image"

@@ -17,7 +17,7 @@ import Util.Size
 view : Flags -> Model -> Html Msg
 view flags model =
     div [ class "collectivesetting-page ui padded grid" ]
-        [ div [ class "four wide column" ]
+        [ div [ class "sixteen wide mobile four wide tablet four wide computer column" ]
             [ h4 [ class "ui top attached ablue-comp header" ]
                 [ text "Collective"
                 ]
@@ -54,7 +54,7 @@ view flags model =
                     ]
                 ]
             ]
-        , div [ class "twelve wide column" ]
+        , div [ class "sixteen wide mobile twelve wide tablet twelve wide computer column" ]
             [ div [ class "" ]
                 (case model.currentTab of
                     Just SourceTab ->

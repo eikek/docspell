@@ -14,7 +14,7 @@ import Util.Html exposing (classActive)
 view : Model -> Html Msg
 view model =
     div [ class "managedata-page ui padded grid" ]
-        [ div [ class "four wide column" ]
+        [ div [ class "sixteen wide mobile four wide tablet four wide computer column" ]
             [ h4 [ class "ui top attached ablue-comp header" ]
                 [ text "Manage Data"
                 ]
@@ -51,7 +51,7 @@ view model =
                     ]
                 ]
             ]
-        , div [ class "twelve wide column" ]
+        , div [ class "sixteen wide mobile twelve wide tablet twelve wide computer column" ]
             [ div [ class "" ]
                 (case model.currentTab of
                     Just TagTab ->
