@@ -13,6 +13,7 @@ import Api.Model.ItemLightGroup exposing (ItemLightGroup)
 import Api.Model.ItemLightList exposing (ItemLightList)
 import Data.Direction
 import Data.Flags exposing (Flags)
+import Data.Icons as Icons
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
@@ -80,10 +81,11 @@ view model =
 viewGroup : ItemLightGroup -> Html Msg
 viewGroup group =
     div [ class "item-group" ]
-        [ div [ class "ui horizontal divider" ]
-            [ text group.name
+        [ div [ class "ui horizontal divider header item-list" ]
+            [ i [ class "calendar alternate outline icon" ] []
+            , text group.name
             ]
-        , div [ class "ui one column grid" ]
+        , div [ class "ui stackable three cards" ]
             (List.map viewItem group.items)
         ]
 
@@ -116,80 +118,79 @@ viewItem item =
         newColor =
             "blue"
     in
-    div [ class "column item-list" ]
-        [ a
-            [ classList
-                [ ( "ui fluid card", True )
-                , ( newColor, not isConfirmed )
-                ]
-            , href "#"
-            , onClick (SelectItem item)
+    a
+        [ classList
+            [ ( "ui fluid card", True )
+            , ( newColor, not isConfirmed )
             ]
-            [ div [ class "content" ]
+        , href "#"
+        , onClick (SelectItem item)
+        ]
+        [ div [ class "content" ]
+            [ div
+                [ class "header"
+                , Data.Direction.labelFromMaybe item.direction
+                    |> title
+                ]
+                [ dirIcon
+                , Util.String.underscoreToSpace item.name
+                    |> text
+                ]
+            , span [ class "meta" ]
                 [ div
-                    [ class "header"
-                    , Data.Direction.labelFromMaybe item.direction
-                        |> title
-                    ]
-                    [ dirIcon
-                    , Util.String.ellipsis 45 item.name |> text
-                    ]
-                , span [ class "meta" ]
-                    [ div
-                        [ classList
-                            [ ( "ui ribbon label", True )
-                            , ( newColor, True )
-                            , ( "invisible", isConfirmed )
-                            ]
-                        ]
-                        [ i [ class "exclamation icon" ] []
-                        , text " New"
+                    [ classList
+                        [ ( "ui ribbon label", True )
+                        , ( newColor, True )
+                        , ( "invisible", isConfirmed )
                         ]
                     ]
-                , span [ class "right floated meta" ]
-                    [ Util.Time.formatDateShort item.date |> text
+                    [ i [ class "exclamation icon" ] []
+                    , text " New"
                     ]
                 ]
-            , div [ class "content" ]
+            , span [ class "right floated meta" ]
+                [ Util.Time.formatDateShort item.date |> text
+                ]
+            ]
+        , div [ class "content" ]
+            [ div [ class "ui horizontal list" ]
+                [ div
+                    [ class "item"
+                    , title "Correspondent"
+                    ]
+                    [ Icons.correspondentIcon
+                    , text " "
+                    , Util.String.withDefault "-" corr |> text
+                    ]
+                , div
+                    [ class "item"
+                    , title "Concerning"
+                    ]
+                    [ Icons.concernedIcon
+                    , text " "
+                    , Util.String.withDefault "-" conc |> text
+                    ]
+                ]
+            , div [ class "right floated meta" ]
                 [ div [ class "ui horizontal list" ]
                     [ div
                         [ class "item"
-                        , title "Correspondent"
+                        , title "Source"
                         ]
-                        [ i [ class "envelope outline icon" ] []
-                        , text " "
-                        , Util.String.withDefault "-" corr |> text
+                        [ text item.source
                         ]
                     , div
                         [ class "item"
-                        , title "Concerning"
+                        , title ("Due on " ++ dueDate)
                         ]
-                        [ i [ class "comment outline icon" ] []
-                        , text " "
-                        , Util.String.withDefault "-" conc |> text
-                        ]
-                    ]
-                , div [ class "right floated meta" ]
-                    [ div [ class "ui horizontal list" ]
                         [ div
-                            [ class "item"
-                            , title "Source"
-                            ]
-                            [ text item.source
-                            ]
-                        , div
-                            [ class "item"
-                            , title ("Due on " ++ dueDate)
-                            ]
-                            [ div
-                                [ classList
-                                    [ ( "ui basic grey label", True )
-                                    , ( "invisible hidden", item.dueDate == Nothing )
-                                    ]
+                            [ classList
+                                [ ( "ui basic grey label", True )
+                                , ( "invisible hidden", item.dueDate == Nothing )
                                 ]
-                                [ i [ class "bell icon" ] []
-                                , text (" " ++ dueDate)
-                                ]
+                            ]
+                            [ Icons.dueDateIcon
+                            , text (" " ++ dueDate)
                             ]
                         ]
                     ]

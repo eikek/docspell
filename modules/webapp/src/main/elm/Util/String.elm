@@ -1,6 +1,7 @@
 module Util.String exposing
     ( crazyEncode
     , ellipsis
+    , underscoreToSpace
     , withDefault
     )
 
@@ -40,3 +41,8 @@ withDefault default str =
 
     else
         str
+
+
+underscoreToSpace : String -> String
+underscoreToSpace str =
+    String.replace "_" " " str

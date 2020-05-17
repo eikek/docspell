@@ -132,12 +132,12 @@ textarea.markdown-editor {
     padding-right: 1em;
 }
 
-.default-layout .ui.grid > .column.item-list:not(.row) {
-    padding-top: 0.8em;
-    padding-bottom: 0;
+.default-layout .item-group:not(:first-child) > .ui.horizontal.divider.header.item-list {
+    margin-top: 1.5em;
 }
-.default-layout .ui.grid > .column.item-list:not(.row):last-child {
-    padding-bottom: 1.5rem;
+.default-layout .ui.horizontal.divider.header.item-list {
+    margin-bottom: 1em;
+    background: rgba(240,248,255,0.4);
 }
 
 label span.muted {
