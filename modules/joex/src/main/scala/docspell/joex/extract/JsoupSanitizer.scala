@@ -7,7 +7,7 @@ import java.nio.charset.Charset
 
 object JsoupSanitizer {
 
-  val change =
+  private val change =
     BodyClean.whitelistClean(EmailWhitelist.default)
 
   def clean(html: String): String =

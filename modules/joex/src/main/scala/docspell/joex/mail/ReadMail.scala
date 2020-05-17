@@ -7,10 +7,9 @@ import emil.{MimeType => _, _}
 import emil.javamail.syntax._
 import emil.tnef.TnefExtract
 import emil.markdown._
-import emil.jsoup.HtmlBodyView
+import emil.jsoup._
 
 import docspell.common._
-import docspell.joex.extract.JsoupSanitizer
 
 object ReadMail {
 
@@ -34,8 +33,9 @@ object ReadMail {
         HtmlBodyView(
           mail.body,
           Some(mail.header),
-          Some(MarkdownBody.makeHtml(markdownCfg)),
-          Some(JsoupSanitizer.change)
+          HtmlBodyViewConfig.default.copy(
+            textToHtml = MarkdownBody.makeHtml(markdownCfg)
+          )
         ).map(makeHtmlBinary[F] _).map(b => Some(b))
       }
 
