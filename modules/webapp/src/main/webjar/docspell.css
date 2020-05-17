@@ -132,6 +132,14 @@ textarea.markdown-editor {
     padding-right: 1em;
 }
 
+.default-layout .item-group:not(:first-child) > .ui.horizontal.divider.header.item-list {
+    margin-top: 1.5em;
+}
+.default-layout .ui.horizontal.divider.header.item-list {
+    margin-bottom: 1em;
+    background: rgba(240,248,255,0.4);
+}
+
 label span.muted {
     font-size: smaller;
     color: rgba(0,0,0,0.6);

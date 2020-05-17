@@ -5,6 +5,7 @@ module Data.Direction exposing
     , icon
     , iconFromMaybe
     , iconFromString
+    , labelFromMaybe
     , toString
     )
 
@@ -70,3 +71,10 @@ iconFromMaybe : Maybe String -> String
 iconFromMaybe ms =
     Maybe.map iconFromString ms
         |> Maybe.withDefault unknownIcon
+
+
+labelFromMaybe : Maybe String -> String
+labelFromMaybe ms =
+    Maybe.andThen fromString ms
+        |> Maybe.map toString
+        |> Maybe.withDefault "Direction"

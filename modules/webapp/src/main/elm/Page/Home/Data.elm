@@ -7,25 +7,27 @@ module Page.Home.Data exposing
     )
 
 import Api.Model.ItemLightList exposing (ItemLightList)
-import Comp.ItemList
+import Comp.ItemCardList
 import Comp.SearchMenu
 import Http
 
 
 type alias Model =
     { searchMenuModel : Comp.SearchMenu.Model
-    , itemListModel : Comp.ItemList.Model
+    , itemListModel : Comp.ItemCardList.Model
     , searchInProgress : Bool
     , viewMode : ViewMode
+    , menuCollapsed : Bool
     }
 
 
 emptyModel : Model
 emptyModel =
     { searchMenuModel = Comp.SearchMenu.emptyModel
-    , itemListModel = Comp.ItemList.emptyModel
+    , itemListModel = Comp.ItemCardList.init
     , searchInProgress = False
     , viewMode = Listing
+    , menuCollapsed = False
     }
 
 
@@ -33,9 +35,10 @@ type Msg
     = Init
     | SearchMenuMsg Comp.SearchMenu.Msg
     | ResetSearch
-    | ItemListMsg Comp.ItemList.Msg
+    | ItemCardListMsg Comp.ItemCardList.Msg
     | ItemSearchResp (Result Http.Error ItemLightList)
     | DoSearch
+    | ToggleSearchMenu
 
 
 type ViewMode
@@ -47,10 +50,10 @@ itemNav : String -> Model -> { prev : Maybe String, next : Maybe String }
 itemNav id model =
     let
         prev =
-            Comp.ItemList.prevItem model.itemListModel id
+            Comp.ItemCardList.prevItem model.itemListModel id
 
         next =
-            Comp.ItemList.nextItem model.itemListModel id
+            Comp.ItemCardList.nextItem model.itemListModel id
     in
     { prev = Maybe.map .id prev
     , next = Maybe.map .id next

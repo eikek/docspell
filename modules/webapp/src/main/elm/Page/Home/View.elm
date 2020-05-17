@@ -1,6 +1,6 @@
 module Page.Home.View exposing (view)
 
-import Comp.ItemList
+import Comp.ItemCardList
 import Comp.SearchMenu
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -12,22 +12,39 @@ import Page.Home.Data exposing (..)
 view : Model -> Html Msg
 view model =
     div [ class "home-page ui padded grid" ]
-        [ div [ class "four wide column" ]
-            [ div [ class "ui top attached ablue-comp menu" ]
-                [ h4 [ class "header item" ]
-                    [ text "Search"
+        [ div
+            [ classList
+                [ ( "sixteen wide mobile six wide tablet four wide computer column"
+                  , True
+                  )
+                , ( "invisible hidden", model.menuCollapsed )
+                ]
+            ]
+            [ div
+                [ class "ui top attached ablue-comp menu"
+                ]
+                [ a
+                    [ class "item"
+                    , href "#"
+                    , onClick ToggleSearchMenu
+                    , title "Hide menu"
+                    ]
+                    [ i [ class "ui angle down icon" ] []
+                    , text "Search"
                     ]
                 , div [ class "right floated menu" ]
                     [ a
-                        [ class "item"
+                        [ class "icon item"
                         , onClick ResetSearch
+                        , title "Reset form"
                         , href "#"
                         ]
                         [ i [ class "undo icon" ] []
                         ]
                     , a
-                        [ class "item"
+                        [ class "icon item"
                         , onClick DoSearch
+                        , title "Run search query"
                         , href ""
                         ]
                         [ i [ class "ui search icon" ] []
@@ -38,14 +55,37 @@ view model =
                 [ Html.map SearchMenuMsg (Comp.SearchMenu.view model.searchMenuModel)
                 ]
             ]
-        , div [ class "twelve wide column" ]
-            [ case model.viewMode of
+        , div
+            [ classList
+                [ ( "sixteen wide mobile ten wide tablet twelve wide computer column"
+                  , not model.menuCollapsed
+                  )
+                , ( "sixteen wide column", model.menuCollapsed )
+                ]
+            ]
+            [ div
+                [ classList
+                    [ ( "invisible hidden", not model.menuCollapsed )
+                    , ( "ui segment container", True )
+                    ]
+                ]
+                [ a
+                    [ class "ui basic large circular label"
+                    , onClick ToggleSearchMenu
+                    , href "#"
+                    ]
+                    [ i [ class "search icon" ] []
+                    , text "Search Menu…"
+                    ]
+                ]
+            , case model.viewMode of
                 Listing ->
                     if model.searchInProgress then
                         resultPlaceholder
 
                     else
-                        Html.map ItemListMsg (Comp.ItemList.view model.itemListModel)
+                        Html.map ItemCardListMsg
+                            (Comp.ItemCardList.view model.itemListModel)
 
                 Detail ->
                     div [] []

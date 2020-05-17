@@ -31,6 +31,7 @@ import Comp.SentMails
 import Comp.YesNoDimmer
 import Data.Direction exposing (Direction)
 import Data.Flags exposing (Flags)
+import Data.Icons as Icons
 import DatePicker exposing (DatePicker)
 import Dict exposing (Dict)
 import Html exposing (..)
@@ -1071,7 +1072,7 @@ view inav model =
             [ Html.map DeleteItemConfirm (Comp.YesNoDimmer.view model.deleteItemConfirm)
             , div
                 [ classList
-                    [ ( "four wide column", True )
+                    [ ( "sixteen wide mobile six wide tablet five wide computer column", True )
                     , ( "invisible", not model.menuOpen )
                     ]
                 ]
@@ -1083,7 +1084,7 @@ view inav model =
                 )
             , div
                 [ classList
-                    [ ( "twelve", model.menuOpen )
+                    [ ( "sixteen wide mobile ten wide tablet eleven wide computer column", model.menuOpen )
                     , ( "sixteen", not model.menuOpen )
                     , ( "wide column", True )
                     ]
@@ -1416,7 +1417,7 @@ renderItemInfo model =
                 [ class "item"
                 , title "Due Date"
                 ]
-                [ i [ class "bell icon" ] []
+                [ Icons.dueDateIcon
                 , Maybe.map Util.Time.formatDate model.item.dueDate
                     |> Maybe.withDefault ""
                     |> text
@@ -1427,7 +1428,7 @@ renderItemInfo model =
                 [ class "item"
                 , title "Correspondent"
                 ]
-                [ i [ class "envelope outline icon" ] []
+                [ Icons.correspondentIcon
                 , List.filterMap identity [ model.item.corrOrg, model.item.corrPerson ]
                     |> List.map .name
                     |> String.join ", "
@@ -1440,7 +1441,7 @@ renderItemInfo model =
                 [ class "item"
                 , title "Concerning"
                 ]
-                [ i [ class "comment outline icon" ] []
+                [ Icons.concernedIcon
                 , List.filterMap identity [ model.item.concPerson, model.item.concEquipment ]
                     |> List.map .name
                     |> String.join ", "
