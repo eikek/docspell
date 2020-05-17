@@ -5,6 +5,8 @@ module Data.Icons exposing
     , correspondentIcon
     , dueDate
     , dueDateIcon
+    , editNotes
+    , editNotesIcon
     )
 
 import Html exposing (Html, i)
@@ -39,3 +41,13 @@ dueDate =
 dueDateIcon : Html msg
 dueDateIcon =
     i [ class dueDate ] []
+
+
+editNotes : String
+editNotes =
+    "comment alternate outline icon"
+
+
+editNotesIcon : Html msg
+editNotesIcon =
+    i [ class editNotes ] []

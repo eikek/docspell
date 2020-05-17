@@ -1064,7 +1064,7 @@ view inav model =
                 , onClick ToggleEditNotes
                 , href "#"
                 ]
-                [ i [ class "edit outline icon" ] []
+                [ Icons.editNotesIcon
                 ]
             ]
         , renderMailForm model
