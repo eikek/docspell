@@ -133,8 +133,8 @@ textarea.markdown-editor {
 }
 
 .default-layout .ui.grid > .column.item-list:not(.row) {
-    padding-top: 0.3em;
-    padding-bottom: 0.6em;
+    padding-top: 0.8em;
+    padding-bottom: 0;
 }
 .default-layout .ui.grid > .column.item-list:not(.row):last-child {
     padding-bottom: 1.5rem;

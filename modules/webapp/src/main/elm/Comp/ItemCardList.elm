@@ -109,23 +109,37 @@ viewItem item =
         dueDate =
             Maybe.map Util.Time.formatDateShort item.dueDate
                 |> Maybe.withDefault ""
+
+        isConfirmed =
+            item.state /= "created"
+
+        newColor =
+            "blue"
     in
     div [ class "column item-list" ]
         [ a
-            [ class "ui fluid card"
+            [ classList
+                [ ( "ui fluid card", True )
+                , ( newColor, not isConfirmed )
+                ]
             , href "#"
             , onClick (SelectItem item)
             ]
             [ div [ class "content" ]
-                [ div [ class "header" ]
+                [ div
+                    [ class "header"
+                    , Data.Direction.labelFromMaybe item.direction
+                        |> title
+                    ]
                     [ dirIcon
                     , Util.String.ellipsis 45 item.name |> text
                     ]
                 , span [ class "meta" ]
                     [ div
                         [ classList
-                            [ ( "ui blue ribbon label", True )
-                            , ( "invisible", item.state /= "created" )
+                            [ ( "ui ribbon label", True )
+                            , ( newColor, True )
+                            , ( "invisible", isConfirmed )
                             ]
                         ]
                         [ i [ class "exclamation icon" ] []

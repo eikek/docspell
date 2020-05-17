@@ -25,6 +25,7 @@ view model =
                     [ class "item"
                     , href "#"
                     , onClick ToggleSearchMenu
+                    , title "Hide menu"
                     ]
                     [ i [ class "ui angle down icon" ] []
                     , text "Search"
@@ -33,6 +34,7 @@ view model =
                     [ a
                         [ class "icon item"
                         , onClick ResetSearch
+                        , title "Reset form"
                         , href "#"
                         ]
                         [ i [ class "undo icon" ] []
@@ -40,6 +42,7 @@ view model =
                     , a
                         [ class "icon item"
                         , onClick DoSearch
+                        , title "Run search query"
                         , href ""
                         ]
                         [ i [ class "ui search icon" ] []
