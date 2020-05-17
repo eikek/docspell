@@ -1072,7 +1072,7 @@ view inav model =
             [ Html.map DeleteItemConfirm (Comp.YesNoDimmer.view model.deleteItemConfirm)
             , div
                 [ classList
-                    [ ( "four wide column", True )
+                    [ ( "sixteen wide mobile six wide tablet five wide computer column", True )
                     , ( "invisible", not model.menuOpen )
                     ]
                 ]
@@ -1084,7 +1084,7 @@ view inav model =
                 )
             , div
                 [ classList
-                    [ ( "twelve", model.menuOpen )
+                    [ ( "sixteen wide mobile ten wide tablet eleven wide computer column", model.menuOpen )
                     , ( "sixteen", not model.menuOpen )
                     , ( "wide column", True )
                     ]

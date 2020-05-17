@@ -149,7 +149,7 @@ viewItem item =
                     ]
                 ]
             , span [ class "right floated meta" ]
-                [ Util.Time.formatDateShort item.date |> text
+                [ Util.Time.formatDate item.date |> text
                 ]
             ]
         , div [ class "content" ]

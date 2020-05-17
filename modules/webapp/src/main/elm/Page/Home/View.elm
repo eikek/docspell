@@ -14,7 +14,9 @@ view model =
     div [ class "home-page ui padded grid" ]
         [ div
             [ classList
-                [ ( "sixteen wide mobile six wide tablet four wide computer column", True )
+                [ ( "sixteen wide mobile six wide tablet four wide computer column"
+                  , True
+                  )
                 , ( "invisible hidden", model.menuCollapsed )
                 ]
             ]
@@ -55,7 +57,9 @@ view model =
             ]
         , div
             [ classList
-                [ ( "sixteen wide mobile ten wide tablet twelve wide computer column", not model.menuCollapsed )
+                [ ( "sixteen wide mobile ten wide tablet twelve wide computer column"
+                  , not model.menuCollapsed
+                  )
                 , ( "sixteen wide column", model.menuCollapsed )
                 ]
             ]
@@ -80,7 +84,8 @@ view model =
                         resultPlaceholder
 
                     else
-                        Html.map ItemCardListMsg (Comp.ItemCardList.view model.itemListModel)
+                        Html.map ItemCardListMsg
+                            (Comp.ItemCardList.view model.itemListModel)
 
                 Detail ->
                     div [] []
