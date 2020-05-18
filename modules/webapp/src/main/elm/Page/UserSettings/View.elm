@@ -16,14 +16,14 @@ view model =
     div [ class "usersetting-page ui padded grid" ]
         [ div [ class "sixteen wide mobile four wide tablet four wide computer column" ]
             [ h4 [ class "ui top attached ablue-comp header" ]
-                [ text "User"
+                [ text "User Settings"
                 ]
             , div [ class "ui attached fluid segment" ]
                 [ div [ class "ui fluid vertical secondary menu" ]
                     [ makeTab model ChangePassTab "Change Password" "user secret icon"
                     , makeTab model EmailSettingsTab "E-Mail Settings (SMTP)" "mail icon"
                     , makeTab model ImapSettingsTab "E-Mail Settings (IMAP)" "mail icon"
-                    , makeTab model NotificationTab "Notifications" "bullhorn icon"
+                    , makeTab model NotificationTab "Notification Task" "bullhorn icon"
                     ]
                 ]
             ]
