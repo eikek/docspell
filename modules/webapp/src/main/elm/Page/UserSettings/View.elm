@@ -4,6 +4,7 @@ import Comp.ChangePasswordForm
 import Comp.EmailSettingsManage
 import Comp.ImapSettingsManage
 import Comp.NotificationForm
+import Comp.ScanMailboxForm
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
@@ -24,6 +25,7 @@ view model =
                     , makeTab model EmailSettingsTab "E-Mail Settings (SMTP)" "mail icon"
                     , makeTab model ImapSettingsTab "E-Mail Settings (IMAP)" "mail icon"
                     , makeTab model NotificationTab "Notification Task" "bullhorn icon"
+                    , makeTab model ScanMailboxTab "Scan Mailbox Task" "envelope open outline icon"
                     ]
                 ]
             ]
@@ -41,6 +43,9 @@ view model =
 
                     Just ImapSettingsTab ->
                         viewImapSettings model
+
+                    Just ScanMailboxTab ->
+                        viewScanMailboxForm model
 
                     Nothing ->
                         []
@@ -117,4 +122,27 @@ viewNotificationForm model =
         ]
     , Html.map NotificationMsg
         (Comp.NotificationForm.view "segment" model.notificationModel)
+    ]
+
+
+viewScanMailboxForm : Model -> List (Html Msg)
+viewScanMailboxForm model =
+    [ h2 [ class "ui header" ]
+        [ i [ class "ui bullhorn icon" ] []
+        , div [ class "content" ]
+            [ text "Scan Mailbox"
+            ]
+        ]
+    , p []
+        [ text "Docspell can scan folders of your mailbox for mails to import. "
+        , text "You need to provide a connection in "
+        , text "your e-mail (imap) settings."
+        ]
+    , p []
+        [ text "Each time this is executed, docspell goes through all configured folders "
+        , text "and imports mails matching the search criteria. The number of mails to import "
+        , text "at one task run is limited. Mails already read in are skipped."
+        ]
+    , Html.map ScanMailboxMsg
+        (Comp.ScanMailboxForm.view "segment" model.scanMailboxModel)
     ]

@@ -30,6 +30,7 @@ module Api exposing
     , getOrganizations
     , getPersons
     , getPersonsLight
+    , getScanMailbox
     , getSentMails
     , getSources
     , getTags
@@ -64,7 +65,9 @@ module Api exposing
     , setTags
     , setUnconfirmed
     , startOnceNotifyDueItems
+    , startOnceScanMailbox
     , submitNotifyDueItems
+    , submitScanMailbox
     , upload
     , uploadSingle
     , versionInfo
@@ -105,6 +108,7 @@ import Api.Model.Person exposing (Person)
 import Api.Model.PersonList exposing (PersonList)
 import Api.Model.ReferenceList exposing (ReferenceList)
 import Api.Model.Registration exposing (Registration)
+import Api.Model.ScanMailboxSettings exposing (ScanMailboxSettings)
 import Api.Model.SentMails exposing (SentMails)
 import Api.Model.SimpleMail exposing (SimpleMail)
 import Api.Model.Source exposing (Source)
@@ -124,6 +128,50 @@ import Task
 import Url
 import Util.File
 import Util.Http as Http2
+
+
+
+--- Scan Mailboxes
+
+
+startOnceScanMailbox :
+    Flags
+    -> ScanMailboxSettings
+    -> (Result Http.Error BasicResult -> msg)
+    -> Cmd msg
+startOnceScanMailbox flags settings receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/usertask/scanmailbox/startonce"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.ScanMailboxSettings.encode settings)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+submitScanMailbox :
+    Flags
+    -> ScanMailboxSettings
+    -> (Result Http.Error BasicResult -> msg)
+    -> Cmd msg
+submitScanMailbox flags settings receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/usertask/scanmailbox"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.ScanMailboxSettings.encode settings)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+getScanMailbox :
+    Flags
+    -> (Result Http.Error ScanMailboxSettings -> msg)
+    -> Cmd msg
+getScanMailbox flags receive =
+    Http2.authGet
+        { url = flags.config.baseUrl ++ "/api/v1/sec/usertask/scanmailbox"
+        , account = getAccount flags
+        , expect = Http.expectJson receive Api.Model.ScanMailboxSettings.decoder
+        }
 
 
 

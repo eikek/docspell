@@ -1755,8 +1755,113 @@ paths:
               schema:
                 $ref: "#/components/schemas/BasicResult"
 
+  /sec/usertask/scanmailbox:
+    get:
+      tags: [ User Tasks ]
+      summary: Get settings for "Scan Mailbox" task
+      description: |
+        Return the current settings for the scan mailbox task of the
+        authenticated user. Users can periodically fetch mails to be
+        imported into docspell.
+      security:
+        - authTokenHeader: []
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScanMailboxSettings"
+    post:
+      tags: [ User Tasks ]
+      summary: Change current settings for "Scan Mailbox" task
+      description: |
+        Change the current settings for the scan-mailbox task of the
+        authenticated user.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ScanMailboxSettings"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+  /sec/usertask/scanmailbox/startonce:
+    post:
+      tags: [ User Tasks ]
+      summary: Start the "Scan Mailbox" task once
+      description: |
+        Starts the scan-mailbox task just once, discarding the
+        schedule and not updating the periodic task.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ScanMailboxSettings"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
 components:
   schemas:
+    ScanMailboxSettings:
+      description: |
+        Settings for the scan mailbox task.
+      required:
+        - id
+        - enabled
+        - imapConnection
+        - schedule
+        - folders
+      properties:
+        id:
+          type: string
+          format: ident
+        enabled:
+          type: boolean
+        imapConnection:
+          type: string
+          format: ident
+        folders:
+          type: array
+          items:
+            type: string
+        schedule:
+          type: string
+          format: calevent
+        receivedSinceHours:
+          type: integer
+          description: |
+            Look only for mails newer than `receivedSinceHours' hours.
+        targetFolder:
+          type: string
+          description: |
+            The folder to move all mails into that have been
+            successfully submitted to docspell.
+        deleteMail:
+          type: boolean
+          description: |
+            Whether to delete all successfully imported mails. This
+            only applies, if `targetFolder' is not set.
+        direction:
+          type: string
+          format: direction
+          description: |
+            The direction to apply to items resulting from importing
+            mails. If not set, the value is guessed based on the from
+            and to mail headers and your address book.
     ImapSettingsList:
       description: |
         A list of user email settings.
