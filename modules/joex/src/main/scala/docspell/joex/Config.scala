@@ -7,6 +7,7 @@ import docspell.store.JdbcConfig
 import docspell.convert.ConvertConfig
 import docspell.extract.ExtractConfig
 import docspell.joex.hk.HouseKeepingConfig
+import docspell.backend.Config.Files
 
 case class Config(
     appId: Ident,
@@ -19,7 +20,8 @@ case class Config(
     extraction: ExtractConfig,
     textAnalysis: TextAnalysisConfig,
     convert: ConvertConfig,
-    sendMail: MailSendConfig
+    sendMail: MailSendConfig,
+    files: Files
 )
 
 object Config {

@@ -48,7 +48,7 @@ object BackendApp {
       equipImpl    <- OEquipment[F](store)
       orgImpl      <- OOrganization(store)
       joexImpl     <- OJoex.create(httpClientEc, store)
-      uploadImpl   <- OUpload(store, queue, cfg, joexImpl)
+      uploadImpl   <- OUpload(store, queue, cfg.files, joexImpl)
       nodeImpl     <- ONode(store)
       jobImpl      <- OJob(store, joexImpl)
       itemImpl     <- OItem(store)

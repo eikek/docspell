@@ -52,7 +52,7 @@ object OUpload {
   def apply[F[_]: Sync](
       store: Store[F],
       queue: JobQueue[F],
-      cfg: Config,
+      cfg: Config.Files,
       joex: OJoex[F]
   ): Resource[F, OUpload[F]] =
     Resource.pure[F, OUpload[F]](new OUpload[F] {
@@ -105,7 +105,7 @@ object OUpload {
       private def saveFile(file: File[F]): F[Option[ProcessItemArgs.File]] =
         logger.finfo(s"Receiving file $file") *>
           store.bitpeace
-            .saveNew(file.data, cfg.files.chunkSize, MimetypeHint(file.name, None), None)
+            .saveNew(file.data, cfg.chunkSize, MimetypeHint(file.name, None), None)
             .compile
             .lastOrError
             .map(fm => Ident.unsafe(fm.id))
