@@ -14,16 +14,18 @@ import Api.Model.Tag exposing (Tag)
 import Api.Model.TagList exposing (TagList)
 import Comp.CalEventInput
 import Comp.Dropdown
-import Comp.EmailInput
 import Comp.IntField
+import Comp.StringListInput
 import Data.CalEvent exposing (CalEvent)
+import Data.Direction exposing (Direction(..))
 import Data.Flags exposing (Flags)
 import Data.Validated exposing (Validated(..))
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onCheck, onClick)
+import Html.Events exposing (onCheck, onClick, onInput)
 import Http
 import Util.Http
+import Util.List
 import Util.Maybe
 import Util.Update
 
@@ -32,6 +34,13 @@ type alias Model =
     { settings : ScanMailboxSettings
     , connectionModel : Comp.Dropdown.Model String
     , enabled : Bool
+    , deleteMail : Bool
+    , receivedHours : Maybe Int
+    , receivedHoursModel : Comp.IntField.Model
+    , targetFolder : Maybe String
+    , foldersModel : Comp.StringListInput.Model
+    , folders : List String
+    , direction : Maybe Direction
     , schedule : Validated CalEvent
     , scheduleModel : Comp.CalEventInput.Model
     , formMsg : Maybe BasicResult
@@ -44,10 +53,15 @@ type Msg
     | ConnMsg (Comp.Dropdown.Msg String)
     | ConnResp (Result Http.Error ImapSettingsList)
     | ToggleEnabled
+    | ToggleDeleteMail
     | CalEventMsg Comp.CalEventInput.Msg
     | SetScanMailboxSettings (Result Http.Error ScanMailboxSettings)
     | SubmitResp (Result Http.Error BasicResult)
     | StartOnce
+    | ReceivedHoursMsg Comp.IntField.Msg
+    | SetTargetFolder String
+    | FoldersMsg Comp.StringListInput.Msg
+    | DirectionMsg (Maybe Direction)
 
 
 initCmd : Flags -> Cmd Msg
@@ -74,10 +88,17 @@ init flags =
                 , placeholder = "Select connection..."
                 }
       , enabled = False
+      , deleteMail = False
+      , receivedHours = Nothing
+      , receivedHoursModel = Comp.IntField.init (Just 1) Nothing True "Received Since Hours"
+      , foldersModel = Comp.StringListInput.init
+      , folders = []
+      , targetFolder = Nothing
+      , direction = Nothing
       , schedule = initialSchedule
       , scheduleModel = sm
       , formMsg = Nothing
-      , loading = 3
+      , loading = 2
       }
     , Cmd.batch
         [ initCmd flags
@@ -102,16 +123,29 @@ makeSettings model =
                 |> Maybe.map Valid
                 |> Maybe.withDefault (Invalid [ "Connection missing" ] "")
 
-        make smtp timer =
+        infolders =
+            if model.folders == [] then
+                Invalid [ "No folders given" ] []
+
+            else
+                Valid model.folders
+
+        make smtp timer folders =
             { prev
                 | imapConnection = smtp
                 , enabled = model.enabled
+                , receivedSinceHours = model.receivedHours
+                , deleteMail = model.deleteMail
+                , targetFolder = model.targetFolder
+                , folders = folders
+                , direction = Maybe.map Data.Direction.toString model.direction
                 , schedule = Data.CalEvent.makeEvent timer
             }
     in
-    Data.Validated.map2 make
+    Data.Validated.map3 make
         conn
         model.schedule
+        infolders
 
 
 withValidSettings : (ScanMailboxSettings -> Cmd Msg) -> Model -> ( Model, Cmd Msg )
@@ -211,6 +245,60 @@ update flags msg model =
             , Cmd.none
             )
 
+        ToggleDeleteMail ->
+            ( { model
+                | deleteMail = not model.deleteMail
+                , formMsg = Nothing
+              }
+            , Cmd.none
+            )
+
+        ReceivedHoursMsg m ->
+            let
+                ( pm, val ) =
+                    Comp.IntField.update m model.receivedHoursModel
+            in
+            ( { model
+                | receivedHoursModel = pm
+                , receivedHours = val
+                , formMsg = Nothing
+              }
+            , Cmd.none
+            )
+
+        SetTargetFolder str ->
+            ( { model | targetFolder = Util.Maybe.fromString str }
+            , Cmd.none
+            )
+
+        FoldersMsg lm ->
+            let
+                ( fm, itemAction ) =
+                    Comp.StringListInput.update lm model.foldersModel
+
+                newList =
+                    case itemAction of
+                        Comp.StringListInput.AddAction s ->
+                            Util.List.distinct (s :: model.folders)
+
+                        Comp.StringListInput.RemoveAction s ->
+                            List.filter (\e -> e /= s) model.folders
+
+                        Comp.StringListInput.NoAction ->
+                            model.folders
+            in
+            ( { model
+                | foldersModel = fm
+                , folders = newList
+              }
+            , Cmd.none
+            )
+
+        DirectionMsg md ->
+            ( { model | direction = md }
+            , Cmd.none
+            )
+
         SetScanMailboxSettings (Ok s) ->
             let
                 imap =
@@ -234,7 +322,12 @@ update flags msg model =
             ( { nm
                 | settings = s
                 , enabled = s.enabled
+                , deleteMail = s.deleteMail
+                , receivedHours = s.receivedSinceHours
+                , targetFolder = s.targetFolder
+                , folders = s.folders
                 , schedule = Data.Validated.Unknown newSchedule
+                , direction = Maybe.andThen Data.Direction.fromString s.direction
                 , scheduleModel = sm
                 , formMsg = Nothing
                 , loading = model.loading - 1
@@ -313,11 +406,108 @@ view extraClasses model =
                 [ text "Loading..."
                 ]
             ]
+        , div [ class "inline field" ]
+            [ div [ class "ui checkbox" ]
+                [ input
+                    [ type_ "checkbox"
+                    , onCheck (\_ -> ToggleEnabled)
+                    , checked model.enabled
+                    ]
+                    []
+                , label [] [ text "Enabled" ]
+                ]
+            , span [ class "small-info" ]
+                [ text "Enable or disable this task."
+                ]
+            ]
         , div [ class "required field" ]
-            [ label [] [ text "Send via" ]
+            [ label [] [ text "Mailbox" ]
             , Html.map ConnMsg (Comp.Dropdown.view model.connectionModel)
             , span [ class "small-info" ]
                 [ text "The IMAP connection to use when sending notification mails."
+                ]
+            ]
+        , div [ class "required field" ]
+            [ label [] [ text "Folders" ]
+            , Html.map FoldersMsg (Comp.StringListInput.view model.folders model.foldersModel)
+            , span [ class "small-info" ]
+                [ text "The folders to go through"
+                ]
+            ]
+        , Html.map ReceivedHoursMsg
+            (Comp.IntField.viewWithInfo
+                "Select mails newer than `now - receivedHours`"
+                model.receivedHours
+                "field"
+                model.receivedHoursModel
+            )
+        , div [ class "field" ]
+            [ label [] [ text "Target folder" ]
+            , input
+                [ type_ "text"
+                , onInput SetTargetFolder
+                , Maybe.withDefault "" model.targetFolder |> value
+                ]
+                []
+            , span [ class "small-info" ]
+                [ text "Move all mails successfully submitted into this folder."
+                ]
+            ]
+        , div [ class "inline field" ]
+            [ div [ class "ui checkbox" ]
+                [ input
+                    [ type_ "checkbox"
+                    , onCheck (\_ -> ToggleDeleteMail)
+                    , checked model.deleteMail
+                    ]
+                    []
+                , label [] [ text "Delete imported mails" ]
+                ]
+            , span [ class "small-info" ]
+                [ text "Whether to delete all mails successfully imported into docspell."
+                ]
+            ]
+        , div [ class "required field" ]
+            [ label [] [ text "Item direction" ]
+            , div [ class "grouped fields" ]
+                [ div [ class "field" ]
+                    [ div [ class "ui radio checkbox" ]
+                        [ input
+                            [ type_ "radio"
+                            , checked (model.direction == Nothing)
+                            , onCheck (\_ -> DirectionMsg Nothing)
+                            ]
+                            []
+                        , label [] [ text "Automatic" ]
+                        ]
+                    ]
+                , div [ class "field" ]
+                    [ div [ class "ui radio checkbox" ]
+                        [ input
+                            [ type_ "radio"
+                            , checked (model.direction == Just Incoming)
+                            , onCheck (\_ -> DirectionMsg (Just Incoming))
+                            ]
+                            []
+                        , label [] [ text "Incoming" ]
+                        ]
+                    ]
+                , div [ class "field" ]
+                    [ div [ class "ui radio checkbox" ]
+                        [ input
+                            [ type_ "radio"
+                            , checked (model.direction == Just Outgoing)
+                            , onCheck (\_ -> DirectionMsg (Just Outgoing))
+                            ]
+                            []
+                        , label [] [ text "Outgoing" ]
+                        ]
+                    ]
+                , span [ class "small-info" ]
+                    [ text "Sets the direction for an item. If you know all mails are incoming or "
+                    , text "outgoing, you can set it here. Otherwise it will be guessed from looking "
+                    , text "at sender and receiver."
+                    ]
                 ]
             ]
         , div [ class "required field" ]

@@ -1825,6 +1825,7 @@ components:
         - imapConnection
         - schedule
         - folders
+        - deleteMail
       properties:
         id:
           type: string
@@ -1843,6 +1844,7 @@ components:
           format: calevent
         receivedSinceHours:
           type: integer
+          format: int32
           description: |
             Look only for mails newer than `receivedSinceHours' hours.
         targetFolder:

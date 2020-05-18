@@ -13,6 +13,10 @@ case class Duration(nanos: Long) {
 
   def seconds: Long = millis / 1000
 
+  def minutes: Long = seconds / 60
+
+  def hours: Long = minutes / 60
+
   def toScala: FiniteDuration =
     FiniteDuration(nanos, TimeUnit.NANOSECONDS)
 
@@ -54,7 +58,6 @@ object Duration {
       now <- Timestamp.current[F]
       end = Timestamp.current[F]
     } yield end.map(e => Duration.millis(e.toMillis - now.toMillis))
-
 
   implicit val jsonEncoder: Encoder[Duration] =
     Encoder.encodeLong.contramap(_.millis)

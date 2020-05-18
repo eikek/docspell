@@ -128,7 +128,7 @@ viewNotificationForm model =
 viewScanMailboxForm : Model -> List (Html Msg)
 viewScanMailboxForm model =
     [ h2 [ class "ui header" ]
-        [ i [ class "ui bullhorn icon" ] []
+        [ i [ class "ui envelope open outline icon" ] []
         , div [ class "content" ]
             [ text "Scan Mailbox"
             ]
