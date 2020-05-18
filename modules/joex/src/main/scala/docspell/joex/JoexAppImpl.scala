@@ -6,6 +6,7 @@ import emil.javamail._
 import docspell.common._
 import docspell.joex.hk._
 import docspell.joex.notify._
+import docspell.joex.scanmailbox._
 import docspell.joex.process.ItemHandler
 import docspell.joex.scheduler._
 import docspell.joexapi.client.JoexClient
@@ -67,6 +68,7 @@ object JoexAppImpl {
       queue   <- JobQueue(store)
       pstore  <- PeriodicTaskStore.create(store)
       nodeOps <- ONode(store)
+      javaEmil = JavaMailEmil(blocker)
       sch <- SchedulerBuilder(cfg.scheduler, blocker, store)
         .withQueue(queue)
         .withTask(
@@ -79,8 +81,15 @@ object JoexAppImpl {
         .withTask(
           JobTask.json(
             NotifyDueItemsArgs.taskName,
-            NotifyDueItemsTask[F](cfg.sendMail, JavaMailEmil(blocker)),
+            NotifyDueItemsTask[F](cfg.sendMail, javaEmil),
             NotifyDueItemsTask.onCancel[F]
+          )
+        )
+        .withTask(
+          JobTask.json(
+            ScanMailboxArgs.taskName,
+            ScanMailboxTask[F](javaEmil),
+            ScanMailboxTask.onCancel[F]
           )
         )
         .withTask(
