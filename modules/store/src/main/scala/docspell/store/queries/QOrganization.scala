@@ -86,6 +86,31 @@ object QOrganization {
       })
   }
 
+  def findPersonByContact(
+      coll: Ident,
+      value: String,
+      ck: Option[ContactKind],
+      concerning: Option[Boolean]
+  ): Stream[ConnectionIO, RPerson] = {
+    val pColl = PC.cid.prefix("p")
+    val pConc = PC.concerning.prefix("p")
+    val pId   = PC.pid.prefix("p")
+    val cPers = RContact.Columns.personId.prefix("c")
+    val cVal  = RContact.Columns.value.prefix("c")
+    val cKind = RContact.Columns.kind.prefix("c")
+
+    val from = RPerson.table ++ fr"p INNER JOIN" ++
+      RContact.table ++ fr"c ON" ++ cPers.is(pId)
+    val q = Seq(
+      cVal.lowerLike(s"%${value.toLowerCase}%"),
+      pColl.is(coll)
+    ) ++ concerning.map(pConc.is(_)).toSeq ++ ck.map(cKind.is(_)).toSeq
+
+    selectDistinct(PC.all.map(_.prefix("p")), from, and(q))
+      .query[RPerson]
+      .stream
+  }
+
   def addOrg[F[_]](
       org: ROrganization,
       contacts: Seq[RContact],

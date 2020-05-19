@@ -90,7 +90,7 @@ object JoexAppImpl {
         .withTask(
           JobTask.json(
             ScanMailboxArgs.taskName,
-            ScanMailboxTask[F](javaEmil, upload),
+            ScanMailboxTask[F](cfg.userTasks.scanMailbox, javaEmil, upload, joex),
             ScanMailboxTask.onCancel[F]
           )
         )

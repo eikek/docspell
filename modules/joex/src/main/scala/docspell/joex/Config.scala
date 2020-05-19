@@ -16,6 +16,7 @@ case class Config(
     jdbc: JdbcConfig,
     scheduler: SchedulerConfig,
     periodicScheduler: PeriodicSchedulerConfig,
+    userTasks: Config.UserTasks,
     houseKeeping: HouseKeepingConfig,
     extraction: ExtractConfig,
     textAnalysis: TextAnalysisConfig,
@@ -26,4 +27,7 @@ case class Config(
 
 object Config {
   case class Bind(address: String, port: Int)
+
+  case class ScanMailbox(maxFolders: Int, mailChunkSize: Int, maxMails: Int)
+  case class UserTasks(scanMailbox: ScanMailbox)
 }

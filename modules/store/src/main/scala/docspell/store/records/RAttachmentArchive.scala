@@ -6,6 +6,7 @@ import doobie.implicits._
 import docspell.common._
 import docspell.store.impl._
 import docspell.store.impl.Implicits._
+import cats.data.NonEmptyList
 
 /** The archive file of some attachment. The `id` is shared with the
   * attachment, to create a 0..1-1 relationship.
@@ -70,6 +71,26 @@ object RAttachmentArchive {
     val where = and(aId.is(attachId), bId.is(attachId), iColl.is(collective))
 
     selectSimple(all.map(_.prefix("a")), from, where).query[RAttachmentArchive].option
+  }
+
+  def findByMessageIdAndCollective(
+      messageIds: NonEmptyList[String],
+      collective: Ident
+  ): ConnectionIO[Vector[RAttachmentArchive]] = {
+    val bId    = RAttachment.Columns.id.prefix("b")
+    val bItem  = RAttachment.Columns.itemId.prefix("b")
+    val aMsgId = Columns.messageId.prefix("a")
+    val aId    = Columns.id.prefix("a")
+    val iId    = RItem.Columns.id.prefix("i")
+    val iColl  = RItem.Columns.cid.prefix("i")
+
+    val from = table ++ fr"a INNER JOIN" ++
+      RAttachment.table ++ fr"b ON" ++ aId.is(bId) ++
+      fr"INNER JOIN" ++ RItem.table ++ fr"i ON" ++ bItem.is(iId)
+
+    val where = and(aMsgId.isIn(messageIds), iColl.is(collective))
+
+    selectSimple(all.map(_.prefix("a")), from, where).query[RAttachmentArchive].to[Vector]
   }
 
   def findByItemWithMeta(
