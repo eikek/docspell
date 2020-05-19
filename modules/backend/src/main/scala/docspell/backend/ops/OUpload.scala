@@ -14,9 +14,17 @@ import org.log4s._
 
 trait OUpload[F[_]] {
 
-  def submit(data: OUpload.UploadData[F], account: AccountId): F[OUpload.UploadResult]
+  def submit(
+      data: OUpload.UploadData[F],
+      account: AccountId,
+      notifyJoex: Boolean
+  ): F[OUpload.UploadResult]
 
-  def submit(data: OUpload.UploadData[F], sourceId: Ident): F[OUpload.UploadResult]
+  def submit(
+      data: OUpload.UploadData[F],
+      sourceId: Ident,
+      notifyJoex: Boolean
+  ): F[OUpload.UploadResult]
 }
 
 object OUpload {
@@ -59,7 +67,8 @@ object OUpload {
 
       def submit(
           data: OUpload.UploadData[F],
-          account: AccountId
+          account: AccountId,
+          notifyJoex: Boolean
       ): F[OUpload.UploadResult] =
         for {
           files <- data.files.traverse(saveFile).map(_.flatten)
@@ -77,13 +86,17 @@ object OUpload {
             else Vector(ProcessItemArgs(meta, files.toList))
           job <- pred.traverse(_ => makeJobs(args, account, data.priority, data.tracker))
           _   <- logger.fdebug(s"Storing jobs: $job")
-          res <- job.traverse(submitJobs)
+          res <- job.traverse(submitJobs(notifyJoex))
           _ <- store.transact(
             RSource.incrementCounter(data.meta.sourceAbbrev, account.collective)
           )
         } yield res.fold(identity, identity)
 
-      def submit(data: OUpload.UploadData[F], sourceId: Ident): F[OUpload.UploadResult] =
+      def submit(
+          data: OUpload.UploadData[F],
+          sourceId: Ident,
+          notifyJoex: Boolean
+      ): F[OUpload.UploadResult] =
         for {
           sOpt <-
             store
@@ -92,14 +105,16 @@ object OUpload {
           abbrev = sOpt.map(_.abbrev).toOption.getOrElse(data.meta.sourceAbbrev)
           updata = data.copy(meta = data.meta.copy(sourceAbbrev = abbrev))
           accId  = sOpt.map(source => AccountId(source.cid, source.sid))
-          result <- accId.traverse(acc => submit(updata, acc))
+          result <- accId.traverse(acc => submit(updata, acc, notifyJoex))
         } yield result.fold(identity, identity)
 
-      private def submitJobs(jobs: Vector[RJob]): F[OUpload.UploadResult] =
+      private def submitJobs(
+          notifyJoex: Boolean
+      )(jobs: Vector[RJob]): F[OUpload.UploadResult] =
         for {
           _ <- logger.fdebug(s"Storing jobs: $jobs")
           _ <- queue.insertAll(jobs)
-          _ <- joex.notifyAllNodes
+          _ <- if (notifyJoex) joex.notifyAllNodes else ().pure[F]
         } yield UploadResult.Success
 
       private def saveFile(file: File[F]): F[Option[ProcessItemArgs.File]] =

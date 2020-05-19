@@ -37,7 +37,7 @@ object UploadRoutes {
             Priority.High,
             cfg.backend.files.validMimeTypes
           )
-          result <- backend.upload.submit(updata, user.account)
+          result <- backend.upload.submit(updata, user.account, true)
           res    <- Ok(basicResult(result))
         } yield res
 
@@ -61,7 +61,7 @@ object UploadRoutes {
             Priority.Low,
             cfg.backend.files.validMimeTypes
           )
-          result <- backend.upload.submit(updata, id)
+          result <- backend.upload.submit(updata, id, true)
           res    <- Ok(basicResult(result))
         } yield res
 
