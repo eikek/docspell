@@ -164,11 +164,11 @@ object ScanMailboxTask {
       for {
         _ <- Kleisli.liftF(
           ctx.logger.debug(
-            s"Searching next ${cfg.mailChunkSize} mails in ${folder.name}."
+            s"Searching next ${cfg.mailBatchSize} mails in ${folder.name}."
           )
         )
         query <- Kleisli.liftF(q)
-        mails <- a.search(folder, cfg.mailChunkSize)(query)
+        mails <- a.search(folder, cfg.mailBatchSize)(query)
         _ <- Kleisli.liftF(
           ctx.logger.debug(
             s"Found ${mails.count} mails in folder. Reading first ${mails.mails.size}"

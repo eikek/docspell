@@ -29,6 +29,9 @@ case class Config(
 object Config {
   case class Bind(address: String, port: Int)
 
-  case class ScanMailbox(maxFolders: Int, mailChunkSize: Int, maxMails: Int)
+  case class ScanMailbox(maxFolders: Int, mailChunkSize: Int, maxMails: Int) {
+    def mailBatchSize: Int =
+      math.min(mailChunkSize, maxMails)
+  }
   case class UserTasks(scanMailbox: ScanMailbox)
 }
