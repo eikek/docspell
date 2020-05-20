@@ -464,7 +464,9 @@ view extraClasses model =
                 , label [] [ text "Delete imported mails" ]
                 ]
             , span [ class "small-info" ]
-                [ text "Whether to delete all mails successfully imported into docspell."
+                [ text "Whether to delete all mails successfully imported into docspell. This only applies if "
+                , em [] [ text "target folder" ]
+                , text " is not set."
                 ]
             ]
         , div [ class "required field" ]
