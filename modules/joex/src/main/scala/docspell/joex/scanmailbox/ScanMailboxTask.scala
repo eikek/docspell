@@ -85,7 +85,7 @@ object ScanMailboxTask {
       if (acc.noneLeft(name)) acc.pure[F]
       else
         mailer
-          .run(impl.handleFolder(theEmil.access, upload, joex)(name))
+          .run(impl.handleFolder(theEmil.access, upload)(name))
           .map(_ ++ acc)
 
     Stream
@@ -98,13 +98,14 @@ object ScanMailboxTask {
       )
       .lastOr(ScanResult.empty)
       .evalMap { sr =>
-        if (sr.processed >= cfg.maxMails)
-          ctx.logger.warn(
-            s"Reached server maximum of ${cfg.maxMails} processed mails. Processed ${sr.processed} mails."
-          )
-        else
-          ctx.logger
-            .info(s"Stopped after processing ${sr.processed} mails")
+        joex.notifyAllNodes *>
+          (if (sr.processed >= cfg.maxMails)
+             ctx.logger.warn(
+               s"Reached server maximum of ${cfg.maxMails} processed mails. Processed ${sr.processed} mails."
+             )
+           else
+             ctx.logger
+               .info(s"Stopped after processing ${sr.processed} mails"))
       }
       .compile
       .drain
@@ -133,7 +134,7 @@ object ScanMailboxTask {
 
   final private class Impl[F[_]: Sync](cfg: Config.ScanMailbox, ctx: Context[F, Args]) {
 
-    def handleFolder[C](a: Access[F, C], upload: OUpload[F], joex: OJoex[F])(
+    def handleFolder[C](a: Access[F, C], upload: OUpload[F])(
         name: String
     ): MailOp[F, C, ScanResult] =
       for {
@@ -142,7 +143,6 @@ object ScanMailboxTask {
         search  <- searchMails(a)(folder)
         headers <- Kleisli.liftF(filterMessageIds(search.mails))
         _       <- headers.traverse(handleOne(a, upload))
-        _       <- Kleisli.liftF(joex.notifyAllNodes)
       } yield ScanResult(name, search.mails.size, search.count - search.mails.size)
 
     def requireFolder[C](a: Access[F, C])(name: String): MailOp[F, C, MailFolder] =
