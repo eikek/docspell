@@ -10,8 +10,6 @@ import Api
 import Api.Model.BasicResult exposing (BasicResult)
 import Api.Model.ImapSettingsList exposing (ImapSettingsList)
 import Api.Model.ScanMailboxSettings exposing (ScanMailboxSettings)
-import Api.Model.Tag exposing (Tag)
-import Api.Model.TagList exposing (TagList)
 import Comp.CalEventInput
 import Comp.Dropdown
 import Comp.IntField
