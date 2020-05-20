@@ -96,6 +96,7 @@ object MimeType {
   val tiff        = image("tiff")
   val html        = text("html")
   val plain       = text("plain")
+  val eml         = MimeType("message", "rfc822", Map.empty)
 
   object PdfMatch {
     def unapply(mt: MimeType): Option[MimeType] =

@@ -2,7 +2,9 @@ module Page.UserSettings.View exposing (view)
 
 import Comp.ChangePasswordForm
 import Comp.EmailSettingsManage
+import Comp.ImapSettingsManage
 import Comp.NotificationForm
+import Comp.ScanMailboxForm
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
@@ -15,13 +17,15 @@ view model =
     div [ class "usersetting-page ui padded grid" ]
         [ div [ class "sixteen wide mobile four wide tablet four wide computer column" ]
             [ h4 [ class "ui top attached ablue-comp header" ]
-                [ text "User"
+                [ text "User Settings"
                 ]
             , div [ class "ui attached fluid segment" ]
                 [ div [ class "ui fluid vertical secondary menu" ]
                     [ makeTab model ChangePassTab "Change Password" "user secret icon"
-                    , makeTab model EmailSettingsTab "E-Mail Settings" "mail icon"
-                    , makeTab model NotificationTab "Notifications" "bullhorn icon"
+                    , makeTab model EmailSettingsTab "E-Mail Settings (SMTP)" "mail icon"
+                    , makeTab model ImapSettingsTab "E-Mail Settings (IMAP)" "mail icon"
+                    , makeTab model NotificationTab "Notification Task" "bullhorn icon"
+                    , makeTab model ScanMailboxTab "Scan Mailbox Task" "envelope open outline icon"
                     ]
                 ]
             ]
@@ -36,6 +40,12 @@ view model =
 
                     Just NotificationTab ->
                         viewNotificationForm model
+
+                    Just ImapSettingsTab ->
+                        viewImapSettings model
+
+                    Just ScanMailboxTab ->
+                        viewScanMailboxForm model
 
                     Nothing ->
                         []
@@ -61,10 +71,22 @@ viewEmailSettings model =
     [ h2 [ class "ui header" ]
         [ i [ class "mail icon" ] []
         , div [ class "content" ]
-            [ text "E-Mail Settings"
+            [ text "E-Mail Settings (Smtp)"
             ]
         ]
     , Html.map EmailSettingsMsg (Comp.EmailSettingsManage.view model.emailSettingsModel)
+    ]
+
+
+viewImapSettings : Model -> List (Html Msg)
+viewImapSettings model =
+    [ h2 [ class "ui header" ]
+        [ i [ class "mail icon" ] []
+        , div [ class "content" ]
+            [ text "E-Mail Settings (Imap)"
+            ]
+        ]
+    , Html.map ImapSettingsMsg (Comp.ImapSettingsManage.view model.imapSettingsModel)
     ]
 
 
@@ -89,15 +111,45 @@ viewNotificationForm model =
             ]
         ]
     , p []
-        [ text "Docspell can notify you once the due dates of your items come closer. "
-        , text "Notification is done via e-mail. You need to provide a connection in "
-        , text "your e-mail settings."
+        [ text """
+            Docspell can notify you once the due dates of your items
+            come closer. Notification is done via e-mail. You need to
+            provide a connection in your e-mail settings."""
         ]
     , p []
-        [ text "Each time this is executed, docspell finds all items that are due in "
+        [ text "Docspell finds all items that are due in "
         , em [] [ text "Remind Days" ]
-        , text " days."
+        , text " days and sends this list via e-mail."
         ]
     , Html.map NotificationMsg
         (Comp.NotificationForm.view "segment" model.notificationModel)
+    ]
+
+
+viewScanMailboxForm : Model -> List (Html Msg)
+viewScanMailboxForm model =
+    [ h2 [ class "ui header" ]
+        [ i [ class "ui envelope open outline icon" ] []
+        , div [ class "content" ]
+            [ text "Scan Mailbox"
+            ]
+        ]
+    , p []
+        [ text "Docspell can scan folders of your mailbox to import your mails. "
+        , text "You need to provide a connection in "
+        , text "your e-mail (imap) settings."
+        ]
+    , p []
+        [ text """
+            Docspell goes through all configured folders and imports
+            mails matching the search criteria. Mails are skipped if
+            they were imported in a previous run and the corresponding
+            items still exist. After submitting a mail into docspell,
+            you can choose to move it to another folder, to delete it
+            or to just leave it there. In the latter case you should
+            adjust the schedule to avoid reading over the same mails
+            again."""
+        ]
+    , Html.map ScanMailboxMsg
+        (Comp.ScanMailboxForm.view "segment" model.scanMailboxModel)
     ]

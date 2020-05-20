@@ -4,14 +4,15 @@ import cats.implicits._
 import cats.effect._
 import emil.javamail._
 import docspell.common._
+import docspell.backend.ops._
 import docspell.joex.hk._
 import docspell.joex.notify._
+import docspell.joex.scanmailbox._
 import docspell.joex.process.ItemHandler
 import docspell.joex.scheduler._
 import docspell.joexapi.client.JoexClient
 import docspell.store.Store
 import docspell.store.queue._
-import docspell.backend.ops.ONode
 import docspell.store.records.RJobLog
 import fs2.concurrent.SignallingRef
 import scala.concurrent.ExecutionContext
@@ -67,6 +68,10 @@ object JoexAppImpl {
       queue   <- JobQueue(store)
       pstore  <- PeriodicTaskStore.create(store)
       nodeOps <- ONode(store)
+      joex    <- OJoex(client, store)
+      upload  <- OUpload(store, queue, cfg.files, joex)
+      javaEmil =
+        JavaMailEmil(blocker, Settings.defaultSettings.copy(debug = cfg.mailDebug))
       sch <- SchedulerBuilder(cfg.scheduler, blocker, store)
         .withQueue(queue)
         .withTask(
@@ -79,8 +84,15 @@ object JoexAppImpl {
         .withTask(
           JobTask.json(
             NotifyDueItemsArgs.taskName,
-            NotifyDueItemsTask[F](cfg.sendMail, JavaMailEmil(blocker)),
+            NotifyDueItemsTask[F](cfg.sendMail, javaEmil),
             NotifyDueItemsTask.onCancel[F]
+          )
+        )
+        .withTask(
+          JobTask.json(
+            ScanMailboxArgs.taskName,
+            ScanMailboxTask[F](cfg.userTasks.scanMailbox, javaEmil, upload, joex),
+            ScanMailboxTask.onCancel[F]
           )
         )
         .withTask(

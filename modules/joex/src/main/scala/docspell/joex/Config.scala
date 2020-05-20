@@ -7,6 +7,7 @@ import docspell.store.JdbcConfig
 import docspell.convert.ConvertConfig
 import docspell.extract.ExtractConfig
 import docspell.joex.hk.HouseKeepingConfig
+import docspell.backend.Config.Files
 
 case class Config(
     appId: Ident,
@@ -15,13 +16,22 @@ case class Config(
     jdbc: JdbcConfig,
     scheduler: SchedulerConfig,
     periodicScheduler: PeriodicSchedulerConfig,
+    userTasks: Config.UserTasks,
     houseKeeping: HouseKeepingConfig,
     extraction: ExtractConfig,
     textAnalysis: TextAnalysisConfig,
     convert: ConvertConfig,
-    sendMail: MailSendConfig
+    sendMail: MailSendConfig,
+    files: Files,
+    mailDebug: Boolean
 )
 
 object Config {
   case class Bind(address: String, port: Int)
+
+  case class ScanMailbox(maxFolders: Int, mailChunkSize: Int, maxMails: Int) {
+    def mailBatchSize: Int =
+      math.min(mailChunkSize, maxMails)
+  }
+  case class UserTasks(scanMailbox: ScanMailbox)
 }

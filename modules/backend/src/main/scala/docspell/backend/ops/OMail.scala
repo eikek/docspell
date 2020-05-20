@@ -12,19 +12,29 @@ import docspell.common._
 import docspell.store._
 import docspell.store.records._
 import docspell.store.queries.QMails
-import OMail.{ItemMail, Sent, SmtpSettings}
+import OMail.{ImapSettings, ItemMail, Sent, SmtpSettings}
 
 trait OMail[F[_]] {
 
-  def getSettings(accId: AccountId, nameQ: Option[String]): F[Vector[RUserEmail]]
+  def getSmtpSettings(accId: AccountId, nameQ: Option[String]): F[Vector[RUserEmail]]
 
-  def findSettings(accId: AccountId, name: Ident): OptionT[F, RUserEmail]
+  def findSmtpSettings(accId: AccountId, name: Ident): OptionT[F, RUserEmail]
 
-  def createSettings(accId: AccountId, data: SmtpSettings): F[AddResult]
+  def createSmtpSettings(accId: AccountId, data: SmtpSettings): F[AddResult]
 
-  def updateSettings(accId: AccountId, name: Ident, data: OMail.SmtpSettings): F[Int]
+  def updateSmtpSettings(accId: AccountId, name: Ident, data: OMail.SmtpSettings): F[Int]
 
-  def deleteSettings(accId: AccountId, name: Ident): F[Int]
+  def deleteSmtpSettings(accId: AccountId, name: Ident): F[Int]
+
+  def getImapSettings(accId: AccountId, nameQ: Option[String]): F[Vector[RUserImap]]
+
+  def findImapSettings(accId: AccountId, name: Ident): OptionT[F, RUserImap]
+
+  def createImapSettings(accId: AccountId, data: ImapSettings): F[AddResult]
+
+  def updateImapSettings(accId: AccountId, name: Ident, data: OMail.ImapSettings): F[Int]
+
+  def deleteImapSettings(accId: AccountId, name: Ident): F[Int]
 
   def sendMail(accId: AccountId, name: Ident, m: ItemMail): F[SendResult]
 
@@ -103,15 +113,41 @@ object OMail {
       )
   }
 
+  case class ImapSettings(
+      name: Ident,
+      imapHost: String,
+      imapPort: Option[Int],
+      imapUser: Option[String],
+      imapPassword: Option[Password],
+      imapSsl: SSLType,
+      imapCertCheck: Boolean
+  ) {
+
+    def toRecord(accId: AccountId) =
+      RUserImap.fromAccount(
+        accId,
+        name,
+        imapHost,
+        imapPort,
+        imapUser,
+        imapPassword,
+        imapSsl,
+        imapCertCheck
+      )
+  }
+
   def apply[F[_]: Effect](store: Store[F], emil: Emil[F]): Resource[F, OMail[F]] =
     Resource.pure[F, OMail[F]](new OMail[F] {
-      def getSettings(accId: AccountId, nameQ: Option[String]): F[Vector[RUserEmail]] =
+      def getSmtpSettings(
+          accId: AccountId,
+          nameQ: Option[String]
+      ): F[Vector[RUserEmail]] =
         store.transact(RUserEmail.findByAccount(accId, nameQ))
 
-      def findSettings(accId: AccountId, name: Ident): OptionT[F, RUserEmail] =
+      def findSmtpSettings(accId: AccountId, name: Ident): OptionT[F, RUserEmail] =
         OptionT(store.transact(RUserEmail.getByName(accId, name)))
 
-      def createSettings(accId: AccountId, s: SmtpSettings): F[AddResult] =
+      def createSmtpSettings(accId: AccountId, s: SmtpSettings): F[AddResult] =
         (for {
           ru <- OptionT(store.transact(s.toRecord(accId).value))
           ins    = RUserEmail.insert(ru)
@@ -119,7 +155,11 @@ object OMail {
           res <- OptionT.liftF(store.add(ins, exists))
         } yield res).getOrElse(AddResult.Failure(new Exception("User not found")))
 
-      def updateSettings(accId: AccountId, name: Ident, data: SmtpSettings): F[Int] = {
+      def updateSmtpSettings(
+          accId: AccountId,
+          name: Ident,
+          data: SmtpSettings
+      ): F[Int] = {
         val op = for {
           um <- OptionT(RUserEmail.getByName(accId, name))
           ru <- data.toRecord(accId)
@@ -129,12 +169,43 @@ object OMail {
         store.transact(op.value).map(_.getOrElse(0))
       }
 
-      def deleteSettings(accId: AccountId, name: Ident): F[Int] =
+      def deleteSmtpSettings(accId: AccountId, name: Ident): F[Int] =
         store.transact(RUserEmail.delete(accId, name))
+
+      def getImapSettings(accId: AccountId, nameQ: Option[String]): F[Vector[RUserImap]] =
+        store.transact(RUserImap.findByAccount(accId, nameQ))
+
+      def findImapSettings(accId: AccountId, name: Ident): OptionT[F, RUserImap] =
+        OptionT(store.transact(RUserImap.getByName(accId, name)))
+
+      def createImapSettings(accId: AccountId, data: ImapSettings): F[AddResult] =
+        (for {
+          ru <- OptionT(store.transact(data.toRecord(accId).value))
+          ins    = RUserImap.insert(ru)
+          exists = RUserImap.exists(ru.uid, ru.name)
+          res <- OptionT.liftF(store.add(ins, exists))
+        } yield res).getOrElse(AddResult.Failure(new Exception("User not found")))
+
+      def updateImapSettings(
+          accId: AccountId,
+          name: Ident,
+          data: OMail.ImapSettings
+      ): F[Int] = {
+        val op = for {
+          um <- OptionT(RUserImap.getByName(accId, name))
+          ru <- data.toRecord(accId)
+          n  <- OptionT.liftF(RUserImap.update(um.id, ru))
+        } yield n
+
+        store.transact(op.value).map(_.getOrElse(0))
+      }
+
+      def deleteImapSettings(accId: AccountId, name: Ident): F[Int] =
+        store.transact(RUserImap.delete(accId, name))
 
       def sendMail(accId: AccountId, name: Ident, m: ItemMail): F[SendResult] = {
 
-        val getSettings: OptionT[F, RUserEmail] =
+        val getSmtpSettings: OptionT[F, RUserEmail] =
           OptionT(store.transact(RUserEmail.getByName(accId, name)))
 
         def createMail(sett: RUserEmail): OptionT[F, Mail[F]] = {
@@ -198,7 +269,7 @@ object OMail {
         }
 
         (for {
-          mailCfg <- getSettings
+          mailCfg <- getSmtpSettings
           mail    <- createMail(mailCfg)
           mid     <- OptionT.liftF(sendMail(mailCfg.toMailConfig, mail))
           res     <- mid.traverse(id => OptionT.liftF(storeMail(id, mailCfg)))

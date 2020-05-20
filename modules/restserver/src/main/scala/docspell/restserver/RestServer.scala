@@ -76,6 +76,7 @@ object RestServer {
       "email/settings"          -> MailSettingsRoutes(restApp.backend, token),
       "email/sent"              -> SentMailRoutes(restApp.backend, token),
       "usertask/notifydueitems" -> NotifyDueItemsRoutes(cfg, restApp.backend, token),
+      "usertask/scanmailbox"    -> ScanMailboxRoutes(restApp.backend, token),
       "calevent/check"          -> CalEventCheckRoutes()
     )
 

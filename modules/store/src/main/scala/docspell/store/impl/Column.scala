@@ -2,6 +2,7 @@ package docspell.store.impl
 
 import doobie._, doobie.implicits._
 import docspell.store.impl.DoobieSyntax._
+import cats.data.NonEmptyList
 
 case class Column(name: String, ns: String = "", alias: String = "") {
 
@@ -45,6 +46,9 @@ case class Column(name: String, ns: String = "", alias: String = "") {
 
   def isIn(values: Seq[Fragment]): Fragment =
     f ++ fr"IN (" ++ commas(values) ++ fr")"
+
+  def isIn[A: Put](values: NonEmptyList[A]): Fragment =
+    isIn(values.map(a => sql"$a").toList)
 
   def isIn(frag: Fragment): Fragment =
     f ++ fr"IN (" ++ frag ++ fr")"

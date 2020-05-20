@@ -11,6 +11,18 @@ import docspell.common._
 
 trait OUserTask[F[_]] {
 
+  /** Return the settings for the scan-mailbox task of the current user.
+    * There is at most one such task per user.
+    */
+  def getScanMailbox(account: AccountId): F[UserTask[ScanMailboxArgs]]
+
+  /** Updates the scan-mailbox tasks and notifies the joex nodes.
+    */
+  def submitScanMailbox(
+      account: AccountId,
+      task: UserTask[ScanMailboxArgs]
+  ): F[Unit]
+
   /** Return the settings for the notify-due-items task of the current
     * user. There is at most one such task per user.
     */
@@ -51,6 +63,20 @@ object OUserTask {
           _     <- joex.notifyAllNodes
         } yield ()
 
+      def getScanMailbox(account: AccountId): F[UserTask[ScanMailboxArgs]] =
+        store
+          .getOneByName[ScanMailboxArgs](account, ScanMailboxArgs.taskName)
+          .getOrElseF(scanMailboxDefault(account))
+
+      def submitScanMailbox(
+          account: AccountId,
+          task: UserTask[ScanMailboxArgs]
+      ): F[Unit] =
+        for {
+          _ <- store.updateOneTask[ScanMailboxArgs](account, task)
+          _ <- joex.notifyAllNodes
+        } yield ()
+
       def getNotifyDueItems(account: AccountId): F[UserTask[NotifyDueItemsArgs]] =
         store
           .getOneByName[NotifyDueItemsArgs](account, NotifyDueItemsArgs.taskName)
@@ -84,6 +110,27 @@ object OUserTask {
             None,
             Nil,
             Nil
+          )
+        )
+
+      private def scanMailboxDefault(
+          account: AccountId
+      ): F[UserTask[ScanMailboxArgs]] =
+        for {
+          id <- Ident.randomId[F]
+        } yield UserTask(
+          id,
+          ScanMailboxArgs.taskName,
+          false,
+          CalEvent.unsafe("*-*-* 0,12:00"),
+          ScanMailboxArgs(
+            account,
+            Ident.unsafe(""),
+            Nil,
+            Some(Duration.hours(12)),
+            None,
+            false,
+            None
           )
         )
     })

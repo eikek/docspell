@@ -13,12 +13,10 @@ import docspell.common._
 import docspell.restapi.model._
 import docspell.store.usertask._
 import docspell.restserver.conv.Conversions
-import docspell.restserver.Config
 
-object NotifyDueItemsRoutes {
+object ScanMailboxRoutes {
 
   def apply[F[_]: Effect](
-      cfg: Config,
       backend: BackendApp[F],
       user: AuthToken
   ): HttpRoutes[F] = {
@@ -29,8 +27,8 @@ object NotifyDueItemsRoutes {
     HttpRoutes.of {
       case req @ POST -> Root / "startonce" =>
         for {
-          data <- req.as[NotificationSettings]
-          task = makeTask(cfg, user.account, data)
+          data <- req.as[ScanMailboxSettings]
+          task = makeTask(user.account, data)
           res <-
             ut.executeNow(user.account, task)
               .attempt
@@ -40,17 +38,17 @@ object NotifyDueItemsRoutes {
 
       case GET -> Root =>
         for {
-          task <- ut.getNotifyDueItems(user.account)
+          task <- ut.getScanMailbox(user.account)
           res  <- taskToSettings(user.account, backend, task)
           resp <- Ok(res)
         } yield resp
 
       case req @ POST -> Root =>
         for {
-          data <- req.as[NotificationSettings]
-          task = makeTask(cfg, user.account, data)
+          data <- req.as[ScanMailboxSettings]
+          task = makeTask(user.account, data)
           res <-
-            ut.submitNotifyDueItems(user.account, task)
+            ut.submitScanMailbox(user.account, task)
               .attempt
               .map(Conversions.basicResult(_, "Saved successfully."))
           resp <- Ok(res)
@@ -59,52 +57,47 @@ object NotifyDueItemsRoutes {
   }
 
   def makeTask(
-      cfg: Config,
       user: AccountId,
-      settings: NotificationSettings
-  ): UserTask[NotifyDueItemsArgs] =
+      settings: ScanMailboxSettings
+  ): UserTask[ScanMailboxArgs] =
     UserTask(
       settings.id,
-      NotifyDueItemsArgs.taskName,
+      ScanMailboxArgs.taskName,
       settings.enabled,
       settings.schedule,
-      NotifyDueItemsArgs(
+      ScanMailboxArgs(
         user,
-        settings.smtpConnection,
-        settings.recipients,
-        Some(cfg.baseUrl / "app" / "item"),
-        settings.remindDays,
-        if (settings.capOverdue) Some(settings.remindDays)
-        else None,
-        settings.tagsInclude.map(_.id),
-        settings.tagsExclude.map(_.id)
+        settings.imapConnection,
+        settings.folders,
+        settings.receivedSinceHours.map(_.toLong).map(Duration.hours),
+        settings.targetFolder,
+        settings.deleteMail,
+        settings.direction
       )
     )
 
   def taskToSettings[F[_]: Sync](
       account: AccountId,
       backend: BackendApp[F],
-      task: UserTask[NotifyDueItemsArgs]
-  ): F[NotificationSettings] =
+      task: UserTask[ScanMailboxArgs]
+  ): F[ScanMailboxSettings] =
     for {
-      tinc <- backend.tag.loadAll(task.args.tagsInclude)
-      texc <- backend.tag.loadAll(task.args.tagsExclude)
       conn <-
         backend.mail
-          .getSmtpSettings(account, None)
+          .getImapSettings(account, None)
           .map(
-            _.find(_.name == task.args.smtpConnection)
+            _.find(_.name == task.args.imapConnection)
               .map(_.name)
           )
-    } yield NotificationSettings(
+    } yield ScanMailboxSettings(
       task.id,
       task.enabled,
       conn.getOrElse(Ident.unsafe("")),
-      task.args.recipients,
+      task.args.folders, //folders
       task.timer,
-      task.args.remindDays,
-      task.args.daysBack.isDefined,
-      tinc.map(Conversions.mkTag).toList,
-      texc.map(Conversions.mkTag).toList
+      task.args.receivedSince.map(_.hours.toInt),
+      task.args.targetFolder,
+      task.args.deleteMail,
+      task.args.direction
     )
 }
