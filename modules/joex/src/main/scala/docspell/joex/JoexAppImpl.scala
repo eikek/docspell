@@ -70,7 +70,8 @@ object JoexAppImpl {
       nodeOps <- ONode(store)
       joex    <- OJoex(client, store)
       upload  <- OUpload(store, queue, cfg.files, joex)
-      javaEmil = JavaMailEmil(blocker)
+      javaEmil =
+        JavaMailEmil(blocker, Settings.defaultSettings.copy(debug = cfg.mailDebug))
       sch <- SchedulerBuilder(cfg.scheduler, blocker, store)
         .withQueue(queue)
         .withTask(

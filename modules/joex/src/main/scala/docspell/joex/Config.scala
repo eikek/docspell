@@ -22,7 +22,8 @@ case class Config(
     textAnalysis: TextAnalysisConfig,
     convert: ConvertConfig,
     sendMail: MailSendConfig,
-    files: Files
+    files: Files,
+    mailDebug: Boolean
 )
 
 object Config {
