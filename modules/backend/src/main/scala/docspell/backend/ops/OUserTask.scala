@@ -2,8 +2,10 @@ package docspell.backend.ops
 
 import cats.implicits._
 import cats.effect._
+import cats.data.OptionT
 import com.github.eikek.calev.CalEvent
 import io.circe.Encoder
+import fs2.Stream
 
 import docspell.store.queue.JobQueue
 import docspell.store.usertask._
@@ -11,10 +13,15 @@ import docspell.common._
 
 trait OUserTask[F[_]] {
 
-  /** Return the settings for the scan-mailbox task of the current user.
-    * There is at most one such task per user.
+  /** Return the settings for all scan-mailbox tasks of the current user.
     */
-  def getScanMailbox(account: AccountId): F[UserTask[ScanMailboxArgs]]
+  def getScanMailbox(account: AccountId): Stream[F, UserTask[ScanMailboxArgs]]
+
+  /** Find a scan-mailbox task by the given id. */
+  def findScanMailbox(
+      id: Ident,
+      account: AccountId
+  ): OptionT[F, UserTask[ScanMailboxArgs]]
 
   /** Updates the scan-mailbox tasks and notifies the joex nodes.
     */
@@ -24,7 +31,9 @@ trait OUserTask[F[_]] {
   ): F[Unit]
 
   /** Return the settings for the notify-due-items task of the current
-    * user. There is at most one such task per user.
+    * user. There is at most one such task per user. If no task has
+    * been created/submitted a new one with default values is
+    * returned.
     */
   def getNotifyDueItems(account: AccountId): F[UserTask[NotifyDueItemsArgs]]
 
@@ -34,6 +43,9 @@ trait OUserTask[F[_]] {
       account: AccountId,
       task: UserTask[NotifyDueItemsArgs]
   ): F[Unit]
+
+  /** Removes a user task with the given id. */
+  def deleteTask(account: AccountId, id: Ident): F[Unit]
 
   /** Discards the schedule and immediately submits the task to the job
     * executor's queue. It will not update the corresponding periodic
@@ -63,17 +75,28 @@ object OUserTask {
           _     <- joex.notifyAllNodes
         } yield ()
 
-      def getScanMailbox(account: AccountId): F[UserTask[ScanMailboxArgs]] =
+      def getScanMailbox(account: AccountId): Stream[F, UserTask[ScanMailboxArgs]] =
         store
-          .getOneByName[ScanMailboxArgs](account, ScanMailboxArgs.taskName)
-          .getOrElseF(scanMailboxDefault(account))
+          .getByName[ScanMailboxArgs](account, ScanMailboxArgs.taskName)
+
+      def findScanMailbox(
+          id: Ident,
+          account: AccountId
+      ): OptionT[F, UserTask[ScanMailboxArgs]] =
+        OptionT(getScanMailbox(account).find(_.id == id).compile.last)
+
+      def deleteTask(account: AccountId, id: Ident): F[Unit] =
+        (for {
+          _ <- store.getByIdRaw(account, id)
+          _ <- OptionT.liftF(store.deleteTask(account, id))
+        } yield ()).getOrElse(())
 
       def submitScanMailbox(
           account: AccountId,
           task: UserTask[ScanMailboxArgs]
       ): F[Unit] =
         for {
-          _ <- store.updateOneTask[ScanMailboxArgs](account, task)
+          _ <- store.updateTask[ScanMailboxArgs](account, task)
           _ <- joex.notifyAllNodes
         } yield ()
 
@@ -113,26 +136,26 @@ object OUserTask {
           )
         )
 
-      private def scanMailboxDefault(
-          account: AccountId
-      ): F[UserTask[ScanMailboxArgs]] =
-        for {
-          id <- Ident.randomId[F]
-        } yield UserTask(
-          id,
-          ScanMailboxArgs.taskName,
-          false,
-          CalEvent.unsafe("*-*-* 0,12:00"),
-          ScanMailboxArgs(
-            account,
-            Ident.unsafe(""),
-            Nil,
-            Some(Duration.hours(12)),
-            None,
-            false,
-            None
-          )
-        )
+      // private def scanMailboxDefault(
+      //     account: AccountId
+      // ): F[UserTask[ScanMailboxArgs]] =
+      //   for {
+      //     id <- Ident.randomId[F]
+      //   } yield UserTask(
+      //     id,
+      //     ScanMailboxArgs.taskName,
+      //     false,
+      //     CalEvent.unsafe("*-*-* 0,12:00"),
+      //     ScanMailboxArgs(
+      //       account,
+      //       Ident.unsafe(""),
+      //       Nil,
+      //       Some(Duration.hours(12)),
+      //       None,
+      //       false,
+      //       None
+      //     )
+      //   )
     })
 
 }

@@ -31,6 +31,20 @@ object QUserTask {
       )
     ).query[RPeriodicTask].stream.map(makeUserTask)
 
+  def findById(
+      account: AccountId,
+      id: Ident
+  ): ConnectionIO[Option[UserTask[String]]] =
+    selectSimple(
+      RPeriodicTask.Columns.all,
+      RPeriodicTask.table,
+      and(
+        cols.group.is(account.collective),
+        cols.submitter.is(account.user),
+        cols.id.is(id)
+      )
+    ).query[RPeriodicTask].option.map(_.map(makeUserTask))
+
   def insert(account: AccountId, task: UserTask[String]): ConnectionIO[Int] =
     for {
       r <- task.toPeriodicTask[ConnectionIO](account)

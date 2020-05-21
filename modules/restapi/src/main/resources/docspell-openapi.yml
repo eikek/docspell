@@ -1760,9 +1760,10 @@ paths:
       tags: [ User Tasks ]
       summary: Get settings for "Scan Mailbox" task
       description: |
-        Return the current settings for the scan mailbox task of the
+        Return the current settings for the scan-mailbox tasks of the
         authenticated user. Users can periodically fetch mails to be
-        imported into docspell.
+        imported into docspell. It is possible to have multiple of
+        these tasks.
       security:
         - authTokenHeader: []
       responses:
@@ -1771,13 +1772,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ScanMailboxSettings"
+                $ref: "#/components/schemas/ScanMailboxSettingsList"
     post:
       tags: [ User Tasks ]
-      summary: Change current settings for "Scan Mailbox" task
+      summary: Create settings for "Scan Mailbox" task
       description: |
-        Change the current settings for the scan-mailbox task of the
-        authenticated user.
+        Create new settings for a scan-mailbox task. The id field in
+        the input data is ignored.
       security:
         - authTokenHeader: []
       requestBody:
@@ -1792,6 +1793,61 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BasicResult"
+    put:
+      tags: [ User Tasks ]
+      summary: Change current settings for "Scan Mailbox" task
+      description: |
+        Change the settings for a scan-mailbox task. The task is
+        looked up by its id.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ScanMailboxSettings"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+  /sec/usertask/scanmailbox/{id}:
+    parameters:
+      - $ref: "#/components/parameters/id"
+    get:
+      tags: [ User Tasks ]
+      summary: Get settings for "Scan Mailbox" task
+      description: |
+        Return the current settings for a single scan-mailbox task of
+        the authenticated user. Users can periodically fetch mails to
+        be imported into docspell.
+      security:
+        - authTokenHeader: []
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScanMailboxSettings"
+    delete:
+      tags: [ User Tasks ]
+      summary: Delete a scan-mailbox task.
+      description: |
+        Deletes the settings to a scan-mailbox task of the
+        authenticated user.
+      security:
+        - authTokenHeader: []
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
   /sec/usertask/scanmailbox/startonce:
     post:
       tags: [ User Tasks ]
@@ -1816,6 +1872,16 @@ paths:
 
 components:
   schemas:
+    ScanMailboxSettingsList:
+      description: |
+        A list of scan-mailbox tasks.
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/ScanMailboxSettings"
     ScanMailboxSettings:
       description: |
         Settings for the scan mailbox task.
