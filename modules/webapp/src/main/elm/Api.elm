@@ -4,6 +4,7 @@ module Api exposing
     , checkCalEvent
     , createImapSettings
     , createMailSettings
+    , createScanMailbox
     , deleteAttachment
     , deleteEquip
     , deleteImapSettings
@@ -11,6 +12,7 @@ module Api exposing
     , deleteMailSettings
     , deleteOrg
     , deletePerson
+    , deleteScanMailbox
     , deleteSource
     , deleteTag
     , deleteUser
@@ -67,7 +69,7 @@ module Api exposing
     , startOnceNotifyDueItems
     , startOnceScanMailbox
     , submitNotifyDueItems
-    , submitScanMailbox
+    , updateScanMailbox
     , upload
     , uploadSingle
     , versionInfo
@@ -109,6 +111,7 @@ import Api.Model.PersonList exposing (PersonList)
 import Api.Model.ReferenceList exposing (ReferenceList)
 import Api.Model.Registration exposing (Registration)
 import Api.Model.ScanMailboxSettings exposing (ScanMailboxSettings)
+import Api.Model.ScanMailboxSettingsList exposing (ScanMailboxSettingsList)
 import Api.Model.SentMails exposing (SentMails)
 import Api.Model.SimpleMail exposing (SimpleMail)
 import Api.Model.Source exposing (Source)
@@ -134,6 +137,19 @@ import Util.Http as Http2
 --- Scan Mailboxes
 
 
+deleteScanMailbox :
+    Flags
+    -> String
+    -> (Result Http.Error BasicResult -> msg)
+    -> Cmd msg
+deleteScanMailbox flags id receive =
+    Http2.authDelete
+        { url = flags.config.baseUrl ++ "/api/v1/sec/usertask/scanmailbox/" ++ id
+        , account = getAccount flags
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
 startOnceScanMailbox :
     Flags
     -> ScanMailboxSettings
@@ -148,12 +164,26 @@ startOnceScanMailbox flags settings receive =
         }
 
 
-submitScanMailbox :
+updateScanMailbox :
     Flags
     -> ScanMailboxSettings
     -> (Result Http.Error BasicResult -> msg)
     -> Cmd msg
-submitScanMailbox flags settings receive =
+updateScanMailbox flags settings receive =
+    Http2.authPut
+        { url = flags.config.baseUrl ++ "/api/v1/sec/usertask/scanmailbox"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.ScanMailboxSettings.encode settings)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+createScanMailbox :
+    Flags
+    -> ScanMailboxSettings
+    -> (Result Http.Error BasicResult -> msg)
+    -> Cmd msg
+createScanMailbox flags settings receive =
     Http2.authPost
         { url = flags.config.baseUrl ++ "/api/v1/sec/usertask/scanmailbox"
         , account = getAccount flags
@@ -164,13 +194,13 @@ submitScanMailbox flags settings receive =
 
 getScanMailbox :
     Flags
-    -> (Result Http.Error ScanMailboxSettings -> msg)
+    -> (Result Http.Error ScanMailboxSettingsList -> msg)
     -> Cmd msg
 getScanMailbox flags receive =
     Http2.authGet
         { url = flags.config.baseUrl ++ "/api/v1/sec/usertask/scanmailbox"
         , account = getAccount flags
-        , expect = Http.expectJson receive Api.Model.ScanMailboxSettings.decoder
+        , expect = Http.expectJson receive Api.Model.ScanMailboxSettingsList.decoder
         }
 
 
