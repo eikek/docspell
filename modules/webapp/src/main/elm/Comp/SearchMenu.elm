@@ -51,6 +51,7 @@ type alias Model =
     , untilDueDateModel : DatePicker
     , untilDueDate : Maybe Int
     , nameModel : Maybe String
+    , datePickerInitialized : Bool
     }
 
 
@@ -105,6 +106,7 @@ emptyModel =
     , untilDueDateModel = Comp.DatePicker.emptyModel
     , untilDueDate = Nothing
     , nameModel = Nothing
+    , datePickerInitialized = False
     }
 
 
@@ -189,23 +191,36 @@ update flags msg model =
             let
                 ( dp, dpc ) =
                     Comp.DatePicker.init
+
+                ( mdp, cdp ) =
+                    case model.datePickerInitialized of
+                        True ->
+                            ( model, Cmd.none )
+
+                        False ->
+                            ( { model
+                                | untilDateModel = dp
+                                , fromDateModel = dp
+                                , untilDueDateModel = dp
+                                , fromDueDateModel = dp
+                                , datePickerInitialized = True
+                              }
+                            , Cmd.batch
+                                [ Cmd.map UntilDateMsg dpc
+                                , Cmd.map FromDateMsg dpc
+                                , Cmd.map UntilDueDateMsg dpc
+                                , Cmd.map FromDueDateMsg dpc
+                                ]
+                            )
             in
             noChange
-                ( { model
-                    | untilDateModel = dp
-                    , fromDateModel = dp
-                    , untilDueDateModel = dp
-                    , fromDueDateModel = dp
-                  }
+                ( mdp
                 , Cmd.batch
                     [ Api.getTags flags "" GetTagsResp
                     , Api.getOrgLight flags GetOrgResp
                     , Api.getEquipments flags "" GetEquipResp
                     , Api.getPersonsLight flags GetPersonResp
-                    , Cmd.map UntilDateMsg dpc
-                    , Cmd.map FromDateMsg dpc
-                    , Cmd.map UntilDueDateMsg dpc
-                    , Cmd.map FromDueDateMsg dpc
+                    , cdp
                     ]
                 )
 
@@ -529,13 +544,21 @@ view model =
                 [ label []
                     [ text "From"
                     ]
-                , Html.map FromDateMsg (Comp.DatePicker.viewTimeDefault model.fromDate model.fromDateModel)
+                , Html.map FromDateMsg
+                    (Comp.DatePicker.viewTimeDefault
+                        model.fromDate
+                        model.fromDateModel
+                    )
                 ]
             , div [ class "field" ]
                 [ label []
                     [ text "To"
                     ]
-                , Html.map UntilDateMsg (Comp.DatePicker.viewTimeDefault model.untilDate model.untilDateModel)
+                , Html.map UntilDateMsg
+                    (Comp.DatePicker.viewTimeDefault
+                        model.untilDate
+                        model.untilDateModel
+                    )
                 ]
             ]
         , h3 [ class "ui header" ]
@@ -546,13 +569,21 @@ view model =
                 [ label []
                     [ text "Due From"
                     ]
-                , Html.map FromDueDateMsg (Comp.DatePicker.viewTimeDefault model.fromDueDate model.fromDueDateModel)
+                , Html.map FromDueDateMsg
+                    (Comp.DatePicker.viewTimeDefault
+                        model.fromDueDate
+                        model.fromDueDateModel
+                    )
                 ]
             , div [ class "field" ]
                 [ label []
                     [ text "Due To"
                     ]
-                , Html.map UntilDueDateMsg (Comp.DatePicker.viewTimeDefault model.untilDueDate model.untilDueDateModel)
+                , Html.map UntilDueDateMsg
+                    (Comp.DatePicker.viewTimeDefault
+                        model.untilDueDate
+                        model.untilDueDateModel
+                    )
                 ]
             ]
         ]
