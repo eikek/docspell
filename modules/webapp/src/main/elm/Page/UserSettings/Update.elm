@@ -4,7 +4,7 @@ import Comp.ChangePasswordForm
 import Comp.EmailSettingsManage
 import Comp.ImapSettingsManage
 import Comp.NotificationForm
-import Comp.ScanMailboxForm
+import Comp.ScanMailboxManage
 import Data.Flags exposing (Flags)
 import Page.UserSettings.Data exposing (..)
 
@@ -48,7 +48,7 @@ update flags msg model =
                             let
                                 initCmd =
                                     Cmd.map ScanMailboxMsg
-                                        (Tuple.second (Comp.ScanMailboxForm.init flags))
+                                        (Tuple.second (Comp.ScanMailboxManage.init flags))
                             in
                             ( m, initCmd )
             in
@@ -87,7 +87,7 @@ update flags msg model =
         ScanMailboxMsg lm ->
             let
                 ( m2, c2 ) =
-                    Comp.ScanMailboxForm.update flags lm model.scanMailboxModel
+                    Comp.ScanMailboxManage.update flags lm model.scanMailboxModel
             in
             ( { model | scanMailboxModel = m2 }
             , Cmd.map ScanMailboxMsg c2

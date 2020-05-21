@@ -1,7 +1,9 @@
 module Comp.ScanMailboxForm exposing
-    ( Model
+    ( Action(..)
+    , Model
     , Msg
     , init
+    , initWith
     , update
     , view
     )
@@ -10,12 +12,11 @@ import Api
 import Api.Model.BasicResult exposing (BasicResult)
 import Api.Model.ImapSettingsList exposing (ImapSettingsList)
 import Api.Model.ScanMailboxSettings exposing (ScanMailboxSettings)
-import Api.Model.Tag exposing (Tag)
-import Api.Model.TagList exposing (TagList)
 import Comp.CalEventInput
 import Comp.Dropdown
 import Comp.IntField
 import Comp.StringListInput
+import Comp.YesNoDimmer
 import Data.CalEvent exposing (CalEvent)
 import Data.Direction exposing (Direction(..))
 import Data.Flags exposing (Flags)
@@ -45,31 +46,75 @@ type alias Model =
     , scheduleModel : Comp.CalEventInput.Model
     , formMsg : Maybe BasicResult
     , loading : Int
+    , yesNoDelete : Comp.YesNoDimmer.Model
     }
+
+
+type Action
+    = SubmitAction ScanMailboxSettings
+    | StartOnceAction ScanMailboxSettings
+    | CancelAction
+    | DeleteAction String
+    | NoAction
 
 
 type Msg
     = Submit
+    | Cancel
+    | RequestDelete
     | ConnMsg (Comp.Dropdown.Msg String)
     | ConnResp (Result Http.Error ImapSettingsList)
     | ToggleEnabled
     | ToggleDeleteMail
     | CalEventMsg Comp.CalEventInput.Msg
-    | SetScanMailboxSettings (Result Http.Error ScanMailboxSettings)
-    | SubmitResp (Result Http.Error BasicResult)
     | StartOnce
     | ReceivedHoursMsg Comp.IntField.Msg
     | SetTargetFolder String
     | FoldersMsg Comp.StringListInput.Msg
     | DirectionMsg (Maybe Direction)
+    | YesNoDeleteMsg Comp.YesNoDimmer.Msg
 
 
-initCmd : Flags -> Cmd Msg
-initCmd flags =
-    Cmd.batch
+initWith : Flags -> ScanMailboxSettings -> ( Model, Cmd Msg )
+initWith flags s =
+    let
+        ( im, _ ) =
+            init flags
+
+        imap =
+            Util.Maybe.fromString s.imapConnection
+                |> Maybe.map List.singleton
+                |> Maybe.withDefault []
+
+        ( nm, _, nc ) =
+            update flags (ConnMsg (Comp.Dropdown.SetSelection imap)) im
+
+        newSchedule =
+            Data.CalEvent.fromEvent s.schedule
+                |> Maybe.withDefault Data.CalEvent.everyMonth
+
+        ( sm, sc ) =
+            Comp.CalEventInput.init flags newSchedule
+    in
+    ( { nm
+        | settings = s
+        , enabled = s.enabled
+        , deleteMail = s.deleteMail
+        , receivedHours = s.receivedSinceHours
+        , targetFolder = s.targetFolder
+        , folders = s.folders
+        , schedule = Data.Validated.Unknown newSchedule
+        , direction = Maybe.andThen Data.Direction.fromString s.direction
+        , scheduleModel = sm
+        , formMsg = Nothing
+        , yesNoDelete = Comp.YesNoDimmer.emptyModel
+      }
+    , Cmd.batch
         [ Api.getImapSettings flags "" ConnResp
-        , Api.getScanMailbox flags SetScanMailboxSettings
+        , nc
+        , Cmd.map CalEventMsg sc
         ]
+    )
 
 
 init : Flags -> ( Model, Cmd Msg )
@@ -98,10 +143,11 @@ init flags =
       , schedule = initialSchedule
       , scheduleModel = sm
       , formMsg = Nothing
-      , loading = 2
+      , loading = 1
+      , yesNoDelete = Comp.YesNoDimmer.emptyModel
       }
     , Cmd.batch
-        [ initCmd flags
+        [ Api.getImapSettings flags "" ConnResp
         , Cmd.map CalEventMsg sc
         ]
     )
@@ -148,12 +194,13 @@ makeSettings model =
         infolders
 
 
-withValidSettings : (ScanMailboxSettings -> Cmd Msg) -> Model -> ( Model, Cmd Msg )
-withValidSettings mkcmd model =
+withValidSettings : (ScanMailboxSettings -> Action) -> Model -> ( Model, Action, Cmd Msg )
+withValidSettings mkAction model =
     case makeSettings model of
         Valid set ->
             ( { model | formMsg = Nothing }
-            , mkcmd set
+            , mkAction set
+            , Cmd.none
             )
 
         Invalid errs _ ->
@@ -161,15 +208,19 @@ withValidSettings mkcmd model =
                 errMsg =
                     String.join ", " errs
             in
-            ( { model | formMsg = Just (BasicResult False errMsg) }, Cmd.none )
+            ( { model | formMsg = Just (BasicResult False errMsg) }
+            , NoAction
+            , Cmd.none
+            )
 
         Unknown _ ->
             ( { model | formMsg = Just (BasicResult False "An unknown error occured") }
+            , NoAction
             , Cmd.none
             )
 
 
-update : Flags -> Msg -> Model -> ( Model, Cmd Msg )
+update : Flags -> Msg -> Model -> ( Model, Action, Cmd Msg )
 update flags msg model =
     case msg of
         CalEventMsg lmsg ->
@@ -185,6 +236,7 @@ update flags msg model =
                 , scheduleModel = cm
                 , formMsg = Nothing
               }
+            , NoAction
             , Cmd.map CalEventMsg cc
             )
 
@@ -197,6 +249,7 @@ update flags msg model =
                 | connectionModel = cm
                 , formMsg = Nothing
               }
+            , NoAction
             , Cmd.map ConnMsg cc
             )
 
@@ -226,6 +279,7 @@ update flags msg model =
                     else
                         Nothing
               }
+            , NoAction
             , Cmd.none
             )
 
@@ -234,6 +288,7 @@ update flags msg model =
                 | formMsg = Just (BasicResult False (Util.Http.errorToString err))
                 , loading = model.loading - 1
               }
+            , NoAction
             , Cmd.none
             )
 
@@ -242,6 +297,7 @@ update flags msg model =
                 | enabled = not model.enabled
                 , formMsg = Nothing
               }
+            , NoAction
             , Cmd.none
             )
 
@@ -250,6 +306,7 @@ update flags msg model =
                 | deleteMail = not model.deleteMail
                 , formMsg = Nothing
               }
+            , NoAction
             , Cmd.none
             )
 
@@ -263,11 +320,13 @@ update flags msg model =
                 , receivedHours = val
                 , formMsg = Nothing
               }
+            , NoAction
             , Cmd.none
             )
 
         SetTargetFolder str ->
             ( { model | targetFolder = Util.Maybe.fromString str }
+            , NoAction
             , Cmd.none
             )
 
@@ -291,80 +350,55 @@ update flags msg model =
                 | foldersModel = fm
                 , folders = newList
               }
+            , NoAction
             , Cmd.none
             )
 
         DirectionMsg md ->
             ( { model | direction = md }
-            , Cmd.none
-            )
-
-        SetScanMailboxSettings (Ok s) ->
-            let
-                imap =
-                    Util.Maybe.fromString s.imapConnection
-                        |> Maybe.map List.singleton
-                        |> Maybe.withDefault []
-
-                ( nm, nc ) =
-                    Util.Update.andThen1
-                        [ update flags (ConnMsg (Comp.Dropdown.SetSelection imap))
-                        ]
-                        model
-
-                newSchedule =
-                    Data.CalEvent.fromEvent s.schedule
-                        |> Maybe.withDefault Data.CalEvent.everyMonth
-
-                ( sm, sc ) =
-                    Comp.CalEventInput.init flags newSchedule
-            in
-            ( { nm
-                | settings = s
-                , enabled = s.enabled
-                , deleteMail = s.deleteMail
-                , receivedHours = s.receivedSinceHours
-                , targetFolder = s.targetFolder
-                , folders = s.folders
-                , schedule = Data.Validated.Unknown newSchedule
-                , direction = Maybe.andThen Data.Direction.fromString s.direction
-                , scheduleModel = sm
-                , formMsg = Nothing
-                , loading = model.loading - 1
-              }
-            , Cmd.batch
-                [ nc
-                , Cmd.map CalEventMsg sc
-                ]
-            )
-
-        SetScanMailboxSettings (Err err) ->
-            ( { model
-                | formMsg = Just (BasicResult False (Util.Http.errorToString err))
-                , loading = model.loading - 1
-              }
+            , NoAction
             , Cmd.none
             )
 
         Submit ->
             withValidSettings
-                (\set -> Api.submitScanMailbox flags set SubmitResp)
+                SubmitAction
                 model
 
         StartOnce ->
             withValidSettings
-                (\set -> Api.startOnceScanMailbox flags set SubmitResp)
+                StartOnceAction
                 model
 
-        SubmitResp (Ok res) ->
-            ( { model | formMsg = Just res }
+        Cancel ->
+            ( model, CancelAction, Cmd.none )
+
+        RequestDelete ->
+            let
+                ( ym, _ ) =
+                    Comp.YesNoDimmer.update
+                        Comp.YesNoDimmer.activate
+                        model.yesNoDelete
+            in
+            ( { model | yesNoDelete = ym }
+            , NoAction
             , Cmd.none
             )
 
-        SubmitResp (Err err) ->
-            ( { model
-                | formMsg = Just (BasicResult False (Util.Http.errorToString err))
-              }
+        YesNoDeleteMsg lm ->
+            let
+                ( ym, flag ) =
+                    Comp.YesNoDimmer.update lm model.yesNoDelete
+
+                act =
+                    if flag then
+                        DeleteAction model.settings.id
+
+                    else
+                        NoAction
+            in
+            ( { model | yesNoDelete = ym }
+            , act
             , Cmd.none
             )
 
@@ -396,7 +430,8 @@ view extraClasses model =
             , ( "success", isFormSuccess model )
             ]
         ]
-        [ div
+        [ Html.map YesNoDeleteMsg (Comp.YesNoDimmer.view model.yesNoDelete)
+        , div
             [ classList
                 [ ( "ui dimmer", True )
                 , ( "active", model.loading > 0 )
@@ -464,7 +499,9 @@ view extraClasses model =
                 , label [] [ text "Delete imported mails" ]
                 ]
             , span [ class "small-info" ]
-                [ text "Whether to delete all mails successfully imported into docspell."
+                [ text "Whether to delete all mails successfully imported into docspell. This only applies if "
+                , em [] [ text "target folder" ]
+                , text " is not set."
                 ]
             ]
         , div [ class "required field" ]
@@ -552,6 +589,18 @@ view extraClasses model =
             , onClick Submit
             ]
             [ text "Submit"
+            ]
+        , button
+            [ class "ui secondary button"
+            , onClick Cancel
+            ]
+            [ text "Cancel"
+            ]
+        , button
+            [ class "ui red button"
+            , onClick RequestDelete
+            ]
+            [ text "Delete"
             ]
         , button
             [ class "ui right floated button"

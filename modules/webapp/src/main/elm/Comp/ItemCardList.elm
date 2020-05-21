@@ -180,14 +180,14 @@ viewItem item =
                         [ text item.source
                         ]
                     , div
-                        [ class "item"
+                        [ classList
+                            [ ( "item", True )
+                            , ( "invisible hidden", item.dueDate == Nothing )
+                            ]
                         , title ("Due on " ++ dueDate)
                         ]
                         [ div
-                            [ classList
-                                [ ( "ui basic grey label", True )
-                                , ( "invisible hidden", item.dueDate == Nothing )
-                                ]
+                            [ class "ui basic grey label"
                             ]
                             [ Icons.dueDateIcon
                             , text (" " ++ dueDate)

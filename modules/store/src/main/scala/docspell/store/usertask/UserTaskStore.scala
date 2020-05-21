@@ -42,12 +42,14 @@ trait UserTaskStore[F[_]] {
       D: Decoder[A]
   ): Stream[F, UserTask[A]]
 
+  /** Return a user-task with the given id. */
+  def getByIdRaw(account: AccountId, id: Ident): OptionT[F, UserTask[String]]
+
   /** Updates or inserts the given task.
     *
     * The task is identified by its id. If no task with this id
     * exists, a new one is created. Otherwise the existing task is
-    * updated. The job executors are notified if a task has been
-    * enabled.
+    * updated.
     */
   def updateTask[A](account: AccountId, ut: UserTask[A])(implicit E: Encoder[A]): F[Int]
 
@@ -99,6 +101,9 @@ object UserTaskStore {
 
       def getByNameRaw(account: AccountId, name: Ident): Stream[F, UserTask[String]] =
         store.transact(QUserTask.findByName(account, name))
+
+      def getByIdRaw(account: AccountId, id: Ident): OptionT[F, UserTask[String]] =
+        OptionT(store.transact(QUserTask.findById(account, id)))
 
       def getByName[A](account: AccountId, name: Ident)(implicit
           D: Decoder[A]

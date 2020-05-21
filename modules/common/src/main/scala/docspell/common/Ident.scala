@@ -9,7 +9,13 @@ import cats.effect.Sync
 import io.circe.{Decoder, Encoder}
 import scodec.bits.ByteVector
 
-case class Ident(id: String) {}
+case class Ident(id: String) {
+  def isEmpty: Boolean =
+    id.trim.isEmpty
+
+  def nonEmpty: Boolean =
+    !isEmpty
+}
 
 object Ident {
   implicit val identEq: Eq[Ident] =

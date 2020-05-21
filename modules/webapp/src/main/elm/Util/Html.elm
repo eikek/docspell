@@ -1,15 +1,35 @@
 module Util.Html exposing
     ( KeyCode(..)
+    , checkbox
     , classActive
     , intToKeyCode
     , onClickk
     , onKeyUp
     )
 
-import Html exposing (Attribute)
+import Html exposing (Attribute, Html, i)
 import Html.Attributes exposing (class)
 import Html.Events exposing (keyCode, on)
 import Json.Decode as Decode
+
+
+checkboxChecked : Html msg
+checkboxChecked =
+    i [ class "ui check square outline icon" ] []
+
+
+checkboxUnchecked : Html msg
+checkboxUnchecked =
+    i [ class "ui square outline icon" ] []
+
+
+checkbox : Bool -> Html msg
+checkbox flag =
+    if flag then
+        checkboxChecked
+
+    else
+        checkboxUnchecked
 
 
 type KeyCode

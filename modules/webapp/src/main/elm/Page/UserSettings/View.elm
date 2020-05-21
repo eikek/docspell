@@ -4,7 +4,7 @@ import Comp.ChangePasswordForm
 import Comp.EmailSettingsManage
 import Comp.ImapSettingsManage
 import Comp.NotificationForm
-import Comp.ScanMailboxForm
+import Comp.ScanMailboxManage
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
@@ -45,7 +45,7 @@ view model =
                         viewImapSettings model
 
                     Just ScanMailboxTab ->
-                        viewScanMailboxForm model
+                        viewScanMailboxManage model
 
                     Nothing ->
                         []
@@ -126,8 +126,8 @@ viewNotificationForm model =
     ]
 
 
-viewScanMailboxForm : Model -> List (Html Msg)
-viewScanMailboxForm model =
+viewScanMailboxManage : Model -> List (Html Msg)
+viewScanMailboxManage model =
     [ h2 [ class "ui header" ]
         [ i [ class "ui envelope open outline icon" ] []
         , div [ class "content" ]
@@ -151,5 +151,7 @@ viewScanMailboxForm model =
             again."""
         ]
     , Html.map ScanMailboxMsg
-        (Comp.ScanMailboxForm.view "segment" model.scanMailboxModel)
+        (Comp.ScanMailboxManage.view
+            model.scanMailboxModel
+        )
     ]
