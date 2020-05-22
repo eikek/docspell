@@ -15,12 +15,16 @@ permalink: features
 - Non-destructive: all your uploaded files are never modified and can
   always be downloaded untouched
 - Text is analysed to find and attach meta data automatically
-- Manage document processing (cancel jobs, set priorities)
+- [Manage document processing](doc/processing): cancel jobs, set
+  priorities
 - Everything available via a documented [REST Api](api)
-- Web-UI included
-- Create “share-urls” to upload files anonymously
-- Send documents via e-mail
-- E-Mail notification for documents with due dates
+- mobile-friendly Web-UI
+- [Create “share-urls”](doc/uploading#anonymous-upload) to upload files
+  anonymously
+- [Send documents via e-mail](doc/mailitem)
+- [E-Mail notification](doc/notifydueitems) for documents with due dates
+- [Read your mailboxes](doc/scanmailbox) via IMAP to import mails into
+  docspell
 - REST server and document processing are separate applications which
   can be scaled-out independently
 - Everything stored in a SQL database: PostgreSQL, MariaDB or H2
@@ -37,7 +41,7 @@ permalink: features
     - zip
     - [eml](https://en.wikipedia.org/wiki/Email#Filename_extensions)
       (e-mail files in plain text MIME)
-- Tooling:
+- [Tooling](doc/tools):
   - Watch a folder: watch folders for changes and send files to docspell
   - Firefox plugin: right click on a link and send the file to docspell
   - Simple CLI for uploading files

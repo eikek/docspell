@@ -39,11 +39,17 @@ options:
      - title: Find and Review
        url: doc/curate
 
+     - title: E-Mail Settings
+       url: doc/emailsettings
+
      - title: Send via E-Mail
        url: doc/mailitem
 
      - title: Notify on due Items
        url: doc/notifydueitems
+
+     - title: Scan Mailboxes
+       url: doc/scanmailbox
 
      - title: Joex
        url: doc/joex

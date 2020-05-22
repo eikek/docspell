@@ -1,5 +1,43 @@
 # Changelog
 
+## v0.6.0
+
+*Unknown*
+
+- New feature "Scan Mailboxes". Docspell can now read mailboxes
+  periodically to import your mails.
+- Fix the `find-by-checksum` route that, given a sha256 checksum,
+  returns whether there is such a file in docspell. It falsely
+  returned `false` although documents existed.
+- Amend the mail-to-pdf conversion to include the e-mail date.
+- Fix webapp for mobile devices.
+- The document list on the front-page has been rewritten. The table is
+  removed and documents are now presented in a “card view”.
+- Fix the search menu to remember dates in fields. When going back
+  from an item detail to the front-page, the search menu remembers the
+  last state, but dates were cleared.
+- More fixes regarding character encodings when reading e-mails.
+
+### Configuration Changes
+
+The joex component has new config sections:
+
+- Add `docspell.joex.mail-debug` flag to enable debugging e-mail
+  related code. This is only useful if you encounter problems
+  connecting to mail servers.
+- Add `docspell.joex.user-tasks` with a `scan-mailbox` section to
+  configure the new scan-mailbox user task.
+- Add `docspell.joex.files` section that is the same as the
+  corresponding section in the rest server config.
+
+### REST Api Changes
+
+- Change `/sec/email/settings` to `/sec/email/settings/smtp`
+- Add `/sec/email/settings/imap`
+- Add `/sec/usertask/scanmailbox` routes to configure one or more
+  scan-mailbox tasks
+
+
 ## v0.5.0
 
 *May 1st, 2020*

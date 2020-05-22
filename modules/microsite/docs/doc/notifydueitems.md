@@ -6,9 +6,9 @@ permalink: doc/notifydueitems
 
 # {{page.title}}
 
-Each user that provides valid email (smtp) settings, can be notified
-by docspell about due items. You will then receive an e-mail
-containing a list of items, sorted by their due date.
+A user that provides valid email (smtp) settings, can be notified by
+docspell about due items. You will then receive an e-mail containing a
+list of items, sorted by their due date.
 
 You need first define smtp settings, please see [this
 page](mailitem#e-mail-settings).

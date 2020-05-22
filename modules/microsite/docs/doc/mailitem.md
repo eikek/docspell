@@ -13,48 +13,11 @@ people outside docspell.
 All sent mails are stored attached to the item.
 
 
-## E-Mail Settings
+## E-Mail Settings (SMTP)
 
-To send mails, there are SMTP settings required. Since an e-mail
-account is connected to a user, you need to check the *User Settings*
-page from the top-right menu.
+To send mails, there are SMTP settings required. Please see the page
+about [e-mail settings](emailsettings#smtp-settings).
 
-<div class="thumbnail">
-  <img src="../img/mail-settings-1.jpg">
-</div>
-
-First, you need to provide some name that is used to recognize this
-account. This name is also used in URLs to docspell and so it must not
-contain whitespace or any special characters. A good value is the
-domain of your provider, for example `gmail.com`, or something like
-that.
-
-These information should be available from your e-mail provider. For
-example, for google-mail it is:
-
-- SMTP Host: `smtp.gmail.com`
-- SMTP Port: `587` or `465`
-- SMTP User: Your Gmail address (for example, example@gmail.com)
-- SMTP Password: Your Gmail password
-- SSL: use `SSL` for port `465` and `StartSSL` for port `587`
-
-Then you need to define the e-mail address that is used for the `From`
-field. This is in most cases the same address as used for the SMTP
-User field.
-
-The `Reply-To` field is optional and can be set to define a different
-e-mail address that your recipients should use to answer a mail.
-
-Once this is setup, you can start sending mails within docspell. It is
-possible to set up these settings for multiple providers, so you can
-choose from which account you want to send mails.
-
-
-*Please Note: If `SSL` is set to `None`, then mails will be sent
-unencrypted to your mail provider! If `Ignore certificate check` is
-enabled, connections to your mail provider will succeed even if the
-provider is wrongly configured for SSL/TLS. This flag should only be
-enabled if you know why.*
 
 ## Sending Mails
 
