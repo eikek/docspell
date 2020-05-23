@@ -59,7 +59,7 @@ object IntegrationEndpointRoutes {
   ): EitherT[F, Response[F], Unit] =
     for {
       opt <- EitherT.liftF(backend.collective.find(coll))
-      res <- EitherT.cond[F](opt.isDefined, (), Response.notFound[F])
+      res <- EitherT.cond[F](opt.exists(_.integrationEnabled), (), Response.notFound[F])
     } yield res
 
   def uploadFile[F[_]: Effect](

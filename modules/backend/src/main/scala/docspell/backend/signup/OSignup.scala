@@ -88,7 +88,13 @@ object OSignup {
           for {
             id2 <- Ident.randomId[F]
             now <- Timestamp.current[F]
-            c = RCollective(data.collName, CollectiveState.Active, Language.German, now)
+            c = RCollective(
+              data.collName,
+              CollectiveState.Active,
+              Language.German,
+              true,
+              now
+            )
             u = RUser(
               id2,
               data.login,

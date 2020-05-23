@@ -1,4 +1,4 @@
-module Comp.Settings exposing
+module Comp.CollectiveSettingsForm exposing
     ( Model
     , Msg
     , getSettings
@@ -13,10 +13,12 @@ import Data.Flags exposing (Flags)
 import Data.Language exposing (Language)
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Html.Events exposing (onCheck)
 
 
 type alias Model =
     { langModel : Comp.Dropdown.Model Language
+    , intEnabled : Bool
     , initSettings : CollectiveSettings
     }
 
@@ -39,6 +41,7 @@ init settings =
             , options = Data.Language.all
             , selected = Just lang
             }
+    , intEnabled = settings.integrationEnabled
     , initSettings = settings
     }
 
@@ -51,10 +54,12 @@ getSettings model =
             |> Maybe.map Data.Language.toIso3
             |> Maybe.withDefault model.initSettings.language
         )
+        model.intEnabled
 
 
 type Msg
     = LangDropdownMsg (Comp.Dropdown.Msg Language)
+    | ToggleIntegrationEndpoint
 
 
 update : Flags -> Msg -> Model -> ( Model, Cmd Msg, Maybe CollectiveSettings )
@@ -77,12 +82,42 @@ update _ msg model =
             in
             ( nextModel, Cmd.map LangDropdownMsg c2, nextSettings )
 
+        ToggleIntegrationEndpoint ->
+            let
+                nextModel =
+                    { model | intEnabled = not model.intEnabled }
+            in
+            ( nextModel, Cmd.none, Just (getSettings nextModel) )
 
-view : Model -> Html Msg
-view model =
+
+view : Flags -> Model -> Html Msg
+view flags model =
     div [ class "ui form" ]
         [ div [ class "field" ]
             [ label [] [ text "Document Language" ]
             , Html.map LangDropdownMsg (Comp.Dropdown.view model.langModel)
+            , span [ class "small-info" ]
+                [ text "The language of your documents. This helps text recognition (OCR) and text analysis."
+                ]
+            ]
+        , div
+            [ classList
+                [ ( "field", True )
+                , ( "invisible hidden", not flags.config.integrationEnabled )
+                ]
+            ]
+            [ div [ class "ui checkbox" ]
+                [ input
+                    [ type_ "checkbox"
+                    , onCheck (\_ -> ToggleIntegrationEndpoint)
+                    , checked model.intEnabled
+                    ]
+                    []
+                , label [] [ text "Enable integration endpoint" ]
+                , span [ class "small-info" ]
+                    [ text "The integration endpoint allows (local) applications to submit files. "
+                    , text "You can choose to disable it for your collective."
+                    ]
+                ]
             ]
         ]

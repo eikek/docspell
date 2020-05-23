@@ -11,6 +11,7 @@ case class RCollective(
     id: Ident,
     state: CollectiveState,
     language: Language,
+    integrationEnabled: Boolean,
     created: Timestamp
 )
 
@@ -20,12 +21,13 @@ object RCollective {
 
   object Columns {
 
-    val id       = Column("cid")
-    val state    = Column("state")
-    val language = Column("doclang")
-    val created  = Column("created")
+    val id          = Column("cid")
+    val state       = Column("state")
+    val language    = Column("doclang")
+    val integration = Column("integration_enabled")
+    val created     = Column("created")
 
-    val all = List(id, state, language, created)
+    val all = List(id, state, language, integration, created)
   }
 
   import Columns._
@@ -34,7 +36,7 @@ object RCollective {
     val sql = insertRow(
       table,
       Columns.all,
-      fr"${value.id},${value.state},${value.language},${value.created}"
+      fr"${value.id},${value.state},${value.language},${value.integrationEnabled},${value.created}"
     )
     sql.update.run
   }
@@ -56,6 +58,16 @@ object RCollective {
   def updateLanguage(cid: Ident, lang: Language): ConnectionIO[Int] =
     updateRow(table, id.is(cid), language.setTo(lang)).update.run
 
+  def updateSettings(cid: Ident, settings: Settings): ConnectionIO[Int] =
+    updateRow(
+      table,
+      id.is(cid),
+      commas(
+        language.setTo(settings.language),
+        integration.setTo(settings.integrationEnabled)
+      )
+    ).update.run
+
   def findById(cid: Ident): ConnectionIO[Option[RCollective]] = {
     val sql = selectSimple(all, table, id.is(cid))
     sql.query[RCollective].option
@@ -75,4 +87,6 @@ object RCollective {
     val sql = selectSimple(all, table, Fragment.empty) ++ orderBy(order(Columns).f)
     sql.query[RCollective].stream
   }
+
+  case class Settings(language: Language, integrationEnabled: Boolean)
 }

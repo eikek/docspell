@@ -4,6 +4,7 @@ import cats.effect._
 import cats.implicits._
 import docspell.backend.BackendApp
 import docspell.backend.auth.AuthToken
+import docspell.backend.ops.OCollective
 import docspell.restapi.model._
 import docspell.restserver.conv.Conversions
 import docspell.restserver.http4s._
@@ -28,16 +29,17 @@ object CollectiveRoutes {
       case req @ POST -> Root / "settings" =>
         for {
           settings <- req.as[CollectiveSettings]
+          sett = OCollective.Settings(settings.language, settings.integrationEnabled)
           res <-
             backend.collective
-              .updateLanguage(user.account.collective, settings.language)
-          resp <- Ok(Conversions.basicResult(res, "Language updated."))
+              .updateSettings(user.account.collective, sett)
+          resp <- Ok(Conversions.basicResult(res, "Settings updated."))
         } yield resp
 
       case GET -> Root / "settings" =>
         for {
           collDb <- backend.collective.find(user.account.collective)
-          sett = collDb.map(c => CollectiveSettings(c.language))
+          sett = collDb.map(c => CollectiveSettings(c.language, c.integrationEnabled))
           resp <- sett.toResponse()
         } yield resp
 

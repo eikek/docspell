@@ -12,7 +12,8 @@ case class Flags(
     appName: String,
     baseUrl: LenientUri,
     signupMode: SignupConfig.Mode,
-    docspellAssetPath: String
+    docspellAssetPath: String,
+    integrationEnabled: Boolean
 )
 
 object Flags {
@@ -21,7 +22,8 @@ object Flags {
       cfg.appName,
       cfg.baseUrl,
       cfg.backend.signup.mode,
-      s"/app/assets/docspell-webapp/${BuildInfo.version}"
+      s"/app/assets/docspell-webapp/${BuildInfo.version}",
+      cfg.integrationEndpoint.enabled
     )
 
   implicit val jsonEncoder: Encoder[Flags] =
