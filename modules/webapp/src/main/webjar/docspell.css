@@ -70,6 +70,9 @@
 .default-layout .ui.segment .item-notes {
     padding: 0 1em;
 }
+.default-layout .ui.segment.item-notes-display {
+    background: rgba(246, 255, 158, 0.4);
+}
 
 .default-layout .extracted-text {
     font-family: monospace;

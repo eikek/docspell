@@ -1327,7 +1327,7 @@ renderNotes model =
                     span [ class "hidden invisible" ] []
 
                 Just str ->
-                    div [ class "ui segment" ]
+                    div [ class "ui raised segment item-notes-display" ]
                         [ Markdown.toHtml [ class "item-notes" ] str
                         , a
                             [ class "ui left corner label"
@@ -1903,7 +1903,10 @@ renderMailForm model =
             , ( "invisible hidden", not model.mailOpen )
             ]
         ]
-        [ div
+        [ h4 [ class "ui header" ]
+            [ text "Send this item via E-Mail"
+            ]
+        , div
             [ classList
                 [ ( "ui dimmer", True )
                 , ( "active", model.mailSending )
@@ -1912,9 +1915,6 @@ renderMailForm model =
             [ div [ class "ui text loader" ]
                 [ text "Sending …"
                 ]
-            ]
-        , h4 [ class "ui header" ]
-            [ text "Send this item via E-Mail"
             ]
         , Html.map ItemMailMsg (Comp.ItemMail.view model.itemMail)
         , div
