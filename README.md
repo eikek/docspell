@@ -52,8 +52,8 @@ book and only once in a while it has to be revisited.
   file and run the script in `bin/`, as [described
   here](https://docspell.org/getit#using-zip-files).
 - Using the [nix](https://nixos.org/nix) package manager as [described
-  here](https://docspell.org/doc/nix). A a NixOS module is
-  available, too.
+  here](https://docspell.org/doc/nix). A NixOS module is available,
+  too.
 - Using Docker, as [described
   here](https://docspell.org/getit#docker).
 
