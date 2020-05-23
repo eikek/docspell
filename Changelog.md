@@ -17,6 +17,7 @@
   from an item detail to the front-page, the search menu remembers the
   last state, but dates were cleared.
 - More fixes regarding character encodings when reading e-mails.
+- Fix redirecting `/` to `/app`.
 
 ### Configuration Changes
 

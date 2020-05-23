@@ -1,7 +1,7 @@
 package docspell.restserver
 
 import cats.effect._
-import cats.data.{Kleisli, OptionT}
+import cats.implicits._
 import docspell.common.Pools
 import docspell.backend.auth.AuthToken
 import docspell.restserver.routes._
@@ -13,6 +13,7 @@ import org.http4s.implicits._
 import org.http4s.server.Router
 import org.http4s.server.blaze.BlazeServerBuilder
 import org.http4s.server.middleware.Logger
+import org.http4s.dsl.Http4sDsl
 
 object RestServer {
 
@@ -88,14 +89,17 @@ object RestServer {
       "checkfile" -> CheckFileRoutes.open(restApp.backend)
     )
 
-  def redirectTo[F[_]: Effect](path: String): HttpRoutes[F] =
-    Kleisli(_ =>
-      OptionT.pure(
+  def redirectTo[F[_]: Effect](path: String): HttpRoutes[F] = {
+    val dsl = new Http4sDsl[F] {}
+    import dsl._
+
+    HttpRoutes.of {
+      case GET -> Root =>
         Response[F](
           Status.SeeOther,
           body = Stream.empty,
           headers = Headers.of(Location(Uri(path = path)))
-        )
-      )
-    )
+        ).pure[F]
+    }
+  }
 }
