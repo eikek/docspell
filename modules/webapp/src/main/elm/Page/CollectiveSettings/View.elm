@@ -1,7 +1,7 @@
 module Page.CollectiveSettings.View exposing (view)
 
 import Api.Model.NameCount exposing (NameCount)
-import Comp.Settings
+import Comp.CollectiveSettingsForm
 import Comp.SourceManage
 import Comp.UserManage
 import Data.Flags exposing (Flags)
@@ -41,8 +41,8 @@ view flags model =
                         [ classActive (model.currentTab == Just SettingsTab) "link icon item"
                         , onClick (SetTab SettingsTab)
                         ]
-                        [ i [ class "language icon" ] []
-                        , text "Document Language"
+                        [ i [ class "cog icon" ] []
+                        , text "Settings"
                         ]
                     , div
                         [ classActive (model.currentTab == Just UserTab) "link icon item"
@@ -67,7 +67,7 @@ view flags model =
                         viewInsights model
 
                     Just SettingsTab ->
-                        viewSettings model
+                        viewSettings flags model
 
                     Nothing ->
                         []
@@ -176,42 +176,25 @@ viewUsers model =
     ]
 
 
-viewSettings : Model -> List (Html Msg)
-viewSettings model =
-    [ div [ class "ui grid" ]
-        [ div [ class "row" ]
-            [ div [ class "sixteen wide colum" ]
-                [ h2 [ class "ui header" ]
-                    [ i [ class "ui language icon" ] []
-                    , div [ class "content" ]
-                        [ text "Document Language"
-                        ]
-                    ]
-                ]
+viewSettings : Flags -> Model -> List (Html Msg)
+viewSettings flags model =
+    [ h2 [ class "ui header" ]
+        [ i [ class "cog icon" ] []
+        , text "Settings"
+        ]
+    , div [ class "ui segment" ]
+        [ Html.map SettingsFormMsg (Comp.CollectiveSettingsForm.view flags model.settingsModel)
+        ]
+    , div
+        [ classList
+            [ ( "ui message", True )
+            , ( "hidden", Util.Maybe.isEmpty model.submitResult )
+            , ( "success", Maybe.map .success model.submitResult |> Maybe.withDefault False )
+            , ( "error", Maybe.map .success model.submitResult |> Maybe.map not |> Maybe.withDefault False )
             ]
-        , div [ class "row" ]
-            [ div [ class "six wide column" ]
-                [ div [ class "ui basic segment" ]
-                    [ text "The language of your documents. This helps text recognition (OCR) and text analysis."
-                    ]
-                ]
-            ]
-        , div [ class "row" ]
-            [ div [ class "six wide column" ]
-                [ Html.map SettingsMsg (Comp.Settings.view model.settingsModel)
-                , div
-                    [ classList
-                        [ ( "ui message", True )
-                        , ( "hidden", Util.Maybe.isEmpty model.submitResult )
-                        , ( "success", Maybe.map .success model.submitResult |> Maybe.withDefault False )
-                        , ( "error", Maybe.map .success model.submitResult |> Maybe.map not |> Maybe.withDefault False )
-                        ]
-                    ]
-                    [ Maybe.map .message model.submitResult
-                        |> Maybe.withDefault ""
-                        |> text
-                    ]
-                ]
-            ]
+        ]
+        [ Maybe.map .message model.submitResult
+            |> Maybe.withDefault ""
+            |> text
         ]
     ]

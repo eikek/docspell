@@ -618,10 +618,9 @@ paths:
                 $ref: "#/components/schemas/CollectiveSettings"
     post:
       tags: [ Collective ]
-      summary: Set document language of the collective
+      summary: Update settings for a collective
       description: |
-        Updates settings for a collective, which currently is just the
-        document language.
+        Updates settings for a collective.
       security:
         - authTokenHeader: []
       requestBody:
@@ -2692,10 +2691,16 @@ components:
         Settings for a collective.
       required:
         - language
+        - integrationEnabled
       properties:
         language:
           type: string
           format: language
+        integrationEnabled:
+          type: boolean
+          description: |
+            Whether the collective has the integration endpoint
+            enabled.
     SourceList:
       description: |
         A list of sources.

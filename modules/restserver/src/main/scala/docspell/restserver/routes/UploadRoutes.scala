@@ -5,7 +5,6 @@ import cats.implicits._
 import docspell.backend.BackendApp
 import docspell.backend.auth.AuthToken
 import docspell.common.{Ident, Priority}
-import docspell.restapi.model.BasicResult
 import docspell.restserver.Config
 import docspell.restserver.conv.Conversions._
 import docspell.restserver.http4s.ResponseGenerator
@@ -40,10 +39,6 @@ object UploadRoutes {
           result <- backend.upload.submit(updata, user.account, true)
           res    <- Ok(basicResult(result))
         } yield res
-
-      case GET -> Root / "checkfile" / checksum =>
-        Ok(BasicResult(false, s"not implemented $checksum"))
-
     }
   }
 
@@ -64,9 +59,6 @@ object UploadRoutes {
           result <- backend.upload.submit(updata, id, true)
           res    <- Ok(basicResult(result))
         } yield res
-
-      case GET -> Root / "checkfile" / Ident(id) / checksum =>
-        Ok(BasicResult(false, s"not implemented $id $checksum"))
     }
   }
 }

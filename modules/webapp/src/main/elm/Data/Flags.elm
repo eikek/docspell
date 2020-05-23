@@ -14,6 +14,7 @@ type alias Config =
     , baseUrl : String
     , signupMode : String
     , docspellAssetPath : String
+    , integrationEnabled : Bool
     }
 
 

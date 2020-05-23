@@ -14,7 +14,7 @@ trait OCollective[F[_]] {
 
   def find(name: Ident): F[Option[RCollective]]
 
-  def updateLanguage(collective: Ident, lang: Language): F[AddResult]
+  def updateSettings(collective: Ident, lang: OCollective.Settings): F[AddResult]
 
   def listUser(collective: Ident): F[Vector[RUser]]
 
@@ -44,6 +44,9 @@ object OCollective {
 
   type InsightData = QCollective.InsightData
   val insightData = QCollective.InsightData
+
+  type Settings = RCollective.Settings
+  val Settings = RCollective.Settings
 
   sealed trait PassChangeResult
   object PassChangeResult {
@@ -85,9 +88,9 @@ object OCollective {
       def find(name: Ident): F[Option[RCollective]] =
         store.transact(RCollective.findById(name))
 
-      def updateLanguage(collective: Ident, lang: Language): F[AddResult] =
+      def updateSettings(collective: Ident, sett: Settings): F[AddResult] =
         store
-          .transact(RCollective.updateLanguage(collective, lang))
+          .transact(RCollective.updateSettings(collective, sett))
           .attempt
           .map(AddResult.fromUpdate)
 

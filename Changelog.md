@@ -6,6 +6,8 @@
 
 - New feature "Scan Mailboxes". Docspell can now read mailboxes
   periodically to import your mails.
+- New feature "Integration Endpoint". Allows an admin to upload files
+  to any collective using a separate endpoint.
 - Fix the `find-by-checksum` route that, given a sha256 checksum,
   returns whether there is such a file in docspell. It falsely
   returned `false` although documents existed.
@@ -21,7 +23,7 @@
 
 ### Configuration Changes
 
-The joex component has new config sections:
+The joex and rest-server component have new config sections:
 
 - Add `docspell.joex.mail-debug` flag to enable debugging e-mail
   related code. This is only useful if you encounter problems
@@ -30,6 +32,8 @@ The joex component has new config sections:
   configure the new scan-mailbox user task.
 - Add `docspell.joex.files` section that is the same as the
   corresponding section in the rest server config.
+- Add `docspell.rest-server.integration-endpoint` with sub-sections to
+  configure an endpoint for uploading files for admin users.
 
 ### REST Api Changes
 
@@ -37,6 +41,9 @@ The joex component has new config sections:
 - Add `/sec/email/settings/imap`
 - Add `/sec/usertask/scanmailbox` routes to configure one or more
   scan-mailbox tasks
+- The data used in `/sec/collective/settings` was extended with a
+  boolean value to enable/disable the "integration endpoint" for a
+  collective.
 
 
 ## v0.5.0

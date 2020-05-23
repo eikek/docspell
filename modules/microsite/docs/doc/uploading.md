@@ -85,6 +85,31 @@ docspell count the files uploaded through the web interface, just
 create a source (can be inactive) with that name (`webapp`).
 
 
+## Integration Endpoint
+
+Another option for uploading files is the special *integration
+endpoint*. This endpoint allows an admin to upload files to any
+collective, that is known by name.
+
+```
+/api/v1/open/integration/item/[collective-name]
+```
+
+The endpoint is behind `/api/v1/open`, so this route is not protected
+by an authentication token (see [REST Api](../api) for more
+information). However, it can be protected via settings in the
+configuration file. The idea is that this endpoint is controlled by an
+administrator and not the user of the application. The admin can
+enable this endpoint and choose between some methods to protect it.
+Then the administrator can upload files to any collective. This might
+be useful to connect other trusted applications to docspell (that run
+on the same host or network).
+
+The endpoint is disabled by default, an admin must change the
+`docspell.restserver.integration-endpoint.enabled` flag to `true` in
+the [configuration file](configure#rest-server).
+
+
 ## The Request
 
 This gives more details about the request for uploads. It is a http

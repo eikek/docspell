@@ -40,6 +40,9 @@ object Implicits {
   implicit val caleventReader: ConfigReader[CalEvent] =
     ConfigReader[String].emap(reason(CalEvent.parse))
 
+  implicit val priorityReader: ConfigReader[Priority] =
+    ConfigReader[String].emap(reason(Priority.fromString))
+
   def reason[A: ClassTag](
       f: String => Either[String, A]
   ): String => Either[FailureReason, A] =

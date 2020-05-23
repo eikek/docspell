@@ -8,7 +8,7 @@ module Page.CollectiveSettings.Data exposing
 import Api.Model.BasicResult exposing (BasicResult)
 import Api.Model.CollectiveSettings exposing (CollectiveSettings)
 import Api.Model.ItemInsights exposing (ItemInsights)
-import Comp.Settings
+import Comp.CollectiveSettingsForm
 import Comp.SourceManage
 import Comp.UserManage
 import Http
@@ -18,7 +18,7 @@ type alias Model =
     { currentTab : Maybe Tab
     , sourceModel : Comp.SourceManage.Model
     , userModel : Comp.UserManage.Model
-    , settingsModel : Comp.Settings.Model
+    , settingsModel : Comp.CollectiveSettingsForm.Model
     , insights : ItemInsights
     , submitResult : Maybe BasicResult
     }
@@ -29,7 +29,7 @@ emptyModel =
     { currentTab = Just InsightsTab
     , sourceModel = Comp.SourceManage.emptyModel
     , userModel = Comp.UserManage.emptyModel
-    , settingsModel = Comp.Settings.init Api.Model.CollectiveSettings.empty
+    , settingsModel = Comp.CollectiveSettingsForm.init Api.Model.CollectiveSettings.empty
     , insights = Api.Model.ItemInsights.empty
     , submitResult = Nothing
     }
@@ -46,7 +46,7 @@ type Msg
     = SetTab Tab
     | SourceMsg Comp.SourceManage.Msg
     | UserMsg Comp.UserManage.Msg
-    | SettingsMsg Comp.Settings.Msg
+    | SettingsFormMsg Comp.CollectiveSettingsForm.Msg
     | Init
     | GetInsightsResp (Result Http.Error ItemInsights)
     | CollectiveSettingsResp (Result Http.Error CollectiveSettings)

@@ -83,10 +83,11 @@ object RestServer {
 
   def openRoutes[F[_]: Effect](cfg: Config, restApp: RestApp[F]): HttpRoutes[F] =
     Router(
-      "auth"      -> LoginRoutes.login(restApp.backend.login, cfg),
-      "signup"    -> RegisterRoutes(restApp.backend, cfg),
-      "upload"    -> UploadRoutes.open(restApp.backend, cfg),
-      "checkfile" -> CheckFileRoutes.open(restApp.backend)
+      "auth"        -> LoginRoutes.login(restApp.backend.login, cfg),
+      "signup"      -> RegisterRoutes(restApp.backend, cfg),
+      "upload"      -> UploadRoutes.open(restApp.backend, cfg),
+      "checkfile"   -> CheckFileRoutes.open(restApp.backend),
+      "integration" -> IntegrationEndpointRoutes.open(restApp.backend, cfg)
     )
 
   def redirectTo[F[_]: Effect](path: String): HttpRoutes[F] = {

@@ -2,7 +2,7 @@ module Page.CollectiveSettings.Update exposing (update)
 
 import Api
 import Api.Model.BasicResult exposing (BasicResult)
-import Comp.Settings
+import Comp.CollectiveSettingsForm
 import Comp.SourceManage
 import Comp.UserManage
 import Data.Flags exposing (Flags)
@@ -45,10 +45,10 @@ update flags msg model =
             in
             ( { model | userModel = m2 }, Cmd.map UserMsg c2 )
 
-        SettingsMsg m ->
+        SettingsFormMsg m ->
             let
                 ( m2, c2, msett ) =
-                    Comp.Settings.update flags m model.settingsModel
+                    Comp.CollectiveSettingsForm.update flags m model.settingsModel
 
                 cmd =
                     case msett of
@@ -58,7 +58,9 @@ update flags msg model =
                         Just sett ->
                             Api.setCollectiveSettings flags sett SubmitResp
             in
-            ( { model | settingsModel = m2, submitResult = Nothing }, Cmd.batch [ cmd, Cmd.map SettingsMsg c2 ] )
+            ( { model | settingsModel = m2, submitResult = Nothing }
+            , Cmd.batch [ cmd, Cmd.map SettingsFormMsg c2 ]
+            )
 
         Init ->
             ( { model | submitResult = Nothing }
@@ -75,7 +77,7 @@ update flags msg model =
             ( model, Cmd.none )
 
         CollectiveSettingsResp (Ok data) ->
-            ( { model | settingsModel = Comp.Settings.init data }, Cmd.none )
+            ( { model | settingsModel = Comp.CollectiveSettingsForm.init data }, Cmd.none )
 
         CollectiveSettingsResp (Err _) ->
             ( model, Cmd.none )
