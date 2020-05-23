@@ -109,7 +109,7 @@ trait Conversions {
       coll,
       m.name,
       if (m.inbox) Seq(ItemState.Created)
-      else ItemState.validStates,
+      else ItemState.validStates.toList,
       m.direction,
       m.corrPerson,
       m.corrOrg,

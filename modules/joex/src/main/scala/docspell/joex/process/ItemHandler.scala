@@ -25,7 +25,11 @@ object ItemHandler {
   def itemStateTask[F[_]: Sync, A](
       state: ItemState
   )(data: ItemData): Task[F, A, ItemData] =
-    Task(ctx => ctx.store.transact(RItem.updateState(data.item.id, state)).map(_ => data))
+    Task(ctx =>
+      ctx.store
+        .transact(RItem.updateState(data.item.id, state, ItemState.invalidStates))
+        .map(_ => data)
+    )
 
   def isLastRetry[F[_]: Sync, A](ctx: Context[F, A]): F[Boolean] =
     for {
