@@ -12,11 +12,13 @@ object ProcessItem {
       cfg: Config
   )(item: ItemData): Task[F, ProcessItemArgs, ItemData] =
     ExtractArchive(item)
+      .flatMap(Task.setProgress(20))
       .flatMap(ConvertPdf(cfg.convert, _))
+      .flatMap(Task.setProgress(40))
       .flatMap(TextExtraction(cfg.extraction, _))
-      .flatMap(Task.setProgress(50))
+      .flatMap(Task.setProgress(60))
       .flatMap(analysisOnly[F](cfg.textAnalysis))
-      .flatMap(Task.setProgress(75))
+      .flatMap(Task.setProgress(80))
       .flatMap(LinkProposal[F])
       .flatMap(Task.setProgress(99))
 
