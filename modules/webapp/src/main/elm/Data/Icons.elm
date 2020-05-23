@@ -1,5 +1,7 @@
 module Data.Icons exposing
-    ( concerned
+    ( addFiles
+    , addFilesIcon
+    , concerned
     , concernedIcon
     , correspondent
     , correspondentIcon
@@ -51,3 +53,13 @@ editNotes =
 editNotesIcon : Html msg
 editNotesIcon =
     i [ class editNotes ] []
+
+
+addFiles : String
+addFiles =
+    "file plus icon"
+
+
+addFilesIcon : Html msg
+addFilesIcon =
+    i [ class addFiles ] []

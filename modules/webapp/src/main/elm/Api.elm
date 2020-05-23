@@ -71,6 +71,7 @@ module Api exposing
     , submitNotifyDueItems
     , updateScanMailbox
     , upload
+    , uploadAmend
     , uploadSingle
     , versionInfo
     )
@@ -429,7 +430,42 @@ createImapSettings flags mname ems receive =
 --- Upload
 
 
-upload : Flags -> Maybe String -> ItemUploadMeta -> List File -> (String -> Result Http.Error BasicResult -> msg) -> List (Cmd msg)
+uploadAmend :
+    Flags
+    -> String
+    -> List File
+    -> (String -> Result Http.Error BasicResult -> msg)
+    -> List (Cmd msg)
+uploadAmend flags itemId files receive =
+    let
+        mkReq file =
+            let
+                fid =
+                    Util.File.makeFileId file
+
+                path =
+                    "/api/v1/sec/upload/item/" ++ itemId
+            in
+            Http2.authPostTrack
+                { url = flags.config.baseUrl ++ path
+                , account = getAccount flags
+                , body =
+                    Http.multipartBody <|
+                        [ Http.filePart "file[]" file ]
+                , expect = Http.expectJson (receive fid) Api.Model.BasicResult.decoder
+                , tracker = fid
+                }
+    in
+    List.map mkReq files
+
+
+upload :
+    Flags
+    -> Maybe String
+    -> ItemUploadMeta
+    -> List File
+    -> (String -> Result Http.Error BasicResult -> msg)
+    -> List (Cmd msg)
 upload flags sourceId meta files receive =
     let
         metaStr =
@@ -457,7 +493,14 @@ upload flags sourceId meta files receive =
     List.map mkReq files
 
 
-uploadSingle : Flags -> Maybe String -> ItemUploadMeta -> String -> List File -> (Result Http.Error BasicResult -> msg) -> Cmd msg
+uploadSingle :
+    Flags
+    -> Maybe String
+    -> ItemUploadMeta
+    -> String
+    -> List File
+    -> (Result Http.Error BasicResult -> msg)
+    -> Cmd msg
 uploadSingle flags sourceId meta track files receive =
     let
         metaStr =

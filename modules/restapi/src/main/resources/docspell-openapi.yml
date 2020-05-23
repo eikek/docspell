@@ -87,14 +87,50 @@ paths:
         The upload meta data can be used to tell, whether multiple
         files are one item, or if each file should become a single
         item. By default, each file will be a one item.
-
-        Only certain file types are supported:
-
-        * application/pdf
-
-        Support for more types might be added.
       parameters:
         - $ref: "#/components/parameters/id"
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                meta:
+                  $ref: "#/components/schemas/ItemUploadMeta"
+                file:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+  /open/upload/item/{itemId}/{id}:
+    post:
+      tags: [ Upload ]
+      summary: Upload files to docspell.
+      description: |
+        Upload a file to docspell for processing. The id is a *source
+        id* configured by a collective. Files are submitted for
+        processing which eventually resuts in an item in the inbox of
+        the corresponding collective. This endpoint associates the
+        files to an existing item identified by its `itemId`.
+
+        The request must be a `multipart/form-data` request, where the
+        first part has name `meta`, is optional and may contain upload
+        metadata as JSON. Checkout the structure `ItemUploadMeta` at
+        the end if it is not shown here. Other parts specify the
+        files. Multiple files can be specified, but at least on is
+        required.
+
+        Upload meta data is ignored.
+      parameters:
+        - $ref: "#/components/parameters/id"
+        - $ref: "#/components/parameters/itemId"
       requestBody:
         content:
           multipart/form-data:
@@ -155,14 +191,52 @@ paths:
         The upload meta data can be used to tell, whether multiple
         files are one item, or if each file should become a single
         item. By default, each file will be a one item.
-
-        Only certain file types are supported:
-
-        * application/pdf
-
-        Support for more types might be added.
       security:
         - authTokenHeader: []
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                meta:
+                  $ref: "#/components/schemas/ItemUploadMeta"
+                file:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+  /sec/upload/{itemId}:
+    post:
+      tags: [ Upload ]
+      summary: Upload files to docspell.
+      description: |
+        Upload files to docspell for processing. This route is meant
+        for authenticated users that upload files to their account.
+        This endpoint will associate the files to an existing item
+        identified by its `itemId`.
+
+        Everything else is the same as with the
+        `/open/upload/item/{itemId}/{id}` endpoint.
+
+        The request must be a "multipart/form-data" request, where the
+        first part is optional and may contain upload metadata as
+        JSON. Other parts specify the files. Multiple files can be
+        specified, but at least on is required.
+
+        The upload meta data is ignored, since the item already
+        exists.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/itemId"
       requestBody:
         content:
           multipart/form-data:
@@ -3153,6 +3227,13 @@ components:
       name: id
       in: path
       description: An identifier
+      required: true
+      schema:
+        type: string
+    itemId:
+      name: itemId
+      in: path
+      description: An identifier for an item
       required: true
       schema:
         type: string

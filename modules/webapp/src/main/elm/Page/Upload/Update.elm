@@ -41,7 +41,12 @@ update sourceId flags msg model =
 
                 uploads =
                     if model.singleItem then
-                        Api.uploadSingle flags sourceId meta uploadAllTracker model.files (SingleUploadResp uploadAllTracker)
+                        Api.uploadSingle flags
+                            sourceId
+                            meta
+                            uploadAllTracker
+                            model.files
+                            (SingleUploadResp uploadAllTracker)
 
                     else
                         Cmd.batch (Api.upload flags sourceId meta model.files SingleUploadResp)

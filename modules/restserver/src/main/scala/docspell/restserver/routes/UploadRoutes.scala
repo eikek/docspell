@@ -39,6 +39,19 @@ object UploadRoutes {
           result <- backend.upload.submit(updata, user.account, true, None)
           res    <- Ok(basicResult(result))
         } yield res
+
+      case req @ POST -> Root / "item" / Ident(itemId) =>
+        for {
+          multipart <- req.as[Multipart[F]]
+          updata <- readMultipart(
+            multipart,
+            logger,
+            Priority.High,
+            cfg.backend.files.validMimeTypes
+          )
+          result <- backend.upload.submit(updata, user.account, true, Some(itemId))
+          res    <- Ok(basicResult(result))
+        } yield res
     }
   }
 
@@ -57,6 +70,19 @@ object UploadRoutes {
             cfg.backend.files.validMimeTypes
           )
           result <- backend.upload.submit(updata, id, true, None)
+          res    <- Ok(basicResult(result))
+        } yield res
+
+      case req @ POST -> Root / "item" / Ident(itemId) / Ident(id) =>
+        for {
+          multipart <- req.as[Multipart[F]]
+          updata <- readMultipart(
+            multipart,
+            logger,
+            Priority.Low,
+            cfg.backend.files.validMimeTypes
+          )
+          result <- backend.upload.submit(updata, id, true, Some(itemId))
           res    <- Ok(basicResult(result))
         } yield res
     }
