@@ -1165,7 +1165,11 @@ view inav model =
         , div
             [ classList
                 [ ( "ui ablue-comp menu", True )
-                , ( "top attached", model.mailOpen || model.addFilesOpen )
+                , ( "top attached"
+                  , model.mailOpen
+                        || model.addFilesOpen
+                        || isEditNotes model.notesField
+                  )
                 ]
             ]
             [ a [ class "item", Page.href HomePage ]
@@ -1248,6 +1252,7 @@ view inav model =
             ]
         , renderMailForm model
         , renderAddFilesForm model
+        , renderNotes model
         , div [ class "ui grid" ]
             [ Html.map DeleteItemConfirm (Comp.YesNoDimmer.view model.deleteItemConfirm)
             , div
@@ -1271,8 +1276,7 @@ view inav model =
                 ]
               <|
                 List.concat
-                    [ renderNotes model
-                    , [ renderAttachmentsTabMenu model
+                    [ [ renderAttachmentsTabMenu model
                       ]
                     , renderAttachmentsTabBody model
                     , renderIdInfo model
@@ -1297,16 +1301,16 @@ renderIdInfo model =
     ]
 
 
-renderNotes : Model -> List (Html Msg)
+renderNotes : Model -> Html Msg
 renderNotes model =
     case model.notesField of
         HideNotes ->
             case model.item.notes of
                 Nothing ->
-                    []
+                    span [ class "invisible hidden" ] []
 
                 Just _ ->
-                    [ div [ class "ui segment" ]
+                    div [ class "ui segment" ]
                         [ a
                             [ class "ui top left attached label"
                             , onClick ToggleNotes
@@ -1316,15 +1320,14 @@ renderNotes model =
                             , text "Show notes…"
                             ]
                         ]
-                    ]
 
         ViewNotes ->
             case model.item.notes of
                 Nothing ->
-                    []
+                    span [ class "hidden invisible" ] []
 
                 Just str ->
-                    [ div [ class "ui segment" ]
+                    div [ class "ui segment" ]
                         [ Markdown.toHtml [ class "item-notes" ] str
                         , a
                             [ class "ui left corner label"
@@ -1334,10 +1337,9 @@ renderNotes model =
                             [ i [ class "eye slash icon" ] []
                             ]
                         ]
-                    ]
 
         EditNotes mm ->
-            [ div [ class "ui segment" ]
+            div [ class "ui bottom attached segment" ]
                 [ Html.map NotesEditMsg (Comp.MarkdownInput.view (Maybe.withDefault "" model.notesModel) mm)
                 , div [ class "ui secondary menu" ]
                     [ a
@@ -1358,7 +1360,6 @@ renderNotes model =
                         ]
                     ]
                 ]
-            ]
 
 
 attachmentVisible : Model -> Int -> Bool
