@@ -80,7 +80,7 @@ object IntegrationEndpointRoutes {
         cfg.backend.files.validMimeTypes
       )
       account = AccountId(coll, Ident.unsafe("docspell-system"))
-      result <- backend.upload.submit(updata, account, true)
+      result <- backend.upload.submit(updata, account, true, None)
       res    <- Ok(basicResult(result))
     } yield res
   }

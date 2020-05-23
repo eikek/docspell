@@ -4,6 +4,14 @@ import io.circe._, io.circe.generic.semiauto._
 import docspell.common.syntax.all._
 import ProcessItemArgs._
 
+/** Arguments to the process-item task.
+  *
+  * This task is run for each new file to create a new item from it or
+  * to add this file as an attachment to an existing item.
+  *
+  * If the `itemId' is set to some value, the item is tried to load to
+  * ammend with the given files. Otherwise a new item is created.
+  */
 case class ProcessItemArgs(meta: ProcessMeta, files: List[File]) {
 
   def makeSubject: String =
@@ -22,6 +30,7 @@ object ProcessItemArgs {
 
   case class ProcessMeta(
       collective: Ident,
+      itemId: Option[Ident],
       language: Language,
       direction: Option[Direction],
       sourceAbbrev: String,

@@ -50,8 +50,10 @@ object ExtractArchive {
         findMime(ctx)(ra).flatMap(m => extractSafe(ctx, archive)(ra, m))
 
       for {
-        ras <- item.attachments.traverse(extract)
-        nra = ras.flatMap(_.files).zipWithIndex.map(t => t._1.copy(position = t._2))
+        ras     <- item.attachments.traverse(extract)
+        lastPos <- ctx.store.transact(RAttachment.countOnItem(item.item.id))
+        nra =
+          ras.flatMap(_.files).zipWithIndex.map(t => t._1.copy(position = lastPos + t._2))
         _ <- nra.traverse(storeAttachment(ctx))
         naa = ras.flatMap(_.archives)
         _ <- naa.traverse(storeArchive(ctx))

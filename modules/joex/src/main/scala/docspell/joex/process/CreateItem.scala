@@ -32,44 +32,75 @@ object CreateItem {
 
       def fileMetas(itemId: Ident, now: Timestamp) =
         Stream
-          .emits(ctx.args.files)
-          .flatMap(f => ctx.store.bitpeace.get(f.fileMetaId.id).map(fm => (f, fm)))
-          .collect({ case (f, Some(fm)) if isValidFile(fm) => f })
-          .zipWithIndex
-          .evalMap({
-            case (f, index) =>
-              Ident
-                .randomId[F]
-                .map(id =>
-                  RAttachment(id, itemId, f.fileMetaId, index.toInt, now, f.name)
-                )
-          })
+          .eval(ctx.store.transact(RAttachment.countOnItem(itemId)))
+          .flatMap { offset =>
+            Stream
+              .emits(ctx.args.files)
+              .flatMap(f => ctx.store.bitpeace.get(f.fileMetaId.id).map(fm => (f, fm)))
+              .collect({ case (f, Some(fm)) if isValidFile(fm) => f })
+              .zipWithIndex
+              .evalMap({
+                case (f, index) =>
+                  Ident
+                    .randomId[F]
+                    .map(id =>
+                      RAttachment(
+                        id,
+                        itemId,
+                        f.fileMetaId,
+                        index.toInt + offset,
+                        now,
+                        f.name
+                      )
+                    )
+              })
+          }
           .compile
           .toVector
 
-      val item = RItem.newItem[F](
-        ctx.args.meta.collective,
-        ctx.args.makeSubject,
-        ctx.args.meta.sourceAbbrev,
-        ctx.args.meta.direction.getOrElse(Direction.Incoming),
-        ItemState.Premature
-      )
+      val loadItemOrInsertNew =
+        ctx.args.meta.itemId match {
+          case Some(id) =>
+            (for {
+              _ <- OptionT.liftF(
+                ctx.logger.info(
+                  s"Loading item with id ${id.id} to ammend"
+                )
+              )
+              item <- OptionT(
+                ctx.store
+                  .transact(RItem.findByIdAndCollective(id, ctx.args.meta.collective))
+              )
+            } yield (1, item))
+              .getOrElseF(Sync[F].raiseError(new Exception(s"Item not found.")))
+          case None =>
+            for {
+              _ <- ctx.logger.info(
+                s"Creating new item with ${ctx.args.files.size} attachment(s)"
+              )
+              item <- RItem.newItem[F](
+                ctx.args.meta.collective,
+                ctx.args.makeSubject,
+                ctx.args.meta.sourceAbbrev,
+                ctx.args.meta.direction.getOrElse(Direction.Incoming),
+                ItemState.Premature
+              )
+              n <- ctx.store.transact(RItem.insert(item))
+            } yield (n, item)
+        }
 
       for {
-        _ <- ctx.logger.info(
-          s"Creating new item with ${ctx.args.files.size} attachment(s)"
-        )
         time <- Duration.stopTime[F]
-        it   <- item
-        n    <- ctx.store.transact(RItem.insert(it))
-        _    <- if (n != 1) storeItemError[F](ctx) else ().pure[F]
-        fm   <- fileMetas(it.id, it.created)
+        it   <- loadItemOrInsertNew
+        _    <- if (it._1 != 1) storeItemError[F](ctx) else ().pure[F]
+        now  <- Timestamp.current[F]
+        fm   <- fileMetas(it._2.id, now)
         k    <- fm.traverse(insertAttachment(ctx))
         _    <- logDifferences(ctx, fm, k.sum)
         dur  <- time
         _    <- ctx.logger.info(s"Creating item finished in ${dur.formatExact}")
       } yield ItemData(
-        it,
+        it._2,
         fm,
         Vector.empty,
         Vector.empty,
@@ -86,7 +117,7 @@ object CreateItem {
     } yield n)
   }
 
-  def findExisting[F[_]: Sync]: Task[F, ProcessItemArgs, Option[ItemData]] =
+  private def findExisting[F[_]: Sync]: Task[F, ProcessItemArgs, Option[ItemData]] =
     Task { ctx =>
       for {
         cand <- ctx.store.transact(QItem.findByFileIds(ctx.args.files.map(_.fileMetaId)))

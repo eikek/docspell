@@ -1,8 +1,9 @@
 package docspell.backend.ops
 
 import bitpeace.MimetypeHint
-import cats.implicits._
+import cats.data.OptionT
 import cats.effect._
+import cats.implicits._
 import docspell.backend.Config
 import fs2.Stream
 import docspell.common._
@@ -17,13 +18,15 @@ trait OUpload[F[_]] {
   def submit(
       data: OUpload.UploadData[F],
       account: AccountId,
-      notifyJoex: Boolean
+      notifyJoex: Boolean,
+      itemId: Option[Ident]
   ): F[OUpload.UploadResult]
 
   def submit(
       data: OUpload.UploadData[F],
       sourceId: Ident,
-      notifyJoex: Boolean
+      notifyJoex: Boolean,
+      itemId: Option[Ident]
   ): F[OUpload.UploadResult]
 }
 
@@ -68,7 +71,8 @@ object OUpload {
       def submit(
           data: OUpload.UploadData[F],
           account: AccountId,
-          notifyJoex: Boolean
+          notifyJoex: Boolean,
+          itemId: Option[Ident]
       ): F[OUpload.UploadResult] =
         for {
           files <- data.files.traverse(saveFile).map(_.flatten)
@@ -76,6 +80,7 @@ object OUpload {
           lang  <- store.transact(RCollective.findLanguage(account.collective))
           meta = ProcessItemArgs.ProcessMeta(
             account.collective,
+            itemId,
             lang.getOrElse(Language.German),
             data.meta.direction,
             data.meta.sourceAbbrev,
@@ -95,18 +100,18 @@ object OUpload {
       def submit(
           data: OUpload.UploadData[F],
           sourceId: Ident,
-          notifyJoex: Boolean
+          notifyJoex: Boolean,
+          itemId: Option[Ident]
       ): F[OUpload.UploadResult] =
-        for {
-          sOpt <-
-            store
-              .transact(RSource.find(sourceId))
-              .map(_.toRight(UploadResult.NoSource))
-          abbrev = sOpt.map(_.abbrev).toOption.getOrElse(data.meta.sourceAbbrev)
-          updata = data.copy(meta = data.meta.copy(sourceAbbrev = abbrev))
-          accId  = sOpt.map(source => AccountId(source.cid, source.sid))
-          result <- accId.traverse(acc => submit(updata, acc, notifyJoex))
-        } yield result.fold(identity, identity)
+        (for {
+          src <- OptionT(store.transact(RSource.find(sourceId)))
+          updata = data.copy(
+            meta = data.meta.copy(sourceAbbrev = src.abbrev),
+            priority = src.priority
+          )
+          accId = AccountId(src.cid, src.sid)
+          result <- OptionT.liftF(submit(updata, accId, notifyJoex, itemId))
+        } yield result).getOrElse(UploadResult.NoSource)
 
       private def submitJobs(
           notifyJoex: Boolean

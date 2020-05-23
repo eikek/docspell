@@ -38,6 +38,9 @@ object RAttachment {
       fr"${v.id},${v.itemId},${v.fileId.id},${v.position},${v.created},${v.name}"
     ).update.run
 
+  def countOnItem(id: Ident): ConnectionIO[Int] =
+    selectCount(itemId, table, itemId.is(id)).query[Int].unique
+
   def updateFileIdAndName(
       attachId: Ident,
       fId: Ident,
