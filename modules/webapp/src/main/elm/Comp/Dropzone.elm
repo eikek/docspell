@@ -18,6 +18,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Json.Decode as D
+import Util.Html exposing (onDragEnter, onDragLeave, onDragOver, onDropFiles)
 
 
 type alias State =
@@ -111,10 +112,10 @@ view : Model -> Html Msg
 view model =
     div
         [ classList (model.settings.classList model.state)
-        , hijackOn "dragenter" (D.succeed DragEnter)
-        , hijackOn "dragover" (D.succeed DragEnter)
-        , hijackOn "dragleave" (D.succeed DragLeave)
-        , hijackOn "drop" dropDecoder
+        , onDragEnter DragEnter
+        , onDragOver DragEnter
+        , onDragLeave DragLeave
+        , onDropFiles GotFiles
         ]
         [ div [ class "ui icon header" ]
             [ i [ class "mouse pointer icon" ] []
@@ -156,18 +157,3 @@ filterMime settings files =
 
     else
         List.filter pred files
-
-
-dropDecoder : D.Decoder Msg
-dropDecoder =
-    D.at [ "dataTransfer", "files" ] (D.oneOrMore GotFiles File.decoder)
-
-
-hijackOn : String -> D.Decoder msg -> Attribute msg
-hijackOn event decoder =
-    preventDefaultOn event (D.map hijack decoder)
-
-
-hijack : msg -> ( msg, Bool )
-hijack msg =
-    ( msg, True )
