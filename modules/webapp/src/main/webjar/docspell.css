@@ -143,6 +143,10 @@ textarea.markdown-editor {
     background: rgba(240,248,255,0.4);
 }
 
+.default-layout .ui.menu .item.current-drop-target {
+    background: rgba(0,0,0,0.2);
+}
+
 label span.muted {
     font-size: smaller;
     color: rgba(0,0,0,0.6);

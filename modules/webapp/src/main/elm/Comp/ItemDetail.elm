@@ -1446,16 +1446,31 @@ renderAttachmentsTabMenu model =
                     [ text "E-Mails"
                     ]
                 ]
+
+        highlight el =
+            let
+                dropId =
+                    DD.getDropId model.attachDD
+
+                dragId =
+                    DD.getDragId model.attachDD
+
+                enable =
+                    Just el.id == dropId && dropId /= dragId
+            in
+            [ ( "current-drop-target", enable )
+            ]
     in
     div [ class "ui top attached tabular menu" ]
         (List.indexedMap
             (\pos ->
                 \el ->
                     a
-                        ([ classList
+                        ([ classList <|
                             [ ( "item", True )
                             , ( "active", attachmentVisible model pos )
                             ]
+                                ++ highlight el
                          , title (Maybe.withDefault "No Name" el.name)
                          , href ""
                          , onClick (SetActiveAttachment pos)
