@@ -62,7 +62,7 @@ object ConvertPdf {
     Conversion.create[F](cfg, sanitizeHtml, ctx.blocker, ctx.logger).use { conv =>
       mime match {
         case mt if mt.baseEqual(Mimetype.`application/pdf`) =>
-          ctx.logger.info("Not going to convert a PDF file into a PDF.") *>
+          ctx.logger.debug(s"Not going to convert a PDF file ${ra.name} into a PDF.") *>
             (ra, None: Option[RAttachmentMeta]).pure[F]
 
         case _ =>

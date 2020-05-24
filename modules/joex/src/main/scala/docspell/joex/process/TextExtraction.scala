@@ -60,7 +60,7 @@ object TextExtraction {
         rm => rm.setContentIfEmpty(txt.map(_.trim).filter(_.nonEmpty))
       )
       est <- dst
-      _ <- ctx.logger.debug(
+      _ <- ctx.logger.info(
         s"Extracting text for attachment ${stripAttachmentName(ra)} finished in ${est.formatExact}"
       )
     } yield meta
