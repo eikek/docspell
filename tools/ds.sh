@@ -4,9 +4,9 @@
 # to upload a given file.
 #
 # The config file contains anonymous upload urls to docspell. All
-# files given to this script are uploaded to those urls.
+# files given to this script are uploaded to all those urls.
 #
-# The default location for the five is
+# The default location for the config file is
 # `~/.config/docspell/ds.conf'.
 #
 # The config file must contain lines of the form:
