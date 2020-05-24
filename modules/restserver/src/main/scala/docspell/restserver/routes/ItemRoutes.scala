@@ -137,6 +137,14 @@ object ItemRoutes {
           resp <- Ok(ip)
         } yield resp
 
+      case req @ POST -> Root / Ident(id) / "attachment" / "movebefore" =>
+        for {
+          data <- req.as[MoveAttachment]
+          _    <- logger.fdebug(s"Move item (${id.id}) attachment $data")
+          res  <- backend.item.moveAttachmentBefore(id, data.source, data.target)
+          resp <- Ok(Conversions.basicResult(res, "Attachment moved."))
+        } yield resp
+
       case DELETE -> Root / Ident(id) =>
         for {
           n <- backend.item.deleteItem(id, user.account.collective)

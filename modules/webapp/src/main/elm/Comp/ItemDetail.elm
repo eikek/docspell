@@ -14,6 +14,7 @@ import Api.Model.EquipmentList exposing (EquipmentList)
 import Api.Model.IdName exposing (IdName)
 import Api.Model.ItemDetail exposing (ItemDetail)
 import Api.Model.ItemProposals exposing (ItemProposals)
+import Api.Model.MoveAttachment exposing (MoveAttachment)
 import Api.Model.OptionalDate exposing (OptionalDate)
 import Api.Model.OptionalId exposing (OptionalId)
 import Api.Model.OptionalText exposing (OptionalText)
@@ -39,6 +40,7 @@ import File exposing (File)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onCheck, onClick, onInput)
+import Html5.DragDrop as DD
 import Http
 import Markdown
 import Page exposing (Page(..))
@@ -88,6 +90,7 @@ type alias Model =
     , completed : Set String
     , errored : Set String
     , loading : Set String
+    , attachDD : DD.Model String String
     }
 
 
@@ -182,6 +185,7 @@ emptyModel =
     , completed = Set.empty
     , errored = Set.empty
     , loading = Set.empty
+    , attachDD = DD.init
     }
 
 
@@ -244,6 +248,7 @@ type Msg
     | AddFilesUploadResp String (Result Http.Error BasicResult)
     | AddFilesProgress String Http.Progress
     | AddFilesReset
+    | AttachDDMsg (DD.Msg String String)
 
 
 
@@ -1174,6 +1179,28 @@ update key flags next msg model =
             in
             noSub ( model, updateBars )
 
+        AttachDDMsg lm ->
+            let
+                ( model_, result ) =
+                    DD.update lm model.attachDD
+
+                cmd =
+                    case result of
+                        Just ( src, trg, _ ) ->
+                            if src /= trg then
+                                Api.moveAttachmentBefore flags
+                                    model.item.id
+                                    (MoveAttachment src trg)
+                                    SaveResp
+
+                            else
+                                Cmd.none
+
+                        Nothing ->
+                            Cmd.none
+            in
+            noSub ( { model | attachDD = model_ }, cmd )
+
 
 
 -- view
@@ -1419,20 +1446,38 @@ renderAttachmentsTabMenu model =
                     [ text "E-Mails"
                     ]
                 ]
+
+        highlight el =
+            let
+                dropId =
+                    DD.getDropId model.attachDD
+
+                dragId =
+                    DD.getDragId model.attachDD
+
+                enable =
+                    Just el.id == dropId && dropId /= dragId
+            in
+            [ ( "current-drop-target", enable )
+            ]
     in
     div [ class "ui top attached tabular menu" ]
         (List.indexedMap
             (\pos ->
                 \el ->
                     a
-                        [ classList
+                        ([ classList <|
                             [ ( "item", True )
                             , ( "active", attachmentVisible model pos )
                             ]
-                        , title (Maybe.withDefault "No Name" el.name)
-                        , href ""
-                        , onClick (SetActiveAttachment pos)
-                        ]
+                                ++ highlight el
+                         , title (Maybe.withDefault "No Name" el.name)
+                         , href ""
+                         , onClick (SetActiveAttachment pos)
+                         ]
+                            ++ DD.draggable AttachDDMsg el.id
+                            ++ DD.droppable AttachDDMsg el.id
+                        )
                         [ Maybe.map (Util.String.ellipsis 20) el.name
                             |> Maybe.withDefault "No Name"
                             |> text

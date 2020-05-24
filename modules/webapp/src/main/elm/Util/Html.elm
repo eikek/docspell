@@ -4,13 +4,18 @@ module Util.Html exposing
     , classActive
     , intToKeyCode
     , onClickk
+    , onDragEnter
+    , onDragLeave
+    , onDragOver
+    , onDropFiles
     , onKeyUp
     )
 
+import File exposing (File)
 import Html exposing (Attribute, Html, i)
 import Html.Attributes exposing (class)
-import Html.Events exposing (keyCode, on)
-import Json.Decode as Decode
+import Html.Events exposing (keyCode, on, preventDefaultOn)
+import Json.Decode as D
 
 
 checkboxChecked : Html msg
@@ -68,12 +73,12 @@ intToKeyCode code =
 
 onKeyUp : (Int -> msg) -> Attribute msg
 onKeyUp tagger =
-    on "keyup" (Decode.map tagger keyCode)
+    on "keyup" (D.map tagger keyCode)
 
 
 onClickk : msg -> Attribute msg
 onClickk msg =
-    Html.Events.preventDefaultOn "click" (Decode.map alwaysPreventDefault (Decode.succeed msg))
+    Html.Events.preventDefaultOn "click" (D.map alwaysPreventDefault (D.succeed msg))
 
 
 alwaysPreventDefault : msg -> ( msg, Bool )
@@ -92,3 +97,42 @@ classActive active classes =
                     ""
                )
         )
+
+
+onDragEnter : msg -> Attribute msg
+onDragEnter m =
+    hijackOn "dragenter" (D.succeed m)
+
+
+onDragOver : msg -> Attribute msg
+onDragOver m =
+    hijackOn "dragover" (D.succeed m)
+
+
+onDragLeave : msg -> Attribute msg
+onDragLeave m =
+    hijackOn "dragleave" (D.succeed m)
+
+
+onDrop : msg -> Attribute msg
+onDrop m =
+    hijackOn "drop" (D.succeed m)
+
+
+onDropFiles : (File -> List File -> msg) -> Attribute msg
+onDropFiles tagger =
+    let
+        dropFilesDecoder =
+            D.at [ "dataTransfer", "files" ] (D.oneOrMore tagger File.decoder)
+    in
+    hijackOn "drop" dropFilesDecoder
+
+
+hijackOn : String -> D.Decoder msg -> Attribute msg
+hijackOn event decoder =
+    preventDefaultOn event (D.map hijack decoder)
+
+
+hijack : msg -> ( msg, Bool )
+hijack msg =
+    ( msg, True )

@@ -9,6 +9,7 @@
 - New feature "Integration Endpoint". Allows an admin to upload files
   to any collective using a separate endpoint.
 - New feature: add files to existing items.
+- New feature: reorder attachments via drag and drop.
 - The document list on the front-page has been rewritten. The table is
   removed and documents are now presented in a “card view”.
 - Amend the mail-to-pdf conversion to include the e-mail date.
@@ -47,6 +48,8 @@ The joex and rest-server component have new config sections:
 - The data used in `/sec/collective/settings` was extended with a
   boolean value to enable/disable the "integration endpoint" for a
   collective.
+- Add `/sec/item/{itemId}/attachment/movebefore` to move an attachment
+  before another.
 
 
 ## v0.5.0

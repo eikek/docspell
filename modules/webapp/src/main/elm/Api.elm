@@ -42,6 +42,7 @@ module Api exposing
     , login
     , loginSession
     , logout
+    , moveAttachmentBefore
     , newInvite
     , postEquipment
     , postNewUser
@@ -100,6 +101,7 @@ import Api.Model.ItemProposals exposing (ItemProposals)
 import Api.Model.ItemSearch exposing (ItemSearch)
 import Api.Model.ItemUploadMeta exposing (ItemUploadMeta)
 import Api.Model.JobQueueState exposing (JobQueueState)
+import Api.Model.MoveAttachment exposing (MoveAttachment)
 import Api.Model.NotificationSettings exposing (NotificationSettings)
 import Api.Model.OptionalDate exposing (OptionalDate)
 import Api.Model.OptionalId exposing (OptionalId)
@@ -1007,6 +1009,21 @@ getJobQueueStateTask flags =
 
 
 -- Item
+
+
+moveAttachmentBefore :
+    Flags
+    -> String
+    -> MoveAttachment
+    -> (Result Http.Error BasicResult -> msg)
+    -> Cmd msg
+moveAttachmentBefore flags itemId data receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/item/" ++ itemId ++ "/attachment/movebefore"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.MoveAttachment.encode data)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
 
 
 itemSearch : Flags -> ItemSearch -> (Result Http.Error ItemLightList -> msg) -> Cmd msg

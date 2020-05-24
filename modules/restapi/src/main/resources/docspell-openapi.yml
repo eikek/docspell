@@ -1239,6 +1239,30 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ItemProposals"
+  /sec/item/{itemId}/attachment/movebefore:
+    post:
+      tags: [ Item ]
+      summary: Reorder attachments within an item
+      description: |
+        Moves the `source` attachment before the `target` attachment,
+        such that `source` becomes the immediate neighbor of `target`
+        with a lower position.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/itemId"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MoveAttachment"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
 
   /sec/attachment/{id}:
     delete:
@@ -1945,6 +1969,19 @@ paths:
 
 components:
   schemas:
+    MoveAttachment:
+      description: |
+        Data to move an attachment to another position.
+      required:
+        - source
+        - target
+      properties:
+        source:
+          type: string
+          format: ident
+        target:
+          type: string
+          format: ident
     ScanMailboxSettingsList:
       description: |
         A list of scan-mailbox tasks.
