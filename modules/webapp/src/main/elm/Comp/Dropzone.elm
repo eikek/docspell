@@ -136,6 +136,12 @@ view model =
             [ i [ class "folder open icon" ] []
             , text "Select ..."
             ]
+        , div [ class "ui center aligned text container" ]
+            [ span [ class "small-info" ]
+                [ text "Choose document files (pdf, docx, txt, html, …). "
+                , text "Archives (zip and eml) are extracted."
+                ]
+            ]
         ]
 
 
