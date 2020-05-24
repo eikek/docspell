@@ -470,6 +470,7 @@ trait Conversions {
       case UploadResult.Success  => BasicResult(true, "Files submitted.")
       case UploadResult.NoFiles  => BasicResult(false, "There were no files to submit.")
       case UploadResult.NoSource => BasicResult(false, "The source id is not valid.")
+      case UploadResult.NoItem   => BasicResult(false, "The item could not be found.")
     }
 
   def basicResult(cr: PassChangeResult): BasicResult =
