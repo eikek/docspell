@@ -29,6 +29,19 @@ trait OUpload[F[_]] {
       notifyJoex: Boolean,
       itemId: Option[Ident]
   ): F[OUpload.UploadResult]
+
+  final def submitEither(
+      data: OUpload.UploadData[F],
+      accOrSrc: Either[Ident, AccountId],
+      notifyJoex: Boolean,
+      itemId: Option[Ident]
+  ): F[OUpload.UploadResult] =
+    accOrSrc match {
+      case Right(acc) =>
+        submit(data, acc, notifyJoex, itemId)
+      case Left(srcId) =>
+        submit(data, srcId, notifyJoex, itemId)
+    }
 }
 
 object OUpload {
