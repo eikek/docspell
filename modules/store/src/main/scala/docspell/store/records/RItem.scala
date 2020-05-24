@@ -1,7 +1,8 @@
 package docspell.store.records
 
-import cats.implicits._
+import cats.data.NonEmptyList
 import cats.effect.Sync
+import cats.implicits._
 import doobie._
 import doobie.implicits._
 import docspell.common._
@@ -110,12 +111,16 @@ object RItem {
   def getCollective(itemId: Ident): ConnectionIO[Option[Ident]] =
     selectSimple(List(cid), table, id.is(itemId)).query[Ident].option
 
-  def updateState(itemId: Ident, itemState: ItemState): ConnectionIO[Int] =
+  def updateState(
+      itemId: Ident,
+      itemState: ItemState,
+      existing: NonEmptyList[ItemState]
+  ): ConnectionIO[Int] =
     for {
       t <- currentTime
       n <- updateRow(
         table,
-        id.is(itemId),
+        and(id.is(itemId), state.isIn(existing)),
         commas(state.setTo(itemState), updated.setTo(t))
       ).update.run
     } yield n
@@ -285,4 +290,7 @@ object RItem {
 
   def existsById(itemId: Ident): ConnectionIO[Boolean] =
     selectCount(id, table, id.is(itemId)).query[Int].unique.map(_ > 0)
+
+  def findByIdAndCollective(itemId: Ident, coll: Ident): ConnectionIO[Option[RItem]] =
+    selectSimple(all, table, and(id.is(itemId), cid.is(coll))).query[RItem].option
 }

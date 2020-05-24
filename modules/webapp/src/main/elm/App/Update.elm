@@ -74,7 +74,7 @@ updateWithSub msg model =
             updateNewInvite m model |> noSub
 
         ItemDetailMsg m ->
-            updateItemDetail m model |> noSub
+            updateItemDetail m model
 
         VersionResp (Ok info) ->
             ( { model | version = info }, Cmd.none ) |> noSub
@@ -172,17 +172,20 @@ updateWithSub msg model =
             ( { model | navMenuOpen = not model.navMenuOpen }, Cmd.none, Sub.none )
 
 
-updateItemDetail : Page.ItemDetail.Data.Msg -> Model -> ( Model, Cmd Msg )
+updateItemDetail : Page.ItemDetail.Data.Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
 updateItemDetail lmsg model =
     let
         inav =
             Page.Home.Data.itemNav model.itemDetailModel.detail.item.id model.homeModel
 
-        ( lm, lc ) =
+        ( lm, lc, ls ) =
             Page.ItemDetail.Update.update model.key model.flags inav.next lmsg model.itemDetailModel
     in
-    ( { model | itemDetailModel = lm }
+    ( { model
+        | itemDetailModel = lm
+      }
     , Cmd.map ItemDetailMsg lc
+    , Sub.map ItemDetailMsg ls
     )
 
 
@@ -341,7 +344,19 @@ initPage model page =
             updateQueue Page.Queue.Data.StopRefresh model
 
         ItemDetailPage id ->
-            updateItemDetail (Page.ItemDetail.Data.Init id) model
+            let
+                updateDetail m__ =
+                    let
+                        ( m, c, s ) =
+                            updateItemDetail (Page.ItemDetail.Data.Init id) m__
+                    in
+                    ( { m | subs = Sub.batch [ m.subs, s ] }, c )
+            in
+            Util.Update.andThen1
+                [ updateDetail
+                , updateQueue Page.Queue.Data.StopRefresh
+                ]
+                model
 
 
 noSub : ( Model, Cmd Msg ) -> ( Model, Cmd Msg, Sub Msg )

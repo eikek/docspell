@@ -1,15 +1,17 @@
 package docspell.backend.ops
 
 import bitpeace.MimetypeHint
-import cats.implicits._
+import cats.Functor
+import cats.data.{EitherT, OptionT}
 import cats.effect._
+import cats.implicits._
 import docspell.backend.Config
 import fs2.Stream
 import docspell.common._
 import docspell.common.syntax.all._
 import docspell.store.Store
 import docspell.store.queue.JobQueue
-import docspell.store.records.{RCollective, RJob, RSource}
+import docspell.store.records._
 import org.log4s._
 
 trait OUpload[F[_]] {
@@ -17,14 +19,29 @@ trait OUpload[F[_]] {
   def submit(
       data: OUpload.UploadData[F],
       account: AccountId,
-      notifyJoex: Boolean
+      notifyJoex: Boolean,
+      itemId: Option[Ident]
   ): F[OUpload.UploadResult]
 
   def submit(
       data: OUpload.UploadData[F],
       sourceId: Ident,
-      notifyJoex: Boolean
+      notifyJoex: Boolean,
+      itemId: Option[Ident]
   ): F[OUpload.UploadResult]
+
+  final def submitEither(
+      data: OUpload.UploadData[F],
+      accOrSrc: Either[Ident, AccountId],
+      notifyJoex: Boolean,
+      itemId: Option[Ident]
+  ): F[OUpload.UploadResult] =
+    accOrSrc match {
+      case Right(acc) =>
+        submit(data, acc, notifyJoex, itemId)
+      case Left(srcId) =>
+        submit(data, srcId, notifyJoex, itemId)
+    }
 }
 
 object OUpload {
@@ -52,10 +69,31 @@ object OUpload {
 
   sealed trait UploadResult
   object UploadResult {
-    case object Success  extends UploadResult
-    case object NoFiles  extends UploadResult
+
+    /** File(s) have been successfully submitted. */
+    case object Success extends UploadResult
+
+    def success: UploadResult = Success
+
+    /** There were no files to submit. */
+    case object NoFiles extends UploadResult
+
+    def noFiles: UploadResult = NoFiles
+
+    /** A source (`RSource') could not be found for a given source-id. */
     case object NoSource extends UploadResult
+
+    def noSource: UploadResult = NoSource
+
+    /** When adding files to an item, no item was found using the given
+      * item-id. */
+    case object NoItem extends UploadResult
+
+    def noItem: UploadResult = NoItem
   }
+
+  private def right[F[_]: Functor, A](a: F[A]): EitherT[F, UploadResult, A] =
+    EitherT.right(a)
 
   def apply[F[_]: Sync](
       store: Store[F],
@@ -68,14 +106,17 @@ object OUpload {
       def submit(
           data: OUpload.UploadData[F],
           account: AccountId,
-          notifyJoex: Boolean
+          notifyJoex: Boolean,
+          itemId: Option[Ident]
       ): F[OUpload.UploadResult] =
-        for {
-          files <- data.files.traverse(saveFile).map(_.flatten)
-          pred  <- checkFileList(files)
-          lang  <- store.transact(RCollective.findLanguage(account.collective))
+        (for {
+          _     <- checkExistingItem(itemId, account.collective)
+          files <- right(data.files.traverse(saveFile).map(_.flatten))
+          _     <- checkFileList(files)
+          lang  <- right(store.transact(RCollective.findLanguage(account.collective)))
           meta = ProcessItemArgs.ProcessMeta(
             account.collective,
+            itemId,
             lang.getOrElse(Language.German),
             data.meta.direction,
             data.meta.sourceAbbrev,
@@ -84,29 +125,31 @@ object OUpload {
           args =
             if (data.multiple) files.map(f => ProcessItemArgs(meta, List(f)))
             else Vector(ProcessItemArgs(meta, files.toList))
-          job <- pred.traverse(_ => makeJobs(args, account, data.priority, data.tracker))
-          _   <- logger.fdebug(s"Storing jobs: $job")
-          res <- job.traverse(submitJobs(notifyJoex))
-          _ <- store.transact(
-            RSource.incrementCounter(data.meta.sourceAbbrev, account.collective)
+          jobs <- right(makeJobs(args, account, data.priority, data.tracker))
+          _    <- right(logger.fdebug(s"Storing jobs: $jobs"))
+          res  <- right(submitJobs(notifyJoex)(jobs))
+          _ <- right(
+            store.transact(
+              RSource.incrementCounter(data.meta.sourceAbbrev, account.collective)
+            )
           )
-        } yield res.fold(identity, identity)
+        } yield res).fold(identity, identity)
 
       def submit(
           data: OUpload.UploadData[F],
           sourceId: Ident,
-          notifyJoex: Boolean
+          notifyJoex: Boolean,
+          itemId: Option[Ident]
       ): F[OUpload.UploadResult] =
-        for {
-          sOpt <-
-            store
-              .transact(RSource.find(sourceId))
-              .map(_.toRight(UploadResult.NoSource))
-          abbrev = sOpt.map(_.abbrev).toOption.getOrElse(data.meta.sourceAbbrev)
-          updata = data.copy(meta = data.meta.copy(sourceAbbrev = abbrev))
-          accId  = sOpt.map(source => AccountId(source.cid, source.sid))
-          result <- accId.traverse(acc => submit(updata, acc, notifyJoex))
-        } yield result.fold(identity, identity)
+        (for {
+          src <- OptionT(store.transact(RSource.find(sourceId)))
+          updata = data.copy(
+            meta = data.meta.copy(sourceAbbrev = src.abbrev),
+            priority = src.priority
+          )
+          accId = AccountId(src.cid, src.sid)
+          result <- OptionT.liftF(submit(updata, accId, notifyJoex, itemId))
+        } yield result).getOrElse(UploadResult.noSource)
 
       private def submitJobs(
           notifyJoex: Boolean
@@ -117,6 +160,7 @@ object OUpload {
           _ <- if (notifyJoex) joex.notifyAllNodes else ().pure[F]
         } yield UploadResult.Success
 
+      /** Saves the file into the database. */
       private def saveFile(file: File[F]): F[Option[ProcessItemArgs.File]] =
         logger.finfo(s"Receiving file $file") *>
           store.bitpeace
@@ -135,10 +179,24 @@ object OUpload {
               )
             )
 
+      private def checkExistingItem(
+          itemId: Option[Ident],
+          coll: Ident
+      ): EitherT[F, UploadResult, Unit] =
+        itemId match {
+          case None =>
+            right(().pure[F])
+          case Some(id) =>
+            OptionT(store.transact(RItem.findByIdAndCollective(id, coll)))
+              .toRight(UploadResult.noItem)
+              .map(_ => ())
+        }
+
       private def checkFileList(
           files: Seq[ProcessItemArgs.File]
-      ): F[Either[UploadResult, Unit]] =
-        Sync[F].pure(if (files.isEmpty) Left(UploadResult.NoFiles) else Right(()))
+      ): EitherT[F, UploadResult, Unit] =
+        if (files.isEmpty) EitherT.left(UploadResult.noFiles.pure[F])
+        else right(().pure[F])
 
       private def makeJobs(
           args: Vector[ProcessItemArgs],

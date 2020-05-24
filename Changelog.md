@@ -8,18 +8,21 @@
   periodically to import your mails.
 - New feature "Integration Endpoint". Allows an admin to upload files
   to any collective using a separate endpoint.
+- New feature: add files to existing items.
+- The document list on the front-page has been rewritten. The table is
+  removed and documents are now presented in a “card view”.
+- Amend the mail-to-pdf conversion to include the e-mail date.
+- When processing e-mails, set the item date automatically from the
+  received-date in the mail.
+- Fixes regarding character encodings when reading e-mails.
 - Fix the `find-by-checksum` route that, given a sha256 checksum,
   returns whether there is such a file in docspell. It falsely
   returned `false` although documents existed.
-- Amend the mail-to-pdf conversion to include the e-mail date.
 - Fix webapp for mobile devices.
-- The document list on the front-page has been rewritten. The table is
-  removed and documents are now presented in a “card view”.
 - Fix the search menu to remember dates in fields. When going back
   from an item detail to the front-page, the search menu remembers the
   last state, but dates were cleared.
-- More fixes regarding character encodings when reading e-mails.
-- Fix redirecting `/` to `/app`.
+- Fix redirecting `/` only to `/app`.
 
 ### Configuration Changes
 

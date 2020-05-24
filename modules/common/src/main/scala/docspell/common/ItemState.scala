@@ -1,11 +1,18 @@
 package docspell.common
 
 import io.circe.{Decoder, Encoder}
+import cats.data.NonEmptyList
 
 sealed trait ItemState { self: Product =>
 
   final def name: String =
     productPrefix.toLowerCase
+
+  def isValid: Boolean =
+    ItemState.validStates.exists(_ == this)
+
+  def isInvalid: Boolean =
+    ItemState.invalidStates.exists(_ == this)
 }
 
 object ItemState {
@@ -24,8 +31,11 @@ object ItemState {
       case _            => Left(s"Invalid item state: $str")
     }
 
-  val validStates: Seq[ItemState] =
-    Seq(Created, Confirmed)
+  val validStates: NonEmptyList[ItemState] =
+    NonEmptyList.of(Created, Confirmed)
+
+  val invalidStates: NonEmptyList[ItemState] =
+    NonEmptyList.of(Premature, Processing)
 
   def unsafe(str: String): ItemState =
     fromString(str).fold(sys.error, identity)

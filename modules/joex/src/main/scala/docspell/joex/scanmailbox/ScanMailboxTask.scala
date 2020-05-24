@@ -259,7 +259,7 @@ object ScanMailboxTask {
           priority = Priority.Low,
           tracker = None
         )
-        res <- upload.submit(data, ctx.args.account, false)
+        res <- upload.submit(data, ctx.args.account, false, None)
       } yield res
     }
 

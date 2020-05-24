@@ -2,19 +2,20 @@ package docspell.joex.process
 
 import cats.implicits._
 import cats.effect._
+import fs2.Stream
 import docspell.common.{ItemState, ProcessItemArgs}
 import docspell.joex.Config
-import docspell.joex.scheduler.{Context, Task}
+import docspell.joex.scheduler.Task
 import docspell.store.queries.QItem
-import docspell.store.records.{RItem, RJob}
+import docspell.store.records.RItem
 
 object ItemHandler {
   def onCancel[F[_]: Sync: ContextShift]: Task[F, ProcessItemArgs, Unit] =
     logWarn("Now cancelling. Deleting potentially created data.").flatMap(_ =>
-      deleteByFileIds
+      deleteByFileIds.flatMap(_ => deleteFiles)
     )
 
-  def apply[F[_]: ConcurrentEffect: ContextShift](
+  def newItem[F[_]: ConcurrentEffect: ContextShift](
       cfg: Config
   ): Task[F, ProcessItemArgs, Unit] =
     CreateItem[F]
@@ -25,18 +26,19 @@ object ItemHandler {
   def itemStateTask[F[_]: Sync, A](
       state: ItemState
   )(data: ItemData): Task[F, A, ItemData] =
-    Task(ctx => ctx.store.transact(RItem.updateState(data.item.id, state)).map(_ => data))
+    Task(ctx =>
+      ctx.store
+        .transact(RItem.updateState(data.item.id, state, ItemState.invalidStates))
+        .map(_ => data)
+    )
 
-  def isLastRetry[F[_]: Sync, A](ctx: Context[F, A]): F[Boolean] =
-    for {
-      current <- ctx.store.transact(RJob.getRetries(ctx.jobId))
-      last = ctx.config.retries == current.getOrElse(0)
-    } yield last
+  def isLastRetry[F[_]: Sync]: Task[F, ProcessItemArgs, Boolean] =
+    Task(_.isLastRetry)
 
   def safeProcess[F[_]: ConcurrentEffect: ContextShift](
       cfg: Config
   )(data: ItemData): Task[F, ProcessItemArgs, ItemData] =
-    Task(isLastRetry[F, ProcessItemArgs] _).flatMap {
+    isLastRetry[F].flatMap {
       case true =>
         ProcessItem[F](cfg)(data).attempt.flatMap({
           case Right(d) =>
@@ -59,6 +61,15 @@ object ItemHandler {
         _     <- items.traverse(i => QItem.delete(ctx.store)(i.id, ctx.args.meta.collective))
       } yield ()
     }
+
+  private def deleteFiles[F[_]: Sync]: Task[F, ProcessItemArgs, Unit] =
+    Task(ctx =>
+      Stream
+        .emits(ctx.args.files.map(_.fileMetaId.id))
+        .flatMap(id => ctx.store.bitpeace.delete(id).attempt.drain)
+        .compile
+        .drain
+    )
 
   private def logWarn[F[_]](msg: => String): Task[F, ProcessItemArgs, Unit] =
     Task(_.logger.warn(msg))

@@ -58,7 +58,9 @@ init flags url key =
                 Nothing ->
                     Cmd.none
     in
-    ( m, Cmd.batch [ cmd, Api.versionInfo flags VersionResp, sessionCheck ] )
+    ( m
+    , Cmd.batch [ cmd, Api.versionInfo flags VersionResp, sessionCheck ]
+    )
 
 
 viewDoc : Model -> Document Msg

@@ -1,7 +1,7 @@
 package docspell.joex.scheduler
 
-import cats.Functor
-import cats.effect.{Blocker, Concurrent}
+import cats.{Applicative, Functor}
+import cats.effect._
 import cats.implicits._
 import docspell.common._
 import docspell.store.Store
@@ -22,6 +22,12 @@ trait Context[F[_], A] { self =>
   def setProgress(percent: Int): F[Unit]
 
   def store: Store[F]
+
+  final def isLastRetry(implicit ev: Applicative[F]): F[Boolean] =
+    for {
+      current <- store.transact(RJob.getRetries(jobId))
+      last = config.retries == current.getOrElse(0)
+    } yield last
 
   def blocker: Blocker
 

@@ -38,6 +38,11 @@ object RAttachment {
       fr"${v.id},${v.itemId},${v.fileId.id},${v.position},${v.created},${v.name}"
     ).update.run
 
+  def nextPosition(id: Ident): ConnectionIO[Int] =
+    for {
+      max <- selectSimple(position.max, table, itemId.is(id)).query[Option[Int]].unique
+    } yield max.map(_ + 1).getOrElse(0)
+
   def updateFileIdAndName(
       attachId: Ident,
       fId: Ident,

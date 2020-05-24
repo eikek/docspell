@@ -71,7 +71,7 @@ object NotifyDueItemsTask {
         QItem.Query
           .empty(ctx.args.account.collective)
           .copy(
-            states = ItemState.validStates,
+            states = ItemState.validStates.toList,
             tagsInclude = ctx.args.tagsInclude,
             tagsExclude = ctx.args.tagsExclude,
             dueDateFrom = ctx.args.daysBack.map(back => now - Duration.days(back.toLong)),

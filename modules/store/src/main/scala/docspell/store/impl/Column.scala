@@ -101,4 +101,6 @@ case class Column(name: String, ns: String = "", alias: String = "") {
   def asc: Fragment =
     f ++ fr"asc"
 
+  def max: Fragment =
+    fr"MAX(" ++ f ++ fr")"
 }

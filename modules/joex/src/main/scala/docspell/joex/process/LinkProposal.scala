@@ -9,21 +9,26 @@ import docspell.store.records.RItem
 object LinkProposal {
 
   def apply[F[_]: Sync](data: ItemData): Task[F, ProcessItemArgs, ItemData] =
-    Task { ctx =>
-      // sort by weight; order of equal weights is not important, just
-      // choose one others are then suggestions
-      // doc-date is only set when given explicitely, not from "guessing"
-      val proposals = MetaProposalList
-        .flatten(data.metas.map(_.proposals))
-        .filter(_.proposalType != MetaProposalType.DocDate)
-        .sortByWeights
+    if (data.item.state.isValid)
+      Task
+        .log[F, ProcessItemArgs](_.debug(s"Not linking proposals on existing item"))
+        .map(_ => data)
+    else
+      Task { ctx =>
+        // sort by weight; order of equal weights is not important, just
+        // choose one others are then suggestions
+        // doc-date is only set when given explicitely, not from "guessing"
+        val proposals = MetaProposalList
+          .flatten(data.metas.map(_.proposals))
+          .filter(_.proposalType != MetaProposalType.DocDate)
+          .sortByWeights
 
-      ctx.logger.info(s"Starting linking proposals") *>
-        MetaProposalType.all
-          .traverse(applyValue(data, proposals, ctx))
-          .map(result => ctx.logger.info(s"Results from proposal processing: $result"))
-          .map(_ => data)
-    }
+        ctx.logger.info(s"Starting linking proposals") *>
+          MetaProposalType.all
+            .traverse(applyValue(data, proposals, ctx))
+            .map(result => ctx.logger.info(s"Results from proposal processing: $result"))
+            .map(_ => data)
+      }
 
   def applyValue[F[_]: Sync](
       data: ItemData,
@@ -40,8 +45,9 @@ object LinkProposal {
             Result.single(mpt)
           )
       case Some(a) =>
+        val ids = a.values.map(_.ref.id.id)
         ctx.logger.info(
-          s"Found many (${a.size}, ${a.values.map(_.ref.id.id)}) candidates for ${a.proposalType}. Setting first."
+          s"Found many (${a.size}, ${ids}) candidates for ${a.proposalType}. Setting first."
         ) *>
           setItemMeta(data.item.id, ctx, a.proposalType, a.values.head.ref.id).map(_ =>
             Result.multiple(mpt)
