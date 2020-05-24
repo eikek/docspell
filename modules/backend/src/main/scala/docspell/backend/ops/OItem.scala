@@ -75,6 +75,8 @@ trait OItem[F[_]] {
   def findByFileSource(checksum: String, sourceId: Ident): F[Vector[RItem]]
 
   def deleteAttachment(id: Ident, collective: Ident): F[Int]
+
+  def moveAttachmentBefore(itemId: Ident, source: Ident, target: Ident): F[AddResult]
 }
 
 object OItem {
@@ -120,6 +122,16 @@ object OItem {
 
   def apply[F[_]: Effect](store: Store[F]): Resource[F, OItem[F]] =
     Resource.pure[F, OItem[F]](new OItem[F] {
+
+      def moveAttachmentBefore(
+          itemId: Ident,
+          source: Ident,
+          target: Ident
+      ): F[AddResult] =
+        store
+          .transact(QItem.moveAttachmentBefore(itemId, source, target))
+          .attempt
+          .map(AddResult.fromUpdate)
 
       def findItem(id: Ident, collective: Ident): F[Option[ItemData]] =
         store

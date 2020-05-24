@@ -72,11 +72,17 @@ case class Column(name: String, ns: String = "", alias: String = "") {
   def isGt[A: Put](a: A): Fragment =
     f ++ fr"> $a"
 
+  def isGte[A: Put](a: A): Fragment =
+    f ++ fr">= $a"
+
   def isGt(c: Column): Fragment =
     f ++ fr">" ++ c.f
 
   def isLt[A: Put](a: A): Fragment =
     f ++ fr"< $a"
+
+  def isLte[A: Put](a: A): Fragment =
+    f ++ fr"<= $a"
 
   def isLt(c: Column): Fragment =
     f ++ fr"<" ++ c.f
@@ -103,4 +109,10 @@ case class Column(name: String, ns: String = "", alias: String = "") {
 
   def max: Fragment =
     fr"MAX(" ++ f ++ fr")"
+
+  def increment[A: Put](a: A): Fragment =
+    f ++ fr"=" ++ f ++ fr"+ $a"
+
+  def decrement[A: Put](a: A): Fragment =
+    f ++ fr"=" ++ f ++ fr"- $a"
 }

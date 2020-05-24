@@ -38,6 +38,20 @@ object RAttachment {
       fr"${v.id},${v.itemId},${v.fileId.id},${v.position},${v.created},${v.name}"
     ).update.run
 
+  def decPositions(iId: Ident, lowerBound: Int, upperBound: Int): ConnectionIO[Int] =
+    updateRow(
+      table,
+      and(itemId.is(iId), position.isGte(lowerBound), position.isLte(upperBound)),
+      position.decrement(1)
+    ).update.run
+
+  def incPositions(iId: Ident, lowerBound: Int, upperBound: Int): ConnectionIO[Int] =
+    updateRow(
+      table,
+      and(itemId.is(iId), position.isGte(lowerBound), position.isLte(upperBound)),
+      position.increment(1)
+    ).update.run
+
   def nextPosition(id: Ident): ConnectionIO[Int] =
     for {
       max <- selectSimple(position.max, table, itemId.is(id)).query[Option[Int]].unique
