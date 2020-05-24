@@ -287,7 +287,7 @@ object QItem {
       n  <- store.transact(RItem.deleteByIdAndCollective(itemId, collective))
     } yield tn + rn + n
 
-  def findByFileIds(fileMetaIds: List[Ident]): ConnectionIO[Vector[RItem]] = {
+  def findByFileIds(fileMetaIds: Seq[Ident]): ConnectionIO[Vector[RItem]] = {
     val IC = RItem.Columns
     val AC = RAttachment.Columns
     val q =

@@ -119,8 +119,9 @@ object CreateItem {
 
   private def findExisting[F[_]: Sync]: Task[F, ProcessItemArgs, Option[ItemData]] =
     Task { ctx =>
+      val fileMetaIds = ctx.args.files.map(_.fileMetaId).toSet
       for {
-        cand <- ctx.store.transact(QItem.findByFileIds(ctx.args.files.map(_.fileMetaId)))
+        cand <- ctx.store.transact(QItem.findByFileIds(fileMetaIds.toSeq))
         _ <-
           if (cand.nonEmpty) ctx.logger.warn("Found existing item with these files.")
           else ().pure[F]
@@ -130,8 +131,11 @@ object CreateItem {
             ctx.logger.warn(s"Removed ${ht.sum} items with same attachments")
           else ().pure[F]
         rms <- OptionT(
+          //load attachments but only those mentioned in the task's arguments
           cand.headOption.traverse(ri =>
-            ctx.store.transact(RAttachment.findByItemAndCollective(ri.id, ri.cid))
+            ctx.store
+              .transact(RAttachment.findByItemAndCollective(ri.id, ri.cid))
+              .map(_.filter(r => fileMetaIds.contains(r.fileId)))
           )
         ).getOrElse(Vector.empty)
         orig <- rms.traverse(a =>
