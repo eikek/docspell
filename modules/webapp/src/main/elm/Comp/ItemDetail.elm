@@ -393,7 +393,12 @@ isSuccessAll model =
         |> List.all (\id -> Set.member id model.completed)
 
 
-update : Nav.Key -> Flags -> Maybe String -> Msg -> Model -> ( Model, Cmd Msg )
+noSub : ( Model, Cmd Msg ) -> ( Model, Cmd Msg, Sub Msg )
+noSub ( m, c ) =
+    ( m, c, Sub.none )
+
+
+update : Nav.Key -> Flags -> Maybe String -> Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
 update key flags next msg model =
     case msg of
         Init ->
@@ -404,22 +409,23 @@ update key flags next msg model =
                 ( im, ic ) =
                     Comp.ItemMail.init flags
             in
-            ( { model | itemDatePicker = dp, dueDatePicker = dp, itemMail = im, visibleAttach = 0 }
-            , Cmd.batch
-                [ getOptions flags
-                , Cmd.map ItemDatePickerMsg dpc
-                , Cmd.map DueDatePickerMsg dpc
-                , Cmd.map ItemMailMsg ic
-                , Api.getSentMails flags model.item.id SentMailsResp
-                ]
-            )
+            noSub
+                ( { model | itemDatePicker = dp, dueDatePicker = dp, itemMail = im, visibleAttach = 0 }
+                , Cmd.batch
+                    [ getOptions flags
+                    , Cmd.map ItemDatePickerMsg dpc
+                    , Cmd.map DueDatePickerMsg dpc
+                    , Cmd.map ItemMailMsg ic
+                    , Api.getSentMails flags model.item.id SentMailsResp
+                    ]
+                )
 
         SetItem item ->
             let
-                ( m1, c1 ) =
+                ( m1, c1, s1 ) =
                     update key flags next (TagDropdownMsg (Comp.Dropdown.SetSelection item.tags)) model
 
-                ( m2, c2 ) =
+                ( m2, c2, s2 ) =
                     update key
                         flags
                         next
@@ -433,7 +439,7 @@ update key flags next msg model =
                         )
                         m1
 
-                ( m3, c3 ) =
+                ( m3, c3, s3 ) =
                     update key
                         flags
                         next
@@ -447,7 +453,7 @@ update key flags next msg model =
                         )
                         m2
 
-                ( m4, c4 ) =
+                ( m4, c4, s4 ) =
                     update key
                         flags
                         next
@@ -461,7 +467,7 @@ update key flags next msg model =
                         )
                         m3
 
-                ( m5, c5 ) =
+                ( m5, c5, s5 ) =
                     update key
                         flags
                         next
@@ -475,7 +481,7 @@ update key flags next msg model =
                         )
                         m4
 
-                ( m6, c6 ) =
+                ( m6, c6, s6 ) =
                     update key
                         flags
                         next
@@ -489,7 +495,7 @@ update key flags next msg model =
                         )
                         m5
 
-                ( m7, c7 ) =
+                ( m7, c7, s7 ) =
                     update key flags next AddFilesReset m6
 
                 proposalCmd =
@@ -520,20 +526,21 @@ update key flags next msg model =
                 , proposalCmd
                 , Api.getSentMails flags item.id SentMailsResp
                 ]
+            , Sub.batch [ s1, s2, s3, s4, s5, s6, s7 ]
             )
 
         SetActiveAttachment pos ->
-            ( { model | visibleAttach = pos, sentMailsOpen = False }, Cmd.none )
+            noSub ( { model | visibleAttach = pos, sentMailsOpen = False }, Cmd.none )
 
         ToggleMenu ->
-            ( { model | menuOpen = not model.menuOpen }, Cmd.none )
+            noSub ( { model | menuOpen = not model.menuOpen }, Cmd.none )
 
         ReloadItem ->
             if model.item.id == "" then
-                ( model, Cmd.none )
+                noSub ( model, Cmd.none )
 
             else
-                ( model, Api.itemDetail flags model.item.id GetItemResp )
+                noSub ( model, Api.itemDetail flags model.item.id GetItemResp )
 
         TagDropdownMsg m ->
             let
@@ -550,7 +557,7 @@ update key flags next msg model =
                     else
                         Cmd.none
             in
-            ( newModel, Cmd.batch [ save, Cmd.map TagDropdownMsg c2 ] )
+            noSub ( newModel, Cmd.batch [ save, Cmd.map TagDropdownMsg c2 ] )
 
         DirDropdownMsg m ->
             let
@@ -567,7 +574,7 @@ update key flags next msg model =
                     else
                         Cmd.none
             in
-            ( newModel, Cmd.batch [ save, Cmd.map DirDropdownMsg c2 ] )
+            noSub ( newModel, Cmd.batch [ save, Cmd.map DirDropdownMsg c2 ] )
 
         OrgDropdownMsg m ->
             let
@@ -587,7 +594,7 @@ update key flags next msg model =
                     else
                         Cmd.none
             in
-            ( newModel, Cmd.batch [ save, Cmd.map OrgDropdownMsg c2 ] )
+            noSub ( newModel, Cmd.batch [ save, Cmd.map OrgDropdownMsg c2 ] )
 
         CorrPersonMsg m ->
             let
@@ -607,7 +614,7 @@ update key flags next msg model =
                     else
                         Cmd.none
             in
-            ( newModel, Cmd.batch [ save, Cmd.map CorrPersonMsg c2 ] )
+            noSub ( newModel, Cmd.batch [ save, Cmd.map CorrPersonMsg c2 ] )
 
         ConcPersonMsg m ->
             let
@@ -627,7 +634,7 @@ update key flags next msg model =
                     else
                         Cmd.none
             in
-            ( newModel, Cmd.batch [ save, Cmd.map ConcPersonMsg c2 ] )
+            noSub ( newModel, Cmd.batch [ save, Cmd.map ConcPersonMsg c2 ] )
 
         ConcEquipMsg m ->
             let
@@ -647,42 +654,45 @@ update key flags next msg model =
                     else
                         Cmd.none
             in
-            ( newModel, Cmd.batch [ save, Cmd.map ConcEquipMsg c2 ] )
+            noSub ( newModel, Cmd.batch [ save, Cmd.map ConcEquipMsg c2 ] )
 
         SetName str ->
-            ( { model | nameModel = str }, Cmd.none )
+            noSub ( { model | nameModel = str }, Cmd.none )
 
         SaveName ->
-            ( model, setName flags model )
+            noSub ( model, setName flags model )
 
         SetNotes str ->
-            ( { model | notesModel = Util.Maybe.fromString str }
-            , Cmd.none
-            )
+            noSub
+                ( { model | notesModel = Util.Maybe.fromString str }
+                , Cmd.none
+                )
 
         ToggleNotes ->
-            ( { model
-                | notesField =
-                    if model.notesField == ViewNotes then
-                        HideNotes
+            noSub
+                ( { model
+                    | notesField =
+                        if model.notesField == ViewNotes then
+                            HideNotes
 
-                    else
-                        ViewNotes
-              }
-            , Cmd.none
-            )
+                        else
+                            ViewNotes
+                  }
+                , Cmd.none
+                )
 
         ToggleEditNotes ->
-            ( { model
-                | notesField =
-                    if isEditNotes model.notesField then
-                        ViewNotes
+            noSub
+                ( { model
+                    | notesField =
+                        if isEditNotes model.notesField then
+                            ViewNotes
 
-                    else
-                        EditNotes Comp.MarkdownInput.init
-              }
-            , Cmd.none
-            )
+                        else
+                            EditNotes Comp.MarkdownInput.init
+                  }
+                , Cmd.none
+                )
 
         NotesEditMsg lm ->
             case model.notesField of
@@ -691,21 +701,25 @@ update key flags next msg model =
                         ( lm2, str ) =
                             Comp.MarkdownInput.update (Maybe.withDefault "" model.notesModel) lm em
                     in
-                    ( { model | notesField = EditNotes lm2, notesModel = Util.Maybe.fromString str }
-                    , Cmd.none
-                    )
+                    noSub
+                        ( { model | notesField = EditNotes lm2, notesModel = Util.Maybe.fromString str }
+                        , Cmd.none
+                        )
 
-                _ ->
-                    ( model, Cmd.none )
+                HideNotes ->
+                    noSub ( model, Cmd.none )
+
+                ViewNotes ->
+                    noSub ( model, Cmd.none )
 
         SaveNotes ->
-            ( model, setNotes flags model )
+            noSub ( model, setNotes flags model )
 
         ConfirmItem ->
-            ( model, Api.setConfirmed flags model.item.id SaveResp )
+            noSub ( model, Api.setConfirmed flags model.item.id SaveResp )
 
         UnconfirmItem ->
-            ( model, Api.setUnconfirmed flags model.item.id SaveResp )
+            noSub ( model, Api.setUnconfirmed flags model.item.id SaveResp )
 
         ItemDatePickerMsg m ->
             let
@@ -718,13 +732,13 @@ update key flags next msg model =
                         newModel =
                             { model | itemDatePicker = dp, itemDate = Just (Comp.DatePicker.midOfDay date) }
                     in
-                    ( newModel, setDate flags newModel newModel.itemDate )
+                    noSub ( newModel, setDate flags newModel newModel.itemDate )
 
                 _ ->
-                    ( { model | itemDatePicker = dp }, Cmd.none )
+                    noSub ( { model | itemDatePicker = dp }, Cmd.none )
 
         RemoveDate ->
-            ( { model | itemDate = Nothing }, setDate flags model Nothing )
+            noSub ( { model | itemDate = Nothing }, setDate flags model Nothing )
 
         DueDatePickerMsg m ->
             let
@@ -737,13 +751,13 @@ update key flags next msg model =
                         newModel =
                             { model | dueDatePicker = dp, dueDate = Just (Comp.DatePicker.midOfDay date) }
                     in
-                    ( newModel, setDueDate flags newModel newModel.dueDate )
+                    noSub ( newModel, setDueDate flags newModel newModel.dueDate )
 
                 _ ->
-                    ( { model | dueDatePicker = dp }, Cmd.none )
+                    noSub ( { model | dueDatePicker = dp }, Cmd.none )
 
         RemoveDueDate ->
-            ( { model | dueDate = Nothing }, setDueDate flags model Nothing )
+            noSub ( { model | dueDate = Nothing }, setDueDate flags model Nothing )
 
         DeleteItemConfirm m ->
             let
@@ -757,41 +771,41 @@ update key flags next msg model =
                     else
                         Cmd.none
             in
-            ( { model | deleteItemConfirm = cm }, cmd )
+            noSub ( { model | deleteItemConfirm = cm }, cmd )
 
         RequestDelete ->
             update key flags next (DeleteItemConfirm Comp.YesNoDimmer.activate) model
 
         SetCorrOrgSuggestion idname ->
-            ( model, setCorrOrg flags model (Just idname) )
+            noSub ( model, setCorrOrg flags model (Just idname) )
 
         SetCorrPersonSuggestion idname ->
-            ( model, setCorrPerson flags model (Just idname) )
+            noSub ( model, setCorrPerson flags model (Just idname) )
 
         SetConcPersonSuggestion idname ->
-            ( model, setConcPerson flags model (Just idname) )
+            noSub ( model, setConcPerson flags model (Just idname) )
 
         SetConcEquipSuggestion idname ->
-            ( model, setConcEquip flags model (Just idname) )
+            noSub ( model, setConcEquip flags model (Just idname) )
 
         SetItemDateSuggestion date ->
-            ( model, setDate flags model (Just date) )
+            noSub ( model, setDate flags model (Just date) )
 
         SetDueDateSuggestion date ->
-            ( model, setDueDate flags model (Just date) )
+            noSub ( model, setDueDate flags model (Just date) )
 
         GetTagsResp (Ok tags) ->
             let
                 tagList =
                     Comp.Dropdown.SetOptions tags.items
 
-                ( m1, c1 ) =
+                ( m1, c1, s1 ) =
                     update key flags next (TagDropdownMsg tagList) model
             in
-            ( m1, c1 )
+            ( m1, c1, s1 )
 
         GetTagsResp (Err _) ->
-            ( model, Cmd.none )
+            noSub ( model, Cmd.none )
 
         GetOrgResp (Ok orgs) ->
             let
@@ -801,23 +815,23 @@ update key flags next msg model =
             update key flags next (OrgDropdownMsg opts) model
 
         GetOrgResp (Err _) ->
-            ( model, Cmd.none )
+            noSub ( model, Cmd.none )
 
         GetPersonResp (Ok ps) ->
             let
                 opts =
                     Comp.Dropdown.SetOptions ps.items
 
-                ( m1, c1 ) =
+                ( m1, c1, s1 ) =
                     update key flags next (CorrPersonMsg opts) model
 
-                ( m2, c2 ) =
+                ( m2, c2, s2 ) =
                     update key flags next (ConcPersonMsg opts) m1
             in
-            ( m2, Cmd.batch [ c1, c2 ] )
+            ( m2, Cmd.batch [ c1, c2 ], Sub.batch [ s1, s2 ] )
 
         GetPersonResp (Err _) ->
-            ( model, Cmd.none )
+            noSub ( model, Cmd.none )
 
         GetEquipResp (Ok equips) ->
             let
@@ -830,44 +844,44 @@ update key flags next msg model =
             update key flags next (ConcEquipMsg opts) model
 
         GetEquipResp (Err _) ->
-            ( model, Cmd.none )
+            noSub ( model, Cmd.none )
 
         SaveResp (Ok res) ->
             if res.success then
-                ( model, Api.itemDetail flags model.item.id GetItemResp )
+                noSub ( model, Api.itemDetail flags model.item.id GetItemResp )
 
             else
-                ( model, Cmd.none )
+                noSub ( model, Cmd.none )
 
         SaveResp (Err _) ->
-            ( model, Cmd.none )
+            noSub ( model, Cmd.none )
 
         DeleteResp (Ok res) ->
             if res.success then
                 case next of
                     Just id ->
-                        ( model, Page.set key (ItemDetailPage id) )
+                        noSub ( model, Page.set key (ItemDetailPage id) )
 
                     Nothing ->
-                        ( model, Page.set key HomePage )
+                        noSub ( model, Page.set key HomePage )
 
             else
-                ( model, Cmd.none )
+                noSub ( model, Cmd.none )
 
         DeleteResp (Err _) ->
-            ( model, Cmd.none )
+            noSub ( model, Cmd.none )
 
         GetItemResp (Ok item) ->
             update key flags next (SetItem item) model
 
         GetItemResp (Err _) ->
-            ( model, Cmd.none )
+            noSub ( model, Cmd.none )
 
         GetProposalResp (Ok ip) ->
-            ( { model | itemProposals = ip }, Cmd.none )
+            noSub ( { model | itemProposals = ip }, Cmd.none )
 
         GetProposalResp (Err _) ->
-            ( model, Cmd.none )
+            noSub ( model, Cmd.none )
 
         ItemMailMsg m ->
             let
@@ -876,16 +890,17 @@ update key flags next msg model =
             in
             case fa of
                 Comp.ItemMail.FormNone ->
-                    ( { model | itemMail = im }, Cmd.map ItemMailMsg ic )
+                    noSub ( { model | itemMail = im }, Cmd.map ItemMailMsg ic )
 
                 Comp.ItemMail.FormCancel ->
-                    ( { model
-                        | itemMail = Comp.ItemMail.clear im
-                        , mailOpen = False
-                        , mailSendResult = Nothing
-                      }
-                    , Cmd.map ItemMailMsg ic
-                    )
+                    noSub
+                        ( { model
+                            | itemMail = Comp.ItemMail.clear im
+                            , mailOpen = False
+                            , mailSendResult = Nothing
+                          }
+                        , Cmd.map ItemMailMsg ic
+                        )
 
                 Comp.ItemMail.FormSend sm ->
                     let
@@ -895,12 +910,13 @@ update key flags next msg model =
                             , conn = sm.conn
                             }
                     in
-                    ( { model | mailSending = True }
-                    , Cmd.batch
-                        [ Cmd.map ItemMailMsg ic
-                        , Api.sendMail flags mail SendMailResp
-                        ]
-                    )
+                    noSub
+                        ( { model | mailSending = True }
+                        , Cmd.batch
+                            [ Cmd.map ItemMailMsg ic
+                            , Api.sendMail flags mail SendMailResp
+                            ]
+                        )
 
         ToggleMail ->
             let
@@ -914,12 +930,13 @@ update key flags next msg model =
                     else
                         Nothing
             in
-            ( { model
-                | mailOpen = newOpen
-                , mailSendResult = sendResult
-              }
-            , Cmd.none
-            )
+            noSub
+                ( { model
+                    | mailOpen = newOpen
+                    , mailSendResult = sendResult
+                  }
+                , Cmd.none
+                )
 
         SendMailResp (Ok br) ->
             let
@@ -930,56 +947,59 @@ update key flags next msg model =
                     else
                         model.itemMail
             in
-            ( { model
-                | itemMail = mm
-                , mailSending = False
-                , mailSendResult = Just br
-              }
-            , if br.success then
-                Api.itemDetail flags model.item.id GetItemResp
+            noSub
+                ( { model
+                    | itemMail = mm
+                    , mailSending = False
+                    , mailSendResult = Just br
+                  }
+                , if br.success then
+                    Api.itemDetail flags model.item.id GetItemResp
 
-              else
-                Cmd.none
-            )
+                  else
+                    Cmd.none
+                )
 
         SendMailResp (Err err) ->
             let
                 errmsg =
                     Util.Http.errorToString err
             in
-            ( { model
-                | mailSendResult = Just (BasicResult False errmsg)
-                , mailSending = False
-              }
-            , Cmd.none
-            )
+            noSub
+                ( { model
+                    | mailSendResult = Just (BasicResult False errmsg)
+                    , mailSending = False
+                  }
+                , Cmd.none
+                )
 
         SentMailsMsg m ->
             let
                 sm =
                     Comp.SentMails.update m model.sentMails
             in
-            ( { model | sentMails = sm }, Cmd.none )
+            noSub ( { model | sentMails = sm }, Cmd.none )
 
         ToggleSentMails ->
-            ( { model | sentMailsOpen = not model.sentMailsOpen, visibleAttach = -1 }, Cmd.none )
+            noSub ( { model | sentMailsOpen = not model.sentMailsOpen, visibleAttach = -1 }, Cmd.none )
 
         SentMailsResp (Ok list) ->
             let
                 sm =
                     Comp.SentMails.initMails list.items
             in
-            ( { model | sentMails = sm }, Cmd.none )
+            noSub ( { model | sentMails = sm }, Cmd.none )
 
         SentMailsResp (Err _) ->
-            ( model, Cmd.none )
+            noSub ( model, Cmd.none )
 
         AttachMetaClick id ->
             case Dict.get id model.attachMeta of
                 Just _ ->
-                    ( { model | attachMetaOpen = not model.attachMetaOpen }
-                    , Cmd.none
-                    )
+                    noSub
+                        ( { model | attachMetaOpen = not model.attachMetaOpen }
+                        , Cmd.none
+                        )
 
                 Nothing ->
                     let
@@ -989,9 +1009,10 @@ update key flags next msg model =
                         nextMeta =
                             Dict.insert id am model.attachMeta
                     in
-                    ( { model | attachMeta = nextMeta, attachMetaOpen = True }
-                    , Cmd.map (AttachMetaMsg id) ac
-                    )
+                    noSub
+                        ( { model | attachMeta = nextMeta, attachMetaOpen = True }
+                        , Cmd.map (AttachMetaMsg id) ac
+                        )
 
         AttachMetaMsg id lmsg ->
             case Dict.get id model.attachMeta of
@@ -1000,17 +1021,19 @@ update key flags next msg model =
                         am =
                             Comp.AttachmentMeta.update lmsg cm
                     in
-                    ( { model | attachMeta = Dict.insert id am model.attachMeta }
-                    , Cmd.none
-                    )
+                    noSub
+                        ( { model | attachMeta = Dict.insert id am model.attachMeta }
+                        , Cmd.none
+                        )
 
                 Nothing ->
-                    ( model, Cmd.none )
+                    noSub ( model, Cmd.none )
 
         TogglePdfNativeView ->
-            ( { model | pdfNativeView = not model.pdfNativeView }
-            , Cmd.none
-            )
+            noSub
+                ( { model | pdfNativeView = not model.pdfNativeView }
+                , Cmd.none
+                )
 
         DeleteAttachConfirm attachId lmsg ->
             let
@@ -1024,17 +1047,17 @@ update key flags next msg model =
                     else
                         Cmd.none
             in
-            ( { model | deleteAttachConfirm = cm }, cmd )
+            noSub ( { model | deleteAttachConfirm = cm }, cmd )
 
         DeleteAttachResp (Ok res) ->
             if res.success then
                 update key flags next ReloadItem model
 
             else
-                ( model, Cmd.none )
+                noSub ( model, Cmd.none )
 
         DeleteAttachResp (Err _) ->
-            ( model, Cmd.none )
+            noSub ( model, Cmd.none )
 
         RequestDeleteAttachment id ->
             update key
@@ -1044,9 +1067,10 @@ update key flags next msg model =
                 model
 
         AddFilesToggle ->
-            ( { model | addFilesOpen = not model.addFilesOpen }
-            , Cmd.none
-            )
+            noSub
+                ( { model | addFilesOpen = not model.addFilesOpen }
+                , Cmd.none
+                )
 
         AddFilesMsg lm ->
             let
@@ -1056,20 +1080,22 @@ update key flags next msg model =
                 nextFiles =
                     model.selectedFiles ++ df
             in
-            ( { model | addFilesModel = dm, selectedFiles = nextFiles }
-            , Cmd.map AddFilesMsg dc
-            )
+            noSub
+                ( { model | addFilesModel = dm, selectedFiles = nextFiles }
+                , Cmd.map AddFilesMsg dc
+                )
 
         AddFilesReset ->
-            ( { model
-                | selectedFiles = []
-                , addFilesModel = Comp.Dropzone.init Comp.Dropzone.defaultSettings
-                , completed = Set.empty
-                , errored = Set.empty
-                , loading = Set.empty
-              }
-            , Cmd.none
-            )
+            noSub
+                ( { model
+                    | selectedFiles = []
+                    , addFilesModel = Comp.Dropzone.init Comp.Dropzone.defaultSettings
+                    , completed = Set.empty
+                    , errored = Set.empty
+                    , loading = Set.empty
+                  }
+                , Cmd.none
+                )
 
         AddFilesSubmitUpload ->
             let
@@ -1085,7 +1111,10 @@ update key flags next msg model =
                 ( cm2, _, _ ) =
                     Comp.Dropzone.update (Comp.Dropzone.setActive False) model.addFilesModel
             in
-            ( { model | loading = Set.fromList fileids, addFilesModel = cm2 }, uploads )
+            ( { model | loading = Set.fromList fileids, addFilesModel = cm2 }
+            , uploads
+            , tracker
+            )
 
         AddFilesUploadResp fileid (Ok res) ->
             let
@@ -1109,9 +1138,10 @@ update key flags next msg model =
                 newModel =
                     { model | completed = compl, errored = errs, loading = load }
             in
-            ( newModel
-            , Ports.setProgress ( fileid, 100 )
-            )
+            noSub
+                ( newModel
+                , Ports.setProgress ( fileid, 100 )
+                )
 
         AddFilesUploadResp fileid (Err _) ->
             let
@@ -1121,7 +1151,7 @@ update key flags next msg model =
                 load =
                     Set.remove fileid model.loading
             in
-            ( { model | errored = errs, loading = load }, Cmd.none )
+            noSub ( { model | errored = errs, loading = load }, Cmd.none )
 
         AddFilesProgress fileid progress ->
             let
@@ -1142,7 +1172,7 @@ update key flags next msg model =
                     else
                         Ports.setProgress ( fileid, percent )
             in
-            ( model, updateBars )
+            noSub ( model, updateBars )
 
 
 
