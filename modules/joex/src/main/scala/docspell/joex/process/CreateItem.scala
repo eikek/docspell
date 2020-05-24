@@ -32,7 +32,7 @@ object CreateItem {
 
       def fileMetas(itemId: Ident, now: Timestamp) =
         Stream
-          .eval(ctx.store.transact(RAttachment.countOnItem(itemId)))
+          .eval(ctx.store.transact(RAttachment.nextPosition(itemId)))
           .flatMap { offset =>
             Stream
               .emits(ctx.args.files)
