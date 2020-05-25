@@ -98,7 +98,6 @@ object Conversion {
         }
     })
 
-
   object Office {
     val odt      = MimeType.application("vnd.oasis.opendocument.text")
     val ods      = MimeType.application("vnd.oasis.opendocument.spreadsheet")
@@ -140,9 +139,9 @@ object Conversion {
 
   def unapply(mt: MimeType): Option[MimeType] =
     mt match {
-      case Office(_) => Some(mt)
-      case MimeType.TextAllMatch(_)  => Some(mt)
-      case MimeType.ImageMatch(_) => Some(mt)
-      case _         => None
+      case Office(_)                => Some(mt)
+      case MimeType.TextAllMatch(_) => Some(mt)
+      case MimeType.ImageMatch(_)   => Some(mt)
+      case _                        => None
     }
 }

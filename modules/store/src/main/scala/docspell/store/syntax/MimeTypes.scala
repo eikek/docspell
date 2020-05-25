@@ -5,7 +5,6 @@ import docspell.common._
 
 object MimeTypes {
 
-
   implicit final class BitpeaceMimeTypeOps(bmt: Mimetype) {
 
     def toLocal: MimeType =
