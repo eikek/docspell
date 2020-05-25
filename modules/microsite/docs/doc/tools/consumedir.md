@@ -62,3 +62,25 @@ This unit file is just an example, it needs some fiddling. It assumes
 an existing user `someuser` that is used to run this service. The url
 `http://localhost:7880/api/v1/open/upload/...` is an anonymous upload
 url as described [here](../uploading#anonymous-upload).
+
+
+## Docker
+
+The provided docker image runs this script to watch a directory for
+new files. If a new file is detected, it is pushed to docspell.
+
+For this to work, the container must know about a valid upload url.
+Therefore, you must first signup and create such an upload url, as
+described [here](doc/uploading#anonymous-upload). Get only the id
+(something like `AvR6sA8GKFm-hgYDgZfwzXa-Tqnu8yqyz6X-KzuefvEvrRf`) and
+define an environment variable `SOURCE_ID` with that value before
+running `docker-compose up` a second time.
+
+```
+export SOURCE_ID="AvR6sA8GKFm-hgYDgZfwzXa-Tqnu8yqyz6X-KzuefvEvrRf"
+docker-compose up
+```
+
+Now you can create a folder `./docs` and place all files in there that
+you want to import. Once dropped in this folder the `consumedir`
+container will push it to docspell.

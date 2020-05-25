@@ -29,5 +29,16 @@ services:
       - ${PWD}/docspell.conf:/opt/docspell.conf
     depends_on:
       - db
+  consumedir:
+    image: eikek0/docspell:consumedir-0.6.0
+    container_name: docspell-consumedir
+    command: --path /opt/docs -m http://restserver:7880/api/v1/open/upload/item/$SOURCE_ID
+    environment:
+      - SOURCE_ID=${SOURCE_ID:-none}
+    volumes:
+      - ${PWD}/docs:/opt/docs
+    depends_on:
+      - restserver
+
 volumes:
   postgres_data:

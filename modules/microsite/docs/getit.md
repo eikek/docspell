@@ -91,3 +91,12 @@ available in the `/docker` folder.
 
 The directory contains a file `docspell.conf` that you can
 [modify](doc/configure) as needed.
+
+
+### Watching files in a directory
+
+This setup starts a container running the
+[`consumedir.sh`](doc/tools/consumedir) script. It is configured to
+watch one directory and upload files arriving in there to docspell.
+Please see the [`consumedir.sh`](doc/tools/consumedir#docker) docs for
+additional steps.
