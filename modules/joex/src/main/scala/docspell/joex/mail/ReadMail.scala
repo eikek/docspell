@@ -10,6 +10,7 @@ import emil.markdown._
 import emil.jsoup._
 
 import docspell.common._
+import docspell.store.syntax.MimeTypes._
 
 object ReadMail {
 
@@ -51,17 +52,12 @@ object ReadMail {
           .eval(TnefExtract.replace(mail))
           .flatMap(m => Stream.emits(m.attachments.all))
           .map(a =>
-            Binary(a.filename.getOrElse("noname"), a.mimeType.toDocspell, a.content)
+            Binary(a.filename.getOrElse("noname"), a.mimeType.toLocal, a.content)
           ))
   }
 
   private def makeHtmlBinary[F[_]](cnt: BodyContent): Binary[F] =
     Binary.html[F]("mail.html", cnt.bytes, cnt.charsetOrUtf8)
-
-  implicit class MimeTypeConv(m: emil.MimeType) {
-    def toDocspell: MimeType =
-      MimeType(m.primary, m.sub, m.params)
-  }
 
   private def bodyType[F[_]](body: MailBody[F]): String =
     body.fold(

@@ -1,0 +1,27 @@
+package docspell.store.syntax
+
+import bitpeace.Mimetype
+import docspell.common._
+
+object MimeTypes {
+
+
+  implicit final class BitpeaceMimeTypeOps(bmt: Mimetype) {
+
+    def toLocal: MimeType =
+      MimeType(bmt.primary, bmt.sub, bmt.params)
+  }
+
+  implicit final class EmilMimeTypeOps(emt: emil.MimeType) {
+    def toLocal: MimeType =
+      MimeType(emt.primary, emt.sub, emt.params)
+  }
+
+  implicit final class DocspellMimeTypeOps(mt: MimeType) {
+    def toEmil: emil.MimeType =
+      emil.MimeType(mt.primary, mt.sub, mt.params)
+
+    def toBitpeace: Mimetype =
+      Mimetype(mt.primary, mt.sub, mt.params)
+  }
+}

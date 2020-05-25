@@ -8,6 +8,7 @@ import docspell.common._
 import docspell.extract.{ExtractConfig, ExtractResult, Extraction}
 import docspell.joex.scheduler.{Context, Task}
 import docspell.store.records.{RAttachment, RAttachmentMeta, RFileMeta}
+import docspell.store.syntax.MimeTypes._
 
 object TextExtraction {
 
@@ -82,7 +83,7 @@ object TextExtraction {
 
     findMime
       .flatMap(mt =>
-        extr.extractText(data, DataType(MimeType(mt.primary, mt.sub, mt.params)), lang)
+        extr.extractText(data, DataType(mt.toLocal), lang)
       )
   }
 

@@ -241,7 +241,7 @@ object ScanMailboxTask {
     def submitMail(upload: OUpload[F])(mail: Mail[F]): F[OUpload.UploadResult] = {
       val file = OUpload.File(
         Some(mail.header.subject + ".eml"),
-        Some(MimeType.eml),
+        Some(MimeType.emls.head),
         mail.toByteStream
       )
       for {

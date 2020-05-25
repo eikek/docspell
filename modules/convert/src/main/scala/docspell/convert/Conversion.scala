@@ -33,10 +33,10 @@ object Conversion {
           in: Stream[F, Byte]
       ): F[A] =
         TikaMimetype.resolve(dataType, in).flatMap {
-          case Pdfs(_) =>
+          case MimeType.PdfMatch(_) =>
             handler.run(ConversionResult.successPdf(in))
 
-          case mt @ MimeType(_, "html", _) =>
+          case MimeType.HtmlMatch(mt) =>
             val cs = mt.charsetOrUtf8
             WkHtmlPdf
               .toPDF(cfg.wkhtmlpdf, cfg.chunkSize, cs, sanitizeHtml, blocker, logger)(
@@ -44,7 +44,7 @@ object Conversion {
                 handler
               )
 
-          case mt @ Texts(_) =>
+          case MimeType.TextAllMatch(mt) =>
             val cs = mt.charsetOrUtf8
             Markdown.toHtml(in, cfg.markdown, cs).flatMap { html =>
               val bytes = Stream
@@ -60,7 +60,7 @@ object Conversion {
               )(bytes, handler)
             }
 
-          case Images(mt) =>
+          case MimeType.ImageMatch(mt) =>
             ImageSize.get(in).flatMap {
               case Some(dim) =>
                 if (dim.product > cfg.maxImageSize)
@@ -98,23 +98,6 @@ object Conversion {
         }
     })
 
-  object Images {
-
-    val all = Set(MimeType.jpeg, MimeType.png, MimeType.tiff)
-
-    def unapply(m: MimeType): Option[MimeType] =
-      Some(m).map(_.baseType).filter(all.contains)
-  }
-
-  object Texts {
-    def unapply(m: MimeType): Option[MimeType] =
-      Some(m).filter(_.primary == "text")
-  }
-
-  object Pdfs {
-    def unapply(m: MimeType): Option[MimeType] =
-      Some(m).filter(_.matches(MimeType.pdf))
-  }
 
   object Office {
     val odt      = MimeType.application("vnd.oasis.opendocument.text")
@@ -158,8 +141,8 @@ object Conversion {
   def unapply(mt: MimeType): Option[MimeType] =
     mt match {
       case Office(_) => Some(mt)
-      case Texts(_)  => Some(mt)
-      case Images(_) => Some(mt)
+      case MimeType.TextAllMatch(_)  => Some(mt)
+      case MimeType.ImageMatch(_) => Some(mt)
       case _         => None
     }
 }

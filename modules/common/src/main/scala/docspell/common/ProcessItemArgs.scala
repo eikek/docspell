@@ -16,7 +16,7 @@ case class ProcessItemArgs(meta: ProcessMeta, files: List[File]) {
 
   def makeSubject: String =
     files.flatMap(_.name) match {
-      case Nil             => s"${meta.sourceAbbrev}: No files"
+      case Nil             => s"${meta.sourceAbbrev}: No files supplied"
       case n :: Nil        => n
       case n1 :: n2 :: Nil => s"$n1, $n2"
       case _               => s"${files.size} files from ${meta.sourceAbbrev}"

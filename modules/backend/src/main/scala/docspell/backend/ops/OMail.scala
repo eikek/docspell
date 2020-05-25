@@ -5,11 +5,11 @@ import cats.effect._
 import cats.implicits._
 import cats.data.OptionT
 import emil._
-import emil.javamail.syntax._
 import bitpeace.{FileMeta, RangeDef}
 
 import docspell.common._
 import docspell.store._
+import docspell.store.syntax.MimeTypes._
 import docspell.store.records._
 import docspell.store.queries.QMails
 import OMail.{ImapSettings, ItemMail, Sent, SmtpSettings}
@@ -224,7 +224,7 @@ object OMail {
                 Stream.emit(a._2).through(store.bitpeace.fetchData2(RangeDef.all))
               ).withFilename(a._1.name)
                 .withLength(a._2.length)
-                .withMimeType(_root_.emil.MimeType.parse(a._2.mimetype.asString).toOption)
+                .withMimeType(a._2.mimetype.toLocal.toEmil)
             }
             val fields: Seq[Trans[F]] = Seq(
               From(sett.mailFrom),

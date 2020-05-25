@@ -87,7 +87,7 @@ object Extraction {
               ) *>
               OdfExtract.get(data).map(ExtractResult.fromEither)
 
-          case mt @ MimeType("text", sub, _) if !sub.contains("html") =>
+          case MimeType.NonHtmlText(mt) =>
             val cs = mt.charsetOrUtf8
             logger.info(s"File detected as ${mt.asString}. Returning itself as text.") *>
               data.through(Binary.decode(cs)).foldMonoid.compile.last.map { txt =>

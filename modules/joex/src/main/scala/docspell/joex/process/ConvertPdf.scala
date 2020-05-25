@@ -10,6 +10,7 @@ import docspell.common._
 import docspell.convert._
 import docspell.joex.scheduler._
 import docspell.store.records._
+import docspell.store.syntax.MimeTypes._
 import docspell.convert.ConversionResult.Handler
 import docspell.convert.SanitizeHtml
 import docspell.joex.extract.JsoupSanitizer
@@ -60,17 +61,16 @@ object ConvertPdf {
       item: ItemData
   )(ra: RAttachment, mime: Mimetype): F[(RAttachment, Option[RAttachmentMeta])] =
     Conversion.create[F](cfg, sanitizeHtml, ctx.blocker, ctx.logger).use { conv =>
-      mime match {
-        case mt if mt.baseEqual(Mimetype.`application/pdf`) =>
+      mime.toLocal match {
+        case MimeType.PdfMatch(_) =>
           ctx.logger.debug(s"Not going to convert a PDF file ${ra.name} into a PDF.") *>
             (ra, None: Option[RAttachmentMeta]).pure[F]
 
-        case _ =>
+        case mt =>
           val data = ctx.store.bitpeace
             .get(ra.fileId.id)
             .unNoneTerminate
             .through(ctx.store.bitpeace.fetchData2(RangeDef.all))
-          val mt      = MimeType(mime.primary, mime.sub, mime.params)
           val handler = conversionHandler[F](ctx, cfg, ra, item)
           ctx.logger.info(s"Converting file ${ra.name} (${mime.asString}) into a PDF") *>
             conv.toPDF(DataType(mt), ctx.args.meta.language, handler)(

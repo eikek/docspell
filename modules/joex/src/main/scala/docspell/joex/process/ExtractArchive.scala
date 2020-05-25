@@ -10,6 +10,7 @@ import docspell.common._
 import docspell.joex.mail._
 import docspell.joex.scheduler._
 import docspell.store.records._
+import docspell.store.syntax.MimeTypes._
 import docspell.files.Zip
 import cats.kernel.Monoid
 import emil.Mail
@@ -88,13 +89,13 @@ object ExtractArchive {
       ctx: Context[F, ProcessItemArgs],
       archive: Option[RAttachmentArchive]
   )(ra: RAttachment, pos: Int, mime: Mimetype): F[Extracted] =
-    mime match {
-      case Mimetype("application", "zip", _) if ra.name.exists(_.endsWith(".zip")) =>
+    mime.toLocal match {
+      case MimeType.ZipMatch(_) if ra.name.exists(_.endsWith(".zip")) =>
         ctx.logger.info(s"Extracting zip archive ${ra.name.getOrElse("<noname>")}.") *>
           extractZip(ctx, archive)(ra, pos)
             .flatTap(_ => cleanupParents(ctx, ra, archive))
 
-      case Mimetype("message", "rfc822", _) =>
+      case MimeType.EmailMatch(_) =>
         ctx.logger.info(s"Reading e-mail ${ra.name.getOrElse("<noname>")}") *>
           extractMail(ctx, archive)(ra, pos)
             .flatTap(_ => cleanupParents(ctx, ra, archive))

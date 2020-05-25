@@ -4,6 +4,7 @@ import docspell.common.syntax.all._
 import io.circe.{Decoder, Encoder}
 import java.nio.charset.StandardCharsets
 import java.nio.charset.Charset
+import cats.data.NonEmptyList
 
 /** A MIME Type impl with just enough features for the use here.
   */
@@ -96,16 +97,49 @@ object MimeType {
   val tiff        = image("tiff")
   val html        = text("html")
   val plain       = text("plain")
-  val eml         = MimeType("message", "rfc822", Map.empty)
+  val emls = NonEmptyList.of(
+    MimeType("message", "rfc822", Map.empty),
+    application("mbox")
+  )
 
   object PdfMatch {
     def unapply(mt: MimeType): Option[MimeType] =
       Some(mt).filter(_.matches(pdf))
   }
 
+  object TextAllMatch {
+    def unapply(mt: MimeType): Option[MimeType] =
+      Some(mt).filter(_.primary == "text")
+  }
+
   object HtmlMatch {
     def unapply(mt: MimeType): Option[MimeType] =
       Some(mt).filter(_.matches(html))
+  }
+
+  object NonHtmlText {
+    def unapply(mt: MimeType): Option[MimeType] =
+      if (mt.primary == "text" && !mt.sub.contains("html")) Some(mt)
+      else None
+  }
+
+  object ZipMatch {
+    def unapply(mt: MimeType): Option[MimeType] =
+      Some(mt).filter(_.matches(zip))
+  }
+
+  /** Only jpeg, png and tiff */
+  object ImageMatch {
+    val all = Set(MimeType.jpeg, MimeType.png, MimeType.tiff)
+
+    def unapply(m: MimeType): Option[MimeType] =
+      Some(m).map(_.baseType).filter(all.contains)
+  }
+
+  object EmailMatch {
+    def unapply(mt: MimeType): Option[MimeType] =
+      if (emls.exists(mt.matches(_))) Some(mt)
+      else None
   }
 
   implicit val jsonEncoder: Encoder[MimeType] =
