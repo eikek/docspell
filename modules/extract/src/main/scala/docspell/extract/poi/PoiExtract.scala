@@ -17,19 +17,20 @@ import fs2.Stream
 import scala.util.Try
 import docspell.common._
 import docspell.files.TikaMimetype
+import docspell.extract.internal.Text
 
 object PoiExtract {
 
   def get[F[_]: Sync](
       data: Stream[F, Byte],
       hint: MimeTypeHint
-  ): F[Either[Throwable, String]] =
+  ): F[Either[Throwable, Text]] =
     TikaMimetype.detect(data, hint).flatMap(mt => get(data, mt))
 
   def get[F[_]: Sync](
       data: Stream[F, Byte],
       mime: MimeType
-  ): F[Either[Throwable, String]] =
+  ): F[Either[Throwable, Text]] =
     mime match {
       case PoiType.doc =>
         getDoc(data)
@@ -55,40 +56,40 @@ object PoiExtract {
         Sync[F].pure(Left(new Exception(s"Unsupported content: ${mt.asString}")))
     }
 
-  def getDocx(is: InputStream): Either[Throwable, String] =
+  def getDocx(is: InputStream): Either[Throwable, Text] =
     Try {
       val xt = new XWPFWordExtractor(new XWPFDocument(is))
-      Option(xt.getText).map(_.trim).getOrElse("")
+      Text(Option(xt.getText))
     }.toEither
 
-  def getDoc(is: InputStream): Either[Throwable, String] =
+  def getDoc(is: InputStream): Either[Throwable, Text] =
     Try {
       val xt = new WordExtractor(is)
-      Option(xt.getText).map(_.trim).getOrElse("")
+      Text(Option(xt.getText))
     }.toEither
 
-  def getXlsx(is: InputStream): Either[Throwable, String] =
+  def getXlsx(is: InputStream): Either[Throwable, Text] =
     Try {
       val xt = new XSSFExcelExtractor(new XSSFWorkbook(is))
-      Option(xt.getText).map(_.trim).getOrElse("")
+      Text(Option(xt.getText))
     }.toEither
 
-  def getXls(is: InputStream): Either[Throwable, String] =
+  def getXls(is: InputStream): Either[Throwable, Text] =
     Try {
       val xt = new ExcelExtractor(new HSSFWorkbook(is))
-      Option(xt.getText).map(_.trim).getOrElse("")
+      Text(Option(xt.getText))
     }.toEither
 
-  def getDocx[F[_]: Sync](data: Stream[F, Byte]): F[Either[Throwable, String]] =
+  def getDocx[F[_]: Sync](data: Stream[F, Byte]): F[Either[Throwable, Text]] =
     data.compile.to(Array).map(new ByteArrayInputStream(_)).map(getDocx)
 
-  def getDoc[F[_]: Sync](data: Stream[F, Byte]): F[Either[Throwable, String]] =
+  def getDoc[F[_]: Sync](data: Stream[F, Byte]): F[Either[Throwable, Text]] =
     data.compile.to(Array).map(new ByteArrayInputStream(_)).map(getDoc)
 
-  def getXlsx[F[_]: Sync](data: Stream[F, Byte]): F[Either[Throwable, String]] =
+  def getXlsx[F[_]: Sync](data: Stream[F, Byte]): F[Either[Throwable, Text]] =
     data.compile.to(Array).map(new ByteArrayInputStream(_)).map(getXlsx)
 
-  def getXls[F[_]: Sync](data: Stream[F, Byte]): F[Either[Throwable, String]] =
+  def getXls[F[_]: Sync](data: Stream[F, Byte]): F[Either[Throwable, Text]] =
     data.compile.to(Array).map(new ByteArrayInputStream(_)).map(getXls)
 
 }

@@ -7,6 +7,7 @@ import docspell.extract.ocr.{OcrType, TextExtract}
 import docspell.extract.odf.{OdfExtract, OdfType}
 import docspell.extract.poi.{PoiExtract, PoiType}
 import docspell.extract.rtf.RtfExtract
+import docspell.extract.internal.Text
 import fs2.Stream
 import docspell.files.TikaMimetype
 import docspell.files.ImageSize
@@ -38,23 +39,30 @@ object Extraction {
           case MimeType.PdfMatch(_) =>
             PdfExtract
               .get(data, blocker, lang, cfg.pdf.minTextLen, cfg.ocr, logger)
+              .map(_.map(_.value))
               .map(ExtractResult.fromEither)
 
           case PoiType(mt) =>
-            PoiExtract.get(data, mt).map(ExtractResult.fromEither)
+            PoiExtract
+              .get(data, mt)
+              .map(_.map(_.value))
+              .map(ExtractResult.fromEither)
 
           case RtfExtract.rtfType =>
-            RtfExtract.get(data).map(ExtractResult.fromEither)
+            RtfExtract.get(data).map(_.map(_.value)).map(ExtractResult.fromEither)
 
           case OdfType(_) =>
-            OdfExtract.get(data).map(ExtractResult.fromEither)
+            OdfExtract
+              .get(data)
+              .map(_.map(_.value))
+              .map(ExtractResult.fromEither)
 
           case OcrType(mt) =>
             val doExtract = TextExtract
               .extractOCR(data, blocker, logger, lang.iso3, cfg.ocr)
               .compile
               .lastOrError
-              .map(_.trim)
+              .map(_.value)
               .attempt
               .map(ExtractResult.fromEither)
 
@@ -85,13 +93,16 @@ object Extraction {
               .info(
                 s"File detected as ${OdfType.container}. Try to read as OpenDocument file."
               ) *>
-              OdfExtract.get(data).map(ExtractResult.fromEither)
+              OdfExtract
+                .get(data)
+                .map(_.map(_.value))
+                .map(ExtractResult.fromEither)
 
           case MimeType.NonHtmlText(mt) =>
             val cs = mt.charsetOrUtf8
             logger.info(s"File detected as ${mt.asString}. Returning itself as text.") *>
               data.through(Binary.decode(cs)).foldMonoid.compile.last.map { txt =>
-                ExtractResult.success(txt.getOrElse("").trim)
+                ExtractResult.success(Text(txt).value)
               }
 
           case mt =>

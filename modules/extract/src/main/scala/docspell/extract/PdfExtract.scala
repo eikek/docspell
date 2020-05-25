@@ -6,6 +6,7 @@ import fs2.Stream
 import docspell.common.{Language, Logger}
 import docspell.extract.ocr.{OcrConfig, TextExtract}
 import docspell.extract.pdfbox.PdfboxExtract
+import docspell.extract.internal.Text
 
 object PdfExtract {
 
@@ -16,12 +17,12 @@ object PdfExtract {
       stripMinLen: Int,
       ocrCfg: OcrConfig,
       logger: Logger[F]
-  ): F[Either[Throwable, String]] = {
+  ): F[Either[Throwable, Text]] = {
 
     val runOcr =
       TextExtract.extractOCR(in, blocker, logger, lang.iso3, ocrCfg).compile.lastOrError
 
-    def chooseResult(ocrStr: String, strippedStr: String) =
+    def chooseResult(ocrStr: Text, strippedStr: Text) =
       if (ocrStr.length > strippedStr.length)
         logger.info(
           s"Using OCR text, as it is longer (${ocrStr.length} > ${strippedStr.length})"

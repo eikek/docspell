@@ -18,7 +18,7 @@ object PdfboxExtractTest extends SimpleTestSuite {
       case (file, txt) =>
         val url      = file.toJavaUrl.fold(sys.error, identity)
         val str      = PdfboxExtract.get(url.openStream()).fold(throw _, identity)
-        val received = removeFormatting(str)
+        val received = removeFormatting(str.value)
         val expect   = removeFormatting(txt)
         assertEquals(received, expect)
     }
@@ -29,7 +29,7 @@ object PdfboxExtractTest extends SimpleTestSuite {
       case (file, txt) =>
         val data     = file.readURL[IO](8192, blocker)
         val str      = PdfboxExtract.get(data).unsafeRunSync().fold(throw _, identity)
-        val received = removeFormatting(str)
+        val received = removeFormatting(str.value)
         val expect   = removeFormatting(txt)
         assertEquals(received, expect)
     }
@@ -40,7 +40,7 @@ object PdfboxExtractTest extends SimpleTestSuite {
 
     val str = PdfboxExtract.get(url.openStream()).fold(throw _, identity)
 
-    assertEquals(str, "")
+    assertEquals(str.value, "")
   }
 
   private def removeFormatting(str: String): String =

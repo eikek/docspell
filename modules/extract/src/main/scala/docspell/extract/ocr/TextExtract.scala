@@ -3,6 +3,7 @@ package docspell.extract.ocr
 import cats.effect.{Blocker, ContextShift, Sync}
 import docspell.common._
 import docspell.files._
+import docspell.extract.internal.Text
 import fs2.Stream
 
 object TextExtract {
@@ -13,7 +14,7 @@ object TextExtract {
       logger: Logger[F],
       lang: String,
       config: OcrConfig
-  ): Stream[F, String] =
+  ): Stream[F, Text] =
     extractOCR(in, blocker, logger, lang, config)
 
   def extractOCR[F[_]: Sync: ContextShift](
@@ -22,7 +23,7 @@ object TextExtract {
       logger: Logger[F],
       lang: String,
       config: OcrConfig
-  ): Stream[F, String] =
+  ): Stream[F, Text] =
     Stream
       .eval(TikaMimetype.detect(in, MimeTypeHint.none))
       .flatMap({
@@ -35,6 +36,7 @@ object TextExtract {
         case mt =>
           raiseError(s"File `$mt` not supported")
       })
+      .map(Text.apply)
 
   private def raiseError[F[_]: Sync](msg: String): Stream[F, Nothing] =
     Stream.raiseError[F](new Exception(msg))

@@ -29,6 +29,6 @@ object TextExtractionSuite extends SimpleTestSuite {
       .lastOrError
       .unsafeRunSync()
 
-    assertEquals(extract.trim, expect.trim)
+    assertEquals(extract.value, expect)
   }
 }
