@@ -57,7 +57,7 @@ build using JDK 8. But a later version of Java should work as well.
 The next tools are only required on machines running the *Joex*
 component.
 
-### External Tools for Joex
+### External Programs for Joex
 
 - [Ghostscript](http://pages.cs.wisc.edu/~ghost/) (the `gs` command)
   is used to extract/convert PDF files into images that are then fed

@@ -54,8 +54,18 @@ options:
      - title: Joex
        url: doc/joex
 
-     - title: Tools
-       url: doc/tools
+  - title: Tools
+    url: doc/tools
+
+    nested_options:
+      - title: Upload CLI
+        url: doc/tools/ds
+
+      - title: Consume Directory
+        url: doc/tools/consumedir
+
+      - title: Browser Extension (Firefox)
+        url: doc/tools/browserext
 
   - title: Development
     url: dev

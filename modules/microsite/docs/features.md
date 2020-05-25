@@ -42,9 +42,11 @@ permalink: features
     - [eml](https://en.wikipedia.org/wiki/Email#Filename_extensions)
       (e-mail files in plain text MIME)
 - [Tooling](doc/tools):
-  - Watch a folder: watch folders for changes and send files to docspell
-  - Firefox plugin: right click on a link and send the file to docspell
-  - Simple CLI for uploading files
+  - [Watch a folder](doc/tools/consumedir): watch folders for changes
+    and send files to docspell
+  - [Simple CLI for uploading files](doc/tools/ds)
+  - [Firefox plugin](doc/tools/browserext): right click on a link and
+    send the file to docspell
 - License: GPLv3
 
 

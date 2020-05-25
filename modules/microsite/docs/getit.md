@@ -11,8 +11,20 @@ Page](https://github.com/eikek/docspell/releases). There are `deb`
 packages and generic zip files. Alternatively, docspell can be
 installed via [nix](doc/nix) or docker (see below).
 
+There are the following quick ways to get docspell to run on your
+machine:
 
-## Prerequisite
+- [Download, Unpack, Run](#without-docker)
+- [With Docker](#with-docker)
+- [NixOs Module](doc/nix#docspell-as-a-service-on-nixos)
+
+Check the [early demo video](demo) to see the basic idea. Refer to the
+[documentation](doc) for more information on how to use docspell.
+
+
+## Without Docker
+
+### Prerequisite
 
 Install Java (use your package manager or look
 [here](https://adoptopenjdk.net/)).
@@ -31,7 +43,7 @@ PDF conversion requires the following tools:
 - [wkhtmltopdf](https://wkhtmltopdf.org/)
 
 
-## Using zip files
+### Using zip files
 
 You need to download the two files:
 
@@ -57,11 +69,8 @@ You need to download the two files:
 4. Point your browser to: <http://localhost:7880/app>
 5. Register a new account, sign in and try it.
 
-Check the [early demo video](demo) to see the basic idea. Refer to the
-[documentation](doc) for more information on how to use docspell.
 
-
-## Docker
+## With Docker
 
 There is a [docker-compose](https://docs.docker.com/compose/) setup
 available in the `/docker` folder.
@@ -81,4 +90,4 @@ available in the `/docker` folder.
 4. Goto <http://localhost:7880>, signup and login
 
 The directory contains a file `docspell.conf` that you can
-[modify](configure) as needed.
+[modify](doc/configure) as needed.
