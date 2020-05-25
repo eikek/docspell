@@ -2,7 +2,7 @@ openapi: 3.0.0
 
 info:
   title: Docspell
-  version: 0.6.0-SNAPSHOT
+  version: 0.6.0
   description: |
     This is the remote API to Docspell, a personal document organizer.
 
