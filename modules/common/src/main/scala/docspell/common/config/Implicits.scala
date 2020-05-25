@@ -1,8 +1,8 @@
-package docspell.common.pureconfig
+package docspell.common.config
 
 import docspell.common._
-import _root_.pureconfig._
-import _root_.pureconfig.error.{CannotConvert, FailureReason}
+import pureconfig._
+import pureconfig.error.{CannotConvert, FailureReason}
 import scodec.bits.ByteVector
 import com.github.eikek.calev.CalEvent
 

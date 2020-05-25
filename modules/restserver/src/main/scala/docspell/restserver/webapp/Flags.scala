@@ -1,7 +1,7 @@
 package docspell.restserver.webapp
 
-import _root_.io.circe._
-import _root_.io.circe.generic.semiauto._
+import io.circe._
+import io.circe.generic.semiauto._
 import docspell.common.LenientUri
 import docspell.restserver.{BuildInfo, Config}
 import docspell.backend.signup.{Config => SignupConfig}

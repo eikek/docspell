@@ -1,10 +1,10 @@
 package docspell.store.usertask
 
-import fs2._
+import fs2.Stream
 import cats.implicits._
 import cats.effect._
 import cats.data.OptionT
-import _root_.io.circe._
+import io.circe._
 import docspell.common._
 import docspell.store.{AddResult, Store}
 import docspell.store.queries.QUserTask

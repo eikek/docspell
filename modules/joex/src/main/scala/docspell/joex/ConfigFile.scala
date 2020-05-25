@@ -1,8 +1,8 @@
 package docspell.joex
 
-import docspell.common.pureconfig.Implicits._
-import _root_.pureconfig._
-import _root_.pureconfig.generic.auto._
+import docspell.common.config.Implicits._
+import pureconfig._
+import pureconfig.generic.auto._
 import docspell.joex.scheduler.CountingScheme
 
 object ConfigFile {

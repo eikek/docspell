@@ -1,6 +1,6 @@
 package docspell.restserver.webapp
 
-import fs2._
+import fs2.{Stream, text}
 import cats.effect._
 import cats.implicits._
 import org.http4s._
@@ -8,7 +8,7 @@ import org.http4s.headers._
 import org.http4s.HttpRoutes
 import org.http4s.dsl.Http4sDsl
 import org.log4s._
-import _root_.io.circe.syntax._
+import io.circe.syntax._
 import yamusca.imports._
 import yamusca.implicits._
 import java.net.URL
@@ -69,7 +69,7 @@ object TemplateRoutes {
   ): F[String] =
     Stream
       .bracket(Sync[F].delay(url.openStream))(in => Sync[F].delay(in.close()))
-      .flatMap(in => io.readInputStream(in.pure[F], 64 * 1024, blocker, false))
+      .flatMap(in => fs2.io.readInputStream(in.pure[F], 64 * 1024, blocker, false))
       .through(text.utf8Decode)
       .compile
       .fold("")(_ + _)
