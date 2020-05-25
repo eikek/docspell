@@ -28,7 +28,6 @@ import Http
 import Util.Http
 import Util.List
 import Util.Maybe
-import Util.Update
 
 
 type alias Model =
@@ -597,7 +596,10 @@ view extraClasses model =
             [ text "Cancel"
             ]
         , button
-            [ class "ui red button"
+            [ classList
+                [ ( "ui red button", True )
+                , ( "hidden invisible", model.settings.id == "" )
+                ]
             , onClick RequestDelete
             ]
             [ text "Delete"
