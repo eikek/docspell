@@ -2,7 +2,7 @@
 
 ## v0.6.0
 
-*Unknown*
+*May 25th, 2020*
 
 - New feature "Scan Mailboxes". Docspell can now read mailboxes
   periodically to import your mails.

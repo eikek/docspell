@@ -12,18 +12,18 @@ application that pushes it to docspell. There is a browser add-on
 implementing this in `tools/webextension`. This add-on only works with
 firefox.
 
-### Install
+## Install
 
 This is a bit complicated, since you need to install external tools
 and the web extension. Both work together.
 
-#### Install `ds.sh`
+### Install `ds.sh`
 
 First copy the `ds.sh` tool somewhere in your `PATH`, maybe
 `/usr/local/bin` as described above.
 
 
-#### Install the native part
+### Install the native part
 
 Then install the "native" part of the web extension:
 
@@ -54,7 +54,7 @@ the tool. Or create a file `$HOME/.config/docspell/ds.cmd` whose
 content is the path to the `ds.sh` script.
 
 
-#### Install the extension
+### Install the extension
 
 An extension file can be build using the `make-xpi.sh` script. But
 installing it in "standard" firefox won't work, because [Mozilla

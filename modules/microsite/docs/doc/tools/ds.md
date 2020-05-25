@@ -28,7 +28,7 @@ The key must start with `url`. The urls should be [anonymous upload
 urls](./uploading#anonymous-upload).
 
 
-### Usage
+## Usage
 
 - The `-c` option allows to specifiy a different config file.
 - The `-h` option shows a help overview.
