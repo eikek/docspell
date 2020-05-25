@@ -17,6 +17,25 @@ let
       address = "localhost";
       port = 7880;
     };
+    integration-endpoint = {
+      enabled = false;
+      priority = "low";
+      allowed-ips = {
+        enabled = true;
+        ips = [ "127.0.0.1" ];
+      };
+      http-basic = {
+        enabled = false;
+        realm = "Docspell Integration";
+        user = "docspell-int";
+        password = "docspell-int";
+      };
+      http-header = {
+        enabled = false;
+        header-name = "Docspell-Integration";
+        header-value = "some-secret";
+      };
+    };
     auth = {
       server-secret = "hex:caffee";
       session-valid = "5 minutes";
@@ -124,6 +143,118 @@ in {
         });
         default = defaults.auth;
         description = "Authentication";
+      };
+
+      integration-endpoint = mkOption {
+        type = types.submodule({
+          options = {
+            enabled = mkOption {
+              type = types.bool;
+              default = defaults.integration-endpoint.enabled;
+              description = "Whether the endpoint is globally enabled or disabled.";
+            };
+            priority = mkOption {
+              type = types.str;
+              default = defaults.integration-endpoint.priority;
+              description = "The priority to use when submitting files through this endpoint.";
+            };
+            allowed-ips = mkOption {
+              type = types.submodule({
+                options = {
+                  enabled = mkOption {
+                    type = types.bool;
+                    default = defaults.integration-endpoint.allowed-ips.enabled;
+                    description = "Enable/Disable this protection";
+                  };
+                  ips = mkOption {
+                    type = types.listOf types.str;
+                    default = defaults.integration-endpoint.allowed-ips.ips;
+                    description = "The ips/ip patterns to allow";
+                  };
+                };
+              });
+              default = defaults.integration-endpoint.allowed-ips;
+              description = ''
+                IPv4 addresses to allow access. An empty list, if enabled,
+                prohibits all requests. IP addresses may be specified as simple
+                globs: a part marked as `*' matches any octet, like in
+                `192.168.*.*`. The `127.0.0.1' (the default) matches the
+                loopback address.
+              '';
+            };
+            http-basic = mkOption {
+              type = types.submodule({
+                options = {
+                  enabled = mkOption {
+                    type = types.bool;
+                    default = defaults.integration-endpoint.http-basic.enabled;
+                    description = "Enable/Disable this protection";
+                  };
+                  realm = mkOption {
+                    type = types.str;
+                    default = defaults.integration-endpoint.http-basic.realm;
+                    description = "The realm name to provide to the client.";
+                  };
+                  user = mkOption {
+                    type = types.str;
+                    default = defaults.integration-endpoint.http-basic.user;
+                    description = "The user name to check.";
+                  };
+                  password = mkOption {
+                    type = types.str;
+                    default = defaults.integration-endpoint.http-basic.password;
+                    description = "The password to check.";
+                  };
+                };
+              });
+              default = defaults.integration-endpoint.http-basic;
+              description = ''
+                Requests are expected to use http basic auth when uploading files.
+              '';
+            };
+            http-header = mkOption {
+              type = types.submodule({
+                options = {
+                  enabled = mkOption {
+                    type = types.bool;
+                    default = defaults.integration-endpoint.http-header.enabled;
+                    description = "Enable/Disable this protection";
+                  };
+                  header-name = mkOption {
+                    type = types.str;
+                    default = defaults.integration-endpoint.http-header.header-name;
+                    description = "The header to extract from the request.";
+                  };
+                  header-value = mkOption {
+                    type = types.str;
+                    default = defaults.integration-endpoint.http-basic.header-value;
+                    description = "The value of the header to check.";
+                  };
+                };
+              });
+              default = defaults.integration-endpoint.http-header;
+              description = ''
+                Requests are expected to supply some specific header when
+                uploading files.
+              '';
+            };
+          };
+        });
+        default = defaults.integration-endpoint;
+        description = ''
+          This endpoint allows to upload files to any collective. The
+          intention is that local software integrates with docspell more
+          easily. Therefore the endpoint is not protected by the usual
+          means.
+
+          For security reasons, this endpoint is disabled by default. If
+          enabled, you can choose from some ways to protect it. It may be a
+          good idea to further protect this endpoint using a firewall, such
+          that outside traffic is not routed.
+
+          NOTE: If all protection methods are disabled, the endpoint is not
+          protected at all!
+        '';
       };
 
       backend = mkOption {

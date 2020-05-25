@@ -16,6 +16,7 @@ let
       address = "localhost";
       port = 7878;
     };
+    mail-debug = false;
     jdbc = {
       url = "jdbc:h2:///tmp/docspell-demo.db;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;AUTO_SERVER=TRUE";
       user = "sa";
@@ -23,6 +24,13 @@ let
     };
     send-mail = {
       list-id = "";
+    };
+    user-tasks = {
+      scan-mailbox = {
+        max-folders = 50;
+        mail-chunk-size = 50;
+        max-mails = 500;
+      };
     };
     scheduler = {
       pool-size = 2;
@@ -121,6 +129,10 @@ let
         working-dir = "/tmp/docspell-convert";
       };
     };
+    files = {
+      chunk-size = 524288;
+      valid-mime-types = [];
+    };
   };
 in {
 
@@ -170,6 +182,16 @@ in {
         });
         default = defaults.bind;
         description = "Address and port bind the rest server.";
+      };
+      mail-debug = mkOption {
+        type = types.bool;
+        default = defaults.mail-debug;
+        description = ''
+         Enable or disable debugging for e-mail related functionality. This
+         applies to both sending and receiving mails. For security reasons
+         logging is not very extensive on authentication failures. Setting
+         this to true, results in a lot of data printed to stdout.
+        '';
       };
 
       jdbc = mkOption {
@@ -304,6 +326,54 @@ in {
         description = ''
           Settings for the periodic scheduler.
         '';
+      };
+
+      user-tasks = mkOption {
+        type = types.submodule({
+          options = {
+            scan-mailbox = mkOption {
+              type = types.submodule({
+                options = {
+                  max-folders = mkOption {
+                    type = types.int;
+                    default = defaults.user-tasks.scan-mailbox.max-folders;
+                    description = ''
+                      A limit of how many folders to scan through. If a user
+                      configures more than this, only upto this limit folders are
+                      scanned and a warning is logged.
+                    '';
+                  };
+                  mail-chunk-size = mkOption {
+                    type = types.int;
+                    default = defaults.user-tasks.scan-mailbox.mail-chunk-size;
+                    description = ''
+                      How many mails (headers only) to retrieve in one chunk.
+
+                      If this is greater than `max-mails' it is set automatically to
+                      the value of `max-mails'.
+                    '';
+                  };
+                  max-mails = mkOption {
+                    type = types.int;
+                    default = defaults.user-tasks.scan-mailbox.max-mails;
+                    description = ''
+                     A limit on how many mails to process in one job run. This is
+                     meant to avoid too heavy resource allocation to one
+                     user/collective.
+
+                     If more than this number of mails is encountered, a warning is
+                     logged.
+                    '';
+                  };
+                };
+              });
+              default = defaults.user-tasks.scan-mailbox;
+              description = "Allows to import e-mails by scanning a mailbox.";
+            };
+          };
+        });
+        default = defaults.user-tasks;
+        description = "Configuration for the user tasks.";
       };
 
       house-keeping = mkOption {
@@ -757,6 +827,38 @@ in {
           below. They must be in the PATH environment or specify the full
           path below via the `program` key.
         '';
+      };
+      files = mkOption {
+        type = types.submodule({
+          options = {
+            chunk-size = mkOption {
+              type = types.int;
+              default = defaults.files.chunk-size;
+              description = ''
+                Defines the chunk size (in bytes) used to store the files.
+                This will affect the memory footprint when uploading and
+                downloading files. At most this amount is loaded into RAM for
+                down- and uploading.
+
+                It also defines the chunk size used for the blobs inside the
+                database.
+              '';
+            };
+            valid-mime-types = mkOption {
+              type = types.listOf types.str;
+              default = defaults.files.valid-mime-types;
+              description = ''
+                The file content types that are considered valid. Docspell
+                will only pass these files to processing. The processing code
+                itself has also checks for which files are supported and which
+                not. This affects the uploading part and is a first check to
+                avoid that 'bad' files get into the system.
+              '';
+            };
+          };
+        });
+        default = defaults.files;
+        description= "Settings for how files are stored.";
       };
     };
   };
