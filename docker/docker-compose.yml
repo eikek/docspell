@@ -1,7 +1,7 @@
 version: '3.7'
 services:
   restserver:
-    image: eikek0/docspell:restserver-0.5.0
+    image: eikek0/docspell:restserver-0.6.0
     container_name: docspell-restserver
     command: /opt/docspell.conf
     ports:
@@ -20,7 +20,7 @@ services:
       - POSTGRES_PASSWORD=dbpass
       - POSTGRES_DB=dbname
   joex:
-    image: eikek0/docspell:joex-0.5.0
+    image: eikek0/docspell:joex-0.6.0
     container_name: docspell-joex
     command: /opt/docspell.conf
     ports:
