@@ -1,0 +1,131 @@
+<!DOCTYPE html><html><head><title>Docspell: Scan Mailboxes</title><meta charset="utf-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="eikek" /><meta name="description" content="Auto-tagging Document Organizer" /><meta name="og:image" content="/img/poster.png" /><meta name="image" property="og:image" content="/img/poster.png" /><meta name="og:title" content="Docspell: Scan Mailboxes" /><meta name="title" property="og:title" content="Docspell: Scan Mailboxes" /><meta name="og:site_name" content="Docspell" /><meta name="og:url" content="" /><meta name="og:type" content="website" /><meta name="og:description" content="Auto-tagging Document Organizer" /><link rel="icon" type="image/png" href="/img/favicon.png" /><meta name="twitter:title" content="Docspell: Scan Mailboxes" /><meta name="twitter:image" content="/img/poster.png" /><meta name="twitter:description" content="Auto-tagging Document Organizer" /><meta name="twitter:card" content="summary_large_image" /><link rel="icon" type="image/png" sizes="96x96" href="/img/favicon.png" /><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" /><link rel="stylesheet" href="/highlight/styles/vs.css" /><link rel="stylesheet" href="/css/light-style.css" /><link rel="stylesheet" href="/css/docspell.css" /></head><body class="docs"><div id="wrapper"><div id="sidebar-wrapper"><div id="sidebar-brand"><a href="/" class="brand"><div class="brand-wrapper"></div><span>Docspell</span></a><button id="main-toggle" class="sidebar-toggle"><span class="close"></span></button></div><div class="sidebar-nav"> <div class="sidebar-nav-item  "><a href="/index.html" title="Home" class="">Home</a></div> <div class="sidebar-nav-item  "><a href="/demo" title="Demo" class="">Demo</a></div> <div class="sidebar-nav-item  "><a href="/getit" title="Quickstart" class="">Quickstart</a></div> <div class="sidebar-nav-item  "><a href="/features" title="Features/Limitations" class="">Features/Limitations</a></div> <div class="sidebar-nav-item  open"><a href="/doc" title="Documentation" class="drop-nested">Documentation</a><i class="fa fa-angle-right"></i><div class="sub-section"> <a href="/doc/install" title="Installation" class="">Installation</a> <a href="/doc/configure" title="Configuring" class="">Configuring</a> <a href="/doc/nix" title="Nix/NixOS" class="">Nix/NixOS</a> <a href="/doc/reverseproxy" title="Reverse Proxy" class="">Reverse Proxy</a> <a href="/doc/metadata" title="Adding Meta Data" class="">Adding Meta Data</a> <a href="/doc/uploading" title="Uploads" class="">Uploads</a> <a href="/doc/processing" title="Processing Queue" class="">Processing Queue</a> <a href="/doc/curate" title="Find and Review" class="">Find and Review</a> <a href="/doc/emailsettings" title="E-Mail Settings" class="">E-Mail Settings</a> <a href="/doc/mailitem" title="Send via E-Mail" class="">Send via E-Mail</a> <a href="/doc/notifydueitems" title="Notify on due Items" class="">Notify on due Items</a> <a href="/doc/scanmailbox" title="Scan Mailboxes" class="active">Scan Mailboxes</a> <a href="/doc/joex" title="Joex" class="">Joex</a></div></div> <div class="sidebar-nav-item  "><a href="/doc/tools" title="Tools" class="drop-nested">Tools</a><i class="fa fa-angle-right"></i><div class="sub-section"> <a href="/doc/tools/ds" title="Upload CLI" class="">Upload CLI</a> <a href="/doc/tools/consumedir" title="Consume Directory" class="">Consume Directory</a> <a href="/doc/tools/browserext" title="Browser Extension (Firefox)" class="">Browser Extension (Firefox)</a></div></div> <div class="sidebar-nav-item  "><a href="/dev" title="Development" class="drop-nested">Development</a><i class="fa fa-angle-right"></i><div class="sub-section"> <a href="/dev/adr" title="ADRs" class="">ADRs</a></div></div> <div class="sidebar-nav-item  "><a href="/api" title="Api" class="drop-nested">Api</a><i class="fa fa-angle-right"></i><div class="sub-section"> <a href="/openapi/docspell-openapi.html" title="REST Api Doc" class="">REST Api Doc</a> <a href="/openapi/docspell-openapi.yml" title="REST OpenApi Spec" class="">REST OpenApi Spec</a></div></div> <div class="sidebar-nav-item  "><a href="/changelog" title="Changelog" class="">Changelog</a></div></div></div><div id="page-content-wrapper"><div class="nav"><div class="container-fluid"><div class="row"><div class="col-lg-12"><div class="action-menu pull-left clearfix"><a href="#menu-toggle" id="menu-toggle"><i class="fa fa-bars" aria-hidden="true"></i></a></div><ul class="pull-right"><li id="gh-eyes-item" class="hidden-xs"><a href="https://github.com/eikek/docspell" target="_blank" rel="noopener noreferrer"><i class="fa fa-eye"></i><span>Watchers<span id="eyes" class="label label-default">--</span></span></a></li><li id="gh-stars-item" class="hidden-xs"><a href="https://github.com/eikek/docspell" target="_blank" rel="noopener noreferrer"><i class="fa fa-star-o"></i><span>Stars<span id="stars" class="label label-default">--</span></span></a></li></ul></div></div></div></div><div id="content" data-github-owner="eikek" data-github-repo="docspell"><div class="content-wrapper"><section><h1 id="scan-mailboxes">Scan Mailboxes</h1>
+
+<p>User that provide valid email (imap) settings, can import mails from
+their mailbox into docspell periodically.</p>
+
+<p>You need first define imap settings, please see <a href="emailsettings#imap-settings">this
+page</a>.</p>
+
+<p>Go to <em>User Settings -&gt; Scan Mailbox Task</em>. You can define periodic
+tasks that connects to your mailbox and import mails into docspell. It
+is possible to define multiple tasks, for example, if you have
+multiple e-mail accounts you want to import periodically.</p>
+
+<div class="thumbnail">
+  <img src="../img/scanmailbox-list.png" />
+</div>
+
+<h2 id="details">Details</h2>
+
+<p>Creating a task requires the following information:</p>
+
+<div class="thumbnail">
+  <img src="../img/scanmailbox-detail.png" />
+</div>
+
+<p>You can enable or disable this task. A disabled task will not run
+periodically. You can still choose to run it manually if you click the
+<code class="highlighter-rouge">Start Once</code> button.</p>
+
+<p>Then you need to specify which <a href="emailsettings#imap-settings">IMAP
+connection</a> to use.</p>
+
+<p>A list of folders is required. Docspell will only look into these
+folders. You can specify multiple folders. The “Inbox” folder is a
+special folder, which will usually appear translated in you web-mail
+client. You can specify “INBOX” case insensitive, it will then read
+mails in your inbox. Any other folder is usually case-sensitive
+(depends on the imap server, but usually they are case sensitive
+except the INBOX folder). Type in a folder name and click the add
+button on the right.</p>
+
+<p>Then the field <em>Received Since Hours</em> defines how many hours to go
+back and look for mails. Usually there are many mails in your inbox
+and importing them all at once is not feasible or desirable. It can
+work together with the <em>Schedule</em> field below. For example, you could
+run this task all 6 hours and read mails from 8 hours back.</p>
+
+<p>The next two settings tell docspell what to do once a mail has been
+submitted to docspell. It can be moved into another folder in your
+mail account. This moves it out of the way for the next run. You can
+also choose to delete the mail, but <em>note that it will really be
+deleted and not moved to your trash folder</em>. If both options are off,
+nothing happens with that mail, it simply stays (and could be re-read
+on the next run).</p>
+
+<p>When docspell creates an item from a mail, it needs to set a direction
+value (incoming or outgoing). If you know that all mails you want to
+import have a specific directon, then you can set it here. Otherwise,
+<em>automatic</em> means that docspell chooses a direction based on the
+<code class="highlighter-rouge">From</code> header of a mail. If the <code class="highlighter-rouge">From</code> header is an e-mail address
+that belongs to a “concerning” person in your address book, then it is
+set to “outgoing”. Otherwise it is set to “incoming”. To support this,
+you need to add your own e-mail address(es) to your address book.</p>
+
+<p>The last field is the <em>Schedule</em> which defines when and how often this
+task should run. The syntax is similiar to a date-time string, like
+<code class="highlighter-rouge">2019-09-15 12:32</code>, where each part is a pattern to also match multple
+values. The ui tries to help a little by displaying the next two
+date-times this task would execute. A more in depth help is available
+<a href="https://github.com/eikek/calev#what-are-calendar-events">here</a>. For
+example, to execute the task every monday at noon, you would write:
+<code class="highlighter-rouge">Mon *-*-* 12:00</code>. A date-time part can match all values (<code class="highlighter-rouge">*</code>), a list
+of values (e.g. <code class="highlighter-rouge">1,5,12,19</code>) or a range (e.g. <code class="highlighter-rouge">1..9</code>). Long lists may
+be written in a shorter way using a repetition value. It is written
+like this: <code class="highlighter-rouge">1/7</code> which is the same as a list with <code class="highlighter-rouge">1</code> and all
+multiples of <code class="highlighter-rouge">7</code> added to it. In other words, it matches <code class="highlighter-rouge">1</code>, <code class="highlighter-rouge">1+7</code>,
+<code class="highlighter-rouge">1+7+7</code>, <code class="highlighter-rouge">1+7+7+7</code> and so on.</p>
+
+<h2 id="reading-mails-twice--duplicates">Reading Mails twice / Duplicates</h2>
+
+<p>Since users can move around mails in their mailboxes, it can happen
+that docspell unintentionally reads a mail multiple times. If docspell
+reads a mail, it will first check if an item already exists that
+originated from this mail. It only proceeds to import it, if it cannot
+find any. If you deleted an item in the meantime, docspell would
+import the mail again.</p>
+
+<p>This check uses the
+<a href="https://en.wikipedia.org/wiki/Message-ID"><code class="highlighter-rouge">Message-ID</code></a> of an e-mail.
+This is usually there and should identify a complete mail. But it
+won’t catch duplicate mails, that are sent multiple times - they might
+have different <code class="highlighter-rouge">Message-ID</code>s. Also some mails have no such ids and are
+then imported from docspell without any checks.</p>
+
+<p>In later versions, docspell may use the checksum of the generated eml
+file to look for duplicates, too.</p>
+
+<h2 id="how-it-works">How it works</h2>
+
+<p>Docspell will go through all folders and download mails in “batches”.
+This size can be set by the admin in the <a href="configure#joex">configuration
+file</a> and applies to all these tasks (same for all
+users). This batch only contains the mail headers and not the complete
+mail.</p>
+
+<p>Then each mail is downloaded completely one by one and converted into
+an <a href="https://en.wikipedia.org/wiki/Email#Filename_extensions">eml</a> file
+which is then submitted to docspell. Then the usual processing
+machinery starts, just like uploading an eml file via the webapp.</p>
+
+<p>The number of folders and the number of mails to import can be limited
+by an admin via the config file. Note that this limit applies to one
+task run only, it is meant to reduce resource allocation of one task.</p>
+</section><div class="edit-button"><a href="https://github.com/eikek/docspell/edit/master/modules/microsite/docs/doc/scanmailbox.md" target="_blank" rel="noopener noreferrer" class="btn-sm btn-info">Improve this page</a></div></div></div></div></div><script src="/highlight/highlight.pack.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/json.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/javascript.min.js"></script><script>
+// For all code blocks, copy the language from the containing div
+// to the inner code tag (where hljs expects it to be)
+const langPrefix = 'language-';
+document.querySelectorAll(`div[class^='${langPrefix}']`).forEach(function(div) {
+  div.classList.forEach(function(cssClass) {
+    if (cssClass.startsWith(langPrefix)) {
+      const lang = cssClass.substring(langPrefix.length);
+      div.querySelectorAll('pre code').forEach(function(code) {
+        code.classList.add(lang);
+      });
+    }
+  });
+});
+
+hljs.configure({languages:['scala','java','bash','json','javascript']});
+hljs.initHighlightingOnLoad();
+      </script><script>console.info('\x57\x65\x62\x73\x69\x74\x65\x20\x62\x75\x69\x6c\x74\x20\x77\x69\x74\x68\x3a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x5f\x5f\x20\x20\x20\x20\x5f\x5f\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x5f\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x5f\x20\x5f\x5f\x0a\x20\x20\x20\x5f\x5f\x5f\x5f\x5f\x2f\x20\x2f\x5f\x20\x20\x2f\x20\x2f\x5f\x20\x20\x20\x20\x20\x20\x5f\x5f\x5f\x5f\x20\x5f\x5f\x5f\x20\x20\x28\x5f\x29\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x20\x20\x5f\x5f\x5f\x5f\x5f\x28\x5f\x29\x20\x2f\x5f\x5f\x5f\x5f\x20\x20\x5f\x5f\x5f\x5f\x5f\x0a\x20\x20\x2f\x20\x5f\x5f\x5f\x2f\x20\x5f\x5f\x20\x5c\x2f\x20\x5f\x5f\x2f\x5f\x5f\x5f\x5f\x5f\x2f\x20\x5f\x5f\x20\x60\x5f\x5f\x20\x5c\x2f\x20\x2f\x20\x5f\x5f\x5f\x2f\x20\x5f\x5f\x5f\x2f\x20\x5f\x5f\x20\x5c\x2f\x20\x5f\x5f\x5f\x2f\x20\x2f\x20\x5f\x5f\x2f\x20\x5f\x20\x5c\x2f\x20\x5f\x5f\x5f\x2f\x0a\x20\x28\x5f\x5f\x20\x20\x29\x20\x2f\x5f\x2f\x20\x2f\x20\x2f\x5f\x2f\x5f\x5f\x5f\x5f\x5f\x2f\x20\x2f\x20\x2f\x20\x2f\x20\x2f\x20\x2f\x20\x2f\x20\x2f\x5f\x5f\x2f\x20\x2f\x20\x20\x2f\x20\x2f\x5f\x2f\x20\x28\x5f\x5f\x20\x20\x29\x20\x2f\x20\x2f\x5f\x2f\x20\x20\x5f\x5f\x28\x5f\x5f\x20\x20\x29\x0a\x2f\x5f\x5f\x5f\x5f\x2f\x5f\x2e\x5f\x5f\x5f\x2f\x5c\x5f\x5f\x2f\x20\x20\x20\x20\x20\x2f\x5f\x2f\x20\x2f\x5f\x2f\x20\x2f\x5f\x2f\x5f\x2f\x5c\x5f\x5f\x5f\x2f\x5f\x2f\x20\x20\x20\x5c\x5f\x5f\x5f\x5f\x2f\x5f\x5f\x5f\x5f\x2f\x5f\x2f\x5c\x5f\x5f\x2f\x5c\x5f\x5f\x5f\x2f\x5f\x5f\x5f\x5f\x2f\x0a\x0a\x68\x74\x74\x70\x73\x3a\x2f\x2f\x34\x37\x64\x65\x67\x2e\x67\x69\x74\x68\x75\x62\x2e\x69\x6f\x2f\x73\x62\x74\x2d\x6d\x69\x63\x72\x6f\x73\x69\x74\x65\x73')</script><script src="/js/docs.js"></script></body></html>

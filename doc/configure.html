@@ -1,4 +1,4 @@
-<!DOCTYPE html><html><head><title>Docspell: Configuring</title><meta charset="utf-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="eikek" /><meta name="description" content="Auto-tagging Document Organizer" /><meta name="og:image" content="/img/poster.png" /><meta name="image" property="og:image" content="/img/poster.png" /><meta name="og:title" content="Docspell: Configuring" /><meta name="title" property="og:title" content="Docspell: Configuring" /><meta name="og:site_name" content="Docspell" /><meta name="og:url" content="" /><meta name="og:type" content="website" /><meta name="og:description" content="Auto-tagging Document Organizer" /><link rel="icon" type="image/png" href="/img/favicon.png" /><meta name="twitter:title" content="Docspell: Configuring" /><meta name="twitter:image" content="/img/poster.png" /><meta name="twitter:description" content="Auto-tagging Document Organizer" /><meta name="twitter:card" content="summary_large_image" /><link rel="icon" type="image/png" sizes="96x96" href="/img/favicon.png" /><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" /><link rel="stylesheet" href="/highlight/styles/vs.css" /><link rel="stylesheet" href="/css/light-style.css" /><link rel="stylesheet" href="/css/docspell.css" /></head><body class="docs"><div id="wrapper"><div id="sidebar-wrapper"><div id="sidebar-brand"><a href="/" class="brand"><div class="brand-wrapper"></div><span>Docspell</span></a><button id="main-toggle" class="sidebar-toggle"><span class="close"></span></button></div><div class="sidebar-nav"> <div class="sidebar-nav-item  "><a href="/index.html" title="Home" class="">Home</a></div> <div class="sidebar-nav-item  "><a href="/demo" title="Demo" class="">Demo</a></div> <div class="sidebar-nav-item  "><a href="/getit" title="Quickstart" class="">Quickstart</a></div> <div class="sidebar-nav-item  "><a href="/features" title="Features/Limitations" class="">Features/Limitations</a></div> <div class="sidebar-nav-item  open"><a href="/doc" title="Documentation" class="drop-nested">Documentation</a><i class="fa fa-angle-right"></i><div class="sub-section"> <a href="/doc/install" title="Installation" class="">Installation</a> <a href="/doc/configure" title="Configuring" class="active">Configuring</a> <a href="/doc/nix" title="Nix/NixOS" class="">Nix/NixOS</a> <a href="/doc/reverseproxy" title="Reverse Proxy" class="">Reverse Proxy</a> <a href="/doc/metadata" title="Adding Meta Data" class="">Adding Meta Data</a> <a href="/doc/uploading" title="Uploads" class="">Uploads</a> <a href="/doc/processing" title="Processing Queue" class="">Processing Queue</a> <a href="/doc/curate" title="Find and Review" class="">Find and Review</a> <a href="/doc/mailitem" title="Send via E-Mail" class="">Send via E-Mail</a> <a href="/doc/notifydueitems" title="Notify on due Items" class="">Notify on due Items</a> <a href="/doc/joex" title="Joex" class="">Joex</a> <a href="/doc/tools" title="Tools" class="">Tools</a></div></div> <div class="sidebar-nav-item  "><a href="/dev" title="Development" class="drop-nested">Development</a><i class="fa fa-angle-right"></i><div class="sub-section"> <a href="/dev/adr" title="ADRs" class="">ADRs</a></div></div> <div class="sidebar-nav-item  "><a href="/api" title="Api" class="drop-nested">Api</a><i class="fa fa-angle-right"></i><div class="sub-section"> <a href="/openapi/docspell-openapi.html" title="REST Api Doc" class="">REST Api Doc</a> <a href="/openapi/docspell-openapi.yml" title="REST OpenApi Spec" class="">REST OpenApi Spec</a></div></div> <div class="sidebar-nav-item  "><a href="/changelog" title="Changelog" class="">Changelog</a></div></div></div><div id="page-content-wrapper"><div class="nav"><div class="container-fluid"><div class="row"><div class="col-lg-12"><div class="action-menu pull-left clearfix"><a href="#menu-toggle" id="menu-toggle"><i class="fa fa-bars" aria-hidden="true"></i></a></div><ul class="pull-right"><li id="gh-eyes-item" class="hidden-xs"><a href="https://github.com/eikek/docspell" target="_blank" rel="noopener noreferrer"><i class="fa fa-eye"></i><span>Watchers<span id="eyes" class="label label-default">--</span></span></a></li><li id="gh-stars-item" class="hidden-xs"><a href="https://github.com/eikek/docspell" target="_blank" rel="noopener noreferrer"><i class="fa fa-star-o"></i><span>Stars<span id="stars" class="label label-default">--</span></span></a></li></ul></div></div></div></div><div id="content" data-github-owner="eikek" data-github-repo="docspell"><div class="content-wrapper"><section><h1 id="configuring">Configuring</h1>
+<!DOCTYPE html><html><head><title>Docspell: Configuring</title><meta charset="utf-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="eikek" /><meta name="description" content="Auto-tagging Document Organizer" /><meta name="og:image" content="/img/poster.png" /><meta name="image" property="og:image" content="/img/poster.png" /><meta name="og:title" content="Docspell: Configuring" /><meta name="title" property="og:title" content="Docspell: Configuring" /><meta name="og:site_name" content="Docspell" /><meta name="og:url" content="" /><meta name="og:type" content="website" /><meta name="og:description" content="Auto-tagging Document Organizer" /><link rel="icon" type="image/png" href="/img/favicon.png" /><meta name="twitter:title" content="Docspell: Configuring" /><meta name="twitter:image" content="/img/poster.png" /><meta name="twitter:description" content="Auto-tagging Document Organizer" /><meta name="twitter:card" content="summary_large_image" /><link rel="icon" type="image/png" sizes="96x96" href="/img/favicon.png" /><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" /><link rel="stylesheet" href="/highlight/styles/vs.css" /><link rel="stylesheet" href="/css/light-style.css" /><link rel="stylesheet" href="/css/docspell.css" /></head><body class="docs"><div id="wrapper"><div id="sidebar-wrapper"><div id="sidebar-brand"><a href="/" class="brand"><div class="brand-wrapper"></div><span>Docspell</span></a><button id="main-toggle" class="sidebar-toggle"><span class="close"></span></button></div><div class="sidebar-nav"> <div class="sidebar-nav-item  "><a href="/index.html" title="Home" class="">Home</a></div> <div class="sidebar-nav-item  "><a href="/demo" title="Demo" class="">Demo</a></div> <div class="sidebar-nav-item  "><a href="/getit" title="Quickstart" class="">Quickstart</a></div> <div class="sidebar-nav-item  "><a href="/features" title="Features/Limitations" class="">Features/Limitations</a></div> <div class="sidebar-nav-item  open"><a href="/doc" title="Documentation" class="drop-nested">Documentation</a><i class="fa fa-angle-right"></i><div class="sub-section"> <a href="/doc/install" title="Installation" class="">Installation</a> <a href="/doc/configure" title="Configuring" class="active">Configuring</a> <a href="/doc/nix" title="Nix/NixOS" class="">Nix/NixOS</a> <a href="/doc/reverseproxy" title="Reverse Proxy" class="">Reverse Proxy</a> <a href="/doc/metadata" title="Adding Meta Data" class="">Adding Meta Data</a> <a href="/doc/uploading" title="Uploads" class="">Uploads</a> <a href="/doc/processing" title="Processing Queue" class="">Processing Queue</a> <a href="/doc/curate" title="Find and Review" class="">Find and Review</a> <a href="/doc/emailsettings" title="E-Mail Settings" class="">E-Mail Settings</a> <a href="/doc/mailitem" title="Send via E-Mail" class="">Send via E-Mail</a> <a href="/doc/notifydueitems" title="Notify on due Items" class="">Notify on due Items</a> <a href="/doc/scanmailbox" title="Scan Mailboxes" class="">Scan Mailboxes</a> <a href="/doc/joex" title="Joex" class="">Joex</a></div></div> <div class="sidebar-nav-item  "><a href="/doc/tools" title="Tools" class="drop-nested">Tools</a><i class="fa fa-angle-right"></i><div class="sub-section"> <a href="/doc/tools/ds" title="Upload CLI" class="">Upload CLI</a> <a href="/doc/tools/consumedir" title="Consume Directory" class="">Consume Directory</a> <a href="/doc/tools/browserext" title="Browser Extension (Firefox)" class="">Browser Extension (Firefox)</a></div></div> <div class="sidebar-nav-item  "><a href="/dev" title="Development" class="drop-nested">Development</a><i class="fa fa-angle-right"></i><div class="sub-section"> <a href="/dev/adr" title="ADRs" class="">ADRs</a></div></div> <div class="sidebar-nav-item  "><a href="/api" title="Api" class="drop-nested">Api</a><i class="fa fa-angle-right"></i><div class="sub-section"> <a href="/openapi/docspell-openapi.html" title="REST Api Doc" class="">REST Api Doc</a> <a href="/openapi/docspell-openapi.yml" title="REST OpenApi Spec" class="">REST OpenApi Spec</a></div></div> <div class="sidebar-nav-item  "><a href="/changelog" title="Changelog" class="">Changelog</a></div></div></div><div id="page-content-wrapper"><div class="nav"><div class="container-fluid"><div class="row"><div class="col-lg-12"><div class="action-menu pull-left clearfix"><a href="#menu-toggle" id="menu-toggle"><i class="fa fa-bars" aria-hidden="true"></i></a></div><ul class="pull-right"><li id="gh-eyes-item" class="hidden-xs"><a href="https://github.com/eikek/docspell" target="_blank" rel="noopener noreferrer"><i class="fa fa-eye"></i><span>Watchers<span id="eyes" class="label label-default">--</span></span></a></li><li id="gh-stars-item" class="hidden-xs"><a href="https://github.com/eikek/docspell" target="_blank" rel="noopener noreferrer"><i class="fa fa-star-o"></i><span>Stars<span id="stars" class="label label-default">--</span></span></a></li></ul></div></div></div></div><div id="content" data-github-owner="eikek" data-github-repo="docspell"><div class="content-wrapper"><section><h1 id="configuring">Configuring</h1>
 
 <p>Docspell’s executable can take one argument – a configuration file. If
 that is not given, the defaults are used. The config file overrides
@@ -230,6 +230,52 @@ docspell.server {
     session-valid = "5 minutes"
   }
 
+  # This endpoint allows to upload files to any collective. The
+  # intention is that local software integrates with docspell more
+  # easily. Therefore the endpoint is not protected by the usual
+  # means.
+  #
+  # For security reasons, this endpoint is disabled by default. If
+  # enabled, you can choose from some ways to protect it. It may be a
+  # good idea to further protect this endpoint using a firewall, such
+  # that outside traffic is not routed.
+  #
+  # NOTE: If all protection methods are disabled, the endpoint is not
+  # protected at all!
+  integration-endpoint {
+    enabled = false
+
+    # The priority to use when submitting files through this endpoint.
+    priority = "low"
+
+    # IPv4 addresses to allow access. An empty list, if enabled,
+    # prohibits all requests. IP addresses may be specified as simple
+    # globs: a part marked as `*' matches any octet, like in
+    # `192.168.*.*`. The `127.0.0.1' (the default) matches the
+    # loopback address.
+    allowed-ips {
+      enabled = true
+      ips = [ "127.0.0.1" ]
+    }
+
+    # Requests are expected to use http basic auth when uploading
+    # files.
+    http-basic {
+      enabled = false
+      realm = "Docspell Integration"
+      user = "docspell-int"
+      password = "docspell-int"
+    }
+
+    # Requests are expected to supply some specific header when
+    # uploading files.
+    http-header {
+      enabled = false
+      header-name = "Docspell-Integration"
+      header-value = "some-secret"
+    }
+  }
+
   # Configuration for the backend.
   backend {
 
@@ -325,6 +371,12 @@ docspell.joex {
     password = ""
   }
 
+  # Enable or disable debugging for e-mail related functionality. This
+  # applies to both sending and receiving mails. For security reasons
+  # logging is not very extensive on authentication failures. Setting
+  # this to true, results in a lot of data printed to stdout.
+  mail-debug = false
+
   send-mail {
     # This is used as the List-Id e-mail header when mails are sent
     # from docspell to its users (example: for notification mails). It
@@ -383,6 +435,32 @@ docspell.joex {
     # lost.
     wakeup-period = "10 minutes"
   }
+
+  # Configuration for the user-tasks.
+  user-tasks {
+    # Allows to import e-mails by scanning a mailbox.
+    scan-mailbox {
+      # A limit of how many folders to scan through. If a user
+      # configures more than this, only upto this limit folders are
+      # scanned and a warning is logged.
+      max-folders = 50
+
+      # How many mails (headers only) to retrieve in one chunk.
+      #
+      # If this is greater than `max-mails' it is set automatically to
+      # the value of `max-mails'.
+      mail-chunk-size = 50
+
+      # A limit on how many mails to process in one job run. This is
+      # meant to avoid too heavy resource allocation to one
+      # user/collective.
+      #
+      # If more than this number of mails is encountered, a warning is
+      # logged.
+      max-mails = 500
+    }
+  }
+
 
   # Docspell uses periodic house keeping tasks, like cleaning expired
   # invites, that can be configured here.
@@ -601,6 +679,30 @@ docspell.joex {
       }
       working-dir = ${java.io.tmpdir}"/docspell-convert"
     }
+  }
+
+  # The same section is also present in the rest-server config. It is
+  # used when submitting files into the job queue for processing.
+  #
+  # Currently, these settings may affect memory usage of all nodes, so
+  # it should be the same on all nodes.
+  files {
+    # Defines the chunk size (in bytes) used to store the files.
+    # This will affect the memory footprint when uploading and
+    # downloading files. At most this amount is loaded into RAM for
+    # down- and uploading.
+    #
+    # It also defines the chunk size used for the blobs inside the
+    # database.
+    chunk-size = 524288
+
+    # The file content types that are considered valid. Docspell
+    # will only pass these files to processing. The processing code
+    # itself has also checks for which files are supported and which
+    # not. This affects the uploading part and can be used to
+    # restrict file types that should be handed over to processing.
+    # By default all files are allowed.
+    valid-mime-types = [ ]
   }
 }
 

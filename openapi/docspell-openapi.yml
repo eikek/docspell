@@ -2,7 +2,7 @@ openapi: 3.0.0
 
 info:
   title: Docspell
-  version: 0.5.0
+  version: 0.6.0
   description: |
     This is the remote API to Docspell, a personal document organizer.
 
@@ -87,14 +87,50 @@ paths:
         The upload meta data can be used to tell, whether multiple
         files are one item, or if each file should become a single
         item. By default, each file will be a one item.
-
-        Only certain file types are supported:
-
-        * application/pdf
-
-        Support for more types might be added.
       parameters:
         - $ref: "#/components/parameters/id"
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                meta:
+                  $ref: "#/components/schemas/ItemUploadMeta"
+                file:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+  /open/upload/item/{itemId}/{id}:
+    post:
+      tags: [ Upload ]
+      summary: Upload files to docspell.
+      description: |
+        Upload a file to docspell for processing. The id is a *source
+        id* configured by a collective. Files are submitted for
+        processing which eventually resuts in an item in the inbox of
+        the corresponding collective. This endpoint associates the
+        files to an existing item identified by its `itemId`.
+
+        The request must be a `multipart/form-data` request, where the
+        first part has name `meta`, is optional and may contain upload
+        metadata as JSON. Checkout the structure `ItemUploadMeta` at
+        the end if it is not shown here. Other parts specify the
+        files. Multiple files can be specified, but at least on is
+        required.
+
+        Upload meta data is ignored.
+      parameters:
+        - $ref: "#/components/parameters/id"
+        - $ref: "#/components/parameters/itemId"
       requestBody:
         content:
           multipart/form-data:
@@ -155,14 +191,52 @@ paths:
         The upload meta data can be used to tell, whether multiple
         files are one item, or if each file should become a single
         item. By default, each file will be a one item.
-
-        Only certain file types are supported:
-
-        * application/pdf
-
-        Support for more types might be added.
       security:
         - authTokenHeader: []
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                meta:
+                  $ref: "#/components/schemas/ItemUploadMeta"
+                file:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+  /sec/upload/{itemId}:
+    post:
+      tags: [ Upload ]
+      summary: Upload files to docspell.
+      description: |
+        Upload files to docspell for processing. This route is meant
+        for authenticated users that upload files to their account.
+        This endpoint will associate the files to an existing item
+        identified by its `itemId`.
+
+        Everything else is the same as with the
+        `/open/upload/item/{itemId}/{id}` endpoint.
+
+        The request must be a "multipart/form-data" request, where the
+        first part is optional and may contain upload metadata as
+        JSON. Other parts specify the files. Multiple files can be
+        specified, but at least on is required.
+
+        The upload meta data is ignored, since the item already
+        exists.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/itemId"
       requestBody:
         content:
           multipart/form-data:
@@ -618,10 +692,9 @@ paths:
                 $ref: "#/components/schemas/CollectiveSettings"
     post:
       tags: [ Collective ]
-      summary: Set document language of the collective
+      summary: Update settings for a collective
       description: |
-        Updates settings for a collective, which currently is just the
-        document language.
+        Updates settings for a collective.
       security:
         - authTokenHeader: []
       requestBody:
@@ -1166,6 +1239,30 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ItemProposals"
+  /sec/item/{itemId}/attachment/movebefore:
+    post:
+      tags: [ Item ]
+      summary: Reorder attachments within an item
+      description: |
+        Moves the `source` attachment before the `target` attachment,
+        such that `source` becomes the immediate neighbor of `target`
+        with a lower position.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/itemId"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MoveAttachment"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
 
   /sec/attachment/{id}:
     delete:
@@ -1414,7 +1511,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BasicResult"
-  /sec/email/settings:
+  /sec/email/settings/smtp:
     get:
       tags: [ E-Mail ]
       summary: List email settings for current user.
@@ -1456,7 +1553,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BasicResult"
-  /sec/email/settings/{name}:
+  /sec/email/settings/smtp/{name}:
     parameters:
       - $ref: "#/components/parameters/name"
     get:
@@ -1486,6 +1583,99 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/EmailSettings"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+    delete:
+      tags: [ E-Mail ]
+      summary: Delete e-mail settings.
+      description: |
+        Deletes the e-mail settings with the specified `name`.
+      security:
+        - authTokenHeader: []
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+  /sec/email/settings/imap:
+    get:
+      tags: [ E-Mail ]
+      summary: List email settings for current user.
+      description: |
+        List all available e-mail settings for the current user.
+        E-Mail settings specify imap connections that can be used to
+        retrieve e-mails.
+
+        Multiple e-mail settings can be specified, they are
+        distinguished by their `name`. The query `q` parameter does a
+        simple substring search in the connection name.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/q"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ImapSettingsList"
+    post:
+      tags: [ E-Mail ]
+      summary: Create new email settings
+      description: |
+        Create new e-mail settings.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ImapSettings"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+  /sec/email/settings/imap/{name}:
+    parameters:
+      - $ref: "#/components/parameters/name"
+    get:
+      tags: [ E-Mail ]
+      summary: Return specific email settings by name.
+      description: |
+        Return the stored e-mail settings for the given connection
+        name.
+      security:
+        - authTokenHeader: []
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ImapSettings"
+    put:
+      tags: [ E-Mail ]
+      summary: Change specific email settings.
+      description: |
+        Changes all settings for the connection with the given `name`.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ImapSettings"
       responses:
         200:
           description: Ok
@@ -1662,8 +1852,231 @@ paths:
               schema:
                 $ref: "#/components/schemas/BasicResult"
 
+  /sec/usertask/scanmailbox:
+    get:
+      tags: [ User Tasks ]
+      summary: Get settings for "Scan Mailbox" task
+      description: |
+        Return the current settings for the scan-mailbox tasks of the
+        authenticated user. Users can periodically fetch mails to be
+        imported into docspell. It is possible to have multiple of
+        these tasks.
+      security:
+        - authTokenHeader: []
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScanMailboxSettingsList"
+    post:
+      tags: [ User Tasks ]
+      summary: Create settings for "Scan Mailbox" task
+      description: |
+        Create new settings for a scan-mailbox task. The id field in
+        the input data is ignored.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ScanMailboxSettings"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+    put:
+      tags: [ User Tasks ]
+      summary: Change current settings for "Scan Mailbox" task
+      description: |
+        Change the settings for a scan-mailbox task. The task is
+        looked up by its id.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ScanMailboxSettings"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+  /sec/usertask/scanmailbox/{id}:
+    parameters:
+      - $ref: "#/components/parameters/id"
+    get:
+      tags: [ User Tasks ]
+      summary: Get settings for "Scan Mailbox" task
+      description: |
+        Return the current settings for a single scan-mailbox task of
+        the authenticated user. Users can periodically fetch mails to
+        be imported into docspell.
+      security:
+        - authTokenHeader: []
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScanMailboxSettings"
+    delete:
+      tags: [ User Tasks ]
+      summary: Delete a scan-mailbox task.
+      description: |
+        Deletes the settings to a scan-mailbox task of the
+        authenticated user.
+      security:
+        - authTokenHeader: []
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
+  /sec/usertask/scanmailbox/startonce:
+    post:
+      tags: [ User Tasks ]
+      summary: Start the "Scan Mailbox" task once
+      description: |
+        Starts the scan-mailbox task just once, discarding the
+        schedule and not updating the periodic task.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ScanMailboxSettings"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
 components:
   schemas:
+    MoveAttachment:
+      description: |
+        Data to move an attachment to another position.
+      required:
+        - source
+        - target
+      properties:
+        source:
+          type: string
+          format: ident
+        target:
+          type: string
+          format: ident
+    ScanMailboxSettingsList:
+      description: |
+        A list of scan-mailbox tasks.
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/ScanMailboxSettings"
+    ScanMailboxSettings:
+      description: |
+        Settings for the scan mailbox task.
+      required:
+        - id
+        - enabled
+        - imapConnection
+        - schedule
+        - folders
+        - deleteMail
+      properties:
+        id:
+          type: string
+          format: ident
+        enabled:
+          type: boolean
+        imapConnection:
+          type: string
+          format: ident
+        folders:
+          type: array
+          items:
+            type: string
+        schedule:
+          type: string
+          format: calevent
+        receivedSinceHours:
+          type: integer
+          format: int32
+          description: |
+            Look only for mails newer than `receivedSinceHours' hours.
+        targetFolder:
+          type: string
+          description: |
+            The folder to move all mails into that have been
+            successfully submitted to docspell.
+        deleteMail:
+          type: boolean
+          description: |
+            Whether to delete all successfully imported mails. This
+            only applies, if `targetFolder' is not set.
+        direction:
+          type: string
+          format: direction
+          description: |
+            The direction to apply to items resulting from importing
+            mails. If not set, the value is guessed based on the from
+            and to mail headers and your address book.
+    ImapSettingsList:
+      description: |
+        A list of user email settings.
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/ImapSettings"
+    ImapSettings:
+      description: |
+        IMAP settings for sending mail.
+      required:
+        - name
+        - imapHost
+        - from
+        - sslType
+        - ignoreCertificates
+      properties:
+        name:
+          type: string
+          format: ident
+        imapHost:
+          type: string
+        imapPort:
+          type: integer
+          format: int32
+        imapUser:
+          type: string
+        imapPassword:
+          type: string
+          format: password
+        sslType:
+          type: string
+        ignoreCertificates:
+          type: boolean
     CalEventCheckResult:
       description: |
         The result of checking a calendar event string.
@@ -2389,10 +2802,16 @@ components:
         Settings for a collective.
       required:
         - language
+        - integrationEnabled
       properties:
         language:
           type: string
           format: language
+        integrationEnabled:
+          type: boolean
+          description: |
+            Whether the collective has the integration endpoint
+            enabled.
     SourceList:
       description: |
         A list of sources.
@@ -2845,6 +3264,13 @@ components:
       name: id
       in: path
       description: An identifier
+      required: true
+      schema:
+        type: string
+    itemId:
+      name: itemId
+      in: path
+      description: An identifier for an item
       required: true
       schema:
         type: string
