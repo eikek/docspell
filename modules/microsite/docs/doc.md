@@ -8,13 +8,13 @@ permalink: doc
 
 This is the documentation for Docspell @VERSION@.
 
-Docspell assists in organizing large amounts of PDF files that are
+Docspell assists in organizing large amounts of files that are
 typically scanned paper documents. You can associate tags, set
 correspondends, what a document is concerned with, a name, a date and
 some more. If your documents are associated with this meta data, you
-should be able to quickly find them later using the search
-feature. But adding this manually to each document is a tedious
-task. What if most of it could be attached automatically?
+should be able to quickly find them later using the search feature.
+But adding this manually to each document is a tedious task. What if
+most of it could be attached automatically?
 
 ## How it works
 

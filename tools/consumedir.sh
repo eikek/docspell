@@ -84,7 +84,7 @@ showUsage() {
     echo "  -p | --path <dir>       The directories to watch. This is required. (value: ${watchdir[@]})"
     echo "  -h | --help             Prints this help text. (value: $help)"
     echo "  -m | --distinct         Optional. Upload only if the file doesn't already exist. (value: $distinct)"
-    echo "  -o | --once             Instead of watching, upload all (pdf) files in that dir. (value: $once)"
+    echo "  -o | --once             Instead of watching, upload all files in that dir. (value: $once)"
     echo ""
     echo "Arguments:"
     echo "  A list of URLs to upload the files to."
@@ -196,7 +196,7 @@ process() {
 if [ "$once" = "y" ]; then
     info "Uploading all files in '$watchdir'."
     for dir in "${watchdir[@]}"; do
-        for file in "$dir"/*.pdf; do
+        for file in "$dir"/*; do
             process "$file"
         done
     done
