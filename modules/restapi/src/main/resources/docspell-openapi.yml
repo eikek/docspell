@@ -151,51 +151,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BasicResult"
-  /open/integration/item/{id}:
-    post:
-      tags: [ Upload ]
-      summary: Upload files to docspell.
-      description: |
-        Upload a file to docspell for processing. The id is a
-        *collective name*. This route only exists, if enabled by an
-        admin in the configuration. The route might be protected by
-        different methods, all configurable via the configuration:
-
-        - A specific header must be prestent
-        - username/password via HTTP Basic mechanism
-        - a specific source ip
-
-        Files are submitted for processing to the specified
-        collective, which eventually resuts in an item in their inbox.
-
-        The request must be a `multipart/form-data` request, where the
-        first part has name `meta`, is optional and may contain upload
-        metadata as JSON. Checkout the structure `ItemUploadMeta` at
-        the end if it is not shown here. Other parts specify the
-        files. Multiple files can be specified, but at least on is
-        required.
-      parameters:
-        - $ref: "#/components/parameters/id"
-      requestBody:
-        content:
-          multipart/form-data:
-            schema:
-              type: object
-              properties:
-                meta:
-                  $ref: "#/components/schemas/ItemUploadMeta"
-                file:
-                  type: array
-                  items:
-                    type: string
-                    format: binary
-      responses:
-        200:
-          description: Ok
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/BasicResult"
   /sec/checkfile/{checksum}:
     get:
       tags: [ Upload ]
@@ -282,6 +237,77 @@ paths:
         - authTokenHeader: []
       parameters:
         - $ref: "#/components/parameters/itemId"
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                meta:
+                  $ref: "#/components/schemas/ItemUploadMeta"
+                file:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+  /open/integration/item/{id}:
+    get:
+      tags: [ Upload Integration ]
+      summary: Upload files to docspell.
+      description: |
+        Allows to check whether an integration endpoint is enabled for
+        a collective. The collective is given by the `id` parameter.
+        It returns not found (404) if the endpoint is disabled (either
+        globally by an admin or by a specific collective). It returns
+        403 (or 401 if http-basic is enabled) if authorization fails.
+
+        The response body is empty (an empty json object).
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+        404:
+          description: Not Found
+        403:
+          description: Forbidden
+        401:
+          description: Unauthorized
+    post:
+      tags: [ Upload Integration ]
+      summary: Upload files to docspell.
+      description: |
+        Upload a file to docspell for processing. The id is a
+        *collective name*. This route only exists, if enabled by an
+        admin in the configuration. The route might be protected by
+        different methods, all configurable via the configuration:
+
+        - A specific header must be prestent
+        - username/password via HTTP Basic mechanism
+        - a specific source ip
+
+        Files are submitted for processing to the specified
+        collective, which eventually resuts in an item in their inbox.
+
+        The request must be a `multipart/form-data` request, where the
+        first part has name `meta`, is optional and may contain upload
+        metadata as JSON. Checkout the structure `ItemUploadMeta` at
+        the end if it is not shown here. Other parts specify the
+        files. Multiple files can be specified, but at least on is
+        required.
+      parameters:
+        - $ref: "#/components/parameters/id"
       requestBody:
         content:
           multipart/form-data:
