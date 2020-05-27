@@ -27,8 +27,8 @@ object IntegrationEndpointRoutes {
     HttpRoutes.of {
       case req @ POST -> Root / "item" / Ident(collective) =>
         (for {
-          _ <- checkEnabled(cfg.integrationEndpoint)
           _ <- authRequest(req, cfg.integrationEndpoint)
+          _ <- checkEnabled(cfg.integrationEndpoint)
           _ <- lookupCollective(collective, backend)
           res <- EitherT.liftF[F, Response[F], Response[F]](
             uploadFile(collective, backend, cfg, dsl)(req)
@@ -37,8 +37,8 @@ object IntegrationEndpointRoutes {
 
       case req @ GET -> Root / "item" / Ident(collective) =>
         (for {
-          _ <- checkEnabled(cfg.integrationEndpoint)
           _ <- authRequest(req, cfg.integrationEndpoint)
+          _ <- checkEnabled(cfg.integrationEndpoint)
           _ <- lookupCollective(collective, backend)
           res <- EitherT.liftF[F, Response[F], Response[F]](Ok(()))
         } yield res).fold(identity, identity)
