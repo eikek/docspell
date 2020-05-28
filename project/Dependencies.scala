@@ -12,7 +12,7 @@ object Dependencies {
   val DoobieVersion = "0.9.0"
   val EmilVersion = "0.6.1"
   val FastparseVersion = "2.1.3"
-  val FlexmarkVersion = "0.61.32"
+  val FlexmarkVersion = "0.61.34"
   val FlywayVersion = "6.4.3"
   val Fs2Version = "2.3.0"
   val H2Version = "1.4.200"
