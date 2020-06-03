@@ -46,8 +46,10 @@ The `url` is the connection to the database. It must start with
 database used: it is either a path to a file for H2 or a host/database
 url for MariaDB and PostgreSQL.
 
-When using H2, the user is `sa`, the password can be empty and the url
-must include these options:
+When using H2, the user and password can be chosen freely on first
+start, but must stay the same on subsequent starts. Usually, the user
+is `sa` and the password is left empty. Additionally, the url must
+include these options:
 
 ```
 ;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;AUTO_SERVER=TRUE

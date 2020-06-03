@@ -96,7 +96,7 @@ docspell.joex {
 }
 ```
 
-The `pool-size` setting deterimens how many jobs run in parallel. You
+The `pool-size` setting determines how many jobs run in parallel. You
 need to play with this setting on your machine to find an optimal
 value.
 

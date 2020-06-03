@@ -27,8 +27,9 @@ you click on the small file symbol on finished jobs, you can inspect
 its log messages again. A running job displays the job executor id
 that executes the job.
 
-Currently the job queue executes just the document processing tasks,
-but it may be used for other long running tasks in the future.
+The jobs listed here are all long-running tasks for your collective.
+Most of the time it executes the document processing tasks. But user
+defined tasks, like "import mailbox", are also visible here.
 
 Since job executors are shared among all collectives, it may happen
 that a job is some time waiting until it is picked up by a job

@@ -39,7 +39,7 @@ connection](emailsettings#imap-settings) to use.
 
 A list of folders is required. Docspell will only look into these
 folders. You can specify multiple folders. The "Inbox" folder is a
-special folder, which will usually appear translated in you web-mail
+special folder, which will usually appear translated in your web-mail
 client. You can specify "INBOX" case insensitive, it will then read
 mails in your inbox. Any other folder is usually case-sensitive
 (depends on the imap server, but usually they are case sensitive
