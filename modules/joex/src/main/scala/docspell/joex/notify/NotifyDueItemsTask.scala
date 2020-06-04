@@ -8,6 +8,7 @@ import emil.markdown._
 import emil.javamail.syntax._
 
 import docspell.common._
+import docspell.backend.ops.OItem.Batch
 import docspell.store.records._
 import docspell.store.queries.QItem
 import docspell.joex.scheduler.{Context, Task}
@@ -15,7 +16,7 @@ import cats.data.OptionT
 import docspell.joex.mail.EmilHeader
 
 object NotifyDueItemsTask {
-  val maxItems: Long = 7
+  val maxItems: Int = 7
   type Args = NotifyDueItemsArgs
 
   def apply[F[_]: Sync](cfg: MailSendConfig, emil: Emil[F]): Task[F, Args, Unit] =
@@ -78,7 +79,11 @@ object NotifyDueItemsTask {
             dueDateTo = Some(now + Duration.days(ctx.args.remindDays.toLong)),
             orderAsc = Some(_.dueDate)
           )
-      res <- ctx.store.transact(QItem.findItems(q).take(maxItems)).compile.toVector
+      res <-
+        ctx.store
+          .transact(QItem.findItems(q, Batch.limit(maxItems)).take(maxItems.toLong))
+          .compile
+          .toVector
     } yield res
 
   def makeMail[F[_]: Sync](

@@ -4,6 +4,7 @@ import cats.effect._
 import cats.implicits._
 import docspell.backend.BackendApp
 import docspell.backend.auth.AuthToken
+import docspell.backend.ops.OItem.Batch
 import docspell.common.{Ident, ItemState}
 import org.http4s.HttpRoutes
 import org.http4s.dsl.Http4sDsl
@@ -27,9 +28,12 @@ object ItemRoutes {
           mask <- req.as[ItemSearch]
           _    <- logger.ftrace(s"Got search mask: $mask")
           query = Conversions.mkQuery(mask, user.account.collective)
-          _     <- logger.ftrace(s"Running query: $query")
-          items <- backend.item.findItems(query, 100)
-          resp  <- Ok(Conversions.mkItemList(items))
+          _ <- logger.ftrace(s"Running query: $query")
+          items <- backend.item.findItems(
+            query,
+            Batch(mask.offset, mask.limit).restrictLimitTo(500)
+          )
+          resp <- Ok(Conversions.mkItemList(items))
         } yield resp
 
       case GET -> Root / Ident(id) =>

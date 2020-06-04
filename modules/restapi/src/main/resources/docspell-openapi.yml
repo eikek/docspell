@@ -3121,6 +3121,8 @@ components:
         - tagsInclude
         - tagsExclude
         - inbox
+        - offset
+        - limit
       properties:
         tagsInclude:
           type: array
@@ -3134,6 +3136,16 @@ components:
             format: ident
         inbox:
           type: boolean
+        offset:
+          type: integer
+          format: int32
+        limit:
+          type: integer
+          format: int32
+          description: |
+            The maximum number of results to return. Note that this
+            limit is a soft limit, there is some hard limit on the
+            server, too.
         direction:
           type: string
           format: direction

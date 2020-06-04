@@ -77,8 +77,11 @@ update key flags msg model =
 doSearch : Flags -> Model -> ( Model, Cmd Msg )
 doSearch flags model =
     let
-        mask =
+        smask =
             Comp.SearchMenu.getItemSearch model.searchMenuModel
+
+        mask =
+            { smask | limit = 100 }
     in
     ( { model | searchInProgress = True, viewMode = Listing }
     , Api.itemSearch flags mask ItemSearchResp

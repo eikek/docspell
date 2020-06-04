@@ -187,7 +187,22 @@ object QItem {
       )
   }
 
-  def findItems(q: Query): Stream[ConnectionIO, ListItem] = {
+  case class Batch(offset: Int, limit: Int) {
+    def restrictLimitTo(n: Int): Batch =
+      Batch(offset, math.min(n, limit))
+  }
+
+  object Batch {
+    val all: Batch = Batch(0, Int.MaxValue)
+
+    def page(n: Int, size: Int): Batch =
+      Batch(n * size, size)
+
+    def limit(c: Int): Batch =
+      Batch(0, c)
+  }
+
+  def findItems(q: Query, batch: Batch): Stream[ConnectionIO, ListItem] = {
     val IC         = RItem.Columns
     val AC         = RAttachment.Columns
     val PC         = RPerson.Columns
@@ -202,7 +217,7 @@ object QItem {
       IC.id.prefix("i").f,
       IC.name.prefix("i").f,
       IC.state.prefix("i").f,
-      coalesce(IC.itemDate.prefix("i").f, IC.created.prefix("i").f),
+      coalesce(IC.itemDate.prefix("i").f, IC.created.prefix("i").f) ++ fr"i_date",
       IC.dueDate.prefix("i").f,
       IC.source.prefix("i").f,
       IC.incoming.prefix("i").f,
@@ -310,11 +325,12 @@ object QItem {
       case Some(co) =>
         orderBy(coalesce(co(IC).prefix("i").f, IC.created.prefix("i").f) ++ fr"ASC")
       case None =>
-        orderBy(
-          coalesce(IC.itemDate.prefix("i").f, IC.created.prefix("i").f) ++ fr"DESC"
-        )
+        orderBy(fr"i_date DESC")
     }
-    val frag = query ++ fr"WHERE" ++ cond ++ order
+    val frag =
+      query ++ fr"WHERE" ++ cond ++ order ++ (if (batch == Batch.all) Fragment.empty
+                                              else
+                                                fr"OFFSET ${batch.offset} LIMIT ${batch.limit}")
     logger.trace(s"List items: $frag")
     frag.query[ListItem].stream
   }
