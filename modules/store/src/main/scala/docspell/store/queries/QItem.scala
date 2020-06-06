@@ -217,7 +217,7 @@ object QItem {
       IC.id.prefix("i").f,
       IC.name.prefix("i").f,
       IC.state.prefix("i").f,
-      coalesce(IC.itemDate.prefix("i").f, IC.created.prefix("i").f) ++ fr"i_date",
+      coalesce(IC.itemDate.prefix("i").f, IC.created.prefix("i").f),
       IC.dueDate.prefix("i").f,
       IC.source.prefix("i").f,
       IC.incoming.prefix("i").f,
@@ -325,13 +325,15 @@ object QItem {
       case Some(co) =>
         orderBy(coalesce(co(IC).prefix("i").f, IC.created.prefix("i").f) ++ fr"ASC")
       case None =>
-        orderBy(fr"i_date DESC")
+        orderBy(
+          coalesce(IC.itemDate.prefix("i").f, IC.created.prefix("i").f) ++ fr"DESC"
+        )
     }
     val frag =
       query ++ fr"WHERE" ++ cond ++ order ++ (if (batch == Batch.all) Fragment.empty
                                               else
                                                 fr"LIMIT ${batch.limit} OFFSET ${batch.offset}")
-    logger.trace(s"List items: $frag")
+    logger.trace(s"List $batch items: $frag")
     frag.query[ListItem].stream
   }
 
