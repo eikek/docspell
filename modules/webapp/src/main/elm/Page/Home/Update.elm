@@ -56,7 +56,9 @@ update key flags msg model =
                         Nothing ->
                             Cmd.none
             in
-            ( { model | itemListModel = m2 }, Cmd.batch [ Cmd.map ItemCardListMsg c2, cmd ] )
+            ( { model | itemListModel = m2 }
+            , Cmd.batch [ Cmd.map ItemCardListMsg c2, cmd ]
+            )
 
         ItemSearchResp (Ok list) ->
             let
@@ -72,10 +74,7 @@ update key flags msg model =
                         , moreAvailable = list.groups /= []
                     }
             in
-            if list.groups == [] then
-                ( m, Cmd.none )
-
-            else if model.searchOffset == 0 then
+            if model.searchOffset == 0 then
                 update key flags (ItemCardListMsg (Comp.ItemCardList.SetResults list)) m
 
             else
@@ -112,9 +111,13 @@ doSearch : Flags -> Model -> ( Model, Cmd Msg )
 doSearch flags model =
     let
         cmd =
-            doSearchCmd flags model.searchOffset model.searchMenuModel
+            doSearchCmd flags 0 model.searchMenuModel
     in
-    ( { model | searchInProgress = True, viewMode = Listing }
+    ( { model
+        | searchInProgress = True
+        , viewMode = Listing
+        , searchOffset = 0
+      }
     , cmd
     )
 
