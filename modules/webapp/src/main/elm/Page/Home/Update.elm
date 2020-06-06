@@ -1,6 +1,5 @@
 module Page.Home.Update exposing (update)
 
-import Api
 import Browser.Navigation as Nav
 import Comp.ItemCardList
 import Comp.SearchMenu
@@ -21,7 +20,11 @@ update key flags msg model =
                 model
 
         ResetSearch ->
-            update key flags (SearchMenuMsg Comp.SearchMenu.ResetForm) model
+            let
+                nm =
+                    { model | searchOffset = 0 }
+            in
+            update key flags (SearchMenuMsg Comp.SearchMenu.ResetForm) nm
 
         SearchMenuMsg m ->
             let
@@ -57,32 +60,71 @@ update key flags msg model =
 
         ItemSearchResp (Ok list) ->
             let
+                noff =
+                    model.searchOffset + searchLimit
+
                 m =
-                    { model | searchInProgress = False, viewMode = Listing }
+                    { model
+                        | searchInProgress = False
+                        , moreInProgress = False
+                        , searchOffset = noff
+                        , viewMode = Listing
+                        , moreAvailable = list.groups /= []
+                    }
             in
-            update key flags (ItemCardListMsg (Comp.ItemCardList.SetResults list)) m
+            if list.groups == [] then
+                ( m, Cmd.none )
+
+            else if model.searchOffset == 0 then
+                update key flags (ItemCardListMsg (Comp.ItemCardList.SetResults list)) m
+
+            else
+                update key flags (ItemCardListMsg (Comp.ItemCardList.AddResults list)) m
 
         ItemSearchResp (Err _) ->
-            ( { model | searchInProgress = False }, Cmd.none )
+            ( { model
+                | searchInProgress = False
+              }
+            , Cmd.none
+            )
 
         DoSearch ->
-            doSearch flags model
+            let
+                nm =
+                    { model | searchOffset = 0 }
+            in
+            doSearch flags nm
 
         ToggleSearchMenu ->
             ( { model | menuCollapsed = not model.menuCollapsed }
             , Cmd.none
             )
 
+        LoadMore ->
+            if model.moreAvailable then
+                doSearchMore flags model
+
+            else
+                ( model, Cmd.none )
+
 
 doSearch : Flags -> Model -> ( Model, Cmd Msg )
 doSearch flags model =
     let
-        smask =
-            Comp.SearchMenu.getItemSearch model.searchMenuModel
-
-        mask =
-            { smask | limit = 100 }
+        cmd =
+            doSearchCmd flags model.searchOffset model.searchMenuModel
     in
     ( { model | searchInProgress = True, viewMode = Listing }
-    , Api.itemSearch flags mask ItemSearchResp
+    , cmd
+    )
+
+
+doSearchMore : Flags -> Model -> ( Model, Cmd Msg )
+doSearchMore flags model =
+    let
+        cmd =
+            doSearchCmd flags model.searchOffset model.searchMenuModel
+    in
+    ( { model | moreInProgress = True, viewMode = Listing }
+    , cmd
     )

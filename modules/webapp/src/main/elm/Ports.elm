@@ -1,5 +1,6 @@
 port module Ports exposing
     ( removeAccount
+    , scrollToElem
     , setAccount
     , setAllProgress
     , setProgress
@@ -18,3 +19,6 @@ port setProgress : ( String, Int ) -> Cmd msg
 
 
 port setAllProgress : ( String, Int ) -> Cmd msg
+
+
+port scrollToElem : String -> Cmd msg
