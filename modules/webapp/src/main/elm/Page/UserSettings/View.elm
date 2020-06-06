@@ -5,6 +5,7 @@ import Comp.EmailSettingsManage
 import Comp.ImapSettingsManage
 import Comp.NotificationForm
 import Comp.ScanMailboxManage
+import Comp.UiSettingsManage
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
@@ -26,6 +27,7 @@ view model =
                     , makeTab model ImapSettingsTab "E-Mail Settings (IMAP)" "mail icon"
                     , makeTab model NotificationTab "Notification Task" "bullhorn icon"
                     , makeTab model ScanMailboxTab "Scan Mailbox Task" "envelope open outline icon"
+                    , makeTab model UiSettingsTab "UI Settings" "cog icon"
                     ]
                 ]
             ]
@@ -47,6 +49,9 @@ view model =
                     Just ScanMailboxTab ->
                         viewScanMailboxManage model
 
+                    Just UiSettingsTab ->
+                        viewUiSettings model
+
                     Nothing ->
                         []
                 )
@@ -64,6 +69,20 @@ makeTab model tab header icon =
         [ i [ class icon ] []
         , text header
         ]
+
+
+viewUiSettings : Model -> List (Html Msg)
+viewUiSettings model =
+    [ h2 [ class "ui header" ]
+        [ i [ class "cog icon" ] []
+        , text "UI Settings"
+        ]
+    , p []
+        [ text "These settings only affect the web ui. They are stored in the browser, "
+        , text "so they are separated between browsers and devices."
+        ]
+    , Html.map UiSettingsMsg (Comp.UiSettingsManage.view "ui segment" model.uiSettingsModel)
+    ]
 
 
 viewEmailSettings : Model -> List (Html Msg)

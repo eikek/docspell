@@ -11,6 +11,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Page
+import Ports
 import Url exposing (Url)
 
 
@@ -59,7 +60,12 @@ init flags url key =
                     Cmd.none
     in
     ( m
-    , Cmd.batch [ cmd, Api.versionInfo flags VersionResp, sessionCheck ]
+    , Cmd.batch
+        [ cmd
+        , Api.versionInfo flags VersionResp
+        , sessionCheck
+        , Ports.getUiSettings flags
+        ]
     )
 
 
@@ -76,4 +82,7 @@ viewDoc model =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    model.subs
+    Sub.batch
+        [ model.subs
+        , Ports.loadUiSettings GetUiSettings
+        ]

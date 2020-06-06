@@ -10,7 +10,9 @@ import Comp.EmailSettingsManage
 import Comp.ImapSettingsManage
 import Comp.NotificationForm
 import Comp.ScanMailboxManage
+import Comp.UiSettingsManage
 import Data.Flags exposing (Flags)
+import Data.UiSettings exposing (UiSettings)
 
 
 type alias Model =
@@ -20,6 +22,7 @@ type alias Model =
     , imapSettingsModel : Comp.ImapSettingsManage.Model
     , notificationModel : Comp.NotificationForm.Model
     , scanMailboxModel : Comp.ScanMailboxManage.Model
+    , uiSettingsModel : Comp.UiSettingsManage.Model
     }
 
 
@@ -31,6 +34,7 @@ emptyModel flags =
     , imapSettingsModel = Comp.ImapSettingsManage.emptyModel
     , notificationModel = Tuple.first (Comp.NotificationForm.init flags)
     , scanMailboxModel = Tuple.first (Comp.ScanMailboxManage.init flags)
+    , uiSettingsModel = Comp.UiSettingsManage.init Data.UiSettings.defaults
     }
 
 
@@ -40,6 +44,7 @@ type Tab
     | ImapSettingsTab
     | NotificationTab
     | ScanMailboxTab
+    | UiSettingsTab
 
 
 type Msg
@@ -49,3 +54,5 @@ type Msg
     | NotificationMsg Comp.NotificationForm.Msg
     | ImapSettingsMsg Comp.ImapSettingsManage.Msg
     | ScanMailboxMsg Comp.ScanMailboxManage.Msg
+    | GetUiSettings UiSettings
+    | UiSettingsMsg Comp.UiSettingsManage.Msg

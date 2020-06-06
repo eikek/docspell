@@ -6,7 +6,6 @@ module Page.Home.Data exposing
     , init
     , itemNav
     , resultsBelowLimit
-    , searchLimit
     )
 
 import Api
@@ -15,6 +14,7 @@ import Comp.ItemCardList
 import Comp.SearchMenu
 import Data.Flags exposing (Flags)
 import Data.Items
+import Data.UiSettings exposing (UiSettings)
 import Http
 
 
@@ -27,6 +27,7 @@ type alias Model =
     , searchOffset : Int
     , moreAvailable : Bool
     , moreInProgress : Bool
+    , uiSettings : UiSettings
     }
 
 
@@ -40,6 +41,7 @@ init _ =
     , searchOffset = 0
     , moreAvailable = True
     , moreInProgress = False
+    , uiSettings = Data.UiSettings.defaults
     }
 
 
@@ -49,9 +51,11 @@ type Msg
     | ResetSearch
     | ItemCardListMsg Comp.ItemCardList.Msg
     | ItemSearchResp (Result Http.Error ItemLightList)
+    | ItemSearchAddResp (Result Http.Error ItemLightList)
     | DoSearch
     | ToggleSearchMenu
     | LoadMore
+    | GetUiSettings UiSettings
 
 
 type ViewMode
@@ -73,24 +77,23 @@ itemNav id model =
     }
 
 
-searchLimit : Int
-searchLimit =
-    90
-
-
-doSearchCmd : Flags -> Int -> Comp.SearchMenu.Model -> Cmd Msg
+doSearchCmd : Flags -> Int -> Model -> Cmd Msg
 doSearchCmd flags offset model =
     let
         smask =
-            Comp.SearchMenu.getItemSearch model
+            Comp.SearchMenu.getItemSearch model.searchMenuModel
 
         mask =
             { smask
-                | limit = searchLimit
+                | limit = model.uiSettings.itemSearchPageSize
                 , offset = offset
             }
     in
-    Api.itemSearch flags mask ItemSearchResp
+    if offset == 0 then
+        Api.itemSearch flags mask ItemSearchResp
+
+    else
+        Api.itemSearch flags mask ItemSearchAddResp
 
 
 resultsBelowLimit : Model -> Bool
@@ -99,4 +102,4 @@ resultsBelowLimit model =
         len =
             Data.Items.length model.itemListModel.results
     in
-    len < searchLimit
+    len < model.uiSettings.itemSearchPageSize
