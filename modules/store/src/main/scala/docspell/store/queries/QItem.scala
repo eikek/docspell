@@ -329,10 +329,12 @@ object QItem {
           coalesce(IC.itemDate.prefix("i").f, IC.created.prefix("i").f) ++ fr"DESC"
         )
     }
+    val limitOffset =
+      if (batch == Batch.all) Fragment.empty
+      else fr"LIMIT ${batch.limit} OFFSET ${batch.offset}"
+
     val frag =
-      query ++ fr"WHERE" ++ cond ++ order ++ (if (batch == Batch.all) Fragment.empty
-                                              else
-                                                fr"LIMIT ${batch.limit} OFFSET ${batch.offset}")
+      query ++ fr"WHERE" ++ cond ++ order ++ limitOffset
     logger.trace(s"List $batch items: $frag")
     frag.query[ListItem].stream
   }
