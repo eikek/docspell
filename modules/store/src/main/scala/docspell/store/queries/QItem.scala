@@ -330,7 +330,7 @@ object QItem {
     val frag =
       query ++ fr"WHERE" ++ cond ++ order ++ (if (batch == Batch.all) Fragment.empty
                                               else
-                                                fr"OFFSET ${batch.offset} LIMIT ${batch.limit}")
+                                                fr"LIMIT ${batch.limit} OFFSET ${batch.offset}")
     logger.trace(s"List items: $frag")
     frag.query[ListItem].stream
   }
