@@ -4,6 +4,7 @@ import bitpeace.FileMeta
 import cats.effect.Sync
 import cats.data.OptionT
 import cats.implicits._
+import cats.effect.concurrent.Ref
 import fs2.Stream
 import doobie._
 import doobie.implicits._
@@ -255,18 +256,10 @@ object QItem {
     ) ++
       fr"SELECT DISTINCT" ++ finalCols ++ fr" FROM items i" ++
       fr"LEFT JOIN attachs a ON" ++ IC.id.prefix("i").is(AC.itemId.prefix("a")) ++
-      fr"LEFT JOIN persons p0 ON" ++ IC.corrPerson
-      .prefix("i")
-      .is(PC.pid.prefix("p0")) ++ // i.corrperson = p0.pid" ++
-      fr"LEFT JOIN orgs o0 ON" ++ IC.corrOrg
-      .prefix("i")
-      .is(OC.oid.prefix("o0")) ++ // i.corrorg = o0.oid" ++
-      fr"LEFT JOIN persons p1 ON" ++ IC.concPerson
-      .prefix("i")
-      .is(PC.pid.prefix("p1")) ++ // i.concperson = p1.pid" ++
-      fr"LEFT JOIN equips e1 ON" ++ IC.concEquipment
-      .prefix("i")
-      .is(EC.eid.prefix("e1")) // i.concequipment = e1.eid"
+      fr"LEFT JOIN persons p0 ON" ++ IC.corrPerson.prefix("i").is(PC.pid.prefix("p0")) ++
+      fr"LEFT JOIN orgs o0 ON" ++ IC.corrOrg.prefix("i").is(OC.oid.prefix("o0")) ++
+      fr"LEFT JOIN persons p1 ON" ++ IC.concPerson.prefix("i").is(PC.pid.prefix("p1")) ++
+      fr"LEFT JOIN equips e1 ON" ++ IC.concEquipment.prefix("i").is(EC.eid.prefix("e1"))
 
     // inclusive tags are AND-ed
     val tagSelectsIncl = q.tagsInclude
@@ -337,6 +330,43 @@ object QItem {
       query ++ fr"WHERE" ++ cond ++ order ++ limitOffset
     logger.trace(s"List $batch items: $frag")
     frag.query[ListItem].stream
+  }
+
+  case class ListItemWithTags(item: ListItem, tags: List[RTag])
+
+  /** Same as `findItems` but resolves the tags for each item. Note that
+    * this is implemented by running an additional query per item.
+    */
+  def findItemsWithTags(
+      q: Query,
+      batch: Batch
+  ): Stream[ConnectionIO, ListItemWithTags] = {
+    def findTag(
+        cache: Ref[ConnectionIO, Map[Ident, RTag]],
+        tagItem: RTagItem
+    ): ConnectionIO[Option[RTag]] =
+      for {
+        cc <- cache.get
+        fromCache = cc.get(tagItem.tagId)
+        orFromDB <-
+          if (fromCache.isDefined) fromCache.pure[ConnectionIO]
+          else RTag.findById(tagItem.tagId)
+        _ <-
+          if (fromCache.isDefined) ().pure[ConnectionIO]
+          else
+            orFromDB match {
+              case Some(t) => cache.update(tmap => tmap.updated(t.tagId, t))
+              case None    => ().pure[ConnectionIO]
+            }
+      } yield orFromDB
+
+    for {
+      resolvedTags <- Stream.eval(Ref.of[ConnectionIO, Map[Ident, RTag]](Map.empty))
+      item         <- findItems(q, batch)
+      tagItems     <- Stream.eval(RTagItem.findByItem(item.id))
+      tags         <- Stream.eval(tagItems.traverse(ti => findTag(resolvedTags, ti)))
+      ftags = tags.flatten.filter(t => t.collective == q.collective)
+    } yield ListItemWithTags(item, ftags.toList.sortBy(_.name))
   }
 
   def delete[F[_]: Sync](store: Store[F])(itemId: Ident, collective: Ident): F[Int] =

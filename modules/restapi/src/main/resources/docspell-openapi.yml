@@ -987,7 +987,31 @@ paths:
       summary: Search for items.
       description: |
         Search for items given a search form. The results are grouped
-        by month by default.
+        by month by default. Tags are *not* resolved! The results will
+        always contain an empty list for item tags. Use
+        `/searchWithTags` to also retrieve all tags of an item.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ItemSearch"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ItemLightList"
+  /sec/item/searchWithTags:
+    post:
+      tags: [ Item ]
+      summary: Search for items.
+      description: |
+        Search for items given a search form. The results are grouped
+        by month by default. For each item, its tags are also
+        returned. This uses more queries and is therefore slower.
       security:
         - authTokenHeader: []
       requestBody:
@@ -3188,6 +3212,7 @@ components:
         - date
         - source
         - fileCount
+        - tags
       properties:
         id:
           type: string
@@ -3221,6 +3246,10 @@ components:
         fileCount:
           type: integer
           format: int32
+        tags:
+          type: array
+          items:
+            $ref: "#/components/schemas/Tag"
     IdName:
       description: |
         The identifier and a human readable name of some entity.

@@ -135,6 +135,17 @@ trait Conversions {
     ItemLightList(gs)
   }
 
+  def mkItemListWithTags(v: Vector[OItem.ListItemWithTags]): ItemLightList = {
+    val groups = v.groupBy(ti => ti.item.date.toUtcDate.toString.substring(0, 7))
+
+    def mkGroup(g: (String, Vector[OItem.ListItemWithTags])): ItemLightGroup =
+      ItemLightGroup(g._1, g._2.map(mkItemLightWithTags).toList)
+
+    val gs =
+      groups.map(mkGroup _).toList.sortWith((g1, g2) => g1.name.compareTo(g2.name) >= 0)
+    ItemLightList(gs)
+  }
+
   def mkItemLight(i: OItem.ListItem): ItemLight =
     ItemLight(
       i.id,
@@ -148,8 +159,12 @@ trait Conversions {
       i.corrPerson.map(mkIdName),
       i.concPerson.map(mkIdName),
       i.concEquip.map(mkIdName),
-      i.fileCount
+      i.fileCount,
+      Nil
     )
+
+  def mkItemLightWithTags(i: OItem.ListItemWithTags): ItemLight =
+    mkItemLight(i.item).copy(tags = i.tags.map(mkTag))
 
   // job
   def mkJobQueueState(state: OJob.CollectiveQueueState): JobQueueState = {
