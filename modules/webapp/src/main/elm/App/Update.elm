@@ -177,6 +177,7 @@ updateWithSub msg model =
         GetUiSettings settings ->
             Util.Update.andThen1
                 [ updateUserSettings Page.UserSettings.Data.UpdateSettings
+                , updateHome Page.Home.Data.DoSearch
                 ]
                 { model | uiSettings = settings }
                 |> noSub
