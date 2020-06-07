@@ -139,6 +139,7 @@ view data opts model =
                 [ i [ class "add icon" ] []
                 ]
             ]
+        , renderFormData opts data
         , span
             [ classList
                 [ ( "small-info", True )
@@ -148,7 +149,6 @@ view data opts model =
             [ Maybe.withDefault "" opts.description
                 |> text
             ]
-        , renderFormData opts data
         ]
 
 

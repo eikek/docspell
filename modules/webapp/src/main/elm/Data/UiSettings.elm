@@ -7,6 +7,9 @@ module Data.UiSettings exposing
     , toStoredUiSettings
     )
 
+import Dict exposing (Dict)
+
+
 {-| Settings for the web ui. All fields should be optional, since it
 is loaded from local storage.
 
@@ -15,10 +18,9 @@ versions. Also if a user is logged out, an empty object is send to
 force default settings.
 
 -}
-
-
 type alias StoredUiSettings =
     { itemSearchPageSize : Maybe Int
+    , tagCategoryColors : List ( String, String )
     }
 
 
@@ -31,12 +33,14 @@ default value, converting the StoredUiSettings into a UiSettings.
 -}
 type alias UiSettings =
     { itemSearchPageSize : Int
+    , tagCategoryColors : Dict String String
     }
 
 
 defaults : UiSettings
 defaults =
     { itemSearchPageSize = 60
+    , tagCategoryColors = Dict.empty
     }
 
 
@@ -44,6 +48,9 @@ merge : StoredUiSettings -> UiSettings -> UiSettings
 merge given fallback =
     { itemSearchPageSize =
         choose given.itemSearchPageSize fallback.itemSearchPageSize
+    , tagCategoryColors =
+        Dict.union (Dict.fromList given.tagCategoryColors)
+            fallback.tagCategoryColors
     }
 
 
@@ -55,6 +62,7 @@ mergeDefaults given =
 toStoredUiSettings : UiSettings -> StoredUiSettings
 toStoredUiSettings settings =
     { itemSearchPageSize = Just settings.itemSearchPageSize
+    , tagCategoryColors = Dict.toList settings.tagCategoryColors
     }
 
 

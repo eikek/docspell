@@ -25,7 +25,6 @@ type alias Model =
     , input : StoredUiSettings
     , searchPageSizeModel : Comp.IntField.Model
     , tagColorModel : Comp.MappingForm.Model
-    , tagColors : Dict String String
     }
 
 
@@ -38,12 +37,11 @@ init flags defaults =
                 (Just 10)
                 (Just 500)
                 False
-                "Item search page"
+                "Page size"
       , tagColorModel =
             Comp.MappingForm.init
                 []
                 Data.Color.allString
-      , tagColors = Dict.empty
       }
     , Api.getTags flags "" GetTagsResp
     )
@@ -92,12 +90,23 @@ update msg model =
             let
                 ( m_, d_ ) =
                     Comp.MappingForm.update lm model.tagColorModel
+
+                newData =
+                    case d_ of
+                        Just data ->
+                            Dict.toList data
+
+                        Nothing ->
+                            model.input.tagCategoryColors
+
+                model_ =
+                    { model
+                        | tagColorModel = m_
+                        , input = changeInput (\s -> { s | tagCategoryColors = newData }) model
+                    }
             in
-            ( { model
-                | tagColorModel = m_
-                , tagColors = Maybe.withDefault model.tagColors d_
-              }
-            , Nothing
+            ( model_
+            , Maybe.map (\_ -> getSettings model_) d_
             )
 
         GetTagsResp (Ok tl) ->
@@ -111,7 +120,6 @@ update msg model =
                     Comp.MappingForm.init
                         categories
                         Data.Color.allString
-                , tagColors = Dict.empty
               }
             , Nothing
             )
@@ -138,16 +146,22 @@ tagColorViewOpts =
 view : Model -> Html Msg
 view model =
     div [ class "ui form" ]
-        [ Html.map SearchPageSizeMsg
+        [ div [ class "ui dividing header" ]
+            [ text "Item Search"
+            ]
+        , Html.map SearchPageSizeMsg
             (Comp.IntField.viewWithInfo
                 "Maximum results in one page when searching items."
                 model.input.itemSearchPageSize
                 "field"
                 model.searchPageSizeModel
             )
+        , div [ class "ui dividing header" ]
+            [ text "Tag Category Colors"
+            ]
         , Html.map TagColorMsg
             (Comp.MappingForm.view
-                model.tagColors
+                (Dict.fromList model.input.tagCategoryColors)
                 tagColorViewOpts
                 model.tagColorModel
             )

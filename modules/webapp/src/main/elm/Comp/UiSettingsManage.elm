@@ -58,7 +58,12 @@ update flags msg model =
             ( { model
                 | formModel = m_
                 , settings = sett
-                , message = Nothing
+                , message =
+                    if sett /= Nothing then
+                        Nothing
+
+                    else
+                        model.message
               }
             , Cmd.none
             , Sub.none
