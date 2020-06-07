@@ -11,6 +11,7 @@ import Api.Model.VersionInfo exposing (VersionInfo)
 import Browser exposing (UrlRequest)
 import Browser.Navigation exposing (Key)
 import Data.Flags exposing (Flags)
+import Data.UiSettings exposing (UiSettings)
 import Http
 import Page exposing (Page(..))
 import Page.CollectiveSettings.Data
@@ -57,7 +58,7 @@ init key url flags =
     , key = key
     , page = page
     , version = Api.Model.VersionInfo.empty
-    , homeModel = Page.Home.Data.emptyModel
+    , homeModel = Page.Home.Data.init flags
     , loginModel = Page.Login.Data.emptyModel
     , manageDataModel = Page.ManageData.Data.emptyModel
     , collSettingsModel = Page.CollectiveSettings.Data.emptyModel
@@ -90,6 +91,7 @@ type Msg
     | LogoutResp (Result Http.Error ())
     | SessionCheckResp (Result Http.Error AuthResult)
     | ToggleNavMenu
+    | GetUiSettings UiSettings
 
 
 isSignedIn : Flags -> Bool

@@ -61,6 +61,7 @@ view model =
                   , not model.menuCollapsed
                   )
                 , ( "sixteen wide column", model.menuCollapsed )
+                , ( "item-card-list", True )
                 ]
             ]
             [ div
@@ -89,6 +90,36 @@ view model =
 
                 Detail ->
                     div [] []
+            ]
+        , div
+            [ classList
+                [ ( "sixteen wide column", True )
+                ]
+            ]
+            [ div [ class "ui basic center aligned segment" ]
+                [ button
+                    [ classList
+                        [ ( "ui basic tiny button", True )
+                        , ( "disabled", not model.moreAvailable )
+                        , ( "hidden invisible", resultsBelowLimit model )
+                        ]
+                    , disabled (not model.moreAvailable || model.moreInProgress || model.searchInProgress)
+                    , title "Load more items"
+                    , href "#"
+                    , onClick LoadMore
+                    ]
+                    [ if model.moreInProgress then
+                        i [ class "loading spinner icon" ] []
+
+                      else
+                        i [ class "angle double down icon" ] []
+                    , if model.moreAvailable then
+                        text "Load more…"
+
+                      else
+                        text "That's all"
+                    ]
+                ]
             ]
         ]
 

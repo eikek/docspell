@@ -40,7 +40,7 @@ update msg model =
         ( m, c, s ) =
             updateWithSub msg model
     in
-    ( { m | subs = s }, c )
+    ( { m | subs = Sub.batch [ m.subs, s ] }, c )
 
 
 updateWithSub : Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
@@ -92,7 +92,10 @@ updateWithSub msg model =
             )
 
         LogoutResp _ ->
-            ( { model | loginModel = Page.Login.Data.emptyModel }, Page.goto (LoginPage Nothing), Sub.none )
+            ( { model | loginModel = Page.Login.Data.emptyModel }
+            , Page.goto (LoginPage Nothing)
+            , Sub.none
+            )
 
         SessionCheckResp res ->
             case res of
@@ -171,6 +174,14 @@ updateWithSub msg model =
         ToggleNavMenu ->
             ( { model | navMenuOpen = not model.navMenuOpen }, Cmd.none, Sub.none )
 
+        GetUiSettings settings ->
+            Util.Update.andThen1
+                [ updateUserSettings (Page.UserSettings.Data.GetUiSettings settings)
+                , updateHome (Page.Home.Data.GetUiSettings settings)
+                ]
+                model
+                |> noSub
+
 
 updateItemDetail : Page.ItemDetail.Data.Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
 updateItemDetail lmsg model =
@@ -241,10 +252,17 @@ updateQueue lmsg model =
 updateUserSettings : Page.UserSettings.Data.Msg -> Model -> ( Model, Cmd Msg )
 updateUserSettings lmsg model =
     let
-        ( lm, lc ) =
+        ( lm, lc, ls ) =
             Page.UserSettings.Update.update model.flags lmsg model.userSettingsModel
     in
-    ( { model | userSettingsModel = lm }
+    ( { model
+        | userSettingsModel = lm
+        , subs =
+            Sub.batch
+                [ model.subs
+                , Sub.map UserSettingsMsg ls
+                ]
+      }
     , Cmd.map UserSettingsMsg lc
     )
 

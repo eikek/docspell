@@ -14,9 +14,11 @@ import Api.Model.ItemLightList exposing (ItemLightList)
 import Data.Direction
 import Data.Flags exposing (Flags)
 import Data.Icons as Icons
+import Data.Items
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
+import Ports
 import Util.List
 import Util.String
 import Util.Time
@@ -29,6 +31,7 @@ type alias Model =
 
 type Msg
     = SetResults ItemLightList
+    | AddResults ItemLightList
     | SelectItem ItemLight
 
 
@@ -63,6 +66,28 @@ update _ msg model =
                     { model | results = list }
             in
             ( newModel, Cmd.none, Nothing )
+
+        AddResults list ->
+            if list.groups == [] then
+                ( model, Cmd.none, Nothing )
+
+            else
+                let
+                    firstNew =
+                        Data.Items.first list
+
+                    scrollCmd =
+                        case firstNew of
+                            Just item ->
+                                Ports.scrollToElem item.id
+
+                            Nothing ->
+                                Cmd.none
+
+                    newModel =
+                        { model | results = Data.Items.concat model.results list }
+                in
+                ( newModel, scrollCmd, Nothing )
 
         SelectItem item ->
             ( model, Cmd.none, Just item )
@@ -123,6 +148,7 @@ viewItem item =
             [ ( "ui fluid card", True )
             , ( newColor, not isConfirmed )
             ]
+        , id item.id
         , href "#"
         , onClick (SelectItem item)
         ]

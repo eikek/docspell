@@ -187,7 +187,22 @@ object QItem {
       )
   }
 
-  def findItems(q: Query): Stream[ConnectionIO, ListItem] = {
+  case class Batch(offset: Int, limit: Int) {
+    def restrictLimitTo(n: Int): Batch =
+      Batch(offset, math.min(n, limit))
+  }
+
+  object Batch {
+    val all: Batch = Batch(0, Int.MaxValue)
+
+    def page(n: Int, size: Int): Batch =
+      Batch(n * size, size)
+
+    def limit(c: Int): Batch =
+      Batch(0, c)
+  }
+
+  def findItems(q: Query, batch: Batch): Stream[ConnectionIO, ListItem] = {
     val IC         = RItem.Columns
     val AC         = RAttachment.Columns
     val PC         = RPerson.Columns
@@ -314,8 +329,13 @@ object QItem {
           coalesce(IC.itemDate.prefix("i").f, IC.created.prefix("i").f) ++ fr"DESC"
         )
     }
-    val frag = query ++ fr"WHERE" ++ cond ++ order
-    logger.trace(s"List items: $frag")
+    val limitOffset =
+      if (batch == Batch.all) Fragment.empty
+      else fr"LIMIT ${batch.limit} OFFSET ${batch.offset}"
+
+    val frag =
+      query ++ fr"WHERE" ++ cond ++ order ++ limitOffset
+    logger.trace(s"List $batch items: $frag")
     frag.query[ListItem].stream
   }
 

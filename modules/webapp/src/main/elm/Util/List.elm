@@ -1,5 +1,6 @@
 module Util.List exposing
     ( distinct
+    , dropRight
     , find
     , findIndexed
     , findNext
@@ -80,3 +81,10 @@ findNext pred list =
         |> Maybe.map Tuple.second
         |> Maybe.map (\i -> i + 1)
         |> Maybe.andThen (get list)
+
+
+dropRight : Int -> List a -> List a
+dropRight n list =
+    List.reverse list
+        |> List.drop n
+        |> List.reverse

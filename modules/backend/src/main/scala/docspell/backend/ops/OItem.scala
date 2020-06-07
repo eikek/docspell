@@ -12,6 +12,7 @@ import OItem.{
   AttachmentArchiveData,
   AttachmentData,
   AttachmentSourceData,
+  Batch,
   ItemData,
   ListItem,
   Query
@@ -24,7 +25,7 @@ trait OItem[F[_]] {
 
   def findItem(id: Ident, collective: Ident): F[Option[ItemData]]
 
-  def findItems(q: Query, maxResults: Int): F[Vector[ListItem]]
+  def findItems(q: Query, batch: Batch): F[Vector[ListItem]]
 
   def findAttachment(id: Ident, collective: Ident): F[Option[AttachmentData[F]]]
 
@@ -84,6 +85,9 @@ object OItem {
   type Query = QItem.Query
   val Query = QItem.Query
 
+  type Batch = QItem.Batch
+  val Batch = QItem.Batch
+
   type ListItem = QItem.ListItem
   val ListItem = QItem.ListItem
 
@@ -138,8 +142,11 @@ object OItem {
           .transact(QItem.findItem(id))
           .map(opt => opt.flatMap(_.filterCollective(collective)))
 
-      def findItems(q: Query, maxResults: Int): F[Vector[ListItem]] =
-        store.transact(QItem.findItems(q).take(maxResults.toLong)).compile.toVector
+      def findItems(q: Query, batch: Batch): F[Vector[ListItem]] =
+        store
+          .transact(QItem.findItems(q, batch).take(batch.limit.toLong))
+          .compile
+          .toVector
 
       def findAttachment(id: Ident, collective: Ident): F[Option[AttachmentData[F]]] =
         store

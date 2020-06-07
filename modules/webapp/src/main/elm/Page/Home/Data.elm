@@ -2,13 +2,19 @@ module Page.Home.Data exposing
     ( Model
     , Msg(..)
     , ViewMode(..)
-    , emptyModel
+    , doSearchCmd
+    , init
     , itemNav
+    , resultsBelowLimit
     )
 
+import Api
 import Api.Model.ItemLightList exposing (ItemLightList)
 import Comp.ItemCardList
 import Comp.SearchMenu
+import Data.Flags exposing (Flags)
+import Data.Items
+import Data.UiSettings exposing (UiSettings)
 import Http
 
 
@@ -18,16 +24,24 @@ type alias Model =
     , searchInProgress : Bool
     , viewMode : ViewMode
     , menuCollapsed : Bool
+    , searchOffset : Int
+    , moreAvailable : Bool
+    , moreInProgress : Bool
+    , uiSettings : UiSettings
     }
 
 
-emptyModel : Model
-emptyModel =
+init : Flags -> Model
+init _ =
     { searchMenuModel = Comp.SearchMenu.emptyModel
     , itemListModel = Comp.ItemCardList.init
     , searchInProgress = False
     , viewMode = Listing
     , menuCollapsed = False
+    , searchOffset = 0
+    , moreAvailable = True
+    , moreInProgress = False
+    , uiSettings = Data.UiSettings.defaults
     }
 
 
@@ -37,8 +51,11 @@ type Msg
     | ResetSearch
     | ItemCardListMsg Comp.ItemCardList.Msg
     | ItemSearchResp (Result Http.Error ItemLightList)
+    | ItemSearchAddResp (Result Http.Error ItemLightList)
     | DoSearch
     | ToggleSearchMenu
+    | LoadMore
+    | GetUiSettings UiSettings
 
 
 type ViewMode
@@ -58,3 +75,31 @@ itemNav id model =
     { prev = Maybe.map .id prev
     , next = Maybe.map .id next
     }
+
+
+doSearchCmd : Flags -> Int -> Model -> Cmd Msg
+doSearchCmd flags offset model =
+    let
+        smask =
+            Comp.SearchMenu.getItemSearch model.searchMenuModel
+
+        mask =
+            { smask
+                | limit = model.uiSettings.itemSearchPageSize
+                , offset = offset
+            }
+    in
+    if offset == 0 then
+        Api.itemSearch flags mask ItemSearchResp
+
+    else
+        Api.itemSearch flags mask ItemSearchAddResp
+
+
+resultsBelowLimit : Model -> Bool
+resultsBelowLimit model =
+    let
+        len =
+            Data.Items.length model.itemListModel.results
+    in
+    len < model.uiSettings.itemSearchPageSize
