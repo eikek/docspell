@@ -162,7 +162,7 @@ viewItem item =
                 , Util.String.underscoreToSpace item.name
                     |> text
                 ]
-            , span [ class "meta" ]
+            , div [ class "meta" ]
                 [ div
                     [ classList
                         [ ( "ui ribbon label", True )
@@ -173,9 +173,33 @@ viewItem item =
                     [ i [ class "exclamation icon" ] []
                     , text " New"
                     ]
+                , span
+                    [ classList
+                        [ ( "right floated", not isConfirmed )
+                        ]
+                    ]
+                    [ Util.Time.formatDate item.date |> text
+                    ]
                 ]
-            , span [ class "right floated meta" ]
-                [ Util.Time.formatDate item.date |> text
+            , div [ class "meta description" ]
+                [ div
+                    [ classList
+                        [ ( "ui right floated tiny labels", True )
+                        , ( "invisible hidden", item.tags == [] )
+                        ]
+                    ]
+                    (List.map
+                        (\tag ->
+                            div
+                                [ classList
+                                    [ ( "ui basic label", True )
+                                    , ( "blue", tag.category /= Nothing )
+                                    ]
+                                ]
+                                [ text tag.name ]
+                        )
+                        item.tags
+                    )
                 ]
             ]
         , div [ class "content" ]

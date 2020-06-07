@@ -36,6 +36,19 @@ object ItemRoutes {
           resp <- Ok(Conversions.mkItemList(items))
         } yield resp
 
+      case req @ POST -> Root / "searchWithTags" =>
+        for {
+          mask <- req.as[ItemSearch]
+          _    <- logger.ftrace(s"Got search mask: $mask")
+          query = Conversions.mkQuery(mask, user.account.collective)
+          _ <- logger.ftrace(s"Running query: $query")
+          items <- backend.item.findItemsWithTags(
+            query,
+            Batch(mask.offset, mask.limit).restrictLimitTo(500)
+          )
+          resp <- Ok(Conversions.mkItemListWithTags(items))
+        } yield resp
+
       case GET -> Root / Ident(id) =>
         for {
           item <- backend.item.findItem(id, user.account.collective)

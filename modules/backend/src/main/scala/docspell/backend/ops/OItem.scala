@@ -15,6 +15,7 @@ import OItem.{
   Batch,
   ItemData,
   ListItem,
+  ListItemWithTags,
   Query
 }
 import bitpeace.{FileMeta, RangeDef}
@@ -26,6 +27,9 @@ trait OItem[F[_]] {
   def findItem(id: Ident, collective: Ident): F[Option[ItemData]]
 
   def findItems(q: Query, batch: Batch): F[Vector[ListItem]]
+
+  /** Same as `findItems` but does more queries per item to find all tags. */
+  def findItemsWithTags(q: Query, batch: Batch): F[Vector[ListItemWithTags]]
 
   def findAttachment(id: Ident, collective: Ident): F[Option[AttachmentData[F]]]
 
@@ -91,6 +95,9 @@ object OItem {
   type ListItem = QItem.ListItem
   val ListItem = QItem.ListItem
 
+  type ListItemWithTags = QItem.ListItemWithTags
+  val ListItemWithTags = QItem.ListItemWithTags
+
   type ItemData = QItem.ItemData
   val ItemData = QItem.ItemData
 
@@ -145,6 +152,12 @@ object OItem {
       def findItems(q: Query, batch: Batch): F[Vector[ListItem]] =
         store
           .transact(QItem.findItems(q, batch).take(batch.limit.toLong))
+          .compile
+          .toVector
+
+      def findItemsWithTags(q: Query, batch: Batch): F[Vector[ListItemWithTags]] =
+        store
+          .transact(QItem.findItemsWithTags(q, batch).take(batch.limit.toLong))
           .compile
           .toVector
 

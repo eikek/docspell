@@ -1029,7 +1029,7 @@ moveAttachmentBefore flags itemId data receive =
 itemSearch : Flags -> ItemSearch -> (Result Http.Error ItemLightList -> msg) -> Cmd msg
 itemSearch flags search receive =
     Http2.authPost
-        { url = flags.config.baseUrl ++ "/api/v1/sec/item/search"
+        { url = flags.config.baseUrl ++ "/api/v1/sec/item/searchWithTags"
         , account = getAccount flags
         , body = Http.jsonBody (Api.Model.ItemSearch.encode search)
         , expect = Http.expectJson receive Api.Model.ItemLightList.decoder

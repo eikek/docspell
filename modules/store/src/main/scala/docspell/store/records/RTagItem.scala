@@ -38,4 +38,7 @@ object RTagItem {
       tagFrag = tagValues.map(v => fr"${v.tagItemId},${v.itemId},${v.tagId}")
       ins <- insertRows(table, all, tagFrag).update.run
     } yield ins
+
+  def findByItem(item: Ident): ConnectionIO[Vector[RTagItem]] =
+    selectSimple(all, table, itemId.is(item)).query[RTagItem].to[Vector]
 }

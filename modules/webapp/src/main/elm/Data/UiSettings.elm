@@ -36,7 +36,7 @@ type alias UiSettings =
 
 defaults : UiSettings
 defaults =
-    { itemSearchPageSize = 90
+    { itemSearchPageSize = 60
     }
 
 
