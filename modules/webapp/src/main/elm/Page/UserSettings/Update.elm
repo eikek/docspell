@@ -97,8 +97,12 @@ update flags msg model =
             )
 
         GetUiSettings settings ->
-            ( { model | uiSettingsModel = Comp.UiSettingsManage.init settings }
-            , Cmd.none
+            let
+                ( um, uc ) =
+                    Comp.UiSettingsManage.init flags settings
+            in
+            ( { model | uiSettingsModel = um }
+            , Cmd.map UiSettingsMsg uc
             , Sub.none
             )
 

@@ -29,12 +29,18 @@ type Msg
     | SettingsSaved
 
 
-init : UiSettings -> Model
-init defaults =
-    { formModel = Comp.UiSettingsForm.initWith defaults
-    , settings = Nothing
-    , message = Nothing
-    }
+init : Flags -> UiSettings -> ( Model, Cmd Msg )
+init flags defaults =
+    let
+        ( fm, fc ) =
+            Comp.UiSettingsForm.init flags defaults
+    in
+    ( { formModel = fm
+      , settings = Nothing
+      , message = Nothing
+      }
+    , Cmd.map UiSettingsFormMsg fc
+    )
 
 
 

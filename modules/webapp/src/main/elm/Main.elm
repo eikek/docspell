@@ -38,7 +38,7 @@ main =
 init : Flags -> Url -> Key -> ( Model, Cmd Msg )
 init flags url key =
     let
-        im =
+        ( im, ic ) =
             App.Data.init key url flags
 
         page =
@@ -62,6 +62,7 @@ init flags url key =
     ( m
     , Cmd.batch
         [ cmd
+        , ic
         , Api.versionInfo flags VersionResp
         , sessionCheck
         , Ports.getUiSettings flags

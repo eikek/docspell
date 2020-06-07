@@ -8,6 +8,7 @@ module Comp.FixedDropdown exposing
     , initTuple
     , update
     , view
+    , viewString
     )
 
 import Html exposing (..)
@@ -99,6 +100,11 @@ view selected model =
           <|
             List.map renderItems model.options
         ]
+
+
+viewString : Maybe String -> Model String -> Html (Msg String)
+viewString selected model =
+    view (Maybe.map (\s -> Item s s) selected) model
 
 
 renderItems : Item a -> Html (Msg a)

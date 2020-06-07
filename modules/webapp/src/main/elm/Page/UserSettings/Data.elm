@@ -26,16 +26,22 @@ type alias Model =
     }
 
 
-emptyModel : Flags -> Model
+emptyModel : Flags -> ( Model, Cmd Msg )
 emptyModel flags =
-    { currentTab = Nothing
-    , changePassModel = Comp.ChangePasswordForm.emptyModel
-    , emailSettingsModel = Comp.EmailSettingsManage.emptyModel
-    , imapSettingsModel = Comp.ImapSettingsManage.emptyModel
-    , notificationModel = Tuple.first (Comp.NotificationForm.init flags)
-    , scanMailboxModel = Tuple.first (Comp.ScanMailboxManage.init flags)
-    , uiSettingsModel = Comp.UiSettingsManage.init Data.UiSettings.defaults
-    }
+    let
+        ( um, uc ) =
+            Comp.UiSettingsManage.init flags Data.UiSettings.defaults
+    in
+    ( { currentTab = Nothing
+      , changePassModel = Comp.ChangePasswordForm.emptyModel
+      , emailSettingsModel = Comp.EmailSettingsManage.emptyModel
+      , imapSettingsModel = Comp.ImapSettingsManage.emptyModel
+      , notificationModel = Tuple.first (Comp.NotificationForm.init flags)
+      , scanMailboxModel = Tuple.first (Comp.ScanMailboxManage.init flags)
+      , uiSettingsModel = um
+      }
+    , Cmd.map UiSettingsMsg uc
+    )
 
 
 type Tab
