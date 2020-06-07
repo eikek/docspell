@@ -84,7 +84,7 @@ type alias Model =
     , sentMailsOpen : Bool
     , attachMeta : Dict String Comp.AttachmentMeta.Model
     , attachMetaOpen : Bool
-    , pdfNativeView : Bool
+    , pdfNativeView : Maybe Bool
     , deleteAttachConfirm : Comp.YesNoDimmer.Model
     , addFilesOpen : Bool
     , addFilesModel : Comp.Dropzone.Model
@@ -170,7 +170,7 @@ emptyModel =
     , sentMailsOpen = False
     , attachMeta = Dict.empty
     , attachMetaOpen = False
-    , pdfNativeView = False
+    , pdfNativeView = Nothing
     , deleteAttachConfirm = Comp.YesNoDimmer.emptyModel
     , addFilesOpen = False
     , addFilesModel = Comp.Dropzone.init Comp.Dropzone.defaultSettings
@@ -231,7 +231,7 @@ type Msg
     | SentMailsResp (Result Http.Error SentMails)
     | AttachMetaClick String
     | AttachMetaMsg String Comp.AttachmentMeta.Msg
-    | TogglePdfNativeView
+    | TogglePdfNativeView Bool
     | RequestDeleteAttachment String
     | DeleteAttachConfirm String Comp.YesNoDimmer.Msg
     | DeleteAttachResp (Result Http.Error BasicResult)
@@ -1027,9 +1027,17 @@ update key flags next msg model =
                 Nothing ->
                     noSub ( model, Cmd.none )
 
-        TogglePdfNativeView ->
+        TogglePdfNativeView default ->
             noSub
-                ( { model | pdfNativeView = not model.pdfNativeView }
+                ( { model
+                    | pdfNativeView =
+                        case model.pdfNativeView of
+                            Just flag ->
+                                Just (not flag)
+
+                            Nothing ->
+                                Just (not default)
+                  }
                 , Cmd.none
                 )
 
@@ -1328,7 +1336,7 @@ view inav settings model =
                 List.concat
                     [ [ renderAttachmentsTabMenu model
                       ]
-                    , renderAttachmentsTabBody model
+                    , renderAttachmentsTabBody settings model
                     , renderIdInfo model
                     ]
             ]
@@ -1481,8 +1489,8 @@ renderAttachmentsTabMenu model =
         )
 
 
-renderAttachmentView : Model -> Int -> Attachment -> Html Msg
-renderAttachmentView model pos attach =
+renderAttachmentView : UiSettings -> Model -> Int -> Attachment -> Html Msg
+renderAttachmentView settings model pos attach =
     let
         fileUrl =
             "/api/v1/sec/attachment/" ++ attach.id
@@ -1513,8 +1521,8 @@ renderAttachmentView model pos attach =
                 [ div [ class "ui slider checkbox" ]
                     [ input
                         [ type_ "checkbox"
-                        , onCheck (\_ -> TogglePdfNativeView)
-                        , checked model.pdfNativeView
+                        , onCheck (\_ -> TogglePdfNativeView settings.nativePdfPreview)
+                        , checked (Maybe.withDefault settings.nativePdfPreview model.pdfNativeView)
                         ]
                         []
                     , label [] [ text "Native view" ]
@@ -1593,7 +1601,7 @@ renderAttachmentView model pos attach =
                 ]
             ]
             [ iframe
-                [ if model.pdfNativeView then
+                [ if Maybe.withDefault settings.nativePdfPreview model.pdfNativeView then
                     src fileUrl
 
                   else
@@ -1623,8 +1631,8 @@ isAttachMetaOpen model id =
     model.attachMetaOpen && (Dict.get id model.attachMeta /= Nothing)
 
 
-renderAttachmentsTabBody : Model -> List (Html Msg)
-renderAttachmentsTabBody model =
+renderAttachmentsTabBody : UiSettings -> Model -> List (Html Msg)
+renderAttachmentsTabBody settings model =
     let
         mailTab =
             if Comp.SentMails.isEmpty model.sentMails then
@@ -1644,7 +1652,7 @@ renderAttachmentsTabBody model =
                     ]
                 ]
     in
-    List.indexedMap (renderAttachmentView model) model.item.attachments
+    List.indexedMap (renderAttachmentView settings model) model.item.attachments
         ++ mailTab
 
 

@@ -25,6 +25,7 @@ force default settings.
 type alias StoredUiSettings =
     { itemSearchPageSize : Maybe Int
     , tagCategoryColors : List ( String, String )
+    , nativePdfPreview : Bool
     }
 
 
@@ -38,6 +39,7 @@ default value, converting the StoredUiSettings into a UiSettings.
 type alias UiSettings =
     { itemSearchPageSize : Int
     , tagCategoryColors : Dict String String
+    , nativePdfPreview : Bool
     }
 
 
@@ -45,6 +47,7 @@ defaults : UiSettings
 defaults =
     { itemSearchPageSize = 60
     , tagCategoryColors = Dict.empty
+    , nativePdfPreview = False
     }
 
 
@@ -55,6 +58,7 @@ merge given fallback =
     , tagCategoryColors =
         Dict.union (Dict.fromList given.tagCategoryColors)
             fallback.tagCategoryColors
+    , nativePdfPreview = given.nativePdfPreview
     }
 
 
@@ -67,6 +71,7 @@ toStoredUiSettings : UiSettings -> StoredUiSettings
 toStoredUiSettings settings =
     { itemSearchPageSize = Just settings.itemSearchPageSize
     , tagCategoryColors = Dict.toList settings.tagCategoryColors
+    , nativePdfPreview = settings.nativePdfPreview
     }
 
 

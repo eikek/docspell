@@ -16,6 +16,7 @@ import Data.UiSettings exposing (StoredUiSettings, UiSettings)
 import Dict exposing (Dict)
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Html.Events exposing (onCheck)
 import Http
 import Util.List
 
@@ -25,6 +26,7 @@ type alias Model =
     , searchPageSizeModel : Comp.IntField.Model
     , tagColors : Dict String String
     , tagColorModel : Comp.MappingForm.Model
+    , nativePdfPreview : Bool
     }
 
 
@@ -42,6 +44,7 @@ init flags settings =
             Comp.MappingForm.init
                 []
                 Data.Color.allString
+      , nativePdfPreview = settings.nativePdfPreview
       }
     , Api.getTags flags "" GetTagsResp
     )
@@ -51,6 +54,7 @@ type Msg
     = SearchPageSizeMsg Comp.IntField.Msg
     | TagColorMsg Comp.MappingForm.Msg
     | GetTagsResp (Result Http.Error TagList)
+    | TogglePdfPreview
 
 
 
@@ -91,6 +95,15 @@ update sett msg model =
                     }
             in
             ( model_, nextSettings )
+
+        TogglePdfPreview ->
+            let
+                flag =
+                    not model.nativePdfPreview
+            in
+            ( { model | nativePdfPreview = flag }
+            , Just { sett | nativePdfPreview = flag }
+            )
 
         GetTagsResp (Ok tl) ->
             let
@@ -139,6 +152,22 @@ view settings model =
                 "field"
                 model.searchPageSizeModel
             )
+        , div [ class "ui dividing header" ]
+            [ text "Item Detail"
+            ]
+        , div [ class "field" ]
+            [ div [ class "ui checkbox" ]
+                [ input
+                    [ type_ "checkbox"
+                    , onCheck (\_ -> TogglePdfPreview)
+                    , checked model.nativePdfPreview
+                    ]
+                    []
+                , label []
+                    [ text "Browser-native PDF preview"
+                    ]
+                ]
+            ]
         , div [ class "ui dividing header" ]
             [ text "Tag Category Colors"
             ]
