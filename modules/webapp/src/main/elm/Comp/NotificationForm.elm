@@ -18,6 +18,7 @@ import Comp.EmailInput
 import Comp.IntField
 import Data.CalEvent exposing (CalEvent)
 import Data.Flags exposing (Flags)
+import Data.UiSettings exposing (UiSettings)
 import Data.Validated exposing (Validated(..))
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -73,8 +74,8 @@ initCmd flags =
         ]
 
 
-init : Flags -> ( Model, Cmd Msg )
-init flags =
+init : Flags -> UiSettings -> ( Model, Cmd Msg )
+init flags settings =
     let
         initialSchedule =
             Data.Validated.Unknown Data.CalEvent.everyMonth
@@ -415,8 +416,8 @@ isFormSuccess model =
         |> Maybe.withDefault False
 
 
-view : String -> Model -> Html Msg
-view extraClasses model =
+view : String -> UiSettings -> Model -> Html Msg
+view extraClasses settings model =
     div
         [ classList
             [ ( "ui form", True )
@@ -451,7 +452,7 @@ view extraClasses model =
             ]
         , div [ class "required field" ]
             [ label [] [ text "Send via" ]
-            , Html.map ConnMsg (Comp.Dropdown.view model.connectionModel)
+            , Html.map ConnMsg (Comp.Dropdown.view settings model.connectionModel)
             , span [ class "small-info" ]
                 [ text "The SMTP connection to use when sending notification mails."
                 ]
@@ -468,14 +469,14 @@ view extraClasses model =
             ]
         , div [ class "field" ]
             [ label [] [ text "Tags Include (and)" ]
-            , Html.map TagIncMsg (Comp.Dropdown.view model.tagInclModel)
+            , Html.map TagIncMsg (Comp.Dropdown.view settings model.tagInclModel)
             , span [ class "small-info" ]
                 [ text "Items must have all the tags specified here."
                 ]
             ]
         , div [ class "field" ]
             [ label [] [ text "Tags Exclude (or)" ]
-            , Html.map TagExcMsg (Comp.Dropdown.view model.tagExclModel)
+            , Html.map TagExcMsg (Comp.Dropdown.view settings model.tagExclModel)
             , span [ class "small-info" ]
                 [ text "Items must not have any tag specified here."
                 ]

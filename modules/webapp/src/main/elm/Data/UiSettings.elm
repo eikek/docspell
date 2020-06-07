@@ -4,9 +4,13 @@ module Data.UiSettings exposing
     , defaults
     , merge
     , mergeDefaults
+    , tagColor
+    , tagColorString
     , toStoredUiSettings
     )
 
+import Api.Model.Tag exposing (Tag)
+import Data.Color exposing (Color)
 import Dict exposing (Dict)
 
 
@@ -64,6 +68,27 @@ toStoredUiSettings settings =
     { itemSearchPageSize = Just settings.itemSearchPageSize
     , tagCategoryColors = Dict.toList settings.tagCategoryColors
     }
+
+
+tagColor : Tag -> UiSettings -> Maybe Color
+tagColor tag settings =
+    let
+        readColor c =
+            Dict.get c settings.tagCategoryColors
+                |> Maybe.andThen Data.Color.fromString
+    in
+    Maybe.andThen readColor tag.category
+
+
+tagColorString : Tag -> UiSettings -> String
+tagColorString tag settings =
+    tagColor tag settings
+        |> Maybe.map Data.Color.toString
+        |> Maybe.withDefault ""
+
+
+
+--- Helpers
 
 
 choose : Maybe a -> a -> a

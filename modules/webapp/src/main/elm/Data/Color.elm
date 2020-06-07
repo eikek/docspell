@@ -37,6 +37,7 @@ all =
     , Pink
     , Brown
     , Grey
+    , Black
     ]
 
 

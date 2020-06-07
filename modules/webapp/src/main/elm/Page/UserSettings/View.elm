@@ -6,6 +6,7 @@ import Comp.ImapSettingsManage
 import Comp.NotificationForm
 import Comp.ScanMailboxManage
 import Comp.UiSettingsManage
+import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
@@ -13,8 +14,8 @@ import Page.UserSettings.Data exposing (..)
 import Util.Html exposing (classActive)
 
 
-view : Model -> Html Msg
-view model =
+view : UiSettings -> Model -> Html Msg
+view settings model =
     div [ class "usersetting-page ui padded grid" ]
         [ div [ class "sixteen wide mobile four wide tablet four wide computer column" ]
             [ h4 [ class "ui top attached ablue-comp header" ]
@@ -38,19 +39,19 @@ view model =
                         viewChangePassword model
 
                     Just EmailSettingsTab ->
-                        viewEmailSettings model
+                        viewEmailSettings settings model
 
                     Just NotificationTab ->
-                        viewNotificationForm model
+                        viewNotificationForm settings model
 
                     Just ImapSettingsTab ->
-                        viewImapSettings model
+                        viewImapSettings settings model
 
                     Just ScanMailboxTab ->
-                        viewScanMailboxManage model
+                        viewScanMailboxManage settings model
 
                     Just UiSettingsTab ->
-                        viewUiSettings model
+                        viewUiSettings settings model
 
                     Nothing ->
                         []
@@ -71,8 +72,8 @@ makeTab model tab header icon =
         ]
 
 
-viewUiSettings : Model -> List (Html Msg)
-viewUiSettings model =
+viewUiSettings : UiSettings -> Model -> List (Html Msg)
+viewUiSettings settings model =
     [ h2 [ class "ui header" ]
         [ i [ class "cog icon" ] []
         , text "UI Settings"
@@ -81,31 +82,36 @@ viewUiSettings model =
         [ text "These settings only affect the web ui. They are stored in the browser, "
         , text "so they are separated between browsers and devices."
         ]
-    , Html.map UiSettingsMsg (Comp.UiSettingsManage.view "ui segment" model.uiSettingsModel)
+    , Html.map UiSettingsMsg
+        (Comp.UiSettingsManage.view
+            settings
+            "ui segment"
+            model.uiSettingsModel
+        )
     ]
 
 
-viewEmailSettings : Model -> List (Html Msg)
-viewEmailSettings model =
+viewEmailSettings : UiSettings -> Model -> List (Html Msg)
+viewEmailSettings settings model =
     [ h2 [ class "ui header" ]
         [ i [ class "mail icon" ] []
         , div [ class "content" ]
             [ text "E-Mail Settings (Smtp)"
             ]
         ]
-    , Html.map EmailSettingsMsg (Comp.EmailSettingsManage.view model.emailSettingsModel)
+    , Html.map EmailSettingsMsg (Comp.EmailSettingsManage.view settings model.emailSettingsModel)
     ]
 
 
-viewImapSettings : Model -> List (Html Msg)
-viewImapSettings model =
+viewImapSettings : UiSettings -> Model -> List (Html Msg)
+viewImapSettings settings model =
     [ h2 [ class "ui header" ]
         [ i [ class "mail icon" ] []
         , div [ class "content" ]
             [ text "E-Mail Settings (Imap)"
             ]
         ]
-    , Html.map ImapSettingsMsg (Comp.ImapSettingsManage.view model.imapSettingsModel)
+    , Html.map ImapSettingsMsg (Comp.ImapSettingsManage.view settings model.imapSettingsModel)
     ]
 
 
@@ -121,8 +127,8 @@ viewChangePassword model =
     ]
 
 
-viewNotificationForm : Model -> List (Html Msg)
-viewNotificationForm model =
+viewNotificationForm : UiSettings -> Model -> List (Html Msg)
+viewNotificationForm settings model =
     [ h2 [ class "ui header" ]
         [ i [ class "ui bullhorn icon" ] []
         , div [ class "content" ]
@@ -141,12 +147,12 @@ viewNotificationForm model =
         , text " days and sends this list via e-mail."
         ]
     , Html.map NotificationMsg
-        (Comp.NotificationForm.view "segment" model.notificationModel)
+        (Comp.NotificationForm.view "segment" settings model.notificationModel)
     ]
 
 
-viewScanMailboxManage : Model -> List (Html Msg)
-viewScanMailboxManage model =
+viewScanMailboxManage : UiSettings -> Model -> List (Html Msg)
+viewScanMailboxManage settings model =
     [ h2 [ class "ui header" ]
         [ i [ class "ui envelope open outline icon" ] []
         , div [ class "content" ]
@@ -171,6 +177,7 @@ viewScanMailboxManage model =
         ]
     , Html.map ScanMailboxMsg
         (Comp.ScanMailboxManage.view
+            settings
             model.scanMailboxModel
         )
     ]

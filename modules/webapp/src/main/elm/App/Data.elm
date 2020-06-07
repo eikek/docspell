@@ -44,18 +44,19 @@ type alias Model =
     , itemDetailModel : Page.ItemDetail.Data.Model
     , navMenuOpen : Bool
     , subs : Sub Msg
+    , uiSettings : UiSettings
     }
 
 
-init : Key -> Url -> Flags -> ( Model, Cmd Msg )
-init key url flags =
+init : Key -> Url -> Flags -> UiSettings -> ( Model, Cmd Msg )
+init key url flags settings =
     let
         page =
             Page.fromUrl url
                 |> Maybe.withDefault (defaultPage flags)
 
         ( um, uc ) =
-            Page.UserSettings.Data.emptyModel flags
+            Page.UserSettings.Data.init flags settings
     in
     ( { flags = flags
       , key = key
@@ -73,6 +74,7 @@ init key url flags =
       , itemDetailModel = Page.ItemDetail.Data.emptyModel
       , navMenuOpen = False
       , subs = Sub.none
+      , uiSettings = settings
       }
     , Cmd.map UserSettingsMsg uc
     )

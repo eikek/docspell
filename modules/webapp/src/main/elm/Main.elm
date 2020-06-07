@@ -7,6 +7,7 @@ import App.View exposing (..)
 import Browser exposing (Document)
 import Browser.Navigation exposing (Key)
 import Data.Flags exposing (Flags)
+import Data.UiSettings
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
@@ -39,7 +40,7 @@ init : Flags -> Url -> Key -> ( Model, Cmd Msg )
 init flags url key =
     let
         ( im, ic ) =
-            App.Data.init key url flags
+            App.Data.init key url flags Data.UiSettings.defaults
 
         page =
             checkPage flags im.page

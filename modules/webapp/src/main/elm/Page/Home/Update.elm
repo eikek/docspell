@@ -4,17 +4,18 @@ import Browser.Navigation as Nav
 import Comp.ItemCardList
 import Comp.SearchMenu
 import Data.Flags exposing (Flags)
+import Data.UiSettings exposing (UiSettings)
 import Page exposing (Page(..))
 import Page.Home.Data exposing (..)
 import Util.Update
 
 
-update : Nav.Key -> Flags -> Msg -> Model -> ( Model, Cmd Msg )
-update key flags msg model =
+update : Nav.Key -> Flags -> UiSettings -> Msg -> Model -> ( Model, Cmd Msg )
+update key flags settings msg model =
     case msg of
         Init ->
             Util.Update.andThen1
-                [ update key flags (SearchMenuMsg Comp.SearchMenu.Init)
+                [ update key flags settings (SearchMenuMsg Comp.SearchMenu.Init)
                 ]
                 model
 
@@ -23,19 +24,19 @@ update key flags msg model =
                 nm =
                     { model | searchOffset = 0 }
             in
-            update key flags (SearchMenuMsg Comp.SearchMenu.ResetForm) nm
+            update key flags settings (SearchMenuMsg Comp.SearchMenu.ResetForm) nm
 
         SearchMenuMsg m ->
             let
                 nextState =
-                    Comp.SearchMenu.update flags m model.searchMenuModel
+                    Comp.SearchMenu.update flags settings m model.searchMenuModel
 
                 newModel =
                     { model | searchMenuModel = Tuple.first nextState.modelCmd }
 
                 ( m2, c2 ) =
                     if nextState.stateChange then
-                        doSearch flags newModel
+                        doSearch flags settings newModel
 
                     else
                         ( newModel, Cmd.none )
@@ -62,7 +63,7 @@ update key flags msg model =
         ItemSearchResp (Ok list) ->
             let
                 noff =
-                    model.uiSettings.itemSearchPageSize
+                    settings.itemSearchPageSize
 
                 m =
                     { model
@@ -72,12 +73,12 @@ update key flags msg model =
                         , moreAvailable = list.groups /= []
                     }
             in
-            update key flags (ItemCardListMsg (Comp.ItemCardList.SetResults list)) m
+            update key flags settings (ItemCardListMsg (Comp.ItemCardList.SetResults list)) m
 
         ItemSearchAddResp (Ok list) ->
             let
                 noff =
-                    model.searchOffset + model.uiSettings.itemSearchPageSize
+                    model.searchOffset + settings.itemSearchPageSize
 
                 m =
                     { model
@@ -88,7 +89,7 @@ update key flags msg model =
                         , moreAvailable = list.groups /= []
                     }
             in
-            update key flags (ItemCardListMsg (Comp.ItemCardList.AddResults list)) m
+            update key flags settings (ItemCardListMsg (Comp.ItemCardList.AddResults list)) m
 
         ItemSearchAddResp (Err _) ->
             ( { model
@@ -109,7 +110,7 @@ update key flags msg model =
                 nm =
                     { model | searchOffset = 0 }
             in
-            doSearch flags nm
+            doSearch flags settings nm
 
         ToggleSearchMenu ->
             ( { model | menuCollapsed = not model.menuCollapsed }
@@ -118,24 +119,17 @@ update key flags msg model =
 
         LoadMore ->
             if model.moreAvailable then
-                doSearchMore flags model
+                doSearchMore flags settings model
 
             else
                 ( model, Cmd.none )
 
-        GetUiSettings settings ->
-            let
-                m_ =
-                    { model | uiSettings = settings }
-            in
-            doSearch flags m_
 
-
-doSearch : Flags -> Model -> ( Model, Cmd Msg )
-doSearch flags model =
+doSearch : Flags -> UiSettings -> Model -> ( Model, Cmd Msg )
+doSearch flags settings model =
     let
         cmd =
-            doSearchCmd flags 0 model
+            doSearchCmd flags settings 0 model
     in
     ( { model
         | searchInProgress = True
@@ -146,11 +140,11 @@ doSearch flags model =
     )
 
 
-doSearchMore : Flags -> Model -> ( Model, Cmd Msg )
-doSearchMore flags model =
+doSearchMore : Flags -> UiSettings -> Model -> ( Model, Cmd Msg )
+doSearchMore flags settings model =
     let
         cmd =
-            doSearchCmd flags model.searchOffset model
+            doSearchCmd flags settings model.searchOffset model
     in
     ( { model | moreInProgress = True, viewMode = Listing }
     , cmd

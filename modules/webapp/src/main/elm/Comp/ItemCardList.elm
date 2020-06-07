@@ -15,6 +15,7 @@ import Data.Direction
 import Data.Flags exposing (Flags)
 import Data.Icons as Icons
 import Data.Items
+import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
@@ -97,26 +98,26 @@ update _ msg model =
 --- View
 
 
-view : Model -> Html Msg
-view model =
+view : UiSettings -> Model -> Html Msg
+view settings model =
     div [ class "ui container" ]
-        (List.map viewGroup model.results.groups)
+        (List.map (viewGroup settings) model.results.groups)
 
 
-viewGroup : ItemLightGroup -> Html Msg
-viewGroup group =
+viewGroup : UiSettings -> ItemLightGroup -> Html Msg
+viewGroup settings group =
     div [ class "item-group" ]
         [ div [ class "ui horizontal divider header item-list" ]
             [ i [ class "calendar alternate outline icon" ] []
             , text group.name
             ]
         , div [ class "ui stackable three cards" ]
-            (List.map viewItem group.items)
+            (List.map (viewItem settings) group.items)
         ]
 
 
-viewItem : ItemLight -> Html Msg
-viewItem item =
+viewItem : UiSettings -> ItemLight -> Html Msg
+viewItem settings item =
     let
         dirIcon =
             i [ class (Data.Direction.iconFromMaybe item.direction) ] []
@@ -193,7 +194,7 @@ viewItem item =
                             div
                                 [ classList
                                     [ ( "ui basic label", True )
-                                    , ( "blue", tag.category /= Nothing )
+                                    , ( Data.UiSettings.tagColorString tag settings, True )
                                     ]
                                 ]
                                 [ text tag.name ]

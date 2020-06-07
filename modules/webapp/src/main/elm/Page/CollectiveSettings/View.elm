@@ -5,6 +5,7 @@ import Comp.CollectiveSettingsForm
 import Comp.SourceManage
 import Comp.UserManage
 import Data.Flags exposing (Flags)
+import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
@@ -14,8 +15,8 @@ import Util.Maybe
 import Util.Size
 
 
-view : Flags -> Model -> Html Msg
-view flags model =
+view : Flags -> UiSettings -> Model -> Html Msg
+view flags settings model =
     div [ class "collectivesetting-page ui padded grid" ]
         [ div [ class "sixteen wide mobile four wide tablet four wide computer column" ]
             [ h4 [ class "ui top attached ablue-comp header" ]
@@ -61,13 +62,13 @@ view flags model =
                         viewSources flags model
 
                     Just UserTab ->
-                        viewUsers model
+                        viewUsers settings model
 
                     Just InsightsTab ->
                         viewInsights model
 
                     Just SettingsTab ->
-                        viewSettings flags model
+                        viewSettings flags settings model
 
                     Nothing ->
                         []
@@ -164,26 +165,26 @@ viewSources flags model =
     ]
 
 
-viewUsers : Model -> List (Html Msg)
-viewUsers model =
+viewUsers : UiSettings -> Model -> List (Html Msg)
+viewUsers settings model =
     [ h2 [ class "ui header" ]
         [ i [ class "ui user icon" ] []
         , div [ class "content" ]
             [ text "Users"
             ]
         ]
-    , Html.map UserMsg (Comp.UserManage.view model.userModel)
+    , Html.map UserMsg (Comp.UserManage.view settings model.userModel)
     ]
 
 
-viewSettings : Flags -> Model -> List (Html Msg)
-viewSettings flags model =
+viewSettings : Flags -> UiSettings -> Model -> List (Html Msg)
+viewSettings flags settings model =
     [ h2 [ class "ui header" ]
         [ i [ class "cog icon" ] []
         , text "Settings"
         ]
     , div [ class "ui segment" ]
-        [ Html.map SettingsFormMsg (Comp.CollectiveSettingsForm.view flags model.settingsModel)
+        [ Html.map SettingsFormMsg (Comp.CollectiveSettingsForm.view flags settings model.settingsModel)
         ]
     , div
         [ classList

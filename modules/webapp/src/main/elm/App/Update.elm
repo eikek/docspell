@@ -176,10 +176,9 @@ updateWithSub msg model =
 
         GetUiSettings settings ->
             Util.Update.andThen1
-                [ updateUserSettings (Page.UserSettings.Data.GetUiSettings settings)
-                , updateHome (Page.Home.Data.GetUiSettings settings)
+                [ updateUserSettings Page.UserSettings.Data.UpdateSettings
                 ]
-                model
+                { model | uiSettings = settings }
                 |> noSub
 
 
@@ -253,7 +252,7 @@ updateUserSettings : Page.UserSettings.Data.Msg -> Model -> ( Model, Cmd Msg )
 updateUserSettings lmsg model =
     let
         ( lm, lc, ls ) =
-            Page.UserSettings.Update.update model.flags lmsg model.userSettingsModel
+            Page.UserSettings.Update.update model.flags model.uiSettings lmsg model.userSettingsModel
     in
     ( { model
         | userSettingsModel = lm
@@ -302,7 +301,7 @@ updateHome : Page.Home.Data.Msg -> Model -> ( Model, Cmd Msg )
 updateHome lmsg model =
     let
         ( lm, lc ) =
-            Page.Home.Update.update model.key model.flags lmsg model.homeModel
+            Page.Home.Update.update model.key model.flags model.uiSettings lmsg model.homeModel
     in
     ( { model | homeModel = lm }
     , Cmd.map HomeMsg lc

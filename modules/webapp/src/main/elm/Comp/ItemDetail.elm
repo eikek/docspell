@@ -34,6 +34,7 @@ import Comp.YesNoDimmer
 import Data.Direction exposing (Direction)
 import Data.Flags exposing (Flags)
 import Data.Icons as Icons
+import Data.UiSettings exposing (UiSettings)
 import DatePicker exposing (DatePicker)
 import Dict exposing (Dict)
 import File exposing (File)
@@ -52,6 +53,7 @@ import Util.List
 import Util.Maybe
 import Util.Size
 import Util.String
+import Util.Tag
 import Util.Time
 
 
@@ -119,16 +121,7 @@ emptyModel =
     , visibleAttach = 0
     , menuOpen = False
     , tagModel =
-        Comp.Dropdown.makeMultiple
-            { makeOption = \tag -> { value = tag.id, text = tag.name }
-            , labelColor =
-                \tag ->
-                    if Util.Maybe.nonEmpty tag.category then
-                        "basic blue"
-
-                    else
-                        ""
-            }
+        Util.Tag.makeDropdownModel
     , directionModel =
         Comp.Dropdown.makeSingleList
             { makeOption =
@@ -1215,10 +1208,10 @@ actionInputDatePicker =
     { ds | containerClassList = [ ( "ui action input", True ) ] }
 
 
-view : { prev : Maybe String, next : Maybe String } -> Model -> Html Msg
-view inav model =
+view : { prev : Maybe String, next : Maybe String } -> UiSettings -> Model -> Html Msg
+view inav settings model =
     div []
-        [ renderItemInfo model
+        [ renderItemInfo settings model
         , div
             [ classList
                 [ ( "ui ablue-comp menu", True )
@@ -1307,7 +1300,7 @@ view inav model =
                 [ Icons.addFilesIcon
                 ]
             ]
-        , renderMailForm model
+        , renderMailForm settings model
         , renderAddFilesForm model
         , renderNotes model
         , div [ class "ui grid" ]
@@ -1319,7 +1312,7 @@ view inav model =
                     ]
                 ]
                 (if model.menuOpen then
-                    renderEditMenu model
+                    renderEditMenu settings model
 
                  else
                     []
@@ -1655,8 +1648,8 @@ renderAttachmentsTabBody model =
         ++ mailTab
 
 
-renderItemInfo : Model -> Html Msg
-renderItemInfo model =
+renderItemInfo : UiSettings -> Model -> Html Msg
+renderItemInfo settings model =
     let
         date =
             div
@@ -1749,12 +1742,12 @@ renderItemInfo model =
                     ]
                 ]
             ]
-            :: renderTags model
+            :: renderTags settings model
         )
 
 
-renderTags : Model -> List (Html Msg)
-renderTags model =
+renderTags : UiSettings -> Model -> List (Html Msg)
+renderTags settings model =
     case model.item.tags of
         [] ->
             []
@@ -1766,7 +1759,7 @@ renderTags model =
                         div
                             [ classList
                                 [ ( "ui tag label", True )
-                                , ( "blue", Util.Maybe.nonEmpty t.category )
+                                , ( Data.UiSettings.tagColorString t settings, True )
                                 ]
                             ]
                             [ text t.name
@@ -1776,10 +1769,10 @@ renderTags model =
             ]
 
 
-renderEditMenu : Model -> List (Html Msg)
-renderEditMenu model =
+renderEditMenu : UiSettings -> Model -> List (Html Msg)
+renderEditMenu settings model =
     [ renderEditButtons model
-    , renderEditForm model
+    , renderEditForm settings model
     ]
 
 
@@ -1813,8 +1806,8 @@ renderEditButtons model =
         ]
 
 
-renderEditForm : Model -> Html Msg
-renderEditForm model =
+renderEditForm : UiSettings -> Model -> Html Msg
+renderEditForm settings model =
     div [ class "ui attached segment" ]
         [ div [ class "ui form" ]
             [ div [ class "field" ]
@@ -1822,7 +1815,7 @@ renderEditForm model =
                     [ i [ class "tags icon" ] []
                     , text "Tags"
                     ]
-                , Html.map TagDropdownMsg (Comp.Dropdown.view model.tagModel)
+                , Html.map TagDropdownMsg (Comp.Dropdown.view settings model.tagModel)
                 ]
             , div [ class " field" ]
                 [ label [] [ text "Name" ]
@@ -1838,7 +1831,7 @@ renderEditForm model =
                 ]
             , div [ class "field" ]
                 [ label [] [ text "Direction" ]
-                , Html.map DirDropdownMsg (Comp.Dropdown.view model.directionModel)
+                , Html.map DirDropdownMsg (Comp.Dropdown.view settings model.directionModel)
                 ]
             , div [ class " field" ]
                 [ label [] [ text "Date" ]
@@ -1875,12 +1868,12 @@ renderEditForm model =
                 ]
             , div [ class "field" ]
                 [ label [] [ text "Organization" ]
-                , Html.map OrgDropdownMsg (Comp.Dropdown.view model.corrOrgModel)
+                , Html.map OrgDropdownMsg (Comp.Dropdown.view settings model.corrOrgModel)
                 , renderOrgSuggestions model
                 ]
             , div [ class "field" ]
                 [ label [] [ text "Person" ]
-                , Html.map CorrPersonMsg (Comp.Dropdown.view model.corrPersonModel)
+                , Html.map CorrPersonMsg (Comp.Dropdown.view settings model.corrPersonModel)
                 , renderCorrPersonSuggestions model
                 ]
             , h4 [ class "ui dividing header" ]
@@ -1889,12 +1882,12 @@ renderEditForm model =
                 ]
             , div [ class "field" ]
                 [ label [] [ text "Person" ]
-                , Html.map ConcPersonMsg (Comp.Dropdown.view model.concPersonModel)
+                , Html.map ConcPersonMsg (Comp.Dropdown.view settings model.concPersonModel)
                 , renderConcPersonSuggestions model
                 ]
             , div [ class "field" ]
                 [ label [] [ text "Equipment" ]
-                , Html.map ConcEquipMsg (Comp.Dropdown.view model.concEquipModel)
+                , Html.map ConcEquipMsg (Comp.Dropdown.view settings model.concEquipModel)
                 , renderConcEquipSuggestions model
                 ]
             ]
@@ -1970,8 +1963,8 @@ renderDueDateSuggestions model =
         SetDueDateSuggestion
 
 
-renderMailForm : Model -> Html Msg
-renderMailForm model =
+renderMailForm : UiSettings -> Model -> Html Msg
+renderMailForm settings model =
     div
         [ classList
             [ ( "ui bottom attached segment", True )
@@ -1991,7 +1984,7 @@ renderMailForm model =
                 [ text "Sending …"
                 ]
             ]
-        , Html.map ItemMailMsg (Comp.ItemMail.view model.itemMail)
+        , Html.map ItemMailMsg (Comp.ItemMail.view settings model.itemMail)
         , div
             [ classList
                 [ ( "ui message", True )

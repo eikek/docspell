@@ -21,23 +21,23 @@ import Util.List
 
 
 type alias Model =
-    { defaults : UiSettings
-    , input : StoredUiSettings
+    { itemSearchPageSize : Maybe Int
     , searchPageSizeModel : Comp.IntField.Model
+    , tagColors : Dict String String
     , tagColorModel : Comp.MappingForm.Model
     }
 
 
 init : Flags -> UiSettings -> ( Model, Cmd Msg )
-init flags defaults =
-    ( { defaults = defaults
-      , input = Data.UiSettings.toStoredUiSettings defaults
+init flags settings =
+    ( { itemSearchPageSize = Just settings.itemSearchPageSize
       , searchPageSizeModel =
             Comp.IntField.init
                 (Just 10)
                 (Just 500)
                 False
                 "Page size"
+      , tagColors = settings.tagCategoryColors
       , tagColorModel =
             Comp.MappingForm.init
                 []
@@ -47,42 +47,32 @@ init flags defaults =
     )
 
 
-changeInput : (StoredUiSettings -> StoredUiSettings) -> Model -> StoredUiSettings
-changeInput change model =
-    change model.input
-
-
 type Msg
     = SearchPageSizeMsg Comp.IntField.Msg
     | TagColorMsg Comp.MappingForm.Msg
     | GetTagsResp (Result Http.Error TagList)
 
 
-getSettings : Model -> UiSettings
-getSettings model =
-    Data.UiSettings.merge model.input model.defaults
-
-
 
 --- Update
 
 
-update : Msg -> Model -> ( Model, Maybe UiSettings )
-update msg model =
+update : UiSettings -> Msg -> Model -> ( Model, Maybe UiSettings )
+update sett msg model =
     case msg of
         SearchPageSizeMsg lm ->
             let
                 ( m, n ) =
                     Comp.IntField.update lm model.searchPageSizeModel
 
+                nextSettings =
+                    Maybe.map (\sz -> { sett | itemSearchPageSize = sz }) n
+
                 model_ =
                     { model
                         | searchPageSizeModel = m
-                        , input = changeInput (\s -> { s | itemSearchPageSize = n }) model
+                        , itemSearchPageSize = n
                     }
-
-                nextSettings =
-                    Maybe.map (\_ -> getSettings model_) n
             in
             ( model_, nextSettings )
 
@@ -91,23 +81,16 @@ update msg model =
                 ( m_, d_ ) =
                     Comp.MappingForm.update lm model.tagColorModel
 
-                newData =
-                    case d_ of
-                        Just data ->
-                            Dict.toList data
-
-                        Nothing ->
-                            model.input.tagCategoryColors
+                nextSettings =
+                    Maybe.map (\tc -> { sett | tagCategoryColors = tc }) d_
 
                 model_ =
                     { model
                         | tagColorModel = m_
-                        , input = changeInput (\s -> { s | tagCategoryColors = newData }) model
+                        , tagColors = Maybe.withDefault model.tagColors d_
                     }
             in
-            ( model_
-            , Maybe.map (\_ -> getSettings model_) d_
-            )
+            ( model_, nextSettings )
 
         GetTagsResp (Ok tl) ->
             let
@@ -143,8 +126,8 @@ tagColorViewOpts =
     }
 
 
-view : Model -> Html Msg
-view model =
+view : UiSettings -> Model -> Html Msg
+view settings model =
     div [ class "ui form" ]
         [ div [ class "ui dividing header" ]
             [ text "Item Search"
@@ -152,7 +135,7 @@ view model =
         , Html.map SearchPageSizeMsg
             (Comp.IntField.viewWithInfo
                 "Maximum results in one page when searching items."
-                model.input.itemSearchPageSize
+                model.itemSearchPageSize
                 "field"
                 model.searchPageSizeModel
             )
@@ -161,7 +144,7 @@ view model =
             ]
         , Html.map TagColorMsg
             (Comp.MappingForm.view
-                (Dict.fromList model.input.tagCategoryColors)
+                model.tagColors
                 tagColorViewOpts
                 model.tagColorModel
             )

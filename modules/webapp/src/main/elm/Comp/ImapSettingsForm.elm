@@ -14,6 +14,7 @@ import Comp.Dropdown
 import Comp.IntField
 import Comp.PasswordInput
 import Data.SSLType exposing (SSLType)
+import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onCheck, onInput)
@@ -149,8 +150,8 @@ update msg model =
             ( { model | ignoreCertificates = not model.ignoreCertificates }, Cmd.none )
 
 
-view : Model -> Html Msg
-view model =
+view : UiSettings -> Model -> Html Msg
+view settings model =
     div
         [ classList
             [ ( "ui form", True )
@@ -220,7 +221,7 @@ view model =
         , div [ class "two fields" ]
             [ div [ class "field" ]
                 [ label [] [ text "SSL" ]
-                , Html.map SSLTypeMsg (Comp.Dropdown.view model.sslType)
+                , Html.map SSLTypeMsg (Comp.Dropdown.view settings model.sslType)
                 ]
             ]
         ]

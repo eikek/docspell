@@ -13,6 +13,7 @@ import Api.Model.ScanMailboxSettingsList exposing (ScanMailboxSettingsList)
 import Comp.ScanMailboxForm
 import Comp.ScanMailboxList
 import Data.Flags exposing (Flags)
+import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
@@ -198,8 +199,8 @@ update flags msg model =
 --- View
 
 
-view : Model -> Html Msg
-view model =
+view : UiSettings -> Model -> Html Msg
+view settings model =
     div []
         [ div [ class "ui menu" ]
             [ a
@@ -224,17 +225,17 @@ view model =
                 |> text
             ]
         , case model.detailModel of
-            Just settings ->
-                viewForm settings
+            Just msett ->
+                viewForm settings msett
 
             Nothing ->
                 viewList model
         ]
 
 
-viewForm : Comp.ScanMailboxForm.Model -> Html Msg
-viewForm model =
-    Html.map DetailMsg (Comp.ScanMailboxForm.view "segment" model)
+viewForm : UiSettings -> Comp.ScanMailboxForm.Model -> Html Msg
+viewForm settings model =
+    Html.map DetailMsg (Comp.ScanMailboxForm.view "segment" settings model)
 
 
 viewList : Model -> Html Msg

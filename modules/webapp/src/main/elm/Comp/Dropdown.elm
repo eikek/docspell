@@ -12,6 +12,7 @@ module Comp.Dropdown exposing
     , view
     )
 
+import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
@@ -52,7 +53,7 @@ type alias Model a =
     , makeOption : a -> Option
     , menuOpen : Bool
     , filterString : String
-    , labelColor : a -> String
+    , labelColor : a -> UiSettings -> String
     , searchable : Int -> Bool
     , placeholder : String
     }
@@ -62,7 +63,7 @@ makeModel :
     { multiple : Bool
     , searchable : Int -> Bool
     , makeOption : a -> Option
-    , labelColor : a -> String
+    , labelColor : a -> UiSettings -> String
     , placeholder : String
     }
     -> Model a
@@ -89,7 +90,7 @@ makeSingle opts =
         { multiple = False
         , searchable = \n -> n > 8
         , makeOption = opts.makeOption
-        , labelColor = \_ -> ""
+        , labelColor = \_ -> \_ -> ""
         , placeholder = opts.placeholder
         }
 
@@ -119,7 +120,7 @@ makeSingleList opts =
 
 makeMultiple :
     { makeOption : a -> Option
-    , labelColor : a -> String
+    , labelColor : a -> UiSettings -> String
     }
     -> Model a
 makeMultiple opts =
@@ -363,10 +364,10 @@ update msg model =
 -- View
 
 
-view : Model a -> Html (Msg a)
-view model =
+view : UiSettings -> Model a -> Html (Msg a)
+view settings model =
     if model.multiple then
-        viewMultiple model
+        viewMultiple settings model
 
     else
         viewSingle model
@@ -422,15 +423,15 @@ viewSingle model =
         )
 
 
-viewMultiple : Model a -> Html (Msg a)
-viewMultiple model =
+viewMultiple : UiSettings -> Model a -> Html (Msg a)
+viewMultiple settings model =
     let
         renderSelectMultiple : Item a -> Html (Msg a)
         renderSelectMultiple item =
             div
                 [ classList
                     [ ( "ui label", True )
-                    , ( model.labelColor item.value, True )
+                    , ( model.labelColor item.value settings, True )
                     ]
                 , style "display" "inline-block !important"
                 , onClick (RemoveItem item)

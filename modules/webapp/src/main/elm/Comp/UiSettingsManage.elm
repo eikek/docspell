@@ -1,6 +1,6 @@
 module Comp.UiSettingsManage exposing
     ( Model
-    , Msg
+    , Msg(..)
     , init
     , update
     , view
@@ -27,13 +27,14 @@ type Msg
     = UiSettingsFormMsg Comp.UiSettingsForm.Msg
     | Submit
     | SettingsSaved
+    | UpdateSettings
 
 
 init : Flags -> UiSettings -> ( Model, Cmd Msg )
-init flags defaults =
+init flags settings =
     let
         ( fm, fc ) =
-            Comp.UiSettingsForm.init flags defaults
+            Comp.UiSettingsForm.init flags settings
     in
     ( { formModel = fm
       , settings = Nothing
@@ -47,13 +48,13 @@ init flags defaults =
 --- update
 
 
-update : Flags -> Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
-update flags msg model =
+update : Flags -> UiSettings -> Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
+update flags settings msg model =
     case msg of
         UiSettingsFormMsg lm ->
             let
                 ( m_, sett ) =
-                    Comp.UiSettingsForm.update lm model.formModel
+                    Comp.UiSettingsForm.update settings lm model.formModel
             in
             ( { model
                 | formModel = m_
@@ -89,6 +90,16 @@ update flags msg model =
             , Sub.none
             )
 
+        UpdateSettings ->
+            let
+                ( fm, fc ) =
+                    Comp.UiSettingsForm.init flags settings
+            in
+            ( { model | formModel = fm }
+            , Cmd.map UiSettingsFormMsg fc
+            , Sub.none
+            )
+
 
 
 --- View
@@ -104,10 +115,10 @@ isSuccess model =
     Maybe.map .success model.message == Just True
 
 
-view : String -> Model -> Html Msg
-view classes model =
+view : UiSettings -> String -> Model -> Html Msg
+view settings classes model =
     div [ class classes ]
-        [ Html.map UiSettingsFormMsg (Comp.UiSettingsForm.view model.formModel)
+        [ Html.map UiSettingsFormMsg (Comp.UiSettingsForm.view settings model.formModel)
         , div [ class "ui divider" ] []
         , button
             [ class "ui primary button"

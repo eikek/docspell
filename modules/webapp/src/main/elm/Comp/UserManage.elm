@@ -14,6 +14,7 @@ import Comp.UserForm
 import Comp.UserTable
 import Comp.YesNoDimmer
 import Data.Flags exposing (Flags)
+import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onSubmit)
@@ -194,13 +195,13 @@ update flags msg model =
             ( { model | deleteConfirm = cm }, cmd )
 
 
-view : Model -> Html Msg
-view model =
+view : UiSettings -> Model -> Html Msg
+view settings model =
     if model.viewMode == Table then
         viewTable model
 
     else
-        viewForm model
+        viewForm settings model
 
 
 viewTable : Model -> Html Msg
@@ -222,8 +223,8 @@ viewTable model =
         ]
 
 
-viewForm : Model -> Html Msg
-viewForm model =
+viewForm : UiSettings -> Model -> Html Msg
+viewForm settings model =
     let
         newUser =
             Comp.UserForm.isNewUser model.formModel
@@ -239,7 +240,7 @@ viewForm model =
             h3 [ class "ui dividing header" ]
                 [ text ("Edit user: " ++ model.formModel.user.login)
                 ]
-        , Html.map FormMsg (Comp.UserForm.view model.formModel)
+        , Html.map FormMsg (Comp.UserForm.view settings model.formModel)
         , div
             [ classList
                 [ ( "ui error message", True )

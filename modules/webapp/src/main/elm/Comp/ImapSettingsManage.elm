@@ -15,6 +15,7 @@ import Comp.ImapSettingsForm
 import Comp.ImapSettingsTable
 import Comp.YesNoDimmer
 import Data.Flags exposing (Flags)
+import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
@@ -199,14 +200,14 @@ update flags msg model =
             ( { model | loading = False }, Cmd.none )
 
 
-view : Model -> Html Msg
-view model =
+view : UiSettings -> Model -> Html Msg
+view settings model =
     case model.viewMode of
         Table ->
             viewTable model
 
         Form ->
-            viewForm model
+            viewForm settings model
 
 
 viewTable : Model -> Html Msg
@@ -243,11 +244,11 @@ viewTable model =
         ]
 
 
-viewForm : Model -> Html Msg
-viewForm model =
+viewForm : UiSettings -> Model -> Html Msg
+viewForm settings model =
     div [ class "ui segment" ]
         [ Html.map YesNoMsg (Comp.YesNoDimmer.view model.deleteConfirm)
-        , Html.map FormMsg (Comp.ImapSettingsForm.view model.formModel)
+        , Html.map FormMsg (Comp.ImapSettingsForm.view settings model.formModel)
         , div
             [ classList
                 [ ( "ui error message", True )

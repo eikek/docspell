@@ -2,7 +2,7 @@ module Util.Tag exposing (makeDropdownModel)
 
 import Api.Model.Tag exposing (Tag)
 import Comp.Dropdown
-import Util.Maybe
+import Data.UiSettings
 
 
 makeDropdownModel : Comp.Dropdown.Model Tag
@@ -13,10 +13,7 @@ makeDropdownModel =
         , makeOption = \tag -> { value = tag.id, text = tag.name }
         , labelColor =
             \tag ->
-                if Util.Maybe.nonEmpty tag.category then
-                    "basic blue"
-
-                else
-                    ""
+                \settings ->
+                    "basic " ++ Data.UiSettings.tagColorString tag settings
         , placeholder = "Choose a tag…"
         }

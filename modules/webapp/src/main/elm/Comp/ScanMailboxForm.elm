@@ -20,6 +20,7 @@ import Comp.YesNoDimmer
 import Data.CalEvent exposing (CalEvent)
 import Data.Direction exposing (Direction(..))
 import Data.Flags exposing (Flags)
+import Data.UiSettings exposing (UiSettings)
 import Data.Validated exposing (Validated(..))
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -419,8 +420,8 @@ isFormSuccess model =
         |> Maybe.withDefault False
 
 
-view : String -> Model -> Html Msg
-view extraClasses model =
+view : String -> UiSettings -> Model -> Html Msg
+view extraClasses settings model =
     div
         [ classList
             [ ( "ui form", True )
@@ -456,7 +457,7 @@ view extraClasses model =
             ]
         , div [ class "required field" ]
             [ label [] [ text "Mailbox" ]
-            , Html.map ConnMsg (Comp.Dropdown.view model.connectionModel)
+            , Html.map ConnMsg (Comp.Dropdown.view settings model.connectionModel)
             , span [ class "small-info" ]
                 [ text "The IMAP connection to use when sending notification mails."
                 ]
