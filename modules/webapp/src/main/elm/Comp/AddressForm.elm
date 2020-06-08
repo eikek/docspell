@@ -9,6 +9,7 @@ module Comp.AddressForm exposing
 
 import Api.Model.Address exposing (Address)
 import Comp.Dropdown
+import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)
@@ -105,8 +106,8 @@ update msg model =
             ( { model | country = m1 }, Cmd.map CountryMsg c1 )
 
 
-view : Model -> Html Msg
-view model =
+view : UiSettings -> Model -> Html Msg
+view settings model =
     div [ class "ui form" ]
         [ div
             [ class "field"
@@ -146,6 +147,6 @@ view model =
             ]
         , div [ class "field" ]
             [ label [] [ text "Country" ]
-            , Html.map CountryMsg (Comp.Dropdown.view model.country)
+            , Html.map CountryMsg (Comp.Dropdown.view settings model.country)
             ]
         ]

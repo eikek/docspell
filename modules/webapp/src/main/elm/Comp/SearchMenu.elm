@@ -2,8 +2,8 @@ module Comp.SearchMenu exposing
     ( Model
     , Msg(..)
     , NextState
-    , emptyModel
     , getItemSearch
+    , init
     , update
     , view
     )
@@ -20,6 +20,7 @@ import Comp.DatePicker
 import Comp.Dropdown exposing (isDropdownChangeMsg)
 import Data.Direction exposing (Direction)
 import Data.Flags exposing (Flags)
+import Data.UiSettings exposing (UiSettings)
 import DatePicker exposing (DatePicker)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -55,8 +56,8 @@ type alias Model =
     }
 
 
-emptyModel : Model
-emptyModel =
+init : Model
+init =
     { tagInclModel = Util.Tag.makeDropdownModel
     , tagExclModel = Util.Tag.makeDropdownModel
     , directionModel =
@@ -75,7 +76,7 @@ emptyModel =
             { multiple = False
             , searchable = \n -> n > 5
             , makeOption = \e -> { value = e.id, text = e.name }
-            , labelColor = \_ -> ""
+            , labelColor = \_ -> \_ -> ""
             , placeholder = "Choose an organization"
             }
     , corrPersonModel =
@@ -93,7 +94,7 @@ emptyModel =
             { multiple = False
             , searchable = \n -> n > 5
             , makeOption = \e -> { value = e.id, text = e.name }
-            , labelColor = \_ -> ""
+            , labelColor = \_ -> \_ -> ""
             , placeholder = "Choose an equipment"
             }
     , inboxCheckbox = False
@@ -184,8 +185,8 @@ noChange p =
     NextState p False
 
 
-update : Flags -> Msg -> Model -> NextState
-update flags msg model =
+update : Flags -> UiSettings -> Msg -> Model -> NextState
+update flags settings msg model =
     case msg of
         Init ->
             let
@@ -193,25 +194,24 @@ update flags msg model =
                     Comp.DatePicker.init
 
                 ( mdp, cdp ) =
-                    case model.datePickerInitialized of
-                        True ->
-                            ( model, Cmd.none )
+                    if model.datePickerInitialized then
+                        ( model, Cmd.none )
 
-                        False ->
-                            ( { model
-                                | untilDateModel = dp
-                                , fromDateModel = dp
-                                , untilDueDateModel = dp
-                                , fromDueDateModel = dp
-                                , datePickerInitialized = True
-                              }
-                            , Cmd.batch
-                                [ Cmd.map UntilDateMsg dpc
-                                , Cmd.map FromDateMsg dpc
-                                , Cmd.map UntilDueDateMsg dpc
-                                , Cmd.map FromDueDateMsg dpc
-                                ]
-                            )
+                    else
+                        ( { model
+                            | untilDateModel = dp
+                            , fromDateModel = dp
+                            , untilDueDateModel = dp
+                            , fromDueDateModel = dp
+                            , datePickerInitialized = True
+                          }
+                        , Cmd.batch
+                            [ Cmd.map UntilDateMsg dpc
+                            , Cmd.map FromDateMsg dpc
+                            , Cmd.map UntilDueDateMsg dpc
+                            , Cmd.map FromDueDateMsg dpc
+                            ]
+                        )
             in
             noChange
                 ( mdp
@@ -227,7 +227,7 @@ update flags msg model =
         ResetForm ->
             let
                 next =
-                    update flags Init emptyModel
+                    update flags settings Init init
             in
             { next | stateChange = True }
 
@@ -238,8 +238,8 @@ update flags msg model =
             in
             noChange <|
                 Util.Update.andThen1
-                    [ update flags (TagIncMsg tagList) >> .modelCmd
-                    , update flags (TagExcMsg tagList) >> .modelCmd
+                    [ update flags settings (TagIncMsg tagList) >> .modelCmd
+                    , update flags settings (TagExcMsg tagList) >> .modelCmd
                     ]
                     model
 
@@ -251,7 +251,7 @@ update flags msg model =
                 opts =
                     Comp.Dropdown.SetOptions equips.items
             in
-            update flags (ConcEquipmentMsg opts) model
+            update flags settings (ConcEquipmentMsg opts) model
 
         GetEquipResp (Err _) ->
             noChange ( model, Cmd.none )
@@ -261,7 +261,7 @@ update flags msg model =
                 opts =
                     Comp.Dropdown.SetOptions orgs.items
             in
-            update flags (OrgMsg opts) model
+            update flags settings (OrgMsg opts) model
 
         GetOrgResp (Err _) ->
             noChange ( model, Cmd.none )
@@ -273,8 +273,8 @@ update flags msg model =
             in
             noChange <|
                 Util.Update.andThen1
-                    [ update flags (CorrPersonMsg opts) >> .modelCmd
-                    , update flags (ConcPersonMsg opts) >> .modelCmd
+                    [ update flags settings (CorrPersonMsg opts) >> .modelCmd
+                    , update flags settings (ConcPersonMsg opts) >> .modelCmd
                     ]
                     model
 
@@ -461,8 +461,8 @@ update flags msg model =
 -- View
 
 
-view : Model -> Html Msg
-view model =
+view : UiSettings -> Model -> Html Msg
+view settings model =
     div [ class "ui form" ]
         [ div [ class "inline field" ]
             [ div [ class "ui checkbox" ]
@@ -493,18 +493,18 @@ view model =
             ]
         , div [ class "field" ]
             [ label [] [ text "Direction" ]
-            , Html.map DirectionMsg (Comp.Dropdown.view model.directionModel)
+            , Html.map DirectionMsg (Comp.Dropdown.view settings model.directionModel)
             ]
         , h3 [ class "ui header" ]
             [ text "Tags"
             ]
         , div [ class "field" ]
             [ label [] [ text "Include (and)" ]
-            , Html.map TagIncMsg (Comp.Dropdown.view model.tagInclModel)
+            , Html.map TagIncMsg (Comp.Dropdown.view settings model.tagInclModel)
             ]
         , div [ class "field" ]
             [ label [] [ text "Exclude (or)" ]
-            , Html.map TagExcMsg (Comp.Dropdown.view model.tagExclModel)
+            , Html.map TagExcMsg (Comp.Dropdown.view settings model.tagExclModel)
             ]
         , h3 [ class "ui header" ]
             [ case getDirection model of
@@ -519,22 +519,22 @@ view model =
             ]
         , div [ class "field" ]
             [ label [] [ text "Organization" ]
-            , Html.map OrgMsg (Comp.Dropdown.view model.orgModel)
+            , Html.map OrgMsg (Comp.Dropdown.view settings model.orgModel)
             ]
         , div [ class "field" ]
             [ label [] [ text "Person" ]
-            , Html.map CorrPersonMsg (Comp.Dropdown.view model.corrPersonModel)
+            , Html.map CorrPersonMsg (Comp.Dropdown.view settings model.corrPersonModel)
             ]
         , h3 [ class "ui header" ]
             [ text "Concerned"
             ]
         , div [ class "field" ]
             [ label [] [ text "Person" ]
-            , Html.map ConcPersonMsg (Comp.Dropdown.view model.concPersonModel)
+            , Html.map ConcPersonMsg (Comp.Dropdown.view settings model.concPersonModel)
             ]
         , div [ class "field" ]
             [ label [] [ text "Equipment" ]
-            , Html.map ConcEquipmentMsg (Comp.Dropdown.view model.concEquipmentModel)
+            , Html.map ConcEquipmentMsg (Comp.Dropdown.view settings model.concEquipmentModel)
             ]
         , h3 [ class "ui header" ]
             [ text "Date"

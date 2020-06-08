@@ -12,6 +12,7 @@ module Comp.UserForm exposing
 import Api.Model.User exposing (User)
 import Comp.Dropdown
 import Data.Flags exposing (Flags)
+import Data.UiSettings exposing (UiSettings)
 import Data.UserState exposing (UserState)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -152,8 +153,8 @@ update _ msg model =
             )
 
 
-view : Model -> Html Msg
-view model =
+view : UiSettings -> Model -> Html Msg
+view settings model =
     div [ class "ui form" ]
         [ div
             [ classList
@@ -182,7 +183,7 @@ view model =
             ]
         , div [ class "field" ]
             [ label [] [ text "State" ]
-            , Html.map StateMsg (Comp.Dropdown.view model.state)
+            , Html.map StateMsg (Comp.Dropdown.view settings model.state)
             ]
         , div
             [ classList

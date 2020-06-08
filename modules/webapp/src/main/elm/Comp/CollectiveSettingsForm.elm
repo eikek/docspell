@@ -11,6 +11,7 @@ import Api.Model.CollectiveSettings exposing (CollectiveSettings)
 import Comp.Dropdown
 import Data.Flags exposing (Flags)
 import Data.Language exposing (Language)
+import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onCheck)
@@ -90,12 +91,12 @@ update _ msg model =
             ( nextModel, Cmd.none, Just (getSettings nextModel) )
 
 
-view : Flags -> Model -> Html Msg
-view flags model =
+view : Flags -> UiSettings -> Model -> Html Msg
+view flags settings model =
     div [ class "ui form" ]
         [ div [ class "field" ]
             [ label [] [ text "Document Language" ]
-            , Html.map LangDropdownMsg (Comp.Dropdown.view model.langModel)
+            , Html.map LangDropdownMsg (Comp.Dropdown.view settings model.langModel)
             , span [ class "small-info" ]
                 [ text "The language of your documents. This helps text recognition (OCR) and text analysis."
                 ]

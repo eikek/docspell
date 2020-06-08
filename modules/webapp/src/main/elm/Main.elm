@@ -7,6 +7,7 @@ import App.View exposing (..)
 import Browser exposing (Document)
 import Browser.Navigation exposing (Key)
 import Data.Flags exposing (Flags)
+import Data.UiSettings
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
@@ -38,8 +39,8 @@ main =
 init : Flags -> Url -> Key -> ( Model, Cmd Msg )
 init flags url key =
     let
-        im =
-            App.Data.init key url flags
+        ( im, ic ) =
+            App.Data.init key url flags Data.UiSettings.defaults
 
         page =
             checkPage flags im.page
@@ -62,6 +63,7 @@ init flags url key =
     ( m
     , Cmd.batch
         [ cmd
+        , ic
         , Api.versionInfo flags VersionResp
         , sessionCheck
         , Ports.getUiSettings flags

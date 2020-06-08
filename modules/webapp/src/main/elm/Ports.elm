@@ -32,13 +32,13 @@ port setAllProgress : ( String, Int ) -> Cmd msg
 port scrollToElem : String -> Cmd msg
 
 
-port saveUiSettings : ( AuthResult, UiSettings ) -> Cmd msg
+port saveUiSettings : ( AuthResult, StoredUiSettings ) -> Cmd msg
 
 
 port receiveUiSettings : (StoredUiSettings -> msg) -> Sub msg
 
 
-port requestUiSettings : ( AuthResult, UiSettings ) -> Cmd msg
+port requestUiSettings : ( AuthResult, StoredUiSettings ) -> Cmd msg
 
 
 port uiSettingsSaved : (() -> msg) -> Sub msg
@@ -53,7 +53,10 @@ storeUiSettings : Flags -> UiSettings -> Cmd msg
 storeUiSettings flags settings =
     case flags.account of
         Just ar ->
-            saveUiSettings ( ar, settings )
+            saveUiSettings
+                ( ar
+                , Data.UiSettings.toStoredUiSettings settings
+                )
 
         Nothing ->
             Cmd.none
@@ -68,7 +71,10 @@ getUiSettings : Flags -> Cmd msg
 getUiSettings flags =
     case flags.account of
         Just ar ->
-            requestUiSettings ( ar, Data.UiSettings.defaults )
+            requestUiSettings
+                ( ar
+                , Data.UiSettings.toStoredUiSettings Data.UiSettings.defaults
+                )
 
         Nothing ->
             Cmd.none

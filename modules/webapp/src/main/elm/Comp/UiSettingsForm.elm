@@ -2,92 +2,179 @@ module Comp.UiSettingsForm exposing
     ( Model
     , Msg
     , init
-    , initWith
     , update
     , view
     )
 
+import Api
+import Api.Model.TagList exposing (TagList)
+import Comp.ColorTagger
 import Comp.IntField
+import Data.Color exposing (Color)
+import Data.Flags exposing (Flags)
 import Data.UiSettings exposing (StoredUiSettings, UiSettings)
+import Dict exposing (Dict)
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Html.Events exposing (onCheck)
+import Http
+import Util.List
 
 
 type alias Model =
-    { defaults : UiSettings
-    , input : StoredUiSettings
+    { itemSearchPageSize : Maybe Int
     , searchPageSizeModel : Comp.IntField.Model
+    , tagColors : Dict String Color
+    , tagColorModel : Comp.ColorTagger.Model
+    , nativePdfPreview : Bool
     }
 
 
-initWith : UiSettings -> Model
-initWith defaults =
-    { defaults = defaults
-    , input = Data.UiSettings.toStoredUiSettings defaults
-    , searchPageSizeModel =
-        Comp.IntField.init
-            (Just 10)
-            (Just 500)
-            False
-            "Item search page"
-    }
-
-
-init : Model
-init =
-    initWith Data.UiSettings.defaults
-
-
-changeInput : (StoredUiSettings -> StoredUiSettings) -> Model -> StoredUiSettings
-changeInput change model =
-    change model.input
+init : Flags -> UiSettings -> ( Model, Cmd Msg )
+init flags settings =
+    ( { itemSearchPageSize = Just settings.itemSearchPageSize
+      , searchPageSizeModel =
+            Comp.IntField.init
+                (Just 10)
+                (Just 500)
+                False
+                "Page size"
+      , tagColors = settings.tagCategoryColors
+      , tagColorModel =
+            Comp.ColorTagger.init
+                []
+                Data.Color.all
+      , nativePdfPreview = settings.nativePdfPreview
+      }
+    , Api.getTags flags "" GetTagsResp
+    )
 
 
 type Msg
     = SearchPageSizeMsg Comp.IntField.Msg
-
-
-getSettings : Model -> UiSettings
-getSettings model =
-    Data.UiSettings.merge model.input model.defaults
+    | TagColorMsg Comp.ColorTagger.Msg
+    | GetTagsResp (Result Http.Error TagList)
+    | TogglePdfPreview
 
 
 
 --- Update
 
 
-update : Msg -> Model -> ( Model, Maybe UiSettings )
-update msg model =
+update : UiSettings -> Msg -> Model -> ( Model, Maybe UiSettings )
+update sett msg model =
     case msg of
         SearchPageSizeMsg lm ->
             let
                 ( m, n ) =
                     Comp.IntField.update lm model.searchPageSizeModel
 
+                nextSettings =
+                    Maybe.map (\sz -> { sett | itemSearchPageSize = sz }) n
+
                 model_ =
                     { model
                         | searchPageSizeModel = m
-                        , input = changeInput (\s -> { s | itemSearchPageSize = n }) model
+                        , itemSearchPageSize = n
                     }
-
-                nextSettings =
-                    Maybe.map (\_ -> getSettings model_) n
             in
             ( model_, nextSettings )
+
+        TagColorMsg lm ->
+            let
+                ( m_, d_ ) =
+                    Comp.ColorTagger.update lm model.tagColorModel
+
+                nextSettings =
+                    Maybe.map (\tc -> { sett | tagCategoryColors = tc }) d_
+
+                model_ =
+                    { model
+                        | tagColorModel = m_
+                        , tagColors = Maybe.withDefault model.tagColors d_
+                    }
+            in
+            ( model_, nextSettings )
+
+        TogglePdfPreview ->
+            let
+                flag =
+                    not model.nativePdfPreview
+            in
+            ( { model | nativePdfPreview = flag }
+            , Just { sett | nativePdfPreview = flag }
+            )
+
+        GetTagsResp (Ok tl) ->
+            let
+                categories =
+                    List.filterMap .category tl.items
+                        |> Util.List.distinct
+            in
+            ( { model
+                | tagColorModel =
+                    Comp.ColorTagger.init
+                        categories
+                        Data.Color.all
+              }
+            , Nothing
+            )
+
+        GetTagsResp (Err _) ->
+            ( model, Nothing )
 
 
 
 --- View
 
 
-view : Model -> Html Msg
-view model =
+tagColorViewOpts : Comp.ColorTagger.ViewOpts
+tagColorViewOpts =
+    { renderItem =
+        \( k, v ) ->
+            span [ class ("ui label " ++ Data.Color.toString v) ]
+                [ text k ]
+    , label = "Choose color for tag categories"
+    , description = Just "Tags can be represented differently based on their category."
+    }
+
+
+view : UiSettings -> Model -> Html Msg
+view _ model =
     div [ class "ui form" ]
-        [ Html.map SearchPageSizeMsg
+        [ div [ class "ui dividing header" ]
+            [ text "Item Search"
+            ]
+        , Html.map SearchPageSizeMsg
             (Comp.IntField.viewWithInfo
                 "Maximum results in one page when searching items."
-                model.input.itemSearchPageSize
-                ""
+                model.itemSearchPageSize
+                "field"
                 model.searchPageSizeModel
+            )
+        , div [ class "ui dividing header" ]
+            [ text "Item Detail"
+            ]
+        , div [ class "field" ]
+            [ div [ class "ui checkbox" ]
+                [ input
+                    [ type_ "checkbox"
+                    , onCheck (\_ -> TogglePdfPreview)
+                    , checked model.nativePdfPreview
+                    ]
+                    []
+                , label []
+                    [ text "Browser-native PDF preview"
+                    ]
+                ]
+            ]
+        , div [ class "ui dividing header" ]
+            [ text "Tag Category Colors"
+            ]
+        , Html.map TagColorMsg
+            (Comp.ColorTagger.view
+                model.tagColors
+                tagColorViewOpts
+                model.tagColorModel
             )
         ]

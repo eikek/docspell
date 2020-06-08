@@ -2,6 +2,7 @@ module Page.Home.View exposing (view)
 
 import Comp.ItemCardList
 import Comp.SearchMenu
+import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
@@ -9,8 +10,8 @@ import Page exposing (Page(..))
 import Page.Home.Data exposing (..)
 
 
-view : Model -> Html Msg
-view model =
+view : UiSettings -> Model -> Html Msg
+view settings model =
     div [ class "home-page ui padded grid" ]
         [ div
             [ classList
@@ -52,7 +53,7 @@ view model =
                     ]
                 ]
             , div [ class "ui attached fluid segment" ]
-                [ Html.map SearchMenuMsg (Comp.SearchMenu.view model.searchMenuModel)
+                [ Html.map SearchMenuMsg (Comp.SearchMenu.view settings model.searchMenuModel)
                 ]
             ]
         , div
@@ -86,7 +87,7 @@ view model =
 
                     else
                         Html.map ItemCardListMsg
-                            (Comp.ItemCardList.view model.itemListModel)
+                            (Comp.ItemCardList.view settings model.itemListModel)
 
                 Detail ->
                     div [] []
@@ -101,7 +102,7 @@ view model =
                     [ classList
                         [ ( "ui basic tiny button", True )
                         , ( "disabled", not model.moreAvailable )
-                        , ( "hidden invisible", resultsBelowLimit model )
+                        , ( "hidden invisible", resultsBelowLimit settings model )
                         ]
                     , disabled (not model.moreAvailable || model.moreInProgress || model.searchInProgress)
                     , title "Load more items"

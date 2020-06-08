@@ -10,6 +10,7 @@ module Comp.ContactField exposing
 import Api.Model.Contact exposing (Contact)
 import Comp.Dropdown
 import Data.ContactType exposing (ContactType)
+import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
@@ -96,12 +97,12 @@ update msg model =
             ( { m1 | value = contact.value, items = newItems }, c1 )
 
 
-view : Model -> Html Msg
-view model =
+view : UiSettings -> Model -> Html Msg
+view settings model =
     div []
         [ div [ class "fields" ]
             [ div [ class "four wide field" ]
-                [ Html.map TypeMsg (Comp.Dropdown.view model.kind)
+                [ Html.map TypeMsg (Comp.Dropdown.view settings model.kind)
                 ]
             , div [ class "twelve wide field" ]
                 [ div [ class "ui action input" ]

@@ -44,33 +44,40 @@ type alias Model =
     , itemDetailModel : Page.ItemDetail.Data.Model
     , navMenuOpen : Bool
     , subs : Sub Msg
+    , uiSettings : UiSettings
     }
 
 
-init : Key -> Url -> Flags -> Model
-init key url flags =
+init : Key -> Url -> Flags -> UiSettings -> ( Model, Cmd Msg )
+init key url flags settings =
     let
         page =
             Page.fromUrl url
                 |> Maybe.withDefault (defaultPage flags)
+
+        ( um, uc ) =
+            Page.UserSettings.Data.init flags settings
     in
-    { flags = flags
-    , key = key
-    , page = page
-    , version = Api.Model.VersionInfo.empty
-    , homeModel = Page.Home.Data.init flags
-    , loginModel = Page.Login.Data.emptyModel
-    , manageDataModel = Page.ManageData.Data.emptyModel
-    , collSettingsModel = Page.CollectiveSettings.Data.emptyModel
-    , userSettingsModel = Page.UserSettings.Data.emptyModel flags
-    , queueModel = Page.Queue.Data.emptyModel
-    , registerModel = Page.Register.Data.emptyModel
-    , uploadModel = Page.Upload.Data.emptyModel
-    , newInviteModel = Page.NewInvite.Data.emptyModel
-    , itemDetailModel = Page.ItemDetail.Data.emptyModel
-    , navMenuOpen = False
-    , subs = Sub.none
-    }
+    ( { flags = flags
+      , key = key
+      , page = page
+      , version = Api.Model.VersionInfo.empty
+      , homeModel = Page.Home.Data.init flags
+      , loginModel = Page.Login.Data.emptyModel
+      , manageDataModel = Page.ManageData.Data.emptyModel
+      , collSettingsModel = Page.CollectiveSettings.Data.emptyModel
+      , userSettingsModel = um
+      , queueModel = Page.Queue.Data.emptyModel
+      , registerModel = Page.Register.Data.emptyModel
+      , uploadModel = Page.Upload.Data.emptyModel
+      , newInviteModel = Page.NewInvite.Data.emptyModel
+      , itemDetailModel = Page.ItemDetail.Data.emptyModel
+      , navMenuOpen = False
+      , subs = Sub.none
+      , uiSettings = settings
+      }
+    , Cmd.map UserSettingsMsg uc
+    )
 
 
 type Msg

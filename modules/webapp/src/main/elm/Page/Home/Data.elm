@@ -27,13 +27,12 @@ type alias Model =
     , searchOffset : Int
     , moreAvailable : Bool
     , moreInProgress : Bool
-    , uiSettings : UiSettings
     }
 
 
 init : Flags -> Model
 init _ =
-    { searchMenuModel = Comp.SearchMenu.emptyModel
+    { searchMenuModel = Comp.SearchMenu.init
     , itemListModel = Comp.ItemCardList.init
     , searchInProgress = False
     , viewMode = Listing
@@ -41,7 +40,6 @@ init _ =
     , searchOffset = 0
     , moreAvailable = True
     , moreInProgress = False
-    , uiSettings = Data.UiSettings.defaults
     }
 
 
@@ -55,7 +53,6 @@ type Msg
     | DoSearch
     | ToggleSearchMenu
     | LoadMore
-    | GetUiSettings UiSettings
 
 
 type ViewMode
@@ -77,15 +74,15 @@ itemNav id model =
     }
 
 
-doSearchCmd : Flags -> Int -> Model -> Cmd Msg
-doSearchCmd flags offset model =
+doSearchCmd : Flags -> UiSettings -> Int -> Model -> Cmd Msg
+doSearchCmd flags settings offset model =
     let
         smask =
             Comp.SearchMenu.getItemSearch model.searchMenuModel
 
         mask =
             { smask
-                | limit = model.uiSettings.itemSearchPageSize
+                | limit = settings.itemSearchPageSize
                 , offset = offset
             }
     in
@@ -96,10 +93,10 @@ doSearchCmd flags offset model =
         Api.itemSearch flags mask ItemSearchAddResp
 
 
-resultsBelowLimit : Model -> Bool
-resultsBelowLimit model =
+resultsBelowLimit : UiSettings -> Model -> Bool
+resultsBelowLimit settings model =
     let
         len =
             Data.Items.length model.itemListModel.results
     in
-    len < model.uiSettings.itemSearchPageSize
+    len < settings.itemSearchPageSize

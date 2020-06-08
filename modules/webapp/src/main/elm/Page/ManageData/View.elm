@@ -4,6 +4,7 @@ import Comp.EquipmentManage
 import Comp.OrgManage
 import Comp.PersonManage
 import Comp.TagManage
+import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
@@ -11,8 +12,8 @@ import Page.ManageData.Data exposing (..)
 import Util.Html exposing (classActive)
 
 
-view : Model -> Html Msg
-view model =
+view : UiSettings -> Model -> Html Msg
+view settings model =
     div [ class "managedata-page ui padded grid" ]
         [ div [ class "sixteen wide mobile four wide tablet four wide computer column" ]
             [ h4 [ class "ui top attached ablue-comp header" ]
@@ -61,10 +62,10 @@ view model =
                         viewEquip model
 
                     Just OrgTab ->
-                        viewOrg model
+                        viewOrg settings model
 
                     Just PersonTab ->
-                        viewPerson model
+                        viewPerson settings model
 
                     Nothing ->
                         []
@@ -97,25 +98,25 @@ viewEquip model =
     ]
 
 
-viewOrg : Model -> List (Html Msg)
-viewOrg model =
+viewOrg : UiSettings -> Model -> List (Html Msg)
+viewOrg settings model =
     [ h2 [ class "ui header" ]
         [ i [ class "ui factory icon" ] []
         , div [ class "content" ]
             [ text "Organizations"
             ]
         ]
-    , Html.map OrgManageMsg (Comp.OrgManage.view model.orgManageModel)
+    , Html.map OrgManageMsg (Comp.OrgManage.view settings model.orgManageModel)
     ]
 
 
-viewPerson : Model -> List (Html Msg)
-viewPerson model =
+viewPerson : UiSettings -> Model -> List (Html Msg)
+viewPerson settings model =
     [ h2 [ class "ui header" ]
         [ i [ class "ui user icon" ] []
         , div [ class "content" ]
             [ text "Person"
             ]
         ]
-    , Html.map PersonManageMsg (Comp.PersonManage.view model.personManageModel)
+    , Html.map PersonManageMsg (Comp.PersonManage.view settings model.personManageModel)
     ]

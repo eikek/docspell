@@ -121,7 +121,7 @@ viewItemDetail id model =
         inav =
             Page.Home.Data.itemNav id model.homeModel
     in
-    Html.map ItemDetailMsg (Page.ItemDetail.View.view inav model.itemDetailModel)
+    Html.map ItemDetailMsg (Page.ItemDetail.View.view inav model.uiSettings model.itemDetailModel)
 
 
 viewNewInvite : Model -> Html Msg
@@ -146,17 +146,21 @@ viewQueue model =
 
 viewUserSettings : Model -> Html Msg
 viewUserSettings model =
-    Html.map UserSettingsMsg (Page.UserSettings.View.view model.userSettingsModel)
+    Html.map UserSettingsMsg (Page.UserSettings.View.view model.uiSettings model.userSettingsModel)
 
 
 viewCollectiveSettings : Model -> Html Msg
 viewCollectiveSettings model =
-    Html.map CollSettingsMsg (Page.CollectiveSettings.View.view model.flags model.collSettingsModel)
+    Html.map CollSettingsMsg
+        (Page.CollectiveSettings.View.view model.flags
+            model.uiSettings
+            model.collSettingsModel
+        )
 
 
 viewManageData : Model -> Html Msg
 viewManageData model =
-    Html.map ManageDataMsg (Page.ManageData.View.view model.manageDataModel)
+    Html.map ManageDataMsg (Page.ManageData.View.view model.uiSettings model.manageDataModel)
 
 
 viewLogin : Model -> Html Msg
@@ -166,7 +170,7 @@ viewLogin model =
 
 viewHome : Model -> Html Msg
 viewHome model =
-    Html.map HomeMsg (Page.Home.View.view model.homeModel)
+    Html.map HomeMsg (Page.Home.View.view model.uiSettings model.homeModel)
 
 
 menuEntry : Model -> Page -> List (Html Msg) -> Html Msg

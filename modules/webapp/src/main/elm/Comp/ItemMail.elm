@@ -15,6 +15,7 @@ import Api.Model.SimpleMail exposing (SimpleMail)
 import Comp.Dropdown
 import Comp.EmailInput
 import Data.Flags exposing (Flags)
+import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onCheck, onClick, onInput)
@@ -173,8 +174,8 @@ isValid model =
         == Nothing
 
 
-view : Model -> Html Msg
-view model =
+view : UiSettings -> Model -> Html Msg
+view settings model =
     div
         [ classList
             [ ( "ui form", True )
@@ -183,7 +184,7 @@ view model =
         ]
         [ div [ class "field" ]
             [ label [] [ text "Send via" ]
-            , Html.map ConnMsg (Comp.Dropdown.view model.connectionModel)
+            , Html.map ConnMsg (Comp.Dropdown.view settings model.connectionModel)
             ]
         , div [ class "ui error message" ]
             [ Maybe.withDefault "" model.formError |> text

@@ -2,7 +2,7 @@ module Page.UserSettings.Data exposing
     ( Model
     , Msg(..)
     , Tab(..)
-    , emptyModel
+    , init
     )
 
 import Comp.ChangePasswordForm
@@ -26,16 +26,22 @@ type alias Model =
     }
 
 
-emptyModel : Flags -> Model
-emptyModel flags =
-    { currentTab = Nothing
-    , changePassModel = Comp.ChangePasswordForm.emptyModel
-    , emailSettingsModel = Comp.EmailSettingsManage.emptyModel
-    , imapSettingsModel = Comp.ImapSettingsManage.emptyModel
-    , notificationModel = Tuple.first (Comp.NotificationForm.init flags)
-    , scanMailboxModel = Tuple.first (Comp.ScanMailboxManage.init flags)
-    , uiSettingsModel = Comp.UiSettingsManage.init Data.UiSettings.defaults
-    }
+init : Flags -> UiSettings -> ( Model, Cmd Msg )
+init flags settings =
+    let
+        ( um, uc ) =
+            Comp.UiSettingsManage.init flags settings
+    in
+    ( { currentTab = Nothing
+      , changePassModel = Comp.ChangePasswordForm.emptyModel
+      , emailSettingsModel = Comp.EmailSettingsManage.emptyModel
+      , imapSettingsModel = Comp.ImapSettingsManage.emptyModel
+      , notificationModel = Tuple.first (Comp.NotificationForm.init flags settings)
+      , scanMailboxModel = Tuple.first (Comp.ScanMailboxManage.init flags)
+      , uiSettingsModel = um
+      }
+    , Cmd.map UiSettingsMsg uc
+    )
 
 
 type Tab
@@ -54,5 +60,5 @@ type Msg
     | NotificationMsg Comp.NotificationForm.Msg
     | ImapSettingsMsg Comp.ImapSettingsManage.Msg
     | ScanMailboxMsg Comp.ScanMailboxManage.Msg
-    | GetUiSettings UiSettings
     | UiSettingsMsg Comp.UiSettingsManage.Msg
+    | UpdateSettings

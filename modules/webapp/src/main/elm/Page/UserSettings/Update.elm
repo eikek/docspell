@@ -7,11 +7,12 @@ import Comp.NotificationForm
 import Comp.ScanMailboxManage
 import Comp.UiSettingsManage
 import Data.Flags exposing (Flags)
+import Data.UiSettings exposing (UiSettings)
 import Page.UserSettings.Data exposing (..)
 
 
-update : Flags -> Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
-update flags msg model =
+update : Flags -> UiSettings -> Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
+update flags settings msg model =
     case msg of
         SetTab t ->
             let
@@ -40,7 +41,7 @@ update flags msg model =
                     let
                         initCmd =
                             Cmd.map NotificationMsg
-                                (Tuple.second (Comp.NotificationForm.init flags))
+                                (Tuple.second (Comp.NotificationForm.init flags settings))
                     in
                     ( m, initCmd, Sub.none )
 
@@ -96,18 +97,18 @@ update flags msg model =
             , Sub.none
             )
 
-        GetUiSettings settings ->
-            ( { model | uiSettingsModel = Comp.UiSettingsManage.init settings }
-            , Cmd.none
-            , Sub.none
-            )
-
         UiSettingsMsg lm ->
             let
                 ( m2, c2, s2 ) =
-                    Comp.UiSettingsManage.update flags lm model.uiSettingsModel
+                    Comp.UiSettingsManage.update flags settings lm model.uiSettingsModel
             in
             ( { model | uiSettingsModel = m2 }
             , Cmd.map UiSettingsMsg c2
             , Sub.map UiSettingsMsg s2
             )
+
+        UpdateSettings ->
+            update flags
+                settings
+                (UiSettingsMsg Comp.UiSettingsManage.UpdateSettings)
+                model
