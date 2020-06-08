@@ -38,7 +38,7 @@ default value, converting the StoredUiSettings into a UiSettings.
 -}
 type alias UiSettings =
     { itemSearchPageSize : Int
-    , tagCategoryColors : Dict String String
+    , tagCategoryColors : Dict String Color
     , nativePdfPreview : Bool
     }
 
@@ -56,7 +56,12 @@ merge given fallback =
     { itemSearchPageSize =
         choose given.itemSearchPageSize fallback.itemSearchPageSize
     , tagCategoryColors =
-        Dict.union (Dict.fromList given.tagCategoryColors)
+        Dict.union
+            (Dict.fromList given.tagCategoryColors
+                |> Dict.map (\_ -> Data.Color.fromString)
+                |> Dict.filter (\_ -> \mc -> mc /= Nothing)
+                |> Dict.map (\_ -> Maybe.withDefault Data.Color.Grey)
+            )
             fallback.tagCategoryColors
     , nativePdfPreview = given.nativePdfPreview
     }
@@ -70,7 +75,9 @@ mergeDefaults given =
 toStoredUiSettings : UiSettings -> StoredUiSettings
 toStoredUiSettings settings =
     { itemSearchPageSize = Just settings.itemSearchPageSize
-    , tagCategoryColors = Dict.toList settings.tagCategoryColors
+    , tagCategoryColors =
+        Dict.map (\_ -> Data.Color.toString) settings.tagCategoryColors
+            |> Dict.toList
     , nativePdfPreview = settings.nativePdfPreview
     }
 
@@ -80,7 +87,6 @@ tagColor tag settings =
     let
         readColor c =
             Dict.get c settings.tagCategoryColors
-                |> Maybe.andThen Data.Color.fromString
     in
     Maybe.andThen readColor tag.category
 

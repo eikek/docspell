@@ -8,9 +8,9 @@ module Comp.UiSettingsForm exposing
 
 import Api
 import Api.Model.TagList exposing (TagList)
+import Comp.ColorTagger
 import Comp.IntField
-import Comp.MappingForm
-import Data.Color
+import Data.Color exposing (Color)
 import Data.Flags exposing (Flags)
 import Data.UiSettings exposing (StoredUiSettings, UiSettings)
 import Dict exposing (Dict)
@@ -24,8 +24,8 @@ import Util.List
 type alias Model =
     { itemSearchPageSize : Maybe Int
     , searchPageSizeModel : Comp.IntField.Model
-    , tagColors : Dict String String
-    , tagColorModel : Comp.MappingForm.Model
+    , tagColors : Dict String Color
+    , tagColorModel : Comp.ColorTagger.Model
     , nativePdfPreview : Bool
     }
 
@@ -41,9 +41,9 @@ init flags settings =
                 "Page size"
       , tagColors = settings.tagCategoryColors
       , tagColorModel =
-            Comp.MappingForm.init
+            Comp.ColorTagger.init
                 []
-                Data.Color.allString
+                Data.Color.all
       , nativePdfPreview = settings.nativePdfPreview
       }
     , Api.getTags flags "" GetTagsResp
@@ -52,7 +52,7 @@ init flags settings =
 
 type Msg
     = SearchPageSizeMsg Comp.IntField.Msg
-    | TagColorMsg Comp.MappingForm.Msg
+    | TagColorMsg Comp.ColorTagger.Msg
     | GetTagsResp (Result Http.Error TagList)
     | TogglePdfPreview
 
@@ -83,7 +83,7 @@ update sett msg model =
         TagColorMsg lm ->
             let
                 ( m_, d_ ) =
-                    Comp.MappingForm.update lm model.tagColorModel
+                    Comp.ColorTagger.update lm model.tagColorModel
 
                 nextSettings =
                     Maybe.map (\tc -> { sett | tagCategoryColors = tc }) d_
@@ -113,9 +113,9 @@ update sett msg model =
             in
             ( { model
                 | tagColorModel =
-                    Comp.MappingForm.init
+                    Comp.ColorTagger.init
                         categories
-                        Data.Color.allString
+                        Data.Color.all
               }
             , Nothing
             )
@@ -128,11 +128,11 @@ update sett msg model =
 --- View
 
 
-tagColorViewOpts : Comp.MappingForm.ViewOpts
+tagColorViewOpts : Comp.ColorTagger.ViewOpts
 tagColorViewOpts =
     { renderItem =
         \( k, v ) ->
-            span [ class ("ui label " ++ v) ]
+            span [ class ("ui label " ++ Data.Color.toString v) ]
                 [ text k ]
     , label = "Choose color for tag categories"
     , description = Just "Tags can be represented differently based on their category."
@@ -140,7 +140,7 @@ tagColorViewOpts =
 
 
 view : UiSettings -> Model -> Html Msg
-view settings model =
+view _ model =
     div [ class "ui form" ]
         [ div [ class "ui dividing header" ]
             [ text "Item Search"
@@ -172,7 +172,7 @@ view settings model =
             [ text "Tag Category Colors"
             ]
         , Html.map TagColorMsg
-            (Comp.MappingForm.view
+            (Comp.ColorTagger.view
                 model.tagColors
                 tagColorViewOpts
                 model.tagColorModel

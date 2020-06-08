@@ -1,5 +1,5 @@
 module Data.Color exposing
-    ( Color
+    ( Color(..)
     , all
     , allString
     , fromString
