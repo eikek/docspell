@@ -1820,7 +1820,7 @@ renderEditForm settings model =
         [ div [ class "ui form" ]
             [ div [ class "field" ]
                 [ label []
-                    [ i [ class "tags icon" ] []
+                    [ Icons.tagsIcon
                     , text "Tags"
                     ]
                 , Html.map TagDropdownMsg (Comp.Dropdown.view settings model.tagModel)
@@ -1838,11 +1838,17 @@ renderEditForm settings model =
                     ]
                 ]
             , div [ class "field" ]
-                [ label [] [ text "Direction" ]
+                [ label []
+                    [ Icons.directionIcon
+                    , text "Direction"
+                    ]
                 , Html.map DirDropdownMsg (Comp.Dropdown.view settings model.directionModel)
                 ]
             , div [ class " field" ]
-                [ label [] [ text "Date" ]
+                [ label []
+                    [ Icons.dateIcon
+                    , text "Date"
+                    ]
                 , div [ class "ui action input" ]
                     [ Html.map ItemDatePickerMsg
                         (Comp.DatePicker.viewTime
@@ -1857,7 +1863,10 @@ renderEditForm settings model =
                 , renderItemDateSuggestions model
                 ]
             , div [ class " field" ]
-                [ label [] [ text "Due Date" ]
+                [ label []
+                    [ Icons.dueDateIcon
+                    , text "Due Date"
+                    ]
                 , div [ class "ui action input" ]
                     [ Html.map DueDatePickerMsg
                         (Comp.DatePicker.viewTime
@@ -1871,30 +1880,42 @@ renderEditForm settings model =
                 , renderDueDateSuggestions model
                 ]
             , h4 [ class "ui dividing header" ]
-                [ i [ class "tiny envelope outline icon" ] []
+                [ Icons.correspondentIcon
                 , text "Correspondent"
                 ]
             , div [ class "field" ]
-                [ label [] [ text "Organization" ]
+                [ label []
+                    [ Icons.organizationIcon
+                    , text "Organization"
+                    ]
                 , Html.map OrgDropdownMsg (Comp.Dropdown.view settings model.corrOrgModel)
                 , renderOrgSuggestions model
                 ]
             , div [ class "field" ]
-                [ label [] [ text "Person" ]
+                [ label []
+                    [ Icons.personIcon
+                    , text "Person"
+                    ]
                 , Html.map CorrPersonMsg (Comp.Dropdown.view settings model.corrPersonModel)
                 , renderCorrPersonSuggestions model
                 ]
             , h4 [ class "ui dividing header" ]
-                [ i [ class "tiny comment outline icon" ] []
+                [ Icons.concernedIcon
                 , text "Concerning"
                 ]
             , div [ class "field" ]
-                [ label [] [ text "Person" ]
+                [ label []
+                    [ Icons.personIcon
+                    , text "Person"
+                    ]
                 , Html.map ConcPersonMsg (Comp.Dropdown.view settings model.concPersonModel)
                 , renderConcPersonSuggestions model
                 ]
             , div [ class "field" ]
-                [ label [] [ text "Equipment" ]
+                [ label []
+                    [ Icons.equipmentIcon
+                    , text "Equipment"
+                    ]
                 , Html.map ConcEquipMsg (Comp.Dropdown.view settings model.concEquipModel)
                 , renderConcEquipSuggestions model
                 ]

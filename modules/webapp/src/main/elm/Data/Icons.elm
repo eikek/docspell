@@ -5,10 +5,24 @@ module Data.Icons exposing
     , concernedIcon
     , correspondent
     , correspondentIcon
+    , date
+    , dateIcon
+    , direction
+    , directionIcon
     , dueDate
     , dueDateIcon
     , editNotes
     , editNotesIcon
+    , equipment
+    , equipmentIcon
+    , organization
+    , organizationIcon
+    , person
+    , personIcon
+    , tag
+    , tagIcon
+    , tags
+    , tagsIcon
     )
 
 import Html exposing (Html, i)
@@ -33,6 +47,16 @@ correspondent =
 correspondentIcon : Html msg
 correspondentIcon =
     i [ class correspondent ] []
+
+
+date : String
+date =
+    "calendar outline icon"
+
+
+dateIcon : Html msg
+dateIcon =
+    i [ class date ] []
 
 
 dueDate : String
@@ -63,3 +87,63 @@ addFiles =
 addFilesIcon : Html msg
 addFilesIcon =
     i [ class addFiles ] []
+
+
+tag : String
+tag =
+    "tag icon"
+
+
+tagIcon : Html msg
+tagIcon =
+    i [ class tag ] []
+
+
+tags : String
+tags =
+    "tags icon"
+
+
+tagsIcon : Html msg
+tagsIcon =
+    i [ class tags ] []
+
+
+direction : String
+direction =
+    "exchange icon"
+
+
+directionIcon : Html msg
+directionIcon =
+    i [ class direction ] []
+
+
+person : String
+person =
+    "user icon"
+
+
+personIcon : Html msg
+personIcon =
+    i [ class person ] []
+
+
+organization : String
+organization =
+    "factory icon"
+
+
+organizationIcon : Html msg
+organizationIcon =
+    i [ class organization ] []
+
+
+equipment : String
+equipment =
+    "box icon"
+
+
+equipmentIcon : Html msg
+equipmentIcon =
+    i [ class equipment ] []
