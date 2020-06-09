@@ -1060,7 +1060,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/BasicResult"
   /sec/item/{id}/tags:
-    post:
+    put:
       tags: [ Item ]
       summary: Set new set of tags.
       description: |
@@ -1082,7 +1082,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/BasicResult"
   /sec/item/{id}/direction:
-    post:
+    put:
       tags: [ Item ]
       summary: Set the direction of an item.
       description: |
@@ -1104,7 +1104,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/BasicResult"
   /sec/item/{id}/corrOrg:
-    post:
+    put:
       tags: [ Item ]
       summary: Set the correspondent organization of an item.
       description: |
@@ -1126,7 +1126,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/BasicResult"
   /sec/item/{id}/corrPerson:
-    post:
+    put:
       tags: [ Item ]
       summary: Set the correspondent person of an item.
       description: |
@@ -1148,7 +1148,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/BasicResult"
   /sec/item/{id}/concPerson:
-    post:
+    put:
       tags: [ Item ]
       summary: Set the concerning person of an item.
       description: |
@@ -1170,7 +1170,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/BasicResult"
   /sec/item/{id}/concEquipment:
-    post:
+    put:
       tags: [ Item ]
       summary: Set the concering equipment of an item.
       description: |
@@ -1192,7 +1192,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/BasicResult"
   /sec/item/{id}/notes:
-    post:
+    put:
       tags: [ Item ]
       summary: Set notes of an item.
       description: |
@@ -1214,7 +1214,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/BasicResult"
   /sec/item/{id}/name:
-    post:
+    put:
       tags: [ Item ]
       summary: Set the name of an item.
       description: |
@@ -1272,7 +1272,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/BasicResult"
   /sec/item/{id}/date:
-    post:
+    put:
       tags: [ Item ]
       summary: Sets the item date.
       description: |
@@ -1294,7 +1294,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/BasicResult"
   /sec/item/{id}/duedate:
-    post:
+    put:
       tags: [ Item ]
       summary: Sets the items due date.
       description: |

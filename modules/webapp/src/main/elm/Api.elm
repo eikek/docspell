@@ -1047,7 +1047,7 @@ itemDetail flags id receive =
 
 setTags : Flags -> String -> ReferenceList -> (Result Http.Error BasicResult -> msg) -> Cmd msg
 setTags flags item tags receive =
-    Http2.authPost
+    Http2.authPut
         { url = flags.config.baseUrl ++ "/api/v1/sec/item/" ++ item ++ "/tags"
         , account = getAccount flags
         , body = Http.jsonBody (Api.Model.ReferenceList.encode tags)
@@ -1057,7 +1057,7 @@ setTags flags item tags receive =
 
 setDirection : Flags -> String -> DirectionValue -> (Result Http.Error BasicResult -> msg) -> Cmd msg
 setDirection flags item dir receive =
-    Http2.authPost
+    Http2.authPut
         { url = flags.config.baseUrl ++ "/api/v1/sec/item/" ++ item ++ "/direction"
         , account = getAccount flags
         , body = Http.jsonBody (Api.Model.DirectionValue.encode dir)
@@ -1067,7 +1067,7 @@ setDirection flags item dir receive =
 
 setCorrOrg : Flags -> String -> OptionalId -> (Result Http.Error BasicResult -> msg) -> Cmd msg
 setCorrOrg flags item id receive =
-    Http2.authPost
+    Http2.authPut
         { url = flags.config.baseUrl ++ "/api/v1/sec/item/" ++ item ++ "/corrOrg"
         , account = getAccount flags
         , body = Http.jsonBody (Api.Model.OptionalId.encode id)
@@ -1077,7 +1077,7 @@ setCorrOrg flags item id receive =
 
 setCorrPerson : Flags -> String -> OptionalId -> (Result Http.Error BasicResult -> msg) -> Cmd msg
 setCorrPerson flags item id receive =
-    Http2.authPost
+    Http2.authPut
         { url = flags.config.baseUrl ++ "/api/v1/sec/item/" ++ item ++ "/corrPerson"
         , account = getAccount flags
         , body = Http.jsonBody (Api.Model.OptionalId.encode id)
@@ -1087,7 +1087,7 @@ setCorrPerson flags item id receive =
 
 setConcPerson : Flags -> String -> OptionalId -> (Result Http.Error BasicResult -> msg) -> Cmd msg
 setConcPerson flags item id receive =
-    Http2.authPost
+    Http2.authPut
         { url = flags.config.baseUrl ++ "/api/v1/sec/item/" ++ item ++ "/concPerson"
         , account = getAccount flags
         , body = Http.jsonBody (Api.Model.OptionalId.encode id)
@@ -1097,7 +1097,7 @@ setConcPerson flags item id receive =
 
 setConcEquip : Flags -> String -> OptionalId -> (Result Http.Error BasicResult -> msg) -> Cmd msg
 setConcEquip flags item id receive =
-    Http2.authPost
+    Http2.authPut
         { url = flags.config.baseUrl ++ "/api/v1/sec/item/" ++ item ++ "/concEquipment"
         , account = getAccount flags
         , body = Http.jsonBody (Api.Model.OptionalId.encode id)
@@ -1107,7 +1107,7 @@ setConcEquip flags item id receive =
 
 setItemName : Flags -> String -> OptionalText -> (Result Http.Error BasicResult -> msg) -> Cmd msg
 setItemName flags item text receive =
-    Http2.authPost
+    Http2.authPut
         { url = flags.config.baseUrl ++ "/api/v1/sec/item/" ++ item ++ "/name"
         , account = getAccount flags
         , body = Http.jsonBody (Api.Model.OptionalText.encode text)
@@ -1117,7 +1117,7 @@ setItemName flags item text receive =
 
 setItemNotes : Flags -> String -> OptionalText -> (Result Http.Error BasicResult -> msg) -> Cmd msg
 setItemNotes flags item text receive =
-    Http2.authPost
+    Http2.authPut
         { url = flags.config.baseUrl ++ "/api/v1/sec/item/" ++ item ++ "/notes"
         , account = getAccount flags
         , body = Http.jsonBody (Api.Model.OptionalText.encode text)
@@ -1127,7 +1127,7 @@ setItemNotes flags item text receive =
 
 setItemDate : Flags -> String -> OptionalDate -> (Result Http.Error BasicResult -> msg) -> Cmd msg
 setItemDate flags item date receive =
-    Http2.authPost
+    Http2.authPut
         { url = flags.config.baseUrl ++ "/api/v1/sec/item/" ++ item ++ "/date"
         , account = getAccount flags
         , body = Http.jsonBody (Api.Model.OptionalDate.encode date)
@@ -1137,7 +1137,7 @@ setItemDate flags item date receive =
 
 setItemDueDate : Flags -> String -> OptionalDate -> (Result Http.Error BasicResult -> msg) -> Cmd msg
 setItemDueDate flags item date receive =
-    Http2.authPost
+    Http2.authPut
         { url = flags.config.baseUrl ++ "/api/v1/sec/item/" ++ item ++ "/duedate"
         , account = getAccount flags
         , body = Http.jsonBody (Api.Model.OptionalDate.encode date)
