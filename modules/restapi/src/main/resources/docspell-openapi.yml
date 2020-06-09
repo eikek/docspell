@@ -1081,6 +1081,31 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BasicResult"
+    post:
+      tags: [ Item ]
+      summary: Add a new tag to an item.
+      description: |
+        Creates a new tag and associates it to the given item.
+
+        The tag's `id` and `created` are generated and not used from
+        the given data, so it can be left empty. Only `name` and
+        `category` are used, where `category` is optional.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Tag"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
   /sec/item/{id}/direction:
     put:
       tags: [ Item ]

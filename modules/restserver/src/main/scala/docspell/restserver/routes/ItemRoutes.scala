@@ -78,6 +78,14 @@ object ItemRoutes {
           resp <- Ok(Conversions.basicResult(res, "Tags updated"))
         } yield resp
 
+      case req @ POST -> Root / Ident(id) / "tags" =>
+        for {
+          data <- req.as[Tag]
+          rtag <- Conversions.newTag(data, user.account.collective)
+          res  <- backend.item.addNewTag(id, rtag)
+          resp <- Ok(Conversions.basicResult(res, "Tag added."))
+        } yield resp
+
       case req @ PUT -> Root / Ident(id) / "direction" =>
         for {
           dir  <- req.as[DirectionValue]
