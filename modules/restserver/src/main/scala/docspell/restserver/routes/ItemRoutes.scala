@@ -115,6 +115,14 @@ object ItemRoutes {
           resp  <- Ok(Conversions.basicResult(res, "Correspondent person updated"))
         } yield resp
 
+      case req @ POST -> Root / Ident(id) / "corrPerson" =>
+        for {
+          data <- req.as[Person]
+          pers <- Conversions.newPerson(data, user.account.collective)
+          res  <- backend.item.addCorrPerson(id, pers)
+          resp <- Ok(Conversions.basicResult(res, "Correspondent person updated"))
+        } yield resp
+
       case req @ PUT -> Root / Ident(id) / "concPerson" =>
         for {
           idref <- req.as[OptionalId]
@@ -122,10 +130,26 @@ object ItemRoutes {
           resp  <- Ok(Conversions.basicResult(res, "Concerned person updated"))
         } yield resp
 
+      case req @ POST -> Root / Ident(id) / "concPerson" =>
+        for {
+          data <- req.as[Person]
+          pers <- Conversions.newPerson(data, user.account.collective)
+          res  <- backend.item.addConcPerson(id, pers)
+          resp <- Ok(Conversions.basicResult(res, "Concerned person updated"))
+        } yield resp
+
       case req @ PUT -> Root / Ident(id) / "concEquipment" =>
         for {
           idref <- req.as[OptionalId]
           res   <- backend.item.setConcEquip(id, idref.id, user.account.collective)
+          resp  <- Ok(Conversions.basicResult(res, "Concerned equipment updated"))
+        } yield resp
+
+      case req @ POST -> Root / Ident(id) / "concEquipment" =>
+        for {
+          data  <- req.as[Equipment]
+          equip <- Conversions.newEquipment(data, user.account.collective)
+          res   <- backend.item.addConcEquip(id, equip)
           resp  <- Ok(Conversions.basicResult(res, "Concerned equipment updated"))
         } yield resp
 

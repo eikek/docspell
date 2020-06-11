@@ -1194,6 +1194,28 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BasicResult"
+    post:
+      tags: [ Item ]
+      summary: Create and set the correspondent person of an item.
+      description: |
+        Creates a new person and updates the correspondent person of
+        an item.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Person"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
   /sec/item/{id}/concPerson:
     put:
       tags: [ Item ]
@@ -1216,6 +1238,28 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BasicResult"
+    post:
+      tags: [ Item ]
+      summary: Create and set the concerning person of an item.
+      description: |
+        Creates a new person and updates the concerning person of an
+        item.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Person"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
   /sec/item/{id}/concEquipment:
     put:
       tags: [ Item ]
@@ -1231,6 +1275,28 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/OptionalId"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+    post:
+      tags: [ Item ]
+      summary: Create and set a new the concering equipment of an item.
+      description: |
+        Creates a new equipment and sets it as the concering equipment
+        of an item.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Equipment"
       responses:
         200:
           description: Ok

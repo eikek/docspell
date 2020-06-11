@@ -57,9 +57,15 @@ trait OItem[F[_]] {
 
   def setCorrPerson(item: Ident, person: Option[Ident], collective: Ident): F[AddResult]
 
+  def addCorrPerson(item: Ident, person: OOrganization.PersonAndContacts): F[AddResult]
+
   def setConcPerson(item: Ident, person: Option[Ident], collective: Ident): F[AddResult]
 
+  def addConcPerson(item: Ident, person: OOrganization.PersonAndContacts): F[AddResult]
+
   def setConcEquip(item: Ident, equip: Option[Ident], collective: Ident): F[AddResult]
+
+  def addConcEquip(item: Ident, equip: REquipment): F[AddResult]
 
   def setNotes(item: Ident, notes: Option[String], collective: Ident): F[AddResult]
 
@@ -139,8 +145,9 @@ object OItem {
 
   def apply[F[_]: Effect](store: Store[F]): Resource[F, OItem[F]] =
     for {
-      otag <- OTag(store)
-      oorg <- OOrganization(store)
+      otag   <- OTag(store)
+      oorg   <- OOrganization(store)
+      oequip <- OEquipment(store)
       oitem <- Resource.pure[F, OItem[F]](new OItem[F] {
         def moveAttachmentBefore(
             itemId: Ident,
@@ -315,6 +322,30 @@ object OItem {
             .attempt
             .map(AddResult.fromUpdate)
 
+        def addCorrPerson(
+            item: Ident,
+            person: OOrganization.PersonAndContacts
+        ): F[AddResult] =
+          (for {
+            _ <- OptionT(store.transact(RItem.getCollective(item)))
+              .filter(_ == person.person.cid)
+            addres <- OptionT.liftF(oorg.addPerson(person))
+            _ <- addres match {
+              case AddResult.Success =>
+                OptionT.liftF(
+                  store.transact(
+                    RItem
+                      .updateCorrPerson(item, person.person.cid, Some(person.person.pid))
+                  )
+                )
+              case AddResult.EntityExists(_) =>
+                OptionT.pure[F](0)
+              case AddResult.Failure(_) =>
+                OptionT.pure[F](0)
+            }
+          } yield addres)
+            .getOrElse(AddResult.Failure(new Exception("Collective mismatch")))
+
         def setConcPerson(
             item: Ident,
             person: Option[Ident],
@@ -325,6 +356,30 @@ object OItem {
             .attempt
             .map(AddResult.fromUpdate)
 
+        def addConcPerson(
+            item: Ident,
+            person: OOrganization.PersonAndContacts
+        ): F[AddResult] =
+          (for {
+            _ <- OptionT(store.transact(RItem.getCollective(item)))
+              .filter(_ == person.person.cid)
+            addres <- OptionT.liftF(oorg.addPerson(person))
+            _ <- addres match {
+              case AddResult.Success =>
+                OptionT.liftF(
+                  store.transact(
+                    RItem
+                      .updateConcPerson(item, person.person.cid, Some(person.person.pid))
+                  )
+                )
+              case AddResult.EntityExists(_) =>
+                OptionT.pure[F](0)
+              case AddResult.Failure(_) =>
+                OptionT.pure[F](0)
+            }
+          } yield addres)
+            .getOrElse(AddResult.Failure(new Exception("Collective mismatch")))
+
         def setConcEquip(
             item: Ident,
             equip: Option[Ident],
@@ -334,6 +389,26 @@ object OItem {
             .transact(RItem.updateConcEquip(item, collective, equip))
             .attempt
             .map(AddResult.fromUpdate)
+
+        def addConcEquip(item: Ident, equip: REquipment): F[AddResult] =
+          (for {
+            _ <- OptionT(store.transact(RItem.getCollective(item)))
+              .filter(_ == equip.cid)
+            addres <- OptionT.liftF(oequip.add(equip))
+            _ <- addres match {
+              case AddResult.Success =>
+                OptionT.liftF(
+                  store.transact(
+                    RItem.updateConcEquip(item, equip.cid, Some(equip.eid))
+                  )
+                )
+              case AddResult.EntityExists(_) =>
+                OptionT.pure[F](0)
+              case AddResult.Failure(_) =>
+                OptionT.pure[F](0)
+            }
+          } yield addres)
+            .getOrElse(AddResult.Failure(new Exception("Collective mismatch")))
 
         def setNotes(
             item: Ident,
