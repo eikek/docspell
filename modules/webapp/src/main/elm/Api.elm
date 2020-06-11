@@ -1,5 +1,6 @@
 module Api exposing
-    ( cancelJob
+    ( addTag
+    , cancelJob
     , changePassword
     , checkCalEvent
     , createImapSettings
@@ -693,7 +694,7 @@ getContacts flags kind q receive =
 
 
 
--- Tags
+--- Tags
 
 
 getTags : Flags -> String -> (Result Http.Error TagList -> msg) -> Cmd msg
@@ -732,7 +733,7 @@ deleteTag flags tag receive =
 
 
 
--- Equipments
+--- Equipments
 
 
 getEquipments : Flags -> String -> (Result Http.Error EquipmentList -> msg) -> Cmd msg
@@ -771,7 +772,7 @@ deleteEquip flags equip receive =
 
 
 
--- Organization
+--- Organization
 
 
 getOrgLight : Flags -> (Result Http.Error ReferenceList -> msg) -> Cmd msg
@@ -819,7 +820,7 @@ deleteOrg flags org receive =
 
 
 
--- Person
+--- Person
 
 
 getPersonsLight : Flags -> (Result Http.Error ReferenceList -> msg) -> Cmd msg
@@ -906,7 +907,7 @@ deleteSource flags src receive =
 
 
 
--- Users
+--- Users
 
 
 getUsers : Flags -> (Result Http.Error UserList -> msg) -> Cmd msg
@@ -958,7 +959,7 @@ deleteUser flags user receive =
 
 
 
--- Job Queue
+--- Job Queue
 
 
 cancelJob : Flags -> String -> (Result Http.Error BasicResult -> msg) -> Cmd msg
@@ -1008,7 +1009,7 @@ getJobQueueStateTask flags =
 
 
 
--- Item
+--- Item
 
 
 moveAttachmentBefore :
@@ -1051,6 +1052,16 @@ setTags flags item tags receive =
         { url = flags.config.baseUrl ++ "/api/v1/sec/item/" ++ item ++ "/tags"
         , account = getAccount flags
         , body = Http.jsonBody (Api.Model.ReferenceList.encode tags)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+addTag : Flags -> String -> Tag -> (Result Http.Error BasicResult -> msg) -> Cmd msg
+addTag flags item tag receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/item/" ++ item ++ "/tags"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.Tag.encode tag)
         , expect = Http.expectJson receive Api.Model.BasicResult.decoder
         }
 
@@ -1184,7 +1195,7 @@ getItemProposals flags item receive =
 
 
 
--- Helper
+--- Helper
 
 
 getAccount : Flags -> AuthResult

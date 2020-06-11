@@ -25,6 +25,7 @@ import Api.Model.TagList exposing (TagList)
 import Browser.Navigation as Nav
 import Comp.AttachmentMeta
 import Comp.DatePicker
+import Comp.DetailEdit
 import Comp.Dropdown exposing (isDropdownChangeMsg)
 import Comp.Dropzone
 import Comp.ItemMail
@@ -93,6 +94,7 @@ type alias Model =
     , errored : Set String
     , loading : Set String
     , attachDD : DD.Model String String
+    , modalEdit : Maybe Comp.DetailEdit.Model
     }
 
 
@@ -179,6 +181,7 @@ emptyModel =
     , errored = Set.empty
     , loading = Set.empty
     , attachDD = DD.init
+    , modalEdit = Nothing
     }
 
 
@@ -242,10 +245,13 @@ type Msg
     | AddFilesProgress String Http.Progress
     | AddFilesReset
     | AttachDDMsg (DD.Msg String String)
+    | ModalEditMsg Comp.DetailEdit.Msg
+    | StartTagModal
+    | CloseModal
 
 
 
--- update
+--- Update
 
 
 getOptions : Flags -> Cmd Msg
@@ -511,6 +517,7 @@ update key flags next msg model =
                 , itemDate = item.itemDate
                 , dueDate = item.dueDate
                 , visibleAttach = 0
+                , modalEdit = Nothing
               }
             , Cmd.batch
                 [ c1
@@ -1202,9 +1209,43 @@ update key flags next msg model =
             in
             noSub ( { model | attachDD = model_ }, cmd )
 
+        ModalEditMsg lm ->
+            case model.modalEdit of
+                Just mm ->
+                    let
+                        ( mm_, mc_, mv ) =
+                            Comp.DetailEdit.update flags lm mm
+
+                        ( model_, cmd_ ) =
+                            case mv of
+                                Just Comp.DetailEdit.CancelForm ->
+                                    ( { model | modalEdit = Nothing }, Cmd.none )
+
+                                Just _ ->
+                                    ( model, Api.itemDetail flags model.item.id GetItemResp )
+
+                                Nothing ->
+                                    ( { model | modalEdit = Just mm_ }, Cmd.none )
+                    in
+                    noSub ( model_, Cmd.batch [ cmd_, Cmd.map ModalEditMsg mc_ ] )
+
+                Nothing ->
+                    noSub ( model, Cmd.none )
+
+        StartTagModal ->
+            noSub
+                ( { model
+                    | modalEdit = Just (Comp.DetailEdit.initTagByName model.item.id "")
+                  }
+                , Cmd.none
+                )
+
+        CloseModal ->
+            noSub ( { model | modalEdit = Nothing }, Cmd.none )
 
 
--- view
+
+--- View
 
 
 actionInputDatePicker : DatePicker.Settings
@@ -1219,7 +1260,8 @@ actionInputDatePicker =
 view : { prev : Maybe String, next : Maybe String } -> UiSettings -> Model -> Html Msg
 view inav settings model =
     div []
-        [ renderItemInfo settings model
+        [ Html.map ModalEditMsg (Comp.DetailEdit.viewModal settings model.modalEdit)
+        , renderItemInfo settings model
         , div
             [ classList
                 [ ( "ui ablue-comp menu", True )
@@ -1822,6 +1864,15 @@ renderEditForm settings model =
                 [ label []
                     [ Icons.tagsIcon
                     , text "Tags"
+                    , span [ class "right-float" ]
+                        [ a
+                            [ class "icon link"
+                            , href "#"
+                            , onClick StartTagModal
+                            ]
+                            [ i [ class "add link icon" ] []
+                            ]
+                        ]
                     ]
                 , Html.map TagDropdownMsg (Comp.Dropdown.view settings model.tagModel)
                 ]
