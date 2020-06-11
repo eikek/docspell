@@ -30,6 +30,7 @@ import Comp.Dropdown exposing (isDropdownChangeMsg)
 import Comp.Dropzone
 import Comp.ItemMail
 import Comp.MarkdownInput
+import Comp.OrgForm
 import Comp.SentMails
 import Comp.YesNoDimmer
 import Data.Direction exposing (Direction)
@@ -247,6 +248,7 @@ type Msg
     | AttachDDMsg (DD.Msg String String)
     | ModalEditMsg Comp.DetailEdit.Msg
     | StartTagModal
+    | StartCorrOrgModal
     | CloseModal
 
 
@@ -1240,6 +1242,14 @@ update key flags next msg model =
                 , Cmd.none
                 )
 
+        StartCorrOrgModal ->
+            noSub
+                ( { model
+                    | modalEdit = Just (Comp.DetailEdit.initOrg model.item.id Comp.OrgForm.emptyModel)
+                  }
+                , Cmd.none
+                )
+
         CloseModal ->
             noSub ( { model | modalEdit = Nothing }, Cmd.none )
 
@@ -1938,6 +1948,13 @@ renderEditForm settings model =
                 [ label []
                     [ Icons.organizationIcon
                     , text "Organization"
+                    , a
+                        [ class "right-float"
+                        , href "#"
+                        , onClick StartCorrOrgModal
+                        ]
+                        [ i [ class "add link icon" ] []
+                        ]
                     ]
                 , Html.map OrgDropdownMsg (Comp.Dropdown.view settings model.corrOrgModel)
                 , renderOrgSuggestions model

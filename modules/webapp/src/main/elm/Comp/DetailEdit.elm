@@ -196,6 +196,20 @@ update flags msg model =
                     else
                         ( model, Cmd.none, Nothing )
 
+                OM om ->
+                    let
+                        org =
+                            Comp.OrgForm.getOrg om
+                    in
+                    if Comp.OrgForm.isValid om then
+                        ( { model | submitting = True }
+                        , Api.addCorrOrg flags model.itemId org SubmitResp
+                        , Nothing
+                        )
+
+                    else
+                        ( model, Cmd.none, Nothing )
+
                 _ ->
                     Debug.todo "implement"
 

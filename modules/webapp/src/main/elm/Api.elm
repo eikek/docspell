@@ -1,5 +1,6 @@
 module Api exposing
-    ( addTag
+    ( addCorrOrg
+    , addTag
     , cancelJob
     , changePassword
     , checkCalEvent
@@ -1082,6 +1083,16 @@ setCorrOrg flags item id receive =
         { url = flags.config.baseUrl ++ "/api/v1/sec/item/" ++ item ++ "/corrOrg"
         , account = getAccount flags
         , body = Http.jsonBody (Api.Model.OptionalId.encode id)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+addCorrOrg : Flags -> String -> Organization -> (Result Http.Error BasicResult -> msg) -> Cmd msg
+addCorrOrg flags item org receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/item/" ++ item ++ "/corrOrg"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.Organization.encode org)
         , expect = Http.expectJson receive Api.Model.BasicResult.decoder
         }
 
