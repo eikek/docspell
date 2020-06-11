@@ -54,9 +54,9 @@ date =
     "calendar outline icon"
 
 
-dateIcon : Html msg
-dateIcon =
-    i [ class date ] []
+dateIcon : String -> Html msg
+dateIcon classes =
+    i [ class (date ++ " " ++ classes) ] []
 
 
 dueDate : String
@@ -64,9 +64,9 @@ dueDate =
     "bell icon"
 
 
-dueDateIcon : Html msg
-dueDateIcon =
-    i [ class dueDate ] []
+dueDateIcon : String -> Html msg
+dueDateIcon classes =
+    i [ class (dueDate ++ " " ++ classes) ] []
 
 
 editNotes : String
@@ -94,9 +94,9 @@ tag =
     "tag icon"
 
 
-tagIcon : Html msg
-tagIcon =
-    i [ class tag ] []
+tagIcon : String -> Html msg
+tagIcon classes =
+    i [ class (tag ++ " " ++ classes) ] []
 
 
 tags : String
@@ -104,9 +104,9 @@ tags =
     "tags icon"
 
 
-tagsIcon : Html msg
-tagsIcon =
-    i [ class tags ] []
+tagsIcon : String -> Html msg
+tagsIcon classes =
+    i [ class (tags ++ " " ++ classes) ] []
 
 
 direction : String
@@ -114,9 +114,9 @@ direction =
     "exchange icon"
 
 
-directionIcon : Html msg
-directionIcon =
-    i [ class direction ] []
+directionIcon : String -> Html msg
+directionIcon classes =
+    i [ class (direction ++ " " ++ classes) ] []
 
 
 person : String
@@ -124,9 +124,9 @@ person =
     "user icon"
 
 
-personIcon : Html msg
-personIcon =
-    i [ class person ] []
+personIcon : String -> Html msg
+personIcon classes =
+    i [ class (person ++ " " ++ classes) ] []
 
 
 organization : String
@@ -134,9 +134,9 @@ organization =
     "factory icon"
 
 
-organizationIcon : Html msg
-organizationIcon =
-    i [ class organization ] []
+organizationIcon : String -> Html msg
+organizationIcon classes =
+    i [ class (organization ++ " " ++ classes) ] []
 
 
 equipment : String
@@ -144,6 +144,6 @@ equipment =
     "box icon"
 
 
-equipmentIcon : Html msg
-equipmentIcon =
-    i [ class equipment ] []
+equipmentIcon : String -> Html msg
+equipmentIcon classes =
+    i [ class (equipment ++ " " ++ classes) ] []

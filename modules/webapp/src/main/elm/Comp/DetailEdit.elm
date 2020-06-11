@@ -193,6 +193,10 @@ update flags msg model =
             )
 
         Submit ->
+            let
+                failMsg =
+                    Just (BasicResult False "Please fill required fields.")
+            in
             case model.form of
                 TM tm ->
                     let
@@ -206,7 +210,10 @@ update flags msg model =
                         )
 
                     else
-                        ( model, Cmd.none, Nothing )
+                        ( { model | result = failMsg }
+                        , Cmd.none
+                        , Nothing
+                        )
 
                 OM om ->
                     let
@@ -220,7 +227,10 @@ update flags msg model =
                         )
 
                     else
-                        ( model, Cmd.none, Nothing )
+                        ( { model | result = failMsg }
+                        , Cmd.none
+                        , Nothing
+                        )
 
                 PMC pm ->
                     let
@@ -234,7 +244,10 @@ update flags msg model =
                         )
 
                     else
-                        ( model, Cmd.none, Nothing )
+                        ( { model | result = failMsg }
+                        , Cmd.none
+                        , Nothing
+                        )
 
                 PMR pm ->
                     let
@@ -248,7 +261,10 @@ update flags msg model =
                         )
 
                     else
-                        ( model, Cmd.none, Nothing )
+                        ( { model | result = failMsg }
+                        , Cmd.none
+                        , Nothing
+                        )
 
                 EM em ->
                     let
@@ -262,7 +278,10 @@ update flags msg model =
                         )
 
                     else
-                        ( model, Cmd.none, Nothing )
+                        ( { model | result = failMsg }
+                        , Cmd.none
+                        , Nothing
+                        )
 
         TagMsg lm ->
             case model.form of
@@ -271,7 +290,10 @@ update flags msg model =
                         ( tm_, tc_ ) =
                             Comp.TagForm.update flags lm tm
                     in
-                    ( { model | form = TM tm_ }
+                    ( { model
+                        | form = TM tm_
+                        , result = Nothing
+                      }
                     , Cmd.map TagMsg tc_
                     , Nothing
                     )
@@ -286,7 +308,10 @@ update flags msg model =
                         ( pm_, pc_ ) =
                             Comp.PersonForm.update flags lm pm
                     in
-                    ( { model | form = PMR pm_ }
+                    ( { model
+                        | form = PMR pm_
+                        , result = Nothing
+                      }
                     , Cmd.map PersonMsg pc_
                     , Nothing
                     )
@@ -296,7 +321,10 @@ update flags msg model =
                         ( pm_, pc_ ) =
                             Comp.PersonForm.update flags lm pm
                     in
-                    ( { model | form = PMC pm_ }
+                    ( { model
+                        | form = PMC pm_
+                        , result = Nothing
+                      }
                     , Cmd.map PersonMsg pc_
                     , Nothing
                     )
@@ -311,7 +339,10 @@ update flags msg model =
                         ( om_, oc_ ) =
                             Comp.OrgForm.update flags lm om
                     in
-                    ( { model | form = OM om_ }
+                    ( { model
+                        | form = OM om_
+                        , result = Nothing
+                      }
                     , Cmd.map OrgMsg oc_
                     , Nothing
                     )
@@ -326,7 +357,10 @@ update flags msg model =
                         ( em_, ec_ ) =
                             Comp.EquipmentForm.update flags lm em
                     in
-                    ( { model | form = EM em_ }
+                    ( { model
+                        | form = EM em_
+                        , result = Nothing
+                      }
                     , Cmd.map EquipMsg ec_
                     , Nothing
                     )
@@ -339,57 +373,72 @@ update flags msg model =
 --- View
 
 
+viewButtons : Model -> List (Html Msg)
+viewButtons model =
+    [ button
+        [ class "ui primary button"
+        , href "#"
+        , onClick Submit
+        , disabled model.submitting
+        ]
+        [ if model.submitting then
+            i [ class "ui spinner loading icon" ] []
+
+          else
+            text "Submit"
+        ]
+    , button
+        [ class "ui button"
+        , href "#"
+        , onClick Cancel
+        ]
+        [ text "Cancel"
+        ]
+    ]
+
+
+viewIntern : UiSettings -> Bool -> Model -> List (Html Msg)
+viewIntern settings withButtons model =
+    [ div
+        [ classList
+            [ ( "ui message", True )
+            , ( "error", Maybe.map .success model.result == Just False )
+            , ( "success", Maybe.map .success model.result == Just True )
+            , ( "invisible hidden", model.result == Nothing )
+            ]
+        ]
+        [ Maybe.map .message model.result
+            |> Maybe.withDefault ""
+            |> text
+        ]
+    , case model.form of
+        TM tm ->
+            Html.map TagMsg (Comp.TagForm.view tm)
+
+        PMR pm ->
+            Html.map PersonMsg (Comp.PersonForm.view settings pm)
+
+        PMC pm ->
+            Html.map PersonMsg (Comp.PersonForm.view settings pm)
+
+        OM om ->
+            Html.map OrgMsg (Comp.OrgForm.view settings om)
+
+        EM em ->
+            Html.map EquipMsg (Comp.EquipmentForm.view em)
+    ]
+        ++ (if withButtons then
+                div [ class "ui divider" ] [] :: viewButtons model
+
+            else
+                []
+           )
+
+
 view : UiSettings -> Model -> Html Msg
 view settings model =
     div []
-        [ case model.form of
-            TM tm ->
-                Html.map TagMsg (Comp.TagForm.view tm)
-
-            PMR pm ->
-                Html.map PersonMsg (Comp.PersonForm.view settings pm)
-
-            PMC pm ->
-                Html.map PersonMsg (Comp.PersonForm.view settings pm)
-
-            OM om ->
-                Html.map OrgMsg (Comp.OrgForm.view settings om)
-
-            EM em ->
-                Html.map EquipMsg (Comp.EquipmentForm.view em)
-        , div [ class "ui divider" ] []
-        , button
-            [ class "ui primary button"
-            , href "#"
-            , onClick Submit
-            , disabled model.submitting
-            ]
-            [ if model.submitting then
-                i [ class "ui spinner loading icon" ] []
-
-              else
-                text "Submit"
-            ]
-        , button
-            [ class "ui button"
-            , href "#"
-            , onClick Cancel
-            ]
-            [ text "Cancel"
-            ]
-        , div
-            [ classList
-                [ ( "ui message", True )
-                , ( "error", Maybe.map .success model.result == Just False )
-                , ( "success", Maybe.map .success model.result == Just True )
-                , ( "invisible hidden", model.result == Nothing )
-                ]
-            ]
-            [ Maybe.map .message model.result
-                |> Maybe.withDefault ""
-                |> text
-            ]
-        ]
+        (viewIntern settings True model)
 
 
 viewModal : UiSettings -> Maybe Model -> Html Msg
@@ -405,10 +454,10 @@ viewModal settings mm =
                 (\_ -> "Add Equipment")
 
         headIcon =
-            fold (\_ -> Icons.tagIcon)
-                (\_ -> Icons.personIcon)
-                (\_ -> Icons.organizationIcon)
-                (\_ -> Icons.equipmentIcon)
+            fold (\_ -> Icons.tagIcon "")
+                (\_ -> Icons.personIcon "")
+                (\_ -> Icons.organizationIcon "")
+                (\_ -> Icons.equipmentIcon "")
     in
     div
         [ classList
@@ -428,13 +477,21 @@ viewModal settings mm =
                     |> Maybe.withDefault ""
                     |> text
                 ]
-            , div [ class "content" ]
-                [ case mm of
+            , div [ class "scrolling content" ]
+                (case mm of
                     Just model ->
-                        view settings model
+                        viewIntern settings False model
 
                     Nothing ->
-                        span [] []
-                ]
+                        []
+                )
+            , div [ class "actions" ]
+                (case mm of
+                    Just model ->
+                        viewButtons model
+
+                    Nothing ->
+                        []
+                )
             ]
         ]

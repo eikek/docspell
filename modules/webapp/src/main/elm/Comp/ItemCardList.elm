@@ -240,7 +240,7 @@ viewItem settings item =
                         [ div
                             [ class "ui basic grey label"
                             ]
-                            [ Icons.dueDateIcon
+                            [ Icons.dueDateIcon ""
                             , text (" " ++ dueDate)
                             ]
                         ]

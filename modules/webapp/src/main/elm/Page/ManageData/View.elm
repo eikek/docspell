@@ -26,28 +26,28 @@ view settings model =
                         [ classActive (model.currentTab == Just TagTab) "link icon item"
                         , onClick (SetTab TagTab)
                         ]
-                        [ Icons.tagIcon
+                        [ Icons.tagIcon ""
                         , text "Tag"
                         ]
                     , div
                         [ classActive (model.currentTab == Just EquipTab) "link icon item"
                         , onClick (SetTab EquipTab)
                         ]
-                        [ Icons.equipmentIcon
+                        [ Icons.equipmentIcon ""
                         , text "Equipment"
                         ]
                     , div
                         [ classActive (model.currentTab == Just OrgTab) "link icon item"
                         , onClick (SetTab OrgTab)
                         ]
-                        [ Icons.organizationIcon
+                        [ Icons.organizationIcon ""
                         , text "Organization"
                         ]
                     , div
                         [ classActive (model.currentTab == Just PersonTab) "link icon item"
                         , onClick (SetTab PersonTab)
                         ]
-                        [ Icons.personIcon
+                        [ Icons.personIcon ""
                         , text "Person"
                         ]
                     ]
@@ -78,7 +78,7 @@ view settings model =
 viewTags : Model -> List (Html Msg)
 viewTags model =
     [ h2 [ class "ui header" ]
-        [ Icons.tagIcon
+        [ Icons.tagIcon ""
         , div [ class "content" ]
             [ text "Tags"
             ]
@@ -90,7 +90,7 @@ viewTags model =
 viewEquip : Model -> List (Html Msg)
 viewEquip model =
     [ h2 [ class "ui header" ]
-        [ Icons.equipmentIcon
+        [ Icons.equipmentIcon ""
         , div [ class "content" ]
             [ text "Equipment"
             ]
@@ -102,7 +102,7 @@ viewEquip model =
 viewOrg : UiSettings -> Model -> List (Html Msg)
 viewOrg settings model =
     [ h2 [ class "ui header" ]
-        [ Icons.organizationIcon
+        [ Icons.organizationIcon ""
         , div [ class "content" ]
             [ text "Organizations"
             ]
@@ -114,7 +114,7 @@ viewOrg settings model =
 viewPerson : UiSettings -> Model -> List (Html Msg)
 viewPerson settings model =
     [ h2 [ class "ui header" ]
-        [ Icons.personIcon
+        [ Icons.personIcon ""
         , div [ class "content" ]
             [ text "Person"
             ]

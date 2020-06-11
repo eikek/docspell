@@ -1775,7 +1775,7 @@ renderItemInfo settings model =
                 [ class "item"
                 , title "Due Date"
                 ]
-                [ Icons.dueDateIcon
+                [ Icons.dueDateIcon "grey"
                 , Maybe.map Util.Time.formatDate model.item.dueDate
                     |> Maybe.withDefault ""
                     |> text
@@ -1917,19 +1917,24 @@ renderEditButtons model =
 
 renderEditForm : UiSettings -> Model -> Html Msg
 renderEditForm settings model =
+    let
+        addIconLink tip m =
+            a
+                [ class "right-float"
+                , href "#"
+                , title tip
+                , onClick m
+                ]
+                [ i [ class "grey plus link icon" ] []
+                ]
+    in
     div [ class "ui attached segment" ]
         [ div [ class "ui form" ]
             [ div [ class "field" ]
                 [ label []
-                    [ Icons.tagsIcon
+                    [ Icons.tagsIcon "grey"
                     , text "Tags"
-                    , a
-                        [ class "right-float"
-                        , href "#"
-                        , onClick StartTagModal
-                        ]
-                        [ i [ class "add link icon" ] []
-                        ]
+                    , addIconLink "Add new tag" StartTagModal
                     ]
                 , Html.map TagDropdownMsg (Comp.Dropdown.view settings model.tagModel)
                 ]
@@ -1947,14 +1952,14 @@ renderEditForm settings model =
                 ]
             , div [ class "field" ]
                 [ label []
-                    [ Icons.directionIcon
+                    [ Icons.directionIcon "grey"
                     , text "Direction"
                     ]
                 , Html.map DirDropdownMsg (Comp.Dropdown.view settings model.directionModel)
                 ]
             , div [ class " field" ]
                 [ label []
-                    [ Icons.dateIcon
+                    [ Icons.dateIcon "grey"
                     , text "Date"
                     ]
                 , div [ class "ui action input" ]
@@ -1972,7 +1977,7 @@ renderEditForm settings model =
                 ]
             , div [ class " field" ]
                 [ label []
-                    [ Icons.dueDateIcon
+                    [ Icons.dueDateIcon "grey"
                     , text "Due Date"
                     ]
                 , div [ class "ui action input" ]
@@ -1993,30 +1998,18 @@ renderEditForm settings model =
                 ]
             , div [ class "field" ]
                 [ label []
-                    [ Icons.organizationIcon
+                    [ Icons.organizationIcon "grey"
                     , text "Organization"
-                    , a
-                        [ class "right-float"
-                        , href "#"
-                        , onClick StartCorrOrgModal
-                        ]
-                        [ i [ class "add link icon" ] []
-                        ]
+                    , addIconLink "Add new organization" StartCorrOrgModal
                     ]
                 , Html.map OrgDropdownMsg (Comp.Dropdown.view settings model.corrOrgModel)
                 , renderOrgSuggestions model
                 ]
             , div [ class "field" ]
                 [ label []
-                    [ Icons.personIcon
+                    [ Icons.personIcon "grey"
                     , text "Person"
-                    , a
-                        [ class "right-float"
-                        , href "#"
-                        , onClick StartCorrPersonModal
-                        ]
-                        [ i [ class "add link icon" ] []
-                        ]
+                    , addIconLink "Add new correspondent person" StartCorrPersonModal
                     ]
                 , Html.map CorrPersonMsg (Comp.Dropdown.view settings model.corrPersonModel)
                 , renderCorrPersonSuggestions model
@@ -2027,30 +2020,18 @@ renderEditForm settings model =
                 ]
             , div [ class "field" ]
                 [ label []
-                    [ Icons.personIcon
+                    [ Icons.personIcon "grey"
                     , text "Person"
-                    , a
-                        [ class "right-float"
-                        , href "#"
-                        , onClick StartConcPersonModal
-                        ]
-                        [ i [ class "add link icon" ] []
-                        ]
+                    , addIconLink "Add new concerning person" StartConcPersonModal
                     ]
                 , Html.map ConcPersonMsg (Comp.Dropdown.view settings model.concPersonModel)
                 , renderConcPersonSuggestions model
                 ]
             , div [ class "field" ]
                 [ label []
-                    [ Icons.equipmentIcon
+                    [ Icons.equipmentIcon "grey"
                     , text "Equipment"
-                    , a
-                        [ class "right-float"
-                        , href "#"
-                        , onClick StartEquipModal
-                        ]
-                        [ i [ class "add link icon" ] []
-                        ]
+                    , addIconLink "Add new equipment" StartEquipModal
                     ]
                 , Html.map ConcEquipMsg (Comp.Dropdown.view settings model.concEquipModel)
                 , renderConcEquipSuggestions model
