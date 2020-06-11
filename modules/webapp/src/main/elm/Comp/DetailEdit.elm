@@ -2,10 +2,10 @@ module Comp.DetailEdit exposing
     ( Model
     , Msg
     , Value(..)
-    , fold
+    , initConcPerson
+    , initCorrPerson
     , initEquip
     , initOrg
-    , initPerson
     , initTag
     , initTagByName
     , update
@@ -50,7 +50,8 @@ type alias Model =
 
 type FormModel
     = TM Comp.TagForm.Model
-    | PM Comp.PersonForm.Model
+    | PMR Comp.PersonForm.Model
+    | PMC Comp.PersonForm.Model
     | OM Comp.OrgForm.Model
     | EM Comp.EquipmentForm.Model
 
@@ -67,7 +68,10 @@ fold ft fp fo fe model =
         TM tm ->
             ft tm
 
-        PM pm ->
+        PMR pm ->
+            fp pm
+
+        PMC pm ->
             fp pm
 
         OM om ->
@@ -96,9 +100,14 @@ initOrg itemId om =
     init itemId (OM om)
 
 
-initPerson : String -> Comp.PersonForm.Model -> Model
-initPerson itemId pm =
-    init itemId (PM pm)
+initCorrPerson : String -> Comp.PersonForm.Model -> Model
+initCorrPerson itemId pm =
+    init itemId (PMR pm)
+
+
+initConcPerson : String -> Comp.PersonForm.Model -> Model
+initConcPerson itemId pm =
+    init itemId (PMC pm)
 
 
 initTag : String -> Comp.TagForm.Model -> Model
@@ -142,7 +151,10 @@ makeValue fm =
         TM tm ->
             SubmitTag (Comp.TagForm.getTag tm)
 
-        PM pm ->
+        PMR pm ->
+            SubmitPerson (Comp.PersonForm.getPerson pm)
+
+        PMC pm ->
             SubmitPerson (Comp.PersonForm.getPerson pm)
 
         OM om ->
@@ -210,8 +222,47 @@ update flags msg model =
                     else
                         ( model, Cmd.none, Nothing )
 
-                _ ->
-                    Debug.todo "implement"
+                PMC pm ->
+                    let
+                        pers =
+                            Comp.PersonForm.getPerson pm
+                    in
+                    if Comp.PersonForm.isValid pm then
+                        ( { model | submitting = True }
+                        , Api.addConcPerson flags model.itemId pers SubmitResp
+                        , Nothing
+                        )
+
+                    else
+                        ( model, Cmd.none, Nothing )
+
+                PMR pm ->
+                    let
+                        pers =
+                            Comp.PersonForm.getPerson pm
+                    in
+                    if Comp.PersonForm.isValid pm then
+                        ( { model | submitting = True }
+                        , Api.addCorrPerson flags model.itemId pers SubmitResp
+                        , Nothing
+                        )
+
+                    else
+                        ( model, Cmd.none, Nothing )
+
+                EM em ->
+                    let
+                        equip =
+                            Comp.EquipmentForm.getEquipment em
+                    in
+                    if Comp.EquipmentForm.isValid em then
+                        ( { model | submitting = True }
+                        , Api.addConcEquip flags model.itemId equip SubmitResp
+                        , Nothing
+                        )
+
+                    else
+                        ( model, Cmd.none, Nothing )
 
         TagMsg lm ->
             case model.form of
@@ -230,12 +281,22 @@ update flags msg model =
 
         PersonMsg lm ->
             case model.form of
-                PM pm ->
+                PMR pm ->
                     let
                         ( pm_, pc_ ) =
                             Comp.PersonForm.update flags lm pm
                     in
-                    ( { model | form = PM pm_ }
+                    ( { model | form = PMR pm_ }
+                    , Cmd.map PersonMsg pc_
+                    , Nothing
+                    )
+
+                PMC pm ->
+                    let
+                        ( pm_, pc_ ) =
+                            Comp.PersonForm.update flags lm pm
+                    in
+                    ( { model | form = PMC pm_ }
                     , Cmd.map PersonMsg pc_
                     , Nothing
                     )
@@ -285,7 +346,10 @@ view settings model =
             TM tm ->
                 Html.map TagMsg (Comp.TagForm.view tm)
 
-            PM pm ->
+            PMR pm ->
+                Html.map PersonMsg (Comp.PersonForm.view settings pm)
+
+            PMC pm ->
                 Html.map PersonMsg (Comp.PersonForm.view settings pm)
 
             OM om ->

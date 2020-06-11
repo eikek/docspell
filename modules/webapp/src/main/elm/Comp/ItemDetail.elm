@@ -28,9 +28,11 @@ import Comp.DatePicker
 import Comp.DetailEdit
 import Comp.Dropdown exposing (isDropdownChangeMsg)
 import Comp.Dropzone
+import Comp.EquipmentForm
 import Comp.ItemMail
 import Comp.MarkdownInput
 import Comp.OrgForm
+import Comp.PersonForm
 import Comp.SentMails
 import Comp.YesNoDimmer
 import Data.Direction exposing (Direction)
@@ -249,6 +251,9 @@ type Msg
     | ModalEditMsg Comp.DetailEdit.Msg
     | StartTagModal
     | StartCorrOrgModal
+    | StartCorrPersonModal
+    | StartConcPersonModal
+    | StartEquipModal
     | CloseModal
 
 
@@ -1245,7 +1250,51 @@ update key flags next msg model =
         StartCorrOrgModal ->
             noSub
                 ( { model
-                    | modalEdit = Just (Comp.DetailEdit.initOrg model.item.id Comp.OrgForm.emptyModel)
+                    | modalEdit =
+                        Just
+                            (Comp.DetailEdit.initOrg
+                                model.item.id
+                                Comp.OrgForm.emptyModel
+                            )
+                  }
+                , Cmd.none
+                )
+
+        StartCorrPersonModal ->
+            noSub
+                ( { model
+                    | modalEdit =
+                        Just
+                            (Comp.DetailEdit.initCorrPerson
+                                model.item.id
+                                Comp.PersonForm.emptyModel
+                            )
+                  }
+                , Cmd.none
+                )
+
+        StartConcPersonModal ->
+            noSub
+                ( { model
+                    | modalEdit =
+                        Just
+                            (Comp.DetailEdit.initConcPerson
+                                model.item.id
+                                Comp.PersonForm.emptyModel
+                            )
+                  }
+                , Cmd.none
+                )
+
+        StartEquipModal ->
+            noSub
+                ( { model
+                    | modalEdit =
+                        Just
+                            (Comp.DetailEdit.initEquip
+                                model.item.id
+                                Comp.EquipmentForm.emptyModel
+                            )
                   }
                 , Cmd.none
                 )
@@ -1874,14 +1923,12 @@ renderEditForm settings model =
                 [ label []
                     [ Icons.tagsIcon
                     , text "Tags"
-                    , span [ class "right-float" ]
-                        [ a
-                            [ class "icon link"
-                            , href "#"
-                            , onClick StartTagModal
-                            ]
-                            [ i [ class "add link icon" ] []
-                            ]
+                    , a
+                        [ class "right-float"
+                        , href "#"
+                        , onClick StartTagModal
+                        ]
+                        [ i [ class "add link icon" ] []
                         ]
                     ]
                 , Html.map TagDropdownMsg (Comp.Dropdown.view settings model.tagModel)
@@ -1963,6 +2010,13 @@ renderEditForm settings model =
                 [ label []
                     [ Icons.personIcon
                     , text "Person"
+                    , a
+                        [ class "right-float"
+                        , href "#"
+                        , onClick StartCorrPersonModal
+                        ]
+                        [ i [ class "add link icon" ] []
+                        ]
                     ]
                 , Html.map CorrPersonMsg (Comp.Dropdown.view settings model.corrPersonModel)
                 , renderCorrPersonSuggestions model
@@ -1975,6 +2029,13 @@ renderEditForm settings model =
                 [ label []
                     [ Icons.personIcon
                     , text "Person"
+                    , a
+                        [ class "right-float"
+                        , href "#"
+                        , onClick StartConcPersonModal
+                        ]
+                        [ i [ class "add link icon" ] []
+                        ]
                     ]
                 , Html.map ConcPersonMsg (Comp.Dropdown.view settings model.concPersonModel)
                 , renderConcPersonSuggestions model
@@ -1983,6 +2044,13 @@ renderEditForm settings model =
                 [ label []
                     [ Icons.equipmentIcon
                     , text "Equipment"
+                    , a
+                        [ class "right-float"
+                        , href "#"
+                        , onClick StartEquipModal
+                        ]
+                        [ i [ class "add link icon" ] []
+                        ]
                     ]
                 , Html.map ConcEquipMsg (Comp.Dropdown.view settings model.concEquipModel)
                 , renderConcEquipSuggestions model

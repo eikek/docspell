@@ -1,5 +1,8 @@
 module Api exposing
-    ( addCorrOrg
+    ( addConcEquip
+    , addConcPerson
+    , addCorrOrg
+    , addCorrPerson
     , addTag
     , cancelJob
     , changePassword
@@ -1107,6 +1110,16 @@ setCorrPerson flags item id receive =
         }
 
 
+addCorrPerson : Flags -> String -> Person -> (Result Http.Error BasicResult -> msg) -> Cmd msg
+addCorrPerson flags item person receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/item/" ++ item ++ "/corrPerson"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.Person.encode person)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
 setConcPerson : Flags -> String -> OptionalId -> (Result Http.Error BasicResult -> msg) -> Cmd msg
 setConcPerson flags item id receive =
     Http2.authPut
@@ -1117,12 +1130,32 @@ setConcPerson flags item id receive =
         }
 
 
+addConcPerson : Flags -> String -> Person -> (Result Http.Error BasicResult -> msg) -> Cmd msg
+addConcPerson flags item person receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/item/" ++ item ++ "/concPerson"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.Person.encode person)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
 setConcEquip : Flags -> String -> OptionalId -> (Result Http.Error BasicResult -> msg) -> Cmd msg
 setConcEquip flags item id receive =
     Http2.authPut
         { url = flags.config.baseUrl ++ "/api/v1/sec/item/" ++ item ++ "/concEquipment"
         , account = getAccount flags
         , body = Http.jsonBody (Api.Model.OptionalId.encode id)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+addConcEquip : Flags -> String -> Equipment -> (Result Http.Error BasicResult -> msg) -> Cmd msg
+addConcEquip flags item equip receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/item/" ++ item ++ "/concEquipment"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.Equipment.encode equip)
         , expect = Http.expectJson receive Api.Model.BasicResult.decoder
         }
 
