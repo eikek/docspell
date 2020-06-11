@@ -53,6 +53,8 @@ trait OItem[F[_]] {
 
   def setCorrOrg(item: Ident, org: Option[Ident], collective: Ident): F[AddResult]
 
+  def addCorrOrg(item: Ident, org: OOrganization.OrgAndContacts): F[AddResult]
+
   def setCorrPerson(item: Ident, person: Option[Ident], collective: Ident): F[AddResult]
 
   def setConcPerson(item: Ident, person: Option[Ident], collective: Ident): F[AddResult]
@@ -138,6 +140,7 @@ object OItem {
   def apply[F[_]: Effect](store: Store[F]): Resource[F, OItem[F]] =
     for {
       otag <- OTag(store)
+      oorg <- OOrganization(store)
       oitem <- Resource.pure[F, OItem[F]](new OItem[F] {
         def moveAttachmentBefore(
             itemId: Ident,
@@ -281,6 +284,26 @@ object OItem {
             .transact(RItem.updateCorrOrg(item, collective, org))
             .attempt
             .map(AddResult.fromUpdate)
+
+        def addCorrOrg(item: Ident, org: OOrganization.OrgAndContacts): F[AddResult] =
+          (for {
+            _ <- OptionT(store.transact(RItem.getCollective(item)))
+              .filter(_ == org.org.cid)
+            addres <- OptionT.liftF(oorg.addOrg(org))
+            _ <- addres match {
+              case AddResult.Success =>
+                OptionT.liftF(
+                  store.transact(
+                    RItem.updateCorrOrg(item, org.org.cid, Some(org.org.oid))
+                  )
+                )
+              case AddResult.EntityExists(_) =>
+                OptionT.pure[F](0)
+              case AddResult.Failure(_) =>
+                OptionT.pure[F](0)
+            }
+          } yield addres)
+            .getOrElse(AddResult.Failure(new Exception("Collective mismatch")))
 
         def setCorrPerson(
             item: Ident,

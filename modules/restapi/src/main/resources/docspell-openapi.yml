@@ -1150,6 +1150,28 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BasicResult"
+    post:
+      tags: [ Item ]
+      summary: Set a new correspondent organization of an item.
+      description: |
+        Create a new organization and update the correspondent
+        organization of an item.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Organization"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
   /sec/item/{id}/corrPerson:
     put:
       tags: [ Item ]

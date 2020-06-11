@@ -100,6 +100,14 @@ object ItemRoutes {
           resp  <- Ok(Conversions.basicResult(res, "Correspondent organization updated"))
         } yield resp
 
+      case req @ POST -> Root / Ident(id) / "corrOrg" =>
+        for {
+          data <- req.as[Organization]
+          org  <- Conversions.newOrg(data, user.account.collective)
+          res  <- backend.item.addCorrOrg(id, org)
+          resp <- Ok(Conversions.basicResult(res, "Correspondent organization updated"))
+        } yield resp
+
       case req @ PUT -> Root / Ident(id) / "corrPerson" =>
         for {
           idref <- req.as[OptionalId]
