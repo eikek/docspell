@@ -67,13 +67,6 @@ options:
       - title: Browser Extension (Firefox)
         url: doc/tools/browserext
 
-  - title: Development
-    url: dev
-
-    nested_options:
-      - title: ADRs
-        url: dev/adr
-
   - title: Api
     url: api
 
@@ -83,6 +76,13 @@ options:
 
      - title: REST OpenApi Spec
        url: openapi/docspell-openapi.yml
+
+  - title: Development
+    url: dev
+
+    nested_options:
+      - title: ADRs
+        url: dev/adr
 
   - title: Changelog
     url : changelog

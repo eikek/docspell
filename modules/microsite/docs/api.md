@@ -16,7 +16,7 @@ The "raw" `openapi.yml` specification file can be found
 [here](openapi/docspell-openapi.yml).
 
 The routes can be divided into protected and unprotected routes. The
-unprotected, or open routes are at `/open/*` wihle the protected
+unprotected, or open routes are at `/open/*` while the protected
 routes are at `/sec/*`. Open routes don't require authenticated access
 and can be used by any user. The protected routes require an
 authenticated user.
