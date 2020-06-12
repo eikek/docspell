@@ -12,6 +12,9 @@ module Comp.Dropdown exposing
     , view
     )
 
+{-| This needs to be rewritten from scratch!
+-}
+
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -41,7 +44,8 @@ makeItem model val =
     { value = val
     , option = model.makeOption val
     , visible = True
-    , selected = False
+    , selected =
+        List.any (\i -> i.value == val) model.selected
     , active = False
     }
 

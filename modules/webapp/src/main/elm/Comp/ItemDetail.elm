@@ -276,6 +276,7 @@ saveTags flags model =
     let
         tags =
             Comp.Dropdown.getSelected model.tagModel
+                |> Util.List.distinct
                 |> List.map (\t -> IdName t.id t.name)
                 |> ReferenceList
     in
