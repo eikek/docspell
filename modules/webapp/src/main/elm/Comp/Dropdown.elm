@@ -88,7 +88,7 @@ makeSingle :
 makeSingle opts =
     makeModel
         { multiple = False
-        , searchable = \n -> n > 8
+        , searchable = \n -> n > 5
         , makeOption = opts.makeOption
         , labelColor = \_ -> \_ -> ""
         , placeholder = opts.placeholder
@@ -126,7 +126,7 @@ makeMultiple :
 makeMultiple opts =
     makeModel
         { multiple = True
-        , searchable = \n -> n > 8
+        , searchable = \n -> n > 5
         , makeOption = opts.makeOption
         , labelColor = opts.labelColor
         , placeholder = ""

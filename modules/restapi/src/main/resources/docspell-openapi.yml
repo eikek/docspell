@@ -1060,7 +1060,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/BasicResult"
   /sec/item/{id}/tags:
-    post:
+    put:
       tags: [ Item ]
       summary: Set new set of tags.
       description: |
@@ -1081,8 +1081,33 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BasicResult"
-  /sec/item/{id}/direction:
     post:
+      tags: [ Item ]
+      summary: Add a new tag to an item.
+      description: |
+        Creates a new tag and associates it to the given item.
+
+        The tag's `id` and `created` are generated and not used from
+        the given data, so it can be left empty. Only `name` and
+        `category` are used, where `category` is optional.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Tag"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+  /sec/item/{id}/direction:
+    put:
       tags: [ Item ]
       summary: Set the direction of an item.
       description: |
@@ -1104,7 +1129,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/BasicResult"
   /sec/item/{id}/corrOrg:
-    post:
+    put:
       tags: [ Item ]
       summary: Set the correspondent organization of an item.
       description: |
@@ -1125,8 +1150,30 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BasicResult"
-  /sec/item/{id}/corrPerson:
     post:
+      tags: [ Item ]
+      summary: Set a new correspondent organization of an item.
+      description: |
+        Create a new organization and update the correspondent
+        organization of an item.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Organization"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+  /sec/item/{id}/corrPerson:
+    put:
       tags: [ Item ]
       summary: Set the correspondent person of an item.
       description: |
@@ -1147,8 +1194,30 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BasicResult"
-  /sec/item/{id}/concPerson:
     post:
+      tags: [ Item ]
+      summary: Create and set the correspondent person of an item.
+      description: |
+        Creates a new person and updates the correspondent person of
+        an item.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Person"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+  /sec/item/{id}/concPerson:
+    put:
       tags: [ Item ]
       summary: Set the concerning person of an item.
       description: |
@@ -1169,8 +1238,30 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BasicResult"
-  /sec/item/{id}/concEquipment:
     post:
+      tags: [ Item ]
+      summary: Create and set the concerning person of an item.
+      description: |
+        Creates a new person and updates the concerning person of an
+        item.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Person"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+  /sec/item/{id}/concEquipment:
+    put:
       tags: [ Item ]
       summary: Set the concering equipment of an item.
       description: |
@@ -1191,8 +1282,30 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BasicResult"
-  /sec/item/{id}/notes:
     post:
+      tags: [ Item ]
+      summary: Create and set a new the concering equipment of an item.
+      description: |
+        Creates a new equipment and sets it as the concering equipment
+        of an item.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Equipment"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+  /sec/item/{id}/notes:
+    put:
       tags: [ Item ]
       summary: Set notes of an item.
       description: |
@@ -1214,7 +1327,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/BasicResult"
   /sec/item/{id}/name:
-    post:
+    put:
       tags: [ Item ]
       summary: Set the name of an item.
       description: |
@@ -1272,7 +1385,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/BasicResult"
   /sec/item/{id}/date:
-    post:
+    put:
       tags: [ Item ]
       summary: Sets the item date.
       description: |
@@ -1294,7 +1407,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/BasicResult"
   /sec/item/{id}/duedate:
-    post:
+    put:
       tags: [ Item ]
       summary: Sets the items due date.
       description: |

@@ -25,10 +25,14 @@ import Api.Model.TagList exposing (TagList)
 import Browser.Navigation as Nav
 import Comp.AttachmentMeta
 import Comp.DatePicker
+import Comp.DetailEdit
 import Comp.Dropdown exposing (isDropdownChangeMsg)
 import Comp.Dropzone
+import Comp.EquipmentForm
 import Comp.ItemMail
 import Comp.MarkdownInput
+import Comp.OrgForm
+import Comp.PersonForm
 import Comp.SentMails
 import Comp.YesNoDimmer
 import Data.Direction exposing (Direction)
@@ -93,6 +97,7 @@ type alias Model =
     , errored : Set String
     , loading : Set String
     , attachDD : DD.Model String String
+    , modalEdit : Maybe Comp.DetailEdit.Model
     }
 
 
@@ -179,6 +184,7 @@ emptyModel =
     , errored = Set.empty
     , loading = Set.empty
     , attachDD = DD.init
+    , modalEdit = Nothing
     }
 
 
@@ -242,10 +248,17 @@ type Msg
     | AddFilesProgress String Http.Progress
     | AddFilesReset
     | AttachDDMsg (DD.Msg String String)
+    | ModalEditMsg Comp.DetailEdit.Msg
+    | StartTagModal
+    | StartCorrOrgModal
+    | StartCorrPersonModal
+    | StartConcPersonModal
+    | StartEquipModal
+    | CloseModal
 
 
 
--- update
+--- Update
 
 
 getOptions : Flags -> Cmd Msg
@@ -511,6 +524,7 @@ update key flags next msg model =
                 , itemDate = item.itemDate
                 , dueDate = item.dueDate
                 , visibleAttach = 0
+                , modalEdit = Nothing
               }
             , Cmd.batch
                 [ c1
@@ -1202,9 +1216,95 @@ update key flags next msg model =
             in
             noSub ( { model | attachDD = model_ }, cmd )
 
+        ModalEditMsg lm ->
+            case model.modalEdit of
+                Just mm ->
+                    let
+                        ( mm_, mc_, mv ) =
+                            Comp.DetailEdit.update flags lm mm
+
+                        ( model_, cmd_ ) =
+                            case mv of
+                                Just Comp.DetailEdit.CancelForm ->
+                                    ( { model | modalEdit = Nothing }, Cmd.none )
+
+                                Just _ ->
+                                    ( model, Api.itemDetail flags model.item.id GetItemResp )
+
+                                Nothing ->
+                                    ( { model | modalEdit = Just mm_ }, Cmd.none )
+                    in
+                    noSub ( model_, Cmd.batch [ cmd_, Cmd.map ModalEditMsg mc_ ] )
+
+                Nothing ->
+                    noSub ( model, Cmd.none )
+
+        StartTagModal ->
+            noSub
+                ( { model
+                    | modalEdit = Just (Comp.DetailEdit.initTagByName model.item.id "")
+                  }
+                , Cmd.none
+                )
+
+        StartCorrOrgModal ->
+            noSub
+                ( { model
+                    | modalEdit =
+                        Just
+                            (Comp.DetailEdit.initOrg
+                                model.item.id
+                                Comp.OrgForm.emptyModel
+                            )
+                  }
+                , Cmd.none
+                )
+
+        StartCorrPersonModal ->
+            noSub
+                ( { model
+                    | modalEdit =
+                        Just
+                            (Comp.DetailEdit.initCorrPerson
+                                model.item.id
+                                Comp.PersonForm.emptyModel
+                            )
+                  }
+                , Cmd.none
+                )
+
+        StartConcPersonModal ->
+            noSub
+                ( { model
+                    | modalEdit =
+                        Just
+                            (Comp.DetailEdit.initConcPerson
+                                model.item.id
+                                Comp.PersonForm.emptyModel
+                            )
+                  }
+                , Cmd.none
+                )
+
+        StartEquipModal ->
+            noSub
+                ( { model
+                    | modalEdit =
+                        Just
+                            (Comp.DetailEdit.initEquip
+                                model.item.id
+                                Comp.EquipmentForm.emptyModel
+                            )
+                  }
+                , Cmd.none
+                )
+
+        CloseModal ->
+            noSub ( { model | modalEdit = Nothing }, Cmd.none )
 
 
--- view
+
+--- View
 
 
 actionInputDatePicker : DatePicker.Settings
@@ -1219,7 +1319,8 @@ actionInputDatePicker =
 view : { prev : Maybe String, next : Maybe String } -> UiSettings -> Model -> Html Msg
 view inav settings model =
     div []
-        [ renderItemInfo settings model
+        [ Html.map ModalEditMsg (Comp.DetailEdit.viewModal settings model.modalEdit)
+        , renderItemInfo settings model
         , div
             [ classList
                 [ ( "ui ablue-comp menu", True )
@@ -1674,7 +1775,7 @@ renderItemInfo settings model =
                 [ class "item"
                 , title "Due Date"
                 ]
-                [ Icons.dueDateIcon
+                [ Icons.dueDateIcon "grey"
                 , Maybe.map Util.Time.formatDate model.item.dueDate
                     |> Maybe.withDefault ""
                     |> text
@@ -1816,12 +1917,24 @@ renderEditButtons model =
 
 renderEditForm : UiSettings -> Model -> Html Msg
 renderEditForm settings model =
+    let
+        addIconLink tip m =
+            a
+                [ class "right-float"
+                , href "#"
+                , title tip
+                , onClick m
+                ]
+                [ i [ class "grey plus link icon" ] []
+                ]
+    in
     div [ class "ui attached segment" ]
         [ div [ class "ui form" ]
             [ div [ class "field" ]
                 [ label []
-                    [ i [ class "tags icon" ] []
+                    [ Icons.tagsIcon "grey"
                     , text "Tags"
+                    , addIconLink "Add new tag" StartTagModal
                     ]
                 , Html.map TagDropdownMsg (Comp.Dropdown.view settings model.tagModel)
                 ]
@@ -1838,11 +1951,17 @@ renderEditForm settings model =
                     ]
                 ]
             , div [ class "field" ]
-                [ label [] [ text "Direction" ]
+                [ label []
+                    [ Icons.directionIcon "grey"
+                    , text "Direction"
+                    ]
                 , Html.map DirDropdownMsg (Comp.Dropdown.view settings model.directionModel)
                 ]
             , div [ class " field" ]
-                [ label [] [ text "Date" ]
+                [ label []
+                    [ Icons.dateIcon "grey"
+                    , text "Date"
+                    ]
                 , div [ class "ui action input" ]
                     [ Html.map ItemDatePickerMsg
                         (Comp.DatePicker.viewTime
@@ -1857,7 +1976,10 @@ renderEditForm settings model =
                 , renderItemDateSuggestions model
                 ]
             , div [ class " field" ]
-                [ label [] [ text "Due Date" ]
+                [ label []
+                    [ Icons.dueDateIcon "grey"
+                    , text "Due Date"
+                    ]
                 , div [ class "ui action input" ]
                     [ Html.map DueDatePickerMsg
                         (Comp.DatePicker.viewTime
@@ -1871,30 +1993,46 @@ renderEditForm settings model =
                 , renderDueDateSuggestions model
                 ]
             , h4 [ class "ui dividing header" ]
-                [ i [ class "tiny envelope outline icon" ] []
+                [ Icons.correspondentIcon
                 , text "Correspondent"
                 ]
             , div [ class "field" ]
-                [ label [] [ text "Organization" ]
+                [ label []
+                    [ Icons.organizationIcon "grey"
+                    , text "Organization"
+                    , addIconLink "Add new organization" StartCorrOrgModal
+                    ]
                 , Html.map OrgDropdownMsg (Comp.Dropdown.view settings model.corrOrgModel)
                 , renderOrgSuggestions model
                 ]
             , div [ class "field" ]
-                [ label [] [ text "Person" ]
+                [ label []
+                    [ Icons.personIcon "grey"
+                    , text "Person"
+                    , addIconLink "Add new correspondent person" StartCorrPersonModal
+                    ]
                 , Html.map CorrPersonMsg (Comp.Dropdown.view settings model.corrPersonModel)
                 , renderCorrPersonSuggestions model
                 ]
             , h4 [ class "ui dividing header" ]
-                [ i [ class "tiny comment outline icon" ] []
+                [ Icons.concernedIcon
                 , text "Concerning"
                 ]
             , div [ class "field" ]
-                [ label [] [ text "Person" ]
+                [ label []
+                    [ Icons.personIcon "grey"
+                    , text "Person"
+                    , addIconLink "Add new concerning person" StartConcPersonModal
+                    ]
                 , Html.map ConcPersonMsg (Comp.Dropdown.view settings model.concPersonModel)
                 , renderConcPersonSuggestions model
                 ]
             , div [ class "field" ]
-                [ label [] [ text "Equipment" ]
+                [ label []
+                    [ Icons.equipmentIcon "grey"
+                    , text "Equipment"
+                    , addIconLink "Add new equipment" StartEquipModal
+                    ]
                 , Html.map ConcEquipMsg (Comp.Dropdown.view settings model.concEquipModel)
                 , renderConcEquipSuggestions model
                 ]

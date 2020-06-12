@@ -4,6 +4,7 @@ import Comp.EquipmentManage
 import Comp.OrgManage
 import Comp.PersonManage
 import Comp.TagManage
+import Data.Icons as Icons
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -25,28 +26,28 @@ view settings model =
                         [ classActive (model.currentTab == Just TagTab) "link icon item"
                         , onClick (SetTab TagTab)
                         ]
-                        [ i [ class "tag icon" ] []
+                        [ Icons.tagIcon ""
                         , text "Tag"
                         ]
                     , div
                         [ classActive (model.currentTab == Just EquipTab) "link icon item"
                         , onClick (SetTab EquipTab)
                         ]
-                        [ i [ class "box icon" ] []
+                        [ Icons.equipmentIcon ""
                         , text "Equipment"
                         ]
                     , div
                         [ classActive (model.currentTab == Just OrgTab) "link icon item"
                         , onClick (SetTab OrgTab)
                         ]
-                        [ i [ class "factory icon" ] []
+                        [ Icons.organizationIcon ""
                         , text "Organization"
                         ]
                     , div
                         [ classActive (model.currentTab == Just PersonTab) "link icon item"
                         , onClick (SetTab PersonTab)
                         ]
-                        [ i [ class "user icon" ] []
+                        [ Icons.personIcon ""
                         , text "Person"
                         ]
                     ]
@@ -77,7 +78,7 @@ view settings model =
 viewTags : Model -> List (Html Msg)
 viewTags model =
     [ h2 [ class "ui header" ]
-        [ i [ class "ui tag icon" ] []
+        [ Icons.tagIcon ""
         , div [ class "content" ]
             [ text "Tags"
             ]
@@ -89,7 +90,7 @@ viewTags model =
 viewEquip : Model -> List (Html Msg)
 viewEquip model =
     [ h2 [ class "ui header" ]
-        [ i [ class "ui box icon" ] []
+        [ Icons.equipmentIcon ""
         , div [ class "content" ]
             [ text "Equipment"
             ]
@@ -101,7 +102,7 @@ viewEquip model =
 viewOrg : UiSettings -> Model -> List (Html Msg)
 viewOrg settings model =
     [ h2 [ class "ui header" ]
-        [ i [ class "ui factory icon" ] []
+        [ Icons.organizationIcon ""
         , div [ class "content" ]
             [ text "Organizations"
             ]
@@ -113,7 +114,7 @@ viewOrg settings model =
 viewPerson : UiSettings -> Model -> List (Html Msg)
 viewPerson settings model =
     [ h2 [ class "ui header" ]
-        [ i [ class "ui user icon" ] []
+        [ Icons.personIcon ""
         , div [ class "content" ]
             [ text "Person"
             ]

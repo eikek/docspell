@@ -71,56 +71,96 @@ object ItemRoutes {
           resp <- Ok(Conversions.basicResult(res, "Item back to created."))
         } yield resp
 
-      case req @ POST -> Root / Ident(id) / "tags" =>
+      case req @ PUT -> Root / Ident(id) / "tags" =>
         for {
           tags <- req.as[ReferenceList].map(_.items)
           res  <- backend.item.setTags(id, tags.map(_.id), user.account.collective)
           resp <- Ok(Conversions.basicResult(res, "Tags updated"))
         } yield resp
 
-      case req @ POST -> Root / Ident(id) / "direction" =>
+      case req @ POST -> Root / Ident(id) / "tags" =>
+        for {
+          data <- req.as[Tag]
+          rtag <- Conversions.newTag(data, user.account.collective)
+          res  <- backend.item.addNewTag(id, rtag)
+          resp <- Ok(Conversions.basicResult(res, "Tag added."))
+        } yield resp
+
+      case req @ PUT -> Root / Ident(id) / "direction" =>
         for {
           dir  <- req.as[DirectionValue]
           res  <- backend.item.setDirection(id, dir.direction, user.account.collective)
           resp <- Ok(Conversions.basicResult(res, "Direction updated"))
         } yield resp
 
-      case req @ POST -> Root / Ident(id) / "corrOrg" =>
+      case req @ PUT -> Root / Ident(id) / "corrOrg" =>
         for {
           idref <- req.as[OptionalId]
           res   <- backend.item.setCorrOrg(id, idref.id, user.account.collective)
           resp  <- Ok(Conversions.basicResult(res, "Correspondent organization updated"))
         } yield resp
 
-      case req @ POST -> Root / Ident(id) / "corrPerson" =>
+      case req @ POST -> Root / Ident(id) / "corrOrg" =>
+        for {
+          data <- req.as[Organization]
+          org  <- Conversions.newOrg(data, user.account.collective)
+          res  <- backend.item.addCorrOrg(id, org)
+          resp <- Ok(Conversions.basicResult(res, "Correspondent organization updated"))
+        } yield resp
+
+      case req @ PUT -> Root / Ident(id) / "corrPerson" =>
         for {
           idref <- req.as[OptionalId]
           res   <- backend.item.setCorrPerson(id, idref.id, user.account.collective)
           resp  <- Ok(Conversions.basicResult(res, "Correspondent person updated"))
         } yield resp
 
-      case req @ POST -> Root / Ident(id) / "concPerson" =>
+      case req @ POST -> Root / Ident(id) / "corrPerson" =>
+        for {
+          data <- req.as[Person]
+          pers <- Conversions.newPerson(data, user.account.collective)
+          res  <- backend.item.addCorrPerson(id, pers)
+          resp <- Ok(Conversions.basicResult(res, "Correspondent person updated"))
+        } yield resp
+
+      case req @ PUT -> Root / Ident(id) / "concPerson" =>
         for {
           idref <- req.as[OptionalId]
           res   <- backend.item.setConcPerson(id, idref.id, user.account.collective)
           resp  <- Ok(Conversions.basicResult(res, "Concerned person updated"))
         } yield resp
 
-      case req @ POST -> Root / Ident(id) / "concEquipment" =>
+      case req @ POST -> Root / Ident(id) / "concPerson" =>
+        for {
+          data <- req.as[Person]
+          pers <- Conversions.newPerson(data, user.account.collective)
+          res  <- backend.item.addConcPerson(id, pers)
+          resp <- Ok(Conversions.basicResult(res, "Concerned person updated"))
+        } yield resp
+
+      case req @ PUT -> Root / Ident(id) / "concEquipment" =>
         for {
           idref <- req.as[OptionalId]
           res   <- backend.item.setConcEquip(id, idref.id, user.account.collective)
           resp  <- Ok(Conversions.basicResult(res, "Concerned equipment updated"))
         } yield resp
 
-      case req @ POST -> Root / Ident(id) / "notes" =>
+      case req @ POST -> Root / Ident(id) / "concEquipment" =>
+        for {
+          data  <- req.as[Equipment]
+          equip <- Conversions.newEquipment(data, user.account.collective)
+          res   <- backend.item.addConcEquip(id, equip)
+          resp  <- Ok(Conversions.basicResult(res, "Concerned equipment updated"))
+        } yield resp
+
+      case req @ PUT -> Root / Ident(id) / "notes" =>
         for {
           text <- req.as[OptionalText]
           res  <- backend.item.setNotes(id, text.text.notEmpty, user.account.collective)
           resp <- Ok(Conversions.basicResult(res, "Notes updated"))
         } yield resp
 
-      case req @ POST -> Root / Ident(id) / "name" =>
+      case req @ PUT -> Root / Ident(id) / "name" =>
         for {
           text <- req.as[OptionalText]
           res <- backend.item.setName(
@@ -131,7 +171,7 @@ object ItemRoutes {
           resp <- Ok(Conversions.basicResult(res, "Name updated"))
         } yield resp
 
-      case req @ POST -> Root / Ident(id) / "duedate" =>
+      case req @ PUT -> Root / Ident(id) / "duedate" =>
         for {
           date <- req.as[OptionalDate]
           _    <- logger.fdebug(s"Setting item due date to ${date.date}")
@@ -139,7 +179,7 @@ object ItemRoutes {
           resp <- Ok(Conversions.basicResult(res, "Item due date updated"))
         } yield resp
 
-      case req @ POST -> Root / Ident(id) / "date" =>
+      case req @ PUT -> Root / Ident(id) / "date" =>
         for {
           date <- req.as[OptionalDate]
           _    <- logger.fdebug(s"Setting item date to ${date.date}")
