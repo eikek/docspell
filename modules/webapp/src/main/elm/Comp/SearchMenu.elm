@@ -154,6 +154,17 @@ getItemSearch model =
     let
         e =
             Api.Model.ItemSearch.empty
+
+        amendWildcards s =
+            if String.startsWith "\"" s && String.endsWith "\"" s then
+                String.dropLeft 1 s
+                    |> String.dropRight 1
+
+            else if String.contains "*" s then
+                s
+
+            else
+                "*" ++ s ++ "*"
     in
     { e
         | tagsInclude = Comp.Dropdown.getSelected model.tagInclModel |> List.map .id
@@ -168,7 +179,9 @@ getItemSearch model =
         , dateUntil = model.untilDate
         , dueDateFrom = model.fromDueDate
         , dueDateUntil = model.untilDueDate
-        , name = model.nameModel
+        , name =
+            model.nameModel
+                |> Maybe.map amendWildcards
     }
 
 
@@ -493,9 +506,10 @@ view settings model =
                 ]
                 []
             , span [ class "small-info" ]
-                [ text "May contain wildcard "
+                [ text "Use wildcards "
                 , code [] [ text "*" ]
-                , text " at beginning or end"
+                , text " at beginning or end. Added automatically if not "
+                , text "present and not quoted."
                 ]
             ]
         , formHeader (Icons.tagsIcon "") "Tags"
