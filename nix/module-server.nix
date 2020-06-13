@@ -13,6 +13,7 @@ let
     app-name = "Docspell";
     app-id = "rest1";
     base-url = "http://localhost:7880";
+    max-item-page-size = 500;
     bind = {
       address = "localhost";
       port = 7880;
@@ -97,6 +98,18 @@ in {
         description = ''
           This is the base URL this application is deployed to. This is used
           to create absolute URLs and to configure the cookie.
+        '';
+      };
+
+      max-item-page-size = mkOption {
+        type = types.int;
+        default = defaults.max-item-page-size;
+        description = ''
+          This is a hard limit to restrict the size of a batch that is
+          returned when searching for items. The user can set this limit
+          within the client config, but it is restricted by the server to
+          the number defined here. An admin might choose a lower number
+          depending on the available resources.
         '';
       };
 

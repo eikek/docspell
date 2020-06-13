@@ -13,12 +13,17 @@ import org.http4s.circe.CirceEntityDecoder._
 import docspell.restapi.model._
 import docspell.common.syntax.all._
 import docspell.restserver.conv.Conversions
+import docspell.restserver.Config
 import org.log4s._
 
 object ItemRoutes {
   private[this] val logger = getLogger
 
-  def apply[F[_]: Effect](backend: BackendApp[F], user: AuthToken): HttpRoutes[F] = {
+  def apply[F[_]: Effect](
+      cfg: Config,
+      backend: BackendApp[F],
+      user: AuthToken
+  ): HttpRoutes[F] = {
     val dsl = new Http4sDsl[F] {}
     import dsl._
 
@@ -31,7 +36,7 @@ object ItemRoutes {
           _ <- logger.ftrace(s"Running query: $query")
           items <- backend.item.findItems(
             query,
-            Batch(mask.offset, mask.limit).restrictLimitTo(500)
+            Batch(mask.offset, mask.limit).restrictLimitTo(cfg.maxItemPageSize)
           )
           resp <- Ok(Conversions.mkItemList(items))
         } yield resp
@@ -44,7 +49,7 @@ object ItemRoutes {
           _ <- logger.ftrace(s"Running query: $query")
           items <- backend.item.findItemsWithTags(
             query,
-            Batch(mask.offset, mask.limit).restrictLimitTo(500)
+            Batch(mask.offset, mask.limit).restrictLimitTo(cfg.maxItemPageSize)
           )
           resp <- Ok(Conversions.mkItemListWithTags(items))
         } yield resp

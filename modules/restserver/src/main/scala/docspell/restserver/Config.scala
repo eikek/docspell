@@ -12,7 +12,8 @@ case class Config(
     bind: Config.Bind,
     backend: BackendConfig,
     auth: Login.Config,
-    integrationEndpoint: Config.IntegrationEndpoint
+    integrationEndpoint: Config.IntegrationEndpoint,
+    maxItemPageSize: Int
 )
 
 object Config {
