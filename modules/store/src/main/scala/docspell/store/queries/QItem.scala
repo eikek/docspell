@@ -164,6 +164,7 @@ object QItem {
       dateTo: Option[Timestamp],
       dueDateFrom: Option[Timestamp],
       dueDateTo: Option[Timestamp],
+      allNames: Option[String],
       orderAsc: Option[RItem.Columns.type => Column]
   )
 
@@ -180,6 +181,7 @@ object QItem {
         None,
         Nil,
         Nil,
+        None,
         None,
         None,
         None,
@@ -282,13 +284,26 @@ object QItem {
           RTagItem.Columns.tagId.isOneOf(q.tagsExclude)
         )
 
-    val name = q.name.map(queryWildcard)
+    val name     = q.name.map(_.toLowerCase).map(queryWildcard)
+    val allNames = q.allNames.map(_.toLowerCase).map(queryWildcard)
     val cond = and(
       IC.cid.prefix("i").is(q.collective),
       IC.state.prefix("i").isOneOf(q.states),
       IC.incoming.prefix("i").isOrDiscard(q.direction),
       name
-        .map(n => or(IC.name.prefix("i").lowerLike(n), IC.notes.prefix("i").lowerLike(n)))
+        .map(n => IC.name.prefix("i").lowerLike(n))
+        .getOrElse(Fragment.empty),
+      allNames
+        .map(n =>
+          or(
+            OC.name.prefix("o0").lowerLike(n),
+            PC.name.prefix("p0").lowerLike(n),
+            PC.name.prefix("p1").lowerLike(n),
+            EC.name.prefix("e1").lowerLike(n),
+            IC.name.prefix("i").lowerLike(n),
+            IC.notes.prefix("i").lowerLike(n)
+          )
+        )
         .getOrElse(Fragment.empty),
       RPerson.Columns.pid.prefix("p0").isOrDiscard(q.corrPerson),
       ROrganization.Columns.oid.prefix("o0").isOrDiscard(q.corrOrg),

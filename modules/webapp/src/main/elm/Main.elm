@@ -45,12 +45,12 @@ init flags url key =
         page =
             checkPage flags im.page
 
-        ( m, cmd ) =
+        ( m, cmd, s ) =
             if im.page == page then
                 App.Update.initPage im page
 
             else
-                ( im, Page.goto page )
+                ( im, Page.goto page, Sub.none )
 
         sessionCheck =
             case m.flags.account of
@@ -60,7 +60,7 @@ init flags url key =
                 Nothing ->
                     Cmd.none
     in
-    ( m
+    ( { m | subs = s }
     , Cmd.batch
         [ cmd
         , ic

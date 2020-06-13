@@ -3354,6 +3354,13 @@ components:
             - outgoing
         name:
           type: string
+          description: |
+            Search in item names.
+        allNames:
+          type: string
+          description: |
+            Search in item names, correspondents, concerned entities
+            and notes.
         corrOrg:
           type: string
           format: ident

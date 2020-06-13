@@ -121,6 +121,7 @@ trait Conversions {
       m.dateUntil,
       m.dueDateFrom,
       m.dueDateUntil,
+      m.allNames,
       None
     )
 

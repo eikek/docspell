@@ -20,12 +20,14 @@ import Comp.DatePicker
 import Comp.Dropdown exposing (isDropdownChangeMsg)
 import Data.Direction exposing (Direction)
 import Data.Flags exposing (Flags)
+import Data.Icons as Icons
 import Data.UiSettings exposing (UiSettings)
 import DatePicker exposing (DatePicker)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onCheck, onInput)
 import Http
+import Util.Maybe
 import Util.Tag
 import Util.Update
 
@@ -52,6 +54,7 @@ type alias Model =
     , untilDueDateModel : DatePicker
     , untilDueDate : Maybe Int
     , nameModel : Maybe String
+    , allNameModel : Maybe String
     , datePickerInitialized : Bool
     }
 
@@ -107,6 +110,7 @@ init =
     , untilDueDateModel = Comp.DatePicker.emptyModel
     , untilDueDate = Nothing
     , nameModel = Nothing
+    , allNameModel = Nothing
     , datePickerInitialized = False
     }
 
@@ -130,6 +134,7 @@ type Msg
     | GetEquipResp (Result Http.Error EquipmentList)
     | GetPersonResp (Result Http.Error ReferenceList)
     | SetName String
+    | SetAllName String
     | ResetForm
 
 
@@ -152,6 +157,17 @@ getItemSearch model =
     let
         e =
             Api.Model.ItemSearch.empty
+
+        amendWildcards s =
+            if String.startsWith "\"" s && String.endsWith "\"" s then
+                String.dropLeft 1 s
+                    |> String.dropRight 1
+
+            else if String.contains "*" s then
+                s
+
+            else
+                "*" ++ s ++ "*"
     in
     { e
         | tagsInclude = Comp.Dropdown.getSelected model.tagInclModel |> List.map .id
@@ -166,7 +182,12 @@ getItemSearch model =
         , dateUntil = model.untilDate
         , dueDateFrom = model.fromDueDate
         , dueDateUntil = model.untilDueDate
-        , name = model.nameModel
+        , name =
+            model.nameModel
+                |> Maybe.map amendWildcards
+        , allNames =
+            model.allNameModel
+                |> Maybe.map amendWildcards
     }
 
 
@@ -444,17 +465,24 @@ update flags settings msg model =
         SetName str ->
             let
                 next =
-                    if str == "" then
-                        Nothing
-
-                    else
-                        Just str
+                    Util.Maybe.fromString str
             in
             NextState
                 ( { model | nameModel = next }
                 , Cmd.none
                 )
                 (model.nameModel /= next)
+
+        SetAllName str ->
+            let
+                next =
+                    Util.Maybe.fromString str
+            in
+            NextState
+                ( { model | allNameModel = next }
+                , Cmd.none
+                )
+                (model.allNameModel /= next)
 
 
 
@@ -463,6 +491,18 @@ update flags settings msg model =
 
 view : UiSettings -> Model -> Html Msg
 view settings model =
+    let
+        formHeader icon headline =
+            div [ class "ui small dividing header" ]
+                [ icon
+                , div [ class "content" ]
+                    [ text headline
+                    ]
+                ]
+
+        nameIcon =
+            i [ class "left align icon" ] []
+    in
     div [ class "ui form" ]
         [ div [ class "inline field" ]
             [ div [ class "ui checkbox" ]
@@ -477,8 +517,21 @@ view settings model =
                     ]
                 ]
             ]
+        , formHeader nameIcon "Names"
         , div [ class "field" ]
-            [ label [] [ text "Name or Notes" ]
+            [ label [] [ text "All Names" ]
+            , input
+                [ type_ "text"
+                , onInput SetAllName
+                , model.allNameModel |> Maybe.withDefault "" |> value
+                ]
+                []
+            , span [ class "small-info" ]
+                [ text "Looks in correspondents, concerned, item name and notes."
+                ]
+            ]
+        , div [ class "field" ]
+            [ label [] [ text "Name" ]
             , input
                 [ type_ "text"
                 , onInput SetName
@@ -486,18 +539,16 @@ view settings model =
                 ]
                 []
             , span [ class "small-info" ]
-                [ text "May contain wildcard "
-                , code [] [ text "*" ]
-                , text " at beginning or end"
+                [ text "Looks in item name."
                 ]
             ]
-        , div [ class "field" ]
-            [ label [] [ text "Direction" ]
-            , Html.map DirectionMsg (Comp.Dropdown.view settings model.directionModel)
+        , span [ class "small-info" ]
+            [ text "Use wildcards "
+            , code [] [ text "*" ]
+            , text " at beginning or end. Added automatically if not "
+            , text "present and not quoted."
             ]
-        , h3 [ class "ui header" ]
-            [ text "Tags"
-            ]
+        , formHeader (Icons.tagsIcon "") "Tags"
         , div [ class "field" ]
             [ label [] [ text "Include (and)" ]
             , Html.map TagIncMsg (Comp.Dropdown.view settings model.tagInclModel)
@@ -506,17 +557,17 @@ view settings model =
             [ label [] [ text "Exclude (or)" ]
             , Html.map TagExcMsg (Comp.Dropdown.view settings model.tagExclModel)
             ]
-        , h3 [ class "ui header" ]
-            [ case getDirection model of
+        , formHeader (Icons.correspondentIcon "")
+            (case getDirection model of
                 Just Data.Direction.Incoming ->
-                    text "Sender"
+                    "Sender"
 
                 Just Data.Direction.Outgoing ->
-                    text "Recipient"
+                    "Recipient"
 
                 Nothing ->
-                    text "Correspondent"
-            ]
+                    "Correspondent"
+            )
         , div [ class "field" ]
             [ label [] [ text "Organization" ]
             , Html.map OrgMsg (Comp.Dropdown.view settings model.orgModel)
@@ -525,9 +576,7 @@ view settings model =
             [ label [] [ text "Person" ]
             , Html.map CorrPersonMsg (Comp.Dropdown.view settings model.corrPersonModel)
             ]
-        , h3 [ class "ui header" ]
-            [ text "Concerned"
-            ]
+        , formHeader Icons.concernedIcon "Concerned"
         , div [ class "field" ]
             [ label [] [ text "Person" ]
             , Html.map ConcPersonMsg (Comp.Dropdown.view settings model.concPersonModel)
@@ -536,9 +585,7 @@ view settings model =
             [ label [] [ text "Equipment" ]
             , Html.map ConcEquipmentMsg (Comp.Dropdown.view settings model.concEquipmentModel)
             ]
-        , h3 [ class "ui header" ]
-            [ text "Date"
-            ]
+        , formHeader (Icons.dateIcon "") "Date"
         , div [ class "fields" ]
             [ div [ class "field" ]
                 [ label []
@@ -561,9 +608,7 @@ view settings model =
                     )
                 ]
             ]
-        , h3 [ class "ui header" ]
-            [ text "Due Date"
-            ]
+        , formHeader (Icons.dueDateIcon "") "Due Date"
         , div [ class "fields" ]
             [ div [ class "field" ]
                 [ label []
@@ -585,5 +630,9 @@ view settings model =
                         model.untilDueDateModel
                     )
                 ]
+            ]
+        , formHeader (Icons.directionIcon "") "Direction"
+        , div [ class "field" ]
+            [ Html.map DirectionMsg (Comp.Dropdown.view settings model.directionModel)
             ]
         ]

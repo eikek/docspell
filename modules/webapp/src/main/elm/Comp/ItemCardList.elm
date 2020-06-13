@@ -209,7 +209,7 @@ viewItem settings item =
                     [ class "item"
                     , title "Correspondent"
                     ]
-                    [ Icons.correspondentIcon
+                    [ Icons.correspondentIcon ""
                     , text " "
                     , Util.String.withDefault "-" corr |> text
                     ]

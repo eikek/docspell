@@ -40,44 +40,44 @@ update msg model =
         ( m, c, s ) =
             updateWithSub msg model
     in
-    ( { m | subs = Sub.batch [ m.subs, s ] }, c )
+    ( { m | subs = s }, c )
 
 
 updateWithSub : Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
 updateWithSub msg model =
     case msg of
         HomeMsg lm ->
-            updateHome lm model |> noSub
+            updateHome lm model
 
         LoginMsg lm ->
-            updateLogin lm model |> noSub
+            updateLogin lm model
 
         ManageDataMsg lm ->
-            updateManageData lm model |> noSub
+            updateManageData lm model
 
         CollSettingsMsg m ->
-            updateCollSettings m model |> noSub
+            updateCollSettings m model
 
         UserSettingsMsg m ->
-            updateUserSettings m model |> noSub
+            updateUserSettings m model
 
         QueueMsg m ->
-            updateQueue m model |> noSub
+            updateQueue m model
 
         RegisterMsg m ->
-            updateRegister m model |> noSub
+            updateRegister m model
 
         UploadMsg m ->
             updateUpload m model
 
         NewInviteMsg m ->
-            updateNewInvite m model |> noSub
+            updateNewInvite m model
 
         ItemDetailMsg m ->
             updateItemDetail m model
 
         VersionResp (Ok info) ->
-            ( { model | version = info }, Cmd.none ) |> noSub
+            ( { model | version = info }, Cmd.none, Sub.none )
 
         VersionResp (Err _) ->
             ( model, Cmd.none, Sub.none )
@@ -162,25 +162,27 @@ updateWithSub msg model =
                 check =
                     checkPage model.flags page
 
-                ( m, c ) =
+                ( m, c, s ) =
                     initPage model page
             in
             if check == page then
-                ( { m | page = page }, c, Sub.none )
+                ( { m | page = page }, c, s )
 
             else
                 ( model, Page.goto check, Sub.none )
 
         ToggleNavMenu ->
-            ( { model | navMenuOpen = not model.navMenuOpen }, Cmd.none, Sub.none )
+            ( { model | navMenuOpen = not model.navMenuOpen }
+            , Cmd.none
+            , Sub.none
+            )
 
         GetUiSettings settings ->
-            Util.Update.andThen1
+            Util.Update.andThen2
                 [ updateUserSettings Page.UserSettings.Data.UpdateSettings
                 , updateHome Page.Home.Data.DoSearch
                 ]
                 { model | uiSettings = settings }
-                |> noSub
 
 
 updateItemDetail : Page.ItemDetail.Data.Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
@@ -200,7 +202,7 @@ updateItemDetail lmsg model =
     )
 
 
-updateNewInvite : Page.NewInvite.Data.Msg -> Model -> ( Model, Cmd Msg )
+updateNewInvite : Page.NewInvite.Data.Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
 updateNewInvite lmsg model =
     let
         ( lm, lc ) =
@@ -208,6 +210,7 @@ updateNewInvite lmsg model =
     in
     ( { model | newInviteModel = lm }
     , Cmd.map NewInviteMsg lc
+    , Sub.none
     )
 
 
@@ -227,7 +230,7 @@ updateUpload lmsg model =
     )
 
 
-updateRegister : Page.Register.Data.Msg -> Model -> ( Model, Cmd Msg )
+updateRegister : Page.Register.Data.Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
 updateRegister lmsg model =
     let
         ( lm, lc ) =
@@ -235,10 +238,11 @@ updateRegister lmsg model =
     in
     ( { model | registerModel = lm }
     , Cmd.map RegisterMsg lc
+    , Sub.none
     )
 
 
-updateQueue : Page.Queue.Data.Msg -> Model -> ( Model, Cmd Msg )
+updateQueue : Page.Queue.Data.Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
 updateQueue lmsg model =
     let
         ( lm, lc ) =
@@ -246,10 +250,11 @@ updateQueue lmsg model =
     in
     ( { model | queueModel = lm }
     , Cmd.map QueueMsg lc
+    , Sub.none
     )
 
 
-updateUserSettings : Page.UserSettings.Data.Msg -> Model -> ( Model, Cmd Msg )
+updateUserSettings : Page.UserSettings.Data.Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
 updateUserSettings lmsg model =
     let
         ( lm, lc, ls ) =
@@ -257,17 +262,13 @@ updateUserSettings lmsg model =
     in
     ( { model
         | userSettingsModel = lm
-        , subs =
-            Sub.batch
-                [ model.subs
-                , Sub.map UserSettingsMsg ls
-                ]
       }
     , Cmd.map UserSettingsMsg lc
+    , Sub.map UserSettingsMsg ls
     )
 
 
-updateCollSettings : Page.CollectiveSettings.Data.Msg -> Model -> ( Model, Cmd Msg )
+updateCollSettings : Page.CollectiveSettings.Data.Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
 updateCollSettings lmsg model =
     let
         ( lm, lc ) =
@@ -277,10 +278,11 @@ updateCollSettings lmsg model =
     in
     ( { model | collSettingsModel = lm }
     , Cmd.map CollSettingsMsg lc
+    , Sub.none
     )
 
 
-updateLogin : Page.Login.Data.Msg -> Model -> ( Model, Cmd Msg )
+updateLogin : Page.Login.Data.Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
 updateLogin lmsg model =
     let
         ( lm, lc, ar ) =
@@ -295,21 +297,25 @@ updateLogin lmsg model =
     in
     ( { model | loginModel = lm, flags = newFlags }
     , Cmd.map LoginMsg lc
+    , Sub.none
     )
 
 
-updateHome : Page.Home.Data.Msg -> Model -> ( Model, Cmd Msg )
+updateHome : Page.Home.Data.Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
 updateHome lmsg model =
     let
-        ( lm, lc ) =
+        ( lm, lc, ls ) =
             Page.Home.Update.update model.key model.flags model.uiSettings lmsg model.homeModel
     in
-    ( { model | homeModel = lm }
+    ( { model
+        | homeModel = lm
+      }
     , Cmd.map HomeMsg lc
+    , Sub.map HomeMsg ls
     )
 
 
-updateManageData : Page.ManageData.Data.Msg -> Model -> ( Model, Cmd Msg )
+updateManageData : Page.ManageData.Data.Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
 updateManageData lmsg model =
     let
         ( lm, lc ) =
@@ -317,14 +323,15 @@ updateManageData lmsg model =
     in
     ( { model | manageDataModel = lm }
     , Cmd.map ManageDataMsg lc
+    , Sub.none
     )
 
 
-initPage : Model -> Page -> ( Model, Cmd Msg )
+initPage : Model -> Page -> ( Model, Cmd Msg, Sub Msg )
 initPage model page =
     case page of
         HomePage ->
-            Util.Update.andThen1
+            Util.Update.andThen2
                 [ updateHome Page.Home.Data.Init
                 , updateQueue Page.Queue.Data.StopRefresh
                 ]
@@ -337,14 +344,14 @@ initPage model page =
             updateQueue Page.Queue.Data.StopRefresh model
 
         CollectiveSettingPage ->
-            Util.Update.andThen1
+            Util.Update.andThen2
                 [ updateQueue Page.Queue.Data.StopRefresh
                 , updateCollSettings Page.CollectiveSettings.Data.Init
                 ]
                 model
 
         UserSettingPage ->
-            Util.Update.andThen1
+            Util.Update.andThen2
                 [ updateQueue Page.Queue.Data.StopRefresh
                 ]
                 model
@@ -362,21 +369,8 @@ initPage model page =
             updateQueue Page.Queue.Data.StopRefresh model
 
         ItemDetailPage id ->
-            let
-                updateDetail m__ =
-                    let
-                        ( m, c, s ) =
-                            updateItemDetail (Page.ItemDetail.Data.Init id) m__
-                    in
-                    ( { m | subs = Sub.batch [ m.subs, s ] }, c )
-            in
-            Util.Update.andThen1
-                [ updateDetail
+            Util.Update.andThen2
+                [ updateItemDetail (Page.ItemDetail.Data.Init id)
                 , updateQueue Page.Queue.Data.StopRefresh
                 ]
                 model
-
-
-noSub : ( Model, Cmd Msg ) -> ( Model, Cmd Msg, Sub Msg )
-noSub ( m, c ) =
-    ( m, c, Sub.none )

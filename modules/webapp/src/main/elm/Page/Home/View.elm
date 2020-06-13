@@ -1,11 +1,12 @@
 module Page.Home.View exposing (view)
 
+import Api.Model.ItemSearch
 import Comp.ItemCardList
 import Comp.SearchMenu
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick)
+import Html.Events exposing (onClick, onInput)
 import Page exposing (Page(..))
 import Page.Home.Data exposing (..)
 
@@ -47,8 +48,15 @@ view settings model =
                         , onClick DoSearch
                         , title "Run search query"
                         , href ""
+                        , disabled model.searchInProgress
                         ]
-                        [ i [ class "ui search icon" ] []
+                        [ i
+                            [ classList
+                                [ ( "search icon", not model.searchInProgress )
+                                , ( "loading spinner icon", model.searchInProgress )
+                                ]
+                            ]
+                            []
                         ]
                     ]
                 ]
@@ -68,26 +76,50 @@ view settings model =
             [ div
                 [ classList
                     [ ( "invisible hidden", not model.menuCollapsed )
-                    , ( "ui segment container", True )
+                    , ( "ui menu container", True )
                     ]
                 ]
                 [ a
-                    [ class "ui basic large circular label"
+                    [ class "item"
                     , onClick ToggleSearchMenu
                     , href "#"
+                    , title "Open search menu"
                     ]
-                    [ i [ class "search icon" ] []
-                    , text "Search Menu…"
+                    [ i [ class "angle left icon" ] []
+                    , i [ class "icons" ]
+                        [ i [ class "grey bars icon" ] []
+                        , i [ class "bottom left corner search icon" ] []
+                        , if hasMoreSearch model then
+                            i [ class "top right blue corner circle icon" ] []
+
+                          else
+                            span [ class "hidden invisible" ] []
+                        ]
+                    ]
+                , div [ class "ui category search item" ]
+                    [ div [ class "ui transparent icon input" ]
+                        [ input
+                            [ type_ "text"
+                            , placeholder "Basic search…"
+                            , onInput SetBasicSearch
+                            , Maybe.map value model.searchMenuModel.allNameModel
+                                |> Maybe.withDefault (value "")
+                            ]
+                            []
+                        , i
+                            [ classList
+                                [ ( "search link icon", not model.searchInProgress )
+                                , ( "loading spinner icon", model.searchInProgress )
+                                ]
+                            ]
+                            []
+                        ]
                     ]
                 ]
             , case model.viewMode of
                 Listing ->
-                    if model.searchInProgress then
-                        resultPlaceholder
-
-                    else
-                        Html.map ItemCardListMsg
-                            (Comp.ItemCardList.view settings model.itemListModel)
+                    Html.map ItemCardListMsg
+                        (Comp.ItemCardList.view settings model.itemListModel)
 
                 Detail ->
                     div [] []
@@ -125,32 +157,13 @@ view settings model =
         ]
 
 
-resultPlaceholder : Html Msg
-resultPlaceholder =
-    div [ class "ui basic segment" ]
-        [ div [ class "ui active inverted dimmer" ]
-            [ div [ class "ui medium text loader" ]
-                [ text "Searching …"
-                ]
-            ]
-        , div [ class "ui middle aligned very relaxed divided basic list segment" ]
-            [ div [ class "item" ]
-                [ div [ class "ui fluid placeholder" ]
-                    [ div [ class "full line" ] []
-                    , div [ class "full line" ] []
-                    ]
-                ]
-            , div [ class "item" ]
-                [ div [ class "ui fluid placeholder" ]
-                    [ div [ class "full line" ] []
-                    , div [ class "full line" ] []
-                    ]
-                ]
-            , div [ class "item" ]
-                [ div [ class "ui fluid placeholder" ]
-                    [ div [ class "full line" ] []
-                    , div [ class "full line" ] []
-                    ]
-                ]
-            ]
-        ]
+hasMoreSearch : Model -> Bool
+hasMoreSearch model =
+    let
+        is =
+            Comp.SearchMenu.getItemSearch model.searchMenuModel
+
+        is_ =
+            { is | allNames = Nothing }
+    in
+    is_ /= Api.Model.ItemSearch.empty

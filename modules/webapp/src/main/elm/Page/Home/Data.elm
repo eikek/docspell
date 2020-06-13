@@ -16,6 +16,7 @@ import Data.Flags exposing (Flags)
 import Data.Items
 import Data.UiSettings exposing (UiSettings)
 import Http
+import Throttle exposing (Throttle)
 
 
 type alias Model =
@@ -27,6 +28,7 @@ type alias Model =
     , searchOffset : Int
     , moreAvailable : Bool
     , moreInProgress : Bool
+    , throttle : Throttle Msg
     }
 
 
@@ -36,10 +38,11 @@ init _ =
     , itemListModel = Comp.ItemCardList.init
     , searchInProgress = False
     , viewMode = Listing
-    , menuCollapsed = False
+    , menuCollapsed = True
     , searchOffset = 0
     , moreAvailable = True
     , moreInProgress = False
+    , throttle = Throttle.create 1
     }
 
 
@@ -53,6 +56,8 @@ type Msg
     | DoSearch
     | ToggleSearchMenu
     | LoadMore
+    | UpdateThrottle
+    | SetBasicSearch String
 
 
 type ViewMode
