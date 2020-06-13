@@ -30,6 +30,9 @@ options:
      - title: Adding Meta Data
        url: doc/metadata
 
+     - title: Finding Items
+       url: doc/finding
+
      - title: Uploads
        url: doc/uploading
 
