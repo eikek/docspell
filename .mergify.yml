@@ -7,3 +7,11 @@ pull_request_rules:
     actions:
       merge:
         method: merge
+  - name: automatically merge my (eikek) PRs on CI success
+    conditions:
+      - author=eikek
+      - base=master
+      - status-success=continuous-integration/travis-ci/pr
+    actions:
+      merge:
+        method: merge

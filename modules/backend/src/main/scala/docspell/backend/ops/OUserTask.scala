@@ -3,7 +3,6 @@ package docspell.backend.ops
 import cats.implicits._
 import cats.effect._
 import cats.data.OptionT
-import com.github.eikek.calev.CalEvent
 import io.circe.Encoder
 import fs2.Stream
 
@@ -30,12 +29,16 @@ trait OUserTask[F[_]] {
       task: UserTask[ScanMailboxArgs]
   ): F[Unit]
 
-  /** Return the settings for the notify-due-items task of the current
-    * user. There is at most one such task per user. If no task has
-    * been created/submitted a new one with default values is
-    * returned.
+  /** Return the settings for all the notify-due-items task of the
+    * current user.
     */
-  def getNotifyDueItems(account: AccountId): F[UserTask[NotifyDueItemsArgs]]
+  def getNotifyDueItems(account: AccountId): Stream[F, UserTask[NotifyDueItemsArgs]]
+
+  /** Find a notify-due-items task by the given id. */
+  def findNotifyDueItems(
+      id: Ident,
+      account: AccountId
+  ): OptionT[F, UserTask[NotifyDueItemsArgs]]
 
   /** Updates the notify-due-items tasks and notifies the joex nodes.
     */
@@ -100,62 +103,24 @@ object OUserTask {
           _ <- joex.notifyAllNodes
         } yield ()
 
-      def getNotifyDueItems(account: AccountId): F[UserTask[NotifyDueItemsArgs]] =
+      def getNotifyDueItems(account: AccountId): Stream[F, UserTask[NotifyDueItemsArgs]] =
         store
-          .getOneByName[NotifyDueItemsArgs](account, NotifyDueItemsArgs.taskName)
-          .getOrElseF(notifyDueItemsDefault(account))
+          .getByName[NotifyDueItemsArgs](account, NotifyDueItemsArgs.taskName)
+
+      def findNotifyDueItems(
+          id: Ident,
+          account: AccountId
+      ): OptionT[F, UserTask[NotifyDueItemsArgs]] =
+        OptionT(getNotifyDueItems(account).find(_.id == id).compile.last)
 
       def submitNotifyDueItems(
           account: AccountId,
           task: UserTask[NotifyDueItemsArgs]
       ): F[Unit] =
         for {
-          _ <- store.updateOneTask[NotifyDueItemsArgs](account, task)
+          _ <- store.updateTask[NotifyDueItemsArgs](account, task)
           _ <- joex.notifyAllNodes
         } yield ()
-
-      private def notifyDueItemsDefault(
-          account: AccountId
-      ): F[UserTask[NotifyDueItemsArgs]] =
-        for {
-          id <- Ident.randomId[F]
-        } yield UserTask(
-          id,
-          NotifyDueItemsArgs.taskName,
-          false,
-          CalEvent.unsafe("*-*-1/7 12:00"),
-          NotifyDueItemsArgs(
-            account,
-            Ident.unsafe(""),
-            Nil,
-            None,
-            5,
-            None,
-            Nil,
-            Nil
-          )
-        )
-
-      // private def scanMailboxDefault(
-      //     account: AccountId
-      // ): F[UserTask[ScanMailboxArgs]] =
-      //   for {
-      //     id <- Ident.randomId[F]
-      //   } yield UserTask(
-      //     id,
-      //     ScanMailboxArgs.taskName,
-      //     false,
-      //     CalEvent.unsafe("*-*-* 0,12:00"),
-      //     ScanMailboxArgs(
-      //       account,
-      //       Ident.unsafe(""),
-      //       Nil,
-      //       Some(Duration.hours(12)),
-      //       None,
-      //       false,
-      //       None
-      //     )
-      //   )
     })
 
 }

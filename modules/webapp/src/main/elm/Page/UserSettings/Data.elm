@@ -8,7 +8,7 @@ module Page.UserSettings.Data exposing
 import Comp.ChangePasswordForm
 import Comp.EmailSettingsManage
 import Comp.ImapSettingsManage
-import Comp.NotificationForm
+import Comp.NotificationManage
 import Comp.ScanMailboxManage
 import Comp.UiSettingsManage
 import Data.Flags exposing (Flags)
@@ -20,7 +20,7 @@ type alias Model =
     , changePassModel : Comp.ChangePasswordForm.Model
     , emailSettingsModel : Comp.EmailSettingsManage.Model
     , imapSettingsModel : Comp.ImapSettingsManage.Model
-    , notificationModel : Comp.NotificationForm.Model
+    , notificationModel : Comp.NotificationManage.Model
     , scanMailboxModel : Comp.ScanMailboxManage.Model
     , uiSettingsModel : Comp.UiSettingsManage.Model
     }
@@ -36,7 +36,7 @@ init flags settings =
       , changePassModel = Comp.ChangePasswordForm.emptyModel
       , emailSettingsModel = Comp.EmailSettingsManage.emptyModel
       , imapSettingsModel = Comp.ImapSettingsManage.emptyModel
-      , notificationModel = Tuple.first (Comp.NotificationForm.init flags settings)
+      , notificationModel = Tuple.first (Comp.NotificationManage.init flags)
       , scanMailboxModel = Tuple.first (Comp.ScanMailboxManage.init flags)
       , uiSettingsModel = um
       }
@@ -57,7 +57,7 @@ type Msg
     = SetTab Tab
     | ChangePassMsg Comp.ChangePasswordForm.Msg
     | EmailSettingsMsg Comp.EmailSettingsManage.Msg
-    | NotificationMsg Comp.NotificationForm.Msg
+    | NotificationMsg Comp.NotificationManage.Msg
     | ImapSettingsMsg Comp.ImapSettingsManage.Msg
     | ScanMailboxMsg Comp.ScanMailboxManage.Msg
     | UiSettingsMsg Comp.UiSettingsManage.Msg

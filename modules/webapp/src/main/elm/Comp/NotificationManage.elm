@@ -1,4 +1,4 @@
-module Comp.ScanMailboxManage exposing
+module Comp.NotificationManage exposing
     ( Model
     , Msg
     , init
@@ -8,10 +8,10 @@ module Comp.ScanMailboxManage exposing
 
 import Api
 import Api.Model.BasicResult exposing (BasicResult)
-import Api.Model.ScanMailboxSettings exposing (ScanMailboxSettings)
-import Api.Model.ScanMailboxSettingsList exposing (ScanMailboxSettingsList)
-import Comp.ScanMailboxForm
-import Comp.ScanMailboxList
+import Api.Model.NotificationSettings exposing (NotificationSettings)
+import Api.Model.NotificationSettingsList exposing (NotificationSettingsList)
+import Comp.NotificationForm
+import Comp.NotificationList
 import Data.Flags exposing (Flags)
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
@@ -22,17 +22,17 @@ import Util.Http
 
 
 type alias Model =
-    { listModel : Comp.ScanMailboxList.Model
-    , detailModel : Maybe Comp.ScanMailboxForm.Model
-    , items : List ScanMailboxSettings
+    { listModel : Comp.NotificationList.Model
+    , detailModel : Maybe Comp.NotificationForm.Model
+    , items : List NotificationSettings
     , result : Maybe BasicResult
     }
 
 
 type Msg
-    = ListMsg Comp.ScanMailboxList.Msg
-    | DetailMsg Comp.ScanMailboxForm.Msg
-    | GetDataResp (Result Http.Error ScanMailboxSettingsList)
+    = ListMsg Comp.NotificationList.Msg
+    | DetailMsg Comp.NotificationForm.Msg
+    | GetDataResp (Result Http.Error NotificationSettingsList)
     | NewTask
     | SubmitResp Bool (Result Http.Error BasicResult)
     | DeleteResp (Result Http.Error BasicResult)
@@ -40,7 +40,7 @@ type Msg
 
 initModel : Model
 initModel =
-    { listModel = Comp.ScanMailboxList.init
+    { listModel = Comp.NotificationList.init
     , detailModel = Nothing
     , items = []
     , result = Nothing
@@ -49,7 +49,7 @@ initModel =
 
 initCmd : Flags -> Cmd Msg
 initCmd flags =
-    Api.getScanMailbox flags GetDataResp
+    Api.getNotifyDueItems flags GetDataResp
 
 
 init : Flags -> ( Model, Cmd Msg )
@@ -80,17 +80,17 @@ update flags msg model =
         ListMsg lm ->
             let
                 ( mm, action ) =
-                    Comp.ScanMailboxList.update lm model.listModel
+                    Comp.NotificationList.update lm model.listModel
 
                 ( detail, cmd ) =
                     case action of
-                        Comp.ScanMailboxList.NoAction ->
+                        Comp.NotificationList.NoAction ->
                             ( Nothing, Cmd.none )
 
-                        Comp.ScanMailboxList.EditAction settings ->
+                        Comp.NotificationList.EditAction settings ->
                             let
                                 ( dm, dc ) =
-                                    Comp.ScanMailboxForm.initWith flags settings
+                                    Comp.NotificationForm.initWith flags settings
                             in
                             ( Just dm, Cmd.map DetailMsg dc )
             in
@@ -106,28 +106,28 @@ update flags msg model =
                 Just dm ->
                     let
                         ( mm, action, mc ) =
-                            Comp.ScanMailboxForm.update flags lm dm
+                            Comp.NotificationForm.update flags lm dm
 
                         ( model_, cmd_ ) =
                             case action of
-                                Comp.ScanMailboxForm.NoAction ->
+                                Comp.NotificationForm.NoAction ->
                                     ( { model | detailModel = Just mm }
                                     , Cmd.none
                                     )
 
-                                Comp.ScanMailboxForm.SubmitAction settings ->
+                                Comp.NotificationForm.SubmitAction settings ->
                                     ( { model
                                         | detailModel = Just mm
                                         , result = Nothing
                                       }
                                     , if settings.id == "" then
-                                        Api.createScanMailbox flags settings (SubmitResp True)
+                                        Api.createNotifyDueItems flags settings (SubmitResp True)
 
                                       else
-                                        Api.updateScanMailbox flags settings (SubmitResp True)
+                                        Api.updateNotifyDueItems flags settings (SubmitResp True)
                                     )
 
-                                Comp.ScanMailboxForm.CancelAction ->
+                                Comp.NotificationForm.CancelAction ->
                                     ( { model
                                         | detailModel = Nothing
                                         , result = Nothing
@@ -135,20 +135,20 @@ update flags msg model =
                                     , initCmd flags
                                     )
 
-                                Comp.ScanMailboxForm.StartOnceAction settings ->
+                                Comp.NotificationForm.StartOnceAction settings ->
                                     ( { model
                                         | detailModel = Just mm
                                         , result = Nothing
                                       }
-                                    , Api.startOnceScanMailbox flags settings (SubmitResp False)
+                                    , Api.startOnceNotifyDueItems flags settings (SubmitResp False)
                                     )
 
-                                Comp.ScanMailboxForm.DeleteAction id ->
+                                Comp.NotificationForm.DeleteAction id ->
                                     ( { model
                                         | detailModel = Just mm
                                         , result = Nothing
                                       }
-                                    , Api.deleteScanMailbox flags id DeleteResp
+                                    , Api.deleteNotifyDueItems flags id DeleteResp
                                     )
                     in
                     ( model_
@@ -164,7 +164,7 @@ update flags msg model =
         NewTask ->
             let
                 ( mm, mc ) =
-                    Comp.ScanMailboxForm.init flags
+                    Comp.NotificationForm.init flags
             in
             ( { model | detailModel = Just mm }, Cmd.map DetailMsg mc )
 
@@ -245,11 +245,11 @@ view settings model =
         ]
 
 
-viewForm : UiSettings -> Comp.ScanMailboxForm.Model -> Html Msg
+viewForm : UiSettings -> Comp.NotificationForm.Model -> Html Msg
 viewForm settings model =
-    Html.map DetailMsg (Comp.ScanMailboxForm.view "segment" settings model)
+    Html.map DetailMsg (Comp.NotificationForm.view "segment" settings model)
 
 
 viewList : Model -> Html Msg
 viewList model =
-    Html.map ListMsg (Comp.ScanMailboxList.view model.listModel model.items)
+    Html.map ListMsg (Comp.NotificationList.view model.listModel model.items)

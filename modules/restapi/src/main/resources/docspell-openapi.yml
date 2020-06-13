@@ -2008,7 +2008,8 @@ paths:
       description: |
         Return the current notification settings of the authenticated
         user. Users can be notified on due items via e-mail. This is
-        done by periodically querying items.
+        done by periodically querying items. It is possible to have
+        multiple tasks.
       security:
         - authTokenHeader: []
       responses:
@@ -2017,13 +2018,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/NotificationSettings"
+                $ref: "#/components/schemas/NotificationSettingsList"
     post:
       tags: [ User Tasks ]
-      summary: Change current settings for "Notify Due Items" task
+      summary: Create settings for "Notify Due Items" task
       description: |
-        Change the current notification settings of the authenticated
-        user.
+        Create a new notification settings task of the authenticated
+        user. The id field in the input is ignored.
       security:
         - authTokenHeader: []
       requestBody:
@@ -2038,6 +2039,58 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BasicResult"
+    put:
+      tags: [ User Tasks ]
+      summary: Change settings for "Notify Due Items" task
+      description: |
+        Change the settings for a notify-due-items task. The task is
+        looked up by its id.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NotificationSettings"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+  /sec/usertask/notifydueitems/{id}:
+    parameters:
+      - $ref: "#/components/parameters/id"
+    get:
+      tags: [ User Tasks ]
+      description: |
+        Return the current settings for a single notify-due-items task
+        of the authenticated user.
+      security:
+        - authTokenHeader: []
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotificationSettings"
+    delete:
+      tags: [ User Tasks ]
+      description: |
+        Delete the settings to a notify-due-items task of the
+        authenticated user.
+      security:
+        - authTokenHeader: []
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
   /sec/usertask/notifydueitems/startonce:
     post:
       tags: [ User Tasks ]
@@ -2100,7 +2153,7 @@ paths:
                 $ref: "#/components/schemas/BasicResult"
     put:
       tags: [ User Tasks ]
-      summary: Change current settings for "Scan Mailbox" task
+      summary: Change settings for a "Scan Mailbox" task
       description: |
         Change the settings for a scan-mailbox task. The task is
         looked up by its id.
@@ -2312,6 +2365,16 @@ components:
       properties:
         event:
           type: string
+    NotificationSettingsList:
+      description: |
+        A list of notification settings.
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/NotificationSettings"
     NotificationSettings:
       description: |
         Settings for notifying about due items.

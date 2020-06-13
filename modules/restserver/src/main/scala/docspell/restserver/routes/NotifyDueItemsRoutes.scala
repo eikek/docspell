@@ -2,6 +2,7 @@ package docspell.restserver.routes
 
 import cats.effect._
 import cats.implicits._
+import cats.data.OptionT
 import org.http4s._
 import org.http4s.dsl.Http4sDsl
 import org.http4s.circe.CirceEntityEncoder._
@@ -27,10 +28,18 @@ object NotifyDueItemsRoutes {
     import dsl._
 
     HttpRoutes.of {
+      case GET -> Root / Ident(id) =>
+        (for {
+          task <- ut.findNotifyDueItems(id, user.account)
+          res  <- OptionT.liftF(taskToSettings(user.account, backend, task))
+          resp <- OptionT.liftF(Ok(res))
+        } yield resp).getOrElseF(NotFound())
+
       case req @ POST -> Root / "startonce" =>
         for {
-          data <- req.as[NotificationSettings]
-          task = makeTask(cfg, user.account, data)
+          data  <- req.as[NotificationSettings]
+          newId <- Ident.randomId[F]
+          task  <- makeTask(newId, cfg, user.account, data)
           res <-
             ut.executeNow(user.account, task)
               .attempt
@@ -38,46 +47,77 @@ object NotifyDueItemsRoutes {
           resp <- Ok(res)
         } yield resp
 
-      case GET -> Root =>
+      case DELETE -> Root / Ident(id) =>
         for {
-          task <- ut.getNotifyDueItems(user.account)
-          res  <- taskToSettings(user.account, backend, task)
+          res <-
+            ut.deleteTask(user.account, id)
+              .attempt
+              .map(Conversions.basicResult(_, "Deleted successfully"))
           resp <- Ok(res)
+        } yield resp
+
+      case req @ PUT -> Root =>
+        def run(data: NotificationSettings) =
+          for {
+            task <- makeTask(data.id, cfg, user.account, data)
+            res <-
+              ut.submitNotifyDueItems(user.account, task)
+                .attempt
+                .map(Conversions.basicResult(_, "Saved successfully"))
+            resp <- Ok(res)
+          } yield resp
+        for {
+          data <- req.as[NotificationSettings]
+          resp <-
+            if (data.id.isEmpty) Ok(BasicResult(false, "Empty id is not allowed"))
+            else run(data)
         } yield resp
 
       case req @ POST -> Root =>
         for {
-          data <- req.as[NotificationSettings]
-          task = makeTask(cfg, user.account, data)
+          data  <- req.as[NotificationSettings]
+          newId <- Ident.randomId[F]
+          task  <- makeTask(newId, cfg, user.account, data)
           res <-
             ut.submitNotifyDueItems(user.account, task)
               .attempt
               .map(Conversions.basicResult(_, "Saved successfully."))
           resp <- Ok(res)
         } yield resp
+
+      case GET -> Root =>
+        ut.getNotifyDueItems(user.account)
+          .evalMap(task => taskToSettings(user.account, backend, task))
+          .compile
+          .toVector
+          .map(v => NotificationSettingsList(v.toList))
+          .flatMap(Ok(_))
     }
   }
 
-  def makeTask(
+  def makeTask[F[_]: Sync](
+      id: Ident,
       cfg: Config,
       user: AccountId,
       settings: NotificationSettings
-  ): UserTask[NotifyDueItemsArgs] =
-    UserTask(
-      settings.id,
-      NotifyDueItemsArgs.taskName,
-      settings.enabled,
-      settings.schedule,
-      NotifyDueItemsArgs(
-        user,
-        settings.smtpConnection,
-        settings.recipients,
-        Some(cfg.baseUrl / "app" / "item"),
-        settings.remindDays,
-        if (settings.capOverdue) Some(settings.remindDays)
-        else None,
-        settings.tagsInclude.map(_.id),
-        settings.tagsExclude.map(_.id)
+  ): F[UserTask[NotifyDueItemsArgs]] =
+    Sync[F].pure(
+      UserTask(
+        id,
+        NotifyDueItemsArgs.taskName,
+        settings.enabled,
+        settings.schedule,
+        NotifyDueItemsArgs(
+          user,
+          settings.smtpConnection,
+          settings.recipients,
+          Some(cfg.baseUrl / "app" / "item"),
+          settings.remindDays,
+          if (settings.capOverdue) Some(settings.remindDays)
+          else None,
+          settings.tagsInclude.map(_.id),
+          settings.tagsExclude.map(_.id)
+        )
       )
     )
 

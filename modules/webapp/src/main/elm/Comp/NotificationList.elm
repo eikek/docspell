@@ -1,4 +1,4 @@
-module Comp.ScanMailboxList exposing
+module Comp.NotificationList exposing
     ( Action(..)
     , Model
     , Msg
@@ -7,7 +7,7 @@ module Comp.ScanMailboxList exposing
     , view
     )
 
-import Api.Model.ScanMailboxSettings exposing (ScanMailboxSettings)
+import Api.Model.NotificationSettings exposing (NotificationSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
@@ -19,12 +19,12 @@ type alias Model =
 
 
 type Msg
-    = EditSettings ScanMailboxSettings
+    = EditSettings NotificationSettings
 
 
 type Action
     = NoAction
-    | EditAction ScanMailboxSettings
+    | EditAction NotificationSettings
 
 
 init : Model
@@ -39,7 +39,7 @@ update msg model =
             ( model, EditAction settings )
 
 
-view : Model -> List ScanMailboxSettings -> Html Msg
+view : Model -> List NotificationSettings -> Html Msg
 view _ items =
     div []
         [ table [ class "ui very basic center aligned table" ]
@@ -50,10 +50,8 @@ view _ items =
                     ]
                 , th [] [ text "Schedule" ]
                 , th [] [ text "Connection" ]
-                , th [] [ text "Folders" ]
-                , th [] [ text "Received Since" ]
-                , th [] [ text "Target" ]
-                , th [] [ text "Delete" ]
+                , th [] [ text "Recipients" ]
+                , th [] [ text "Remind Days" ]
                 ]
             , tbody []
                 (List.map viewItem items)
@@ -61,7 +59,7 @@ view _ items =
         ]
 
 
-viewItem : ScanMailboxSettings -> Html Msg
+viewItem : NotificationSettings -> Html Msg
 viewItem item =
     tr []
         [ td [ class "collapsing" ]
@@ -83,22 +81,13 @@ viewItem item =
                 ]
             ]
         , td []
-            [ text item.imapConnection
+            [ text item.smtpConnection
             ]
         , td []
-            [ String.join ", " item.folders |> text
+            [ String.join ", " item.recipients |> text
             ]
         , td []
-            [ Maybe.map String.fromInt item.receivedSinceHours
-                |> Maybe.withDefault "-"
+            [ String.fromInt item.remindDays
                 |> text
-            , text " h"
-            ]
-        , td []
-            [ Maybe.withDefault "-" item.targetFolder
-                |> text
-            ]
-        , td []
-            [ Util.Html.checkbox item.deleteMail
             ]
         ]

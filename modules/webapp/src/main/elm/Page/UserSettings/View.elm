@@ -3,7 +3,7 @@ module Page.UserSettings.View exposing (view)
 import Comp.ChangePasswordForm
 import Comp.EmailSettingsManage
 import Comp.ImapSettingsManage
-import Comp.NotificationForm
+import Comp.NotificationManage
 import Comp.ScanMailboxManage
 import Comp.UiSettingsManage
 import Data.UiSettings exposing (UiSettings)
@@ -42,7 +42,7 @@ view settings model =
                         viewEmailSettings settings model
 
                     Just NotificationTab ->
-                        viewNotificationForm settings model
+                        viewNotificationManage settings model
 
                     Just ImapSettingsTab ->
                         viewImapSettings settings model
@@ -127,8 +127,8 @@ viewChangePassword model =
     ]
 
 
-viewNotificationForm : UiSettings -> Model -> List (Html Msg)
-viewNotificationForm settings model =
+viewNotificationManage : UiSettings -> Model -> List (Html Msg)
+viewNotificationManage settings model =
     [ h2 [ class "ui header" ]
         [ i [ class "ui bullhorn icon" ] []
         , div [ class "content" ]
@@ -147,7 +147,7 @@ viewNotificationForm settings model =
         , text " days and sends this list via e-mail."
         ]
     , Html.map NotificationMsg
-        (Comp.NotificationForm.view "segment" settings model.notificationModel)
+        (Comp.NotificationManage.view settings model.notificationModel)
     ]
 
 
