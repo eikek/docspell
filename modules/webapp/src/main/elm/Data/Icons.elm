@@ -44,9 +44,9 @@ correspondent =
     "address card outline icon"
 
 
-correspondentIcon : Html msg
-correspondentIcon =
-    i [ class correspondent ] []
+correspondentIcon : String -> Html msg
+correspondentIcon classes =
+    i [ class (correspondent ++ " " ++ classes) ] []
 
 
 date : String

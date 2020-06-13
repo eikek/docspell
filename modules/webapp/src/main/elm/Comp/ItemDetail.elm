@@ -1787,7 +1787,7 @@ renderItemInfo settings model =
                 [ class "item"
                 , title "Correspondent"
                 ]
-                [ Icons.correspondentIcon
+                [ Icons.correspondentIcon ""
                 , List.filterMap identity [ model.item.corrOrg, model.item.corrPerson ]
                     |> List.map .name
                     |> String.join ", "
@@ -1994,7 +1994,7 @@ renderEditForm settings model =
                 , renderDueDateSuggestions model
                 ]
             , h4 [ class "ui dividing header" ]
-                [ Icons.correspondentIcon
+                [ Icons.correspondentIcon ""
                 , text "Correspondent"
                 ]
             , div [ class "field" ]

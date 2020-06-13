@@ -20,12 +20,14 @@ import Comp.DatePicker
 import Comp.Dropdown exposing (isDropdownChangeMsg)
 import Data.Direction exposing (Direction)
 import Data.Flags exposing (Flags)
+import Data.Icons as Icons
 import Data.UiSettings exposing (UiSettings)
 import DatePicker exposing (DatePicker)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onCheck, onInput)
 import Http
+import Util.Maybe
 import Util.Tag
 import Util.Update
 
@@ -444,11 +446,7 @@ update flags settings msg model =
         SetName str ->
             let
                 next =
-                    if str == "" then
-                        Nothing
-
-                    else
-                        Just str
+                    Util.Maybe.fromString str
             in
             NextState
                 ( { model | nameModel = next }
@@ -463,6 +461,15 @@ update flags settings msg model =
 
 view : UiSettings -> Model -> Html Msg
 view settings model =
+    let
+        formHeader icon headline =
+            div [ class "ui small dividing header" ]
+                [ icon
+                , div [ class "content" ]
+                    [ text headline
+                    ]
+                ]
+    in
     div [ class "ui form" ]
         [ div [ class "inline field" ]
             [ div [ class "ui checkbox" ]
@@ -491,13 +498,7 @@ view settings model =
                 , text " at beginning or end"
                 ]
             ]
-        , div [ class "field" ]
-            [ label [] [ text "Direction" ]
-            , Html.map DirectionMsg (Comp.Dropdown.view settings model.directionModel)
-            ]
-        , h3 [ class "ui header" ]
-            [ text "Tags"
-            ]
+        , formHeader (Icons.tagsIcon "") "Tags"
         , div [ class "field" ]
             [ label [] [ text "Include (and)" ]
             , Html.map TagIncMsg (Comp.Dropdown.view settings model.tagInclModel)
@@ -506,17 +507,17 @@ view settings model =
             [ label [] [ text "Exclude (or)" ]
             , Html.map TagExcMsg (Comp.Dropdown.view settings model.tagExclModel)
             ]
-        , h3 [ class "ui header" ]
-            [ case getDirection model of
+        , formHeader (Icons.correspondentIcon "")
+            (case getDirection model of
                 Just Data.Direction.Incoming ->
-                    text "Sender"
+                    "Sender"
 
                 Just Data.Direction.Outgoing ->
-                    text "Recipient"
+                    "Recipient"
 
                 Nothing ->
-                    text "Correspondent"
-            ]
+                    "Correspondent"
+            )
         , div [ class "field" ]
             [ label [] [ text "Organization" ]
             , Html.map OrgMsg (Comp.Dropdown.view settings model.orgModel)
@@ -525,9 +526,7 @@ view settings model =
             [ label [] [ text "Person" ]
             , Html.map CorrPersonMsg (Comp.Dropdown.view settings model.corrPersonModel)
             ]
-        , h3 [ class "ui header" ]
-            [ text "Concerned"
-            ]
+        , formHeader Icons.concernedIcon "Concerned"
         , div [ class "field" ]
             [ label [] [ text "Person" ]
             , Html.map ConcPersonMsg (Comp.Dropdown.view settings model.concPersonModel)
@@ -536,9 +535,7 @@ view settings model =
             [ label [] [ text "Equipment" ]
             , Html.map ConcEquipmentMsg (Comp.Dropdown.view settings model.concEquipmentModel)
             ]
-        , h3 [ class "ui header" ]
-            [ text "Date"
-            ]
+        , formHeader (Icons.dateIcon "") "Date"
         , div [ class "fields" ]
             [ div [ class "field" ]
                 [ label []
@@ -561,9 +558,7 @@ view settings model =
                     )
                 ]
             ]
-        , h3 [ class "ui header" ]
-            [ text "Due Date"
-            ]
+        , formHeader (Icons.dueDateIcon "") "Due Date"
         , div [ class "fields" ]
             [ div [ class "field" ]
                 [ label []
@@ -585,5 +580,9 @@ view settings model =
                         model.untilDueDateModel
                     )
                 ]
+            ]
+        , formHeader (Icons.directionIcon "") "Direction"
+        , div [ class "field" ]
+            [ Html.map DirectionMsg (Comp.Dropdown.view settings model.directionModel)
             ]
         ]
