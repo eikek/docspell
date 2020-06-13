@@ -34,7 +34,7 @@ type Msg
     | DetailMsg Comp.NotificationForm.Msg
     | GetDataResp (Result Http.Error NotificationSettingsList)
     | NewTask
-    | SubmitResp (Result Http.Error BasicResult)
+    | SubmitResp Bool (Result Http.Error BasicResult)
     | DeleteResp (Result Http.Error BasicResult)
 
 
@@ -121,10 +121,10 @@ update flags msg model =
                                         , result = Nothing
                                       }
                                     , if settings.id == "" then
-                                        Api.createNotifyDueItems flags settings SubmitResp
+                                        Api.createNotifyDueItems flags settings (SubmitResp True)
 
                                       else
-                                        Api.updateNotifyDueItems flags settings SubmitResp
+                                        Api.updateNotifyDueItems flags settings (SubmitResp True)
                                     )
 
                                 Comp.NotificationForm.CancelAction ->
@@ -140,7 +140,7 @@ update flags msg model =
                                         | detailModel = Just mm
                                         , result = Nothing
                                       }
-                                    , Api.startOnceNotifyDueItems flags settings SubmitResp
+                                    , Api.startOnceNotifyDueItems flags settings (SubmitResp False)
                                     )
 
                                 Comp.NotificationForm.DeleteAction id ->
@@ -168,12 +168,24 @@ update flags msg model =
             in
             ( { model | detailModel = Just mm }, Cmd.map DetailMsg mc )
 
-        SubmitResp (Ok res) ->
-            ( { model | result = Just res }
-            , Cmd.none
+        SubmitResp close (Ok res) ->
+            ( { model
+                | result = Just res
+                , detailModel =
+                    if close then
+                        Nothing
+
+                    else
+                        model.detailModel
+              }
+            , if close then
+                initCmd flags
+
+              else
+                Cmd.none
             )
 
-        SubmitResp (Err err) ->
+        SubmitResp _ (Err err) ->
             ( { model | result = Just (BasicResult False (Util.Http.errorToString err)) }
             , Cmd.none
             )
