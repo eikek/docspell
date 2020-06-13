@@ -9,7 +9,7 @@ import docspell.store.queue.JobQueue
 import docspell.store.usertask.UserTaskStore
 
 import scala.concurrent.ExecutionContext
-import emil.javamail.JavaMailEmil
+import emil.javamail.{JavaMailEmil, Settings}
 
 trait BackendApp[F[_]] {
 
@@ -38,21 +38,23 @@ object BackendApp {
       blocker: Blocker
   ): Resource[F, BackendApp[F]] =
     for {
-      utStore      <- UserTaskStore(store)
-      queue        <- JobQueue(store)
-      loginImpl    <- Login[F](store)
-      signupImpl   <- OSignup[F](store)
-      collImpl     <- OCollective[F](store)
-      sourceImpl   <- OSource[F](store)
-      tagImpl      <- OTag[F](store)
-      equipImpl    <- OEquipment[F](store)
-      orgImpl      <- OOrganization(store)
-      joexImpl     <- OJoex.create(httpClientEc, store)
-      uploadImpl   <- OUpload(store, queue, cfg.files, joexImpl)
-      nodeImpl     <- ONode(store)
-      jobImpl      <- OJob(store, joexImpl)
-      itemImpl     <- OItem(store)
-      mailImpl     <- OMail(store, JavaMailEmil(blocker))
+      utStore    <- UserTaskStore(store)
+      queue      <- JobQueue(store)
+      loginImpl  <- Login[F](store)
+      signupImpl <- OSignup[F](store)
+      collImpl   <- OCollective[F](store)
+      sourceImpl <- OSource[F](store)
+      tagImpl    <- OTag[F](store)
+      equipImpl  <- OEquipment[F](store)
+      orgImpl    <- OOrganization(store)
+      joexImpl   <- OJoex.create(httpClientEc, store)
+      uploadImpl <- OUpload(store, queue, cfg.files, joexImpl)
+      nodeImpl   <- ONode(store)
+      jobImpl    <- OJob(store, joexImpl)
+      itemImpl   <- OItem(store)
+      javaEmil =
+        JavaMailEmil(blocker, Settings.defaultSettings.copy(debug = cfg.mailDebug))
+      mailImpl     <- OMail(store, javaEmil)
       userTaskImpl <- OUserTask(utStore, queue, joexImpl)
     } yield new BackendApp[F] {
       val login: Login[F]            = loginImpl

@@ -4,7 +4,12 @@ import docspell.backend.signup.{Config => SignupConfig}
 import docspell.common._
 import docspell.store.JdbcConfig
 
-case class Config(jdbc: JdbcConfig, signup: SignupConfig, files: Config.Files) {}
+case class Config(
+    mailDebug: Boolean,
+    jdbc: JdbcConfig,
+    signup: SignupConfig,
+    files: Config.Files
+) {}
 
 object Config {
 

@@ -41,6 +41,7 @@ let
       session-valid = "5 minutes";
     };
     backend = {
+      mail-debug = false;
       jdbc = {
         url = "jdbc:h2:///tmp/docspell-demo.db;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;AUTO_SERVER=TRUE";
         user = "sa";
@@ -260,6 +261,16 @@ in {
       backend = mkOption {
         type = types.submodule({
           options = {
+            mail-debug = mkOption {
+              type = types.bool;
+              default = defaults.backend.mail-debug;
+              description = ''
+               Enable or disable debugging for e-mail related functionality. This
+               applies to both sending and receiving mails. For security reasons
+               logging is not very extensive on authentication failures. Setting
+               this to true, results in a lot of data printed to stdout.
+              '';
+            };
             jdbc = mkOption {
               type = types.submodule ({
                 options = {
