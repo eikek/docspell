@@ -54,6 +54,7 @@ type alias Model =
     , untilDueDateModel : DatePicker
     , untilDueDate : Maybe Int
     , nameModel : Maybe String
+    , allNameModel : Maybe String
     , datePickerInitialized : Bool
     }
 
@@ -109,6 +110,7 @@ init =
     , untilDueDateModel = Comp.DatePicker.emptyModel
     , untilDueDate = Nothing
     , nameModel = Nothing
+    , allNameModel = Nothing
     , datePickerInitialized = False
     }
 
@@ -132,6 +134,7 @@ type Msg
     | GetEquipResp (Result Http.Error EquipmentList)
     | GetPersonResp (Result Http.Error ReferenceList)
     | SetName String
+    | SetAllName String
     | ResetForm
 
 
@@ -181,6 +184,9 @@ getItemSearch model =
         , dueDateUntil = model.untilDueDate
         , name =
             model.nameModel
+                |> Maybe.map amendWildcards
+        , allNames =
+            model.allNameModel
                 |> Maybe.map amendWildcards
     }
 
@@ -467,6 +473,17 @@ update flags settings msg model =
                 )
                 (model.nameModel /= next)
 
+        SetAllName str ->
+            let
+                next =
+                    Util.Maybe.fromString str
+            in
+            NextState
+                ( { model | allNameModel = next }
+                , Cmd.none
+                )
+                (model.allNameModel /= next)
+
 
 
 -- View
@@ -497,6 +514,19 @@ view settings model =
                     ]
                 ]
             ]
+        , formHeader (i [ class "left align icon" ] []) "By Name"
+        , div [ class "field" ]
+            [ label [] [ text "All Names" ]
+            , input
+                [ type_ "text"
+                , onInput SetAllName
+                , model.allNameModel |> Maybe.withDefault "" |> value
+                ]
+                []
+            , span [ class "small-info" ]
+                [ text "Looks in correspondents, concerned, item name and notes."
+                ]
+            ]
         , div [ class "field" ]
             [ label [] [ text "Name or Notes" ]
             , input
@@ -506,11 +536,14 @@ view settings model =
                 ]
                 []
             , span [ class "small-info" ]
-                [ text "Use wildcards "
-                , code [] [ text "*" ]
-                , text " at beginning or end. Added automatically if not "
-                , text "present and not quoted."
+                [ text "Looks in item name and notes only."
                 ]
+            ]
+        , span [ class "small-info" ]
+            [ text "Use wildcards "
+            , code [] [ text "*" ]
+            , text " at beginning or end. Added automatically if not "
+            , text "present and not quoted."
             ]
         , formHeader (Icons.tagsIcon "") "Tags"
         , div [ class "field" ]

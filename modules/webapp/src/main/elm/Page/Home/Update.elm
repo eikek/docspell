@@ -35,7 +35,7 @@ update key flags settings msg model =
                     { model | searchMenuModel = Tuple.first nextState.modelCmd }
 
                 ( m2, c2 ) =
-                    if nextState.stateChange then
+                    if nextState.stateChange && not model.searchInProgress then
                         doSearch flags settings newModel
 
                     else
