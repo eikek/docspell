@@ -284,8 +284,8 @@ object QItem {
           RTagItem.Columns.tagId.isOneOf(q.tagsExclude)
         )
 
-    val name     = q.name.map(queryWildcard)
-    val allNames = q.allNames.map(queryWildcard)
+    val name     = q.name.map(_.toLowerCase).map(queryWildcard)
+    val allNames = q.allNames.map(_.toLowerCase).map(queryWildcard)
     val cond = and(
       IC.cid.prefix("i").is(q.collective),
       IC.state.prefix("i").isOneOf(q.states),
