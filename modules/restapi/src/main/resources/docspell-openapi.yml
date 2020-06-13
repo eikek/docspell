@@ -3354,6 +3354,8 @@ components:
             - outgoing
         name:
           type: string
+        allNames:
+          type: string
         corrOrg:
           type: string
           format: ident
