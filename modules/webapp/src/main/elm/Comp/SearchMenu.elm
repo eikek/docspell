@@ -499,6 +499,9 @@ view settings model =
                     [ text headline
                     ]
                 ]
+
+        nameIcon =
+            i [ class "left align icon" ] []
     in
     div [ class "ui form" ]
         [ div [ class "inline field" ]
@@ -514,7 +517,7 @@ view settings model =
                     ]
                 ]
             ]
-        , formHeader (i [ class "left align icon" ] []) "By Name"
+        , formHeader nameIcon "Names"
         , div [ class "field" ]
             [ label [] [ text "All Names" ]
             , input
@@ -528,7 +531,7 @@ view settings model =
                 ]
             ]
         , div [ class "field" ]
-            [ label [] [ text "Name or Notes" ]
+            [ label [] [ text "Name" ]
             , input
                 [ type_ "text"
                 , onInput SetName
@@ -536,7 +539,7 @@ view settings model =
                 ]
                 []
             , span [ class "small-info" ]
-                [ text "Looks in item name and notes only."
+                [ text "Looks in item name."
                 ]
             ]
         , span [ class "small-info" ]

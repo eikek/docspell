@@ -7,17 +7,15 @@ import Data.Flags exposing (Flags)
 import Data.UiSettings exposing (UiSettings)
 import Page exposing (Page(..))
 import Page.Home.Data exposing (..)
-import Util.Update
+import Throttle
+import Time
 
 
-update : Nav.Key -> Flags -> UiSettings -> Msg -> Model -> ( Model, Cmd Msg )
+update : Nav.Key -> Flags -> UiSettings -> Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
 update key flags settings msg model =
     case msg of
         Init ->
-            Util.Update.andThen1
-                [ update key flags settings (SearchMenuMsg Comp.SearchMenu.Init)
-                ]
-                model
+            update key flags settings (SearchMenuMsg Comp.SearchMenu.Init) model
 
         ResetSearch ->
             let
@@ -34,14 +32,20 @@ update key flags settings msg model =
                 newModel =
                     { model | searchMenuModel = Tuple.first nextState.modelCmd }
 
-                ( m2, c2 ) =
+                ( m2, c2, s2 ) =
                     if nextState.stateChange && not model.searchInProgress then
                         doSearch flags settings newModel
 
                     else
-                        ( newModel, Cmd.none )
+                        withSub ( newModel, Cmd.none )
             in
-            ( m2, Cmd.batch [ c2, Cmd.map SearchMenuMsg (Tuple.second nextState.modelCmd) ] )
+            ( m2
+            , Cmd.batch
+                [ c2
+                , Cmd.map SearchMenuMsg (Tuple.second nextState.modelCmd)
+                ]
+            , s2
+            )
 
         ItemCardListMsg m ->
             let
@@ -56,9 +60,10 @@ update key flags settings msg model =
                         Nothing ->
                             Cmd.none
             in
-            ( { model | itemListModel = m2 }
-            , Cmd.batch [ Cmd.map ItemCardListMsg c2, cmd ]
-            )
+            withSub
+                ( { model | itemListModel = m2 }
+                , Cmd.batch [ Cmd.map ItemCardListMsg c2, cmd ]
+                )
 
         ItemSearchResp (Ok list) ->
             let
@@ -92,52 +97,71 @@ update key flags settings msg model =
             update key flags settings (ItemCardListMsg (Comp.ItemCardList.AddResults list)) m
 
         ItemSearchAddResp (Err _) ->
-            ( { model
-                | moreInProgress = False
-              }
-            , Cmd.none
-            )
+            withSub
+                ( { model
+                    | moreInProgress = False
+                  }
+                , Cmd.none
+                )
 
         ItemSearchResp (Err _) ->
-            ( { model
-                | searchInProgress = False
-              }
-            , Cmd.none
-            )
+            withSub
+                ( { model
+                    | searchInProgress = False
+                  }
+                , Cmd.none
+                )
 
         DoSearch ->
             let
                 nm =
                     { model | searchOffset = 0 }
             in
-            doSearch flags settings nm
+            if model.searchInProgress then
+                withSub ( model, Cmd.none )
+
+            else
+                doSearch flags settings nm
 
         ToggleSearchMenu ->
-            ( { model | menuCollapsed = not model.menuCollapsed }
-            , Cmd.none
-            )
+            withSub
+                ( { model | menuCollapsed = not model.menuCollapsed }
+                , Cmd.none
+                )
 
         LoadMore ->
             if model.moreAvailable then
-                doSearchMore flags settings model
+                doSearchMore flags settings model |> withSub
 
             else
-                ( model, Cmd.none )
+                withSub ( model, Cmd.none )
+
+        UpdateThrottle ->
+            let
+                ( newThrottle, cmd ) =
+                    Throttle.update model.throttle
+            in
+            withSub ( { model | throttle = newThrottle }, cmd )
 
 
-doSearch : Flags -> UiSettings -> Model -> ( Model, Cmd Msg )
+doSearch : Flags -> UiSettings -> Model -> ( Model, Cmd Msg, Sub Msg )
 doSearch flags settings model =
     let
-        cmd =
+        searchCmd =
             doSearchCmd flags settings 0 model
+
+        ( newThrottle, cmd ) =
+            Throttle.try searchCmd model.throttle
     in
-    ( { model
-        | searchInProgress = True
-        , viewMode = Listing
-        , searchOffset = 0
-      }
-    , cmd
-    )
+    withSub
+        ( { model
+            | searchInProgress = cmd /= Cmd.none
+            , viewMode = Listing
+            , searchOffset = 0
+            , throttle = newThrottle
+          }
+        , cmd
+        )
 
 
 doSearchMore : Flags -> UiSettings -> Model -> ( Model, Cmd Msg )
@@ -148,4 +172,14 @@ doSearchMore flags settings model =
     in
     ( { model | moreInProgress = True, viewMode = Listing }
     , cmd
+    )
+
+
+withSub : ( Model, Cmd Msg ) -> ( Model, Cmd Msg, Sub Msg )
+withSub ( m, c ) =
+    ( m
+    , c
+    , Throttle.ifNeeded
+        (Time.every 150 (\_ -> UpdateThrottle))
+        m.throttle
     )

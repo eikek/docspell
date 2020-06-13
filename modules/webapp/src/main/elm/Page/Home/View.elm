@@ -47,8 +47,15 @@ view settings model =
                         , onClick DoSearch
                         , title "Run search query"
                         , href ""
+                        , disabled model.searchInProgress
                         ]
-                        [ i [ class "ui search icon" ] []
+                        [ i
+                            [ classList
+                                [ ( "search icon", not model.searchInProgress )
+                                , ( "loading spinner icon", model.searchInProgress )
+                                ]
+                            ]
+                            []
                         ]
                     ]
                 ]
@@ -82,12 +89,8 @@ view settings model =
                 ]
             , case model.viewMode of
                 Listing ->
-                    if model.searchInProgress then
-                        resultPlaceholder
-
-                    else
-                        Html.map ItemCardListMsg
-                            (Comp.ItemCardList.view settings model.itemListModel)
+                    Html.map ItemCardListMsg
+                        (Comp.ItemCardList.view settings model.itemListModel)
 
                 Detail ->
                     div [] []
@@ -119,37 +122,6 @@ view settings model =
 
                       else
                         text "That's all"
-                    ]
-                ]
-            ]
-        ]
-
-
-resultPlaceholder : Html Msg
-resultPlaceholder =
-    div [ class "ui basic segment" ]
-        [ div [ class "ui active inverted dimmer" ]
-            [ div [ class "ui medium text loader" ]
-                [ text "Searching …"
-                ]
-            ]
-        , div [ class "ui middle aligned very relaxed divided basic list segment" ]
-            [ div [ class "item" ]
-                [ div [ class "ui fluid placeholder" ]
-                    [ div [ class "full line" ] []
-                    , div [ class "full line" ] []
-                    ]
-                ]
-            , div [ class "item" ]
-                [ div [ class "ui fluid placeholder" ]
-                    [ div [ class "full line" ] []
-                    , div [ class "full line" ] []
-                    ]
-                ]
-            , div [ class "item" ]
-                [ div [ class "ui fluid placeholder" ]
-                    [ div [ class "full line" ] []
-                    , div [ class "full line" ] []
                     ]
                 ]
             ]

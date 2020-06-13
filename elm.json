@@ -22,7 +22,8 @@
             "justinmimbs/date": "3.1.2",
             "norpan/elm-html5-drag-drop": "3.1.4",
             "ryannhg/date-format": "2.3.0",
-            "truqu/elm-base64": "2.0.4"
+            "truqu/elm-base64": "2.0.4",
+            "ursi/elm-throttle": "1.0.1"
         },
         "indirect": {
             "elm/bytes": "1.0.8",
