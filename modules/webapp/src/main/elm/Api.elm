@@ -9,12 +9,14 @@ module Api exposing
     , checkCalEvent
     , createImapSettings
     , createMailSettings
+    , createNotifyDueItems
     , createScanMailbox
     , deleteAttachment
     , deleteEquip
     , deleteImapSettings
     , deleteItem
     , deleteMailSettings
+    , deleteNotifyDueItems
     , deleteOrg
     , deletePerson
     , deleteScanMailbox
@@ -75,6 +77,7 @@ module Api exposing
     , startOnceNotifyDueItems
     , startOnceScanMailbox
     , submitNotifyDueItems
+    , updateNotifyDueItems
     , updateScanMailbox
     , upload
     , uploadAmend
@@ -108,6 +111,7 @@ import Api.Model.ItemUploadMeta exposing (ItemUploadMeta)
 import Api.Model.JobQueueState exposing (JobQueueState)
 import Api.Model.MoveAttachment exposing (MoveAttachment)
 import Api.Model.NotificationSettings exposing (NotificationSettings)
+import Api.Model.NotificationSettingsList exposing (NotificationSettingsList)
 import Api.Model.OptionalDate exposing (OptionalDate)
 import Api.Model.OptionalId exposing (OptionalId)
 import Api.Model.OptionalText exposing (OptionalText)
@@ -216,6 +220,19 @@ getScanMailbox flags receive =
 --- NotifyDueItems
 
 
+deleteNotifyDueItems :
+    Flags
+    -> String
+    -> (Result Http.Error BasicResult -> msg)
+    -> Cmd msg
+deleteNotifyDueItems flags id receive =
+    Http2.authDelete
+        { url = flags.config.baseUrl ++ "/api/v1/sec/usertask/notifydueitems/" ++ id
+        , account = getAccount flags
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
 startOnceNotifyDueItems :
     Flags
     -> NotificationSettings
@@ -230,6 +247,46 @@ startOnceNotifyDueItems flags settings receive =
         }
 
 
+updateNotifyDueItems :
+    Flags
+    -> NotificationSettings
+    -> (Result Http.Error BasicResult -> msg)
+    -> Cmd msg
+updateNotifyDueItems flags settings receive =
+    Http2.authPut
+        { url = flags.config.baseUrl ++ "/api/v1/sec/usertask/notifydueitems"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.NotificationSettings.encode settings)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+createNotifyDueItems :
+    Flags
+    -> NotificationSettings
+    -> (Result Http.Error BasicResult -> msg)
+    -> Cmd msg
+createNotifyDueItems flags settings receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/usertask/notifydueitems"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.NotificationSettings.encode settings)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+getNotifyDueItems :
+    Flags
+    -> (Result Http.Error NotificationSettingsList -> msg)
+    -> Cmd msg
+getNotifyDueItems flags receive =
+    Http2.authGet
+        { url = flags.config.baseUrl ++ "/api/v1/sec/usertask/notifydueitems"
+        , account = getAccount flags
+        , expect = Http.expectJson receive Api.Model.NotificationSettingsList.decoder
+        }
+
+
 submitNotifyDueItems :
     Flags
     -> NotificationSettings
@@ -241,18 +298,6 @@ submitNotifyDueItems flags settings receive =
         , account = getAccount flags
         , body = Http.jsonBody (Api.Model.NotificationSettings.encode settings)
         , expect = Http.expectJson receive Api.Model.BasicResult.decoder
-        }
-
-
-getNotifyDueItems :
-    Flags
-    -> (Result Http.Error NotificationSettings -> msg)
-    -> Cmd msg
-getNotifyDueItems flags receive =
-    Http2.authGet
-        { url = flags.config.baseUrl ++ "/api/v1/sec/usertask/notifydueitems"
-        , account = getAccount flags
-        , expect = Http.expectJson receive Api.Model.NotificationSettings.decoder
         }
 
 

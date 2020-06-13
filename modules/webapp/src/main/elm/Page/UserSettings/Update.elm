@@ -3,7 +3,7 @@ module Page.UserSettings.Update exposing (update)
 import Comp.ChangePasswordForm
 import Comp.EmailSettingsManage
 import Comp.ImapSettingsManage
-import Comp.NotificationForm
+import Comp.NotificationManage
 import Comp.ScanMailboxManage
 import Comp.UiSettingsManage
 import Data.Flags exposing (Flags)
@@ -41,7 +41,7 @@ update flags settings msg model =
                     let
                         initCmd =
                             Cmd.map NotificationMsg
-                                (Tuple.second (Comp.NotificationForm.init flags settings))
+                                (Tuple.second (Comp.NotificationManage.init flags))
                     in
                     ( m, initCmd, Sub.none )
 
@@ -80,7 +80,7 @@ update flags settings msg model =
         NotificationMsg lm ->
             let
                 ( m2, c2 ) =
-                    Comp.NotificationForm.update flags lm model.notificationModel
+                    Comp.NotificationManage.update flags lm model.notificationModel
             in
             ( { model | notificationModel = m2 }
             , Cmd.map NotificationMsg c2

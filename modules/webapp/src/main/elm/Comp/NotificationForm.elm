@@ -1,7 +1,9 @@
 module Comp.NotificationForm exposing
-    ( Model
+    ( Action(..)
+    , Model
     , Msg
     , init
+    , initWith
     , update
     , view
     )
@@ -16,6 +18,7 @@ import Comp.CalEventInput
 import Comp.Dropdown
 import Comp.EmailInput
 import Comp.IntField
+import Comp.YesNoDimmer
 import Data.CalEvent exposing (CalEvent)
 import Data.Flags exposing (Flags)
 import Data.UiSettings exposing (UiSettings)
@@ -45,7 +48,16 @@ type alias Model =
     , scheduleModel : Comp.CalEventInput.Model
     , formMsg : Maybe BasicResult
     , loading : Int
+    , yesNoDelete : Comp.YesNoDimmer.Model
     }
+
+
+type Action
+    = SubmitAction NotificationSettings
+    | StartOnceAction NotificationSettings
+    | CancelAction
+    | DeleteAction String
+    | NoAction
 
 
 type Msg
@@ -60,22 +72,63 @@ type Msg
     | ToggleEnabled
     | ToggleCapOverdue
     | CalEventMsg Comp.CalEventInput.Msg
-    | SetNotificationSettings (Result Http.Error NotificationSettings)
-    | SubmitResp (Result Http.Error BasicResult)
     | StartOnce
+    | Cancel
+    | RequestDelete
+    | YesNoDeleteMsg Comp.YesNoDimmer.Msg
 
 
-initCmd : Flags -> Cmd Msg
-initCmd flags =
-    Cmd.batch
-        [ Api.getMailSettings flags "" ConnResp
-        , Api.getTags flags "" GetTagsResp
-        , Api.getNotifyDueItems flags SetNotificationSettings
+initWith : Flags -> NotificationSettings -> ( Model, Cmd Msg )
+initWith flags s =
+    let
+        ( im, ic ) =
+            init flags
+
+        smtp =
+            Util.Maybe.fromString s.smtpConnection
+                |> Maybe.map List.singleton
+                |> Maybe.withDefault []
+
+        removeAction ( tm, _, tc ) =
+            ( tm, tc )
+
+        ( nm, nc ) =
+            Util.Update.andThen1
+                [ update flags (ConnMsg (Comp.Dropdown.SetSelection smtp)) >> removeAction
+                , update flags (TagIncMsg (Comp.Dropdown.SetSelection s.tagsInclude)) >> removeAction
+                , update flags (TagExcMsg (Comp.Dropdown.SetSelection s.tagsExclude)) >> removeAction
+                ]
+                im
+
+        newSchedule =
+            Data.CalEvent.fromEvent s.schedule
+                |> Maybe.withDefault Data.CalEvent.everyMonth
+
+        ( sm, sc ) =
+            Comp.CalEventInput.init flags newSchedule
+    in
+    ( { nm
+        | settings = s
+        , recipients = s.recipients
+        , remindDays = Just s.remindDays
+        , enabled = s.enabled
+        , capOverdue = s.capOverdue
+        , schedule = Data.Validated.Unknown newSchedule
+        , scheduleModel = sm
+        , formMsg = Nothing
+        , loading = im.loading
+        , yesNoDelete = Comp.YesNoDimmer.emptyModel
+      }
+    , Cmd.batch
+        [ nc
+        , ic
+        , Cmd.map CalEventMsg sc
         ]
+    )
 
 
-init : Flags -> UiSettings -> ( Model, Cmd Msg )
-init flags settings =
+init : Flags -> ( Model, Cmd Msg )
+init flags =
     let
         initialSchedule =
             Data.Validated.Unknown Data.CalEvent.everyMonth
@@ -100,10 +153,12 @@ init flags settings =
       , schedule = initialSchedule
       , scheduleModel = sm
       , formMsg = Nothing
-      , loading = 3
+      , loading = 2
+      , yesNoDelete = Comp.YesNoDimmer.emptyModel
       }
     , Cmd.batch
-        [ initCmd flags
+        [ Api.getMailSettings flags "" ConnResp
+        , Api.getTags flags "" GetTagsResp
         , Cmd.map CalEventMsg sc
         ]
     )
@@ -155,12 +210,13 @@ makeSettings model =
         model.schedule
 
 
-withValidSettings : (NotificationSettings -> Cmd Msg) -> Model -> ( Model, Cmd Msg )
+withValidSettings : (NotificationSettings -> Action) -> Model -> ( Model, Action, Cmd Msg )
 withValidSettings mkcmd model =
     case makeSettings model of
         Valid set ->
             ( { model | formMsg = Nothing }
             , mkcmd set
+            , Cmd.none
             )
 
         Invalid errs _ ->
@@ -168,15 +224,19 @@ withValidSettings mkcmd model =
                 errMsg =
                     String.join ", " errs
             in
-            ( { model | formMsg = Just (BasicResult False errMsg) }, Cmd.none )
+            ( { model | formMsg = Just (BasicResult False errMsg) }
+            , NoAction
+            , Cmd.none
+            )
 
         Unknown _ ->
             ( { model | formMsg = Just (BasicResult False "An unknown error occured") }
+            , NoAction
             , Cmd.none
             )
 
 
-update : Flags -> Msg -> Model -> ( Model, Cmd Msg )
+update : Flags -> Msg -> Model -> ( Model, Action, Cmd Msg )
 update flags msg model =
     case msg of
         CalEventMsg lmsg ->
@@ -192,6 +252,7 @@ update flags msg model =
                 , scheduleModel = cm
                 , formMsg = Nothing
               }
+            , NoAction
             , Cmd.map CalEventMsg cc
             )
 
@@ -205,6 +266,7 @@ update flags msg model =
                 , recipientsModel = em
                 , formMsg = Nothing
               }
+            , NoAction
             , Cmd.map RecipientMsg ec
             )
 
@@ -217,6 +279,7 @@ update flags msg model =
                 | connectionModel = cm
                 , formMsg = Nothing
               }
+            , NoAction
             , Cmd.map ConnMsg cc
             )
 
@@ -246,6 +309,7 @@ update flags msg model =
                     else
                         Nothing
               }
+            , NoAction
             , Cmd.none
             )
 
@@ -254,6 +318,7 @@ update flags msg model =
                 | formMsg = Just (BasicResult False (Util.Http.errorToString err))
                 , loading = model.loading - 1
               }
+            , NoAction
             , Cmd.none
             )
 
@@ -266,6 +331,7 @@ update flags msg model =
                 | tagInclModel = m2
                 , formMsg = Nothing
               }
+            , NoAction
             , Cmd.map TagIncMsg c2
             )
 
@@ -278,6 +344,7 @@ update flags msg model =
                 | tagExclModel = m2
                 , formMsg = Nothing
               }
+            , NoAction
             , Cmd.map TagExcMsg c2
             )
 
@@ -285,18 +352,25 @@ update flags msg model =
             let
                 tagList =
                     Comp.Dropdown.SetOptions tags.items
+
+                removeAction ( tm, _, tc ) =
+                    ( tm, tc )
+
+                ( m, c ) =
+                    Util.Update.andThen1
+                        [ update flags (TagIncMsg tagList) >> removeAction
+                        , update flags (TagExcMsg tagList) >> removeAction
+                        ]
+                        { model | loading = model.loading - 1 }
             in
-            Util.Update.andThen1
-                [ update flags (TagIncMsg tagList)
-                , update flags (TagExcMsg tagList)
-                ]
-                { model | loading = model.loading - 1 }
+            ( m, NoAction, c )
 
         GetTagsResp (Err err) ->
             ( { model
                 | loading = model.loading - 1
                 , formMsg = Just (BasicResult False (Util.Http.errorToString err))
               }
+            , NoAction
             , Cmd.none
             )
 
@@ -310,6 +384,7 @@ update flags msg model =
                 , remindDays = val
                 , formMsg = Nothing
               }
+            , NoAction
             , Cmd.none
             )
 
@@ -318,6 +393,7 @@ update flags msg model =
                 | enabled = not model.enabled
                 , formMsg = Nothing
               }
+            , NoAction
             , Cmd.none
             )
 
@@ -326,75 +402,49 @@ update flags msg model =
                 | capOverdue = not model.capOverdue
                 , formMsg = Nothing
               }
-            , Cmd.none
-            )
-
-        SetNotificationSettings (Ok s) ->
-            let
-                smtp =
-                    Util.Maybe.fromString s.smtpConnection
-                        |> Maybe.map List.singleton
-                        |> Maybe.withDefault []
-
-                ( nm, nc ) =
-                    Util.Update.andThen1
-                        [ update flags (ConnMsg (Comp.Dropdown.SetSelection smtp))
-                        , update flags (TagIncMsg (Comp.Dropdown.SetSelection s.tagsInclude))
-                        , update flags (TagExcMsg (Comp.Dropdown.SetSelection s.tagsExclude))
-                        ]
-                        model
-
-                newSchedule =
-                    Data.CalEvent.fromEvent s.schedule
-                        |> Maybe.withDefault Data.CalEvent.everyMonth
-
-                ( sm, sc ) =
-                    Comp.CalEventInput.init flags newSchedule
-            in
-            ( { nm
-                | settings = s
-                , recipients = s.recipients
-                , remindDays = Just s.remindDays
-                , enabled = s.enabled
-                , capOverdue = s.capOverdue
-                , schedule = Data.Validated.Unknown newSchedule
-                , scheduleModel = sm
-                , formMsg = Nothing
-                , loading = model.loading - 1
-              }
-            , Cmd.batch
-                [ nc
-                , Cmd.map CalEventMsg sc
-                ]
-            )
-
-        SetNotificationSettings (Err err) ->
-            ( { model
-                | formMsg = Just (BasicResult False (Util.Http.errorToString err))
-                , loading = model.loading - 1
-              }
+            , NoAction
             , Cmd.none
             )
 
         Submit ->
             withValidSettings
-                (\set -> Api.submitNotifyDueItems flags set SubmitResp)
+                SubmitAction
                 model
 
         StartOnce ->
             withValidSettings
-                (\set -> Api.startOnceNotifyDueItems flags set SubmitResp)
+                StartOnceAction
                 model
 
-        SubmitResp (Ok res) ->
-            ( { model | formMsg = Just res }
+        Cancel ->
+            ( model, CancelAction, Cmd.none )
+
+        RequestDelete ->
+            let
+                ( ym, _ ) =
+                    Comp.YesNoDimmer.update
+                        Comp.YesNoDimmer.activate
+                        model.yesNoDelete
+            in
+            ( { model | yesNoDelete = ym }
+            , NoAction
             , Cmd.none
             )
 
-        SubmitResp (Err err) ->
-            ( { model
-                | formMsg = Just (BasicResult False (Util.Http.errorToString err))
-              }
+        YesNoDeleteMsg lm ->
+            let
+                ( ym, flag ) =
+                    Comp.YesNoDimmer.update lm model.yesNoDelete
+
+                act =
+                    if flag then
+                        DeleteAction model.settings.id
+
+                    else
+                        NoAction
+            in
+            ( { model | yesNoDelete = ym }
+            , act
             , Cmd.none
             )
 
@@ -426,7 +476,8 @@ view extraClasses settings model =
             , ( "success", isFormSuccess model )
             ]
         ]
-        [ div
+        [ Html.map YesNoDeleteMsg (Comp.YesNoDimmer.view model.yesNoDelete)
+        , div
             [ classList
                 [ ( "ui dimmer", True )
                 , ( "active", model.loading > 0 )
@@ -549,6 +600,21 @@ view extraClasses settings model =
             , onClick Submit
             ]
             [ text "Submit"
+            ]
+        , button
+            [ class "ui secondary button"
+            , onClick Cancel
+            ]
+            [ text "Cancel"
+            ]
+        , button
+            [ classList
+                [ ( "ui red button", True )
+                , ( "hidden invisible", model.settings.id == "" )
+                ]
+            , onClick RequestDelete
+            ]
+            [ text "Delete"
             ]
         , button
             [ class "ui right floated button"
