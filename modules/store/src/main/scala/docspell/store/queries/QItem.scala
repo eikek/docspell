@@ -291,7 +291,7 @@ object QItem {
       IC.state.prefix("i").isOneOf(q.states),
       IC.incoming.prefix("i").isOrDiscard(q.direction),
       name
-        .map(n => or(IC.name.prefix("i").lowerLike(n), IC.notes.prefix("i").lowerLike(n)))
+        .map(n => IC.name.prefix("i").lowerLike(n))
         .getOrElse(Fragment.empty),
       allNames
         .map(n =>
