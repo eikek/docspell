@@ -42,15 +42,15 @@ update msg model =
 view : Model -> List ScanMailboxSettings -> Html Msg
 view _ items =
     div []
-        [ table [ class "ui  very basic table" ]
+        [ table [ class "ui very basic center aligned table" ]
             [ thead []
                 [ th [ class "collapsing" ] []
                 , th [ class "collapsing" ]
                     [ i [ class "check icon" ] []
                     ]
+                , th [] [ text "Schedule" ]
                 , th [] [ text "Connection" ]
                 , th [] [ text "Folders" ]
-                , th [] [ text "Schedule" ]
                 , th [] [ text "Received Since" ]
                 , th [] [ text "Target" ]
                 , th [] [ text "Delete" ]
@@ -78,20 +78,21 @@ viewItem item =
             [ Util.Html.checkbox item.enabled
             ]
         , td []
+            [ code []
+                [ text item.schedule
+                ]
+            ]
+        , td []
             [ text item.imapConnection
             ]
         , td []
             [ String.join ", " item.folders |> text
             ]
         , td []
-            [ code []
-                [ text item.schedule
-                ]
-            ]
-        , td []
             [ Maybe.map String.fromInt item.receivedSinceHours
                 |> Maybe.withDefault "-"
                 |> text
+            , text " h"
             ]
         , td []
             [ Maybe.withDefault "-" item.targetFolder

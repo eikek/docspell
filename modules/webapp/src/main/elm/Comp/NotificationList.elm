@@ -42,15 +42,15 @@ update msg model =
 view : Model -> List NotificationSettings -> Html Msg
 view _ items =
     div []
-        [ table [ class "ui  very basic table" ]
+        [ table [ class "ui very basic center aligned table" ]
             [ thead []
                 [ th [ class "collapsing" ] []
                 , th [ class "collapsing" ]
                     [ i [ class "check icon" ] []
                     ]
+                , th [] [ text "Schedule" ]
                 , th [] [ text "Connection" ]
                 , th [] [ text "Recipients" ]
-                , th [] [ text "Schedule" ]
                 , th [] [ text "Remind Days" ]
                 ]
             , tbody []
@@ -76,15 +76,15 @@ viewItem item =
             [ Util.Html.checkbox item.enabled
             ]
         , td []
+            [ code []
+                [ text item.schedule
+                ]
+            ]
+        , td []
             [ text item.smtpConnection
             ]
         , td []
             [ String.join ", " item.recipients |> text
-            ]
-        , td []
-            [ code []
-                [ text item.schedule
-                ]
             ]
         , td []
             [ String.fromInt item.remindDays
