@@ -1,11 +1,12 @@
 module Page.Home.View exposing (view)
 
+import Api.Model.ItemSearch
 import Comp.ItemCardList
 import Comp.SearchMenu
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick)
+import Html.Events exposing (onClick, onInput)
 import Page exposing (Page(..))
 import Page.Home.Data exposing (..)
 
@@ -75,16 +76,44 @@ view settings model =
             [ div
                 [ classList
                     [ ( "invisible hidden", not model.menuCollapsed )
-                    , ( "ui segment container", True )
+                    , ( "ui menu container", True )
                     ]
                 ]
                 [ a
-                    [ class "ui basic large circular label"
+                    [ class "item"
                     , onClick ToggleSearchMenu
                     , href "#"
+                    , title "Open search menu"
                     ]
-                    [ i [ class "search icon" ] []
-                    , text "Search Menu…"
+                    [ i [ class "angle left icon" ] []
+                    , i [ class "icons" ]
+                        [ i [ class "grey bars icon" ] []
+                        , i [ class "bottom left corner search icon" ] []
+                        , if hasMoreSearch model then
+                            i [ class "top right blue corner circle icon" ] []
+
+                          else
+                            span [ class "hidden invisible" ] []
+                        ]
+                    ]
+                , div [ class "ui category search item" ]
+                    [ div [ class "ui transparent icon input" ]
+                        [ input
+                            [ type_ "text"
+                            , placeholder "Basic search…"
+                            , onInput SetBasicSearch
+                            , Maybe.map value model.searchMenuModel.allNameModel
+                                |> Maybe.withDefault (value "")
+                            ]
+                            []
+                        , i
+                            [ classList
+                                [ ( "search link icon", not model.searchInProgress )
+                                , ( "loading spinner icon", model.searchInProgress )
+                                ]
+                            ]
+                            []
+                        ]
                     ]
                 ]
             , case model.viewMode of
@@ -126,3 +155,15 @@ view settings model =
                 ]
             ]
         ]
+
+
+hasMoreSearch : Model -> Bool
+hasMoreSearch model =
+    let
+        is =
+            Comp.SearchMenu.getItemSearch model.searchMenuModel
+
+        is_ =
+            { is | allNames = Nothing }
+    in
+    is_ /= Api.Model.ItemSearch.empty

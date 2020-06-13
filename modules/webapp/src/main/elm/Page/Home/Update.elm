@@ -143,6 +143,17 @@ update key flags settings msg model =
             in
             withSub ( { model | throttle = newThrottle }, cmd )
 
+        SetBasicSearch str ->
+            let
+                m =
+                    SearchMenuMsg (Comp.SearchMenu.SetAllName str)
+            in
+            update key flags settings m model
+
+
+
+--- Helpers
+
 
 doSearch : Flags -> UiSettings -> Model -> ( Model, Cmd Msg, Sub Msg )
 doSearch flags settings model =

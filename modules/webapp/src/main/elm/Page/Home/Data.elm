@@ -38,7 +38,7 @@ init _ =
     , itemListModel = Comp.ItemCardList.init
     , searchInProgress = False
     , viewMode = Listing
-    , menuCollapsed = False
+    , menuCollapsed = True
     , searchOffset = 0
     , moreAvailable = True
     , moreInProgress = False
@@ -57,6 +57,7 @@ type Msg
     | ToggleSearchMenu
     | LoadMore
     | UpdateThrottle
+    | SetBasicSearch String
 
 
 type ViewMode
