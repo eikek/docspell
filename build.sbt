@@ -259,6 +259,26 @@ val analysis = project.in(file("modules/analysis")).
       Dependencies.fs2 ++
       Dependencies.stanfordNlpCore
   ).dependsOn(common, files % "test->test")
+
+val ftsclient = project.in(file("modules/fts-client")).
+  disablePlugins(RevolverPlugin).
+  settings(sharedSettings).
+  settings(testSettings).
+  settings(
+    name := "docspell-fts-client",
+    libraryDependencies ++= Seq.empty
+  ).dependsOn(common)
+
+val ftssolr = project.in(file("modules/fts-solr")).
+  disablePlugins(RevolverPlugin).
+  settings(sharedSettings).
+  settings(testSettings).
+  settings(
+    name := "docspell-fts-solr",
+    libraryDependencies ++=
+      Dependencies.http4sClient ++
+      Dependencies.circe
+  ).dependsOn(common, ftsclient)
   
 val restapi = project.in(file("modules/restapi")).
   disablePlugins(RevolverPlugin).
@@ -303,7 +323,7 @@ val backend = project.in(file("modules/backend")).
       Dependencies.bcrypt ++
       Dependencies.http4sClient ++
       Dependencies.emil
-  ).dependsOn(store, joexapi)
+  ).dependsOn(store, joexapi, ftsclient, ftssolr)
 
 val webapp = project.in(file("modules/webapp")).
   disablePlugins(RevolverPlugin).
@@ -472,6 +492,8 @@ val root = project.in(file(".")).
     , extract
     , convert
     , analysis
+    , ftsclient
+    , ftssolr
     , files
     , store
     , joexapi
