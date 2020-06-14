@@ -109,6 +109,11 @@ The endpoint is disabled by default, an admin must change the
 `docspell.restserver.integration-endpoint.enabled` flag to `true` in
 the [configuration file](configure#rest-server).
 
+If queried by a `GET` request, it returns whether it is enabled and
+the collective exists.
+
+See the [SMTP gateway](tools/smtpgateway) for an example to use this
+endpoint.
 
 ## The Request
 

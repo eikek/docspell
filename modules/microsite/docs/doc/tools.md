@@ -16,3 +16,5 @@ for integrating docspell.
 - [Browser Extension](browserext) An extension for firefox to
   upload files from your browser via *right-click -> upload to
   docspell*.
+- [SMTP Gateway](smtpgateway) Start a SMTP server that forwards all
+  mails to docspell.

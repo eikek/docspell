@@ -1,0 +1,13 @@
+version: '3.7'
+services:
+  smtp:
+    image: ds-exim:latest
+    ports:
+      - "25:25"
+    environment:
+      # This is the configured header value for the integration-endpoint
+      - DS_HEADER=test123
+      # This is the URL to docspell
+      - DS_URL=http://192.168.1.95:7880
+    # Use host network for demo purposes
+    network_mode: host

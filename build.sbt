@@ -432,21 +432,27 @@ val microsite = project.in(file("modules/microsite")).
       )
     ),
     Compile/resourceGenerators += Def.task {
-      val conf1 = (resourceDirectory in (restserver, Compile)).value / "reference.conf"
-      val conf2 = (resourceDirectory in (joex, Compile)).value / "reference.conf"      
-      val out1 = resourceManaged.value/"main"/"jekyll"/"_includes"/"server.conf"
-      val out2 = resourceManaged.value/"main"/"jekyll"/"_includes"/"joex.conf"
-      streams.value.log.info(s"Copying reference.conf: $conf1 -> $out1, $conf2 -> $out2")
-      IO.write(out1, "{% raw %}\n")
-      IO.append(out1, IO.readBytes(conf1))
-      IO.write(out1, "\n{% endraw %}", append = true)
-      IO.write(out2, "{% raw %}\n")
-      IO.append(out2, IO.readBytes(conf2))
-      IO.write(out2, "\n{% endraw %}", append = true)
-      val oa1 = (resourceDirectory in (restapi, Compile)).value/"docspell-openapi.yml"
-      val oaout = resourceManaged.value/"main"/"jekyll"/"openapi"/"docspell-openapi.yml"
-      IO.copy(Seq(oa1 -> oaout))
-      Seq(out1, out2, oaout)
+      val jekyllOut = resourceManaged.value/"main"/"jekyll"
+      val logger = streams.value.log
+
+      val templates = Seq(
+        (resourceDirectory in (restserver, Compile)).value / "reference.conf" -> jekyllOut /"_includes"/"server.conf",
+        (resourceDirectory in (joex, Compile)).value / "reference.conf" -> jekyllOut/"_includes"/"joex.conf",
+        (LocalRootProject / baseDirectory).value / "tools" / "exim" / "exim.conf" -> jekyllOut/ "_includes"/"sample-exim.conf"
+      )
+      val res1 = templates.map { case (s, t) =>
+        logger.info(s"Copying $s -> $t")
+        IO.write(t, "{% raw %}\n")
+        IO.append(t, IO.readBytes(s))
+        IO.write(t, "\n{% endraw %}", append = true)
+        t
+      }
+
+      val files = Seq(
+        (resourceDirectory in (restapi, Compile)).value/"docspell-openapi.yml" -> jekyllOut/"openapi"/"docspell-openapi.yml"
+      )
+      IO.copy(files)
+      res1 ++ files.map(_._2)
     }.taskValue,
     Compile/resourceGenerators += Def.task {
       val staticDoc = (restapi/Compile/openapiStaticDoc).value

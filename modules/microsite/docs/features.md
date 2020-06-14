@@ -47,6 +47,8 @@ permalink: features
   - [Simple CLI for uploading files](doc/tools/ds)
   - [Firefox plugin](doc/tools/browserext): right click on a link and
     send the file to docspell
+  - [SMTP Gateway](doc/tools/smtpgateway): Setup a SMTP server that
+    delivers mails directly to docspell.
 - License: GPLv3
 
 
