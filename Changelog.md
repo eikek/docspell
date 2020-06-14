@@ -1,5 +1,76 @@
 # Changelog
 
+## v0.7.0
+
+*Soon*
+
+- Document integration endpoint and add a `GET` route to check it.
+- Add webui settings for the user. These settings only apply to the
+  web client and are stored in the browser's local storage.
+- Enable paging in the item list view. The page size can be set in the
+  new client settings. If the number of results is equal to this size,
+  a button at the end of the page allows to load more.
+- The item list now contains all tags of an item.
+- The tag colors can be customized in the client settings. A color per
+  tag *category* can be defined.
+- New meta data (tags, correspondents, concerned entities) can be
+  created directly in the item detail view (see #138). No need to
+  navigate away to the *Manage Data* page.
+- Fixes a bug in the dropdown widgets that would present items that
+  have already been selected.
+- Allow to have multiple notify-due-items tasks.
+- New *simple search* feature: The list view now appears without the
+  search menu by default. A search bar is shown instead that allows to
+  search in item name and notes and in names of correspondents and
+  concerned entities. The search menu can be opened as before. The
+  *name* search field now only searches in item names (as before
+  0.3.0), i.e. it doesn't search item notes anymore, which is now
+  possible with the *allNames* search field.
+- Fixes a bug where a search term was not lower-cased but compared to
+  a lower-cased value.
+- Allow to change names of attachments. 
+- Document how to create a SMTP gateway to docspell and provide a
+  simple docker based setup. This is a SMTP server that delivers mails
+  to docspell instead of using a mbox or maildir. It utilises the
+  integration endpoint.
+
+### Configuration Changes
+
+- Add `docspell.server.max-item-page-size` for a hard limit of the
+  page size when fetching items.
+- Changed default value of
+  `docspell.server.integration-endpoint.allowed-ips.enabled` to
+  `false`.
+- Add `docspell.server.backend.mail-debug` to allow debug mail related
+  problems.
+
+### REST Api Changes
+
+- Add `GET /open/integration/item/{id}` to allow checking the
+  integration endpoint.
+- Change all routes to update item properties (name, tags, direction,
+  corrOrg, corrPerson, concPerson, concEquipment, notes, date,
+  duedate) from `POST` to `PUT`.
+- Add corresponding `POST` routes to create and update meta data in
+  one call. This is only applicable: corrOrg, corrPerson, tags,
+  concPerson, concEquipment.
+- Add `POST /sec/attachment/{id}/name` to change the name of an
+  attachment.
+- Change `/sec/usertask/notifydueitems` to return a list of
+  notification settings.
+- Change the `POST` route to `/sec/usertask/notifydueitems` to only
+  create new notification tasks.
+- Add a `PUT` route to `/sec/usertask/notifydueitems` to update
+  existing notification tasks.
+- Add a `GET` and `DELETE` route to
+  `/sec/usertask/notifydueitems/{id}` to retrieve or delete a specific
+  notification task.
+- The `ItemSearch` structure is extended to allow specifying `offset`
+  and `limit` for paging (which is required now). It also has an
+  optional property `allNames` to provide the search term for the new
+  *simple search* feature.
+- The `ItemLight` structure has now a list of tags.
+
 ## v0.6.0
 
 *May 25th, 2020*
@@ -36,7 +107,7 @@ The joex and rest-server component have new config sections:
   configure the new scan-mailbox user task.
 - Add `docspell.joex.files` section that is the same as the
   corresponding section in the rest server config.
-- Add `docspell.rest-server.integration-endpoint` with sub-sections to
+- Add `docspell.server.integration-endpoint` with sub-sections to
   configure an endpoint for uploading files for admin users.
 
 ### REST Api Changes
