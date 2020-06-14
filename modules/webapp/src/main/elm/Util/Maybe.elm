@@ -1,5 +1,6 @@
 module Util.Maybe exposing
-    ( fromString
+    ( filter
+    , fromString
     , isEmpty
     , nonEmpty
     , or
@@ -52,3 +53,17 @@ fromString str =
 
     else
         Just str
+
+
+filter : (a -> Bool) -> Maybe a -> Maybe a
+filter predicate ma =
+    case ma of
+        Just v ->
+            if predicate v then
+                Just v
+
+            else
+                Nothing
+
+        Nothing ->
+            Nothing

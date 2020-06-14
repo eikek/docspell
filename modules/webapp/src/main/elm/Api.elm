@@ -61,6 +61,7 @@ module Api exposing
     , refreshSession
     , register
     , sendMail
+    , setAttachmentName
     , setCollectiveSettings
     , setConcEquip
     , setConcPerson
@@ -1059,6 +1060,21 @@ getJobQueueStateTask flags =
 
 
 --- Item
+
+
+setAttachmentName :
+    Flags
+    -> String
+    -> Maybe String
+    -> (Result Http.Error BasicResult -> msg)
+    -> Cmd msg
+setAttachmentName flags attachId newName receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/attachment/" ++ attachId ++ "/name"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.OptionalText.encode (OptionalText newName))
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
 
 
 moveAttachmentBefore :

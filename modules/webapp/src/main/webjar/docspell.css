@@ -83,6 +83,11 @@
     padding: 0.8em;
 }
 
+.default-layout .menu .item.active a.right-tab-icon-link {
+    position: relative;
+    right: -8px;
+}
+
 .markdown-preview {
     overflow: auto;
     max-height: 300px;
