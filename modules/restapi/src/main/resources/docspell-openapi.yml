@@ -1683,6 +1683,31 @@ paths:
           description: See Other
         200:
           description: Ok
+  /sec/attachment/{id}/name:
+    post:
+      tags: [ Attachment ]
+      summary: Changes the name of an attachment
+      description: |
+        Change the name of the attachment with the given id. The
+        attachment must be part of an item that belongs to the
+        collective of the current user.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OptionalText"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
   /sec/queue/state:
     get:
       tags: [ Job Queue ]

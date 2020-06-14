@@ -1,6 +1,7 @@
 package docspell.store.records
 
 import bitpeace.FileMeta
+import cats.implicits._
 import doobie._
 import doobie.implicits._
 import docspell.common._
@@ -89,6 +90,18 @@ object RAttachment {
     selectSimple(cols, from, cond).query[FileMeta].option
   }
 
+  def updateName(
+      attachId: Ident,
+      collective: Ident,
+      aname: Option[String]
+  ): ConnectionIO[Int] = {
+    val update = updateRow(table, id.is(attachId), name.setTo(aname)).update.run
+    for {
+      exists <- existsByIdAndCollective(attachId, collective)
+      n      <- if (exists) update else 0.pure[ConnectionIO]
+    } yield n
+  }
+
   def findByIdAndCollective(
       attachId: Ident,
       collective: Ident
@@ -105,6 +118,20 @@ object RAttachment {
 
   def findByItem(id: Ident): ConnectionIO[Vector[RAttachment]] =
     selectSimple(all, table, itemId.is(id)).query[RAttachment].to[Vector]
+
+  def existsByIdAndCollective(
+      attachId: Ident,
+      collective: Ident
+  ): ConnectionIO[Boolean] = {
+    val aId   = id.prefix("a")
+    val aItem = itemId.prefix("a")
+    val iId   = RItem.Columns.id.prefix("i")
+    val iColl = RItem.Columns.cid.prefix("i")
+    val from =
+      table ++ fr"a INNER JOIN" ++ RItem.table ++ fr"i ON" ++ aItem.is(iId)
+    val cond = and(iColl.is(collective), aId.is(attachId))
+    selectCount(id, from, cond).query[Int].unique.map(_ > 0)
+  }
 
   def findByItemAndCollective(
       id: Ident,
