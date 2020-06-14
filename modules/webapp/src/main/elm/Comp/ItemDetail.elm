@@ -98,6 +98,7 @@ type alias Model =
     , loading : Set String
     , attachDD : DD.Model String String
     , modalEdit : Maybe Comp.DetailEdit.Model
+    , attachRename : Maybe AttachmentRename
     }
 
 
@@ -105,6 +106,12 @@ type NotesField
     = ViewNotes
     | EditNotes Comp.MarkdownInput.Model
     | HideNotes
+
+
+type alias AttachmentRename =
+    { id : String
+    , newName : String
+    }
 
 
 isEditNotes : NotesField -> Bool
@@ -185,6 +192,7 @@ emptyModel =
     , loading = Set.empty
     , attachDD = DD.init
     , modalEdit = Nothing
+    , attachRename = Nothing
     }
 
 
@@ -255,6 +263,11 @@ type Msg
     | StartConcPersonModal
     | StartEquipModal
     | CloseModal
+    | EditAttachNameStart String
+    | EditAttachNameCancel
+    | EditAttachNameSet String
+    | EditAttachNameSubmit
+    | EditAttachNameResp (Result Http.Error BasicResult)
 
 
 
@@ -543,7 +556,14 @@ update key flags next msg model =
             )
 
         SetActiveAttachment pos ->
-            noSub ( { model | visibleAttach = pos, sentMailsOpen = False }, Cmd.none )
+            noSub
+                ( { model
+                    | visibleAttach = pos
+                    , sentMailsOpen = False
+                    , attachRename = Nothing
+                  }
+                , Cmd.none
+                )
 
         ToggleMenu ->
             noSub ( { model | menuOpen = not model.menuOpen }, Cmd.none )
@@ -1303,6 +1323,92 @@ update key flags next msg model =
         CloseModal ->
             noSub ( { model | modalEdit = Nothing }, Cmd.none )
 
+        EditAttachNameStart id ->
+            case model.attachRename of
+                Nothing ->
+                    let
+                        name =
+                            Util.List.find (\el -> el.id == id) model.item.attachments
+                                |> Maybe.map (\el -> Maybe.withDefault "" el.name)
+                    in
+                    case name of
+                        Just n ->
+                            noSub ( { model | attachRename = Just (AttachmentRename id n) }, Cmd.none )
+
+                        Nothing ->
+                            noSub ( model, Cmd.none )
+
+                Just _ ->
+                    noSub ( { model | attachRename = Nothing }, Cmd.none )
+
+        EditAttachNameCancel ->
+            noSub ( { model | attachRename = Nothing }, Cmd.none )
+
+        EditAttachNameSet str ->
+            case model.attachRename of
+                Just m ->
+                    noSub
+                        ( { model | attachRename = Just { m | newName = str } }
+                        , Cmd.none
+                        )
+
+                Nothing ->
+                    noSub ( model, Cmd.none )
+
+        EditAttachNameSubmit ->
+            let
+                editId =
+                    Maybe.map .id model.attachRename
+
+                name =
+                    Util.List.find (\el -> Just el.id == editId) model.item.attachments
+                        |> Maybe.map (\el -> Maybe.withDefault "" el.name)
+
+                ma =
+                    Util.Maybe.filter (\m -> Just m.newName /= name) model.attachRename
+            in
+            case ma of
+                Just m ->
+                    noSub
+                        ( model
+                        , Api.setAttachmentName
+                            flags
+                            m.id
+                            (Util.Maybe.fromString m.newName)
+                            EditAttachNameResp
+                        )
+
+                Nothing ->
+                    noSub ( { model | attachRename = Nothing }, Cmd.none )
+
+        EditAttachNameResp (Ok res) ->
+            case model.attachRename of
+                Just m ->
+                    let
+                        changeName a =
+                            if a.id == m.id then
+                                { a | name = Util.Maybe.fromString m.newName }
+
+                            else
+                                a
+
+                        changeItem i =
+                            { i | attachments = List.map changeName i.attachments }
+                    in
+                    noSub
+                        ( { model
+                            | attachRename = Nothing
+                            , item = changeItem model.item
+                          }
+                        , Cmd.none
+                        )
+
+                Nothing ->
+                    noSub ( model, Cmd.none )
+
+        EditAttachNameResp (Err _) ->
+            noSub ( model, Cmd.none )
+
 
 
 --- View
@@ -1568,23 +1674,47 @@ renderAttachmentsTabMenu model =
         (List.indexedMap
             (\pos ->
                 \el ->
-                    a
-                        ([ classList <|
-                            [ ( "item", True )
-                            , ( "active", attachmentVisible model pos )
+                    if attachmentVisible model pos then
+                        a
+                            ([ classList <|
+                                [ ( "active item", True )
+                                ]
+                                    ++ highlight el
+                             , title (Maybe.withDefault "No Name" el.name)
+                             , href ""
+                             ]
+                                ++ DD.draggable AttachDDMsg el.id
+                                ++ DD.droppable AttachDDMsg el.id
+                            )
+                            [ Maybe.map (Util.String.ellipsis 30) el.name
+                                |> Maybe.withDefault "No Name"
+                                |> text
+                            , a
+                                [ class "right-tab-icon-link"
+                                , href "#"
+                                , onClick (EditAttachNameStart el.id)
+                                ]
+                                [ i [ class "grey edit link icon" ] []
+                                ]
                             ]
-                                ++ highlight el
-                         , title (Maybe.withDefault "No Name" el.name)
-                         , href ""
-                         , onClick (SetActiveAttachment pos)
-                         ]
-                            ++ DD.draggable AttachDDMsg el.id
-                            ++ DD.droppable AttachDDMsg el.id
-                        )
-                        [ Maybe.map (Util.String.ellipsis 20) el.name
-                            |> Maybe.withDefault "No Name"
-                            |> text
-                        ]
+
+                    else
+                        a
+                            ([ classList <|
+                                [ ( "item", True )
+                                ]
+                                    ++ highlight el
+                             , title (Maybe.withDefault "No Name" el.name)
+                             , href ""
+                             , onClick (SetActiveAttachment pos)
+                             ]
+                                ++ DD.draggable AttachDDMsg el.id
+                                ++ DD.droppable AttachDDMsg el.id
+                            )
+                            [ Maybe.map (Util.String.ellipsis 20) el.name
+                                |> Maybe.withDefault "No Name"
+                                |> text
+                            ]
             )
             model.item.attachments
             ++ mailTab
@@ -1611,6 +1741,7 @@ renderAttachmentView settings model pos attach =
             ]
         ]
         [ Html.map (DeleteAttachConfirm attach.id) (Comp.YesNoDimmer.view model.deleteAttachConfirm)
+        , renderEditAttachmentName model attach
         , div [ class "ui small secondary menu" ]
             [ div [ class "horizontally fitted item" ]
                 [ i [ class "file outline icon" ] []
@@ -2243,3 +2374,36 @@ renderFileItem model file =
                 ]
             ]
         ]
+
+
+renderEditAttachmentName : Model -> Attachment -> Html Msg
+renderEditAttachmentName model attach =
+    let
+        am =
+            Util.Maybe.filter (\m -> m.id == attach.id) model.attachRename
+    in
+    case am of
+        Just m ->
+            div [ class "ui fluid action input" ]
+                [ input
+                    [ type_ "text"
+                    , value m.newName
+                    , onInput EditAttachNameSet
+                    ]
+                    []
+                , button
+                    [ class "ui primary icon button"
+                    , onClick EditAttachNameSubmit
+                    ]
+                    [ i [ class "check icon" ] []
+                    ]
+                , button
+                    [ class "ui secondary icon button"
+                    , onClick EditAttachNameCancel
+                    ]
+                    [ i [ class "delete icon" ] []
+                    ]
+                ]
+
+        Nothing ->
+            span [ class "invisible hidden" ] []

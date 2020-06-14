@@ -94,6 +94,12 @@ trait OItem[F[_]] {
   def deleteAttachment(id: Ident, collective: Ident): F[Int]
 
   def moveAttachmentBefore(itemId: Ident, source: Ident, target: Ident): F[AddResult]
+
+  def setAttachmentName(
+      attachId: Ident,
+      name: Option[String],
+      collective: Ident
+  ): F[AddResult]
 }
 
 object OItem {
@@ -472,6 +478,16 @@ object OItem {
 
         def deleteAttachment(id: Ident, collective: Ident): F[Int] =
           QAttachment.deleteSingleAttachment(store)(id, collective)
+
+        def setAttachmentName(
+            attachId: Ident,
+            name: Option[String],
+            collective: Ident
+        ): F[AddResult] =
+          store
+            .transact(RAttachment.updateName(attachId, collective, name))
+            .attempt
+            .map(AddResult.fromUpdate)
       })
     } yield oitem
 }

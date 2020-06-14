@@ -9,6 +9,7 @@ import org.http4s.dsl.Http4sDsl
 import org.http4s.headers._
 import org.http4s.headers.ETag.EntityTag
 import org.http4s.circe.CirceEntityEncoder._
+import org.http4s.circe.CirceEntityDecoder._
 import docspell.backend.BackendApp
 import docspell.backend.auth.AuthToken
 import docspell.backend.ops.OItem
@@ -124,6 +125,13 @@ object AttachmentRoutes {
           rm <- backend.item.findAttachmentMeta(id, user.account.collective)
           md = rm.map(Conversions.mkAttachmentMeta)
           resp <- md.map(Ok(_)).getOrElse(NotFound(BasicResult(false, "Not found.")))
+        } yield resp
+
+      case req @ POST -> Root / Ident(id) / "name" =>
+        for {
+          nn   <- req.as[OptionalText]
+          res  <- backend.item.setAttachmentName(id, nn.text, user.account.collective)
+          resp <- Ok(Conversions.basicResult(res, "Name updated."))
         } yield resp
 
       case DELETE -> Root / Ident(id) =>
