@@ -3386,6 +3386,10 @@ components:
           description: |
             Search in item names, correspondents, concerned entities
             and notes.
+        fullText:
+          type: string
+          description: |
+            A query searching the contents of documents.
         corrOrg:
           type: string
           format: ident

@@ -124,6 +124,7 @@ trait Conversions {
       m.dueDateFrom,
       m.dueDateUntil,
       m.allNames,
+      m.fullText,
       None
     )
 
