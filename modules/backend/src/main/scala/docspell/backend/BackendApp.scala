@@ -24,6 +24,7 @@ trait BackendApp[F[_]] {
   def node: ONode[F]
   def job: OJob[F]
   def item: OItem[F]
+  def itemSearch: OItemSearch[F]
   def mail: OMail[F]
   def joex: OJoex[F]
   def userTask: OUserTask[F]
@@ -38,20 +39,21 @@ object BackendApp {
       blocker: Blocker
   ): Resource[F, BackendApp[F]] =
     for {
-      utStore    <- UserTaskStore(store)
-      queue      <- JobQueue(store)
-      loginImpl  <- Login[F](store)
-      signupImpl <- OSignup[F](store)
-      collImpl   <- OCollective[F](store)
-      sourceImpl <- OSource[F](store)
-      tagImpl    <- OTag[F](store)
-      equipImpl  <- OEquipment[F](store)
-      orgImpl    <- OOrganization(store)
-      joexImpl   <- OJoex.create(httpClientEc, store)
-      uploadImpl <- OUpload(store, queue, cfg.files, joexImpl)
-      nodeImpl   <- ONode(store)
-      jobImpl    <- OJob(store, joexImpl)
-      itemImpl   <- OItem(store)
+      utStore        <- UserTaskStore(store)
+      queue          <- JobQueue(store)
+      loginImpl      <- Login[F](store)
+      signupImpl     <- OSignup[F](store)
+      collImpl       <- OCollective[F](store)
+      sourceImpl     <- OSource[F](store)
+      tagImpl        <- OTag[F](store)
+      equipImpl      <- OEquipment[F](store)
+      orgImpl        <- OOrganization(store)
+      joexImpl       <- OJoex.create(httpClientEc, store)
+      uploadImpl     <- OUpload(store, queue, cfg.files, joexImpl)
+      nodeImpl       <- ONode(store)
+      jobImpl        <- OJob(store, joexImpl)
+      itemImpl       <- OItem(store)
+      itemSearchImpl <- OItemSearch(store)
       javaEmil =
         JavaMailEmil(blocker, Settings.defaultSettings.copy(debug = cfg.mailDebug))
       mailImpl     <- OMail(store, javaEmil)
@@ -68,6 +70,7 @@ object BackendApp {
       val node                       = nodeImpl
       val job                        = jobImpl
       val item                       = itemImpl
+      val itemSearch                 = itemSearchImpl
       val mail                       = mailImpl
       val joex                       = joexImpl
       val userTask                   = userTaskImpl

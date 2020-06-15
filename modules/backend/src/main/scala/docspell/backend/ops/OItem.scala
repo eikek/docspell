@@ -1,6 +1,5 @@
 package docspell.backend.ops
 
-import fs2.Stream
 import cats.data.OptionT
 import cats.implicits._
 import cats.effect.{Effect, Resource}
@@ -8,40 +7,10 @@ import doobie._
 import doobie.implicits._
 import docspell.store.{AddResult, Store}
 import docspell.store.queries.{QAttachment, QItem}
-import OItem.{
-  AttachmentArchiveData,
-  AttachmentData,
-  AttachmentSourceData,
-  Batch,
-  ItemData,
-  ListItem,
-  ListItemWithTags,
-  Query
-}
-import bitpeace.{FileMeta, RangeDef}
 import docspell.common.{Direction, Ident, ItemState, MetaProposalList, Timestamp}
 import docspell.store.records._
 
 trait OItem[F[_]] {
-
-  def findItem(id: Ident, collective: Ident): F[Option[ItemData]]
-
-  def findItems(q: Query, batch: Batch): F[Vector[ListItem]]
-
-  /** Same as `findItems` but does more queries per item to find all tags. */
-  def findItemsWithTags(q: Query, batch: Batch): F[Vector[ListItemWithTags]]
-
-  def findAttachment(id: Ident, collective: Ident): F[Option[AttachmentData[F]]]
-
-  def findAttachmentSource(
-      id: Ident,
-      collective: Ident
-  ): F[Option[AttachmentSourceData[F]]]
-
-  def findAttachmentArchive(
-      id: Ident,
-      collective: Ident
-  ): F[Option[AttachmentArchiveData[F]]]
 
   /** Sets the given tags (removing all existing ones). */
   def setTags(item: Ident, tagIds: List[Ident], collective: Ident): F[AddResult]
@@ -85,12 +54,6 @@ trait OItem[F[_]] {
 
   def deleteItem(itemId: Ident, collective: Ident): F[Int]
 
-  def findAttachmentMeta(id: Ident, collective: Ident): F[Option[RAttachmentMeta]]
-
-  def findByFileCollective(checksum: String, collective: Ident): F[Vector[RItem]]
-
-  def findByFileSource(checksum: String, sourceId: Ident): F[Vector[RItem]]
-
   def deleteAttachment(id: Ident, collective: Ident): F[Int]
 
   def moveAttachmentBefore(itemId: Ident, source: Ident, target: Ident): F[AddResult]
@@ -103,51 +66,6 @@ trait OItem[F[_]] {
 }
 
 object OItem {
-
-  type Query = QItem.Query
-  val Query = QItem.Query
-
-  type Batch = QItem.Batch
-  val Batch = QItem.Batch
-
-  type ListItem = QItem.ListItem
-  val ListItem = QItem.ListItem
-
-  type ListItemWithTags = QItem.ListItemWithTags
-  val ListItemWithTags = QItem.ListItemWithTags
-
-  type ItemData = QItem.ItemData
-  val ItemData = QItem.ItemData
-
-  trait BinaryData[F[_]] {
-    def data: Stream[F, Byte]
-    def name: Option[String]
-    def meta: FileMeta
-    def fileId: Ident
-  }
-  case class AttachmentData[F[_]](ra: RAttachment, meta: FileMeta, data: Stream[F, Byte])
-      extends BinaryData[F] {
-    val name   = ra.name
-    val fileId = ra.fileId
-  }
-
-  case class AttachmentSourceData[F[_]](
-      rs: RAttachmentSource,
-      meta: FileMeta,
-      data: Stream[F, Byte]
-  ) extends BinaryData[F] {
-    val name   = rs.name
-    val fileId = rs.fileId
-  }
-
-  case class AttachmentArchiveData[F[_]](
-      rs: RAttachmentArchive,
-      meta: FileMeta,
-      data: Stream[F, Byte]
-  ) extends BinaryData[F] {
-    val name   = rs.name
-    val fileId = rs.fileId
-  }
 
   def apply[F[_]: Effect](store: Store[F]): Resource[F, OItem[F]] =
     for {
@@ -164,90 +82,6 @@ object OItem {
             .transact(QItem.moveAttachmentBefore(itemId, source, target))
             .attempt
             .map(AddResult.fromUpdate)
-
-        def findItem(id: Ident, collective: Ident): F[Option[ItemData]] =
-          store
-            .transact(QItem.findItem(id))
-            .map(opt => opt.flatMap(_.filterCollective(collective)))
-
-        def findItems(q: Query, batch: Batch): F[Vector[ListItem]] =
-          store
-            .transact(QItem.findItems(q, batch).take(batch.limit.toLong))
-            .compile
-            .toVector
-
-        def findItemsWithTags(q: Query, batch: Batch): F[Vector[ListItemWithTags]] =
-          store
-            .transact(QItem.findItemsWithTags(q, batch).take(batch.limit.toLong))
-            .compile
-            .toVector
-
-        def findAttachment(id: Ident, collective: Ident): F[Option[AttachmentData[F]]] =
-          store
-            .transact(RAttachment.findByIdAndCollective(id, collective))
-            .flatMap({
-              case Some(ra) =>
-                makeBinaryData(ra.fileId) { m =>
-                  AttachmentData[F](
-                    ra,
-                    m,
-                    store.bitpeace.fetchData2(RangeDef.all)(Stream.emit(m))
-                  )
-                }
-
-              case None =>
-                (None: Option[AttachmentData[F]]).pure[F]
-            })
-
-        def findAttachmentSource(
-            id: Ident,
-            collective: Ident
-        ): F[Option[AttachmentSourceData[F]]] =
-          store
-            .transact(RAttachmentSource.findByIdAndCollective(id, collective))
-            .flatMap({
-              case Some(ra) =>
-                makeBinaryData(ra.fileId) { m =>
-                  AttachmentSourceData[F](
-                    ra,
-                    m,
-                    store.bitpeace.fetchData2(RangeDef.all)(Stream.emit(m))
-                  )
-                }
-
-              case None =>
-                (None: Option[AttachmentSourceData[F]]).pure[F]
-            })
-
-        def findAttachmentArchive(
-            id: Ident,
-            collective: Ident
-        ): F[Option[AttachmentArchiveData[F]]] =
-          store
-            .transact(RAttachmentArchive.findByIdAndCollective(id, collective))
-            .flatMap({
-              case Some(ra) =>
-                makeBinaryData(ra.fileId) { m =>
-                  AttachmentArchiveData[F](
-                    ra,
-                    m,
-                    store.bitpeace.fetchData2(RangeDef.all)(Stream.emit(m))
-                  )
-                }
-
-              case None =>
-                (None: Option[AttachmentArchiveData[F]]).pure[F]
-            })
-
-        private def makeBinaryData[A](fileId: Ident)(f: FileMeta => A): F[Option[A]] =
-          store.bitpeace
-            .get(fileId.id)
-            .unNoneTerminate
-            .compile
-            .last
-            .map(
-              _.map(m => f(m))
-            )
 
         def setTags(item: Ident, tagIds: List[Ident], collective: Ident): F[AddResult] = {
           val db = for {
@@ -463,18 +297,6 @@ object OItem {
 
         def getProposals(item: Ident, collective: Ident): F[MetaProposalList] =
           store.transact(QAttachment.getMetaProposals(item, collective))
-
-        def findAttachmentMeta(id: Ident, collective: Ident): F[Option[RAttachmentMeta]] =
-          store.transact(QAttachment.getAttachmentMeta(id, collective))
-
-        def findByFileCollective(checksum: String, collective: Ident): F[Vector[RItem]] =
-          store.transact(QItem.findByChecksum(checksum, collective))
-
-        def findByFileSource(checksum: String, sourceId: Ident): F[Vector[RItem]] =
-          store.transact((for {
-            coll  <- OptionT(RSource.findCollective(sourceId))
-            items <- OptionT.liftF(QItem.findByChecksum(checksum, coll))
-          } yield items).getOrElse(Vector.empty))
 
         def deleteAttachment(id: Ident, collective: Ident): F[Int] =
           QAttachment.deleteSingleAttachment(store)(id, collective)

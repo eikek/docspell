@@ -12,7 +12,7 @@ import org.http4s.circe.CirceEntityEncoder._
 import org.http4s.circe.CirceEntityDecoder._
 import docspell.backend.BackendApp
 import docspell.backend.auth.AuthToken
-import docspell.backend.ops.OItem
+import docspell.backend.ops._
 import docspell.common.Ident
 import docspell.restapi.model._
 import docspell.restserver.conv.Conversions
@@ -26,7 +26,7 @@ object AttachmentRoutes {
 
     def withResponseHeaders(
         resp: F[Response[F]]
-    )(data: OItem.BinaryData[F]): F[Response[F]] = {
+    )(data: OItemSearch.BinaryData[F]): F[Response[F]] = {
       val mt             = MediaType.unsafeParse(data.meta.mimetype.asString)
       val ctype          = `Content-Type`(mt)
       val cntLen: Header = `Content-Length`.unsafeFromLong(data.meta.length)
@@ -40,13 +40,13 @@ object AttachmentRoutes {
       )
     }
 
-    def makeByteResp(data: OItem.BinaryData[F]): F[Response[F]] =
+    def makeByteResp(data: OItemSearch.BinaryData[F]): F[Response[F]] =
       withResponseHeaders(Ok(data.data.take(data.meta.length)))(data)
 
     HttpRoutes.of {
       case HEAD -> Root / Ident(id) =>
         for {
-          fileData <- backend.item.findAttachment(id, user.account.collective)
+          fileData <- backend.itemSearch.findAttachment(id, user.account.collective)
           resp <-
             fileData
               .map(data => withResponseHeaders(Ok())(data))
@@ -55,7 +55,7 @@ object AttachmentRoutes {
 
       case req @ GET -> Root / Ident(id) =>
         for {
-          fileData <- backend.item.findAttachment(id, user.account.collective)
+          fileData <- backend.itemSearch.findAttachment(id, user.account.collective)
           inm     = req.headers.get(`If-None-Match`).flatMap(_.tags)
           matches = matchETag(fileData.map(_.meta), inm)
           resp <-
@@ -69,7 +69,7 @@ object AttachmentRoutes {
 
       case HEAD -> Root / Ident(id) / "original" =>
         for {
-          fileData <- backend.item.findAttachmentSource(id, user.account.collective)
+          fileData <- backend.itemSearch.findAttachmentSource(id, user.account.collective)
           resp <-
             fileData
               .map(data => withResponseHeaders(Ok())(data))
@@ -78,7 +78,7 @@ object AttachmentRoutes {
 
       case req @ GET -> Root / Ident(id) / "original" =>
         for {
-          fileData <- backend.item.findAttachmentSource(id, user.account.collective)
+          fileData <- backend.itemSearch.findAttachmentSource(id, user.account.collective)
           inm     = req.headers.get(`If-None-Match`).flatMap(_.tags)
           matches = matchETag(fileData.map(_.meta), inm)
           resp <-
@@ -92,7 +92,8 @@ object AttachmentRoutes {
 
       case HEAD -> Root / Ident(id) / "archive" =>
         for {
-          fileData <- backend.item.findAttachmentArchive(id, user.account.collective)
+          fileData <-
+            backend.itemSearch.findAttachmentArchive(id, user.account.collective)
           resp <-
             fileData
               .map(data => withResponseHeaders(Ok())(data))
@@ -101,7 +102,8 @@ object AttachmentRoutes {
 
       case req @ GET -> Root / Ident(id) / "archive" =>
         for {
-          fileData <- backend.item.findAttachmentArchive(id, user.account.collective)
+          fileData <-
+            backend.itemSearch.findAttachmentArchive(id, user.account.collective)
           inm     = req.headers.get(`If-None-Match`).flatMap(_.tags)
           matches = matchETag(fileData.map(_.meta), inm)
           resp <-
@@ -122,7 +124,7 @@ object AttachmentRoutes {
 
       case GET -> Root / Ident(id) / "meta" =>
         for {
-          rm <- backend.item.findAttachmentMeta(id, user.account.collective)
+          rm <- backend.itemSearch.findAttachmentMeta(id, user.account.collective)
           md = rm.map(Conversions.mkAttachmentMeta)
           resp <- md.map(Ok(_)).getOrElse(NotFound(BasicResult(false, "Not found.")))
         } yield resp

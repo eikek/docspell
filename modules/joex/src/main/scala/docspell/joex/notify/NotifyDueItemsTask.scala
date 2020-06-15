@@ -8,7 +8,7 @@ import emil.markdown._
 import emil.javamail.syntax._
 
 import docspell.common._
-import docspell.backend.ops.OItem.Batch
+import docspell.backend.ops.OItemSearch.Batch
 import docspell.store.records._
 import docspell.store.queries.QItem
 import docspell.joex.scheduler.{Context, Task}

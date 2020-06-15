@@ -21,8 +21,9 @@ object CheckFileRoutes {
     HttpRoutes.of {
       case GET -> Root / checksum =>
         for {
-          items <- backend.item.findByFileCollective(checksum, user.account.collective)
-          resp  <- Ok(convert(items))
+          items <-
+            backend.itemSearch.findByFileCollective(checksum, user.account.collective)
+          resp <- Ok(convert(items))
         } yield resp
 
     }
@@ -35,7 +36,7 @@ object CheckFileRoutes {
     HttpRoutes.of {
       case GET -> Root / Ident(id) / checksum =>
         for {
-          items <- backend.item.findByFileSource(checksum, id)
+          items <- backend.itemSearch.findByFileSource(checksum, id)
           resp  <- Ok(convert(items))
         } yield resp
     }

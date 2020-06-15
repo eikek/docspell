@@ -14,7 +14,7 @@ import bitpeace.FileMeta
 import docspell.backend.ops.OCollective.{InsightData, PassChangeResult}
 import docspell.backend.ops.OJob.JobCancelResult
 import docspell.backend.ops.OUpload.{UploadData, UploadMeta, UploadResult}
-import docspell.backend.ops.{OItem, OJob, OOrganization, OUpload}
+import docspell.backend.ops.{OItemSearch, OJob, OOrganization, OUpload}
 import docspell.store.AddResult
 import org.http4s.multipart.Multipart
 import org.http4s.headers.`Content-Type`
@@ -67,7 +67,7 @@ trait Conversions {
   }
 
   // item detail
-  def mkItemDetail(data: OItem.ItemData): ItemDetail =
+  def mkItemDetail(data: OItemSearch.ItemData): ItemDetail =
     ItemDetail(
       data.item.id,
       data.item.direction,
@@ -90,7 +90,9 @@ trait Conversions {
       data.tags.map(mkTag).toList
     )
 
-  def mkAttachment(item: OItem.ItemData)(ra: RAttachment, m: FileMeta): Attachment = {
+  def mkAttachment(
+      item: OItemSearch.ItemData
+  )(ra: RAttachment, m: FileMeta): Attachment = {
     val converted =
       item.sources.find(_._1.id == ra.id).exists(_._2.checksum != m.checksum)
     Attachment(ra.id, ra.name, m.length, MimeType.unsafe(m.mimetype.asString), converted)
@@ -104,8 +106,8 @@ trait Conversions {
 
   // item list
 
-  def mkQuery(m: ItemSearch, coll: Ident): OItem.Query =
-    OItem.Query(
+  def mkQuery(m: ItemSearch, coll: Ident): OItemSearch.Query =
+    OItemSearch.Query(
       coll,
       m.name,
       if (m.inbox) Seq(ItemState.Created)
@@ -125,10 +127,10 @@ trait Conversions {
       None
     )
 
-  def mkItemList(v: Vector[OItem.ListItem]): ItemLightList = {
+  def mkItemList(v: Vector[OItemSearch.ListItem]): ItemLightList = {
     val groups = v.groupBy(item => item.date.toUtcDate.toString.substring(0, 7))
 
-    def mkGroup(g: (String, Vector[OItem.ListItem])): ItemLightGroup =
+    def mkGroup(g: (String, Vector[OItemSearch.ListItem])): ItemLightGroup =
       ItemLightGroup(g._1, g._2.map(mkItemLight).toList)
 
     val gs =
@@ -136,10 +138,10 @@ trait Conversions {
     ItemLightList(gs)
   }
 
-  def mkItemListWithTags(v: Vector[OItem.ListItemWithTags]): ItemLightList = {
+  def mkItemListWithTags(v: Vector[OItemSearch.ListItemWithTags]): ItemLightList = {
     val groups = v.groupBy(ti => ti.item.date.toUtcDate.toString.substring(0, 7))
 
-    def mkGroup(g: (String, Vector[OItem.ListItemWithTags])): ItemLightGroup =
+    def mkGroup(g: (String, Vector[OItemSearch.ListItemWithTags])): ItemLightGroup =
       ItemLightGroup(g._1, g._2.map(mkItemLightWithTags).toList)
 
     val gs =
@@ -147,7 +149,7 @@ trait Conversions {
     ItemLightList(gs)
   }
 
-  def mkItemLight(i: OItem.ListItem): ItemLight =
+  def mkItemLight(i: OItemSearch.ListItem): ItemLight =
     ItemLight(
       i.id,
       i.name,
@@ -164,7 +166,7 @@ trait Conversions {
       Nil
     )
 
-  def mkItemLightWithTags(i: OItem.ListItemWithTags): ItemLight =
+  def mkItemLightWithTags(i: OItemSearch.ListItemWithTags): ItemLight =
     mkItemLight(i.item).copy(tags = i.tags.map(mkTag))
 
   // job
