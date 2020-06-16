@@ -55,6 +55,7 @@ type alias Model =
     , untilDueDate : Maybe Int
     , nameModel : Maybe String
     , allNameModel : Maybe String
+    , fulltextModel : Maybe String
     , datePickerInitialized : Bool
     }
 
@@ -111,6 +112,7 @@ init =
     , untilDueDate = Nothing
     , nameModel = Nothing
     , allNameModel = Nothing
+    , fulltextModel = Nothing
     , datePickerInitialized = False
     }
 
@@ -135,6 +137,7 @@ type Msg
     | GetPersonResp (Result Http.Error ReferenceList)
     | SetName String
     | SetAllName String
+    | SetFulltext String
     | ResetForm
 
 
@@ -188,6 +191,7 @@ getItemSearch model =
         , allNames =
             model.allNameModel
                 |> Maybe.map amendWildcards
+        , fullText = model.fulltextModel
     }
 
 
@@ -484,6 +488,17 @@ update flags settings msg model =
                 )
                 (model.allNameModel /= next)
 
+        SetFulltext str ->
+            let
+                next =
+                    Util.Maybe.fromString str
+            in
+            NextState
+                ( { model | fulltextModel = next }
+                , Cmd.none
+                )
+                (model.fulltextModel /= next)
+
 
 
 -- View
@@ -515,6 +530,18 @@ view settings model =
                 , label []
                     [ text "Only New"
                     ]
+                ]
+            ]
+        , div [ class "field" ]
+            [ label [] [ text "Content Search" ]
+            , input
+                [ type_ "text"
+                , onInput SetFulltext
+                , model.fulltextModel |> Maybe.withDefault "" |> value
+                ]
+                []
+            , span [ class "small-info" ]
+                [ text "Fulltext search in document contents."
                 ]
             ]
         , formHeader nameIcon "Names"

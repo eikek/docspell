@@ -8,6 +8,7 @@ import docspell.joex.Config
 import docspell.joex.scheduler.Task
 import docspell.store.queries.QItem
 import docspell.store.records.RItem
+import docspell.ftsclient.FtsClient
 
 object ItemHandler {
   def onCancel[F[_]: Sync: ContextShift]: Task[F, ProcessItemArgs, Unit] =
@@ -16,11 +17,11 @@ object ItemHandler {
     )
 
   def newItem[F[_]: ConcurrentEffect: ContextShift](
-      cfg: Config
+      cfg: Config, fts: FtsClient[F]
   ): Task[F, ProcessItemArgs, Unit] =
     CreateItem[F]
       .flatMap(itemStateTask(ItemState.Processing))
-      .flatMap(safeProcess[F](cfg))
+      .flatMap(safeProcess[F](cfg, fts))
       .map(_ => ())
 
   def itemStateTask[F[_]: Sync, A](
@@ -36,11 +37,11 @@ object ItemHandler {
     Task(_.isLastRetry)
 
   def safeProcess[F[_]: ConcurrentEffect: ContextShift](
-      cfg: Config
+      cfg: Config, fts: FtsClient[F]
   )(data: ItemData): Task[F, ProcessItemArgs, ItemData] =
     isLastRetry[F].flatMap {
       case true =>
-        ProcessItem[F](cfg)(data).attempt.flatMap({
+        ProcessItem[F](cfg, fts)(data).attempt.flatMap({
           case Right(d) =>
             Task.pure(d)
           case Left(ex) =>
@@ -50,7 +51,7 @@ object ItemHandler {
               .andThen(_ => Sync[F].raiseError(ex))
         })
       case false =>
-        ProcessItem[F](cfg)(data).flatMap(itemStateTask(ItemState.Created))
+        ProcessItem[F](cfg, fts)(data).flatMap(itemStateTask(ItemState.Created))
     }
 
   def deleteByFileIds[F[_]: Sync: ContextShift]: Task[F, ProcessItemArgs, Unit] =

@@ -14,8 +14,10 @@ import docspell.joexapi.client.JoexClient
 import docspell.store.Store
 import docspell.store.queue._
 import docspell.store.records.RJobLog
+import docspell.ftssolr.SolrFtsClient
 import fs2.concurrent.SignallingRef
 import scala.concurrent.ExecutionContext
+import org.http4s.client.blaze.BlazeClientBuilder
 
 final class JoexAppImpl[F[_]: ConcurrentEffect: ContextShift: Timer](
     cfg: Config,
@@ -63,13 +65,15 @@ object JoexAppImpl {
       blocker: Blocker
   ): Resource[F, JoexApp[F]] =
     for {
-      client  <- JoexClient.resource(clientEC)
+      httpClient <- BlazeClientBuilder[F](clientEC).resource
+      client = JoexClient(httpClient)
       store   <- Store.create(cfg.jdbc, connectEC, blocker)
       queue   <- JobQueue(store)
       pstore  <- PeriodicTaskStore.create(store)
       nodeOps <- ONode(store)
       joex    <- OJoex(client, store)
       upload  <- OUpload(store, queue, cfg.files, joex)
+      fts     <- SolrFtsClient(cfg.fullTextSearch.solr, httpClient)
       javaEmil =
         JavaMailEmil(blocker, Settings.defaultSettings.copy(debug = cfg.mailDebug))
       sch <- SchedulerBuilder(cfg.scheduler, blocker, store)
@@ -77,7 +81,7 @@ object JoexAppImpl {
         .withTask(
           JobTask.json(
             ProcessItemArgs.taskName,
-            ItemHandler.newItem[F](cfg),
+            ItemHandler.newItem[F](cfg, fts),
             ItemHandler.onCancel[F]
           )
         )

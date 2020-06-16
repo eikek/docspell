@@ -73,49 +73,7 @@ view settings model =
                 , ( "item-card-list", True )
                 ]
             ]
-            [ div
-                [ classList
-                    [ ( "invisible hidden", not model.menuCollapsed )
-                    , ( "ui menu container", True )
-                    ]
-                ]
-                [ a
-                    [ class "item"
-                    , onClick ToggleSearchMenu
-                    , href "#"
-                    , title "Open search menu"
-                    ]
-                    [ i [ class "angle left icon" ] []
-                    , i [ class "icons" ]
-                        [ i [ class "grey bars icon" ] []
-                        , i [ class "bottom left corner search icon" ] []
-                        , if hasMoreSearch model then
-                            i [ class "top right blue corner circle icon" ] []
-
-                          else
-                            span [ class "hidden invisible" ] []
-                        ]
-                    ]
-                , div [ class "ui category search item" ]
-                    [ div [ class "ui transparent icon input" ]
-                        [ input
-                            [ type_ "text"
-                            , placeholder "Basic search…"
-                            , onInput SetBasicSearch
-                            , Maybe.map value model.searchMenuModel.allNameModel
-                                |> Maybe.withDefault (value "")
-                            ]
-                            []
-                        , i
-                            [ classList
-                                [ ( "search link icon", not model.searchInProgress )
-                                , ( "loading spinner icon", model.searchInProgress )
-                                ]
-                            ]
-                            []
-                        ]
-                    ]
-                ]
+            [ viewSearchBar model
             , case model.viewMode of
                 Listing ->
                     Html.map ItemCardListMsg
@@ -157,6 +115,72 @@ view settings model =
         ]
 
 
+viewSearchBar : Model -> Html Msg
+viewSearchBar model =
+    div
+        [ classList
+            [ ( "invisible hidden", not model.menuCollapsed )
+            , ( "ui menu container", True )
+            ]
+        ]
+        [ a
+            [ class "item"
+            , onClick ToggleSearchMenu
+            , href "#"
+            , title "Open search menu"
+            ]
+            [ i [ class "angle left icon" ] []
+            , i [ class "icons" ]
+                [ i [ class "grey bars icon" ] []
+                , i [ class "bottom left corner search icon" ] []
+                , if hasMoreSearch model then
+                    i [ class "top right blue corner circle icon" ] []
+
+                  else
+                    span [ class "hidden invisible" ] []
+                ]
+            ]
+        , div [ class "ui category search item" ]
+            [ div [ class "ui transparent icon input" ]
+                [ input
+                    [ type_ "text"
+                    , placeholder "Basic search…"
+                    , onInput SetBasicSearch
+                    , Maybe.map value model.searchMenuModel.allNameModel
+                        |> Maybe.withDefault (value "")
+                    ]
+                    []
+                , i
+                    [ classList
+                        [ ( "search link icon", not model.searchInProgress )
+                        , ( "loading spinner icon", model.searchInProgress )
+                        ]
+                    ]
+                    []
+                ]
+            ]
+        , div [ class "ui category search item" ]
+            [ div [ class "ui transparent icon input" ]
+                [ input
+                    [ type_ "text"
+                    , placeholder "Fulltext search…"
+                    , onInput SetFulltextSearch
+                    , Maybe.map value model.searchMenuModel.fulltextModel
+                        |> Maybe.withDefault (value "")
+                    ]
+                    []
+                , i
+                    [ classList
+                        [ ( "search link icon", not model.searchInProgress )
+                        , ( "loading spinner icon", model.searchInProgress )
+                        ]
+                    ]
+                    []
+                ]
+            ]
+        ]
+
+
 hasMoreSearch : Model -> Bool
 hasMoreSearch model =
     let
@@ -164,6 +188,6 @@ hasMoreSearch model =
             Comp.SearchMenu.getItemSearch model.searchMenuModel
 
         is_ =
-            { is | allNames = Nothing }
+            { is | allNames = Nothing, fullText = Nothing }
     in
     is_ /= Api.Model.ItemSearch.empty

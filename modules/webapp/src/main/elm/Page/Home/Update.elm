@@ -155,6 +155,13 @@ update key flags settings msg model =
             in
             update key flags settings m model
 
+        SetFulltextSearch str ->
+            let
+                m =
+                    SearchMenuMsg (Comp.SearchMenu.SetFulltext str)
+            in
+            update key flags settings m model
+
 
 
 --- Helpers

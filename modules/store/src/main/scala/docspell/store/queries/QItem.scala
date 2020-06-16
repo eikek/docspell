@@ -3,6 +3,7 @@ package docspell.store.queries
 import bitpeace.FileMeta
 import cats.effect.Sync
 import cats.data.OptionT
+import cats.data.NonEmptyList
 import cats.implicits._
 import cats.effect.concurrent.Ref
 import fs2.Stream
@@ -165,6 +166,7 @@ object QItem {
       dueDateFrom: Option[Timestamp],
       dueDateTo: Option[Timestamp],
       allNames: Option[String],
+      itemIds: Option[Set[Ident]],
       orderAsc: Option[RItem.Columns.type => Column]
   )
 
@@ -186,6 +188,7 @@ object QItem {
         None,
         None,
         None,
+        None,
         None
       )
   }
@@ -193,6 +196,9 @@ object QItem {
   case class Batch(offset: Int, limit: Int) {
     def restrictLimitTo(n: Int): Batch =
       Batch(offset, math.min(n, limit))
+
+    def next: Batch =
+      Batch(offset + limit, limit)
   }
 
   object Batch {
@@ -326,7 +332,15 @@ object QItem {
         )
         .getOrElse(Fragment.empty),
       q.dueDateFrom.map(d => IC.dueDate.prefix("i").isGt(d)).getOrElse(Fragment.empty),
-      q.dueDateTo.map(d => IC.dueDate.prefix("i").isLt(d)).getOrElse(Fragment.empty)
+      q.dueDateTo.map(d => IC.dueDate.prefix("i").isLt(d)).getOrElse(Fragment.empty),
+      q.itemIds
+        .map(ids =>
+          NonEmptyList
+            .fromList(ids.toList)
+            .map(nel => IC.id.prefix("i").isIn(nel))
+            .getOrElse(IC.id.prefix("i").is(""))
+        )
+        .getOrElse(Fragment.empty)
     )
 
     val order = q.orderAsc match {

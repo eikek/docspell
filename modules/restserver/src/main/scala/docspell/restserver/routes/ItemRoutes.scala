@@ -47,10 +47,19 @@ object ItemRoutes {
           _    <- logger.ftrace(s"Got search mask: $mask")
           query = Conversions.mkQuery(mask, user.account.collective)
           _ <- logger.ftrace(s"Running query: $query")
-          items <- backend.itemSearch.findItemsWithTags(
-            query,
-            Batch(mask.offset, mask.limit).restrictLimitTo(cfg.maxItemPageSize)
-          )
+          items <- mask.fullText match {
+            case None =>
+              backend.itemSearch.findItemsWithTags(
+                query,
+                Batch(mask.offset, mask.limit).restrictLimitTo(cfg.maxItemPageSize)
+              )
+            case Some(fq) =>
+              backend.fulltext.findItemsWithTags(
+                query,
+                fq,
+                Batch(mask.offset, mask.limit).restrictLimitTo(cfg.maxItemPageSize)
+              )
+          }
           resp <- Ok(Conversions.mkItemListWithTags(items))
         } yield resp
 

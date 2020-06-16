@@ -58,6 +58,7 @@ type Msg
     | LoadMore
     | UpdateThrottle
     | SetBasicSearch String
+    | SetFulltextSearch String
 
 
 type ViewMode

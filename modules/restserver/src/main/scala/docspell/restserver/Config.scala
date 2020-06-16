@@ -13,7 +13,8 @@ case class Config(
     backend: BackendConfig,
     auth: Login.Config,
     integrationEndpoint: Config.IntegrationEndpoint,
-    maxItemPageSize: Int
+    maxItemPageSize: Int,
+    fulltextSearch: Config.FulltextSearch
 )
 
 object Config {
@@ -50,4 +51,9 @@ object Config {
       }
     }
   }
+
+  case class FulltextSearch(enabled: Boolean)
+
+  object FulltextSearch {}
+
 }

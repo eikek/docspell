@@ -1,19 +1,20 @@
 package docspell.joex.process
 
+import fs2.Stream
 import bitpeace.{Mimetype, RangeDef}
 import cats.data.OptionT
 import cats.implicits._
-import cats.effect.{ContextShift, Sync}
+import cats.effect._
 import docspell.common._
 import docspell.extract.{ExtractConfig, ExtractResult, Extraction}
 import docspell.joex.scheduler.{Context, Task}
 import docspell.store.records.{RAttachment, RAttachmentMeta, RFileMeta}
 import docspell.store.syntax.MimeTypes._
+import docspell.ftsclient.{FtsClient, TextData}
 
 object TextExtraction {
 
-  def apply[F[_]: Sync: ContextShift](
-      cfg: ExtractConfig,
+  def apply[F[_]: ConcurrentEffect: ContextShift](cfg: ExtractConfig, fts: FtsClient[F])(
       item: ItemData
   ): Task[F, ProcessItemArgs, ItemData] =
     Task { ctx =>
@@ -23,8 +24,20 @@ object TextExtraction {
         txt <- item.attachments.traverse(
           extractTextIfEmpty(ctx, cfg, ctx.args.meta.language, item)
         )
-        _   <- ctx.logger.debug("Storing extracted texts")
-        _   <- txt.toList.traverse(rm => ctx.store.transact(RAttachmentMeta.upsert(rm)))
+        _ <- ctx.logger.debug("Storing extracted texts")
+        _ <- txt.toList.traverse(rm => ctx.store.transact(RAttachmentMeta.upsert(rm)))
+        _ <- fts.indexData(
+          Stream
+            .emits(txt)
+            .map(a =>
+              TextData(
+                item.item.id,
+                a.id,
+                ctx.args.meta.collective,
+                a.content.getOrElse("")
+              )
+            )
+        )
         dur <- start
         _   <- ctx.logger.info(s"Text extraction finished in ${dur.formatExact}")
       } yield item.copy(metas = txt)

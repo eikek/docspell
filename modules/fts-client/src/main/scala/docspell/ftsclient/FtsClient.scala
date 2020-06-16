@@ -14,5 +14,5 @@ trait FtsClient[F[_]] {
 
   def searchBasic(q: FtsQuery): Stream[F, FtsBasicResult]
 
-  def indexData(data: TextData): F[Unit]
+  def indexData(data: Stream[F, TextData]): F[Unit]
 }
