@@ -22,7 +22,7 @@ let
       enabled = false;
       priority = "low";
       allowed-ips = {
-        enabled = true;
+        enabled = false;
         ips = [ "127.0.0.1" ];
       };
       http-basic = {
