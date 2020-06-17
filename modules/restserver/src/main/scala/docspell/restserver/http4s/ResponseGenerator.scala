@@ -15,10 +15,9 @@ trait ResponseGenerator[F[_]] {
         w1: EntityEncoder[F, B]
     ): F[Response[F]] =
       e.fold(
-          a => UnprocessableEntity(a),
-          b => Ok(b)
-        )
-        .map(_.withHeaders(headers: _*))
+        a => UnprocessableEntity(a),
+        b => Ok(b)
+      ).map(_.withHeaders(headers: _*))
   }
 
   implicit final class OptionResponse[A](o: Option[A]) {

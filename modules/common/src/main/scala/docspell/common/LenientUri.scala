@@ -221,13 +221,12 @@ object LenientUri {
     if (!s.contains("%")) s
     else
       s.foldLeft(("", ByteVector.empty)) {
-          case ((acc, res), c) =>
-            if (acc.length == 2) ("", res ++ ByteVector.fromValidHex(acc.drop(1) + c))
-            else if (acc.startsWith("%")) (acc :+ c, res)
-            else if (c == '%') ("%", res)
-            else (acc, res :+ c.toByte)
-        }
-        ._2
+        case ((acc, res), c) =>
+          if (acc.length == 2) ("", res ++ ByteVector.fromValidHex(acc.drop(1) + c))
+          else if (acc.startsWith("%")) (acc :+ c, res)
+          else if (c == '%') ("%", res)
+          else (acc, res :+ c.toByte)
+      }._2
         .decodeUtf8
         .fold(throw _, identity)
 

@@ -3,7 +3,6 @@ package docspell.analysis.split
 import fs2.Stream
 
 /** Splits text into words.
-  *
   */
 object TextSplitter {
   private[this] val trimChars =

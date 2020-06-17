@@ -7,7 +7,6 @@ import docspell.joex.scheduler.Task
 import docspell.store.records._
 
 /** Saves the proposals in the database
-  *
   */
 object SaveProposals {
 
