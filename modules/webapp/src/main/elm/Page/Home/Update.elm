@@ -9,13 +9,18 @@ import Page exposing (Page(..))
 import Page.Home.Data exposing (..)
 import Throttle
 import Time
+import Util.Update
 
 
 update : Nav.Key -> Flags -> UiSettings -> Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
 update key flags settings msg model =
     case msg of
         Init ->
-            update key flags settings (SearchMenuMsg Comp.SearchMenu.Init) model
+            Util.Update.andThen2
+                [ update key flags settings (SearchMenuMsg Comp.SearchMenu.Init)
+                , doSearch flags settings
+                ]
+                model
 
         ResetSearch ->
             let
