@@ -1,7 +1,7 @@
 version: '3.7'
 services:
   restserver:
-    image: eikek0/docspell:restserver-0.6.0
+    image: eikek0/docspell:restserver-0.7.0
     container_name: docspell-restserver
     command: /opt/docspell.conf
     ports:
@@ -20,7 +20,7 @@ services:
       - POSTGRES_PASSWORD=dbpass
       - POSTGRES_DB=dbname
   joex:
-    image: eikek0/docspell:joex-0.6.0
+    image: eikek0/docspell:joex-0.7.0
     container_name: docspell-joex
     command: /opt/docspell.conf
     ports:
@@ -30,7 +30,7 @@ services:
     depends_on:
       - db
   consumedir:
-    image: eikek0/docspell:consumedir-0.6.0
+    image: eikek0/docspell:consumedir-0.7.0
     container_name: docspell-consumedir
     command: --path /opt/docs -m http://restserver:7880/api/v1/open/upload/item/$SOURCE_ID
     environment:
