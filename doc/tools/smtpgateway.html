@@ -1,0 +1,257 @@
+<!DOCTYPE html><html><head><title>Docspell: SMTP Gateway with Exim</title><meta charset="utf-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="eikek" /><meta name="description" content="Auto-tagging Document Organizer" /><meta name="og:image" content="/img/poster.png" /><meta name="image" property="og:image" content="/img/poster.png" /><meta name="og:title" content="Docspell: SMTP Gateway with Exim" /><meta name="title" property="og:title" content="Docspell: SMTP Gateway with Exim" /><meta name="og:site_name" content="Docspell" /><meta name="og:url" content="" /><meta name="og:type" content="website" /><meta name="og:description" content="Auto-tagging Document Organizer" /><link rel="icon" type="image/png" href="/img/favicon.png" /><meta name="twitter:title" content="Docspell: SMTP Gateway with Exim" /><meta name="twitter:image" content="/img/poster.png" /><meta name="twitter:description" content="Auto-tagging Document Organizer" /><meta name="twitter:card" content="summary_large_image" /><link rel="icon" type="image/png" sizes="96x96" href="/img/favicon.png" /><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" /><link rel="stylesheet" href="/highlight/styles/vs.css" /><link rel="stylesheet" href="/css/light-style.css" /><link rel="stylesheet" href="/css/docspell.css" /></head><body class="docs"><div id="wrapper"><div id="sidebar-wrapper"><div id="sidebar-brand"><a href="/" class="brand"><div class="brand-wrapper"></div><span>Docspell</span></a><button id="main-toggle" class="sidebar-toggle"><span class="close"></span></button></div><div class="sidebar-nav"> <div class="sidebar-nav-item  "><a href="/index.html" title="Home" class="">Home</a></div> <div class="sidebar-nav-item  "><a href="/demo" title="Demo" class="">Demo</a></div> <div class="sidebar-nav-item  "><a href="/getit" title="Quickstart" class="">Quickstart</a></div> <div class="sidebar-nav-item  "><a href="/features" title="Features/Limitations" class="">Features/Limitations</a></div> <div class="sidebar-nav-item  "><a href="/doc" title="Documentation" class="drop-nested">Documentation</a><i class="fa fa-angle-right"></i><div class="sub-section"> <a href="/doc/install" title="Installation" class="">Installation</a> <a href="/doc/configure" title="Configuring" class="">Configuring</a> <a href="/doc/nix" title="Nix/NixOS" class="">Nix/NixOS</a> <a href="/doc/reverseproxy" title="Reverse Proxy" class="">Reverse Proxy</a> <a href="/doc/metadata" title="Adding Meta Data" class="">Adding Meta Data</a> <a href="/doc/finding" title="Finding Items" class="">Finding Items</a> <a href="/doc/uploading" title="Uploads" class="">Uploads</a> <a href="/doc/processing" title="Processing Queue" class="">Processing Queue</a> <a href="/doc/curate" title="Find and Review" class="">Find and Review</a> <a href="/doc/emailsettings" title="E-Mail Settings" class="">E-Mail Settings</a> <a href="/doc/mailitem" title="Send via E-Mail" class="">Send via E-Mail</a> <a href="/doc/notifydueitems" title="Notify on due Items" class="">Notify on due Items</a> <a href="/doc/scanmailbox" title="Scan Mailboxes" class="">Scan Mailboxes</a> <a href="/doc/joex" title="Joex" class="">Joex</a></div></div> <div class="sidebar-nav-item  open"><a href="/doc/tools" title="Tools" class="drop-nested">Tools</a><i class="fa fa-angle-right"></i><div class="sub-section"> <a href="/doc/tools/ds" title="Upload CLI" class="">Upload CLI</a> <a href="/doc/tools/consumedir" title="Consume Directory" class="">Consume Directory</a> <a href="/doc/tools/browserext" title="Browser Extension (Firefox)" class="">Browser Extension (Firefox)</a> <a href="/doc/tools/smtpgateway" title="SMTP Gateway" class="active">SMTP Gateway</a></div></div> <div class="sidebar-nav-item  "><a href="/api" title="Api" class="drop-nested">Api</a><i class="fa fa-angle-right"></i><div class="sub-section"> <a href="/openapi/docspell-openapi.html" title="REST Api Doc" class="">REST Api Doc</a> <a href="/openapi/docspell-openapi.yml" title="REST OpenApi Spec" class="">REST OpenApi Spec</a></div></div> <div class="sidebar-nav-item  "><a href="/dev" title="Development" class="drop-nested">Development</a><i class="fa fa-angle-right"></i><div class="sub-section"> <a href="/dev/adr" title="ADRs" class="">ADRs</a></div></div> <div class="sidebar-nav-item  "><a href="/changelog" title="Changelog" class="">Changelog</a></div></div></div><div id="page-content-wrapper"><div class="nav"><div class="container-fluid"><div class="row"><div class="col-lg-12"><div class="action-menu pull-left clearfix"><a href="#menu-toggle" id="menu-toggle"><i class="fa fa-bars" aria-hidden="true"></i></a></div><ul class="pull-right"><li id="gh-eyes-item" class="hidden-xs"><a href="https://github.com/eikek/docspell" target="_blank" rel="noopener noreferrer"><i class="fa fa-eye"></i><span>Watchers<span id="eyes" class="label label-default">--</span></span></a></li><li id="gh-stars-item" class="hidden-xs"><a href="https://github.com/eikek/docspell" target="_blank" rel="noopener noreferrer"><i class="fa fa-star-o"></i><span>Stars<span id="stars" class="label label-default">--</span></span></a></li></ul></div></div></div></div><div id="content" data-github-owner="eikek" data-github-repo="docspell"><div class="content-wrapper"><section><h1 id="smtp-gateway-with-exim">SMTP Gateway with Exim</h1>
+
+<p>One possible use case for the <a href="../uploading#integration-endpoint">integration
+endpoint</a> is a SMTP server that
+forwards all local mail to docspell. This way there is no periodic
+polling involved and documents (e-mails) get into docspell without
+delay.</p>
+
+<p>The <code class="highlighter-rouge">tools/exim</code> folder contains a docker file and a sample
+<code class="highlighter-rouge">exim.conf</code> to help start with this setup. Note that these files
+provide a minimal setup, you might want to add tls and spam protection
+when opening it to the public.</p>
+
+<h2 id="what-you-need">What you need</h2>
+
+<p>You need to own a domain and add the appropriate MX records to point
+to your server. In this document, the domain <code class="highlighter-rouge">test.org</code> is used.</p>
+
+<p>You need to enable the <a href="../uploading#integration-endpoint">integration
+endpoint</a> in the docspell
+configuration.</p>
+
+<h2 id="exim">Exim</h2>
+
+<p><a href="http://exim.org/">Exim</a> is a popular smtp server (message transfer
+agent). It is used here only because of previous knowledge, but same
+can be achieved with other MTAs.</p>
+
+<h2 id="the-config-file">The Config File</h2>
+
+<p>Here is the example config file for exim:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+## Provide certificates to enable StartTLS
+# tls_certificate = /var/lib/acme/test.org/fullchain.pem
+# tls_privatekey = /var/lib/acme/test.org/key.pem
+tls_advertise_hosts =
+
+primary_hostname = test.org
+domainlist local_domains = test.org
+timeout_frozen_after = 1m
+acl_smtp_rcpt = acl_check_rcpt
+acl_smtp_data = acl_check_data
+never_users = root
+host_lookup = *
+daemon_smtp_ports = 25
+
+message_size_limit = 30m
+
+keep_environment = DS_HEADER : DS_URL
+
+begin acl
+acl_check_rcpt:
+require
+  domains = +local_domains
+require
+  message = Sender verification failed
+  verify = sender
+require
+  message = Receiver verification failed
+  verify = recipient
+require
+  message = Recipient unknown
+  condition = ${run{/usr/bin/curl --out /dev/null --silent --fail -H "Docspell-Integration: ${env{DS_HEADER}{$value} fail}" "${env{DS_URL}{$value} fail}/api/v1/open/integration/item/$local_part"}{yes}{no}}
+warn
+  message = Reverse lookup failed
+  !verify = reverse_host_lookup
+accept
+
+acl_check_data:
+deny
+  message = Sender verification failed
+  !verify = header_sender
+accept
+
+begin routers
+local_users:
+  driver = accept
+  transport = docspell
+
+begin transports
+docspell:
+  driver = pipe
+  command = /usr/bin/curl --out /dev/null --silent --fail -H "Docspell-Integration: ${env{DS_HEADER}{$value} fail}" -F "file=@-;filename=\"$h_subject:\"" "${env{DS_URL}{$value} fail}/api/v1/open/integration/item/$local_part"
+  return_fail_output
+  user = nobody
+  delivery_date_add
+  envelope_to_add
+  return_path_add
+  log_output
+
+</code></pre></div></div>
+
+<p>Exim has good <a href="https://www.exim.org/docs.html">documentation</a>, look
+there for more info. The following is only a quick summary of the file
+above.</p>
+
+<p>The <code class="highlighter-rouge">domainlist local_domains</code> should list your domain. Only mails to
+this domain are allowed, as specified in the first rule in
+<code class="highlighter-rouge">acl_check_rcpt</code>. So mails to <code class="highlighter-rouge">name@test.org</code> are ok, but
+<code class="highlighter-rouge">name@someother.org</code> not.</p>
+
+<p>Another rule in <code class="highlighter-rouge">acl_check_rcpt</code> executes a <code class="highlighter-rouge">GET</code> request against the
+integration endpoint. If that fails, the recipient is wrong (or the
+endpoint disabled) and the mail is rejected right away.</p>
+
+<p>Then the <code class="highlighter-rouge">routers</code> define how a mail is handled. There is only one
+router that accepts all mails (that have not been rejected by a rule
+in acls) and uses the <code class="highlighter-rouge">docspell</code> transport to deliver it. The
+transport specifies a command via the <code class="highlighter-rouge">pipe</code> driver that is run with
+the mail. The mail itself is provided via stdin. So a simple <code class="highlighter-rouge">curl</code>
+command can upload it to the integration endpoint. Here are some quick
+notes about the used options (see <code class="highlighter-rouge">man curl</code>):</p>
+
+<ul>
+  <li><code class="highlighter-rouge">--silent</code> and <code class="highlighter-rouge">--out /dev/null</code> don’t print upload progress
+information and no output to stdout</li>
+  <li><code class="highlighter-rouge">--fail</code> return non-zero if http status code is not success</li>
+  <li><code class="highlighter-rouge">-F</code> use a multipart/form-data request (defaults to a POST request)</li>
+  <li><code class="highlighter-rouge">"file=@-;filename=\"$_subject:\""</code> add one part with name <code class="highlighter-rouge">file</code>
+and take the data from stdin (<code class="highlighter-rouge">@-</code>). Since there is no filename, we
+use the subject of the mail. This is <a href="http://exim.org/exim-html-current/doc/html/spec_html/ch-string_expansions.html">supported by
+exim</a>
+by expanding the subject mail header via <code class="highlighter-rouge">$h_subject:</code> (the colon is
+required).</li>
+  <li><code class="highlighter-rouge">$local_part</code> this is expanded by exim to the recipient address,
+only the part until the <code class="highlighter-rouge">@</code> sign.</li>
+  <li><code class="highlighter-rouge">${env{DS_HEADER}{$value} fail}</code> looks up an environment variable by
+key <code class="highlighter-rouge">DS_HEADER</code>. This is usually defined in <code class="highlighter-rouge">docker-compose.yml</code>.
+The value must be the “secret” header value as defined in docspell’s
+configuration file.</li>
+  <li><code class="highlighter-rouge">${env{DS_URL}{$value} fail}</code> the url to docspell. It is looked up
+from the environment with key <code class="highlighter-rouge">DS_URL</code>, which is usually defined in
+<code class="highlighter-rouge">docker-compose.yml</code>. Adding the <code class="highlighter-rouge">$local_part</code> at the end means that
+mails to <code class="highlighter-rouge">somename@test.org</code> are uploaded to the collective
+<code class="highlighter-rouge">somename</code>.</li>
+</ul>
+
+<h2 id="install-with-docker">Install with Docker</h2>
+
+<p>Go into the <code class="highlighter-rouge">tools/exim</code> directory and build the docker image:</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker build <span class="nt">-t</span> ds-exim:latest <span class="nt">-f</span> exim.dockerfile <span class="nb">.</span>
+</code></pre></div></div>
+
+<p>Then start docspell somewhere and configure the integration endpoint
+to use http-header protection; i.e. set this in the config file:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docspell.server {
+  integration-endpoint {
+    enabled = true
+    http-header = {
+      enabled = true
+      header-value = "test123"
+    }
+  }
+}
+</code></pre></div></div>
+
+<p>Then edit the <code class="highlighter-rouge">docker-compose.yml</code> and change the environment
+variables as needed.</p>
+
+<p>Finally start the container:</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker-compose up
+</code></pre></div></div>
+
+<h2 id="test-run">Test Run</h2>
+
+<p>Now it is possible to send mails to this MTA which will be immediatly
+uploaded to docspell for the collective corresponding to the
+<code class="highlighter-rouge">$local_part</code> of the recipients address. Here is a quick telnet
+session (the collective is named <code class="highlighter-rouge">family</code>):</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>fish ~&gt; telnet localhost 25
+Trying ::1...
+Connected to localhost.
+Escape character is '^]'.
+220 test.org ESMTP Exim 4.93 Sun, 14 Jun 2020 19:03:51 +0000
+ehlo localhost
+250-test.org Hello localhost [::1]
+250-SIZE 31457280
+250-8BITMIME
+250-PIPELINING
+250-CHUNKING
+250 HELP
+mail from:&lt;me@test.org&gt;
+250 OK
+rcpt to:&lt;family@test.org&gt;
+250 Accepted
+data
+354 Enter message, ending with "." on a line by itself
+From: me@test.org
+To: family@test.org
+Subject: This is a test
+
+Test,
+
+this is just a test mail.
+.
+250 OK id=1jkXwf-000007-0d
+quit
+221 test.org closing connection
+Connection closed by foreign host.
+fish ~&gt;
+</code></pre></div></div>
+
+<p>The mail is processed and results in an item:</p>
+
+<div class="thumbnail">
+  <img src="../../img/exim-mail.png" />
+</div>
+
+<p>However, if a mail is to an unknown collective or not to the
+configured local domain, the server rejects it immediately:</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>fish ~&gt; telnet localhost 25
+Trying ::1...
+Connected to localhost.
+Escape character is <span class="s1">'^]'</span><span class="nb">.</span>
+220 test.org ESMTP Exim 4.93 Sun, 14 Jun 2020 19:07:04 +0000
+ehlo localhost
+250-test.org Hello localhost <span class="o">[</span>::1]
+250-SIZE 31457280
+250-8BITMIME
+250-PIPELINING
+250-CHUNKING
+250 HELP
+mail from:&lt;me@test.org&gt;
+250 OK
+rcpt to:&lt;family22@test.org&gt;
+550 Recipient unknown
+rcpt to:&lt;family@gmail.com&gt;
+550 Administrative prohibition
+quit
+221 test.org closing connection
+Connection closed by foreign host.
+fish ~&gt;
+</code></pre></div></div>
+</section><div class="edit-button"><a href="https://github.com/eikek/docspell/edit/master/modules/microsite/docs/doc/tools/smtpgateway.md" target="_blank" rel="noopener noreferrer" class="btn-sm btn-info">Improve this page</a></div></div></div></div></div><script src="/highlight/highlight.pack.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/json.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/javascript.min.js"></script><script>
+// For all code blocks, copy the language from the containing div
+// to the inner code tag (where hljs expects it to be)
+const langPrefix = 'language-';
+document.querySelectorAll(`div[class^='${langPrefix}']`).forEach(function(div) {
+  div.classList.forEach(function(cssClass) {
+    if (cssClass.startsWith(langPrefix)) {
+      const lang = cssClass.substring(langPrefix.length);
+      div.querySelectorAll('pre code').forEach(function(code) {
+        code.classList.add(lang);
+      });
+    }
+  });
+});
+
+hljs.configure({languages:['scala','java','bash','json','javascript']});
+hljs.initHighlightingOnLoad();
+      </script><script>console.info('\x57\x65\x62\x73\x69\x74\x65\x20\x62\x75\x69\x6c\x74\x20\x77\x69\x74\x68\x3a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x5f\x5f\x20\x20\x20\x20\x5f\x5f\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x5f\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x5f\x20\x5f\x5f\x0a\x20\x20\x20\x5f\x5f\x5f\x5f\x5f\x2f\x20\x2f\x5f\x20\x20\x2f\x20\x2f\x5f\x20\x20\x20\x20\x20\x20\x5f\x5f\x5f\x5f\x20\x5f\x5f\x5f\x20\x20\x28\x5f\x29\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x20\x20\x5f\x5f\x5f\x5f\x5f\x28\x5f\x29\x20\x2f\x5f\x5f\x5f\x5f\x20\x20\x5f\x5f\x5f\x5f\x5f\x0a\x20\x20\x2f\x20\x5f\x5f\x5f\x2f\x20\x5f\x5f\x20\x5c\x2f\x20\x5f\x5f\x2f\x5f\x5f\x5f\x5f\x5f\x2f\x20\x5f\x5f\x20\x60\x5f\x5f\x20\x5c\x2f\x20\x2f\x20\x5f\x5f\x5f\x2f\x20\x5f\x5f\x5f\x2f\x20\x5f\x5f\x20\x5c\x2f\x20\x5f\x5f\x5f\x2f\x20\x2f\x20\x5f\x5f\x2f\x20\x5f\x20\x5c\x2f\x20\x5f\x5f\x5f\x2f\x0a\x20\x28\x5f\x5f\x20\x20\x29\x20\x2f\x5f\x2f\x20\x2f\x20\x2f\x5f\x2f\x5f\x5f\x5f\x5f\x5f\x2f\x20\x2f\x20\x2f\x20\x2f\x20\x2f\x20\x2f\x20\x2f\x20\x2f\x5f\x5f\x2f\x20\x2f\x20\x20\x2f\x20\x2f\x5f\x2f\x20\x28\x5f\x5f\x20\x20\x29\x20\x2f\x20\x2f\x5f\x2f\x20\x20\x5f\x5f\x28\x5f\x5f\x20\x20\x29\x0a\x2f\x5f\x5f\x5f\x5f\x2f\x5f\x2e\x5f\x5f\x5f\x2f\x5c\x5f\x5f\x2f\x20\x20\x20\x20\x20\x2f\x5f\x2f\x20\x2f\x5f\x2f\x20\x2f\x5f\x2f\x5f\x2f\x5c\x5f\x5f\x5f\x2f\x5f\x2f\x20\x20\x20\x5c\x5f\x5f\x5f\x5f\x2f\x5f\x5f\x5f\x5f\x2f\x5f\x2f\x5c\x5f\x5f\x2f\x5c\x5f\x5f\x5f\x2f\x5f\x5f\x5f\x5f\x2f\x0a\x0a\x68\x74\x74\x70\x73\x3a\x2f\x2f\x34\x37\x64\x65\x67\x2e\x67\x69\x74\x68\x75\x62\x2e\x69\x6f\x2f\x73\x62\x74\x2d\x6d\x69\x63\x72\x6f\x73\x69\x74\x65\x73')</script><script src="/js/docs.js"></script></body></html>

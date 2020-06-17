@@ -2,7 +2,7 @@ openapi: 3.0.0
 
 info:
   title: Docspell
-  version: 0.6.0
+  version: 0.7.0
   description: |
     This is the remote API to Docspell, a personal document organizer.
 
@@ -237,6 +237,77 @@ paths:
         - authTokenHeader: []
       parameters:
         - $ref: "#/components/parameters/itemId"
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                meta:
+                  $ref: "#/components/schemas/ItemUploadMeta"
+                file:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+  /open/integration/item/{id}:
+    get:
+      tags: [ Upload Integration ]
+      summary: Upload files to docspell.
+      description: |
+        Allows to check whether an integration endpoint is enabled for
+        a collective. The collective is given by the `id` parameter.
+        It returns not found (404) if the endpoint is disabled (either
+        globally by an admin or by a specific collective). It returns
+        403 (or 401 if http-basic is enabled) if authorization fails.
+
+        The response body is empty (an empty json object).
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+        404:
+          description: Not Found
+        403:
+          description: Forbidden
+        401:
+          description: Unauthorized
+    post:
+      tags: [ Upload Integration ]
+      summary: Upload files to docspell.
+      description: |
+        Upload a file to docspell for processing. The id is a
+        *collective name*. This route only exists, if enabled by an
+        admin in the configuration. The route might be protected by
+        different methods, all configurable via the configuration:
+
+        - A specific header must be prestent
+        - username/password via HTTP Basic mechanism
+        - a specific source ip
+
+        Files are submitted for processing to the specified
+        collective, which eventually resuts in an item in their inbox.
+
+        The request must be a `multipart/form-data` request, where the
+        first part has name `meta`, is optional and may contain upload
+        metadata as JSON. Checkout the structure `ItemUploadMeta` at
+        the end if it is not shown here. Other parts specify the
+        files. Multiple files can be specified, but at least on is
+        required.
+      parameters:
+        - $ref: "#/components/parameters/id"
       requestBody:
         content:
           multipart/form-data:
@@ -916,7 +987,31 @@ paths:
       summary: Search for items.
       description: |
         Search for items given a search form. The results are grouped
-        by month by default.
+        by month by default. Tags are *not* resolved! The results will
+        always contain an empty list for item tags. Use
+        `/searchWithTags` to also retrieve all tags of an item.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ItemSearch"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ItemLightList"
+  /sec/item/searchWithTags:
+    post:
+      tags: [ Item ]
+      summary: Search for items.
+      description: |
+        Search for items given a search form. The results are grouped
+        by month by default. For each item, its tags are also
+        returned. This uses more queries and is therefore slower.
       security:
         - authTokenHeader: []
       requestBody:
@@ -965,7 +1060,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/BasicResult"
   /sec/item/{id}/tags:
-    post:
+    put:
       tags: [ Item ]
       summary: Set new set of tags.
       description: |
@@ -986,8 +1081,33 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BasicResult"
-  /sec/item/{id}/direction:
     post:
+      tags: [ Item ]
+      summary: Add a new tag to an item.
+      description: |
+        Creates a new tag and associates it to the given item.
+
+        The tag's `id` and `created` are generated and not used from
+        the given data, so it can be left empty. Only `name` and
+        `category` are used, where `category` is optional.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Tag"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+  /sec/item/{id}/direction:
+    put:
       tags: [ Item ]
       summary: Set the direction of an item.
       description: |
@@ -1009,7 +1129,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/BasicResult"
   /sec/item/{id}/corrOrg:
-    post:
+    put:
       tags: [ Item ]
       summary: Set the correspondent organization of an item.
       description: |
@@ -1030,8 +1150,30 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BasicResult"
-  /sec/item/{id}/corrPerson:
     post:
+      tags: [ Item ]
+      summary: Set a new correspondent organization of an item.
+      description: |
+        Create a new organization and update the correspondent
+        organization of an item.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Organization"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+  /sec/item/{id}/corrPerson:
+    put:
       tags: [ Item ]
       summary: Set the correspondent person of an item.
       description: |
@@ -1052,8 +1194,30 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BasicResult"
-  /sec/item/{id}/concPerson:
     post:
+      tags: [ Item ]
+      summary: Create and set the correspondent person of an item.
+      description: |
+        Creates a new person and updates the correspondent person of
+        an item.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Person"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+  /sec/item/{id}/concPerson:
+    put:
       tags: [ Item ]
       summary: Set the concerning person of an item.
       description: |
@@ -1074,8 +1238,30 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BasicResult"
-  /sec/item/{id}/concEquipment:
     post:
+      tags: [ Item ]
+      summary: Create and set the concerning person of an item.
+      description: |
+        Creates a new person and updates the concerning person of an
+        item.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Person"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+  /sec/item/{id}/concEquipment:
+    put:
       tags: [ Item ]
       summary: Set the concering equipment of an item.
       description: |
@@ -1096,8 +1282,30 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BasicResult"
-  /sec/item/{id}/notes:
     post:
+      tags: [ Item ]
+      summary: Create and set a new the concering equipment of an item.
+      description: |
+        Creates a new equipment and sets it as the concering equipment
+        of an item.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Equipment"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+  /sec/item/{id}/notes:
+    put:
       tags: [ Item ]
       summary: Set notes of an item.
       description: |
@@ -1119,7 +1327,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/BasicResult"
   /sec/item/{id}/name:
-    post:
+    put:
       tags: [ Item ]
       summary: Set the name of an item.
       description: |
@@ -1177,7 +1385,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/BasicResult"
   /sec/item/{id}/date:
-    post:
+    put:
       tags: [ Item ]
       summary: Sets the item date.
       description: |
@@ -1199,7 +1407,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/BasicResult"
   /sec/item/{id}/duedate:
-    post:
+    put:
       tags: [ Item ]
       summary: Sets the items due date.
       description: |
@@ -1475,6 +1683,31 @@ paths:
           description: See Other
         200:
           description: Ok
+  /sec/attachment/{id}/name:
+    post:
+      tags: [ Attachment ]
+      summary: Changes the name of an attachment
+      description: |
+        Change the name of the attachment with the given id. The
+        attachment must be part of an item that belongs to the
+        collective of the current user.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OptionalText"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
   /sec/queue/state:
     get:
       tags: [ Job Queue ]
@@ -1800,7 +2033,8 @@ paths:
       description: |
         Return the current notification settings of the authenticated
         user. Users can be notified on due items via e-mail. This is
-        done by periodically querying items.
+        done by periodically querying items. It is possible to have
+        multiple tasks.
       security:
         - authTokenHeader: []
       responses:
@@ -1809,13 +2043,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/NotificationSettings"
+                $ref: "#/components/schemas/NotificationSettingsList"
     post:
       tags: [ User Tasks ]
-      summary: Change current settings for "Notify Due Items" task
+      summary: Create settings for "Notify Due Items" task
       description: |
-        Change the current notification settings of the authenticated
-        user.
+        Create a new notification settings task of the authenticated
+        user. The id field in the input is ignored.
       security:
         - authTokenHeader: []
       requestBody:
@@ -1830,6 +2064,58 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BasicResult"
+    put:
+      tags: [ User Tasks ]
+      summary: Change settings for "Notify Due Items" task
+      description: |
+        Change the settings for a notify-due-items task. The task is
+        looked up by its id.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NotificationSettings"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+  /sec/usertask/notifydueitems/{id}:
+    parameters:
+      - $ref: "#/components/parameters/id"
+    get:
+      tags: [ User Tasks ]
+      description: |
+        Return the current settings for a single notify-due-items task
+        of the authenticated user.
+      security:
+        - authTokenHeader: []
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotificationSettings"
+    delete:
+      tags: [ User Tasks ]
+      description: |
+        Delete the settings to a notify-due-items task of the
+        authenticated user.
+      security:
+        - authTokenHeader: []
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
   /sec/usertask/notifydueitems/startonce:
     post:
       tags: [ User Tasks ]
@@ -1892,7 +2178,7 @@ paths:
                 $ref: "#/components/schemas/BasicResult"
     put:
       tags: [ User Tasks ]
-      summary: Change current settings for "Scan Mailbox" task
+      summary: Change settings for a "Scan Mailbox" task
       description: |
         Change the settings for a scan-mailbox task. The task is
         looked up by its id.
@@ -2104,6 +2390,16 @@ components:
       properties:
         event:
           type: string
+    NotificationSettingsList:
+      description: |
+        A list of notification settings.
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/NotificationSettings"
     NotificationSettings:
       description: |
         Settings for notifying about due items.
@@ -3050,6 +3346,8 @@ components:
         - tagsInclude
         - tagsExclude
         - inbox
+        - offset
+        - limit
       properties:
         tagsInclude:
           type: array
@@ -3063,6 +3361,16 @@ components:
             format: ident
         inbox:
           type: boolean
+        offset:
+          type: integer
+          format: int32
+        limit:
+          type: integer
+          format: int32
+          description: |
+            The maximum number of results to return. Note that this
+            limit is a soft limit, there is some hard limit on the
+            server, too.
         direction:
           type: string
           format: direction
@@ -3071,6 +3379,13 @@ components:
             - outgoing
         name:
           type: string
+          description: |
+            Search in item names.
+        allNames:
+          type: string
+          description: |
+            Search in item names, correspondents, concerned entities
+            and notes.
         corrOrg:
           type: string
           format: ident
@@ -3105,6 +3420,7 @@ components:
         - date
         - source
         - fileCount
+        - tags
       properties:
         id:
           type: string
@@ -3138,6 +3454,10 @@ components:
         fileCount:
           type: integer
           format: int32
+        tags:
+          type: array
+          items:
+            $ref: "#/components/schemas/Tag"
     IdName:
       description: |
         The identifier and a human readable name of some entity.
