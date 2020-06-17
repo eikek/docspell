@@ -22,40 +22,49 @@ object TextExtraction {
         _     <- ctx.logger.info("Starting text extraction")
         start <- Duration.stopTime[F]
         txt <- item.attachments.traverse(
-          extractTextIfEmpty(ctx, cfg, ctx.args.meta.language, item)
+          extractTextIfEmpty(
+            ctx,
+            cfg,
+            ctx.args.meta.language,
+            ctx.args.meta.collective,
+            item
+          )
         )
-        _ <- ctx.logger.debug("Storing extracted texts")
-        _ <- txt.toList.traverse(rm => ctx.store.transact(RAttachmentMeta.upsert(rm)))
-        _ <- fts.indexData(
-          Stream
-            .emits(txt)
-            .map(a =>
-              TextData(
-                item.item.id,
-                a.id,
-                ctx.args.meta.collective,
-                a.content.getOrElse("")
-              )
-            )
-        )
+        _   <- ctx.logger.debug("Storing extracted texts")
+        _   <- txt.toList.traverse(rm => ctx.store.transact(RAttachmentMeta.upsert(rm._1)))
+        _   <- fts.indexData(Stream.emits(txt.map(_._2)))
         dur <- start
         _   <- ctx.logger.info(s"Text extraction finished in ${dur.formatExact}")
-      } yield item.copy(metas = txt)
+      } yield item.copy(metas = txt.map(_._1))
     }
 
   def extractTextIfEmpty[F[_]: Sync: ContextShift](
       ctx: Context[F, _],
       cfg: ExtractConfig,
       lang: Language,
+      collective: Ident,
       item: ItemData
-  )(ra: RAttachment): F[RAttachmentMeta] = {
+  )(ra: RAttachment): F[(RAttachmentMeta, TextData)] = {
+    def makeTextData(rm: RAttachmentMeta): (RAttachmentMeta, TextData) =
+      (
+        rm,
+        TextData.attachment(
+          item.item.id,
+          ra.id,
+          collective,
+          ra.name,
+          rm.content
+        )
+      )
+
     val rm = item.findOrCreate(ra.id)
     rm.content match {
       case Some(_) =>
         ctx.logger.info("TextExtraction skipped, since text is already available.") *>
-          rm.pure[F]
+          makeTextData(rm).pure[F]
       case None =>
         extractTextToMeta[F](ctx, cfg, lang, item)(ra)
+          .map(makeTextData)
     }
   }
 
