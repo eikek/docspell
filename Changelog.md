@@ -2,7 +2,7 @@
 
 ## v0.7.0
 
-*Soon*
+*June 17, 2020*
 
 - Document integration endpoint and add a `GET` route to check it.
 - Add webui settings for the user. These settings only apply to the
