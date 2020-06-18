@@ -2,6 +2,7 @@ package docspell.ftssolr
 
 import fs2.Stream
 import cats.effect._
+import cats.implicits._
 import org.http4s.client.Client
 
 import cats.data.NonEmptyList
@@ -9,8 +10,15 @@ import docspell.common._
 import docspell.ftsclient._
 import docspell.ftsclient.FtsBasicResult._
 
-final class SolrFtsClient[F[_]](cfg: SolrConfig, client: Client[F]) extends FtsClient[F] {
+final class SolrFtsClient[F[_]: Effect](
+    cfg: SolrConfig,
+    client: Client[F]
+) extends FtsClient[F] {
   println(s"$client $cfg")
+
+  def initialize: F[Unit] =
+    ().pure[F]
+
   def searchBasic(q: FtsQuery): Stream[F, FtsBasicResult] =
     Stream.emits(
       Seq(
@@ -25,8 +33,9 @@ final class SolrFtsClient[F[_]](cfg: SolrConfig, client: Client[F]) extends FtsC
       )
     )
 
-  def indexData(data: Stream[F, TextData]): F[Unit] =
-    ???
+  def indexData(logger: Logger[F], data: Stream[F, TextData]): F[Unit] =
+    logger.info("Inserting lots of data into index")
+
 }
 
 object SolrFtsClient {

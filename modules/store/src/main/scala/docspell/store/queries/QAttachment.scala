@@ -138,4 +138,30 @@ object QAttachment {
 
     q.query[RAttachmentMeta].option
   }
+
+  case class ContentAndName(
+      id: Ident,
+      item: Ident,
+      collective: Ident,
+      name: Option[String],
+      content: Option[String]
+  )
+  def allAttachmentMetaAndName(chunkSize: Int): Stream[ConnectionIO, ContentAndName] = {
+    val aId      = RAttachment.Columns.id.prefix("a")
+    val aItem    = RAttachment.Columns.itemId.prefix("a")
+    val aName    = RAttachment.Columns.name.prefix("a")
+    val mId      = RAttachmentMeta.Columns.id.prefix("m")
+    val mContent = RAttachmentMeta.Columns.content.prefix("m")
+    val iId      = RItem.Columns.id.prefix("i")
+    val iColl    = RItem.Columns.cid.prefix("i")
+
+    val cols = Seq(aId, aItem,  iColl, aName, mContent)
+    val from = RAttachment.table ++ fr"a INNER JOIN" ++
+      RAttachmentMeta.table ++ fr"m ON" ++ aId.is(mId) ++
+      fr"INNER JOIN" ++ RItem.table ++ fr"i ON" ++ iId.is(aItem)
+
+    selectSimple(cols, from, Fragment.empty)
+      .query[ContentAndName]
+      .streamWithChunkSize(chunkSize)
+  }
 }

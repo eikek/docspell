@@ -32,7 +32,7 @@ object TextExtraction {
         )
         _   <- ctx.logger.debug("Storing extracted texts")
         _   <- txt.toList.traverse(rm => ctx.store.transact(RAttachmentMeta.upsert(rm._1)))
-        _   <- fts.indexData(Stream.emits(txt.map(_._2)))
+        _   <- fts.indexData(ctx.logger, Stream.emits(txt.map(_._2)))
         dur <- start
         _   <- ctx.logger.info(s"Text extraction finished in ${dur.formatExact}")
       } yield item.copy(metas = txt.map(_._1))

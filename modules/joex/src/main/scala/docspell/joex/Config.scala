@@ -37,5 +37,14 @@ object Config {
   }
   case class UserTasks(scanMailbox: ScanMailbox)
 
-  case class FullTextSearch(enabled: Boolean, solr: SolrConfig)
+  case class FullTextSearch(
+      enabled: Boolean,
+      migration: FullTextSearch.Migration,
+      solr: SolrConfig
+  )
+
+  object FullTextSearch {
+
+    final case class Migration(indexAllChunk: Int)
+  }
 }

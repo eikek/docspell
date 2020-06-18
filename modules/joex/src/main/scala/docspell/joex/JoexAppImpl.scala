@@ -7,6 +7,7 @@ import docspell.common._
 import docspell.backend.ops._
 import docspell.joex.hk._
 import docspell.joex.notify._
+import docspell.joex.fts.IndexTask
 import docspell.joex.scanmailbox._
 import docspell.joex.process.ItemHandler
 import docspell.joex.scheduler._
@@ -23,6 +24,7 @@ final class JoexAppImpl[F[_]: ConcurrentEffect: ContextShift: Timer](
     cfg: Config,
     nodeOps: ONode[F],
     store: Store[F],
+    queue: JobQueue[F],
     pstore: PeriodicTaskStore[F],
     termSignal: SignallingRef[F, Boolean],
     val scheduler: Scheduler[F],
@@ -52,7 +54,9 @@ final class JoexAppImpl[F[_]: ConcurrentEffect: ContextShift: Timer](
     periodicScheduler.shutdown *> scheduler.shutdown(false) *> termSignal.set(true)
 
   private def scheduleBackgroundTasks: F[Unit] =
-    HouseKeepingTask.periodicTask[F](cfg.houseKeeping.schedule).flatMap(pstore.insert)
+    HouseKeepingTask
+      .periodicTask[F](cfg.houseKeeping.schedule)
+      .flatMap(pstore.insert) *> IndexTask.job.flatMap(queue.insert)
 }
 
 object JoexAppImpl {
@@ -101,6 +105,13 @@ object JoexAppImpl {
         )
         .withTask(
           JobTask.json(
+            IndexTask.taskName,
+            IndexTask[F](cfg.fullTextSearch, fts),
+            IndexTask.onCancel[F]
+          )
+        )
+        .withTask(
+          JobTask.json(
             HouseKeepingTask.taskName,
             HouseKeepingTask[F](cfg),
             HouseKeepingTask.onCancel[F]
@@ -115,7 +126,7 @@ object JoexAppImpl {
         client,
         Timer[F]
       )
-      app = new JoexAppImpl(cfg, nodeOps, store, pstore, termSignal, sch, psch)
+      app = new JoexAppImpl(cfg, nodeOps, store, queue, pstore, termSignal, sch, psch)
       appR <- Resource.make(app.init.map(_ => app))(_.shutdown)
     } yield appR
 }
