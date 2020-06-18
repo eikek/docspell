@@ -277,6 +277,8 @@ val ftssolr = project.in(file("modules/fts-solr")).
     name := "docspell-fts-solr",
     libraryDependencies ++=
       Dependencies.http4sClient ++
+      Dependencies.http4sCirce ++
+      Dependencies.http4sDsl ++
       Dependencies.circe
   ).dependsOn(common, ftsclient)
   
@@ -356,7 +358,9 @@ val joex = project.in(file("modules/joex")).
     name := "docspell-joex",
     libraryDependencies ++=
       Dependencies.fs2 ++
-      Dependencies.http4s ++
+      Dependencies.http4sServer ++
+      Dependencies.http4sCirce ++
+      Dependencies.http4sDsl ++
       Dependencies.circe ++
       Dependencies.pureconfig ++
       Dependencies.emilTnef ++
@@ -384,7 +388,9 @@ val restserver = project.in(file("modules/restserver")).
   settings(
     name := "docspell-restserver",
     libraryDependencies ++=
-      Dependencies.http4s ++
+      Dependencies.http4sServer ++
+      Dependencies.http4sCirce ++
+      Dependencies.http4sDsl ++
       Dependencies.circe ++
       Dependencies.pureconfig ++
       Dependencies.yamusca ++

@@ -11,10 +11,8 @@ import docspell.ftsclient._
 import docspell.ftsclient.FtsBasicResult._
 
 final class SolrFtsClient[F[_]: Effect](
-    cfg: SolrConfig,
-    client: Client[F]
+    solrUpdate: SolrUpdate[F]
 ) extends FtsClient[F] {
-  println(s"$client $cfg")
 
   def initialize: F[Unit] =
     ().pure[F]
@@ -34,7 +32,16 @@ final class SolrFtsClient[F[_]: Effect](
     )
 
   def indexData(logger: Logger[F], data: Stream[F, TextData]): F[Unit] =
-    logger.info("Inserting lots of data into index")
+    (for {
+      _      <- Stream.eval(logger.debug("Inserting data into index"))
+      chunks <- data.chunks
+      res    <- Stream.eval(solrUpdate.many(chunks.toList).attempt)
+      _ <- res match {
+        case Right(()) => Stream.emit(())
+        case Left(ex) =>
+          Stream.eval(logger.error(ex)("Error inserting chunk of data into index"))
+      }
+    } yield ()).compile.drain
 
 }
 
@@ -44,6 +51,8 @@ object SolrFtsClient {
       cfg: SolrConfig,
       httpClient: Client[F]
   ): Resource[F, FtsClient[F]] =
-    Resource.pure[F, FtsClient[F]](new SolrFtsClient(cfg, httpClient))
+    Resource.pure[F, FtsClient[F]](
+      new SolrFtsClient(SolrUpdate(cfg, httpClient))
+    )
 
 }

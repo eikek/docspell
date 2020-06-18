@@ -10,6 +10,11 @@ sealed trait TextData {
 
   def collective: Ident
 
+  final def fold[A](f: TextData.Attachment => A, g: TextData.Item => A): A =
+    this match {
+      case a: TextData.Attachment => f(a)
+      case a: TextData.Item       => g(a)
+    }
 }
 
 object TextData {

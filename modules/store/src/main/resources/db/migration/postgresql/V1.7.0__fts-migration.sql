@@ -6,5 +6,5 @@ CREATE TABLE "fts_migration" (
   "created" timestamp not null
 );
 
-CREATE UNIQE INDEX "fts_migration_version_engine_idx"
+CREATE UNIQUE INDEX "fts_migration_version_engine_idx"
 ON "fts_migration"("version", "fts_engine");

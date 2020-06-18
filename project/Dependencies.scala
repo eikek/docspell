@@ -4,40 +4,39 @@ import sbt._
 
 object Dependencies {
 
-  val BcryptVersion = "0.4"
+  val BcryptVersion           = "0.4"
   val BetterMonadicForVersion = "0.3.1"
-  val BitpeaceVersion = "0.5.0"
-  val CalevVersion = "0.3.1"
-  val CirceVersion = "0.13.0"
-  val DoobieVersion = "0.9.0"
-  val EmilVersion = "0.6.1"
-  val FastparseVersion = "2.1.3"
-  val FlexmarkVersion = "0.62.2"
-  val FlywayVersion = "6.4.4"
-  val Fs2Version = "2.4.2"
-  val H2Version = "1.4.200"
-  val Http4sVersion = "0.21.4"
-  val Icu4jVersion = "67.1"
-  val JsoupVersion = "1.13.1"
-  val KindProjectorVersion = "0.10.3"
-  val Log4sVersion = "1.8.2"
-  val LogbackVersion = "1.2.3"
-  val MariaDbVersion = "2.6.0"
-  val MiniTestVersion = "2.8.2"
-  val PdfboxVersion = "2.0.20"
-  val PoiVersion = "4.1.2"
-  val PostgresVersion = "42.2.14"
-  val PureConfigVersion = "0.12.3"
-  val Slf4jVersion = "1.7.30"
-  val StanfordNlpVersion = "3.9.2"
-  val TikaVersion = "1.24.1"
-  val YamuscaVersion = "0.6.2"
-  val SwaggerUIVersion = "3.26.1"
-  val SemanticUIVersion = "2.4.1"
-  val TwelveMonkeysVersion = "3.5"
-  val JQueryVersion = "3.5.1"
-  val ViewerJSVersion = "0.5.8"
-
+  val BitpeaceVersion         = "0.5.0"
+  val CalevVersion            = "0.3.1"
+  val CirceVersion            = "0.13.0"
+  val DoobieVersion           = "0.9.0"
+  val EmilVersion             = "0.6.1"
+  val FastparseVersion        = "2.1.3"
+  val FlexmarkVersion         = "0.62.2"
+  val FlywayVersion           = "6.4.4"
+  val Fs2Version              = "2.4.2"
+  val H2Version               = "1.4.200"
+  val Http4sVersion           = "0.21.4"
+  val Icu4jVersion            = "67.1"
+  val JsoupVersion            = "1.13.1"
+  val KindProjectorVersion    = "0.10.3"
+  val Log4sVersion            = "1.8.2"
+  val LogbackVersion          = "1.2.3"
+  val MariaDbVersion          = "2.6.0"
+  val MiniTestVersion         = "2.8.2"
+  val PdfboxVersion           = "2.0.20"
+  val PoiVersion              = "4.1.2"
+  val PostgresVersion         = "42.2.14"
+  val PureConfigVersion       = "0.12.3"
+  val Slf4jVersion            = "1.7.30"
+  val StanfordNlpVersion      = "3.9.2"
+  val TikaVersion             = "1.24.1"
+  val YamuscaVersion          = "0.6.2"
+  val SwaggerUIVersion        = "3.26.1"
+  val SemanticUIVersion       = "2.4.1"
+  val TwelveMonkeysVersion    = "3.5"
+  val JQueryVersion           = "3.5.1"
+  val ViewerJSVersion         = "0.5.8"
 
   val calevCore = Seq(
     "com.github.eikek" %% "calev-core" % CalevVersion
@@ -57,23 +56,27 @@ object Dependencies {
   )
 
   val poi = Seq(
-    "org.apache.poi" % "poi" % PoiVersion,
-    "org.apache.poi" % "poi-ooxml" % PoiVersion,
-    "org.apache.poi" % "poi-scratchpad" % PoiVersion,
-  ).map(_.excludeAll(
-    ExclusionRule("commons-logging")
-  )) ++ jclOverSlf4j
+    "org.apache.poi" % "poi"            % PoiVersion,
+    "org.apache.poi" % "poi-ooxml"      % PoiVersion,
+    "org.apache.poi" % "poi-scratchpad" % PoiVersion
+  ).map(
+    _.excludeAll(
+      ExclusionRule("commons-logging")
+    )
+  ) ++ jclOverSlf4j
 
   // https://github.com/vsch/flexmark-java
   // BSD 2-Clause
   val flexmark = Seq(
-    "com.vladsch.flexmark" % "flexmark" % FlexmarkVersion,
-    "com.vladsch.flexmark" % "flexmark-ext-tables" % FlexmarkVersion,
+    "com.vladsch.flexmark" % "flexmark"                       % FlexmarkVersion,
+    "com.vladsch.flexmark" % "flexmark-ext-tables"            % FlexmarkVersion,
     "com.vladsch.flexmark" % "flexmark-ext-gfm-strikethrough" % FlexmarkVersion
-  ).map(_.excludeAll(
-    ExclusionRule("junit"),
-    ExclusionRule("hamcrest-core")
-  ))
+  ).map(
+    _.excludeAll(
+      ExclusionRule("junit"),
+      ExclusionRule("hamcrest-core")
+    )
+  )
 
   val twelvemonkeys = Seq(
     "com.twelvemonkeys.imageio" % "imageio-jpeg" % TwelveMonkeysVersion,
@@ -81,30 +84,30 @@ object Dependencies {
   )
 
   val pdfbox = Seq(
-    "org.apache.pdfbox" % "pdfbox" % PdfboxVersion excludeAll (
+    ("org.apache.pdfbox" % "pdfbox" % PdfboxVersion).excludeAll(
       ExclusionRule("org.bouncycastle"),
       ExclusionRule("commons-logging")
     )
   ) ++ jclOverSlf4j
 
   val emilCommon = Seq(
-    "com.github.eikek" %% "emil-common" % EmilVersion,
+    "com.github.eikek" %% "emil-common" % EmilVersion
   )
   val emil = Seq(
-    "com.github.eikek" %% "emil-common" % EmilVersion,
-    "com.github.eikek" %% "emil-javamail" % EmilVersion    
+    "com.github.eikek" %% "emil-common"   % EmilVersion,
+    "com.github.eikek" %% "emil-javamail" % EmilVersion
   )
   val emilDoobie = Seq(
-    "com.github.eikek" %% "emil-doobie" % EmilVersion,
+    "com.github.eikek" %% "emil-doobie" % EmilVersion
   )
   val emilTnef = Seq(
-    "com.github.eikek" %% "emil-tnef" % EmilVersion,
+    "com.github.eikek" %% "emil-tnef" % EmilVersion
   )
   val emilMarkdown = Seq(
-    "com.github.eikek" %% "emil-markdown" % EmilVersion,
+    "com.github.eikek" %% "emil-markdown" % EmilVersion
   )
   val emilJsoup = Seq(
-    "com.github.eikek" %% "emil-jsoup" % EmilVersion,
+    "com.github.eikek" %% "emil-jsoup" % EmilVersion
   )
 
   val jsoup = Seq(
@@ -112,7 +115,7 @@ object Dependencies {
   )
 
   val stanfordNlpCore = Seq(
-    "edu.stanford.nlp" % "stanford-corenlp" % StanfordNlpVersion excludeAll(
+    ("edu.stanford.nlp" % "stanford-corenlp" % StanfordNlpVersion).excludeAll(
       ExclusionRule("com.io7m.xom", "xom"),
       ExclusionRule("javax.servlet", "javax.servlet-api"),
       ExclusionRule("org.apache.lucene", "lucene-queryparser"),
@@ -130,8 +133,11 @@ object Dependencies {
   )
 
   val stanfordNlpModels = Seq(
-    "edu.stanford.nlp" % "stanford-corenlp" % StanfordNlpVersion classifier "models-german",
-    "edu.stanford.nlp" % "stanford-corenlp" % StanfordNlpVersion classifier "models-english"
+    ("edu.stanford.nlp" % "stanford-corenlp" % StanfordNlpVersion)
+      .classifier("models-german"),
+    ("edu.stanford.nlp" % "stanford-corenlp" % StanfordNlpVersion).classifier(
+      "models-english"
+    )
   )
 
   val tika = Seq(
@@ -150,22 +156,28 @@ object Dependencies {
 
   val fs2 = Seq(
     "co.fs2" %% "fs2-core" % Fs2Version,
-    "co.fs2" %% "fs2-io" % Fs2Version
+    "co.fs2" %% "fs2-io"   % Fs2Version
   )
 
-  val http4s = Seq(
-    "org.http4s" %% "http4s-blaze-server" % Http4sVersion,
-    "org.http4s" %% "http4s-circe"        % Http4sVersion,
-    "org.http4s" %% "http4s-dsl"          % Http4sVersion,
-  )
-  
   val http4sClient = Seq(
     "org.http4s" %% "http4s-blaze-client" % Http4sVersion
   )
 
+  val http4sCirce = Seq(
+    "org.http4s" %% "http4s-circe" % Http4sVersion
+  )
+
+  val http4sDsl = Seq(
+    "org.http4s" %% "http4s-dsl" % Http4sVersion
+  )
+
+  val http4sServer = Seq(
+    "org.http4s" %% "http4s-blaze-server" % Http4sVersion
+  )
+
   val circe = Seq(
     "io.circe" %% "circe-generic" % CirceVersion,
-    "io.circe" %% "circe-parser" % CirceVersion
+    "io.circe" %% "circe-parser"  % CirceVersion
   )
 
   // https://github.com/Log4s/log4s;ASL 2.0
@@ -203,7 +215,7 @@ object Dependencies {
   // https://github.com/tpolecat/doobie
   // MIT
   val doobie = Seq(
-    "org.tpolecat" %% "doobie-core" % DoobieVersion,
+    "org.tpolecat" %% "doobie-core"   % DoobieVersion,
     "org.tpolecat" %% "doobie-hikari" % DoobieVersion
   )
 
@@ -224,18 +236,18 @@ object Dependencies {
   val miniTest = Seq(
     // https://github.com/monix/minitest
     // Apache 2.0
-    "io.monix" %% "minitest" % MiniTestVersion,
+    "io.monix" %% "minitest"      % MiniTestVersion,
     "io.monix" %% "minitest-laws" % MiniTestVersion
   ).map(_ % Test)
 
-  val kindProjectorPlugin = "org.typelevel" %% "kind-projector" % KindProjectorVersion
-  val betterMonadicFor = "com.olegpy" %% "better-monadic-for" % BetterMonadicForVersion
+  val kindProjectorPlugin = "org.typelevel" %% "kind-projector"     % KindProjectorVersion
+  val betterMonadicFor    = "com.olegpy"    %% "better-monadic-for" % BetterMonadicForVersion
 
   val webjars = Seq(
-    "org.webjars" % "swagger-ui" % SwaggerUIVersion,
-    "org.webjars" % "Semantic-UI"% SemanticUIVersion,
-    "org.webjars" % "jquery" % JQueryVersion,
-    "org.webjars" % "viewerjs" % ViewerJSVersion
+    "org.webjars" % "swagger-ui"  % SwaggerUIVersion,
+    "org.webjars" % "Semantic-UI" % SemanticUIVersion,
+    "org.webjars" % "jquery"      % JQueryVersion,
+    "org.webjars" % "viewerjs"    % ViewerJSVersion
   )
 
   val icu4j = Seq(
