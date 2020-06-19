@@ -11,11 +11,12 @@ import docspell.ftsclient._
 import docspell.ftsclient.FtsBasicResult._
 
 final class SolrFtsClient[F[_]: Effect](
-    solrUpdate: SolrUpdate[F]
+    solrUpdate: SolrUpdate[F],
+    solrSetup: SolrSetup[F]
 ) extends FtsClient[F] {
 
   def initialize: F[Unit] =
-    ().pure[F]
+    solrSetup.setupSchema
 
   def searchBasic(q: FtsQuery): Stream[F, FtsBasicResult] =
     Stream.emits(
@@ -52,7 +53,7 @@ object SolrFtsClient {
       httpClient: Client[F]
   ): Resource[F, FtsClient[F]] =
     Resource.pure[F, FtsClient[F]](
-      new SolrFtsClient(SolrUpdate(cfg, httpClient))
+      new SolrFtsClient(SolrUpdate(cfg, httpClient), SolrSetup(cfg, httpClient))
     )
 
 }

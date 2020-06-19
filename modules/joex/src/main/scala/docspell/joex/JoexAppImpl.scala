@@ -56,7 +56,7 @@ final class JoexAppImpl[F[_]: ConcurrentEffect: ContextShift: Timer](
   private def scheduleBackgroundTasks: F[Unit] =
     HouseKeepingTask
       .periodicTask[F](cfg.houseKeeping.schedule)
-      .flatMap(pstore.insert) *> IndexTask.job.flatMap(queue.insert)
+      .flatMap(pstore.insert) *> IndexTask.job.flatMap(queue.insertIfNew)
 }
 
 object JoexAppImpl {

@@ -29,7 +29,7 @@ object SolrUpdate {
 
     new SolrUpdate[F] {
       val url = (Uri.unsafeFromString(cfg.url.asString) / "update")
-        .withQueryParam("commitWithin", "1000")
+        .withQueryParam("commitWithin", cfg.commitWithin.toString)
         .withQueryParam("overwrite", "true")
         .withQueryParam("wt", "json")
 

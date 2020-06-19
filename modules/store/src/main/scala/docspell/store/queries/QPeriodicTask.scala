@@ -51,15 +51,4 @@ object QPeriodicTask {
       selectSimple(RPeriodicTask.Columns.all, RPeriodicTask.table, where) ++ order
     sql.query[RPeriodicTask].streamWithChunkSize(2).take(1).compile.last
   }
-
-  def findNonFinal(pid: Ident): ConnectionIO[Option[RJob]] =
-    selectSimple(
-      RJob.Columns.all,
-      RJob.table,
-      and(
-        RJob.Columns.tracker.is(pid),
-        RJob.Columns.state.isOneOf(JobState.all.diff(JobState.done).toSeq)
-      )
-    ).query[RJob].option
-
 }

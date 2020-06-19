@@ -57,22 +57,23 @@ object Migration {
       _   <- OptionT.liftF(ctx.logger.info(s"Apply ${m.version}/${m.description}"))
       rec <- OptionT(insertRecord)
       res <- OptionT.liftF(m.task.run(ctx).attempt)
-      _ <- OptionT.liftF(res match {
+      ret <- OptionT.liftF(res match {
         case Right(()) => ().pure[F]
         case Left(ex) =>
           ctx.logger.error(ex)(
             s"Applying index migration ${m.version}/${m.description} failed"
           ) *>
-            ctx.store.transact(RFtsMigration.deleteById(rec.id)) *> Effect[F].raiseError(
-            ex
-          )
+            ctx.store.transact(RFtsMigration.deleteById(rec.id)) *> Effect[F]
+            .raiseError[Unit](
+              ex
+            )
       })
-    } yield ()).getOrElseF(
+    } yield ret).getOrElseF(
       ctx.logger.info(s"Migration ${m.version}/${m.description} already applied.")
     )
   }
 
-  def migrationTasks[F[_]]: List[Migration[F]] =
+  def migrationTasks[F[_]: Effect]: List[Migration[F]] =
     List(
       Migration[F](1, solrEngine, "initialize", Kleisli(ctx => ctx.fts.initialize)),
       Migration[F](

@@ -42,7 +42,7 @@ object IndexTask {
       now,
       systemGroup,
       Priority.Low,
-      None
+      Some(taskName)
     )
 
 }
