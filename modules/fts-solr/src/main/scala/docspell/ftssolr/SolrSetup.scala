@@ -11,8 +11,6 @@ import _root_.io.circe.syntax._
 import _root_.io.circe._
 import _root_.io.circe.generic.semiauto._
 
-import Fields.{Attachment, Item}
-
 trait SolrSetup[F[_]] {
 
   def setupSchema: F[Unit]
@@ -33,18 +31,18 @@ object SolrSetup {
       def setupSchema: F[Unit] = {
         val cmds0 =
           List(
-            Fields.id,
-            Fields.itemId,
-            Fields.collectiveId,
-            Fields.discriminator,
-            Attachment.attachmentId
+            Field.id,
+            Field.itemId,
+            Field.collectiveId,
+            Field.discriminator,
+            Field.attachmentId
           )
             .traverse(addStringField)
         val cmds1 = List(
-          Attachment.attachmentName,
-          Attachment.content,
-          Item.itemName,
-          Item.itemNotes
+          Field.attachmentName,
+          Field.content,
+          Field.itemName,
+          Field.itemNotes
         )
           .traverse(addTextField)
 
@@ -57,13 +55,13 @@ object SolrSetup {
         client.expect[String](req).map(r => logger.debug(s"Response: $r"))
       }
 
-      private def addStringField(name: String): F[Unit] =
-        run(DeleteField.command(DeleteField(name))).attempt *>
-          run(AddField.command(AddField.string(name)))
+      private def addStringField(field: Field): F[Unit] =
+        run(DeleteField.command(DeleteField(field))).attempt *>
+          run(AddField.command(AddField.string(field)))
 
-      private def addTextField(name: String): F[Unit] =
-        run(DeleteField.command(DeleteField(name))).attempt *>
-          run(AddField.command(AddField.text(name)))
+      private def addTextField(field: Field): F[Unit] =
+        run(DeleteField.command(DeleteField(field))).attempt *>
+          run(AddField.command(AddField.text(field)))
 
     }
   }
@@ -71,7 +69,7 @@ object SolrSetup {
   // Schema Commands
 
   case class AddField(
-      name: String,
+      name: Field,
       `type`: String,
       stored: Boolean,
       indexed: Boolean,
@@ -84,14 +82,14 @@ object SolrSetup {
     def command(body: AddField): Json =
       Map("add-field" -> body.asJson).asJson
 
-    def string(name: String): AddField =
-      AddField(name, "string", true, true, false)
+    def string(field: Field): AddField =
+      AddField(field, "string", true, true, false)
 
-    def text(name: String): AddField =
-      AddField(name, "text_general", true, true, false)
+    def text(field: Field): AddField =
+      AddField(field, "text_general", true, true, false)
   }
 
-  case class DeleteField(name: String)
+  case class DeleteField(name: Field)
   object DeleteField {
     implicit val encoder: Encoder[DeleteField] =
       deriveEncoder[DeleteField]

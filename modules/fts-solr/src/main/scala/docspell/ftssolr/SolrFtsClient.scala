@@ -5,32 +5,20 @@ import cats.effect._
 import cats.implicits._
 import org.http4s.client.Client
 
-import cats.data.NonEmptyList
 import docspell.common._
 import docspell.ftsclient._
-import docspell.ftsclient.FtsBasicResult._
 
 final class SolrFtsClient[F[_]: Effect](
     solrUpdate: SolrUpdate[F],
-    solrSetup: SolrSetup[F]
+    solrSetup: SolrSetup[F],
+    solrQuery: SolrQuery[F]
 ) extends FtsClient[F] {
 
   def initialize: F[Unit] =
     solrSetup.setupSchema
 
-  def searchBasic(q: FtsQuery): Stream[F, FtsBasicResult] =
-    Stream.emits(
-      Seq(
-        FtsBasicResult(
-          Ident.unsafe("5J4zvCiTE2j-UEznDUsUCsA-5px6ftrSwfs-FpUWCaHh2Ei"),
-          NonEmptyList.of(AttachmentMatch(Ident.unsafe("a"), 0.2))
-        ),
-        FtsBasicResult(
-          Ident.unsafe("8B8UNoC1U4y-dqnqjdFG7ue-LG5ktz9pWVt-diFemCLrLAa"),
-          NonEmptyList.of(AttachmentMatch(Ident.unsafe("b"), 0.5))
-        )
-      )
-    )
+  def searchBasic(q: FtsQuery): Stream[F, FtsResult] =
+    Stream.eval(solrQuery.query(q))
 
   def indexData(logger: Logger[F], data: Stream[F, TextData]): F[Unit] =
     (for {
@@ -53,7 +41,11 @@ object SolrFtsClient {
       httpClient: Client[F]
   ): Resource[F, FtsClient[F]] =
     Resource.pure[F, FtsClient[F]](
-      new SolrFtsClient(SolrUpdate(cfg, httpClient), SolrSetup(cfg, httpClient))
+      new SolrFtsClient(
+        SolrUpdate(cfg, httpClient),
+        SolrSetup(cfg, httpClient),
+        SolrQuery(cfg, httpClient)
+      )
     )
 
 }

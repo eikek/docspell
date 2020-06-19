@@ -17,7 +17,7 @@ case class Ident(id: String) {
     !isEmpty
 
   def / (next: Ident): Ident =
-    new Ident(id + "/" + next.id)
+    new Ident(id + "." + next.id)
 }
 
 object Ident {

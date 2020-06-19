@@ -20,7 +20,6 @@ object OFulltext {
   // then run a query
   // check if supported by mariadb, postgres and h2. seems like it is supported everywhere
 
-
   def apply[F[_]: Effect](
       itemSearch: OItemSearch[F],
       fts: FtsClient[F]
@@ -43,21 +42,21 @@ object OFulltext {
           .compile
           .toVector
 
-
       private def findItemsFts[A](
           q: Query,
           ftsQ: String,
           batch: Batch,
           search: (Query, Batch) => F[Vector[A]]
       ): Stream[F, A] = {
-        val fq = FtsQuery(ftsQ, q.collective, batch.limit, batch.offset)
+        val fq = FtsQuery(ftsQ, q.collective, batch.limit, batch.offset, Nil)
 
         val qres =
           for {
             items <-
               fts
                 .searchBasic(fq)
-                .map(_.item)
+                .flatMap(r => Stream.emits(r.results))
+                .map(_.itemId)
                 .compile
                 .toVector
                 .map(_.toSet)

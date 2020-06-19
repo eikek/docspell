@@ -25,6 +25,9 @@ case class Duration(nanos: Long) {
 
   def formatExact: String =
     s"$millis ms"
+
+  override def toString(): String =
+    s"Duration(${millis}ms)"
 }
 
 object Duration {

@@ -19,7 +19,7 @@ trait FtsClient[F[_]] {
     */
   def initialize: F[Unit]
 
-  def searchBasic(q: FtsQuery): Stream[F, FtsBasicResult]
+  def searchBasic(q: FtsQuery): Stream[F, FtsResult]
 
   def indexData(logger: Logger[F], data: Stream[F, TextData]): F[Unit]
 }
