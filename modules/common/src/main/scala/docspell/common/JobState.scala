@@ -13,7 +13,8 @@ object JobState {
   case object Waiting extends JobState {}
 
   /** A scheduler has picked up this job and will pass it to the next
-    * free slot. */
+    * free slot.
+    */
   case object Scheduled extends JobState {}
 
   /** Is currently executing */
