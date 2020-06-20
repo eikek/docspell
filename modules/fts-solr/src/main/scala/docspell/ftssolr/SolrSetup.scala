@@ -82,7 +82,9 @@ object SolrSetup {
     }
   }
 
-  // Schema Commands
+  // Schema Commands: The structure is for conveniently creating the
+  // solr json. All fields must be stored, because of highlighting and
+  // single-updates only work when all fields are stored.
 
   case class AddField(
       name: Field,

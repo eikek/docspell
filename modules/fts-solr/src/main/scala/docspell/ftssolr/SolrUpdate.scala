@@ -14,9 +14,9 @@ import JsonCodec._
 
 trait SolrUpdate[F[_]] {
 
-  def single(td: TextData): F[Unit]
+  def add(tds: List[TextData]): F[Unit]
 
-  def many(tds: List[TextData]): F[Unit]
+  def update(tds: List[TextData]): F[Unit]
 
 }
 
@@ -33,15 +33,24 @@ object SolrUpdate {
         .withQueryParam("overwrite", "true")
         .withQueryParam("wt", "json")
 
-      def single(td: TextData): F[Unit] = {
-        val req = Method.POST(td.asJson, url)
-        client.expect[String](req).map(r => logger.debug(s"Req: $req Response: $r"))
-      }
 
-      def many(tds: List[TextData]): F[Unit] = {
+      def add(tds: List[TextData]): F[Unit] = {
         val req = Method.POST(tds.asJson, url)
         client.expect[String](req).map(r => logger.debug(s"Req: $req Response: $r"))
       }
+
+      def update(tds: List[TextData]): F[Unit] = {
+        val req = Method.POST(tds.filter(minOneChange).map(SetFields).asJson, url)
+        client.expect[String](req).map(r => logger.debug(s"Req: $req Response: $r"))
+      }
+
+      private val minOneChange: TextData => Boolean =
+        _ match {
+          case td: TextData.Attachment =>
+            td.name.isDefined || td.text.isDefined
+          case td: TextData.Item =>
+            td.name.isDefined || td.notes.isDefined
+        }
     }
   }
 }

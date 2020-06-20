@@ -24,7 +24,7 @@ final class SolrFtsClient[F[_]: Effect](
     (for {
       _      <- Stream.eval(logger.debug("Inserting data into index"))
       chunks <- data.chunks
-      res    <- Stream.eval(solrUpdate.many(chunks.toList).attempt)
+      res    <- Stream.eval(solrUpdate.add(chunks.toList).attempt)
       _ <- res match {
         case Right(()) => Stream.emit(())
         case Left(ex) =>

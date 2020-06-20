@@ -1,6 +1,7 @@
 package docspell.ftssolr
 
 import io.circe._
+import io.circe.syntax._
 import docspell.common._
 import docspell.ftsclient._
 
@@ -12,15 +13,7 @@ trait JsonCodec {
     new Encoder[TextData.Attachment] {
       final def apply(td: TextData.Attachment): Json = {
         val cnt =
-          (
-            td.lang match {
-              case Language.German =>
-                Field.content_de.name
-              case Language.English =>
-                Field.content_en.name
-            },
-            Json.fromString(td.text.getOrElse(""))
-          )
+          (Field.contentField(td.lang).name, Json.fromString(td.text.getOrElse("")))
 
         Json.fromFields(
           cnt :: List(
@@ -100,6 +93,41 @@ trait JsonCodec {
     new KeyDecoder[Ident] {
       override def apply(ident: String): Option[Ident] = Ident(ident).toOption
     }
+
+  def setAttachmentEncoder(implicit
+      enc: Encoder[Ident]
+  ): Encoder[TextData.Attachment] =
+    new Encoder[TextData.Attachment] {
+      final def apply(td: TextData.Attachment): Json = {
+        val setter = List(
+          td.name.map(n => (Field.attachmentName.name, Map("set" -> n.asJson).asJson)),
+          td.text.map(txt =>
+            (Field.contentField(td.lang).name, Map("set" -> txt.asJson).asJson)
+          )
+        ).flatten
+        Json.fromFields(
+          (Field.id.name, enc(td.id)) :: setter
+        )
+      }
+    }
+
+  def setItemEncoder(implicit enc: Encoder[Ident]): Encoder[TextData.Item] =
+    new Encoder[TextData.Item] {
+      final def apply(td: TextData.Item): Json = {
+        val setter = List(
+          td.name.map(n => (Field.itemName.name, Map("set" -> n.asJson).asJson)),
+          td.notes.map(n => (Field.itemNotes.name, Map("set" -> n.asJson).asJson))
+        ).flatten
+
+        Json.fromFields(
+          (Field.id.name, enc(td.id)) :: setter
+        )
+      }
+    }
+
+  implicit def textDataEncoder: Encoder[SetFields] =
+    Encoder(_.td.fold(setAttachmentEncoder.apply, setItemEncoder.apply))
+
 }
 
 object JsonCodec extends JsonCodec
