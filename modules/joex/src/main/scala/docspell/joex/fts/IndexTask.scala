@@ -22,7 +22,7 @@ object IndexTask {
       .flatMap(_ =>
         Task(ctx =>
           Migration[F](cfg, ctx.store, fts, ctx.logger)
-            .run(Migration.migrationTasks[F])
+            .run(migrationTasks[F])
         )
       )
 
@@ -43,6 +43,13 @@ object IndexTask {
       systemGroup,
       Priority.Low,
       Some(taskName)
+    )
+
+  private val solrEngine = Ident.unsafe("solr")
+  def migrationTasks[F[_]: Effect]: List[Migration[F]] =
+    List(
+      Migration[F](1, solrEngine, "initialize", MigrationTask[F](ctx => ctx.fts.initialize)),
+      Migration[F](2, solrEngine, "Index all from database", MigrationTask.insertAll[F])
     )
 
 }

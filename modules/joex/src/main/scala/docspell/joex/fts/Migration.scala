@@ -8,25 +8,16 @@ import docspell.common._
 import docspell.joex.Config
 import docspell.store.{AddResult, Store}
 import docspell.store.records.RFtsMigration
-import docspell.store.queries.{QAttachment, QItem}
 import docspell.ftsclient._
 
+case class Migration[F[_]](
+    version: Int,
+    engine: Ident,
+    description: String,
+    task: MigrationTask[F]
+)
+
 object Migration {
-  private val solrEngine = Ident.unsafe("solr")
-
-  case class MigrateCtx[F[_]](
-      cfg: Config.FullTextSearch,
-      store: Store[F],
-      fts: FtsClient[F],
-      logger: Logger[F]
-  )
-
-  case class Migration[F[_]](
-      version: Int,
-      engine: Ident,
-      description: String,
-      task: Kleisli[F, MigrateCtx[F], Unit]
-  )
 
   def apply[F[_]: Effect](
       cfg: Config.FullTextSearch,
@@ -72,47 +63,4 @@ object Migration {
       ctx.logger.info(s"Migration ${m.version}/${m.description} already applied.")
     )
   }
-
-  def migrationTasks[F[_]: Effect]: List[Migration[F]] =
-    List(
-      Migration[F](1, solrEngine, "initialize", Kleisli(ctx => ctx.fts.initialize)),
-      Migration[F](
-        2,
-        solrEngine,
-        "Index all attachments from database",
-        Kleisli(ctx =>
-          ctx.fts.indexData(
-            ctx.logger,
-            ctx.store
-              .transact(
-                QAttachment.allAttachmentMetaAndName(ctx.cfg.migration.indexAllChunk)
-              )
-              .map(caa =>
-                TextData
-                  .attachment(
-                    caa.item,
-                    caa.id,
-                    caa.collective,
-                    caa.lang,
-                    caa.name,
-                    caa.content
-                  )
-              )
-          )
-        )
-      ),
-      Migration[F](
-        3,
-        solrEngine,
-        "Index all items from database",
-        Kleisli(ctx =>
-          ctx.fts.indexData(
-            ctx.logger,
-            ctx.store
-              .transact(QItem.allNameAndNotes(ctx.cfg.migration.indexAllChunk * 5))
-              .map(nn => TextData.item(nn.id, nn.collective, Option(nn.name), nn.notes))
-          )
-        )
-      )
-    )
 }
