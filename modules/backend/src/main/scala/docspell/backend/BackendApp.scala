@@ -45,6 +45,7 @@ object BackendApp {
   ): Resource[F, BackendApp[F]] =
     for {
       httpClient     <- BlazeClientBuilder[F](httpClientEc).resource
+      solrFts        <- SolrFtsClient(cfg.fullTextSearch.solr, httpClient)
       utStore        <- UserTaskStore(store)
       queue          <- JobQueue(store)
       loginImpl      <- Login[F](store)
@@ -58,9 +59,8 @@ object BackendApp {
       uploadImpl     <- OUpload(store, queue, cfg.files, joexImpl)
       nodeImpl       <- ONode(store)
       jobImpl        <- OJob(store, joexImpl)
-      itemImpl       <- OItem(store)
+      itemImpl       <- OItem(store, solrFts)
       itemSearchImpl <- OItemSearch(store)
-      solrFts        <- SolrFtsClient(cfg.fullTextSearch.solr, httpClient)
       fulltextImpl   <- OFulltext(itemSearchImpl, solrFts)
       javaEmil =
         JavaMailEmil(blocker, Settings.defaultSettings.copy(debug = cfg.mailDebug))

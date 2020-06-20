@@ -183,4 +183,6 @@ object RAttachment {
       n2 <- deleteFrom(table, id.is(attachId)).update.run
     } yield n0 + n1 + n2
 
+  def findItemId(attachId: Ident): ConnectionIO[Option[Ident]] =
+    selectSimple(Seq(itemId), table, id.is(attachId)).query[Ident].option
 }

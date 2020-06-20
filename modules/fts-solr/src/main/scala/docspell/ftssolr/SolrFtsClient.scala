@@ -21,19 +21,22 @@ final class SolrFtsClient[F[_]: Effect](
     solrQuery.query(q)
 
   def indexData(logger: Logger[F], data: Stream[F, TextData]): F[Unit] =
-    (for {
-      _      <- Stream.eval(logger.debug("Inserting data into index"))
+    modifyIndex(logger, data)(solrUpdate.add)
+
+  def updateIndex(logger: Logger[F], data: Stream[F, TextData]): F[Unit] =
+    modifyIndex(logger, data)(solrUpdate.update)
+
+  def modifyIndex(logger: Logger[F], data: Stream[F, TextData])(f: List[TextData] => F[Unit]): F[Unit] =
+        (for {
+      _      <- Stream.eval(logger.debug("Updating SOLR index"))
       chunks <- data.chunks
-      res    <- Stream.eval(solrUpdate.add(chunks.toList).attempt)
+      res    <- Stream.eval(f(chunks.toList).attempt)
       _ <- res match {
         case Right(()) => Stream.emit(())
         case Left(ex) =>
-          Stream.eval(logger.error(ex)("Error inserting chunk of data into index"))
+          Stream.eval(logger.error(ex)("Error updating with chunk of data"))
       }
     } yield ()).compile.drain
-
-  def updateIndex(logger: Logger[F], data: Stream[F, TextData]): F[Unit] = ???
-
 }
 
 object SolrFtsClient {

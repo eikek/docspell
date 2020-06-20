@@ -44,4 +44,41 @@ trait FtsClient[F[_]] {
   def updateIndex(logger: Logger[F], data: TextData*): F[Unit] =
     updateIndex(logger, Stream.emits(data))
 
+  def updateItemName(
+      logger: Logger[F],
+      itemId: Ident,
+      collective: Ident,
+      name: String
+  ): F[Unit] =
+    updateIndex(logger, TextData.item(itemId, collective, Some(name), None))
+
+  def updateItemNotes(
+      logger: Logger[F],
+      itemId: Ident,
+      collective: Ident,
+      notes: Option[String]
+  ): F[Unit] =
+    updateIndex(
+      logger,
+      TextData.item(itemId, collective, None, Some(notes.getOrElse("")))
+    )
+
+  def updateAttachmentName(
+      logger: Logger[F],
+      itemId: Ident,
+      attachId: Ident,
+      collective: Ident,
+      name: Option[String]
+  ): F[Unit] =
+    updateIndex(
+      logger,
+      TextData.attachment(
+        itemId,
+        attachId,
+        collective,
+        Language.English,
+        Some(name.getOrElse("")),
+        None
+      )
+    )
 }
