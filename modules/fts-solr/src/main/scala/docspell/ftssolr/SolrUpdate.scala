@@ -35,14 +35,12 @@ object SolrUpdate {
 
       def single(td: TextData): F[Unit] = {
         val req = Method.POST(td.asJson, url)
-        logger.debug(s"Running request $req")
-        client.expect[String](req).map(r => logger.debug(s"Response: $r"))
+        client.expect[String](req).map(r => logger.debug(s"Req: $req Response: $r"))
       }
 
       def many(tds: List[TextData]): F[Unit] = {
         val req = Method.POST(tds.asJson, url)
-        logger.debug(s"Running request $req")
-        client.expect[String](req).map(r => logger.debug(s"Response: $r"))
+        client.expect[String](req).map(r => logger.debug(s"Req: $req Response: $r"))
       }
     }
   }

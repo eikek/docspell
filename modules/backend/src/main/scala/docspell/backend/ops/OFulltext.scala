@@ -48,17 +48,14 @@ object OFulltext {
           batch: Batch,
           search: (Query, Batch) => F[Vector[A]]
       ): Stream[F, A] = {
-        val fq = FtsQuery(ftsQ, q.collective, batch.limit, batch.offset, Nil)
+        val fq = FtsQuery(ftsQ, q.collective, Nil, batch.limit, batch.offset)
 
         val qres =
           for {
             items <-
               fts
-                .searchBasic(fq)
-                .flatMap(r => Stream.emits(r.results))
-                .map(_.itemId)
-                .compile
-                .toVector
+                .search(fq)
+                .map(_.results.map(_.itemId))
                 .map(_.toSet)
             sq = q.copy(itemIds = Some(items))
             res <- search(sq, batch)

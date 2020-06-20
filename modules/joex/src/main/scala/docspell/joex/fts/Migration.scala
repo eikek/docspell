@@ -89,7 +89,14 @@ object Migration {
               )
               .map(caa =>
                 TextData
-                  .attachment(caa.item, caa.id, caa.collective, caa.name, caa.content)
+                  .attachment(
+                    caa.item,
+                    caa.id,
+                    caa.collective,
+                    caa.lang,
+                    caa.name,
+                    caa.content
+                  )
               )
           )
         )

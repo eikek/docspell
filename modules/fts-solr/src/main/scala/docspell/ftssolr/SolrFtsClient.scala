@@ -17,8 +17,8 @@ final class SolrFtsClient[F[_]: Effect](
   def initialize: F[Unit] =
     solrSetup.setupSchema
 
-  def searchBasic(q: FtsQuery): Stream[F, FtsResult] =
-    Stream.eval(solrQuery.query(q))
+  def search(q: FtsQuery): F[FtsResult] =
+    solrQuery.query(q)
 
   def indexData(logger: Logger[F], data: Stream[F, TextData]): F[Unit] =
     (for {
@@ -31,6 +31,8 @@ final class SolrFtsClient[F[_]: Effect](
           Stream.eval(logger.error(ex)("Error inserting chunk of data into index"))
       }
     } yield ()).compile.drain
+
+  def updateIndex(logger: Logger[F], data: Stream[F, TextData]): F[Unit] = ???
 
 }
 

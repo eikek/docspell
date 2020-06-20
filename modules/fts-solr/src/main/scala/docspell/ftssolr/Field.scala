@@ -13,13 +13,15 @@ object Field {
     new Field(name)
 
 
-  val discriminator = Field("discriminator")
   val id = Field("id")
   val itemId = Field("itemId")
   val collectiveId = Field("collectiveId")
   val attachmentId = Field("attachmentId")
+  val discriminator = Field("discriminator")
   val attachmentName = Field("attachmentName")
   val content = Field("content")
+  val content_de = Field("content_de")
+  val content_en = Field("content_en")
   val itemName = Field("itemName")
   val itemNotes = Field("itemNotes")
 

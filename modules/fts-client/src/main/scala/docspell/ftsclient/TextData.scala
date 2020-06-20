@@ -23,6 +23,7 @@ object TextData {
       item: Ident,
       attachId: Ident,
       collective: Ident,
+      lang: Language,
       name: Option[String],
       text: Option[String]
   ) extends TextData {
@@ -35,10 +36,11 @@ object TextData {
       item: Ident,
       attachId: Ident,
       collective: Ident,
+      lang: Language,
       name: Option[String],
       text: Option[String]
   ): TextData =
-    Attachment(item, attachId, collective, name, text)
+    Attachment(item, attachId, collective, lang, name, text)
 
   final case class Item(
       item: Ident,

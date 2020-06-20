@@ -1,6 +1,5 @@
 package docspell.ftssolr
 
-//import cats.implicits._
 import io.circe._
 import docspell.common._
 import docspell.ftsclient._
@@ -11,16 +10,30 @@ trait JsonCodec {
       enc: Encoder[Ident]
   ): Encoder[TextData.Attachment] =
     new Encoder[TextData.Attachment] {
-      final def apply(td: TextData.Attachment): Json =
-        Json.obj(
-          (Field.id.name, enc(td.id)),
-          (Field.itemId.name, enc(td.item)),
-          (Field.collectiveId.name, enc(td.collective)),
-          (Field.attachmentId.name, enc(td.attachId)),
-          (Field.attachmentName.name, Json.fromString(td.name.getOrElse(""))),
-          (Field.content.name, Json.fromString(td.text.getOrElse(""))),
-          (Field.discriminator.name, Json.fromString("attachment"))
+      final def apply(td: TextData.Attachment): Json = {
+        val cnt =
+          (
+            td.lang match {
+              case Language.German =>
+                Field.content_de.name
+              case Language.English =>
+                Field.content_en.name
+            },
+            Json.fromString(td.text.getOrElse(""))
+          )
+
+        Json.fromFields(
+          cnt :: List(
+            (Field.id.name, enc(td.id)),
+            (Field.itemId.name, enc(td.item)),
+            (Field.collectiveId.name, enc(td.collective)),
+            (Field.attachmentId.name, enc(td.attachId)),
+            (Field.attachmentName.name, Json.fromString(td.name.getOrElse(""))),
+            (Field.discriminator.name, Json.fromString("attachment"))
+          )
         )
+
+      }
     }
 
   implicit def itemEncoder(implicit enc: Encoder[Ident]): Encoder[TextData.Item] =
@@ -46,13 +59,13 @@ trait JsonCodec {
     new Decoder[FtsResult] {
       final def apply(c: HCursor): Decoder.Result[FtsResult] =
         for {
-          qtime    <- c.downField("responseHeader").get[Duration]("QTime")
-          count    <- c.downField("response").get[Int]("numFound")
-          maxScore <- c.downField("response").get[Double]("maxScore")
-          results  <- c.downField("response").get[List[FtsResult.ItemMatch]]("docs")
-          highligh <- c.get[Map[Ident, Map[String, List[String]]]]("highlighting")
-          highline = highligh.map(kv => kv._1 -> kv._2.values.flatten.toList)
-        } yield FtsResult(qtime, count, maxScore, highline, results)
+          qtime       <- c.downField("responseHeader").get[Duration]("QTime")
+          count       <- c.downField("response").get[Int]("numFound")
+          maxScore    <- c.downField("response").get[Double]("maxScore")
+          results     <- c.downField("response").get[List[FtsResult.ItemMatch]]("docs")
+          highlightng <- c.get[Map[Ident, Map[String, List[String]]]]("highlighting")
+          highlight = highlightng.map(kv => kv._1 -> kv._2.values.flatten.toList)
+        } yield FtsResult(qtime, count, maxScore, highlight, results)
     }
 
   implicit def decodeItemMatch: Decoder[FtsResult.ItemMatch] =

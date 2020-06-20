@@ -18,7 +18,14 @@ trait SolrQuery[F[_]] {
 
   def query(q: FtsQuery): F[FtsResult] = {
     val fq = QueryData(
-      List(Field.content, Field.itemName, Field.itemNotes, Field.attachmentName),
+      List(
+        Field.content,
+        Field.content_de,
+        Field.content_en,
+        Field.itemName,
+        Field.itemNotes,
+        Field.attachmentName
+      ),
       List(
         Field.id,
         Field.itemId,

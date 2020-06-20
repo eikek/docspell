@@ -1,6 +1,5 @@
 package docspell.joex.process
 
-import fs2.Stream
 import bitpeace.{Mimetype, RangeDef}
 import cats.data.OptionT
 import cats.implicits._
@@ -30,9 +29,11 @@ object TextExtraction {
             item
           )
         )
-        _   <- ctx.logger.debug("Storing extracted texts")
-        _   <- txt.toList.traverse(rm => ctx.store.transact(RAttachmentMeta.upsert(rm._1)))
-        _   <- fts.indexData(ctx.logger, Stream.emits(txt.map(_._2)))
+        _ <- ctx.logger.debug("Storing extracted texts")
+        _ <- txt.toList.traverse(rm => ctx.store.transact(RAttachmentMeta.upsert(rm._1)))
+        idxItem =
+          TextData.item(item.item.id, ctx.args.meta.collective, item.item.name.some, None)
+        _   <- fts.indexData(ctx.logger, (idxItem +: txt.map(_._2)).toSeq: _*)
         dur <- start
         _   <- ctx.logger.info(s"Text extraction finished in ${dur.formatExact}")
       } yield item.copy(metas = txt.map(_._1))
@@ -52,6 +53,7 @@ object TextExtraction {
           item.item.id,
           ra.id,
           collective,
+          lang,
           ra.name,
           rm.content
         )

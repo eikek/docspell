@@ -10,6 +10,7 @@ import org.log4s.getLogger
 import _root_.io.circe.syntax._
 import _root_.io.circe._
 import _root_.io.circe.generic.semiauto._
+import docspell.common._
 
 trait SolrSetup[F[_]] {
 
@@ -44,9 +45,16 @@ object SolrSetup {
           Field.itemName,
           Field.itemNotes
         )
-          .traverse(addTextField)
+          .traverse(addTextField(None))
 
-        cmds0 *> cmds1 *> ().pure[F]
+        val cntLang = Language.all.traverse {
+          case l @ Language.German =>
+            addTextField(l.some)(Field.content_de)
+          case l @ Language.English =>
+            addTextField(l.some)(Field.content_en)
+        }
+
+        cmds0 *> cmds1 *> cntLang *> ().pure[F]
       }
 
       private def run(cmd: Json): F[Unit] = {
@@ -59,10 +67,18 @@ object SolrSetup {
         run(DeleteField.command(DeleteField(field))).attempt *>
           run(AddField.command(AddField.string(field)))
 
-      private def addTextField(field: Field): F[Unit] =
-        run(DeleteField.command(DeleteField(field))).attempt *>
-          run(AddField.command(AddField.text(field)))
-
+      private def addTextField(lang: Option[Language])(field: Field): F[Unit] =
+        lang match {
+          case None =>
+            run(DeleteField.command(DeleteField(field))).attempt *>
+              run(AddField.command(AddField.text(field)))
+          case Some(Language.German) =>
+            run(DeleteField.command(DeleteField(field))).attempt *>
+              run(AddField.command(AddField.textDE(field)))
+          case Some(Language.English) =>
+            run(DeleteField.command(DeleteField(field))).attempt *>
+              run(AddField.command(AddField.textEN(field)))
+        }
     }
   }
 
@@ -87,6 +103,12 @@ object SolrSetup {
 
     def text(field: Field): AddField =
       AddField(field, "text_general", true, true, false)
+
+    def textDE(field: Field): AddField =
+      AddField(field, "text_de", true, true, false)
+
+    def textEN(field: Field): AddField =
+      AddField(field, "text_en", true, true, false)
   }
 
   case class DeleteField(name: Field)
