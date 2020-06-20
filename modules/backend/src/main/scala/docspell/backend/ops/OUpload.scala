@@ -86,7 +86,8 @@ object OUpload {
     def noSource: UploadResult = NoSource
 
     /** When adding files to an item, no item was found using the given
-      * item-id. */
+      * item-id.
+      */
     case object NoItem extends UploadResult
 
     def noItem: UploadResult = NoItem
