@@ -1,15 +1,18 @@
 module Page.Home.Data exposing
     ( Model
     , Msg(..)
+    , SearchType(..)
     , ViewMode(..)
     , doSearchCmd
     , init
     , itemNav
     , resultsBelowLimit
+    , searchTypeString
     )
 
 import Api
 import Api.Model.ItemLightList exposing (ItemLightList)
+import Comp.FixedDropdown
 import Comp.ItemCardList
 import Comp.SearchMenu
 import Data.Flags exposing (Flags)
@@ -29,11 +32,28 @@ type alias Model =
     , moreAvailable : Bool
     , moreInProgress : Bool
     , throttle : Throttle Msg
+    , searchTypeDropdown : Comp.FixedDropdown.Model SearchType
+    , searchType : SearchType
     }
 
 
 init : Flags -> Model
-init _ =
+init flags =
+    let
+        searchTypeOptions =
+            if flags.config.fullTextSearchEnabled then
+                [ BasicSearch, ContentSearch, ContentOnlySearch ]
+
+            else
+                [ BasicSearch ]
+
+        defaultSearchType =
+            if flags.config.fullTextSearchEnabled then
+                ContentSearch
+
+            else
+                BasicSearch
+    in
     { searchMenuModel = Comp.SearchMenu.init
     , itemListModel = Comp.ItemCardList.init
     , searchInProgress = False
@@ -43,6 +63,10 @@ init _ =
     , moreAvailable = True
     , moreInProgress = False
     , throttle = Throttle.create 1
+    , searchTypeDropdown =
+        Comp.FixedDropdown.initMap searchTypeString
+            searchTypeOptions
+    , searchType = defaultSearchType
     }
 
 
@@ -58,7 +82,26 @@ type Msg
     | LoadMore
     | UpdateThrottle
     | SetBasicSearch String
-    | SetFulltextSearch String
+    | SearchTypeMsg (Comp.FixedDropdown.Msg SearchType)
+
+
+type SearchType
+    = BasicSearch
+    | ContentSearch
+    | ContentOnlySearch
+
+
+searchTypeString : SearchType -> String
+searchTypeString st =
+    case st of
+        BasicSearch ->
+            "All Names"
+
+        ContentSearch ->
+            "Contents"
+
+        ContentOnlySearch ->
+            "Contents Only"
 
 
 type ViewMode

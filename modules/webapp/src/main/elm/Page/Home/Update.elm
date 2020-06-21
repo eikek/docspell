@@ -1,6 +1,7 @@
 module Page.Home.Update exposing (update)
 
 import Browser.Navigation as Nav
+import Comp.FixedDropdown
 import Comp.ItemCardList
 import Comp.SearchMenu
 import Data.Flags exposing (Flags)
@@ -150,17 +151,31 @@ update key flags settings msg model =
 
         SetBasicSearch str ->
             let
-                m =
-                    SearchMenuMsg (Comp.SearchMenu.SetAllName str)
-            in
-            update key flags settings m model
+                smMsg =
+                    case model.searchType of
+                        BasicSearch ->
+                            SearchMenuMsg (Comp.SearchMenu.SetAllName str)
 
-        SetFulltextSearch str ->
-            let
-                m =
-                    SearchMenuMsg (Comp.SearchMenu.SetFulltext str)
+                        ContentSearch ->
+                            SearchMenuMsg (Comp.SearchMenu.SetFulltext str)
+
+                        ContentOnlySearch ->
+                            Debug.todo "implement"
             in
-            update key flags settings m model
+            update key flags settings smMsg model
+
+        SearchTypeMsg lm ->
+            let
+                ( sm, mv ) =
+                    Comp.FixedDropdown.update lm model.searchTypeDropdown
+            in
+            withSub
+                ( { model
+                    | searchTypeDropdown = sm
+                    , searchType = Maybe.withDefault model.searchType mv
+                  }
+                , Cmd.none
+                )
 
 
 

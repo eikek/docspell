@@ -9,6 +9,7 @@ module Comp.FixedDropdown exposing
     , update
     , view
     , viewString
+    , viewStyled
     )
 
 import Html exposing (..)
@@ -69,11 +70,12 @@ update msg model =
             ( model, Just item.id )
 
 
-view : Maybe (Item a) -> Model a -> Html (Msg a)
-view selected model =
+viewStyled : String -> Maybe (Item a) -> Model a -> Html (Msg a)
+viewStyled classes selected model =
     div
         [ classList
             [ ( "ui selection dropdown", True )
+            , ( classes, True )
             , ( "open", model.menuOpen )
             ]
         , onClick ToggleMenu
@@ -100,6 +102,11 @@ view selected model =
           <|
             List.map renderItems model.options
         ]
+
+
+view : Maybe (Item a) -> Model a -> Html (Msg a)
+view selected model =
+    viewStyled "" selected model
 
 
 viewString : Maybe String -> Model String -> Html (Msg String)

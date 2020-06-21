@@ -504,8 +504,8 @@ update flags settings msg model =
 -- View
 
 
-view : UiSettings -> Model -> Html Msg
-view settings model =
+view : Flags -> UiSettings -> Model -> Html Msg
+view flags settings model =
     let
         formHeader icon headline =
             div [ class "ui small dividing header" ]
@@ -532,7 +532,12 @@ view settings model =
                     ]
                 ]
             ]
-        , div [ class "field" ]
+        , div
+            [ classList
+                [ ( "field", True )
+                , ( "invisible hidden", not flags.config.fullTextSearchEnabled )
+                ]
+            ]
             [ label [] [ text "Content Search" ]
             , input
                 [ type_ "text"

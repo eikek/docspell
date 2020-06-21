@@ -170,7 +170,7 @@ viewLogin model =
 
 viewHome : Model -> Html Msg
 viewHome model =
-    Html.map HomeMsg (Page.Home.View.view model.uiSettings model.homeModel)
+    Html.map HomeMsg (Page.Home.View.view model.flags model.uiSettings model.homeModel)
 
 
 menuEntry : Model -> Page -> List (Html Msg) -> Html Msg

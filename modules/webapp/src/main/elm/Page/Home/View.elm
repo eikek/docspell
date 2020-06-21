@@ -1,8 +1,10 @@
 module Page.Home.View exposing (view)
 
 import Api.Model.ItemSearch
+import Comp.FixedDropdown
 import Comp.ItemCardList
 import Comp.SearchMenu
+import Data.Flags exposing (Flags)
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -11,8 +13,8 @@ import Page exposing (Page(..))
 import Page.Home.Data exposing (..)
 
 
-view : UiSettings -> Model -> Html Msg
-view settings model =
+view : Flags -> UiSettings -> Model -> Html Msg
+view flags settings model =
     div [ class "home-page ui padded grid" ]
         [ div
             [ classList
@@ -61,7 +63,7 @@ view settings model =
                     ]
                 ]
             , div [ class "ui attached fluid segment" ]
-                [ Html.map SearchMenuMsg (Comp.SearchMenu.view settings model.searchMenuModel)
+                [ Html.map SearchMenuMsg (Comp.SearchMenu.view flags settings model.searchMenuModel)
                 ]
             ]
         , div
@@ -73,7 +75,7 @@ view settings model =
                 , ( "item-card-list", True )
                 ]
             ]
-            [ viewSearchBar model
+            [ viewSearchBar flags model
             , case model.viewMode of
                 Listing ->
                     Html.map ItemCardListMsg
@@ -115,12 +117,36 @@ view settings model =
         ]
 
 
-viewSearchBar : Model -> Html Msg
-viewSearchBar model =
+viewSearchBar : Flags -> Model -> Html Msg
+viewSearchBar flags model =
+    let
+        searchTypeItem =
+            Comp.FixedDropdown.Item
+                model.searchType
+                (searchTypeString model.searchType)
+
+        searchInput =
+            case model.searchType of
+                BasicSearch ->
+                    model.searchMenuModel.allNameModel
+
+                ContentSearch ->
+                    model.searchMenuModel.fulltextModel
+
+                ContentOnlySearch ->
+                    Debug.todo "implement"
+
+        searchTypeClass =
+            if flags.config.fullTextSearchEnabled then
+                "compact"
+
+            else
+                "hidden invisible"
+    in
     div
         [ classList
             [ ( "invisible hidden", not model.menuCollapsed )
-            , ( "ui menu container", True )
+            , ( "ui secondary menu container", True )
             ]
         ]
         [ a
@@ -141,41 +167,33 @@ viewSearchBar model =
                 ]
             ]
         , div [ class "ui category search item" ]
-            [ div [ class "ui transparent icon input" ]
+            [ div [ class "ui action input" ]
                 [ input
                     [ type_ "text"
-                    , placeholder "Basic search…"
+                    , placeholder "Search …"
                     , onInput SetBasicSearch
-                    , Maybe.map value model.searchMenuModel.allNameModel
+                    , Maybe.map value searchInput
                         |> Maybe.withDefault (value "")
                     ]
                     []
-                , i
-                    [ classList
-                        [ ( "search link icon", not model.searchInProgress )
-                        , ( "loading spinner icon", model.searchInProgress )
+                , Html.map SearchTypeMsg
+                    (Comp.FixedDropdown.viewStyled searchTypeClass
+                        (Just searchTypeItem)
+                        model.searchTypeDropdown
+                    )
+                , a
+                    [ class "ui basic icon button"
+                    , href "#"
+                    , onClick DoSearch
+                    ]
+                    [ i
+                        [ classList
+                            [ ( "search link icon", not model.searchInProgress )
+                            , ( "loading spinner icon", model.searchInProgress )
+                            ]
                         ]
+                        []
                     ]
-                    []
-                ]
-            ]
-        , div [ class "ui category search item" ]
-            [ div [ class "ui transparent icon input" ]
-                [ input
-                    [ type_ "text"
-                    , placeholder "Fulltext search…"
-                    , onInput SetFulltextSearch
-                    , Maybe.map value model.searchMenuModel.fulltextModel
-                        |> Maybe.withDefault (value "")
-                    ]
-                    []
-                , i
-                    [ classList
-                        [ ( "search link icon", not model.searchInProgress )
-                        , ( "loading spinner icon", model.searchInProgress )
-                        ]
-                    ]
-                    []
                 ]
             ]
         ]
