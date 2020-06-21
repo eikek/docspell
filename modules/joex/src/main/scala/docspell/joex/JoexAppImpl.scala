@@ -7,7 +7,7 @@ import docspell.common._
 import docspell.backend.ops._
 import docspell.joex.hk._
 import docspell.joex.notify._
-import docspell.joex.fts.MigrationTask
+import docspell.joex.fts.{MigrationTask, ReIndexTask}
 import docspell.joex.scanmailbox._
 import docspell.joex.process.ItemHandler
 import docspell.joex.scheduler._
@@ -109,6 +109,13 @@ object JoexAppImpl {
             MigrationTask.taskName,
             MigrationTask[F](cfg.fullTextSearch, fts),
             MigrationTask.onCancel[F]
+          )
+        )
+        .withTask(
+          JobTask.json(
+            ReIndexTask.taskName,
+            ReIndexTask[F](cfg.fullTextSearch, fts),
+            ReIndexTask.onCancel[F]
           )
         )
         .withTask(

@@ -147,7 +147,10 @@ object QAttachment {
       name: Option[String],
       content: Option[String]
   )
-  def allAttachmentMetaAndName(chunkSize: Int): Stream[ConnectionIO, ContentAndName] = {
+  def allAttachmentMetaAndName(
+      coll: Option[Ident],
+      chunkSize: Int
+  ): Stream[ConnectionIO, ContentAndName] = {
     val aId      = RAttachment.Columns.id.prefix("a")
     val aItem    = RAttachment.Columns.itemId.prefix("a")
     val aName    = RAttachment.Columns.name.prefix("a")
@@ -164,7 +167,9 @@ object QAttachment {
       fr"INNER JOIN" ++ RItem.table ++ fr"i ON" ++ iId.is(aItem) ++
       fr"INNER JOIN" ++ RCollective.table ++ fr"c ON" ++ cId.is(iColl)
 
-    selectSimple(cols, from, Fragment.empty)
+    val where = coll.map(cid => iColl.is(cid)).getOrElse(Fragment.empty)
+
+    selectSimple(cols, from, where)
       .query[ContentAndName]
       .streamWithChunkSize(chunkSize)
   }

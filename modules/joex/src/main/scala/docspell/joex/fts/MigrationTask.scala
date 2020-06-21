@@ -7,12 +7,9 @@ import docspell.joex.Config
 import docspell.joex.scheduler.Task
 import docspell.ftsclient._
 import docspell.store.records.RJob
-import docspell.joex.hk.HouseKeepingTask
 
 object MigrationTask {
   val taskName    = Ident.unsafe("full-text-index")
-  val tracker     = Ident.unsafe("full-text-index-tracker")
-  val systemGroup = HouseKeepingTask.systemGroup
 
   def apply[F[_]: ConcurrentEffect](
       cfg: Config.FullTextSearch,
@@ -37,20 +34,20 @@ object MigrationTask {
     } yield RJob.newJob(
       id,
       taskName,
-      systemGroup,
+      DocspellSystem.taskGroup,
       (),
       "Create full-text index",
       now,
-      systemGroup,
+      DocspellSystem.taskGroup,
       Priority.Low,
-      Some(tracker)
+      Some(DocspellSystem.migrationTaskTracker)
     )
 
   private val solrEngine = Ident.unsafe("solr")
   def migrationTasks[F[_]: Effect]: List[Migration[F]] =
     List(
       Migration[F](1, solrEngine, "initialize", FtsWork.initialize[F]),
-      Migration[F](2, solrEngine, "Index all from database", FtsWork.insertAll[F])
+      Migration[F](2, solrEngine, "Index all from database", FtsWork.insertAll[F](None))
     )
 
 }

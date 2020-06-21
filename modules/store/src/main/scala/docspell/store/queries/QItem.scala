@@ -475,14 +475,18 @@ object QItem {
       name: String,
       notes: Option[String]
   )
-  def allNameAndNotes(chunkSize: Int): Stream[ConnectionIO, NameAndNotes] = {
+  def allNameAndNotes(
+      coll: Option[Ident],
+      chunkSize: Int
+  ): Stream[ConnectionIO, NameAndNotes] = {
     val iId    = RItem.Columns.id
     val iColl  = RItem.Columns.cid
     val iName  = RItem.Columns.name
     val iNotes = RItem.Columns.notes
 
-    val cols = Seq(iId, iColl, iName, iNotes)
-    selectSimple(cols, RItem.table, Fragment.empty)
+    val cols  = Seq(iId, iColl, iName, iNotes)
+    val where = coll.map(cid => iColl.is(cid)).getOrElse(Fragment.empty)
+    selectSimple(cols, RItem.table, where)
       .query[NameAndNotes]
       .streamWithChunkSize(chunkSize)
   }

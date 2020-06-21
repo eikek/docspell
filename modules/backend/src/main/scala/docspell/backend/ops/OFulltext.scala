@@ -5,6 +5,10 @@ import cats.implicits._
 import fs2.Stream
 import docspell.common._
 import docspell.ftsclient._
+import docspell.backend.JobFactory
+import docspell.store.Store
+import docspell.store.records.RJob
+import docspell.store.queue.JobQueue
 import OItemSearch.{Batch, ListItem, ListItemWithTags, Query}
 
 trait OFulltext[F[_]] {
@@ -22,7 +26,7 @@ trait OFulltext[F[_]] {
   /** Clears the full-text index for the given collective and starts a
     * task indexing all their data.
     */
-  def reindexCollective(collective: Ident): F[Unit]
+  def reindexCollective(account: AccountId): F[Unit]
 }
 
 object OFulltext {
@@ -32,12 +36,27 @@ object OFulltext {
 
   def apply[F[_]: Effect](
       itemSearch: OItemSearch[F],
-      fts: FtsClient[F]
+      fts: FtsClient[F],
+      store: Store[F],
+      queue: JobQueue[F]
   ): Resource[F, OFulltext[F]] =
     Resource.pure[F, OFulltext[F]](new OFulltext[F] {
-      def reindexAll: F[Unit] = ???
+      def reindexAll: F[Unit] =
+        for {
+          job <- JobFactory.reIndexAll[F]
+          _   <- queue.insertIfNew(job)
+        } yield ()
 
-      def reindexCollective(collective: Ident): F[Unit] = ???
+      def reindexCollective(account: AccountId): F[Unit] =
+        for {
+          exist <- store.transact(
+            RJob.findNonFinalByTracker(DocspellSystem.migrationTaskTracker)
+          )
+          job <- JobFactory.reIndex(account)
+          _ <-
+            if (exist.isDefined) ().pure[F]
+            else queue.insertIfNew(job)
+        } yield ()
 
       def findItems(q: Query, ftsQ: String, batch: Batch): F[Vector[ListItem]] =
         findItemsFts(q, ftsQ, batch, itemSearch.findItems)

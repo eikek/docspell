@@ -61,7 +61,7 @@ object BackendApp {
       jobImpl        <- OJob(store, joexImpl)
       itemImpl       <- OItem(store, solrFts)
       itemSearchImpl <- OItemSearch(store)
-      fulltextImpl   <- OFulltext(itemSearchImpl, solrFts)
+      fulltextImpl   <- OFulltext(itemSearchImpl, solrFts, store, queue)
       javaEmil =
         JavaMailEmil(blocker, Settings.defaultSettings.copy(debug = cfg.mailDebug))
       mailImpl     <- OMail(store, javaEmil)
