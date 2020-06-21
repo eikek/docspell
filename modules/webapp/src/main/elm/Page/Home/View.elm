@@ -25,20 +25,19 @@ view flags settings model =
                 ]
             ]
             [ div
-                [ class "ui top attached ablue-comp menu"
+                [ class "ui top attached ablue-comp icon menu"
                 ]
                 [ a
-                    [ class "item"
+                    [ class "borderless item"
                     , href "#"
                     , onClick ToggleSearchMenu
                     , title "Hide menu"
                     ]
                     [ i [ class "ui angle down icon" ] []
-                    , text "Search"
                     ]
                 , div [ class "right floated menu" ]
                     [ a
-                        [ class "icon item"
+                        [ class "borderless item"
                         , onClick ResetSearch
                         , title "Reset form"
                         , href "#"
@@ -46,7 +45,7 @@ view flags settings model =
                         [ i [ class "undo icon" ] []
                         ]
                     , a
-                        [ class "icon item"
+                        [ class "borderless item"
                         , onClick DoSearch
                         , title "Run search query"
                         , href ""
