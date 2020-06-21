@@ -18,6 +18,7 @@ trait FtsClient[F[_]] {
     */
   def initialize: F[Unit]
 
+  /** Run a full-text search. */
   def search(q: FtsQuery): F[FtsResult]
 
   def searchAll(q: FtsQuery): Stream[F, FtsResult] =
@@ -81,4 +82,11 @@ trait FtsClient[F[_]] {
         None
       )
     )
+
+  /** Clears the index – removes everything. */
+  def clearAll(logger: Logger[F]): F[Unit]
+
+  /** Clears the index from all data belonging to the given collective. */
+  def clear(logger: Logger[F], collective: Ident): F[Unit]
+
 }

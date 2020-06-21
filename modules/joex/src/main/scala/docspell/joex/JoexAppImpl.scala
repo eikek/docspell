@@ -7,7 +7,7 @@ import docspell.common._
 import docspell.backend.ops._
 import docspell.joex.hk._
 import docspell.joex.notify._
-import docspell.joex.fts.IndexTask
+import docspell.joex.fts.MigrationTask
 import docspell.joex.scanmailbox._
 import docspell.joex.process.ItemHandler
 import docspell.joex.scheduler._
@@ -56,7 +56,8 @@ final class JoexAppImpl[F[_]: ConcurrentEffect: ContextShift: Timer](
   private def scheduleBackgroundTasks: F[Unit] =
     HouseKeepingTask
       .periodicTask[F](cfg.houseKeeping.schedule)
-      .flatMap(pstore.insert) *> IndexTask.job.flatMap(queue.insertIfNew)
+      .flatMap(pstore.insert) *>
+      MigrationTask.job.flatMap(queue.insertIfNew)
 }
 
 object JoexAppImpl {
@@ -105,9 +106,9 @@ object JoexAppImpl {
         )
         .withTask(
           JobTask.json(
-            IndexTask.taskName,
-            IndexTask[F](cfg.fullTextSearch, fts),
-            IndexTask.onCancel[F]
+            MigrationTask.taskName,
+            MigrationTask[F](cfg.fullTextSearch, fts),
+            MigrationTask.onCancel[F]
           )
         )
         .withTask(

@@ -26,8 +26,10 @@ final class SolrFtsClient[F[_]: Effect](
   def updateIndex(logger: Logger[F], data: Stream[F, TextData]): F[Unit] =
     modifyIndex(logger, data)(solrUpdate.update)
 
-  def modifyIndex(logger: Logger[F], data: Stream[F, TextData])(f: List[TextData] => F[Unit]): F[Unit] =
-        (for {
+  def modifyIndex(logger: Logger[F], data: Stream[F, TextData])(
+      f: List[TextData] => F[Unit]
+  ): F[Unit] =
+    (for {
       _      <- Stream.eval(logger.debug("Updating SOLR index"))
       chunks <- data.chunks
       res    <- Stream.eval(f(chunks.toList).attempt)
@@ -37,6 +39,14 @@ final class SolrFtsClient[F[_]: Effect](
           Stream.eval(logger.error(ex)("Error updating with chunk of data"))
       }
     } yield ()).compile.drain
+
+  def clearAll(logger: Logger[F]): F[Unit] =
+    logger.info("Deleting complete full-text index!") *>
+      solrUpdate.delete("*:*")
+
+  def clear(logger: Logger[F], collective: Ident): F[Unit] =
+    logger.info(s"Deleting full-text index for collective ${collective.id}") *>
+      solrUpdate.delete(s"${Field.collectiveId.name}:${collective.id}")
 }
 
 object SolrFtsClient {

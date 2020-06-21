@@ -14,22 +14,22 @@ case class Migration[F[_]](
     version: Int,
     engine: Ident,
     description: String,
-    task: MigrationTask[F]
+    task: FtsWork[F]
 )
 
 object Migration {
 
   def apply[F[_]: Effect](
       cfg: Config.FullTextSearch,
-      store: Store[F],
       fts: FtsClient[F],
+      store: Store[F],
       logger: Logger[F]
   ): Kleisli[F, List[Migration[F]], Unit] = {
-    val ctx = MigrateCtx(cfg, store, fts, logger)
+    val ctx = FtsContext(cfg, store, fts, logger)
     Kleisli(migs => Traverse[List].sequence(migs.map(applySingle[F](ctx))).map(_ => ()))
   }
 
-  def applySingle[F[_]: Effect](ctx: MigrateCtx[F])(m: Migration[F]): F[Unit] = {
+  def applySingle[F[_]: Effect](ctx: FtsContext[F])(m: Migration[F]): F[Unit] = {
     val insertRecord: F[Option[RFtsMigration]] =
       for {
         rec <- RFtsMigration.create(m.version, m.engine, m.description)

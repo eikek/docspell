@@ -4,6 +4,6 @@ import cats.data.Kleisli
 
 package object fts {
 
-  type MigrationTask[F[_]] = Kleisli[F, MigrateCtx[F], Unit]
+  type FtsWork[F[_]] = Kleisli[F, FtsContext[F], Unit]
 
 }

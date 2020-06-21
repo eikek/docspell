@@ -6,6 +6,7 @@ import cats.implicits._
 import org.http4s.client.Client
 import org.http4s.circe._
 import org.http4s.client.dsl.Http4sClientDsl
+import _root_.io.circe._
 import _root_.io.circe.syntax._
 import org.log4s.getLogger
 
@@ -18,6 +19,7 @@ trait SolrUpdate[F[_]] {
 
   def update(tds: List[TextData]): F[Unit]
 
+  def delete(q: String): F[Unit]
 }
 
 object SolrUpdate {
@@ -44,6 +46,11 @@ object SolrUpdate {
         client.expect[String](req).map(r => logger.debug(s"Req: $req Response: $r"))
       }
 
+      def delete(q: String): F[Unit] = {
+        val req = Method.POST(Delete(q).asJson, url)
+        client.expect[String](req).map(r => logger.debug(s"Req: $req Response: $r"))
+      }
+
       private val minOneChange: TextData => Boolean =
         _ match {
           case td: TextData.Attachment =>
@@ -52,5 +59,16 @@ object SolrUpdate {
             td.name.isDefined || td.notes.isDefined
         }
     }
-  }
+    }
+
+    case class Delete(query: String)
+    object Delete {
+      implicit val jsonEncoder: Encoder[Delete] =
+        new Encoder[Delete] {
+          def apply(d: Delete): Json =
+            Json.obj(
+              ("delete", Json.obj("query" -> d.query.asJson))
+            )
+        }
+    }
 }

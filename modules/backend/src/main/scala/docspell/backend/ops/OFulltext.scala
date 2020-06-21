@@ -3,6 +3,7 @@ package docspell.backend.ops
 import cats.effect._
 import cats.implicits._
 import fs2.Stream
+import docspell.common._
 import docspell.ftsclient._
 import OItemSearch.{Batch, ListItem, ListItemWithTags, Query}
 
@@ -13,6 +14,15 @@ trait OFulltext[F[_]] {
   /** Same as `findItems` but does more queries per item to find all tags. */
   def findItemsWithTags(q: Query, fts: String, batch: Batch): F[Vector[ListItemWithTags]]
 
+  /** Clears the full-text index completely and launches a task that
+    * indexes all data.
+    */
+  def reindexAll: F[Unit]
+
+  /** Clears the full-text index for the given collective and starts a
+    * task indexing all their data.
+    */
+  def reindexCollective(collective: Ident): F[Unit]
 }
 
 object OFulltext {
@@ -25,6 +35,9 @@ object OFulltext {
       fts: FtsClient[F]
   ): Resource[F, OFulltext[F]] =
     Resource.pure[F, OFulltext[F]](new OFulltext[F] {
+      def reindexAll: F[Unit] = ???
+
+      def reindexCollective(collective: Ident): F[Unit] = ???
 
       def findItems(q: Query, ftsQ: String, batch: Batch): F[Vector[ListItem]] =
         findItemsFts(q, ftsQ, batch, itemSearch.findItems)
