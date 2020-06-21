@@ -1,6 +1,7 @@
 package docspell.backend
 
 import cats.effect.{Blocker, ConcurrentEffect, ContextShift, Resource}
+import org.http4s.client.Client
 import org.http4s.client.blaze.BlazeClientBuilder
 
 import docspell.backend.auth.Login
@@ -10,7 +11,7 @@ import docspell.joexapi.client.JoexClient
 import docspell.store.Store
 import docspell.store.queue.JobQueue
 import docspell.store.usertask.UserTaskStore
-import docspell.ftssolr.SolrFtsClient
+import docspell.ftsclient.FtsClient
 
 import scala.concurrent.ExecutionContext
 import emil.javamail.{JavaMailEmil, Settings}
@@ -40,12 +41,11 @@ object BackendApp {
   def create[F[_]: ConcurrentEffect: ContextShift](
       cfg: Config,
       store: Store[F],
-      httpClientEc: ExecutionContext,
+      httpClient: Client[F],
+      ftsClient: FtsClient[F],
       blocker: Blocker
   ): Resource[F, BackendApp[F]] =
     for {
-      httpClient     <- BlazeClientBuilder[F](httpClientEc).resource
-      solrFts        <- SolrFtsClient(cfg.fullTextSearch.solr, httpClient)
       utStore        <- UserTaskStore(store)
       queue          <- JobQueue(store)
       loginImpl      <- Login[F](store)
@@ -59,9 +59,9 @@ object BackendApp {
       uploadImpl     <- OUpload(store, queue, cfg.files, joexImpl)
       nodeImpl       <- ONode(store)
       jobImpl        <- OJob(store, joexImpl)
-      itemImpl       <- OItem(store, solrFts)
+      itemImpl       <- OItem(store, ftsClient)
       itemSearchImpl <- OItemSearch(store)
-      fulltextImpl   <- OFulltext(itemSearchImpl, solrFts, store, queue)
+      fulltextImpl   <- OFulltext(itemSearchImpl, ftsClient, store, queue, joexImpl)
       javaEmil =
         JavaMailEmil(blocker, Settings.defaultSettings.copy(debug = cfg.mailDebug))
       mailImpl     <- OMail(store, javaEmil)
@@ -90,9 +90,11 @@ object BackendApp {
       connectEC: ExecutionContext,
       httpClientEc: ExecutionContext,
       blocker: Blocker
-  ): Resource[F, BackendApp[F]] =
+  )(ftsFactory: Client[F] => Resource[F, FtsClient[F]]): Resource[F, BackendApp[F]] =
     for {
-      store   <- Store.create(cfg.jdbc, connectEC, blocker)
-      backend <- create(cfg, store, httpClientEc, blocker)
+      store      <- Store.create(cfg.jdbc, connectEC, blocker)
+      httpClient <- BlazeClientBuilder[F](httpClientEc).resource
+      ftsClient  <- ftsFactory(httpClient)
+      backend    <- create(cfg, store, httpClient, ftsClient, blocker)
     } yield backend
 }

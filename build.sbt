@@ -325,7 +325,7 @@ val backend = project.in(file("modules/backend")).
       Dependencies.bcrypt ++
       Dependencies.http4sClient ++
       Dependencies.emil
-  ).dependsOn(store, joexapi, ftsclient, ftssolr)
+  ).dependsOn(store, joexapi, ftsclient)
 
 val webapp = project.in(file("modules/webapp")).
   disablePlugins(RevolverPlugin).
@@ -374,7 +374,7 @@ val joex = project.in(file("modules/joex")).
     addCompilerPlugin(Dependencies.betterMonadicFor),
     buildInfoPackage := "docspell.joex",
     reStart/javaOptions ++= Seq(s"-Dconfig.file=${(LocalRootProject/baseDirectory).value/"local"/"dev.conf"}")
-  ).dependsOn(store, backend, extract, convert, analysis, joexapi, restapi)
+  ).dependsOn(store, backend, extract, convert, analysis, joexapi, restapi, ftssolr)
 
 val restserver = project.in(file("modules/restserver")).
   enablePlugins(BuildInfoPlugin
@@ -412,7 +412,7 @@ val restserver = project.in(file("modules/restserver")).
     }.taskValue,
     Compile/unmanagedResourceDirectories ++= Seq((Compile/resourceDirectory).value.getParentFile/"templates"),
     reStart/javaOptions ++= Seq(s"-Dconfig.file=${(LocalRootProject/baseDirectory).value/"local"/"dev.conf"}")
-  ).dependsOn(restapi, joexapi, backend, webapp)
+  ).dependsOn(restapi, joexapi, backend, webapp, ftssolr)
 
 
 

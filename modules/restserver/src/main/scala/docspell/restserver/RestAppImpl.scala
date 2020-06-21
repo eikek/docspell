@@ -2,8 +2,11 @@ package docspell.restserver
 
 import cats.implicits._
 import cats.effect._
+import org.http4s.client.Client
 import docspell.backend.BackendApp
 import docspell.common.NodeType
+import docspell.ftsclient.FtsClient
+import docspell.ftssolr.SolrFtsClient
 
 import scala.concurrent.ExecutionContext
 
@@ -26,9 +29,15 @@ object RestAppImpl {
       blocker: Blocker
   ): Resource[F, RestApp[F]] =
     for {
-      backend <- BackendApp(cfg.backend, connectEC, httpClientEc, blocker)
+      backend <- BackendApp(cfg.backend, connectEC, httpClientEc, blocker)(
+        createFtsClient[F](cfg)
+      )
       app = new RestAppImpl[F](cfg, backend)
       appR <- Resource.make(app.init.map(_ => app))(_.shutdown)
     } yield appR
 
+  private def createFtsClient[F[_]: ConcurrentEffect: ContextShift](
+      cfg: Config
+  )(client: Client[F]): Resource[F, FtsClient[F]] =
+    SolrFtsClient(cfg.fullTextSearch.solr, client)
 }

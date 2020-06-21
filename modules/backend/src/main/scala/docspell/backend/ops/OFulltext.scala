@@ -38,13 +38,14 @@ object OFulltext {
       itemSearch: OItemSearch[F],
       fts: FtsClient[F],
       store: Store[F],
-      queue: JobQueue[F]
+      queue: JobQueue[F],
+      joex: OJoex[F]
   ): Resource[F, OFulltext[F]] =
     Resource.pure[F, OFulltext[F]](new OFulltext[F] {
       def reindexAll: F[Unit] =
         for {
           job <- JobFactory.reIndexAll[F]
-          _   <- queue.insertIfNew(job)
+          _   <- queue.insertIfNew(job) *> joex.notifyAllNodes
         } yield ()
 
       def reindexCollective(account: AccountId): F[Unit] =
@@ -55,7 +56,7 @@ object OFulltext {
           job <- JobFactory.reIndex(account)
           _ <-
             if (exist.isDefined) ().pure[F]
-            else queue.insertIfNew(job)
+            else queue.insertIfNew(job) *> joex.notifyAllNodes
         } yield ()
 
       def findItems(q: Query, ftsQ: String, batch: Batch): F[Vector[ListItem]] =
