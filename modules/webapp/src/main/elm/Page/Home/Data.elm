@@ -20,6 +20,7 @@ import Data.Items
 import Data.UiSettings exposing (UiSettings)
 import Http
 import Throttle exposing (Throttle)
+import Util.Html exposing (KeyCode(..))
 
 
 type alias Model =
@@ -83,6 +84,7 @@ type Msg
     | UpdateThrottle
     | SetBasicSearch String
     | SearchTypeMsg (Comp.FixedDropdown.Msg SearchType)
+    | KeyUpMsg (Maybe KeyCode)
 
 
 type SearchType

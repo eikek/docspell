@@ -10,6 +10,7 @@ import Page exposing (Page(..))
 import Page.Home.Data exposing (..)
 import Throttle
 import Time
+import Util.Html exposing (KeyCode(..))
 import Util.Update
 
 
@@ -177,6 +178,12 @@ update key flags settings msg model =
                 , Cmd.none
                 )
 
+        KeyUpMsg (Just Enter) ->
+            update key flags settings DoSearch model
+
+        KeyUpMsg _ ->
+            withSub ( model, Cmd.none )
+
 
 
 --- Helpers
@@ -218,6 +225,6 @@ withSub ( m, c ) =
     ( m
     , c
     , Throttle.ifNeeded
-        (Time.every 150 (\_ -> UpdateThrottle))
+        (Time.every 500 (\_ -> UpdateThrottle))
         m.throttle
     )

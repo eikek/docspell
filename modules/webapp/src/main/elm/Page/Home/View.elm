@@ -11,6 +11,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Page exposing (Page(..))
 import Page.Home.Data exposing (..)
+import Util.Html
 
 
 view : Flags -> UiSettings -> Model -> Html Msg
@@ -165,12 +166,22 @@ viewSearchBar flags model =
                     span [ class "hidden invisible" ] []
                 ]
             ]
-        , div [ class "ui category search item" ]
-            [ div [ class "ui action input" ]
-                [ input
+        , div [ class "item" ]
+            [ div [ class "ui left icon right action input" ]
+                [ i
+                    [ classList
+                        [ ( "search link icon", not model.searchInProgress )
+                        , ( "loading spinner icon", model.searchInProgress )
+                        ]
+                    , href "#"
+                    , onClick DoSearch
+                    ]
+                    []
+                , input
                     [ type_ "text"
                     , placeholder "Search …"
                     , onInput SetBasicSearch
+                    , Util.Html.onKeyUpCode KeyUpMsg
                     , Maybe.map value searchInput
                         |> Maybe.withDefault (value "")
                     ]
@@ -180,19 +191,6 @@ viewSearchBar flags model =
                         (Just searchTypeItem)
                         model.searchTypeDropdown
                     )
-                , a
-                    [ class "ui basic icon button"
-                    , href "#"
-                    , onClick DoSearch
-                    ]
-                    [ i
-                        [ classList
-                            [ ( "search link icon", not model.searchInProgress )
-                            , ( "loading spinner icon", model.searchInProgress )
-                            ]
-                        ]
-                        []
-                    ]
                 ]
             ]
         ]
@@ -205,6 +203,14 @@ hasMoreSearch model =
             Comp.SearchMenu.getItemSearch model.searchMenuModel
 
         is_ =
-            { is | allNames = Nothing, fullText = Nothing }
+            case model.searchType of
+                BasicSearch ->
+                    { is | allNames = Nothing }
+
+                ContentSearch ->
+                    { is | fullText = Nothing }
+
+                ContentOnlySearch ->
+                    Debug.todo "implement"
     in
     is_ /= Api.Model.ItemSearch.empty

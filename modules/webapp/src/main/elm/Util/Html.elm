@@ -9,6 +9,7 @@ module Util.Html exposing
     , onDragOver
     , onDropFiles
     , onKeyUp
+    , onKeyUpCode
     )
 
 import File exposing (File)
@@ -74,6 +75,11 @@ intToKeyCode code =
 onKeyUp : (Int -> msg) -> Attribute msg
 onKeyUp tagger =
     on "keyup" (D.map tagger keyCode)
+
+
+onKeyUpCode : (Maybe KeyCode -> msg) -> Attribute msg
+onKeyUpCode tagger =
+    onKeyUp (intToKeyCode >> tagger)
 
 
 onClickk : msg -> Attribute msg
