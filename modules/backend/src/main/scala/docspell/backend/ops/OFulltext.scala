@@ -60,7 +60,8 @@ object OFulltext {
         } yield ()
 
       def findItems(q: Query, ftsQ: String, batch: Batch): F[Vector[ListItem]] =
-        findItemsFts(q, ftsQ, batch, itemSearch.findItems)
+        findItemsFts(q, ftsQ, batch.first, itemSearch.findItems)
+          .drop(batch.offset.toLong)
           .take(batch.limit.toLong)
           .compile
           .toVector
@@ -70,28 +71,33 @@ object OFulltext {
           ftsQ: String,
           batch: Batch
       ): F[Vector[ListItemWithTags]] =
-        findItemsFts(q, ftsQ, batch, itemSearch.findItemsWithTags)
+        findItemsFts(q, ftsQ, batch.first, itemSearch.findItemsWithTags)
+          .drop(batch.offset.toLong)
           .take(batch.limit.toLong)
           .compile
           .toVector
 
-      private def findItemsFts[A](
+      private def findItemsFts[A: ItemId](
           q: Query,
           ftsQ: String,
           batch: Batch,
           search: (Query, Batch) => F[Vector[A]]
       ): Stream[F, A] = {
-        val fq = FtsQuery(ftsQ, q.collective, Nil, batch.limit, batch.offset)
+
+        val sqlResult = search(q, batch)
+        val fq        = FtsQuery(ftsQ, q.collective, Set.empty, batch.limit, batch.offset)
 
         val qres =
           for {
-            items <-
+            items <- sqlResult
+            ids  = items.map(a => ItemId[A].itemId(a))
+            ftsQ = fq.copy(items = ids.toSet)
+            ftsR <-
               fts
-                .search(fq)
+                .search(ftsQ)
                 .map(_.results.map(_.itemId))
                 .map(_.toSet)
-            sq = q.copy(itemIds = Some(items))
-            res <- search(sq, batch)
+            res = items.filter(a => ftsR.contains(ItemId[A].itemId(a)))
           } yield res
 
         Stream.eval(qres).flatMap { v =>
@@ -100,6 +106,23 @@ object OFulltext {
           else results ++ findItemsFts(q, ftsQ, batch.next, search)
         }
       }
-
     })
+
+  trait ItemId[A] {
+    def itemId(a: A): Ident
+  }
+  object ItemId {
+    def apply[A](implicit ev: ItemId[A]): ItemId[A] = ev
+
+    def from[A](f: A => Ident): ItemId[A] =
+      new ItemId[A] {
+        def itemId(a: A) = f(a)
+      }
+
+    implicit val listItemId: ItemId[ListItem] =
+      ItemId.from(_.id)
+
+    implicit val listItemWithTagsId: ItemId[ListItemWithTags] =
+      ItemId.from(_.item.id)
+  }
 }

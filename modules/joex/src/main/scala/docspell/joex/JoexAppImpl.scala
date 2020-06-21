@@ -3,6 +3,10 @@ package docspell.joex
 import cats.implicits._
 import cats.effect._
 import emil.javamail._
+import fs2.concurrent.SignallingRef
+import scala.concurrent.ExecutionContext
+import org.http4s.client.Client
+import org.http4s.client.blaze.BlazeClientBuilder
 import docspell.common._
 import docspell.backend.ops._
 import docspell.joex.hk._
@@ -15,10 +19,8 @@ import docspell.joexapi.client.JoexClient
 import docspell.store.Store
 import docspell.store.queue._
 import docspell.store.records.RJobLog
+import docspell.ftsclient.FtsClient
 import docspell.ftssolr.SolrFtsClient
-import fs2.concurrent.SignallingRef
-import scala.concurrent.ExecutionContext
-import org.http4s.client.blaze.BlazeClientBuilder
 
 final class JoexAppImpl[F[_]: ConcurrentEffect: ContextShift: Timer](
     cfg: Config,
@@ -78,7 +80,7 @@ object JoexAppImpl {
       nodeOps <- ONode(store)
       joex    <- OJoex(client, store)
       upload  <- OUpload(store, queue, cfg.files, joex)
-      fts     <- SolrFtsClient(cfg.fullTextSearch.solr, httpClient)
+      fts     <- createFtsClient(cfg)(httpClient)
       javaEmil =
         JavaMailEmil(blocker, Settings.defaultSettings.copy(debug = cfg.mailDebug))
       sch <- SchedulerBuilder(cfg.scheduler, blocker, store)
@@ -137,4 +139,10 @@ object JoexAppImpl {
       app = new JoexAppImpl(cfg, nodeOps, store, queue, pstore, termSignal, sch, psch)
       appR <- Resource.make(app.init.map(_ => app))(_.shutdown)
     } yield appR
+
+  private def createFtsClient[F[_]: ConcurrentEffect: ContextShift](
+      cfg: Config
+  )(client: Client[F]): Resource[F, FtsClient[F]] =
+    if (cfg.fullTextSearch.enabled) SolrFtsClient(cfg.fullTextSearch.solr, client)
+    else Resource.pure[F, FtsClient[F]](FtsClient.none[F])
 }

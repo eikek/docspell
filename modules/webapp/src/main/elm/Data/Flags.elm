@@ -15,6 +15,7 @@ type alias Config =
     , signupMode : String
     , docspellAssetPath : String
     , integrationEnabled : Bool
+    , fullTextSearchEnabled : Bool
     }
 
 

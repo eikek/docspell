@@ -199,6 +199,9 @@ object QItem {
 
     def next: Batch =
       Batch(offset + limit, limit)
+
+    def first: Batch =
+      Batch(0, limit)
   }
 
   object Batch {

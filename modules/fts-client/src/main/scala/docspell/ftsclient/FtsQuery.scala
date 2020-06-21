@@ -13,7 +13,7 @@ import docspell.common._
 final case class FtsQuery(
     q: String,
     collective: Ident,
-    items: List[Ident],
+    items: Set[Ident],
     limit: Int,
     offset: Int
 ) {

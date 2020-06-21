@@ -39,5 +39,6 @@ object RestAppImpl {
   private def createFtsClient[F[_]: ConcurrentEffect: ContextShift](
       cfg: Config
   )(client: Client[F]): Resource[F, FtsClient[F]] =
-    SolrFtsClient(cfg.fullTextSearch.solr, client)
+    if (cfg.fullTextSearch.enabled) SolrFtsClient(cfg.fullTextSearch.solr, client)
+    else Resource.pure[F, FtsClient[F]](FtsClient.none[F])
 }

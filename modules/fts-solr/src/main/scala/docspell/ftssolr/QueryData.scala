@@ -39,7 +39,7 @@ object QueryData {
     val items = fq.items.map(_.id).mkString(" ")
     val collQ = s"""${Field.collectiveId.name}:"${fq.collective.id}""""
     val filterQ = fq.items match {
-      case Nil =>
+      case s if s.isEmpty =>
         collQ
       case _ =>
         (collQ :: List(s"""${Field.itemId.name}:($items)""")).mkString(" AND ")

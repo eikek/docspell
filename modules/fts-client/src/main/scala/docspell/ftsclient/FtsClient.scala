@@ -1,6 +1,9 @@
 package docspell.ftsclient
 
 import fs2.Stream
+import cats.implicits._
+import cats.effect._
+import org.log4s.getLogger
 import docspell.common._
 
 /** The fts client is the interface for docspell to a fulltext search
@@ -89,4 +92,30 @@ trait FtsClient[F[_]] {
   /** Clears the index from all data belonging to the given collective. */
   def clear(logger: Logger[F], collective: Ident): F[Unit]
 
+}
+
+object FtsClient {
+
+  def none[F[_]: Sync] =
+    new FtsClient[F] {
+      private[this] val logger = Logger.log4s[F](getLogger)
+
+      def initialize: F[Unit] =
+        logger.info("Full-text search is disabled!")
+
+      def search(q: FtsQuery): F[FtsResult] =
+        logger.warn("Full-text search is disabled!") *> FtsResult.empty.pure[F]
+
+      def updateIndex(logger: Logger[F], data: Stream[F, TextData]): F[Unit] =
+        logger.warn("Full-text search is disabled!")
+
+      def indexData(logger: Logger[F], data: Stream[F, TextData]): F[Unit] =
+        logger.warn("Full-text search is disabled!")
+
+      def clearAll(logger: Logger[F]): F[Unit] =
+        logger.warn("Full-text search is disabled!")
+
+      def clear(logger: Logger[F], collective: Ident): F[Unit] =
+        logger.warn("Full-text search is disabled!")
+    }
 }

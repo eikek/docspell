@@ -14,6 +14,9 @@ final case class FtsResult(
 
 object FtsResult {
 
+  val empty =
+    FtsResult(Duration.millis(0), 0, 0.0, Map.empty, Nil)
+
   sealed trait MatchData
   case class AttachmentData(attachId: Ident) extends MatchData
   case object ItemData                       extends MatchData
