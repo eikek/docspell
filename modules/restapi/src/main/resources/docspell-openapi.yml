@@ -151,6 +151,46 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BasicResult"
+  /open/fts/reIndexAll/{id}:
+    post:
+      tags: [Full-Text Index]
+      summary: Re-creates the full-text index.
+      description: |
+        Clears the full-text index and inserts all data from the
+        database. This migh take a while to complete. The response
+        returns immediately. A task is submitted that will be executed
+        by a job executor. Note that this affects all data of all
+        collectives.
+
+        The `id` is required and refers to the key given in the config
+        file to ensure that only admins can call this route.
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
+  /sec/fts/reIndex:
+    post:
+      tags: [Full-Text Index]
+      summary: Re-creates the full-text index for the current collective
+      description: |
+        Clears the full-text index for all data belonging to the
+        current collective and inserts the data from the database. The
+        response is immediately returned and a task is submitted that
+        will be executed by a job executor.
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
   /sec/checkfile/{checksum}:
     get:
       tags: [ Upload ]
