@@ -20,30 +20,34 @@ object NerModelsPlugin extends AutoPlugin {
   object autoImport {
     val NerModels = config("NerModels")
 
-    val nerModelsFilter = settingKey[String => Boolean]("Which files to keep.")
+    val nerModelsFilter    = settingKey[String => Boolean]("Which files to keep.")
     val nerModelsRunFilter = taskKey[Seq[File]]("Extract files from libraryDependencies")
 
   }
 
   import autoImport._
 
-  def nerModelSettings: Seq[Setting[_]] = Seq(
-    nerModelsFilter := (_ => false),
-    nerModelsRunFilter := {
-      filterArtifacts(streams.value.log
-        , Classpaths.managedJars(NerModels, Set("jar", "zip"), update.value)
-        , nerModelsFilter.value
-        , (Compile/resourceManaged).value)
-    },
-    Compile / resourceGenerators += nerModelsRunFilter.taskValue
-  )
+  def nerModelSettings: Seq[Setting[_]] =
+    Seq(
+      nerModelsFilter := (_ => false),
+      nerModelsRunFilter := {
+        filterArtifacts(
+          streams.value.log,
+          Classpaths.managedJars(NerModels, Set("jar", "zip"), update.value),
+          nerModelsFilter.value,
+          (Compile / resourceManaged).value
+        )
+      },
+      Compile / resourceGenerators += nerModelsRunFilter.taskValue
+    )
 
-  def nerClassifierSettings: Seq[Setting[_]] = Seq(
-    libraryDependencies ++= Dependencies.stanfordNlpModels.map(_ % NerModels),
-    nerModelsFilter := {
-      name => nerModels.exists(name.endsWith)
-    }
-  )
+  def nerClassifierSettings: Seq[Setting[_]] =
+    Seq(
+      libraryDependencies ++= Dependencies.stanfordNlpModels.map(_ % NerModels),
+      nerModelsFilter := { name =>
+        nerModels.exists(name.endsWith)
+      }
+    )
 
   override def projectConfigurations: Seq[Configuration] =
     Seq(NerModels)
@@ -51,11 +55,16 @@ object NerModelsPlugin extends AutoPlugin {
   override def projectSettings: Seq[Setting[_]] =
     nerModelSettings
 
-  def filterArtifacts(logger: Logger, cp: Classpath, nameFilter: NameFilter, out: File): Seq[File] = {
+  def filterArtifacts(
+      logger: Logger,
+      cp: Classpath,
+      nameFilter: NameFilter,
+      out: File
+  ): Seq[File] = {
     logger.info(s"NerModels: Filtering artifacts...")
-    cp.files.flatMap(f => {
+    cp.files.flatMap { f =>
       IO.unzip(f, out, nameFilter)
-    })
+    }
   }
 
   private val nerModels = List(
