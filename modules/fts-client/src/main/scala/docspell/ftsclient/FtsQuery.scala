@@ -15,9 +15,19 @@ final case class FtsQuery(
     collective: Ident,
     items: Set[Ident],
     limit: Int,
-    offset: Int
+    offset: Int,
+    highlight: FtsQuery.HighlightSetting
 ) {
 
   def nextPage: FtsQuery =
     copy(offset = limit + offset)
+}
+
+object FtsQuery {
+
+  case class HighlightSetting(pre: String, post: String)
+
+  object HighlightSetting {
+    val default = HighlightSetting("**", "**")
+  }
 }

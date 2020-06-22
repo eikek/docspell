@@ -46,8 +46,8 @@ object QueryData {
     }
     QueryData(extQ, filterQ, fq.limit, fq.offset, fields, Map.empty).withHighLight(
       search,
-      "**",
-      "**"
+      fq.highlight.pre,
+      fq.highlight.post
     )
   }
 

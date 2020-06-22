@@ -3502,6 +3502,29 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/Tag"
+        highlighting:
+          description: |
+            Optional contextual information of a search query. Each
+            item refers to some field where a search match was found
+            (e.g. the name of an attachment or the item notes) and a
+            list of lines giving surrounding context of the macth.
+          type: array
+          items:
+            $ref: "#/components/schemas/HighlightEntry"
+    HighlightEntry:
+      description: |
+        Highlighting information for a single field (maybe attachment
+        name or item notes).
+      required:
+        - name
+        - lines
+      properties:
+        name:
+          type: string
+        lines:
+          type: array
+          items:
+            type: string
     IdName:
       description: |
         The identifier and a human readable name of some entity.

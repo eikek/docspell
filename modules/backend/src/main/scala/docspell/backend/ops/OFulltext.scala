@@ -13,10 +13,18 @@ import OItemSearch.{Batch, ListItem, ListItemWithTags, Query}
 
 trait OFulltext[F[_]] {
 
-  def findItems(q: Query, fts: String, batch: Batch): F[Vector[ListItem]]
+  def findItems(
+      q: Query,
+      fts: OFulltext.FtsInput,
+      batch: Batch
+  ): F[Vector[OFulltext.FtsItem]]
 
   /** Same as `findItems` but does more queries per item to find all tags. */
-  def findItemsWithTags(q: Query, fts: String, batch: Batch): F[Vector[ListItemWithTags]]
+  def findItemsWithTags(
+      q: Query,
+      fts: OFulltext.FtsInput,
+      batch: Batch
+  ): F[Vector[OFulltext.FtsItemWithTags]]
 
   /** Clears the full-text index completely and launches a task that
     * indexes all data.
@@ -30,9 +38,26 @@ trait OFulltext[F[_]] {
 }
 
 object OFulltext {
-  // maybe use a temporary table? could run fts and do .take(batch.limit) and store this in sql
-  // then run a query
-  // check if supported by mariadb, postgres and h2. seems like it is supported everywhere
+
+  case class FtsInput(
+      query: String,
+      highlightPre: String = "***",
+      highlightPost: String = "***"
+  )
+
+  case class FtsDataItem(
+      score: Double,
+      matchData: FtsResult.MatchData,
+      context: List[String]
+  )
+  case class FtsData(
+      maxScore: Double,
+      count: Int,
+      qtime: Duration,
+      items: List[FtsDataItem]
+  )
+  case class FtsItem(item: ListItem, ftsData: FtsData)
+  case class FtsItemWithTags(item: ListItemWithTags, ftsData: FtsData)
 
   def apply[F[_]: Effect](
       itemSearch: OItemSearch[F],
@@ -59,52 +84,82 @@ object OFulltext {
             else queue.insertIfNew(job) *> joex.notifyAllNodes
         } yield ()
 
-      def findItems(q: Query, ftsQ: String, batch: Batch): F[Vector[ListItem]] =
-        findItemsFts(q, ftsQ, batch.first, itemSearch.findItems)
+      def findItems(q: Query, ftsQ: FtsInput, batch: Batch): F[Vector[FtsItem]] =
+        findItemsFts(q, ftsQ, batch.first, itemSearch.findItems, convertFtsData[ListItem])
           .drop(batch.offset.toLong)
           .take(batch.limit.toLong)
+          .map({ case (li, fd) => FtsItem(li, fd) })
           .compile
           .toVector
 
       def findItemsWithTags(
           q: Query,
-          ftsQ: String,
+          ftsQ: FtsInput,
           batch: Batch
-      ): F[Vector[ListItemWithTags]] =
-        findItemsFts(q, ftsQ, batch.first, itemSearch.findItemsWithTags)
+      ): F[Vector[FtsItemWithTags]] =
+        findItemsFts(
+          q,
+          ftsQ,
+          batch.first,
+          itemSearch.findItemsWithTags,
+          convertFtsData[ListItemWithTags]
+        )
           .drop(batch.offset.toLong)
           .take(batch.limit.toLong)
+          .map({ case (li, fd) => FtsItemWithTags(li, fd) })
           .compile
           .toVector
 
-      private def findItemsFts[A: ItemId](
+      private def findItemsFts[A: ItemId, B](
           q: Query,
-          ftsQ: String,
+          ftsQ: FtsInput,
           batch: Batch,
-          search: (Query, Batch) => F[Vector[A]]
-      ): Stream[F, A] = {
+          search: (Query, Batch) => F[Vector[A]],
+          convert: (
+              FtsResult,
+              Map[Ident, List[FtsResult.ItemMatch]]
+          ) => PartialFunction[A, (A, FtsData)]
+      ): Stream[F, (A, FtsData)] = {
 
         val sqlResult = search(q, batch)
-        val fq        = FtsQuery(ftsQ, q.collective, Set.empty, batch.limit, batch.offset)
+        val fq = FtsQuery(
+          ftsQ.query,
+          q.collective,
+          Set.empty,
+          batch.limit,
+          batch.offset,
+          FtsQuery.HighlightSetting(ftsQ.highlightPre, ftsQ.highlightPost)
+        )
 
         val qres =
           for {
             items <- sqlResult
             ids  = items.map(a => ItemId[A].itemId(a))
             ftsQ = fq.copy(items = ids.toSet)
-            ftsR <-
-              fts
-                .search(ftsQ)
-                .map(_.results.map(_.itemId))
-                .map(_.toSet)
-            res = items.filter(a => ftsR.contains(ItemId[A].itemId(a)))
+            ftsR <- fts.search(ftsQ)
+            ftsItems = ftsR.results.groupBy(_.itemId)
+            res      = items.collect(convert(ftsR, ftsItems))
           } yield res
 
         Stream.eval(qres).flatMap { v =>
           val results = Stream.emits(v)
           if (v.size < batch.limit) results
-          else results ++ findItemsFts(q, ftsQ, batch.next, search)
+          else results ++ findItemsFts(q, ftsQ, batch.next, search, convert)
         }
+      }
+
+      private def convertFtsData[A: ItemId](
+          ftr: FtsResult,
+          ftrItems: Map[Ident, List[FtsResult.ItemMatch]]
+      ): PartialFunction[A, (A, FtsData)] = {
+        case a if ftrItems.contains(ItemId[A].itemId(a)) =>
+          val ftsDataItems = ftrItems
+            .get(ItemId[A].itemId(a))
+            .getOrElse(Nil)
+            .map(im =>
+              FtsDataItem(im.score, im.data, ftr.highlight.get(im.id).getOrElse(Nil))
+            )
+          (a, FtsData(ftr.maxScore, ftr.count, ftr.qtime, ftsDataItems))
       }
     })
 

@@ -14,8 +14,9 @@ import bitpeace.FileMeta
 import docspell.backend.ops.OCollective.{InsightData, PassChangeResult}
 import docspell.backend.ops.OJob.JobCancelResult
 import docspell.backend.ops.OUpload.{UploadData, UploadMeta, UploadResult}
-import docspell.backend.ops.{OItemSearch, OJob, OOrganization, OUpload}
+import docspell.backend.ops.{OFulltext, OItemSearch, OJob, OOrganization, OUpload}
 import docspell.store.AddResult
+import docspell.ftsclient.FtsResult
 import org.http4s.multipart.Multipart
 import org.http4s.headers.`Content-Type`
 import org.log4s.Logger
@@ -139,10 +140,32 @@ trait Conversions {
     ItemLightList(gs)
   }
 
+  def mkItemListFts(v: Vector[OFulltext.FtsItem]): ItemLightList = {
+    val groups = v.groupBy(item => item.item.date.toUtcDate.toString.substring(0, 7))
+
+    def mkGroup(g: (String, Vector[OFulltext.FtsItem])): ItemLightGroup =
+      ItemLightGroup(g._1, g._2.map(mkItemLight).toList)
+
+    val gs =
+      groups.map(mkGroup _).toList.sortWith((g1, g2) => g1.name.compareTo(g2.name) >= 0)
+    ItemLightList(gs)
+  }
+
   def mkItemListWithTags(v: Vector[OItemSearch.ListItemWithTags]): ItemLightList = {
     val groups = v.groupBy(ti => ti.item.date.toUtcDate.toString.substring(0, 7))
 
     def mkGroup(g: (String, Vector[OItemSearch.ListItemWithTags])): ItemLightGroup =
+      ItemLightGroup(g._1, g._2.map(mkItemLightWithTags).toList)
+
+    val gs =
+      groups.map(mkGroup _).toList.sortWith((g1, g2) => g1.name.compareTo(g2.name) >= 0)
+    ItemLightList(gs)
+  }
+
+  def mkItemListWithTagsFts(v: Vector[OFulltext.FtsItemWithTags]): ItemLightList = {
+    val groups = v.groupBy(ti => ti.item.item.date.toUtcDate.toString.substring(0, 7))
+
+    def mkGroup(g: (String, Vector[OFulltext.FtsItemWithTags])): ItemLightGroup =
       ItemLightGroup(g._1, g._2.map(mkItemLightWithTags).toList)
 
     val gs =
@@ -164,11 +187,34 @@ trait Conversions {
       i.concPerson.map(mkIdName),
       i.concEquip.map(mkIdName),
       i.fileCount,
+      Nil,
       Nil
     )
 
+  def mkItemLight(i: OFulltext.FtsItem): ItemLight = {
+    val il        = mkItemLight(i.item)
+    val highlight = mkHighlight(i.ftsData)
+    il.copy(highlighting = highlight)
+  }
+
   def mkItemLightWithTags(i: OItemSearch.ListItemWithTags): ItemLight =
     mkItemLight(i.item).copy(tags = i.tags.map(mkTag))
+
+  def mkItemLightWithTags(i: OFulltext.FtsItemWithTags): ItemLight = {
+    val il        = mkItemLightWithTags(i.item)
+    val highlight = mkHighlight(i.ftsData)
+    il.copy(highlighting = highlight)
+  }
+
+  private def mkHighlight(ftsData: OFulltext.FtsData): List[HighlightEntry] =
+    ftsData.items.filter(_.context.nonEmpty).sortBy(-_.score).map { fdi =>
+      fdi.matchData match {
+        case FtsResult.AttachmentData(_, aName) =>
+          HighlightEntry(aName, fdi.context)
+        case FtsResult.ItemData =>
+          HighlightEntry("Item", fdi.context)
+      }
+    }
 
   // job
   def mkJobQueueState(state: OJob.CollectiveQueueState): JobQueueState = {

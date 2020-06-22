@@ -5,6 +5,7 @@ import cats.implicits._
 import docspell.backend.BackendApp
 import docspell.backend.auth.AuthToken
 import docspell.backend.ops.OItemSearch.Batch
+import docspell.backend.ops.OFulltext
 import docspell.common.{Ident, ItemState}
 import org.http4s.HttpRoutes
 import org.http4s.dsl.Http4sDsl
@@ -34,11 +35,25 @@ object ItemRoutes {
           _    <- logger.ftrace(s"Got search mask: $mask")
           query = Conversions.mkQuery(mask, user.account.collective)
           _ <- logger.ftrace(s"Running query: $query")
-          items <- backend.itemSearch.findItems(
-            query,
-            Batch(mask.offset, mask.limit).restrictLimitTo(cfg.maxItemPageSize)
-          )
-          resp <- Ok(Conversions.mkItemList(items))
+          resp <- mask.fullText match {
+            case Some(fq) if cfg.fullTextSearch.enabled =>
+              for {
+                items <- backend.fulltext.findItems(
+                  query,
+                  OFulltext.FtsInput(fq),
+                  Batch(mask.offset, mask.limit).restrictLimitTo(cfg.maxItemPageSize)
+                )
+                ok <- Ok(Conversions.mkItemListFts(items))
+              } yield ok
+            case _ =>
+              for {
+                items <- backend.itemSearch.findItems(
+                  query,
+                  Batch(mask.offset, mask.limit).restrictLimitTo(cfg.maxItemPageSize)
+                )
+                ok <- Ok(Conversions.mkItemList(items))
+              } yield ok
+          }
         } yield resp
 
       case req @ POST -> Root / "searchWithTags" =>
@@ -47,20 +62,25 @@ object ItemRoutes {
           _    <- logger.ftrace(s"Got search mask: $mask")
           query = Conversions.mkQuery(mask, user.account.collective)
           _ <- logger.ftrace(s"Running query: $query")
-          items <- mask.fullText match {
-            case None =>
-              backend.itemSearch.findItemsWithTags(
-                query,
-                Batch(mask.offset, mask.limit).restrictLimitTo(cfg.maxItemPageSize)
-              )
-            case Some(fq) =>
-              backend.fulltext.findItemsWithTags(
-                query,
-                fq,
-                Batch(mask.offset, mask.limit).restrictLimitTo(cfg.maxItemPageSize)
-              )
+          resp <- mask.fullText match {
+            case Some(fq) if cfg.fullTextSearch.enabled =>
+              for {
+                items <- backend.fulltext.findItemsWithTags(
+                  query,
+                  OFulltext.FtsInput(fq),
+                  Batch(mask.offset, mask.limit).restrictLimitTo(cfg.maxItemPageSize)
+                )
+                ok <- Ok(Conversions.mkItemListWithTagsFts(items))
+              } yield ok
+            case _ =>
+              for {
+                items <- backend.itemSearch.findItemsWithTags(
+                  query,
+                  Batch(mask.offset, mask.limit).restrictLimitTo(cfg.maxItemPageSize)
+                )
+                ok <- Ok(Conversions.mkItemListWithTags(items))
+              } yield ok
           }
-          resp <- Ok(Conversions.mkItemListWithTags(items))
         } yield resp
 
       case GET -> Root / Ident(id) =>
