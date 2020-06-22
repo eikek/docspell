@@ -88,6 +88,22 @@
     right: -8px;
 }
 
+.default-layout .ui.cards .ui.card .content.search-highlight {
+    background: rgba(246, 255, 158, 0.15);
+    font-size: smaller;
+    max-height: 25em;
+    overflow: auto;
+}
+.default-layout .ui.cards .ui.card .content.search-highlight .ui.list .item .content .header {
+}
+.default-layout .ui.cards .ui.card .content.search-highlight .ui.list .item .content .description {
+    color: rgba(0,0,0,.55);
+    margin-left: 0.75em;
+}
+.default-layout .ui.cards .ui.card .content.search-highlight .ui.list .item .content .description strong > em {
+    color: rgba(0,0,0,.65);
+}
+
 .markdown-preview {
     overflow: auto;
     max-height: 300px;

@@ -8,6 +8,7 @@ module Comp.ItemCardList exposing
     , view
     )
 
+import Api.Model.HighlightEntry exposing (HighlightEntry)
 import Api.Model.ItemLight exposing (ItemLight)
 import Api.Model.ItemLightGroup exposing (ItemLightGroup)
 import Api.Model.ItemLightList exposing (ItemLightList)
@@ -19,6 +20,7 @@ import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
+import Markdown
 import Ports
 import Util.List
 import Util.String
@@ -247,4 +249,41 @@ viewItem settings item =
                     ]
                 ]
             ]
+        , div
+            [ classList
+                [ ( "content search-highlight", True )
+                , ( "invisible hidden", item.highlighting == [] )
+                ]
+            ]
+            [ div [ class "ui list" ]
+                (List.map renderHighlightEntry item.highlighting)
+            ]
+        ]
+
+
+renderHighlightEntry : HighlightEntry -> Html Msg
+renderHighlightEntry entry =
+    let
+        stripWhitespace str =
+            String.trim str
+                |> String.replace "```" ""
+                |> String.replace "\t" "  "
+                |> String.replace "\n\n" "\n"
+                |> String.lines
+                |> List.map String.trim
+                |> String.join "\n"
+    in
+    div [ class "item" ]
+        [ div [ class "content" ]
+            (div [ class "header" ]
+                [ i [ class "caret right icon" ] []
+                , text (entry.name ++ ":")
+                ]
+                :: List.map
+                    (\str ->
+                        Markdown.toHtml [ class "description" ] <|
+                            (stripWhitespace str ++ "…")
+                    )
+                    entry.lines
+            )
         ]
