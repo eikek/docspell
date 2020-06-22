@@ -11,14 +11,16 @@ object CollectiveState {
 
   /** A collective may be readonly in cases it is implicitly closed
     * (e.g. no payment). Users can still see there data and
-    * download, but have no write access. */
+    * download, but have no write access.
+    */
   case object ReadOnly extends CollectiveState
 
   /** A collective that has been explicitely closed. */
   case object Closed extends CollectiveState
 
   /** A collective blocked by a super user, usually some emergency
-    * action. */
+    * action.
+    */
   case object Blocked extends CollectiveState
 
   def fromString(s: String): Either[String, CollectiveState] =
