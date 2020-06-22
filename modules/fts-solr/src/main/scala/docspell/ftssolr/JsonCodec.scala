@@ -80,7 +80,10 @@ trait JsonCodec {
           disc <- c.get[String]("discriminator")
           md <-
             if ("attachment" == disc)
-              c.get[Ident]("attachmentId").map(FtsResult.AttachmentData.apply)
+              for {
+                aId   <- c.get[Ident](Field.attachmentId.name)
+                aName <- c.get[String](Field.attachmentName.name)
+              } yield FtsResult.AttachmentData(aId, aName)
             else Right(FtsResult.ItemData)
         } yield md
     }

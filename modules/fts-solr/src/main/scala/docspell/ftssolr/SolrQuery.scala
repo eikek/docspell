@@ -32,6 +32,7 @@ trait SolrQuery[F[_]] {
         Field.collectiveId,
         Field("score"),
         Field.attachmentId,
+        Field.attachmentName,
         Field.discriminator
       ),
       q
