@@ -110,6 +110,8 @@ object OFulltext {
           .compile
           .toVector
 
+      // Helper
+
       private def findItemsFts[A: ItemId, B](
           q: Query,
           ftsQ: FtsInput,
@@ -119,33 +121,46 @@ object OFulltext {
               FtsResult,
               Map[Ident, List[FtsResult.ItemMatch]]
           ) => PartialFunction[A, (A, FtsData)]
-      ): Stream[F, (A, FtsData)] = {
+      ): Stream[F, (A, FtsData)] =
+        findItemsFts0(q, ftsQ, batch, search, convert)
+          .takeThrough(_._1 >= batch.limit)
+          .flatMap(x => Stream.emits(x._2))
 
+      private def findItemsFts0[A: ItemId, B](
+          q: Query,
+          ftsQ: FtsInput,
+          batch: Batch,
+          search: (Query, Batch) => F[Vector[A]],
+          convert: (
+              FtsResult,
+              Map[Ident, List[FtsResult.ItemMatch]]
+          ) => PartialFunction[A, (A, FtsData)]
+      ): Stream[F, (Int, Vector[(A, FtsData)])] = {
         val sqlResult = search(q, batch)
         val fq = FtsQuery(
           ftsQ.query,
           q.collective,
           Set.empty,
-          batch.limit,
-          batch.offset,
+          0,
+          0,
           FtsQuery.HighlightSetting(ftsQ.highlightPre, ftsQ.highlightPost)
         )
 
         val qres =
           for {
             items <- sqlResult
-            ids  = items.map(a => ItemId[A].itemId(a))
-            ftsQ = fq.copy(items = ids.toSet)
+            ids = items.map(a => ItemId[A].itemId(a))
+            // must find all index results involving the items.
+            // Currently there is one result per item + one result per
+            // attachment
+            limit = items.map(a => ItemId[A].fileCount(a)).sum + items.size
+            ftsQ  = fq.copy(items = ids.toSet, limit = limit)
             ftsR <- fts.search(ftsQ)
             ftsItems = ftsR.results.groupBy(_.itemId)
             res      = items.collect(convert(ftsR, ftsItems))
-          } yield res
+          } yield (items.size, res)
 
-        Stream.eval(qres).flatMap { v =>
-          val results = Stream.emits(v)
-          if (v.size < batch.limit) results
-          else results ++ findItemsFts(q, ftsQ, batch.next, search, convert)
-        }
+        Stream.eval(qres) ++ findItemsFts0(q, ftsQ, batch.next, search, convert)
       }
 
       private def convertFtsData[A: ItemId](
@@ -165,19 +180,22 @@ object OFulltext {
 
   trait ItemId[A] {
     def itemId(a: A): Ident
+
+    def fileCount(a: A): Int
   }
   object ItemId {
     def apply[A](implicit ev: ItemId[A]): ItemId[A] = ev
 
-    def from[A](f: A => Ident): ItemId[A] =
+    def from[A](f: A => Ident, g: A => Int): ItemId[A] =
       new ItemId[A] {
-        def itemId(a: A) = f(a)
+        def itemId(a: A)    = f(a)
+        def fileCount(a: A) = g(a)
       }
 
     implicit val listItemId: ItemId[ListItem] =
-      ItemId.from(_.id)
+      ItemId.from(_.id, _.fileCount)
 
     implicit val listItemWithTagsId: ItemId[ListItemWithTags] =
-      ItemId.from(_.item.id)
+      ItemId.from(_.item.id, _.item.fileCount)
   }
 }
