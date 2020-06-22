@@ -17,7 +17,8 @@ object ItemHandler {
     )
 
   def newItem[F[_]: ConcurrentEffect: ContextShift](
-      cfg: Config, fts: FtsClient[F]
+      cfg: Config,
+      fts: FtsClient[F]
   ): Task[F, ProcessItemArgs, Unit] =
     CreateItem[F]
       .flatMap(itemStateTask(ItemState.Processing))
@@ -37,7 +38,8 @@ object ItemHandler {
     Task(_.isLastRetry)
 
   def safeProcess[F[_]: ConcurrentEffect: ContextShift](
-      cfg: Config, fts: FtsClient[F]
+      cfg: Config,
+      fts: FtsClient[F]
   )(data: ItemData): Task[F, ProcessItemArgs, ItemData] =
     isLastRetry[F].flatMap {
       case true =>

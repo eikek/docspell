@@ -9,7 +9,7 @@ import docspell.ftsclient._
 import docspell.store.records.RJob
 
 object MigrationTask {
-  val taskName    = Ident.unsafe("full-text-index")
+  val taskName = Ident.unsafe("full-text-index")
 
   def apply[F[_]: ConcurrentEffect](
       cfg: Config.FullTextSearch,

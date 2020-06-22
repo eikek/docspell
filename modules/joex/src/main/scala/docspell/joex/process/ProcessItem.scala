@@ -10,7 +10,8 @@ import docspell.ftsclient.FtsClient
 object ProcessItem {
 
   def apply[F[_]: ConcurrentEffect: ContextShift](
-      cfg: Config, fts: FtsClient[F]
+      cfg: Config,
+      fts: FtsClient[F]
   )(item: ItemData): Task[F, ProcessItemArgs, ItemData] =
     ExtractArchive(item)
       .flatMap(Task.setProgress(20))

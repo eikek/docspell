@@ -35,7 +35,6 @@ object SolrUpdate {
         .withQueryParam("overwrite", "true")
         .withQueryParam("wt", "json")
 
-
       def add(tds: List[TextData]): F[Unit] = {
         val req = Method.POST(tds.asJson, url)
         client.expect[String](req).map(r => logger.debug(s"Req: $req Response: $r"))
@@ -59,16 +58,16 @@ object SolrUpdate {
             td.name.isDefined || td.notes.isDefined
         }
     }
-    }
+  }
 
-    case class Delete(query: String)
-    object Delete {
-      implicit val jsonEncoder: Encoder[Delete] =
-        new Encoder[Delete] {
-          def apply(d: Delete): Json =
-            Json.obj(
-              ("delete", Json.obj("query" -> d.query.asJson))
-            )
-        }
-    }
+  case class Delete(query: String)
+  object Delete {
+    implicit val jsonEncoder: Encoder[Delete] =
+      new Encoder[Delete] {
+        def apply(d: Delete): Json =
+          Json.obj(
+            ("delete", Json.obj("query" -> d.query.asJson))
+          )
+      }
+  }
 }
