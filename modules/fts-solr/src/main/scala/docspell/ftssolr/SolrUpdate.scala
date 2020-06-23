@@ -37,17 +37,17 @@ object SolrUpdate {
 
       def add(tds: List[TextData]): F[Unit] = {
         val req = Method.POST(tds.asJson, url)
-        client.expect[String](req).map(r => logger.debug(s"Req: $req Response: $r"))
+        client.expect[String](req).map(r => logger.trace(s"Req: $req Response: $r"))
       }
 
       def update(tds: List[TextData]): F[Unit] = {
         val req = Method.POST(tds.filter(minOneChange).map(SetFields).asJson, url)
-        client.expect[String](req).map(r => logger.debug(s"Req: $req Response: $r"))
+        client.expect[String](req).map(r => logger.trace(s"Req: $req Response: $r"))
       }
 
       def delete(q: String): F[Unit] = {
         val req = Method.POST(Delete(q).asJson, url)
-        client.expect[String](req).map(r => logger.debug(s"Req: $req Response: $r"))
+        client.expect[String](req).map(r => logger.trace(s"Req: $req Response: $r"))
       }
 
       private val minOneChange: TextData => Boolean =
