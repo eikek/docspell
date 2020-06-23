@@ -480,7 +480,7 @@ update flags settings msg model =
                 ( { model | nameModel = next }
                 , Cmd.none
                 )
-                (model.nameModel /= Nothing && str == "")
+                False
 
         SetAllName str ->
             let
@@ -491,7 +491,7 @@ update flags settings msg model =
                 ( { model | allNameModel = next }
                 , Cmd.none
                 )
-                (model.allNameModel /= Nothing && str == "")
+                False
 
         SetFulltext str ->
             let
@@ -502,7 +502,7 @@ update flags settings msg model =
                 ( { model | fulltextModel = next }
                 , Cmd.none
                 )
-                (model.fulltextModel /= Nothing && str == "")
+                False
 
         KeyUpMsg (Just Enter) ->
             NextState ( model, Cmd.none ) True
