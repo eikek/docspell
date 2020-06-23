@@ -45,6 +45,7 @@ module Api exposing
     , getTags
     , getUsers
     , itemDetail
+    , itemIndexSearch
     , itemSearch
     , login
     , loginSession
@@ -104,6 +105,7 @@ import Api.Model.ImapSettings exposing (ImapSettings)
 import Api.Model.ImapSettingsList exposing (ImapSettingsList)
 import Api.Model.InviteResult exposing (InviteResult)
 import Api.Model.ItemDetail exposing (ItemDetail)
+import Api.Model.ItemFtsSearch exposing (ItemFtsSearch)
 import Api.Model.ItemInsights exposing (ItemInsights)
 import Api.Model.ItemLightList exposing (ItemLightList)
 import Api.Model.ItemProposals exposing (ItemProposals)
@@ -1089,6 +1091,20 @@ moveAttachmentBefore flags itemId data receive =
         , account = getAccount flags
         , body = Http.jsonBody (Api.Model.MoveAttachment.encode data)
         , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+itemIndexSearch :
+    Flags
+    -> ItemFtsSearch
+    -> (Result Http.Error ItemLightList -> msg)
+    -> Cmd msg
+itemIndexSearch flags query receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/item/searchIndex"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.ItemFtsSearch.encode query)
+        , expect = Http.expectJson receive Api.Model.ItemLightList.decoder
         }
 
 

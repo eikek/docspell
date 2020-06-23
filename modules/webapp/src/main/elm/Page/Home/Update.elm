@@ -11,6 +11,7 @@ import Page.Home.Data exposing (..)
 import Throttle
 import Time
 import Util.Html exposing (KeyCode(..))
+import Util.Maybe
 import Util.Update
 
 
@@ -27,7 +28,10 @@ update key flags settings msg model =
         ResetSearch ->
             let
                 nm =
-                    { model | searchOffset = 0 }
+                    { model
+                        | searchOffset = 0
+                        , searchType = defaultSearchType flags
+                    }
             in
             update key flags settings (SearchMenuMsg Comp.SearchMenu.ResetForm) nm
 
@@ -161,9 +165,15 @@ update key flags settings msg model =
                             SearchMenuMsg (Comp.SearchMenu.SetFulltext str)
 
                         ContentOnlySearch ->
-                            Debug.todo "implement"
+                            SetContentOnly str
             in
             update key flags settings smMsg model
+
+        SetContentOnly str ->
+            withSub
+                ( { model | contentOnlySearch = Util.Maybe.fromString str }
+                , Cmd.none
+                )
 
         SearchTypeMsg lm ->
             let

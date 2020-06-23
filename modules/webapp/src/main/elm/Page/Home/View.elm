@@ -134,7 +134,7 @@ viewSearchBar flags model =
                     model.searchMenuModel.fulltextModel
 
                 ContentOnlySearch ->
-                    Debug.todo "implement"
+                    model.contentOnlySearch
 
         searchTypeClass =
             if flags.config.fullTextSearchEnabled then
@@ -211,6 +211,6 @@ hasMoreSearch model =
                     { is | fullText = Nothing }
 
                 ContentOnlySearch ->
-                    Debug.todo "implement"
+                    Api.Model.ItemSearch.empty
     in
     is_ /= Api.Model.ItemSearch.empty
