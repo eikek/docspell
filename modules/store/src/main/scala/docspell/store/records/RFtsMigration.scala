@@ -46,7 +46,7 @@ object RFtsMigration {
       table,
       all,
       fr"${v.id},${v.version},${v.ftsEngine},${v.description},${v.created}"
-    ).update.run
+    ).updateWithLogHandler(LogHandler.nop).run
 
   def exists(vers: Int, engine: Ident): ConnectionIO[Boolean] =
     selectCount(id, table, and(version.is(vers), ftsEngine.is(engine)))

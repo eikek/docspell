@@ -214,7 +214,11 @@ object QItem {
       Batch(0, c)
   }
 
-  private def findItemsBase(q: Query, distinct: Boolean, ctes: (String, Fragment)*): Fragment = {
+  private def findItemsBase(
+      q: Query,
+      distinct: Boolean,
+      ctes: (String, Fragment)*
+  ): Fragment = {
     val IC         = RItem.Columns
     val AC         = RAttachment.Columns
     val PC         = RPerson.Columns
@@ -389,7 +393,11 @@ object QItem {
         .map(it => fr"(${it.itemId}, ${it.weight})")
         .reduce((r, e) => r ++ fr"," ++ e)
 
-      val from = findItemsBase(q, false, ("tids(item_id, weight)", fr"(VALUES" ++ values ++ fr")")) ++
+      val from = findItemsBase(
+        q,
+        false,
+        ("tids(item_id, weight)", fr"(VALUES" ++ values ++ fr")")
+      ) ++
         fr"INNER JOIN tids ON" ++ IC.id.prefix("i").f ++ fr" = tids.item_id" ++
         fr"ORDER BY tids.weight DESC"
 

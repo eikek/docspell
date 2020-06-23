@@ -65,9 +65,9 @@ trait JsonCodec {
     new Decoder[FtsResult.ItemMatch] {
       final def apply(c: HCursor): Decoder.Result[FtsResult.ItemMatch] =
         for {
-          itemId <- c.get[Ident]("itemId")
-          id     <- c.get[Ident]("id")
-          coll   <- c.get[Ident]("collectiveId")
+          itemId <- c.get[Ident](Field.itemId.name)
+          id     <- c.get[Ident](Field.id.name)
+          coll   <- c.get[Ident](Field.collectiveId.name)
           score  <- c.get[Double]("score")
           md     <- decodeMatchData(c)
         } yield FtsResult.ItemMatch(id, itemId, coll, score, md)
