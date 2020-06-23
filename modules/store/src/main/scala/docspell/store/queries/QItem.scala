@@ -217,6 +217,7 @@ object QItem {
   private def findItemsBase(
       q: Query,
       distinct: Boolean,
+      moreCols: Seq[Fragment],
       ctes: (String, Fragment)*
   ): Fragment = {
     val IC         = RItem.Columns
@@ -230,29 +231,31 @@ object QItem {
     val equipCols  = List(REquipment.Columns.eid, REquipment.Columns.name)
 
     val finalCols = commas(
-      IC.id.prefix("i").f,
-      IC.name.prefix("i").f,
-      IC.state.prefix("i").f,
-      coalesce(IC.itemDate.prefix("i").f, IC.created.prefix("i").f),
-      IC.dueDate.prefix("i").f,
-      IC.source.prefix("i").f,
-      IC.incoming.prefix("i").f,
-      IC.created.prefix("i").f,
-      fr"COALESCE(a.num, 0)",
-      OC.oid.prefix("o0").f,
-      OC.name.prefix("o0").f,
-      PC.pid.prefix("p0").f,
-      PC.name.prefix("p0").f,
-      PC.pid.prefix("p1").f,
-      PC.name.prefix("p1").f,
-      EC.eid.prefix("e1").f,
-      EC.name.prefix("e1").f,
-      q.orderAsc match {
-        case Some(co) =>
-          coalesce(co(IC).prefix("i").f, IC.created.prefix("i").f)
-        case None =>
-          IC.created.prefix("i").f
-      }
+      Seq(
+        IC.id.prefix("i").f,
+        IC.name.prefix("i").f,
+        IC.state.prefix("i").f,
+        coalesce(IC.itemDate.prefix("i").f, IC.created.prefix("i").f),
+        IC.dueDate.prefix("i").f,
+        IC.source.prefix("i").f,
+        IC.incoming.prefix("i").f,
+        IC.created.prefix("i").f,
+        fr"COALESCE(a.num, 0)",
+        OC.oid.prefix("o0").f,
+        OC.name.prefix("o0").f,
+        PC.pid.prefix("p0").f,
+        PC.name.prefix("p0").f,
+        PC.pid.prefix("p1").f,
+        PC.name.prefix("p1").f,
+        EC.eid.prefix("e1").f,
+        EC.name.prefix("e1").f,
+        q.orderAsc match {
+          case Some(co) =>
+            coalesce(co(IC).prefix("i").f, IC.created.prefix("i").f)
+          case None =>
+            IC.created.prefix("i").f
+        }
+      ) ++ moreCols
     )
 
     val withItem   = selectSimple(itemCols, RItem.table, IC.cid.is(q.collective))
@@ -287,7 +290,7 @@ object QItem {
     val OC = ROrganization.Columns
     val EC = REquipment.Columns
 
-    val query = findItemsBase(q, true)
+    val query = findItemsBase(q, true, Seq.empty)
 
     // inclusive tags are AND-ed
     val tagSelectsIncl = q.tagsInclude
@@ -395,7 +398,8 @@ object QItem {
 
       val from = findItemsBase(
         q,
-        false,
+        true,
+        Seq(fr"tids.weight"),
         ("tids(item_id, weight)", fr"(VALUES" ++ values ++ fr")")
       ) ++
         fr"INNER JOIN tids ON" ++ IC.id.prefix("i").f ++ fr" = tids.item_id" ++
