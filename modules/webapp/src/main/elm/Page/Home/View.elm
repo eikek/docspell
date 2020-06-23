@@ -153,13 +153,20 @@ viewSearchBar flags model =
             [ class "item"
             , onClick ToggleSearchMenu
             , href "#"
-            , title "Open search menu"
+            , if model.searchType == ContentOnlySearch then
+                title "Search menu disabled"
+
+              else
+                title "Open search menu"
             ]
             [ i [ class "angle left icon" ] []
             , i [ class "icons" ]
                 [ i [ class "grey bars icon" ] []
                 , i [ class "bottom left corner search icon" ] []
-                , if hasMoreSearch model then
+                , if model.searchType == ContentOnlySearch then
+                    i [ class "top right red corner delete icon" ] []
+
+                  else if hasMoreSearch model then
                     i [ class "top right blue corner circle icon" ] []
 
                   else
@@ -179,7 +186,7 @@ viewSearchBar flags model =
                     []
                 , input
                     [ type_ "text"
-                    , placeholder "Search …"
+                    , placeholder "Quick Search …"
                     , onInput SetBasicSearch
                     , Util.Html.onKeyUpCode KeyUpMsg
                     , Maybe.map value searchInput
