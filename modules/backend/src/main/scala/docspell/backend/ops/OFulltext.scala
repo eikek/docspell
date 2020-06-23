@@ -9,6 +9,7 @@ import docspell.backend.JobFactory
 import docspell.store.Store
 import docspell.store.records.RJob
 import docspell.store.queue.JobQueue
+import docspell.store.queries.QItem
 import OItemSearch.{Batch, ListItem, ListItemWithTags, Query}
 
 trait OFulltext[F[_]] {
@@ -23,6 +24,12 @@ trait OFulltext[F[_]] {
   def findItemsWithTags(
       q: Query,
       fts: OFulltext.FtsInput,
+      batch: Batch
+  ): F[Vector[OFulltext.FtsItemWithTags]]
+
+  def findIndexOnly(
+      fts: OFulltext.FtsInput,
+      collective: Ident,
       batch: Batch
   ): F[Vector[OFulltext.FtsItemWithTags]]
 
@@ -83,6 +90,41 @@ object OFulltext {
             if (exist.isDefined) ().pure[F]
             else queue.insertIfNew(job) *> joex.notifyAllNodes
         } yield ()
+
+      def findIndexOnly(
+          ftsQ: OFulltext.FtsInput,
+          collective: Ident,
+          batch: Batch
+      ): F[Vector[OFulltext.FtsItemWithTags]] = {
+        val fq = FtsQuery(
+          ftsQ.query,
+          collective,
+          Set.empty,
+          batch.limit,
+          batch.offset,
+          FtsQuery.HighlightSetting(ftsQ.highlightPre, ftsQ.highlightPost)
+        )
+        for {
+          ftsR <- fts.search(fq)
+          ftsItems = ftsR.results.groupBy(_.itemId)
+          select   = ftsR.results.map(r => QItem.SelectedItem(r.itemId, r.score)).toSet
+          itemsWithTags <-
+            store
+              .transact(
+                QItem.findItemsWithTags(
+                  collective,
+                  QItem.findSelectedItems(QItem.Query.empty(collective), select)
+                )
+              )
+              .take(batch.limit.toLong)
+              .compile
+              .toVector
+          res =
+            itemsWithTags
+              .collect(convertFtsData(ftsR, ftsItems))
+              .map({ case (li, fd) => FtsItemWithTags(li, fd) })
+        } yield res
+      }
 
       def findItems(q: Query, ftsQ: FtsInput, batch: Batch): F[Vector[FtsItem]] =
         findItemsFts(q, ftsQ, batch.first, itemSearch.findItems, convertFtsData[ListItem])

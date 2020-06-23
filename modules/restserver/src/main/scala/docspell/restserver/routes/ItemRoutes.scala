@@ -83,6 +83,26 @@ object ItemRoutes {
           }
         } yield resp
 
+      case req @ POST -> Root / "searchIndex" =>
+        for {
+          mask <- req.as[ItemFtsSearch]
+          resp <- mask.query match {
+            case q if q.length > 1 =>
+              val ftsIn = OFulltext.FtsInput(q)
+              for {
+                items <- backend.fulltext.findIndexOnly(
+                  ftsIn,
+                  user.account.collective,
+                  Batch(mask.offset, mask.limit).restrictLimitTo(cfg.maxItemPageSize)
+                )
+                ok <- Ok(Conversions.mkItemListWithTagsFtsPlain(items))
+              } yield ok
+
+            case _ =>
+              BadRequest(BasicResult(false, "Query string too short"))
+          }
+        } yield resp
+
       case GET -> Root / Ident(id) =>
         for {
           item <- backend.itemSearch.findItem(id, user.account.collective)

@@ -1027,9 +1027,13 @@ paths:
       summary: Search for items.
       description: |
         Search for items given a search form. The results are grouped
-        by month by default. Tags are *not* resolved! The results will
-        always contain an empty list for item tags. Use
-        `/searchWithTags` to also retrieve all tags of an item.
+        by month and are sorted by item date (newest first). Tags are
+        *not* resolved. The results will always contain an empty list
+        for item tags. Use `/searchWithTags` to also retrieve all tags
+        of an item.
+
+        The `fulltext` field can be used to restrict the results by
+        using full-text search in the documents contents.
       security:
         - authTokenHeader: []
       requestBody:
@@ -1051,7 +1055,11 @@ paths:
       description: |
         Search for items given a search form. The results are grouped
         by month by default. For each item, its tags are also
-        returned. This uses more queries and is therefore slower.
+        returned. This uses more queries and is therefore slower, but
+        returns all tags to an item.
+
+        The `fulltext` field can be used to restrict the results by
+        using full-text search in the documents contents.
       security:
         - authTokenHeader: []
       requestBody:
@@ -1066,6 +1074,37 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ItemLightList"
+  /sec/item/searchIndex:
+    post:
+      tags: [ Item ]
+      summary: Search for items using full-text search only.
+      description: |
+        Search for items by only using the full-text search index.
+
+        Unlike the other search routes, this one only asks the
+        full-text search index and returns only one group that
+        contains the results in the same order as given from the
+        index. Most full-text search engines use an ordering that
+        reflect the relevance wrt the search term.
+
+        The other search routes always order the results by some
+        property (the item date) and thus the relevance ordering is
+        destroyed when using the full-text search.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ItemFtsSearch"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ItemLightList"
+
   /sec/item/{id}:
     get:
       tags: [ Item ]
@@ -2295,6 +2334,28 @@ paths:
 
 components:
   schemas:
+    ItemFtsSearch:
+      description: |
+        Query description for a full-text only search.
+      required:
+        - query
+        - offset
+        - limit
+      properties:
+        offset:
+          type: integer
+          format: int32
+        limit:
+          type: integer
+          format: int32
+          description: |
+            The maximum number of results to return. Note that this
+            limit is a soft limit, there is some hard limit on the
+            server, too.
+        query:
+          type: string
+          description: |
+            A query searching the contents of documents.
     MoveAttachment:
       description: |
         Data to move an attachment to another position.

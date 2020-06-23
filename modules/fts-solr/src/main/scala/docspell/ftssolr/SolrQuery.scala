@@ -53,7 +53,7 @@ object SolrQuery {
 
       def query(q: QueryData): F[FtsResult] = {
         val req = Method.POST(q.asJson, url)
-        logger.debug(s"Running query: $req")
+        logger.trace(s"Running query: $req : ${q.asJson}")
         client.expect[FtsResult](req)
       }
 

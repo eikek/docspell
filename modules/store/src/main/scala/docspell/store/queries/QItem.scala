@@ -214,7 +214,7 @@ object QItem {
       Batch(0, c)
   }
 
-  private def findItemsBase(q: Query): Fragment = {
+  private def findItemsBase(q: Query, distinct: Boolean, ctes: (String, Fragment)*): Fragment = {
     val IC         = RItem.Columns
     val AC         = RAttachment.Columns
     val PC         = RPerson.Columns
@@ -258,14 +258,17 @@ object QItem {
     val withAttach = fr"SELECT COUNT(" ++ AC.id.f ++ fr") as num, " ++ AC.itemId.f ++
       fr"from" ++ RAttachment.table ++ fr"GROUP BY (" ++ AC.itemId.f ++ fr")"
 
+    val selectKW = if (distinct) fr"SELECT DISTINCT" else fr"SELECT"
     val query = withCTE(
-      "items"   -> withItem,
-      "persons" -> withPerson,
-      "orgs"    -> withOrgs,
-      "equips"  -> withEquips,
-      "attachs" -> withAttach
+      (Seq(
+        "items"   -> withItem,
+        "persons" -> withPerson,
+        "orgs"    -> withOrgs,
+        "equips"  -> withEquips,
+        "attachs" -> withAttach
+      ) ++ ctes): _*
     ) ++
-      fr"SELECT DISTINCT" ++ finalCols ++ fr" FROM items i" ++
+      selectKW ++ finalCols ++ fr" FROM items i" ++
       fr"LEFT JOIN attachs a ON" ++ IC.id.prefix("i").is(AC.itemId.prefix("a")) ++
       fr"LEFT JOIN persons p0 ON" ++ IC.corrPerson.prefix("i").is(PC.pid.prefix("p0")) ++
       fr"LEFT JOIN orgs o0 ON" ++ IC.corrOrg.prefix("i").is(OC.oid.prefix("o0")) ++
@@ -280,7 +283,7 @@ object QItem {
     val OC = ROrganization.Columns
     val EC = REquipment.Columns
 
-    val query = findItemsBase(q)
+    val query = findItemsBase(q, true)
 
     // inclusive tags are AND-ed
     val tagSelectsIncl = q.tagsInclude
@@ -374,14 +377,34 @@ object QItem {
     frag.query[ListItem].stream
   }
 
+  case class SelectedItem(itemId: Ident, weight: Double)
+  def findSelectedItems(
+      q: Query,
+      items: Set[SelectedItem]
+  ): Stream[ConnectionIO, ListItem] =
+    if (items.isEmpty) Stream.empty
+    else {
+      val IC = RItem.Columns
+      val values = items
+        .map(it => fr"(${it.itemId}, ${it.weight})")
+        .reduce((r, e) => r ++ fr"," ++ e)
+
+      val from = findItemsBase(q, false, ("tids(item_id, weight)", fr"(VALUES" ++ values ++ fr")")) ++
+        fr"INNER JOIN tids ON" ++ IC.id.prefix("i").f ++ fr" = tids.item_id" ++
+        fr"ORDER BY tids.weight DESC"
+
+      logger.trace(s"fts query: $from")
+      from.query[ListItem].stream
+    }
+
   case class ListItemWithTags(item: ListItem, tags: List[RTag])
 
   /** Same as `findItems` but resolves the tags for each item. Note that
     * this is implemented by running an additional query per item.
     */
   def findItemsWithTags(
-    collective: Ident,
-    search: Stream[ConnectionIO, ListItem]
+      collective: Ident,
+      search: Stream[ConnectionIO, ListItem]
   ): Stream[ConnectionIO, ListItemWithTags] = {
     def findTag(
         cache: Ref[ConnectionIO, Map[Ident, RTag]],
