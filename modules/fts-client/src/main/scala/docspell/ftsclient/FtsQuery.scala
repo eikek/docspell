@@ -8,7 +8,8 @@ import docspell.common._
   * interpret it according to the system in use.
   *
   * Searches must only look for given collective and in the given list
-  * of item ids.
+  * of item ids, if it is non-empty. If the item set is empty, then
+  * don't restrict the result in this way.
   */
 final case class FtsQuery(
     q: String,

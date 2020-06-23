@@ -24,6 +24,7 @@ trait FtsClient[F[_]] {
   /** Run a full-text search. */
   def search(q: FtsQuery): F[FtsResult]
 
+  /** Continually run a full-text search and concatenate the results. */
   def searchAll(q: FtsQuery): Stream[F, FtsResult] =
     Stream.eval(search(q)).flatMap { result =>
       if (result.results.size < q.limit) Stream.emit(result)

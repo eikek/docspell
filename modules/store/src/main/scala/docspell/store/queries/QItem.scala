@@ -214,7 +214,7 @@ object QItem {
       Batch(0, c)
   }
 
-  def findItems(q: Query, batch: Batch): Stream[ConnectionIO, ListItem] = {
+  private def findItemsBase(q: Query): Fragment = {
     val IC         = RItem.Columns
     val AC         = RAttachment.Columns
     val PC         = RPerson.Columns
@@ -271,6 +271,16 @@ object QItem {
       fr"LEFT JOIN orgs o0 ON" ++ IC.corrOrg.prefix("i").is(OC.oid.prefix("o0")) ++
       fr"LEFT JOIN persons p1 ON" ++ IC.concPerson.prefix("i").is(PC.pid.prefix("p1")) ++
       fr"LEFT JOIN equips e1 ON" ++ IC.concEquipment.prefix("i").is(EC.eid.prefix("e1"))
+    query
+  }
+
+  def findItems(q: Query, batch: Batch): Stream[ConnectionIO, ListItem] = {
+    val IC = RItem.Columns
+    val PC = RPerson.Columns
+    val OC = ROrganization.Columns
+    val EC = REquipment.Columns
+
+    val query = findItemsBase(q)
 
     // inclusive tags are AND-ed
     val tagSelectsIncl = q.tagsInclude
@@ -370,8 +380,8 @@ object QItem {
     * this is implemented by running an additional query per item.
     */
   def findItemsWithTags(
-      q: Query,
-      batch: Batch
+    collective: Ident,
+    search: Stream[ConnectionIO, ListItem]
   ): Stream[ConnectionIO, ListItemWithTags] = {
     def findTag(
         cache: Ref[ConnectionIO, Map[Ident, RTag]],
@@ -394,10 +404,10 @@ object QItem {
 
     for {
       resolvedTags <- Stream.eval(Ref.of[ConnectionIO, Map[Ident, RTag]](Map.empty))
-      item         <- findItems(q, batch)
+      item         <- search
       tagItems     <- Stream.eval(RTagItem.findByItem(item.id))
       tags         <- Stream.eval(tagItems.traverse(ti => findTag(resolvedTags, ti)))
-      ftags = tags.flatten.filter(t => t.collective == q.collective)
+      ftags = tags.flatten.filter(t => t.collective == collective)
     } yield ListItemWithTags(item, ftags.toList.sortBy(_.name))
   }
 
