@@ -76,21 +76,10 @@ update _ msg model =
 
             else
                 let
-                    firstNew =
-                        Data.Items.first list
-
-                    scrollCmd =
-                        case firstNew of
-                            Just item ->
-                                Ports.scrollToElem item.id
-
-                            Nothing ->
-                                Cmd.none
-
                     newModel =
                         { model | results = Data.Items.concat model.results list }
                 in
-                ( newModel, scrollCmd, Nothing )
+                ( newModel, Cmd.none, Nothing )
 
         SelectItem item ->
             ( model, Cmd.none, Just item )
