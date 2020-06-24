@@ -6,7 +6,6 @@ import cats.implicits._
 import org.http4s.client.Client
 import org.http4s.circe._
 import org.http4s.client.dsl.Http4sClientDsl
-import org.log4s.getLogger
 import _root_.io.circe.syntax._
 import _root_.io.circe._
 import _root_.io.circe.generic.semiauto._
@@ -19,7 +18,6 @@ trait SolrSetup[F[_]] {
 }
 
 object SolrSetup {
-  private[this] val logger = getLogger
 
   def apply[F[_]: ConcurrentEffect](cfg: SolrConfig, client: Client[F]): SolrSetup[F] = {
     val dsl = new Http4sClientDsl[F] {}
@@ -59,8 +57,7 @@ object SolrSetup {
 
       private def run(cmd: Json): F[Unit] = {
         val req = Method.POST(cmd, url)
-        logger.debug(s"Running request $req: ${cmd.noSpaces}")
-        client.expect[String](req).map(r => logger.debug(s"Response: $r"))
+        client.expect[Unit](req)
       }
 
       private def addStringField(field: Field): F[Unit] =

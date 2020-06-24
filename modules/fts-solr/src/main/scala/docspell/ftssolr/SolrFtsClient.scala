@@ -4,6 +4,8 @@ import fs2.Stream
 import cats.effect._
 import cats.implicits._
 import org.http4s.client.Client
+import org.http4s.client.middleware.Logger
+import org.log4s.getLogger
 
 import docspell.common._
 import docspell.ftsclient._
@@ -50,17 +52,30 @@ final class SolrFtsClient[F[_]: Effect](
 }
 
 object SolrFtsClient {
+  private[this] val logger = getLogger
 
   def apply[F[_]: ConcurrentEffect](
       cfg: SolrConfig,
       httpClient: Client[F]
-  ): Resource[F, FtsClient[F]] =
+  ): Resource[F, FtsClient[F]] = {
+    val client = loggingMiddleware(cfg, httpClient)
     Resource.pure[F, FtsClient[F]](
       new SolrFtsClient(
-        SolrUpdate(cfg, httpClient),
-        SolrSetup(cfg, httpClient),
-        SolrQuery(cfg, httpClient)
+        SolrUpdate(cfg, client),
+        SolrSetup(cfg, client),
+        SolrQuery(cfg, client)
       )
     )
+  }
+
+  private def loggingMiddleware[F[_]: Concurrent](
+      cfg: SolrConfig,
+      client: Client[F]
+  ): Client[F] =
+    Logger(
+      logHeaders = true,
+      logBody = cfg.logVerbose,
+      logAction = Some((msg: String) => Sync[F].delay(logger.trace(msg)))
+    )(client)
 
 }

@@ -7,7 +7,6 @@ import org.http4s.circe._
 import org.http4s.circe.CirceEntityDecoder._
 import org.http4s.client.dsl.Http4sClientDsl
 import _root_.io.circe.syntax._
-import org.log4s.getLogger
 
 import docspell.ftsclient._
 import JsonCodec._
@@ -42,8 +41,6 @@ trait SolrQuery[F[_]] {
 }
 
 object SolrQuery {
-  private[this] val logger = getLogger
-
   def apply[F[_]: ConcurrentEffect](cfg: SolrConfig, client: Client[F]): SolrQuery[F] = {
     val dsl = new Http4sClientDsl[F] {}
     import dsl._
@@ -53,7 +50,6 @@ object SolrQuery {
 
       def query(q: QueryData): F[FtsResult] = {
         val req = Method.POST(q.asJson, url)
-        logger.trace(s"Running query: $req : ${q.asJson}")
         client.expect[FtsResult](req)
       }
 

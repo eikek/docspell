@@ -2,13 +2,11 @@ package docspell.ftssolr
 
 import cats.effect._
 import org.http4s._
-import cats.implicits._
 import org.http4s.client.Client
 import org.http4s.circe._
 import org.http4s.client.dsl.Http4sClientDsl
 import _root_.io.circe._
 import _root_.io.circe.syntax._
-import org.log4s.getLogger
 
 import docspell.ftsclient._
 import JsonCodec._
@@ -23,7 +21,6 @@ trait SolrUpdate[F[_]] {
 }
 
 object SolrUpdate {
-  private[this] val logger = getLogger
 
   def apply[F[_]: ConcurrentEffect](cfg: SolrConfig, client: Client[F]): SolrUpdate[F] = {
     val dsl = new Http4sClientDsl[F] {}
@@ -37,17 +34,17 @@ object SolrUpdate {
 
       def add(tds: List[TextData]): F[Unit] = {
         val req = Method.POST(tds.asJson, url)
-        client.expect[String](req).map(r => logger.trace(s"Req: $req Response: $r"))
+        client.expect[Unit](req)
       }
 
       def update(tds: List[TextData]): F[Unit] = {
         val req = Method.POST(tds.filter(minOneChange).map(SetFields).asJson, url)
-        client.expect[String](req).map(r => logger.trace(s"Req: $req Response: $r"))
+        client.expect[Unit](req)
       }
 
       def delete(q: String): F[Unit] = {
         val req = Method.POST(Delete(q).asJson, url)
-        client.expect[String](req).map(r => logger.trace(s"Req: $req Response: $r"))
+        client.expect[Unit](req)
       }
 
       private val minOneChange: TextData => Boolean =
