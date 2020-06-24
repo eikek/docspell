@@ -448,10 +448,11 @@ object QItem {
 
   def delete[F[_]: Sync](store: Store[F])(itemId: Ident, collective: Ident): F[Int] =
     for {
-      tn <- store.transact(RTagItem.deleteItemTags(itemId))
       rn <- QAttachment.deleteItemAttachments(store)(itemId, collective)
+      tn <- store.transact(RTagItem.deleteItemTags(itemId))
+      mn <- store.transact(RSentMail.deleteByItem(itemId))
       n  <- store.transact(RItem.deleteByIdAndCollective(itemId, collective))
-    } yield tn + rn + n
+    } yield tn + rn + n + mn
 
   def findByFileIds(fileMetaIds: Seq[Ident]): ConnectionIO[Vector[RItem]] = {
     val IC = RItem.Columns
