@@ -33,14 +33,14 @@ options:
      - title: Finding Items
        url: doc/finding
 
+     - title: Curate Metadata
+       url: doc/curate
+
      - title: Uploads
        url: doc/uploading
 
      - title: Processing Queue
        url: doc/processing
-
-     - title: Find and Review
-       url: doc/curate
 
      - title: E-Mail Settings
        url: doc/emailsettings

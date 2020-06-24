@@ -1,6 +1,6 @@
 ---
 layout: docs
-title: Find and Review
+title: Curate Metadata
 permalink: doc/curate
 ---
 
