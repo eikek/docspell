@@ -87,6 +87,10 @@ trait FtsClient[F[_]] {
       )
     )
 
+  def removeItem(logger: Logger[F], itemId: Ident): F[Unit]
+
+  def removeAttachment(logger: Logger[F], attachId: Ident): F[Unit]
+
   /** Clears the index – removes everything. */
   def clearAll(logger: Logger[F]): F[Unit]
 
@@ -111,6 +115,12 @@ object FtsClient {
         logger.warn("Full-text search is disabled!")
 
       def indexData(logger: Logger[F], data: Stream[F, TextData]): F[Unit] =
+        logger.warn("Full-text search is disabled!")
+
+      def removeItem(logger: Logger[F], itemId: Ident): F[Unit] =
+        logger.warn("Full-text search is disabled!")
+
+      def removeAttachment(logger: Logger[F], attachId: Ident): F[Unit] =
         logger.warn("Full-text search is disabled!")
 
       def clearAll(logger: Logger[F]): F[Unit] =

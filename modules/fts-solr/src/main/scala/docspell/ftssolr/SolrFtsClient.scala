@@ -42,6 +42,14 @@ final class SolrFtsClient[F[_]: Effect](
       }
     } yield ()).compile.drain
 
+  def removeItem(logger: Logger[F], itemId: Ident): F[Unit] =
+    logger.debug(s"Remove item '${itemId.id}' from index") *>
+      solrUpdate.delete(s"${Field.itemId.name}:${itemId.id}")
+
+  def removeAttachment(logger: Logger[F], attachId: Ident): F[Unit] =
+    logger.debug(s"Remove attachment '${attachId.id}' from index") *>
+      solrUpdate.delete(s"${Field.attachmentId.name}:${attachId.id}")
+
   def clearAll(logger: Logger[F]): F[Unit] =
     logger.info("Deleting complete full-text index!") *>
       solrUpdate.delete("*:*")

@@ -146,7 +146,7 @@ viewSearchBar flags model =
     div
         [ classList
             [ ( "invisible hidden", not model.menuCollapsed )
-            , ( "ui secondary menu container", True )
+            , ( "ui secondary stackable menu container", True )
             ]
         ]
         [ a

@@ -302,13 +302,17 @@ object OItem {
             .map(AddResult.fromUpdate)
 
         def deleteItem(itemId: Ident, collective: Ident): F[Int] =
-          QItem.delete(store)(itemId, collective)
+          QItem
+            .delete(store)(itemId, collective)
+            .flatTap(_ => fts.removeItem(logger, itemId))
 
         def getProposals(item: Ident, collective: Ident): F[MetaProposalList] =
           store.transact(QAttachment.getMetaProposals(item, collective))
 
         def deleteAttachment(id: Ident, collective: Ident): F[Int] =
-          QAttachment.deleteSingleAttachment(store)(id, collective)
+          QAttachment
+            .deleteSingleAttachment(store)(id, collective)
+            .flatTap(_ => fts.removeAttachment(logger, id))
 
         def setAttachmentName(
             attachId: Ident,
