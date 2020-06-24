@@ -15,29 +15,7 @@ trait SolrQuery[F[_]] {
 
   def query(q: QueryData): F[FtsResult]
 
-  def query(q: FtsQuery): F[FtsResult] = {
-    val fq = QueryData(
-      List(
-        Field.content,
-        Field.content_de,
-        Field.content_en,
-        Field.itemName,
-        Field.itemNotes,
-        Field.attachmentName
-      ),
-      List(
-        Field.id,
-        Field.itemId,
-        Field.collectiveId,
-        Field("score"),
-        Field.attachmentId,
-        Field.attachmentName,
-        Field.discriminator
-      ),
-      q
-    )
-    query(fq)
-  }
+  def query(q: FtsQuery): F[FtsResult]
 }
 
 object SolrQuery {
@@ -53,6 +31,30 @@ object SolrQuery {
         client.expect[FtsResult](req)
       }
 
+      def query(q: FtsQuery): F[FtsResult] = {
+        val fq = QueryData(
+          cfg,
+          List(
+            Field.content,
+            Field.content_de,
+            Field.content_en,
+            Field.itemName,
+            Field.itemNotes,
+            Field.attachmentName
+          ),
+          List(
+            Field.id,
+            Field.itemId,
+            Field.collectiveId,
+            Field("score"),
+            Field.attachmentId,
+            Field.attachmentName,
+            Field.discriminator
+          ),
+          q
+        )
+        query(fq)
+      }
     }
   }
 }

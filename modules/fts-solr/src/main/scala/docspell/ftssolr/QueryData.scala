@@ -33,7 +33,12 @@ object QueryData {
   implicit val jsonEncoder: Encoder[QueryData] =
     deriveEncoder[QueryData]
 
-  def apply(search: List[Field], fields: List[Field], fq: FtsQuery): QueryData = {
+  def apply(
+      cfg: SolrConfig,
+      search: List[Field],
+      fields: List[Field],
+      fq: FtsQuery
+  ): QueryData = {
     val q     = sanitize(fq.q)
     val extQ  = search.map(f => s"${f.name}:($q)").mkString(" OR ")
     val items = fq.items.map(_.id).mkString(" ")
@@ -44,7 +49,14 @@ object QueryData {
       case _ =>
         (collQ :: List(s"""${Field.itemId.name}:($items)""")).mkString(" AND ")
     }
-    QueryData(extQ, filterQ, fq.limit, fq.offset, fields, Map.empty).withHighLight(
+    QueryData(
+      extQ,
+      filterQ,
+      fq.limit,
+      fq.offset,
+      fields,
+      Map("defType" -> cfg.defType, "q.op" -> cfg.qOp)
+    ).withHighLight(
       search,
       fq.highlight.pre,
       fq.highlight.post
