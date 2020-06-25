@@ -2,7 +2,6 @@ package docspell.joex.process
 
 import cats.effect._
 import docspell.common.ProcessItemArgs
-import docspell.analysis.TextAnalysisConfig
 import docspell.joex.scheduler.Task
 import docspell.joex.Config
 import docspell.ftsclient.FtsClient
@@ -19,16 +18,16 @@ object ProcessItem {
       .flatMap(Task.setProgress(40))
       .flatMap(TextExtraction(cfg.extraction, fts))
       .flatMap(Task.setProgress(60))
-      .flatMap(analysisOnly[F](cfg.textAnalysis))
+      .flatMap(analysisOnly[F](cfg))
       .flatMap(Task.setProgress(80))
       .flatMap(LinkProposal[F])
       .flatMap(Task.setProgress(99))
 
   def analysisOnly[F[_]: Sync](
-      cfg: TextAnalysisConfig
+      cfg: Config
   )(item: ItemData): Task[F, ProcessItemArgs, ItemData] =
-    TextAnalysis[F](cfg)(item)
-      .flatMap(FindProposal[F])
+    TextAnalysis[F](cfg.textAnalysis)(item)
+      .flatMap(FindProposal[F](cfg.processing))
       .flatMap(EvalProposals[F])
       .flatMap(SaveProposals[F])
 

@@ -92,6 +92,9 @@ let
     text-analysis = {
       max-length = 10000;
     };
+    processing = {
+      max-due-date-years = 10;
+    };
     convert = {
       chunk-size = 524288;
       max-image-size = 14000000;
@@ -664,6 +667,23 @@ in {
         });
         default = defaults.text-analysis;
         description = "Settings for text analysis";
+      };
+
+      processing = mkOption {
+        type = types.submodule({
+          options = {
+            max-due-date-years = mkOption {
+              type = types.int;
+              default = defaults.processing.max-due-date-years;
+              description = ''
+                Restricts proposals for due dates. Only dates earlier than this
+                number of years in the future are considered.
+              '';
+            };
+          };
+        });
+        default = defaults.processing;
+        description = "General config for processing documents";
       };
 
       convert = mkOption {
