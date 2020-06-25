@@ -6,7 +6,7 @@ import cats.effect.Sync
 import cats.data.OptionT
 import doobie._
 import doobie.implicits._
-import docspell.common.{Ident, MetaProposalList}
+import docspell.common._
 import docspell.store.Store
 import docspell.store.impl.Implicits._
 import docspell.store.records._
@@ -137,5 +137,40 @@ object QAttachment {
       )
 
     q.query[RAttachmentMeta].option
+  }
+
+  case class ContentAndName(
+      id: Ident,
+      item: Ident,
+      collective: Ident,
+      lang: Language,
+      name: Option[String],
+      content: Option[String]
+  )
+  def allAttachmentMetaAndName(
+      coll: Option[Ident],
+      chunkSize: Int
+  ): Stream[ConnectionIO, ContentAndName] = {
+    val aId      = RAttachment.Columns.id.prefix("a")
+    val aItem    = RAttachment.Columns.itemId.prefix("a")
+    val aName    = RAttachment.Columns.name.prefix("a")
+    val mId      = RAttachmentMeta.Columns.id.prefix("m")
+    val mContent = RAttachmentMeta.Columns.content.prefix("m")
+    val iId      = RItem.Columns.id.prefix("i")
+    val iColl    = RItem.Columns.cid.prefix("i")
+    val cId      = RCollective.Columns.id.prefix("c")
+    val cLang    = RCollective.Columns.language.prefix("c")
+
+    val cols = Seq(aId, aItem, iColl, cLang, aName, mContent)
+    val from = RAttachment.table ++ fr"a INNER JOIN" ++
+      RAttachmentMeta.table ++ fr"m ON" ++ aId.is(mId) ++
+      fr"INNER JOIN" ++ RItem.table ++ fr"i ON" ++ iId.is(aItem) ++
+      fr"INNER JOIN" ++ RCollective.table ++ fr"c ON" ++ cId.is(iColl)
+
+    val where = coll.map(cid => iColl.is(cid)).getOrElse(Fragment.empty)
+
+    selectSimple(cols, from, where)
+      .query[ContentAndName]
+      .streamWithChunkSize(chunkSize)
   }
 }

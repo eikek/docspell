@@ -72,6 +72,68 @@ H2
 url = "jdbc:h2:///path/to/a/file.db;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;AUTO_SERVER=TRUE"
 ```
 
+
+### Full-Text Search: SOLR
+
+[Apache SOLR](https://lucene.apache.org/solr) is used to provide the
+full-text search. Both docspell components must provide the same
+connection setup. This is defined in the `full-text-search.solr`
+subsection:
+
+```
+...
+  full-text-search {
+    enabled = true
+    ...
+    solr = {
+      url = "http://localhost:8983/solr/docspell"
+    }
+  }
+```
+
+The default configuration at the end of this page contains more
+information about each setting.
+
+The `solr.url` is the mandatory setting that you need to change to
+point to your SOLR instance. Then you need to set the `enabled` flag
+to `true`.
+
+When installing docspell manually, just install solr and create a core
+as described in the [solr
+documentation](https://lucene.apache.org/solr/guide/8_4/installing-solr.html).
+That will provide you with the connection url (the last part is the
+core name).
+
+While the `full-text-search.solr` options are the same for joex and
+the restserver, there are some settings that differ. The restserver
+has this additional setting, that may be of interest:
+
+```
+full-text-search {
+  recreate-key = "test123"
+}
+```
+
+This key is required if you want docspell to drop and re-create the
+entire index. This is possible via a REST call:
+
+``` shell
+$ curl -XPOST http://localhost:7880/api/v1/open/fts/reIndexAll/test123
+```
+
+Here the `test123` is the key defined with `recreate-key`. If it is
+empty (the default), this REST call is disabled. Otherwise, the POST
+request will submit a system task that is executed by a joex instance
+eventually.
+
+Using this endpoint, the index will be re-created. This is sometimes
+necessary, for example if you upgrade SOLR or delete the core to
+provide a new one (see
+[here](https://lucene.apache.org/solr/guide/8_4/reindexing.html) for
+details). Note that a collective can also re-index their data using a
+similiar endpoint; but this is only deleting their data and doesn't do
+a full re-index.
+
 ### Bind
 
 The host and port the http server binds to. This applies to both

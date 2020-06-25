@@ -255,4 +255,12 @@ object RJob {
       .map(_ => 1)
       .compile
       .foldMonoid
+
+  def findNonFinalByTracker(trackerId: Ident): ConnectionIO[Option[RJob]] =
+    selectSimple(
+      all,
+      table,
+      and(tracker.is(trackerId), state.isOneOf(JobState.all.diff(JobState.done).toSeq))
+    ).query[RJob].option
+
 }

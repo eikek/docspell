@@ -100,7 +100,7 @@ object PeriodicTaskStore {
           }
 
       def findNonFinalJob(pjobId: Ident): F[Option[RJob]] =
-        store.transact(QPeriodicTask.findNonFinal(pjobId))
+        store.transact(RJob.findNonFinalByTracker(pjobId))
 
       def insert(task: RPeriodicTask): F[Unit] = {
         val update = store.transact(RPeriodicTask.update(task))

@@ -159,14 +159,20 @@ object Dependencies {
     "co.fs2" %% "fs2-io"   % Fs2Version
   )
 
-  val http4s = Seq(
-    "org.http4s" %% "http4s-blaze-server" % Http4sVersion,
-    "org.http4s" %% "http4s-circe"        % Http4sVersion,
-    "org.http4s" %% "http4s-dsl"          % Http4sVersion
-  )
-
   val http4sClient = Seq(
     "org.http4s" %% "http4s-blaze-client" % Http4sVersion
+  )
+
+  val http4sCirce = Seq(
+    "org.http4s" %% "http4s-circe" % Http4sVersion
+  )
+
+  val http4sDsl = Seq(
+    "org.http4s" %% "http4s-dsl" % Http4sVersion
+  )
+
+  val http4sServer = Seq(
+    "org.http4s" %% "http4s-blaze-server" % Http4sVersion
   )
 
   val circe = Seq(

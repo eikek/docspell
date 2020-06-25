@@ -3,6 +3,7 @@ package docspell.store.queries
 import bitpeace.FileMeta
 import cats.effect.Sync
 import cats.data.OptionT
+import cats.data.NonEmptyList
 import cats.implicits._
 import cats.effect.concurrent.Ref
 import fs2.Stream
@@ -165,6 +166,7 @@ object QItem {
       dueDateFrom: Option[Timestamp],
       dueDateTo: Option[Timestamp],
       allNames: Option[String],
+      itemIds: Option[Set[Ident]],
       orderAsc: Option[RItem.Columns.type => Column]
   )
 
@@ -186,6 +188,7 @@ object QItem {
         None,
         None,
         None,
+        None,
         None
       )
   }
@@ -193,6 +196,12 @@ object QItem {
   case class Batch(offset: Int, limit: Int) {
     def restrictLimitTo(n: Int): Batch =
       Batch(offset, math.min(n, limit))
+
+    def next: Batch =
+      Batch(offset + limit, limit)
+
+    def first: Batch =
+      Batch(0, limit)
   }
 
   object Batch {
@@ -205,7 +214,12 @@ object QItem {
       Batch(0, c)
   }
 
-  def findItems(q: Query, batch: Batch): Stream[ConnectionIO, ListItem] = {
+  private def findItemsBase(
+      q: Query,
+      distinct: Boolean,
+      moreCols: Seq[Fragment],
+      ctes: (String, Fragment)*
+  ): Fragment = {
     val IC         = RItem.Columns
     val AC         = RAttachment.Columns
     val PC         = RPerson.Columns
@@ -217,29 +231,31 @@ object QItem {
     val equipCols  = List(REquipment.Columns.eid, REquipment.Columns.name)
 
     val finalCols = commas(
-      IC.id.prefix("i").f,
-      IC.name.prefix("i").f,
-      IC.state.prefix("i").f,
-      coalesce(IC.itemDate.prefix("i").f, IC.created.prefix("i").f),
-      IC.dueDate.prefix("i").f,
-      IC.source.prefix("i").f,
-      IC.incoming.prefix("i").f,
-      IC.created.prefix("i").f,
-      fr"COALESCE(a.num, 0)",
-      OC.oid.prefix("o0").f,
-      OC.name.prefix("o0").f,
-      PC.pid.prefix("p0").f,
-      PC.name.prefix("p0").f,
-      PC.pid.prefix("p1").f,
-      PC.name.prefix("p1").f,
-      EC.eid.prefix("e1").f,
-      EC.name.prefix("e1").f,
-      q.orderAsc match {
-        case Some(co) =>
-          coalesce(co(IC).prefix("i").f, IC.created.prefix("i").f)
-        case None =>
-          IC.created.prefix("i").f
-      }
+      Seq(
+        IC.id.prefix("i").f,
+        IC.name.prefix("i").f,
+        IC.state.prefix("i").f,
+        coalesce(IC.itemDate.prefix("i").f, IC.created.prefix("i").f),
+        IC.dueDate.prefix("i").f,
+        IC.source.prefix("i").f,
+        IC.incoming.prefix("i").f,
+        IC.created.prefix("i").f,
+        fr"COALESCE(a.num, 0)",
+        OC.oid.prefix("o0").f,
+        OC.name.prefix("o0").f,
+        PC.pid.prefix("p0").f,
+        PC.name.prefix("p0").f,
+        PC.pid.prefix("p1").f,
+        PC.name.prefix("p1").f,
+        EC.eid.prefix("e1").f,
+        EC.name.prefix("e1").f,
+        q.orderAsc match {
+          case Some(co) =>
+            coalesce(co(IC).prefix("i").f, IC.created.prefix("i").f)
+          case None =>
+            IC.created.prefix("i").f
+        }
+      ) ++ moreCols
     )
 
     val withItem   = selectSimple(itemCols, RItem.table, IC.cid.is(q.collective))
@@ -249,19 +265,32 @@ object QItem {
     val withAttach = fr"SELECT COUNT(" ++ AC.id.f ++ fr") as num, " ++ AC.itemId.f ++
       fr"from" ++ RAttachment.table ++ fr"GROUP BY (" ++ AC.itemId.f ++ fr")"
 
+    val selectKW = if (distinct) fr"SELECT DISTINCT" else fr"SELECT"
     val query = withCTE(
-      "items"   -> withItem,
-      "persons" -> withPerson,
-      "orgs"    -> withOrgs,
-      "equips"  -> withEquips,
-      "attachs" -> withAttach
+      (Seq(
+        "items"   -> withItem,
+        "persons" -> withPerson,
+        "orgs"    -> withOrgs,
+        "equips"  -> withEquips,
+        "attachs" -> withAttach
+      ) ++ ctes): _*
     ) ++
-      fr"SELECT DISTINCT" ++ finalCols ++ fr" FROM items i" ++
+      selectKW ++ finalCols ++ fr" FROM items i" ++
       fr"LEFT JOIN attachs a ON" ++ IC.id.prefix("i").is(AC.itemId.prefix("a")) ++
       fr"LEFT JOIN persons p0 ON" ++ IC.corrPerson.prefix("i").is(PC.pid.prefix("p0")) ++
       fr"LEFT JOIN orgs o0 ON" ++ IC.corrOrg.prefix("i").is(OC.oid.prefix("o0")) ++
       fr"LEFT JOIN persons p1 ON" ++ IC.concPerson.prefix("i").is(PC.pid.prefix("p1")) ++
       fr"LEFT JOIN equips e1 ON" ++ IC.concEquipment.prefix("i").is(EC.eid.prefix("e1"))
+    query
+  }
+
+  def findItems(q: Query, batch: Batch): Stream[ConnectionIO, ListItem] = {
+    val IC = RItem.Columns
+    val PC = RPerson.Columns
+    val OC = ROrganization.Columns
+    val EC = REquipment.Columns
+
+    val query = findItemsBase(q, true, Seq.empty)
 
     // inclusive tags are AND-ed
     val tagSelectsIncl = q.tagsInclude
@@ -326,7 +355,15 @@ object QItem {
         )
         .getOrElse(Fragment.empty),
       q.dueDateFrom.map(d => IC.dueDate.prefix("i").isGt(d)).getOrElse(Fragment.empty),
-      q.dueDateTo.map(d => IC.dueDate.prefix("i").isLt(d)).getOrElse(Fragment.empty)
+      q.dueDateTo.map(d => IC.dueDate.prefix("i").isLt(d)).getOrElse(Fragment.empty),
+      q.itemIds
+        .map(ids =>
+          NonEmptyList
+            .fromList(ids.toList)
+            .map(nel => IC.id.prefix("i").isIn(nel))
+            .getOrElse(IC.id.prefix("i").is(""))
+        )
+        .getOrElse(Fragment.empty)
     )
 
     val order = q.orderAsc match {
@@ -347,14 +384,39 @@ object QItem {
     frag.query[ListItem].stream
   }
 
+  case class SelectedItem(itemId: Ident, weight: Double)
+  def findSelectedItems(
+      q: Query,
+      items: Set[SelectedItem]
+  ): Stream[ConnectionIO, ListItem] =
+    if (items.isEmpty) Stream.empty
+    else {
+      val IC = RItem.Columns
+      val values = items
+        .map(it => fr"(${it.itemId}, ${it.weight})")
+        .reduce((r, e) => r ++ fr"," ++ e)
+
+      val from = findItemsBase(
+        q,
+        true,
+        Seq(fr"tids.weight"),
+        ("tids(item_id, weight)", fr"(VALUES" ++ values ++ fr")")
+      ) ++
+        fr"INNER JOIN tids ON" ++ IC.id.prefix("i").f ++ fr" = tids.item_id" ++
+        fr"ORDER BY tids.weight DESC"
+
+      logger.trace(s"fts query: $from")
+      from.query[ListItem].stream
+    }
+
   case class ListItemWithTags(item: ListItem, tags: List[RTag])
 
   /** Same as `findItems` but resolves the tags for each item. Note that
     * this is implemented by running an additional query per item.
     */
   def findItemsWithTags(
-      q: Query,
-      batch: Batch
+      collective: Ident,
+      search: Stream[ConnectionIO, ListItem]
   ): Stream[ConnectionIO, ListItemWithTags] = {
     def findTag(
         cache: Ref[ConnectionIO, Map[Ident, RTag]],
@@ -377,19 +439,20 @@ object QItem {
 
     for {
       resolvedTags <- Stream.eval(Ref.of[ConnectionIO, Map[Ident, RTag]](Map.empty))
-      item         <- findItems(q, batch)
+      item         <- search
       tagItems     <- Stream.eval(RTagItem.findByItem(item.id))
       tags         <- Stream.eval(tagItems.traverse(ti => findTag(resolvedTags, ti)))
-      ftags = tags.flatten.filter(t => t.collective == q.collective)
+      ftags = tags.flatten.filter(t => t.collective == collective)
     } yield ListItemWithTags(item, ftags.toList.sortBy(_.name))
   }
 
   def delete[F[_]: Sync](store: Store[F])(itemId: Ident, collective: Ident): F[Int] =
     for {
-      tn <- store.transact(RTagItem.deleteItemTags(itemId))
       rn <- QAttachment.deleteItemAttachments(store)(itemId, collective)
+      tn <- store.transact(RTagItem.deleteItemTags(itemId))
+      mn <- store.transact(RSentMail.deleteByItem(itemId))
       n  <- store.transact(RItem.deleteByIdAndCollective(itemId, collective))
-    } yield tn + rn + n
+    } yield tn + rn + n + mn
 
   def findByFileIds(fileMetaIds: Seq[Ident]): ConnectionIO[Vector[RItem]] = {
     val IC = RItem.Columns
@@ -455,4 +518,25 @@ object QItem {
     prefix(suffix(value))
   }
 
+  final case class NameAndNotes(
+      id: Ident,
+      collective: Ident,
+      name: String,
+      notes: Option[String]
+  )
+  def allNameAndNotes(
+      coll: Option[Ident],
+      chunkSize: Int
+  ): Stream[ConnectionIO, NameAndNotes] = {
+    val iId    = RItem.Columns.id
+    val iColl  = RItem.Columns.cid
+    val iName  = RItem.Columns.name
+    val iNotes = RItem.Columns.notes
+
+    val cols  = Seq(iId, iColl, iName, iNotes)
+    val where = coll.map(cid => iColl.is(cid)).getOrElse(Fragment.empty)
+    selectSimple(cols, RItem.table, where)
+      .query[NameAndNotes]
+      .streamWithChunkSize(chunkSize)
+  }
 }

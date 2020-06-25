@@ -32,20 +32,20 @@ elmApp.ports.setAllProgress.subscribe(function(input) {
     }, 100);
 });
 
-elmApp.ports.scrollToElem.subscribe(function(id) {
-    if (id && id != "") {
-        window.setTimeout(function() {
-            var el = document.getElementById(id);
-            if (el) {
-                if (el["scrollIntoViewIfNeeded"]) {
-                    el.scrollIntoViewIfNeeded();
-                } else {
-                    el.scrollIntoView();
-                }
-            }
-        }, 20);
-    }
-});
+// elmApp.ports.scrollToElem.subscribe(function(id) {
+//     if (id && id != "") {
+//         window.setTimeout(function() {
+//             var el = document.getElementById(id);
+//             if (el) {
+//                 if (el["scrollIntoViewIfNeeded"]) {
+//                     el.scrollIntoViewIfNeeded();
+//                 } else {
+//                     el.scrollIntoView();
+//                 }
+//             }
+//         }, 20);
+//     }
+// });
 
 elmApp.ports.saveUiSettings.subscribe(function(args) {
     if (Array.isArray(args) && args.length == 2) {

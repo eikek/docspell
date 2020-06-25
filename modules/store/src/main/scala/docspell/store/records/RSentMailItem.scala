@@ -54,4 +54,10 @@ object RSentMailItem {
 
   def deleteMail(mailId: Ident): ConnectionIO[Int] =
     deleteFrom(table, sentMailId.is(mailId)).update.run
+
+  def findSentMailIdsByItem(item: Ident): ConnectionIO[Set[Ident]] =
+    selectSimple(Seq(sentMailId), table, itemId.is(item)).query[Ident].to[Set]
+
+  def deleteAllByItem(item: Ident): ConnectionIO[Int] =
+    deleteFrom(table, itemId.is(item)).update.run
 }

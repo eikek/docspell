@@ -3,6 +3,7 @@ package docspell.store.records
 import fs2.Stream
 import cats.effect._
 import cats.implicits._
+import cats.data.NonEmptyList
 import doobie._
 import doobie.implicits._
 import docspell.common._
@@ -115,4 +116,15 @@ object RSentMail {
 
   def delete(mailId: Ident): ConnectionIO[Int] =
     deleteFrom(table, id.is(mailId)).update.run
+
+  def deleteByItem(item: Ident): ConnectionIO[Int] =
+    for {
+      list <- RSentMailItem.findSentMailIdsByItem(item)
+      n1   <- RSentMailItem.deleteAllByItem(item)
+      n0 <- NonEmptyList.fromList(list.toList) match {
+        case Some(nel) => deleteFrom(table, id.isIn(nel)).update.run
+        case None      => 0.pure[ConnectionIO]
+      }
+    } yield n0 + n1
+
 }

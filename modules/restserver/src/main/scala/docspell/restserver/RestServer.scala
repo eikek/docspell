@@ -78,7 +78,8 @@ object RestServer {
       "email/sent"              -> SentMailRoutes(restApp.backend, token),
       "usertask/notifydueitems" -> NotifyDueItemsRoutes(cfg, restApp.backend, token),
       "usertask/scanmailbox"    -> ScanMailboxRoutes(restApp.backend, token),
-      "calevent/check"          -> CalEventCheckRoutes()
+      "calevent/check"          -> CalEventCheckRoutes(),
+      "fts"                     -> FullTextIndexRoutes.secured(cfg, restApp.backend, token)
     )
 
   def openRoutes[F[_]: Effect](cfg: Config, restApp: RestApp[F]): HttpRoutes[F] =
@@ -87,7 +88,8 @@ object RestServer {
       "signup"      -> RegisterRoutes(restApp.backend, cfg),
       "upload"      -> UploadRoutes.open(restApp.backend, cfg),
       "checkfile"   -> CheckFileRoutes.open(restApp.backend),
-      "integration" -> IntegrationEndpointRoutes.open(restApp.backend, cfg)
+      "integration" -> IntegrationEndpointRoutes.open(restApp.backend, cfg),
+      "fts"         -> FullTextIndexRoutes.open(cfg, restApp.backend)
     )
 
   def redirectTo[F[_]: Effect](path: String): HttpRoutes[F] = {

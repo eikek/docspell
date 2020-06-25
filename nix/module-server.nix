@@ -13,7 +13,7 @@ let
     app-name = "Docspell";
     app-id = "rest1";
     base-url = "http://localhost:7880";
-    max-item-page-size = 500;
+    max-item-page-size = 200;
     bind = {
       address = "localhost";
       port = 7880;

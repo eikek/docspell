@@ -1,12 +1,17 @@
 package docspell.backend
 
 import cats.effect.{Blocker, ConcurrentEffect, ContextShift, Resource}
+import org.http4s.client.Client
+import org.http4s.client.blaze.BlazeClientBuilder
+
 import docspell.backend.auth.Login
 import docspell.backend.ops._
 import docspell.backend.signup.OSignup
+import docspell.joexapi.client.JoexClient
 import docspell.store.Store
 import docspell.store.queue.JobQueue
 import docspell.store.usertask.UserTaskStore
+import docspell.ftsclient.FtsClient
 
 import scala.concurrent.ExecutionContext
 import emil.javamail.{JavaMailEmil, Settings}
@@ -25,6 +30,7 @@ trait BackendApp[F[_]] {
   def job: OJob[F]
   def item: OItem[F]
   def itemSearch: OItemSearch[F]
+  def fulltext: OFulltext[F]
   def mail: OMail[F]
   def joex: OJoex[F]
   def userTask: OUserTask[F]
@@ -35,7 +41,8 @@ object BackendApp {
   def create[F[_]: ConcurrentEffect: ContextShift](
       cfg: Config,
       store: Store[F],
-      httpClientEc: ExecutionContext,
+      httpClient: Client[F],
+      ftsClient: FtsClient[F],
       blocker: Blocker
   ): Resource[F, BackendApp[F]] =
     for {
@@ -48,12 +55,13 @@ object BackendApp {
       tagImpl        <- OTag[F](store)
       equipImpl      <- OEquipment[F](store)
       orgImpl        <- OOrganization(store)
-      joexImpl       <- OJoex.create(httpClientEc, store)
+      joexImpl       <- OJoex(JoexClient(httpClient), store)
       uploadImpl     <- OUpload(store, queue, cfg.files, joexImpl)
       nodeImpl       <- ONode(store)
       jobImpl        <- OJob(store, joexImpl)
-      itemImpl       <- OItem(store)
+      itemImpl       <- OItem(store, ftsClient)
       itemSearchImpl <- OItemSearch(store)
+      fulltextImpl   <- OFulltext(itemSearchImpl, ftsClient, store, queue, joexImpl)
       javaEmil =
         JavaMailEmil(blocker, Settings.defaultSettings.copy(debug = cfg.mailDebug))
       mailImpl     <- OMail(store, javaEmil)
@@ -71,6 +79,7 @@ object BackendApp {
       val job                        = jobImpl
       val item                       = itemImpl
       val itemSearch                 = itemSearchImpl
+      val fulltext                   = fulltextImpl
       val mail                       = mailImpl
       val joex                       = joexImpl
       val userTask                   = userTaskImpl
@@ -81,9 +90,11 @@ object BackendApp {
       connectEC: ExecutionContext,
       httpClientEc: ExecutionContext,
       blocker: Blocker
-  ): Resource[F, BackendApp[F]] =
+  )(ftsFactory: Client[F] => Resource[F, FtsClient[F]]): Resource[F, BackendApp[F]] =
     for {
-      store   <- Store.create(cfg.jdbc, connectEC, blocker)
-      backend <- create(cfg, store, httpClientEc, blocker)
+      store      <- Store.create(cfg.jdbc, connectEC, blocker)
+      httpClient <- BlazeClientBuilder[F](httpClientEc).resource
+      ftsClient  <- ftsFactory(httpClient)
+      backend    <- create(cfg, store, httpClient, ftsClient, blocker)
     } yield backend
 }

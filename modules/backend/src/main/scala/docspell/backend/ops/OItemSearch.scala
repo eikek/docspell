@@ -110,11 +110,15 @@ object OItemSearch {
           .compile
           .toVector
 
-      def findItemsWithTags(q: Query, batch: Batch): F[Vector[ListItemWithTags]] =
+      def findItemsWithTags(q: Query, batch: Batch): F[Vector[ListItemWithTags]] = {
+        val search = QItem.findItems(q, batch)
         store
-          .transact(QItem.findItemsWithTags(q, batch).take(batch.limit.toLong))
+          .transact(
+            QItem.findItemsWithTags(q.collective, search).take(batch.limit.toLong)
+          )
           .compile
           .toVector
+      }
 
       def findAttachment(id: Ident, collective: Ident): F[Option[AttachmentData[F]]] =
         store

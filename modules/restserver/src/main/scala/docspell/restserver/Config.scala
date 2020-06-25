@@ -1,9 +1,10 @@
 package docspell.restserver
 
 import java.net.InetAddress
+import docspell.common._
 import docspell.backend.auth.Login
 import docspell.backend.{Config => BackendConfig}
-import docspell.common._
+import docspell.ftssolr.SolrConfig
 
 case class Config(
     appName: String,
@@ -13,7 +14,8 @@ case class Config(
     backend: BackendConfig,
     auth: Login.Config,
     integrationEndpoint: Config.IntegrationEndpoint,
-    maxItemPageSize: Int
+    maxItemPageSize: Int,
+    fullTextSearch: Config.FullTextSearch
 )
 
 object Config {
@@ -50,4 +52,9 @@ object Config {
       }
     }
   }
+
+  case class FullTextSearch(enabled: Boolean, recreateKey: Ident, solr: SolrConfig)
+
+  object FullTextSearch {}
+
 }

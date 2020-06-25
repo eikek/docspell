@@ -5,17 +5,19 @@ import docspell.common.ProcessItemArgs
 import docspell.analysis.TextAnalysisConfig
 import docspell.joex.scheduler.Task
 import docspell.joex.Config
+import docspell.ftsclient.FtsClient
 
 object ProcessItem {
 
   def apply[F[_]: ConcurrentEffect: ContextShift](
-      cfg: Config
+      cfg: Config,
+      fts: FtsClient[F]
   )(item: ItemData): Task[F, ProcessItemArgs, ItemData] =
     ExtractArchive(item)
       .flatMap(Task.setProgress(20))
       .flatMap(ConvertPdf(cfg.convert, _))
       .flatMap(Task.setProgress(40))
-      .flatMap(TextExtraction(cfg.extraction, _))
+      .flatMap(TextExtraction(cfg.extraction, fts))
       .flatMap(Task.setProgress(60))
       .flatMap(analysisOnly[F](cfg.textAnalysis))
       .flatMap(Task.setProgress(80))

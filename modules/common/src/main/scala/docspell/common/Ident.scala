@@ -15,6 +15,9 @@ case class Ident(id: String) {
 
   def nonEmpty: Boolean =
     !isEmpty
+
+  def /(next: Ident): Ident =
+    new Ident(id + "." + next.id)
 }
 
 object Ident {

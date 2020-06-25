@@ -259,6 +259,28 @@ val analysis = project.in(file("modules/analysis")).
       Dependencies.fs2 ++
       Dependencies.stanfordNlpCore
   ).dependsOn(common, files % "test->test")
+
+val ftsclient = project.in(file("modules/fts-client")).
+  disablePlugins(RevolverPlugin).
+  settings(sharedSettings).
+  settings(testSettings).
+  settings(
+    name := "docspell-fts-client",
+    libraryDependencies ++= Seq.empty
+  ).dependsOn(common)
+
+val ftssolr = project.in(file("modules/fts-solr")).
+  disablePlugins(RevolverPlugin).
+  settings(sharedSettings).
+  settings(testSettings).
+  settings(
+    name := "docspell-fts-solr",
+    libraryDependencies ++=
+      Dependencies.http4sClient ++
+      Dependencies.http4sCirce ++
+      Dependencies.http4sDsl ++
+      Dependencies.circe
+  ).dependsOn(common, ftsclient)
   
 val restapi = project.in(file("modules/restapi")).
   disablePlugins(RevolverPlugin).
@@ -303,7 +325,7 @@ val backend = project.in(file("modules/backend")).
       Dependencies.bcrypt ++
       Dependencies.http4sClient ++
       Dependencies.emil
-  ).dependsOn(store, joexapi)
+  ).dependsOn(store, joexapi, ftsclient)
 
 val webapp = project.in(file("modules/webapp")).
   disablePlugins(RevolverPlugin).
@@ -336,7 +358,9 @@ val joex = project.in(file("modules/joex")).
     name := "docspell-joex",
     libraryDependencies ++=
       Dependencies.fs2 ++
-      Dependencies.http4s ++
+      Dependencies.http4sServer ++
+      Dependencies.http4sCirce ++
+      Dependencies.http4sDsl ++
       Dependencies.circe ++
       Dependencies.pureconfig ++
       Dependencies.emilTnef ++
@@ -350,7 +374,7 @@ val joex = project.in(file("modules/joex")).
     addCompilerPlugin(Dependencies.betterMonadicFor),
     buildInfoPackage := "docspell.joex",
     reStart/javaOptions ++= Seq(s"-Dconfig.file=${(LocalRootProject/baseDirectory).value/"local"/"dev.conf"}")
-  ).dependsOn(store, backend, extract, convert, analysis, joexapi, restapi)
+  ).dependsOn(store, backend, extract, convert, analysis, joexapi, restapi, ftssolr)
 
 val restserver = project.in(file("modules/restserver")).
   enablePlugins(BuildInfoPlugin
@@ -364,7 +388,9 @@ val restserver = project.in(file("modules/restserver")).
   settings(
     name := "docspell-restserver",
     libraryDependencies ++=
-      Dependencies.http4s ++
+      Dependencies.http4sServer ++
+      Dependencies.http4sCirce ++
+      Dependencies.http4sDsl ++
       Dependencies.circe ++
       Dependencies.pureconfig ++
       Dependencies.yamusca ++
@@ -386,7 +412,7 @@ val restserver = project.in(file("modules/restserver")).
     }.taskValue,
     Compile/unmanagedResourceDirectories ++= Seq((Compile/resourceDirectory).value.getParentFile/"templates"),
     reStart/javaOptions ++= Seq(s"-Dconfig.file=${(LocalRootProject/baseDirectory).value/"local"/"dev.conf"}")
-  ).dependsOn(restapi, joexapi, backend, webapp)
+  ).dependsOn(restapi, joexapi, backend, webapp, ftssolr)
 
 
 
@@ -472,6 +498,8 @@ val root = project.in(file(".")).
     , extract
     , convert
     , analysis
+    , ftsclient
+    , ftssolr
     , files
     , store
     , joexapi

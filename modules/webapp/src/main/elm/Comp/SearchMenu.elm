@@ -25,8 +25,9 @@ import Data.UiSettings exposing (UiSettings)
 import DatePicker exposing (DatePicker)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onCheck, onInput)
+import Html.Events exposing (onCheck, onClick, onInput)
 import Http
+import Util.Html exposing (KeyCode(..))
 import Util.Maybe
 import Util.Tag
 import Util.Update
@@ -55,7 +56,9 @@ type alias Model =
     , untilDueDate : Maybe Int
     , nameModel : Maybe String
     , allNameModel : Maybe String
+    , fulltextModel : Maybe String
     , datePickerInitialized : Bool
+    , showNameHelp : Bool
     }
 
 
@@ -111,7 +114,9 @@ init =
     , untilDueDate = Nothing
     , nameModel = Nothing
     , allNameModel = Nothing
+    , fulltextModel = Nothing
     , datePickerInitialized = False
+    , showNameHelp = False
     }
 
 
@@ -135,7 +140,10 @@ type Msg
     | GetPersonResp (Result Http.Error ReferenceList)
     | SetName String
     | SetAllName String
+    | SetFulltext String
     | ResetForm
+    | KeyUpMsg (Maybe KeyCode)
+    | ToggleNameHelp
 
 
 getDirection : Model -> Maybe Direction
@@ -188,6 +196,7 @@ getItemSearch model =
         , allNames =
             model.allNameModel
                 |> Maybe.map amendWildcards
+        , fullText = model.fulltextModel
     }
 
 
@@ -471,7 +480,7 @@ update flags settings msg model =
                 ( { model | nameModel = next }
                 , Cmd.none
                 )
-                (model.nameModel /= next)
+                False
 
         SetAllName str ->
             let
@@ -482,19 +491,54 @@ update flags settings msg model =
                 ( { model | allNameModel = next }
                 , Cmd.none
                 )
-                (model.allNameModel /= next)
+                False
+
+        SetFulltext str ->
+            let
+                next =
+                    Util.Maybe.fromString str
+            in
+            NextState
+                ( { model | fulltextModel = next }
+                , Cmd.none
+                )
+                False
+
+        KeyUpMsg (Just Enter) ->
+            NextState ( model, Cmd.none ) True
+
+        KeyUpMsg _ ->
+            NextState ( model, Cmd.none ) False
+
+        ToggleNameHelp ->
+            NextState ( { model | showNameHelp = not model.showNameHelp }, Cmd.none ) False
 
 
 
 -- View
 
 
-view : UiSettings -> Model -> Html Msg
-view settings model =
+view : Flags -> UiSettings -> Model -> Html Msg
+view flags settings model =
     let
         formHeader icon headline =
             div [ class "ui small dividing header" ]
                 [ icon
+                , div [ class "content" ]
+                    [ text headline
+                    ]
+                ]
+
+        formHeaderHelp icon headline tagger =
+            div [ class "ui small dividing header" ]
+                [ a
+                    [ class "right-float"
+                    , href "#"
+                    , onClick tagger
+                    ]
+                    [ i [ class "small grey help link icon" ] []
+                    ]
+                , icon
                 , div [ class "content" ]
                     [ text headline
                     ]
@@ -517,17 +561,54 @@ view settings model =
                     ]
                 ]
             ]
-        , formHeader nameIcon "Names"
+        , div
+            [ classList
+                [ ( "field", True )
+                , ( "invisible hidden", not flags.config.fullTextSearchEnabled )
+                ]
+            ]
+            [ label [] [ text "Content Search" ]
+            , input
+                [ type_ "text"
+                , onInput SetFulltext
+                , Util.Html.onKeyUpCode KeyUpMsg
+                , model.fulltextModel |> Maybe.withDefault "" |> value
+                ]
+                []
+            , span [ class "small-info" ]
+                [ text "Fulltext search in document contents."
+                ]
+            ]
+        , formHeaderHelp nameIcon "Names" ToggleNameHelp
+        , span
+            [ classList
+                [ ( "small-info", True )
+                , ( "invisible hidden", not model.showNameHelp )
+                ]
+            ]
+            [ text "Use wildcards "
+            , code [] [ text "*" ]
+            , text " at beginning or end. Added automatically if not "
+            , text "present and not quoted. Press "
+            , em [] [ text "Enter" ]
+            , text " to start searching."
+            ]
         , div [ class "field" ]
             [ label [] [ text "All Names" ]
             , input
                 [ type_ "text"
                 , onInput SetAllName
+                , Util.Html.onKeyUpCode KeyUpMsg
                 , model.allNameModel |> Maybe.withDefault "" |> value
                 ]
                 []
-            , span [ class "small-info" ]
-                [ text "Looks in correspondents, concerned, item name and notes."
+            , span
+                [ classList
+                    [ ( "small-info", True )
+                    , ( "invisible hidden", not model.showNameHelp )
+                    ]
+                ]
+                [ text "Looks in correspondents, concerned entities, item name and notes."
                 ]
             ]
         , div [ class "field" ]
@@ -535,18 +616,18 @@ view settings model =
             , input
                 [ type_ "text"
                 , onInput SetName
+                , Util.Html.onKeyUpCode KeyUpMsg
                 , model.nameModel |> Maybe.withDefault "" |> value
                 ]
                 []
-            , span [ class "small-info" ]
-                [ text "Looks in item name."
+            , span
+                [ classList
+                    [ ( "small-info", True )
+                    , ( "invisible hidden", not model.showNameHelp )
+                    ]
                 ]
-            ]
-        , span [ class "small-info" ]
-            [ text "Use wildcards "
-            , code [] [ text "*" ]
-            , text " at beginning or end. Added automatically if not "
-            , text "present and not quoted."
+                [ text "Looks in item name only."
+                ]
             ]
         , formHeader (Icons.tagsIcon "") "Tags"
         , div [ class "field" ]

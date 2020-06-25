@@ -11,7 +11,6 @@ import docspell.store.records._
 
 object HouseKeepingTask {
   private val periodicId = Ident.unsafe("docspell-houskeeping")
-  val systemGroup: Ident = Ident.unsafe("docspell-system")
 
   val taskName: Ident = Ident.unsafe("housekeeping")
 
@@ -29,10 +28,10 @@ object HouseKeepingTask {
       .createJson(
         true,
         taskName,
-        systemGroup,
+        DocspellSystem.taskGroup,
         (),
         "Docspell house-keeping",
-        systemGroup,
+        DocspellSystem.taskGroup,
         Priority.Low,
         ce
       )

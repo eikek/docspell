@@ -1,6 +1,7 @@
 module Page.Home.Update exposing (update)
 
 import Browser.Navigation as Nav
+import Comp.FixedDropdown
 import Comp.ItemCardList
 import Comp.SearchMenu
 import Data.Flags exposing (Flags)
@@ -9,6 +10,8 @@ import Page exposing (Page(..))
 import Page.Home.Data exposing (..)
 import Throttle
 import Time
+import Util.Html exposing (KeyCode(..))
+import Util.Maybe
 import Util.Update
 
 
@@ -25,7 +28,10 @@ update key flags settings msg model =
         ResetSearch ->
             let
                 nm =
-                    { model | searchOffset = 0 }
+                    { model
+                        | searchOffset = 0
+                        , searchType = defaultSearchType flags
+                    }
             in
             update key flags settings (SearchMenuMsg Comp.SearchMenu.ResetForm) nm
 
@@ -150,10 +156,43 @@ update key flags settings msg model =
 
         SetBasicSearch str ->
             let
-                m =
-                    SearchMenuMsg (Comp.SearchMenu.SetAllName str)
+                smMsg =
+                    case model.searchType of
+                        BasicSearch ->
+                            SearchMenuMsg (Comp.SearchMenu.SetAllName str)
+
+                        ContentSearch ->
+                            SearchMenuMsg (Comp.SearchMenu.SetFulltext str)
+
+                        ContentOnlySearch ->
+                            SetContentOnly str
             in
-            update key flags settings m model
+            update key flags settings smMsg model
+
+        SetContentOnly str ->
+            withSub
+                ( { model | contentOnlySearch = Util.Maybe.fromString str }
+                , Cmd.none
+                )
+
+        SearchTypeMsg lm ->
+            let
+                ( sm, mv ) =
+                    Comp.FixedDropdown.update lm model.searchTypeDropdown
+            in
+            withSub
+                ( { model
+                    | searchTypeDropdown = sm
+                    , searchType = Maybe.withDefault model.searchType mv
+                  }
+                , Cmd.none
+                )
+
+        KeyUpMsg (Just Enter) ->
+            update key flags settings DoSearch model
+
+        KeyUpMsg _ ->
+            withSub ( model, Cmd.none )
 
 
 
@@ -196,6 +235,6 @@ withSub ( m, c ) =
     ( m
     , c
     , Throttle.ifNeeded
-        (Time.every 150 (\_ -> UpdateThrottle))
+        (Time.every 500 (\_ -> UpdateThrottle))
         m.throttle
     )

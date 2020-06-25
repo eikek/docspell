@@ -3,10 +3,15 @@ package docspell.joex
 import cats.implicits._
 import cats.effect._
 import emil.javamail._
+import fs2.concurrent.SignallingRef
+import scala.concurrent.ExecutionContext
+import org.http4s.client.Client
+import org.http4s.client.blaze.BlazeClientBuilder
 import docspell.common._
 import docspell.backend.ops._
 import docspell.joex.hk._
 import docspell.joex.notify._
+import docspell.joex.fts.{MigrationTask, ReIndexTask}
 import docspell.joex.scanmailbox._
 import docspell.joex.process.ItemHandler
 import docspell.joex.scheduler._
@@ -14,13 +19,14 @@ import docspell.joexapi.client.JoexClient
 import docspell.store.Store
 import docspell.store.queue._
 import docspell.store.records.RJobLog
-import fs2.concurrent.SignallingRef
-import scala.concurrent.ExecutionContext
+import docspell.ftsclient.FtsClient
+import docspell.ftssolr.SolrFtsClient
 
 final class JoexAppImpl[F[_]: ConcurrentEffect: ContextShift: Timer](
     cfg: Config,
     nodeOps: ONode[F],
     store: Store[F],
+    queue: JobQueue[F],
     pstore: PeriodicTaskStore[F],
     termSignal: SignallingRef[F, Boolean],
     val scheduler: Scheduler[F],
@@ -50,7 +56,10 @@ final class JoexAppImpl[F[_]: ConcurrentEffect: ContextShift: Timer](
     periodicScheduler.shutdown *> scheduler.shutdown(false) *> termSignal.set(true)
 
   private def scheduleBackgroundTasks: F[Unit] =
-    HouseKeepingTask.periodicTask[F](cfg.houseKeeping.schedule).flatMap(pstore.insert)
+    HouseKeepingTask
+      .periodicTask[F](cfg.houseKeeping.schedule)
+      .flatMap(pstore.insert) *>
+      MigrationTask.job.flatMap(queue.insertIfNew)
 }
 
 object JoexAppImpl {
@@ -63,13 +72,15 @@ object JoexAppImpl {
       blocker: Blocker
   ): Resource[F, JoexApp[F]] =
     for {
-      client  <- JoexClient.resource(clientEC)
+      httpClient <- BlazeClientBuilder[F](clientEC).resource
+      client = JoexClient(httpClient)
       store   <- Store.create(cfg.jdbc, connectEC, blocker)
       queue   <- JobQueue(store)
       pstore  <- PeriodicTaskStore.create(store)
       nodeOps <- ONode(store)
       joex    <- OJoex(client, store)
       upload  <- OUpload(store, queue, cfg.files, joex)
+      fts     <- createFtsClient(cfg)(httpClient)
       javaEmil =
         JavaMailEmil(blocker, Settings.defaultSettings.copy(debug = cfg.mailDebug))
       sch <- SchedulerBuilder(cfg.scheduler, blocker, store)
@@ -77,7 +88,7 @@ object JoexAppImpl {
         .withTask(
           JobTask.json(
             ProcessItemArgs.taskName,
-            ItemHandler.newItem[F](cfg),
+            ItemHandler.newItem[F](cfg, fts),
             ItemHandler.onCancel[F]
           )
         )
@@ -97,6 +108,20 @@ object JoexAppImpl {
         )
         .withTask(
           JobTask.json(
+            MigrationTask.taskName,
+            MigrationTask[F](cfg.fullTextSearch, fts),
+            MigrationTask.onCancel[F]
+          )
+        )
+        .withTask(
+          JobTask.json(
+            ReIndexTask.taskName,
+            ReIndexTask[F](cfg.fullTextSearch, fts),
+            ReIndexTask.onCancel[F]
+          )
+        )
+        .withTask(
+          JobTask.json(
             HouseKeepingTask.taskName,
             HouseKeepingTask[F](cfg),
             HouseKeepingTask.onCancel[F]
@@ -111,7 +136,13 @@ object JoexAppImpl {
         client,
         Timer[F]
       )
-      app = new JoexAppImpl(cfg, nodeOps, store, pstore, termSignal, sch, psch)
+      app = new JoexAppImpl(cfg, nodeOps, store, queue, pstore, termSignal, sch, psch)
       appR <- Resource.make(app.init.map(_ => app))(_.shutdown)
     } yield appR
+
+  private def createFtsClient[F[_]: ConcurrentEffect: ContextShift](
+      cfg: Config
+  )(client: Client[F]): Resource[F, FtsClient[F]] =
+    if (cfg.fullTextSearch.enabled) SolrFtsClient(cfg.fullTextSearch.solr, client)
+    else Resource.pure[F, FtsClient[F]](FtsClient.none[F])
 }

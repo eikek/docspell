@@ -1,18 +1,21 @@
 module Page.Home.View exposing (view)
 
 import Api.Model.ItemSearch
+import Comp.FixedDropdown
 import Comp.ItemCardList
 import Comp.SearchMenu
+import Data.Flags exposing (Flags)
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Page exposing (Page(..))
 import Page.Home.Data exposing (..)
+import Util.Html
 
 
-view : UiSettings -> Model -> Html Msg
-view settings model =
+view : Flags -> UiSettings -> Model -> Html Msg
+view flags settings model =
     div [ class "home-page ui padded grid" ]
         [ div
             [ classList
@@ -23,20 +26,19 @@ view settings model =
                 ]
             ]
             [ div
-                [ class "ui top attached ablue-comp menu"
+                [ class "ui top attached ablue-comp icon menu"
                 ]
                 [ a
-                    [ class "item"
+                    [ class "borderless item"
                     , href "#"
                     , onClick ToggleSearchMenu
                     , title "Hide menu"
                     ]
                     [ i [ class "ui angle down icon" ] []
-                    , text "Search"
                     ]
                 , div [ class "right floated menu" ]
                     [ a
-                        [ class "icon item"
+                        [ class "borderless item"
                         , onClick ResetSearch
                         , title "Reset form"
                         , href "#"
@@ -44,7 +46,7 @@ view settings model =
                         [ i [ class "undo icon" ] []
                         ]
                     , a
-                        [ class "icon item"
+                        [ class "borderless item"
                         , onClick DoSearch
                         , title "Run search query"
                         , href ""
@@ -61,7 +63,7 @@ view settings model =
                     ]
                 ]
             , div [ class "ui attached fluid segment" ]
-                [ Html.map SearchMenuMsg (Comp.SearchMenu.view settings model.searchMenuModel)
+                [ Html.map SearchMenuMsg (Comp.SearchMenu.view flags settings model.searchMenuModel)
                 ]
             ]
         , div
@@ -73,49 +75,7 @@ view settings model =
                 , ( "item-card-list", True )
                 ]
             ]
-            [ div
-                [ classList
-                    [ ( "invisible hidden", not model.menuCollapsed )
-                    , ( "ui menu container", True )
-                    ]
-                ]
-                [ a
-                    [ class "item"
-                    , onClick ToggleSearchMenu
-                    , href "#"
-                    , title "Open search menu"
-                    ]
-                    [ i [ class "angle left icon" ] []
-                    , i [ class "icons" ]
-                        [ i [ class "grey bars icon" ] []
-                        , i [ class "bottom left corner search icon" ] []
-                        , if hasMoreSearch model then
-                            i [ class "top right blue corner circle icon" ] []
-
-                          else
-                            span [ class "hidden invisible" ] []
-                        ]
-                    ]
-                , div [ class "ui category search item" ]
-                    [ div [ class "ui transparent icon input" ]
-                        [ input
-                            [ type_ "text"
-                            , placeholder "Basic search…"
-                            , onInput SetBasicSearch
-                            , Maybe.map value model.searchMenuModel.allNameModel
-                                |> Maybe.withDefault (value "")
-                            ]
-                            []
-                        , i
-                            [ classList
-                                [ ( "search link icon", not model.searchInProgress )
-                                , ( "loading spinner icon", model.searchInProgress )
-                                ]
-                            ]
-                            []
-                        ]
-                    ]
-                ]
+            [ viewSearchBar flags model
             , case model.viewMode of
                 Listing ->
                     Html.map ItemCardListMsg
@@ -157,6 +117,92 @@ view settings model =
         ]
 
 
+viewSearchBar : Flags -> Model -> Html Msg
+viewSearchBar flags model =
+    let
+        searchTypeItem =
+            Comp.FixedDropdown.Item
+                model.searchType
+                (searchTypeString model.searchType)
+
+        searchInput =
+            case model.searchType of
+                BasicSearch ->
+                    model.searchMenuModel.allNameModel
+
+                ContentSearch ->
+                    model.searchMenuModel.fulltextModel
+
+                ContentOnlySearch ->
+                    model.contentOnlySearch
+
+        searchTypeClass =
+            if flags.config.fullTextSearchEnabled then
+                "compact"
+
+            else
+                "hidden invisible"
+    in
+    div
+        [ classList
+            [ ( "invisible hidden", not model.menuCollapsed )
+            , ( "ui secondary stackable menu container", True )
+            ]
+        ]
+        [ a
+            [ class "item"
+            , onClick ToggleSearchMenu
+            , href "#"
+            , if model.searchType == ContentOnlySearch then
+                title "Search menu disabled"
+
+              else
+                title "Open search menu"
+            ]
+            [ i [ class "angle left icon" ] []
+            , i [ class "icons" ]
+                [ i [ class "grey bars icon" ] []
+                , i [ class "bottom left corner search icon" ] []
+                , if model.searchType == ContentOnlySearch then
+                    i [ class "top right red corner delete icon" ] []
+
+                  else if hasMoreSearch model then
+                    i [ class "top right blue corner circle icon" ] []
+
+                  else
+                    span [ class "hidden invisible" ] []
+                ]
+            ]
+        , div [ class "item" ]
+            [ div [ class "ui left icon right action input" ]
+                [ i
+                    [ classList
+                        [ ( "search link icon", not model.searchInProgress )
+                        , ( "loading spinner icon", model.searchInProgress )
+                        ]
+                    , href "#"
+                    , onClick DoSearch
+                    ]
+                    []
+                , input
+                    [ type_ "text"
+                    , placeholder "Quick Search …"
+                    , onInput SetBasicSearch
+                    , Util.Html.onKeyUpCode KeyUpMsg
+                    , Maybe.map value searchInput
+                        |> Maybe.withDefault (value "")
+                    ]
+                    []
+                , Html.map SearchTypeMsg
+                    (Comp.FixedDropdown.viewStyled searchTypeClass
+                        (Just searchTypeItem)
+                        model.searchTypeDropdown
+                    )
+                ]
+            ]
+        ]
+
+
 hasMoreSearch : Model -> Bool
 hasMoreSearch model =
     let
@@ -164,6 +210,14 @@ hasMoreSearch model =
             Comp.SearchMenu.getItemSearch model.searchMenuModel
 
         is_ =
-            { is | allNames = Nothing }
+            case model.searchType of
+                BasicSearch ->
+                    { is | allNames = Nothing }
+
+                ContentSearch ->
+                    { is | fullText = Nothing }
+
+                ContentOnlySearch ->
+                    Api.Model.ItemSearch.empty
     in
     is_ /= Api.Model.ItemSearch.empty

@@ -11,13 +11,18 @@ permalink: features
   account)
 - Handle multiple documents as one unit
 - OCR using [tesseract](https://github.com/tesseract-ocr/tesseract)
+- [Full-Text Search](doc/finding#full-text-search) based on [Apache
+  SOLR](https://lucene.apache.org/solr)
 - Conversion to PDF: all files are converted into a PDF file
 - Non-destructive: all your uploaded files are never modified and can
   always be downloaded untouched
 - Text is analysed to find and attach meta data automatically
 - [Manage document processing](doc/processing): cancel jobs, set
   priorities
-- Everything available via a documented [REST Api](api)
+- Everything available via a [documented](https://www.openapis.org/)
+  [REST Api](api); allows to [generate
+  clients](https://openapi-generator.tech/docs/generators) for
+  (almost) any language
 - mobile-friendly Web-UI
 - [Create “share-urls”](doc/uploading#anonymous-upload) to upload files
   anonymously
@@ -28,6 +33,8 @@ permalink: features
 - REST server and document processing are separate applications which
   can be scaled-out independently
 - Everything stored in a SQL database: PostgreSQL, MariaDB or H2
+  - H2 is embedded, a "one-file-only" database, avoids installing db
+    servers
 - Files supported:
   - Documents:
     - PDF
@@ -55,8 +62,7 @@ permalink: features
 # Limitations
 
 These are current known limitations that may be of interest for
-considering docspell at the moment. Hopefully they will be resolved
-eventually….
+considering docspell at the moment.
 
-- No fulltext search implemented. This is now planned for an upcoming
-  release.
+- Documents cannot be modified.
+- You can remove and add documents but there is no versioning.

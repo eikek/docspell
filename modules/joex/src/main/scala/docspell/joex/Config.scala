@@ -8,6 +8,7 @@ import docspell.convert.ConvertConfig
 import docspell.extract.ExtractConfig
 import docspell.joex.hk.HouseKeepingConfig
 import docspell.backend.Config.Files
+import docspell.ftssolr.SolrConfig
 
 case class Config(
     appId: Ident,
@@ -23,7 +24,8 @@ case class Config(
     convert: ConvertConfig,
     sendMail: MailSendConfig,
     files: Files,
-    mailDebug: Boolean
+    mailDebug: Boolean,
+    fullTextSearch: Config.FullTextSearch
 )
 
 object Config {
@@ -34,4 +36,15 @@ object Config {
       math.min(mailChunkSize, maxMails)
   }
   case class UserTasks(scanMailbox: ScanMailbox)
+
+  case class FullTextSearch(
+      enabled: Boolean,
+      migration: FullTextSearch.Migration,
+      solr: SolrConfig
+  )
+
+  object FullTextSearch {
+
+    final case class Migration(indexAllChunk: Int)
+  }
 }

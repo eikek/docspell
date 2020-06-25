@@ -5,10 +5,12 @@ import cats.implicits._
 import cats.effect.{Effect, Resource}
 import doobie._
 import doobie.implicits._
+import org.log4s.getLogger
 import docspell.store.{AddResult, Store}
 import docspell.store.queries.{QAttachment, QItem}
-import docspell.common.{Direction, Ident, ItemState, MetaProposalList, Timestamp}
+import docspell.common._
 import docspell.store.records._
+import docspell.ftsclient.FtsClient
 
 trait OItem[F[_]] {
 
@@ -38,7 +40,7 @@ trait OItem[F[_]] {
 
   def setNotes(item: Ident, notes: Option[String], collective: Ident): F[AddResult]
 
-  def setName(item: Ident, notes: String, collective: Ident): F[AddResult]
+  def setName(item: Ident, name: String, collective: Ident): F[AddResult]
 
   def setState(item: Ident, state: ItemState, collective: Ident): F[AddResult]
 
@@ -67,11 +69,12 @@ trait OItem[F[_]] {
 
 object OItem {
 
-  def apply[F[_]: Effect](store: Store[F]): Resource[F, OItem[F]] =
+  def apply[F[_]: Effect](store: Store[F], fts: FtsClient[F]): Resource[F, OItem[F]] =
     for {
       otag   <- OTag(store)
       oorg   <- OOrganization(store)
       oequip <- OEquipment(store)
+      logger <- Resource.pure[F, Logger[F]](Logger.log4s(getLogger))
       oitem <- Resource.pure[F, OItem[F]](new OItem[F] {
         def moveAttachmentBefore(
             itemId: Ident,
@@ -259,12 +262,18 @@ object OItem {
             .transact(RItem.updateNotes(item, collective, notes))
             .attempt
             .map(AddResult.fromUpdate)
+            .flatTap(
+              onSuccessIgnoreError(fts.updateItemNotes(logger, item, collective, notes))
+            )
 
         def setName(item: Ident, name: String, collective: Ident): F[AddResult] =
           store
             .transact(RItem.updateName(item, collective, name))
             .attempt
             .map(AddResult.fromUpdate)
+            .flatTap(
+              onSuccessIgnoreError(fts.updateItemName(logger, item, collective, name))
+            )
 
         def setState(item: Ident, state: ItemState, collective: Ident): F[AddResult] =
           store
@@ -293,13 +302,17 @@ object OItem {
             .map(AddResult.fromUpdate)
 
         def deleteItem(itemId: Ident, collective: Ident): F[Int] =
-          QItem.delete(store)(itemId, collective)
+          QItem
+            .delete(store)(itemId, collective)
+            .flatTap(_ => fts.removeItem(logger, itemId))
 
         def getProposals(item: Ident, collective: Ident): F[MetaProposalList] =
           store.transact(QAttachment.getMetaProposals(item, collective))
 
         def deleteAttachment(id: Ident, collective: Ident): F[Int] =
-          QAttachment.deleteSingleAttachment(store)(id, collective)
+          QAttachment
+            .deleteSingleAttachment(store)(id, collective)
+            .flatTap(_ => fts.removeAttachment(logger, id))
 
         def setAttachmentName(
             attachId: Ident,
@@ -310,6 +323,29 @@ object OItem {
             .transact(RAttachment.updateName(attachId, collective, name))
             .attempt
             .map(AddResult.fromUpdate)
+            .flatTap(
+              onSuccessIgnoreError(
+                OptionT(store.transact(RAttachment.findItemId(attachId)))
+                  .semiflatMap(itemId =>
+                    fts.updateAttachmentName(logger, itemId, attachId, collective, name)
+                  )
+                  .fold(())(identity)
+              )
+            )
+
+        private def onSuccessIgnoreError(update: F[Unit])(ar: AddResult): F[Unit] =
+          ar match {
+            case AddResult.Success =>
+              update.attempt.flatMap {
+                case Right(()) => ().pure[F]
+                case Left(ex) =>
+                  logger.warn(s"Error updating full-text index: ${ex.getMessage}")
+              }
+            case AddResult.Failure(_) =>
+              ().pure[F]
+            case AddResult.EntityExists(_) =>
+              ().pure[F]
+          }
       })
     } yield oitem
 }

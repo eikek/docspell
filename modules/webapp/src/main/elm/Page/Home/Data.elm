@@ -1,15 +1,19 @@
 module Page.Home.Data exposing
     ( Model
     , Msg(..)
+    , SearchType(..)
     , ViewMode(..)
+    , defaultSearchType
     , doSearchCmd
     , init
     , itemNav
     , resultsBelowLimit
+    , searchTypeString
     )
 
 import Api
 import Api.Model.ItemLightList exposing (ItemLightList)
+import Comp.FixedDropdown
 import Comp.ItemCardList
 import Comp.SearchMenu
 import Data.Flags exposing (Flags)
@@ -17,6 +21,7 @@ import Data.Items
 import Data.UiSettings exposing (UiSettings)
 import Http
 import Throttle exposing (Throttle)
+import Util.Html exposing (KeyCode(..))
 
 
 type alias Model =
@@ -29,11 +34,22 @@ type alias Model =
     , moreAvailable : Bool
     , moreInProgress : Bool
     , throttle : Throttle Msg
+    , searchTypeDropdown : Comp.FixedDropdown.Model SearchType
+    , searchType : SearchType
+    , contentOnlySearch : Maybe String
     }
 
 
 init : Flags -> Model
-init _ =
+init flags =
+    let
+        searchTypeOptions =
+            if flags.config.fullTextSearchEnabled then
+                [ BasicSearch, ContentSearch, ContentOnlySearch ]
+
+            else
+                [ BasicSearch ]
+    in
     { searchMenuModel = Comp.SearchMenu.init
     , itemListModel = Comp.ItemCardList.init
     , searchInProgress = False
@@ -43,7 +59,21 @@ init _ =
     , moreAvailable = True
     , moreInProgress = False
     , throttle = Throttle.create 1
+    , searchTypeDropdown =
+        Comp.FixedDropdown.initMap searchTypeString
+            searchTypeOptions
+    , searchType = defaultSearchType flags
+    , contentOnlySearch = Nothing
     }
+
+
+defaultSearchType : Flags -> SearchType
+defaultSearchType flags =
+    if flags.config.fullTextSearchEnabled then
+        ContentSearch
+
+    else
+        BasicSearch
 
 
 type Msg
@@ -58,6 +88,28 @@ type Msg
     | LoadMore
     | UpdateThrottle
     | SetBasicSearch String
+    | SearchTypeMsg (Comp.FixedDropdown.Msg SearchType)
+    | KeyUpMsg (Maybe KeyCode)
+    | SetContentOnly String
+
+
+type SearchType
+    = BasicSearch
+    | ContentSearch
+    | ContentOnlySearch
+
+
+searchTypeString : SearchType -> String
+searchTypeString st =
+    case st of
+        BasicSearch ->
+            "All Names"
+
+        ContentSearch ->
+            "Contents"
+
+        ContentOnlySearch ->
+            "Contents Only"
 
 
 type ViewMode
@@ -81,6 +133,19 @@ itemNav id model =
 
 doSearchCmd : Flags -> UiSettings -> Int -> Model -> Cmd Msg
 doSearchCmd flags settings offset model =
+    case model.searchType of
+        BasicSearch ->
+            doSearchDefaultCmd flags settings offset model
+
+        ContentSearch ->
+            doSearchDefaultCmd flags settings offset model
+
+        ContentOnlySearch ->
+            doSearchIndexCmd flags settings offset model
+
+
+doSearchDefaultCmd : Flags -> UiSettings -> Int -> Model -> Cmd Msg
+doSearchDefaultCmd flags settings offset model =
     let
         smask =
             Comp.SearchMenu.getItemSearch model.searchMenuModel
@@ -96,6 +161,27 @@ doSearchCmd flags settings offset model =
 
     else
         Api.itemSearch flags mask ItemSearchAddResp
+
+
+doSearchIndexCmd : Flags -> UiSettings -> Int -> Model -> Cmd Msg
+doSearchIndexCmd flags settings offset model =
+    case model.contentOnlySearch of
+        Just q ->
+            let
+                mask =
+                    { query = q
+                    , limit = settings.itemSearchPageSize
+                    , offset = offset
+                    }
+            in
+            if offset == 0 then
+                Api.itemIndexSearch flags mask ItemSearchResp
+
+            else
+                Api.itemIndexSearch flags mask ItemSearchAddResp
+
+        Nothing ->
+            Cmd.none
 
 
 resultsBelowLimit : UiSettings -> Model -> Bool

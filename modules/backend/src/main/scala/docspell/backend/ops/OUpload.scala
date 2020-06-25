@@ -5,7 +5,7 @@ import cats.Functor
 import cats.data.{EitherT, OptionT}
 import cats.effect._
 import cats.implicits._
-import docspell.backend.Config
+import docspell.backend.{Config, JobFactory}
 import fs2.Stream
 import docspell.common._
 import docspell.common.syntax.all._
@@ -204,26 +204,7 @@ object OUpload {
           account: AccountId,
           prio: Priority,
           tracker: Option[Ident]
-      ): F[Vector[RJob]] = {
-        def create(id: Ident, now: Timestamp, arg: ProcessItemArgs): RJob =
-          RJob.newJob(
-            id,
-            ProcessItemArgs.taskName,
-            account.collective,
-            arg,
-            arg.makeSubject,
-            now,
-            account.user,
-            prio,
-            tracker
-          )
-
-        for {
-          id  <- Ident.randomId[F]
-          now <- Timestamp.current[F]
-          jobs = args.map(a => create(id, now, a))
-        } yield jobs
-
-      }
+      ): F[Vector[RJob]] =
+        JobFactory.processItems[F](args, account, prio, tracker)
     })
 }
