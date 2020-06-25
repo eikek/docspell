@@ -37,6 +37,17 @@ let
         header-value = "some-secret";
       };
     };
+    full-text-search = {
+      enabled = false;
+      solr = {
+        url = "http://localhost:8983/solr/docspell";
+        commit-within = 1000;
+        log-verbose = false;
+        def-type = "lucene";
+        q-op = "OR";
+      };
+      recreate-key = "";
+    };
     auth = {
       server-secret = "hex:caffee";
       session-valid = "5 minutes";
@@ -269,6 +280,75 @@ in {
           NOTE: If all protection methods are disabled, the endpoint is not
           protected at all!
         '';
+      };
+
+      full-text-search = mkOption {
+        type = types.submodule({
+          options = {
+            enabled = mkOption {
+              type = types.bool;
+              default = defaults.full-text-search.enabled;
+              description = ''
+                The full-text search feature can be disabled. It requires an
+                additional index server which needs additional memory and disk
+                space. It can be enabled later any time.
+
+                Currently the SOLR search platform is supported.
+              '';
+            };
+            solr = mkOption {
+              type = types.submodule({
+                options = {
+                  url = mkOption {
+                    type = types.str;
+                    default = defaults.full-text-search.solr.url;
+                    description = "The URL to solr";
+                  };
+                  commit-within = mkOption {
+                    type = types.int;
+                    default = defaults.full-text-search.solr.commit-within;
+                    description = "Used to tell solr when to commit the data";
+                  };
+                  log-verbose = mkOption {
+                    type = types.bool;
+                    default = defaults.full-text-search.solr.log-verbose;
+                    description = "If true, logs request and response bodies";
+                  };
+                  def-type = mkOption {
+                    type = types.str;
+                    default = defaults.full-text-search.solr.def-type;
+                    description = ''
+                      The defType parameter to lucene that defines the parser to
+                      use. You might want to try "edismax" or look here:
+                      https://lucene.apache.org/solr/guide/8_4/query-syntax-and-parsing.html#query-syntax-and-parsing
+                    '';
+                  };
+                  q-op = mkOption {
+                    type = types.str;
+                    default = defaults.full-text-search.solr.q-op;
+                    description = "The default combiner for tokens. One of {AND, OR}.";
+                  };
+                };
+              });
+              default = defaults.full-text-search.solr;
+              description = "Configuration for the SOLR backend.";
+            };
+            recreate-key = mkOption {
+              type = types.str;
+              default = defaults.full-text-search.recreate-key;
+              description = ''
+                When re-creating the complete index via a REST call, this key
+                is required. If left empty (the default), recreating the index
+                is disabled.
+
+                Example curl command:
+                curl -XPOST http://localhost:7880/api/v1/open/fts/reIndexAll/test123
+              '';
+            };
+          };
+        });
+        default = defaults.full-text-search;
+        description = "Configuration for full-text search.";
       };
 
       backend = mkOption {
