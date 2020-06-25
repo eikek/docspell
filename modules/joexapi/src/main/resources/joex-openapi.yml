@@ -11,19 +11,20 @@ servers:
 paths:
   /api/info:
     get:
-      tag: [ Api Info ]
+      tags: [ Api Info ]
       summary: Get basic information about this software.
       description: |
         Returns the version and project name and other properties of the build.
       responses:
         200:
+          description: Ok
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/VersionInfo"
   /api/v1/notify:
     post:
-      tag: [ Job Executor ]
+      tags: [ Job Executor ]
       summary: Notify the job executor.
       description: |
         Notifies the job executor to wake up and look for jobs in th queue.
@@ -36,7 +37,7 @@ paths:
                 $ref: "#/components/schemas/BasicResult"
   /api/v1/running:
     get:
-      tag: [ Job Executor ]
+      tags: [ Job Executor ]
       summary: Get a list of currently executing jobs.
       description: |
         Returns all jobs this executor is currently executing.
@@ -49,7 +50,7 @@ paths:
                 $ref: "#/components/schemas/JobList"
   /api/v1/shutdownAndExit:
     post:
-      tag: [ Job Executor ]
+      tags: [ Job Executor ]
       summary: Stops this component and exits.
       description: |
         Gracefully stops the scheduler and also stops the process.
@@ -62,25 +63,29 @@ paths:
                 $ref: "#/components/schemas/BasicResult"
   /api/v1/job/{id}:
     get:
-      tag: [ Current Jobs ]
+      tags: [ Current Jobs ]
       summary: Get a job by its id.
       description: |
         Returns details about a job given the id.
+      parameters:
+        - $ref: "#/components/parameters/id"
       responses:
         200:
           description: Ok
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/JobAndLogs"
+                $ref: "#/components/schemas/JobAndLog"
   /api/v1/job/{id}/cancel:
     post:
-      tag: [ Current Jobs ]
+      tags: [ Current Jobs ]
       summary: Request to cancel a running job.
       description: |
         Requests to cancel the running job. This will try to cancel
         the execution but it is not guaranteed that it can immediately
         abort. The job is then removed from the queue.
+      parameters:
+        - $ref: "#/components/parameters/id"
       responses:
         200:
           description: Ok
@@ -197,3 +202,11 @@ components:
           type: boolean
         message:
           type: string
+  parameters:
+    id:
+      name: id
+      in: path
+      description: An identifier
+      required: true
+      schema:
+        type: string
