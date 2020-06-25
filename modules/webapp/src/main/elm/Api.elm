@@ -78,6 +78,7 @@ module Api exposing
     , setUnconfirmed
     , startOnceNotifyDueItems
     , startOnceScanMailbox
+    , startReIndex
     , submitNotifyDueItems
     , updateNotifyDueItems
     , updateScanMailbox
@@ -146,6 +147,20 @@ import Task
 import Url
 import Util.File
 import Util.Http as Http2
+
+
+
+--- Full-Text
+
+
+startReIndex : Flags -> (Result Http.Error BasicResult -> msg) -> Cmd msg
+startReIndex flags receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/fts/reIndex"
+        , account = getAccount flags
+        , body = Http.emptyBody
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
 
 
 
