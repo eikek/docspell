@@ -2,7 +2,8 @@ package docspell.joex.fts
 
 import cats.effect._
 import cats.data.{Kleisli, NonEmptyList}
-import cats.{FlatMap, Semigroup}
+import cats.{ApplicativeError, FlatMap, Semigroup}
+import cats.implicits._
 import docspell.common._
 import docspell.ftsclient._
 import docspell.joex.scheduler.Context
@@ -23,6 +24,9 @@ object FtsWork {
     Semigroup.instance((mt1, mt2) => mt1.flatMap(_ => mt2))
 
   // some tasks
+
+  def log[F[_]](f: Logger[F] => F[Unit]): FtsWork[F] =
+    FtsWork(ctx => f(ctx.logger))
 
   def initialize[F[_]]: FtsWork[F] =
     FtsWork(_.fts.initialize)
@@ -73,6 +77,11 @@ object FtsWork {
     implicit final class FtsWorkOps[F[_]](mt: FtsWork[F]) {
       def ++(mn: FtsWork[F])(implicit ev: FlatMap[F]): FtsWork[F] =
         all(mt, mn)
+
+      def recoverWith(
+          other: FtsWork[F]
+      )(implicit ev: ApplicativeError[F, Throwable]): FtsWork[F] =
+        Kleisli(ctx => mt.run(ctx).onError({ case _ => other.run(ctx) }))
 
       def forContext(
           cfg: Config.FullTextSearch,

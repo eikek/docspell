@@ -126,6 +126,13 @@ empty (the default), this REST call is disabled. Otherwise, the POST
 request will submit a system task that is executed by a joex instance
 eventually.
 
+Using this endpoint, the index will be re-created. This is sometimes
+necessary, for example if you upgrade SOLR or delete the core to
+provide a new one (see
+[here](https://lucene.apache.org/solr/guide/8_4/reindexing.html) for
+details). Note that a collective can also re-index their data using a
+similiar endpoint; but this is only deleting their data and doesn't do
+a full re-index.
 
 ### Bind
 

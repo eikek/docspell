@@ -17,7 +17,7 @@ trait SolrUpdate[F[_]] {
 
   def update(tds: List[TextData]): F[Unit]
 
-  def delete(q: String): F[Unit]
+  def delete(q: String, commitWithin: Option[Int]): F[Unit]
 }
 
 object SolrUpdate {
@@ -42,8 +42,16 @@ object SolrUpdate {
         client.expect[Unit](req)
       }
 
-      def delete(q: String): F[Unit] = {
-        val req = Method.POST(Delete(q).asJson, url)
+      def delete(q: String, commitWithin: Option[Int]): F[Unit] = {
+        val uri = commitWithin match {
+          case Some(n) =>
+            if (n <= 0)
+              url.removeQueryParam("commitWithin").withQueryParam("commit", "true")
+            else url.withQueryParam("commitWithin", n.toString)
+          case None =>
+            url
+        }
+        val req = Method.POST(Delete(q).asJson, uri)
         client.expect[Unit](req)
       }
 
