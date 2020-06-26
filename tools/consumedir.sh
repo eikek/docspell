@@ -20,8 +20,8 @@ if [[ ${PIPESTATUS[0]} -ne 4 ]]; then
     exit 1
 fi
 
-OPTIONS=omhdp:v
-LONGOPTS=once,distinct,help,delete,path:,verbose
+OPTIONS=omhdp:vr
+LONGOPTS=once,distinct,help,delete,path:,verbose,recursive,dry
 
 ! PARSED=$(getopt --options=$OPTIONS --longoptions=$LONGOPTS --name "$0" -- "$@")
 if [[ ${PIPESTATUS[0]} -ne 0 ]]; then
@@ -34,7 +34,7 @@ fi
 eval set -- "$PARSED"
 
 declare -a watchdir
-help=n verbose=n delete=n once=n distinct=n
+help=n verbose=n delete=n once=n distinct=n recursive=n dryrun=n
 while true; do
     case "$1" in
         -h|--help)
@@ -61,6 +61,14 @@ while true; do
             distinct=y
             shift
             ;;
+        -r|--recursive)
+            recursive=y
+            shift
+            ;;
+        --dry)
+            dryrun=y
+            shift
+            ;;
         --)
             shift
             break
@@ -85,6 +93,8 @@ showUsage() {
     echo "  -h | --help             Prints this help text. (value: $help)"
     echo "  -m | --distinct         Optional. Upload only if the file doesn't already exist. (value: $distinct)"
     echo "  -o | --once             Instead of watching, upload all files in that dir. (value: $once)"
+    echo "  -r | --recursive        Traverse the directory(ies) recursively (value: $recursive)"
+    echo "       --dry              Do a 'dry run', not uploading anything only printing to stdout (value: $dryrun)"
     echo ""
     echo "Arguments:"
     echo "  A list of URLs to upload the files to."
@@ -126,20 +136,24 @@ info() {
 }
 
 upload() {
-    tf=$($MKTEMP_CMD) rc=0
-    $CURL_CMD -# -o "$tf" --stderr "$tf" -w "%{http_code}" -XPOST -F file=@"$1" "$2" | (2>&1 1>/dev/null grep 200)
-    rc=$(expr $rc + $?)
-    cat $tf | (2>&1 1>/dev/null grep '{"success":true')
-    rc=$(expr $rc + $?)
-    if [ $rc -ne 0 ]; then
-        info "Upload failed. Exit code: $rc"
-        cat "$tf"
-        echo ""
-        rm "$tf"
-        return $rc
+    if [ "$dryrun" = "y" ]; then
+        info "Not uploading (dry-run) $1 to $2"
     else
-        rm "$tf"
-        return 0
+        tf=$($MKTEMP_CMD) rc=0
+        $CURL_CMD -# -o "$tf" --stderr "$tf" -w "%{http_code}" -XPOST -F file=@"$1" "$2" | (2>&1 1>/dev/null grep 200)
+        rc=$(expr $rc + $?)
+        cat $tf | (2>&1 1>/dev/null grep '{"success":true')
+        rc=$(expr $rc + $?)
+        if [ $rc -ne 0 ]; then
+            info "Upload failed. Exit code: $rc"
+            cat "$tf"
+            echo ""
+            rm "$tf"
+            return $rc
+        else
+            rm "$tf"
+            return 0
+        fi
     fi
 }
 
@@ -195,13 +209,21 @@ process() {
 
 if [ "$once" = "y" ]; then
     info "Uploading all files in '$watchdir'."
+    MD="-maxdepth 1"
+    if [ "$recursive" = "y" ]; then
+        MD=""
+    fi
     for dir in "${watchdir[@]}"; do
-        for file in "$dir"/*; do
+        find "$dir" $MD -type f -print0 | while IFS= read -d '' -r file; do
             process "$file"
         done
     done
 else
-    $INOTIFY_CMD -m "${watchdir[@]}" -e close_write -e moved_to |
+    REC=""
+    if [ "$recursive" = "y" ]; then
+        REC="-r"
+    fi
+    $INOTIFY_CMD $REC -m "${watchdir[@]}" -e close_write -e moved_to |
         while read path action file; do
             trace "The file '$file' appeared in directory '$path' via '$action'"
             sleep 1
