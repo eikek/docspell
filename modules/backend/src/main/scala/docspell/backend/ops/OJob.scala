@@ -2,6 +2,7 @@ package docspell.backend.ops
 
 import cats.implicits._
 import cats.effect._
+import cats.data.OptionT
 import docspell.backend.ops.OJob.{CollectiveQueueState, JobCancelResult}
 import docspell.common.{Ident, JobState}
 import docspell.store.Store
@@ -22,6 +23,10 @@ object OJob {
     case object Removed         extends JobCancelResult
     case object CancelRequested extends JobCancelResult
     case object JobNotFound     extends JobCancelResult
+
+    def removed: JobCancelResult         = Removed
+    def cancelRequested: JobCancelResult = CancelRequested
+    def jobNotFound: JobCancelResult     = JobNotFound
   }
 
   case class JobDetail(job: RJob, logs: Vector[RJobLog])
@@ -49,43 +54,30 @@ object OJob {
           .map(CollectiveQueueState)
 
       def cancelJob(id: Ident, collective: Ident): F[JobCancelResult] = {
-        def mustCancel(job: Option[RJob]): Option[(RJob, Ident)] =
-          for {
-            worker <- job.flatMap(_.worker)
-            job <- job.filter(j =>
-              j.state == JobState.Scheduled || j.state == JobState.Running
-            )
-          } yield (job, worker)
+        def remove(job: RJob): F[JobCancelResult] =
+          store.transact(RJob.delete(job.id)) *> JobCancelResult.removed.pure[F]
 
-        def canDelete(j: RJob): Boolean =
-          mustCancel(j.some).isEmpty
-
-        val tryDelete = for {
-          job <- RJob.findByIdAndGroup(id, collective)
-          jobm = job.filter(canDelete)
-          del <- jobm.traverse(j => RJob.delete(j.id))
-        } yield del match {
-          case Some(_) => Right(JobCancelResult.Removed: JobCancelResult)
-          case None    => Left(mustCancel(job))
-        }
-
-        def tryCancel(job: RJob, worker: Ident): F[JobCancelResult] =
-          joex
-            .cancelJob(job.id, worker)
-            .map(flag =>
-              if (flag) JobCancelResult.CancelRequested else JobCancelResult.JobNotFound
-            )
-
-        for {
-          tryDel <- store.transact(tryDelete)
-          result <- tryDel match {
-            case Right(r) => r.pure[F]
-            case Left(Some((job, worker))) =>
-              tryCancel(job, worker)
-            case Left(None) =>
-              (JobCancelResult.JobNotFound: OJob.JobCancelResult).pure[F]
+        def tryCancel(job: RJob): F[JobCancelResult] =
+          job.worker match {
+            case Some(worker) =>
+              for {
+                flag <- joex.cancelJob(job.id, worker)
+                res <-
+                  if (flag) JobCancelResult.cancelRequested.pure[F]
+                  else remove(job)
+              } yield res
+            case None =>
+              remove(job)
           }
-        } yield result
+
+        (for {
+          job <- OptionT(store.transact(RJob.findByIdAndGroup(id, collective)))
+          result <- OptionT.liftF(
+            if (job.isInProgress) tryCancel(job)
+            else remove(job)
+          )
+        } yield result)
+          .getOrElse(JobCancelResult.jobNotFound)
       }
     })
 }

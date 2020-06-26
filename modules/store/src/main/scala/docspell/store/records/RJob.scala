@@ -31,6 +31,12 @@ case class RJob(
 
   def info: String =
     s"${id.id.substring(0, 9)}.../${group.id}/${task.id}/$priority"
+
+  def isFinalState: Boolean =
+    JobState.done.contains(state)
+
+  def isInProgress: Boolean =
+    JobState.inProgress.contains(state)
 }
 
 object RJob {
@@ -120,6 +126,12 @@ object RJob {
 
   def findByIdAndGroup(jobId: Ident, jobGroup: Ident): ConnectionIO[Option[RJob]] =
     selectSimple(all, table, and(id.is(jobId), group.is(jobGroup))).query[RJob].option
+
+  def findById(jobId: Ident): ConnectionIO[Option[RJob]] =
+    selectSimple(all, table, id.is(jobId)).query[RJob].option
+
+  def findByIdAndWorker(jobId: Ident, workerId: Ident): ConnectionIO[Option[RJob]] =
+    selectSimple(all, table, and(id.is(jobId), worker.is(workerId))).query[RJob].option
 
   def setRunningToWaiting(workerId: Ident): ConnectionIO[Int] = {
     val states: Seq[JobState] = List(JobState.Running, JobState.Scheduled)

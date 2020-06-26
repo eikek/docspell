@@ -307,6 +307,7 @@ val joexapi = project.in(file("modules/joexapi")).
     name := "docspell-joexapi",
     libraryDependencies ++=
       Dependencies.circe ++
+      Dependencies.http4sCirce ++
       Dependencies.http4sClient,
     openapiTargetLanguage := Language.Scala,
     openapiPackage := Pkg("docspell.joexapi.model"),

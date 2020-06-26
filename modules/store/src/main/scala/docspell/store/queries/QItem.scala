@@ -454,20 +454,55 @@ object QItem {
       n  <- store.transact(RItem.deleteByIdAndCollective(itemId, collective))
     } yield tn + rn + n + mn
 
-  def findByFileIds(fileMetaIds: Seq[Ident]): ConnectionIO[Vector[RItem]] = {
-    val IC = RItem.Columns
-    val AC = RAttachment.Columns
-    val q =
-      fr"SELECT DISTINCT" ++ commas(
-        IC.all.map(_.prefix("i").f)
-      ) ++ fr"FROM" ++ RItem.table ++ fr"i" ++
-        fr"INNER JOIN" ++ RAttachment.table ++ fr"a ON" ++ AC.itemId
-        .prefix("a")
-        .is(IC.id.prefix("i")) ++
-        fr"WHERE" ++ AC.fileId.isOneOf(fileMetaIds) ++ orderBy(IC.created.prefix("i").asc)
+  private def findByFileIdsQuery(fileMetaIds: NonEmptyList[Ident], limit: Option[Int]) = {
+    val IC      = RItem.Columns.all.map(_.prefix("i"))
+    val aItem   = RAttachment.Columns.itemId.prefix("a")
+    val aId     = RAttachment.Columns.id.prefix("a")
+    val aFileId = RAttachment.Columns.fileId.prefix("a")
+    val iId     = RItem.Columns.id.prefix("i")
+    val sId     = RAttachmentSource.Columns.id.prefix("s")
+    val sFileId = RAttachmentSource.Columns.fileId.prefix("s")
+    val rId     = RAttachmentArchive.Columns.id.prefix("r")
+    val rFileId = RAttachmentArchive.Columns.fileId.prefix("r")
+    val m1Id    = RFileMeta.Columns.id.prefix("m1")
+    val m2Id    = RFileMeta.Columns.id.prefix("m2")
+    val m3Id    = RFileMeta.Columns.id.prefix("m3")
 
-    q.query[RItem].to[Vector]
+    val from =
+      RItem.table ++ fr"i INNER JOIN" ++ RAttachment.table ++ fr"a ON" ++ aItem.is(iId) ++
+        fr"INNER JOIN" ++ RAttachmentSource.table ++ fr"s ON" ++ aId.is(sId) ++
+        fr"INNER JOIN" ++ RFileMeta.table ++ fr"m1 ON" ++ m1Id.is(aFileId) ++
+        fr"INNER JOIN" ++ RFileMeta.table ++ fr"m2 ON" ++ m2Id.is(sFileId) ++
+        fr"LEFT OUTER JOIN" ++ RAttachmentArchive.table ++ fr"r ON" ++ aId.is(rId) ++
+        fr"LEFT OUTER JOIN" ++ RFileMeta.table ++ fr"m3 ON" ++ m3Id.is(rFileId)
+
+    val q = selectSimple(
+      IC,
+      from,
+      and(or(m1Id.isIn(fileMetaIds), m2Id.isIn(fileMetaIds), m3Id.isIn(fileMetaIds)))
+    )
+
+    limit match {
+      case Some(n) => q ++ fr"LIMIT $n"
+      case None    => q
+    }
   }
+
+  def findOneByFileIds(fileMetaIds: Seq[Ident]): ConnectionIO[Option[RItem]] =
+    NonEmptyList.fromList(fileMetaIds.toList) match {
+      case Some(nel) =>
+        findByFileIdsQuery(nel, Some(1)).query[RItem].option
+      case None =>
+        (None: Option[RItem]).pure[ConnectionIO]
+    }
+
+  def findByFileIds(fileMetaIds: Seq[Ident]): ConnectionIO[Vector[RItem]] =
+    NonEmptyList.fromList(fileMetaIds.toList) match {
+      case Some(nel) =>
+        findByFileIdsQuery(nel, None).query[RItem].to[Vector]
+      case None =>
+        Vector.empty[RItem].pure[ConnectionIO]
+    }
 
   def findByChecksum(checksum: String, collective: Ident): ConnectionIO[Vector[RItem]] = {
     val IC         = RItem.Columns.all.map(_.prefix("i"))

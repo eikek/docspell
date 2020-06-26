@@ -3,6 +3,7 @@ package docspell.joex.scheduler
 import fs2.Stream
 import cats.implicits._
 import cats.effect.concurrent.Semaphore
+import cats.data.OptionT
 import docspell.common._
 import docspell.common.syntax.all._
 import docspell.store.queue.JobQueue
@@ -51,7 +52,16 @@ final class SchedulerImpl[F[_]: ConcurrentEffect: ContextShift](
     state.get.flatMap(_.cancelRequest(jobId) match {
       case Some(ct) => ct.map(_ => true)
       case None =>
-        logger.fwarn(s"Job ${jobId.id} not found, cannot cancel.").map(_ => false)
+        (for {
+          job <- OptionT(store.transact(RJob.findByIdAndWorker(jobId, config.name)))
+          _ <- OptionT.liftF(
+            if (job.isInProgress) executeCancel(job)
+            else ().pure[F]
+          )
+        } yield true)
+          .getOrElseF(
+            logger.fwarn(s"Job ${jobId.id} not found, cannot cancel.").map(_ => false)
+          )
     })
 
   def notifyChange: F[Unit] =
@@ -125,6 +135,31 @@ final class SchedulerImpl[F[_]: ConcurrentEffect: ContextShift](
             logger.sdebug(s"Notify signal, going into main loop") ++
             mainLoop
       })
+  }
+
+  private def executeCancel(job: RJob): F[Unit] = {
+    val task = for {
+      jobtask <-
+        tasks
+          .find(job.task)
+          .toRight(s"This executor cannot run tasks with name: ${job.task}")
+    } yield jobtask
+
+    task match {
+      case Left(err) =>
+        logger.ferror(s"Unable to run cancellation task for job ${job.info}: $err")
+      case Right(t) =>
+        for {
+          _ <-
+            logger.fdebug(s"Creating context for job ${job.info} to run cancellation $t")
+          ctx <- Context[F, String](job, job.args, config, logSink, blocker, store)
+          _   <- t.onCancel.run(ctx)
+          _   <- state.modify(_.markCancelled(job))
+          _   <- onFinish(job, JobState.Cancelled)
+          _   <- ctx.logger.warn("Job has been cancelled.")
+          _   <- logger.fdebug(s"Job ${job.info} has been cancelled.")
+        } yield ()
+    }
   }
 
   def execute(job: RJob): F[Unit] = {
