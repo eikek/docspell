@@ -35,7 +35,7 @@ let
     scheduler = {
       pool-size = 2;
       counting-scheme = "4,1";
-      retries = 5;
+      retries = 2;
       retry-delay = "1 minute";
       log-buffer-size = 500;
       wakeup-period = "30 minutes";
@@ -92,6 +92,9 @@ let
     text-analysis = {
       max-length = 10000;
     };
+    processing = {
+      max-due-date-years = 10;
+    };
     convert = {
       chunk-size = 524288;
       max-image-size = 14000000;
@@ -132,6 +135,19 @@ let
     files = {
       chunk-size = 524288;
       valid-mime-types = [];
+    };
+    full-text-search = {
+      enabled = false;
+      solr = {
+        url = "http://localhost:8983/solr/docspell";
+        commit-within = 1000;
+        log-verbose = false;
+        def-type = "lucene";
+        q-op = "OR";
+      };
+      migration = {
+        index-all-chunk = 10;
+      };
     };
   };
 in {
@@ -653,6 +669,23 @@ in {
         description = "Settings for text analysis";
       };
 
+      processing = mkOption {
+        type = types.submodule({
+          options = {
+            max-due-date-years = mkOption {
+              type = types.int;
+              default = defaults.processing.max-due-date-years;
+              description = ''
+                Restricts proposals for due dates. Only dates earlier than this
+                number of years in the future are considered.
+              '';
+            };
+          };
+        });
+        default = defaults.processing;
+        description = "General config for processing documents";
+      };
+
       convert = mkOption {
         type = types.submodule({
           options = {
@@ -859,6 +892,79 @@ in {
         });
         default = defaults.files;
         description= "Settings for how files are stored.";
+      };
+      full-text-search = mkOption {
+        type = types.submodule({
+          options = {
+            enabled = mkOption {
+              type = types.bool;
+              default = defaults.full-text-search.enabled;
+              description = ''
+                The full-text search feature can be disabled. It requires an
+                additional index server which needs additional memory and disk
+                space. It can be enabled later any time.
+
+                Currently the SOLR search platform is supported.
+              '';
+            };
+            solr = mkOption {
+              type = types.submodule({
+                options = {
+                  url = mkOption {
+                    type = types.str;
+                    default = defaults.full-text-search.solr.url;
+                    description = "The URL to solr";
+                  };
+                  commit-within = mkOption {
+                    type = types.int;
+                    default = defaults.full-text-search.solr.commit-within;
+                    description = "Used to tell solr when to commit the data";
+                  };
+                  log-verbose = mkOption {
+                    type = types.bool;
+                    default = defaults.full-text-search.solr.log-verbose;
+                    description = "If true, logs request and response bodies";
+                  };
+                  def-type = mkOption {
+                    type = types.str;
+                    default = defaults.full-text-search.solr.def-type;
+                    description = ''
+                      The defType parameter to lucene that defines the parser to
+                      use. You might want to try "edismax" or look here:
+                      https://lucene.apache.org/solr/guide/8_4/query-syntax-and-parsing.html#query-syntax-and-parsing
+                    '';
+                  };
+                  q-op = mkOption {
+                    type = types.str;
+                    default = defaults.full-text-search.solr.q-op;
+                    description = "The default combiner for tokens. One of {AND, OR}.";
+                  };
+                };
+              });
+              default = defaults.full-text-search.solr;
+              description = "Configuration for the SOLR backend.";
+            };
+            migration = mkOption {
+              type = types.submodule({
+                options = {
+                  index-all-chunk = mkOption {
+                    type = types.int;
+                    default = defaults.full-text-search.migration.index-all-chunk;
+                    description = ''
+                      Chunk size to use when indexing data from the database. This
+                      many attachments are loaded into memory and pushed to the
+                      full-text index.
+                    '';
+                  };
+                };
+              });
+              default = defaults.full-text-search.migration;
+              description = "Settings for running the index migration tasks";
+            };
+          };
+        });
+        default = defaults.full-text-search;
+        description = "Configuration for full-text search.";
       };
     };
   };

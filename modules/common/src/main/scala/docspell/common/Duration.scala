@@ -53,6 +53,9 @@ object Duration {
   def days(n: Long): Duration =
     apply(JDur.ofDays(n))
 
+  def years(n: Long): Duration =
+    days(n * 365)
+
   def nanos(n: Long): Duration =
     Duration(n)
 

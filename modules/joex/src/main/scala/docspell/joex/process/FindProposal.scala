@@ -8,6 +8,7 @@ import cats.effect.Sync
 import docspell.analysis.contact._
 import docspell.common.MetaProposal.Candidate
 import docspell.common._
+import docspell.joex.Config
 import docspell.joex.scheduler.{Context, Task}
 import docspell.store.records._
 
@@ -16,33 +17,42 @@ import docspell.store.records._
   */
 object FindProposal {
 
-  def apply[F[_]: Sync](data: ItemData): Task[F, ProcessItemArgs, ItemData] =
+  def apply[F[_]: Sync](
+      cfg: Config.Processing
+  )(data: ItemData): Task[F, ProcessItemArgs, ItemData] =
     Task { ctx =>
       val rmas = data.metas.map(rm => rm.copy(nerlabels = removeDuplicates(rm.nerlabels)))
 
       ctx.logger.info("Starting find-proposal") *>
         rmas
           .traverse(rm =>
-            processAttachment(rm, data.findDates(rm), ctx)
+            processAttachment(cfg, rm, data.findDates(rm), ctx)
               .map(ml => rm.copy(proposals = ml))
           )
           .map(rmv => data.copy(metas = rmv))
     }
 
   def processAttachment[F[_]: Sync](
+      cfg: Config.Processing,
       rm: RAttachmentMeta,
       rd: Vector[NerDateLabel],
       ctx: Context[F, ProcessItemArgs]
   ): F[MetaProposalList] = {
     val finder = Finder.searchExact(ctx).next(Finder.searchFuzzy(ctx))
-    List(finder.find(rm.nerlabels), makeDateProposal(rd))
+    List(finder.find(rm.nerlabels), makeDateProposal(cfg, rd))
       .traverse(identity)
       .map(MetaProposalList.flatten)
   }
 
-  def makeDateProposal[F[_]: Sync](dates: Vector[NerDateLabel]): F[MetaProposalList] =
+  def makeDateProposal[F[_]: Sync](
+      cfg: Config.Processing,
+      dates: Vector[NerDateLabel]
+  ): F[MetaProposalList] =
     Timestamp.current[F].map { now =>
-      val latestFirst     = dates.sortWith((l1, l2) => l1.date.isAfter(l2.date))
+      val maxFuture = now.plus(Duration.years(cfg.maxDueDateYears.toLong))
+      val latestFirst = dates
+        .filter(_.date.isBefore(maxFuture.toUtcDate))
+        .sortWith((l1, l2) => l1.date.isAfter(l2.date))
       val nowDate         = now.value.atZone(ZoneId.of("GMT")).toLocalDate
       val (after, before) = latestFirst.span(ndl => ndl.date.isAfter(nowDate))
 

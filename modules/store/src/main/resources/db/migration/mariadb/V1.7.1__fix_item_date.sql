@@ -1,0 +1,5 @@
+ALTER TABLE `item`
+MODIFY `itemdate` DATETIME NULL;
+
+ALTER TABLE `item`
+MODIFY `duedate` DATETIME NULL;

@@ -25,7 +25,8 @@ case class Config(
     sendMail: MailSendConfig,
     files: Files,
     mailDebug: Boolean,
-    fullTextSearch: Config.FullTextSearch
+    fullTextSearch: Config.FullTextSearch,
+    processing: Config.Processing
 )
 
 object Config {
@@ -47,4 +48,6 @@ object Config {
 
     final case class Migration(indexAllChunk: Int)
   }
+
+  case class Processing(maxDueDateYears: Int)
 }
