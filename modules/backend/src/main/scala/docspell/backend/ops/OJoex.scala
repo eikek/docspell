@@ -2,6 +2,7 @@ package docspell.backend.ops
 
 import cats.implicits._
 import cats.effect._
+import cats.data.OptionT
 import docspell.common.{Ident, NodeType}
 import docspell.joexapi.client.JoexClient
 import docspell.store.Store
@@ -28,10 +29,10 @@ object OJoex {
         } yield ()
 
       def cancelJob(job: Ident, worker: Ident): F[Boolean] =
-        for {
-          node   <- store.transact(RNode.findById(worker))
-          cancel <- node.traverse(n => client.cancelJob(n.url, job))
-        } yield cancel.isDefined
+        (for {
+          node   <- OptionT(store.transact(RNode.findById(worker)))
+          cancel <- OptionT.liftF(client.cancelJob(node.url, job))
+        } yield cancel.success).getOrElse(false)
     })
 
   def create[F[_]: ConcurrentEffect](

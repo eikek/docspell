@@ -2,6 +2,7 @@ package docspell.joex.process
 
 import cats.implicits._
 import cats.effect._
+import cats.data.OptionT
 import fs2.Stream
 import docspell.common.{ItemState, ProcessItemArgs}
 import docspell.joex.Config
@@ -11,15 +12,22 @@ import docspell.store.records.RItem
 import docspell.ftsclient.FtsClient
 
 object ItemHandler {
-  def onCancel[F[_]: Sync: ContextShift]: Task[F, ProcessItemArgs, Unit] =
-    logWarn("Now cancelling. Deleting potentially created data.").flatMap(_ =>
-      deleteByFileIds.flatMap(_ => deleteFiles)
+  type Args = ProcessItemArgs
+
+  def onCancel[F[_]: Sync: ContextShift]: Task[F, Args, Unit] =
+    logWarn("Now cancelling.").flatMap(_ =>
+      markItemCreated.flatMap {
+        case true =>
+          Task.pure(())
+        case false =>
+          deleteByFileIds[F].flatMap(_ => deleteFiles)
+      }
     )
 
   def newItem[F[_]: ConcurrentEffect: ContextShift](
       cfg: Config,
       fts: FtsClient[F]
-  ): Task[F, ProcessItemArgs, Unit] =
+  ): Task[F, Args, Unit] =
     CreateItem[F]
       .flatMap(itemStateTask(ItemState.Processing))
       .flatMap(safeProcess[F](cfg, fts))
@@ -34,13 +42,13 @@ object ItemHandler {
         .map(_ => data)
     )
 
-  def isLastRetry[F[_]: Sync]: Task[F, ProcessItemArgs, Boolean] =
+  def isLastRetry[F[_]: Sync]: Task[F, Args, Boolean] =
     Task(_.isLastRetry)
 
   def safeProcess[F[_]: ConcurrentEffect: ContextShift](
       cfg: Config,
       fts: FtsClient[F]
-  )(data: ItemData): Task[F, ProcessItemArgs, ItemData] =
+  )(data: ItemData): Task[F, Args, ItemData] =
     isLastRetry[F].flatMap {
       case true =>
         ProcessItem[F](cfg, fts)(data).attempt.flatMap({
@@ -56,24 +64,50 @@ object ItemHandler {
         ProcessItem[F](cfg, fts)(data).flatMap(itemStateTask(ItemState.Created))
     }
 
-  def deleteByFileIds[F[_]: Sync: ContextShift]: Task[F, ProcessItemArgs, Unit] =
+  private def markItemCreated[F[_]: Sync]: Task[F, Args, Boolean] =
+    Task { ctx =>
+      val fileMetaIds = ctx.args.files.map(_.fileMetaId).toSet
+      (for {
+        item <- OptionT(ctx.store.transact(QItem.findOneByFileIds(fileMetaIds.toSeq)))
+        _ <- OptionT.liftF(
+          ctx.logger.info("Processing cancelled. Marking item as created anyways.")
+        )
+        _ <- OptionT.liftF(
+          ctx.store
+            .transact(
+              RItem.updateState(item.id, ItemState.Created, ItemState.invalidStates)
+            )
+        )
+      } yield true)
+        .getOrElseF(
+          ctx.logger.warn("Processing cancelled. No item created").map(_ => false)
+        )
+    }
+
+  def deleteByFileIds[F[_]: Sync: ContextShift]: Task[F, Args, Unit] =
     Task { ctx =>
       for {
         items <- ctx.store.transact(QItem.findByFileIds(ctx.args.files.map(_.fileMetaId)))
-        _     <- ctx.logger.info(s"Deleting items ${items.map(_.id.id)}")
-        _     <- items.traverse(i => QItem.delete(ctx.store)(i.id, ctx.args.meta.collective))
+        _ <-
+          if (items.nonEmpty) ctx.logger.info(s"Deleting items ${items.map(_.id.id)}")
+          else
+            ctx.logger.info(
+              s"No items found for file ids ${ctx.args.files.map(_.fileMetaId)}"
+            )
+        _ <- items.traverse(i => QItem.delete(ctx.store)(i.id, ctx.args.meta.collective))
       } yield ()
     }
 
-  private def deleteFiles[F[_]: Sync]: Task[F, ProcessItemArgs, Unit] =
+  private def deleteFiles[F[_]: Sync]: Task[F, Args, Unit] =
     Task(ctx =>
-      Stream
-        .emits(ctx.args.files.map(_.fileMetaId.id))
-        .flatMap(id => ctx.store.bitpeace.delete(id).attempt.drain)
-        .compile
-        .drain
+      ctx.logger.info("Deleting input files …") *>
+        Stream
+          .emits(ctx.args.files.map(_.fileMetaId.id))
+          .flatMap(id => ctx.store.bitpeace.delete(id).attempt.drain)
+          .compile
+          .drain
     )
 
-  private def logWarn[F[_]](msg: => String): Task[F, ProcessItemArgs, Unit] =
+  private def logWarn[F[_]](msg: => String): Task[F, Args, Unit] =
     Task(_.logger.warn(msg))
 }

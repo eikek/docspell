@@ -20,7 +20,7 @@ object JobState {
   /** Is currently executing */
   case object Running extends JobState {}
 
-  /** Finished with failure and is being retried. */
+  /** Task completed with failure and is being retried. */
   case object Stuck extends JobState {}
 
   /** Finished finally with a failure */
@@ -34,8 +34,9 @@ object JobState {
 
   val all: Set[JobState] =
     Set(Waiting, Scheduled, Running, Stuck, Failed, Cancelled, Success)
-  val queued: Set[JobState] = Set(Waiting, Scheduled, Stuck)
-  val done: Set[JobState]   = Set(Failed, Cancelled, Success)
+  val queued: Set[JobState]     = Set(Waiting, Scheduled, Stuck)
+  val done: Set[JobState]       = Set(Failed, Cancelled, Success)
+  val inProgress: Set[JobState] = Set(Scheduled, Running, Stuck)
 
   def parse(str: String): Either[String, JobState] =
     str.toLowerCase match {

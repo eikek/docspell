@@ -30,5 +30,4 @@ object ProcessItem {
       .flatMap(FindProposal[F](cfg.processing))
       .flatMap(EvalProposals[F])
       .flatMap(SaveProposals[F])
-
 }
