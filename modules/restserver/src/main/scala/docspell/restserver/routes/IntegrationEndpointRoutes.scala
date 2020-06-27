@@ -8,6 +8,7 @@ import docspell.common._
 import docspell.restserver.Config
 import docspell.restserver.conv.Conversions._
 import docspell.restserver.http4s.Responses
+import docspell.store.records.RItem
 import org.http4s._
 import org.http4s.circe.CirceEntityEncoder._
 import org.http4s.dsl.Http4sDsl
@@ -24,12 +25,17 @@ object IntegrationEndpointRoutes {
     val dsl = new Http4sDsl[F] {}
     import dsl._
 
+    def validate(req: Request[F], collective: Ident) =
+      for {
+        _ <- authRequest(req, cfg.integrationEndpoint)
+        _ <- checkEnabled(cfg.integrationEndpoint)
+        _ <- lookupCollective(collective, backend)
+      } yield ()
+
     HttpRoutes.of {
       case req @ POST -> Root / "item" / Ident(collective) =>
         (for {
-          _ <- authRequest(req, cfg.integrationEndpoint)
-          _ <- checkEnabled(cfg.integrationEndpoint)
-          _ <- lookupCollective(collective, backend)
+          _ <- validate(req, collective)
           res <- EitherT.liftF[F, Response[F], Response[F]](
             uploadFile(collective, backend, cfg, dsl)(req)
           )
@@ -37,11 +43,20 @@ object IntegrationEndpointRoutes {
 
       case req @ GET -> Root / "item" / Ident(collective) =>
         (for {
-          _   <- authRequest(req, cfg.integrationEndpoint)
-          _   <- checkEnabled(cfg.integrationEndpoint)
-          _   <- lookupCollective(collective, backend)
+          _   <- validate(req, collective)
           res <- EitherT.liftF[F, Response[F], Response[F]](Ok(()))
         } yield res).fold(identity, identity)
+
+      case req @ GET -> Root / "checkfile" / Ident(collective) / checksum =>
+        (for {
+          _ <- validate(req, collective)
+          items <- EitherT.liftF[F, Response[F], Vector[RItem]](
+            backend.itemSearch.findByFileCollective(checksum, collective)
+          )
+          resp <-
+            EitherT.liftF[F, Response[F], Response[F]](Ok(CheckFileRoutes.convert(items)))
+        } yield resp).fold(identity, identity)
+
     }
   }
 

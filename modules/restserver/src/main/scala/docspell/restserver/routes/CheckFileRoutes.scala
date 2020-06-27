@@ -42,7 +42,7 @@ object CheckFileRoutes {
     }
   }
 
-  private def convert(v: Vector[RItem]): CheckFileResult =
+  def convert(v: Vector[RItem]): CheckFileResult =
     CheckFileResult(
       v.nonEmpty,
       v.map(r => BasicItem(r.id, r.name, r.direction, r.state, r.created, r.itemDate))
