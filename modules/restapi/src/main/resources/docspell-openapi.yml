@@ -299,8 +299,8 @@ paths:
                 $ref: "#/components/schemas/BasicResult"
   /open/integration/item/{id}:
     get:
-      tags: [ Upload Integration ]
-      summary: Upload files to docspell.
+      tags: [ Integration Endpoint ]
+      summary: Check if integration endpoint is available.
       description: |
         Allows to check whether an integration endpoint is enabled for
         a collective. The collective is given by the `id` parameter.
@@ -325,7 +325,7 @@ paths:
         401:
           description: Unauthorized
     post:
-      tags: [ Upload Integration ]
+      tags: [ Integration Endpoint ]
       summary: Upload files to docspell.
       description: |
         Upload a file to docspell for processing. The id is a
@@ -368,6 +368,30 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BasicResult"
+  /open/integration/checkfile/{id}/{checksum}:
+    get:
+      tags: [ Integration Endpoint ]
+      summary: Check if a file is in docspell.
+      description: |
+        Checks if a file with the given SHA-256 checksum is in
+        docspell. The `id` is the *collective name*. This route only
+        exists, if it is enabled in the configuration file.
+
+        The result shows all items that contains a file with the given
+        checksum.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+        - $ref: "#/components/parameters/checksum"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CheckFileResult"
+
   /open/signup/register:
     post:
       tags: [ Registration ]

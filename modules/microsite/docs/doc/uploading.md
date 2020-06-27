@@ -112,8 +112,15 @@ the [configuration file](configure#rest-server).
 If queried by a `GET` request, it returns whether it is enabled and
 the collective exists.
 
-See the [SMTP gateway](tools/smtpgateway) for an example to use this
-endpoint.
+It is also possible to check for existing files using their sha256
+checksum with:
+
+```
+/api/v1/open/integration/checkfile/[collective-name]/[sha256-checksum]
+```
+
+See the [SMTP gateway](tools/smtpgateway) or the [consumedir
+script](tools/consumedir) for examples to use this endpoint.
 
 ## The Request
 
