@@ -3,13 +3,14 @@ package docspell.store.records
 import cats.effect.Sync
 import cats.implicits._
 import fs2.Stream
-import doobie._
-import doobie.implicits._
-import io.circe.Encoder
 
 import docspell.common._
 import docspell.store.impl.Column
 import docspell.store.impl.Implicits._
+
+import doobie._
+import doobie.implicits._
+import io.circe.Encoder
 
 case class RJob(
     id: Ident,

@@ -2,6 +2,7 @@ package docspell.restserver.routes
 
 import cats.effect._
 import cats.implicits._
+
 import docspell.backend.BackendApp
 import docspell.backend.auth.AuthToken
 import docspell.common.Ident
@@ -9,6 +10,7 @@ import docspell.common.syntax.all._
 import docspell.restapi.model._
 import docspell.restserver.conv.Conversions._
 import docspell.restserver.http4s.QueryParam
+
 import org.http4s.HttpRoutes
 import org.http4s.circe.CirceEntityDecoder._
 import org.http4s.circe.CirceEntityEncoder._

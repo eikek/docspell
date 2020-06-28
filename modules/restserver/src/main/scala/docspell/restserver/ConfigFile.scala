@@ -1,7 +1,8 @@
 package docspell.restserver
 
-import docspell.common.config.Implicits._
 import docspell.backend.signup.{Config => SignupConfig}
+import docspell.common.config.Implicits._
+
 import pureconfig._
 import pureconfig.generic.auto._
 

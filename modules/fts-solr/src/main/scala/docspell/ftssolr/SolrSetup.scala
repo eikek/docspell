@@ -1,15 +1,17 @@
 package docspell.ftssolr
 
 import cats.effect._
-import org.http4s._
 import cats.implicits._
-import org.http4s.client.Client
-import org.http4s.circe._
-import org.http4s.client.dsl.Http4sClientDsl
-import _root_.io.circe.syntax._
+
+import docspell.common._
+
 import _root_.io.circe._
 import _root_.io.circe.generic.semiauto._
-import docspell.common._
+import _root_.io.circe.syntax._
+import org.http4s._
+import org.http4s.circe._
+import org.http4s.client.Client
+import org.http4s.client.dsl.Http4sClientDsl
 
 trait SolrSetup[F[_]] {
 

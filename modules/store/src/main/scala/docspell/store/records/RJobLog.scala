@@ -1,10 +1,11 @@
 package docspell.store.records
 
-import doobie._
-import doobie.implicits._
 import docspell.common._
 import docspell.store.impl.Column
 import docspell.store.impl.Implicits._
+
+import doobie._
+import doobie.implicits._
 
 case class RJobLog(
     id: Ident,

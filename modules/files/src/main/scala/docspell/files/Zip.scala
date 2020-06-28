@@ -1,11 +1,13 @@
 package docspell.files
 
+import java.io.InputStream
+import java.nio.file.Paths
+import java.util.zip.ZipInputStream
+
 import cats.effect._
 import cats.implicits._
 import fs2.{Pipe, Stream}
-import java.io.InputStream
-import java.util.zip.ZipInputStream
-import java.nio.file.Paths
+
 import docspell.common.Binary
 
 object Zip {

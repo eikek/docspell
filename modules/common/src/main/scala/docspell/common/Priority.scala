@@ -1,7 +1,8 @@
 package docspell.common
 
-import cats.implicits._
 import cats.Order
+import cats.implicits._
+
 import io.circe.{Decoder, Encoder}
 
 sealed trait Priority { self: Product =>

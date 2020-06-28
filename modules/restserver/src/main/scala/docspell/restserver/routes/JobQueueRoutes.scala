@@ -2,10 +2,12 @@ package docspell.restserver.routes
 
 import cats.effect._
 import cats.implicits._
+
 import docspell.backend.BackendApp
 import docspell.backend.auth.AuthToken
 import docspell.common.Ident
 import docspell.restserver.conv.Conversions
+
 import org.http4s.HttpRoutes
 import org.http4s.circe.CirceEntityEncoder._
 import org.http4s.dsl.Http4sDsl

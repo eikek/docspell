@@ -1,11 +1,12 @@
 package docspell.restserver
 
+import java.nio.file.{Files, Paths}
+
 import cats.effect._
 import cats.implicits._
 
-import java.nio.file.{Files, Paths}
-
 import docspell.common.{Banner, Pools, ThreadFactories}
+
 import org.log4s._
 
 object Main extends IOApp {

@@ -1,11 +1,12 @@
 package docspell.joex.scheduler
 
-import cats.implicits._
+import cats.effect._
 import cats.effect.concurrent.Semaphore
-import cats.effect.{Blocker, ConcurrentEffect, ContextShift, Resource}
+import cats.implicits._
+import fs2.concurrent.SignallingRef
+
 import docspell.store.Store
 import docspell.store.queue.JobQueue
-import fs2.concurrent.SignallingRef
 
 case class SchedulerBuilder[F[_]: ConcurrentEffect: ContextShift](
     config: SchedulerConfig,

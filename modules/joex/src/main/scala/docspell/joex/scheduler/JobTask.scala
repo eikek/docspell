@@ -1,9 +1,11 @@
 package docspell.joex.scheduler
 
-import cats.implicits._
 import cats.effect.Sync
+import cats.implicits._
+
 import docspell.common.Ident
 import docspell.common.syntax.all._
+
 import io.circe.Decoder
 
 /**

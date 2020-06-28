@@ -1,10 +1,13 @@
 package docspell.common
 
-import docspell.common.syntax.all._
-import io.circe.{Decoder, Encoder}
-import java.nio.charset.StandardCharsets
 import java.nio.charset.Charset
+import java.nio.charset.StandardCharsets
+
 import cats.data.NonEmptyList
+
+import docspell.common.syntax.all._
+
+import io.circe.{Decoder, Encoder}
 
 /** A MIME Type impl with just enough features for the use here.
   */

@@ -2,13 +2,15 @@ package docspell.restserver.routes
 
 import cats.effect._
 import cats.implicits._
+
 import docspell.backend.auth._
 import docspell.restapi.model._
 import docspell.restserver._
 import docspell.restserver.auth._
+
 import org.http4s._
-import org.http4s.circe.CirceEntityEncoder._
 import org.http4s.circe.CirceEntityDecoder._
+import org.http4s.circe.CirceEntityEncoder._
 import org.http4s.dsl.Http4sDsl
 
 object LoginRoutes {

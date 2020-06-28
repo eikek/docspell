@@ -1,16 +1,18 @@
 package docspell.backend.ops
 
 import cats.data.OptionT
-import cats.implicits._
 import cats.effect.{Effect, Resource}
+import cats.implicits._
+
+import docspell.common._
+import docspell.ftsclient.FtsClient
+import docspell.store.queries.{QAttachment, QItem}
+import docspell.store.records._
+import docspell.store.{AddResult, Store}
+
 import doobie._
 import doobie.implicits._
 import org.log4s.getLogger
-import docspell.store.{AddResult, Store}
-import docspell.store.queries.{QAttachment, QItem}
-import docspell.common._
-import docspell.store.records._
-import docspell.ftsclient.FtsClient
 
 trait OItem[F[_]] {
 

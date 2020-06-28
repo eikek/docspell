@@ -1,9 +1,10 @@
 package docspell.joex.extract
 
+import java.nio.charset.Charset
+
 import emil.BodyContent
 import emil.jsoup._
 import scodec.bits.ByteVector
-import java.nio.charset.Charset
 
 object JsoupSanitizer {
 

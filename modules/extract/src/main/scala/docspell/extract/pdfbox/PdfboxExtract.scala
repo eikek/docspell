@@ -3,14 +3,16 @@ package docspell.extract.pdfbox
 import java.io.InputStream
 import java.nio.file.Path
 
-import cats.implicits._
+import scala.util.{Try, Using}
+
 import cats.effect.Sync
+import cats.implicits._
+import fs2.Stream
+
+import docspell.extract.internal.Text
+
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.text.PDFTextStripper
-
-import scala.util.{Try, Using}
-import fs2.Stream
-import docspell.extract.internal.Text
 
 object PdfboxExtract {
 

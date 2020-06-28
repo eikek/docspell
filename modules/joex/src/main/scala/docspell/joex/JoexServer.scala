@@ -2,15 +2,17 @@ package docspell.joex
 
 import cats.effect._
 import cats.effect.concurrent.Ref
-import docspell.common.Pools
-import docspell.joex.routes._
-import org.http4s.server.blaze.BlazeServerBuilder
-import org.http4s.implicits._
 import fs2.Stream
 import fs2.concurrent.SignallingRef
+
+import docspell.common.Pools
+import docspell.joex.routes._
+
 import org.http4s.HttpApp
-import org.http4s.server.middleware.Logger
+import org.http4s.implicits._
 import org.http4s.server.Router
+import org.http4s.server.blaze.BlazeServerBuilder
+import org.http4s.server.middleware.Logger
 
 object JoexServer {
 

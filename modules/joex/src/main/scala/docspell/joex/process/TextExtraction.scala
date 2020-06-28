@@ -1,15 +1,17 @@
 package docspell.joex.process
 
-import bitpeace.{Mimetype, RangeDef}
 import cats.data.OptionT
-import cats.implicits._
 import cats.effect._
+import cats.implicits._
+
 import docspell.common._
 import docspell.extract.{ExtractConfig, ExtractResult, Extraction}
+import docspell.ftsclient.{FtsClient, TextData}
 import docspell.joex.scheduler.{Context, Task}
 import docspell.store.records.{RAttachment, RAttachmentMeta, RFileMeta}
 import docspell.store.syntax.MimeTypes._
-import docspell.ftsclient.{FtsClient, TextData}
+
+import bitpeace.{Mimetype, RangeDef}
 
 object TextExtraction {
 

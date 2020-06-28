@@ -2,9 +2,10 @@ package docspell.convert
 
 import java.nio.charset.StandardCharsets
 
-import fs2._
 import cats.effect._
 import cats.implicits._
+import fs2._
+
 import docspell.common._
 import docspell.convert.ConversionResult.Handler
 import docspell.convert.extern.{Tesseract, Unoconv, WkHtmlPdf}

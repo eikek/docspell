@@ -2,9 +2,10 @@ package docspell.joex.process
 
 import java.time.ZoneId
 
-import cats.{Applicative, FlatMap}
-import cats.implicits._
 import cats.effect.Sync
+import cats.implicits._
+import cats.{Applicative, FlatMap}
+
 import docspell.analysis.contact._
 import docspell.common.MetaProposal.Candidate
 import docspell.common._

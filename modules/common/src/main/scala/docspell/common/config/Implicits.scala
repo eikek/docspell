@@ -1,12 +1,13 @@
 package docspell.common.config
 
+import scala.reflect.ClassTag
+
 import docspell.common._
+
+import com.github.eikek.calev.CalEvent
 import pureconfig._
 import pureconfig.error.{CannotConvert, FailureReason}
 import scodec.bits.ByteVector
-import com.github.eikek.calev.CalEvent
-
-import scala.reflect.ClassTag
 
 object Implicits {
   implicit val lenientUriReader: ConfigReader[LenientUri] =

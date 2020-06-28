@@ -1,14 +1,15 @@
 package docspell.backend.ops
 
-import cats.implicits._
-import cats.effect._
 import cats.data.OptionT
-import io.circe.Encoder
+import cats.effect._
+import cats.implicits._
 import fs2.Stream
 
+import docspell.common._
 import docspell.store.queue.JobQueue
 import docspell.store.usertask._
-import docspell.common._
+
+import io.circe.Encoder
 
 trait OUserTask[F[_]] {
 

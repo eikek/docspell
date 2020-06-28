@@ -1,10 +1,10 @@
 package docspell.analysis.contact
 
-import fs2.Stream
 import cats.implicits._
+import fs2.Stream
 
-import docspell.common._
 import docspell.analysis.split._
+import docspell.common._
 
 object Contact {
   private[this] val protocols = Set("ftp", "http", "https")

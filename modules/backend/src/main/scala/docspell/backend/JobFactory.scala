@@ -2,6 +2,7 @@ package docspell.backend
 
 import cats.effect._
 import cats.implicits._
+
 import docspell.common._
 import docspell.store.records.RJob
 

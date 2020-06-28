@@ -1,18 +1,19 @@
 package docspell.backend.ops
 
-import fs2.Stream
+import cats.data.OptionT
 import cats.effect._
 import cats.implicits._
-import cats.data.OptionT
-import emil._
-import bitpeace.{FileMeta, RangeDef}
+import fs2.Stream
 
+import docspell.backend.ops.OMail._
 import docspell.common._
 import docspell.store._
-import docspell.store.syntax.MimeTypes._
-import docspell.store.records._
 import docspell.store.queries.QMails
-import OMail.{ImapSettings, ItemMail, Sent, SmtpSettings}
+import docspell.store.records._
+import docspell.store.syntax.MimeTypes._
+
+import bitpeace.{FileMeta, RangeDef}
+import emil._
 
 trait OMail[F[_]] {
 

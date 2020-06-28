@@ -1,19 +1,20 @@
 package docspell.restserver.routes
 
+import cats.data.OptionT
 import cats.effect._
 import cats.implicits._
-import cats.data.OptionT
-import org.http4s._
-import org.http4s.dsl.Http4sDsl
-import org.http4s.circe.CirceEntityEncoder._
-import org.http4s.circe.CirceEntityDecoder._
 
 import docspell.backend.BackendApp
 import docspell.backend.auth.AuthToken
 import docspell.common._
 import docspell.restapi.model._
-import docspell.store.usertask._
 import docspell.restserver.conv.Conversions
+import docspell.store.usertask._
+
+import org.http4s._
+import org.http4s.circe.CirceEntityDecoder._
+import org.http4s.circe.CirceEntityEncoder._
+import org.http4s.dsl.Http4sDsl
 
 object ScanMailboxRoutes {
 

@@ -2,9 +2,10 @@ package docspell.convert.extern
 
 import java.nio.file.Path
 
-import cats.implicits._
 import cats.effect._
+import cats.implicits._
 import fs2.{Pipe, Stream}
+
 import docspell.common._
 import docspell.convert.ConversionResult
 import docspell.convert.ConversionResult.{Handler, successPdf, successPdfTxt}

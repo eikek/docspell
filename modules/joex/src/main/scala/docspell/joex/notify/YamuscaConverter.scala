@@ -1,8 +1,9 @@
 package docspell.joex.notify
 
-import yamusca.imports._
-import yamusca.implicits._
 import docspell.common._
+
+import yamusca.implicits._
+import yamusca.imports._
 
 trait YamuscaConverter {
 

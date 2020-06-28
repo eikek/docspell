@@ -1,6 +1,7 @@
 package docspell.analysis.contact
 
 import cats.data.NonEmptyList
+
 import docspell.common.LenientUri
 
 case class Domain(labels: NonEmptyList[String], tld: String) {

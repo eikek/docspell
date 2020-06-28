@@ -1,12 +1,13 @@
 package docspell.backend.ops
 
-import cats.implicits._
 import cats.effect.{Effect, Resource}
+import cats.implicits._
+
+import docspell.backend.ops.OOrganization._
 import docspell.common._
 import docspell.store._
-import docspell.store.records._
-import OOrganization._
 import docspell.store.queries.QOrganization
+import docspell.store.records._
 
 trait OOrganization[F[_]] {
   def findAllOrg(account: AccountId, query: Option[String]): F[Vector[OrgAndContacts]]

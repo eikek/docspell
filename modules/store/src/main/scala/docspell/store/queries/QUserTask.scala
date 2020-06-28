@@ -1,10 +1,12 @@
 package docspell.store.queries
 
 import fs2._
+
 import docspell.common._
 import docspell.store.impl.Implicits._
 import docspell.store.records._
 import docspell.store.usertask.UserTask
+
 import doobie._
 
 object QUserTask {

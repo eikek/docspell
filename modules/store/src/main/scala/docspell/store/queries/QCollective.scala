@@ -1,12 +1,14 @@
 package docspell.store.queries
 
 import fs2.Stream
-import doobie._
-import doobie.implicits._
+
+import docspell.common.ContactKind
 import docspell.common.{Direction, Ident}
 import docspell.store.impl.Implicits._
 import docspell.store.records._
-import docspell.common.ContactKind
+
+import doobie._
+import doobie.implicits._
 
 object QCollective {
 

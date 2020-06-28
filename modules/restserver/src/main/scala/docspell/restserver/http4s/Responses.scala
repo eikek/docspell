@@ -1,7 +1,8 @@
 package docspell.restserver.http4s
 
-import fs2.{Pure, Stream}
 import fs2.text.utf8Encode
+import fs2.{Pure, Stream}
+
 import org.http4s._
 import org.http4s.headers._
 

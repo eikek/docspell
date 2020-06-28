@@ -1,6 +1,7 @@
 package docspell.backend
 
 import docspell.common.Password
+
 import org.mindrot.jbcrypt.BCrypt
 
 object PasswordCrypt {

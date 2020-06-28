@@ -1,13 +1,16 @@
 package docspell.common
 
-import cats.implicits._
+import java.time.LocalDate
+
 import cats.data.NonEmptyList
-import docspell.common._
+import cats.implicits._
+import cats.kernel.Order
+
 import docspell.common.MetaProposal.Candidate
+import docspell.common._
+
 import io.circe._
 import io.circe.generic.semiauto._
-import java.time.LocalDate
-import cats.kernel.Order
 
 /** A proposed meta data to an item.
   *

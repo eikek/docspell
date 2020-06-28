@@ -2,7 +2,9 @@ package docspell.common
 
 import cats.data.NonEmptyList
 import cats.kernel.Monoid
+
 import docspell.common.MetaProposal.Candidate
+
 import io.circe._
 import io.circe.generic.semiauto._
 

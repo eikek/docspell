@@ -1,6 +1,7 @@
 package docspell.common.syntax
 
 import cats.implicits._
+
 import io.circe.Decoder
 import io.circe.parser._
 

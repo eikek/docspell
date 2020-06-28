@@ -1,8 +1,9 @@
 package docspell.backend.ops
 
-import cats.implicits._
-import cats.effect._
 import cats.data.OptionT
+import cats.effect._
+import cats.implicits._
+
 import docspell.backend.ops.OJob.{CollectiveQueueState, JobCancelResult}
 import docspell.common.{Ident, JobState}
 import docspell.store.Store

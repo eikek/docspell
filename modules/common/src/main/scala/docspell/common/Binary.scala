@@ -1,9 +1,11 @@
 package docspell.common
 
-import cats.effect._
-import fs2.{Chunk, Pipe, Stream}
 import java.nio.charset.Charset
 import java.nio.charset.StandardCharsets
+
+import cats.effect._
+import fs2.{Chunk, Pipe, Stream}
+
 import scodec.bits.ByteVector
 
 final case class Binary[F[_]](name: String, mime: MimeType, data: Stream[F, Byte]) {

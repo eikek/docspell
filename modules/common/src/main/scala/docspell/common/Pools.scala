@@ -1,7 +1,8 @@
 package docspell.common
 
-import cats.effect._
 import scala.concurrent.ExecutionContext
+
+import cats.effect._
 
 /** Captures thread pools to use in an application.
   */

@@ -1,15 +1,16 @@
 package docspell.extract.rtf
 
 import java.io.{ByteArrayInputStream, InputStream}
-
-import cats.implicits._
-import cats.effect.Sync
-import docspell.common.MimeType
-import docspell.extract.internal.Text
-import fs2.Stream
 import javax.swing.text.rtf.RTFEditorKit
 
 import scala.util.Try
+
+import cats.effect.Sync
+import cats.implicits._
+import fs2.Stream
+
+import docspell.common.MimeType
+import docspell.extract.internal.Text
 
 object RtfExtract {
 

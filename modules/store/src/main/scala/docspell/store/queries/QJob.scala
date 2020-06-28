@@ -2,14 +2,16 @@ package docspell.store.queries
 
 import cats.effect.Effect
 import cats.implicits._
+import fs2.Stream
+
 import docspell.common._
 import docspell.common.syntax.all._
 import docspell.store.Store
 import docspell.store.impl.Implicits._
 import docspell.store.records.{RJob, RJobGroupUse, RJobLog}
+
 import doobie._
 import doobie.implicits._
-import fs2.Stream
 import org.log4s._
 
 object QJob {

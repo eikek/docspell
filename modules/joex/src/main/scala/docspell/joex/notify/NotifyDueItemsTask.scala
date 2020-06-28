@@ -1,19 +1,20 @@
 package docspell.joex.notify
 
-import cats.implicits._
+import cats.data.OptionT
 import cats.effect._
+import cats.implicits._
+
+import docspell.backend.ops.OItemSearch.Batch
+import docspell.common._
+import docspell.joex.mail.EmilHeader
+import docspell.joex.scheduler.{Context, Task}
+import docspell.store.queries.QItem
+import docspell.store.records._
+
 import emil._
 import emil.builder._
-import emil.markdown._
 import emil.javamail.syntax._
-
-import docspell.common._
-import docspell.backend.ops.OItemSearch.Batch
-import docspell.store.records._
-import docspell.store.queries.QItem
-import docspell.joex.scheduler.{Context, Task}
-import cats.data.OptionT
-import docspell.joex.mail.EmilHeader
+import emil.markdown._
 
 object NotifyDueItemsTask {
   val maxItems: Int = 7

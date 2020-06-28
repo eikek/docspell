@@ -2,19 +2,21 @@ package docspell.restserver.routes
 
 import cats.effect._
 import cats.implicits._
+
 import docspell.backend.BackendApp
 import docspell.backend.auth.AuthToken
-import docspell.backend.ops.OItemSearch.Batch
 import docspell.backend.ops.OFulltext
-import docspell.common.{Ident, ItemState}
-import org.http4s.HttpRoutes
-import org.http4s.dsl.Http4sDsl
-import org.http4s.circe.CirceEntityEncoder._
-import org.http4s.circe.CirceEntityDecoder._
-import docspell.restapi.model._
+import docspell.backend.ops.OItemSearch.Batch
 import docspell.common.syntax.all._
-import docspell.restserver.conv.Conversions
+import docspell.common.{Ident, ItemState}
+import docspell.restapi.model._
 import docspell.restserver.Config
+import docspell.restserver.conv.Conversions
+
+import org.http4s.HttpRoutes
+import org.http4s.circe.CirceEntityDecoder._
+import org.http4s.circe.CirceEntityEncoder._
+import org.http4s.dsl.Http4sDsl
 import org.log4s._
 
 object ItemRoutes {

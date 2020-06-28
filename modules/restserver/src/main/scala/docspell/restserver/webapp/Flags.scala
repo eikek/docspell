@@ -1,12 +1,13 @@
 package docspell.restserver.webapp
 
-import io.circe._
-import io.circe.generic.semiauto._
+import docspell.backend.signup.{Config => SignupConfig}
 import docspell.common.LenientUri
 import docspell.restserver.{BuildInfo, Config}
-import docspell.backend.signup.{Config => SignupConfig}
-import yamusca.imports._
+
+import io.circe._
+import io.circe.generic.semiauto._
 import yamusca.implicits._
+import yamusca.imports._
 
 case class Flags(
     appName: String,

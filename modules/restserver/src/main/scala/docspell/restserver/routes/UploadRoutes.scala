@@ -2,15 +2,16 @@ package docspell.restserver.routes
 
 import cats.effect._
 import cats.implicits._
-import docspell.common._
+
 import docspell.backend.BackendApp
 import docspell.backend.auth.AuthToken
+import docspell.common._
 import docspell.restserver.Config
 import docspell.restserver.conv.Conversions._
 import docspell.restserver.http4s.ResponseGenerator
+
 import org.http4s._
 import org.http4s.circe.CirceEntityEncoder._
-import org.http4s.EntityDecoder._
 import org.http4s.dsl.Http4sDsl
 import org.http4s.multipart.Multipart
 import org.log4s._

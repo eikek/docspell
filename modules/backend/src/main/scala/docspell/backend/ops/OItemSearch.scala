@@ -1,25 +1,18 @@
 package docspell.backend.ops
 
-import fs2.Stream
 import cats.data.OptionT
-import cats.implicits._
 import cats.effect.{Effect, Resource}
-import doobie.implicits._
+import cats.implicits._
+import fs2.Stream
+
+import docspell.backend.ops.OItemSearch._
+import docspell.common._
 import docspell.store.Store
 import docspell.store.queries.{QAttachment, QItem}
-import OItemSearch.{
-  AttachmentArchiveData,
-  AttachmentData,
-  AttachmentSourceData,
-  Batch,
-  ItemData,
-  ListItem,
-  ListItemWithTags,
-  Query
-}
-import bitpeace.{FileMeta, RangeDef}
-import docspell.common._
 import docspell.store.records._
+
+import bitpeace.{FileMeta, RangeDef}
+import doobie.implicits._
 
 trait OItemSearch[F[_]] {
   def findItem(id: Ident, collective: Ident): F[Option[ItemData]]

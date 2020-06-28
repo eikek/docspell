@@ -1,10 +1,11 @@
 package docspell.restserver.webapp
 
 import cats.effect._
+
 import org.http4s.HttpRoutes
-import org.http4s.server.staticcontent.webjarService
 import org.http4s.server.staticcontent.NoopCacheStrategy
-import org.http4s.server.staticcontent.WebjarService.{WebjarAsset, Config => WebjarConfig}
+import org.http4s.server.staticcontent.WebjarService.{Config => WebjarConfig, WebjarAsset}
+import org.http4s.server.staticcontent.webjarService
 
 object WebjarRoutes {
 

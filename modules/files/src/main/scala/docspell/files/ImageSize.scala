@@ -2,15 +2,15 @@ package docspell.files
 
 import java.io.{ByteArrayInputStream, InputStream}
 import java.nio.file.Path
-
-import cats.implicits._
-import cats.effect._
-import fs2.Stream
 import javax.imageio.stream.{FileImageInputStream, ImageInputStream}
 import javax.imageio.{ImageIO, ImageReader}
 
 import scala.jdk.CollectionConverters._
 import scala.util.{Try, Using}
+
+import cats.effect._
+import cats.implicits._
+import fs2.Stream
 
 object ImageSize {
 

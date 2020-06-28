@@ -1,14 +1,14 @@
 package docspell.joex
 
 import docspell.analysis.TextAnalysisConfig
+import docspell.backend.Config.Files
 import docspell.common._
-import docspell.joex.scheduler.{PeriodicSchedulerConfig, SchedulerConfig}
-import docspell.store.JdbcConfig
 import docspell.convert.ConvertConfig
 import docspell.extract.ExtractConfig
-import docspell.joex.hk.HouseKeepingConfig
-import docspell.backend.Config.Files
 import docspell.ftssolr.SolrConfig
+import docspell.joex.hk.HouseKeepingConfig
+import docspell.joex.scheduler.{PeriodicSchedulerConfig, SchedulerConfig}
+import docspell.store.JdbcConfig
 
 case class Config(
     appId: Ident,

@@ -2,15 +2,17 @@ package docspell.restserver.routes
 
 import cats.effect._
 import cats.implicits._
+
 import docspell.backend.BackendApp
 import docspell.backend.auth.AuthToken
 import docspell.common.Ident
 import docspell.restapi.model.{BasicItem, CheckFileResult}
 import docspell.restserver.http4s.ResponseGenerator
+import docspell.store.records.RItem
+
 import org.http4s.HttpRoutes
 import org.http4s.circe.CirceEntityEncoder._
 import org.http4s.dsl.Http4sDsl
-import docspell.store.records.RItem
 
 object CheckFileRoutes {
 

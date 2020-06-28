@@ -1,13 +1,15 @@
 package docspell.joex.scheduler
 
-import cats.implicits._
 import cats.effect.{Concurrent, Sync}
+import cats.implicits._
 import fs2.{Pipe, Stream}
-import org.log4s.{LogLevel => _, _}
+
 import docspell.common._
 import docspell.common.syntax.all._
 import docspell.store.Store
 import docspell.store.records.RJobLog
+
+import org.log4s.{LogLevel => _, _}
 
 trait LogSink[F[_]] {
 

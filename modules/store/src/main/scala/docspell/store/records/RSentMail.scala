@@ -1,16 +1,18 @@
 package docspell.store.records
 
-import fs2.Stream
+import cats.data.NonEmptyList
+import cats.data.OptionT
 import cats.effect._
 import cats.implicits._
-import cats.data.NonEmptyList
-import doobie._
-import doobie.implicits._
+import fs2.Stream
+
 import docspell.common._
 import docspell.store.impl.Column
 import docspell.store.impl.Implicits._
+
+import doobie._
+import doobie.implicits._
 import emil.MailAddress
-import cats.data.OptionT
 
 case class RSentMail(
     id: Ident,

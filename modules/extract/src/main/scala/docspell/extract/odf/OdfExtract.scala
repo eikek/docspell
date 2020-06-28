@@ -1,17 +1,19 @@
 package docspell.extract.odf
 
+import java.io.{ByteArrayInputStream, InputStream}
+
+import scala.util.Try
+
 import cats.effect._
 import cats.implicits._
 import fs2.Stream
-import java.io.{ByteArrayInputStream, InputStream}
+
+import docspell.extract.internal.Text
 
 import org.apache.tika.metadata.Metadata
 import org.apache.tika.parser.ParseContext
 import org.apache.tika.parser.odf.OpenDocumentParser
 import org.apache.tika.sax.BodyContentHandler
-
-import scala.util.Try
-import docspell.extract.internal.Text
 
 object OdfExtract {
 

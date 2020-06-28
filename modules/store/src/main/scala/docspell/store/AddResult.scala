@@ -1,6 +1,6 @@
 package docspell.store
 
-import AddResult._
+import docspell.store.AddResult._
 
 sealed trait AddResult {
   def toEither: Either[Throwable, Unit]

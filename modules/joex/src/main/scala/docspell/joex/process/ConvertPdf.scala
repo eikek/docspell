@@ -1,19 +1,21 @@
 package docspell.joex.process
 
-import bitpeace.{Mimetype, MimetypeHint, RangeDef}
 import cats.Functor
-import cats.implicits._
-import cats.effect._
 import cats.data.{Kleisli, OptionT}
+import cats.effect._
+import cats.implicits._
 import fs2.Stream
+
 import docspell.common._
+import docspell.convert.ConversionResult.Handler
+import docspell.convert.SanitizeHtml
 import docspell.convert._
+import docspell.joex.extract.JsoupSanitizer
 import docspell.joex.scheduler._
 import docspell.store.records._
 import docspell.store.syntax.MimeTypes._
-import docspell.convert.ConversionResult.Handler
-import docspell.convert.SanitizeHtml
-import docspell.joex.extract.JsoupSanitizer
+
+import bitpeace.{Mimetype, MimetypeHint, RangeDef}
 
 /** Goes through all attachments and creates a PDF version of it where
   * supported.

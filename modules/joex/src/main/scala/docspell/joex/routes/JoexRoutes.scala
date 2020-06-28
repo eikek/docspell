@@ -2,10 +2,12 @@ package docspell.joex.routes
 
 import cats.effect._
 import cats.implicits._
+
 import docspell.common.{Duration, Ident, Timestamp}
 import docspell.joex.JoexApp
 import docspell.joexapi.model._
 import docspell.store.records.{RJob, RJobLog}
+
 import org.http4s.HttpRoutes
 import org.http4s.circe.CirceEntityEncoder._
 import org.http4s.dsl.Http4sDsl

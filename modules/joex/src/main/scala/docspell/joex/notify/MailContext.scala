@@ -1,11 +1,11 @@
 package docspell.joex.notify
 
+import docspell.common._
+import docspell.joex.notify.YamuscaConverter._
+import docspell.store.queries.QItem
+
 import yamusca.implicits._
 import yamusca.imports._
-
-import docspell.common._
-import docspell.store.queries.QItem
-import docspell.joex.notify.YamuscaConverter._
 
 /** The context for rendering the e-mail template. */
 case class MailContext(

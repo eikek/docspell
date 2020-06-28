@@ -1,14 +1,15 @@
 package docspell.convert.extern
 
+import java.nio.charset.Charset
 import java.nio.file.Path
 
 import cats.effect._
 import cats.implicits._
 import fs2.{Chunk, Stream}
+
 import docspell.common._
-import docspell.convert.{ConversionResult, SanitizeHtml}
 import docspell.convert.ConversionResult.Handler
-import java.nio.charset.Charset
+import docspell.convert.{ConversionResult, SanitizeHtml}
 
 object WkHtmlPdf {
 

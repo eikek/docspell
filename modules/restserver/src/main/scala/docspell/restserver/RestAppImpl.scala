@@ -1,14 +1,16 @@
 package docspell.restserver
 
-import cats.implicits._
+import scala.concurrent.ExecutionContext
+
 import cats.effect._
-import org.http4s.client.Client
+import cats.implicits._
+
 import docspell.backend.BackendApp
 import docspell.common.NodeType
 import docspell.ftsclient.FtsClient
 import docspell.ftssolr.SolrFtsClient
 
-import scala.concurrent.ExecutionContext
+import org.http4s.client.Client
 
 final class RestAppImpl[F[_]: Sync](val config: Config, val backend: BackendApp[F])
     extends RestApp[F] {

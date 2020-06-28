@@ -1,9 +1,10 @@
 package docspell.joex.scheduler
 
-import cats.implicits._
-import cats.{Applicative, ApplicativeError, FlatMap, Functor}
+import cats._
 import cats.data.Kleisli
 import cats.effect.Sync
+import cats.implicits._
+
 import docspell.common.Logger
 
 /**

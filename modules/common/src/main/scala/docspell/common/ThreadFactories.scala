@@ -1,12 +1,14 @@
 package docspell.common
 
-import java.util.concurrent.atomic.AtomicLong
-import java.util.concurrent.{Executors, ThreadFactory}
-import cats.effect._
-import scala.concurrent._
 import java.util.concurrent.ForkJoinPool
 import java.util.concurrent.ForkJoinPool.ForkJoinWorkerThreadFactory
 import java.util.concurrent.ForkJoinWorkerThread
+import java.util.concurrent.atomic.AtomicLong
+import java.util.concurrent.{Executors, ThreadFactory}
+
+import scala.concurrent._
+
+import cats.effect._
 
 object ThreadFactories {
 

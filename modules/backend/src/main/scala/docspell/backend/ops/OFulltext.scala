@@ -3,14 +3,15 @@ package docspell.backend.ops
 import cats.effect._
 import cats.implicits._
 import fs2.Stream
+
+import docspell.backend.JobFactory
+import docspell.backend.ops.OItemSearch._
 import docspell.common._
 import docspell.ftsclient._
-import docspell.backend.JobFactory
 import docspell.store.Store
-import docspell.store.records.RJob
-import docspell.store.queue.JobQueue
 import docspell.store.queries.QItem
-import OItemSearch.{Batch, ListItem, ListItemWithTags, Query}
+import docspell.store.queue.JobQueue
+import docspell.store.records.RJob
 
 trait OFulltext[F[_]] {
 

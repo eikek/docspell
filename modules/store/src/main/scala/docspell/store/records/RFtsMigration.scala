@@ -1,12 +1,14 @@
 package docspell.store.records
 
-import cats.implicits._
 import cats.effect._
+import cats.implicits._
+
+import docspell.common._
+import docspell.store.impl.Implicits._
+import docspell.store.impl._
+
 import doobie._
 import doobie.implicits._
-import docspell.common._
-import docspell.store.impl._
-import docspell.store.impl.Implicits._
 
 final case class RFtsMigration(
     id: Ident,

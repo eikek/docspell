@@ -1,11 +1,13 @@
 package docspell.store.records
 
+import fs2.Stream
+
 import docspell.common._
 import docspell.store.impl.Column
 import docspell.store.impl.Implicits._
+
 import doobie._
 import doobie.implicits._
-import fs2.Stream
 
 case class RCollective(
     id: Ident,

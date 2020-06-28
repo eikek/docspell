@@ -1,16 +1,18 @@
 package docspell.joexapi.client
 
-import cats.implicits._
-import cats.effect._
-import docspell.common.{Ident, LenientUri}
-import docspell.common.syntax.all._
-import docspell.joexapi.model.BasicResult
-import org.http4s.{Method, Request, Uri}
-import org.http4s.client.Client
-import org.http4s.client.blaze.BlazeClientBuilder
-import org.http4s.circe.CirceEntityDecoder._
 import scala.concurrent.ExecutionContext
 
+import cats.effect._
+import cats.implicits._
+
+import docspell.common.syntax.all._
+import docspell.common.{Ident, LenientUri}
+import docspell.joexapi.model.BasicResult
+
+import org.http4s.circe.CirceEntityDecoder._
+import org.http4s.client.Client
+import org.http4s.client.blaze.BlazeClientBuilder
+import org.http4s.{Method, Request, Uri}
 import org.log4s.getLogger
 
 trait JoexClient[F[_]] {

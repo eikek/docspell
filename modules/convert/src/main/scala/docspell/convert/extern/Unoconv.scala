@@ -4,6 +4,7 @@ import java.nio.file.Path
 
 import cats.effect._
 import fs2.Stream
+
 import docspell.common._
 import docspell.convert.ConversionResult
 import docspell.convert.ConversionResult.Handler

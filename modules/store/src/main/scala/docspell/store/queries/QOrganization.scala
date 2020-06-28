@@ -1,16 +1,18 @@
 package docspell.store.queries
 
-import fs2._
 import cats.implicits._
-import doobie._
-import doobie.implicits._
+import fs2._
+
 import docspell.common._
-import docspell.store.{AddResult, Store}
 import docspell.store.impl.Column
 import docspell.store.impl.Implicits._
 import docspell.store.records.ROrganization.{Columns => OC}
 import docspell.store.records.RPerson.{Columns => PC}
 import docspell.store.records._
+import docspell.store.{AddResult, Store}
+
+import doobie._
+import doobie.implicits._
 
 object QOrganization {
 

@@ -1,20 +1,22 @@
 package docspell.restserver.webapp
 
-import fs2.{Stream, text}
-import cats.effect._
-import cats.implicits._
-import org.http4s._
-import org.http4s.headers._
-import org.http4s.HttpRoutes
-import org.http4s.dsl.Http4sDsl
-import org.log4s._
-import io.circe.syntax._
-import yamusca.imports._
-import yamusca.implicits._
 import java.net.URL
 import java.util.concurrent.atomic.AtomicReference
 
+import cats.effect._
+import cats.implicits._
+import fs2.{Stream, text}
+
 import docspell.restserver.{BuildInfo, Config}
+
+import io.circe.syntax._
+import org.http4s.HttpRoutes
+import org.http4s._
+import org.http4s.dsl.Http4sDsl
+import org.http4s.headers._
+import org.log4s._
+import yamusca.implicits._
+import yamusca.imports._
 
 object TemplateRoutes {
   private[this] val logger = getLogger

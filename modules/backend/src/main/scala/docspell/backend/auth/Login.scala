@@ -2,14 +2,16 @@ package docspell.backend.auth
 
 import cats.effect._
 import cats.implicits._
-import Login._
+
+import docspell.backend.auth.Login._
 import docspell.common._
 import docspell.store.Store
 import docspell.store.queries.QLogin
 import docspell.store.records.RUser
+
+import org.log4s._
 import org.mindrot.jbcrypt.BCrypt
 import scodec.bits.ByteVector
-import org.log4s._
 
 trait Login[F[_]] {
 

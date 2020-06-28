@@ -2,13 +2,15 @@ package docspell.store.queue
 
 import cats.effect._
 import cats.implicits._
-import org.log4s.getLogger
-import com.github.eikek.fs2calev._
+
 import docspell.common._
 import docspell.common.syntax.all._
-import docspell.store.{AddResult, Store}
-import docspell.store.records._
 import docspell.store.queries.QPeriodicTask
+import docspell.store.records._
+import docspell.store.{AddResult, Store}
+
+import com.github.eikek.fs2calev._
+import org.log4s.getLogger
 
 trait PeriodicTaskStore[F[_]] {
 

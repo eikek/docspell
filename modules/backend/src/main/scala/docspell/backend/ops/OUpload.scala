@@ -1,17 +1,19 @@
 package docspell.backend.ops
 
-import bitpeace.MimetypeHint
 import cats.Functor
 import cats.data.{EitherT, OptionT}
 import cats.effect._
 import cats.implicits._
-import docspell.backend.{Config, JobFactory}
 import fs2.Stream
+
+import docspell.backend.{Config, JobFactory}
 import docspell.common._
 import docspell.common.syntax.all._
 import docspell.store.Store
 import docspell.store.queue.JobQueue
 import docspell.store.records._
+
+import bitpeace.MimetypeHint
 import org.log4s._
 
 trait OUpload[F[_]] {

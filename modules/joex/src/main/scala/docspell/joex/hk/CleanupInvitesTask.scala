@@ -1,7 +1,7 @@
 package docspell.joex.hk
 
-import cats.implicits._
 import cats.effect._
+import cats.implicits._
 
 import docspell.common._
 import docspell.joex.scheduler.Task

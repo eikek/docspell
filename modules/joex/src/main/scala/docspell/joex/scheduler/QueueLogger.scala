@@ -1,9 +1,10 @@
 package docspell.joex.scheduler
 
-import cats.implicits._
 import cats.effect.{Concurrent, Sync}
-import docspell.common._
+import cats.implicits._
 import fs2.concurrent.Queue
+
+import docspell.common._
 
 object QueueLogger {
 

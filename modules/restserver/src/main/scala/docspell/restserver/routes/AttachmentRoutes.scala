@@ -1,15 +1,9 @@
 package docspell.restserver.routes
 
-import bitpeace.FileMeta
 import cats.data.NonEmptyList
 import cats.effect._
 import cats.implicits._
-import org.http4s._
-import org.http4s.dsl.Http4sDsl
-import org.http4s.headers._
-import org.http4s.headers.ETag.EntityTag
-import org.http4s.circe.CirceEntityEncoder._
-import org.http4s.circe.CirceEntityDecoder._
+
 import docspell.backend.BackendApp
 import docspell.backend.auth.AuthToken
 import docspell.backend.ops._
@@ -17,6 +11,14 @@ import docspell.common.Ident
 import docspell.restapi.model._
 import docspell.restserver.conv.Conversions
 import docspell.restserver.webapp.Webjars
+
+import bitpeace.FileMeta
+import org.http4s._
+import org.http4s.circe.CirceEntityDecoder._
+import org.http4s.circe.CirceEntityEncoder._
+import org.http4s.dsl.Http4sDsl
+import org.http4s.headers.ETag.EntityTag
+import org.http4s.headers._
 
 object AttachmentRoutes {
 

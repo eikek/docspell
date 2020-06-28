@@ -1,7 +1,9 @@
 package docspell.common
 
-import io.circe._, io.circe.generic.semiauto._
 import docspell.common.syntax.all._
+
+import io.circe._
+import io.circe.generic.semiauto._
 
 /** Arguments to the poll-mailbox task.
   *

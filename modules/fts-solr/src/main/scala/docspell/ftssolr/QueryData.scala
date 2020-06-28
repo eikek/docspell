@@ -1,8 +1,9 @@
 package docspell.ftssolr
 
+import docspell.ftsclient.FtsQuery
+
 import io.circe._
 import io.circe.generic.semiauto._
-import docspell.ftsclient.FtsQuery
 
 final case class QueryData(
     query: String,

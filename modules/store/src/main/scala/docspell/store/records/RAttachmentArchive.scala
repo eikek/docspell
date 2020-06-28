@@ -1,12 +1,14 @@
 package docspell.store.records
 
+import cats.data.NonEmptyList
+
+import docspell.common._
+import docspell.store.impl.Implicits._
+import docspell.store.impl._
+
 import bitpeace.FileMeta
 import doobie._
 import doobie.implicits._
-import docspell.common._
-import docspell.store.impl._
-import docspell.store.impl.Implicits._
-import cats.data.NonEmptyList
 
 /** The archive file of some attachment. The `id` is shared with the
   * attachment, to create a 0..1-1 relationship.

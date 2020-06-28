@@ -2,18 +2,20 @@ package docspell.restserver
 
 import cats.effect._
 import cats.implicits._
-import docspell.common.Pools
+import fs2.Stream
+
 import docspell.backend.auth.AuthToken
+import docspell.common.Pools
 import docspell.restserver.routes._
 import docspell.restserver.webapp._
-import fs2.Stream
+
 import org.http4s._
+import org.http4s.dsl.Http4sDsl
 import org.http4s.headers.Location
 import org.http4s.implicits._
 import org.http4s.server.Router
 import org.http4s.server.blaze.BlazeServerBuilder
 import org.http4s.server.middleware.Logger
-import org.http4s.dsl.Http4sDsl
 
 object RestServer {
 

@@ -1,8 +1,8 @@
 package docspell.extract
 
-import docspell.common.MimeType
-
 import scala.util.Try
+
+import docspell.common.MimeType
 
 sealed trait ExtractResult {
 

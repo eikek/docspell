@@ -1,8 +1,10 @@
 package docspell.common
 
-import io.circe._, io.circe.generic.semiauto._
+import docspell.common.ProcessItemArgs._
 import docspell.common.syntax.all._
-import ProcessItemArgs._
+
+import io.circe._
+import io.circe.generic.semiauto._
 
 /** Arguments to the process-item task.
   *

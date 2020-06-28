@@ -2,15 +2,16 @@ package docspell.extract
 
 import cats.effect._
 import cats.implicits._
+import fs2.Stream
+
 import docspell.common._
+import docspell.extract.internal.Text
 import docspell.extract.ocr.{OcrType, TextExtract}
 import docspell.extract.odf.{OdfExtract, OdfType}
 import docspell.extract.poi.{PoiExtract, PoiType}
 import docspell.extract.rtf.RtfExtract
-import docspell.extract.internal.Text
-import fs2.Stream
-import docspell.files.TikaMimetype
 import docspell.files.ImageSize
+import docspell.files.TikaMimetype
 
 trait Extraction[F[_]] {
 

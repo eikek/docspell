@@ -1,6 +1,7 @@
 package docspell.convert
-import scodec.bits.ByteVector
 import java.nio.charset.Charset
+
+import scodec.bits.ByteVector
 
 @FunctionalInterface
 trait SanitizeHtml {

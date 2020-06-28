@@ -1,9 +1,9 @@
 package docspell.joex.hk
 
-import com.github.eikek.calev.CalEvent
 import docspell.common._
+import docspell.joex.hk.HouseKeepingConfig._
 
-import HouseKeepingConfig._
+import com.github.eikek.calev.CalEvent
 
 case class HouseKeepingConfig(
     schedule: CalEvent,
