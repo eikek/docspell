@@ -168,6 +168,16 @@ in {
           user is created.
         '';
       };
+      waitForTarget = mkOption {
+        type = types.nullOr types.str;
+        default = null;
+        description = ''
+          If not null, joex depends on this systemd target. This is
+          useful if full-text-search is enabled and the solr instance
+          is running on the same machine.
+        '';
+      };
+
 
       app-id = mkOption {
         type = types.str;
@@ -999,10 +1009,16 @@ in {
     systemd.services.docspell-joex =
       let
         cmd = "${pkgs.docspell.joex}/bin/docspell-joex ${configFile}";
+        waitTarget =
+          if cfg.waitForTarget != null
+          then
+            [ cfg.waitForTarget ]
+          else
+            [];
       in
         {
           description = "Docspell Joex";
-          after = [ "networking.target" ];
+          after = ([ "networking.target" ] ++ waitTarget);
           wantedBy = [ "multi-user.target" ];
           path = [ pkgs.gawk ];
 
