@@ -167,8 +167,8 @@ info() {
 }
 
 getCollective() {
-    file="$(realpath -e $1)"
-    dir="$(realpath -e $2)"
+    file="$(realpath $1)"
+    dir="$(realpath $2)"
     collective=${file#"$dir"}
     coll=$(echo $collective | cut -d'/' -f1)
     if [ -z "$coll" ]; then
@@ -179,8 +179,8 @@ getCollective() {
 
 
 upload() {
-    dir="$(realpath -e $1)"
-    file="$(realpath -e $2)"
+    dir="$(realpath $1)"
+    file="$(realpath $2)"
     url="$3"
     OPTS="$CURL_OPTS"
     if [ "$integration" = "y" ]; then
@@ -245,10 +245,10 @@ checkFile() {
     else
         url=$(echo "$1" | sed 's,upload/item,checkfile,g')
     fi
-    trace "- Check file: $url/$(checksum $file)"
+    url="$url/$(checksum $file)"
+    trace "- Check file via $OPTS: $url"
     tf1=$($MKTEMP_CMD) tf2=$($MKTEMP_CMD)
-
-    $CURL_CMD --fail -o "$tf1" --stderr "$tf2" $OPTS -XGET -s "$url/$(checksum "$file")"
+    $CURL_CMD --fail -o "$tf1" --stderr "$tf2" $OPTS -XGET -s "$url"
     if [ $? -ne 0 ]; then
         info "Checking file failed!"
         cat "$tf1" >&2
@@ -269,7 +269,7 @@ checkFile() {
 }
 
 process() {
-    file="$(realpath -e $1)"
+    file="$(realpath $1)"
     dir="$2"
     info "---- Processing $file ----------"
     declare -i curlrc=0
@@ -345,6 +345,6 @@ else
             dir=$(findDir "$path")
             trace "The file '$file' appeared in directory '$path' below '$dir' via '$action'"
             sleep 1
-            process "$(realpath -e "$path$file")" "$dir"
+            process "$(realpath "$path$file")" "$dir"
         done
 fi
