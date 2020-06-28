@@ -116,21 +116,26 @@ url as described [here](../uploading#anonymous-upload).
 
 ## Docker
 
-The provided docker image runs this script to watch a directory for
-new files. If a new file is detected, it is pushed to docspell.
+The provided docker image runs this script to watch a single
+directory, `./docs` in current directory, for new files. If a new file
+is detected, it is pushed to docspell.
 
-For this to work, the container must know about a valid upload url.
-Therefore, you must first signup and create such an upload url, as
-described [here](doc/uploading#anonymous-upload). Get only the id
-(something like `AvR6sA8GKFm-hgYDgZfwzXa-Tqnu8yqyz6X-KzuefvEvrRf`) and
-define an environment variable `SOURCE_ID` with that value before
-running `docker-compose up` a second time.
+This utilizes the [integration
+endpoint](../uploading#integration-endpoint), which is enabled in the
+config file, to allow uploading documents for all collectives. A
+subfolder must be created for each registered collective. The docker
+containers are configured to use http-header protection for the
+integration endpoint. This requires you to provide a secret, that is
+shared between the rest-server and the `consumedir.sh` script. This
+can be done by defining an environment variable which gets picked up
+by the containers defined in `docker-compose.yml`:
 
 ```
-export SOURCE_ID="AvR6sA8GKFm-hgYDgZfwzXa-Tqnu8yqyz6X-KzuefvEvrRf"
+export DOCSPELL_HEADER_VALUE="my-secret"
 docker-compose up
 ```
 
-Now you can create a folder `./docs` and place all files in there that
-you want to import. Once dropped in this folder the `consumedir`
-container will push it to docspell.
+
+Now you can create a folder `./docs/<collective-name>` and place all
+files in there that you want to import. Once dropped in this folder
+the `consumedir` container will push it to docspell.

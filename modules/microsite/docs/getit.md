@@ -69,6 +69,9 @@ You need to download the two files:
 4. Point your browser to: <http://localhost:7880/app>
 5. Register a new account, sign in and try it.
 
+Note, that this setup doesn't include watching a directory. You can
+use the [`consumedir.sh`](doc/tools/consumedir) tool for this or use
+the docker variant below.
 
 ## With Docker
 
@@ -84,19 +87,19 @@ available in the `/docker` folder.
    $ cd docspell/docker
    ```
 3. Run `docker-compose up`:
+
    ```bash
+   $ export DOCSPELL_HEADER_VALUE="my-secret-123"
    $ docker-compose up
    ```
-4. Goto <http://localhost:7880>, signup and login
+
+   The environment variable defines a secret that is shared between
+   some containers. You can define whatever you like. Please see the
+   [`consumedir.sh`](doc/tools/consumedir#docker) docs for additional
+   info.
+4. Goto <http://localhost:7880>, signup and login. Create a folder
+   `./docs/<collective-name>` and place files in there for importing
+   them.
 
 The directory contains a file `docspell.conf` that you can
 [modify](doc/configure) as needed.
-
-
-### Watching files in a directory
-
-This setup starts a container running the
-[`consumedir.sh`](doc/tools/consumedir) script. It is configured to
-watch one directory and upload files arriving in there to docspell.
-Please see the [`consumedir.sh`](doc/tools/consumedir#docker) docs for
-additional steps.

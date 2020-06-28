@@ -1,5 +1,55 @@
 # Changelog
 
+## v0.8.0
+
+*Soon*
+
+- Adds the [full-text
+  search](https://docspell.org/doc/finding#full-text-search) feature
+  (see #69). It requires a separate
+  [Solr](https://lucene.apache.org/solr) instance. Items can be
+  searched by documents contents and item/file names. It is possible
+  to use full-text search to further confine the results via the
+  search menu.
+- Fixes column types for item date and due-date for MariaDB (see #158)
+  and adds an upper limit for due-dates (which is configurable).
+- Fixes a bug when cancelling jobs where stuck jobs were only removed
+  from the queue, but their cancel routine was not called.
+- Changes cancelling process-item jobs, the item will still be created
+  and not removed.
+- Fixes a bug where items could not be deleted if there were sent
+  mails attached.
+- Fixes the openapi spec for the joex component.
+- Changes to the `consumedir.sh` script:
+  - Allow to recursively watch or traverse directories
+  - Allow it to work with the integration endpoint. This allows using
+    `consumedir.sh` for all collectives.
+- The docker setup now starts a solr container automatically and
+  configures the consumedir container to use the integration endpoint.
+  It is still necessary to define an environment variable.
+
+### Configuration Changes
+
+- Set new default for `docspell.server.max-item-page-size` to `200`.
+- New `full-text-search` section for restserver and joex.
+
+### REST Api Changes
+
+- Add `/open/fts/reIndexAll/{key}` to re-index the full-text search
+  index. The `key` must be defined in the config file, so only admins
+  can execute this.
+- Add `/sec/fts/reIndex` to allow a collective to re-index their data
+  only.
+- Add `/open/integration/checkfile/{id}/{checksum}` to check whether a
+  file is in docspell via the integration endpoint.
+- Add `/sec/item/searchIndex` to allow searching the full-text index
+  only. This route returns the results as ordered by SOLR and not
+  ordered by date.
+- The `ItemSearch` input data is extended to support the new full-text
+  search field.
+- The `ItemLight` result structure now can contain "highlighting"
+  information that is provided by the full-text search index.
+
 ## v0.7.0
 
 *June 17, 2020*
