@@ -11,6 +11,12 @@ val elmCompileMode = settingKey[ElmCompileMode]("How to compile elm sources")
 
 // --- Settings
 
+val scalafixSettings = Seq(
+  semanticdbEnabled := true, // enable SemanticDB
+  semanticdbVersion := scalafixSemanticdb.revision, //"4.3.10", // use Scalafix compatible version
+  ThisBuild / scalafixDependencies ++= Dependencies.organizeImports
+)
+
 val sharedSettings = Seq(
   organization := "com.github.eikek",
   scalaVersion := "2.13.2",
@@ -37,7 +43,7 @@ val sharedSettings = Seq(
     (scalacOptions.value.filter(o => !o.contains("Xlint")) ++ Seq("-Xlint:_,-unused")),
   scalacOptions in (Test, console) :=
     (scalacOptions.value.filter(o => !o.contains("Xlint")) ++ Seq("-Xlint:_,-unused"))
-)
+) ++ scalafixSettings
 
 val testSettings = Seq(
   testFrameworks += new TestFramework("minitest.runner.Framework"),
@@ -141,7 +147,6 @@ val openapiScalaSettings = Seq(
           "com.github.eikek.calev.circe.CalevCirceCodec._")))
     }))
 )
-
 
 
 // --- Modules
