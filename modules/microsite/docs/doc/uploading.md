@@ -106,8 +106,8 @@ be useful to connect other trusted applications to docspell (that run
 on the same host or network).
 
 The endpoint is disabled by default, an admin must change the
-`docspell.restserver.integration-endpoint.enabled` flag to `true` in
-the [configuration file](configure#rest-server).
+`docspell.server.integration-endpoint.enabled` flag to `true` in the
+[configuration file](configure#rest-server).
 
 If queried by a `GET` request, it returns whether it is enabled and
 the collective exists.

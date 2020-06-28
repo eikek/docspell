@@ -1,15 +1,39 @@
 version: '3.7'
 services:
   restserver:
-    image: eikek0/docspell:restserver-0.7.0
+    image: eikek0/docspell:restserver-latest
     container_name: docspell-restserver
     command: /opt/docspell.conf
     ports:
       - "7880:7880"
     volumes:
       - ${PWD}/docspell.conf:/opt/docspell.conf
+    environment:
+      - DOCSPELL_HEADER_VALUE=${DOCSPELL_HEADER_VALUE:-none}
     depends_on:
       - db
+      - solr
+  joex:
+    image: eikek0/docspell:joex-latest
+    container_name: docspell-joex
+    command: /opt/docspell.conf
+    ports:
+      - "7878:7878"
+    volumes:
+      - ${PWD}/docspell.conf:/opt/docspell.conf
+    depends_on:
+      - db
+      - solr
+  consumedir:
+    image: eikek0/docspell:consumedir-latest
+    container_name: docspell-consumedir
+    command: --path /opt/docs -i --iheader "Docspell-Integration:${DOCSPELL_HEADER_VALUE}" -m http://restserver:7880/api/v1/open/integration/item
+    environment:
+      - DOCSPELL_HEADER_VALUE=${DOCSPELL_HEADER_VALUE:-none}
+    volumes:
+      - ${PWD}/docs:/opt/docs
+    depends_on:
+      - restserver
   db:
     image: postgres:11.7
     container_name: postgres_db
@@ -19,26 +43,17 @@ services:
       - POSTGRES_USER=dbuser
       - POSTGRES_PASSWORD=dbpass
       - POSTGRES_DB=dbname
-  joex:
-    image: eikek0/docspell:joex-0.7.0
-    container_name: docspell-joex
-    command: /opt/docspell.conf
+  solr:
+    image: solr:8
+    container_name: docspell-solr
     ports:
-      - "7878:7878"
+      - "8983:8983"
     volumes:
-      - ${PWD}/docspell.conf:/opt/docspell.conf
-    depends_on:
-      - db
-  consumedir:
-    image: eikek0/docspell:consumedir-0.7.0
-    container_name: docspell-consumedir
-    command: --path /opt/docs -m http://restserver:7880/api/v1/open/upload/item/$SOURCE_ID
-    environment:
-      - SOURCE_ID=${SOURCE_ID:-none}
-    volumes:
-      - ${PWD}/docs:/opt/docs
-    depends_on:
-      - restserver
+      - solr_data:/var/solr
+    command:
+      - solr-precreate
+      - docspell
 
 volumes:
   postgres_data:
+  solr_data:

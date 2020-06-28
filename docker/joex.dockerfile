@@ -29,7 +29,7 @@ RUN apk add --no-cache openjdk11-jre \
   && rm docspell.zip \
   && apk del curl unzip
 
-COPY joex/entrypoint.sh /opt/entrypoint.sh
+COPY entrypoint-joex.sh /opt/entrypoint.sh
 
 EXPOSE 7878
 
