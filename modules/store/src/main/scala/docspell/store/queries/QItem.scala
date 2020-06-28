@@ -1,19 +1,21 @@
 package docspell.store.queries
 
-import bitpeace.FileMeta
-import cats.effect.Sync
-import cats.data.OptionT
 import cats.data.NonEmptyList
-import cats.implicits._
+import cats.data.OptionT
+import cats.effect.Sync
 import cats.effect.concurrent.Ref
+import cats.implicits._
 import fs2.Stream
-import doobie._
-import doobie.implicits._
+
 import docspell.common.{IdRef, _}
 import docspell.store.Store
-import docspell.store.records._
-import docspell.store.impl._
 import docspell.store.impl.Implicits._
+import docspell.store.impl._
+import docspell.store.records._
+
+import bitpeace.FileMeta
+import doobie._
+import doobie.implicits._
 import org.log4s._
 
 object QItem {

@@ -1,8 +1,11 @@
 package docspell.store.impl
 
-import doobie._, doobie.implicits._
-import docspell.store.impl.DoobieSyntax._
 import cats.data.NonEmptyList
+
+import docspell.store.impl.DoobieSyntax._
+
+import doobie._
+import doobie.implicits._
 
 case class Column(name: String, ns: String = "", alias: String = "") {
 

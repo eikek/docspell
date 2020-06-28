@@ -1,8 +1,9 @@
 package docspell.joex.scheduler
 
-import cats.implicits._
-import docspell.common._
 import cats.effect.Sync
+import cats.implicits._
+
+import docspell.common._
 
 case class LogEvent(
     jobId: Ident,

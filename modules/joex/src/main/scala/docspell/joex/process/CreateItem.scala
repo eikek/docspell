@@ -1,14 +1,16 @@
 package docspell.joex.process
 
-import bitpeace.FileMeta
-import cats.implicits._
-import cats.effect.Sync
 import cats.data.OptionT
+import cats.effect.Sync
+import cats.implicits._
 import fs2.Stream
+
 import docspell.common._
 import docspell.joex.scheduler.{Context, Task}
 import docspell.store.queries.QItem
 import docspell.store.records.{RAttachment, RAttachmentSource, RItem}
+
+import bitpeace.FileMeta
 
 /**
   * Task that creates the item.

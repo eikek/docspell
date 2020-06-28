@@ -2,13 +2,14 @@ package docspell.store.usertask
 
 import cats.effect._
 import cats.implicits._
-import com.github.eikek.calev.CalEvent
-import io.circe.Decoder
-import io.circe.Encoder
 
 import docspell.common._
 import docspell.common.syntax.all._
 import docspell.store.records.RPeriodicTask
+
+import com.github.eikek.calev.CalEvent
+import io.circe.Decoder
+import io.circe.Encoder
 
 case class UserTask[A](
     id: Ident,

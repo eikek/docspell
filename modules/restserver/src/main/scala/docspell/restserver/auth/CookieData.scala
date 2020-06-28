@@ -1,10 +1,11 @@
 package docspell.restserver.auth
 
-import org.http4s._
-import org.http4s.util._
 import docspell.backend.auth._
 import docspell.common.AccountId
 import docspell.restserver.Config
+
+import org.http4s._
+import org.http4s.util._
 
 case class CookieData(auth: AuthToken) {
   def accountId: AccountId = auth.account

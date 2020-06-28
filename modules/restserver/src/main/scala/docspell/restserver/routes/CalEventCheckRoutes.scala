@@ -2,14 +2,15 @@ package docspell.restserver.routes
 
 import cats.effect._
 import cats.implicits._
-import org.http4s._
-import org.http4s.dsl.Http4sDsl
-import org.http4s.circe.CirceEntityEncoder._
-import org.http4s.circe.CirceEntityDecoder._
-import com.github.eikek.calev.CalEvent
 
 import docspell.common._
 import docspell.restapi.model._
+
+import com.github.eikek.calev.CalEvent
+import org.http4s._
+import org.http4s.circe.CirceEntityDecoder._
+import org.http4s.circe.CirceEntityEncoder._
+import org.http4s.dsl.Http4sDsl
 
 object CalEventCheckRoutes {
 

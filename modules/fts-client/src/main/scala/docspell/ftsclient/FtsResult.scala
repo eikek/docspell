@@ -1,8 +1,7 @@
 package docspell.ftsclient
 
 import docspell.common._
-
-import FtsResult.ItemMatch
+import docspell.ftsclient.FtsResult.ItemMatch
 
 final case class FtsResult(
     qtime: Duration,

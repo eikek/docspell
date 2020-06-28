@@ -1,13 +1,14 @@
 package docspell.joex.hk
 
-import cats.implicits._
 import cats.effect._
-import com.github.eikek.calev._
+import cats.implicits._
 
 import docspell.common._
 import docspell.joex.Config
 import docspell.joex.scheduler.Task
 import docspell.store.records._
+
+import com.github.eikek.calev._
 
 object HouseKeepingTask {
   private val periodicId = Ident.unsafe("docspell-houskeeping")

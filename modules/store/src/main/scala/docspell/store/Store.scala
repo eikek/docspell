@@ -1,13 +1,15 @@
 package docspell.store
 
-import bitpeace.Bitpeace
+import scala.concurrent.ExecutionContext
+
+import cats.effect._
 import fs2._
-import cats.effect.{Blocker, ContextShift, Effect, Resource}
+
 import docspell.store.impl.StoreImpl
+
+import bitpeace.Bitpeace
 import doobie._
 import doobie.hikari.HikariTransactor
-
-import scala.concurrent.ExecutionContext
 
 trait Store[F[_]] {
 

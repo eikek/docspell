@@ -1,7 +1,8 @@
 package docspell.ftssolr
 
-import io.circe._
 import docspell.common._
+
+import io.circe._
 
 final class Field(val name: String) extends AnyVal {
 

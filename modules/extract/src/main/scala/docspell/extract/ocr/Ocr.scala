@@ -4,6 +4,7 @@ import java.nio.file.Path
 
 import cats.effect.{Blocker, ContextShift, Sync}
 import fs2.Stream
+
 import docspell.common._
 
 object Ocr {

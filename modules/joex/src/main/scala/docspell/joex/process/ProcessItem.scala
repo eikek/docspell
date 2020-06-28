@@ -1,10 +1,11 @@
 package docspell.joex.process
 
 import cats.effect._
+
 import docspell.common.ProcessItemArgs
-import docspell.joex.scheduler.Task
-import docspell.joex.Config
 import docspell.ftsclient.FtsClient
+import docspell.joex.Config
+import docspell.joex.scheduler.Task
 
 object ProcessItem {
 

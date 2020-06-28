@@ -2,10 +2,12 @@ package docspell.backend.ops
 
 import cats.effect.{Effect, Resource}
 import cats.implicits._
+
 import docspell.common.syntax.all._
 import docspell.common.{Ident, LenientUri, NodeType}
 import docspell.store.Store
 import docspell.store.records.RNode
+
 import org.log4s._
 
 trait ONode[F[_]] {

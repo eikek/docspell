@@ -2,15 +2,16 @@ package docspell.store.impl
 
 import java.time.format.DateTimeFormatter
 import java.time.{Instant, LocalDate}
-import io.circe.{Decoder, Encoder}
+
+import docspell.common._
+import docspell.common.syntax.all._
+
+import com.github.eikek.calev.CalEvent
 import doobie._
 import doobie.implicits.legacy.instant._
 import doobie.util.log.Success
 import emil.doobie.EmilDoobieMeta
-import com.github.eikek.calev.CalEvent
-
-import docspell.common._
-import docspell.common.syntax.all._
+import io.circe.{Decoder, Encoder}
 
 trait DoobieMeta extends EmilDoobieMeta {
 

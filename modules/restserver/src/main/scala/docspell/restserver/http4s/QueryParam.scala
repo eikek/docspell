@@ -1,8 +1,9 @@
 package docspell.restserver.http4s
 
-import org.http4s.QueryParamDecoder
-import org.http4s.ParseFailure
 import docspell.common.ContactKind
+
+import org.http4s.ParseFailure
+import org.http4s.QueryParamDecoder
 import org.http4s.dsl.impl.OptionalQueryParamDecoderMatcher
 
 object QueryParam {

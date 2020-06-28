@@ -1,7 +1,8 @@
 package docspell.store.syntax
 
-import bitpeace.Mimetype
 import docspell.common._
+
+import bitpeace.Mimetype
 
 object MimeTypes {
 

@@ -2,11 +2,13 @@ package docspell.store.records
 
 import cats.Eq
 import fs2.Stream
+
+import docspell.common.{IdRef, _}
+import docspell.store.impl.Implicits._
+import docspell.store.impl._
+
 import doobie._
 import doobie.implicits._
-import docspell.common.{IdRef, _}
-import docspell.store.impl._
-import docspell.store.impl.Implicits._
 
 case class ROrganization(
     oid: Ident,

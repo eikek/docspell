@@ -1,10 +1,11 @@
 package docspell.backend.ops
 
-import cats.implicits._
 import cats.effect.{Effect, Resource}
+import cats.implicits._
+
 import docspell.common.{AccountId, Ident}
-import docspell.store.{AddResult, Store}
 import docspell.store.records.RSource
+import docspell.store.{AddResult, Store}
 
 trait OSource[F[_]] {
 

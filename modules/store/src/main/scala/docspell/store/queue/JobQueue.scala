@@ -1,12 +1,14 @@
 package docspell.store.queue
 
-import cats.implicits._
 import cats.effect.{Effect, Resource}
+import cats.implicits._
+
 import docspell.common._
 import docspell.common.syntax.all._
 import docspell.store.Store
 import docspell.store.queries.QJob
 import docspell.store.records.RJob
+
 import org.log4s._
 
 trait JobQueue[F[_]] {

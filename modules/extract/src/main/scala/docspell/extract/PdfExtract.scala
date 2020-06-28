@@ -1,12 +1,13 @@
 package docspell.extract
 
-import cats.implicits._
 import cats.effect._
+import cats.implicits._
 import fs2.Stream
+
 import docspell.common.{Language, Logger}
+import docspell.extract.internal.Text
 import docspell.extract.ocr.{OcrConfig, TextExtract}
 import docspell.extract.pdfbox.PdfboxExtract
-import docspell.extract.internal.Text
 
 object PdfExtract {
 

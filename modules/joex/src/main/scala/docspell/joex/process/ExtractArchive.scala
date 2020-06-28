@@ -1,21 +1,23 @@
 package docspell.joex.process
 
-import bitpeace.{Mimetype, MimetypeHint, RangeDef}
 import cats.Functor
+import cats.data.NonEmptyList
 import cats.data.OptionT
 import cats.effect._
 import cats.implicits._
+import cats.kernel.Monoid
+import cats.kernel.Order
 import fs2.Stream
+
 import docspell.common._
+import docspell.files.Zip
 import docspell.joex.mail._
 import docspell.joex.scheduler._
 import docspell.store.records._
 import docspell.store.syntax.MimeTypes._
-import docspell.files.Zip
-import cats.kernel.Monoid
+
+import bitpeace.{Mimetype, MimetypeHint, RangeDef}
 import emil.Mail
-import cats.kernel.Order
-import cats.data.NonEmptyList
 
 /** Goes through all attachments and extracts archive files, like zip
   * files. The process is recursive, until all archives have been

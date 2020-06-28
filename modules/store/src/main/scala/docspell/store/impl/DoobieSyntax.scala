@@ -1,6 +1,7 @@
 package docspell.store.impl
 
 import docspell.common.Timestamp
+
 import doobie._
 import doobie.implicits._
 

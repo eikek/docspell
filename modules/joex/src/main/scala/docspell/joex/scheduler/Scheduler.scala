@@ -2,6 +2,7 @@ package docspell.joex.scheduler
 
 import cats.effect.{Fiber, Timer}
 import fs2.Stream
+
 import docspell.common.Ident
 import docspell.store.records.RJob
 

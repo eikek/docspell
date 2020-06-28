@@ -1,13 +1,15 @@
 package docspell.store.usertask
 
-import fs2.Stream
-import cats.implicits._
-import cats.effect._
 import cats.data.OptionT
-import io.circe._
+import cats.effect._
+import cats.implicits._
+import fs2.Stream
+
 import docspell.common._
-import docspell.store.{AddResult, Store}
 import docspell.store.queries.QUserTask
+import docspell.store.{AddResult, Store}
+
+import io.circe._
 
 /** User tasks are `RPeriodicTask`s that can be managed by the user.
   * The user can change arguments, enable/disable it or run it just

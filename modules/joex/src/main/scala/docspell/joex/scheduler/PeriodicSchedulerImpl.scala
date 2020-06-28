@@ -1,19 +1,19 @@
 package docspell.joex.scheduler
 
-import fs2._
-import fs2.concurrent.SignallingRef
 import cats.effect._
 import cats.implicits._
-import org.log4s.getLogger
-import com.github.eikek.fs2calev._
+import fs2._
+import fs2.concurrent.SignallingRef
 
 import docspell.common._
 import docspell.common.syntax.all._
+import docspell.joex.scheduler.PeriodicSchedulerImpl.State
 import docspell.joexapi.client.JoexClient
 import docspell.store.queue._
 import docspell.store.records.RPeriodicTask
 
-import PeriodicSchedulerImpl.State
+import com.github.eikek.fs2calev._
+import org.log4s.getLogger
 
 final class PeriodicSchedulerImpl[F[_]: ConcurrentEffect: ContextShift](
     val config: PeriodicSchedulerConfig,

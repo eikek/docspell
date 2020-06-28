@@ -1,7 +1,8 @@
 package docspell.common
 
-import io.circe.{Decoder, Encoder}
 import cats.data.NonEmptyList
+
+import io.circe.{Decoder, Encoder}
 
 sealed trait ItemState { self: Product =>
 

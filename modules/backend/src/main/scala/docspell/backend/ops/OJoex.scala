@@ -1,14 +1,15 @@
 package docspell.backend.ops
 
-import cats.implicits._
-import cats.effect._
+import scala.concurrent.ExecutionContext
+
 import cats.data.OptionT
+import cats.effect._
+import cats.implicits._
+
 import docspell.common.{Ident, NodeType}
 import docspell.joexapi.client.JoexClient
 import docspell.store.Store
 import docspell.store.records.RNode
-
-import scala.concurrent.ExecutionContext
 
 trait OJoex[F[_]] {
 

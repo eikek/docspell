@@ -3,16 +3,17 @@ package docspell.restserver.routes
 import cats.data.{EitherT, OptionT}
 import cats.effect._
 import cats.implicits._
+
 import docspell.backend.BackendApp
 import docspell.common._
 import docspell.restserver.Config
 import docspell.restserver.conv.Conversions._
 import docspell.restserver.http4s.Responses
 import docspell.store.records.RItem
+
 import org.http4s._
 import org.http4s.circe.CirceEntityEncoder._
 import org.http4s.dsl.Http4sDsl
-import org.http4s.EntityDecoder._
 import org.http4s.headers.{Authorization, `WWW-Authenticate`}
 import org.http4s.multipart.Multipart
 import org.http4s.util.CaseInsensitiveString

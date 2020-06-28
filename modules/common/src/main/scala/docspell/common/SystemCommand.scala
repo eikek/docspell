@@ -5,11 +5,11 @@ import java.lang.ProcessBuilder.Redirect
 import java.nio.file.Path
 import java.util.concurrent.TimeUnit
 
-import cats.implicits._
-import cats.effect.{Blocker, ContextShift, Sync}
-import fs2.{Stream, io, text}
-
 import scala.jdk.CollectionConverters._
+
+import cats.effect.{Blocker, ContextShift, Sync}
+import cats.implicits._
+import fs2.{Stream, io, text}
 
 object SystemCommand {
 

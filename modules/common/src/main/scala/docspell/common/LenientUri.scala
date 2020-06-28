@@ -1,17 +1,19 @@
 package docspell.common
 
-import java.net.URL
-
-import fs2.Stream
-import cats.implicits._
-import cats.data.NonEmptyList
-import cats.effect.{Blocker, ContextShift, Sync}
-import docspell.common.LenientUri.Path
-import io.circe.{Decoder, Encoder}
-import java.net.URLEncoder
-import scodec.bits.ByteVector
-import cats.effect.Resource
 import java.net.HttpURLConnection
+import java.net.URL
+import java.net.URLEncoder
+
+import cats.data.NonEmptyList
+import cats.effect.Resource
+import cats.effect.{Blocker, ContextShift, Sync}
+import cats.implicits._
+import fs2.Stream
+
+import docspell.common.LenientUri.Path
+
+import io.circe.{Decoder, Encoder}
+import scodec.bits.ByteVector
 
 /** A URI.
   *

@@ -3,14 +3,15 @@ package docspell.joex.mail
 import cats.effect._
 import cats.implicits._
 import fs2.{Pipe, Stream}
-import emil.{MimeType => _, _}
-import emil.javamail.syntax._
-import emil.tnef.TnefExtract
-import emil.markdown._
-import emil.jsoup._
 
 import docspell.common._
 import docspell.store.syntax.MimeTypes._
+
+import emil.javamail.syntax._
+import emil.jsoup._
+import emil.markdown._
+import emil.tnef.TnefExtract
+import emil.{MimeType => _, _}
 
 object ReadMail {
 

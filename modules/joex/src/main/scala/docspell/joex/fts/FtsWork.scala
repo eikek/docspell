@@ -1,13 +1,14 @@
 package docspell.joex.fts
 
-import cats.effect._
 import cats.data.{Kleisli, NonEmptyList}
-import cats.{ApplicativeError, FlatMap, Semigroup}
+import cats.effect._
 import cats.implicits._
+import cats.{ApplicativeError, FlatMap, Semigroup}
+
 import docspell.common._
 import docspell.ftsclient._
-import docspell.joex.scheduler.Context
 import docspell.joex.Config
+import docspell.joex.scheduler.Context
 import docspell.store.queries.{QAttachment, QItem}
 
 object FtsWork {

@@ -1,16 +1,17 @@
 package docspell.backend.auth
 
-import cats.effect._
-import cats.implicits._
 import java.time.Instant
-
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
-import scodec.bits.ByteVector
+
+import cats.effect._
+import cats.implicits._
 
 import docspell.backend.Common
-import AuthToken._
+import docspell.backend.auth.AuthToken._
 import docspell.common._
+
+import scodec.bits.ByteVector
 
 case class AuthToken(millis: Long, account: AccountId, salt: String, sig: String) {
   def asString = s"$millis-${b64enc(account.asString)}-$salt-$sig"

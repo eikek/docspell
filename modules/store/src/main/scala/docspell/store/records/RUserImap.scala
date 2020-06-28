@@ -1,13 +1,15 @@
 package docspell.store.records
 
-import doobie._
-import doobie.implicits._
+import cats.data.OptionT
 import cats.effect._
 import cats.implicits._
-import cats.data.OptionT
+
 import docspell.common._
 import docspell.store.impl.Column
 import docspell.store.impl.Implicits._
+
+import doobie._
+import doobie.implicits._
 import emil.{MailConfig, SSLType}
 
 case class RUserImap(

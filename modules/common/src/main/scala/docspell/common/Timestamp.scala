@@ -1,12 +1,13 @@
 package docspell.common
 
+import java.time.LocalDateTime
+import java.time.ZonedDateTime
+import java.time.temporal.ChronoUnit
 import java.time.{Instant, LocalDate, ZoneId}
 
 import cats.effect.Sync
+
 import io.circe.{Decoder, Encoder}
-import java.time.temporal.ChronoUnit
-import java.time.LocalDateTime
-import java.time.ZonedDateTime
 
 case class Timestamp(value: Instant) {
 

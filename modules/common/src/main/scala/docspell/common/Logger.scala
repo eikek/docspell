@@ -1,7 +1,9 @@
 package docspell.common
 
 import cats.effect.Sync
+
 import docspell.common.syntax.all._
+
 import org.log4s.{Logger => Log4sLogger}
 
 trait Logger[F[_]] {

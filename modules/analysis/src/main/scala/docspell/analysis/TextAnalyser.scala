@@ -2,6 +2,7 @@ package docspell.analysis
 
 import cats.effect._
 import cats.implicits._
+
 import docspell.analysis.contact.Contact
 import docspell.analysis.date.DateFind
 import docspell.analysis.nlp.StanfordNerClassifier

@@ -1,18 +1,19 @@
 package docspell.restserver.routes
 
+import cats.data.OptionT
 import cats.effect._
 import cats.implicits._
-import cats.data.OptionT
-import org.http4s._
-import org.http4s.dsl.Http4sDsl
-import org.http4s.circe.CirceEntityEncoder._
-import emil.javamail.syntax._
 
 import docspell.backend.BackendApp
 import docspell.backend.auth.AuthToken
 import docspell.backend.ops.OMail.Sent
 import docspell.common._
 import docspell.restapi.model._
+
+import emil.javamail.syntax._
+import org.http4s._
+import org.http4s.circe.CirceEntityEncoder._
+import org.http4s.dsl.Http4sDsl
 
 object SentMailRoutes {
 

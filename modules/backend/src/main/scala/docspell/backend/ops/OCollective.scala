@@ -1,14 +1,15 @@
 package docspell.backend.ops
 
-import fs2.Stream
-import cats.implicits._
 import cats.effect.{Effect, Resource}
-import docspell.common._
-import docspell.store.{AddResult, Store}
-import docspell.store.records.{RCollective, RContact, RUser}
-import OCollective._
+import cats.implicits._
+import fs2.Stream
+
 import docspell.backend.PasswordCrypt
+import docspell.backend.ops.OCollective._
+import docspell.common._
 import docspell.store.queries.QCollective
+import docspell.store.records.{RCollective, RContact, RUser}
+import docspell.store.{AddResult, Store}
 
 trait OCollective[F[_]] {
 

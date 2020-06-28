@@ -1,7 +1,9 @@
 package docspell.store.migrate
 
 import cats.effect.Sync
+
 import docspell.store.JdbcConfig
+
 import org.flywaydb.core.Flyway
 import org.log4s._
 

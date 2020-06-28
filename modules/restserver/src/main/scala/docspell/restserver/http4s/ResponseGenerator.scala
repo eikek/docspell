@@ -1,9 +1,10 @@
 package docspell.restserver.http4s
 
-import cats.implicits._
 import cats.Applicative
-import org.http4s.{EntityEncoder, Header, Response}
+import cats.implicits._
+
 import org.http4s.dsl.Http4sDsl
+import org.http4s.{EntityEncoder, Header, Response}
 
 trait ResponseGenerator[F[_]] {
   self: Http4sDsl[F] =>

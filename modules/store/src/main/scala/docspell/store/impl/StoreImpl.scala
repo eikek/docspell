@@ -1,11 +1,13 @@
 package docspell.store.impl
 
-import bitpeace.{Bitpeace, BitpeaceConfig, TikaMimetypeDetect}
 import cats.effect.Effect
 import cats.implicits._
+
 import docspell.common.Ident
 import docspell.store.migrate.FlywayMigrate
 import docspell.store.{AddResult, JdbcConfig, Store}
+
+import bitpeace.{Bitpeace, BitpeaceConfig, TikaMimetypeDetect}
 import doobie._
 import doobie.implicits._
 

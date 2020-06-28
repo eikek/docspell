@@ -1,16 +1,18 @@
 package docspell.store.queries
 
-import fs2.Stream
-import cats.implicits._
-import cats.effect.Sync
 import cats.data.OptionT
-import doobie._
-import doobie.implicits._
+import cats.effect.Sync
+import cats.implicits._
+import fs2.Stream
+
 import docspell.common._
+import docspell.common.syntax.all._
 import docspell.store.Store
 import docspell.store.impl.Implicits._
 import docspell.store.records._
-import docspell.common.syntax.all._
+
+import doobie._
+import doobie.implicits._
 
 object QAttachment {
   private[this] val logger = org.log4s.getLogger

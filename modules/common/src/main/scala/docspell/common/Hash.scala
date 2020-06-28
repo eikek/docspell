@@ -1,7 +1,8 @@
 package docspell.common
 
-import scodec.bits.ByteVector
 import java.nio.charset.StandardCharsets
+
+import scodec.bits.ByteVector
 
 final class Hash(bytes: ByteVector) {
 

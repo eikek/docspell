@@ -1,10 +1,11 @@
 package docspell.extract.ocr
 
 import cats.effect.{Blocker, ContextShift, Sync}
-import docspell.common._
-import docspell.files._
-import docspell.extract.internal.Text
 import fs2.Stream
+
+import docspell.common._
+import docspell.extract.internal.Text
+import docspell.files._
 
 object TextExtract {
 

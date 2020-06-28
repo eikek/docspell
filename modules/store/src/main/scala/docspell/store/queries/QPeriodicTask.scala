@@ -3,6 +3,7 @@ package docspell.store.queries
 import docspell.common._
 import docspell.store.impl.Implicits._
 import docspell.store.records._
+
 import doobie._
 import doobie.implicits._
 

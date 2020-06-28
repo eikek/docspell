@@ -2,23 +2,25 @@ package docspell.restserver.conv
 
 import java.time.{LocalDate, ZoneId}
 
-import fs2.Stream
-import cats.implicits._
 import cats.effect.{Effect, Sync}
-import docspell.common._
-import docspell.common.syntax.all._
-import docspell.restapi.model._
-import docspell.store.records._
-import Conversions._
-import bitpeace.FileMeta
+import cats.implicits._
+import fs2.Stream
+
 import docspell.backend.ops.OCollective.{InsightData, PassChangeResult}
 import docspell.backend.ops.OJob.JobCancelResult
 import docspell.backend.ops.OUpload.{UploadData, UploadMeta, UploadResult}
-import docspell.backend.ops.{OFulltext, OItemSearch, OJob, OOrganization, OUpload}
-import docspell.store.AddResult
+import docspell.backend.ops._
+import docspell.common._
+import docspell.common.syntax.all._
 import docspell.ftsclient.FtsResult
-import org.http4s.multipart.Multipart
+import docspell.restapi.model._
+import docspell.restserver.conv.Conversions._
+import docspell.store.AddResult
+import docspell.store.records._
+
+import bitpeace.FileMeta
 import org.http4s.headers.`Content-Type`
+import org.http4s.multipart.Multipart
 import org.log4s.Logger
 
 trait Conversions {

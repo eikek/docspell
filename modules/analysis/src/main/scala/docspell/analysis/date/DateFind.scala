@@ -2,11 +2,12 @@ package docspell.analysis.date
 
 import java.time.LocalDate
 
-import fs2.{Pure, Stream}
-import docspell.common._
-import docspell.analysis.split._
-
 import scala.util.Try
+
+import fs2.{Pure, Stream}
+
+import docspell.analysis.split._
+import docspell.common._
 
 object DateFind {
 

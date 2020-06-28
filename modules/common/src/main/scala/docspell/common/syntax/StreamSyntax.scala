@@ -1,8 +1,9 @@
 package docspell.common.syntax
 
 import cats.effect.Sync
-import fs2.Stream
 import cats.implicits._
+import fs2.Stream
+
 import io.circe._
 import io.circe.parser._
 

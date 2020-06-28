@@ -1,9 +1,10 @@
 package docspell.joex
 
 import docspell.common.config.Implicits._
+import docspell.joex.scheduler.CountingScheme
+
 import pureconfig._
 import pureconfig.generic.auto._
-import docspell.joex.scheduler.CountingScheme
 
 object ConfigFile {
   import Implicits._

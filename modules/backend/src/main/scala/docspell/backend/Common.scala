@@ -1,6 +1,7 @@
 package docspell.backend
 
 import cats.effect._
+
 import org.mindrot.jbcrypt.BCrypt
 
 object Common {

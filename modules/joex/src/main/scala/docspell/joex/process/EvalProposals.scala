@@ -1,8 +1,10 @@
 package docspell.joex.process
 
 import java.time.{LocalDate, Period}
-import cats.implicits._
+
 import cats.effect.Sync
+import cats.implicits._
+
 import docspell.common._
 import docspell.joex.scheduler.Task
 import docspell.store.records.RAttachmentMeta

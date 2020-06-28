@@ -1,14 +1,15 @@
 package docspell.common
 
 import java.io.IOException
+import java.nio.file._
 import java.nio.file.attribute.BasicFileAttributes
-import java.nio.file.{FileVisitResult, Files, Path, SimpleFileVisitor}
 import java.util.concurrent.atomic.AtomicInteger
 
 import scala.jdk.CollectionConverters._
-import fs2.Stream
-import cats.implicits._
+
 import cats.effect._
+import cats.implicits._
+import fs2.Stream
 
 object File {
 

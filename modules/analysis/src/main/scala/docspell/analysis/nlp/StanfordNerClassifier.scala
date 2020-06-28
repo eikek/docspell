@@ -3,15 +3,15 @@ package docspell.analysis.nlp
 import java.net.URL
 import java.util.zip.GZIPInputStream
 
+import scala.jdk.CollectionConverters._
+import scala.util.Using
+
+import docspell.common._
+
 import edu.stanford.nlp.ie.AbstractSequenceClassifier
 import edu.stanford.nlp.ie.crf.CRFClassifier
 import edu.stanford.nlp.ling.{CoreAnnotations, CoreLabel}
 import org.log4s.getLogger
-
-import docspell.common._
-
-import scala.util.Using
-import scala.jdk.CollectionConverters._
 
 object StanfordNerClassifier {
   private[this] val logger = getLogger

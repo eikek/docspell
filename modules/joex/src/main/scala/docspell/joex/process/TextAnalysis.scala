@@ -1,7 +1,8 @@
 package docspell.joex.process
 
-import cats.implicits._
 import cats.effect.Sync
+import cats.implicits._
+
 import docspell.analysis.{TextAnalyser, TextAnalysisConfig}
 import docspell.common._
 import docspell.joex.process.ItemData.AttachmentDates

@@ -1,21 +1,22 @@
 package docspell.joex.scanmailbox
 
-import fs2._
-import cats.implicits._
-import cats.effect._
-import emil.{MimeType => _, _}
-import emil.javamail.syntax._
-import emil.SearchQuery.{All, ReceivedDate}
-
-import docspell.common._
-import docspell.backend.ops.{OJoex, OUpload}
-import docspell.store.records._
-import docspell.joex.Config
-import docspell.joex.scheduler.{Context, Task}
-import docspell.store.queries.QOrganization
 import cats.data.Kleisli
 import cats.data.NonEmptyList
 import cats.data.OptionT
+import cats.effect._
+import cats.implicits._
+import fs2._
+
+import docspell.backend.ops.{OJoex, OUpload}
+import docspell.common._
+import docspell.joex.Config
+import docspell.joex.scheduler.{Context, Task}
+import docspell.store.queries.QOrganization
+import docspell.store.records._
+
+import emil.SearchQuery.{All, ReceivedDate}
+import emil.javamail.syntax._
+import emil.{MimeType => _, _}
 
 object ScanMailboxTask {
   val maxItems: Long = 7

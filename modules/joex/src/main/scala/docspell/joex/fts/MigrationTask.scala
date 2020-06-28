@@ -2,10 +2,11 @@ package docspell.joex.fts
 
 import cats.effect._
 import cats.implicits._
+
 import docspell.common._
+import docspell.ftsclient._
 import docspell.joex.Config
 import docspell.joex.scheduler.Task
-import docspell.ftsclient._
 import docspell.store.records.RJob
 
 object MigrationTask {

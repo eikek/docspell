@@ -1,6 +1,7 @@
 package docspell.backend.signup
 
 import docspell.common.{Duration, Password}
+
 import io.circe._
 
 case class Config(mode: Config.Mode, newInvitePassword: Password, inviteTime: Duration)

@@ -1,9 +1,11 @@
 package docspell.store.records
 
-import doobie._, doobie.implicits._
 import docspell.common._
-import docspell.store.impl._
 import docspell.store.impl.Implicits._
+import docspell.store.impl._
+
+import doobie._
+import doobie.implicits._
 
 case class RTag(
     tagId: Ident,

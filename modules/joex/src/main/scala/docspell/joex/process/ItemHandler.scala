@@ -1,15 +1,16 @@
 package docspell.joex.process
 
-import cats.implicits._
-import cats.effect._
 import cats.data.OptionT
+import cats.effect._
+import cats.implicits._
 import fs2.Stream
+
 import docspell.common.{ItemState, ProcessItemArgs}
+import docspell.ftsclient.FtsClient
 import docspell.joex.Config
 import docspell.joex.scheduler.Task
 import docspell.store.queries.QItem
 import docspell.store.records.RItem
-import docspell.ftsclient.FtsClient
 
 object ItemHandler {
   type Args = ProcessItemArgs

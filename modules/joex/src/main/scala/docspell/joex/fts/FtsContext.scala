@@ -1,10 +1,10 @@
 package docspell.joex.fts
 
 import docspell.common.Logger
+import docspell.ftsclient.FtsClient
 import docspell.joex.Config
 import docspell.joex.scheduler.Context
 import docspell.store.Store
-import docspell.ftsclient.FtsClient
 
 case class FtsContext[F[_]](
     cfg: Config.FullTextSearch,

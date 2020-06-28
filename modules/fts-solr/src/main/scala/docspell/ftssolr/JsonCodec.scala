@@ -1,9 +1,10 @@
 package docspell.ftssolr
 
-import io.circe._
-import io.circe.syntax._
 import docspell.common._
 import docspell.ftsclient._
+
+import io.circe._
+import io.circe.syntax._
 
 trait JsonCodec {
 

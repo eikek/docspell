@@ -1,12 +1,14 @@
 package docspell.joex.scheduler
 
-import cats.{Applicative, Functor}
 import cats.effect._
 import cats.implicits._
+import cats.{Applicative, Functor}
+
 import docspell.common._
+import docspell.common.syntax.all._
 import docspell.store.Store
 import docspell.store.records.RJob
-import docspell.common.syntax.all._
+
 import org.log4s.{Logger => _, _}
 
 trait Context[F[_], A] { self =>

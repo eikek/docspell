@@ -1,26 +1,29 @@
 package docspell.joex
 
-import cats.implicits._
-import cats.effect._
-import emil.javamail._
-import fs2.concurrent.SignallingRef
 import scala.concurrent.ExecutionContext
-import org.http4s.client.Client
-import org.http4s.client.blaze.BlazeClientBuilder
-import docspell.common._
+
+import cats.effect._
+import cats.implicits._
+import fs2.concurrent.SignallingRef
+
 import docspell.backend.ops._
+import docspell.common._
+import docspell.ftsclient.FtsClient
+import docspell.ftssolr.SolrFtsClient
+import docspell.joex.fts.{MigrationTask, ReIndexTask}
 import docspell.joex.hk._
 import docspell.joex.notify._
-import docspell.joex.fts.{MigrationTask, ReIndexTask}
-import docspell.joex.scanmailbox._
 import docspell.joex.process.ItemHandler
+import docspell.joex.scanmailbox._
 import docspell.joex.scheduler._
 import docspell.joexapi.client.JoexClient
 import docspell.store.Store
 import docspell.store.queue._
 import docspell.store.records.RJobLog
-import docspell.ftsclient.FtsClient
-import docspell.ftssolr.SolrFtsClient
+
+import emil.javamail._
+import org.http4s.client.Client
+import org.http4s.client.blaze.BlazeClientBuilder
 
 final class JoexAppImpl[F[_]: ConcurrentEffect: ContextShift: Timer](
     cfg: Config,

@@ -24,6 +24,7 @@ object Dependencies {
   val LogbackVersion          = "1.2.3"
   val MariaDbVersion          = "2.6.1"
   val MiniTestVersion         = "2.8.2"
+  val OrganizeImportsVersion  = "0.3.1-RC3"
   val PdfboxVersion           = "2.0.20"
   val PoiVersion              = "4.1.2"
   val PostgresVersion         = "42.2.14"
@@ -252,5 +253,9 @@ object Dependencies {
 
   val icu4j = Seq(
     "com.ibm.icu" % "icu4j" % Icu4jVersion
+  )
+
+  val organizeImports = Seq(
+    "com.github.liancheng" %% "organize-imports" % OrganizeImportsVersion
   )
 }

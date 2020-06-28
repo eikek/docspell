@@ -1,14 +1,15 @@
 package docspell.joex.fts
 
+import cats.Traverse
+import cats.data.{Kleisli, OptionT}
 import cats.effect._
 import cats.implicits._
-import cats.data.{Kleisli, OptionT}
-import cats.Traverse
+
 import docspell.common._
-import docspell.joex.Config
-import docspell.store.{AddResult, Store}
-import docspell.store.records.RFtsMigration
 import docspell.ftsclient._
+import docspell.joex.Config
+import docspell.store.records.RFtsMigration
+import docspell.store.{AddResult, Store}
 
 case class Migration[F[_]](
     version: Int,

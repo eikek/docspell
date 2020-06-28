@@ -1,19 +1,22 @@
 package docspell.files
 
 import java.io.BufferedInputStream
-import java.nio.file.{Files, Path}
 import java.nio.charset.Charset
+import java.nio.file.{Files, Path}
 
 import scala.jdk.CollectionConverters._
 import scala.util.Using
-import cats.implicits._
+
 import cats.effect.Sync
+import cats.implicits._
 import fs2.Stream
+
+import docspell.common._
+
 import org.apache.tika.config.TikaConfig
 import org.apache.tika.metadata.{HttpHeaders, Metadata, TikaMetadataKeys}
 import org.apache.tika.mime.MediaType
 import org.apache.tika.parser.txt.Icu4jEncodingDetector
-import docspell.common._
 
 object TikaMimetype {
   private val tika = new TikaConfig().getDetector

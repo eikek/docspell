@@ -1,6 +1,7 @@
 package docspell.joex.scheduler
 
 import cats.implicits._
+
 import docspell.common.Priority
 
 /** A counting scheme to indicate a ratio between scheduling high and

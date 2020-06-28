@@ -5,6 +5,7 @@ import docspell.store.impl.Implicits._
 import docspell.store.records.RCollective.{Columns => CC}
 import docspell.store.records.RUser.{Columns => UC}
 import docspell.store.records.{RCollective, RUser}
+
 import doobie._
 import doobie.implicits._
 import org.log4s._

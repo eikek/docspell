@@ -2,12 +2,14 @@ package docspell.store.records
 
 import cats.effect._
 import cats.implicits._
-import doobie._
-import doobie.implicits._
-import com.github.eikek.calev.CalEvent
+
 import docspell.common._
 import docspell.store.impl.Column
 import docspell.store.impl.Implicits._
+
+import com.github.eikek.calev.CalEvent
+import doobie._
+import doobie.implicits._
 import io.circe.Encoder
 
 /** A periodic task is a special job description, that shares a few

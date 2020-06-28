@@ -1,11 +1,12 @@
 package docspell.joex.fts
 
 import cats.effect._
+
 import docspell.common._
-import docspell.joex.Config
-import docspell.joex.scheduler.Task
 import docspell.ftsclient._
-import FtsWork.syntax._
+import docspell.joex.Config
+import docspell.joex.fts.FtsWork.syntax._
+import docspell.joex.scheduler.Task
 
 object ReIndexTask {
   type Args = ReIndexTaskArgs

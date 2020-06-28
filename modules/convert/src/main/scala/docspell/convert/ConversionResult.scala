@@ -2,6 +2,7 @@ package docspell.convert
 
 import cats.data.Kleisli
 import fs2.Stream
+
 import docspell.common.MimeType
 
 sealed trait ConversionResult[F[_]] {

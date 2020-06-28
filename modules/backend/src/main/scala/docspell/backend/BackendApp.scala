@@ -1,20 +1,21 @@
 package docspell.backend
 
-import cats.effect.{Blocker, ConcurrentEffect, ContextShift, Resource}
-import org.http4s.client.Client
-import org.http4s.client.blaze.BlazeClientBuilder
+import scala.concurrent.ExecutionContext
+
+import cats.effect._
 
 import docspell.backend.auth.Login
 import docspell.backend.ops._
 import docspell.backend.signup.OSignup
+import docspell.ftsclient.FtsClient
 import docspell.joexapi.client.JoexClient
 import docspell.store.Store
 import docspell.store.queue.JobQueue
 import docspell.store.usertask.UserTaskStore
-import docspell.ftsclient.FtsClient
 
-import scala.concurrent.ExecutionContext
 import emil.javamail.{JavaMailEmil, Settings}
+import org.http4s.client.Client
+import org.http4s.client.blaze.BlazeClientBuilder
 
 trait BackendApp[F[_]] {
 

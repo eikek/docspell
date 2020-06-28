@@ -1,19 +1,21 @@
 package docspell.joex.scheduler
 
-import fs2.Stream
-import cats.implicits._
-import cats.effect.concurrent.Semaphore
 import cats.data.OptionT
+import cats.effect._
+import cats.effect.concurrent.Semaphore
+import cats.implicits._
+import fs2.Stream
+import fs2.concurrent.SignallingRef
+
 import docspell.common._
 import docspell.common.syntax.all._
-import docspell.store.queue.JobQueue
-import docspell.store.records.RJob
-import fs2.concurrent.SignallingRef
-import cats.effect._
-import org.log4s._
-import SchedulerImpl._
+import docspell.joex.scheduler.SchedulerImpl._
 import docspell.store.Store
 import docspell.store.queries.QJob
+import docspell.store.queue.JobQueue
+import docspell.store.records.RJob
+
+import org.log4s._
 
 final class SchedulerImpl[F[_]: ConcurrentEffect: ContextShift](
     val config: SchedulerConfig,

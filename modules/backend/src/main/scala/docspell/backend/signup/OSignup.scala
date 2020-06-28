@@ -1,13 +1,15 @@
 package docspell.backend.signup
 
-import cats.implicits._
 import cats.effect.{Effect, Resource}
+import cats.implicits._
+
 import docspell.backend.PasswordCrypt
 import docspell.backend.ops.OCollective.RegisterData
-import docspell.common.syntax.all._
 import docspell.common._
-import docspell.store.{AddResult, Store}
+import docspell.common.syntax.all._
 import docspell.store.records.{RCollective, RInvitation, RUser}
+import docspell.store.{AddResult, Store}
+
 import doobie.free.connection.ConnectionIO
 import org.log4s.getLogger
 

@@ -1,8 +1,8 @@
 package docspell.joex.scheduler
 
+import cats.effect._
 import fs2._
 import fs2.concurrent.SignallingRef
-import cats.effect._
 
 import docspell.joexapi.client.JoexClient
 import docspell.store.queue._

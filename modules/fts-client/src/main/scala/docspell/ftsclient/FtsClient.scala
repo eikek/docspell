@@ -1,10 +1,12 @@
 package docspell.ftsclient
 
-import fs2.Stream
-import cats.implicits._
 import cats.effect._
-import org.log4s.getLogger
+import cats.implicits._
+import fs2.Stream
+
 import docspell.common._
+
+import org.log4s.getLogger
 
 /** The fts client is the interface for docspell to a fulltext search
   * engine.

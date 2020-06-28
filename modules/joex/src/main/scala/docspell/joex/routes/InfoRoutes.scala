@@ -1,8 +1,10 @@
 package docspell.joex.routes
 
 import cats.effect.Sync
+
 import docspell.joex.BuildInfo
 import docspell.joexapi.model.VersionInfo
+
 import org.http4s.HttpRoutes
 import org.http4s.circe.CirceEntityEncoder._
 import org.http4s.dsl.Http4sDsl

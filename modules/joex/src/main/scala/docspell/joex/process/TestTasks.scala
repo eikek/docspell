@@ -1,10 +1,12 @@
 package docspell.joex.process
 
-import cats.implicits._
 import cats.effect.Sync
+import cats.implicits._
+
 import docspell.common.ProcessItemArgs
 import docspell.common.syntax.all._
 import docspell.joex.scheduler.Task
+
 import org.log4s._
 
 object TestTasks {

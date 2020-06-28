@@ -2,9 +2,17 @@ package docspell.extract.poi
 
 import java.io.{ByteArrayInputStream, InputStream}
 
+import scala.util.Try
+
 import cats.data.EitherT
-import cats.implicits._
 import cats.effect.Sync
+import cats.implicits._
+import fs2.Stream
+
+import docspell.common._
+import docspell.extract.internal.Text
+import docspell.files.TikaMimetype
+
 import org.apache.poi.hssf.extractor.ExcelExtractor
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import org.apache.poi.hwpf.extractor.WordExtractor
@@ -12,12 +20,6 @@ import org.apache.poi.xssf.extractor.XSSFExcelExtractor
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.apache.poi.xwpf.extractor.XWPFWordExtractor
 import org.apache.poi.xwpf.usermodel.XWPFDocument
-import fs2.Stream
-
-import scala.util.Try
-import docspell.common._
-import docspell.files.TikaMimetype
-import docspell.extract.internal.Text
 
 object PoiExtract {
 

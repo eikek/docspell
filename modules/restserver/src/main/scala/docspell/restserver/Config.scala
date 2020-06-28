@@ -1,9 +1,10 @@
 package docspell.restserver
 
 import java.net.InetAddress
-import docspell.common._
+
 import docspell.backend.auth.Login
 import docspell.backend.{Config => BackendConfig}
+import docspell.common._
 import docspell.ftssolr.SolrConfig
 
 case class Config(

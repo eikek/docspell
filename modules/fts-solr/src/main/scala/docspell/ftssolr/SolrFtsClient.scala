@@ -1,14 +1,15 @@
 package docspell.ftssolr
 
-import fs2.Stream
 import cats.effect._
 import cats.implicits._
-import org.http4s.client.Client
-import org.http4s.client.middleware.Logger
-import org.log4s.getLogger
+import fs2.Stream
 
 import docspell.common._
 import docspell.ftsclient._
+
+import org.http4s.client.Client
+import org.http4s.client.middleware.Logger
+import org.log4s.getLogger
 
 final class SolrFtsClient[F[_]: Effect](
     solrUpdate: SolrUpdate[F],
