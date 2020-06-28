@@ -1,9 +1,10 @@
 ---
 layout: docs
 title: Fulltext Search Engine
+permalink: dev/adr/0014_fulltext_search_engine
 ---
 
-# Choose a Fulltext Search Engine
+# {{ page.title }}
 
 It should be possible to search the contents of all documents.
 

@@ -134,6 +134,10 @@ details). Note that a collective can also re-index their data using a
 similiar endpoint; but this is only deleting their data and doesn't do
 a full re-index.
 
+The solr index doesn't contain any new information, it can be
+regenerated any time using the above REST call. Thus it doesn't need
+to be backed up.
+
 ### Bind
 
 The host and port the http server binds to. This applies to both

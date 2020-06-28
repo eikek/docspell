@@ -6,23 +6,21 @@ permalink: getit
 
 # {{ page.title }}
 
-You can download pre-compiled binaries from the [Release
-Page](https://github.com/eikek/docspell/releases). There are `deb`
-packages and generic zip files. Alternatively, docspell can be
-installed via [nix](doc/nix) or docker (see below).
-
 There are the following quick ways to get docspell to run on your
 machine:
 
-- [Download, Unpack, Run](#without-docker)
+- [Download, Unpack, Run](#without-docker) You can download
+  pre-compiled binaries from the [Release
+  Page](https://github.com/eikek/docspell/releases). There are `deb`
+  packages and generic zip files.
 - [With Docker](#with-docker)
 - [NixOs Module](doc/nix#docspell-as-a-service-on-nixos)
 
-Check the [early demo video](demo) to see the basic idea. Refer to the
+Check the [demo videos](demo) to see the basic idea. Refer to the
 [documentation](doc) for more information on how to use docspell.
 
 
-## Without Docker
+## Download, Unpack, Run
 
 ### Prerequisite
 
@@ -97,9 +95,13 @@ available in the `/docker` folder.
    some containers. You can define whatever you like. Please see the
    [`consumedir.sh`](doc/tools/consumedir#docker) docs for additional
    info.
-4. Goto <http://localhost:7880>, signup and login. Create a folder
-   `./docs/<collective-name>` and place files in there for importing
-   them.
+4. Goto <http://localhost:7880>, signup and login. When signing up,
+   you can choose the same name for collective and user. Then login
+   with this name and the password.
+
+5. (Optional) Create a folder `./docs/<collective-name>` (the name you
+   chose for the collective at registration) and place files in there
+   for importing them.
 
 The directory contains a file `docspell.conf` that you can
 [modify](doc/configure) as needed.

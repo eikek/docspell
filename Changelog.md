@@ -2,7 +2,7 @@
 
 ## v0.8.0
 
-*Soon*
+*June 29, 2020*
 
 - Adds the [full-text
   search](https://docspell.org/doc/finding#full-text-search) feature
@@ -13,13 +13,14 @@
   search menu.
 - Fixes column types for item date and due-date for MariaDB (see #158)
   and adds an upper limit for due-dates (which is configurable).
-- Fixes a bug when cancelling jobs where stuck jobs were only removed
-  from the queue, but their cancel routine was not called.
-- Changes cancelling process-item jobs, the item will still be created
-  and not removed.
+- Fixes a bug when cancelling jobs. Stuck jobs were only removed from
+  the queue, but their cancel routine was not called.
+- Changes in cancelling process-item jobs: the item will still be
+  created and not removed.
 - Fixes a bug where items could not be deleted if there were sent
   mails attached.
-- Fixes the openapi spec for the joex component.
+- Fixes the openapi spec for the joex component. This made the
+  generated live documentation unusable.
 - Changes to the `consumedir.sh` script:
   - Allow to recursively watch or traverse directories
   - Allow it to work with the integration endpoint. This allows using
@@ -50,6 +51,7 @@
 - The `ItemLight` result structure now can contain "highlighting"
   information that is provided by the full-text search index.
 
+
 ## v0.7.0
 
 *June 17, 2020*
@@ -77,7 +79,7 @@
   0.3.0), i.e. it doesn't search item notes anymore, which is now
   possible with the *allNames* search field.
 - Fixes a bug where a search term was not lower-cased but compared to
-  a lower-cased value.
+  a lower-cased value (see #147).
 - Allow to change names of attachments. 
 - Document how to create a SMTP gateway to docspell and provide a
   simple docker based setup. This is a SMTP server that delivers mails
