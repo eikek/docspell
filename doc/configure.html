@@ -1,4 +1,4 @@
-<!DOCTYPE html><html><head><title>Docspell: Configuring</title><meta charset="utf-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="eikek" /><meta name="description" content="Auto-tagging Document Organizer" /><meta name="og:image" content="/img/poster.png" /><meta name="image" property="og:image" content="/img/poster.png" /><meta name="og:title" content="Docspell: Configuring" /><meta name="title" property="og:title" content="Docspell: Configuring" /><meta name="og:site_name" content="Docspell" /><meta name="og:url" content="" /><meta name="og:type" content="website" /><meta name="og:description" content="Auto-tagging Document Organizer" /><link rel="icon" type="image/png" href="/img/favicon.png" /><meta name="twitter:title" content="Docspell: Configuring" /><meta name="twitter:image" content="/img/poster.png" /><meta name="twitter:description" content="Auto-tagging Document Organizer" /><meta name="twitter:card" content="summary_large_image" /><link rel="icon" type="image/png" sizes="96x96" href="/img/favicon.png" /><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" /><link rel="stylesheet" href="/highlight/styles/vs.css" /><link rel="stylesheet" href="/css/light-style.css" /><link rel="stylesheet" href="/css/docspell.css" /></head><body class="docs"><div id="wrapper"><div id="sidebar-wrapper"><div id="sidebar-brand"><a href="/" class="brand"><div class="brand-wrapper"></div><span>Docspell</span></a><button id="main-toggle" class="sidebar-toggle"><span class="close"></span></button></div><div class="sidebar-nav"> <div class="sidebar-nav-item  "><a href="/index.html" title="Home" class="">Home</a></div> <div class="sidebar-nav-item  "><a href="/demo" title="Demo" class="">Demo</a></div> <div class="sidebar-nav-item  "><a href="/getit" title="Quickstart" class="">Quickstart</a></div> <div class="sidebar-nav-item  "><a href="/features" title="Features/Limitations" class="">Features/Limitations</a></div> <div class="sidebar-nav-item  open"><a href="/doc" title="Documentation" class="drop-nested">Documentation</a><i class="fa fa-angle-right"></i><div class="sub-section"> <a href="/doc/install" title="Installation" class="">Installation</a> <a href="/doc/configure" title="Configuring" class="active">Configuring</a> <a href="/doc/nix" title="Nix/NixOS" class="">Nix/NixOS</a> <a href="/doc/reverseproxy" title="Reverse Proxy" class="">Reverse Proxy</a> <a href="/doc/metadata" title="Adding Meta Data" class="">Adding Meta Data</a> <a href="/doc/finding" title="Finding Items" class="">Finding Items</a> <a href="/doc/uploading" title="Uploads" class="">Uploads</a> <a href="/doc/processing" title="Processing Queue" class="">Processing Queue</a> <a href="/doc/curate" title="Find and Review" class="">Find and Review</a> <a href="/doc/emailsettings" title="E-Mail Settings" class="">E-Mail Settings</a> <a href="/doc/mailitem" title="Send via E-Mail" class="">Send via E-Mail</a> <a href="/doc/notifydueitems" title="Notify on due Items" class="">Notify on due Items</a> <a href="/doc/scanmailbox" title="Scan Mailboxes" class="">Scan Mailboxes</a> <a href="/doc/joex" title="Joex" class="">Joex</a></div></div> <div class="sidebar-nav-item  "><a href="/doc/tools" title="Tools" class="drop-nested">Tools</a><i class="fa fa-angle-right"></i><div class="sub-section"> <a href="/doc/tools/ds" title="Upload CLI" class="">Upload CLI</a> <a href="/doc/tools/consumedir" title="Consume Directory" class="">Consume Directory</a> <a href="/doc/tools/browserext" title="Browser Extension (Firefox)" class="">Browser Extension (Firefox)</a> <a href="/doc/tools/smtpgateway" title="SMTP Gateway" class="">SMTP Gateway</a></div></div> <div class="sidebar-nav-item  "><a href="/api" title="Api" class="drop-nested">Api</a><i class="fa fa-angle-right"></i><div class="sub-section"> <a href="/openapi/docspell-openapi.html" title="REST Api Doc" class="">REST Api Doc</a> <a href="/openapi/docspell-openapi.yml" title="REST OpenApi Spec" class="">REST OpenApi Spec</a></div></div> <div class="sidebar-nav-item  "><a href="/dev" title="Development" class="drop-nested">Development</a><i class="fa fa-angle-right"></i><div class="sub-section"> <a href="/dev/adr" title="ADRs" class="">ADRs</a></div></div> <div class="sidebar-nav-item  "><a href="/changelog" title="Changelog" class="">Changelog</a></div></div></div><div id="page-content-wrapper"><div class="nav"><div class="container-fluid"><div class="row"><div class="col-lg-12"><div class="action-menu pull-left clearfix"><a href="#menu-toggle" id="menu-toggle"><i class="fa fa-bars" aria-hidden="true"></i></a></div><ul class="pull-right"><li id="gh-eyes-item" class="hidden-xs"><a href="https://github.com/eikek/docspell" target="_blank" rel="noopener noreferrer"><i class="fa fa-eye"></i><span>Watchers<span id="eyes" class="label label-default">--</span></span></a></li><li id="gh-stars-item" class="hidden-xs"><a href="https://github.com/eikek/docspell" target="_blank" rel="noopener noreferrer"><i class="fa fa-star-o"></i><span>Stars<span id="stars" class="label label-default">--</span></span></a></li></ul></div></div></div></div><div id="content" data-github-owner="eikek" data-github-repo="docspell"><div class="content-wrapper"><section><h1 id="configuring">Configuring</h1>
+<!DOCTYPE html><html><head><title>Docspell: Configuring</title><meta charset="utf-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="eikek" /><meta name="description" content="Auto-tagging Document Organizer" /><meta name="og:image" content="/img/poster.png" /><meta name="image" property="og:image" content="/img/poster.png" /><meta name="og:title" content="Docspell: Configuring" /><meta name="title" property="og:title" content="Docspell: Configuring" /><meta name="og:site_name" content="Docspell" /><meta name="og:url" content="" /><meta name="og:type" content="website" /><meta name="og:description" content="Auto-tagging Document Organizer" /><link rel="icon" type="image/png" href="/img/favicon.png" /><meta name="twitter:title" content="Docspell: Configuring" /><meta name="twitter:image" content="/img/poster.png" /><meta name="twitter:description" content="Auto-tagging Document Organizer" /><meta name="twitter:card" content="summary_large_image" /><link rel="icon" type="image/png" sizes="96x96" href="/img/favicon.png" /><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" /><link rel="stylesheet" href="/highlight/styles/vs.css" /><link rel="stylesheet" href="/css/light-style.css" /><link rel="stylesheet" href="/css/docspell.css" /></head><body class="docs"><div id="wrapper"><div id="sidebar-wrapper"><div id="sidebar-brand"><a href="/" class="brand"><div class="brand-wrapper"></div><span>Docspell</span></a><button id="main-toggle" class="sidebar-toggle"><span class="close"></span></button></div><div class="sidebar-nav"> <div class="sidebar-nav-item  "><a href="/index.html" title="Home" class="">Home</a></div> <div class="sidebar-nav-item  "><a href="/demo" title="Demo" class="">Demo</a></div> <div class="sidebar-nav-item  "><a href="/getit" title="Quickstart" class="">Quickstart</a></div> <div class="sidebar-nav-item  "><a href="/features" title="Features/Limitations" class="">Features/Limitations</a></div> <div class="sidebar-nav-item  open"><a href="/doc" title="Documentation" class="drop-nested">Documentation</a><i class="fa fa-angle-right"></i><div class="sub-section"> <a href="/doc/install" title="Installation" class="">Installation</a> <a href="/doc/configure" title="Configuring" class="active">Configuring</a> <a href="/doc/nix" title="Nix/NixOS" class="">Nix/NixOS</a> <a href="/doc/reverseproxy" title="Reverse Proxy" class="">Reverse Proxy</a> <a href="/doc/metadata" title="Adding Meta Data" class="">Adding Meta Data</a> <a href="/doc/finding" title="Finding Items" class="">Finding Items</a> <a href="/doc/curate" title="Curate Metadata" class="">Curate Metadata</a> <a href="/doc/uploading" title="Uploads" class="">Uploads</a> <a href="/doc/processing" title="Processing Queue" class="">Processing Queue</a> <a href="/doc/emailsettings" title="E-Mail Settings" class="">E-Mail Settings</a> <a href="/doc/mailitem" title="Send via E-Mail" class="">Send via E-Mail</a> <a href="/doc/notifydueitems" title="Notify on due Items" class="">Notify on due Items</a> <a href="/doc/scanmailbox" title="Scan Mailboxes" class="">Scan Mailboxes</a> <a href="/doc/joex" title="Joex" class="">Joex</a></div></div> <div class="sidebar-nav-item  "><a href="/doc/tools" title="Tools" class="drop-nested">Tools</a><i class="fa fa-angle-right"></i><div class="sub-section"> <a href="/doc/tools/ds" title="Upload CLI" class="">Upload CLI</a> <a href="/doc/tools/consumedir" title="Consume Directory" class="">Consume Directory</a> <a href="/doc/tools/browserext" title="Browser Extension (Firefox)" class="">Browser Extension (Firefox)</a> <a href="/doc/tools/smtpgateway" title="SMTP Gateway" class="">SMTP Gateway</a></div></div> <div class="sidebar-nav-item  "><a href="/api" title="Api" class="drop-nested">Api</a><i class="fa fa-angle-right"></i><div class="sub-section"> <a href="/openapi/docspell-openapi.html" title="REST Api Doc" class="">REST Api Doc</a> <a href="/openapi/docspell-openapi.yml" title="REST OpenApi Spec" class="">REST OpenApi Spec</a></div></div> <div class="sidebar-nav-item  "><a href="/dev" title="Development" class="drop-nested">Development</a><i class="fa fa-angle-right"></i><div class="sub-section"> <a href="/dev/adr" title="ADRs" class="">ADRs</a></div></div> <div class="sidebar-nav-item  "><a href="/changelog" title="Changelog" class="">Changelog</a></div></div></div><div id="page-content-wrapper"><div class="nav"><div class="container-fluid"><div class="row"><div class="col-lg-12"><div class="action-menu pull-left clearfix"><a href="#menu-toggle" id="menu-toggle"><i class="fa fa-bars" aria-hidden="true"></i></a></div><ul class="pull-right"><li id="gh-eyes-item" class="hidden-xs"><a href="https://github.com/eikek/docspell" target="_blank" rel="noopener noreferrer"><i class="fa fa-eye"></i><span>Watchers<span id="eyes" class="label label-default">--</span></span></a></li><li id="gh-stars-item" class="hidden-xs"><a href="https://github.com/eikek/docspell" target="_blank" rel="noopener noreferrer"><i class="fa fa-star-o"></i><span>Stars<span id="stars" class="label label-default">--</span></span></a></li></ul></div></div></div></div><div id="content" data-github-owner="eikek" data-github-repo="docspell"><div class="content-wrapper"><section><h1 id="configuring">Configuring</h1>
 
 <p>Docspell’s executable can take one argument – a configuration file. If
 that is not given, the defaults are used. The config file overrides
@@ -60,6 +60,68 @@ include these options:</p>
 <p>H2</p>
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>url = "jdbc:h2:///path/to/a/file.db;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;AUTO_SERVER=TRUE"
 </code></pre></div></div>
+
+<h3 id="full-text-search-solr">Full-Text Search: SOLR</h3>
+
+<p><a href="https://lucene.apache.org/solr">Apache SOLR</a> is used to provide the
+full-text search. Both docspell components must provide the same
+connection setup. This is defined in the <code class="highlighter-rouge">full-text-search.solr</code>
+subsection:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>...
+  full-text-search {
+    enabled = true
+    ...
+    solr = {
+      url = "http://localhost:8983/solr/docspell"
+    }
+  }
+</code></pre></div></div>
+
+<p>The default configuration at the end of this page contains more
+information about each setting.</p>
+
+<p>The <code class="highlighter-rouge">solr.url</code> is the mandatory setting that you need to change to
+point to your SOLR instance. Then you need to set the <code class="highlighter-rouge">enabled</code> flag
+to <code class="highlighter-rouge">true</code>.</p>
+
+<p>When installing docspell manually, just install solr and create a core
+as described in the <a href="https://lucene.apache.org/solr/guide/8_4/installing-solr.html">solr
+documentation</a>.
+That will provide you with the connection url (the last part is the
+core name).</p>
+
+<p>While the <code class="highlighter-rouge">full-text-search.solr</code> options are the same for joex and
+the restserver, there are some settings that differ. The restserver
+has this additional setting, that may be of interest:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>full-text-search {
+  recreate-key = "test123"
+}
+</code></pre></div></div>
+
+<p>This key is required if you want docspell to drop and re-create the
+entire index. This is possible via a REST call:</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>curl <span class="nt">-XPOST</span> http://localhost:7880/api/v1/open/fts/reIndexAll/test123
+</code></pre></div></div>
+
+<p>Here the <code class="highlighter-rouge">test123</code> is the key defined with <code class="highlighter-rouge">recreate-key</code>. If it is
+empty (the default), this REST call is disabled. Otherwise, the POST
+request will submit a system task that is executed by a joex instance
+eventually.</p>
+
+<p>Using this endpoint, the index will be re-created. This is sometimes
+necessary, for example if you upgrade SOLR or delete the core to
+provide a new one (see
+<a href="https://lucene.apache.org/solr/guide/8_4/reindexing.html">here</a> for
+details). Note that a collective can also re-index their data using a
+similiar endpoint; but this is only deleting their data and doesn’t do
+a full re-index.</p>
+
+<p>The solr index doesn’t contain any new information, it can be
+regenerated any time using the above REST call. Thus it doesn’t need
+to be backed up.</p>
 
 <h3 id="bind">Bind</h3>
 
@@ -223,7 +285,7 @@ docspell.server {
   # within the client config, but it is restricted by the server to
   # the number defined here. An admin might choose a lower number
   # depending on the available resources.
-  max-item-page-size = 500
+  max-item-page-size = 200
 
   # Authentication.
   auth {
@@ -282,6 +344,40 @@ docspell.server {
       enabled = false
       header-name = "Docspell-Integration"
       header-value = "some-secret"
+    }
+  }
+
+  # Configuration of the full-text search engine.
+  full-text-search {
+    # The full-text search feature can be disabled. It requires an
+    # additional index server which needs additional memory and disk
+    # space. It can be enabled later any time.
+    #
+    # Currently the SOLR search platform is supported.
+    enabled = false
+
+    # When re-creating the complete index via a REST call, this key
+    # is required. If left empty (the default), recreating the index
+    # is disabled.
+    #
+    # Example curl command:
+    # curl -XPOST http://localhost:7880/api/v1/open/fts/reIndexAll/test123
+    recreate-key = ""
+
+    # Configuration for the SOLR backend.
+    solr = {
+      # The URL to solr
+      url = "http://localhost:8983/solr/docspell"
+      # Used to tell solr when to commit the data
+      commit-within = 1000
+      # If true, logs request and response bodies
+      log-verbose = false
+      # The defType parameter to lucene that defines the parser to
+      # use. You might want to try "edismax" or look here:
+      # https://lucene.apache.org/solr/guide/8_4/query-syntax-and-parsing.html#query-syntax-and-parsing
+      def-type = "lucene"
+      # The default combiner for tokens. One of {AND, OR}.
+      q-op = "OR"
     }
   }
 
@@ -422,7 +518,7 @@ docspell.joex {
     # How often a failed job should be retried until it enters failed
     # state. If a job fails, it becomes "stuck" and will be retried
     # after a delay.
-    retries = 5
+    retries = 2
 
     # The delay until the next try is performed for a failed job. This
     # delay is increased exponentially with the number of retries.
@@ -695,6 +791,13 @@ docspell.joex {
     }
   }
 
+  # General config for processing documents
+  processing {
+    # Restricts proposals for due dates. Only dates earlier than this
+    # number of years in the future are considered.
+    max-due-date-years = 10
+  }
+
   # The same section is also present in the rest-server config. It is
   # used when submitting files into the job queue for processing.
   #
@@ -717,6 +820,40 @@ docspell.joex {
     # restrict file types that should be handed over to processing.
     # By default all files are allowed.
     valid-mime-types = [ ]
+  }
+
+  # Configuration of the full-text search engine.
+  full-text-search {
+    # The full-text search feature can be disabled. It requires an
+    # additional index server which needs additional memory and disk
+    # space. It can be enabled later any time.
+    #
+    # Currently the SOLR search platform is supported.
+    enabled = false
+
+    # Configuration for the SOLR backend.
+    solr = {
+      # The URL to solr
+      url = "http://localhost:8983/solr/docspell"
+      # Used to tell solr when to commit the data
+      commit-within = 1000
+      # If true, logs request and response bodies
+      log-verbose = false
+      # The defType parameter to lucene that defines the parser to
+      # use. You might want to try "edismax" or look here:
+      # https://lucene.apache.org/solr/guide/8_4/query-syntax-and-parsing.html#query-syntax-and-parsing
+      def-type = "lucene"
+      # The default combiner for tokens. One of {AND, OR}.
+      q-op = "OR"
+    }
+
+    # Settings for running the index migration tasks
+    migration = {
+      # Chunk size to use when indexing data from the database. This
+      # many attachments are loaded into memory and pushed to the
+      # full-text index.
+      index-all-chunk = 10
+    }
   }
 }
 

@@ -2,7 +2,7 @@ openapi: 3.0.0
 
 info:
   title: Docspell
-  version: 0.7.0
+  version: 0.8.0
   description: |
     This is the remote API to Docspell, a personal document organizer.
 
@@ -151,6 +151,46 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BasicResult"
+  /open/fts/reIndexAll/{id}:
+    post:
+      tags: [Full-Text Index]
+      summary: Re-creates the full-text index.
+      description: |
+        Clears the full-text index and inserts all data from the
+        database. This migh take a while to complete. The response
+        returns immediately. A task is submitted that will be executed
+        by a job executor. Note that this affects all data of all
+        collectives.
+
+        The `id` is required and refers to the key given in the config
+        file to ensure that only admins can call this route.
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
+  /sec/fts/reIndex:
+    post:
+      tags: [Full-Text Index]
+      summary: Re-creates the full-text index for the current collective
+      description: |
+        Clears the full-text index for all data belonging to the
+        current collective and inserts the data from the database. The
+        response is immediately returned and a task is submitted that
+        will be executed by a job executor.
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
   /sec/checkfile/{checksum}:
     get:
       tags: [ Upload ]
@@ -259,8 +299,8 @@ paths:
                 $ref: "#/components/schemas/BasicResult"
   /open/integration/item/{id}:
     get:
-      tags: [ Upload Integration ]
-      summary: Upload files to docspell.
+      tags: [ Integration Endpoint ]
+      summary: Check if integration endpoint is available.
       description: |
         Allows to check whether an integration endpoint is enabled for
         a collective. The collective is given by the `id` parameter.
@@ -285,7 +325,7 @@ paths:
         401:
           description: Unauthorized
     post:
-      tags: [ Upload Integration ]
+      tags: [ Integration Endpoint ]
       summary: Upload files to docspell.
       description: |
         Upload a file to docspell for processing. The id is a
@@ -328,6 +368,30 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BasicResult"
+  /open/integration/checkfile/{id}/{checksum}:
+    get:
+      tags: [ Integration Endpoint ]
+      summary: Check if a file is in docspell.
+      description: |
+        Checks if a file with the given SHA-256 checksum is in
+        docspell. The `id` is the *collective name*. This route only
+        exists, if it is enabled in the configuration file.
+
+        The result shows all items that contains a file with the given
+        checksum.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+        - $ref: "#/components/parameters/checksum"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CheckFileResult"
+
   /open/signup/register:
     post:
       tags: [ Registration ]
@@ -987,9 +1051,13 @@ paths:
       summary: Search for items.
       description: |
         Search for items given a search form. The results are grouped
-        by month by default. Tags are *not* resolved! The results will
-        always contain an empty list for item tags. Use
-        `/searchWithTags` to also retrieve all tags of an item.
+        by month and are sorted by item date (newest first). Tags are
+        *not* resolved. The results will always contain an empty list
+        for item tags. Use `/searchWithTags` to also retrieve all tags
+        of an item.
+
+        The `fulltext` field can be used to restrict the results by
+        using full-text search in the documents contents.
       security:
         - authTokenHeader: []
       requestBody:
@@ -1011,7 +1079,11 @@ paths:
       description: |
         Search for items given a search form. The results are grouped
         by month by default. For each item, its tags are also
-        returned. This uses more queries and is therefore slower.
+        returned. This uses more queries and is therefore slower, but
+        returns all tags to an item.
+
+        The `fulltext` field can be used to restrict the results by
+        using full-text search in the documents contents.
       security:
         - authTokenHeader: []
       requestBody:
@@ -1026,6 +1098,37 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ItemLightList"
+  /sec/item/searchIndex:
+    post:
+      tags: [ Item ]
+      summary: Search for items using full-text search only.
+      description: |
+        Search for items by only using the full-text search index.
+
+        Unlike the other search routes, this one only asks the
+        full-text search index and returns only one group that
+        contains the results in the same order as given from the
+        index. Most full-text search engines use an ordering that
+        reflect the relevance wrt the search term.
+
+        The other search routes always order the results by some
+        property (the item date) and thus the relevance ordering is
+        destroyed when using the full-text search.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ItemFtsSearch"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ItemLightList"
+
   /sec/item/{id}:
     get:
       tags: [ Item ]
@@ -2255,6 +2358,28 @@ paths:
 
 components:
   schemas:
+    ItemFtsSearch:
+      description: |
+        Query description for a full-text only search.
+      required:
+        - query
+        - offset
+        - limit
+      properties:
+        offset:
+          type: integer
+          format: int32
+        limit:
+          type: integer
+          format: int32
+          description: |
+            The maximum number of results to return. Note that this
+            limit is a soft limit, there is some hard limit on the
+            server, too.
+        query:
+          type: string
+          description: |
+            A query searching the contents of documents.
     MoveAttachment:
       description: |
         Data to move an attachment to another position.
@@ -3386,6 +3511,10 @@ components:
           description: |
             Search in item names, correspondents, concerned entities
             and notes.
+        fullText:
+          type: string
+          description: |
+            A query searching the contents of documents.
         corrOrg:
           type: string
           format: ident
@@ -3458,6 +3587,29 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/Tag"
+        highlighting:
+          description: |
+            Optional contextual information of a search query. Each
+            item refers to some field where a search match was found
+            (e.g. the name of an attachment or the item notes) and a
+            list of lines giving surrounding context of the macth.
+          type: array
+          items:
+            $ref: "#/components/schemas/HighlightEntry"
+    HighlightEntry:
+      description: |
+        Highlighting information for a single field (maybe attachment
+        name or item notes).
+      required:
+        - name
+        - lines
+      properties:
+        name:
+          type: string
+        lines:
+          type: array
+          items:
+            type: string
     IdName:
       description: |
         The identifier and a human readable name of some entity.

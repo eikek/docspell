@@ -1122,6 +1122,21 @@
   },
   "description" : "A request to generate a new invitation key.\n"
 };
+            defs.HighlightEntry = {
+  "required" : [ "lines", "name" ],
+  "properties" : {
+    "name" : {
+      "type" : "string"
+    },
+    "lines" : {
+      "type" : "array",
+      "items" : {
+        "type" : "string"
+      }
+    }
+  },
+  "description" : "Highlighting information for a single field (maybe attachment\nname or item notes).\n"
+};
             defs.IdName = {
   "required" : [ "id", "name" ],
   "properties" : {
@@ -1176,6 +1191,20 @@
     }
   },
   "description" : "A list of user email settings.\n"
+};
+            defs.inline_response_200 = {
+  "oneOf" : [ {
+    "$ref" : "#/components/schemas/ReferenceList"
+  }, {
+    "$ref" : "#/components/schemas/OrganizationList"
+  } ]
+};
+            defs.inline_response_200_1 = {
+  "oneOf" : [ {
+    "$ref" : "#/components/schemas/ReferenceList"
+  }, {
+    "$ref" : "#/components/schemas/PersonList"
+  } ]
 };
             defs.InviteResult = {
   "required" : [ "message", "success" ],
@@ -1276,6 +1305,25 @@
   },
   "description" : "Detailed information about an item.\n"
 };
+            defs.ItemFtsSearch = {
+  "required" : [ "limit", "offset", "query" ],
+  "properties" : {
+    "offset" : {
+      "type" : "integer",
+      "format" : "int32"
+    },
+    "limit" : {
+      "type" : "integer",
+      "description" : "The maximum number of results to return. Note that this\nlimit is a soft limit, there is some hard limit on the\nserver, too.\n",
+      "format" : "int32"
+    },
+    "query" : {
+      "type" : "string",
+      "description" : "A query searching the contents of documents.\n"
+    }
+  },
+  "description" : "Query description for a full-text only search.\n"
+};
             defs.ItemInsights = {
   "required" : [ "incomingCount", "itemSize", "outgoingCount", "tagCloud" ],
   "properties" : {
@@ -1346,6 +1394,13 @@
       "type" : "array",
       "items" : {
         "$ref" : "#/components/schemas/Tag"
+      }
+    },
+    "highlighting" : {
+      "type" : "array",
+      "description" : "Optional contextual information of a search query. Each\nitem refers to some field where a search match was found\n(e.g. the name of an attachment or the item notes) and a\nlist of lines giving surrounding context of the macth.\n",
+      "items" : {
+        "$ref" : "#/components/schemas/HighlightEntry"
       }
     }
   },
@@ -1463,6 +1518,10 @@
     "allNames" : {
       "type" : "string",
       "description" : "Search in item names, correspondents, concerned entities\nand notes.\n"
+    },
+    "fullText" : {
+      "type" : "string",
+      "description" : "A query searching the contents of documents.\n"
     },
     "corrOrg" : {
       "type" : "string",
@@ -1718,6 +1777,8 @@
   },
   "description" : "A list of notification settings.\n"
 };
+            defs.OneOfinline_response_200 = {};
+            defs.OneOfinline_response_200_1 = {};
             defs.OptionalDate = {
   "properties" : {
     "date" : {
@@ -2329,9 +2390,26 @@
                     <li data-group="Equipment" data-name="secEquipmentPut" class="">
                       <a href="#api-Equipment-secEquipmentPut">secEquipmentPut</a>
                     </li>
+                  <li class="nav-header" data-group="FullTextIndex"><a href="#api-FullTextIndex">API Methods - FullTextIndex</a></li>
+                    <li data-group="FullTextIndex" data-name="openFtsReIndexAllIdPost" class="">
+                      <a href="#api-FullTextIndex-openFtsReIndexAllIdPost">openFtsReIndexAllIdPost</a>
+                    </li>
+                    <li data-group="FullTextIndex" data-name="secFtsReIndexPost" class="">
+                      <a href="#api-FullTextIndex-secFtsReIndexPost">secFtsReIndexPost</a>
+                    </li>
                   <li class="nav-header" data-group="Information"><a href="#api-Information">API Methods - Information</a></li>
                     <li data-group="Information" data-name="apiInfoVersionGet" class="">
                       <a href="#api-Information-apiInfoVersionGet">apiInfoVersionGet</a>
+                    </li>
+                  <li class="nav-header" data-group="IntegrationEndpoint"><a href="#api-IntegrationEndpoint">API Methods - IntegrationEndpoint</a></li>
+                    <li data-group="IntegrationEndpoint" data-name="openIntegrationCheckfileIdChecksumGet" class="">
+                      <a href="#api-IntegrationEndpoint-openIntegrationCheckfileIdChecksumGet">openIntegrationCheckfileIdChecksumGet</a>
+                    </li>
+                    <li data-group="IntegrationEndpoint" data-name="openIntegrationItemIdGet" class="">
+                      <a href="#api-IntegrationEndpoint-openIntegrationItemIdGet">openIntegrationItemIdGet</a>
+                    </li>
+                    <li data-group="IntegrationEndpoint" data-name="openIntegrationItemIdPost" class="">
+                      <a href="#api-IntegrationEndpoint-openIntegrationItemIdPost">openIntegrationItemIdPost</a>
                     </li>
                   <li class="nav-header" data-group="Item"><a href="#api-Item">API Methods - Item</a></li>
                     <li data-group="Item" data-name="secItemIdConcEquipmentPost" class="">
@@ -2396,6 +2474,9 @@
                     </li>
                     <li data-group="Item" data-name="secItemItemIdAttachmentMovebeforePost" class="">
                       <a href="#api-Item-secItemItemIdAttachmentMovebeforePost">secItemItemIdAttachmentMovebeforePost</a>
+                    </li>
+                    <li data-group="Item" data-name="secItemSearchIndexPost" class="">
+                      <a href="#api-Item-secItemSearchIndexPost">secItemSearchIndexPost</a>
                     </li>
                     <li data-group="Item" data-name="secItemSearchPost" class="">
                       <a href="#api-Item-secItemSearchPost">secItemSearchPost</a>
@@ -2494,13 +2575,6 @@
                     <li data-group="Upload" data-name="secUploadPost" class="">
                       <a href="#api-Upload-secUploadPost">secUploadPost</a>
                     </li>
-                  <li class="nav-header" data-group="UploadIntegration"><a href="#api-UploadIntegration">API Methods - UploadIntegration</a></li>
-                    <li data-group="UploadIntegration" data-name="openIntegrationItemIdGet" class="">
-                      <a href="#api-UploadIntegration-openIntegrationItemIdGet">openIntegrationItemIdGet</a>
-                    </li>
-                    <li data-group="UploadIntegration" data-name="openIntegrationItemIdPost" class="">
-                      <a href="#api-UploadIntegration-openIntegrationItemIdPost">openIntegrationItemIdPost</a>
-                    </li>
                   <li class="nav-header" data-group="UserTasks"><a href="#api-UserTasks">API Methods - UserTasks</a></li>
                     <li data-group="UserTasks" data-name="secUsertaskNotifydueitemsGet" class="">
                       <a href="#api-UserTasks-secUsertaskNotifydueitemsGet">secUsertaskNotifydueitemsGet</a>
@@ -2555,7 +2629,7 @@
         <div id="header">
           <div id="api-_">
             <h2 id="welcome-to-apidoc">API and SDK Documentation</h2>
-              <div class="app-desc">Version: 0.7.0</div>
+              <div class="app-desc">Version: 0.8.0</div>
             <hr>
             <div>This is the remote API to Docspell, a personal document organizer.</div>
           </div>
@@ -4695,7 +4769,9 @@ authTokenHeader.apiKey = "YOUR API KEY"
 
 var api = new Docspell.AttachmentApi()
 var id = id_example; // {{String}} An identifier
-
+var opts = { 
+  'body':  // {{OptionalText}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -4703,7 +4779,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.secAttachmentIdNamePost(id, callback);
+api.secAttachmentIdNamePost(id, opts, callback);
 </code></pre>
                             </div>
 
@@ -6028,7 +6104,9 @@ AuthenticationApi *apiInstance = [[AuthenticationApi alloc] init];
                               <pre class="prettyprint"><code class="language-js">var Docspell = require('docspell');
 
 var api = new Docspell.AuthenticationApi()
-
+var opts = { 
+  'body':  // {{UserPass}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -6036,7 +6114,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.openAuthLoginPost(, callback);
+api.openAuthLoginPost(opts, callback);
 </code></pre>
                             </div>
 
@@ -8161,7 +8239,9 @@ authTokenHeader.apiKey = "YOUR API KEY"
 //authTokenHeader.apiKeyPrefix['X-Docspell-Auth'] = "Token"
 
 var api = new Docspell.CollectiveApi()
-
+var opts = { 
+  'body':  // {{CollectiveSettings}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -8169,7 +8249,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.secCollectiveSettingsPost(, callback);
+api.secCollectiveSettingsPost(opts, callback);
 </code></pre>
                             </div>
 
@@ -8507,7 +8587,9 @@ authTokenHeader.apiKey = "YOUR API KEY"
 //authTokenHeader.apiKeyPrefix['X-Docspell-Auth'] = "Token"
 
 var api = new Docspell.CollectiveApi()
-
+var opts = { 
+  'body':  // {{PasswordChange}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -8515,7 +8597,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.secUserChangePasswordPost(, callback);
+api.secUserChangePasswordPost(opts, callback);
 </code></pre>
                             </div>
 
@@ -9484,7 +9566,9 @@ authTokenHeader.apiKey = "YOUR API KEY"
 //authTokenHeader.apiKeyPrefix['X-Docspell-Auth'] = "Token"
 
 var api = new Docspell.CollectiveApi()
-
+var opts = { 
+  'body':  // {{User}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -9492,7 +9576,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.secUserPost(, callback);
+api.secUserPost(opts, callback);
 </code></pre>
                             </div>
 
@@ -9831,7 +9915,9 @@ authTokenHeader.apiKey = "YOUR API KEY"
 //authTokenHeader.apiKeyPrefix['X-Docspell-Auth'] = "Token"
 
 var api = new Docspell.CollectiveApi()
-
+var opts = { 
+  'body':  // {{User}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -9839,7 +9925,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.secUserPut(, callback);
+api.secUserPut(opts, callback);
 </code></pre>
                             </div>
 
@@ -10192,7 +10278,9 @@ authTokenHeader.apiKey = "YOUR API KEY"
 var api = new Docspell.EMailApi()
 var name = name_example; // {{String}} An e-mail connection name
 var id = id_example; // {{String}} An identifier
-
+var opts = { 
+  'body':  // {{SimpleMail}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -10200,7 +10288,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.secEmailSendNameIdPost(nameid, callback);
+api.secEmailSendNameIdPost(nameid, opts, callback);
 </code></pre>
                             </div>
 
@@ -12612,7 +12700,9 @@ authTokenHeader.apiKey = "YOUR API KEY"
 
 var api = new Docspell.EMailApi()
 var name = name_example; // {{String}} An e-mail connection name
-
+var opts = { 
+  'body':  // {{ImapSettings}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -12620,7 +12710,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.secEmailSettingsImapNamePut(name, callback);
+api.secEmailSettingsImapNamePut(name, opts, callback);
 </code></pre>
                             </div>
 
@@ -12991,7 +13081,9 @@ authTokenHeader.apiKey = "YOUR API KEY"
 //authTokenHeader.apiKeyPrefix['X-Docspell-Auth'] = "Token"
 
 var api = new Docspell.EMailApi()
-
+var opts = { 
+  'body':  // {{ImapSettings}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -12999,7 +13091,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.secEmailSettingsImapPost(, callback);
+api.secEmailSettingsImapPost(opts, callback);
 </code></pre>
                             </div>
 
@@ -14349,7 +14441,9 @@ authTokenHeader.apiKey = "YOUR API KEY"
 
 var api = new Docspell.EMailApi()
 var name = name_example; // {{String}} An e-mail connection name
-
+var opts = { 
+  'body':  // {{EmailSettings}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -14357,7 +14451,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.secEmailSettingsSmtpNamePut(name, callback);
+api.secEmailSettingsSmtpNamePut(name, opts, callback);
 </code></pre>
                             </div>
 
@@ -14728,7 +14822,9 @@ authTokenHeader.apiKey = "YOUR API KEY"
 //authTokenHeader.apiKeyPrefix['X-Docspell-Auth'] = "Token"
 
 var api = new Docspell.EMailApi()
-
+var opts = { 
+  'body':  // {{EmailSettings}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -14736,7 +14832,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.secEmailSettingsSmtpPost(, callback);
+api.secEmailSettingsSmtpPost(opts, callback);
 </code></pre>
                             </div>
 
@@ -15745,7 +15841,9 @@ authTokenHeader.apiKey = "YOUR API KEY"
 //authTokenHeader.apiKeyPrefix['X-Docspell-Auth'] = "Token"
 
 var api = new Docspell.EquipmentApi()
-
+var opts = { 
+  'body':  // {{Equipment}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -15753,7 +15851,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.secEquipmentPost(, callback);
+api.secEquipmentPost(opts, callback);
 </code></pre>
                             </div>
 
@@ -16092,7 +16190,9 @@ authTokenHeader.apiKey = "YOUR API KEY"
 //authTokenHeader.apiKeyPrefix['X-Docspell-Auth'] = "Token"
 
 var api = new Docspell.EquipmentApi()
-
+var opts = { 
+  'body':  // {{Equipment}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -16100,7 +16200,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.secEquipmentPut(, callback);
+api.secEquipmentPut(opts, callback);
 </code></pre>
                             </div>
 
@@ -16308,6 +16408,571 @@ except ApiException as e:
                                     </script>
                                   </div>
                                   <input id='responses-secEquipmentPut-200-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
+                  </section>
+                <section id="api-FullTextIndex">
+                  <h1>FullTextIndex</h1>
+                    <div id="api-FullTextIndex-openFtsReIndexAllIdPost">
+                      <article id="api-FullTextIndex-openFtsReIndexAllIdPost-0" data-group="User" data-name="openFtsReIndexAllIdPost" data-version="0">
+                        <div class="pull-left">
+                          <h1>openFtsReIndexAllIdPost</h1>
+                          <p>Re-creates the full-text index.</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked">Clears the full-text index and inserts all data from the
+database. This migh take a while to complete. The response
+returns immediately. A task is submitted that will be executed
+by a job executor. Note that this affects all data of all
+collectives.
+
+The &#x60;id&#x60; is required and refers to the key given in the config
+file to ensure that only admins can call this route.
+</p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="post"><code><span class="pln">/open/fts/reIndexAll/{id}</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-FullTextIndex-openFtsReIndexAllIdPost-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-FullTextIndex-openFtsReIndexAllIdPost-0-java">Java</a></li>
+                          <li class=""><a href="#examples-FullTextIndex-openFtsReIndexAllIdPost-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-FullTextIndex-openFtsReIndexAllIdPost-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-FullTextIndex-openFtsReIndexAllIdPost-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-FullTextIndex-openFtsReIndexAllIdPost-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-FullTextIndex-openFtsReIndexAllIdPost-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-FullTextIndex-openFtsReIndexAllIdPost-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-FullTextIndex-openFtsReIndexAllIdPost-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-FullTextIndex-openFtsReIndexAllIdPost-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-FullTextIndex-openFtsReIndexAllIdPost-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-FullTextIndex-openFtsReIndexAllIdPost-0-curl">
+                            <pre class="prettyprint"><code class="language-bsh">curl -X POST "/api/v1/open/fts/reIndexAll/{id}"</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-FullTextIndex-openFtsReIndexAllIdPost-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.FullTextIndexApi;
+
+import java.io.File;
+import java.util.*;
+
+public class FullTextIndexApiExample {
+
+    public static void main(String[] args) {
+        
+        FullTextIndexApi apiInstance = new FullTextIndexApi();
+        String id = id_example; // String | An identifier
+        try {
+            BasicResult result = apiInstance.openFtsReIndexAllIdPost(id);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling FullTextIndexApi#openFtsReIndexAllIdPost");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-FullTextIndex-openFtsReIndexAllIdPost-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.FullTextIndexApi;
+
+public class FullTextIndexApiExample {
+
+    public static void main(String[] args) {
+        FullTextIndexApi apiInstance = new FullTextIndexApi();
+        String id = id_example; // String | An identifier
+        try {
+            BasicResult result = apiInstance.openFtsReIndexAllIdPost(id);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling FullTextIndexApi#openFtsReIndexAllIdPost");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-FullTextIndex-openFtsReIndexAllIdPost-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-FullTextIndex-openFtsReIndexAllIdPost-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">String *id = id_example; // An identifier
+
+FullTextIndexApi *apiInstance = [[FullTextIndexApi alloc] init];
+
+// Re-creates the full-text index.
+[apiInstance openFtsReIndexAllIdPostWith:id
+              completionHandler: ^(BasicResult output, NSError* error) {
+                            if (output) {
+                                NSLog(@"%@", output);
+                            }
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-FullTextIndex-openFtsReIndexAllIdPost-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var Docspell = require('docspell');
+
+var api = new Docspell.FullTextIndexApi()
+var id = id_example; // {{String}} An identifier
+
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+};
+api.openFtsReIndexAllIdPost(id, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-FullTextIndex-openFtsReIndexAllIdPost-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-FullTextIndex-openFtsReIndexAllIdPost-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class openFtsReIndexAllIdPostExample
+    {
+        public void main()
+        {
+
+            var apiInstance = new FullTextIndexApi();
+            var id = id_example;  // String | An identifier
+
+            try
+            {
+                // Re-creates the full-text index.
+                BasicResult result = apiInstance.openFtsReIndexAllIdPost(id);
+                Debug.WriteLine(result);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling FullTextIndexApi.openFtsReIndexAllIdPost: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-FullTextIndex-openFtsReIndexAllIdPost-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+$api_instance = new Swagger\Client\ApiFullTextIndexApi();
+$id = id_example; // String | An identifier
+
+try {
+    $result = $api_instance->openFtsReIndexAllIdPost($id);
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling FullTextIndexApi->openFtsReIndexAllIdPost: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-FullTextIndex-openFtsReIndexAllIdPost-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::FullTextIndexApi;
+
+my $api_instance = WWW::SwaggerClient::FullTextIndexApi->new();
+my $id = id_example; # String | An identifier
+
+eval { 
+    my $result = $api_instance->openFtsReIndexAllIdPost(id => $id);
+    print Dumper($result);
+};
+if ($@) {
+    warn "Exception when calling FullTextIndexApi->openFtsReIndexAllIdPost: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-FullTextIndex-openFtsReIndexAllIdPost-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# create an instance of the API class
+api_instance = swagger_client.FullTextIndexApi()
+id = id_example # String | An identifier
+
+try: 
+    # Re-creates the full-text index.
+    api_response = api_instance.open_fts_re_index_all_id_post(id)
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling FullTextIndexApi->openFtsReIndexAllIdPost: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+                            <div class="methodsubtabletitle">Path parameters</div>
+                            <table id="methodsubtable">
+                                <tr>
+                                  <th width="150px">Name</th>
+                                  <th>Description</th>
+                                </tr>
+                                  <tr><td style="width:150px;">id*</td>
+                                  <td>
+                                  
+                                  
+                                      <div id="d2e199_openFtsReIndexAllIdPost_id">
+                                          <div class="json-schema-view">
+                                              <div class="primitive">
+                                                  <span class="type">
+                                                      String
+                                                  </span>
+                                  
+                                                      <div class="inner description">
+                                                          An identifier
+                                                      </div>
+                                              </div>
+                                                  <div class="inner required">
+                                                      Required
+                                                  </div>
+                                          </div>
+                                      </div>
+                                  </td>
+                                  </tr>
+                            </table>
+
+
+
+
+
+                          <h2>Responses</h2>
+                            <h3> Status: 200 - Ok </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-openFtsReIndexAllIdPost-200-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-openFtsReIndexAllIdPost-200-schema">
+                                  <div id='responses-openFtsReIndexAllIdPost-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "Ok",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/BasicResult"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-openFtsReIndexAllIdPost-200-schema-data').val(stringify(schema));
+                                        var result = $('#responses-openFtsReIndexAllIdPost-200-schema-200');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-openFtsReIndexAllIdPost-200-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
+                    <div id="api-FullTextIndex-secFtsReIndexPost">
+                      <article id="api-FullTextIndex-secFtsReIndexPost-0" data-group="User" data-name="secFtsReIndexPost" data-version="0">
+                        <div class="pull-left">
+                          <h1>secFtsReIndexPost</h1>
+                          <p>Re-creates the full-text index for the current collective</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked">Clears the full-text index for all data belonging to the
+current collective and inserts the data from the database. The
+response is immediately returned and a task is submitted that
+will be executed by a job executor.
+</p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="post"><code><span class="pln">/sec/fts/reIndex</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-FullTextIndex-secFtsReIndexPost-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-FullTextIndex-secFtsReIndexPost-0-java">Java</a></li>
+                          <li class=""><a href="#examples-FullTextIndex-secFtsReIndexPost-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-FullTextIndex-secFtsReIndexPost-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-FullTextIndex-secFtsReIndexPost-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-FullTextIndex-secFtsReIndexPost-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-FullTextIndex-secFtsReIndexPost-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-FullTextIndex-secFtsReIndexPost-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-FullTextIndex-secFtsReIndexPost-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-FullTextIndex-secFtsReIndexPost-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-FullTextIndex-secFtsReIndexPost-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-FullTextIndex-secFtsReIndexPost-0-curl">
+                            <pre class="prettyprint"><code class="language-bsh">curl -X POST "/api/v1/sec/fts/reIndex"</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-FullTextIndex-secFtsReIndexPost-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.FullTextIndexApi;
+
+import java.io.File;
+import java.util.*;
+
+public class FullTextIndexApiExample {
+
+    public static void main(String[] args) {
+        
+        FullTextIndexApi apiInstance = new FullTextIndexApi();
+        try {
+            BasicResult result = apiInstance.secFtsReIndexPost();
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling FullTextIndexApi#secFtsReIndexPost");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-FullTextIndex-secFtsReIndexPost-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.FullTextIndexApi;
+
+public class FullTextIndexApiExample {
+
+    public static void main(String[] args) {
+        FullTextIndexApi apiInstance = new FullTextIndexApi();
+        try {
+            BasicResult result = apiInstance.secFtsReIndexPost();
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling FullTextIndexApi#secFtsReIndexPost");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-FullTextIndex-secFtsReIndexPost-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-FullTextIndex-secFtsReIndexPost-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">
+FullTextIndexApi *apiInstance = [[FullTextIndexApi alloc] init];
+
+// Re-creates the full-text index for the current collective
+[apiInstance secFtsReIndexPostWithCompletionHandler: 
+              ^(BasicResult output, NSError* error) {
+                            if (output) {
+                                NSLog(@"%@", output);
+                            }
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-FullTextIndex-secFtsReIndexPost-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var Docspell = require('docspell');
+
+var api = new Docspell.FullTextIndexApi()
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+};
+api.secFtsReIndexPost(callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-FullTextIndex-secFtsReIndexPost-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-FullTextIndex-secFtsReIndexPost-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class secFtsReIndexPostExample
+    {
+        public void main()
+        {
+
+            var apiInstance = new FullTextIndexApi();
+
+            try
+            {
+                // Re-creates the full-text index for the current collective
+                BasicResult result = apiInstance.secFtsReIndexPost();
+                Debug.WriteLine(result);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling FullTextIndexApi.secFtsReIndexPost: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-FullTextIndex-secFtsReIndexPost-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+$api_instance = new Swagger\Client\ApiFullTextIndexApi();
+
+try {
+    $result = $api_instance->secFtsReIndexPost();
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling FullTextIndexApi->secFtsReIndexPost: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-FullTextIndex-secFtsReIndexPost-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::FullTextIndexApi;
+
+my $api_instance = WWW::SwaggerClient::FullTextIndexApi->new();
+
+eval { 
+    my $result = $api_instance->secFtsReIndexPost();
+    print Dumper($result);
+};
+if ($@) {
+    warn "Exception when calling FullTextIndexApi->secFtsReIndexPost: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-FullTextIndex-secFtsReIndexPost-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# create an instance of the API class
+api_instance = swagger_client.FullTextIndexApi()
+
+try: 
+    # Re-creates the full-text index for the current collective
+    api_response = api_instance.sec_fts_re_index_post()
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling FullTextIndexApi->secFtsReIndexPost: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+
+
+
+
+
+                          <h2>Responses</h2>
+                            <h3> Status: 200 - Ok </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-secFtsReIndexPost-200-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-secFtsReIndexPost-200-schema">
+                                  <div id='responses-secFtsReIndexPost-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "Ok",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/BasicResult"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-secFtsReIndexPost-200-schema-data').val(stringify(schema));
+                                        var result = $('#responses-secFtsReIndexPost-200-schema-200');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-secFtsReIndexPost-200-schema-data' type='hidden' value=''></input>
                                 </div>
                             </div>
 
@@ -16575,6 +17240,1078 @@ except ApiException as e:
                       </div>
                       <hr>
                   </section>
+                <section id="api-IntegrationEndpoint">
+                  <h1>IntegrationEndpoint</h1>
+                    <div id="api-IntegrationEndpoint-openIntegrationCheckfileIdChecksumGet">
+                      <article id="api-IntegrationEndpoint-openIntegrationCheckfileIdChecksumGet-0" data-group="User" data-name="openIntegrationCheckfileIdChecksumGet" data-version="0">
+                        <div class="pull-left">
+                          <h1>openIntegrationCheckfileIdChecksumGet</h1>
+                          <p>Check if a file is in docspell.</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked">Checks if a file with the given SHA-256 checksum is in
+docspell. The &#x60;id&#x60; is the *collective name*. This route only
+exists, if it is enabled in the configuration file.
+
+The result shows all items that contains a file with the given
+checksum.
+</p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="get"><code><span class="pln">/open/integration/checkfile/{id}/{checksum}</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-IntegrationEndpoint-openIntegrationCheckfileIdChecksumGet-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-IntegrationEndpoint-openIntegrationCheckfileIdChecksumGet-0-java">Java</a></li>
+                          <li class=""><a href="#examples-IntegrationEndpoint-openIntegrationCheckfileIdChecksumGet-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-IntegrationEndpoint-openIntegrationCheckfileIdChecksumGet-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-IntegrationEndpoint-openIntegrationCheckfileIdChecksumGet-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-IntegrationEndpoint-openIntegrationCheckfileIdChecksumGet-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-IntegrationEndpoint-openIntegrationCheckfileIdChecksumGet-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-IntegrationEndpoint-openIntegrationCheckfileIdChecksumGet-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-IntegrationEndpoint-openIntegrationCheckfileIdChecksumGet-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-IntegrationEndpoint-openIntegrationCheckfileIdChecksumGet-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-IntegrationEndpoint-openIntegrationCheckfileIdChecksumGet-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-IntegrationEndpoint-openIntegrationCheckfileIdChecksumGet-0-curl">
+                            <pre class="prettyprint"><code class="language-bsh">curl -X GET -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/open/integration/checkfile/{id}/{checksum}"</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-IntegrationEndpoint-openIntegrationCheckfileIdChecksumGet-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.IntegrationEndpointApi;
+
+import java.io.File;
+import java.util.*;
+
+public class IntegrationEndpointApiExample {
+
+    public static void main(String[] args) {
+        ApiClient defaultClient = Configuration.getDefaultApiClient();
+
+        // Configure API key authorization: authTokenHeader
+        ApiKeyAuth authTokenHeader = (ApiKeyAuth) defaultClient.getAuthentication("authTokenHeader");
+        authTokenHeader.setApiKey("YOUR API KEY");
+        // Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+        //authTokenHeader.setApiKeyPrefix("Token");
+
+        IntegrationEndpointApi apiInstance = new IntegrationEndpointApi();
+        String id = id_example; // String | An identifier
+        String checksum = checksum_example; // String | A SHA-256 checksum
+        try {
+            CheckFileResult result = apiInstance.openIntegrationCheckfileIdChecksumGet(id, checksum);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling IntegrationEndpointApi#openIntegrationCheckfileIdChecksumGet");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-IntegrationEndpoint-openIntegrationCheckfileIdChecksumGet-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.IntegrationEndpointApi;
+
+public class IntegrationEndpointApiExample {
+
+    public static void main(String[] args) {
+        IntegrationEndpointApi apiInstance = new IntegrationEndpointApi();
+        String id = id_example; // String | An identifier
+        String checksum = checksum_example; // String | A SHA-256 checksum
+        try {
+            CheckFileResult result = apiInstance.openIntegrationCheckfileIdChecksumGet(id, checksum);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling IntegrationEndpointApi#openIntegrationCheckfileIdChecksumGet");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-IntegrationEndpoint-openIntegrationCheckfileIdChecksumGet-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-IntegrationEndpoint-openIntegrationCheckfileIdChecksumGet-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
+// Configure API key authorization: (authentication scheme: authTokenHeader)
+[apiConfig setApiKey:@"YOUR_API_KEY" forApiKeyIdentifier:@"X-Docspell-Auth"];
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+//[apiConfig setApiKeyPrefix:@"Bearer" forApiKeyIdentifier:@"X-Docspell-Auth"];
+String *id = id_example; // An identifier
+String *checksum = checksum_example; // A SHA-256 checksum
+
+IntegrationEndpointApi *apiInstance = [[IntegrationEndpointApi alloc] init];
+
+// Check if a file is in docspell.
+[apiInstance openIntegrationCheckfileIdChecksumGetWith:id
+    checksum:checksum
+              completionHandler: ^(CheckFileResult output, NSError* error) {
+                            if (output) {
+                                NSLog(@"%@", output);
+                            }
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-IntegrationEndpoint-openIntegrationCheckfileIdChecksumGet-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var Docspell = require('docspell');
+var defaultClient = Docspell.ApiClient.instance;
+
+// Configure API key authorization: authTokenHeader
+var authTokenHeader = defaultClient.authentications['authTokenHeader'];
+authTokenHeader.apiKey = "YOUR API KEY"
+// Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+//authTokenHeader.apiKeyPrefix['X-Docspell-Auth'] = "Token"
+
+var api = new Docspell.IntegrationEndpointApi()
+var id = id_example; // {{String}} An identifier
+var checksum = checksum_example; // {{String}} A SHA-256 checksum
+
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+};
+api.openIntegrationCheckfileIdChecksumGet(id, checksum, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-IntegrationEndpoint-openIntegrationCheckfileIdChecksumGet-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-IntegrationEndpoint-openIntegrationCheckfileIdChecksumGet-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class openIntegrationCheckfileIdChecksumGetExample
+    {
+        public void main()
+        {
+
+            // Configure API key authorization: authTokenHeader
+            Configuration.Default.ApiKey.Add("X-Docspell-Auth", "YOUR_API_KEY");
+            // Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+            // Configuration.Default.ApiKeyPrefix.Add("X-Docspell-Auth", "Bearer");
+
+            var apiInstance = new IntegrationEndpointApi();
+            var id = id_example;  // String | An identifier
+            var checksum = checksum_example;  // String | A SHA-256 checksum
+
+            try
+            {
+                // Check if a file is in docspell.
+                CheckFileResult result = apiInstance.openIntegrationCheckfileIdChecksumGet(id, checksum);
+                Debug.WriteLine(result);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling IntegrationEndpointApi.openIntegrationCheckfileIdChecksumGet: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-IntegrationEndpoint-openIntegrationCheckfileIdChecksumGet-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+// Configure API key authorization: authTokenHeader
+Swagger\Client\Configuration::getDefaultConfiguration()->setApiKey('X-Docspell-Auth', 'YOUR_API_KEY');
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+// Swagger\Client\Configuration::getDefaultConfiguration()->setApiKeyPrefix('X-Docspell-Auth', 'Bearer');
+
+$api_instance = new Swagger\Client\ApiIntegrationEndpointApi();
+$id = id_example; // String | An identifier
+$checksum = checksum_example; // String | A SHA-256 checksum
+
+try {
+    $result = $api_instance->openIntegrationCheckfileIdChecksumGet($id, $checksum);
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling IntegrationEndpointApi->openIntegrationCheckfileIdChecksumGet: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-IntegrationEndpoint-openIntegrationCheckfileIdChecksumGet-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::IntegrationEndpointApi;
+
+# Configure API key authorization: authTokenHeader
+$WWW::SwaggerClient::Configuration::api_key->{'X-Docspell-Auth'} = 'YOUR_API_KEY';
+# uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+#$WWW::SwaggerClient::Configuration::api_key_prefix->{'X-Docspell-Auth'} = "Bearer";
+
+my $api_instance = WWW::SwaggerClient::IntegrationEndpointApi->new();
+my $id = id_example; # String | An identifier
+my $checksum = checksum_example; # String | A SHA-256 checksum
+
+eval { 
+    my $result = $api_instance->openIntegrationCheckfileIdChecksumGet(id => $id, checksum => $checksum);
+    print Dumper($result);
+};
+if ($@) {
+    warn "Exception when calling IntegrationEndpointApi->openIntegrationCheckfileIdChecksumGet: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-IntegrationEndpoint-openIntegrationCheckfileIdChecksumGet-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# Configure API key authorization: authTokenHeader
+swagger_client.configuration.api_key['X-Docspell-Auth'] = 'YOUR_API_KEY'
+# Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+# swagger_client.configuration.api_key_prefix['X-Docspell-Auth'] = 'Bearer'
+
+# create an instance of the API class
+api_instance = swagger_client.IntegrationEndpointApi()
+id = id_example # String | An identifier
+checksum = checksum_example # String | A SHA-256 checksum
+
+try: 
+    # Check if a file is in docspell.
+    api_response = api_instance.open_integration_checkfile_id_checksum_get(id, checksum)
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling IntegrationEndpointApi->openIntegrationCheckfileIdChecksumGet: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+                            <div class="methodsubtabletitle">Path parameters</div>
+                            <table id="methodsubtable">
+                                <tr>
+                                  <th width="150px">Name</th>
+                                  <th>Description</th>
+                                </tr>
+                                  <tr><td style="width:150px;">id*</td>
+                                  <td>
+                                  
+                                  
+                                      <div id="d2e199_openIntegrationCheckfileIdChecksumGet_id">
+                                          <div class="json-schema-view">
+                                              <div class="primitive">
+                                                  <span class="type">
+                                                      String
+                                                  </span>
+                                  
+                                                      <div class="inner description">
+                                                          An identifier
+                                                      </div>
+                                              </div>
+                                                  <div class="inner required">
+                                                      Required
+                                                  </div>
+                                          </div>
+                                      </div>
+                                  </td>
+                                  </tr>
+                                  <tr><td style="width:150px;">checksum*</td>
+                                  <td>
+                                  
+                                  
+                                      <div id="d2e199_openIntegrationCheckfileIdChecksumGet_checksum">
+                                          <div class="json-schema-view">
+                                              <div class="primitive">
+                                                  <span class="type">
+                                                      String
+                                                  </span>
+                                  
+                                                      <div class="inner description">
+                                                          A SHA-256 checksum
+                                                      </div>
+                                              </div>
+                                                  <div class="inner required">
+                                                      Required
+                                                  </div>
+                                          </div>
+                                      </div>
+                                  </td>
+                                  </tr>
+                            </table>
+
+
+
+
+
+                          <h2>Responses</h2>
+                            <h3> Status: 200 - Ok </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-openIntegrationCheckfileIdChecksumGet-200-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-openIntegrationCheckfileIdChecksumGet-200-schema">
+                                  <div id='responses-openIntegrationCheckfileIdChecksumGet-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "Ok",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/CheckFileResult"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-openIntegrationCheckfileIdChecksumGet-200-schema-data').val(stringify(schema));
+                                        var result = $('#responses-openIntegrationCheckfileIdChecksumGet-200-schema-200');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-openIntegrationCheckfileIdChecksumGet-200-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
+                    <div id="api-IntegrationEndpoint-openIntegrationItemIdGet">
+                      <article id="api-IntegrationEndpoint-openIntegrationItemIdGet-0" data-group="User" data-name="openIntegrationItemIdGet" data-version="0">
+                        <div class="pull-left">
+                          <h1>openIntegrationItemIdGet</h1>
+                          <p>Check if integration endpoint is available.</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked">Allows to check whether an integration endpoint is enabled for
+a collective. The collective is given by the &#x60;id&#x60; parameter.
+It returns not found (404) if the endpoint is disabled (either
+globally by an admin or by a specific collective). It returns
+403 (or 401 if http-basic is enabled) if authorization fails.
+
+The response body is empty (an empty json object).
+</p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="get"><code><span class="pln">/open/integration/item/{id}</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-IntegrationEndpoint-openIntegrationItemIdGet-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-IntegrationEndpoint-openIntegrationItemIdGet-0-java">Java</a></li>
+                          <li class=""><a href="#examples-IntegrationEndpoint-openIntegrationItemIdGet-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-IntegrationEndpoint-openIntegrationItemIdGet-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-IntegrationEndpoint-openIntegrationItemIdGet-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-IntegrationEndpoint-openIntegrationItemIdGet-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-IntegrationEndpoint-openIntegrationItemIdGet-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-IntegrationEndpoint-openIntegrationItemIdGet-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-IntegrationEndpoint-openIntegrationItemIdGet-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-IntegrationEndpoint-openIntegrationItemIdGet-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-IntegrationEndpoint-openIntegrationItemIdGet-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-IntegrationEndpoint-openIntegrationItemIdGet-0-curl">
+                            <pre class="prettyprint"><code class="language-bsh">curl -X GET "/api/v1/open/integration/item/{id}"</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-IntegrationEndpoint-openIntegrationItemIdGet-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.IntegrationEndpointApi;
+
+import java.io.File;
+import java.util.*;
+
+public class IntegrationEndpointApiExample {
+
+    public static void main(String[] args) {
+        
+        IntegrationEndpointApi apiInstance = new IntegrationEndpointApi();
+        String id = id_example; // String | An identifier
+        try {
+            Object result = apiInstance.openIntegrationItemIdGet(id);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling IntegrationEndpointApi#openIntegrationItemIdGet");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-IntegrationEndpoint-openIntegrationItemIdGet-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.IntegrationEndpointApi;
+
+public class IntegrationEndpointApiExample {
+
+    public static void main(String[] args) {
+        IntegrationEndpointApi apiInstance = new IntegrationEndpointApi();
+        String id = id_example; // String | An identifier
+        try {
+            Object result = apiInstance.openIntegrationItemIdGet(id);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling IntegrationEndpointApi#openIntegrationItemIdGet");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-IntegrationEndpoint-openIntegrationItemIdGet-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-IntegrationEndpoint-openIntegrationItemIdGet-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">String *id = id_example; // An identifier
+
+IntegrationEndpointApi *apiInstance = [[IntegrationEndpointApi alloc] init];
+
+// Check if integration endpoint is available.
+[apiInstance openIntegrationItemIdGetWith:id
+              completionHandler: ^(Object output, NSError* error) {
+                            if (output) {
+                                NSLog(@"%@", output);
+                            }
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-IntegrationEndpoint-openIntegrationItemIdGet-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var Docspell = require('docspell');
+
+var api = new Docspell.IntegrationEndpointApi()
+var id = id_example; // {{String}} An identifier
+
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+};
+api.openIntegrationItemIdGet(id, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-IntegrationEndpoint-openIntegrationItemIdGet-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-IntegrationEndpoint-openIntegrationItemIdGet-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class openIntegrationItemIdGetExample
+    {
+        public void main()
+        {
+
+            var apiInstance = new IntegrationEndpointApi();
+            var id = id_example;  // String | An identifier
+
+            try
+            {
+                // Check if integration endpoint is available.
+                Object result = apiInstance.openIntegrationItemIdGet(id);
+                Debug.WriteLine(result);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling IntegrationEndpointApi.openIntegrationItemIdGet: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-IntegrationEndpoint-openIntegrationItemIdGet-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+$api_instance = new Swagger\Client\ApiIntegrationEndpointApi();
+$id = id_example; // String | An identifier
+
+try {
+    $result = $api_instance->openIntegrationItemIdGet($id);
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling IntegrationEndpointApi->openIntegrationItemIdGet: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-IntegrationEndpoint-openIntegrationItemIdGet-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::IntegrationEndpointApi;
+
+my $api_instance = WWW::SwaggerClient::IntegrationEndpointApi->new();
+my $id = id_example; # String | An identifier
+
+eval { 
+    my $result = $api_instance->openIntegrationItemIdGet(id => $id);
+    print Dumper($result);
+};
+if ($@) {
+    warn "Exception when calling IntegrationEndpointApi->openIntegrationItemIdGet: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-IntegrationEndpoint-openIntegrationItemIdGet-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# create an instance of the API class
+api_instance = swagger_client.IntegrationEndpointApi()
+id = id_example # String | An identifier
+
+try: 
+    # Check if integration endpoint is available.
+    api_response = api_instance.open_integration_item_id_get(id)
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling IntegrationEndpointApi->openIntegrationItemIdGet: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+                            <div class="methodsubtabletitle">Path parameters</div>
+                            <table id="methodsubtable">
+                                <tr>
+                                  <th width="150px">Name</th>
+                                  <th>Description</th>
+                                </tr>
+                                  <tr><td style="width:150px;">id*</td>
+                                  <td>
+                                  
+                                  
+                                      <div id="d2e199_openIntegrationItemIdGet_id">
+                                          <div class="json-schema-view">
+                                              <div class="primitive">
+                                                  <span class="type">
+                                                      String
+                                                  </span>
+                                  
+                                                      <div class="inner description">
+                                                          An identifier
+                                                      </div>
+                                              </div>
+                                                  <div class="inner required">
+                                                      Required
+                                                  </div>
+                                          </div>
+                                      </div>
+                                  </td>
+                                  </tr>
+                            </table>
+
+
+
+
+
+                          <h2>Responses</h2>
+                            <h3> Status: 200 - Ok </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-openIntegrationItemIdGet-200-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-openIntegrationItemIdGet-200-schema">
+                                  <div id='responses-openIntegrationItemIdGet-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "Ok",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "type" : "object",
+        "x-content-type" : "application/json"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-openIntegrationItemIdGet-200-schema-data').val(stringify(schema));
+                                        var result = $('#responses-openIntegrationItemIdGet-200-schema-200');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-openIntegrationItemIdGet-200-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                            <h3> Status: 404 - Not Found </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                            </div>
+
+                            <h3> Status: 403 - Forbidden </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                            </div>
+
+                            <h3> Status: 401 - Unauthorized </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
+                    <div id="api-IntegrationEndpoint-openIntegrationItemIdPost">
+                      <article id="api-IntegrationEndpoint-openIntegrationItemIdPost-0" data-group="User" data-name="openIntegrationItemIdPost" data-version="0">
+                        <div class="pull-left">
+                          <h1>openIntegrationItemIdPost</h1>
+                          <p>Upload files to docspell.</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked">Upload a file to docspell for processing. The id is a
+*collective name*. This route only exists, if enabled by an
+admin in the configuration. The route might be protected by
+different methods, all configurable via the configuration:
+
+- A specific header must be prestent
+- username/password via HTTP Basic mechanism
+- a specific source ip
+
+Files are submitted for processing to the specified
+collective, which eventually resuts in an item in their inbox.
+
+The request must be a &#x60;multipart/form-data&#x60; request, where the
+first part has name &#x60;meta&#x60;, is optional and may contain upload
+metadata as JSON. Checkout the structure &#x60;ItemUploadMeta&#x60; at
+the end if it is not shown here. Other parts specify the
+files. Multiple files can be specified, but at least on is
+required.
+</p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="post"><code><span class="pln">/open/integration/item/{id}</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-IntegrationEndpoint-openIntegrationItemIdPost-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-IntegrationEndpoint-openIntegrationItemIdPost-0-java">Java</a></li>
+                          <li class=""><a href="#examples-IntegrationEndpoint-openIntegrationItemIdPost-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-IntegrationEndpoint-openIntegrationItemIdPost-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-IntegrationEndpoint-openIntegrationItemIdPost-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-IntegrationEndpoint-openIntegrationItemIdPost-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-IntegrationEndpoint-openIntegrationItemIdPost-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-IntegrationEndpoint-openIntegrationItemIdPost-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-IntegrationEndpoint-openIntegrationItemIdPost-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-IntegrationEndpoint-openIntegrationItemIdPost-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-IntegrationEndpoint-openIntegrationItemIdPost-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-IntegrationEndpoint-openIntegrationItemIdPost-0-curl">
+                            <pre class="prettyprint"><code class="language-bsh">curl -X POST "/api/v1/open/integration/item/{id}"</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-IntegrationEndpoint-openIntegrationItemIdPost-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.IntegrationEndpointApi;
+
+import java.io.File;
+import java.util.*;
+
+public class IntegrationEndpointApiExample {
+
+    public static void main(String[] args) {
+        
+        IntegrationEndpointApi apiInstance = new IntegrationEndpointApi();
+        String id = id_example; // String | An identifier
+        ItemUploadMeta meta = ; // ItemUploadMeta | 
+        array[byte[]] file = ; // array[byte[]] | 
+        try {
+            BasicResult result = apiInstance.openIntegrationItemIdPost(id, meta, file);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling IntegrationEndpointApi#openIntegrationItemIdPost");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-IntegrationEndpoint-openIntegrationItemIdPost-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.IntegrationEndpointApi;
+
+public class IntegrationEndpointApiExample {
+
+    public static void main(String[] args) {
+        IntegrationEndpointApi apiInstance = new IntegrationEndpointApi();
+        String id = id_example; // String | An identifier
+        ItemUploadMeta meta = ; // ItemUploadMeta | 
+        array[byte[]] file = ; // array[byte[]] | 
+        try {
+            BasicResult result = apiInstance.openIntegrationItemIdPost(id, meta, file);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling IntegrationEndpointApi#openIntegrationItemIdPost");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-IntegrationEndpoint-openIntegrationItemIdPost-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-IntegrationEndpoint-openIntegrationItemIdPost-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">String *id = id_example; // An identifier
+ItemUploadMeta *meta = ; //  (optional)
+array[byte[]] *file = ; //  (optional)
+
+IntegrationEndpointApi *apiInstance = [[IntegrationEndpointApi alloc] init];
+
+// Upload files to docspell.
+[apiInstance openIntegrationItemIdPostWith:id
+    meta:meta
+    file:file
+              completionHandler: ^(BasicResult output, NSError* error) {
+                            if (output) {
+                                NSLog(@"%@", output);
+                            }
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-IntegrationEndpoint-openIntegrationItemIdPost-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var Docspell = require('docspell');
+
+var api = new Docspell.IntegrationEndpointApi()
+var id = id_example; // {{String}} An identifier
+var opts = { 
+  'meta':  // {{ItemUploadMeta}} 
+  'file':  // {{array[byte[]]}} 
+};
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+};
+api.openIntegrationItemIdPost(id, opts, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-IntegrationEndpoint-openIntegrationItemIdPost-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-IntegrationEndpoint-openIntegrationItemIdPost-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class openIntegrationItemIdPostExample
+    {
+        public void main()
+        {
+
+            var apiInstance = new IntegrationEndpointApi();
+            var id = id_example;  // String | An identifier
+            var meta = new ItemUploadMeta(); // ItemUploadMeta |  (optional) 
+            var file = new array[byte[]](); // array[byte[]] |  (optional) 
+
+            try
+            {
+                // Upload files to docspell.
+                BasicResult result = apiInstance.openIntegrationItemIdPost(id, meta, file);
+                Debug.WriteLine(result);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling IntegrationEndpointApi.openIntegrationItemIdPost: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-IntegrationEndpoint-openIntegrationItemIdPost-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+$api_instance = new Swagger\Client\ApiIntegrationEndpointApi();
+$id = id_example; // String | An identifier
+$meta = ; // ItemUploadMeta | 
+$file = ; // array[byte[]] | 
+
+try {
+    $result = $api_instance->openIntegrationItemIdPost($id, $meta, $file);
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling IntegrationEndpointApi->openIntegrationItemIdPost: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-IntegrationEndpoint-openIntegrationItemIdPost-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::IntegrationEndpointApi;
+
+my $api_instance = WWW::SwaggerClient::IntegrationEndpointApi->new();
+my $id = id_example; # String | An identifier
+my $meta = ; # ItemUploadMeta | 
+my $file = []; # array[byte[]] | 
+
+eval { 
+    my $result = $api_instance->openIntegrationItemIdPost(id => $id, meta => $meta, file => $file);
+    print Dumper($result);
+};
+if ($@) {
+    warn "Exception when calling IntegrationEndpointApi->openIntegrationItemIdPost: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-IntegrationEndpoint-openIntegrationItemIdPost-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# create an instance of the API class
+api_instance = swagger_client.IntegrationEndpointApi()
+id = id_example # String | An identifier
+meta =  # ItemUploadMeta |  (optional)
+file =  # array[byte[]] |  (optional)
+
+try: 
+    # Upload files to docspell.
+    api_response = api_instance.open_integration_item_id_post(id, meta=meta, file=file)
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling IntegrationEndpointApi->openIntegrationItemIdPost: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+                            <div class="methodsubtabletitle">Path parameters</div>
+                            <table id="methodsubtable">
+                                <tr>
+                                  <th width="150px">Name</th>
+                                  <th>Description</th>
+                                </tr>
+                                  <tr><td style="width:150px;">id*</td>
+                                  <td>
+                                  
+                                  
+                                      <div id="d2e199_openIntegrationItemIdPost_id">
+                                          <div class="json-schema-view">
+                                              <div class="primitive">
+                                                  <span class="type">
+                                                      String
+                                                  </span>
+                                  
+                                                      <div class="inner description">
+                                                          An identifier
+                                                      </div>
+                                              </div>
+                                                  <div class="inner required">
+                                                      Required
+                                                  </div>
+                                          </div>
+                                      </div>
+                                  </td>
+                                  </tr>
+                            </table>
+
+
+
+                            <div class="methodsubtabletitle">Form parameters</div>
+                            <table id="methodsubtable">
+                              <tr>
+                                <th width="150px">Name</th>
+                                <th>Description</th>
+                              </tr>
+                                  <tr><td style="width:150px;">meta</td>
+                                  <td>
+                                  
+                                  
+                                      <div id="d2e199_openIntegrationItemIdPost_meta">
+                                          <div class="json-schema-view">
+                                              <div class="primitive">
+                                                  <span class="type">
+                                                      ItemUploadMeta
+                                                  </span>
+                                  
+                                              </div>
+                                          </div>
+                                      </div>
+                                  </td>
+                                  </tr>
+                                  <tr><td style="width:150px;">file</td>
+                                  <td>
+                                  
+                                  
+                                      <div id="d2e199_openIntegrationItemIdPost_file">
+                                          <div class="json-schema-view">
+                                              <div class="primitive">
+                                                  <span class="type">
+                                                      array[byte[]]
+                                                  </span>
+                                                      <span class="format">
+                                                          (binary)
+                                                      </span>
+                                  
+                                              </div>
+                                          </div>
+                                      </div>
+                                  </td>
+                                  </tr>
+                            </table>
+
+
+                          <h2>Responses</h2>
+                            <h3> Status: 200 - Ok </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-openIntegrationItemIdPost-200-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-openIntegrationItemIdPost-200-schema">
+                                  <div id='responses-openIntegrationItemIdPost-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "Ok",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/BasicResult"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-openIntegrationItemIdPost-200-schema-data').val(stringify(schema));
+                                        var result = $('#responses-openIntegrationItemIdPost-200-schema-200');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-openIntegrationItemIdPost-200-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
+                  </section>
                 <section id="api-Item">
                   <h1>Item</h1>
                     <div id="api-Item-secItemIdConcEquipmentPost">
@@ -16707,7 +18444,9 @@ authTokenHeader.apiKey = "YOUR API KEY"
 
 var api = new Docspell.ItemApi()
 var id = id_example; // {{String}} An identifier
-
+var opts = { 
+  'body':  // {{Equipment}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -16715,7 +18454,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.secItemIdConcEquipmentPost(id, callback);
+api.secItemIdConcEquipmentPost(id, opts, callback);
 </code></pre>
                             </div>
 
@@ -17091,7 +18830,9 @@ authTokenHeader.apiKey = "YOUR API KEY"
 
 var api = new Docspell.ItemApi()
 var id = id_example; // {{String}} An identifier
-
+var opts = { 
+  'body':  // {{OptionalId}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -17099,7 +18840,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.secItemIdConcEquipmentPut(id, callback);
+api.secItemIdConcEquipmentPut(id, opts, callback);
 </code></pre>
                             </div>
 
@@ -17476,7 +19217,9 @@ authTokenHeader.apiKey = "YOUR API KEY"
 
 var api = new Docspell.ItemApi()
 var id = id_example; // {{String}} An identifier
-
+var opts = { 
+  'body':  // {{Person}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -17484,7 +19227,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.secItemIdConcPersonPost(id, callback);
+api.secItemIdConcPersonPost(id, opts, callback);
 </code></pre>
                             </div>
 
@@ -17860,7 +19603,9 @@ authTokenHeader.apiKey = "YOUR API KEY"
 
 var api = new Docspell.ItemApi()
 var id = id_example; // {{String}} An identifier
-
+var opts = { 
+  'body':  // {{OptionalId}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -17868,7 +19613,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.secItemIdConcPersonPut(id, callback);
+api.secItemIdConcPersonPut(id, opts, callback);
 </code></pre>
                             </div>
 
@@ -18580,7 +20325,9 @@ authTokenHeader.apiKey = "YOUR API KEY"
 
 var api = new Docspell.ItemApi()
 var id = id_example; // {{String}} An identifier
-
+var opts = { 
+  'body':  // {{Organization}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -18588,7 +20335,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.secItemIdCorrOrgPost(id, callback);
+api.secItemIdCorrOrgPost(id, opts, callback);
 </code></pre>
                             </div>
 
@@ -18964,7 +20711,9 @@ authTokenHeader.apiKey = "YOUR API KEY"
 
 var api = new Docspell.ItemApi()
 var id = id_example; // {{String}} An identifier
-
+var opts = { 
+  'body':  // {{OptionalId}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -18972,7 +20721,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.secItemIdCorrOrgPut(id, callback);
+api.secItemIdCorrOrgPut(id, opts, callback);
 </code></pre>
                             </div>
 
@@ -19349,7 +21098,9 @@ authTokenHeader.apiKey = "YOUR API KEY"
 
 var api = new Docspell.ItemApi()
 var id = id_example; // {{String}} An identifier
-
+var opts = { 
+  'body':  // {{Person}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -19357,7 +21108,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.secItemIdCorrPersonPost(id, callback);
+api.secItemIdCorrPersonPost(id, opts, callback);
 </code></pre>
                             </div>
 
@@ -19733,7 +21484,9 @@ authTokenHeader.apiKey = "YOUR API KEY"
 
 var api = new Docspell.ItemApi()
 var id = id_example; // {{String}} An identifier
-
+var opts = { 
+  'body':  // {{OptionalId}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -19741,7 +21494,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.secItemIdCorrPersonPut(id, callback);
+api.secItemIdCorrPersonPut(id, opts, callback);
 </code></pre>
                             </div>
 
@@ -20117,7 +21870,9 @@ authTokenHeader.apiKey = "YOUR API KEY"
 
 var api = new Docspell.ItemApi()
 var id = id_example; // {{String}} An identifier
-
+var opts = { 
+  'body':  // {{OptionalDate}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -20125,7 +21880,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.secItemIdDatePut(id, callback);
+api.secItemIdDatePut(id, opts, callback);
 </code></pre>
                             </div>
 
@@ -20835,7 +22590,9 @@ authTokenHeader.apiKey = "YOUR API KEY"
 
 var api = new Docspell.ItemApi()
 var id = id_example; // {{String}} An identifier
-
+var opts = { 
+  'body':  // {{DirectionValue}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -20843,7 +22600,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.secItemIdDirectionPut(id, callback);
+api.secItemIdDirectionPut(id, opts, callback);
 </code></pre>
                             </div>
 
@@ -21219,7 +22976,9 @@ authTokenHeader.apiKey = "YOUR API KEY"
 
 var api = new Docspell.ItemApi()
 var id = id_example; // {{String}} An identifier
-
+var opts = { 
+  'body':  // {{OptionalDate}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -21227,7 +22986,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.secItemIdDuedatePut(id, callback);
+api.secItemIdDuedatePut(id, opts, callback);
 </code></pre>
                             </div>
 
@@ -21937,7 +23696,9 @@ authTokenHeader.apiKey = "YOUR API KEY"
 
 var api = new Docspell.ItemApi()
 var id = id_example; // {{String}} An identifier
-
+var opts = { 
+  'body':  // {{OptionalText}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -21945,7 +23706,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.secItemIdNamePut(id, callback);
+api.secItemIdNamePut(id, opts, callback);
 </code></pre>
                             </div>
 
@@ -22321,7 +24082,9 @@ authTokenHeader.apiKey = "YOUR API KEY"
 
 var api = new Docspell.ItemApi()
 var id = id_example; // {{String}} An identifier
-
+var opts = { 
+  'body':  // {{OptionalText}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -22329,7 +24092,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.secItemIdNotesPut(id, callback);
+api.secItemIdNotesPut(id, opts, callback);
 </code></pre>
                             </div>
 
@@ -23045,7 +24808,9 @@ authTokenHeader.apiKey = "YOUR API KEY"
 
 var api = new Docspell.ItemApi()
 var id = id_example; // {{String}} An identifier
-
+var opts = { 
+  'body':  // {{Tag}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -23053,7 +24818,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.secItemIdTagsPost(id, callback);
+api.secItemIdTagsPost(id, opts, callback);
 </code></pre>
                             </div>
 
@@ -23429,7 +25194,9 @@ authTokenHeader.apiKey = "YOUR API KEY"
 
 var api = new Docspell.ItemApi()
 var id = id_example; // {{String}} An identifier
-
+var opts = { 
+  'body':  // {{ReferenceList}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -23437,7 +25204,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.secItemIdTagsPut(id, callback);
+api.secItemIdTagsPut(id, opts, callback);
 </code></pre>
                             </div>
 
@@ -24150,7 +25917,9 @@ authTokenHeader.apiKey = "YOUR API KEY"
 
 var api = new Docspell.ItemApi()
 var itemId = itemId_example; // {{String}} An identifier for an item
-
+var opts = { 
+  'body':  // {{MoveAttachment}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -24158,7 +25927,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.secItemItemIdAttachmentMovebeforePost(itemId, callback);
+api.secItemItemIdAttachmentMovebeforePost(itemId, opts, callback);
 </code></pre>
                             </div>
 
@@ -24405,6 +26174,364 @@ except ApiException as e:
                         </article>
                       </div>
                       <hr>
+                    <div id="api-Item-secItemSearchIndexPost">
+                      <article id="api-Item-secItemSearchIndexPost-0" data-group="User" data-name="secItemSearchIndexPost" data-version="0">
+                        <div class="pull-left">
+                          <h1>secItemSearchIndexPost</h1>
+                          <p>Search for items using full-text search only.</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked">Search for items by only using the full-text search index.
+
+Unlike the other search routes, this one only asks the
+full-text search index and returns only one group that
+contains the results in the same order as given from the
+index. Most full-text search engines use an ordering that
+reflect the relevance wrt the search term.
+
+The other search routes always order the results by some
+property (the item date) and thus the relevance ordering is
+destroyed when using the full-text search.
+</p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="post"><code><span class="pln">/sec/item/searchIndex</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-Item-secItemSearchIndexPost-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-Item-secItemSearchIndexPost-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Item-secItemSearchIndexPost-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-Item-secItemSearchIndexPost-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-Item-secItemSearchIndexPost-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-Item-secItemSearchIndexPost-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-Item-secItemSearchIndexPost-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-Item-secItemSearchIndexPost-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-Item-secItemSearchIndexPost-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-Item-secItemSearchIndexPost-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-Item-secItemSearchIndexPost-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-Item-secItemSearchIndexPost-0-curl">
+                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/item/searchIndex"</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-Item-secItemSearchIndexPost-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.ItemApi;
+
+import java.io.File;
+import java.util.*;
+
+public class ItemApiExample {
+
+    public static void main(String[] args) {
+        ApiClient defaultClient = Configuration.getDefaultApiClient();
+
+        // Configure API key authorization: authTokenHeader
+        ApiKeyAuth authTokenHeader = (ApiKeyAuth) defaultClient.getAuthentication("authTokenHeader");
+        authTokenHeader.setApiKey("YOUR API KEY");
+        // Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+        //authTokenHeader.setApiKeyPrefix("Token");
+
+        ItemApi apiInstance = new ItemApi();
+        ItemFtsSearch body = ; // ItemFtsSearch | 
+        try {
+            ItemLightList result = apiInstance.secItemSearchIndexPost(body);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling ItemApi#secItemSearchIndexPost");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Item-secItemSearchIndexPost-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.ItemApi;
+
+public class ItemApiExample {
+
+    public static void main(String[] args) {
+        ItemApi apiInstance = new ItemApi();
+        ItemFtsSearch body = ; // ItemFtsSearch | 
+        try {
+            ItemLightList result = apiInstance.secItemSearchIndexPost(body);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling ItemApi#secItemSearchIndexPost");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-Item-secItemSearchIndexPost-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-Item-secItemSearchIndexPost-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
+// Configure API key authorization: (authentication scheme: authTokenHeader)
+[apiConfig setApiKey:@"YOUR_API_KEY" forApiKeyIdentifier:@"X-Docspell-Auth"];
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+//[apiConfig setApiKeyPrefix:@"Bearer" forApiKeyIdentifier:@"X-Docspell-Auth"];
+ItemFtsSearch *body = ; //  (optional)
+
+ItemApi *apiInstance = [[ItemApi alloc] init];
+
+// Search for items using full-text search only.
+[apiInstance secItemSearchIndexPostWith:body
+              completionHandler: ^(ItemLightList output, NSError* error) {
+                            if (output) {
+                                NSLog(@"%@", output);
+                            }
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Item-secItemSearchIndexPost-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var Docspell = require('docspell');
+var defaultClient = Docspell.ApiClient.instance;
+
+// Configure API key authorization: authTokenHeader
+var authTokenHeader = defaultClient.authentications['authTokenHeader'];
+authTokenHeader.apiKey = "YOUR API KEY"
+// Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+//authTokenHeader.apiKeyPrefix['X-Docspell-Auth'] = "Token"
+
+var api = new Docspell.ItemApi()
+var opts = { 
+  'body':  // {{ItemFtsSearch}} 
+};
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+};
+api.secItemSearchIndexPost(opts, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-Item-secItemSearchIndexPost-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-Item-secItemSearchIndexPost-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class secItemSearchIndexPostExample
+    {
+        public void main()
+        {
+
+            // Configure API key authorization: authTokenHeader
+            Configuration.Default.ApiKey.Add("X-Docspell-Auth", "YOUR_API_KEY");
+            // Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+            // Configuration.Default.ApiKeyPrefix.Add("X-Docspell-Auth", "Bearer");
+
+            var apiInstance = new ItemApi();
+            var body = new ItemFtsSearch(); // ItemFtsSearch |  (optional) 
+
+            try
+            {
+                // Search for items using full-text search only.
+                ItemLightList result = apiInstance.secItemSearchIndexPost(body);
+                Debug.WriteLine(result);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling ItemApi.secItemSearchIndexPost: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Item-secItemSearchIndexPost-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+// Configure API key authorization: authTokenHeader
+Swagger\Client\Configuration::getDefaultConfiguration()->setApiKey('X-Docspell-Auth', 'YOUR_API_KEY');
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+// Swagger\Client\Configuration::getDefaultConfiguration()->setApiKeyPrefix('X-Docspell-Auth', 'Bearer');
+
+$api_instance = new Swagger\Client\ApiItemApi();
+$body = ; // ItemFtsSearch | 
+
+try {
+    $result = $api_instance->secItemSearchIndexPost($body);
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling ItemApi->secItemSearchIndexPost: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Item-secItemSearchIndexPost-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::ItemApi;
+
+# Configure API key authorization: authTokenHeader
+$WWW::SwaggerClient::Configuration::api_key->{'X-Docspell-Auth'} = 'YOUR_API_KEY';
+# uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+#$WWW::SwaggerClient::Configuration::api_key_prefix->{'X-Docspell-Auth'} = "Bearer";
+
+my $api_instance = WWW::SwaggerClient::ItemApi->new();
+my $body = WWW::SwaggerClient::Object::ItemFtsSearch->new(); # ItemFtsSearch | 
+
+eval { 
+    my $result = $api_instance->secItemSearchIndexPost(body => $body);
+    print Dumper($result);
+};
+if ($@) {
+    warn "Exception when calling ItemApi->secItemSearchIndexPost: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Item-secItemSearchIndexPost-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# Configure API key authorization: authTokenHeader
+swagger_client.configuration.api_key['X-Docspell-Auth'] = 'YOUR_API_KEY'
+# Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+# swagger_client.configuration.api_key_prefix['X-Docspell-Auth'] = 'Bearer'
+
+# create an instance of the API class
+api_instance = swagger_client.ItemApi()
+body =  # ItemFtsSearch |  (optional)
+
+try: 
+    # Search for items using full-text search only.
+    api_response = api_instance.sec_item_search_index_post(body=body)
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling ItemApi->secItemSearchIndexPost: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+
+
+                            <div class="methodsubtabletitle">Body parameters</div>
+                            <table id="methodsubtable">
+                              <tr>
+                                <th width="150px">Name</th>
+                                <th>Description</th>
+                              </tr>
+                                <tr><td style="width:150px;">body </td>
+                                <td>
+                                
+                                
+                                <script>
+                                $(document).ready(function() {
+                                  var schemaWrapper = {
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/ItemFtsSearch"
+      }
+    }
+  }
+};
+                                  var schema = schemaWrapper.content["application/json"].schema;
+                                  if (schema.$ref != null) {
+                                    schema = defsParser.$refs.get(schema.$ref);
+                                  } else {
+                                    schemaWrapper.components = {};
+                                    schemaWrapper.components.schemas = Object.assign({}, defs);
+                                    $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                      console.log(err);
+                                    });
+                                  }
+                                
+                                  var view = new JSONSchemaView(schema,2,{isBodyParam: true});
+                                  var result = $('#d2e199_secItemSearchIndexPost_body');
+                                  result.empty();
+                                  result.append(view.render());
+                                });
+                                </script>
+                                <div id="d2e199_secItemSearchIndexPost_body"></div>
+                                </td>
+                                </tr>
+                            </table>
+
+
+
+                          <h2>Responses</h2>
+                            <h3> Status: 200 - Ok </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-secItemSearchIndexPost-200-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-secItemSearchIndexPost-200-schema">
+                                  <div id='responses-secItemSearchIndexPost-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "Ok",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/ItemLightList"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-secItemSearchIndexPost-200-schema-data').val(stringify(schema));
+                                        var result = $('#responses-secItemSearchIndexPost-200-schema-200');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-secItemSearchIndexPost-200-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
                     <div id="api-Item-secItemSearchPost">
                       <article id="api-Item-secItemSearchPost-0" data-group="User" data-name="secItemSearchPost" data-version="0">
                         <div class="pull-left">
@@ -24415,9 +26542,13 @@ except ApiException as e:
                         <div class="clearfix"></div>
                         <p></p>
                         <p class="marked">Search for items given a search form. The results are grouped
-by month by default. Tags are *not* resolved! The results will
-always contain an empty list for item tags. Use
-&#x60;/searchWithTags&#x60; to also retrieve all tags of an item.
+by month and are sorted by item date (newest first). Tags are
+*not* resolved. The results will always contain an empty list
+for item tags. Use &#x60;/searchWithTags&#x60; to also retrieve all tags
+of an item.
+
+The &#x60;fulltext&#x60; field can be used to restrict the results by
+using full-text search in the documents contents.
 </p>
                         <p></p>
                         <br />
@@ -24532,7 +26663,9 @@ authTokenHeader.apiKey = "YOUR API KEY"
 //authTokenHeader.apiKeyPrefix['X-Docspell-Auth'] = "Token"
 
 var api = new Docspell.ItemApi()
-
+var opts = { 
+  'body':  // {{ItemSearch}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -24540,7 +26673,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.secItemSearchPost(, callback);
+api.secItemSearchPost(opts, callback);
 </code></pre>
                             </div>
 
@@ -24765,7 +26898,11 @@ except ApiException as e:
                         <p></p>
                         <p class="marked">Search for items given a search form. The results are grouped
 by month by default. For each item, its tags are also
-returned. This uses more queries and is therefore slower.
+returned. This uses more queries and is therefore slower, but
+returns all tags to an item.
+
+The &#x60;fulltext&#x60; field can be used to restrict the results by
+using full-text search in the documents contents.
 </p>
                         <p></p>
                         <br />
@@ -24880,7 +27017,9 @@ authTokenHeader.apiKey = "YOUR API KEY"
 //authTokenHeader.apiKeyPrefix['X-Docspell-Auth'] = "Token"
 
 var api = new Docspell.ItemApi()
-
+var opts = { 
+  'body':  // {{ItemSearch}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -24888,7 +27027,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.secItemSearchWithTagsPost(, callback);
+api.secItemSearchWithTagsPost(opts, callback);
 </code></pre>
                             </div>
 
@@ -25801,7 +27940,8 @@ public class OrganizationApiExample {
         Boolean full = true; // Boolean | Whether to list full data or just name and id.
         String q = q_example; // String | A query string.
         try {
-            apiInstance.secOrganizationGet(full, q);
+            inline_response_200 result = apiInstance.secOrganizationGet(full, q);
+            System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling OrganizationApi#secOrganizationGet");
             e.printStackTrace();
@@ -25820,7 +27960,8 @@ public class OrganizationApiExample {
         Boolean full = true; // Boolean | Whether to list full data or just name and id.
         String q = q_example; // String | A query string.
         try {
-            apiInstance.secOrganizationGet(full, q);
+            inline_response_200 result = apiInstance.secOrganizationGet(full, q);
+            System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling OrganizationApi#secOrganizationGet");
             e.printStackTrace();
@@ -25846,7 +27987,10 @@ OrganizationApi *apiInstance = [[OrganizationApi alloc] init];
 // Get a list of organizations.
 [apiInstance secOrganizationGetWith:full
     q:q
-              completionHandler: ^(NSError* error) {
+              completionHandler: ^(inline_response_200 output, NSError* error) {
+                            if (output) {
+                                NSLog(@"%@", output);
+                            }
                             if (error) {
                                 NSLog(@"Error: %@", error);
                             }
@@ -25873,7 +28017,7 @@ var callback = function(error, data, response) {
   if (error) {
     console.error(error);
   } else {
-    console.log('API called successfully.');
+    console.log('API called successfully. Returned data: ' + data);
   }
 };
 api.secOrganizationGet(opts, callback);
@@ -25909,7 +28053,8 @@ namespace Example
             try
             {
                 // Get a list of organizations.
-                apiInstance.secOrganizationGet(full, q);
+                inline_response_200 result = apiInstance.secOrganizationGet(full, q);
+                Debug.WriteLine(result);
             }
             catch (Exception e)
             {
@@ -25935,7 +28080,8 @@ $full = true; // Boolean | Whether to list full data or just name and id.
 $q = q_example; // String | A query string.
 
 try {
-    $api_instance->secOrganizationGet($full, $q);
+    $result = $api_instance->secOrganizationGet($full, $q);
+    print_r($result);
 } catch (Exception $e) {
     echo 'Exception when calling OrganizationApi->secOrganizationGet: ', $e->getMessage(), PHP_EOL;
 }
@@ -25957,7 +28103,8 @@ my $full = true; # Boolean | Whether to list full data or just name and id.
 my $q = q_example; # String | A query string.
 
 eval { 
-    $api_instance->secOrganizationGet(full => $full, q => $q);
+    my $result = $api_instance->secOrganizationGet(full => $full, q => $q);
+    print Dumper($result);
 };
 if ($@) {
     warn "Exception when calling OrganizationApi->secOrganizationGet: $@\n";
@@ -25983,7 +28130,8 @@ q = q_example # String | A query string. (optional)
 
 try: 
     # Get a list of organizations.
-    api_instance.sec_organization_get(full=full, q=q)
+    api_response = api_instance.sec_organization_get(full=full, q=q)
+    pprint(api_response)
 except ApiException as e:
     print("Exception when calling OrganizationApi->secOrganizationGet: %s\n" % e)</code></pre>
                             </div>
@@ -26061,12 +28209,7 @@ except ApiException as e:
   "content" : {
     "application/json" : {
       "schema" : {
-        "oneOf" : [ {
-          "$ref" : "#/components/schemas/ReferenceList"
-        }, {
-          "$ref" : "#/components/schemas/OrganizationList"
-        } ],
-        "x-content-type" : "application/json"
+        "$ref" : "#/components/schemas/inline_response_200"
       }
     }
   }
@@ -26891,7 +29034,9 @@ authTokenHeader.apiKey = "YOUR API KEY"
 //authTokenHeader.apiKeyPrefix['X-Docspell-Auth'] = "Token"
 
 var api = new Docspell.OrganizationApi()
-
+var opts = { 
+  'body':  // {{Organization}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -26899,7 +29044,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.secOrganizationPost(, callback);
+api.secOrganizationPost(opts, callback);
 </code></pre>
                             </div>
 
@@ -27238,7 +29383,9 @@ authTokenHeader.apiKey = "YOUR API KEY"
 //authTokenHeader.apiKeyPrefix['X-Docspell-Auth'] = "Token"
 
 var api = new Docspell.OrganizationApi()
-
+var opts = { 
+  'body':  // {{Organization}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -27246,7 +29393,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.secOrganizationPut(, callback);
+api.secOrganizationPut(opts, callback);
 </code></pre>
                             </div>
 
@@ -27522,7 +29669,8 @@ public class PersonApiExample {
         Boolean full = true; // Boolean | Whether to list full data or just name and id.
         String q = q_example; // String | A query string.
         try {
-            apiInstance.secPersonGet(full, q);
+            inline_response_200_1 result = apiInstance.secPersonGet(full, q);
+            System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling PersonApi#secPersonGet");
             e.printStackTrace();
@@ -27541,7 +29689,8 @@ public class PersonApiExample {
         Boolean full = true; // Boolean | Whether to list full data or just name and id.
         String q = q_example; // String | A query string.
         try {
-            apiInstance.secPersonGet(full, q);
+            inline_response_200_1 result = apiInstance.secPersonGet(full, q);
+            System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling PersonApi#secPersonGet");
             e.printStackTrace();
@@ -27567,7 +29716,10 @@ PersonApi *apiInstance = [[PersonApi alloc] init];
 // Get a list of persons.
 [apiInstance secPersonGetWith:full
     q:q
-              completionHandler: ^(NSError* error) {
+              completionHandler: ^(inline_response_200_1 output, NSError* error) {
+                            if (output) {
+                                NSLog(@"%@", output);
+                            }
                             if (error) {
                                 NSLog(@"Error: %@", error);
                             }
@@ -27594,7 +29746,7 @@ var callback = function(error, data, response) {
   if (error) {
     console.error(error);
   } else {
-    console.log('API called successfully.');
+    console.log('API called successfully. Returned data: ' + data);
   }
 };
 api.secPersonGet(opts, callback);
@@ -27630,7 +29782,8 @@ namespace Example
             try
             {
                 // Get a list of persons.
-                apiInstance.secPersonGet(full, q);
+                inline_response_200_1 result = apiInstance.secPersonGet(full, q);
+                Debug.WriteLine(result);
             }
             catch (Exception e)
             {
@@ -27656,7 +29809,8 @@ $full = true; // Boolean | Whether to list full data or just name and id.
 $q = q_example; // String | A query string.
 
 try {
-    $api_instance->secPersonGet($full, $q);
+    $result = $api_instance->secPersonGet($full, $q);
+    print_r($result);
 } catch (Exception $e) {
     echo 'Exception when calling PersonApi->secPersonGet: ', $e->getMessage(), PHP_EOL;
 }
@@ -27678,7 +29832,8 @@ my $full = true; # Boolean | Whether to list full data or just name and id.
 my $q = q_example; # String | A query string.
 
 eval { 
-    $api_instance->secPersonGet(full => $full, q => $q);
+    my $result = $api_instance->secPersonGet(full => $full, q => $q);
+    print Dumper($result);
 };
 if ($@) {
     warn "Exception when calling PersonApi->secPersonGet: $@\n";
@@ -27704,7 +29859,8 @@ q = q_example # String | A query string. (optional)
 
 try: 
     # Get a list of persons.
-    api_instance.sec_person_get(full=full, q=q)
+    api_response = api_instance.sec_person_get(full=full, q=q)
+    pprint(api_response)
 except ApiException as e:
     print("Exception when calling PersonApi->secPersonGet: %s\n" % e)</code></pre>
                             </div>
@@ -27782,12 +29938,7 @@ except ApiException as e:
   "content" : {
     "application/json" : {
       "schema" : {
-        "oneOf" : [ {
-          "$ref" : "#/components/schemas/ReferenceList"
-        }, {
-          "$ref" : "#/components/schemas/PersonList"
-        } ],
-        "x-content-type" : "application/json"
+        "$ref" : "#/components/schemas/inline_response_200_1"
       }
     }
   }
@@ -28612,7 +30763,9 @@ authTokenHeader.apiKey = "YOUR API KEY"
 //authTokenHeader.apiKeyPrefix['X-Docspell-Auth'] = "Token"
 
 var api = new Docspell.PersonApi()
-
+var opts = { 
+  'body':  // {{Person}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -28620,7 +30773,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.secPersonPost(, callback);
+api.secPersonPost(opts, callback);
 </code></pre>
                             </div>
 
@@ -28959,7 +31112,9 @@ authTokenHeader.apiKey = "YOUR API KEY"
 //authTokenHeader.apiKeyPrefix['X-Docspell-Auth'] = "Token"
 
 var api = new Docspell.PersonApi()
-
+var opts = { 
+  'body':  // {{Person}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -28967,7 +31122,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.secPersonPut(, callback);
+api.secPersonPut(opts, callback);
 </code></pre>
                             </div>
 
@@ -29293,7 +31448,9 @@ RegistrationApi *apiInstance = [[RegistrationApi alloc] init];
                               <pre class="prettyprint"><code class="language-js">var Docspell = require('docspell');
 
 var api = new Docspell.RegistrationApi()
-
+var opts = { 
+  'body':  // {{GenInvite}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -29301,7 +31458,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.openSignupNewinvitePost(, callback);
+api.openSignupNewinvitePost(opts, callback);
 </code></pre>
                             </div>
 
@@ -29600,7 +31757,9 @@ RegistrationApi *apiInstance = [[RegistrationApi alloc] init];
                               <pre class="prettyprint"><code class="language-js">var Docspell = require('docspell');
 
 var api = new Docspell.RegistrationApi()
-
+var opts = { 
+  'body':  // {{Registration}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -29608,7 +31767,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.openSignupRegisterPost(, callback);
+api.openSignupRegisterPost(opts, callback);
 </code></pre>
                             </div>
 
@@ -30561,7 +32720,9 @@ authTokenHeader.apiKey = "YOUR API KEY"
 //authTokenHeader.apiKeyPrefix['X-Docspell-Auth'] = "Token"
 
 var api = new Docspell.SourceApi()
-
+var opts = { 
+  'body':  // {{Source}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -30569,7 +32730,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.secSourcePost(, callback);
+api.secSourcePost(opts, callback);
 </code></pre>
                             </div>
 
@@ -30908,7 +33069,9 @@ authTokenHeader.apiKey = "YOUR API KEY"
 //authTokenHeader.apiKeyPrefix['X-Docspell-Auth'] = "Token"
 
 var api = new Docspell.SourceApi()
-
+var opts = { 
+  'body':  // {{Source}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -30916,7 +33079,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.secSourcePut(, callback);
+api.secSourcePut(opts, callback);
 </code></pre>
                             </div>
 
@@ -31924,7 +34087,9 @@ authTokenHeader.apiKey = "YOUR API KEY"
 //authTokenHeader.apiKeyPrefix['X-Docspell-Auth'] = "Token"
 
 var api = new Docspell.TagsApi()
-
+var opts = { 
+  'body':  // {{Tag}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -31932,7 +34097,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.secTagPost(, callback);
+api.secTagPost(opts, callback);
 </code></pre>
                             </div>
 
@@ -32271,7 +34436,9 @@ authTokenHeader.apiKey = "YOUR API KEY"
 //authTokenHeader.apiKeyPrefix['X-Docspell-Auth'] = "Token"
 
 var api = new Docspell.TagsApi()
-
+var opts = { 
+  'body':  // {{Tag}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -32279,7 +34446,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.secTagPut(, callback);
+api.secTagPut(opts, callback);
 </code></pre>
                             </div>
 
@@ -32954,7 +35121,10 @@ UploadApi *apiInstance = [[UploadApi alloc] init];
 
 var api = new Docspell.UploadApi()
 var id = id_example; // {{String}} An identifier
-
+var opts = { 
+  'meta':  // {{ItemUploadMeta}} 
+  'file':  // {{array[byte[]]}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -32962,7 +35132,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.openUploadItemIdPost(id, callback);
+api.openUploadItemIdPost(id, opts, callback);
 </code></pre>
                             </div>
 
@@ -33325,7 +35495,10 @@ UploadApi *apiInstance = [[UploadApi alloc] init];
 var api = new Docspell.UploadApi()
 var id = id_example; // {{String}} An identifier
 var itemId = itemId_example; // {{String}} An identifier for an item
-
+var opts = { 
+  'meta':  // {{ItemUploadMeta}} 
+  'file':  // {{array[byte[]]}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -33333,7 +35506,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.openUploadItemItemIdIdPost(iditemId, callback);
+api.openUploadItemItemIdIdPost(iditemId, opts, callback);
 </code></pre>
                             </div>
 
@@ -34075,7 +36248,10 @@ authTokenHeader.apiKey = "YOUR API KEY"
 
 var api = new Docspell.UploadApi()
 var itemId = itemId_example; // {{String}} An identifier for an item
-
+var opts = { 
+  'meta':  // {{ItemUploadMeta}} 
+  'file':  // {{array[byte[]]}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -34083,7 +36259,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.secUploadItemIdPost(itemId, callback);
+api.secUploadItemIdPost(itemId, opts, callback);
 </code></pre>
                             </div>
 
@@ -34475,7 +36651,10 @@ authTokenHeader.apiKey = "YOUR API KEY"
 //authTokenHeader.apiKeyPrefix['X-Docspell-Auth'] = "Token"
 
 var api = new Docspell.UploadApi()
-
+var opts = { 
+  'meta':  // {{ItemUploadMeta}} 
+  'file':  // {{array[byte[]]}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -34483,7 +36662,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.secUploadPost(, callback);
+api.secUploadPost(opts, callback);
 </code></pre>
                             </div>
 
@@ -34695,705 +36874,6 @@ except ApiException as e:
                                     </script>
                                   </div>
                                   <input id='responses-secUploadPost-200-schema-data' type='hidden' value=''></input>
-                                </div>
-                            </div>
-
-                        </article>
-                      </div>
-                      <hr>
-                  </section>
-                <section id="api-UploadIntegration">
-                  <h1>UploadIntegration</h1>
-                    <div id="api-UploadIntegration-openIntegrationItemIdGet">
-                      <article id="api-UploadIntegration-openIntegrationItemIdGet-0" data-group="User" data-name="openIntegrationItemIdGet" data-version="0">
-                        <div class="pull-left">
-                          <h1>openIntegrationItemIdGet</h1>
-                          <p>Upload files to docspell.</p>
-                        </div>
-                        <div class="pull-right"></div>
-                        <div class="clearfix"></div>
-                        <p></p>
-                        <p class="marked">Allows to check whether an integration endpoint is enabled for
-a collective. The collective is given by the &#x60;id&#x60; parameter.
-It returns not found (404) if the endpoint is disabled (either
-globally by an admin or by a specific collective). It returns
-403 (or 401 if http-basic is enabled) if authorization fails.
-
-The response body is empty (an empty json object).
-</p>
-                        <p></p>
-                        <br />
-                        <pre class="prettyprint language-html prettyprinted" data-type="get"><code><span class="pln">/open/integration/item/{id}</span></code></pre>
-                        <p>
-                          <h3>Usage and SDK Samples</h3>
-                        </p>
-                        <ul class="nav nav-tabs nav-tabs-examples">
-                          <li class="active"><a href="#examples-UploadIntegration-openIntegrationItemIdGet-0-curl">Curl</a></li>
-                          <li class=""><a href="#examples-UploadIntegration-openIntegrationItemIdGet-0-java">Java</a></li>
-                          <li class=""><a href="#examples-UploadIntegration-openIntegrationItemIdGet-0-android">Android</a></li>
-                          <!--<li class=""><a href="#examples-UploadIntegration-openIntegrationItemIdGet-0-groovy">Groovy</a></li>-->
-                          <li class=""><a href="#examples-UploadIntegration-openIntegrationItemIdGet-0-objc">Obj-C</a></li>
-                          <li class=""><a href="#examples-UploadIntegration-openIntegrationItemIdGet-0-javascript">JavaScript</a></li>
-                          <!--<li class=""><a href="#examples-UploadIntegration-openIntegrationItemIdGet-0-angular">Angular</a></li>-->
-                          <li class=""><a href="#examples-UploadIntegration-openIntegrationItemIdGet-0-csharp">C#</a></li>
-                          <li class=""><a href="#examples-UploadIntegration-openIntegrationItemIdGet-0-php">PHP</a></li>
-                          <li class=""><a href="#examples-UploadIntegration-openIntegrationItemIdGet-0-perl">Perl</a></li>
-                          <li class=""><a href="#examples-UploadIntegration-openIntegrationItemIdGet-0-python">Python</a></li>
-                        </ul>
-
-                        <div class="tab-content">
-                          <div class="tab-pane active" id="examples-UploadIntegration-openIntegrationItemIdGet-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X GET "/api/v1/open/integration/item/{id}"</code></pre>
-                          </div>
-                          <div class="tab-pane" id="examples-UploadIntegration-openIntegrationItemIdGet-0-java">
-                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
-import io.swagger.client.auth.*;
-import io.swagger.client.model.*;
-import io.swagger.client.api.UploadIntegrationApi;
-
-import java.io.File;
-import java.util.*;
-
-public class UploadIntegrationApiExample {
-
-    public static void main(String[] args) {
-        
-        UploadIntegrationApi apiInstance = new UploadIntegrationApi();
-        String id = id_example; // String | An identifier
-        try {
-            Object result = apiInstance.openIntegrationItemIdGet(id);
-            System.out.println(result);
-        } catch (ApiException e) {
-            System.err.println("Exception when calling UploadIntegrationApi#openIntegrationItemIdGet");
-            e.printStackTrace();
-        }
-    }
-}</code></pre>
-                          </div>
-
-                          <div class="tab-pane" id="examples-UploadIntegration-openIntegrationItemIdGet-0-android">
-                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.UploadIntegrationApi;
-
-public class UploadIntegrationApiExample {
-
-    public static void main(String[] args) {
-        UploadIntegrationApi apiInstance = new UploadIntegrationApi();
-        String id = id_example; // String | An identifier
-        try {
-            Object result = apiInstance.openIntegrationItemIdGet(id);
-            System.out.println(result);
-        } catch (ApiException e) {
-            System.err.println("Exception when calling UploadIntegrationApi#openIntegrationItemIdGet");
-            e.printStackTrace();
-        }
-    }
-}</code></pre>
-                          </div>
-  <!--
-  <div class="tab-pane" id="examples-UploadIntegration-openIntegrationItemIdGet-0-groovy">
-  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
-  </div> -->
-                            <div class="tab-pane" id="examples-UploadIntegration-openIntegrationItemIdGet-0-objc">
-                              <pre class="prettyprint"><code class="language-cpp">String *id = id_example; // An identifier
-
-UploadIntegrationApi *apiInstance = [[UploadIntegrationApi alloc] init];
-
-// Upload files to docspell.
-[apiInstance openIntegrationItemIdGetWith:id
-              completionHandler: ^(Object output, NSError* error) {
-                            if (output) {
-                                NSLog(@"%@", output);
-                            }
-                            if (error) {
-                                NSLog(@"Error: %@", error);
-                            }
-                        }];
-</code></pre>
-                            </div>
-
-                            <div class="tab-pane" id="examples-UploadIntegration-openIntegrationItemIdGet-0-javascript">
-                              <pre class="prettyprint"><code class="language-js">var Docspell = require('docspell');
-
-var api = new Docspell.UploadIntegrationApi()
-var id = id_example; // {{String}} An identifier
-
-var callback = function(error, data, response) {
-  if (error) {
-    console.error(error);
-  } else {
-    console.log('API called successfully. Returned data: ' + data);
-  }
-};
-api.openIntegrationItemIdGet(id, callback);
-</code></pre>
-                            </div>
-
-                            <!--<div class="tab-pane" id="examples-UploadIntegration-openIntegrationItemIdGet-0-angular">
-              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
-            </div>-->
-                            <div class="tab-pane" id="examples-UploadIntegration-openIntegrationItemIdGet-0-csharp">
-                              <pre class="prettyprint"><code class="language-cs">using System;
-using System.Diagnostics;
-using IO.Swagger.Api;
-using IO.Swagger.Client;
-using IO.Swagger.Model;
-
-namespace Example
-{
-    public class openIntegrationItemIdGetExample
-    {
-        public void main()
-        {
-
-            var apiInstance = new UploadIntegrationApi();
-            var id = id_example;  // String | An identifier
-
-            try
-            {
-                // Upload files to docspell.
-                Object result = apiInstance.openIntegrationItemIdGet(id);
-                Debug.WriteLine(result);
-            }
-            catch (Exception e)
-            {
-                Debug.Print("Exception when calling UploadIntegrationApi.openIntegrationItemIdGet: " + e.Message );
-            }
-        }
-    }
-}
-</code></pre>
-                            </div>
-
-                            <div class="tab-pane" id="examples-UploadIntegration-openIntegrationItemIdGet-0-php">
-                              <pre class="prettyprint"><code class="language-php"><&#63;php
-require_once(__DIR__ . '/vendor/autoload.php');
-
-$api_instance = new Swagger\Client\ApiUploadIntegrationApi();
-$id = id_example; // String | An identifier
-
-try {
-    $result = $api_instance->openIntegrationItemIdGet($id);
-    print_r($result);
-} catch (Exception $e) {
-    echo 'Exception when calling UploadIntegrationApi->openIntegrationItemIdGet: ', $e->getMessage(), PHP_EOL;
-}
-?></code></pre>
-                            </div>
-
-                            <div class="tab-pane" id="examples-UploadIntegration-openIntegrationItemIdGet-0-perl">
-                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
-use WWW::SwaggerClient::Configuration;
-use WWW::SwaggerClient::UploadIntegrationApi;
-
-my $api_instance = WWW::SwaggerClient::UploadIntegrationApi->new();
-my $id = id_example; # String | An identifier
-
-eval { 
-    my $result = $api_instance->openIntegrationItemIdGet(id => $id);
-    print Dumper($result);
-};
-if ($@) {
-    warn "Exception when calling UploadIntegrationApi->openIntegrationItemIdGet: $@\n";
-}</code></pre>
-                            </div>
-
-                            <div class="tab-pane" id="examples-UploadIntegration-openIntegrationItemIdGet-0-python">
-                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
-import time
-import swagger_client
-from swagger_client.rest import ApiException
-from pprint import pprint
-
-# create an instance of the API class
-api_instance = swagger_client.UploadIntegrationApi()
-id = id_example # String | An identifier
-
-try: 
-    # Upload files to docspell.
-    api_response = api_instance.open_integration_item_id_get(id)
-    pprint(api_response)
-except ApiException as e:
-    print("Exception when calling UploadIntegrationApi->openIntegrationItemIdGet: %s\n" % e)</code></pre>
-                            </div>
-                          </div>
-
-                          <h2>Parameters</h2>
-
-                            <div class="methodsubtabletitle">Path parameters</div>
-                            <table id="methodsubtable">
-                                <tr>
-                                  <th width="150px">Name</th>
-                                  <th>Description</th>
-                                </tr>
-                                  <tr><td style="width:150px;">id*</td>
-                                  <td>
-                                  
-                                  
-                                      <div id="d2e199_openIntegrationItemIdGet_id">
-                                          <div class="json-schema-view">
-                                              <div class="primitive">
-                                                  <span class="type">
-                                                      String
-                                                  </span>
-                                  
-                                                      <div class="inner description">
-                                                          An identifier
-                                                      </div>
-                                              </div>
-                                                  <div class="inner required">
-                                                      Required
-                                                  </div>
-                                          </div>
-                                      </div>
-                                  </td>
-                                  </tr>
-                            </table>
-
-
-
-
-
-                          <h2>Responses</h2>
-                            <h3> Status: 200 - Ok </h3>
-
-                            <ul class="nav nav-tabs nav-tabs-examples" >
-                                <li class="active">
-                                  <a data-toggle="tab" href="#responses-openIntegrationItemIdGet-200-schema">Schema</a>
-                                </li>
-
-                            </ul>
-
-                            <div class="tab-content" style='margin-bottom: 10px;'>
-                                <div class="tab-pane active" id="responses-openIntegrationItemIdGet-200-schema">
-                                  <div id='responses-openIntegrationItemIdGet-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
-                                    <script>
-                                      $(document).ready(function() {
-                                        var schemaWrapper = {
-  "description" : "Ok",
-  "content" : {
-    "application/json" : {
-      "schema" : {
-        "type" : "object",
-        "x-content-type" : "application/json"
-      }
-    }
-  }
-};
-                                        var schema = schemaWrapper.content["application/json"].schema;
-                                        if (schema.$ref != null) {
-                                          schema = defsParser.$refs.get(schema.$ref);
-                                        } else {
-                                          schemaWrapper.components = {};
-                                          schemaWrapper.components.schemas = Object.assign({}, defs);
-                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
-                                            console.log(err);
-                                          });
-                                        }
-
-                                        //console.log(JSON.stringify(schema));
-                                        var view = new JSONSchemaView(schema, 3);
-                                        $('#responses-openIntegrationItemIdGet-200-schema-data').val(stringify(schema));
-                                        var result = $('#responses-openIntegrationItemIdGet-200-schema-200');
-                                        result.empty();
-                                        result.append(view.render());
-                                      });
-                                    </script>
-                                  </div>
-                                  <input id='responses-openIntegrationItemIdGet-200-schema-data' type='hidden' value=''></input>
-                                </div>
-                            </div>
-
-                            <h3> Status: 404 - Not Found </h3>
-
-                            <ul class="nav nav-tabs nav-tabs-examples" >
-                            </ul>
-
-                            <div class="tab-content" style='margin-bottom: 10px;'>
-                            </div>
-
-                            <h3> Status: 403 - Forbidden </h3>
-
-                            <ul class="nav nav-tabs nav-tabs-examples" >
-                            </ul>
-
-                            <div class="tab-content" style='margin-bottom: 10px;'>
-                            </div>
-
-                            <h3> Status: 401 - Unauthorized </h3>
-
-                            <ul class="nav nav-tabs nav-tabs-examples" >
-                            </ul>
-
-                            <div class="tab-content" style='margin-bottom: 10px;'>
-                            </div>
-
-                        </article>
-                      </div>
-                      <hr>
-                    <div id="api-UploadIntegration-openIntegrationItemIdPost">
-                      <article id="api-UploadIntegration-openIntegrationItemIdPost-0" data-group="User" data-name="openIntegrationItemIdPost" data-version="0">
-                        <div class="pull-left">
-                          <h1>openIntegrationItemIdPost</h1>
-                          <p>Upload files to docspell.</p>
-                        </div>
-                        <div class="pull-right"></div>
-                        <div class="clearfix"></div>
-                        <p></p>
-                        <p class="marked">Upload a file to docspell for processing. The id is a
-*collective name*. This route only exists, if enabled by an
-admin in the configuration. The route might be protected by
-different methods, all configurable via the configuration:
-
-- A specific header must be prestent
-- username/password via HTTP Basic mechanism
-- a specific source ip
-
-Files are submitted for processing to the specified
-collective, which eventually resuts in an item in their inbox.
-
-The request must be a &#x60;multipart/form-data&#x60; request, where the
-first part has name &#x60;meta&#x60;, is optional and may contain upload
-metadata as JSON. Checkout the structure &#x60;ItemUploadMeta&#x60; at
-the end if it is not shown here. Other parts specify the
-files. Multiple files can be specified, but at least on is
-required.
-</p>
-                        <p></p>
-                        <br />
-                        <pre class="prettyprint language-html prettyprinted" data-type="post"><code><span class="pln">/open/integration/item/{id}</span></code></pre>
-                        <p>
-                          <h3>Usage and SDK Samples</h3>
-                        </p>
-                        <ul class="nav nav-tabs nav-tabs-examples">
-                          <li class="active"><a href="#examples-UploadIntegration-openIntegrationItemIdPost-0-curl">Curl</a></li>
-                          <li class=""><a href="#examples-UploadIntegration-openIntegrationItemIdPost-0-java">Java</a></li>
-                          <li class=""><a href="#examples-UploadIntegration-openIntegrationItemIdPost-0-android">Android</a></li>
-                          <!--<li class=""><a href="#examples-UploadIntegration-openIntegrationItemIdPost-0-groovy">Groovy</a></li>-->
-                          <li class=""><a href="#examples-UploadIntegration-openIntegrationItemIdPost-0-objc">Obj-C</a></li>
-                          <li class=""><a href="#examples-UploadIntegration-openIntegrationItemIdPost-0-javascript">JavaScript</a></li>
-                          <!--<li class=""><a href="#examples-UploadIntegration-openIntegrationItemIdPost-0-angular">Angular</a></li>-->
-                          <li class=""><a href="#examples-UploadIntegration-openIntegrationItemIdPost-0-csharp">C#</a></li>
-                          <li class=""><a href="#examples-UploadIntegration-openIntegrationItemIdPost-0-php">PHP</a></li>
-                          <li class=""><a href="#examples-UploadIntegration-openIntegrationItemIdPost-0-perl">Perl</a></li>
-                          <li class=""><a href="#examples-UploadIntegration-openIntegrationItemIdPost-0-python">Python</a></li>
-                        </ul>
-
-                        <div class="tab-content">
-                          <div class="tab-pane active" id="examples-UploadIntegration-openIntegrationItemIdPost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST "/api/v1/open/integration/item/{id}"</code></pre>
-                          </div>
-                          <div class="tab-pane" id="examples-UploadIntegration-openIntegrationItemIdPost-0-java">
-                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
-import io.swagger.client.auth.*;
-import io.swagger.client.model.*;
-import io.swagger.client.api.UploadIntegrationApi;
-
-import java.io.File;
-import java.util.*;
-
-public class UploadIntegrationApiExample {
-
-    public static void main(String[] args) {
-        
-        UploadIntegrationApi apiInstance = new UploadIntegrationApi();
-        String id = id_example; // String | An identifier
-        ItemUploadMeta meta = ; // ItemUploadMeta | 
-        array[byte[]] file = ; // array[byte[]] | 
-        try {
-            BasicResult result = apiInstance.openIntegrationItemIdPost(id, meta, file);
-            System.out.println(result);
-        } catch (ApiException e) {
-            System.err.println("Exception when calling UploadIntegrationApi#openIntegrationItemIdPost");
-            e.printStackTrace();
-        }
-    }
-}</code></pre>
-                          </div>
-
-                          <div class="tab-pane" id="examples-UploadIntegration-openIntegrationItemIdPost-0-android">
-                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.UploadIntegrationApi;
-
-public class UploadIntegrationApiExample {
-
-    public static void main(String[] args) {
-        UploadIntegrationApi apiInstance = new UploadIntegrationApi();
-        String id = id_example; // String | An identifier
-        ItemUploadMeta meta = ; // ItemUploadMeta | 
-        array[byte[]] file = ; // array[byte[]] | 
-        try {
-            BasicResult result = apiInstance.openIntegrationItemIdPost(id, meta, file);
-            System.out.println(result);
-        } catch (ApiException e) {
-            System.err.println("Exception when calling UploadIntegrationApi#openIntegrationItemIdPost");
-            e.printStackTrace();
-        }
-    }
-}</code></pre>
-                          </div>
-  <!--
-  <div class="tab-pane" id="examples-UploadIntegration-openIntegrationItemIdPost-0-groovy">
-  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
-  </div> -->
-                            <div class="tab-pane" id="examples-UploadIntegration-openIntegrationItemIdPost-0-objc">
-                              <pre class="prettyprint"><code class="language-cpp">String *id = id_example; // An identifier
-ItemUploadMeta *meta = ; //  (optional)
-array[byte[]] *file = ; //  (optional)
-
-UploadIntegrationApi *apiInstance = [[UploadIntegrationApi alloc] init];
-
-// Upload files to docspell.
-[apiInstance openIntegrationItemIdPostWith:id
-    meta:meta
-    file:file
-              completionHandler: ^(BasicResult output, NSError* error) {
-                            if (output) {
-                                NSLog(@"%@", output);
-                            }
-                            if (error) {
-                                NSLog(@"Error: %@", error);
-                            }
-                        }];
-</code></pre>
-                            </div>
-
-                            <div class="tab-pane" id="examples-UploadIntegration-openIntegrationItemIdPost-0-javascript">
-                              <pre class="prettyprint"><code class="language-js">var Docspell = require('docspell');
-
-var api = new Docspell.UploadIntegrationApi()
-var id = id_example; // {{String}} An identifier
-
-var callback = function(error, data, response) {
-  if (error) {
-    console.error(error);
-  } else {
-    console.log('API called successfully. Returned data: ' + data);
-  }
-};
-api.openIntegrationItemIdPost(id, callback);
-</code></pre>
-                            </div>
-
-                            <!--<div class="tab-pane" id="examples-UploadIntegration-openIntegrationItemIdPost-0-angular">
-              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
-            </div>-->
-                            <div class="tab-pane" id="examples-UploadIntegration-openIntegrationItemIdPost-0-csharp">
-                              <pre class="prettyprint"><code class="language-cs">using System;
-using System.Diagnostics;
-using IO.Swagger.Api;
-using IO.Swagger.Client;
-using IO.Swagger.Model;
-
-namespace Example
-{
-    public class openIntegrationItemIdPostExample
-    {
-        public void main()
-        {
-
-            var apiInstance = new UploadIntegrationApi();
-            var id = id_example;  // String | An identifier
-            var meta = new ItemUploadMeta(); // ItemUploadMeta |  (optional) 
-            var file = new array[byte[]](); // array[byte[]] |  (optional) 
-
-            try
-            {
-                // Upload files to docspell.
-                BasicResult result = apiInstance.openIntegrationItemIdPost(id, meta, file);
-                Debug.WriteLine(result);
-            }
-            catch (Exception e)
-            {
-                Debug.Print("Exception when calling UploadIntegrationApi.openIntegrationItemIdPost: " + e.Message );
-            }
-        }
-    }
-}
-</code></pre>
-                            </div>
-
-                            <div class="tab-pane" id="examples-UploadIntegration-openIntegrationItemIdPost-0-php">
-                              <pre class="prettyprint"><code class="language-php"><&#63;php
-require_once(__DIR__ . '/vendor/autoload.php');
-
-$api_instance = new Swagger\Client\ApiUploadIntegrationApi();
-$id = id_example; // String | An identifier
-$meta = ; // ItemUploadMeta | 
-$file = ; // array[byte[]] | 
-
-try {
-    $result = $api_instance->openIntegrationItemIdPost($id, $meta, $file);
-    print_r($result);
-} catch (Exception $e) {
-    echo 'Exception when calling UploadIntegrationApi->openIntegrationItemIdPost: ', $e->getMessage(), PHP_EOL;
-}
-?></code></pre>
-                            </div>
-
-                            <div class="tab-pane" id="examples-UploadIntegration-openIntegrationItemIdPost-0-perl">
-                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
-use WWW::SwaggerClient::Configuration;
-use WWW::SwaggerClient::UploadIntegrationApi;
-
-my $api_instance = WWW::SwaggerClient::UploadIntegrationApi->new();
-my $id = id_example; # String | An identifier
-my $meta = ; # ItemUploadMeta | 
-my $file = []; # array[byte[]] | 
-
-eval { 
-    my $result = $api_instance->openIntegrationItemIdPost(id => $id, meta => $meta, file => $file);
-    print Dumper($result);
-};
-if ($@) {
-    warn "Exception when calling UploadIntegrationApi->openIntegrationItemIdPost: $@\n";
-}</code></pre>
-                            </div>
-
-                            <div class="tab-pane" id="examples-UploadIntegration-openIntegrationItemIdPost-0-python">
-                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
-import time
-import swagger_client
-from swagger_client.rest import ApiException
-from pprint import pprint
-
-# create an instance of the API class
-api_instance = swagger_client.UploadIntegrationApi()
-id = id_example # String | An identifier
-meta =  # ItemUploadMeta |  (optional)
-file =  # array[byte[]] |  (optional)
-
-try: 
-    # Upload files to docspell.
-    api_response = api_instance.open_integration_item_id_post(id, meta=meta, file=file)
-    pprint(api_response)
-except ApiException as e:
-    print("Exception when calling UploadIntegrationApi->openIntegrationItemIdPost: %s\n" % e)</code></pre>
-                            </div>
-                          </div>
-
-                          <h2>Parameters</h2>
-
-                            <div class="methodsubtabletitle">Path parameters</div>
-                            <table id="methodsubtable">
-                                <tr>
-                                  <th width="150px">Name</th>
-                                  <th>Description</th>
-                                </tr>
-                                  <tr><td style="width:150px;">id*</td>
-                                  <td>
-                                  
-                                  
-                                      <div id="d2e199_openIntegrationItemIdPost_id">
-                                          <div class="json-schema-view">
-                                              <div class="primitive">
-                                                  <span class="type">
-                                                      String
-                                                  </span>
-                                  
-                                                      <div class="inner description">
-                                                          An identifier
-                                                      </div>
-                                              </div>
-                                                  <div class="inner required">
-                                                      Required
-                                                  </div>
-                                          </div>
-                                      </div>
-                                  </td>
-                                  </tr>
-                            </table>
-
-
-
-                            <div class="methodsubtabletitle">Form parameters</div>
-                            <table id="methodsubtable">
-                              <tr>
-                                <th width="150px">Name</th>
-                                <th>Description</th>
-                              </tr>
-                                  <tr><td style="width:150px;">meta</td>
-                                  <td>
-                                  
-                                  
-                                      <div id="d2e199_openIntegrationItemIdPost_meta">
-                                          <div class="json-schema-view">
-                                              <div class="primitive">
-                                                  <span class="type">
-                                                      ItemUploadMeta
-                                                  </span>
-                                  
-                                              </div>
-                                          </div>
-                                      </div>
-                                  </td>
-                                  </tr>
-                                  <tr><td style="width:150px;">file</td>
-                                  <td>
-                                  
-                                  
-                                      <div id="d2e199_openIntegrationItemIdPost_file">
-                                          <div class="json-schema-view">
-                                              <div class="primitive">
-                                                  <span class="type">
-                                                      array[byte[]]
-                                                  </span>
-                                                      <span class="format">
-                                                          (binary)
-                                                      </span>
-                                  
-                                              </div>
-                                          </div>
-                                      </div>
-                                  </td>
-                                  </tr>
-                            </table>
-
-
-                          <h2>Responses</h2>
-                            <h3> Status: 200 - Ok </h3>
-
-                            <ul class="nav nav-tabs nav-tabs-examples" >
-                                <li class="active">
-                                  <a data-toggle="tab" href="#responses-openIntegrationItemIdPost-200-schema">Schema</a>
-                                </li>
-
-                            </ul>
-
-                            <div class="tab-content" style='margin-bottom: 10px;'>
-                                <div class="tab-pane active" id="responses-openIntegrationItemIdPost-200-schema">
-                                  <div id='responses-openIntegrationItemIdPost-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
-                                    <script>
-                                      $(document).ready(function() {
-                                        var schemaWrapper = {
-  "description" : "Ok",
-  "content" : {
-    "application/json" : {
-      "schema" : {
-        "$ref" : "#/components/schemas/BasicResult"
-      }
-    }
-  }
-};
-                                        var schema = schemaWrapper.content["application/json"].schema;
-                                        if (schema.$ref != null) {
-                                          schema = defsParser.$refs.get(schema.$ref);
-                                        } else {
-                                          schemaWrapper.components = {};
-                                          schemaWrapper.components.schemas = Object.assign({}, defs);
-                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
-                                            console.log(err);
-                                          });
-                                        }
-
-                                        //console.log(JSON.stringify(schema));
-                                        var view = new JSONSchemaView(schema, 3);
-                                        $('#responses-openIntegrationItemIdPost-200-schema-data').val(stringify(schema));
-                                        var result = $('#responses-openIntegrationItemIdPost-200-schema-200');
-                                        result.empty();
-                                        result.append(view.render());
-                                      });
-                                    </script>
-                                  </div>
-                                  <input id='responses-openIntegrationItemIdPost-200-schema-data' type='hidden' value=''></input>
                                 </div>
                             </div>
 
@@ -36491,7 +37971,9 @@ authTokenHeader.apiKey = "YOUR API KEY"
 //authTokenHeader.apiKeyPrefix['X-Docspell-Auth'] = "Token"
 
 var api = new Docspell.UserTasksApi()
-
+var opts = { 
+  'body':  // {{NotificationSettings}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -36499,7 +37981,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.secUsertaskNotifydueitemsPost(, callback);
+api.secUsertaskNotifydueitemsPost(opts, callback);
 </code></pre>
                             </div>
 
@@ -36838,7 +38320,9 @@ authTokenHeader.apiKey = "YOUR API KEY"
 //authTokenHeader.apiKeyPrefix['X-Docspell-Auth'] = "Token"
 
 var api = new Docspell.UserTasksApi()
-
+var opts = { 
+  'body':  // {{NotificationSettings}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -36846,7 +38330,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.secUsertaskNotifydueitemsPut(, callback);
+api.secUsertaskNotifydueitemsPut(opts, callback);
 </code></pre>
                             </div>
 
@@ -37185,7 +38669,9 @@ authTokenHeader.apiKey = "YOUR API KEY"
 //authTokenHeader.apiKeyPrefix['X-Docspell-Auth'] = "Token"
 
 var api = new Docspell.UserTasksApi()
-
+var opts = { 
+  'body':  // {{NotificationSettings}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -37193,7 +38679,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.secUsertaskNotifydueitemsStartoncePost(, callback);
+api.secUsertaskNotifydueitemsStartoncePost(opts, callback);
 </code></pre>
                             </div>
 
@@ -38502,7 +39988,9 @@ authTokenHeader.apiKey = "YOUR API KEY"
 //authTokenHeader.apiKeyPrefix['X-Docspell-Auth'] = "Token"
 
 var api = new Docspell.UserTasksApi()
-
+var opts = { 
+  'body':  // {{ScanMailboxSettings}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -38510,7 +39998,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.secUsertaskScanmailboxPost(, callback);
+api.secUsertaskScanmailboxPost(opts, callback);
 </code></pre>
                             </div>
 
@@ -38849,7 +40337,9 @@ authTokenHeader.apiKey = "YOUR API KEY"
 //authTokenHeader.apiKeyPrefix['X-Docspell-Auth'] = "Token"
 
 var api = new Docspell.UserTasksApi()
-
+var opts = { 
+  'body':  // {{ScanMailboxSettings}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -38857,7 +40347,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.secUsertaskScanmailboxPut(, callback);
+api.secUsertaskScanmailboxPut(opts, callback);
 </code></pre>
                             </div>
 
@@ -39196,7 +40686,9 @@ authTokenHeader.apiKey = "YOUR API KEY"
 //authTokenHeader.apiKeyPrefix['X-Docspell-Auth'] = "Token"
 
 var api = new Docspell.UserTasksApi()
-
+var opts = { 
+  'body':  // {{ScanMailboxSettings}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -39204,7 +40696,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.secUsertaskScanmailboxStartoncePost(, callback);
+api.secUsertaskScanmailboxStartoncePost(opts, callback);
 </code></pre>
                             </div>
 
@@ -39546,7 +41038,9 @@ authTokenHeader.apiKey = "YOUR API KEY"
 //authTokenHeader.apiKeyPrefix['X-Docspell-Auth'] = "Token"
 
 var api = new Docspell.UtilityApi()
-
+var opts = { 
+  'body':  // {{CalEventCheck}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -39554,7 +41048,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.secCaleventCheckPost(, callback);
+api.secCaleventCheckPost(opts, callback);
 </code></pre>
                             </div>
 
