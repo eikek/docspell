@@ -35,6 +35,7 @@ trait BackendApp[F[_]] {
   def mail: OMail[F]
   def joex: OJoex[F]
   def userTask: OUserTask[F]
+  def space: OSpace[F]
 }
 
 object BackendApp {
@@ -67,6 +68,7 @@ object BackendApp {
         JavaMailEmil(blocker, Settings.defaultSettings.copy(debug = cfg.mailDebug))
       mailImpl     <- OMail(store, javaEmil)
       userTaskImpl <- OUserTask(utStore, queue, joexImpl)
+      spaceImpl    <- OSpace(store)
     } yield new BackendApp[F] {
       val login: Login[F]            = loginImpl
       val signup: OSignup[F]         = signupImpl
@@ -84,6 +86,7 @@ object BackendApp {
       val mail                       = mailImpl
       val joex                       = joexImpl
       val userTask                   = userTaskImpl
+      val space                      = spaceImpl
     }
 
   def apply[F[_]: ConcurrentEffect: ContextShift](
