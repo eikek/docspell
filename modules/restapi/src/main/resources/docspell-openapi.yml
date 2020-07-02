@@ -795,6 +795,139 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BasicResult"
+  /sec/space:
+    get:
+      tags: [ Space ]
+      summary: Get a list of spaces.
+      description: |
+        Return a list of spaces for the current collective.
+
+        All spaces are returned, including those not owned by the
+        current user.
+
+        It is possible to restrict the results by a substring match of
+        the name.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/q"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SpaceList"
+    post:
+      tags: [ Space ]
+      summary: Create a new space
+      description: |
+        Create a new space owned by the current user. If a space with
+        the same name already exists, an error is thrown.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewSpace"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+  /sec/space/{id}:
+    get:
+      tags: [ Space ]
+      summary: Get space details.
+      description: |
+        Return details about a space.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SpaceDetail"
+    put:
+      tags: [ Space ]
+      summary: Change the name of a space
+      description: |
+        Changes the name of a space. The new name must not exists.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewSpace"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+    delete:
+      tags: [ Space ]
+      summary: Delete a space by its id.
+      description: |
+        Deletes a space.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+  /sec/space/{id}/member/{userId}:
+    put:
+      tags: [ Space ]
+      summary: Add a member to this space
+      description: |
+        Adds a member to this space (identified by `id`).
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+        - $ref: "#/components/parameters/userId"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+    delete:
+      tags: [ Space ]
+      summary: Removes a member from this space.
+      description: |
+        Removes a member from this space.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+        - $ref: "#/components/parameters/userId"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
   /sec/collective:
     get:
       tags: [ Collective ]
@@ -2358,6 +2491,80 @@ paths:
 
 components:
   schemas:
+    SpaceList:
+      description: |
+        A list of spaces with their member counts.
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/SpaceItem"
+    SpaceItem:
+      description: |
+        An item in a space list.
+      required:
+        - id
+        - name
+        - owner
+        - created
+        - members
+      properties:
+        id:
+          type: string
+          format: ident
+        name:
+          type: string
+        owner:
+          $ref: "#/components/schemas/IdName"
+        created:
+          type: integer
+          format: date-time
+        members:
+          type: integer
+          format: int32
+    NewSpace:
+      description: |
+        Data required to create a new space.
+      required:
+        - name
+      properties:
+        name:
+          type: string
+    SpaceDetail:
+      description: |
+        Details about a space.
+      required:
+        - id
+        - name
+        - owner
+        - created
+        - members
+      properties:
+        id:
+          type: string
+          format: ident
+        name:
+          type: string
+        owner:
+          $ref: "#/components/schemas/IdName"
+        created:
+          type: integer
+          format: date-time
+        members:
+          type: array
+          items:
+            $ref: "#/components/schemas/IdName"
+    SpaceMember:
+      description: |
+        Information to add or remove a space member.
+      required:
+        - userId
+      properties:
+        userId:
+          type: string
+          format: ident
     ItemFtsSearch:
       description: |
         Query description for a full-text only search.
@@ -3734,6 +3941,13 @@ components:
   parameters:
     id:
       name: id
+      in: path
+      description: An identifier
+      required: true
+      schema:
+        type: string
+    userId:
+      name: userId
       in: path
       description: An identifier
       required: true

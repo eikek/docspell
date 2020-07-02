@@ -27,7 +27,8 @@ case class RItem(
     dueDate: Option[Timestamp],
     created: Timestamp,
     updated: Timestamp,
-    notes: Option[String]
+    notes: Option[String],
+    spaceId: Option[Ident]
 ) {}
 
 object RItem {
@@ -58,6 +59,7 @@ object RItem {
       None,
       now,
       now,
+      None,
       None
     )
 
@@ -80,6 +82,7 @@ object RItem {
     val created       = Column("created")
     val updated       = Column("updated")
     val notes         = Column("notes")
+    val space         = Column("space_id")
     val all = List(
       id,
       cid,
@@ -96,7 +99,8 @@ object RItem {
       dueDate,
       created,
       updated,
-      notes
+      notes,
+      space
     )
   }
   import Columns._
@@ -107,7 +111,7 @@ object RItem {
       all,
       fr"${v.id},${v.cid},${v.name},${v.itemDate},${v.source},${v.direction},${v.state}," ++
         fr"${v.corrOrg},${v.corrPerson},${v.concPerson},${v.concEquipment},${v.inReplyTo},${v.dueDate}," ++
-        fr"${v.created},${v.updated},${v.notes}"
+        fr"${v.created},${v.updated},${v.notes},${v.spaceId}"
     ).update.run
 
   def getCollective(itemId: Ident): ConnectionIO[Option[Ident]] =

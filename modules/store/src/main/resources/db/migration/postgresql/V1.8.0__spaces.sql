@@ -19,12 +19,5 @@ CREATE TABLE "space_member" (
   foreign key ("user_id") references "user_"("uid")
 );
 
-CREATE TABLE "space_item" (
-  "id" varchar(254) not null primary key,
-  "space_id" varchar(254) not null,
-  "item_id" varchar(254) not null,
-  "created" timestamp not null,
-  unique ("space_id", "item_id"),
-  foreign key ("space_id") references "space"("id"),
-  foreign key ("item_id") references "item"("itemid")
-);
+ALTER TABLE "item"
+ADD COLUMN "space_id" varchar(254) NULL;
