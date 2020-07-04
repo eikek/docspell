@@ -19,6 +19,8 @@ module Data.Icons exposing
     , organizationIcon
     , person
     , personIcon
+    , space
+    , spaceIcon
     , tag
     , tagIcon
     , tags
@@ -27,6 +29,16 @@ module Data.Icons exposing
 
 import Html exposing (Html, i)
 import Html.Attributes exposing (class)
+
+
+space : String
+space =
+    "folder outline icon"
+
+
+spaceIcon : String -> Html msg
+spaceIcon classes =
+    i [ class (space ++ " " ++ classes) ] []
 
 
 concerned : String

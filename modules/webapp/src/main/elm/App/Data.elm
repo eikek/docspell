@@ -57,6 +57,9 @@ init key url flags settings =
 
         ( um, uc ) =
             Page.UserSettings.Data.init flags settings
+
+        ( mdm, mdc ) =
+            Page.ManageData.Data.init flags
     in
     ( { flags = flags
       , key = key
@@ -64,7 +67,7 @@ init key url flags settings =
       , version = Api.Model.VersionInfo.empty
       , homeModel = Page.Home.Data.init flags
       , loginModel = Page.Login.Data.emptyModel
-      , manageDataModel = Page.ManageData.Data.emptyModel
+      , manageDataModel = mdm
       , collSettingsModel = Page.CollectiveSettings.Data.emptyModel
       , userSettingsModel = um
       , queueModel = Page.Queue.Data.emptyModel
@@ -76,7 +79,10 @@ init key url flags settings =
       , subs = Sub.none
       , uiSettings = settings
       }
-    , Cmd.map UserSettingsMsg uc
+    , Cmd.batch
+        [ Cmd.map UserSettingsMsg uc
+        , Cmd.map ManageDataMsg mdc
+        ]
     )
 
 

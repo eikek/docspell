@@ -3,6 +3,7 @@ module Page.ManageData.View exposing (view)
 import Comp.EquipmentManage
 import Comp.OrgManage
 import Comp.PersonManage
+import Comp.SpaceManage
 import Comp.TagManage
 import Data.Icons as Icons
 import Data.UiSettings exposing (UiSettings)
@@ -50,6 +51,13 @@ view settings model =
                         [ Icons.personIcon ""
                         , text "Person"
                         ]
+                    , div
+                        [ classActive (model.currentTab == Just SpaceTab) "link icon item"
+                        , onClick (SetTab SpaceTab)
+                        ]
+                        [ Icons.spaceIcon ""
+                        , text "Space"
+                        ]
                     ]
                 ]
             ]
@@ -68,11 +76,30 @@ view settings model =
                     Just PersonTab ->
                         viewPerson settings model
 
+                    Just SpaceTab ->
+                        viewSpace settings model
+
                     Nothing ->
                         []
                 )
             ]
         ]
+
+
+viewSpace : UiSettings -> Model -> List (Html Msg)
+viewSpace _ model =
+    [ h2
+        [ class "ui header"
+        ]
+        [ Icons.spaceIcon ""
+        , div
+            [ class "content"
+            ]
+            [ text "Spaces"
+            ]
+        ]
+    , Html.map SpaceMsg (Comp.SpaceManage.view model.spaceManageModel)
+    ]
 
 
 viewTags : Model -> List (Html Msg)

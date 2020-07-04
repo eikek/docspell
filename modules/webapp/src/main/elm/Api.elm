@@ -42,6 +42,7 @@ module Api exposing
     , getScanMailbox
     , getSentMails
     , getSources
+    , getSpaces
     , getTags
     , getUsers
     , itemDetail
@@ -132,6 +133,7 @@ import Api.Model.SentMails exposing (SentMails)
 import Api.Model.SimpleMail exposing (SimpleMail)
 import Api.Model.Source exposing (Source)
 import Api.Model.SourceList exposing (SourceList)
+import Api.Model.SpaceList exposing (SpaceList)
 import Api.Model.Tag exposing (Tag)
 import Api.Model.TagList exposing (TagList)
 import Api.Model.User exposing (User)
@@ -147,6 +149,19 @@ import Task
 import Url
 import Util.File
 import Util.Http as Http2
+
+
+
+--- Spaces
+
+
+getSpaces : Flags -> (Result Http.Error SpaceList -> msg) -> Cmd msg
+getSpaces flags receive =
+    Http2.authGet
+        { url = flags.config.baseUrl ++ "/api/v1/sec/space"
+        , account = getAccount flags
+        , expect = Http.expectJson receive Api.Model.SpaceList.decoder
+        }
 
 
 

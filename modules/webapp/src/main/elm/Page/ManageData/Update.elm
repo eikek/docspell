@@ -3,6 +3,7 @@ module Page.ManageData.Update exposing (update)
 import Comp.EquipmentManage
 import Comp.OrgManage
 import Comp.PersonManage
+import Comp.SpaceManage
 import Comp.TagManage
 import Data.Flags exposing (Flags)
 import Page.ManageData.Data exposing (..)
@@ -28,6 +29,13 @@ update flags msg model =
 
                 PersonTab ->
                     update flags (PersonManageMsg Comp.PersonManage.LoadPersons) m
+
+                SpaceTab ->
+                    let
+                        ( sm, sc ) =
+                            Comp.SpaceManage.init flags
+                    in
+                    ( { m | spaceManageModel = sm }, Cmd.map SpaceMsg sc )
 
         TagManageMsg m ->
             let
@@ -56,3 +64,12 @@ update flags msg model =
                     Comp.PersonManage.update flags m model.personManageModel
             in
             ( { model | personManageModel = m2 }, Cmd.map PersonManageMsg c2 )
+
+        SpaceMsg lm ->
+            let
+                ( m2, c2 ) =
+                    Comp.SpaceManage.update flags lm model.spaceManageModel
+            in
+            ( { model | spaceManageModel = m2 }
+            , Cmd.map SpaceMsg c2
+            )
