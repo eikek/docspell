@@ -3360,11 +3360,15 @@ components:
       description: |
         A user of a collective.
       required:
+        - id
         - login
         - state
         - loginCount
         - created
       properties:
+        id:
+          type: string
+          format: ident
         login:
           type: string
           format: ident

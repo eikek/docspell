@@ -431,7 +431,16 @@ trait Conversions {
 
   // users
   def mkUser(ru: RUser): User =
-    User(ru.login, ru.state, None, ru.email, ru.lastLogin, ru.loginCount, ru.created)
+    User(
+      ru.uid,
+      ru.login,
+      ru.state,
+      None,
+      ru.email,
+      ru.lastLogin,
+      ru.loginCount,
+      ru.created
+    )
 
   def newUser[F[_]: Sync](u: User, cid: Ident): F[RUser] =
     timeId.map {
@@ -451,7 +460,7 @@ trait Conversions {
 
   def changeUser(u: User, cid: Ident): RUser =
     RUser(
-      Ident.unsafe(""),
+      u.id,
       u.login,
       cid,
       u.password.getOrElse(Password.empty),
