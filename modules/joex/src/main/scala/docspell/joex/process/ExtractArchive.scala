@@ -251,7 +251,6 @@ object ExtractArchive {
           this
         case Some(nel) =>
           val sorted = nel.sorted
-          println(s"---------------------------- $sorted ")
           val offset = sorted.head.first
           val pos =
             sorted.zipWithIndex.map({ case (p, i) => p.id -> (i + offset) }).toList.toMap

@@ -4,81 +4,102 @@ import cats.effect._
 
 import docspell.common._
 import docspell.store.{AddResult, Store}
-import docspell.store.records.RSpace
+import docspell.store.records.{RSpace, RUser}
+import docspell.store.queries.QSpace
 
 trait OSpace[F[_]] {
 
-  def findAll(account: AccountId, nameQuery: Option[String]): F[Vector[OSpace.SpaceItem]]
+  def findAll(collective: Ident, nameQuery: Option[String]): F[Vector[OSpace.SpaceItem]]
 
   def findById(id: Ident, collective: Ident): F[Option[OSpace.SpaceDetail]]
 
-  def delete(id: Ident, collective: Ident): F[Int]
+  /** Adds a new space. If `login` is non-empty, the `space.user`
+    * property is ignored and the user-id is determined by the given
+    * login name.
+    */
+  def add(space: RSpace, login: Option[Ident]): F[AddResult]
 
-  def add(space: RSpace): F[AddResult]
-
-  def changeName(space: Ident, account: AccountId, name: String): F[AddResult]
+  def changeName(
+      space: Ident,
+      account: AccountId,
+      name: String
+  ): F[OSpace.SpaceChangeResult]
 
   def addMember(
       space: Ident,
       account: AccountId,
       member: Ident
-  ): F[OSpace.MemberChangeResult]
+  ): F[OSpace.SpaceChangeResult]
+
   def removeMember(
       space: Ident,
       account: AccountId,
       member: Ident
-  ): F[OSpace.MemberChangeResult]
+  ): F[OSpace.SpaceChangeResult]
+
+  def delete(id: Ident, account: AccountId): F[OSpace.SpaceChangeResult]
 }
 
 object OSpace {
 
-  sealed trait MemberChangeResult
-  object MemberChangeResult {
-    case object Success   extends MemberChangeResult
-    case object NotFound  extends MemberChangeResult
-    case object Forbidden extends MemberChangeResult
-  }
+  type SpaceChangeResult = QSpace.SpaceChangeResult
+  val SpaceChangeResult = QSpace.SpaceChangeResult
 
-  final case class SpaceItem(
-      id: Ident,
-      name: String,
-      owner: IdRef,
-      created: Timestamp,
-      members: Int
-  )
+  type SpaceItem = QSpace.SpaceItem
+  val SpaceItem = QSpace.SpaceItem
 
-  final case class SpaceDetail(
-      id: Ident,
-      name: String,
-      owner: IdRef,
-      created: Timestamp,
-      members: List[IdRef]
-  )
+  type SpaceDetail = QSpace.SpaceDetail
+  val SpaceDetail = QSpace.SpaceDetail
 
   def apply[F[_]: Effect](store: Store[F]): Resource[F, OSpace[F]] =
     Resource.pure[F, OSpace[F]](new OSpace[F] {
-      println(s"$store")
       def findAll(
-          account: AccountId,
+          collective: Ident,
           nameQuery: Option[String]
-      ): F[Vector[OSpace.SpaceItem]] = ???
+      ): F[Vector[SpaceItem]] =
+        store.transact(QSpace.findAll(collective, None, nameQuery))
 
-      def findById(id: Ident, collective: Ident): F[Option[OSpace.SpaceDetail]]    = ???
-      def add(space: RSpace): F[AddResult]                                         = ???
-      def changeName(space: Ident, account: AccountId, name: String): F[AddResult] = ???
-      def delete(id: Ident, collective: Ident): F[Int]                             = ???
+      def findById(id: Ident, collective: Ident): F[Option[SpaceDetail]] =
+        store.transact(QSpace.findById(id, collective))
+
+      def add(space: RSpace, login: Option[Ident]): F[AddResult] = {
+        val insert = login match {
+          case Some(n) =>
+            for {
+              user <- RUser.findByAccount(AccountId(space.collectiveId, n))
+              s = user.map(u => space.copy(owner = u.uid)).getOrElse(space)
+              n <- RSpace.insert(s)
+            } yield n
+
+          case None =>
+            RSpace.insert(space)
+        }
+        val exists = RSpace.existsByName(space.collectiveId, space.name)
+        store.add(insert, exists)
+      }
+
+      def changeName(
+          space: Ident,
+          account: AccountId,
+          name: String
+      ): F[SpaceChangeResult] =
+        store.transact(QSpace.changeName(space, account, name))
+
       def addMember(
           space: Ident,
           account: AccountId,
           member: Ident
-      ): F[MemberChangeResult] =
-        ???
+      ): F[SpaceChangeResult] =
+        store.transact(QSpace.addMember(space, account, member))
+
       def removeMember(
           space: Ident,
           account: AccountId,
           member: Ident
-      ): F[MemberChangeResult] =
-        ???
+      ): F[SpaceChangeResult] =
+        store.transact(QSpace.removeMember(space, account, member))
 
+      def delete(id: Ident, account: AccountId): F[SpaceChangeResult] =
+        store.transact(QSpace.delete(id, account))
     })
 }

@@ -299,4 +299,9 @@ object RItem {
 
   def findByIdAndCollective(itemId: Ident, coll: Ident): ConnectionIO[Option[RItem]] =
     selectSimple(all, table, and(id.is(itemId), cid.is(coll))).query[RItem].option
+
+  def removeSpace(spaceId: Ident): ConnectionIO[Int] = {
+    val empty: Option[Ident] = None
+    updateRow(table, space.is(spaceId), space.setTo(empty)).update.run
+  }
 }

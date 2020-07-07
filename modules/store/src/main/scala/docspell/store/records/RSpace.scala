@@ -80,4 +80,6 @@ object RSpace {
     sql.query[RSpace].to[Vector]
   }
 
+  def delete(spaceId: Ident): ConnectionIO[Int] =
+    deleteFrom(table, id.is(spaceId)).update.run
 }

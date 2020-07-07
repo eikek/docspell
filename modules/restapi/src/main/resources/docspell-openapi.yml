@@ -837,7 +837,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/BasicResult"
+                $ref: "#/components/schemas/IdResult"
   /sec/space/{id}:
     get:
       tags: [ Space ]
@@ -2509,7 +2509,6 @@ components:
         - name
         - owner
         - created
-        - members
       properties:
         id:
           type: string
@@ -2521,9 +2520,6 @@ components:
         created:
           type: integer
           format: date-time
-        members:
-          type: integer
-          format: int32
     NewSpace:
       description: |
         Data required to create a new space.
@@ -3844,6 +3840,22 @@ components:
           type: boolean
         message:
           type: string
+    IdResult:
+      description: |
+        Some basic result of an operation with an ID as payload. If
+        success if `false` the id is not usable.
+      required:
+        - success
+        - message
+        - id
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        id:
+          type: string
+          format: ident
     Tag:
       description: |
         A tag used to annotate items. A tag may have a category which

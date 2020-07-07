@@ -15,7 +15,7 @@ import docspell.common.syntax.all._
 import docspell.ftsclient.FtsResult
 import docspell.restapi.model._
 import docspell.restserver.conv.Conversions._
-import docspell.store.AddResult
+import docspell.store.{AddResult, UpdateResult}
 import docspell.store.records._
 
 import bitpeace.FileMeta
@@ -537,11 +537,27 @@ trait Conversions {
         BasicResult(true, "The job has been removed from the queue.")
     }
 
+  def idResult(ar: AddResult, id: Ident, successMsg: String): IdResult =
+    ar match {
+      case AddResult.Success           => IdResult(true, successMsg, id)
+      case AddResult.EntityExists(msg) => IdResult(false, msg, Ident.unsafe(""))
+      case AddResult.Failure(ex) =>
+        IdResult(false, s"Internal error: ${ex.getMessage}", Ident.unsafe(""))
+    }
+
   def basicResult(ar: AddResult, successMsg: String): BasicResult =
     ar match {
       case AddResult.Success           => BasicResult(true, successMsg)
       case AddResult.EntityExists(msg) => BasicResult(false, msg)
       case AddResult.Failure(ex) =>
+        BasicResult(false, s"Internal error: ${ex.getMessage}")
+    }
+
+  def basicResult(ar: UpdateResult, successMsg: String): BasicResult =
+    ar match {
+      case UpdateResult.Success  => BasicResult(true, successMsg)
+      case UpdateResult.NotFound => BasicResult(false, "Not found")
+      case UpdateResult.Failure(ex) =>
         BasicResult(false, s"Internal error: ${ex.getMessage}")
     }
 

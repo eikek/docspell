@@ -27,16 +27,16 @@ object SpaceRoutes {
     HttpRoutes.of {
       case GET -> Root :? QueryParam.QueryOpt(q) =>
         for {
-          all  <- backend.space.findAll(user.account, q.map(_.q))
+          all  <- backend.space.findAll(user.account.collective, q.map(_.q))
           resp <- Ok(SpaceList(all.map(mkSpace).toList))
         } yield resp
 
       case req @ POST -> Root =>
         for {
-          data <- req.as[NewSpace]
-          tag  <- newSpace(data, user.account)
-          res  <- backend.space.add(tag)
-          resp <- Ok(Conversions.basicResult(res, "Space successfully created."))
+          data   <- req.as[NewSpace]
+          nspace <- newSpace(data, user.account)
+          res    <- backend.space.add(nspace, Some(user.account.user))
+          resp   <- Ok(Conversions.idResult(res, nspace.id, "Space successfully created."))
         } yield resp
 
       case GET -> Root / Ident(id) =>
@@ -49,28 +49,25 @@ object SpaceRoutes {
         for {
           data <- req.as[NewSpace]
           res  <- backend.space.changeName(id, user.account, data.name)
-          resp <- Ok(Conversions.basicResult(res, "Space successfully updated."))
+          resp <- Ok(mkSpaceChangeResult(res))
         } yield resp
 
       case DELETE -> Root / Ident(id) =>
         for {
-          del <- backend.space.delete(id, user.account.collective)
-          resp <- Ok(
-            if (del > 0) BasicResult(true, "Successfully deleted space")
-            else BasicResult(false, "Could not delete space")
-          )
+          res  <- backend.space.delete(id, user.account)
+          resp <- Ok(mkSpaceChangeResult(res))
         } yield resp
 
       case PUT -> Root / Ident(id) / "member" / Ident(userId) =>
         for {
           res  <- backend.space.addMember(id, user.account, userId)
-          resp <- Ok(mkMemberResult(res))
+          resp <- Ok(mkSpaceChangeResult(res))
         } yield resp
 
       case DELETE -> Root / Ident(id) / "member" / Ident(userId) =>
         for {
           res  <- backend.space.removeMember(id, user.account, userId)
-          resp <- Ok(mkMemberResult(res))
+          resp <- Ok(mkSpaceChangeResult(res))
         } yield resp
     }
   }
@@ -83,8 +80,7 @@ object SpaceRoutes {
       item.id,
       item.name,
       Conversions.mkIdName(item.owner),
-      item.created,
-      item.members
+      item.created
     )
 
   private def mkSpaceDetail(item: OSpace.SpaceDetail): SpaceDetail =
@@ -96,13 +92,15 @@ object SpaceRoutes {
       item.members.map(Conversions.mkIdName)
     )
 
-  private def mkMemberResult(r: OSpace.MemberChangeResult): BasicResult =
+  private def mkSpaceChangeResult(r: OSpace.SpaceChangeResult): BasicResult =
     r match {
-      case OSpace.MemberChangeResult.Success =>
-        BasicResult(true, "Successfully changed space")
-      case OSpace.MemberChangeResult.NotFound =>
-        BasicResult(false, "Space or user not found")
-      case OSpace.MemberChangeResult.Forbidden =>
-        BasicResult(false, "Not allowed to edit space")
+      case OSpace.SpaceChangeResult.Success =>
+        BasicResult(true, "Successfully changed space.")
+      case OSpace.SpaceChangeResult.NotFound =>
+        BasicResult(false, "Space or user not found.")
+      case OSpace.SpaceChangeResult.Forbidden =>
+        BasicResult(false, "Not allowed to edit space.")
+      case OSpace.SpaceChangeResult.Exists =>
+        BasicResult(false, "The member already exists.")
     }
 }

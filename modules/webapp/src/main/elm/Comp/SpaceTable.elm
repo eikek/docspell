@@ -48,7 +48,6 @@ view _ items =
                 [ th [ class "collapsing" ] []
                 , th [] [ text "Name" ]
                 , th [] [ text "Owner" ]
-                , th [] [ text "Members" ]
                 , th [] [ text "Created" ]
                 ]
             , tbody []
@@ -77,10 +76,6 @@ viewItem item =
             ]
         , td []
             [ text item.owner.name
-            ]
-        , td []
-            [ String.fromInt item.members
-                |> text
             ]
         , td []
             [ Util.Time.formatDateShort item.created
