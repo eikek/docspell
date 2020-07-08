@@ -70,9 +70,7 @@ viewItem item =
                 ]
             ]
         , td []
-            [ code []
-                [ text item.name
-                ]
+            [ text item.name
             ]
         , td []
             [ text item.owner.name

@@ -58,7 +58,7 @@ init flags =
     ( empty
     , Cmd.batch
         [ Api.getUsers flags UserListResp
-        , Api.getSpaces flags SpaceListResp
+        , Api.getSpaces flags "" SpaceListResp
         ]
     )
 
@@ -69,15 +69,109 @@ init flags =
 
 update : Flags -> Msg -> Model -> ( Model, Cmd Msg )
 update flags msg model =
-    ( model, Cmd.none )
+    case msg of
+        TableMsg lm ->
+            let
+                ( tm, action ) =
+                    Comp.SpaceTable.update lm model.tableModel
+
+                cmd =
+                    case action of
+                        Comp.SpaceTable.EditAction item ->
+                            Api.getSpaceDetail flags item.id SpaceDetailResp
+
+                        Comp.SpaceTable.NoAction ->
+                            Cmd.none
+            in
+            ( { model | tableModel = tm }, cmd )
+
+        DetailMsg lm ->
+            case model.detailModel of
+                Just detail ->
+                    let
+                        ( dm, dc, back ) =
+                            Comp.SpaceDetail.update flags lm detail
+
+                        cmd =
+                            if back then
+                                Api.getSpaces flags model.query SpaceListResp
+
+                            else
+                                Cmd.none
+                    in
+                    ( { model
+                        | detailModel =
+                            if back then
+                                Nothing
+
+                            else
+                                Just dm
+                      }
+                    , Cmd.batch
+                        [ Cmd.map DetailMsg dc
+                        , cmd
+                        ]
+                    )
+
+                Nothing ->
+                    ( model, Cmd.none )
+
+        SetQuery str ->
+            ( { model | query = str }, Api.getSpaces flags str SpaceListResp )
+
+        UserListResp (Ok ul) ->
+            ( { model | users = ul.items }, Cmd.none )
+
+        UserListResp (Err err) ->
+            ( model, Cmd.none )
+
+        SpaceListResp (Ok sl) ->
+            ( { model | spaces = sl.items }, Cmd.none )
+
+        SpaceListResp (Err err) ->
+            ( model, Cmd.none )
+
+        SpaceDetailResp (Ok sd) ->
+            ( { model | detailModel = Comp.SpaceDetail.init model.users sd |> Just }
+            , Cmd.none
+            )
+
+        SpaceDetailResp (Err err) ->
+            ( model, Cmd.none )
+
+        InitNewSpace ->
+            let
+                sd =
+                    Comp.SpaceDetail.initEmpty model.users
+            in
+            ( { model | detailModel = Just sd }
+            , Cmd.none
+            )
 
 
 
 --- View
 
 
-view : Model -> Html Msg
-view model =
+view : Flags -> Model -> Html Msg
+view flags model =
+    case model.detailModel of
+        Just dm ->
+            viewDetail flags dm
+
+        Nothing ->
+            viewTable model
+
+
+viewDetail : Flags -> Comp.SpaceDetail.Model -> Html Msg
+viewDetail flags detailModel =
+    div []
+        [ Html.map DetailMsg (Comp.SpaceDetail.view flags detailModel)
+        ]
+
+
+viewTable : Model -> Html Msg
+viewTable model =
     div []
         [ div [ class "ui secondary menu" ]
             [ div [ class "horizontally fitted item" ]

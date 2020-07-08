@@ -5,6 +5,7 @@ import Comp.OrgManage
 import Comp.PersonManage
 import Comp.SpaceManage
 import Comp.TagManage
+import Data.Flags exposing (Flags)
 import Data.Icons as Icons
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
@@ -14,8 +15,8 @@ import Page.ManageData.Data exposing (..)
 import Util.Html exposing (classActive)
 
 
-view : UiSettings -> Model -> Html Msg
-view settings model =
+view : Flags -> UiSettings -> Model -> Html Msg
+view flags settings model =
     div [ class "managedata-page ui padded grid" ]
         [ div [ class "sixteen wide mobile four wide tablet four wide computer column" ]
             [ h4 [ class "ui top attached ablue-comp header" ]
@@ -77,7 +78,7 @@ view settings model =
                         viewPerson settings model
 
                     Just SpaceTab ->
-                        viewSpace settings model
+                        viewSpace flags settings model
 
                     Nothing ->
                         []
@@ -86,8 +87,8 @@ view settings model =
         ]
 
 
-viewSpace : UiSettings -> Model -> List (Html Msg)
-viewSpace _ model =
+viewSpace : Flags -> UiSettings -> Model -> List (Html Msg)
+viewSpace flags _ model =
     [ h2
         [ class "ui header"
         ]
@@ -98,7 +99,7 @@ viewSpace _ model =
             [ text "Spaces"
             ]
         ]
-    , Html.map SpaceMsg (Comp.SpaceManage.view model.spaceManageModel)
+    , Html.map SpaceMsg (Comp.SpaceManage.view flags model.spaceManageModel)
     ]
 
 

@@ -3,12 +3,15 @@ module Api exposing
     , addConcPerson
     , addCorrOrg
     , addCorrPerson
+    , addMember
     , addTag
     , cancelJob
     , changePassword
+    , changeSpaceName
     , checkCalEvent
     , createImapSettings
     , createMailSettings
+    , createNewSpace
     , createNotifyDueItems
     , createScanMailbox
     , deleteAttachment
@@ -21,6 +24,7 @@ module Api exposing
     , deletePerson
     , deleteScanMailbox
     , deleteSource
+    , deleteSpace
     , deleteTag
     , deleteUser
     , getAttachmentMeta
@@ -42,6 +46,7 @@ module Api exposing
     , getScanMailbox
     , getSentMails
     , getSources
+    , getSpaceDetail
     , getSpaces
     , getTags
     , getUsers
@@ -62,6 +67,7 @@ module Api exposing
     , putUser
     , refreshSession
     , register
+    , removeMember
     , sendMail
     , setAttachmentName
     , setCollectiveSettings
@@ -103,6 +109,7 @@ import Api.Model.EmailSettingsList exposing (EmailSettingsList)
 import Api.Model.Equipment exposing (Equipment)
 import Api.Model.EquipmentList exposing (EquipmentList)
 import Api.Model.GenInvite exposing (GenInvite)
+import Api.Model.IdResult exposing (IdResult)
 import Api.Model.ImapSettings exposing (ImapSettings)
 import Api.Model.ImapSettingsList exposing (ImapSettingsList)
 import Api.Model.InviteResult exposing (InviteResult)
@@ -115,6 +122,7 @@ import Api.Model.ItemSearch exposing (ItemSearch)
 import Api.Model.ItemUploadMeta exposing (ItemUploadMeta)
 import Api.Model.JobQueueState exposing (JobQueueState)
 import Api.Model.MoveAttachment exposing (MoveAttachment)
+import Api.Model.NewSpace exposing (NewSpace)
 import Api.Model.NotificationSettings exposing (NotificationSettings)
 import Api.Model.NotificationSettingsList exposing (NotificationSettingsList)
 import Api.Model.OptionalDate exposing (OptionalDate)
@@ -133,6 +141,7 @@ import Api.Model.SentMails exposing (SentMails)
 import Api.Model.SimpleMail exposing (SimpleMail)
 import Api.Model.Source exposing (Source)
 import Api.Model.SourceList exposing (SourceList)
+import Api.Model.SpaceDetail exposing (SpaceDetail)
 import Api.Model.SpaceList exposing (SpaceList)
 import Api.Model.Tag exposing (Tag)
 import Api.Model.TagList exposing (TagList)
@@ -155,10 +164,67 @@ import Util.Http as Http2
 --- Spaces
 
 
-getSpaces : Flags -> (Result Http.Error SpaceList -> msg) -> Cmd msg
-getSpaces flags receive =
-    Http2.authGet
+deleteSpace : Flags -> String -> (Result Http.Error BasicResult -> msg) -> Cmd msg
+deleteSpace flags id receive =
+    Http2.authDelete
+        { url = flags.config.baseUrl ++ "/api/v1/sec/space/" ++ id
+        , account = getAccount flags
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+removeMember : Flags -> String -> String -> (Result Http.Error BasicResult -> msg) -> Cmd msg
+removeMember flags id user receive =
+    Http2.authDelete
+        { url = flags.config.baseUrl ++ "/api/v1/sec/space/" ++ id ++ "/member/" ++ user
+        , account = getAccount flags
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+addMember : Flags -> String -> String -> (Result Http.Error BasicResult -> msg) -> Cmd msg
+addMember flags id user receive =
+    Http2.authPut
+        { url = flags.config.baseUrl ++ "/api/v1/sec/space/" ++ id ++ "/member/" ++ user
+        , account = getAccount flags
+        , body = Http.emptyBody
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+changeSpaceName : Flags -> String -> NewSpace -> (Result Http.Error BasicResult -> msg) -> Cmd msg
+changeSpaceName flags id ns receive =
+    Http2.authPut
+        { url = flags.config.baseUrl ++ "/api/v1/sec/space/" ++ id
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.NewSpace.encode ns)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+createNewSpace : Flags -> NewSpace -> (Result Http.Error IdResult -> msg) -> Cmd msg
+createNewSpace flags ns receive =
+    Http2.authPost
         { url = flags.config.baseUrl ++ "/api/v1/sec/space"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.NewSpace.encode ns)
+        , expect = Http.expectJson receive Api.Model.IdResult.decoder
+        }
+
+
+getSpaceDetail : Flags -> String -> (Result Http.Error SpaceDetail -> msg) -> Cmd msg
+getSpaceDetail flags id receive =
+    Http2.authGet
+        { url = flags.config.baseUrl ++ "/api/v1/sec/space/" ++ id
+        , account = getAccount flags
+        , expect = Http.expectJson receive Api.Model.SpaceDetail.decoder
+        }
+
+
+getSpaces : Flags -> String -> (Result Http.Error SpaceList -> msg) -> Cmd msg
+getSpaces flags query receive =
+    Http2.authGet
+        { url = flags.config.baseUrl ++ "/api/v1/sec/space?q=" ++ Url.percentEncode query
         , account = getAccount flags
         , expect = Http.expectJson receive Api.Model.SpaceList.decoder
         }
