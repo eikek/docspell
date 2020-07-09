@@ -10,12 +10,12 @@ import docspell.store.queries.QSpace
 trait OSpace[F[_]] {
 
   def findAll(
-      collective: Ident,
+      account: AccountId,
       ownerLogin: Option[Ident],
       nameQuery: Option[String]
   ): F[Vector[OSpace.SpaceItem]]
 
-  def findById(id: Ident, collective: Ident): F[Option[OSpace.SpaceDetail]]
+  def findById(id: Ident, account: AccountId): F[Option[OSpace.SpaceDetail]]
 
   /** Adds a new space. If `login` is non-empty, the `space.user`
     * property is ignored and the user-id is determined by the given
@@ -58,14 +58,14 @@ object OSpace {
   def apply[F[_]: Effect](store: Store[F]): Resource[F, OSpace[F]] =
     Resource.pure[F, OSpace[F]](new OSpace[F] {
       def findAll(
-          collective: Ident,
+          account: AccountId,
           ownerLogin: Option[Ident],
           nameQuery: Option[String]
       ): F[Vector[SpaceItem]] =
-        store.transact(QSpace.findAll(collective, None, ownerLogin, nameQuery))
+        store.transact(QSpace.findAll(account, None, ownerLogin, nameQuery))
 
-      def findById(id: Ident, collective: Ident): F[Option[SpaceDetail]] =
-        store.transact(QSpace.findById(id, collective))
+      def findById(id: Ident, account: AccountId): F[Option[SpaceDetail]] =
+        store.transact(QSpace.findById(id, account))
 
       def add(space: RSpace, login: Option[Ident]): F[AddResult] = {
         val insert = login match {

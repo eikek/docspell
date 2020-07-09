@@ -15,8 +15,8 @@ import docspell.common.syntax.all._
 import docspell.ftsclient.FtsResult
 import docspell.restapi.model._
 import docspell.restserver.conv.Conversions._
-import docspell.store.{AddResult, UpdateResult}
 import docspell.store.records._
+import docspell.store.{AddResult, UpdateResult}
 
 import bitpeace.FileMeta
 import org.http4s.headers.`Content-Type`

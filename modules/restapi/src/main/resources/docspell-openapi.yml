@@ -2510,6 +2510,8 @@ components:
         - name
         - owner
         - created
+        - isMember
+        - memberCount
       properties:
         id:
           type: string
@@ -2521,6 +2523,11 @@ components:
         created:
           type: integer
           format: date-time
+        isMember:
+          type: boolean
+        memberCount:
+          type: integer
+          format: int32
     NewSpace:
       description: |
         Data required to create a new space.
@@ -2537,6 +2544,8 @@ components:
         - name
         - owner
         - created
+        - isMember
+        - memberCount
         - members
       properties:
         id:
@@ -2549,6 +2558,11 @@ components:
         created:
           type: integer
           format: date-time
+        isMember:
+          type: boolean
+        memberCount:
+          type: integer
+          format: int32
         members:
           type: array
           items:

@@ -8,10 +8,10 @@ import docspell.backend.BackendApp
 import docspell.backend.auth.AuthToken
 import docspell.backend.ops.OSpace
 import docspell.common._
-import docspell.store.records.RSpace
 import docspell.restapi.model._
 import docspell.restserver.conv.Conversions
 import docspell.restserver.http4s._
+import docspell.store.records.RSpace
 
 import org.http4s.HttpRoutes
 import org.http4s.circe.CirceEntityDecoder._
@@ -29,7 +29,7 @@ object SpaceRoutes {
         val login =
           owning.filter(identity).map(_ => user.account.user)
         for {
-          all  <- backend.space.findAll(user.account.collective, login, q.map(_.q))
+          all  <- backend.space.findAll(user.account, login, q.map(_.q))
           resp <- Ok(SpaceList(all.map(mkSpace).toList))
         } yield resp
 
@@ -43,7 +43,7 @@ object SpaceRoutes {
 
       case GET -> Root / Ident(id) =>
         (for {
-          space <- OptionT(backend.space.findById(id, user.account.collective))
+          space <- OptionT(backend.space.findById(id, user.account))
           resp  <- OptionT.liftF(Ok(mkSpaceDetail(space)))
         } yield resp).getOrElseF(NotFound())
 
@@ -82,7 +82,9 @@ object SpaceRoutes {
       item.id,
       item.name,
       Conversions.mkIdName(item.owner),
-      item.created
+      item.created,
+      item.member,
+      item.memberCount
     )
 
   private def mkSpaceDetail(item: OSpace.SpaceDetail): SpaceDetail =
@@ -91,6 +93,8 @@ object SpaceRoutes {
       item.name,
       Conversions.mkIdName(item.owner),
       item.created,
+      item.member,
+      item.memberCount,
       item.members.map(Conversions.mkIdName)
     )
 
