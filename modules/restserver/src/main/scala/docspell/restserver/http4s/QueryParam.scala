@@ -24,6 +24,8 @@ object QueryParam {
 
   object FullOpt extends OptionalQueryParamDecoderMatcher[Boolean]("full")
 
+  object OwningOpt extends OptionalQueryParamDecoderMatcher[Boolean]("owning")
+
   object ContactKindOpt extends OptionalQueryParamDecoderMatcher[ContactKind]("kind")
 
   object QueryOpt extends OptionalQueryParamDecoderMatcher[QueryString]("q")

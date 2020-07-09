@@ -25,9 +25,11 @@ object SpaceRoutes {
     import dsl._
 
     HttpRoutes.of {
-      case GET -> Root :? QueryParam.QueryOpt(q) =>
+      case GET -> Root :? QueryParam.QueryOpt(q) :? QueryParam.OwningOpt(owning) =>
+        val login =
+          owning.filter(identity).map(_ => user.account.user)
         for {
-          all  <- backend.space.findAll(user.account.collective, q.map(_.q))
+          all  <- backend.space.findAll(user.account.collective, login, q.map(_.q))
           resp <- Ok(SpaceList(all.map(mkSpace).toList))
         } yield resp
 

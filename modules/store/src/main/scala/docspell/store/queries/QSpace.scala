@@ -149,7 +149,7 @@ object QSpace {
     ).query[IdRef].to[Vector]
 
     (for {
-      space <- OptionT(findAll(collective, Some(id), None).map(_.headOption))
+      space <- OptionT(findAll(collective, Some(id), None, None).map(_.headOption))
       memb  <- OptionT.liftF(memberQ)
     } yield space.withMembers(memb.toList)).value
   }
@@ -157,9 +157,11 @@ object QSpace {
   def findAll(
       collective: Ident,
       idQ: Option[Ident],
+      ownerLogin: Option[Ident],
       nameQ: Option[String]
   ): ConnectionIO[Vector[SpaceItem]] = {
     val uId    = RUser.Columns.uid.prefix("u")
+    val uLogin = RUser.Columns.login.prefix("u")
     val sId    = RSpace.Columns.id.prefix("s")
     val sOwner = RSpace.Columns.owner.prefix("s")
     val sName  = RSpace.Columns.name.prefix("s")
@@ -178,7 +180,7 @@ object QSpace {
     val where =
       sColl.is(collective) :: idQ.toList.map(id => sId.is(id)) ::: nameQ.toList.map(q =>
         sName.lowerLike(s"%${q.toLowerCase}%")
-      )
+      ) ::: ownerLogin.toList.map(login => uLogin.is(login))
 
     selectSimple(cols, from, and(where) ++ orderBy(sName.asc)).query[SpaceItem].to[Vector]
   }

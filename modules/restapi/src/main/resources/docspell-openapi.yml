@@ -811,6 +811,7 @@ paths:
         - authTokenHeader: []
       parameters:
         - $ref: "#/components/parameters/q"
+        - $ref: "#/components/parameters/owning"
       responses:
         200:
           description: Ok
@@ -3980,6 +3981,13 @@ components:
       name: full
       in: query
       description: Whether to list full data or just name and id.
+      required: false
+      schema:
+        type: boolean
+    owning:
+      name: full
+      in: query
+      description: Whether to get owning spaces
       required: false
       schema:
         type: boolean

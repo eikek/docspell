@@ -9,7 +9,11 @@ import docspell.store.queries.QSpace
 
 trait OSpace[F[_]] {
 
-  def findAll(collective: Ident, nameQuery: Option[String]): F[Vector[OSpace.SpaceItem]]
+  def findAll(
+      collective: Ident,
+      ownerLogin: Option[Ident],
+      nameQuery: Option[String]
+  ): F[Vector[OSpace.SpaceItem]]
 
   def findById(id: Ident, collective: Ident): F[Option[OSpace.SpaceDetail]]
 
@@ -55,9 +59,10 @@ object OSpace {
     Resource.pure[F, OSpace[F]](new OSpace[F] {
       def findAll(
           collective: Ident,
+          ownerLogin: Option[Ident],
           nameQuery: Option[String]
       ): F[Vector[SpaceItem]] =
-        store.transact(QSpace.findAll(collective, None, nameQuery))
+        store.transact(QSpace.findAll(collective, None, ownerLogin, nameQuery))
 
       def findById(id: Ident, collective: Ident): F[Option[SpaceDetail]] =
         store.transact(QSpace.findById(id, collective))
