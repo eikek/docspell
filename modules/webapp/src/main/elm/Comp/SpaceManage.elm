@@ -18,7 +18,7 @@ import Comp.SpaceTable
 import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick, onInput)
+import Html.Events exposing (onCheck, onClick, onInput)
 import Http
 
 
@@ -28,6 +28,7 @@ type alias Model =
     , spaces : List SpaceItem
     , users : List User
     , query : String
+    , owningOnly : Bool
     , loading : Bool
     }
 
@@ -40,6 +41,7 @@ type Msg
     | SpaceDetailResp (Result Http.Error SpaceDetail)
     | SetQuery String
     | InitNewSpace
+    | ToggleOwningOnly
 
 
 empty : Model
@@ -49,6 +51,7 @@ empty =
     , spaces = []
     , users = []
     , query = ""
+    , owningOnly = True
     , loading = False
     }
 
@@ -58,7 +61,7 @@ init flags =
     ( empty
     , Cmd.batch
         [ Api.getUsers flags UserListResp
-        , Api.getSpaces flags "" SpaceListResp
+        , Api.getSpaces flags empty.query empty.owningOnly SpaceListResp
         ]
     )
 
@@ -94,7 +97,7 @@ update flags msg model =
 
                         cmd =
                             if back then
-                                Api.getSpaces flags model.query SpaceListResp
+                                Api.getSpaces flags model.query model.owningOnly SpaceListResp
 
                             else
                                 Cmd.none
@@ -117,7 +120,18 @@ update flags msg model =
                     ( model, Cmd.none )
 
         SetQuery str ->
-            ( { model | query = str }, Api.getSpaces flags str SpaceListResp )
+            ( { model | query = str }
+            , Api.getSpaces flags str model.owningOnly SpaceListResp
+            )
+
+        ToggleOwningOnly ->
+            let
+                newOwning =
+                    not model.owningOnly
+            in
+            ( { model | owningOnly = newOwning }
+            , Api.getSpaces flags model.query newOwning SpaceListResp
+            )
 
         UserListResp (Ok ul) ->
             ( { model | users = ul.items }, Cmd.none )
@@ -185,6 +199,17 @@ viewTable model =
                         []
                     , i [ class "ui search icon" ]
                         []
+                    ]
+                ]
+            , div [ class "item" ]
+                [ div [ class "ui checkbox" ]
+                    [ input
+                        [ type_ "checkbox"
+                        , onCheck (\_ -> ToggleOwningOnly)
+                        , checked model.owningOnly
+                        ]
+                        []
+                    , label [] [ text "Show owning spaces only" ]
                     ]
                 ]
             , div [ class "right menu" ]

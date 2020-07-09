@@ -221,10 +221,19 @@ getSpaceDetail flags id receive =
         }
 
 
-getSpaces : Flags -> String -> (Result Http.Error SpaceList -> msg) -> Cmd msg
-getSpaces flags query receive =
+getSpaces : Flags -> String -> Bool -> (Result Http.Error SpaceList -> msg) -> Cmd msg
+getSpaces flags query owningOnly receive =
     Http2.authGet
-        { url = flags.config.baseUrl ++ "/api/v1/sec/space?q=" ++ Url.percentEncode query
+        { url =
+            flags.config.baseUrl
+                ++ "/api/v1/sec/space?q="
+                ++ Url.percentEncode query
+                ++ (if owningOnly then
+                        "&owning=true"
+
+                    else
+                        ""
+                   )
         , account = getAccount flags
         , expect = Http.expectJson receive Api.Model.SpaceList.decoder
         }

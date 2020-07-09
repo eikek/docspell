@@ -8,10 +8,10 @@ module Comp.SpaceTable exposing
     )
 
 import Api.Model.SpaceItem exposing (SpaceItem)
-import Api.Model.SpaceList exposing (SpaceList)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
+import Util.Html
 import Util.Time
 
 
@@ -48,6 +48,8 @@ view _ items =
                 [ th [ class "collapsing" ] []
                 , th [] [ text "Name" ]
                 , th [] [ text "Owner" ]
+                , th [] [ text "Owner or Member" ]
+                , th [] [ text "#Member" ]
                 , th [] [ text "Created" ]
                 ]
             , tbody []
@@ -74,6 +76,13 @@ viewItem item =
             ]
         , td []
             [ text item.owner.name
+            ]
+        , td []
+            [ Util.Html.checkbox item.isMember
+            ]
+        , td []
+            [ String.fromInt item.memberCount
+                |> text
             ]
         , td []
             [ Util.Time.formatDateShort item.created
