@@ -74,6 +74,7 @@ init =
                 \entry ->
                     { value = Data.Direction.toString entry
                     , text = Data.Direction.toString entry
+                    , additional = ""
                     }
             , options = Data.Direction.all
             , placeholder = "Choose a direction…"
@@ -83,25 +84,25 @@ init =
         Comp.Dropdown.makeModel
             { multiple = False
             , searchable = \n -> n > 5
-            , makeOption = \e -> { value = e.id, text = e.name }
+            , makeOption = \e -> { value = e.id, text = e.name, additional = "" }
             , labelColor = \_ -> \_ -> ""
             , placeholder = "Choose an organization"
             }
     , corrPersonModel =
         Comp.Dropdown.makeSingle
-            { makeOption = \e -> { value = e.id, text = e.name }
+            { makeOption = \e -> { value = e.id, text = e.name, additional = "" }
             , placeholder = "Choose a person"
             }
     , concPersonModel =
         Comp.Dropdown.makeSingle
-            { makeOption = \e -> { value = e.id, text = e.name }
+            { makeOption = \e -> { value = e.id, text = e.name, additional = "" }
             , placeholder = "Choose a person"
             }
     , concEquipmentModel =
         Comp.Dropdown.makeModel
             { multiple = False
             , searchable = \n -> n > 5
-            , makeOption = \e -> { value = e.id, text = e.name }
+            , makeOption = \e -> { value = e.id, text = e.name, additional = "" }
             , labelColor = \_ -> \_ -> ""
             , placeholder = "Choose an equipment"
             }
@@ -109,7 +110,7 @@ init =
         Comp.Dropdown.makeModel
             { multiple = False
             , searchable = \n -> n > 5
-            , makeOption = \e -> { value = e.id, text = e.name }
+            , makeOption = \e -> { value = e.id, text = e.name, additional = "" }
             , labelColor = \_ -> \_ -> ""
             , placeholder = "Only items in folder"
             }

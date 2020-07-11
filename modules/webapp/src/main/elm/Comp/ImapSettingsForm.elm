@@ -47,7 +47,12 @@ emptyModel =
     , password = Nothing
     , sslType =
         Comp.Dropdown.makeSingleList
-            { makeOption = \s -> { value = Data.SSLType.toString s, text = Data.SSLType.label s }
+            { makeOption =
+                \s ->
+                    { value = Data.SSLType.toString s
+                    , text = Data.SSLType.label s
+                    , additional = ""
+                    }
             , placeholder = ""
             , options = Data.SSLType.all
             , selected = Just Data.SSLType.None
@@ -68,7 +73,12 @@ init ems =
     , password = ems.imapPassword
     , sslType =
         Comp.Dropdown.makeSingleList
-            { makeOption = \s -> { value = Data.SSLType.toString s, text = Data.SSLType.label s }
+            { makeOption =
+                \s ->
+                    { value = Data.SSLType.toString s
+                    , text = Data.SSLType.label s
+                    , additional = ""
+                    }
             , placeholder = ""
             , options = Data.SSLType.all
             , selected =

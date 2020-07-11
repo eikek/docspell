@@ -61,7 +61,7 @@ emptyModel : Model
 emptyModel =
     { connectionModel =
         Comp.Dropdown.makeSingle
-            { makeOption = \a -> { value = a, text = a }
+            { makeOption = \a -> { value = a, text = a, additional = "" }
             , placeholder = "Select connection..."
             }
     , subject = ""
@@ -124,7 +124,7 @@ update flags msg model =
 
                 cm =
                     Comp.Dropdown.makeSingleList
-                        { makeOption = \a -> { value = a, text = a }
+                        { makeOption = \a -> { value = a, text = a, additional = "" }
                         , placeholder = "Select Connection..."
                         , options = names
                         , selected = List.head names

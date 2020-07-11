@@ -10,7 +10,7 @@ makeDropdownModel =
     Comp.Dropdown.makeModel
         { multiple = True
         , searchable = \n -> n > 5
-        , makeOption = \tag -> { value = tag.id, text = tag.name }
+        , makeOption = \tag -> { value = tag.id, text = tag.name, additional = "" }
         , labelColor =
             \tag ->
                 \settings ->

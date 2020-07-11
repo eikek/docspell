@@ -41,6 +41,7 @@ emptyModel =
                 \s ->
                     { value = Data.UserState.toString s
                     , text = Data.UserState.toString s
+                    , additional = ""
                     }
             , placeholder = ""
             , options = Data.UserState.all
@@ -98,7 +99,12 @@ update _ msg model =
             let
                 state =
                     Comp.Dropdown.makeSingleList
-                        { makeOption = \s -> { value = Data.UserState.toString s, text = Data.UserState.toString s }
+                        { makeOption =
+                            \s ->
+                                { value = Data.UserState.toString s
+                                , text = Data.UserState.toString s
+                                , additional = ""
+                                }
                         , placeholder = ""
                         , options = Data.UserState.all
                         , selected =
