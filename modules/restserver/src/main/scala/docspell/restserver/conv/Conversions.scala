@@ -110,9 +110,9 @@ trait Conversions {
 
   // item list
 
-  def mkQuery(m: ItemSearch, coll: Ident): OItemSearch.Query =
+  def mkQuery(m: ItemSearch, account: AccountId): OItemSearch.Query =
     OItemSearch.Query(
-      coll,
+      account,
       m.name,
       if (m.inbox) Seq(ItemState.Created)
       else ItemState.validStates.toList,

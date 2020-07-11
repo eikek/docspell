@@ -160,7 +160,7 @@ object QItem {
   )
 
   case class Query(
-      collective: Ident,
+      account: AccountId,
       name: Option[String],
       states: Seq[ItemState],
       direction: Option[Direction],
@@ -181,9 +181,9 @@ object QItem {
   )
 
   object Query {
-    def empty(collective: Ident): Query =
+    def empty(account: AccountId): Query =
       Query(
-        collective,
+        account,
         None,
         Seq.empty,
         None,
@@ -273,12 +273,12 @@ object QItem {
       ) ++ moreCols
     )
 
-    val withItem   = selectSimple(itemCols, RItem.table, IC.cid.is(q.collective))
-    val withPerson = selectSimple(personCols, RPerson.table, PC.cid.is(q.collective))
-    val withOrgs   = selectSimple(orgCols, ROrganization.table, OC.cid.is(q.collective))
-    val withEquips = selectSimple(equipCols, REquipment.table, EC.cid.is(q.collective))
+    val withItem   = selectSimple(itemCols, RItem.table, IC.cid.is(q.account.collective))
+    val withPerson = selectSimple(personCols, RPerson.table, PC.cid.is(q.account.collective))
+    val withOrgs   = selectSimple(orgCols, ROrganization.table, OC.cid.is(q.account.collective))
+    val withEquips = selectSimple(equipCols, REquipment.table, EC.cid.is(q.account.collective))
     val withFolder =
-      selectSimple(folderCols, RFolder.table, FC.collective.is(q.collective))
+      selectSimple(folderCols, RFolder.table, FC.collective.is(q.account.collective))
     val withAttach = fr"SELECT COUNT(" ++ AC.id.f ++ fr") as num, " ++ AC.itemId.f ++
       fr"from" ++ RAttachment.table ++ fr"GROUP BY (" ++ AC.itemId.f ++ fr")"
 
@@ -337,7 +337,7 @@ object QItem {
     val name     = q.name.map(_.toLowerCase).map(queryWildcard)
     val allNames = q.allNames.map(_.toLowerCase).map(queryWildcard)
     val cond = and(
-      IC.cid.prefix("i").is(q.collective),
+      IC.cid.prefix("i").is(q.account.collective),
       IC.state.prefix("i").isOneOf(q.states),
       IC.incoming.prefix("i").isOrDiscard(q.direction),
       name
@@ -476,7 +476,7 @@ object QItem {
       n  <- store.transact(RItem.deleteByIdAndCollective(itemId, collective))
     } yield tn + rn + n + mn
 
-  private def findByFileIdsQuery(fileMetaIds: NonEmptyList[Ident], limit: Option[Int]) = {
+  private def findByFileIdsQuery(fileMetaIds: NonEmptyList[Ident], limit: Option[Int]): Fragment = {
     val IC      = RItem.Columns.all.map(_.prefix("i"))
     val aItem   = RAttachment.Columns.itemId.prefix("a")
     val aId     = RAttachment.Columns.id.prefix("a")

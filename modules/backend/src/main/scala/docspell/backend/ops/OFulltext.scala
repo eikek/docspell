@@ -30,7 +30,7 @@ trait OFulltext[F[_]] {
 
   def findIndexOnly(
       fts: OFulltext.FtsInput,
-      collective: Ident,
+      account: AccountId,
       batch: Batch
   ): F[Vector[OFulltext.FtsItemWithTags]]
 
@@ -94,12 +94,12 @@ object OFulltext {
 
       def findIndexOnly(
           ftsQ: OFulltext.FtsInput,
-          collective: Ident,
+          account: AccountId,
           batch: Batch
       ): F[Vector[OFulltext.FtsItemWithTags]] = {
         val fq = FtsQuery(
           ftsQ.query,
-          collective,
+          account.collective,
           Set.empty,
           batch.limit,
           batch.offset,
@@ -113,8 +113,8 @@ object OFulltext {
             store
               .transact(
                 QItem.findItemsWithTags(
-                  collective,
-                  QItem.findSelectedItems(QItem.Query.empty(collective), select)
+                  account.collective,
+                  QItem.findSelectedItems(QItem.Query.empty(account), select)
                 )
               )
               .take(batch.limit.toLong)
@@ -182,7 +182,7 @@ object OFulltext {
         val sqlResult = search(q, batch)
         val fq = FtsQuery(
           ftsQ.query,
-          q.collective,
+          q.account.collective,
           Set.empty,
           0,
           0,
