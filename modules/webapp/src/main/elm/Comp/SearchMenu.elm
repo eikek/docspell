@@ -11,6 +11,7 @@ module Comp.SearchMenu exposing
 import Api
 import Api.Model.Equipment exposing (Equipment)
 import Api.Model.EquipmentList exposing (EquipmentList)
+import Api.Model.FolderList exposing (FolderList)
 import Api.Model.IdName exposing (IdName)
 import Api.Model.ItemSearch exposing (ItemSearch)
 import Api.Model.ReferenceList exposing (ReferenceList)
@@ -45,6 +46,7 @@ type alias Model =
     , corrPersonModel : Comp.Dropdown.Model IdName
     , concPersonModel : Comp.Dropdown.Model IdName
     , concEquipmentModel : Comp.Dropdown.Model Equipment
+    , folderModel : Comp.Dropdown.Model IdName
     , inboxCheckbox : Bool
     , fromDateModel : DatePicker
     , fromDate : Maybe Int
@@ -103,6 +105,14 @@ init =
             , labelColor = \_ -> \_ -> ""
             , placeholder = "Choose an equipment"
             }
+    , folderModel =
+        Comp.Dropdown.makeModel
+            { multiple = False
+            , searchable = \n -> n > 5
+            , makeOption = \e -> { value = e.id, text = e.name }
+            , labelColor = \_ -> \_ -> ""
+            , placeholder = "Only items in folder"
+            }
     , inboxCheckbox = False
     , fromDateModel = Comp.DatePicker.emptyModel
     , fromDate = Nothing
@@ -144,6 +154,8 @@ type Msg
     | ResetForm
     | KeyUpMsg (Maybe KeyCode)
     | ToggleNameHelp
+    | FolderMsg (Comp.Dropdown.Msg IdName)
+    | GetFolderResp (Result Http.Error FolderList)
 
 
 getDirection : Model -> Maybe Direction
@@ -184,6 +196,7 @@ getItemSearch model =
         , corrOrg = Comp.Dropdown.getSelected model.orgModel |> List.map .id |> List.head
         , concPerson = Comp.Dropdown.getSelected model.concPersonModel |> List.map .id |> List.head
         , concEquip = Comp.Dropdown.getSelected model.concEquipmentModel |> List.map .id |> List.head
+        , folder = Comp.Dropdown.getSelected model.folderModel |> List.map .id |> List.head
         , direction = Comp.Dropdown.getSelected model.directionModel |> List.head |> Maybe.map Data.Direction.toString
         , inbox = model.inboxCheckbox
         , dateFrom = model.fromDate
@@ -250,6 +263,7 @@ update flags settings msg model =
                     , Api.getOrgLight flags GetOrgResp
                     , Api.getEquipments flags "" GetEquipResp
                     , Api.getPersonsLight flags GetPersonResp
+                    , Api.getFolders flags "" False GetFolderResp
                     , cdp
                     ]
                 )
@@ -513,6 +527,29 @@ update flags settings msg model =
         ToggleNameHelp ->
             NextState ( { model | showNameHelp = not model.showNameHelp }, Cmd.none ) False
 
+        GetFolderResp (Ok fs) ->
+            let
+                opts =
+                    List.filter .isMember fs.items
+                        |> List.map (\e -> IdName e.id e.name)
+                        |> Comp.Dropdown.SetOptions
+            in
+            update flags settings (FolderMsg opts) model
+
+        GetFolderResp (Err _) ->
+            noChange ( model, Cmd.none )
+
+        FolderMsg lm ->
+            let
+                ( m2, c2 ) =
+                    Comp.Dropdown.update lm model.folderModel
+            in
+            NextState
+                ( { model | folderModel = m2 }
+                , Cmd.map FolderMsg c2
+                )
+                (isDropdownChangeMsg lm)
+
 
 
 -- View
@@ -628,6 +665,11 @@ view flags settings model =
                 ]
                 [ text "Looks in item name only."
                 ]
+            ]
+        , formHeader (Icons.folderIcon "") "Folder"
+        , div [ class "field" ]
+            [ label [] [ text "Folder" ]
+            , Html.map FolderMsg (Comp.Dropdown.view settings model.folderModel)
             ]
         , formHeader (Icons.tagsIcon "") "Tags"
         , div [ class "field" ]

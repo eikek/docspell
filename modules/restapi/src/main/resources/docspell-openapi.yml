@@ -3776,6 +3776,9 @@ components:
         concEquip:
           type: string
           format: ident
+        folder:
+          type: string
+          format: ident
         dateFrom:
           type: integer
           format: date-time
@@ -3828,6 +3831,8 @@ components:
         concPerson:
           $ref: "#/components/schemas/IdName"
         concEquip:
+          $ref: "#/components/schemas/IdName"
+        folder:
           $ref: "#/components/schemas/IdName"
         fileCount:
           type: integer

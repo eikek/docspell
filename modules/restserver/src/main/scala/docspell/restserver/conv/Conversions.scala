@@ -121,6 +121,7 @@ trait Conversions {
       m.corrOrg,
       m.concPerson,
       m.concEquip,
+      m.folder,
       m.tagsInclude.map(Ident.unsafe),
       m.tagsExclude.map(Ident.unsafe),
       m.dateFrom,
@@ -193,6 +194,7 @@ trait Conversions {
       i.corrPerson.map(mkIdName),
       i.concPerson.map(mkIdName),
       i.concEquip.map(mkIdName),
+      i.folder.map(mkIdName),
       i.fileCount,
       Nil,
       Nil

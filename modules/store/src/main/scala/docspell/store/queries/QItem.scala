@@ -155,7 +155,8 @@ object QItem {
       corrOrg: Option[IdRef],
       corrPerson: Option[IdRef],
       concPerson: Option[IdRef],
-      concEquip: Option[IdRef]
+      concEquip: Option[IdRef],
+      folder: Option[IdRef]
   )
 
   case class Query(
@@ -167,6 +168,7 @@ object QItem {
       corrOrg: Option[Ident],
       concPerson: Option[Ident],
       concEquip: Option[Ident],
+      folder: Option[Ident],
       tagsInclude: List[Ident],
       tagsExclude: List[Ident],
       dateFrom: Option[Timestamp],
@@ -184,6 +186,7 @@ object QItem {
         collective,
         None,
         Seq.empty,
+        None,
         None,
         None,
         None,
@@ -233,10 +236,12 @@ object QItem {
     val PC         = RPerson.Columns
     val OC         = ROrganization.Columns
     val EC         = REquipment.Columns
+    val FC         = RFolder.Columns
     val itemCols   = IC.all
-    val personCols = List(RPerson.Columns.pid, RPerson.Columns.name)
-    val orgCols    = List(ROrganization.Columns.oid, ROrganization.Columns.name)
-    val equipCols  = List(REquipment.Columns.eid, REquipment.Columns.name)
+    val personCols = List(PC.pid, PC.name)
+    val orgCols    = List(OC.oid, OC.name)
+    val equipCols  = List(EC.eid, EC.name)
+    val folderCols = List(FC.id, FC.name)
 
     val finalCols = commas(
       Seq(
@@ -257,6 +262,8 @@ object QItem {
         PC.name.prefix("p1").f,
         EC.eid.prefix("e1").f,
         EC.name.prefix("e1").f,
+        FC.id.prefix("f1").f,
+        FC.name.prefix("f1").f,
         q.orderAsc match {
           case Some(co) =>
             coalesce(co(IC).prefix("i").f, IC.created.prefix("i").f)
@@ -270,6 +277,8 @@ object QItem {
     val withPerson = selectSimple(personCols, RPerson.table, PC.cid.is(q.collective))
     val withOrgs   = selectSimple(orgCols, ROrganization.table, OC.cid.is(q.collective))
     val withEquips = selectSimple(equipCols, REquipment.table, EC.cid.is(q.collective))
+    val withFolder =
+      selectSimple(folderCols, RFolder.table, FC.collective.is(q.collective))
     val withAttach = fr"SELECT COUNT(" ++ AC.id.f ++ fr") as num, " ++ AC.itemId.f ++
       fr"from" ++ RAttachment.table ++ fr"GROUP BY (" ++ AC.itemId.f ++ fr")"
 
@@ -280,7 +289,8 @@ object QItem {
         "persons" -> withPerson,
         "orgs"    -> withOrgs,
         "equips"  -> withEquips,
-        "attachs" -> withAttach
+        "attachs" -> withAttach,
+        "folders" -> withFolder
       ) ++ ctes): _*
     ) ++
       selectKW ++ finalCols ++ fr" FROM items i" ++
@@ -288,7 +298,10 @@ object QItem {
       fr"LEFT JOIN persons p0 ON" ++ IC.corrPerson.prefix("i").is(PC.pid.prefix("p0")) ++
       fr"LEFT JOIN orgs o0 ON" ++ IC.corrOrg.prefix("i").is(OC.oid.prefix("o0")) ++
       fr"LEFT JOIN persons p1 ON" ++ IC.concPerson.prefix("i").is(PC.pid.prefix("p1")) ++
-      fr"LEFT JOIN equips e1 ON" ++ IC.concEquipment.prefix("i").is(EC.eid.prefix("e1"))
+      fr"LEFT JOIN equips e1 ON" ++ IC.concEquipment
+      .prefix("i")
+      .is(EC.eid.prefix("e1")) ++
+      fr"LEFT JOIN folders f1 ON" ++ IC.folder.prefix("i").is(FC.id.prefix("f1"))
     query
   }
 
@@ -346,6 +359,7 @@ object QItem {
       ROrganization.Columns.oid.prefix("o0").isOrDiscard(q.corrOrg),
       RPerson.Columns.pid.prefix("p1").isOrDiscard(q.concPerson),
       REquipment.Columns.eid.prefix("e1").isOrDiscard(q.concEquip),
+      RFolder.Columns.id.prefix("f1").isOrDiscard(q.folder),
       if (q.tagsInclude.isEmpty) Fragment.empty
       else
         IC.id.prefix("i") ++ sql" IN (" ++ tagSelectsIncl
