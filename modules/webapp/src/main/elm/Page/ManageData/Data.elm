@@ -6,9 +6,9 @@ module Page.ManageData.Data exposing
     )
 
 import Comp.EquipmentManage
+import Comp.FolderManage
 import Comp.OrgManage
 import Comp.PersonManage
-import Comp.SpaceManage
 import Comp.TagManage
 import Data.Flags exposing (Flags)
 
@@ -19,7 +19,7 @@ type alias Model =
     , equipManageModel : Comp.EquipmentManage.Model
     , orgManageModel : Comp.OrgManage.Model
     , personManageModel : Comp.PersonManage.Model
-    , spaceManageModel : Comp.SpaceManage.Model
+    , folderManageModel : Comp.FolderManage.Model
     }
 
 
@@ -30,7 +30,7 @@ init _ =
       , equipManageModel = Comp.EquipmentManage.emptyModel
       , orgManageModel = Comp.OrgManage.emptyModel
       , personManageModel = Comp.PersonManage.emptyModel
-      , spaceManageModel = Comp.SpaceManage.empty
+      , folderManageModel = Comp.FolderManage.empty
       }
     , Cmd.none
     )
@@ -41,7 +41,7 @@ type Tab
     | EquipTab
     | OrgTab
     | PersonTab
-    | SpaceTab
+    | FolderTab
 
 
 type Msg
@@ -50,4 +50,4 @@ type Msg
     | EquipManageMsg Comp.EquipmentManage.Msg
     | OrgManageMsg Comp.OrgManage.Msg
     | PersonManageMsg Comp.PersonManage.Msg
-    | SpaceMsg Comp.SpaceManage.Msg
+    | FolderMsg Comp.FolderManage.Msg

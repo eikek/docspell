@@ -15,12 +15,12 @@ module Data.Icons exposing
     , editNotesIcon
     , equipment
     , equipmentIcon
+    , folder
+    , folderIcon
     , organization
     , organizationIcon
     , person
     , personIcon
-    , space
-    , spaceIcon
     , tag
     , tagIcon
     , tags
@@ -31,14 +31,14 @@ import Html exposing (Html, i)
 import Html.Attributes exposing (class)
 
 
-space : String
-space =
+folder : String
+folder =
     "folder outline icon"
 
 
-spaceIcon : String -> Html msg
-spaceIcon classes =
-    i [ class (space ++ " " ++ classes) ] []
+folderIcon : String -> Html msg
+folderIcon classes =
+    i [ class (folder ++ " " ++ classes) ] []
 
 
 concerned : String

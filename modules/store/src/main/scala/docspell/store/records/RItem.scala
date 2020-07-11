@@ -28,7 +28,7 @@ case class RItem(
     created: Timestamp,
     updated: Timestamp,
     notes: Option[String],
-    spaceId: Option[Ident]
+    folderId: Option[Ident]
 ) {}
 
 object RItem {
@@ -82,7 +82,7 @@ object RItem {
     val created       = Column("created")
     val updated       = Column("updated")
     val notes         = Column("notes")
-    val space         = Column("space_id")
+    val folder         = Column("folder_id")
     val all = List(
       id,
       cid,
@@ -100,7 +100,7 @@ object RItem {
       created,
       updated,
       notes,
-      space
+      folder
     )
   }
   import Columns._
@@ -111,7 +111,7 @@ object RItem {
       all,
       fr"${v.id},${v.cid},${v.name},${v.itemDate},${v.source},${v.direction},${v.state}," ++
         fr"${v.corrOrg},${v.corrPerson},${v.concPerson},${v.concEquipment},${v.inReplyTo},${v.dueDate}," ++
-        fr"${v.created},${v.updated},${v.notes},${v.spaceId}"
+        fr"${v.created},${v.updated},${v.notes},${v.folderId}"
     ).update.run
 
   def getCollective(itemId: Ident): ConnectionIO[Option[Ident]] =
@@ -300,8 +300,8 @@ object RItem {
   def findByIdAndCollective(itemId: Ident, coll: Ident): ConnectionIO[Option[RItem]] =
     selectSimple(all, table, and(id.is(itemId), cid.is(coll))).query[RItem].option
 
-  def removeSpace(spaceId: Ident): ConnectionIO[Int] = {
+  def removeFolder(folderId: Ident): ConnectionIO[Int] = {
     val empty: Option[Ident] = None
-    updateRow(table, space.is(spaceId), space.setTo(empty)).update.run
+    updateRow(table, folder.is(folderId), folder.setTo(empty)).update.run
   }
 }

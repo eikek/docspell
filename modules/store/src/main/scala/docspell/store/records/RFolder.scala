@@ -9,7 +9,7 @@ import docspell.store.impl.Implicits._
 import doobie._
 import doobie.implicits._
 
-case class RSpace(
+case class RFolder(
     id: Ident,
     name: String,
     collectiveId: Ident,
@@ -17,15 +17,15 @@ case class RSpace(
     created: Timestamp
 )
 
-object RSpace {
+object RFolder {
 
-  def newSpace[F[_]: Sync](name: String, account: AccountId): F[RSpace] =
+  def newFolder[F[_]: Sync](name: String, account: AccountId): F[RFolder] =
     for {
       nId <- Ident.randomId[F]
       now <- Timestamp.current[F]
-    } yield RSpace(nId, name, account.collective, account.user, now)
+    } yield RFolder(nId, name, account.collective, account.user, now)
 
-  val table = fr"space"
+  val table = fr"folder"
 
   object Columns {
 
@@ -40,7 +40,7 @@ object RSpace {
 
   import Columns._
 
-  def insert(value: RSpace): ConnectionIO[Int] = {
+  def insert(value: RFolder): ConnectionIO[Int] = {
     val sql = insertRow(
       table,
       all,
@@ -49,37 +49,37 @@ object RSpace {
     sql.update.run
   }
 
-  def update(v: RSpace): ConnectionIO[Int] =
+  def update(v: RFolder): ConnectionIO[Int] =
     updateRow(
       table,
       and(id.is(v.id), collective.is(v.collectiveId), owner.is(v.owner)),
       name.setTo(v.name)
     ).update.run
 
-  def existsByName(coll: Ident, spaceName: String): ConnectionIO[Boolean] =
-    selectCount(id, table, and(collective.is(coll), name.is(spaceName)))
+  def existsByName(coll: Ident, folderName: String): ConnectionIO[Boolean] =
+    selectCount(id, table, and(collective.is(coll), name.is(folderName)))
       .query[Int]
       .unique
       .map(_ > 0)
 
-  def findById(spaceId: Ident): ConnectionIO[Option[RSpace]] = {
-    val sql = selectSimple(all, table, id.is(spaceId))
-    sql.query[RSpace].option
+  def findById(folderId: Ident): ConnectionIO[Option[RFolder]] = {
+    val sql = selectSimple(all, table, id.is(folderId))
+    sql.query[RFolder].option
   }
 
   def findAll(
       coll: Ident,
       nameQ: Option[String],
       order: Columns.type => Column
-  ): ConnectionIO[Vector[RSpace]] = {
+  ): ConnectionIO[Vector[RFolder]] = {
     val q = Seq(collective.is(coll)) ++ (nameQ match {
       case Some(str) => Seq(name.lowerLike(s"%${str.toLowerCase}%"))
       case None      => Seq.empty
     })
     val sql = selectSimple(all, table, and(q)) ++ orderBy(order(Columns).f)
-    sql.query[RSpace].to[Vector]
+    sql.query[RFolder].to[Vector]
   }
 
-  def delete(spaceId: Ident): ConnectionIO[Int] =
-    deleteFrom(table, id.is(spaceId)).update.run
+  def delete(folderId: Ident): ConnectionIO[Int] =
+    deleteFrom(table, id.is(folderId)).update.run
 }

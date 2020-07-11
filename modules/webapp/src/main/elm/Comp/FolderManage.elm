@@ -1,4 +1,4 @@
-module Comp.SpaceManage exposing
+module Comp.FolderManage exposing
     ( Model
     , Msg
     , empty
@@ -8,13 +8,13 @@ module Comp.SpaceManage exposing
     )
 
 import Api
-import Api.Model.SpaceDetail exposing (SpaceDetail)
-import Api.Model.SpaceItem exposing (SpaceItem)
-import Api.Model.SpaceList exposing (SpaceList)
+import Api.Model.FolderDetail exposing (FolderDetail)
+import Api.Model.FolderItem exposing (FolderItem)
+import Api.Model.FolderList exposing (FolderList)
 import Api.Model.User exposing (User)
 import Api.Model.UserList exposing (UserList)
-import Comp.SpaceDetail
-import Comp.SpaceTable
+import Comp.FolderDetail
+import Comp.FolderTable
 import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -23,9 +23,9 @@ import Http
 
 
 type alias Model =
-    { tableModel : Comp.SpaceTable.Model
-    , detailModel : Maybe Comp.SpaceDetail.Model
-    , spaces : List SpaceItem
+    { tableModel : Comp.FolderTable.Model
+    , detailModel : Maybe Comp.FolderDetail.Model
+    , folders : List FolderItem
     , users : List User
     , query : String
     , owningOnly : Bool
@@ -34,21 +34,21 @@ type alias Model =
 
 
 type Msg
-    = TableMsg Comp.SpaceTable.Msg
-    | DetailMsg Comp.SpaceDetail.Msg
+    = TableMsg Comp.FolderTable.Msg
+    | DetailMsg Comp.FolderDetail.Msg
     | UserListResp (Result Http.Error UserList)
-    | SpaceListResp (Result Http.Error SpaceList)
-    | SpaceDetailResp (Result Http.Error SpaceDetail)
+    | FolderListResp (Result Http.Error FolderList)
+    | FolderDetailResp (Result Http.Error FolderDetail)
     | SetQuery String
-    | InitNewSpace
+    | InitNewFolder
     | ToggleOwningOnly
 
 
 empty : Model
 empty =
-    { tableModel = Comp.SpaceTable.init
+    { tableModel = Comp.FolderTable.init
     , detailModel = Nothing
-    , spaces = []
+    , folders = []
     , users = []
     , query = ""
     , owningOnly = True
@@ -61,7 +61,7 @@ init flags =
     ( empty
     , Cmd.batch
         [ Api.getUsers flags UserListResp
-        , Api.getSpaces flags empty.query empty.owningOnly SpaceListResp
+        , Api.getFolders flags empty.query empty.owningOnly FolderListResp
         ]
     )
 
@@ -76,14 +76,14 @@ update flags msg model =
         TableMsg lm ->
             let
                 ( tm, action ) =
-                    Comp.SpaceTable.update lm model.tableModel
+                    Comp.FolderTable.update lm model.tableModel
 
                 cmd =
                     case action of
-                        Comp.SpaceTable.EditAction item ->
-                            Api.getSpaceDetail flags item.id SpaceDetailResp
+                        Comp.FolderTable.EditAction item ->
+                            Api.getFolderDetail flags item.id FolderDetailResp
 
-                        Comp.SpaceTable.NoAction ->
+                        Comp.FolderTable.NoAction ->
                             Cmd.none
             in
             ( { model | tableModel = tm }, cmd )
@@ -93,11 +93,11 @@ update flags msg model =
                 Just detail ->
                     let
                         ( dm, dc, back ) =
-                            Comp.SpaceDetail.update flags lm detail
+                            Comp.FolderDetail.update flags lm detail
 
                         cmd =
                             if back then
-                                Api.getSpaces flags model.query model.owningOnly SpaceListResp
+                                Api.getFolders flags model.query model.owningOnly FolderListResp
 
                             else
                                 Cmd.none
@@ -121,7 +121,7 @@ update flags msg model =
 
         SetQuery str ->
             ( { model | query = str }
-            , Api.getSpaces flags str model.owningOnly SpaceListResp
+            , Api.getFolders flags str model.owningOnly FolderListResp
             )
 
         ToggleOwningOnly ->
@@ -130,7 +130,7 @@ update flags msg model =
                     not model.owningOnly
             in
             ( { model | owningOnly = newOwning }
-            , Api.getSpaces flags model.query newOwning SpaceListResp
+            , Api.getFolders flags model.query newOwning FolderListResp
             )
 
         UserListResp (Ok ul) ->
@@ -139,24 +139,24 @@ update flags msg model =
         UserListResp (Err err) ->
             ( model, Cmd.none )
 
-        SpaceListResp (Ok sl) ->
-            ( { model | spaces = sl.items }, Cmd.none )
+        FolderListResp (Ok sl) ->
+            ( { model | folders = sl.items }, Cmd.none )
 
-        SpaceListResp (Err err) ->
+        FolderListResp (Err err) ->
             ( model, Cmd.none )
 
-        SpaceDetailResp (Ok sd) ->
-            ( { model | detailModel = Comp.SpaceDetail.init model.users sd |> Just }
+        FolderDetailResp (Ok sd) ->
+            ( { model | detailModel = Comp.FolderDetail.init model.users sd |> Just }
             , Cmd.none
             )
 
-        SpaceDetailResp (Err err) ->
+        FolderDetailResp (Err err) ->
             ( model, Cmd.none )
 
-        InitNewSpace ->
+        InitNewFolder ->
             let
                 sd =
-                    Comp.SpaceDetail.initEmpty model.users
+                    Comp.FolderDetail.initEmpty model.users
             in
             ( { model | detailModel = Just sd }
             , Cmd.none
@@ -177,10 +177,10 @@ view flags model =
             viewTable model
 
 
-viewDetail : Flags -> Comp.SpaceDetail.Model -> Html Msg
+viewDetail : Flags -> Comp.FolderDetail.Model -> Html Msg
 viewDetail flags detailModel =
     div []
-        [ Html.map DetailMsg (Comp.SpaceDetail.view flags detailModel)
+        [ Html.map DetailMsg (Comp.FolderDetail.view flags detailModel)
         ]
 
 
@@ -209,7 +209,7 @@ viewTable model =
                         , checked model.owningOnly
                         ]
                         []
-                    , label [] [ text "Show owning spaces only" ]
+                    , label [] [ text "Show owning folders only" ]
                     ]
                 ]
             , div [ class "right menu" ]
@@ -217,15 +217,15 @@ viewTable model =
                     [ a
                         [ class "ui primary button"
                         , href "#"
-                        , onClick InitNewSpace
+                        , onClick InitNewFolder
                         ]
                         [ i [ class "plus icon" ] []
-                        , text "New Space"
+                        , text "New Folder"
                         ]
                     ]
                 ]
             ]
-        , Html.map TableMsg (Comp.SpaceTable.view model.tableModel model.spaces)
+        , Html.map TableMsg (Comp.FolderTable.view model.tableModel model.folders)
         , div
             [ classList
                 [ ( "ui dimmer", True )

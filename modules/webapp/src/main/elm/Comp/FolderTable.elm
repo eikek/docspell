@@ -1,4 +1,4 @@
-module Comp.SpaceTable exposing
+module Comp.FolderTable exposing
     ( Action(..)
     , Model
     , Msg
@@ -7,7 +7,7 @@ module Comp.SpaceTable exposing
     , view
     )
 
-import Api.Model.SpaceItem exposing (SpaceItem)
+import Api.Model.FolderItem exposing (FolderItem)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
@@ -20,12 +20,12 @@ type alias Model =
 
 
 type Msg
-    = EditItem SpaceItem
+    = EditItem FolderItem
 
 
 type Action
     = NoAction
-    | EditAction SpaceItem
+    | EditAction FolderItem
 
 
 init : Model
@@ -40,7 +40,7 @@ update msg model =
             ( model, EditAction item )
 
 
-view : Model -> List SpaceItem -> Html Msg
+view : Model -> List FolderItem -> Html Msg
 view _ items =
     div []
         [ table [ class "ui very basic center aligned table" ]
@@ -58,7 +58,7 @@ view _ items =
         ]
 
 
-viewItem : SpaceItem -> Html Msg
+viewItem : FolderItem -> Html Msg
 viewItem item =
     tr []
         [ td [ class "collapsing" ]

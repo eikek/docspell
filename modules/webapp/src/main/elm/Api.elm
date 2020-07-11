@@ -6,16 +6,17 @@ module Api exposing
     , addMember
     , addTag
     , cancelJob
+    , changeFolderName
     , changePassword
-    , changeSpaceName
     , checkCalEvent
     , createImapSettings
     , createMailSettings
-    , createNewSpace
+    , createNewFolder
     , createNotifyDueItems
     , createScanMailbox
     , deleteAttachment
     , deleteEquip
+    , deleteFolder
     , deleteImapSettings
     , deleteItem
     , deleteMailSettings
@@ -24,7 +25,6 @@ module Api exposing
     , deletePerson
     , deleteScanMailbox
     , deleteSource
-    , deleteSpace
     , deleteTag
     , deleteUser
     , getAttachmentMeta
@@ -32,6 +32,8 @@ module Api exposing
     , getCollectiveSettings
     , getContacts
     , getEquipments
+    , getFolderDetail
+    , getFolders
     , getImapSettings
     , getInsights
     , getItemProposals
@@ -46,8 +48,6 @@ module Api exposing
     , getScanMailbox
     , getSentMails
     , getSources
-    , getSpaceDetail
-    , getSpaces
     , getTags
     , getUsers
     , itemDetail
@@ -108,6 +108,8 @@ import Api.Model.EmailSettings exposing (EmailSettings)
 import Api.Model.EmailSettingsList exposing (EmailSettingsList)
 import Api.Model.Equipment exposing (Equipment)
 import Api.Model.EquipmentList exposing (EquipmentList)
+import Api.Model.FolderDetail exposing (FolderDetail)
+import Api.Model.FolderList exposing (FolderList)
 import Api.Model.GenInvite exposing (GenInvite)
 import Api.Model.IdResult exposing (IdResult)
 import Api.Model.ImapSettings exposing (ImapSettings)
@@ -122,7 +124,7 @@ import Api.Model.ItemSearch exposing (ItemSearch)
 import Api.Model.ItemUploadMeta exposing (ItemUploadMeta)
 import Api.Model.JobQueueState exposing (JobQueueState)
 import Api.Model.MoveAttachment exposing (MoveAttachment)
-import Api.Model.NewSpace exposing (NewSpace)
+import Api.Model.NewFolder exposing (NewFolder)
 import Api.Model.NotificationSettings exposing (NotificationSettings)
 import Api.Model.NotificationSettingsList exposing (NotificationSettingsList)
 import Api.Model.OptionalDate exposing (OptionalDate)
@@ -141,8 +143,6 @@ import Api.Model.SentMails exposing (SentMails)
 import Api.Model.SimpleMail exposing (SimpleMail)
 import Api.Model.Source exposing (Source)
 import Api.Model.SourceList exposing (SourceList)
-import Api.Model.SpaceDetail exposing (SpaceDetail)
-import Api.Model.SpaceList exposing (SpaceList)
 import Api.Model.Tag exposing (Tag)
 import Api.Model.TagList exposing (TagList)
 import Api.Model.User exposing (User)
@@ -161,13 +161,13 @@ import Util.Http as Http2
 
 
 
---- Spaces
+--- Folders
 
 
-deleteSpace : Flags -> String -> (Result Http.Error BasicResult -> msg) -> Cmd msg
-deleteSpace flags id receive =
+deleteFolder : Flags -> String -> (Result Http.Error BasicResult -> msg) -> Cmd msg
+deleteFolder flags id receive =
     Http2.authDelete
-        { url = flags.config.baseUrl ++ "/api/v1/sec/space/" ++ id
+        { url = flags.config.baseUrl ++ "/api/v1/sec/folder/" ++ id
         , account = getAccount flags
         , expect = Http.expectJson receive Api.Model.BasicResult.decoder
         }
@@ -176,7 +176,7 @@ deleteSpace flags id receive =
 removeMember : Flags -> String -> String -> (Result Http.Error BasicResult -> msg) -> Cmd msg
 removeMember flags id user receive =
     Http2.authDelete
-        { url = flags.config.baseUrl ++ "/api/v1/sec/space/" ++ id ++ "/member/" ++ user
+        { url = flags.config.baseUrl ++ "/api/v1/sec/folder/" ++ id ++ "/member/" ++ user
         , account = getAccount flags
         , expect = Http.expectJson receive Api.Model.BasicResult.decoder
         }
@@ -185,48 +185,48 @@ removeMember flags id user receive =
 addMember : Flags -> String -> String -> (Result Http.Error BasicResult -> msg) -> Cmd msg
 addMember flags id user receive =
     Http2.authPut
-        { url = flags.config.baseUrl ++ "/api/v1/sec/space/" ++ id ++ "/member/" ++ user
+        { url = flags.config.baseUrl ++ "/api/v1/sec/folder/" ++ id ++ "/member/" ++ user
         , account = getAccount flags
         , body = Http.emptyBody
         , expect = Http.expectJson receive Api.Model.BasicResult.decoder
         }
 
 
-changeSpaceName : Flags -> String -> NewSpace -> (Result Http.Error BasicResult -> msg) -> Cmd msg
-changeSpaceName flags id ns receive =
+changeFolderName : Flags -> String -> NewFolder -> (Result Http.Error BasicResult -> msg) -> Cmd msg
+changeFolderName flags id ns receive =
     Http2.authPut
-        { url = flags.config.baseUrl ++ "/api/v1/sec/space/" ++ id
+        { url = flags.config.baseUrl ++ "/api/v1/sec/folder/" ++ id
         , account = getAccount flags
-        , body = Http.jsonBody (Api.Model.NewSpace.encode ns)
+        , body = Http.jsonBody (Api.Model.NewFolder.encode ns)
         , expect = Http.expectJson receive Api.Model.BasicResult.decoder
         }
 
 
-createNewSpace : Flags -> NewSpace -> (Result Http.Error IdResult -> msg) -> Cmd msg
-createNewSpace flags ns receive =
+createNewFolder : Flags -> NewFolder -> (Result Http.Error IdResult -> msg) -> Cmd msg
+createNewFolder flags ns receive =
     Http2.authPost
-        { url = flags.config.baseUrl ++ "/api/v1/sec/space"
+        { url = flags.config.baseUrl ++ "/api/v1/sec/folder"
         , account = getAccount flags
-        , body = Http.jsonBody (Api.Model.NewSpace.encode ns)
+        , body = Http.jsonBody (Api.Model.NewFolder.encode ns)
         , expect = Http.expectJson receive Api.Model.IdResult.decoder
         }
 
 
-getSpaceDetail : Flags -> String -> (Result Http.Error SpaceDetail -> msg) -> Cmd msg
-getSpaceDetail flags id receive =
+getFolderDetail : Flags -> String -> (Result Http.Error FolderDetail -> msg) -> Cmd msg
+getFolderDetail flags id receive =
     Http2.authGet
-        { url = flags.config.baseUrl ++ "/api/v1/sec/space/" ++ id
+        { url = flags.config.baseUrl ++ "/api/v1/sec/folder/" ++ id
         , account = getAccount flags
-        , expect = Http.expectJson receive Api.Model.SpaceDetail.decoder
+        , expect = Http.expectJson receive Api.Model.FolderDetail.decoder
         }
 
 
-getSpaces : Flags -> String -> Bool -> (Result Http.Error SpaceList -> msg) -> Cmd msg
-getSpaces flags query owningOnly receive =
+getFolders : Flags -> String -> Bool -> (Result Http.Error FolderList -> msg) -> Cmd msg
+getFolders flags query owningOnly receive =
     Http2.authGet
         { url =
             flags.config.baseUrl
-                ++ "/api/v1/sec/space?q="
+                ++ "/api/v1/sec/folder?q="
                 ++ Url.percentEncode query
                 ++ (if owningOnly then
                         "&owning=true"
@@ -235,7 +235,7 @@ getSpaces flags query owningOnly receive =
                         ""
                    )
         , account = getAccount flags
-        , expect = Http.expectJson receive Api.Model.SpaceList.decoder
+        , expect = Http.expectJson receive Api.Model.FolderList.decoder
         }
 
 

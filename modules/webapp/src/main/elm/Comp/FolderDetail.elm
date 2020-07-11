@@ -1,4 +1,4 @@
-module Comp.SpaceDetail exposing
+module Comp.FolderDetail exposing
     ( Model
     , Msg
     , init
@@ -9,10 +9,10 @@ module Comp.SpaceDetail exposing
 
 import Api
 import Api.Model.BasicResult exposing (BasicResult)
+import Api.Model.FolderDetail exposing (FolderDetail)
 import Api.Model.IdName exposing (IdName)
 import Api.Model.IdResult exposing (IdResult)
-import Api.Model.NewSpace exposing (NewSpace)
-import Api.Model.SpaceDetail exposing (SpaceDetail)
+import Api.Model.NewFolder exposing (NewFolder)
 import Api.Model.User exposing (User)
 import Api.Model.UserList exposing (UserList)
 import Comp.FixedDropdown
@@ -28,7 +28,7 @@ import Util.Maybe
 
 type alias Model =
     { result : Maybe BasicResult
-    , space : SpaceDetail
+    , folder : FolderDetail
     , name : Maybe String
     , members : List IdName
     , users : List User
@@ -43,10 +43,10 @@ type Msg
     = SetName String
     | MemberDropdownMsg (Comp.FixedDropdown.Msg IdName)
     | SaveName
-    | NewSpaceResp (Result Http.Error IdResult)
-    | ChangeSpaceResp (Result Http.Error BasicResult)
+    | NewFolderResp (Result Http.Error IdResult)
+    | ChangeFolderResp (Result Http.Error BasicResult)
     | ChangeNameResp (Result Http.Error BasicResult)
-    | SpaceDetailResp (Result Http.Error SpaceDetail)
+    | FolderDetailResp (Result Http.Error FolderDetail)
     | AddMember
     | RemoveMember IdName
     | RequestDelete
@@ -55,16 +55,16 @@ type Msg
     | GoBack
 
 
-init : List User -> SpaceDetail -> Model
-init users space =
+init : List User -> FolderDetail -> Model
+init users folder =
     { result = Nothing
-    , space = space
-    , name = Util.Maybe.fromString space.name
-    , members = space.members
+    , folder = folder
+    , name = Util.Maybe.fromString folder.name
+    , members = folder.members
     , users = users
     , memberDropdown =
         Comp.FixedDropdown.initMap .name
-            (makeOptions users space)
+            (makeOptions users folder)
     , selectedMember = Nothing
     , loading = False
     , deleteDimmer = Comp.YesNoDimmer.emptyModel
@@ -73,17 +73,17 @@ init users space =
 
 initEmpty : List User -> Model
 initEmpty users =
-    init users Api.Model.SpaceDetail.empty
+    init users Api.Model.FolderDetail.empty
 
 
-makeOptions : List User -> SpaceDetail -> List IdName
-makeOptions users space =
+makeOptions : List User -> FolderDetail -> List IdName
+makeOptions users folder =
     let
         toIdName u =
             IdName u.id u.login
 
         notMember idn =
-            List.member idn (space.owner :: space.members) |> not
+            List.member idn (folder.owner :: folder.members) |> not
     in
     List.map toIdName users
         |> List.filter notMember
@@ -129,13 +129,13 @@ update flags msg model =
                 Just name ->
                     let
                         cmd =
-                            if model.space.id == "" then
-                                Api.createNewSpace flags (NewSpace name) NewSpaceResp
+                            if model.folder.id == "" then
+                                Api.createNewFolder flags (NewFolder name) NewFolderResp
 
                             else
-                                Api.changeSpaceName flags
-                                    model.space.id
-                                    (NewSpace name)
+                                Api.changeFolderName flags
+                                    model.folder.id
+                                    (NewFolder name)
                                     ChangeNameResp
                     in
                     ( { model
@@ -149,9 +149,9 @@ update flags msg model =
                 Nothing ->
                     ( model, Cmd.none, False )
 
-        NewSpaceResp (Ok ir) ->
+        NewFolderResp (Ok ir) ->
             if ir.success then
-                ( model, Api.getSpaceDetail flags ir.id SpaceDetailResp, False )
+                ( model, Api.getFolderDetail flags ir.id FolderDetailResp, False )
 
             else
                 ( { model
@@ -162,7 +162,7 @@ update flags msg model =
                 , False
                 )
 
-        NewSpaceResp (Err err) ->
+        NewFolderResp (Err err) ->
             ( { model
                 | loading = False
                 , result = Just (BasicResult False (Util.Http.errorToString err))
@@ -171,10 +171,10 @@ update flags msg model =
             , False
             )
 
-        ChangeSpaceResp (Ok r) ->
+        ChangeFolderResp (Ok r) ->
             if r.success then
                 ( model
-                , Api.getSpaceDetail flags model.space.id SpaceDetailResp
+                , Api.getFolderDetail flags model.folder.id FolderDetailResp
                 , False
                 )
 
@@ -184,7 +184,7 @@ update flags msg model =
                 , False
                 )
 
-        ChangeSpaceResp (Err err) ->
+        ChangeFolderResp (Err err) ->
             ( { model
                 | loading = False
                 , result = Just (BasicResult False (Util.Http.errorToString err))
@@ -209,10 +209,10 @@ update flags msg model =
             , False
             )
 
-        SpaceDetailResp (Ok sd) ->
+        FolderDetailResp (Ok sd) ->
             ( init model.users sd, Cmd.none, False )
 
-        SpaceDetailResp (Err err) ->
+        FolderDetailResp (Err err) ->
             ( { model
                 | loading = False
                 , result = Just (BasicResult False (Util.Http.errorToString err))
@@ -225,7 +225,7 @@ update flags msg model =
             case model.selectedMember of
                 Just mem ->
                     ( { model | loading = True }
-                    , Api.addMember flags model.space.id mem.id ChangeSpaceResp
+                    , Api.addMember flags model.folder.id mem.id ChangeFolderResp
                     , False
                     )
 
@@ -234,7 +234,7 @@ update flags msg model =
 
         RemoveMember idname ->
             ( { model | loading = True }
-            , Api.removeMember flags model.space.id idname.id ChangeSpaceResp
+            , Api.removeMember flags model.folder.id idname.id ChangeFolderResp
             , False
             )
 
@@ -252,7 +252,7 @@ update flags msg model =
 
                 cmd =
                     if flag then
-                        Api.deleteSpace flags model.space.id DeleteResp
+                        Api.deleteFolder flags model.folder.id DeleteResp
 
                     else
                         Cmd.none
@@ -278,23 +278,23 @@ view flags model =
     let
         isOwner =
             Maybe.map .user flags.account
-                |> Maybe.map ((==) model.space.owner.name)
+                |> Maybe.map ((==) model.folder.owner.name)
                 |> Maybe.withDefault False
     in
     div []
         ([ Html.map DeleteMsg (Comp.YesNoDimmer.view model.deleteDimmer)
-         , if model.space.id == "" then
+         , if model.folder.id == "" then
             div []
-                [ text "Create a new space. You are automatically set as owner of this new space."
+                [ text "Create a new folder. You are automatically set as owner of this new folder."
                 ]
 
            else
             div []
-                [ text "Modify this space by changing the name or add/remove members."
+                [ text "Modify this folder by changing the name or add/remove members."
                 ]
-         , if model.space.id /= "" && not isOwner then
+         , if model.folder.id /= "" && not isOwner then
             div [ class "ui info message" ]
-                [ text "You are not the owner of this space and therefore are not allowed to edit it."
+                [ text "You are not the owner of this folder and therefore are not allowed to edit it."
                 ]
 
            else
@@ -315,7 +315,7 @@ view flags model =
             [ text "Owner"
             ]
          , div [ class "" ]
-            [ text model.space.owner.name
+            [ text model.folder.owner.name
             ]
          , div [ class "ui header" ]
             [ text "Name"
@@ -361,7 +361,7 @@ viewButtons _ =
 
 viewMembers : Model -> List (Html Msg)
 viewMembers model =
-    if model.space.id == "" then
+    if model.folder.id == "" then
         []
 
     else

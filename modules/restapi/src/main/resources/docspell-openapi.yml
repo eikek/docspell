@@ -795,14 +795,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BasicResult"
-  /sec/space:
+  /sec/folder:
     get:
-      tags: [ Space ]
-      summary: Get a list of spaces.
+      tags: [ Folder ]
+      summary: Get a list of folders.
       description: |
-        Return a list of spaces for the current collective.
+        Return a list of folders for the current collective.
 
-        All spaces are returned, including those not owned by the
+        All folders are returned, including those not owned by the
         current user.
 
         It is possible to restrict the results by a substring match of
@@ -818,12 +818,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SpaceList"
+                $ref: "#/components/schemas/FolderList"
     post:
-      tags: [ Space ]
-      summary: Create a new space
+      tags: [ Folder ]
+      summary: Create a new folder
       description: |
-        Create a new space owned by the current user. If a space with
+        Create a new folder owned by the current user. If a folder with
         the same name already exists, an error is thrown.
       security:
         - authTokenHeader: []
@@ -831,7 +831,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/NewSpace"
+              $ref: "#/components/schemas/NewFolder"
       responses:
         200:
           description: Ok
@@ -839,12 +839,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/IdResult"
-  /sec/space/{id}:
+  /sec/folder/{id}:
     get:
-      tags: [ Space ]
-      summary: Get space details.
+      tags: [ Folder ]
+      summary: Get folder details.
       description: |
-        Return details about a space.
+        Return details about a folder.
       security:
         - authTokenHeader: []
       parameters:
@@ -855,12 +855,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SpaceDetail"
+                $ref: "#/components/schemas/FolderDetail"
     put:
-      tags: [ Space ]
-      summary: Change the name of a space
+      tags: [ Folder ]
+      summary: Change the name of a folder
       description: |
-        Changes the name of a space. The new name must not exists.
+        Changes the name of a folder. The new name must not exists.
       security:
         - authTokenHeader: []
       parameters:
@@ -869,7 +869,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/NewSpace"
+              $ref: "#/components/schemas/NewFolder"
       responses:
         200:
           description: Ok
@@ -878,10 +878,10 @@ paths:
               schema:
                 $ref: "#/components/schemas/BasicResult"
     delete:
-      tags: [ Space ]
-      summary: Delete a space by its id.
+      tags: [ Folder ]
+      summary: Delete a folder by its id.
       description: |
-        Deletes a space.
+        Deletes a folder.
       security:
         - authTokenHeader: []
       parameters:
@@ -893,12 +893,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BasicResult"
-  /sec/space/{id}/member/{userId}:
+  /sec/folder/{id}/member/{userId}:
     put:
-      tags: [ Space ]
-      summary: Add a member to this space
+      tags: [ Folder ]
+      summary: Add a member to this folder
       description: |
-        Adds a member to this space (identified by `id`).
+        Adds a member to this folder (identified by `id`).
       security:
         - authTokenHeader: []
       parameters:
@@ -912,10 +912,10 @@ paths:
               schema:
                 $ref: "#/components/schemas/BasicResult"
     delete:
-      tags: [ Space ]
-      summary: Removes a member from this space.
+      tags: [ Folder ]
+      summary: Removes a member from this folder.
       description: |
-        Removes a member from this space.
+        Removes a member from this folder.
       security:
         - authTokenHeader: []
       parameters:
@@ -984,7 +984,7 @@ paths:
       summary: Get some insights regarding your items.
       description: |
         Returns some information about how many items there are, how
-        much space they occupy etc.
+        much folder they occupy etc.
       security:
         - authTokenHeader: []
       responses:
@@ -2492,19 +2492,19 @@ paths:
 
 components:
   schemas:
-    SpaceList:
+    FolderList:
       description: |
-        A list of spaces with their member counts.
+        A list of folders with their member counts.
       required:
         - items
       properties:
         items:
           type: array
           items:
-            $ref: "#/components/schemas/SpaceItem"
-    SpaceItem:
+            $ref: "#/components/schemas/FolderItem"
+    FolderItem:
       description: |
-        An item in a space list.
+        An item in a folder list.
       required:
         - id
         - name
@@ -2528,17 +2528,17 @@ components:
         memberCount:
           type: integer
           format: int32
-    NewSpace:
+    NewFolder:
       description: |
-        Data required to create a new space.
+        Data required to create a new folder.
       required:
         - name
       properties:
         name:
           type: string
-    SpaceDetail:
+    FolderDetail:
       description: |
-        Details about a space.
+        Details about a folder.
       required:
         - id
         - name
@@ -2567,9 +2567,9 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/IdName"
-    SpaceMember:
+    FolderMember:
       description: |
-        Information to add or remove a space member.
+        Information to add or remove a folder member.
       required:
         - userId
       properties:
@@ -4001,7 +4001,7 @@ components:
     owning:
       name: full
       in: query
-      description: Whether to get owning spaces
+      description: Whether to get owning folders
       required: false
       schema:
         type: boolean

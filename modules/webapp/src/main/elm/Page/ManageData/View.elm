@@ -1,9 +1,9 @@
 module Page.ManageData.View exposing (view)
 
 import Comp.EquipmentManage
+import Comp.FolderManage
 import Comp.OrgManage
 import Comp.PersonManage
-import Comp.SpaceManage
 import Comp.TagManage
 import Data.Flags exposing (Flags)
 import Data.Icons as Icons
@@ -53,11 +53,11 @@ view flags settings model =
                         , text "Person"
                         ]
                     , div
-                        [ classActive (model.currentTab == Just SpaceTab) "link icon item"
-                        , onClick (SetTab SpaceTab)
+                        [ classActive (model.currentTab == Just FolderTab) "link icon item"
+                        , onClick (SetTab FolderTab)
                         ]
-                        [ Icons.spaceIcon ""
-                        , text "Space"
+                        [ Icons.folderIcon ""
+                        , text "Folder"
                         ]
                     ]
                 ]
@@ -77,8 +77,8 @@ view flags settings model =
                     Just PersonTab ->
                         viewPerson settings model
 
-                    Just SpaceTab ->
-                        viewSpace flags settings model
+                    Just FolderTab ->
+                        viewFolder flags settings model
 
                     Nothing ->
                         []
@@ -87,19 +87,19 @@ view flags settings model =
         ]
 
 
-viewSpace : Flags -> UiSettings -> Model -> List (Html Msg)
-viewSpace flags _ model =
+viewFolder : Flags -> UiSettings -> Model -> List (Html Msg)
+viewFolder flags _ model =
     [ h2
         [ class "ui header"
         ]
-        [ Icons.spaceIcon ""
+        [ Icons.folderIcon ""
         , div
             [ class "content"
             ]
-            [ text "Spaces"
+            [ text "Folders"
             ]
         ]
-    , Html.map SpaceMsg (Comp.SpaceManage.view flags model.spaceManageModel)
+    , Html.map FolderMsg (Comp.FolderManage.view flags model.folderManageModel)
     ]
 
 
