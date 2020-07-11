@@ -66,6 +66,7 @@ object QItem {
       concPerson: Option[RPerson],
       concEquip: Option[REquipment],
       inReplyTo: Option[IdRef],
+      folder: Option[IdRef],
       tags: Vector[RTag],
       attachments: Vector[(RAttachment, FileMeta)],
       sources: Vector[(RAttachmentSource, FileMeta)],
@@ -83,10 +84,11 @@ object QItem {
     val P1C = RPerson.Columns.all.map(_.prefix("p1"))
     val EC  = REquipment.Columns.all.map(_.prefix("e"))
     val ICC = List(RItem.Columns.id, RItem.Columns.name).map(_.prefix("ref"))
+    val FC  = List(RFolder.Columns.id, RFolder.Columns.name).map(_.prefix("f"))
 
     val cq =
       selectSimple(
-        IC ++ OC ++ P0C ++ P1C ++ EC ++ ICC,
+        IC ++ OC ++ P0C ++ P1C ++ EC ++ ICC ++ FC,
         RItem.table ++ fr"i",
         Fragment.empty
       ) ++
@@ -105,6 +107,9 @@ object QItem {
         fr"LEFT JOIN" ++ RItem.table ++ fr"ref ON" ++ RItem.Columns.inReplyTo
         .prefix("i")
         .is(RItem.Columns.id.prefix("ref")) ++
+        fr"LEFT JOIN" ++ RFolder.table ++ fr"f ON" ++ RItem.Columns.folder
+        .prefix("i")
+        .is(RFolder.Columns.id.prefix("f")) ++
         fr"WHERE" ++ RItem.Columns.id.prefix("i").is(id)
 
     val q = cq
@@ -115,6 +120,7 @@ object QItem {
             Option[RPerson],
             Option[RPerson],
             Option[REquipment],
+            Option[IdRef],
             Option[IdRef]
         )
       ]
@@ -132,7 +138,7 @@ object QItem {
       arch <- archives
       ts   <- tags
     } yield data.map(d =>
-      ItemData(d._1, d._2, d._3, d._4, d._5, d._6, ts, att, srcs, arch)
+      ItemData(d._1, d._2, d._3, d._4, d._5, d._6, d._7, ts, att, srcs, arch)
     )
   }
 

@@ -77,6 +77,7 @@ module Api exposing
     , setCorrOrg
     , setCorrPerson
     , setDirection
+    , setFolder
     , setItemDate
     , setItemDueDate
     , setItemName
@@ -1258,6 +1259,16 @@ setDirection flags item dir receive =
         { url = flags.config.baseUrl ++ "/api/v1/sec/item/" ++ item ++ "/direction"
         , account = getAccount flags
         , body = Http.jsonBody (Api.Model.DirectionValue.encode dir)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+setFolder : Flags -> String -> OptionalId -> (Result Http.Error BasicResult -> msg) -> Cmd msg
+setFolder flags item id receive =
+    Http2.authPut
+        { url = flags.config.baseUrl ++ "/api/v1/sec/item/" ++ item ++ "/folder"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.OptionalId.encode id)
         , expect = Http.expectJson receive Api.Model.BasicResult.decoder
         }
 

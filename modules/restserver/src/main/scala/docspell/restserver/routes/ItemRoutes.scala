@@ -149,6 +149,13 @@ object ItemRoutes {
           resp <- Ok(Conversions.basicResult(res, "Direction updated"))
         } yield resp
 
+      case req @ PUT -> Root / Ident(id) / "folder" =>
+        for {
+          idref <- req.as[OptionalId]
+          res   <- backend.item.setFolder(id, idref.id, user.account.collective)
+          resp  <- Ok(Conversions.basicResult(res, "Folder updated"))
+        } yield resp
+
       case req @ PUT -> Root / Ident(id) / "corrOrg" =>
         for {
           idref <- req.as[OptionalId]

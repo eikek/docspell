@@ -82,7 +82,7 @@ object RItem {
     val created       = Column("created")
     val updated       = Column("updated")
     val notes         = Column("notes")
-    val folder         = Column("folder_id")
+    val folder        = Column("folder_id")
     val all = List(
       id,
       cid,
@@ -243,7 +243,17 @@ object RItem {
       n <- updateRow(
         table,
         and(cid.is(coll), concEquipment.is(Some(currentEquip))),
-        commas(concPerson.setTo(None: Option[Ident]), updated.setTo(t))
+        commas(concEquipment.setTo(None: Option[Ident]), updated.setTo(t))
+      ).update.run
+    } yield n
+
+  def updateFolder(itemId: Ident, coll: Ident, folderId: Option[Ident]): ConnectionIO[Int] =
+    for {
+      t <- currentTime
+      n <- updateRow(
+        table,
+        and(cid.is(coll), id.is(itemId)),
+        commas(folder.setTo(folderId), updated.setTo(t))
       ).update.run
     } yield n
 

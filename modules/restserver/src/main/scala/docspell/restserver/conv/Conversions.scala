@@ -85,6 +85,7 @@ trait Conversions {
       data.concPerson.map(p => IdName(p.pid, p.name)),
       data.concEquip.map(e => IdName(e.eid, e.name)),
       data.inReplyTo.map(mkIdName),
+      data.folder.map(mkIdName),
       data.item.dueDate,
       data.item.notes,
       data.attachments.map((mkAttachment(data) _).tupled).toList,

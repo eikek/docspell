@@ -1365,6 +1365,31 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BasicResult"
+  /sec/item/{id}/folder:
+    put:
+      tags: [ Item ]
+      summary: Set a folder for this item.
+      description: |
+        Updates the folder property for this item to "place" the item
+        into a folder. If the request contains an empty object or an
+        `id` property of `null`, the item is moved into the "public"
+        or "root" folder.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OptionalId"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
   /sec/item/{id}/corrOrg:
     put:
       tags: [ Item ]
@@ -3166,6 +3191,8 @@ components:
         concEquipment:
           $ref: "#/components/schemas/IdName"
         inReplyTo:
+          $ref: "#/components/schemas/IdName"
+        folder:
           $ref: "#/components/schemas/IdName"
         dueDate:
           type: integer

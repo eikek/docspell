@@ -11,6 +11,8 @@ import Api.Model.Attachment exposing (Attachment)
 import Api.Model.BasicResult exposing (BasicResult)
 import Api.Model.DirectionValue exposing (DirectionValue)
 import Api.Model.EquipmentList exposing (EquipmentList)
+import Api.Model.FolderItem exposing (FolderItem)
+import Api.Model.FolderList exposing (FolderList)
 import Api.Model.IdName exposing (IdName)
 import Api.Model.ItemDetail exposing (ItemDetail)
 import Api.Model.ItemProposals exposing (ItemProposals)
@@ -71,6 +73,7 @@ type alias Model =
     , corrPersonModel : Comp.Dropdown.Model IdName
     , concPersonModel : Comp.Dropdown.Model IdName
     , concEquipModel : Comp.Dropdown.Model IdName
+    , folderModel : Comp.Dropdown.Model IdName
     , nameModel : String
     , notesModel : Maybe String
     , notesField : NotesField
@@ -161,6 +164,11 @@ emptyModel =
             , placeholder = ""
             }
     , concEquipModel =
+        Comp.Dropdown.makeSingle
+            { makeOption = \e -> { value = e.id, text = e.name }
+            , placeholder = ""
+            }
+    , folderModel =
         Comp.Dropdown.makeSingle
             { makeOption = \e -> { value = e.id, text = e.name }
             , placeholder = ""
@@ -268,6 +276,8 @@ type Msg
     | EditAttachNameSet String
     | EditAttachNameSubmit
     | EditAttachNameResp (Result Http.Error BasicResult)
+    | GetFolderResp (Result Http.Error FolderList)
+    | FolderDropdownMsg (Comp.Dropdown.Msg IdName)
 
 
 
@@ -281,6 +291,7 @@ getOptions flags =
         , Api.getOrgLight flags GetOrgResp
         , Api.getPersonsLight flags GetPersonResp
         , Api.getEquipments flags "" GetEquipResp
+        , Api.getFolders flags "" False GetFolderResp
         ]
 
 
@@ -308,6 +319,16 @@ setDirection flags model =
 
         Nothing ->
             Cmd.none
+
+
+setFolder : Flags -> Model -> Maybe IdName -> Cmd Msg
+setFolder flags model mref =
+    let
+        idref =
+            Maybe.map .id mref
+                |> OptionalId
+    in
+    Api.setFolder flags model.item.id idref SaveResp
 
 
 setCorrOrg : Flags -> Model -> Maybe IdName -> Cmd Msg
@@ -523,6 +544,20 @@ update key flags next msg model =
                 ( m7, c7, s7 ) =
                     update key flags next AddFilesReset m6
 
+                ( m8, c8, s8 ) =
+                    update key
+                        flags
+                        next
+                        (FolderDropdownMsg
+                            (Comp.Dropdown.SetSelection
+                                (item.folder
+                                    |> Maybe.map List.singleton
+                                    |> Maybe.withDefault []
+                                )
+                            )
+                        )
+                        m7
+
                 proposalCmd =
                     if item.state == "created" then
                         Api.getItemProposals flags item.id GetProposalResp
@@ -530,7 +565,7 @@ update key flags next msg model =
                     else
                         Cmd.none
             in
-            ( { m7
+            ( { m8
                 | item = item
                 , nameModel = item.name
                 , notesModel = item.notes
@@ -548,11 +583,12 @@ update key flags next msg model =
                 , c5
                 , c6
                 , c7
+                , c8
                 , getOptions flags
                 , proposalCmd
                 , Api.getSentMails flags item.id SentMailsResp
                 ]
-            , Sub.batch [ s1, s2, s3, s4, s5, s6, s7 ]
+            , Sub.batch [ s1, s2, s3, s4, s5, s6, s7, s8 ]
             )
 
         SetActiveAttachment pos ->
@@ -574,6 +610,26 @@ update key flags next msg model =
 
             else
                 noSub ( model, Api.itemDetail flags model.item.id GetItemResp )
+
+        FolderDropdownMsg m ->
+            let
+                ( m2, c2 ) =
+                    Comp.Dropdown.update m model.folderModel
+
+                newModel =
+                    { model | folderModel = m2 }
+
+                idref =
+                    Comp.Dropdown.getSelected m2 |> List.head
+
+                save =
+                    if isDropdownChangeMsg m then
+                        setFolder flags newModel idref
+
+                    else
+                        Cmd.none
+            in
+            noSub ( newModel, Cmd.batch [ save, Cmd.map FolderDropdownMsg c2 ] )
 
         TagDropdownMsg m ->
             let
@@ -826,6 +882,18 @@ update key flags next msg model =
 
         SetDueDateSuggestion date ->
             noSub ( model, setDueDate flags model (Just date) )
+
+        GetFolderResp (Ok fs) ->
+            let
+                opts =
+                    fs.items
+                        |> List.map (\e -> IdName e.id e.name)
+                        |> Comp.Dropdown.SetOptions
+            in
+            update key flags next (FolderDropdownMsg opts) model
+
+        GetFolderResp (Err _) ->
+            noSub ( model, Cmd.none )
 
         GetTagsResp (Ok tags) ->
             let
@@ -2081,6 +2149,13 @@ renderEditForm settings model =
                         [ i [ class "save outline icon" ] []
                         ]
                     ]
+                ]
+            , div [ class "field" ]
+                [ label []
+                    [ Icons.folderIcon "grey"
+                    , text "Folder"
+                    ]
+                , Html.map FolderDropdownMsg (Comp.Dropdown.view settings model.folderModel)
                 ]
             , div [ class "field" ]
                 [ label []
