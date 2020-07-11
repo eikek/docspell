@@ -273,17 +273,20 @@ object QItem {
       ) ++ moreCols
     )
 
-    val withItem   = selectSimple(itemCols, RItem.table, IC.cid.is(q.account.collective))
-    val withPerson = selectSimple(personCols, RPerson.table, PC.cid.is(q.account.collective))
-    val withOrgs   = selectSimple(orgCols, ROrganization.table, OC.cid.is(q.account.collective))
-    val withEquips = selectSimple(equipCols, REquipment.table, EC.cid.is(q.account.collective))
+    val withItem = selectSimple(itemCols, RItem.table, IC.cid.is(q.account.collective))
+    val withPerson =
+      selectSimple(personCols, RPerson.table, PC.cid.is(q.account.collective))
+    val withOrgs =
+      selectSimple(orgCols, ROrganization.table, OC.cid.is(q.account.collective))
+    val withEquips =
+      selectSimple(equipCols, REquipment.table, EC.cid.is(q.account.collective))
     val withFolder =
       selectSimple(folderCols, RFolder.table, FC.collective.is(q.account.collective))
     val withAttach = fr"SELECT COUNT(" ++ AC.id.f ++ fr") as num, " ++ AC.itemId.f ++
       fr"from" ++ RAttachment.table ++ fr"GROUP BY (" ++ AC.itemId.f ++ fr")"
 
     val selectKW = if (distinct) fr"SELECT DISTINCT" else fr"SELECT"
-    val query = withCTE(
+    withCTE(
       (Seq(
         "items"   -> withItem,
         "persons" -> withPerson,
@@ -302,7 +305,6 @@ object QItem {
       .prefix("i")
       .is(EC.eid.prefix("e1")) ++
       fr"LEFT JOIN folders f1 ON" ++ IC.folder.prefix("i").is(FC.id.prefix("f1"))
-    query
   }
 
   def findItems(q: Query, batch: Batch): Stream[ConnectionIO, ListItem] = {
@@ -334,6 +336,7 @@ object QItem {
           RTagItem.Columns.tagId.isOneOf(q.tagsExclude)
         )
 
+    val iFolder  = IC.folder.prefix("i")
     val name     = q.name.map(_.toLowerCase).map(queryWildcard)
     val allNames = q.allNames.map(_.toLowerCase).map(queryWildcard)
     val cond = and(
@@ -385,7 +388,8 @@ object QItem {
             .map(nel => IC.id.prefix("i").isIn(nel))
             .getOrElse(IC.id.prefix("i").is(""))
         )
-        .getOrElse(Fragment.empty)
+        .getOrElse(Fragment.empty),
+      or(iFolder.isNull, iFolder.isIn(QFolder.findMemberFolderIds(q.account)))
     )
 
     val order = q.orderAsc match {
@@ -476,7 +480,10 @@ object QItem {
       n  <- store.transact(RItem.deleteByIdAndCollective(itemId, collective))
     } yield tn + rn + n + mn
 
-  private def findByFileIdsQuery(fileMetaIds: NonEmptyList[Ident], limit: Option[Int]): Fragment = {
+  private def findByFileIdsQuery(
+      fileMetaIds: NonEmptyList[Ident],
+      limit: Option[Int]
+  ): Fragment = {
     val IC      = RItem.Columns.all.map(_.prefix("i"))
     val aItem   = RAttachment.Columns.itemId.prefix("a")
     val aId     = RAttachment.Columns.id.prefix("a")

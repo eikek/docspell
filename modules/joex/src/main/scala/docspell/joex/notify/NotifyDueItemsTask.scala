@@ -71,7 +71,7 @@ object NotifyDueItemsTask {
       now <- Timestamp.current[F]
       q =
         QItem.Query
-          .empty(ctx.args.account.collective)
+          .empty(ctx.args.account)
           .copy(
             states = ItemState.validStates.toList,
             tagsInclude = ctx.args.tagsInclude,

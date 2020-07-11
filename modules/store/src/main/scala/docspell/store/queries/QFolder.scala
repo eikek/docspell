@@ -244,6 +244,32 @@ object QFolder {
       .to[Vector]
   }
 
+  /** Select all folder_id where the given account is member or owner. */
+  def findMemberFolderIds(account: AccountId): Fragment = {
+    val fId     = RFolder.Columns.id.prefix("f")
+    val fOwner  = RFolder.Columns.owner.prefix("f")
+    val fColl   = RFolder.Columns.collective.prefix("f")
+    val uId     = RUser.Columns.uid.prefix("u")
+    val uLogin  = RUser.Columns.login.prefix("u")
+    val mFolder = RFolderMember.Columns.folder.prefix("m")
+    val mUser   = RFolderMember.Columns.user.prefix("m")
+
+    selectSimple(
+      Seq(fId),
+      RFolder.table ++ fr"f INNER JOIN" ++ RUser.table ++ fr"u ON" ++ fOwner.is(uId),
+      and(fColl.is(account.collective), uLogin.is(account.user))
+    ) ++
+      fr"UNION ALL" ++
+      selectSimple(
+        Seq(mFolder),
+        RFolderMember.table ++ fr"m INNER JOIN" ++ RFolder.table ++ fr"f ON" ++ fId.is(
+          mFolder
+        ) ++
+          fr"INNER JOIN" ++ RUser.table ++ fr"u ON" ++ uId.is(mUser),
+        and(fColl.is(account.collective), uLogin.is(account.user))
+      )
+  }
+
   private def findUserId(account: AccountId): ConnectionIO[Option[Ident]] =
     RUser.findByAccount(account).map(_.map(_.uid))
 }
