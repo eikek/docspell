@@ -4,6 +4,7 @@ import cats.effect._
 import cats.implicits._
 
 import docspell.common._
+import docspell.ftsclient.FtsMigration
 
 import _root_.io.circe._
 import _root_.io.circe.generic.semiauto._
@@ -15,21 +16,48 @@ import org.http4s.client.dsl.Http4sClientDsl
 
 trait SolrSetup[F[_]] {
 
-  def setupSchema: F[Unit]
+  def setupSchema: List[FtsMigration[F]]
 
 }
 
 object SolrSetup {
+  private val solrEngine = Ident.unsafe("solr")
 
   def apply[F[_]: ConcurrentEffect](cfg: SolrConfig, client: Client[F]): SolrSetup[F] = {
     val dsl = new Http4sClientDsl[F] {}
     import dsl._
 
     new SolrSetup[F] {
+
       val url = (Uri.unsafeFromString(cfg.url.asString) / "schema")
         .withQueryParam("commitWithin", cfg.commitWithin.toString)
 
-      def setupSchema: F[Unit] = {
+      def setupSchema: List[FtsMigration[F]] =
+        List(
+          FtsMigration[F](
+            1,
+            solrEngine,
+            "Initialize",
+            setupCoreSchema.map(_ => FtsMigration.Result.workDone)
+          ),
+          FtsMigration[F](
+            3,
+            solrEngine,
+            "Add folder field",
+            addFolderField.map(_ => FtsMigration.Result.workDone)
+          ),
+          FtsMigration[F](
+            4,
+            solrEngine,
+            "Index all from database",
+            FtsMigration.Result.indexAll.pure[F]
+          )
+        )
+
+      def addFolderField: F[Unit] =
+        addStringField(Field.folderId)
+
+      def setupCoreSchema: F[Unit] = {
         val cmds0 =
           List(
             Field.id,

@@ -1,9 +1,8 @@
 package docspell.joex.fts
 
 import cats.data.{Kleisli, NonEmptyList}
-import cats.effect._
 import cats.implicits._
-import cats.{ApplicativeError, FlatMap, Semigroup}
+import cats.{Applicative, ApplicativeError, FlatMap, Monad, Semigroup}
 
 import docspell.common._
 import docspell.ftsclient._
@@ -15,6 +14,19 @@ object FtsWork {
   def apply[F[_]](f: FtsContext[F] => F[Unit]): FtsWork[F] =
     Kleisli(f)
 
+  def allInitializeTasks[F[_]: Monad]: FtsWork[F] =
+    FtsWork[F](_ => ().pure[F]).tap[FtsContext[F]].flatMap { ctx =>
+      NonEmptyList.fromList(ctx.fts.initialize.map(fm => from[F](fm.task))) match {
+        case Some(nel) =>
+          nel.reduce(semigroup[F])
+        case None =>
+          FtsWork[F](_ => ().pure[F])
+      }
+    }
+
+  def from[F[_]: FlatMap: Applicative](t: F[FtsMigration.Result]): FtsWork[F] =
+    Kleisli.liftF(t).flatMap(transformResult[F])
+
   def all[F[_]: FlatMap](
       m0: FtsWork[F],
       mn: FtsWork[F]*
@@ -24,13 +36,24 @@ object FtsWork {
   implicit def semigroup[F[_]: FlatMap]: Semigroup[FtsWork[F]] =
     Semigroup.instance((mt1, mt2) => mt1.flatMap(_ => mt2))
 
+  private def transformResult[F[_]: Applicative: FlatMap](
+      r: FtsMigration.Result
+  ): FtsWork[F] =
+    r match {
+      case FtsMigration.Result.WorkDone =>
+        Kleisli.pure(())
+
+      case FtsMigration.Result.IndexAll =>
+        insertAll[F](None)
+
+      case FtsMigration.Result.ReIndexAll =>
+        clearIndex[F](None) >> insertAll[F](None)
+    }
+
   // some tasks
 
   def log[F[_]](f: Logger[F] => F[Unit]): FtsWork[F] =
     FtsWork(ctx => f(ctx.logger))
-
-  def initialize[F[_]]: FtsWork[F] =
-    FtsWork(_.fts.initialize)
 
   def clearIndex[F[_]](coll: Option[Ident]): FtsWork[F] =
     coll match {
@@ -40,7 +63,7 @@ object FtsWork {
         FtsWork(ctx => ctx.fts.clearAll(ctx.logger))
     }
 
-  def insertAll[F[_]: Effect](coll: Option[Ident]): FtsWork[F] =
+  def insertAll[F[_]: FlatMap](coll: Option[Ident]): FtsWork[F] =
     FtsWork
       .all(
         FtsWork(ctx =>

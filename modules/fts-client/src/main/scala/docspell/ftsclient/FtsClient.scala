@@ -17,11 +17,12 @@ import org.log4s.getLogger
   */
 trait FtsClient[F[_]] {
 
-  /** Initialization tasks. This is called exactly once and then never
+  /** Initialization tasks. This is called exactly once at the very
+    * beginning when initializing the full-text index and then never
     * again (except when re-indexing everything). It may be used to
     * setup the database.
     */
-  def initialize: F[Unit]
+  def initialize: List[FtsMigration[F]]
 
   /** Run a full-text search. */
   def search(q: FtsQuery): F[FtsResult]
@@ -107,8 +108,8 @@ object FtsClient {
     new FtsClient[F] {
       private[this] val logger = Logger.log4s[F](getLogger)
 
-      def initialize: F[Unit] =
-        logger.info("Full-text search is disabled!")
+      def initialize: List[FtsMigration[F]] =
+        Nil
 
       def search(q: FtsQuery): F[FtsResult] =
         logger.warn("Full-text search is disabled!") *> FtsResult.empty.pure[F]
