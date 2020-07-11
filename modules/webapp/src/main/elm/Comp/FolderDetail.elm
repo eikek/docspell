@@ -342,7 +342,7 @@ view flags model =
 
 
 viewButtons : Model -> List (Html Msg)
-viewButtons _ =
+viewButtons model =
     [ div [ class "ui divider" ] []
     , button
         [ class "ui button"
@@ -351,7 +351,10 @@ viewButtons _ =
         [ text "Back"
         ]
     , button
-        [ class "ui red button"
+        [ classList
+            [ ( "ui red button", True )
+            , ( "invisible hidden", model.folder.id == "" )
+            ]
         , onClick RequestDelete
         ]
         [ text "Delete"
