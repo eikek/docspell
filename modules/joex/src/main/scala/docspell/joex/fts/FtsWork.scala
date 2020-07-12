@@ -1,8 +1,8 @@
 package docspell.joex.fts
 
+import cats._
 import cats.data.{Kleisli, NonEmptyList}
 import cats.implicits._
-import cats.{Applicative, ApplicativeError, FlatMap, Monad, Semigroup}
 
 import docspell.common._
 import docspell.ftsclient._

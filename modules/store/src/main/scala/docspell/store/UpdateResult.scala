@@ -1,7 +1,7 @@
 package docspell.store
 
-import cats.implicits._
 import cats.ApplicativeError
+import cats.implicits._
 
 sealed trait UpdateResult
 

@@ -2,6 +2,7 @@ package docspell.store.records
 
 import cats.effect._
 import cats.implicits._
+
 import docspell.common._
 import docspell.store.impl.Column
 import docspell.store.impl.Implicits._

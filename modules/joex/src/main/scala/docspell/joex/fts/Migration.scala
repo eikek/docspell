@@ -1,9 +1,9 @@
 package docspell.joex.fts
 
-import cats.{Applicative, FlatMap, Traverse}
 import cats.data.{Kleisli, OptionT}
 import cats.effect._
 import cats.implicits._
+import cats.{Applicative, FlatMap, Traverse}
 
 import docspell.common._
 import docspell.ftsclient._

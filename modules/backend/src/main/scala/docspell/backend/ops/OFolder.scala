@@ -3,9 +3,9 @@ package docspell.backend.ops
 import cats.effect._
 
 import docspell.common._
-import docspell.store.{AddResult, Store}
-import docspell.store.records.{RFolder, RUser}
 import docspell.store.queries.QFolder
+import docspell.store.records.{RFolder, RUser}
+import docspell.store.{AddResult, Store}
 
 trait OFolder[F[_]] {
 

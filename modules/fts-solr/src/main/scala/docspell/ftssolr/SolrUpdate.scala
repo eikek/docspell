@@ -10,10 +10,10 @@ import docspell.ftssolr.JsonCodec._
 import _root_.io.circe._
 import _root_.io.circe.syntax._
 import org.http4s._
+import org.http4s.circe.CirceEntityDecoder._
 import org.http4s.circe._
 import org.http4s.client.Client
 import org.http4s.client.dsl.Http4sClientDsl
-import org.http4s.circe.CirceEntityDecoder._
 
 trait SolrUpdate[F[_]] {
 
