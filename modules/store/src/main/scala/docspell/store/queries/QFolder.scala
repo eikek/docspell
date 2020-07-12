@@ -270,6 +270,9 @@ object QFolder {
       )
   }
 
+  def getMemberFolders(account: AccountId): ConnectionIO[Set[Ident]] =
+    findMemberFolderIds(account).query[Ident].to[Set]
+
   private def findUserId(account: AccountId): ConnectionIO[Option[Ident]] =
     RUser.findByAccount(account).map(_.map(_.uid))
 }

@@ -142,6 +142,9 @@ object OItem {
             .transact(RItem.updateFolder(item, collective, folder))
             .attempt
             .map(AddResult.fromUpdate)
+            .flatTap(
+              onSuccessIgnoreError(fts.updateFolder(logger, item, collective, folder))
+            )
 
         def setCorrOrg(item: Ident, org: Option[Ident], collective: Ident): F[AddResult] =
           store

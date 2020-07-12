@@ -40,16 +40,26 @@ object QueryData {
       fields: List[Field],
       fq: FtsQuery
   ): QueryData = {
-    val q     = sanitize(fq.q)
-    val extQ  = search.map(f => s"${f.name}:($q)").mkString(" OR ")
-    val items = fq.items.map(_.id).mkString(" ")
-    val collQ = s"""${Field.collectiveId.name}:"${fq.collective.id}""""
-    val filterQ = fq.items match {
-      case s if s.isEmpty =>
-        collQ
-      case _ =>
-        (collQ :: List(s"""${Field.itemId.name}:($items)""")).mkString(" AND ")
-    }
+    val q       = sanitize(fq.q)
+    val extQ    = search.map(f => s"${f.name}:($q)").mkString(" OR ")
+    val items   = fq.items.map(_.id).mkString(" ")
+    val folders = fq.folders.map(_.id).mkString(" ")
+    val filterQ = List(
+      s"""${Field.collectiveId.name}:"${fq.collective.id}"""",
+      fq.items match {
+        case s if s.isEmpty =>
+          ""
+        case _ =>
+          s"""${Field.itemId.name}:($items)"""
+      },
+      fq.folders match {
+        case s if s.isEmpty =>
+          ""
+        case _ =>
+          s"""${Field.folderId.name}:($folders) OR (*:* NOT ${Field.folderId.name}:*)"""
+      }
+    ).filterNot(_.isEmpty).map(t => s"($t)").mkString(" AND ")
+
     QueryData(
       extQ,
       filterQ,

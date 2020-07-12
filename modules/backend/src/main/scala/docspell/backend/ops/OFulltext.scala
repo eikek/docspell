@@ -9,7 +9,7 @@ import docspell.backend.ops.OItemSearch._
 import docspell.common._
 import docspell.ftsclient._
 import docspell.store.Store
-import docspell.store.queries.QItem
+import docspell.store.queries.{QFolder, QItem}
 import docspell.store.queue.JobQueue
 import docspell.store.records.RJob
 
@@ -101,12 +101,14 @@ object OFulltext {
           ftsQ.query,
           account.collective,
           Set.empty,
+          Set.empty,
           batch.limit,
           batch.offset,
           FtsQuery.HighlightSetting(ftsQ.highlightPre, ftsQ.highlightPost)
         )
         for {
-          ftsR <- fts.search(fq)
+          folders <- store.transact(QFolder.getMemberFolders(account))
+          ftsR    <- fts.search(fq.withFolders(folders))
           ftsItems = ftsR.results.groupBy(_.itemId)
           select   = ftsR.results.map(r => QItem.SelectedItem(r.itemId, r.score)).toSet
           itemsWithTags <-
@@ -183,6 +185,7 @@ object OFulltext {
         val fq = FtsQuery(
           ftsQ.query,
           q.account.collective,
+          Set.empty,
           Set.empty,
           0,
           0,

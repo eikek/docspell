@@ -80,6 +80,7 @@ object FtsWork {
                     caa.item,
                     caa.id,
                     caa.collective,
+                    caa.folder,
                     caa.lang,
                     caa.name,
                     caa.content
@@ -92,7 +93,9 @@ object FtsWork {
             ctx.logger,
             ctx.store
               .transact(QItem.allNameAndNotes(coll, ctx.cfg.migration.indexAllChunk * 5))
-              .map(nn => TextData.item(nn.id, nn.collective, Option(nn.name), nn.notes))
+              .map(nn =>
+                TextData.item(nn.id, nn.collective, nn.folder, Option(nn.name), nn.notes)
+              )
           )
         )
       )

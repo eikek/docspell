@@ -58,7 +58,7 @@ trait FtsClient[F[_]] {
       collective: Ident,
       name: String
   ): F[Unit] =
-    updateIndex(logger, TextData.item(itemId, collective, Some(name), None))
+    updateIndex(logger, TextData.item(itemId, collective, None, Some(name), None))
 
   def updateItemNotes(
       logger: Logger[F],
@@ -68,7 +68,7 @@ trait FtsClient[F[_]] {
   ): F[Unit] =
     updateIndex(
       logger,
-      TextData.item(itemId, collective, None, Some(notes.getOrElse("")))
+      TextData.item(itemId, collective, None, None, Some(notes.getOrElse("")))
     )
 
   def updateAttachmentName(
@@ -84,11 +84,19 @@ trait FtsClient[F[_]] {
         itemId,
         attachId,
         collective,
+        None,
         Language.English,
         Some(name.getOrElse("")),
         None
       )
     )
+
+  def updateFolder(
+      logger: Logger[F],
+      itemId: Ident,
+      collective: Ident,
+      folder: Option[Ident]
+  ): F[Unit]
 
   def removeItem(logger: Logger[F], itemId: Ident): F[Unit]
 
@@ -115,6 +123,14 @@ object FtsClient {
         logger.warn("Full-text search is disabled!") *> FtsResult.empty.pure[F]
 
       def updateIndex(logger: Logger[F], data: Stream[F, TextData]): F[Unit] =
+        logger.warn("Full-text search is disabled!")
+
+      def updateFolder(
+          logger: Logger[F],
+          itemId: Ident,
+          collective: Ident,
+          folder: Option[Ident]
+      ): F[Unit] =
         logger.warn("Full-text search is disabled!")
 
       def indexData(logger: Logger[F], data: Stream[F, TextData]): F[Unit] =

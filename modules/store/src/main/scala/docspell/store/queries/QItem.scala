@@ -585,6 +585,7 @@ object QItem {
   final case class NameAndNotes(
       id: Ident,
       collective: Ident,
+      folder: Option[Ident],
       name: String,
       notes: Option[String]
   )
@@ -592,12 +593,13 @@ object QItem {
       coll: Option[Ident],
       chunkSize: Int
   ): Stream[ConnectionIO, NameAndNotes] = {
-    val iId    = RItem.Columns.id
-    val iColl  = RItem.Columns.cid
-    val iName  = RItem.Columns.name
-    val iNotes = RItem.Columns.notes
+    val iId     = RItem.Columns.id
+    val iColl   = RItem.Columns.cid
+    val iName   = RItem.Columns.name
+    val iFolder = RItem.Columns.folder
+    val iNotes  = RItem.Columns.notes
 
-    val cols  = Seq(iId, iColl, iName, iNotes)
+    val cols  = Seq(iId, iColl, iFolder, iName, iNotes)
     val where = coll.map(cid => iColl.is(cid)).getOrElse(Fragment.empty)
     selectSimple(cols, RItem.table, where)
       .query[NameAndNotes]

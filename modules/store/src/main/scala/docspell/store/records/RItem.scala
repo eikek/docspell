@@ -247,7 +247,11 @@ object RItem {
       ).update.run
     } yield n
 
-  def updateFolder(itemId: Ident, coll: Ident, folderId: Option[Ident]): ConnectionIO[Int] =
+  def updateFolder(
+      itemId: Ident,
+      coll: Ident,
+      folderId: Option[Ident]
+  ): ConnectionIO[Int] =
     for {
       t <- currentTime
       n <- updateRow(
