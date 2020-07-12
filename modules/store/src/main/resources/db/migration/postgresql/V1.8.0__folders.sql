@@ -21,3 +21,14 @@ CREATE TABLE "folder_member" (
 
 ALTER TABLE "item"
 ADD COLUMN "folder_id" varchar(254) NULL;
+
+ALTER TABLE "item"
+ADD FOREIGN KEY ("folder_id")
+REFERENCES "folder"("id");
+
+ALTER TABLE "source"
+ADD COLUMN "folder_id" varchar(254) NULL;
+
+ALTER TABLE "source"
+ADD FOREIGN KEY ("folder_id")
+REFERENCES "folder"("id");
