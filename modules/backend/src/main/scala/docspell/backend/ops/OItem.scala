@@ -24,6 +24,8 @@ trait OItem[F[_]] {
 
   def setDirection(item: Ident, direction: Direction, collective: Ident): F[AddResult]
 
+  def setFolder(item: Ident, folder: Option[Ident], collective: Ident): F[AddResult]
+
   def setCorrOrg(item: Ident, org: Option[Ident], collective: Ident): F[AddResult]
 
   def addCorrOrg(item: Ident, org: OOrganization.OrgAndContacts): F[AddResult]
@@ -130,6 +132,19 @@ object OItem {
             .transact(RItem.updateDirection(item, collective, direction))
             .attempt
             .map(AddResult.fromUpdate)
+
+        def setFolder(
+            item: Ident,
+            folder: Option[Ident],
+            collective: Ident
+        ): F[AddResult] =
+          store
+            .transact(RItem.updateFolder(item, collective, folder))
+            .attempt
+            .map(AddResult.fromUpdate)
+            .flatTap(
+              onSuccessIgnoreError(fts.updateFolder(logger, item, collective, folder))
+            )
 
         def setCorrOrg(item: Ident, org: Option[Ident], collective: Ident): F[AddResult] =
           store

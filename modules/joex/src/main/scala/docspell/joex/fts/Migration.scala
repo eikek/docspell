@@ -1,9 +1,9 @@
 package docspell.joex.fts
 
-import cats.Traverse
 import cats.data.{Kleisli, OptionT}
 import cats.effect._
 import cats.implicits._
+import cats.{Applicative, FlatMap, Traverse}
 
 import docspell.common._
 import docspell.ftsclient._
@@ -19,6 +19,9 @@ case class Migration[F[_]](
 )
 
 object Migration {
+
+  def from[F[_]: Applicative: FlatMap](fm: FtsMigration[F]): Migration[F] =
+    Migration(fm.version, fm.engine, fm.description, FtsWork.from(fm.task))
 
   def apply[F[_]: Effect](
       cfg: Config.FullTextSearch,

@@ -33,8 +33,13 @@ object TextExtraction {
         )
         _ <- ctx.logger.debug("Storing extracted texts")
         _ <- txt.toList.traverse(rm => ctx.store.transact(RAttachmentMeta.upsert(rm._1)))
-        idxItem =
-          TextData.item(item.item.id, ctx.args.meta.collective, item.item.name.some, None)
+        idxItem = TextData.item(
+          item.item.id,
+          ctx.args.meta.collective,
+          None, //folder
+          item.item.name.some,
+          None
+        )
         _   <- fts.indexData(ctx.logger, (idxItem +: txt.map(_._2)).toSeq: _*)
         dur <- start
         _   <- ctx.logger.info(s"Text extraction finished in ${dur.formatExact}")
@@ -55,6 +60,7 @@ object TextExtraction {
           item.item.id,
           ra.id,
           collective,
+          None, //folder
           lang,
           ra.name,
           rm.content

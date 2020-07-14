@@ -5,6 +5,7 @@ import cats.effect._
 import cats.implicits._
 import fs2.Stream
 
+import docspell.backend.ops.OItem
 import docspell.common.{ItemState, ProcessItemArgs}
 import docspell.ftsclient.FtsClient
 import docspell.joex.Config
@@ -27,11 +28,12 @@ object ItemHandler {
 
   def newItem[F[_]: ConcurrentEffect: ContextShift](
       cfg: Config,
+      itemOps: OItem[F],
       fts: FtsClient[F]
   ): Task[F, Args, Unit] =
     CreateItem[F]
       .flatMap(itemStateTask(ItemState.Processing))
-      .flatMap(safeProcess[F](cfg, fts))
+      .flatMap(safeProcess[F](cfg, itemOps, fts))
       .map(_ => ())
 
   def itemStateTask[F[_]: Sync, A](
@@ -48,11 +50,12 @@ object ItemHandler {
 
   def safeProcess[F[_]: ConcurrentEffect: ContextShift](
       cfg: Config,
+      itemOps: OItem[F],
       fts: FtsClient[F]
   )(data: ItemData): Task[F, Args, ItemData] =
     isLastRetry[F].flatMap {
       case true =>
-        ProcessItem[F](cfg, fts)(data).attempt.flatMap({
+        ProcessItem[F](cfg, itemOps, fts)(data).attempt.flatMap({
           case Right(d) =>
             Task.pure(d)
           case Left(ex) =>
@@ -62,7 +65,7 @@ object ItemHandler {
               .andThen(_ => Sync[F].raiseError(ex))
         })
       case false =>
-        ProcessItem[F](cfg, fts)(data).flatMap(itemStateTask(ItemState.Created))
+        ProcessItem[F](cfg, itemOps, fts)(data).flatMap(itemStateTask(ItemState.Created))
     }
 
   private def markItemCreated[F[_]: Sync]: Task[F, Args, Boolean] =

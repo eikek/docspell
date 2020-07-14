@@ -49,7 +49,7 @@ emptyModel =
     , city = ""
     , country =
         Comp.Dropdown.makeSingleList
-            { makeOption = \c -> { value = c.code, text = c.label }
+            { makeOption = \c -> { value = c.code, text = c.label, additional = "" }
             , placeholder = "Select Country"
             , options = countries
             , selected = Nothing

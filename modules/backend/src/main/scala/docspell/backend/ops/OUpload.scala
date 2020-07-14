@@ -58,6 +58,7 @@ object OUpload {
   case class UploadMeta(
       direction: Option[Direction],
       sourceAbbrev: String,
+      folderId: Option[Ident],
       validFileTypes: Seq[MimeType]
   )
 
@@ -123,6 +124,7 @@ object OUpload {
             lang.getOrElse(Language.German),
             data.meta.direction,
             data.meta.sourceAbbrev,
+            data.meta.folderId,
             data.meta.validFileTypes
           )
           args =
@@ -147,7 +149,10 @@ object OUpload {
         (for {
           src <- OptionT(store.transact(RSource.find(sourceId)))
           updata = data.copy(
-            meta = data.meta.copy(sourceAbbrev = src.abbrev),
+            meta = data.meta.copy(
+              sourceAbbrev = src.abbrev,
+              folderId = data.meta.folderId.orElse(src.folderId)
+            ),
             priority = src.priority
           )
           accId = AccountId(src.cid, src.sid)

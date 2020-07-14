@@ -15,6 +15,8 @@ module Data.Icons exposing
     , editNotesIcon
     , equipment
     , equipmentIcon
+    , folder
+    , folderIcon
     , organization
     , organizationIcon
     , person
@@ -27,6 +29,16 @@ module Data.Icons exposing
 
 import Html exposing (Html, i)
 import Html.Attributes exposing (class)
+
+
+folder : String
+folder =
+    "folder outline icon"
+
+
+folderIcon : String -> Html msg
+folderIcon classes =
+    i [ class (folder ++ " " ++ classes) ] []
 
 
 concerned : String

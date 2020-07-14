@@ -66,6 +66,7 @@ object QItem {
       concPerson: Option[RPerson],
       concEquip: Option[REquipment],
       inReplyTo: Option[IdRef],
+      folder: Option[IdRef],
       tags: Vector[RTag],
       attachments: Vector[(RAttachment, FileMeta)],
       sources: Vector[(RAttachmentSource, FileMeta)],
@@ -83,10 +84,11 @@ object QItem {
     val P1C = RPerson.Columns.all.map(_.prefix("p1"))
     val EC  = REquipment.Columns.all.map(_.prefix("e"))
     val ICC = List(RItem.Columns.id, RItem.Columns.name).map(_.prefix("ref"))
+    val FC  = List(RFolder.Columns.id, RFolder.Columns.name).map(_.prefix("f"))
 
     val cq =
       selectSimple(
-        IC ++ OC ++ P0C ++ P1C ++ EC ++ ICC,
+        IC ++ OC ++ P0C ++ P1C ++ EC ++ ICC ++ FC,
         RItem.table ++ fr"i",
         Fragment.empty
       ) ++
@@ -105,6 +107,9 @@ object QItem {
         fr"LEFT JOIN" ++ RItem.table ++ fr"ref ON" ++ RItem.Columns.inReplyTo
         .prefix("i")
         .is(RItem.Columns.id.prefix("ref")) ++
+        fr"LEFT JOIN" ++ RFolder.table ++ fr"f ON" ++ RItem.Columns.folder
+        .prefix("i")
+        .is(RFolder.Columns.id.prefix("f")) ++
         fr"WHERE" ++ RItem.Columns.id.prefix("i").is(id)
 
     val q = cq
@@ -115,6 +120,7 @@ object QItem {
             Option[RPerson],
             Option[RPerson],
             Option[REquipment],
+            Option[IdRef],
             Option[IdRef]
         )
       ]
@@ -132,7 +138,7 @@ object QItem {
       arch <- archives
       ts   <- tags
     } yield data.map(d =>
-      ItemData(d._1, d._2, d._3, d._4, d._5, d._6, ts, att, srcs, arch)
+      ItemData(d._1, d._2, d._3, d._4, d._5, d._6, d._7, ts, att, srcs, arch)
     )
   }
 
@@ -149,11 +155,12 @@ object QItem {
       corrOrg: Option[IdRef],
       corrPerson: Option[IdRef],
       concPerson: Option[IdRef],
-      concEquip: Option[IdRef]
+      concEquip: Option[IdRef],
+      folder: Option[IdRef]
   )
 
   case class Query(
-      collective: Ident,
+      account: AccountId,
       name: Option[String],
       states: Seq[ItemState],
       direction: Option[Direction],
@@ -161,6 +168,7 @@ object QItem {
       corrOrg: Option[Ident],
       concPerson: Option[Ident],
       concEquip: Option[Ident],
+      folder: Option[Ident],
       tagsInclude: List[Ident],
       tagsExclude: List[Ident],
       dateFrom: Option[Timestamp],
@@ -173,11 +181,12 @@ object QItem {
   )
 
   object Query {
-    def empty(collective: Ident): Query =
+    def empty(account: AccountId): Query =
       Query(
-        collective,
+        account,
         None,
         Seq.empty,
+        None,
         None,
         None,
         None,
@@ -227,10 +236,12 @@ object QItem {
     val PC         = RPerson.Columns
     val OC         = ROrganization.Columns
     val EC         = REquipment.Columns
+    val FC         = RFolder.Columns
     val itemCols   = IC.all
-    val personCols = List(RPerson.Columns.pid, RPerson.Columns.name)
-    val orgCols    = List(ROrganization.Columns.oid, ROrganization.Columns.name)
-    val equipCols  = List(REquipment.Columns.eid, REquipment.Columns.name)
+    val personCols = List(PC.pid, PC.name)
+    val orgCols    = List(OC.oid, OC.name)
+    val equipCols  = List(EC.eid, EC.name)
+    val folderCols = List(FC.id, FC.name)
 
     val finalCols = commas(
       Seq(
@@ -251,6 +262,8 @@ object QItem {
         PC.name.prefix("p1").f,
         EC.eid.prefix("e1").f,
         EC.name.prefix("e1").f,
+        FC.id.prefix("f1").f,
+        FC.name.prefix("f1").f,
         q.orderAsc match {
           case Some(co) =>
             coalesce(co(IC).prefix("i").f, IC.created.prefix("i").f)
@@ -260,21 +273,27 @@ object QItem {
       ) ++ moreCols
     )
 
-    val withItem   = selectSimple(itemCols, RItem.table, IC.cid.is(q.collective))
-    val withPerson = selectSimple(personCols, RPerson.table, PC.cid.is(q.collective))
-    val withOrgs   = selectSimple(orgCols, ROrganization.table, OC.cid.is(q.collective))
-    val withEquips = selectSimple(equipCols, REquipment.table, EC.cid.is(q.collective))
+    val withItem = selectSimple(itemCols, RItem.table, IC.cid.is(q.account.collective))
+    val withPerson =
+      selectSimple(personCols, RPerson.table, PC.cid.is(q.account.collective))
+    val withOrgs =
+      selectSimple(orgCols, ROrganization.table, OC.cid.is(q.account.collective))
+    val withEquips =
+      selectSimple(equipCols, REquipment.table, EC.cid.is(q.account.collective))
+    val withFolder =
+      selectSimple(folderCols, RFolder.table, FC.collective.is(q.account.collective))
     val withAttach = fr"SELECT COUNT(" ++ AC.id.f ++ fr") as num, " ++ AC.itemId.f ++
       fr"from" ++ RAttachment.table ++ fr"GROUP BY (" ++ AC.itemId.f ++ fr")"
 
     val selectKW = if (distinct) fr"SELECT DISTINCT" else fr"SELECT"
-    val query = withCTE(
+    withCTE(
       (Seq(
         "items"   -> withItem,
         "persons" -> withPerson,
         "orgs"    -> withOrgs,
         "equips"  -> withEquips,
-        "attachs" -> withAttach
+        "attachs" -> withAttach,
+        "folders" -> withFolder
       ) ++ ctes): _*
     ) ++
       selectKW ++ finalCols ++ fr" FROM items i" ++
@@ -282,8 +301,10 @@ object QItem {
       fr"LEFT JOIN persons p0 ON" ++ IC.corrPerson.prefix("i").is(PC.pid.prefix("p0")) ++
       fr"LEFT JOIN orgs o0 ON" ++ IC.corrOrg.prefix("i").is(OC.oid.prefix("o0")) ++
       fr"LEFT JOIN persons p1 ON" ++ IC.concPerson.prefix("i").is(PC.pid.prefix("p1")) ++
-      fr"LEFT JOIN equips e1 ON" ++ IC.concEquipment.prefix("i").is(EC.eid.prefix("e1"))
-    query
+      fr"LEFT JOIN equips e1 ON" ++ IC.concEquipment
+      .prefix("i")
+      .is(EC.eid.prefix("e1")) ++
+      fr"LEFT JOIN folders f1 ON" ++ IC.folder.prefix("i").is(FC.id.prefix("f1"))
   }
 
   def findItems(q: Query, batch: Batch): Stream[ConnectionIO, ListItem] = {
@@ -315,10 +336,11 @@ object QItem {
           RTagItem.Columns.tagId.isOneOf(q.tagsExclude)
         )
 
+    val iFolder  = IC.folder.prefix("i")
     val name     = q.name.map(_.toLowerCase).map(queryWildcard)
     val allNames = q.allNames.map(_.toLowerCase).map(queryWildcard)
     val cond = and(
-      IC.cid.prefix("i").is(q.collective),
+      IC.cid.prefix("i").is(q.account.collective),
       IC.state.prefix("i").isOneOf(q.states),
       IC.incoming.prefix("i").isOrDiscard(q.direction),
       name
@@ -340,6 +362,7 @@ object QItem {
       ROrganization.Columns.oid.prefix("o0").isOrDiscard(q.corrOrg),
       RPerson.Columns.pid.prefix("p1").isOrDiscard(q.concPerson),
       REquipment.Columns.eid.prefix("e1").isOrDiscard(q.concEquip),
+      RFolder.Columns.id.prefix("f1").isOrDiscard(q.folder),
       if (q.tagsInclude.isEmpty) Fragment.empty
       else
         IC.id.prefix("i") ++ sql" IN (" ++ tagSelectsIncl
@@ -365,7 +388,8 @@ object QItem {
             .map(nel => IC.id.prefix("i").isIn(nel))
             .getOrElse(IC.id.prefix("i").is(""))
         )
-        .getOrElse(Fragment.empty)
+        .getOrElse(Fragment.empty),
+      or(iFolder.isNull, iFolder.isIn(QFolder.findMemberFolderIds(q.account)))
     )
 
     val order = q.orderAsc match {
@@ -456,7 +480,10 @@ object QItem {
       n  <- store.transact(RItem.deleteByIdAndCollective(itemId, collective))
     } yield tn + rn + n + mn
 
-  private def findByFileIdsQuery(fileMetaIds: NonEmptyList[Ident], limit: Option[Int]) = {
+  private def findByFileIdsQuery(
+      fileMetaIds: NonEmptyList[Ident],
+      limit: Option[Int]
+  ): Fragment = {
     val IC      = RItem.Columns.all.map(_.prefix("i"))
     val aItem   = RAttachment.Columns.itemId.prefix("a")
     val aId     = RAttachment.Columns.id.prefix("a")
@@ -558,6 +585,7 @@ object QItem {
   final case class NameAndNotes(
       id: Ident,
       collective: Ident,
+      folder: Option[Ident],
       name: String,
       notes: Option[String]
   )
@@ -565,12 +593,13 @@ object QItem {
       coll: Option[Ident],
       chunkSize: Int
   ): Stream[ConnectionIO, NameAndNotes] = {
-    val iId    = RItem.Columns.id
-    val iColl  = RItem.Columns.cid
-    val iName  = RItem.Columns.name
-    val iNotes = RItem.Columns.notes
+    val iId     = RItem.Columns.id
+    val iColl   = RItem.Columns.cid
+    val iName   = RItem.Columns.name
+    val iFolder = RItem.Columns.folder
+    val iNotes  = RItem.Columns.notes
 
-    val cols  = Seq(iId, iColl, iName, iNotes)
+    val cols  = Seq(iId, iColl, iFolder, iName, iNotes)
     val where = coll.map(cid => iColl.is(cid)).getOrElse(Fragment.empty)
     selectSimple(cols, RItem.table, where)
       .query[NameAndNotes]

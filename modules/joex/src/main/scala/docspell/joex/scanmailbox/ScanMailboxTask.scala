@@ -143,7 +143,7 @@ object ScanMailboxTask {
         folder  <- requireFolder(a)(name)
         search  <- searchMails(a)(folder)
         headers <- Kleisli.liftF(filterMessageIds(search.mails))
-        _       <- headers.traverse(handleOne(a, upload))
+        _       <- headers.traverse(handleOne(ctx.args, a, upload))
       } yield ScanResult(name, search.mails.size, search.count - search.mails.size)
 
     def requireFolder[C](a: Access[F, C])(name: String): MailOp[F, C, MailFolder] =
@@ -239,7 +239,9 @@ object ScanMailboxTask {
           MailOp.pure(())
       }
 
-    def submitMail(upload: OUpload[F])(mail: Mail[F]): F[OUpload.UploadResult] = {
+    def submitMail(upload: OUpload[F], args: Args)(
+        mail: Mail[F]
+    ): F[OUpload.UploadResult] = {
       val file = OUpload.File(
         Some(mail.header.subject + ".eml"),
         Some(MimeType.emls.head),
@@ -251,6 +253,7 @@ object ScanMailboxTask {
         meta = OUpload.UploadMeta(
           Some(dir),
           s"mailbox-${ctx.args.account.user.id}",
+          args.itemFolder,
           Seq.empty
         )
         data = OUpload.UploadData(
@@ -264,14 +267,14 @@ object ScanMailboxTask {
       } yield res
     }
 
-    def handleOne[C](a: Access[F, C], upload: OUpload[F])(
+    def handleOne[C](args: Args, a: Access[F, C], upload: OUpload[F])(
         mh: MailHeader
     ): MailOp[F, C, Unit] =
       for {
         mail <- a.loadMail(mh)
         res <- mail match {
           case Some(m) =>
-            Kleisli.liftF(submitMail(upload)(m).attempt)
+            Kleisli.liftF(submitMail(upload, args)(m).attempt)
           case None =>
             MailOp.pure[F, C, Either[Throwable, OUpload.UploadResult]](
               Either.left(new Exception(s"Mail not found"))

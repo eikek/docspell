@@ -145,6 +145,7 @@ object QAttachment {
       id: Ident,
       item: Ident,
       collective: Ident,
+      folder: Option[Ident],
       lang: Language,
       name: Option[String],
       content: Option[String]
@@ -160,10 +161,11 @@ object QAttachment {
     val mContent = RAttachmentMeta.Columns.content.prefix("m")
     val iId      = RItem.Columns.id.prefix("i")
     val iColl    = RItem.Columns.cid.prefix("i")
+    val iFolder  = RItem.Columns.folder.prefix("i")
     val cId      = RCollective.Columns.id.prefix("c")
     val cLang    = RCollective.Columns.language.prefix("c")
 
-    val cols = Seq(aId, aItem, iColl, cLang, aName, mContent)
+    val cols = Seq(aId, aItem, iColl, iFolder, cLang, aName, mContent)
     val from = RAttachment.table ++ fr"a INNER JOIN" ++
       RAttachmentMeta.table ++ fr"m ON" ++ aId.is(mId) ++
       fr"INNER JOIN" ++ RItem.table ++ fr"i ON" ++ iId.is(aItem) ++

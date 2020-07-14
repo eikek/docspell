@@ -1,9 +1,11 @@
 module Page.ManageData.View exposing (view)
 
 import Comp.EquipmentManage
+import Comp.FolderManage
 import Comp.OrgManage
 import Comp.PersonManage
 import Comp.TagManage
+import Data.Flags exposing (Flags)
 import Data.Icons as Icons
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
@@ -13,8 +15,8 @@ import Page.ManageData.Data exposing (..)
 import Util.Html exposing (classActive)
 
 
-view : UiSettings -> Model -> Html Msg
-view settings model =
+view : Flags -> UiSettings -> Model -> Html Msg
+view flags settings model =
     div [ class "managedata-page ui padded grid" ]
         [ div [ class "sixteen wide mobile four wide tablet four wide computer column" ]
             [ h4 [ class "ui top attached ablue-comp header" ]
@@ -50,6 +52,13 @@ view settings model =
                         [ Icons.personIcon ""
                         , text "Person"
                         ]
+                    , div
+                        [ classActive (model.currentTab == Just FolderTab) "link icon item"
+                        , onClick (SetTab FolderTab)
+                        ]
+                        [ Icons.folderIcon ""
+                        , text "Folder"
+                        ]
                     ]
                 ]
             ]
@@ -68,11 +77,30 @@ view settings model =
                     Just PersonTab ->
                         viewPerson settings model
 
+                    Just FolderTab ->
+                        viewFolder flags settings model
+
                     Nothing ->
                         []
                 )
             ]
         ]
+
+
+viewFolder : Flags -> UiSettings -> Model -> List (Html Msg)
+viewFolder flags _ model =
+    [ h2
+        [ class "ui header"
+        ]
+        [ Icons.folderIcon ""
+        , div
+            [ class "content"
+            ]
+            [ text "Folders"
+            ]
+        ]
+    , Html.map FolderMsg (Comp.FolderManage.view flags model.folderManageModel)
+    ]
 
 
 viewTags : Model -> List (Html Msg)

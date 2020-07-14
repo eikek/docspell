@@ -8,6 +8,8 @@ module Comp.Dropdown exposing
     , makeMultiple
     , makeSingle
     , makeSingleList
+    , mkOption
+    , setMkOption
     , update
     , view
     )
@@ -27,7 +29,13 @@ import Util.List
 type alias Option =
     { value : String
     , text : String
+    , additional : String
     }
+
+
+mkOption : String -> String -> Option
+mkOption value text =
+    Option value text ""
 
 
 type alias Item a =
@@ -61,6 +69,11 @@ type alias Model a =
     , searchable : Int -> Bool
     , placeholder : String
     }
+
+
+setMkOption : (a -> Option) -> Model a -> Model a
+setMkOption mkopt model =
+    { model | makeOption = mkopt }
 
 
 makeModel :
@@ -508,4 +521,7 @@ renderOption item =
         , onClick (AddItem item)
         ]
         [ text item.option.text
+        , span [ class "small-info right-float" ]
+            [ text item.option.additional
+            ]
         ]

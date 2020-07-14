@@ -84,6 +84,7 @@ object JoexAppImpl {
       joex    <- OJoex(client, store)
       upload  <- OUpload(store, queue, cfg.files, joex)
       fts     <- createFtsClient(cfg)(httpClient)
+      itemOps <- OItem(store, fts)
       javaEmil =
         JavaMailEmil(blocker, Settings.defaultSettings.copy(debug = cfg.mailDebug))
       sch <- SchedulerBuilder(cfg.scheduler, blocker, store)
@@ -91,7 +92,7 @@ object JoexAppImpl {
         .withTask(
           JobTask.json(
             ProcessItemArgs.taskName,
-            ItemHandler.newItem[F](cfg, fts),
+            ItemHandler.newItem[F](cfg, itemOps, fts),
             ItemHandler.onCancel[F]
           )
         )

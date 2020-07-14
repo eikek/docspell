@@ -17,7 +17,7 @@ final class SolrFtsClient[F[_]: Effect](
     solrQuery: SolrQuery[F]
 ) extends FtsClient[F] {
 
-  def initialize: F[Unit] =
+  def initialize: List[FtsMigration[F]] =
     solrSetup.setupSchema
 
   def search(q: FtsQuery): F[FtsResult] =
@@ -28,6 +28,17 @@ final class SolrFtsClient[F[_]: Effect](
 
   def updateIndex(logger: Logger[F], data: Stream[F, TextData]): F[Unit] =
     modifyIndex(logger, data)(solrUpdate.update)
+
+  def updateFolder(
+      logger: Logger[F],
+      itemId: Ident,
+      collective: Ident,
+      folder: Option[Ident]
+  ): F[Unit] =
+    logger.debug(
+      s"Update folder in solr index for coll/item ${collective.id}/${itemId.id}"
+    ) *>
+      solrUpdate.updateFolder(itemId, collective, folder)
 
   def modifyIndex(logger: Logger[F], data: Stream[F, TextData])(
       f: List[TextData] => F[Unit]

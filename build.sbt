@@ -598,3 +598,4 @@ addCommandAlias("make-zip", ";restserver/universal:packageBin ;joex/universal:pa
 addCommandAlias("make-deb", ";restserver/debian:packageBin ;joex/debian:packageBin")
 addCommandAlias("make-tools", ";root/toolsPackage")
 addCommandAlias("make-pkg", ";clean ;make ;make-zip ;make-deb ;make-tools")
+addCommandAlias("reformatAll", ";project root ;scalafix ;scalafmtAll")

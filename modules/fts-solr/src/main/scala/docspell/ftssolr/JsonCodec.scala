@@ -1,5 +1,7 @@
 package docspell.ftssolr
 
+import cats.implicits._
+
 import docspell.common._
 import docspell.ftsclient._
 
@@ -21,6 +23,7 @@ trait JsonCodec {
             (Field.id.name, enc(td.id)),
             (Field.itemId.name, enc(td.item)),
             (Field.collectiveId.name, enc(td.collective)),
+            (Field.folderId.name, td.folder.getOrElse(Ident.unsafe("")).asJson),
             (Field.attachmentId.name, enc(td.attachId)),
             (Field.attachmentName.name, Json.fromString(td.name.getOrElse(""))),
             (Field.discriminator.name, Json.fromString("attachment"))
@@ -37,6 +40,7 @@ trait JsonCodec {
           (Field.id.name, enc(td.id)),
           (Field.itemId.name, enc(td.item)),
           (Field.collectiveId.name, enc(td.collective)),
+          (Field.folderId.name, td.folder.getOrElse(Ident.unsafe("")).asJson),
           (Field.itemName.name, Json.fromString(td.name.getOrElse(""))),
           (Field.itemNotes.name, Json.fromString(td.notes.getOrElse(""))),
           (Field.discriminator.name, Json.fromString("item"))
@@ -48,6 +52,18 @@ trait JsonCodec {
       ie: Encoder[TextData.Item]
   ): Encoder[TextData] =
     Encoder(_.fold(ae.apply, ie.apply))
+
+  implicit def docIdResultsDecoder: Decoder[DocIdResult] =
+    new Decoder[DocIdResult] {
+      final def apply(c: HCursor): Decoder.Result[DocIdResult] =
+        c.downField("response")
+          .downField("docs")
+          .values
+          .getOrElse(Nil)
+          .toList
+          .traverse(_.hcursor.get[Ident](Field.id.name))
+          .map(DocIdResult.apply)
+    }
 
   implicit def ftsResultDecoder: Decoder[FtsResult] =
     new Decoder[FtsResult] {
@@ -87,6 +103,12 @@ trait JsonCodec {
               } yield FtsResult.AttachmentData(aId, aName)
             else Right(FtsResult.ItemData)
         } yield md
+    }
+
+  implicit def decodeEverythingToUnit: Decoder[Unit] =
+    new Decoder[Unit] {
+      final def apply(c: HCursor): Decoder.Result[Unit] =
+        Right(())
     }
 
   implicit def identKeyEncoder: KeyEncoder[Ident] =
@@ -129,9 +151,24 @@ trait JsonCodec {
       }
     }
 
-  implicit def textDataEncoder: Encoder[SetFields] =
+  implicit def setTextDataFieldsEncoder: Encoder[SetFields] =
     Encoder(_.td.fold(setAttachmentEncoder.apply, setItemEncoder.apply))
 
+  implicit def setFolderEncoder(implicit
+      enc: Encoder[Option[Ident]]
+  ): Encoder[SetFolder] =
+    new Encoder[SetFolder] {
+      final def apply(td: SetFolder): Json =
+        Json.fromFields(
+          List(
+            (Field.id.name, td.docId.asJson),
+            (
+              Field.folderId.name,
+              Map("set" -> td.folder.asJson).asJson
+            )
+          )
+        )
+    }
 }
 
 object JsonCodec extends JsonCodec

@@ -35,7 +35,7 @@ object ItemRoutes {
         for {
           mask <- req.as[ItemSearch]
           _    <- logger.ftrace(s"Got search mask: $mask")
-          query = Conversions.mkQuery(mask, user.account.collective)
+          query = Conversions.mkQuery(mask, user.account)
           _ <- logger.ftrace(s"Running query: $query")
           resp <- mask.fullText match {
             case Some(fq) if cfg.fullTextSearch.enabled =>
@@ -62,7 +62,7 @@ object ItemRoutes {
         for {
           mask <- req.as[ItemSearch]
           _    <- logger.ftrace(s"Got search mask: $mask")
-          query = Conversions.mkQuery(mask, user.account.collective)
+          query = Conversions.mkQuery(mask, user.account)
           _ <- logger.ftrace(s"Running query: $query")
           resp <- mask.fullText match {
             case Some(fq) if cfg.fullTextSearch.enabled =>
@@ -94,7 +94,7 @@ object ItemRoutes {
               for {
                 items <- backend.fulltext.findIndexOnly(
                   ftsIn,
-                  user.account.collective,
+                  user.account,
                   Batch(mask.offset, mask.limit).restrictLimitTo(cfg.maxItemPageSize)
                 )
                 ok <- Ok(Conversions.mkItemListWithTagsFtsPlain(items))
@@ -147,6 +147,13 @@ object ItemRoutes {
           dir  <- req.as[DirectionValue]
           res  <- backend.item.setDirection(id, dir.direction, user.account.collective)
           resp <- Ok(Conversions.basicResult(res, "Direction updated"))
+        } yield resp
+
+      case req @ PUT -> Root / Ident(id) / "folder" =>
+        for {
+          idref <- req.as[OptionalId]
+          res   <- backend.item.setFolder(id, idref.id, user.account.collective)
+          resp  <- Ok(Conversions.basicResult(res, "Folder updated"))
         } yield resp
 
       case req @ PUT -> Root / Ident(id) / "corrOrg" =>

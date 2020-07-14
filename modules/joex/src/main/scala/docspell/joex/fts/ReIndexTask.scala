@@ -21,13 +21,7 @@ object ReIndexTask {
     Task
       .log[F, Args](_.info(s"Running full-text re-index now"))
       .flatMap(_ =>
-        Task(ctx =>
-          (clearData[F](ctx.args.collective) ++
-            FtsWork.log[F](_.info("Inserting data from database")) ++
-            FtsWork.insertAll[F](
-              ctx.args.collective
-            )).forContext(cfg, fts).run(ctx)
-        )
+        Task(ctx => clearData[F](ctx.args.collective).forContext(cfg, fts).run(ctx))
       )
 
   def onCancel[F[_]: Sync]: Task[F, Args, Unit] =
@@ -41,7 +35,9 @@ object ReIndexTask {
             .clearIndex(collective)
             .recoverWith(
               FtsWork.log[F](_.info("Clearing data failed. Continue re-indexing."))
-            )
+            ) ++
+            FtsWork.log[F](_.info("Inserting data from database")) ++
+            FtsWork.insertAll[F](collective)
 
         case None =>
           FtsWork
@@ -50,6 +46,6 @@ object ReIndexTask {
               FtsWork.log[F](_.info("Clearing data failed. Continue re-indexing."))
             ) ++
             FtsWork.log[F](_.info("Running index initialize")) ++
-            FtsWork.initialize[F]
+            FtsWork.allInitializeTasks[F]
       })
 }

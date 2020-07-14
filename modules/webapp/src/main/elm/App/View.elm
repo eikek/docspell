@@ -160,7 +160,11 @@ viewCollectiveSettings model =
 
 viewManageData : Model -> Html Msg
 viewManageData model =
-    Html.map ManageDataMsg (Page.ManageData.View.view model.uiSettings model.manageDataModel)
+    Html.map ManageDataMsg
+        (Page.ManageData.View.view model.flags
+            model.uiSettings
+            model.manageDataModel
+        )
 
 
 viewLogin : Model -> Html Msg

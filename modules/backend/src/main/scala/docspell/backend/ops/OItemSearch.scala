@@ -107,7 +107,7 @@ object OItemSearch {
         val search = QItem.findItems(q, batch)
         store
           .transact(
-            QItem.findItemsWithTags(q.collective, search).take(batch.limit.toLong)
+            QItem.findItemsWithTags(q.account.collective, search).take(batch.limit.toLong)
           )
           .compile
           .toVector

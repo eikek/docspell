@@ -2,6 +2,7 @@ package docspell.joex.process
 
 import cats.effect._
 
+import docspell.backend.ops.OItem
 import docspell.common.ProcessItemArgs
 import docspell.ftsclient.FtsClient
 import docspell.joex.Config
@@ -11,6 +12,7 @@ object ProcessItem {
 
   def apply[F[_]: ConcurrentEffect: ContextShift](
       cfg: Config,
+      itemOps: OItem[F],
       fts: FtsClient[F]
   )(item: ItemData): Task[F, ProcessItemArgs, ItemData] =
     ExtractArchive(item)
@@ -22,6 +24,7 @@ object ProcessItem {
       .flatMap(analysisOnly[F](cfg))
       .flatMap(Task.setProgress(80))
       .flatMap(LinkProposal[F])
+      .flatMap(SetGivenData[F](itemOps))
       .flatMap(Task.setProgress(99))
 
   def analysisOnly[F[_]: Sync](

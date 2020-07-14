@@ -1,13 +1,16 @@
 package docspell.ftssolr
 
 import cats.effect._
+import cats.implicits._
 
+import docspell.common._
 import docspell.ftsclient._
 import docspell.ftssolr.JsonCodec._
 
 import _root_.io.circe._
 import _root_.io.circe.syntax._
 import org.http4s._
+import org.http4s.circe.CirceEntityDecoder._
 import org.http4s.circe._
 import org.http4s.client.Client
 import org.http4s.client.dsl.Http4sClientDsl
@@ -17,6 +20,8 @@ trait SolrUpdate[F[_]] {
   def add(tds: List[TextData]): F[Unit]
 
   def update(tds: List[TextData]): F[Unit]
+
+  def updateFolder(itemId: Ident, collective: Ident, folder: Option[Ident]): F[Unit]
 
   def delete(q: String, commitWithin: Option[Int]): F[Unit]
 }
@@ -41,6 +46,29 @@ object SolrUpdate {
       def update(tds: List[TextData]): F[Unit] = {
         val req = Method.POST(tds.filter(minOneChange).map(SetFields).asJson, url)
         client.expect[Unit](req)
+      }
+
+      def updateFolder(
+          itemId: Ident,
+          collective: Ident,
+          folder: Option[Ident]
+      ): F[Unit] = {
+        val queryUrl = Uri.unsafeFromString(cfg.url.asString) / "query"
+        val q = QueryData(
+          "*:*",
+          s"${Field.itemId.name}:${itemId.id} AND ${Field.collectiveId.name}:${collective.id}",
+          Int.MaxValue,
+          0,
+          List(Field.id),
+          Map.empty
+        )
+        val searchReq = Method.POST(q.asJson, queryUrl)
+        for {
+          docIds <- client.expect[DocIdResult](searchReq)
+          sets = docIds.toSetFolder(folder)
+          req  = Method.POST(sets.asJson, url)
+          _ <- client.expect[Unit](req)
+        } yield ()
       }
 
       def delete(q: String, commitWithin: Option[Int]): F[Unit] = {

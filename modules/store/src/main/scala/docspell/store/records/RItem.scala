@@ -27,7 +27,8 @@ case class RItem(
     dueDate: Option[Timestamp],
     created: Timestamp,
     updated: Timestamp,
-    notes: Option[String]
+    notes: Option[String],
+    folderId: Option[Ident]
 ) {}
 
 object RItem {
@@ -58,6 +59,7 @@ object RItem {
       None,
       now,
       now,
+      None,
       None
     )
 
@@ -80,6 +82,7 @@ object RItem {
     val created       = Column("created")
     val updated       = Column("updated")
     val notes         = Column("notes")
+    val folder        = Column("folder_id")
     val all = List(
       id,
       cid,
@@ -96,7 +99,8 @@ object RItem {
       dueDate,
       created,
       updated,
-      notes
+      notes,
+      folder
     )
   }
   import Columns._
@@ -107,7 +111,7 @@ object RItem {
       all,
       fr"${v.id},${v.cid},${v.name},${v.itemDate},${v.source},${v.direction},${v.state}," ++
         fr"${v.corrOrg},${v.corrPerson},${v.concPerson},${v.concEquipment},${v.inReplyTo},${v.dueDate}," ++
-        fr"${v.created},${v.updated},${v.notes}"
+        fr"${v.created},${v.updated},${v.notes},${v.folderId}"
     ).update.run
 
   def getCollective(itemId: Ident): ConnectionIO[Option[Ident]] =
@@ -239,7 +243,21 @@ object RItem {
       n <- updateRow(
         table,
         and(cid.is(coll), concEquipment.is(Some(currentEquip))),
-        commas(concPerson.setTo(None: Option[Ident]), updated.setTo(t))
+        commas(concEquipment.setTo(None: Option[Ident]), updated.setTo(t))
+      ).update.run
+    } yield n
+
+  def updateFolder(
+      itemId: Ident,
+      coll: Ident,
+      folderId: Option[Ident]
+  ): ConnectionIO[Int] =
+    for {
+      t <- currentTime
+      n <- updateRow(
+        table,
+        and(cid.is(coll), id.is(itemId)),
+        commas(folder.setTo(folderId), updated.setTo(t))
       ).update.run
     } yield n
 
@@ -295,4 +313,9 @@ object RItem {
 
   def findByIdAndCollective(itemId: Ident, coll: Ident): ConnectionIO[Option[RItem]] =
     selectSimple(all, table, and(id.is(itemId), cid.is(coll))).query[RItem].option
+
+  def removeFolder(folderId: Ident): ConnectionIO[Int] = {
+    val empty: Option[Ident] = None
+    updateRow(table, folder.is(folderId), folder.setTo(empty)).update.run
+  }
 }

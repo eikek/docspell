@@ -1,6 +1,7 @@
 module Page.ManageData.Update exposing (update)
 
 import Comp.EquipmentManage
+import Comp.FolderManage
 import Comp.OrgManage
 import Comp.PersonManage
 import Comp.TagManage
@@ -29,6 +30,13 @@ update flags msg model =
                 PersonTab ->
                     update flags (PersonManageMsg Comp.PersonManage.LoadPersons) m
 
+                FolderTab ->
+                    let
+                        ( sm, sc ) =
+                            Comp.FolderManage.init flags
+                    in
+                    ( { m | folderManageModel = sm }, Cmd.map FolderMsg sc )
+
         TagManageMsg m ->
             let
                 ( m2, c2 ) =
@@ -56,3 +64,12 @@ update flags msg model =
                     Comp.PersonManage.update flags m model.personManageModel
             in
             ( { model | personManageModel = m2 }, Cmd.map PersonManageMsg c2 )
+
+        FolderMsg lm ->
+            let
+                ( m2, c2 ) =
+                    Comp.FolderManage.update flags lm model.folderManageModel
+            in
+            ( { model | folderManageModel = m2 }
+            , Cmd.map FolderMsg c2
+            )

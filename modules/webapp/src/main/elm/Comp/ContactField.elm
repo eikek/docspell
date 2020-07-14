@@ -32,6 +32,7 @@ emptyModel =
                 \ct ->
                     { value = Data.ContactType.toString ct
                     , text = Data.ContactType.toString ct
+                    , additional = ""
                     }
             , placeholder = ""
             , options = Data.ContactType.all

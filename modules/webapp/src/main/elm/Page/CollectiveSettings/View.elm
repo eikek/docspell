@@ -59,7 +59,7 @@ view flags settings model =
             [ div [ class "" ]
                 (case model.currentTab of
                     Just SourceTab ->
-                        viewSources flags model
+                        viewSources flags settings model
 
                     Just UserTab ->
                         viewUsers settings model
@@ -153,15 +153,15 @@ makeTagStats nc =
         ]
 
 
-viewSources : Flags -> Model -> List (Html Msg)
-viewSources flags model =
+viewSources : Flags -> UiSettings -> Model -> List (Html Msg)
+viewSources flags settings model =
     [ h2 [ class "ui header" ]
         [ i [ class "ui upload icon" ] []
         , div [ class "content" ]
             [ text "Sources"
             ]
         ]
-    , Html.map SourceMsg (Comp.SourceManage.view flags model.sourceModel)
+    , Html.map SourceMsg (Comp.SourceManage.view flags settings model.sourceModel)
     ]
 
 

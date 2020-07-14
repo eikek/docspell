@@ -43,6 +43,7 @@ init settings =
                 \l ->
                     { value = Data.Language.toIso3 l
                     , text = Data.Language.toName l
+                    , additional = ""
                     }
             , placeholder = ""
             , options = Data.Language.all

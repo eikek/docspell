@@ -9,7 +9,7 @@ import docspell.backend.ops.OItemSearch._
 import docspell.common._
 import docspell.ftsclient._
 import docspell.store.Store
-import docspell.store.queries.QItem
+import docspell.store.queries.{QFolder, QItem}
 import docspell.store.queue.JobQueue
 import docspell.store.records.RJob
 
@@ -30,7 +30,7 @@ trait OFulltext[F[_]] {
 
   def findIndexOnly(
       fts: OFulltext.FtsInput,
-      collective: Ident,
+      account: AccountId,
       batch: Batch
   ): F[Vector[OFulltext.FtsItemWithTags]]
 
@@ -94,27 +94,29 @@ object OFulltext {
 
       def findIndexOnly(
           ftsQ: OFulltext.FtsInput,
-          collective: Ident,
+          account: AccountId,
           batch: Batch
       ): F[Vector[OFulltext.FtsItemWithTags]] = {
         val fq = FtsQuery(
           ftsQ.query,
-          collective,
+          account.collective,
+          Set.empty,
           Set.empty,
           batch.limit,
           batch.offset,
           FtsQuery.HighlightSetting(ftsQ.highlightPre, ftsQ.highlightPost)
         )
         for {
-          ftsR <- fts.search(fq)
+          folders <- store.transact(QFolder.getMemberFolders(account))
+          ftsR    <- fts.search(fq.withFolders(folders))
           ftsItems = ftsR.results.groupBy(_.itemId)
           select   = ftsR.results.map(r => QItem.SelectedItem(r.itemId, r.score)).toSet
           itemsWithTags <-
             store
               .transact(
                 QItem.findItemsWithTags(
-                  collective,
-                  QItem.findSelectedItems(QItem.Query.empty(collective), select)
+                  account.collective,
+                  QItem.findSelectedItems(QItem.Query.empty(account), select)
                 )
               )
               .take(batch.limit.toLong)
@@ -182,7 +184,8 @@ object OFulltext {
         val sqlResult = search(q, batch)
         val fq = FtsQuery(
           ftsQ.query,
-          q.collective,
+          q.account.collective,
+          Set.empty,
           Set.empty,
           0,
           0,

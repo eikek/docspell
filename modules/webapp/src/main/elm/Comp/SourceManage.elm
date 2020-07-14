@@ -1,7 +1,7 @@
 module Comp.SourceManage exposing
     ( Model
     , Msg(..)
-    , emptyModel
+    , init
     , update
     , view
     )
@@ -14,6 +14,7 @@ import Comp.SourceForm
 import Comp.SourceTable
 import Comp.YesNoDimmer
 import Data.Flags exposing (Flags)
+import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onSubmit)
@@ -37,15 +38,21 @@ type ViewMode
     | Form
 
 
-emptyModel : Model
-emptyModel =
-    { tableModel = Comp.SourceTable.emptyModel
-    , formModel = Comp.SourceForm.emptyModel
-    , viewMode = Table
-    , formError = Nothing
-    , loading = False
-    , deleteConfirm = Comp.YesNoDimmer.emptyModel
-    }
+init : Flags -> ( Model, Cmd Msg )
+init flags =
+    let
+        ( fm, fc ) =
+            Comp.SourceForm.init flags
+    in
+    ( { tableModel = Comp.SourceTable.emptyModel
+      , formModel = fm
+      , viewMode = Table
+      , formError = Nothing
+      , loading = False
+      , deleteConfirm = Comp.YesNoDimmer.emptyModel
+      }
+    , Cmd.map FormMsg fc
+    )
 
 
 type Msg
@@ -187,13 +194,13 @@ update flags msg model =
             ( { model | deleteConfirm = cm }, cmd )
 
 
-view : Flags -> Model -> Html Msg
-view flags model =
+view : Flags -> UiSettings -> Model -> Html Msg
+view flags settings model =
     if model.viewMode == Table then
         viewTable model
 
     else
-        div [] (viewForm flags model)
+        div [] (viewForm flags settings model)
 
 
 viewTable : Model -> Html Msg
@@ -215,8 +222,8 @@ viewTable model =
         ]
 
 
-viewForm : Flags -> Model -> List (Html Msg)
-viewForm flags model =
+viewForm : Flags -> UiSettings -> Model -> List (Html Msg)
+viewForm flags settings model =
     let
         newSource =
             model.formModel.source.id == ""
@@ -236,7 +243,7 @@ viewForm flags model =
             ]
     , Html.form [ class "ui attached segment", onSubmit Submit ]
         [ Html.map YesNoMsg (Comp.YesNoDimmer.view model.deleteConfirm)
-        , Html.map FormMsg (Comp.SourceForm.view flags model.formModel)
+        , Html.map FormMsg (Comp.SourceForm.view flags settings model.formModel)
         , div
             [ classList
                 [ ( "ui error message", True )

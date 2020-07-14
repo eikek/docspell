@@ -139,7 +139,7 @@ init flags =
     ( { settings = Api.Model.NotificationSettings.empty
       , connectionModel =
             Comp.Dropdown.makeSingle
-                { makeOption = \a -> { value = a, text = a }
+                { makeOption = \a -> { value = a, text = a, additional = "" }
                 , placeholder = "Select connection..."
                 }
       , tagInclModel = Util.Tag.makeDropdownModel
@@ -290,7 +290,7 @@ update flags msg model =
 
                 cm =
                     Comp.Dropdown.makeSingleList
-                        { makeOption = \a -> { value = a, text = a }
+                        { makeOption = \a -> { value = a, text = a, additional = "" }
                         , placeholder = "Select Connection..."
                         , options = names
                         , selected = List.head names

@@ -11,6 +11,8 @@ import Api.Model.Attachment exposing (Attachment)
 import Api.Model.BasicResult exposing (BasicResult)
 import Api.Model.DirectionValue exposing (DirectionValue)
 import Api.Model.EquipmentList exposing (EquipmentList)
+import Api.Model.FolderItem exposing (FolderItem)
+import Api.Model.FolderList exposing (FolderList)
 import Api.Model.IdName exposing (IdName)
 import Api.Model.ItemDetail exposing (ItemDetail)
 import Api.Model.ItemProposals exposing (ItemProposals)
@@ -52,6 +54,7 @@ import Page exposing (Page(..))
 import Ports
 import Set exposing (Set)
 import Util.File exposing (makeFileId)
+import Util.Folder exposing (mkFolderOption)
 import Util.Http
 import Util.List
 import Util.Maybe
@@ -71,6 +74,8 @@ type alias Model =
     , corrPersonModel : Comp.Dropdown.Model IdName
     , concPersonModel : Comp.Dropdown.Model IdName
     , concEquipModel : Comp.Dropdown.Model IdName
+    , folderModel : Comp.Dropdown.Model IdName
+    , allFolders : List FolderItem
     , nameModel : String
     , notesModel : Maybe String
     , notesField : NotesField
@@ -140,6 +145,7 @@ emptyModel =
                 \entry ->
                     { value = Data.Direction.toString entry
                     , text = Data.Direction.toString entry
+                    , additional = ""
                     }
             , options = Data.Direction.all
             , placeholder = "Choose a direction…"
@@ -147,24 +153,30 @@ emptyModel =
             }
     , corrOrgModel =
         Comp.Dropdown.makeSingle
-            { makeOption = \e -> { value = e.id, text = e.name }
+            { makeOption = \e -> { value = e.id, text = e.name, additional = "" }
             , placeholder = ""
             }
     , corrPersonModel =
         Comp.Dropdown.makeSingle
-            { makeOption = \e -> { value = e.id, text = e.name }
+            { makeOption = \e -> { value = e.id, text = e.name, additional = "" }
             , placeholder = ""
             }
     , concPersonModel =
         Comp.Dropdown.makeSingle
-            { makeOption = \e -> { value = e.id, text = e.name }
+            { makeOption = \e -> { value = e.id, text = e.name, additional = "" }
             , placeholder = ""
             }
     , concEquipModel =
         Comp.Dropdown.makeSingle
-            { makeOption = \e -> { value = e.id, text = e.name }
+            { makeOption = \e -> { value = e.id, text = e.name, additional = "" }
             , placeholder = ""
             }
+    , folderModel =
+        Comp.Dropdown.makeSingle
+            { makeOption = \e -> { value = e.id, text = e.name, additional = "" }
+            , placeholder = ""
+            }
+    , allFolders = []
     , nameModel = ""
     , notesModel = Nothing
     , notesField = ViewNotes
@@ -268,6 +280,8 @@ type Msg
     | EditAttachNameSet String
     | EditAttachNameSubmit
     | EditAttachNameResp (Result Http.Error BasicResult)
+    | GetFolderResp (Result Http.Error FolderList)
+    | FolderDropdownMsg (Comp.Dropdown.Msg IdName)
 
 
 
@@ -281,6 +295,7 @@ getOptions flags =
         , Api.getOrgLight flags GetOrgResp
         , Api.getPersonsLight flags GetPersonResp
         , Api.getEquipments flags "" GetEquipResp
+        , Api.getFolders flags "" False GetFolderResp
         ]
 
 
@@ -308,6 +323,16 @@ setDirection flags model =
 
         Nothing ->
             Cmd.none
+
+
+setFolder : Flags -> Model -> Maybe IdName -> Cmd Msg
+setFolder flags model mref =
+    let
+        idref =
+            Maybe.map .id mref
+                |> OptionalId
+    in
+    Api.setFolder flags model.item.id idref SaveResp
 
 
 setCorrOrg : Flags -> Model -> Maybe IdName -> Cmd Msg
@@ -523,6 +548,20 @@ update key flags next msg model =
                 ( m7, c7, s7 ) =
                     update key flags next AddFilesReset m6
 
+                ( m8, c8, s8 ) =
+                    update key
+                        flags
+                        next
+                        (FolderDropdownMsg
+                            (Comp.Dropdown.SetSelection
+                                (item.folder
+                                    |> Maybe.map List.singleton
+                                    |> Maybe.withDefault []
+                                )
+                            )
+                        )
+                        m7
+
                 proposalCmd =
                     if item.state == "created" then
                         Api.getItemProposals flags item.id GetProposalResp
@@ -530,7 +569,7 @@ update key flags next msg model =
                     else
                         Cmd.none
             in
-            ( { m7
+            ( { m8
                 | item = item
                 , nameModel = item.name
                 , notesModel = item.notes
@@ -548,11 +587,12 @@ update key flags next msg model =
                 , c5
                 , c6
                 , c7
+                , c8
                 , getOptions flags
                 , proposalCmd
                 , Api.getSentMails flags item.id SentMailsResp
                 ]
-            , Sub.batch [ s1, s2, s3, s4, s5, s6, s7 ]
+            , Sub.batch [ s1, s2, s3, s4, s5, s6, s7, s8 ]
             )
 
         SetActiveAttachment pos ->
@@ -574,6 +614,26 @@ update key flags next msg model =
 
             else
                 noSub ( model, Api.itemDetail flags model.item.id GetItemResp )
+
+        FolderDropdownMsg m ->
+            let
+                ( m2, c2 ) =
+                    Comp.Dropdown.update m model.folderModel
+
+                newModel =
+                    { model | folderModel = m2 }
+
+                idref =
+                    Comp.Dropdown.getSelected m2 |> List.head
+
+                save =
+                    if isDropdownChangeMsg m then
+                        setFolder flags newModel idref
+
+                    else
+                        Cmd.none
+            in
+            noSub ( newModel, Cmd.batch [ save, Cmd.map FolderDropdownMsg c2 ] )
 
         TagDropdownMsg m ->
             let
@@ -826,6 +886,30 @@ update key flags next msg model =
 
         SetDueDateSuggestion date ->
             noSub ( model, setDueDate flags model (Just date) )
+
+        GetFolderResp (Ok fs) ->
+            let
+                model_ =
+                    { model
+                        | allFolders = fs.items
+                        , folderModel =
+                            Comp.Dropdown.setMkOption
+                                (mkFolderOption flags fs.items)
+                                model.folderModel
+                    }
+
+                mkIdName fitem =
+                    IdName fitem.id fitem.name
+
+                opts =
+                    fs.items
+                        |> List.map mkIdName
+                        |> Comp.Dropdown.SetOptions
+            in
+            update key flags next (FolderDropdownMsg opts) model_
+
+        GetFolderResp (Err _) ->
+            noSub ( model, Cmd.none )
 
         GetTagsResp (Ok tags) ->
             let
@@ -1382,29 +1466,33 @@ update key flags next msg model =
                     noSub ( { model | attachRename = Nothing }, Cmd.none )
 
         EditAttachNameResp (Ok res) ->
-            case model.attachRename of
-                Just m ->
-                    let
-                        changeName a =
-                            if a.id == m.id then
-                                { a | name = Util.Maybe.fromString m.newName }
+            if res.success then
+                case model.attachRename of
+                    Just m ->
+                        let
+                            changeName a =
+                                if a.id == m.id then
+                                    { a | name = Util.Maybe.fromString m.newName }
 
-                            else
-                                a
+                                else
+                                    a
 
-                        changeItem i =
-                            { i | attachments = List.map changeName i.attachments }
-                    in
-                    noSub
-                        ( { model
-                            | attachRename = Nothing
-                            , item = changeItem model.item
-                          }
-                        , Cmd.none
-                        )
+                            changeItem i =
+                                { i | attachments = List.map changeName i.attachments }
+                        in
+                        noSub
+                            ( { model
+                                | attachRename = Nothing
+                                , item = changeItem model.item
+                              }
+                            , Cmd.none
+                            )
 
-                Nothing ->
-                    noSub ( model, Cmd.none )
+                    Nothing ->
+                        noSub ( model, Cmd.none )
+
+            else
+                noSub ( model, Cmd.none )
 
         EditAttachNameResp (Err _) ->
             noSub ( model, Cmd.none )
@@ -1939,6 +2027,17 @@ renderItemInfo settings model =
                     |> text
                 ]
 
+        itemfolder =
+            div
+                [ class "item"
+                , title "Folder"
+                ]
+                [ Icons.folderIcon ""
+                , Maybe.map .name model.item.folder
+                    |> Maybe.withDefault "-"
+                    |> text
+                ]
+
         src =
             div
                 [ class "item"
@@ -1972,6 +2071,7 @@ renderItemInfo settings model =
                             [ date
                             , corr
                             , conc
+                            , itemfolder
                             , src
                             ]
                             (if Util.Maybe.isEmpty model.item.dueDate then
@@ -2061,7 +2161,7 @@ renderEditForm settings model =
                 ]
     in
     div [ class "ui attached segment" ]
-        [ div [ class "ui form" ]
+        [ div [ class "ui form warning" ]
             [ div [ class "field" ]
                 [ label []
                     [ Icons.tagsIcon "grey"
@@ -2080,6 +2180,25 @@ renderEditForm settings model =
                         ]
                         [ i [ class "save outline icon" ] []
                         ]
+                    ]
+                ]
+            , div [ class "field" ]
+                [ label []
+                    [ Icons.folderIcon "grey"
+                    , text "Folder"
+                    ]
+                , Html.map FolderDropdownMsg (Comp.Dropdown.view settings model.folderModel)
+                , div
+                    [ classList
+                        [ ( "ui warning message", True )
+                        , ( "hidden", isFolderMember model )
+                        ]
+                    ]
+                    [ Markdown.toHtml [] """
+You are **not a member** of this folder. This item will be **hidden**
+from any search now. Use a folder where you are a member of to make this
+item visible. This message will disappear then.
+                      """
                     ]
                 ]
             , div [ class "field" ]
@@ -2407,3 +2526,14 @@ renderEditAttachmentName model attach =
 
         Nothing ->
             span [ class "invisible hidden" ] []
+
+
+isFolderMember : Model -> Bool
+isFolderMember model =
+    let
+        selected =
+            Comp.Dropdown.getSelected model.folderModel
+                |> List.head
+                |> Maybe.map .id
+    in
+    Util.Folder.isFolderMember model.allFolders selected

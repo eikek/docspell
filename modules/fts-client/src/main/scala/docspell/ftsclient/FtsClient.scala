@@ -17,11 +17,12 @@ import org.log4s.getLogger
   */
 trait FtsClient[F[_]] {
 
-  /** Initialization tasks. This is called exactly once and then never
+  /** Initialization tasks. This is called exactly once at the very
+    * beginning when initializing the full-text index and then never
     * again (except when re-indexing everything). It may be used to
     * setup the database.
     */
-  def initialize: F[Unit]
+  def initialize: List[FtsMigration[F]]
 
   /** Run a full-text search. */
   def search(q: FtsQuery): F[FtsResult]
@@ -57,7 +58,7 @@ trait FtsClient[F[_]] {
       collective: Ident,
       name: String
   ): F[Unit] =
-    updateIndex(logger, TextData.item(itemId, collective, Some(name), None))
+    updateIndex(logger, TextData.item(itemId, collective, None, Some(name), None))
 
   def updateItemNotes(
       logger: Logger[F],
@@ -67,7 +68,7 @@ trait FtsClient[F[_]] {
   ): F[Unit] =
     updateIndex(
       logger,
-      TextData.item(itemId, collective, None, Some(notes.getOrElse("")))
+      TextData.item(itemId, collective, None, None, Some(notes.getOrElse("")))
     )
 
   def updateAttachmentName(
@@ -83,11 +84,19 @@ trait FtsClient[F[_]] {
         itemId,
         attachId,
         collective,
+        None,
         Language.English,
         Some(name.getOrElse("")),
         None
       )
     )
+
+  def updateFolder(
+      logger: Logger[F],
+      itemId: Ident,
+      collective: Ident,
+      folder: Option[Ident]
+  ): F[Unit]
 
   def removeItem(logger: Logger[F], itemId: Ident): F[Unit]
 
@@ -107,13 +116,21 @@ object FtsClient {
     new FtsClient[F] {
       private[this] val logger = Logger.log4s[F](getLogger)
 
-      def initialize: F[Unit] =
-        logger.info("Full-text search is disabled!")
+      def initialize: List[FtsMigration[F]] =
+        Nil
 
       def search(q: FtsQuery): F[FtsResult] =
         logger.warn("Full-text search is disabled!") *> FtsResult.empty.pure[F]
 
       def updateIndex(logger: Logger[F], data: Stream[F, TextData]): F[Unit] =
+        logger.warn("Full-text search is disabled!")
+
+      def updateFolder(
+          logger: Logger[F],
+          itemId: Ident,
+          collective: Ident,
+          folder: Option[Ident]
+      ): F[Unit] =
         logger.warn("Full-text search is disabled!")
 
       def indexData(logger: Logger[F], data: Stream[F, TextData]): F[Unit] =

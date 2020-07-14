@@ -15,8 +15,8 @@ import docspell.common.syntax.all._
 import docspell.ftsclient.FtsResult
 import docspell.restapi.model._
 import docspell.restserver.conv.Conversions._
-import docspell.store.AddResult
 import docspell.store.records._
+import docspell.store.{AddResult, UpdateResult}
 
 import bitpeace.FileMeta
 import org.http4s.headers.`Content-Type`
@@ -85,6 +85,7 @@ trait Conversions {
       data.concPerson.map(p => IdName(p.pid, p.name)),
       data.concEquip.map(e => IdName(e.eid, e.name)),
       data.inReplyTo.map(mkIdName),
+      data.folder.map(mkIdName),
       data.item.dueDate,
       data.item.notes,
       data.attachments.map((mkAttachment(data) _).tupled).toList,
@@ -109,9 +110,9 @@ trait Conversions {
 
   // item list
 
-  def mkQuery(m: ItemSearch, coll: Ident): OItemSearch.Query =
+  def mkQuery(m: ItemSearch, account: AccountId): OItemSearch.Query =
     OItemSearch.Query(
-      coll,
+      account,
       m.name,
       if (m.inbox) Seq(ItemState.Created)
       else ItemState.validStates.toList,
@@ -120,6 +121,7 @@ trait Conversions {
       m.corrOrg,
       m.concPerson,
       m.concEquip,
+      m.folder,
       m.tagsInclude.map(Ident.unsafe),
       m.tagsExclude.map(Ident.unsafe),
       m.dateFrom,
@@ -192,6 +194,7 @@ trait Conversions {
       i.corrPerson.map(mkIdName),
       i.concPerson.map(mkIdName),
       i.concEquip.map(mkIdName),
+      i.folder.map(mkIdName),
       i.fileCount,
       Nil,
       Nil
@@ -284,9 +287,11 @@ trait Conversions {
       .find(_.name.exists(_.equalsIgnoreCase("meta")))
       .map(p => parseMeta(p.body))
       .map(fm =>
-        fm.map(m => (m.multiple, UploadMeta(m.direction, "webapp", validFileTypes)))
+        fm.map(m =>
+          (m.multiple, UploadMeta(m.direction, "webapp", m.folder, validFileTypes))
+        )
       )
-      .getOrElse((true, UploadMeta(None, "webapp", validFileTypes)).pure[F])
+      .getOrElse((true, UploadMeta(None, "webapp", None, validFileTypes)).pure[F])
 
     val files = mp.parts
       .filter(p => p.name.forall(s => !s.equalsIgnoreCase("meta")))
@@ -431,7 +436,16 @@ trait Conversions {
 
   // users
   def mkUser(ru: RUser): User =
-    User(ru.login, ru.state, None, ru.email, ru.lastLogin, ru.loginCount, ru.created)
+    User(
+      ru.uid,
+      ru.login,
+      ru.state,
+      None,
+      ru.email,
+      ru.lastLogin,
+      ru.loginCount,
+      ru.created
+    )
 
   def newUser[F[_]: Sync](u: User, cid: Ident): F[RUser] =
     timeId.map {
@@ -451,7 +465,7 @@ trait Conversions {
 
   def changeUser(u: User, cid: Ident): RUser =
     RUser(
-      Ident.unsafe(""),
+      u.id,
       u.login,
       cid,
       u.password.getOrElse(Password.empty),
@@ -479,12 +493,21 @@ trait Conversions {
   // sources
 
   def mkSource(s: RSource): Source =
-    Source(s.sid, s.abbrev, s.description, s.counter, s.enabled, s.priority, s.created)
+    Source(
+      s.sid,
+      s.abbrev,
+      s.description,
+      s.counter,
+      s.enabled,
+      s.priority,
+      s.folderId,
+      s.created
+    )
 
   def newSource[F[_]: Sync](s: Source, cid: Ident): F[RSource] =
     timeId.map({
       case (id, now) =>
-        RSource(id, cid, s.abbrev, s.description, 0, s.enabled, s.priority, now)
+        RSource(id, cid, s.abbrev, s.description, 0, s.enabled, s.priority, now, s.folder)
     })
 
   def changeSource[F[_]: Sync](s: Source, coll: Ident): RSource =
@@ -496,7 +519,8 @@ trait Conversions {
       s.counter,
       s.enabled,
       s.priority,
-      s.created
+      s.created,
+      s.folder
     )
 
   // equipment
@@ -528,11 +552,27 @@ trait Conversions {
         BasicResult(true, "The job has been removed from the queue.")
     }
 
+  def idResult(ar: AddResult, id: Ident, successMsg: String): IdResult =
+    ar match {
+      case AddResult.Success           => IdResult(true, successMsg, id)
+      case AddResult.EntityExists(msg) => IdResult(false, msg, Ident.unsafe(""))
+      case AddResult.Failure(ex) =>
+        IdResult(false, s"Internal error: ${ex.getMessage}", Ident.unsafe(""))
+    }
+
   def basicResult(ar: AddResult, successMsg: String): BasicResult =
     ar match {
       case AddResult.Success           => BasicResult(true, successMsg)
       case AddResult.EntityExists(msg) => BasicResult(false, msg)
       case AddResult.Failure(ex) =>
+        BasicResult(false, s"Internal error: ${ex.getMessage}")
+    }
+
+  def basicResult(ar: UpdateResult, successMsg: String): BasicResult =
+    ar match {
+      case UpdateResult.Success  => BasicResult(true, successMsg)
+      case UpdateResult.NotFound => BasicResult(false, "Not found")
+      case UpdateResult.Failure(ex) =>
         BasicResult(false, s"Internal error: ${ex.getMessage}")
     }
 

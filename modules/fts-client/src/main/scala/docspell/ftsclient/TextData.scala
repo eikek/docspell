@@ -10,6 +10,8 @@ sealed trait TextData {
 
   def collective: Ident
 
+  def folder: Option[Ident]
+
   final def fold[A](f: TextData.Attachment => A, g: TextData.Item => A): A =
     this match {
       case a: TextData.Attachment => f(a)
@@ -23,6 +25,7 @@ object TextData {
       item: Ident,
       attachId: Ident,
       collective: Ident,
+      folder: Option[Ident],
       lang: Language,
       name: Option[String],
       text: Option[String]
@@ -36,15 +39,17 @@ object TextData {
       item: Ident,
       attachId: Ident,
       collective: Ident,
+      folder: Option[Ident],
       lang: Language,
       name: Option[String],
       text: Option[String]
   ): TextData =
-    Attachment(item, attachId, collective, lang, name, text)
+    Attachment(item, attachId, collective, folder, lang, name, text)
 
   final case class Item(
       item: Ident,
       collective: Ident,
+      folder: Option[Ident],
       name: Option[String],
       notes: Option[String]
   ) extends TextData {
@@ -56,8 +61,9 @@ object TextData {
   def item(
       item: Ident,
       collective: Ident,
+      folder: Option[Ident],
       name: Option[String],
       notes: Option[String]
   ): TextData =
-    Item(item, collective, name, notes)
+    Item(item, collective, folder, name, notes)
 }

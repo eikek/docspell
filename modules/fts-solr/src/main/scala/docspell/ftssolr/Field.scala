@@ -25,6 +25,7 @@ object Field {
   val content_en     = Field("content_en")
   val itemName       = Field("itemName")
   val itemNotes      = Field("itemNotes")
+  val folderId       = Field("folder")
 
   def contentField(lang: Language): Field =
     lang match {

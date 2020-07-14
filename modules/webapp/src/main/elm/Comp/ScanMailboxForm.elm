@@ -10,10 +10,13 @@ module Comp.ScanMailboxForm exposing
 
 import Api
 import Api.Model.BasicResult exposing (BasicResult)
+import Api.Model.FolderItem exposing (FolderItem)
+import Api.Model.FolderList exposing (FolderList)
+import Api.Model.IdName exposing (IdName)
 import Api.Model.ImapSettingsList exposing (ImapSettingsList)
 import Api.Model.ScanMailboxSettings exposing (ScanMailboxSettings)
 import Comp.CalEventInput
-import Comp.Dropdown
+import Comp.Dropdown exposing (isDropdownChangeMsg)
 import Comp.IntField
 import Comp.StringListInput
 import Comp.YesNoDimmer
@@ -26,9 +29,12 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onCheck, onClick, onInput)
 import Http
+import Markdown
+import Util.Folder exposing (mkFolderOption)
 import Util.Http
 import Util.List
 import Util.Maybe
+import Util.Update
 
 
 type alias Model =
@@ -47,6 +53,9 @@ type alias Model =
     , formMsg : Maybe BasicResult
     , loading : Int
     , yesNoDelete : Comp.YesNoDimmer.Model
+    , folderModel : Comp.Dropdown.Model IdName
+    , allFolders : List FolderItem
+    , itemFolderId : Maybe String
     }
 
 
@@ -73,6 +82,8 @@ type Msg
     | FoldersMsg Comp.StringListInput.Msg
     | DirectionMsg (Maybe Direction)
     | YesNoDeleteMsg Comp.YesNoDimmer.Msg
+    | GetFolderResp (Result Http.Error FolderList)
+    | FolderDropdownMsg (Comp.Dropdown.Msg IdName)
 
 
 initWith : Flags -> ScanMailboxSettings -> ( Model, Cmd Msg )
@@ -108,11 +119,13 @@ initWith flags s =
         , scheduleModel = sm
         , formMsg = Nothing
         , yesNoDelete = Comp.YesNoDimmer.emptyModel
+        , itemFolderId = s.itemFolder
       }
     , Cmd.batch
         [ Api.getImapSettings flags "" ConnResp
         , nc
         , Cmd.map CalEventMsg sc
+        , Api.getFolders flags "" False GetFolderResp
         ]
     )
 
@@ -129,7 +142,7 @@ init flags =
     ( { settings = Api.Model.ScanMailboxSettings.empty
       , connectionModel =
             Comp.Dropdown.makeSingle
-                { makeOption = \a -> { value = a, text = a }
+                { makeOption = \a -> { value = a, text = a, additional = "" }
                 , placeholder = "Select connection..."
                 }
       , enabled = False
@@ -143,12 +156,20 @@ init flags =
       , schedule = initialSchedule
       , scheduleModel = sm
       , formMsg = Nothing
-      , loading = 1
+      , loading = 2
       , yesNoDelete = Comp.YesNoDimmer.emptyModel
+      , folderModel =
+            Comp.Dropdown.makeSingle
+                { makeOption = \e -> { value = e.id, text = e.name, additional = "" }
+                , placeholder = ""
+                }
+      , allFolders = []
+      , itemFolderId = Nothing
       }
     , Cmd.batch
         [ Api.getImapSettings flags "" ConnResp
         , Cmd.map CalEventMsg sc
+        , Api.getFolders flags "" False GetFolderResp
         ]
     )
 
@@ -186,6 +207,7 @@ makeSettings model =
                 , folders = folders
                 , direction = Maybe.map Data.Direction.toString model.direction
                 , schedule = Data.CalEvent.makeEvent timer
+                , itemFolder = model.itemFolderId
             }
     in
     Data.Validated.map3 make
@@ -260,7 +282,7 @@ update flags msg model =
 
                 cm =
                     Comp.Dropdown.makeSingleList
-                        { makeOption = \a -> { value = a, text = a }
+                        { makeOption = \a -> { value = a, text = a, additional = "" }
                         , placeholder = "Select Connection..."
                         , options = names
                         , selected = List.head names
@@ -402,6 +424,84 @@ update flags msg model =
             , Cmd.none
             )
 
+        GetFolderResp (Ok fs) ->
+            let
+                model_ =
+                    { model
+                        | allFolders = fs.items
+                        , loading = model.loading - 1
+                        , folderModel =
+                            Comp.Dropdown.setMkOption
+                                (mkFolderOption flags fs.items)
+                                model.folderModel
+                    }
+
+                mkIdName fitem =
+                    IdName fitem.id fitem.name
+
+                opts =
+                    fs.items
+                        |> List.map mkIdName
+                        |> Comp.Dropdown.SetOptions
+
+                mkIdNameFromId id =
+                    List.filterMap
+                        (\f ->
+                            if f.id == id then
+                                Just (IdName id f.name)
+
+                            else
+                                Nothing
+                        )
+                        fs.items
+
+                sel =
+                    case Maybe.map mkIdNameFromId model.itemFolderId of
+                        Just idref ->
+                            idref
+
+                        Nothing ->
+                            []
+
+                removeAction ( a, _, c ) =
+                    ( a, c )
+
+                addNoAction ( a, b ) =
+                    ( a, NoAction, b )
+            in
+            Util.Update.andThen1
+                [ update flags (FolderDropdownMsg opts) >> removeAction
+                , update flags (FolderDropdownMsg (Comp.Dropdown.SetSelection sel)) >> removeAction
+                ]
+                model_
+                |> addNoAction
+
+        GetFolderResp (Err _) ->
+            ( { model | loading = model.loading - 1 }
+            , NoAction
+            , Cmd.none
+            )
+
+        FolderDropdownMsg m ->
+            let
+                ( m2, c2 ) =
+                    Comp.Dropdown.update m model.folderModel
+
+                newModel =
+                    { model | folderModel = m2 }
+
+                idref =
+                    Comp.Dropdown.getSelected m2 |> List.head
+
+                model_ =
+                    if isDropdownChangeMsg m then
+                        { newModel | itemFolderId = Maybe.map .id idref }
+
+                    else
+                        newModel
+            in
+            ( model_, NoAction, Cmd.map FolderDropdownMsg c2 )
+
 
 
 --- View
@@ -424,7 +524,7 @@ view : String -> UiSettings -> Model -> Html Msg
 view extraClasses settings model =
     div
         [ classList
-            [ ( "ui form", True )
+            [ ( "ui warning form", True )
             , ( extraClasses, True )
             , ( "error", isFormError model )
             , ( "success", isFormSuccess model )
@@ -547,6 +647,28 @@ view extraClasses settings model =
                     ]
                 ]
             ]
+        , div [ class "field" ]
+            [ label []
+                [ text "Item Folder"
+                ]
+            , Html.map FolderDropdownMsg (Comp.Dropdown.view settings model.folderModel)
+            , span [ class "small-info" ]
+                [ text "Put all items from this mailbox into the selected folder"
+                ]
+            , div
+                [ classList
+                    [ ( "ui warning message", True )
+                    , ( "hidden", isFolderMember model )
+                    ]
+                ]
+                [ Markdown.toHtml [] """
+You are **not a member** of this folder. Items created from mails in
+this mailbox will be **hidden** from any search results. Use a folder
+where you are a member of to make items visible. This message will
+disappear then.
+                      """
+                ]
+            ]
         , div [ class "required field" ]
             [ label []
                 [ text "Schedule"
@@ -612,3 +734,14 @@ view extraClasses settings model =
             [ text "Start Once"
             ]
         ]
+
+
+isFolderMember : Model -> Bool
+isFolderMember model =
+    let
+        selected =
+            Comp.Dropdown.getSelected model.folderModel
+                |> List.head
+                |> Maybe.map .id
+    in
+    Util.Folder.isFolderMember model.allFolders selected

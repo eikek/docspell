@@ -21,7 +21,6 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Markdown
-import Ports
 import Util.List
 import Util.String
 import Util.Time
@@ -125,6 +124,10 @@ viewItem settings item =
                 |> List.intersperse ", "
                 |> String.concat
 
+        folder =
+            Maybe.map .name item.folder
+                |> Maybe.withDefault ""
+
         dueDate =
             Maybe.map Util.Time.formatDateShort item.dueDate
                 |> Maybe.withDefault ""
@@ -211,6 +214,14 @@ viewItem settings item =
                     [ Icons.concernedIcon
                     , text " "
                     , Util.String.withDefault "-" conc |> text
+                    ]
+                , div
+                    [ class "item"
+                    , title "Folder"
+                    ]
+                    [ Icons.folderIcon ""
+                    , text " "
+                    , Util.String.withDefault "-" folder |> text
                     ]
                 ]
             , div [ class "right floated meta" ]
