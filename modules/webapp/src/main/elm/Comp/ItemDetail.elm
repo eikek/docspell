@@ -54,6 +54,7 @@ import Page exposing (Page(..))
 import Ports
 import Set exposing (Set)
 import Util.File exposing (makeFileId)
+import Util.Folder exposing (mkFolderOption)
 import Util.Http
 import Util.List
 import Util.Maybe
@@ -129,36 +130,6 @@ isEditNotes field =
 
         HideNotes ->
             False
-
-
-mkFolderOption : Flags -> List FolderItem -> IdName -> Comp.Dropdown.Option
-mkFolderOption flags allFolders idref =
-    let
-        folder =
-            List.filter (\e -> e.id == idref.id) allFolders
-                |> List.head
-
-        isMember =
-            folder
-                |> Maybe.map .isMember
-                |> Maybe.withDefault False
-
-        isOwner =
-            Maybe.map .owner folder
-                |> Maybe.map .name
-                |> (==) (Maybe.map .user flags.account)
-
-        adds =
-            if isOwner then
-                "owner"
-
-            else if isMember then
-                "member"
-
-            else
-                ""
-    in
-    { value = idref.id, text = idref.name, additional = adds }
 
 
 emptyModel : Model
@@ -2552,13 +2523,5 @@ isFolderMember model =
             Comp.Dropdown.getSelected model.folderModel
                 |> List.head
                 |> Maybe.map .id
-
-        findFolder id =
-            List.filter (\e -> e.id == id) model.allFolders
-                |> List.head
-
-        folder =
-            Maybe.andThen findFolder selected
     in
-    Maybe.map .isMember folder
-        |> Maybe.withDefault True
+    Util.Folder.isFolderMember model.allFolders selected

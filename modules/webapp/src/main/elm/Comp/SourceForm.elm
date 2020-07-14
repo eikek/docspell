@@ -1,20 +1,29 @@
 module Comp.SourceForm exposing
     ( Model
     , Msg(..)
-    , emptyModel
     , getSource
+    , init
     , isValid
     , update
     , view
     )
 
+import Api
+import Api.Model.FolderItem exposing (FolderItem)
+import Api.Model.FolderList exposing (FolderList)
+import Api.Model.IdName exposing (IdName)
 import Api.Model.Source exposing (Source)
+import Comp.Dropdown exposing (isDropdownChangeMsg)
 import Comp.FixedDropdown
 import Data.Flags exposing (Flags)
 import Data.Priority exposing (Priority)
+import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onCheck, onInput)
+import Http
+import Markdown
+import Util.Folder exposing (mkFolderOption)
 
 
 type alias Model =
@@ -24,6 +33,9 @@ type alias Model =
     , priorityModel : Comp.FixedDropdown.Model Priority
     , priority : Priority
     , enabled : Bool
+    , folderModel : Comp.Dropdown.Model IdName
+    , allFolders : List FolderItem
+    , folderId : Maybe String
     }
 
 
@@ -38,7 +50,21 @@ emptyModel =
             Data.Priority.all
     , priority = Data.Priority.Low
     , enabled = False
+    , folderModel =
+        Comp.Dropdown.makeSingle
+            { makeOption = \e -> { value = e.id, text = e.name, additional = "" }
+            , placeholder = ""
+            }
+    , allFolders = []
+    , folderId = Nothing
     }
+
+
+init : Flags -> ( Model, Cmd Msg )
+init flags =
+    ( emptyModel
+    , Api.getFolders flags "" False GetFolderResp
+    )
 
 
 isValid : Model -> Bool
@@ -57,6 +83,7 @@ getSource model =
         , description = model.description
         , enabled = model.enabled
         , priority = Data.Priority.toName model.priority
+        , folder = model.folderId
     }
 
 
@@ -66,10 +93,12 @@ type Msg
     | SetDescr String
     | ToggleEnabled
     | PrioDropdownMsg (Comp.FixedDropdown.Msg Priority)
+    | GetFolderResp (Result Http.Error FolderList)
+    | FolderDropdownMsg (Comp.Dropdown.Msg IdName)
 
 
 update : Flags -> Msg -> Model -> ( Model, Cmd Msg )
-update _ msg model =
+update flags msg model =
     case msg of
         SetSource t ->
             let
@@ -83,19 +112,41 @@ update _ msg model =
                         , description = t.description
                         , priority = t.priority
                         , enabled = t.enabled
+                        , folder = t.folder
                     }
+
+                newModel =
+                    { model
+                        | source = np
+                        , abbrev = t.abbrev
+                        , description = t.description
+                        , priority =
+                            Data.Priority.fromString t.priority
+                                |> Maybe.withDefault Data.Priority.Low
+                        , enabled = t.enabled
+                        , folderId = t.folder
+                    }
+
+                mkIdName id =
+                    List.filterMap
+                        (\f ->
+                            if f.id == id then
+                                Just (IdName id f.name)
+
+                            else
+                                Nothing
+                        )
+                        model.allFolders
+
+                sel =
+                    case Maybe.map mkIdName t.folder of
+                        Just idref ->
+                            idref
+
+                        Nothing ->
+                            []
             in
-            ( { model
-                | source = np
-                , abbrev = t.abbrev
-                , description = t.description
-                , priority =
-                    Data.Priority.fromString t.priority
-                        |> Maybe.withDefault Data.Priority.Low
-                , enabled = t.enabled
-              }
-            , Cmd.none
-            )
+            update flags (FolderDropdownMsg (Comp.Dropdown.SetSelection sel)) newModel
 
         ToggleEnabled ->
             ( { model | enabled = not model.enabled }, Cmd.none )
@@ -127,16 +178,60 @@ update _ msg model =
             , Cmd.none
             )
 
+        GetFolderResp (Ok fs) ->
+            let
+                model_ =
+                    { model
+                        | allFolders = fs.items
+                        , folderModel =
+                            Comp.Dropdown.setMkOption
+                                (mkFolderOption flags fs.items)
+                                model.folderModel
+                    }
 
-view : Flags -> Model -> Html Msg
-view flags model =
+                mkIdName fitem =
+                    IdName fitem.id fitem.name
+
+                opts =
+                    fs.items
+                        |> List.map mkIdName
+                        |> Comp.Dropdown.SetOptions
+            in
+            update flags (FolderDropdownMsg opts) model_
+
+        GetFolderResp (Err _) ->
+            ( model, Cmd.none )
+
+        FolderDropdownMsg m ->
+            let
+                ( m2, c2 ) =
+                    Comp.Dropdown.update m model.folderModel
+
+                newModel =
+                    { model | folderModel = m2 }
+
+                idref =
+                    Comp.Dropdown.getSelected m2 |> List.head
+
+                model_ =
+                    if isDropdownChangeMsg m then
+                        { newModel | folderId = Maybe.map .id idref }
+
+                    else
+                        newModel
+            in
+            ( model_, Cmd.map FolderDropdownMsg c2 )
+
+
+view : Flags -> UiSettings -> Model -> Html Msg
+view flags settings model =
     let
         priorityItem =
             Comp.FixedDropdown.Item
                 model.priority
                 (Data.Priority.toName model.priority)
     in
-    div [ class "ui form" ]
+    div [ class "ui warning form" ]
         [ div
             [ classList
                 [ ( "field", True )
@@ -179,6 +274,25 @@ view flags model =
                     model.priorityModel
                 )
             ]
+        , div [ class "field" ]
+            [ label []
+                [ text "Folder"
+                ]
+            , Html.map FolderDropdownMsg (Comp.Dropdown.view settings model.folderModel)
+            , div
+                [ classList
+                    [ ( "ui warning message", True )
+                    , ( "hidden", isFolderMember model )
+                    ]
+                ]
+                [ Markdown.toHtml [] """
+You are **not a member** of this folder. Items created through this
+link will be **hidden** from any search results. Use a folder where
+you are a member of to make items visible. This message will
+disappear then.
+                      """
+                ]
+            ]
         , urlInfoMessage flags model
         ]
 
@@ -217,3 +331,14 @@ urlInfoMessage flags model =
                 ]
             ]
         ]
+
+
+isFolderMember : Model -> Bool
+isFolderMember model =
+    let
+        selected =
+            Comp.Dropdown.getSelected model.folderModel
+                |> List.head
+                |> Maybe.map .id
+    in
+    Util.Folder.isFolderMember model.allFolders selected

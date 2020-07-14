@@ -2,7 +2,7 @@ module Page.CollectiveSettings.Data exposing
     ( Model
     , Msg(..)
     , Tab(..)
-    , emptyModel
+    , init
     )
 
 import Api.Model.BasicResult exposing (BasicResult)
@@ -11,6 +11,7 @@ import Api.Model.ItemInsights exposing (ItemInsights)
 import Comp.CollectiveSettingsForm
 import Comp.SourceManage
 import Comp.UserManage
+import Data.Flags exposing (Flags)
 import Http
 
 
@@ -24,15 +25,21 @@ type alias Model =
     }
 
 
-emptyModel : Model
-emptyModel =
-    { currentTab = Just InsightsTab
-    , sourceModel = Comp.SourceManage.emptyModel
-    , userModel = Comp.UserManage.emptyModel
-    , settingsModel = Comp.CollectiveSettingsForm.init Api.Model.CollectiveSettings.empty
-    , insights = Api.Model.ItemInsights.empty
-    , submitResult = Nothing
-    }
+init : Flags -> ( Model, Cmd Msg )
+init flags =
+    let
+        ( sm, sc ) =
+            Comp.SourceManage.init flags
+    in
+    ( { currentTab = Just InsightsTab
+      , sourceModel = sm
+      , userModel = Comp.UserManage.emptyModel
+      , settingsModel = Comp.CollectiveSettingsForm.init Api.Model.CollectiveSettings.empty
+      , insights = Api.Model.ItemInsights.empty
+      , submitResult = Nothing
+      }
+    , Cmd.map SourceMsg sc
+    )
 
 
 type Tab
