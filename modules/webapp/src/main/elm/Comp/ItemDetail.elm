@@ -2027,6 +2027,17 @@ renderItemInfo settings model =
                     |> text
                 ]
 
+        itemfolder =
+            div
+                [ class "item"
+                , title "Folder"
+                ]
+                [ Icons.folderIcon ""
+                , Maybe.map .name model.item.folder
+                    |> Maybe.withDefault "-"
+                    |> text
+                ]
+
         src =
             div
                 [ class "item"
@@ -2060,6 +2071,7 @@ renderItemInfo settings model =
                             [ date
                             , corr
                             , conc
+                            , itemfolder
                             , src
                             ]
                             (if Util.Maybe.isEmpty model.item.dueDate then
