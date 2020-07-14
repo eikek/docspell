@@ -287,9 +287,11 @@ trait Conversions {
       .find(_.name.exists(_.equalsIgnoreCase("meta")))
       .map(p => parseMeta(p.body))
       .map(fm =>
-        fm.map(m => (m.multiple, UploadMeta(m.direction, "webapp", validFileTypes)))
+        fm.map(m =>
+          (m.multiple, UploadMeta(m.direction, "webapp", m.folder, validFileTypes))
+        )
       )
-      .getOrElse((true, UploadMeta(None, "webapp", validFileTypes)).pure[F])
+      .getOrElse((true, UploadMeta(None, "webapp", None, validFileTypes)).pure[F])
 
     val files = mp.parts
       .filter(p => p.name.forall(s => !s.equalsIgnoreCase("meta")))
@@ -491,12 +493,21 @@ trait Conversions {
   // sources
 
   def mkSource(s: RSource): Source =
-    Source(s.sid, s.abbrev, s.description, s.counter, s.enabled, s.priority, s.created)
+    Source(
+      s.sid,
+      s.abbrev,
+      s.description,
+      s.counter,
+      s.enabled,
+      s.priority,
+      s.folderId,
+      s.created
+    )
 
   def newSource[F[_]: Sync](s: Source, cid: Ident): F[RSource] =
     timeId.map({
       case (id, now) =>
-        RSource(id, cid, s.abbrev, s.description, 0, s.enabled, s.priority, now)
+        RSource(id, cid, s.abbrev, s.description, 0, s.enabled, s.priority, now, s.folder)
     })
 
   def changeSource[F[_]: Sync](s: Source, coll: Ident): RSource =
@@ -508,7 +519,8 @@ trait Conversions {
       s.counter,
       s.enabled,
       s.priority,
-      s.created
+      s.created,
+      s.folder
     )
 
   // equipment

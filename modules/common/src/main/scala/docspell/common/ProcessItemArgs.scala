@@ -36,6 +36,7 @@ object ProcessItemArgs {
       language: Language,
       direction: Option[Direction],
       sourceAbbrev: String,
+      folderId: Option[Ident],
       validFileTypes: Seq[MimeType]
   )
 

@@ -144,6 +144,7 @@ structure:
 ```
 { multiple: Bool
 , direction: Maybe String
+, folder: Maybe String
 }
 ```
 
@@ -155,6 +156,11 @@ will create just one item, that will then contain all files.
 Furthermore, the direction of the document (one of `incoming` or
 `outgoing`) can be given. It is optional, it can be left out or
 `null`.
+
+A `folder` id can be specified. Each item created by this request will
+be placed into this folder. Errors are logged (for example, the folder
+may have been deleted before the task is executed) and the item is
+then not put into any folder.
 
 This kind of request is very common and most programming languages
 have support for this. For example, here is another curl command

@@ -27,7 +27,9 @@ case class ScanMailboxArgs(
     // delete the after submitting (only if targetFolder is None)
     deleteMail: Boolean,
     // set the direction when submitting
-    direction: Option[Direction]
+    direction: Option[Direction],
+    // set a folder for items
+    itemFolder: Option[Ident]
 )
 
 object ScanMailboxArgs {

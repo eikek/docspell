@@ -112,7 +112,8 @@ object ScanMailboxRoutes {
           settings.receivedSinceHours.map(_.toLong).map(Duration.hours),
           settings.targetFolder,
           settings.deleteMail,
-          settings.direction
+          settings.direction,
+          settings.itemFolder
         )
       )
     )
@@ -139,6 +140,7 @@ object ScanMailboxRoutes {
       task.args.receivedSince.map(_.hours.toInt),
       task.args.targetFolder,
       task.args.deleteMail,
-      task.args.direction
+      task.args.direction,
+      task.args.itemFolder
     )
 }

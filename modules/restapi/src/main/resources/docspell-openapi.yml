@@ -2694,6 +2694,13 @@ components:
             The direction to apply to items resulting from importing
             mails. If not set, the value is guessed based on the from
             and to mail headers and your address book.
+        itemFolder:
+          type: string
+          format: ident
+          description: |
+            The folder id that is applied to items resulting from
+            importing mails. If the folder id is not valid when the
+            task executes, items have no folder set.
     ImapSettingsList:
       description: |
         A list of user email settings.
@@ -3437,9 +3444,15 @@ components:
         Meta information for an item upload. The user can specify some
         structured information with a binary file.
 
-        Additional metadata is not required. However, you have to
-        specifiy whether the corresponding files should become one
-        single item or if an item is created for each file.
+        Additional metadata is not required. However, if there is some
+        specified, you have to specifiy whether the corresponding
+        files should become one single item or if an item is created
+        for each file.
+
+        A direction can be given, `Incoming` is used if not specified.
+
+        A folderId can be given, the item is placed into this folder
+        after creation.
       required:
         - multiple
       properties:
@@ -3449,6 +3462,9 @@ components:
         direction:
           type: string
           format: direction
+        folder:
+          type: string
+          format: ident
     Collective:
       description: |
         Information about a collective.
@@ -3519,6 +3535,9 @@ components:
         priority:
           type: string
           format: priority
+        folder:
+          type: string
+          format: ident
         created:
           description: DateTime
           type: integer

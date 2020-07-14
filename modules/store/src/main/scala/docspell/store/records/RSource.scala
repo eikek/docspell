@@ -15,7 +15,8 @@ case class RSource(
     counter: Int,
     enabled: Boolean,
     priority: Priority,
-    created: Timestamp
+    created: Timestamp,
+    folderId: Option[Ident]
 ) {}
 
 object RSource {
@@ -32,8 +33,10 @@ object RSource {
     val enabled     = Column("enabled")
     val priority    = Column("priority")
     val created     = Column("created")
+    val folder      = Column("folder_id")
 
-    val all = List(sid, cid, abbrev, description, counter, enabled, priority, created)
+    val all =
+      List(sid, cid, abbrev, description, counter, enabled, priority, created, folder)
   }
 
   import Columns._
@@ -42,7 +45,7 @@ object RSource {
     val sql = insertRow(
       table,
       all,
-      fr"${v.sid},${v.cid},${v.abbrev},${v.description},${v.counter},${v.enabled},${v.priority},${v.created}"
+      fr"${v.sid},${v.cid},${v.abbrev},${v.description},${v.counter},${v.enabled},${v.priority},${v.created},${v.folderId}"
     )
     sql.update.run
   }
@@ -56,7 +59,8 @@ object RSource {
         abbrev.setTo(v.abbrev),
         description.setTo(v.description),
         enabled.setTo(v.enabled),
-        priority.setTo(v.priority)
+        priority.setTo(v.priority),
+        folder.setTo(v.folderId)
       )
     )
     sql.update.run
@@ -97,4 +101,9 @@ object RSource {
 
   def delete(sourceId: Ident, coll: Ident): ConnectionIO[Int] =
     deleteFrom(table, and(sid.is(sourceId), cid.is(coll))).update.run
+
+  def removeFolder(folderId: Ident): ConnectionIO[Int] = {
+    val empty: Option[Ident] = None
+    updateRow(table, folder.is(folderId), folder.setTo(empty)).update.run
+  }
 }

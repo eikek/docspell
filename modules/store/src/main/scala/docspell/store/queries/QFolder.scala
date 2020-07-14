@@ -50,6 +50,7 @@ object QFolder {
     def tryDelete =
       for {
         _ <- RItem.removeFolder(id)
+        _ <- RSource.removeFolder(id)
         _ <- RFolderMember.deleteAll(id)
         _ <- RFolder.delete(id)
       } yield FolderChangeResult.success
