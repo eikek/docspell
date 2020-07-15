@@ -17,7 +17,7 @@ import org.log4s.getLogger
 
 trait JoexClient[F[_]] {
 
-  def notifyJoex(base: LenientUri): F[Unit]
+  def notifyJoex(base: LenientUri): F[BasicResult]
 
   def notifyJoexIgnoreErrors(base: LenientUri): F[Unit]
 
@@ -31,21 +31,25 @@ object JoexClient {
 
   def apply[F[_]: Sync](client: Client[F]): JoexClient[F] =
     new JoexClient[F] {
-      def notifyJoex(base: LenientUri): F[Unit] = {
+      def notifyJoex(base: LenientUri): F[BasicResult] = {
         val notifyUrl = base / "api" / "v1" / "notify"
         val req       = Request[F](Method.POST, uri(notifyUrl))
         logger.fdebug(s"Notify joex at ${notifyUrl.asString}") *>
-          client.expect[String](req).map(_ => ())
+          client.expect[BasicResult](req)
       }
 
       def notifyJoexIgnoreErrors(base: LenientUri): F[Unit] =
         notifyJoex(base).attempt.map {
-          case Right(()) => ()
+          case Right(BasicResult(succ, msg)) =>
+            if (succ) ()
+            else
+              logger.warn(
+                s"Notifying Joex instance '${base.asString}' returned with failure: ${msg}"
+              )
           case Left(ex) =>
             logger.warn(
               s"Notifying Joex instance '${base.asString}' failed: ${ex.getMessage}"
             )
-            ()
         }
 
       def cancelJob(base: LenientUri, job: Ident): F[BasicResult] = {
