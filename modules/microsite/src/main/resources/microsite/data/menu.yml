@@ -27,13 +27,13 @@ options:
      - title: Reverse Proxy
        url: doc/reverseproxy
 
-     - title: Adding Meta Data
+     - title: Meta Data
        url: doc/metadata
 
      - title: Finding Items
        url: doc/finding
 
-     - title: Curate Metadata
+     - title: Curate Items
        url: doc/curate
 
      - title: Uploads

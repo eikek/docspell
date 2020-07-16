@@ -49,10 +49,20 @@ your username is not visible.
 Example screenshot:
 
 <div class="thumbnail">
-  <img src="../img/sources-form.jpg">
+  <img src="../img/sources-form.png">
 </div>
 
-This example shows a source with name "test". It defines two urls:
+This example shows a source with name "test". Besides a description
+and a name that is only used for displaying purposes, a priority and a
+[folder](metadata#folders) can be specified.
+
+The priority is used for the processing jobs that are submitted when
+files are uploaded via this endpoint.
+
+The folder is used to place all items, that result from uploads to
+this endpoint, into this folder.
+
+The source endpoint defines two urls:
 
 - `/app/upload/<id>`
 - `/api/v1/open/upload/item/<id>`

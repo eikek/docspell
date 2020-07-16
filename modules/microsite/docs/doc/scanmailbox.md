@@ -69,6 +69,11 @@ that belongs to a “concerning” person in your address book, then it is
 set to "outgoing". Otherwise it is set to "incoming". To support this,
 you need to add your own e-mail address(es) to your address book.
 
+The *Item Folder* setting is used to put all items that are created
+from mails into the specified [folder](metadata#folders). If you
+define a folder here, where you are not a member, you won't find
+resulting items.
+
 The last field is the *Schedule* which defines when and how often this
 task should run. The syntax is similiar to a date-time string, like
 `2019-09-15 12:32`, where each part is a pattern to also match multple

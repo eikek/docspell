@@ -1,6 +1,6 @@
 ---
 layout: docs
-title: Curate Metadata
+title: Curate Items
 permalink: doc/curate
 ---
 

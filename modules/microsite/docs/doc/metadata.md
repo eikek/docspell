@@ -1,6 +1,6 @@
 ---
 layout: docs
-title: Adding Meta Data
+title: Meta Data
 permalink: doc/metadata
 ---
 
@@ -12,13 +12,13 @@ Docspell processes each uploaded file. Processing involves extracting
 archives, extracting text, anlyzing the extracted text and converting
 the file into a pdf. Text is analyzed to find metadata that can be set
 automatically. Docspell compares the extracted text against a set of
-known meta data. The *Meta Data* page allows to manage this meta data.
-You can create the following:
+known meta data. The *Meta Data* page allows to manage this meta data:
 
 - Tags
 - Organizations
 - Persons
 - Equipments
+- Folders
 
 
 ### Tags
@@ -79,6 +79,31 @@ about. Examples are: bills or insurances for *cars*, contracts for
 
 Equipments don't have contact information, so the only property that
 is used to find matches during document processing is its name.
+
+
+### Folders
+
+Folders provide a way to divide all documents into disjoint subsets.
+Unlike with tags, an item can have at most one folder or none. A
+folder has an owner – the user who created the folder. Additionally,
+it can have members: users of the collective that the owner can assign
+to a folder.
+
+When searching for items, the results are restricted to items that
+have either no folder assigned or a folder where the current user is
+owner or member. It can be used to control visibility when searching.
+However: there are no hard access checks. For example, if the item id
+is known, any user of the collective can see it and modify its meta
+data.
+
+One use case is, that you can hide items from other users, like bills
+for birthday presents. In this case it is very unlikely that someone
+can guess the item-id.
+
+While folders are *not* taken into account when processing documents,
+they can be specified with the upload request or a [source
+url](uploading#anonymous-upload) to have them automatically set when
+they arrive.
 
 
 ## Document Language

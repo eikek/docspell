@@ -86,6 +86,12 @@ same as the search in the search bar (see above).
 
 The `Name` field only searches in the name property of an item.
 
+### Folder
+
+Set a folder to only show items in that folder. If no folder is set,
+all accessible items are shown. These are all items that either have
+no folder set, or a folder where the current user is member.
+
 ### Tags
 
 Specify a list of tags that the items must have. When adding tags to
