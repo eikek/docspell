@@ -107,7 +107,8 @@ object CreateItem {
         Vector.empty,
         Vector.empty,
         fm.map(a => a.id -> a.fileId).toMap,
-        MetaProposalList.empty
+        MetaProposalList.empty,
+        Nil
       )
     }
 
@@ -148,7 +149,15 @@ object CreateItem {
             .map(originFileTuple)
             .toMap
       } yield cand.headOption.map(ri =>
-        ItemData(ri, rms, Vector.empty, Vector.empty, origMap, MetaProposalList.empty)
+        ItemData(
+          ri,
+          rms,
+          Vector.empty,
+          Vector.empty,
+          origMap,
+          MetaProposalList.empty,
+          Nil
+        )
       )
     }
 

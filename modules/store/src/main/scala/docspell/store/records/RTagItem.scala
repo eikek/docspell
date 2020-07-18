@@ -1,5 +1,6 @@
 package docspell.store.records
 
+import cats.data.NonEmptyList
 import cats.implicits._
 
 import docspell.common._
@@ -43,4 +44,28 @@ object RTagItem {
 
   def findByItem(item: Ident): ConnectionIO[Vector[RTagItem]] =
     selectSimple(all, table, itemId.is(item)).query[RTagItem].to[Vector]
+
+  def findAllIn(item: Ident, tags: Seq[Ident]): ConnectionIO[Vector[RTagItem]] =
+    NonEmptyList.fromList(tags.toList) match {
+      case Some(nel) =>
+        selectSimple(all, table, and(itemId.is(item), tagId.isIn(nel)))
+          .query[RTagItem]
+          .to[Vector]
+      case None =>
+        Vector.empty.pure[ConnectionIO]
+    }
+
+  def setAllTags(item: Ident, tags: Seq[Ident]): ConnectionIO[Int] =
+    if (tags.isEmpty) 0.pure[ConnectionIO]
+    else
+      for {
+        entities <- tags.toList.traverse(tagId =>
+          Ident.randomId[ConnectionIO].map(id => RTagItem(id, item, tagId))
+        )
+        n <- insertRows(
+          table,
+          all,
+          entities.map(v => fr"${v.tagItemId},${v.itemId},${v.tagId}")
+        ).update.run
+      } yield n
 }

@@ -53,6 +53,9 @@ case class Column(name: String, ns: String = "", alias: String = "") {
   def isIn[A: Put](values: NonEmptyList[A]): Fragment =
     isIn(values.map(a => sql"$a").toList)
 
+  def isLowerIn[A: Put](values: NonEmptyList[A]): Fragment =
+    fr"lower(" ++ f ++ fr") IN (" ++ commas(values.map(a => sql"$a").toList) ++ fr")"
+
   def isIn(frag: Fragment): Fragment =
     f ++ fr"IN (" ++ frag ++ fr")"
 

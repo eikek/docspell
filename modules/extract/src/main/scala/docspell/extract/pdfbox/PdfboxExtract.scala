@@ -9,17 +9,17 @@ import cats.effect.Sync
 import cats.implicits._
 import fs2.Stream
 
+import docspell.common.Timestamp
 import docspell.extract.internal.Text
 
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.text.PDFTextStripper
-import docspell.common.Timestamp
 
 object PdfboxExtract {
 
   def getTextAndMetaData[F[_]: Sync](
       data: Stream[F, Byte]
-  ): F[Either[Throwable, (Text, PdfMetaData)]] =
+  ): F[Either[Throwable, (Text, Option[PdfMetaData])]] =
     data.compile
       .to(Array)
       .map(bytes =>
@@ -27,7 +27,7 @@ object PdfboxExtract {
           for {
             txt <- readText(doc)
             md  <- readMetaData(doc)
-          } yield (txt, md)
+          } yield (txt, Some(md).filter(_.nonEmpty))
         }.toEither.flatten
       )
 

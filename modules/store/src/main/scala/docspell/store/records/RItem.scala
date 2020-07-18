@@ -314,6 +314,9 @@ object RItem {
   def findByIdAndCollective(itemId: Ident, coll: Ident): ConnectionIO[Option[RItem]] =
     selectSimple(all, table, and(id.is(itemId), cid.is(coll))).query[RItem].option
 
+  def checkByIdAndCollective(itemId: Ident, coll: Ident): ConnectionIO[Option[Ident]] =
+    selectSimple(Seq(id), table, and(id.is(itemId), cid.is(coll))).query[Ident].option
+
   def removeFolder(folderId: Ident): ConnectionIO[Int] = {
     val empty: Option[Ident] = None
     updateRow(table, folder.is(folderId), folder.setTo(empty)).update.run

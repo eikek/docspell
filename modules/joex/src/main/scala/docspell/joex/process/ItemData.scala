@@ -22,7 +22,8 @@ case class ItemData(
     metas: Vector[RAttachmentMeta],
     dateLabels: Vector[AttachmentDates],
     originFile: Map[Ident, Ident], // maps RAttachment.id -> FileMeta.id
-    givenMeta: MetaProposalList    // given meta data not associated to a specific attachment
+    givenMeta: MetaProposalList,   // given meta data not associated to a specific attachment
+    tags: List[String]             // a list of tags (names or ids) attached to the item if they exist
 ) {
 
   def findMeta(attachId: Ident): Option[RAttachmentMeta] =

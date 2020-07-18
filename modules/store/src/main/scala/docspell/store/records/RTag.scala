@@ -1,5 +1,8 @@
 package docspell.store.records
 
+import cats.data.NonEmptyList
+import cats.implicits._
+
 import docspell.common._
 import docspell.store.impl.Implicits._
 import docspell.store.impl._
@@ -99,6 +102,21 @@ object RTag {
         RTagItem.Columns.tagId.prefix("i").is(tid.prefix("t"))
       )
     ) ++ orderBy(name.prefix("t").asc)).query[RTag].to[Vector]
+  }
+
+  def findAllByNameOrId(
+      nameOrIds: List[String],
+      coll: Ident
+  ): ConnectionIO[Vector[RTag]] = {
+    val idList =
+      NonEmptyList.fromList(nameOrIds.flatMap(s => Ident.fromString(s).toOption)).toSeq
+    val nameList = NonEmptyList.fromList(nameOrIds.map(_.toLowerCase)).toSeq
+
+    val cond = idList.flatMap(ids => Seq(tid.isIn(ids))) ++
+      nameList.flatMap(ns => Seq(name.isLowerIn(ns)))
+
+    if (cond.isEmpty) Vector.empty.pure[ConnectionIO]
+    else selectSimple(all, table, and(cid.is(coll), or(cond))).query[RTag].to[Vector]
   }
 
   def delete(tagId: Ident, coll: Ident): ConnectionIO[Int] =

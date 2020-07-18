@@ -47,7 +47,7 @@ object PdfboxExtractTest extends SimpleTestSuite {
     val url = ExampleFiles.keywords_pdf.toJavaUrl.fold(sys.error, identity)
     val str = PdfboxExtract.getText(url.openStream()).fold(throw _, identity)
     assert(str.value.startsWith("Keywords in PDF"))
-    val md =  PdfboxExtract.getMetaData(url.openStream()).fold(throw _, identity)
+    val md = PdfboxExtract.getMetaData(url.openStream()).fold(throw _, identity)
     assertEquals(md.author, Some("E.K."))
     assertEquals(md.title, Some("Keywords in PDF"))
     assertEquals(md.subject, Some("This is a subject"))
