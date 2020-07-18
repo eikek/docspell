@@ -37,7 +37,7 @@ object PdfExtract {
     for {
       pdfboxRes <-
         logger.debug("Trying to strip text from pdf using pdfbox.") *> PdfboxExtract
-          .get[F](in)
+          .getText[F](in)
       res <- pdfboxRes.fold(
         ex =>
           logger.info(
