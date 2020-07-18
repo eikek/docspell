@@ -85,9 +85,10 @@ object TextExtraction {
       item: ItemData
   )(ra: RAttachment): F[RAttachmentMeta] =
     for {
-      _   <- ctx.logger.debug(s"Extracting text for attachment ${stripAttachmentName(ra)}")
-      dst <- Duration.stopTime[F]
-      txt <- extractTextFallback(ctx, cfg, ra, lang)(filesToExtract(item, ra))
+      _    <- ctx.logger.debug(s"Extracting text for attachment ${stripAttachmentName(ra)}")
+      dst  <- Duration.stopTime[F]
+      fids <- filesToExtract(ctx)(item, ra)
+      txt  <- extractTextFallback(ctx, cfg, ra, lang)(fids)
       meta = item.changeMeta(
         ra.id,
         rm => rm.setContentIfEmpty(txt.map(_.trim).filter(_.nonEmpty))
@@ -151,11 +152,24 @@ object TextExtraction {
 
   /** Returns the fileIds to extract text from. First, the source file
     * is tried. If that fails, the converted file is tried.
+    *
+    * If the source file is a PDF, then use the converted file. This
+    * may then already contain the text if ocrmypdf is enabled. If it
+    * is disabled, both files are the same.
     */
-  private def filesToExtract(item: ItemData, ra: RAttachment): List[Ident] =
+  private def filesToExtract[F[_]: Sync](ctx: Context[F, _])(
+      item: ItemData,
+      ra: RAttachment
+  ): F[List[Ident]] =
     item.originFile.get(ra.id) match {
-      case Some(sid) => List(sid, ra.fileId).distinct
-      case None      => List(ra.fileId)
+      case Some(sid) =>
+        ctx.store.transact(RFileMeta.findMime(sid)).map {
+          case Some(MimeType.PdfMatch(_)) =>
+            List(ra.fileId)
+          case _ =>
+            List(sid, ra.fileId).distinct
+        }
+      case None => List(ra.fileId).pure[F]
     }
 
   private def stripAttachmentName(ra: RAttachment): String =

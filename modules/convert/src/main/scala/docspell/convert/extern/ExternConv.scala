@@ -41,7 +41,7 @@ private[extern] object ExternConv {
 
         in.through(createInput).flatMap { _ =>
           SystemCommand
-            .execSuccess[F](
+            .exec[F](
               sysCfg,
               blocker,
               logger,
@@ -65,11 +65,20 @@ private[extern] object ExternConv {
       logger: Logger[F]
   )(out: Path, result: SystemCommand.Result): F[ConversionResult[F]] =
     File.existsNonEmpty[F](out).flatMap {
-      case true =>
-        if (result.rc == 0) successPdf(File.readAll(out, blocker, chunkSize)).pure[F]
-        else
-          logger.warn(s"Command not successful (rc=${result.rc}), but file exists.") *>
+      case true if result.rc == 0 =>
+        val outTxt = out.resolveSibling(out.getFileName.toString + ".txt")
+        File.existsNonEmpty[F](outTxt).flatMap {
+          case true =>
+            successPdfTxt(
+              File.readAll(out, blocker, chunkSize),
+              File.readText(outTxt, blocker)
+            ).pure[F]
+          case false =>
             successPdf(File.readAll(out, blocker, chunkSize)).pure[F]
+        }
+      case true if result.rc != 0 =>
+        logger.warn(s"Command not successful (rc=${result.rc}), but file exists.") *>
+          successPdf(File.readAll(out, blocker, chunkSize)).pure[F]
 
       case false =>
         ConversionResult

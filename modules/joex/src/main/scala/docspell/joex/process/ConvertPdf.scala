@@ -64,10 +64,6 @@ object ConvertPdf {
   )(ra: RAttachment, mime: Mimetype): F[(RAttachment, Option[RAttachmentMeta])] =
     Conversion.create[F](cfg, sanitizeHtml, ctx.blocker, ctx.logger).use { conv =>
       mime.toLocal match {
-        case MimeType.PdfMatch(_) =>
-          ctx.logger.debug(s"Not going to convert a PDF file ${ra.name} into a PDF.") *>
-            (ra, None: Option[RAttachmentMeta]).pure[F]
-
         case mt =>
           val data = ctx.store.bitpeace
             .get(ra.fileId.id)

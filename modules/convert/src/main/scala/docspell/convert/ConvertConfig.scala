@@ -1,5 +1,6 @@
 package docspell.convert
 
+import docspell.convert.extern.OcrMyPdfConfig
 import docspell.convert.extern.{TesseractConfig, UnoconvConfig, WkHtmlPdfConfig}
 import docspell.convert.flexmark.MarkdownConfig
 
@@ -9,5 +10,6 @@ case class ConvertConfig(
     markdown: MarkdownConfig,
     wkhtmlpdf: WkHtmlPdfConfig,
     tesseract: TesseractConfig,
-    unoconv: UnoconvConfig
+    unoconv: UnoconvConfig,
+    ocrmypdf: OcrMyPdfConfig
 )

@@ -131,6 +131,23 @@ let
         };
         working-dir = "/tmp/docspell-convert";
       };
+
+      ocrmypdf = {
+        enabled = true;
+        command = {
+          program = "${pkgs.ocrmypdf}/bin/ocrmypdf";
+          args = [
+          "-l" "{{lang}}"
+          "--skip-text"
+          "--deskew"
+          "-j" "1"
+          "{{infile}}"
+          "{{outfile}}"
+          ];
+          timeout = "5 minutes";
+        };
+        working-dir = "/tmp/docspell-convert";
+      };
     };
     files = {
       chunk-size = 524288;
@@ -860,6 +877,66 @@ in {
                 process.
               '';
             };
+
+            ocrmypdf = mkOption {
+              type = types.submodule({
+                options = {
+                  enabled = mkOption {
+                    type = types.bool;
+                    default = defaults.convert.ocrmypdf.enabled;
+                    description = "Whether to use ocrmypdf to convert pdf to pdf/a.";
+                  };
+                  working-dir = mkOption {
+                    type = types.str;
+                    default = defaults.convert.ocrmypdf.working-dir;
+                    description = "Directory where the conversion processes can put their temp files";
+                  };
+                  command = mkOption {
+                    type = types.submodule({
+                      options = {
+                        program = mkOption {
+                          type = types.str;
+                          default = defaults.convert.ocrmypdf.command.program;
+                          description = "The path to the executable.";
+                        };
+                        args = mkOption {
+                          type = types.listOf types.str;
+                          default = defaults.convert.ocrmypdf.command.args;
+                          description = "The arguments to the program";
+                        };
+                        timeout = mkOption {
+                          type = types.str;
+                          default = defaults.convert.ocrmypdf.command.timeout;
+                          description = "The timeout when executing the command";
+                        };
+                      };
+                    });
+                    default = defaults.convert.ocrmypdf.command;
+                    description = "The system command";
+                  };
+                };
+              });
+              default = defaults.convert.orcmypdf;
+              description = ''
+                The tool ocrmypdf can be used to convert pdf files to pdf files
+                in order to add extracted text as a separate layer. This makes
+                image-only pdfs searchable and you can select and copy/paste the
+                text. It also converts pdfs into pdf/a type pdfs, which are best
+                suited for archiving. So it makes sense to use this even for
+                text-only pdfs.
+
+                It is recommended to install ocrympdf, but it also is optional.
+                If it is enabled but fails, the error is not fatal and the
+                processing will continue using the original pdf for extracting
+                text. You can also disable it to remove the errors from the
+                processing logs.
+
+                The `--skip-text` option is necessary to not fail on "text" pdfs
+                (where ocr is not necessary). In this case, the pdf will be
+                converted to PDF/A.
+              '';
+            };
+
           };
         });
         default = defaults.convert;
