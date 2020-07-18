@@ -19,6 +19,17 @@ RUN apk add --no-cache openjdk11-jre \
     ttf-dejavu \
     ttf-freefont \
     ttf-liberation \
+    libxml2-dev \
+    libxslt-dev \
+    pngquant \
+    zlib-dev \
+    g++ \
+    qpdf \
+    python3-dev \
+    libffi-dev\
+    qpdf-dev \
+  && pip3 install --upgrade pip \
+  && pip3 install ocrmypdf \
   && curl -Ls $UNO_URL -o /usr/local/bin/unoconv \
   && chmod +x /usr/local/bin/unoconv \
   && ln -s /usr/bin/python3 /usr/bin/python \
@@ -27,7 +38,7 @@ RUN apk add --no-cache openjdk11-jre \
   && curl -L -o docspell.zip https://github.com/eikek/docspell/releases/download/v0.8.0/docspell-joex-0.8.0.zip \
   && unzip docspell.zip \
   && rm docspell.zip \
-  && apk del curl unzip
+  && apk del curl unzip libxml2-dev libxslt-dev zlib-dev g++ python3-dev libffi-dev qpdf-dev
 
 COPY entrypoint-joex.sh /opt/entrypoint.sh
 

@@ -8,7 +8,7 @@ import fs2._
 
 import docspell.common._
 import docspell.convert.ConversionResult.Handler
-import docspell.convert.extern.{Tesseract, Unoconv, WkHtmlPdf}
+import docspell.convert.extern._
 import docspell.convert.flexmark.Markdown
 import docspell.files.{ImageSize, TikaMimetype}
 
@@ -35,7 +35,8 @@ object Conversion {
       ): F[A] =
         TikaMimetype.resolve(dataType, in).flatMap {
           case MimeType.PdfMatch(_) =>
-            handler.run(ConversionResult.successPdf(in))
+            OcrMyPdf
+              .toPDF(cfg.ocrmypdf, lang, cfg.chunkSize, blocker, logger)(in, handler)
 
           case MimeType.HtmlMatch(mt) =>
             val cs = mt.charsetOrUtf8

@@ -77,6 +77,10 @@ component.
   office documents into PDF files. It uses libreoffice/openoffice.
 - [wkhtmltopdf](https://wkhtmltopdf.org/) is used to convert HTML into
   PDF files.
+- [OCRmyPDF](https://github.com/jbarlow83/OCRmyPDF) can be optionally
+  used to convert PDF to PDF files. It adds an OCR layer to scanned
+  PDF files to make them searchable. It also creates PDF/A files from
+  the input pdf.
 
 The performance of `unoconv` can be improved by starting `unoconv -l`
 in a separate process. This runs a libreoffice/openoffice listener
@@ -87,7 +91,7 @@ therefore avoids starting one each time `unoconv` is called.
 On Debian this should install all joex requirements:
 
 ``` bash
-sudo apt-get install ghostscript tesseract-ocr tesseract-ocr-deu tesseract-ocr-eng unpaper unoconv wkhtmltopdf
+sudo apt-get install ghostscript tesseract-ocr tesseract-ocr-deu tesseract-ocr-eng unpaper unoconv wkhtmltopdf ocrmypdf
 ```
 
 

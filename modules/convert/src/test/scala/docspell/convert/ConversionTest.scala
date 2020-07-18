@@ -12,6 +12,7 @@ import docspell.convert.extern.{TesseractConfig, UnoconvConfig, WkHtmlPdfConfig}
 import docspell.convert.flexmark.MarkdownConfig
 import docspell.files.{ExampleFiles, TestFiles}
 import minitest.SimpleTestSuite
+import docspell.convert.extern.OcrMyPdfConfig
 
 object ConversionTest extends SimpleTestSuite with FileChecks {
   val blocker     = TestFiles.blocker
@@ -44,6 +45,24 @@ object ConversionTest extends SimpleTestSuite with FileChecks {
       SystemCommand.Config(
         "unoconv",
         Seq("-f", "pdf", "-o", "{{outfile}}", "{{infile}}"),
+        Duration.seconds(20)
+      ),
+      target
+    ),
+    OcrMyPdfConfig(
+      true,
+      SystemCommand.Config(
+        "ocrmypdf",
+        Seq(
+          "-l",
+          "{{lang}}",
+          "--skip-text",
+          "--deskew",
+          "-j",
+          "1",
+          "{{infile}}",
+          "{{outfile}}"
+        ),
         Duration.seconds(20)
       ),
       target

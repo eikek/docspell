@@ -23,3 +23,4 @@ Some early information about certain details can be found in a few
 - [0012 Periodic Tasks](adr/0012_periodic_tasks)
 - [0013 Archive Files](adr/0013_archive_files)
 - [0014 Full-Text Search](adr/0014_fulltext_search_engine)
+- [0015 Convert PDF files](adr/0015_convert_pdf_files)

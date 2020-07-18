@@ -13,7 +13,9 @@ permalink: features
 - OCR using [tesseract](https://github.com/tesseract-ocr/tesseract)
 - [Full-Text Search](doc/finding#full-text-search) based on [Apache
   SOLR](https://lucene.apache.org/solr)
-- Conversion to PDF: all files are converted into a PDF file
+- Conversion to PDF: all files are converted into a PDF file. PDFs
+  with only images (as often returned from scanners) are converted
+  into searchable PDF/A pdfs.
 - Non-destructive: all your uploaded files are never modified and can
   always be downloaded untouched
 - Text is analysed to find and attach meta data automatically
