@@ -6,6 +6,7 @@ import cats.implicits._
 
 import docspell.common._
 import docspell.ftsclient.FtsClient
+import docspell.store.UpdateResult
 import docspell.store.queries.{QAttachment, QItem}
 import docspell.store.records._
 import docspell.store.{AddResult, Store}
@@ -21,6 +22,9 @@ trait OItem[F[_]] {
 
   /** Create a new tag and add it to the item. */
   def addNewTag(item: Ident, tag: RTag): F[AddResult]
+
+  /** Apply all tags to the given item. Tags must exist, but can be IDs or names. */
+  def linkTags(item: Ident, tags: List[String], collective: Ident): F[UpdateResult]
 
   def setDirection(item: Ident, direction: Direction, collective: Ident): F[AddResult]
 
@@ -89,6 +93,27 @@ object OItem {
             .transact(QItem.moveAttachmentBefore(itemId, source, target))
             .attempt
             .map(AddResult.fromUpdate)
+
+        def linkTags(
+            item: Ident,
+            tags: List[String],
+            collective: Ident
+        ): F[UpdateResult] =
+          tags.distinct match {
+            case Nil => UpdateResult.success.pure[F]
+            case kws =>
+              val db =
+                (for {
+                  _     <- OptionT(RItem.checkByIdAndCollective(item, collective))
+                  given <- OptionT.liftF(RTag.findAllByNameOrId(kws, collective))
+                  exist <- OptionT.liftF(RTagItem.findAllIn(item, given.map(_.tagId)))
+                  _ <- OptionT.liftF(
+                    RTagItem.setAllTags(item, given.map(_.tagId).diff(exist.map(_.tagId)))
+                  )
+                } yield UpdateResult.success).getOrElse(UpdateResult.notFound)
+
+              store.transact(db)
+          }
 
         def setTags(item: Ident, tagIds: List[Ident], collective: Ident): F[AddResult] = {
           val db = for {

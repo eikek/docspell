@@ -40,8 +40,7 @@ object Extraction {
           case MimeType.PdfMatch(_) =>
             PdfExtract
               .get(data, blocker, lang, cfg.pdf.minTextLen, cfg.ocr, logger)
-              .map(_.map(_.value))
-              .map(ExtractResult.fromEither)
+              .map(ExtractResult.fromEitherResult)
 
           case PoiType(mt) =>
             PoiExtract
@@ -103,7 +102,7 @@ object Extraction {
             val cs = mt.charsetOrUtf8
             logger.info(s"File detected as ${mt.asString}. Returning itself as text.") *>
               data.through(Binary.decode(cs)).foldMonoid.compile.last.map { txt =>
-                ExtractResult.success(Text(txt).value)
+                ExtractResult.success(Text(txt).value, None)
               }
 
           case mt =>

@@ -32,46 +32,52 @@ object TextExtraction {
           )
         )
         _ <- ctx.logger.debug("Storing extracted texts")
-        _ <- txt.toList.traverse(rm => ctx.store.transact(RAttachmentMeta.upsert(rm._1)))
+        _ <-
+          txt.toList.traverse(res => ctx.store.transact(RAttachmentMeta.upsert(res.am)))
         idxItem = TextData.item(
           item.item.id,
           ctx.args.meta.collective,
-          None, //folder
+          ctx.args.meta.folderId,
           item.item.name.some,
           None
         )
-        _   <- fts.indexData(ctx.logger, (idxItem +: txt.map(_._2)).toSeq: _*)
+        _   <- fts.indexData(ctx.logger, (idxItem +: txt.map(_.td)).toSeq: _*)
         dur <- start
         _   <- ctx.logger.info(s"Text extraction finished in ${dur.formatExact}")
-      } yield item.copy(metas = txt.map(_._1))
+      } yield item.copy(metas = txt.map(_.am), tags = txt.flatMap(_.tags).distinct.toList)
     }
 
+  // --  helpers
+
+  case class Result(am: RAttachmentMeta, td: TextData, tags: List[String] = Nil)
+
   def extractTextIfEmpty[F[_]: Sync: ContextShift](
-      ctx: Context[F, _],
+      ctx: Context[F, ProcessItemArgs],
       cfg: ExtractConfig,
       lang: Language,
       collective: Ident,
       item: ItemData
-  )(ra: RAttachment): F[(RAttachmentMeta, TextData)] = {
-    def makeTextData(rm: RAttachmentMeta): (RAttachmentMeta, TextData) =
-      (
-        rm,
+  )(ra: RAttachment): F[Result] = {
+    def makeTextData(pair: (RAttachmentMeta, List[String])): Result =
+      Result(
+        pair._1,
         TextData.attachment(
           item.item.id,
           ra.id,
           collective,
-          None, //folder
+          ctx.args.meta.folderId,
           lang,
           ra.name,
-          rm.content
-        )
+          pair._1.content
+        ),
+        pair._2
       )
 
     val rm = item.findOrCreate(ra.id)
     rm.content match {
       case Some(_) =>
         ctx.logger.info("TextExtraction skipped, since text is already available.") *>
-          makeTextData(rm).pure[F]
+          makeTextData((rm, Nil)).pure[F]
       case None =>
         extractTextToMeta[F](ctx, cfg, lang, item)(ra)
           .map(makeTextData)
@@ -83,21 +89,25 @@ object TextExtraction {
       cfg: ExtractConfig,
       lang: Language,
       item: ItemData
-  )(ra: RAttachment): F[RAttachmentMeta] =
+  )(ra: RAttachment): F[(RAttachmentMeta, List[String])] =
     for {
       _    <- ctx.logger.debug(s"Extracting text for attachment ${stripAttachmentName(ra)}")
       dst  <- Duration.stopTime[F]
       fids <- filesToExtract(ctx)(item, ra)
-      txt  <- extractTextFallback(ctx, cfg, ra, lang)(fids)
+      res  <- extractTextFallback(ctx, cfg, ra, lang)(fids)
       meta = item.changeMeta(
         ra.id,
-        rm => rm.setContentIfEmpty(txt.map(_.trim).filter(_.nonEmpty))
+        rm =>
+          rm.setContentIfEmpty(
+            res.map(_.appendPdfMetaToText.text.trim).filter(_.nonEmpty)
+          )
       )
+      tags = res.flatMap(_.pdfMeta).map(_.keywordList).getOrElse(Nil)
       est <- dst
       _ <- ctx.logger.info(
         s"Extracting text for attachment ${stripAttachmentName(ra)} finished in ${est.formatExact}"
       )
-    } yield meta
+    } yield (meta, tags)
 
   def extractText[F[_]: Sync: ContextShift](
       ctx: Context[F, _],
@@ -123,7 +133,7 @@ object TextExtraction {
       cfg: ExtractConfig,
       ra: RAttachment,
       lang: Language
-  )(fileIds: List[Ident]): F[Option[String]] =
+  )(fileIds: List[Ident]): F[Option[ExtractResult.Success]] =
     fileIds match {
       case Nil =>
         ctx.logger.error(s"Cannot extract text").map(_ => None)
@@ -133,8 +143,8 @@ object TextExtraction {
 
         extractText[F](ctx, extr, lang)(id)
           .flatMap({
-            case ExtractResult.Success(txt) =>
-              txt.some.pure[F]
+            case res @ ExtractResult.Success(_, _) =>
+              res.some.pure[F]
 
             case ExtractResult.UnsupportedFormat(mt) =>
               ctx.logger
