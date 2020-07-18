@@ -24,6 +24,15 @@ final case class PdfMetaData(
 
   def keywordList: List[String] =
     keywords.map(kws => kws.split("[,;]\\s*").toList).getOrElse(Nil)
+
+  /** Return all data in lines, except keywords. Keywords are handled separately. */
+  def asText: Option[String] =
+    (title.toList ++ author.toList ++ subject.toList ++ creationDate.toList.map(
+      _.toUtcDate.toString
+    )) match {
+      case Nil  => None
+      case list => Some(list.mkString("\n"))
+    }
 }
 
 object PdfMetaData {

@@ -28,6 +28,12 @@ object ExtractResult {
 
   case class Success(text: String, pdfMeta: Option[PdfMetaData]) extends ExtractResult {
     val textOption = Some(text)
+    def appendPdfMetaToText: Success =
+      pdfMeta.flatMap(_.asText) match {
+        case Some(m) =>
+          copy(text = text + "\n\n" + m)
+        case None => this
+      }
   }
   def success(text: String, pdfMeta: Option[PdfMetaData]): ExtractResult =
     Success(text, pdfMeta)

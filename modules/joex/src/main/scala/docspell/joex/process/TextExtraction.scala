@@ -97,7 +97,10 @@ object TextExtraction {
       res  <- extractTextFallback(ctx, cfg, ra, lang)(fids)
       meta = item.changeMeta(
         ra.id,
-        rm => rm.setContentIfEmpty(res.map(_.text.trim).filter(_.nonEmpty))
+        rm =>
+          rm.setContentIfEmpty(
+            res.map(_.appendPdfMetaToText.text.trim).filter(_.nonEmpty)
+          )
       )
       tags = res.flatMap(_.pdfMeta).map(_.keywordList).getOrElse(Nil)
       est <- dst
