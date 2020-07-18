@@ -36,7 +36,7 @@ object TextExtraction {
         idxItem = TextData.item(
           item.item.id,
           ctx.args.meta.collective,
-          None, //folder
+          ctx.args.meta.folderId,
           item.item.name.some,
           None
         )
@@ -47,7 +47,7 @@ object TextExtraction {
     }
 
   def extractTextIfEmpty[F[_]: Sync: ContextShift](
-      ctx: Context[F, _],
+      ctx: Context[F, ProcessItemArgs],
       cfg: ExtractConfig,
       lang: Language,
       collective: Ident,
@@ -60,7 +60,7 @@ object TextExtraction {
           item.item.id,
           ra.id,
           collective,
-          None, //folder
+          ctx.args.meta.folderId,
           lang,
           ra.name,
           rm.content
