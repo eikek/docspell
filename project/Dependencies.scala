@@ -22,7 +22,7 @@ object Dependencies {
   val KindProjectorVersion    = "0.10.3"
   val Log4sVersion            = "1.8.2"
   val LogbackVersion          = "1.2.3"
-  val MariaDbVersion          = "2.6.1"
+  val MariaDbVersion          = "2.6.2"
   val MiniTestVersion         = "2.8.2"
   val OrganizeImportsVersion  = "0.4.0"
   val PdfboxVersion           = "2.0.20"
