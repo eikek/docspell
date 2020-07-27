@@ -1,0 +1,29 @@
+# The URL the site will be built for
+base_url = "https://docspell.org"
+
+# Whether to automatically compile all Sass files in the sass directory
+compile_sass = true
+
+# Whether to do syntax highlighting
+# Theme can be customised by setting the `highlight_theme` variable to a theme supported by Zola
+highlight_code = true
+
+highlight_theme = "gruvbox-dark"
+
+# Whether to build a search index to be used later on by a JavaScript library
+build_search_index = true
+
+[link_checker]
+skip_prefixes = [
+  "http://localhost",
+  "/openapi",
+  "https://www.abisource.com" # has bad ssl config
+]
+skip_anchor_prefixes = [
+  "https://github.com",
+  "https://package.elm-lang.org"
+]
+
+[extra]
+# Put all your custom variables here
+version = "0.9.0-SNAPSHOT"

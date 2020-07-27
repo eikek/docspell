@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Not Found</title>
+        <link rel="stylesheet" href="/styles.css">
+    </head>
+    <body>
+        <section class="hero is-info is-small">
+            <div class="hero-head">
+                {% include "navbar.html" %}
+            </div>
+            <div class="hero-body">
+                <h1 class="title">
+                    Not Found
+                </h1>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="columns is-vcentered">
+                <div class="column">
+                    <figure class="image is-2by1 feature-image">
+                        <img alt="Not Found Ghost" src="/icons/ghost-40.svg"/>
+                    </figure>
+                </div>
+                <div class="column">
+                    <h1 class="title">
+                        Not Found :(
+                    </h1>
+                    <h2 class="subtitle">
+                       → <a href="/docs">Documentation</a>?
+                    </h2>
+                </div>
+            </div>
+        </section>
+        {% include "footer.html" %}
+    </body>
+</html>

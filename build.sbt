@@ -300,6 +300,7 @@ val restapi = project.in(file("modules/restapi")).
     openapiTargetLanguage := Language.Scala,
     openapiPackage := Pkg("docspell.restapi.model"),
     openapiSpec := (Compile/resourceDirectory).value/"docspell-openapi.yml",
+    openapiStaticArgs := Seq("-l", "html2")
   ).dependsOn(common)
 
 val joexapi = project.in(file("modules/joexapi")).
@@ -422,77 +423,52 @@ val restserver = project.in(file("modules/restserver")).
 
 
 
-// --- Microsite Documentation
+// --- Website Documentation
 
-val microsite = project.in(file("modules/microsite")).
+val website = project.in(file("website")).
   disablePlugins(RevolverPlugin).
-  enablePlugins(MicrositesPlugin).
   disablePlugins(ReleasePlugin).
   settings(sharedSettings).
   settings(
-    name := "docspell-microsite",
+    name := "docspell-website",
     publishArtifact := false,
     skip in publish := true,
-    micrositeFooterText := Some(
-      """
-        |<p>&copy; 2020 <a href="https://github.com/eikek/docspell">Docspell, v{{site.version}}</a></p>
-        |""".stripMargin
-    ),
-    micrositeName := "Docspell",
-    micrositeDescription := "Auto-tagging Document Organizer",
-    micrositeDocumentationUrl := "doc",
-    micrositeDocumentationLabelDescription := "Documentation",
-    micrositeFavicons := Seq(microsites.MicrositeFavicon("favicon.png", "96x96")),
-    micrositeAuthor := "eikek",
-    micrositeGithubOwner := "eikek",
-    micrositeGithubRepo := "docspell",
-    micrositeGitterChannel := false,
-    micrositeShareOnSocial := false,
-    micrositeHighlightLanguages ++= Seq("json", "javascript"),
-    micrositeEditButton := Some(microsites.MicrositeEditButton("Improve this page", "/edit/master/modules/microsite/docs/{{ page.path }}")),
-    fork in run := true,
-    micrositeCompilingDocsTool := WithMdoc,
-    mdocVariables := Map(
-      "VERSION" -> version.value,
-      "PVERSION" -> version.value.replace('.', '_')
-    ),
-    micrositeExtraMdFiles := Map(
-      file("Changelog.md") -> ExtraMdFileConfig(
-        "changelog.md",
-        "docs",
-        Map("title" -> "Changelog", "permalink" -> "changelog")
-      )
-    ),
     Compile/resourceGenerators += Def.task {
-      val jekyllOut = resourceManaged.value/"main"/"jekyll"
+      val templateOut = baseDirectory.value/"site"/"templates"/"shortcodes"
+      val staticOut = baseDirectory.value/"site"/"static"/"openapi"
+      IO.createDirectories(Seq(templateOut, staticOut))
       val logger = streams.value.log
 
-      val templates = Seq(
-        (resourceDirectory in (restserver, Compile)).value / "reference.conf" -> jekyllOut /"_includes"/"server.conf",
-        (resourceDirectory in (joex, Compile)).value / "reference.conf" -> jekyllOut/"_includes"/"joex.conf",
-        (LocalRootProject / baseDirectory).value / "tools" / "exim" / "exim.conf" -> jekyllOut/ "_includes"/"sample-exim.conf"
-      )
-      val res1 = templates.map { case (s, t) =>
-        logger.info(s"Copying $s -> $t")
-        IO.write(t, "{% raw %}\n")
-        IO.append(t, IO.readBytes(s))
-        IO.write(t, "\n{% endraw %}", append = true)
-        t
-      }
-
       val files = Seq(
-        (resourceDirectory in (restapi, Compile)).value/"docspell-openapi.yml" -> jekyllOut/"openapi"/"docspell-openapi.yml"
+        (resourceDirectory in (restserver, Compile)).value / "reference.conf" -> templateOut /"server.conf",
+        (resourceDirectory in (joex, Compile)).value / "reference.conf" -> templateOut/"joex.conf",
+        (LocalRootProject / baseDirectory).value / "tools" / "exim" / "exim.conf" -> templateOut/"sample-exim.conf",
+        (resourceDirectory in (restapi, Compile)).value/"docspell-openapi.yml" -> staticOut/"docspell-openapi.yml",
+        (restapi/Compile/openapiStaticDoc).value -> staticOut/"docspell-openapi.html"
       )
       IO.copy(files)
-      res1 ++ files.map(_._2)
+      files.map(_._2)
     }.taskValue,
     Compile/resourceGenerators += Def.task {
-      val staticDoc = (restapi/Compile/openapiStaticDoc).value
-      val target = resourceManaged.value/"main"/"jekyll"/"openapi"/"docspell-openapi.html"
-      IO.copy(Seq(staticDoc -> target))
+      val changelog = (LocalRootProject / baseDirectory).value / "Changelog.md"
+      val targetDir = baseDirectory.value/"site"/"content"/"docs"/"changelog"
+      IO.createDirectory(targetDir)
+      val target = targetDir/"_index.md"
+
+      IO.write(target, """|+++
+                          |title = "Changelog"
+                          |description = "See what changed between releases."
+                          |weight = 10
+                          |insert_anchor_links = "right"
+                          |[extra]
+                          |maketoc = false
+                          |+++
+                          |""".stripMargin)
+      IO.append(target, IO.readBytes(changelog))
       Seq(target)
-    }.taskValue
+    }.taskValue    
   )
+
 
 val root = project.in(file(".")).
   settings(sharedSettings).

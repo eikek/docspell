@@ -9,6 +9,8 @@ buildFHSUserEnv {
   name = "docspell-sbt";
   targetPkgs = pkgs: with pkgs; [
     netcat jdk8 wget which zsh dpkg sbt git elmPackages.elm ncurses fakeroot mc jekyll
+    zola yarn
+
     # haskells http client needs this (to download elm packages)
     iana-etc
   ];

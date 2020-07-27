@@ -90,7 +90,7 @@ notes about the used options (see `man curl`):
 
 Go into the `tools/exim` directory and build the docker image:
 
-``` shell
+``` bash
 docker build -t ds-exim:latest -f exim.dockerfile .
 ```
 
@@ -114,7 +114,7 @@ variables as needed.
 
 Finally start the container:
 
-``` shell
+``` bash
 docker-compose up
 ```
 
@@ -169,7 +169,7 @@ The mail is processed and results in an item:
 However, if a mail is to an unknown collective or not to the
 configured local domain, the server rejects it immediately:
 
-``` shell
+``` bash
 fish ~> telnet localhost 25
 Trying ::1...
 Connected to localhost.

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Docspell: {{ page.title }}</title>
+        <link rel="stylesheet" href="/styles.css">
+    </head>
+    <body>
+        <section class="hero is-info is-small">
+            <div class="hero-head">
+                {% include "navbar.html" %}
+            </div>
+            <div class="hero-body">
+                <h1 class="title">
+                    {{ page.title }}
+                </h1>
+                <h2 class="subtitle">
+                    Docspell Documentation
+                </h2>
+            </div>
+        </section>
+        <nav class="breadcrumb has-succeeds-separator" aria-label="breadcrumbs">
+            <ul>
+                {% for parent in page.ancestors %}
+                {% set s = get_section(path = parent, metadata_only = true) %}
+                <li>
+                    <a href="{{ s.permalink }}">{{ s.title }}</a>
+                </li>
+                {% endfor %}
+                <li>
+                    <a href="{{ page.permalink }}">{{ page.title }}</a>
+                </li>
+            </ul>
+        </nav>
+
+        <section class="section pt-2">
+            <div class="columns is-desktop">
+                <div class="column is-3">
+                    <div class="menu">
+                        <ul class="menu-list">
+                            {% set last = page.ancestors | last %}
+                            {% set s = get_section(path=last) %}
+
+                            <p class="menu-label">
+                                {{ s.title }}
+                            </p>
+                            {% for sub in s.pages %}
+                            {% set sub_is_current = page.permalink == sub.permalink %}
+                            <li>
+                                <a href="{{ sub.permalink | safe }}"
+                                   {% if sub_is_current %}class="is-active"{% endif %}>
+                                    {{ sub.title | title }}
+                                </a>
+                                {% if sub_is_current %}
+                                <ul class="menu-list">
+                                    {% for header in page.toc %}
+                                    <li>
+                                        <a href="{{ header.permalink }}">
+                                            {{ header.title }}
+                                        </a>
+                                        <ul>
+                                            {% for subhead in header.children %}
+                                            <li>
+                                                <a href="{{ subhead.permalink }}">
+                                                    {{ subhead.title }}
+                                                </a>
+                                            </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                                {% endif %}
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="column is-9">
+                    <div class="content">
+                        {{ page.content | safe }}
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        {% include "footer.html" %}
+    </body>
+</html>

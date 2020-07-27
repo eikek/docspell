@@ -1,0 +1,6 @@
+{
+    "license": "GPL-3.0-or-later",
+    "dependencies": {
+        "bulma": "^0.9.0"
+    }
+}

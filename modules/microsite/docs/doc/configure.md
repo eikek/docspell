@@ -117,7 +117,7 @@ full-text-search {
 This key is required if you want docspell to drop and re-create the
 entire index. This is possible via a REST call:
 
-``` shell
+``` bash
 $ curl -XPOST http://localhost:7880/api/v1/open/fts/reIndexAll/test123
 ```
 

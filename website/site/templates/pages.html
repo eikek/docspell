@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Docspell: {{ section.title }}</title>
+        <link rel="stylesheet" href="/styles.css">
+    </head>
+    <body>
+        <section class="hero is-info is-small">
+            <div class="hero-head">
+                {% include "navbar.html" %}
+            </div>
+            <div class="hero-body">
+                <h1 class="title">
+                    Docspell Documentation
+                </h1>
+                <h2 class="subtitle">
+                    {{ section.title }}
+                </h2>
+            </div>
+        </section>
+        <nav class="breadcrumb has-succeeds-separator" aria-label="breadcrumbs">
+            <ul>
+                {% for parent in section.ancestors %}
+                {% set s = get_section(path = parent, metadata_only = true) %}
+                <li>
+                    <a href="{{ s.permalink }}">{{ s.title }}</a>
+                </li>
+                {% endfor %}
+                <li>
+                    <a href="{{ section.permalink }}">{{ section.title }}</a>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="container">
+            <div class="columns">
+                <div class="column is-3">
+                    <aside class="menu">
+                        <p class="menu-label">
+                            Contents
+                        </p>
+                        <ul class="menu-list">
+                            {% for page in section.pages %}
+                            <li>
+                                <a href="{{page.permalink | safe}}">
+                                    {{ page.title | title }}
+                                </a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </aside>
+
+                </div>
+                <div class="column is-9">
+                    <div class="content">
+                        {{ section.content | safe }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% include "footer.html" %}
+    </body>
+</html>

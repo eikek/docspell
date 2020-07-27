@@ -132,7 +132,7 @@ Download the `oauth2.py` script from
 [here](https://github.com/google/gmail-oauth2-tools) and first create
 an *oauth2-token*:
 
-``` shell
+``` bash
 ./oauth2.py --user=your.name@gmail.com \
    --client_id=106701....d8c.apps.googleusercontent.com \
    --client_secret=5Z1...Kir_t \

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Docspell: {{ section.title }}</title>
+        <link rel="stylesheet" href="../styles.css">
+    </head>
+    <body>
+        <section class="hero is-info is-small">
+            <div class="hero-head">
+                {% include "navbar.html" %}
+            </div>
+            <div class="hero-body">
+                <h1 class="title">
+                    Docspell Documentation
+                </h1>
+                <h2 class="subtitle">
+                    {{ section.title }}
+                </h2>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="content is-size-5">
+                This is the documentation for Docspell, version {{ config.extra.version }}.
+            </div>
+            <div class="columns is-multiline">
+                {% for section in section.subsections %}
+
+                {% set sub = get_section(path=section) %}
+
+                <div class="column is-one-third-widescreen is-half-tablet">
+                    <div class="card full-height">
+                        <a href="{{sub.permalink | safe}}">
+                            <div class="card-content">
+                                <div class="media">
+                                    <div class="media-content">
+                                        <p class="title is-5">
+                                            {{ sub.title | title }}
+                                        </p>
+                                        <p class="subtitle is-6">
+                                            {{ sub.description }}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+
+
+        {% include "footer.html" %}
+    </body>
+</html>
