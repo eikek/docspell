@@ -7,7 +7,7 @@ Curating the items meta data helps finding them later. This page
 describes how you can quickly go through those items and correct or
 amend with existing data.
 
-## Select New items
+# Select New items
 
 After files have been uploaded and the job executor created the
 corresponding items, they will show up on the main page. All items,
@@ -18,7 +18,7 @@ items:
 {{ figure(file="docspell-curate-1.jpg") }}
 
 
-## Check selected items
+# Check selected items
 
 Then you can go through all new items and check their metadata: Click
 on the first item to open the detail view. This shows the documents
@@ -27,7 +27,7 @@ and the meta data in the header.
 {{ figure(file="docspell-curate-2.jpg") }}
 
 
-## Modify if necessary
+# Modify if necessary
 
 To change something, click the *Edit* button in the menu above the
 document view. This will open a form next to your documents. You can
@@ -44,7 +44,7 @@ when changing text fields, a click on the *Save* symbol next to the
 field is required.
 
 
-## Confirm
+# Confirm
 
 If everything looks good, click the *Confirm* button to confirm the
 current data. The *New* status goes away and also the suggestions are
@@ -55,7 +55,7 @@ hidden in this state. You can always go back by clicking the
 {{ figure(file="docspell-curate-5.jpg") }}
 
 
-## Proceed with next item
+# Proceed with next item
 
 To look at the next item in the search results, click the *Next*
 button in the menu (next to the *Edit* button). Clicking next, will

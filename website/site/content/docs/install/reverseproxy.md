@@ -12,7 +12,7 @@ For the examples below, assume the following:
   `localhost:7880` instead.
 - The external domain/hostname is `docspell.example.com`
 
-## Configuring Docspell
+# Configuring Docspell
 
 These settings require a complement config part in the docspell
 configuration file:
@@ -51,7 +51,7 @@ server and web application.
 If you have examples for more servers, please let me know or add it to
 this site.
 
-## Nginx
+# Nginx
 
 This defines two servers: one listens for http traffic and redirects
 to the https variant. Additionally it defines the let's encrypt

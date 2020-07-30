@@ -19,7 +19,7 @@ multiple e-mail accounts you want to import periodically.
 {{ figure(file="scanmailbox-list.png") }}
 
 
-## Details
+# Details
 
 Creating a task requires the following information:
 
@@ -84,7 +84,7 @@ multiples of `7` added to it. In other words, it matches `1`, `1+7`,
 `1+7+7`, `1+7+7+7` and so on.
 
 
-## Reading Mails twice / Duplicates
+# Reading Mails twice / Duplicates
 
 Since users can move around mails in their mailboxes, it can happen
 that docspell unintentionally reads a mail multiple times. If docspell
@@ -104,7 +104,7 @@ In later versions, docspell may use the checksum of the generated eml
 file to look for duplicates, too.
 
 
-## How it works
+# How it works
 
 Docspell will go through all folders and download mails in “batches”.
 This size can be set by the admin in the [configuration

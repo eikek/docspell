@@ -4,6 +4,8 @@ description = "A script to quickly upload files from the command line."
 weight = 10
 +++
 
+# Introduction
+
 A bash script to quickly upload files from the command line. It reads
 a configuration file containing the URLs to upload to. Then each file
 given to the script will be uploaded to al URLs in the config.
@@ -25,7 +27,7 @@ The key must start with `url`. The urls should be [anonymous upload
 urls](@/docs/webapp/uploading.md#anonymous-upload).
 
 
-## Usage
+# Usage
 
 - The `-c` option allows to specifiy a different config file.
 - The `-h` option shows a help overview.

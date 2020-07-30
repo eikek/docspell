@@ -14,7 +14,7 @@ menu with many options. Both are active at the same time, but only one
 is visible. You can switch between them without affecting the results.
 
 
-## Search Bar
+# Search Bar
 
 {{ imgright(file="search-bar.png") }}
 
@@ -22,7 +22,7 @@ By default, the search bar is shown. It provides a refined view of the
 search menu. The dropdown contains different options to do a quick
 search.
 
-### *All Names* and *Contents*
+## *All Names* and *Contents*
 
 These two options correspond to the same named field in the search
 menu. If you switch between search menu and search bar (by clicking
@@ -54,7 +54,7 @@ restricted by the search term given in the search-bar, but also by
 what is specified in the search menu.
 
 
-### *Contents Only*
+## *Contents Only*
 
 This option has no corresponding part in the search menu. Searching
 with this option active, there is only a full text search done in the
@@ -65,33 +65,33 @@ respect to the search term. This ordering is returned from the full
 text search engine and is simply transfered unmodified.
 
 
-## Search Menu
+# Search Menu
 
 {{ imgright(file="search-menu.png") }}
 
 The search menu can be opened by clicking the left icon in the top
 bar. It shows some options to constrain the item list:
 
-### Show new items
+## Show new items
 
 Clicking the checkbox "Only new" shows items that have not been
 "Confirmed". All items that have been created by docspell and not
 looked at are marked as "new" automatically.
 
-### Names
+## Names
 
 Searches in names of certain properties. The `All Names` field is the
 same as the search in the search bar (see above).
 
 The `Name` field only searches in the name property of an item.
 
-### Folder
+## Folder
 
 Set a folder to only show items in that folder. If no folder is set,
 all accessible items are shown. These are all items that either have
 no folder set, or a folder where the current user is member.
 
-### Tags
+## Tags
 
 Specify a list of tags that the items must have. When adding tags to
 the "Include" list, an item must have all these tags in order to be
@@ -100,15 +100,15 @@ included in the results.
 When adding tags to the "Exclude" list, then an item is removed from
 the results if it has at least one of these tags.
 
-### Correspondent
+## Correspondent
 
 Pick a correspondent to show only these items.
 
-### Concerned
+## Concerned
 
 Pick a concerned entity to show only these items.
 
-### Date
+## Date
 
 Specify a date range to show only items whose date property is within
 this range. If you want to see items of a specific day, choose the
@@ -117,18 +117,18 @@ same day for both fields.
 For items that don't have an explicitly date property set, the created
 date is used.
 
-### Due Date
+## Due Date
 
 Specify a date range to show only items whose due date property is
 within this range. Items without a due date are not shown.
 
 
-### Direction
+## Direction
 
 Specify whether to show only incoming, only outgoing or all items.
 
 
-## Customize Substring Search
+# Customize Substring Search
 
 The substring search of the *All Names* and *Name* field can be
 customized in the following way: A wildcard `*` can be used at the
@@ -144,10 +144,10 @@ unless one of the following is true:
 - The term is enclosed in quotes `"`.
 
 
-## Full Text Search
+# Full Text Search
 
 
-### The Query
+## The Query
 
 The query string for full text search is very powerful. Docspell
 currently supports [Apache SOLR](https://lucene.apache.org/solr/) as
@@ -170,7 +170,7 @@ It will by default search all indexed fields, which are: attachment
 contents, attachment names, item name and item notes.
 
 
-### The Results
+## The Results
 
 When using full text search, each item in the result list is annotated
 with the highlighted occurrence of the match.

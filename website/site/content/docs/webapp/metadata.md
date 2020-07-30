@@ -5,6 +5,8 @@ weight = 10
 mktoc = true
 +++
 
+# Metadata
+
 Docspell processes each uploaded file. Processing involves extracting
 archives, extracting text, anlyzing the extracted text and converting
 the file into a pdf. Text is analyzed to find metadata that can be set
@@ -17,8 +19,7 @@ known meta data. The *Meta Data* page allows to manage this meta data:
 - Equipments
 - Folders
 
-
-### Tags
+## Tags
 
 Items can be tagged with multiple custom tags (aka labels). This
 allows to describe many different workflows people may have with their
@@ -37,7 +38,7 @@ not automatically associate tags to your items. The tags are only
 meant to be used manually for now.
 
 
-### Organization and Person
+## Organization and Person
 
 The organization entity represents an non-personal (organization or
 company) correspondent of an item. Docspell will choose one or more
@@ -65,7 +66,7 @@ document processing. They might be useful when using this as a real
 address book.
 
 
-### Equipment
+## Equipment
 
 The equipment entity is almost like a tag. In fact, it could be
 replaced by a tag with a specific known category. The difference is
@@ -78,7 +79,7 @@ Equipments don't have contact information, so the only property that
 is used to find matches during document processing is its name.
 
 
-### Folders
+## Folders
 
 Folders provide a way to divide all documents into disjoint subsets.
 Unlike with tags, an item can have at most one folder or none. A
@@ -103,7 +104,7 @@ url](uploading#anonymous-upload) to have them automatically set when
 they arrive.
 
 
-## Document Language
+# Document Language
 
 An important setting is the language of your documents. This helps OCR
 and text analysis. You can select between English and German

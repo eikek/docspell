@@ -8,10 +8,16 @@ $dwhite: #f0f8ff
 $code: $dblue
 $pre: $dblue
 
-@import url('https://fonts.googleapis.com/css?family=Nunito:400,700')
+@import url('https://fonts.googleapis.com/css?family=Libre+Baskerville:400,700')
+@import url('https://fonts.googleapis.com/css?family=Montserrat:400,600')
+@import url('https://fonts.googleapis.com/css?family=Source+Code+Pro:400')
 
 // Update Bulma's global variables
-$family-sans-serif: "Nunito", sans-serif
+$family-serif: "Libre Baskerville",serif
+$family-sans-serif: "Montserrat", sans-serif
+$family-monospace: "Source Code Pro",monospace
+//$family-primary: $family-serif
+
 /* $grey-dark: $brown;
 /* $grey-light: $beige-light;
 $primary: $dred
@@ -20,6 +26,9 @@ $info: $infoblue
 //josh-rose-trYl7JYATH0-unsplash
 //tersius-van-rhyn-xcQWMPm9fG8-unsplash
 //cassie-boca-x-tbVqkfQCU-unsplash
+//jf-martin-Ofs3LjEUcrk-unsplash
+  //  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 1)), url(img/jf-martin-Ofs3LjEUcrk-unsplash.jpg)
+//jesse-gardner-EqdpXeemf58-unsplash
 #hero-main
   background: url(img/tersius-van-rhyn-xcQWMPm9fG8-unsplash.jpg)
   background-size: 100% 100%
@@ -35,6 +44,13 @@ $info: $infoblue
   height: 100%
   &:hover
     box-shadow: 1px 1px 3px $info;
+
+h1
+  font-family: $family-serif
+
+.doc
+  h1
+    border-bottom: 1px solid #ccc
 
 a.zola-anchor
   padding-left: 0.75rem
@@ -62,6 +78,14 @@ nav.breadcrumb
     &:hover
       color: black
 
+span.unsplash-credit
+  color: #444
+  float: right
+  font-size: smaller
+  a
+    color: #444
+    &:hover
+      color: #666
 
 //import all of bulma
 @import "../../node_modules/bulma/bulma.sass"

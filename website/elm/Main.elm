@@ -310,4 +310,14 @@ mainHero model =
                     ]
                 ]
             ]
+        , div [ class "hero-foot" ]
+            [ span [ class "unsplash-credit" ]
+                [ text "Photo by "
+                , a
+                    [ href "https://unsplash.com/@tersiusvanrhyn"
+                    ]
+                    [ text "Tersius van Rhyn"
+                    ]
+                ]
+            ]
         ]

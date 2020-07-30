@@ -7,7 +7,7 @@ This page describes, how files can get into docspell. Technically,
 there is just one way: via http multipart/form-data requests.
 
 
-## Authenticated Upload
+# Authenticated Upload
 
 From within the web application there is the "Upload Files"
 page. There you can select multiple files to upload. You can also
@@ -25,12 +25,12 @@ This obviously requires an authenticated user. While this is handy for
 ad-hoc uploads, it is very inconvenient for automating it by custom
 scripts. For this the next variant exists.
 
-## Anonymous Upload
+# Anonymous Upload
 
 It is also possible to upload files without authentication. This
 should make tools that interact with docspell much easier to write.
 
-### Creating Anonymous Uploads
+# Creating Anonymous Uploads
 
 Go to "Collective Settings" and then to the "Source" tab. A *Source*
 identifies an endpoint where files can be uploaded
@@ -88,7 +88,7 @@ docspell count the files uploaded through the web interface, just
 create a source (can be inactive) with that name (`webapp`).
 
 
-## Integration Endpoint
+# Integration Endpoint
 
 Another option for uploading files is the special *integration
 endpoint*. This endpoint allows an admin to upload files to any
@@ -125,7 +125,7 @@ checksum with:
 See the [SMTP gateway](@/docs/tools/smtpgateway.md) or the [consumedir
 script](@/docs/tools/consumedir.md) for examples to use this endpoint.
 
-## The Request
+# The Request
 
 This gives more details about the request for uploads. It is a http
 `multipart/form-data` request, with two possible fields:

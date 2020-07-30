@@ -61,8 +61,10 @@
                 </div>
 
                 <div class="column is-9">
-                    <div class="content">
-                        {{ section.content | safe }}
+                    <div class="container">
+                        <div class="content doc">
+                            {{ section.content | safe }}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -71,8 +73,10 @@
 
         {% if not section.extra.mktoc %}
         <section class="section pt-2">
-            <div class="content">
-                {{ section.content | safe }}
+            <div class="container">
+                <div class="content doc">
+                    {{ section.content | safe }}
+                </div>
             </div>
         </section>
         {% endif %}

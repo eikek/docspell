@@ -16,7 +16,7 @@ provide a minimal setup, you might want to add tls and spam protection
 when opening it to the public.
 
 
-## What you need
+# What you need
 
 You need to own a domain and add the appropriate MX records to point
 to your server. In this document, the domain `test.org` is used.
@@ -25,14 +25,14 @@ You need to enable the [integration
 endpoint](@/docs/webapp/uploading.md#integration-endpoint) in the
 docspell configuration.
 
-## Exim
+# Exim
 
 [Exim](http://exim.org/) is a popular smtp server (message transfer
 agent). It is used here only because of previous knowledge, but same
 can be achieved with other MTAs.
 
 
-## The Config File
+# The Config File
 
 Here is the example config file for exim:
 
@@ -83,7 +83,7 @@ notes about the used options (see `man curl`):
   `somename`.
 
 
-## Install with Docker
+# Install with Docker
 
 Go into the `tools/exim` directory and build the docker image:
 
@@ -116,7 +116,7 @@ docker-compose up
 ```
 
 
-## Test Run
+# Test Run
 
 Now it is possible to send mails to this MTA which will be immediatly
 uploaded to docspell for the collective corresponding to the

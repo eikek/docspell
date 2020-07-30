@@ -7,6 +7,8 @@ insert_anchor_links = "right"
 mktoc = true
 +++
 
+# Introduction
+
 Joex is short for *Job Executor* and it is the component managing long
 running tasks in docspell. One of these long running tasks is the file
 processing task.
@@ -28,7 +30,7 @@ compete on getting the next job from the queue. After a job finishes
 and no job is waiting in the queue, joex will sleep until notified
 again. It will also periodically notify itself as a fallback.
 
-## Task vs Job
+# Task vs Job
 
 Just for the sake of this document, a task denotes the code that has
 to be executed or the thing that has to be done. It emerges in a job,
@@ -37,7 +39,7 @@ up and executed eventually. A job maintains a state and other things,
 while a task is just code.
 
 
-## Scheduler and Queue
+# Scheduler and Queue
 
 The scheduler is the part that runs and monitors the long running
 jobs. It works together with the job queue, which defines what job to
@@ -60,7 +62,7 @@ logged in, jobs are more important that those submitted when not
 logged in.
 
 
-## Scheduler Config
+# Scheduler Config
 
 The relevant part of the config file regarding the scheduler is shown
 below with some explanations.
@@ -128,7 +130,7 @@ reach a joex component. This periodic wakup is just to ensure that
 jobs are eventually run.
 
 
-## Periodic Tasks
+# Periodic Tasks
 
 The job executor can execute tasks periodically. These tasks are
 stored in the database such that they can be submitted into the job
@@ -137,7 +139,7 @@ something with a task. So a periodic task is never submitted twice. It
 is also not submitted, if a previous task has not finished yet.
 
 
-## Starting on demand
+# Starting on demand
 
 The job executor and rest server can be started multiple times. This
 is especially useful for the job executor. For example, when
@@ -152,7 +154,7 @@ Once the files have been processced you can stop the additional
 executors.
 
 
-## Shutting down
+# Shutting down
 
 If a job executor is sleeping and not executing any jobs, you can just
 quit using SIGTERM or `Ctrl-C` when running in a terminal. But if

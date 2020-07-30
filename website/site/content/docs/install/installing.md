@@ -219,7 +219,7 @@ The modules files are only applicable to the newest version of
 Docspell. If you really need an older version, checkout the
 appropriate commit.
 
-## NixOS Example
+### NixOS Example
 
 This is a example system configuration that installs docspell with a
 postgres database. This snippet can be used to create a vm (using

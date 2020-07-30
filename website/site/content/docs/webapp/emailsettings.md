@@ -24,7 +24,7 @@ your e-mail account to send mails on behalf of you and receive your
 mails.*
 
 
-## SMTP Settings
+# SMTP Settings
 
 For sending mail, you need to provide information to connect to a SMTP
 server. Every e-mail provider has this information somewhere
@@ -61,7 +61,7 @@ possible to set up these settings for multiple providers, so you can
 choose from which account you want to send mails.
 
 
-## IMAP Settings
+# IMAP Settings
 
 For receiving e-mails, you need to provide information to connect to
 an IMAP server. Your e-mail provider should have this information
@@ -88,7 +88,7 @@ Here is an example for posteo.de:
 - SSL: use `StartTLS`
 
 
-## SSL / TLS / StartTLS
+# SSL / TLS / StartTLS
 
 *Please Note: If `SSL` is set to `None`, then mails will be sent
 unencrypted to your mail provider! If `Ignore certificate check` is
@@ -97,7 +97,7 @@ provider is wrongly configured for SSL/TLS. This flag should only be
 enabled if you know why.*
 
 
-## GMail
+# GMail
 
 Authenticating with GMail may be not so simple. GMail implements an
 authentication scheme called *XOAUTH2* (at least for Imap). It will

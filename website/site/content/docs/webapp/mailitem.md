@@ -12,13 +12,13 @@ people outside docspell.
 All sent mails are stored attached to the item.
 
 
-## E-Mail Settings (SMTP)
+# E-Mail Settings (SMTP)
 
 To send mails, there are SMTP settings required. Please see the page
 about [e-mail settings](@/docs/webapp/emailsettings.md#smtp-settings).
 
 
-## Sending Mails
+# Sending Mails
 
 Currently, it is possible to send mails related to only one item. You
 can define the mail body and docspell will add the attachments of an
@@ -53,7 +53,7 @@ Once you click *Send*, the docspell server will send the mail using
 your connection settings. If that succeeds the mail is saved to the
 database and you'll see a message in the form.
 
-## Accessing Sent Mails
+# Accessing Sent Mails
 
 If there is an e-mail for an item, a tab shows up at the right side,
 next to the attachments.

@@ -4,6 +4,8 @@ description = "A script to watch a directory for new files and upload them to do
 weight = 20
 +++
 
+# Introduction
+
 The `consumerdir.sh` is a bash script that works in two modes:
 
 - Go through all files in given directories (recursively, if `-r` is
@@ -90,7 +92,7 @@ about duplicates. This allows to keep your files organized using the
 file-system and have them mirrored into docspell as well.
 
 
-## Systemd
+# Systemd
 
 The script can be used with systemd to run as a service. This is an
 example unit file:
@@ -112,7 +114,7 @@ an existing user `someuser` that is used to run this service. The url
 url as described [here](@/docs/webapp/uploading.md#anonymous-upload).
 
 
-## Docker
+# Docker
 
 The provided docker image runs this script to watch a single
 directory, `./docs` in current directory, for new files. If a new file

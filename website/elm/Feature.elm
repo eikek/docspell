@@ -64,6 +64,12 @@ files while using their own account with their own settings.
 Text is extracted from all files. For scanned documents/images, OCR is used by utilising tesseract. The text is analysed and is available for full-text search.
 """
       }
+    , { image = "img/analyze-feature.png"
+      , header = "Text Analysis"
+      , description = """
+The extracted text is analyzed and is used to find properties that can be annotated to your documents automatically.
+"""
+      }
     , { image = "img/filetype-feature.svg"
       , header = "Support for many files"
       , description = """

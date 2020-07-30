@@ -79,7 +79,7 @@ explained.
 
 ## Item
 
-An **Item** is roughly your document, only that an item may span
+An *Item* is roughly your document, only that an item may span
 multiple files, which are called **attachments**. An item has **meta
 data** associated:
 
