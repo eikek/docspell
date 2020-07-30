@@ -1,18 +1,16 @@
 import com.github.eikek.sbt.openapi._
 import scala.sys.process._
+import com.typesafe.sbt.site.SitePlugin
 import com.typesafe.sbt.SbtGit.GitKeys._
 import docspell.build._
-import microsites.ExtraMdFileConfig
 
-val toolsPackage = taskKey[Seq[File]]("Package the scripts/extension tools")
+val toolsPackage   = taskKey[Seq[File]]("Package the scripts/extension tools")
 val elmCompileMode = settingKey[ElmCompileMode]("How to compile elm sources")
-
-
 
 // --- Settings
 
 val scalafixSettings = Seq(
-  semanticdbEnabled := true, // enable SemanticDB
+  semanticdbEnabled := true,                        // enable SemanticDB
   semanticdbVersion := scalafixSemanticdb.revision, //"4.3.10", // use Scalafix compatible version
   ThisBuild / scalafixDependencies ++= Dependencies.organizeImports
 )
@@ -199,263 +197,294 @@ ${lines.map(_._1).mkString(",\n")}
 
 }
 """
-      val target = (Test/sourceManaged).value/"scala"/"ExampleFiles.scala"
+      val target  = (Test / sourceManaged).value / "scala" / "ExampleFiles.scala"
       IO.createDirectory(target.getParentFile)
       IO.write(target, content)
       Seq(target)
     }.taskValue
-  ).dependsOn(common)
+  )
+  .dependsOn(common)
 
-val store = project.in(file("modules/store")).
-  disablePlugins(RevolverPlugin).
-  settings(sharedSettings).
-  settings(testSettings).
-  settings(
+val store = project
+  .in(file("modules/store"))
+  .disablePlugins(RevolverPlugin)
+  .settings(sharedSettings)
+  .settings(testSettings)
+  .settings(
     name := "docspell-store",
     libraryDependencies ++=
       Dependencies.doobie ++
-      Dependencies.bitpeace ++
-      Dependencies.tika ++
-      Dependencies.fs2 ++
-      Dependencies.databases ++
-      Dependencies.flyway ++
-      Dependencies.loggingApi ++
-      Dependencies.emil ++
-      Dependencies.emilDoobie ++
-      Dependencies.calevCore ++
-      Dependencies.calevFs2
-  ).dependsOn(common)
+        Dependencies.bitpeace ++
+        Dependencies.tika ++
+        Dependencies.fs2 ++
+        Dependencies.databases ++
+        Dependencies.flyway ++
+        Dependencies.loggingApi ++
+        Dependencies.emil ++
+        Dependencies.emilDoobie ++
+        Dependencies.calevCore ++
+        Dependencies.calevFs2
+  )
+  .dependsOn(common)
 
-val extract = project.in(file("modules/extract")).
-  disablePlugins(RevolverPlugin).
-  settings(sharedSettings).
-  settings(testSettings).
-  settings(
+val extract = project
+  .in(file("modules/extract"))
+  .disablePlugins(RevolverPlugin)
+  .settings(sharedSettings)
+  .settings(testSettings)
+  .settings(
     name := "docspell-extract",
     libraryDependencies ++=
       Dependencies.fs2 ++
-      Dependencies.twelvemonkeys ++      
-      Dependencies.pdfbox ++
-      Dependencies.poi ++
-      Dependencies.commonsIO ++
-      Dependencies.julOverSlf4j
-  ).dependsOn(common, files % "compile->compile;test->test")
+        Dependencies.twelvemonkeys ++
+        Dependencies.pdfbox ++
+        Dependencies.poi ++
+        Dependencies.commonsIO ++
+        Dependencies.julOverSlf4j
+  )
+  .dependsOn(common, files % "compile->compile;test->test")
 
-val convert = project.in(file("modules/convert")).
-  disablePlugins(RevolverPlugin).
-  settings(sharedSettings).
-  settings(testSettings).
-  settings(
+val convert = project
+  .in(file("modules/convert"))
+  .disablePlugins(RevolverPlugin)
+  .settings(sharedSettings)
+  .settings(testSettings)
+  .settings(
     name := "docspell-convert",
     libraryDependencies ++=
       Dependencies.flexmark ++
-      Dependencies.twelvemonkeys
-  ).dependsOn(common, files % "compile->compile;test->test")
+        Dependencies.twelvemonkeys
+  )
+  .dependsOn(common, files % "compile->compile;test->test")
 
-val analysis = project.in(file("modules/analysis")).
-  disablePlugins(RevolverPlugin).
-  enablePlugins(NerModelsPlugin).
-  settings(sharedSettings).
-  settings(testSettings).
-  settings(NerModelsPlugin.nerClassifierSettings).
-  settings(
+val analysis = project
+  .in(file("modules/analysis"))
+  .disablePlugins(RevolverPlugin)
+  .enablePlugins(NerModelsPlugin)
+  .settings(sharedSettings)
+  .settings(testSettings)
+  .settings(NerModelsPlugin.nerClassifierSettings)
+  .settings(
     name := "docspell-analysis",
     libraryDependencies ++=
       Dependencies.fs2 ++
-      Dependencies.stanfordNlpCore
-  ).dependsOn(common, files % "test->test")
+        Dependencies.stanfordNlpCore
+  )
+  .dependsOn(common, files % "test->test")
 
-val ftsclient = project.in(file("modules/fts-client")).
-  disablePlugins(RevolverPlugin).
-  settings(sharedSettings).
-  settings(testSettings).
-  settings(
+val ftsclient = project
+  .in(file("modules/fts-client"))
+  .disablePlugins(RevolverPlugin)
+  .settings(sharedSettings)
+  .settings(testSettings)
+  .settings(
     name := "docspell-fts-client",
     libraryDependencies ++= Seq.empty
-  ).dependsOn(common)
+  )
+  .dependsOn(common)
 
-val ftssolr = project.in(file("modules/fts-solr")).
-  disablePlugins(RevolverPlugin).
-  settings(sharedSettings).
-  settings(testSettings).
-  settings(
+val ftssolr = project
+  .in(file("modules/fts-solr"))
+  .disablePlugins(RevolverPlugin)
+  .settings(sharedSettings)
+  .settings(testSettings)
+  .settings(
     name := "docspell-fts-solr",
     libraryDependencies ++=
       Dependencies.http4sClient ++
-      Dependencies.http4sCirce ++
-      Dependencies.http4sDsl ++
-      Dependencies.circe
-  ).dependsOn(common, ftsclient)
-  
-val restapi = project.in(file("modules/restapi")).
-  disablePlugins(RevolverPlugin).
-  enablePlugins(OpenApiSchema).
-  settings(sharedSettings).
-  settings(testSettings).
-  settings(openapiScalaSettings).
-  settings(
+        Dependencies.http4sCirce ++
+        Dependencies.http4sDsl ++
+        Dependencies.circe
+  )
+  .dependsOn(common, ftsclient)
+
+val restapi = project
+  .in(file("modules/restapi"))
+  .disablePlugins(RevolverPlugin)
+  .enablePlugins(OpenApiSchema)
+  .settings(sharedSettings)
+  .settings(testSettings)
+  .settings(openapiScalaSettings)
+  .settings(
     name := "docspell-restapi",
     libraryDependencies ++=
       Dependencies.circe,
     openapiTargetLanguage := Language.Scala,
     openapiPackage := Pkg("docspell.restapi.model"),
-    openapiSpec := (Compile/resourceDirectory).value/"docspell-openapi.yml",
+    openapiSpec := (Compile / resourceDirectory).value / "docspell-openapi.yml",
     openapiStaticArgs := Seq("-l", "html2")
-  ).dependsOn(common)
+  )
+  .dependsOn(common)
 
-val joexapi = project.in(file("modules/joexapi")).
-  disablePlugins(RevolverPlugin).
-  enablePlugins(OpenApiSchema).
-  settings(sharedSettings).
-  settings(testSettings).
-  settings(openapiScalaSettings).
-  settings(
+val joexapi = project
+  .in(file("modules/joexapi"))
+  .disablePlugins(RevolverPlugin)
+  .enablePlugins(OpenApiSchema)
+  .settings(sharedSettings)
+  .settings(testSettings)
+  .settings(openapiScalaSettings)
+  .settings(
     name := "docspell-joexapi",
     libraryDependencies ++=
       Dependencies.circe ++
-      Dependencies.http4sCirce ++
-      Dependencies.http4sClient,
+        Dependencies.http4sCirce ++
+        Dependencies.http4sClient,
     openapiTargetLanguage := Language.Scala,
     openapiPackage := Pkg("docspell.joexapi.model"),
-    openapiSpec := (Compile/resourceDirectory).value/"joex-openapi.yml"
-  ).dependsOn(common)
+    openapiSpec := (Compile / resourceDirectory).value / "joex-openapi.yml"
+  )
+  .dependsOn(common)
 
-val backend = project.in(file("modules/backend")).
-  disablePlugins(RevolverPlugin).
-  settings(sharedSettings).
-  settings(testSettings).
-  settings(
+val backend = project
+  .in(file("modules/backend"))
+  .disablePlugins(RevolverPlugin)
+  .settings(sharedSettings)
+  .settings(testSettings)
+  .settings(
     name := "docspell-backend",
     libraryDependencies ++=
       Dependencies.loggingApi ++
-      Dependencies.fs2 ++
-      Dependencies.bcrypt ++
-      Dependencies.http4sClient ++
-      Dependencies.emil
-  ).dependsOn(store, joexapi, ftsclient)
+        Dependencies.fs2 ++
+        Dependencies.bcrypt ++
+        Dependencies.http4sClient ++
+        Dependencies.emil
+  )
+  .dependsOn(store, joexapi, ftsclient)
 
-val webapp = project.in(file("modules/webapp")).
-  disablePlugins(RevolverPlugin).
-  enablePlugins(OpenApiSchema).
-  settings(sharedSettings).
-  settings(elmSettings).
-  settings(webjarSettings).
-  settings(
+val webapp = project
+  .in(file("modules/webapp"))
+  .disablePlugins(RevolverPlugin)
+  .enablePlugins(OpenApiSchema)
+  .settings(sharedSettings)
+  .settings(elmSettings)
+  .settings(webjarSettings)
+  .settings(
     name := "docspell-webapp",
     openapiTargetLanguage := Language.Elm,
     openapiPackage := Pkg("Api.Model"),
-    openapiSpec := (restapi/Compile/resourceDirectory).value/"docspell-openapi.yml",
+    openapiSpec := (restapi / Compile / resourceDirectory).value / "docspell-openapi.yml",
     openapiElmConfig := ElmConfig().withJson(ElmJson.decodePipeline)
   )
 
-
-
 // --- Application(s)
 
-val joex = project.in(file("modules/joex")).
-  enablePlugins(BuildInfoPlugin
-    , JavaServerAppPackaging
-    , DebianPlugin
-    , SystemdPlugin).
-  settings(sharedSettings).
-  settings(testSettings).
-  settings(debianSettings("docspell-joex")).
-  settings(buildInfoSettings).
-  settings(
+val joex = project
+  .in(file("modules/joex"))
+  .enablePlugins(BuildInfoPlugin, JavaServerAppPackaging, DebianPlugin, SystemdPlugin)
+  .settings(sharedSettings)
+  .settings(testSettings)
+  .settings(debianSettings("docspell-joex"))
+  .settings(buildInfoSettings)
+  .settings(
     name := "docspell-joex",
     libraryDependencies ++=
       Dependencies.fs2 ++
-      Dependencies.http4sServer ++
-      Dependencies.http4sCirce ++
-      Dependencies.http4sDsl ++
-      Dependencies.circe ++
-      Dependencies.pureconfig ++
-      Dependencies.emilTnef ++
-      Dependencies.emilMarkdown ++
-      Dependencies.emilJsoup ++
-      Dependencies.jsoup ++
-      Dependencies.yamusca ++
-      Dependencies.loggingApi ++
-      Dependencies.logging.map(_ % Runtime),
+        Dependencies.http4sServer ++
+        Dependencies.http4sCirce ++
+        Dependencies.http4sDsl ++
+        Dependencies.circe ++
+        Dependencies.pureconfig ++
+        Dependencies.emilTnef ++
+        Dependencies.emilMarkdown ++
+        Dependencies.emilJsoup ++
+        Dependencies.jsoup ++
+        Dependencies.yamusca ++
+        Dependencies.loggingApi ++
+        Dependencies.logging.map(_ % Runtime),
     addCompilerPlugin(Dependencies.kindProjectorPlugin),
     addCompilerPlugin(Dependencies.betterMonadicFor),
     buildInfoPackage := "docspell.joex",
-    reStart/javaOptions ++= Seq(s"-Dconfig.file=${(LocalRootProject/baseDirectory).value/"local"/"dev.conf"}")
-  ).dependsOn(store, backend, extract, convert, analysis, joexapi, restapi, ftssolr)
+    reStart / javaOptions ++= Seq(
+      s"-Dconfig.file=${(LocalRootProject / baseDirectory).value / "local" / "dev.conf"}"
+    )
+  )
+  .dependsOn(store, backend, extract, convert, analysis, joexapi, restapi, ftssolr)
 
-val restserver = project.in(file("modules/restserver")).
-  enablePlugins(BuildInfoPlugin
-    , JavaServerAppPackaging
-    , DebianPlugin
-    , SystemdPlugin).
-  settings(sharedSettings).
-  settings(testSettings).
-  settings(debianSettings("docspell-server")).
-  settings(buildInfoSettings).
-  settings(
+val restserver = project
+  .in(file("modules/restserver"))
+  .enablePlugins(BuildInfoPlugin, JavaServerAppPackaging, DebianPlugin, SystemdPlugin)
+  .settings(sharedSettings)
+  .settings(testSettings)
+  .settings(debianSettings("docspell-server"))
+  .settings(buildInfoSettings)
+  .settings(
     name := "docspell-restserver",
     libraryDependencies ++=
       Dependencies.http4sServer ++
-      Dependencies.http4sCirce ++
-      Dependencies.http4sDsl ++
-      Dependencies.circe ++
-      Dependencies.pureconfig ++
-      Dependencies.yamusca ++
-      Dependencies.webjars ++
-      Dependencies.loggingApi ++
-      Dependencies.logging.map(_ % Runtime),
+        Dependencies.http4sCirce ++
+        Dependencies.http4sDsl ++
+        Dependencies.circe ++
+        Dependencies.pureconfig ++
+        Dependencies.yamusca ++
+        Dependencies.webjars ++
+        Dependencies.loggingApi ++
+        Dependencies.logging.map(_ % Runtime),
     addCompilerPlugin(Dependencies.kindProjectorPlugin),
     addCompilerPlugin(Dependencies.betterMonadicFor),
     buildInfoPackage := "docspell.restserver",
-    Compile/sourceGenerators += Def.task {
-      createWebjarSource(Dependencies.webjars, (Compile/sourceManaged).value)
+    Compile / sourceGenerators += Def.task {
+      createWebjarSource(Dependencies.webjars, (Compile / sourceManaged).value)
     }.taskValue,
-    Compile/resourceGenerators += Def.task {
-      copyWebjarResources(Seq((restapi/Compile/resourceDirectory).value/"docspell-openapi.yml")
-        , (Compile/resourceManaged).value
-        , name.value
-        , version.value
-        , streams.value.log)
+    Compile / resourceGenerators += Def.task {
+      copyWebjarResources(
+        Seq((restapi / Compile / resourceDirectory).value / "docspell-openapi.yml"),
+        (Compile / resourceManaged).value,
+        name.value,
+        version.value,
+        streams.value.log
+      )
     }.taskValue,
-    Compile/unmanagedResourceDirectories ++= Seq((Compile/resourceDirectory).value.getParentFile/"templates"),
-    reStart/javaOptions ++= Seq(s"-Dconfig.file=${(LocalRootProject/baseDirectory).value/"local"/"dev.conf"}")
-  ).dependsOn(restapi, joexapi, backend, webapp, ftssolr)
-
-
+    Compile / unmanagedResourceDirectories ++= Seq(
+      (Compile / resourceDirectory).value.getParentFile / "templates"
+    ),
+    reStart / javaOptions ++= Seq(
+      s"-Dconfig.file=${(LocalRootProject / baseDirectory).value / "local" / "dev.conf"}"
+    )
+  )
+  .dependsOn(restapi, joexapi, backend, webapp, ftssolr)
 
 // --- Website Documentation
 
-val website = project.in(file("website")).
-  disablePlugins(RevolverPlugin).
-  disablePlugins(ReleasePlugin).
-  settings(sharedSettings).
-  settings(
+val website = project
+  .in(file("website"))
+  .disablePlugins(RevolverPlugin, ReleasePlugin)
+  .enablePlugins(ZolaPlugin, GhpagesPlugin)
+  .settings(sharedSettings)
+  .settings(
     name := "docspell-website",
     publishArtifact := false,
     skip in publish := true,
-    Compile/resourceGenerators += Def.task {
-      val templateOut = baseDirectory.value/"site"/"templates"/"shortcodes"
-      val staticOut = baseDirectory.value/"site"/"static"/"openapi"
+    ghpagesNoJekyll := true,
+    // the ghpages plugins works together with the site plugin (its a dependency)
+    // to make it publish the zola generated site, override their mappings with the zola output
+    mappings in SitePlugin.autoImport.makeSite :=
+      Path.selectSubpaths(zolaOutputDir.value, _ => true).toSeq,
+    git.remoteRepo := "git@github.com:eikek/docspell",
+    Compile / resourceGenerators += Def.task {
+      val templateOut = baseDirectory.value / "site" / "templates" / "shortcodes"
+      val staticOut   = baseDirectory.value / "site" / "static" / "openapi"
       IO.createDirectories(Seq(templateOut, staticOut))
       val logger = streams.value.log
 
       val files = Seq(
-        (resourceDirectory in (restserver, Compile)).value / "reference.conf" -> templateOut /"server.conf",
-        (resourceDirectory in (joex, Compile)).value / "reference.conf" -> templateOut/"joex.conf",
-        (LocalRootProject / baseDirectory).value / "tools" / "exim" / "exim.conf" -> templateOut/"sample-exim.conf",
-        (resourceDirectory in (restapi, Compile)).value/"docspell-openapi.yml" -> staticOut/"docspell-openapi.yml",
-        (restapi/Compile/openapiStaticDoc).value -> staticOut/"docspell-openapi.html"
+        (resourceDirectory in (restserver, Compile)).value / "reference.conf"     -> templateOut / "server.conf",
+        (resourceDirectory in (joex, Compile)).value / "reference.conf"           -> templateOut / "joex.conf",
+        (LocalRootProject / baseDirectory).value / "tools" / "exim" / "exim.conf" -> templateOut / "sample-exim.conf",
+        (resourceDirectory in (restapi, Compile)).value / "docspell-openapi.yml"  -> staticOut / "docspell-openapi.yml",
+        (restapi / Compile / openapiStaticDoc).value                              -> staticOut / "docspell-openapi.html"
       )
       IO.copy(files)
       files.map(_._2)
     }.taskValue,
-    Compile/resourceGenerators += Def.task {
+    Compile / resourceGenerators += Def.task {
       val changelog = (LocalRootProject / baseDirectory).value / "Changelog.md"
-      val targetDir = baseDirectory.value/"site"/"content"/"docs"/"changelog"
+      val targetDir = baseDirectory.value / "site" / "content" / "docs" / "changelog"
       IO.createDirectory(targetDir)
-      val target = targetDir/"_index.md"
+      val target = targetDir / "_index.md"
 
-      IO.write(target, """|+++
+      IO.write(
+        target,
+        """|+++
                           |title = "Changelog"
                           |description = "See what changed between releases."
                           |weight = 10
@@ -463,52 +492,60 @@ val website = project.in(file("website")).
                           |[extra]
                           |maketoc = false
                           |+++
-                          |""".stripMargin)
+                          |""".stripMargin
+      )
       IO.append(target, IO.readBytes(changelog))
       Seq(target)
-    }.taskValue    
+    }.taskValue
   )
 
-
-val root = project.in(file(".")).
-  settings(sharedSettings).
-  settings(noPublish).
-  settings(
+val root = project
+  .in(file("."))
+  .settings(sharedSettings)
+  .settings(noPublish)
+  .settings(
     name := "docspell-root"
-  ).
-  aggregate(common
-    , extract
-    , convert
-    , analysis
-    , ftsclient
-    , ftssolr
-    , files
-    , store
-    , joexapi
-    , joex
-    , backend
-    , webapp
-    , restapi
-    , restserver)
-
-
+  )
+  .aggregate(
+    common,
+    extract,
+    convert,
+    analysis,
+    ftsclient,
+    ftssolr,
+    files,
+    store,
+    joexapi,
+    joex,
+    backend,
+    webapp,
+    restapi,
+    restserver
+  )
 
 // --- Helpers
 
-def copyWebjarResources(src: Seq[File], base: File, artifact: String, version: String, logger: Logger): Seq[File] = {
-  val targetDir = base/"META-INF"/"resources"/"webjars"/artifact/version
+def copyWebjarResources(
+    src: Seq[File],
+    base: File,
+    artifact: String,
+    version: String,
+    logger: Logger
+): Seq[File] = {
+  val targetDir = base / "META-INF" / "resources" / "webjars" / artifact / version
   logger.info(s"Copy webjar resources from ${src.size} files/directories.")
   src.flatMap { dir =>
     if (dir.isDirectory) {
-      val files = (dir ** "*").filter(_.isFile).get pair Path.relativeTo(dir)
-      files.map { case (f, name) =>
-        val target = targetDir/name
-        IO.createDirectories(Seq(target.getParentFile))
-        IO.copy(Seq(f -> target))
-        target
+      val files = (dir ** "*").filter(_.isFile).get.pair(Path.relativeTo(dir))
+      files.map {
+        case (f, name) =>
+          val target = targetDir / name
+          IO.createDirectories(Seq(target.getParentFile))
+          IO.copy(Seq(f -> target))
+          target
       }
     } else {
-      val target = targetDir/dir.name
+      val target = targetDir / dir.name
       IO.createDirectories(Seq(target.getParentFile))
       IO.copy(Seq(dir -> target))
       Seq(target)
