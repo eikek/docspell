@@ -20,7 +20,8 @@ val sharedSettings = Seq(
   scalaVersion := "2.13.2",
   scalacOptions ++= Seq(
     "-deprecation",
-    "-encoding", "UTF-8",
+    "-encoding",
+    "UTF-8",
     "-language:higherKinds",
     "-feature",
     "-Werror", // fail when there are warnings
@@ -31,10 +32,10 @@ val sharedSettings = Seq(
     "-Wvalue-discard",
     "-Wnumeric-widen"
   ),
-  LocalRootProject/toolsPackage := {
-    val v = version.value
+  LocalRootProject / toolsPackage := {
+    val v      = version.value
     val logger = streams.value.log
-    val dir = (LocalRootProject/baseDirectory).value / "tools"
+    val dir    = (LocalRootProject / baseDirectory).value / "tools"
     packageTools(logger, dir, v)
   },
   scalacOptions in (Compile, console) :=
@@ -56,135 +57,173 @@ lazy val noPublish = Seq(
 
 val elmSettings = Seq(
   elmCompileMode := ElmCompileMode.Debug,
-  Compile/resourceGenerators += Def.task {
-    compileElm(streams.value.log
-      , (Compile/baseDirectory).value
-      , (Compile/resourceManaged).value
-      , name.value
-      , version.value
-      , elmCompileMode.value)
+  Compile / resourceGenerators += Def.task {
+    compileElm(
+      streams.value.log,
+      (Compile / baseDirectory).value,
+      (Compile / resourceManaged).value,
+      name.value,
+      version.value,
+      elmCompileMode.value
+    )
   }.taskValue,
   watchSources += Watched.WatchSource(
-    (Compile/sourceDirectory).value/"elm"
-      , FileFilter.globFilter("*.elm")
-      , HiddenFileFilter
+    (Compile / sourceDirectory).value / "elm",
+    FileFilter.globFilter("*.elm"),
+    HiddenFileFilter
   )
 )
 
 val webjarSettings = Seq(
-  Compile/resourceGenerators += Def.task {
-    copyWebjarResources(Seq((sourceDirectory in Compile).value/"webjar")
-      , (Compile/resourceManaged).value
-      , name.value
-      , version.value
-      , streams.value.log
+  Compile / resourceGenerators += Def.task {
+    copyWebjarResources(
+      Seq((sourceDirectory in Compile).value / "webjar"),
+      (Compile / resourceManaged).value,
+      name.value,
+      version.value,
+      streams.value.log
     )
   }.taskValue,
   watchSources += Watched.WatchSource(
-    (Compile / sourceDirectory).value/"webjar"
-      , FileFilter.globFilter("*.js") || FileFilter.globFilter("*.css")
-      , HiddenFileFilter
+    (Compile / sourceDirectory).value / "webjar",
+    FileFilter.globFilter("*.js") || FileFilter.globFilter("*.css"),
+    HiddenFileFilter
   )
 )
 
-def debianSettings(cfgFile: String) = Seq(
-  maintainer := "Eike Kettner <eike.kettner@posteo.de>",
-  packageSummary := description.value,
-  packageDescription := description.value,
-  mappings in Universal += {
-    val conf = (Compile / resourceDirectory).value / "reference.conf"
-    if (!conf.exists) {
-      sys.error(s"File $conf not found")
-    }
-    conf -> s"conf/$cfgFile.conf"
-  },
-  bashScriptExtraDefines += s"""addJava "-Dconfig.file=$${app_home}/../conf/$cfgFile.conf""""
-)
+def debianSettings(cfgFile: String) =
+  Seq(
+    maintainer := "Eike Kettner <eike.kettner@posteo.de>",
+    packageSummary := description.value,
+    packageDescription := description.value,
+    mappings in Universal += {
+      val conf = (Compile / resourceDirectory).value / "reference.conf"
+      if (!conf.exists)
+        sys.error(s"File $conf not found")
+      conf -> s"conf/$cfgFile.conf"
+    },
+    bashScriptExtraDefines += s"""addJava "-Dconfig.file=$${app_home}/../conf/$cfgFile.conf""""
+  )
 
 val buildInfoSettings = Seq(
-  buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion, gitHeadCommit, gitHeadCommitDate, gitUncommittedChanges, gitDescribedVersion),
+  buildInfoKeys := Seq[BuildInfoKey](
+    name,
+    version,
+    scalaVersion,
+    sbtVersion,
+    gitHeadCommit,
+    gitHeadCommitDate,
+    gitUncommittedChanges,
+    gitDescribedVersion
+  ),
   buildInfoOptions += BuildInfoOption.ToJson,
   buildInfoOptions += BuildInfoOption.BuildTime
 )
 
 val openapiScalaSettings = Seq(
-  openapiScalaConfig := ScalaConfig().withJson(ScalaJson.circeSemiauto).
-    addMapping(CustomMapping.forType({
-      case TypeDef("LocalDateTime", _)  =>
+  openapiScalaConfig := ScalaConfig()
+    .withJson(ScalaJson.circeSemiauto)
+    .addMapping(CustomMapping.forType({
+      case TypeDef("LocalDateTime", _) =>
         TypeDef("Timestamp", Imports("docspell.common.Timestamp"))
-    })).
-    addMapping(CustomMapping.forFormatType({
-      case "ident" => field =>
-        field.copy(typeDef = TypeDef("Ident", Imports("docspell.common.Ident")))
-      case "collectivestate" => field =>
-        field.copy(typeDef = TypeDef("CollectiveState", Imports("docspell.common.CollectiveState")))
-      case "userstate" => field =>
-        field.copy(typeDef = TypeDef("UserState", Imports("docspell.common.UserState")))
-      case "password" => field =>
-        field.copy(typeDef = TypeDef("Password", Imports("docspell.common.Password")))
-      case "contactkind" => field =>
-        field.copy(typeDef = TypeDef("ContactKind", Imports("docspell.common.ContactKind")))
-      case "direction" => field =>
-        field.copy(typeDef = TypeDef("Direction", Imports("docspell.common.Direction")))
-      case "priority" => field =>
-        field.copy(typeDef = TypeDef("Priority", Imports("docspell.common.Priority")))
-      case "jobstate" => field =>
-        field.copy(typeDef = TypeDef("JobState", Imports("docspell.common.JobState")))
-      case "loglevel" => field =>
-        field.copy(typeDef = TypeDef("LogLevel", Imports("docspell.common.LogLevel")))
-      case "mimetype" => field =>
-        field.copy(typeDef = TypeDef("MimeType", Imports("docspell.common.MimeType")))
-      case "itemstate" => field =>
-        field.copy(typeDef = TypeDef("ItemState", Imports("docspell.common.ItemState")))
-      case "nertag" => field =>
-        field.copy(typeDef = TypeDef("NerTag", Imports("docspell.common.NerTag")))
-      case "language" => field =>
-        field.copy(typeDef = TypeDef("Language", Imports("docspell.common.Language")))
-      case "calevent" => field =>
-        field.copy(typeDef = TypeDef("CalEvent", Imports("com.github.eikek.calev.CalEvent",
-          "com.github.eikek.calev.circe.CalevCirceCodec._")))
+    }))
+    .addMapping(CustomMapping.forFormatType({
+      case "ident" =>
+        field => field.copy(typeDef = TypeDef("Ident", Imports("docspell.common.Ident")))
+      case "collectivestate" =>
+        field =>
+          field.copy(typeDef =
+            TypeDef("CollectiveState", Imports("docspell.common.CollectiveState"))
+          )
+      case "userstate" =>
+        field =>
+          field.copy(typeDef = TypeDef("UserState", Imports("docspell.common.UserState")))
+      case "password" =>
+        field =>
+          field.copy(typeDef = TypeDef("Password", Imports("docspell.common.Password")))
+      case "contactkind" =>
+        field =>
+          field.copy(typeDef =
+            TypeDef("ContactKind", Imports("docspell.common.ContactKind"))
+          )
+      case "direction" =>
+        field =>
+          field.copy(typeDef = TypeDef("Direction", Imports("docspell.common.Direction")))
+      case "priority" =>
+        field =>
+          field.copy(typeDef = TypeDef("Priority", Imports("docspell.common.Priority")))
+      case "jobstate" =>
+        field =>
+          field.copy(typeDef = TypeDef("JobState", Imports("docspell.common.JobState")))
+      case "loglevel" =>
+        field =>
+          field.copy(typeDef = TypeDef("LogLevel", Imports("docspell.common.LogLevel")))
+      case "mimetype" =>
+        field =>
+          field.copy(typeDef = TypeDef("MimeType", Imports("docspell.common.MimeType")))
+      case "itemstate" =>
+        field =>
+          field.copy(typeDef = TypeDef("ItemState", Imports("docspell.common.ItemState")))
+      case "nertag" =>
+        field =>
+          field.copy(typeDef = TypeDef("NerTag", Imports("docspell.common.NerTag")))
+      case "language" =>
+        field =>
+          field.copy(typeDef = TypeDef("Language", Imports("docspell.common.Language")))
+      case "calevent" =>
+        field =>
+          field.copy(typeDef =
+            TypeDef(
+              "CalEvent",
+              Imports(
+                "com.github.eikek.calev.CalEvent",
+                "com.github.eikek.calev.circe.CalevCirceCodec._"
+              )
+            )
+          )
     }))
 )
-
 
 // --- Modules
 
 // Base module, everything depends on this – including restapi and
 // joexapi modules. This should aim to have least possible
 // dependencies
-val common = project.in(file("modules/common")).
-  disablePlugins(RevolverPlugin).
-  settings(sharedSettings).
-  settings(testSettings).
-  settings(
+val common = project
+  .in(file("modules/common"))
+  .disablePlugins(RevolverPlugin)
+  .settings(sharedSettings)
+  .settings(testSettings)
+  .settings(
     name := "docspell-common",
     libraryDependencies ++=
       Dependencies.fs2 ++
-      Dependencies.circe ++
-      Dependencies.loggingApi ++
-      Dependencies.calevCore ++
-      Dependencies.calevCirce ++
-      Dependencies.pureconfig.map(_ % "optional")
+        Dependencies.circe ++
+        Dependencies.loggingApi ++
+        Dependencies.calevCore ++
+        Dependencies.calevCirce ++
+        Dependencies.pureconfig.map(_ % "optional")
   )
 
 // Some example files for testing
 // https://file-examples.com/index.php/sample-documents-download/sample-doc-download/
-val files = project.in(file("modules/files")).
-  disablePlugins(RevolverPlugin).
-  settings(sharedSettings).
-  settings(testSettings).
-  settings(
+val files = project
+  .in(file("modules/files"))
+  .disablePlugins(RevolverPlugin)
+  .settings(sharedSettings)
+  .settings(testSettings)
+  .settings(
     name := "docspell-files",
     libraryDependencies ++=
       Dependencies.tika ++
-      Dependencies.icu4j,
+        Dependencies.icu4j,
     Test / sourceGenerators += Def.task {
-      val base = (Test/resourceDirectory).value
-      val files = (base ** (_.isFile)) pair sbt.io.Path.relativeTo(base)
-      val lines = files.toList.map(_._2).map(s => {
+      val base  = (Test / resourceDirectory).value
+      val files = (base ** (_.isFile)).pair(sbt.io.Path.relativeTo(base))
+      val lines = files.toList.map(_._2).map { s =>
         val ident = s.replaceAll("[^a-zA-Z0-9_]+", "_")
         ident -> s"""val $ident = createUrl("${s}")"""
-      })
+      }
       val content = s"""package docspell.files
 
 object ExampleFiles extends ExampleFilesSupport {
@@ -553,19 +592,34 @@ def copyWebjarResources(
   }
 }
 
-def compileElm(logger: Logger, wd: File, outBase: File, artifact: String, version: String, mode: ElmCompileMode): Seq[File] = {
+def compileElm(
+    logger: Logger,
+    wd: File,
+    outBase: File,
+    artifact: String,
+    version: String,
+    mode: ElmCompileMode
+): Seq[File] = {
   logger.info("Compile elm files ...")
-  val target = outBase/"META-INF"/"resources"/"webjars"/artifact/version/"docspell-app.js"
+  val target =
+    outBase / "META-INF" / "resources" / "webjars" / artifact / version / "docspell-app.js"
   val cmd = Seq("elm", "make") ++ mode.flags ++ Seq("--output", target.toString)
-  val proc = Process(cmd ++ Seq(wd/"src"/"main"/"elm"/"Main.elm").map(_.toString), Some(wd))
+  val proc = Process(
+    cmd ++ Seq(wd / "src" / "main" / "elm" / "Main.elm").map(_.toString),
+    Some(wd)
+  )
   val out = proc.!!
   logger.info(out)
   Seq(target)
 }
 
 def createWebjarSource(wj: Seq[ModuleID], out: File): Seq[File] = {
-  val target = out/"Webjars.scala"
-  val fields = wj.map(m => s"""val ${m.name.toLowerCase.filter(_ != '-')} = "/${m.name}/${m.revision}" """).mkString("\n\n")
+  val target = out / "Webjars.scala"
+  val fields = wj
+    .map(m =>
+      s"""val ${m.name.toLowerCase.filter(_ != '-')} = "/${m.name}/${m.revision}" """
+    )
+    .mkString("\n\n")
   val content = s"""package docspell.restserver.webapp
     |object Webjars {
     |$fields
@@ -577,36 +631,45 @@ def createWebjarSource(wj: Seq[ModuleID], out: File): Seq[File] = {
 }
 
 def packageTools(logger: Logger, dir: File, version: String): Seq[File] = {
-  val target = dir/"target"
+  val target = dir / "target"
   IO.delete(target)
   IO.createDirectory(target)
-  val archive = target/s"docspell-tools-${version}.zip"
+  val archive = target / s"docspell-tools-${version}.zip"
   logger.info(s"Packaging tools to $archive ...")
-  val webext = target/"docspell-firefox-extension.xpi"
-  val wx = dir/"webextension"
-  IO.zip(Seq(
-    wx/"_locales/de/messages.json" -> "_locales/de/messages.json",
-    wx/"_locales/en/messages.json" -> "_locales/en/messages.json",
-    wx/"docspell.js" -> "docspell.js",
-    wx/"icons"/"logo-48.png" -> "icons/logo-48.png",
-    wx/"icons"/"logo-96.png" -> "icons/logo-96.png",
-    wx/"manifest.json" -> "manifest.json"
-  ), webext)
+  val webext = target / "docspell-firefox-extension.xpi"
+  val wx     = dir / "webextension"
+  IO.zip(
+    Seq(
+      wx / "_locales/de/messages.json" -> "_locales/de/messages.json",
+      wx / "_locales/en/messages.json" -> "_locales/en/messages.json",
+      wx / "docspell.js"               -> "docspell.js",
+      wx / "icons" / "logo-48.png"     -> "icons/logo-48.png",
+      wx / "icons" / "logo-96.png"     -> "icons/logo-96.png",
+      wx / "manifest.json"             -> "manifest.json"
+    ),
+    webext
+  )
 
-  IO.zip(Seq(
-    webext -> s"docspell-tools-${version}/firefox/docspell-extension.xpi",
-    wx/"native/app_manifest.json" ->s"docspell-tools-${version}/firefox/native/app_manifest.json",
-    wx/"native/native.py" ->s"docspell-tools-${version}/firefox/native/native.py",
-    dir/"ds.sh" -> s"docspell-tools-${version}/ds.sh",
-    dir/"consumedir.sh" -> s"docspell-tools-${version}/consumedir.sh"
-  ), archive)
+  IO.zip(
+    Seq(
+      webext                          -> s"docspell-tools-${version}/firefox/docspell-extension.xpi",
+      wx / "native/app_manifest.json" -> s"docspell-tools-${version}/firefox/native/app_manifest.json",
+      wx / "native/native.py"         -> s"docspell-tools-${version}/firefox/native/native.py",
+      dir / "ds.sh"                   -> s"docspell-tools-${version}/ds.sh",
+      dir / "consumedir.sh"           -> s"docspell-tools-${version}/consumedir.sh"
+    ),
+    archive
+  )
 
   Seq(archive)
 }
 
 // --- aliases
 
-addCommandAlias("make", ";set webapp/elmCompileMode := ElmCompileMode.Production ;root/openapiCodegen ;root/test:compile")
+addCommandAlias(
+  "make",
+  ";set webapp/elmCompileMode := ElmCompileMode.Production ;root/openapiCodegen ;root/test:compile"
+)
 addCommandAlias("make-zip", ";restserver/universal:packageBin ;joex/universal:packageBin")
 addCommandAlias("make-deb", ";restserver/debian:packageBin ;joex/debian:packageBin")
 addCommandAlias("make-tools", ";root/toolsPackage")
