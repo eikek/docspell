@@ -262,6 +262,12 @@ label span.muted {
    From: https://github.com/CurrySoftware/elm-datepicker/blob/3.1.0/css/elm-datepicker.css
    License: BSD-3-Clause
 */
+
+.elm-datepicker--container.ui.input .elm-datepicker--picker {
+    top: 2.7em;
+}
+
+
 .elm-datepicker--container {
   position: relative; }
 
