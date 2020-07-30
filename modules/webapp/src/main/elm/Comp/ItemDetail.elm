@@ -2208,7 +2208,7 @@ item visible. This message will disappear then.
                     ]
                 , Html.map DirDropdownMsg (Comp.Dropdown.view settings model.directionModel)
                 ]
-            , div [ class " field" ]
+            , div [ class "field" ]
                 [ label []
                     [ Icons.dateIcon "grey"
                     , text "Date"
