@@ -136,7 +136,11 @@ viewInsights model =
             [ text "Tags"
             ]
         , div [ class "ui statistics" ]
-            (List.map makeTagStats model.insights.tagCloud.items)
+            (List.map makeTagStats
+                (List.sortBy .count model.insights.tagCloud.items
+                    |> List.reverse
+                )
+            )
         ]
     ]
 
