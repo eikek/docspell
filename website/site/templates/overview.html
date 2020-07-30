@@ -1,11 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Docspell: {{ section.title }}</title>
-        <link rel="stylesheet" href="../styles.css">
+        {% include "meta.html" %}
+        <title>{{ section.title }} – Docspell Documentation</title>
+        <link rel="stylesheet" href="/styles.css">
     </head>
     <body>
         <section class="hero is-info is-small">
@@ -24,34 +22,34 @@
 
         <section class="section">
             <div class="container">
-            <div class="content is-size-5">
-                This is the documentation for Docspell, version {{ config.extra.version }}.
-            </div>
-            <div class="columns is-multiline">
-                {% for section in section.subsections %}
+                <div class="content is-size-5">
+                    This is the documentation for Docspell, version {{ config.extra.version }}.
+                </div>
+                <div class="columns is-multiline">
+                    {% for section in section.subsections %}
 
-                {% set sub = get_section(path=section) %}
+                    {% set sub = get_section(path=section) %}
 
-                <div class="column is-one-third-widescreen is-half-tablet">
-                    <div class="card full-height">
-                        <a href="{{sub.permalink | safe}}">
-                            <div class="card-content">
-                                <div class="media">
-                                    <div class="media-content">
-                                        <p class="title is-5">
-                                            {{ sub.title | title }}
-                                        </p>
-                                        <p class="subtitle is-6">
-                                            {{ sub.description }}
-                                        </p>
+                    <div class="column is-one-third-widescreen is-half-tablet">
+                        <div class="card full-height">
+                            <a href="{{sub.permalink | safe}}">
+                                <div class="card-content">
+                                    <div class="media">
+                                        <div class="media-content">
+                                            <p class="title is-5">
+                                                {{ sub.title | title }}
+                                            </p>
+                                            <p class="subtitle is-6">
+                                                {{ sub.description }}
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </a>
+                            </a>
+                        </div>
                     </div>
+                    {% endfor %}
                 </div>
-                {% endfor %}
-            </div>
             </div>
         </section>
 
