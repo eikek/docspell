@@ -21,6 +21,8 @@ module Data.Icons exposing
     , organizationIcon
     , person
     , personIcon
+    , search
+    , searchIcon
     , tag
     , tagIcon
     , tags
@@ -29,6 +31,16 @@ module Data.Icons exposing
 
 import Html exposing (Html, i)
 import Html.Attributes exposing (class)
+
+
+search : String
+search =
+    "search icon"
+
+
+searchIcon : String -> Html msg
+searchIcon classes =
+    i [ class (search ++ " " ++ classes) ] []
 
 
 folder : String

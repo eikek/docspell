@@ -1,0 +1,10 @@
+<div class="notification is-{{ mode }} is-light" style="z-index: -1">
+    <div class="content ">
+        <p class="title is-5">
+            {{ title }}
+        </p>
+        <div>
+            {{ body | markdown | safe }}
+        </div>
+    </div>
+</div>
