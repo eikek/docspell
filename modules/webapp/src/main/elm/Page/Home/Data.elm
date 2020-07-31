@@ -13,6 +13,7 @@ module Page.Home.Data exposing
 
 import Api
 import Api.Model.ItemLightList exposing (ItemLightList)
+import Api.Model.ItemSearch
 import Comp.FixedDropdown
 import Comp.ItemCardList
 import Comp.SearchMenu
@@ -45,7 +46,7 @@ init flags =
     let
         searchTypeOptions =
             if flags.config.fullTextSearchEnabled then
-                [ BasicSearch, ContentSearch, ContentOnlySearch ]
+                [ BasicSearch, ContentOnlySearch ]
 
             else
                 [ BasicSearch ]
@@ -70,7 +71,7 @@ init flags =
 defaultSearchType : Flags -> SearchType
 defaultSearchType flags =
     if flags.config.fullTextSearchEnabled then
-        ContentSearch
+        ContentOnlySearch
 
     else
         BasicSearch
@@ -103,7 +104,7 @@ searchTypeString : SearchType -> String
 searchTypeString st =
     case st of
         BasicSearch ->
-            "All Names"
+            "Names"
 
         ContentSearch ->
             "Contents"
@@ -133,15 +134,19 @@ itemNav id model =
 
 doSearchCmd : Flags -> UiSettings -> Int -> Model -> Cmd Msg
 doSearchCmd flags settings offset model =
-    case model.searchType of
-        BasicSearch ->
-            doSearchDefaultCmd flags settings offset model
+    if model.menuCollapsed then
+        case model.searchType of
+            BasicSearch ->
+                doSearchDefaultCmd flags settings offset model
 
-        ContentSearch ->
-            doSearchDefaultCmd flags settings offset model
+            ContentSearch ->
+                doSearchDefaultCmd flags settings offset model
 
-        ContentOnlySearch ->
-            doSearchIndexCmd flags settings offset model
+            ContentOnlySearch ->
+                doSearchIndexCmd flags settings offset model
+
+    else
+        doSearchDefaultCmd flags settings offset model
 
 
 doSearchDefaultCmd : Flags -> UiSettings -> Int -> Model -> Cmd Msg
@@ -181,7 +186,16 @@ doSearchIndexCmd flags settings offset model =
                 Api.itemIndexSearch flags mask ItemSearchAddResp
 
         Nothing ->
-            Cmd.none
+            -- If there is no fulltext query, render simply the most
+            -- current ones
+            let
+                emptyMask =
+                    Api.Model.ItemSearch.empty
+
+                mask =
+                    { emptyMask | limit = settings.itemSearchPageSize }
+            in
+            Api.itemSearch flags mask ItemSearchResp
 
 
 resultsBelowLimit : UiSettings -> Model -> Bool

@@ -599,24 +599,6 @@ view flags settings model =
                     ]
                 ]
             ]
-        , div
-            [ classList
-                [ ( "field", True )
-                , ( "invisible hidden", not flags.config.fullTextSearchEnabled )
-                ]
-            ]
-            [ label [] [ text "Content Search" ]
-            , input
-                [ type_ "text"
-                , onInput SetFulltext
-                , Util.Html.onKeyUpCode KeyUpMsg
-                , model.fulltextModel |> Maybe.withDefault "" |> value
-                ]
-                []
-            , span [ class "small-info" ]
-                [ text "Fulltext search in document contents."
-                ]
-            ]
         , formHeaderHelp nameIcon "Names" ToggleNameHelp
         , span
             [ classList
@@ -632,7 +614,7 @@ view flags settings model =
             , text " to start searching."
             ]
         , div [ class "field" ]
-            [ label [] [ text "All Names" ]
+            [ label [] [ text "Names" ]
             , input
                 [ type_ "text"
                 , onInput SetAllName
@@ -649,24 +631,6 @@ view flags settings model =
                 [ text "Looks in correspondents, concerned entities, item name and notes."
                 ]
             ]
-        , div [ class "field" ]
-            [ label [] [ text "Name" ]
-            , input
-                [ type_ "text"
-                , onInput SetName
-                , Util.Html.onKeyUpCode KeyUpMsg
-                , model.nameModel |> Maybe.withDefault "" |> value
-                ]
-                []
-            , span
-                [ classList
-                    [ ( "small-info", True )
-                    , ( "invisible hidden", not model.showNameHelp )
-                    ]
-                ]
-                [ text "Looks in item name only."
-                ]
-            ]
         , formHeader (Icons.folderIcon "") "Folder"
         , div [ class "field" ]
             [ label [] [ text "Folder" ]
@@ -680,6 +644,25 @@ view flags settings model =
         , div [ class "field" ]
             [ label [] [ text "Exclude (or)" ]
             , Html.map TagExcMsg (Comp.Dropdown.view settings model.tagExclModel)
+            ]
+        , formHeader (Icons.searchIcon "") "Content"
+        , div
+            [ classList
+                [ ( "field", True )
+                , ( "invisible hidden", not flags.config.fullTextSearchEnabled )
+                ]
+            ]
+            [ label [] [ text "Content Search" ]
+            , input
+                [ type_ "text"
+                , onInput SetFulltext
+                , Util.Html.onKeyUpCode KeyUpMsg
+                , model.fulltextModel |> Maybe.withDefault "" |> value
+                ]
+                []
+            , span [ class "small-info" ]
+                [ text "Fulltext search in document contents and notes."
+                ]
             ]
         , formHeader (Icons.correspondentIcon "")
             (case getDirection model of
