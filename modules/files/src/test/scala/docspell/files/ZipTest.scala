@@ -29,6 +29,6 @@ object ZipTest extends SimpleTestSuite {
       }
       .compile
       .drain
-      .unsafeRunSync
+      .unsafeRunSync()
   }
 }

@@ -17,7 +17,7 @@ val scalafixSettings = Seq(
 
 val sharedSettings = Seq(
   organization := "com.github.eikek",
-  scalaVersion := "2.13.2",
+  scalaVersion := "2.13.3",
   scalacOptions ++= Seq(
     "-deprecation",
     "-encoding",
@@ -26,7 +26,8 @@ val sharedSettings = Seq(
     "-feature",
     "-Werror", // fail when there are warnings
     "-unchecked",
-    "-Xlint:_",
+    // remove -byname-implicit, once https://github.com/scala/bug/issues/12072 is resolved
+    "-Xlint:-byname-implicit,_",
     "-Wdead-code",
     "-Wunused",
     "-Wvalue-discard",

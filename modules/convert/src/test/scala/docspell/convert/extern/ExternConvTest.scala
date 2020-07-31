@@ -41,7 +41,7 @@ object ExternConvTest extends SimpleTestSuite with FileChecks {
             assert(p.isNonEmpty && p.isPDF)
           }
         )
-        .unsafeRunSync
+        .unsafeRunSync()
   }
 
   test("convert office to pdf") {
@@ -69,7 +69,7 @@ object ExternConvTest extends SimpleTestSuite with FileChecks {
             assert(p.isNonEmpty && p.isPDF)
           }
         )
-        .unsafeRunSync
+        .unsafeRunSync()
   }
 
   test("convert image to pdf") {
@@ -98,7 +98,7 @@ object ExternConvTest extends SimpleTestSuite with FileChecks {
             assert(txt.isNonEmpty && txt.isPlainText)
           }
         )
-        .unsafeRunSync
+        .unsafeRunSync()
   }
 
 }
