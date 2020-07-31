@@ -100,8 +100,8 @@ can guess the item-id.
 
 While folders are *not* taken into account when processing documents,
 they can be specified with the upload request or a [source
-url](uploading#anonymous-upload) to have them automatically set when
-they arrive.
+url](@/docs/webapp/uploading.md#anonymous-upload) to have them
+automatically set when files arrive.
 
 
 # Document Language

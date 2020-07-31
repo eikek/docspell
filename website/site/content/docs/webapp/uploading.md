@@ -30,16 +30,14 @@ scripts. For this the next variant exists.
 It is also possible to upload files without authentication. This
 should make tools that interact with docspell much easier to write.
 
-# Creating Anonymous Uploads
-
 Go to "Collective Settings" and then to the "Source" tab. A *Source*
-identifies an endpoint where files can be uploaded
-anonymously. Creating a new source creates a long unique id which is
-part on an url that can be used to upload files. You can choose any
-time to deactivate or delete the source at which point uploading is
-not possible anymore. The idea is to give this URL away safely. You
-can delete it any time and no passwords or secrets are visible, even
-your username is not visible.
+identifies an endpoint where files can be uploaded anonymously.
+Creating a new source creates a long unique id which is part of an url
+that can be used to upload files. You can choose any time to
+deactivate or delete the source at which point uploading is not
+possible anymore. The idea is to give this URL away safely. You can
+delete it any time and no passwords or secrets are visible, even your
+username is not visible.
 
 Example screenshot:
 
@@ -65,9 +63,9 @@ your account. You could give this url to people for sending files
 directly into your docspell.
 
 The second url is the API url, which accepts the requests to upload
-files (which is used by the first url).
+files (it is used by the upload page, the first url).
 
-For example, this url can be used to upload files with curl:
+For example, the api url can be used to upload files with curl:
 
 ``` bash
 $ curl -XPOST -F file=@test.pdf http://localhost:7880/api/v1/open/upload/item/CqpFTb7UmGe-9nMVPZSmnwc-AHH6nWFh52t-M1JFQ9y7cdH
@@ -76,11 +74,14 @@ $ curl -XPOST -F file=@test.pdf http://localhost:7880/api/v1/open/upload/item/Cq
 
 You could add more `-F file=@/path/to/your/file.pdf` to upload
 multiple files (note, the `@` is required by curl, so it knows that
-the following is a file).
+the following is a file). There is a [script
+provided](@/docs/tools/ds.md) that uses this to upload files from the
+command line.
 
 When files are uploaded to an source endpoint, the items resulting
 from this uploads are marked with the name of the source. So you know
-which source an item originated.
+which source an item originated. There is also a counter incremented
+for each reqest.
 
 If files are uploaded using the web applications *Upload files* page,
 the source is implicitly set to `webapp`. If you also want to let

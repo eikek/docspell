@@ -36,7 +36,7 @@ The sbt build is setup such that a file `dev.conf` in the directory
 it exists. So you can create a custom config file for development. For
 example, a custom database for development may be setup this way:
 
-```
+``` conf
 #jdbcurl = "jdbc:h2:///home/dev/workspace/projects/docspell/local/docspell-demo.db;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;AUTO_SERVER=TRUE"
 jdbcurl = "jdbc:postgresql://localhost:5432/docspelldev"
 #jdbcurl = "jdbc:mariadb://localhost:3306/docspelldev"

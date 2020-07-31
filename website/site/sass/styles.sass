@@ -30,7 +30,7 @@ $info: $infoblue
   //  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 1)), url(img/jf-martin-Ofs3LjEUcrk-unsplash.jpg)
 //jesse-gardner-EqdpXeemf58-unsplash
 #hero-main
-  background: url(img/tersius-van-rhyn-xcQWMPm9fG8-unsplash.jpg)
+  background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 1)), url('img/jf-martin-Ofs3LjEUcrk-unsplash.jpg')
   background-size: 100% 100%
   background-repeat: no-repeat
   .hero-body h1, h2, p
@@ -51,10 +51,12 @@ h1
 .doc
   h1
     border-bottom: 1px solid #ccc
+    padding-bottom: 0.15em
 
 a.zola-anchor
   padding-left: 0.75rem
   display: none
+  font-family: $family-monospace
 
 h1:hover a.zola-anchor
   display: inline
@@ -79,13 +81,22 @@ nav.breadcrumb
       color: black
 
 span.unsplash-credit
-  color: #444
+  color: #555
+  margin-right: 0.5em
   float: right
   font-size: smaller
   a
-    color: #444
+    color: #555
     &:hover
-      color: #666
+      color: #777
+
 
 //import all of bulma
 @import "../../node_modules/bulma/bulma.sass"
+
+p.has-text
+  color: $text
+
+.card.full-height
+  .card-content
+    height: 100%

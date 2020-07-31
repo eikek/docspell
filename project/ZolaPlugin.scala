@@ -76,38 +76,31 @@ object ZolaPlugin extends AutoPlugin {
         runElmCompile("elm", inDir.getParentFile, outDir, logger)
         Seq.empty
     }
-    val cmd  = Seq(zolaCmd, "build", "-o", outDir.absolutePath.toString) ++ baseUrl
-    val proc = Process(cmd, Some(inDir))
-    val out  = proc.!!
-    logger.info(out)
-  }
-
-  def checkSite(zolaCmd: String, inDir: File, logger: Logger): Unit = {
-    val cmd  = Seq(zolaCmd, "check")
-    val proc = Process(cmd, Some(inDir))
-    val out  = proc.!!
-    logger.info(out)
-  }
-
-  def runYarnInstall(yarnCmd: String, inDir: File, logger: Logger): Unit = {
-    val cmd  = Seq(yarnCmd, "install")
-    val proc = Process(cmd, Some(inDir))
-    val out  = proc.!!
-    logger.info(out)
-  }
-
-  def runElmCompile(elmCmd: String, inDir: File, zolaOut: File, logger: Logger): Unit = {
-    val cmd = Seq(
-      elmCmd,
-      "make",
-      "--output",
-      (zolaOut / "static" / "js" / "bundle.js").absolutePath.toString,
-      "--optimize",
-      (inDir/"elm"/"Main.elm").toString
+    Cmd.run(
+      Seq(zolaCmd, "build", "-o", outDir.absolutePath.toString) ++ baseUrl,
+      inDir,
+      logger
     )
-    val proc = Process(cmd, Some(inDir))
-    val out  = proc.!!
-    logger.info(out)
   }
+
+  def checkSite(zolaCmd: String, inDir: File, logger: Logger): Unit =
+    Cmd.run(Seq(zolaCmd, "check"), inDir, logger)
+
+  def runYarnInstall(yarnCmd: String, inDir: File, logger: Logger): Unit =
+    Cmd.run(Seq(yarnCmd, "install"), inDir, logger)
+
+  def runElmCompile(elmCmd: String, inDir: File, zolaOut: File, logger: Logger): Unit =
+    Cmd.run(
+      Seq(
+        elmCmd,
+        "make",
+        "--output",
+        (zolaOut / "static" / "js" / "bundle.js").absolutePath.toString,
+        "--optimize",
+        (inDir / "elm" / "Main.elm").toString
+      ),
+      inDir,
+      logger
+    )
 
 }

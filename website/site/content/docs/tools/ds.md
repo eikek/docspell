@@ -6,9 +6,10 @@ weight = 10
 
 # Introduction
 
-A bash script to quickly upload files from the command line. It reads
-a configuration file containing the URLs to upload to. Then each file
-given to the script will be uploaded to al URLs in the config.
+The `tools/ds.sh` is a bash script to quickly upload files from the
+command line. It reads a configuration file containing the URLs to
+upload to. Then each file given to the script will be uploaded to al
+URLs in the config.
 
 The config file is expected in
 `$XDG_CONFIG_HOME/docspell/ds.conf`. `$XDG_CONFIG_HOME` defaults to

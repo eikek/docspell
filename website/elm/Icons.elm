@@ -21,7 +21,7 @@ refresh =
 
 logo : Html msg
 logo =
-    img [ src "icons/logo-only.svg" ] []
+    img [ src "icons/logo-only-36.svg" ] []
 
 
 logoMC : Html msg

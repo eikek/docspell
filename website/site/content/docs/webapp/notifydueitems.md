@@ -14,8 +14,8 @@ page](@/docs/webapp/emailsettings.md#smtp-settings).
 
 Notifying works simply by searching for due items periodically. It
 will be submitted to the job queue and is picked up by an available
-[job executor](joex) eventually. This can be setup in the user
-settings page.
+[job executor](@/docs/joex/_index.md) eventually. This can be setup in
+the user settings page.
 
 {{ figure(file="notify-due-items.jpg") }}
 

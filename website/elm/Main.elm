@@ -314,9 +314,10 @@ mainHero model =
             [ span [ class "unsplash-credit" ]
                 [ text "Photo by "
                 , a
-                    [ href "https://unsplash.com/@tersiusvanrhyn"
+                    [ href "https://unsplash.com/@numericcitizen"
+                    , target "_blank"
                     ]
-                    [ text "Tersius van Rhyn"
+                    [ text "JF Martin"
                     ]
                 ]
             ]
