@@ -18,34 +18,23 @@ is visible. You can switch between them without affecting the results.
 
 {{ imgright(file="search-bar.png") }}
 
-By default, the search bar is shown. It provides a refined view of the
-search menu. The dropdown contains different options to do a quick
-search.
+By default, the search bar is shown. It provides a shortcut to search
+for names and a mode for fulltext-only search. The dropdown contains
+the different options.
 
-## *All Names* and *Contents*
+## The *Names* option {#names}
 
-These two options correspond to the same named field in the search
-menu. If you switch between search menu and search bar (by clicking
-the icon on the left), you'll see that they are the same fields.
-Typing in the search bar also fills the corresponding field in the
-search menu (and vice versa).
+This option corresponds to the same named field in the search menu. If
+you switch between search menu and search bar (by clicking the icon on
+the left), you'll see that they are the same fields. Typing in the
+search bar also fills the corresponding field in the search menu (and
+vice versa).
 
-- The *All Names* searches in the item name, item notes, names of
-  correspondent organization and person, and names of concering person
-  and equipment. It uses a simple substring search.
-- The option *Contents* searches the contents of all attachments
-  (documents), attachment names, the item name and item notes. It uses
-  full text search. However, it does not search the names of attached
-  meta data.
-
-When searching with one of these fields active, it simply submits the
-(hidden) search menu. So if the menu has other fields filled out, they
-will affect the result, too. Using one of these fields, the bar is
-just a reduced view of the search menu.
-
-So you can choose tags or correspondents in the search menu and
-further restrict the results using full text search. The results will
-be returned sorted by the item date, newest first.
+The *Names* searches in the item name, names of correspondent
+organization and person, and names of concering person and equipment.
+It uses a simple substring search. When searching with this option
+active, it simply submits the (hidden) search menu. So if the menu has
+other fields filled out, they will affect the result, too.
 
 If the left button in the search bar shows a little blue bubble, it
 means that there are more search fields filled out in the search menu
@@ -54,10 +43,10 @@ restricted by the search term given in the search-bar, but also by
 what is specified in the search menu.
 
 
-## *Contents Only*
+## The *Contents Only* option {#contents-only}
 
 This option has no corresponding part in the search menu. Searching
-with this option active, there is only a full text search done in the
+with this option active, there is a full text search done in:
 attachments contents, attachment names, item name and item notes.
 
 The results are not ordered by item date, but by relevance with
@@ -80,10 +69,8 @@ looked at are marked as "new" automatically.
 
 ## Names
 
-Searches in names of certain properties. The `All Names` field is the
-same as the search in the search bar (see above).
-
-The `Name` field only searches in the name property of an item.
+Searches in names of certain properties. The `Names` field is the same
+as the search in the search bar ([see above](#names)).
 
 ## Folder
 
@@ -99,6 +86,22 @@ included in the results.
 
 When adding tags to the "Exclude" list, then an item is removed from
 the results if it has at least one of these tags.
+
+## Content
+
+You can choose tags or correspondents in the search menu and further
+restrict the results using full text search using the *content* field.
+
+{% infobubble(mode="warning", title="Please note") %}
+This field is intended to be used in conjunction with other fields in
+the search menu. It *may be really slow* if used alone, since first
+the database query is executed and its results are furhter constrained
+by fulltext search.
+
+Use the search-bar with option *Contents Only* to do quick fulltext
+searches.
+{% end %}
+
 
 ## Correspondent
 
