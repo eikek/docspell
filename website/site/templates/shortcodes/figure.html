@@ -1,0 +1,5 @@
+<figure class="image">
+    {% set len = page.components | length %}
+    {% set p = page.components | slice(end=len - 1) | join(sep='/') %}
+    <img src="{{ get_url(path=p  ~ "/" ~ file) }}">
+</figure>

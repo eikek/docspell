@@ -1,18 +1,16 @@
 import com.github.eikek.sbt.openapi._
 import scala.sys.process._
+import com.typesafe.sbt.site.SitePlugin
 import com.typesafe.sbt.SbtGit.GitKeys._
 import docspell.build._
-import microsites.ExtraMdFileConfig
 
-val toolsPackage = taskKey[Seq[File]]("Package the scripts/extension tools")
+val toolsPackage   = taskKey[Seq[File]]("Package the scripts/extension tools")
 val elmCompileMode = settingKey[ElmCompileMode]("How to compile elm sources")
-
-
 
 // --- Settings
 
 val scalafixSettings = Seq(
-  semanticdbEnabled := true, // enable SemanticDB
+  semanticdbEnabled := true,                        // enable SemanticDB
   semanticdbVersion := scalafixSemanticdb.revision, //"4.3.10", // use Scalafix compatible version
   ThisBuild / scalafixDependencies ++= Dependencies.organizeImports
 )
@@ -22,7 +20,8 @@ val sharedSettings = Seq(
   scalaVersion := "2.13.2",
   scalacOptions ++= Seq(
     "-deprecation",
-    "-encoding", "UTF-8",
+    "-encoding",
+    "UTF-8",
     "-language:higherKinds",
     "-feature",
     "-Werror", // fail when there are warnings
@@ -33,10 +32,10 @@ val sharedSettings = Seq(
     "-Wvalue-discard",
     "-Wnumeric-widen"
   ),
-  LocalRootProject/toolsPackage := {
-    val v = version.value
+  LocalRootProject / toolsPackage := {
+    val v      = version.value
     val logger = streams.value.log
-    val dir = (LocalRootProject/baseDirectory).value / "tools"
+    val dir    = (LocalRootProject / baseDirectory).value / "tools"
     packageTools(logger, dir, v)
   },
   scalacOptions in (Compile, console) :=
@@ -58,135 +57,173 @@ lazy val noPublish = Seq(
 
 val elmSettings = Seq(
   elmCompileMode := ElmCompileMode.Debug,
-  Compile/resourceGenerators += Def.task {
-    compileElm(streams.value.log
-      , (Compile/baseDirectory).value
-      , (Compile/resourceManaged).value
-      , name.value
-      , version.value
-      , elmCompileMode.value)
+  Compile / resourceGenerators += Def.task {
+    compileElm(
+      streams.value.log,
+      (Compile / baseDirectory).value,
+      (Compile / resourceManaged).value,
+      name.value,
+      version.value,
+      elmCompileMode.value
+    )
   }.taskValue,
   watchSources += Watched.WatchSource(
-    (Compile/sourceDirectory).value/"elm"
-      , FileFilter.globFilter("*.elm")
-      , HiddenFileFilter
+    (Compile / sourceDirectory).value / "elm",
+    FileFilter.globFilter("*.elm"),
+    HiddenFileFilter
   )
 )
 
 val webjarSettings = Seq(
-  Compile/resourceGenerators += Def.task {
-    copyWebjarResources(Seq((sourceDirectory in Compile).value/"webjar")
-      , (Compile/resourceManaged).value
-      , name.value
-      , version.value
-      , streams.value.log
+  Compile / resourceGenerators += Def.task {
+    copyWebjarResources(
+      Seq((sourceDirectory in Compile).value / "webjar"),
+      (Compile / resourceManaged).value,
+      name.value,
+      version.value,
+      streams.value.log
     )
   }.taskValue,
   watchSources += Watched.WatchSource(
-    (Compile / sourceDirectory).value/"webjar"
-      , FileFilter.globFilter("*.js") || FileFilter.globFilter("*.css")
-      , HiddenFileFilter
+    (Compile / sourceDirectory).value / "webjar",
+    FileFilter.globFilter("*.js") || FileFilter.globFilter("*.css"),
+    HiddenFileFilter
   )
 )
 
-def debianSettings(cfgFile: String) = Seq(
-  maintainer := "Eike Kettner <eike.kettner@posteo.de>",
-  packageSummary := description.value,
-  packageDescription := description.value,
-  mappings in Universal += {
-    val conf = (Compile / resourceDirectory).value / "reference.conf"
-    if (!conf.exists) {
-      sys.error(s"File $conf not found")
-    }
-    conf -> s"conf/$cfgFile.conf"
-  },
-  bashScriptExtraDefines += s"""addJava "-Dconfig.file=$${app_home}/../conf/$cfgFile.conf""""
-)
+def debianSettings(cfgFile: String) =
+  Seq(
+    maintainer := "Eike Kettner <eike.kettner@posteo.de>",
+    packageSummary := description.value,
+    packageDescription := description.value,
+    mappings in Universal += {
+      val conf = (Compile / resourceDirectory).value / "reference.conf"
+      if (!conf.exists)
+        sys.error(s"File $conf not found")
+      conf -> s"conf/$cfgFile.conf"
+    },
+    bashScriptExtraDefines += s"""addJava "-Dconfig.file=$${app_home}/../conf/$cfgFile.conf""""
+  )
 
 val buildInfoSettings = Seq(
-  buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion, gitHeadCommit, gitHeadCommitDate, gitUncommittedChanges, gitDescribedVersion),
+  buildInfoKeys := Seq[BuildInfoKey](
+    name,
+    version,
+    scalaVersion,
+    sbtVersion,
+    gitHeadCommit,
+    gitHeadCommitDate,
+    gitUncommittedChanges,
+    gitDescribedVersion
+  ),
   buildInfoOptions += BuildInfoOption.ToJson,
   buildInfoOptions += BuildInfoOption.BuildTime
 )
 
 val openapiScalaSettings = Seq(
-  openapiScalaConfig := ScalaConfig().withJson(ScalaJson.circeSemiauto).
-    addMapping(CustomMapping.forType({
-      case TypeDef("LocalDateTime", _)  =>
+  openapiScalaConfig := ScalaConfig()
+    .withJson(ScalaJson.circeSemiauto)
+    .addMapping(CustomMapping.forType({
+      case TypeDef("LocalDateTime", _) =>
         TypeDef("Timestamp", Imports("docspell.common.Timestamp"))
-    })).
-    addMapping(CustomMapping.forFormatType({
-      case "ident" => field =>
-        field.copy(typeDef = TypeDef("Ident", Imports("docspell.common.Ident")))
-      case "collectivestate" => field =>
-        field.copy(typeDef = TypeDef("CollectiveState", Imports("docspell.common.CollectiveState")))
-      case "userstate" => field =>
-        field.copy(typeDef = TypeDef("UserState", Imports("docspell.common.UserState")))
-      case "password" => field =>
-        field.copy(typeDef = TypeDef("Password", Imports("docspell.common.Password")))
-      case "contactkind" => field =>
-        field.copy(typeDef = TypeDef("ContactKind", Imports("docspell.common.ContactKind")))
-      case "direction" => field =>
-        field.copy(typeDef = TypeDef("Direction", Imports("docspell.common.Direction")))
-      case "priority" => field =>
-        field.copy(typeDef = TypeDef("Priority", Imports("docspell.common.Priority")))
-      case "jobstate" => field =>
-        field.copy(typeDef = TypeDef("JobState", Imports("docspell.common.JobState")))
-      case "loglevel" => field =>
-        field.copy(typeDef = TypeDef("LogLevel", Imports("docspell.common.LogLevel")))
-      case "mimetype" => field =>
-        field.copy(typeDef = TypeDef("MimeType", Imports("docspell.common.MimeType")))
-      case "itemstate" => field =>
-        field.copy(typeDef = TypeDef("ItemState", Imports("docspell.common.ItemState")))
-      case "nertag" => field =>
-        field.copy(typeDef = TypeDef("NerTag", Imports("docspell.common.NerTag")))
-      case "language" => field =>
-        field.copy(typeDef = TypeDef("Language", Imports("docspell.common.Language")))
-      case "calevent" => field =>
-        field.copy(typeDef = TypeDef("CalEvent", Imports("com.github.eikek.calev.CalEvent",
-          "com.github.eikek.calev.circe.CalevCirceCodec._")))
+    }))
+    .addMapping(CustomMapping.forFormatType({
+      case "ident" =>
+        field => field.copy(typeDef = TypeDef("Ident", Imports("docspell.common.Ident")))
+      case "collectivestate" =>
+        field =>
+          field.copy(typeDef =
+            TypeDef("CollectiveState", Imports("docspell.common.CollectiveState"))
+          )
+      case "userstate" =>
+        field =>
+          field.copy(typeDef = TypeDef("UserState", Imports("docspell.common.UserState")))
+      case "password" =>
+        field =>
+          field.copy(typeDef = TypeDef("Password", Imports("docspell.common.Password")))
+      case "contactkind" =>
+        field =>
+          field.copy(typeDef =
+            TypeDef("ContactKind", Imports("docspell.common.ContactKind"))
+          )
+      case "direction" =>
+        field =>
+          field.copy(typeDef = TypeDef("Direction", Imports("docspell.common.Direction")))
+      case "priority" =>
+        field =>
+          field.copy(typeDef = TypeDef("Priority", Imports("docspell.common.Priority")))
+      case "jobstate" =>
+        field =>
+          field.copy(typeDef = TypeDef("JobState", Imports("docspell.common.JobState")))
+      case "loglevel" =>
+        field =>
+          field.copy(typeDef = TypeDef("LogLevel", Imports("docspell.common.LogLevel")))
+      case "mimetype" =>
+        field =>
+          field.copy(typeDef = TypeDef("MimeType", Imports("docspell.common.MimeType")))
+      case "itemstate" =>
+        field =>
+          field.copy(typeDef = TypeDef("ItemState", Imports("docspell.common.ItemState")))
+      case "nertag" =>
+        field =>
+          field.copy(typeDef = TypeDef("NerTag", Imports("docspell.common.NerTag")))
+      case "language" =>
+        field =>
+          field.copy(typeDef = TypeDef("Language", Imports("docspell.common.Language")))
+      case "calevent" =>
+        field =>
+          field.copy(typeDef =
+            TypeDef(
+              "CalEvent",
+              Imports(
+                "com.github.eikek.calev.CalEvent",
+                "com.github.eikek.calev.circe.CalevCirceCodec._"
+              )
+            )
+          )
     }))
 )
-
 
 // --- Modules
 
 // Base module, everything depends on this – including restapi and
 // joexapi modules. This should aim to have least possible
 // dependencies
-val common = project.in(file("modules/common")).
-  disablePlugins(RevolverPlugin).
-  settings(sharedSettings).
-  settings(testSettings).
-  settings(
+val common = project
+  .in(file("modules/common"))
+  .disablePlugins(RevolverPlugin)
+  .settings(sharedSettings)
+  .settings(testSettings)
+  .settings(
     name := "docspell-common",
     libraryDependencies ++=
       Dependencies.fs2 ++
-      Dependencies.circe ++
-      Dependencies.loggingApi ++
-      Dependencies.calevCore ++
-      Dependencies.calevCirce ++
-      Dependencies.pureconfig.map(_ % "optional")
+        Dependencies.circe ++
+        Dependencies.loggingApi ++
+        Dependencies.calevCore ++
+        Dependencies.calevCirce ++
+        Dependencies.pureconfig.map(_ % "optional")
   )
 
 // Some example files for testing
 // https://file-examples.com/index.php/sample-documents-download/sample-doc-download/
-val files = project.in(file("modules/files")).
-  disablePlugins(RevolverPlugin).
-  settings(sharedSettings).
-  settings(testSettings).
-  settings(
+val files = project
+  .in(file("modules/files"))
+  .disablePlugins(RevolverPlugin)
+  .settings(sharedSettings)
+  .settings(testSettings)
+  .settings(
     name := "docspell-files",
     libraryDependencies ++=
       Dependencies.tika ++
-      Dependencies.icu4j,
+        Dependencies.icu4j,
     Test / sourceGenerators += Def.task {
-      val base = (Test/resourceDirectory).value
-      val files = (base ** (_.isFile)) pair sbt.io.Path.relativeTo(base)
-      val lines = files.toList.map(_._2).map(s => {
+      val base  = (Test / resourceDirectory).value
+      val files = (base ** (_.isFile)).pair(sbt.io.Path.relativeTo(base))
+      val lines = files.toList.map(_._2).map { s =>
         val ident = s.replaceAll("[^a-zA-Z0-9_]+", "_")
         ident -> s"""val $ident = createUrl("${s}")"""
-      })
+      }
       val content = s"""package docspell.files
 
 object ExampleFiles extends ExampleFilesSupport {
@@ -199,340 +236,355 @@ ${lines.map(_._1).mkString(",\n")}
 
 }
 """
-      val target = (Test/sourceManaged).value/"scala"/"ExampleFiles.scala"
+      val target  = (Test / sourceManaged).value / "scala" / "ExampleFiles.scala"
       IO.createDirectory(target.getParentFile)
       IO.write(target, content)
       Seq(target)
     }.taskValue
-  ).dependsOn(common)
+  )
+  .dependsOn(common)
 
-val store = project.in(file("modules/store")).
-  disablePlugins(RevolverPlugin).
-  settings(sharedSettings).
-  settings(testSettings).
-  settings(
+val store = project
+  .in(file("modules/store"))
+  .disablePlugins(RevolverPlugin)
+  .settings(sharedSettings)
+  .settings(testSettings)
+  .settings(
     name := "docspell-store",
     libraryDependencies ++=
       Dependencies.doobie ++
-      Dependencies.bitpeace ++
-      Dependencies.tika ++
-      Dependencies.fs2 ++
-      Dependencies.databases ++
-      Dependencies.flyway ++
-      Dependencies.loggingApi ++
-      Dependencies.emil ++
-      Dependencies.emilDoobie ++
-      Dependencies.calevCore ++
-      Dependencies.calevFs2
-  ).dependsOn(common)
+        Dependencies.bitpeace ++
+        Dependencies.tika ++
+        Dependencies.fs2 ++
+        Dependencies.databases ++
+        Dependencies.flyway ++
+        Dependencies.loggingApi ++
+        Dependencies.emil ++
+        Dependencies.emilDoobie ++
+        Dependencies.calevCore ++
+        Dependencies.calevFs2
+  )
+  .dependsOn(common)
 
-val extract = project.in(file("modules/extract")).
-  disablePlugins(RevolverPlugin).
-  settings(sharedSettings).
-  settings(testSettings).
-  settings(
+val extract = project
+  .in(file("modules/extract"))
+  .disablePlugins(RevolverPlugin)
+  .settings(sharedSettings)
+  .settings(testSettings)
+  .settings(
     name := "docspell-extract",
     libraryDependencies ++=
       Dependencies.fs2 ++
-      Dependencies.twelvemonkeys ++      
-      Dependencies.pdfbox ++
-      Dependencies.poi ++
-      Dependencies.commonsIO ++
-      Dependencies.julOverSlf4j
-  ).dependsOn(common, files % "compile->compile;test->test")
+        Dependencies.twelvemonkeys ++
+        Dependencies.pdfbox ++
+        Dependencies.poi ++
+        Dependencies.commonsIO ++
+        Dependencies.julOverSlf4j
+  )
+  .dependsOn(common, files % "compile->compile;test->test")
 
-val convert = project.in(file("modules/convert")).
-  disablePlugins(RevolverPlugin).
-  settings(sharedSettings).
-  settings(testSettings).
-  settings(
+val convert = project
+  .in(file("modules/convert"))
+  .disablePlugins(RevolverPlugin)
+  .settings(sharedSettings)
+  .settings(testSettings)
+  .settings(
     name := "docspell-convert",
     libraryDependencies ++=
       Dependencies.flexmark ++
-      Dependencies.twelvemonkeys
-  ).dependsOn(common, files % "compile->compile;test->test")
+        Dependencies.twelvemonkeys
+  )
+  .dependsOn(common, files % "compile->compile;test->test")
 
-val analysis = project.in(file("modules/analysis")).
-  disablePlugins(RevolverPlugin).
-  enablePlugins(NerModelsPlugin).
-  settings(sharedSettings).
-  settings(testSettings).
-  settings(NerModelsPlugin.nerClassifierSettings).
-  settings(
+val analysis = project
+  .in(file("modules/analysis"))
+  .disablePlugins(RevolverPlugin)
+  .enablePlugins(NerModelsPlugin)
+  .settings(sharedSettings)
+  .settings(testSettings)
+  .settings(NerModelsPlugin.nerClassifierSettings)
+  .settings(
     name := "docspell-analysis",
     libraryDependencies ++=
       Dependencies.fs2 ++
-      Dependencies.stanfordNlpCore
-  ).dependsOn(common, files % "test->test")
+        Dependencies.stanfordNlpCore
+  )
+  .dependsOn(common, files % "test->test")
 
-val ftsclient = project.in(file("modules/fts-client")).
-  disablePlugins(RevolverPlugin).
-  settings(sharedSettings).
-  settings(testSettings).
-  settings(
+val ftsclient = project
+  .in(file("modules/fts-client"))
+  .disablePlugins(RevolverPlugin)
+  .settings(sharedSettings)
+  .settings(testSettings)
+  .settings(
     name := "docspell-fts-client",
     libraryDependencies ++= Seq.empty
-  ).dependsOn(common)
+  )
+  .dependsOn(common)
 
-val ftssolr = project.in(file("modules/fts-solr")).
-  disablePlugins(RevolverPlugin).
-  settings(sharedSettings).
-  settings(testSettings).
-  settings(
+val ftssolr = project
+  .in(file("modules/fts-solr"))
+  .disablePlugins(RevolverPlugin)
+  .settings(sharedSettings)
+  .settings(testSettings)
+  .settings(
     name := "docspell-fts-solr",
     libraryDependencies ++=
       Dependencies.http4sClient ++
-      Dependencies.http4sCirce ++
-      Dependencies.http4sDsl ++
-      Dependencies.circe
-  ).dependsOn(common, ftsclient)
-  
-val restapi = project.in(file("modules/restapi")).
-  disablePlugins(RevolverPlugin).
-  enablePlugins(OpenApiSchema).
-  settings(sharedSettings).
-  settings(testSettings).
-  settings(openapiScalaSettings).
-  settings(
+        Dependencies.http4sCirce ++
+        Dependencies.http4sDsl ++
+        Dependencies.circe
+  )
+  .dependsOn(common, ftsclient)
+
+val restapi = project
+  .in(file("modules/restapi"))
+  .disablePlugins(RevolverPlugin)
+  .enablePlugins(OpenApiSchema)
+  .settings(sharedSettings)
+  .settings(testSettings)
+  .settings(openapiScalaSettings)
+  .settings(
     name := "docspell-restapi",
     libraryDependencies ++=
       Dependencies.circe,
     openapiTargetLanguage := Language.Scala,
     openapiPackage := Pkg("docspell.restapi.model"),
-    openapiSpec := (Compile/resourceDirectory).value/"docspell-openapi.yml",
-  ).dependsOn(common)
+    openapiSpec := (Compile / resourceDirectory).value / "docspell-openapi.yml",
+    openapiStaticArgs := Seq("-l", "html2")
+  )
+  .dependsOn(common)
 
-val joexapi = project.in(file("modules/joexapi")).
-  disablePlugins(RevolverPlugin).
-  enablePlugins(OpenApiSchema).
-  settings(sharedSettings).
-  settings(testSettings).
-  settings(openapiScalaSettings).
-  settings(
+val joexapi = project
+  .in(file("modules/joexapi"))
+  .disablePlugins(RevolverPlugin)
+  .enablePlugins(OpenApiSchema)
+  .settings(sharedSettings)
+  .settings(testSettings)
+  .settings(openapiScalaSettings)
+  .settings(
     name := "docspell-joexapi",
     libraryDependencies ++=
       Dependencies.circe ++
-      Dependencies.http4sCirce ++
-      Dependencies.http4sClient,
+        Dependencies.http4sCirce ++
+        Dependencies.http4sClient,
     openapiTargetLanguage := Language.Scala,
     openapiPackage := Pkg("docspell.joexapi.model"),
-    openapiSpec := (Compile/resourceDirectory).value/"joex-openapi.yml"
-  ).dependsOn(common)
+    openapiSpec := (Compile / resourceDirectory).value / "joex-openapi.yml"
+  )
+  .dependsOn(common)
 
-val backend = project.in(file("modules/backend")).
-  disablePlugins(RevolverPlugin).
-  settings(sharedSettings).
-  settings(testSettings).
-  settings(
+val backend = project
+  .in(file("modules/backend"))
+  .disablePlugins(RevolverPlugin)
+  .settings(sharedSettings)
+  .settings(testSettings)
+  .settings(
     name := "docspell-backend",
     libraryDependencies ++=
       Dependencies.loggingApi ++
-      Dependencies.fs2 ++
-      Dependencies.bcrypt ++
-      Dependencies.http4sClient ++
-      Dependencies.emil
-  ).dependsOn(store, joexapi, ftsclient)
+        Dependencies.fs2 ++
+        Dependencies.bcrypt ++
+        Dependencies.http4sClient ++
+        Dependencies.emil
+  )
+  .dependsOn(store, joexapi, ftsclient)
 
-val webapp = project.in(file("modules/webapp")).
-  disablePlugins(RevolverPlugin).
-  enablePlugins(OpenApiSchema).
-  settings(sharedSettings).
-  settings(elmSettings).
-  settings(webjarSettings).
-  settings(
+val webapp = project
+  .in(file("modules/webapp"))
+  .disablePlugins(RevolverPlugin)
+  .enablePlugins(OpenApiSchema)
+  .settings(sharedSettings)
+  .settings(elmSettings)
+  .settings(webjarSettings)
+  .settings(
     name := "docspell-webapp",
     openapiTargetLanguage := Language.Elm,
     openapiPackage := Pkg("Api.Model"),
-    openapiSpec := (restapi/Compile/resourceDirectory).value/"docspell-openapi.yml",
+    openapiSpec := (restapi / Compile / resourceDirectory).value / "docspell-openapi.yml",
     openapiElmConfig := ElmConfig().withJson(ElmJson.decodePipeline)
   )
 
-
-
 // --- Application(s)
 
-val joex = project.in(file("modules/joex")).
-  enablePlugins(BuildInfoPlugin
-    , JavaServerAppPackaging
-    , DebianPlugin
-    , SystemdPlugin).
-  settings(sharedSettings).
-  settings(testSettings).
-  settings(debianSettings("docspell-joex")).
-  settings(buildInfoSettings).
-  settings(
+val joex = project
+  .in(file("modules/joex"))
+  .enablePlugins(BuildInfoPlugin, JavaServerAppPackaging, DebianPlugin, SystemdPlugin)
+  .settings(sharedSettings)
+  .settings(testSettings)
+  .settings(debianSettings("docspell-joex"))
+  .settings(buildInfoSettings)
+  .settings(
     name := "docspell-joex",
     libraryDependencies ++=
       Dependencies.fs2 ++
-      Dependencies.http4sServer ++
-      Dependencies.http4sCirce ++
-      Dependencies.http4sDsl ++
-      Dependencies.circe ++
-      Dependencies.pureconfig ++
-      Dependencies.emilTnef ++
-      Dependencies.emilMarkdown ++
-      Dependencies.emilJsoup ++
-      Dependencies.jsoup ++
-      Dependencies.yamusca ++
-      Dependencies.loggingApi ++
-      Dependencies.logging.map(_ % Runtime),
+        Dependencies.http4sServer ++
+        Dependencies.http4sCirce ++
+        Dependencies.http4sDsl ++
+        Dependencies.circe ++
+        Dependencies.pureconfig ++
+        Dependencies.emilTnef ++
+        Dependencies.emilMarkdown ++
+        Dependencies.emilJsoup ++
+        Dependencies.jsoup ++
+        Dependencies.yamusca ++
+        Dependencies.loggingApi ++
+        Dependencies.logging.map(_ % Runtime),
     addCompilerPlugin(Dependencies.kindProjectorPlugin),
     addCompilerPlugin(Dependencies.betterMonadicFor),
     buildInfoPackage := "docspell.joex",
-    reStart/javaOptions ++= Seq(s"-Dconfig.file=${(LocalRootProject/baseDirectory).value/"local"/"dev.conf"}")
-  ).dependsOn(store, backend, extract, convert, analysis, joexapi, restapi, ftssolr)
+    reStart / javaOptions ++= Seq(
+      s"-Dconfig.file=${(LocalRootProject / baseDirectory).value / "local" / "dev.conf"}"
+    )
+  )
+  .dependsOn(store, backend, extract, convert, analysis, joexapi, restapi, ftssolr)
 
-val restserver = project.in(file("modules/restserver")).
-  enablePlugins(BuildInfoPlugin
-    , JavaServerAppPackaging
-    , DebianPlugin
-    , SystemdPlugin).
-  settings(sharedSettings).
-  settings(testSettings).
-  settings(debianSettings("docspell-server")).
-  settings(buildInfoSettings).
-  settings(
+val restserver = project
+  .in(file("modules/restserver"))
+  .enablePlugins(BuildInfoPlugin, JavaServerAppPackaging, DebianPlugin, SystemdPlugin)
+  .settings(sharedSettings)
+  .settings(testSettings)
+  .settings(debianSettings("docspell-server"))
+  .settings(buildInfoSettings)
+  .settings(
     name := "docspell-restserver",
     libraryDependencies ++=
       Dependencies.http4sServer ++
-      Dependencies.http4sCirce ++
-      Dependencies.http4sDsl ++
-      Dependencies.circe ++
-      Dependencies.pureconfig ++
-      Dependencies.yamusca ++
-      Dependencies.webjars ++
-      Dependencies.loggingApi ++
-      Dependencies.logging.map(_ % Runtime),
+        Dependencies.http4sCirce ++
+        Dependencies.http4sDsl ++
+        Dependencies.circe ++
+        Dependencies.pureconfig ++
+        Dependencies.yamusca ++
+        Dependencies.webjars ++
+        Dependencies.loggingApi ++
+        Dependencies.logging.map(_ % Runtime),
     addCompilerPlugin(Dependencies.kindProjectorPlugin),
     addCompilerPlugin(Dependencies.betterMonadicFor),
     buildInfoPackage := "docspell.restserver",
-    Compile/sourceGenerators += Def.task {
-      createWebjarSource(Dependencies.webjars, (Compile/sourceManaged).value)
+    Compile / sourceGenerators += Def.task {
+      createWebjarSource(Dependencies.webjars, (Compile / sourceManaged).value)
     }.taskValue,
-    Compile/resourceGenerators += Def.task {
-      copyWebjarResources(Seq((restapi/Compile/resourceDirectory).value/"docspell-openapi.yml")
-        , (Compile/resourceManaged).value
-        , name.value
-        , version.value
-        , streams.value.log)
+    Compile / resourceGenerators += Def.task {
+      copyWebjarResources(
+        Seq((restapi / Compile / resourceDirectory).value / "docspell-openapi.yml"),
+        (Compile / resourceManaged).value,
+        name.value,
+        version.value,
+        streams.value.log
+      )
     }.taskValue,
-    Compile/unmanagedResourceDirectories ++= Seq((Compile/resourceDirectory).value.getParentFile/"templates"),
-    reStart/javaOptions ++= Seq(s"-Dconfig.file=${(LocalRootProject/baseDirectory).value/"local"/"dev.conf"}")
-  ).dependsOn(restapi, joexapi, backend, webapp, ftssolr)
+    Compile / unmanagedResourceDirectories ++= Seq(
+      (Compile / resourceDirectory).value.getParentFile / "templates"
+    ),
+    reStart / javaOptions ++= Seq(
+      s"-Dconfig.file=${(LocalRootProject / baseDirectory).value / "local" / "dev.conf"}"
+    )
+  )
+  .dependsOn(restapi, joexapi, backend, webapp, ftssolr)
 
+// --- Website Documentation
 
-
-// --- Microsite Documentation
-
-val microsite = project.in(file("modules/microsite")).
-  disablePlugins(RevolverPlugin).
-  enablePlugins(MicrositesPlugin).
-  disablePlugins(ReleasePlugin).
-  settings(sharedSettings).
-  settings(
-    name := "docspell-microsite",
+val website = project
+  .in(file("website"))
+  .disablePlugins(RevolverPlugin, ReleasePlugin)
+  .enablePlugins(ZolaPlugin, GhpagesPlugin)
+  .settings(sharedSettings)
+  .settings(
+    name := "docspell-website",
     publishArtifact := false,
     skip in publish := true,
-    micrositeFooterText := Some(
-      """
-        |<p>&copy; 2020 <a href="https://github.com/eikek/docspell">Docspell, v{{site.version}}</a></p>
-        |""".stripMargin
-    ),
-    micrositeName := "Docspell",
-    micrositeDescription := "Auto-tagging Document Organizer",
-    micrositeDocumentationUrl := "doc",
-    micrositeDocumentationLabelDescription := "Documentation",
-    micrositeFavicons := Seq(microsites.MicrositeFavicon("favicon.png", "96x96")),
-    micrositeAuthor := "eikek",
-    micrositeGithubOwner := "eikek",
-    micrositeGithubRepo := "docspell",
-    micrositeGitterChannel := false,
-    micrositeShareOnSocial := false,
-    micrositeHighlightLanguages ++= Seq("json", "javascript"),
-    micrositeEditButton := Some(microsites.MicrositeEditButton("Improve this page", "/edit/master/modules/microsite/docs/{{ page.path }}")),
-    fork in run := true,
-    micrositeCompilingDocsTool := WithMdoc,
-    mdocVariables := Map(
-      "VERSION" -> version.value,
-      "PVERSION" -> version.value.replace('.', '_')
-    ),
-    micrositeExtraMdFiles := Map(
-      file("Changelog.md") -> ExtraMdFileConfig(
-        "changelog.md",
-        "docs",
-        Map("title" -> "Changelog", "permalink" -> "changelog")
-      )
-    ),
-    Compile/resourceGenerators += Def.task {
-      val jekyllOut = resourceManaged.value/"main"/"jekyll"
+    ghpagesNoJekyll := true,
+    // the ghpages plugins works together with the site plugin (its a dependency)
+    // to make it publish the zola generated site, override their mappings with the zola output
+    mappings in SitePlugin.autoImport.makeSite :=
+      Path.selectSubpaths(zolaOutputDir.value, _ => true).toSeq,
+    git.remoteRepo := "git@github.com:eikek/docspell",
+    Compile / resourceGenerators += Def.task {
+      val templateOut = baseDirectory.value / "site" / "templates" / "shortcodes"
+      val staticOut   = baseDirectory.value / "site" / "static" / "openapi"
+      IO.createDirectories(Seq(templateOut, staticOut))
       val logger = streams.value.log
 
-      val templates = Seq(
-        (resourceDirectory in (restserver, Compile)).value / "reference.conf" -> jekyllOut /"_includes"/"server.conf",
-        (resourceDirectory in (joex, Compile)).value / "reference.conf" -> jekyllOut/"_includes"/"joex.conf",
-        (LocalRootProject / baseDirectory).value / "tools" / "exim" / "exim.conf" -> jekyllOut/ "_includes"/"sample-exim.conf"
-      )
-      val res1 = templates.map { case (s, t) =>
-        logger.info(s"Copying $s -> $t")
-        IO.write(t, "{% raw %}\n")
-        IO.append(t, IO.readBytes(s))
-        IO.write(t, "\n{% endraw %}", append = true)
-        t
-      }
-
       val files = Seq(
-        (resourceDirectory in (restapi, Compile)).value/"docspell-openapi.yml" -> jekyllOut/"openapi"/"docspell-openapi.yml"
+        (resourceDirectory in (restserver, Compile)).value / "reference.conf"     -> templateOut / "server.conf",
+        (resourceDirectory in (joex, Compile)).value / "reference.conf"           -> templateOut / "joex.conf",
+        (LocalRootProject / baseDirectory).value / "tools" / "exim" / "exim.conf" -> templateOut / "sample-exim.conf",
+        (resourceDirectory in (restapi, Compile)).value / "docspell-openapi.yml"  -> staticOut / "docspell-openapi.yml",
+        (restapi / Compile / openapiStaticDoc).value                              -> staticOut / "docspell-openapi.html"
       )
       IO.copy(files)
-      res1 ++ files.map(_._2)
+      files.map(_._2)
     }.taskValue,
-    Compile/resourceGenerators += Def.task {
-      val staticDoc = (restapi/Compile/openapiStaticDoc).value
-      val target = resourceManaged.value/"main"/"jekyll"/"openapi"/"docspell-openapi.html"
-      IO.copy(Seq(staticDoc -> target))
+    Compile / resourceGenerators += Def.task {
+      val changelog = (LocalRootProject / baseDirectory).value / "Changelog.md"
+      val targetDir = baseDirectory.value / "site" / "content" / "docs" / "changelog"
+      IO.createDirectory(targetDir)
+      val target = targetDir / "_index.md"
+
+      IO.write(
+        target,
+        """|+++
+                          |title = "Changelog"
+                          |description = "See what changed between releases."
+                          |weight = 10
+                          |insert_anchor_links = "right"
+                          |[extra]
+                          |maketoc = false
+                          |+++
+                          |""".stripMargin
+      )
+      IO.append(target, IO.readBytes(changelog))
       Seq(target)
     }.taskValue
   )
 
-val root = project.in(file(".")).
-  settings(sharedSettings).
-  settings(noPublish).
-  settings(
+val root = project
+  .in(file("."))
+  .settings(sharedSettings)
+  .settings(noPublish)
+  .settings(
     name := "docspell-root"
-  ).
-  aggregate(common
-    , extract
-    , convert
-    , analysis
-    , ftsclient
-    , ftssolr
-    , files
-    , store
-    , joexapi
-    , joex
-    , backend
-    , webapp
-    , restapi
-    , restserver)
-
-
+  )
+  .aggregate(
+    common,
+    extract,
+    convert,
+    analysis,
+    ftsclient,
+    ftssolr,
+    files,
+    store,
+    joexapi,
+    joex,
+    backend,
+    webapp,
+    restapi,
+    restserver
+  )
 
 // --- Helpers
 
-def copyWebjarResources(src: Seq[File], base: File, artifact: String, version: String, logger: Logger): Seq[File] = {
-  val targetDir = base/"META-INF"/"resources"/"webjars"/artifact/version
+def copyWebjarResources(
+    src: Seq[File],
+    base: File,
+    artifact: String,
+    version: String,
+    logger: Logger
+): Seq[File] = {
+  val targetDir = base / "META-INF" / "resources" / "webjars" / artifact / version
   logger.info(s"Copy webjar resources from ${src.size} files/directories.")
   src.flatMap { dir =>
     if (dir.isDirectory) {
-      val files = (dir ** "*").filter(_.isFile).get pair Path.relativeTo(dir)
-      files.map { case (f, name) =>
-        val target = targetDir/name
-        IO.createDirectories(Seq(target.getParentFile))
-        IO.copy(Seq(f -> target))
-        target
+      val files = (dir ** "*").filter(_.isFile).get.pair(Path.relativeTo(dir))
+      files.map {
+        case (f, name) =>
+          val target = targetDir / name
+          IO.createDirectories(Seq(target.getParentFile))
+          IO.copy(Seq(f -> target))
+          target
       }
     } else {
-      val target = targetDir/dir.name
+      val target = targetDir / dir.name
       IO.createDirectories(Seq(target.getParentFile))
       IO.copy(Seq(dir -> target))
       Seq(target)
@@ -540,19 +592,34 @@ def copyWebjarResources(src: Seq[File], base: File, artifact: String, version: S
   }
 }
 
-def compileElm(logger: Logger, wd: File, outBase: File, artifact: String, version: String, mode: ElmCompileMode): Seq[File] = {
+def compileElm(
+    logger: Logger,
+    wd: File,
+    outBase: File,
+    artifact: String,
+    version: String,
+    mode: ElmCompileMode
+): Seq[File] = {
   logger.info("Compile elm files ...")
-  val target = outBase/"META-INF"/"resources"/"webjars"/artifact/version/"docspell-app.js"
+  val target =
+    outBase / "META-INF" / "resources" / "webjars" / artifact / version / "docspell-app.js"
   val cmd = Seq("elm", "make") ++ mode.flags ++ Seq("--output", target.toString)
-  val proc = Process(cmd ++ Seq(wd/"src"/"main"/"elm"/"Main.elm").map(_.toString), Some(wd))
+  val proc = Process(
+    cmd ++ Seq(wd / "src" / "main" / "elm" / "Main.elm").map(_.toString),
+    Some(wd)
+  )
   val out = proc.!!
   logger.info(out)
   Seq(target)
 }
 
 def createWebjarSource(wj: Seq[ModuleID], out: File): Seq[File] = {
-  val target = out/"Webjars.scala"
-  val fields = wj.map(m => s"""val ${m.name.toLowerCase.filter(_ != '-')} = "/${m.name}/${m.revision}" """).mkString("\n\n")
+  val target = out / "Webjars.scala"
+  val fields = wj
+    .map(m =>
+      s"""val ${m.name.toLowerCase.filter(_ != '-')} = "/${m.name}/${m.revision}" """
+    )
+    .mkString("\n\n")
   val content = s"""package docspell.restserver.webapp
     |object Webjars {
     |$fields
@@ -564,36 +631,45 @@ def createWebjarSource(wj: Seq[ModuleID], out: File): Seq[File] = {
 }
 
 def packageTools(logger: Logger, dir: File, version: String): Seq[File] = {
-  val target = dir/"target"
+  val target = dir / "target"
   IO.delete(target)
   IO.createDirectory(target)
-  val archive = target/s"docspell-tools-${version}.zip"
+  val archive = target / s"docspell-tools-${version}.zip"
   logger.info(s"Packaging tools to $archive ...")
-  val webext = target/"docspell-firefox-extension.xpi"
-  val wx = dir/"webextension"
-  IO.zip(Seq(
-    wx/"_locales/de/messages.json" -> "_locales/de/messages.json",
-    wx/"_locales/en/messages.json" -> "_locales/en/messages.json",
-    wx/"docspell.js" -> "docspell.js",
-    wx/"icons"/"logo-48.png" -> "icons/logo-48.png",
-    wx/"icons"/"logo-96.png" -> "icons/logo-96.png",
-    wx/"manifest.json" -> "manifest.json"
-  ), webext)
+  val webext = target / "docspell-firefox-extension.xpi"
+  val wx     = dir / "webextension"
+  IO.zip(
+    Seq(
+      wx / "_locales/de/messages.json" -> "_locales/de/messages.json",
+      wx / "_locales/en/messages.json" -> "_locales/en/messages.json",
+      wx / "docspell.js"               -> "docspell.js",
+      wx / "icons" / "logo-48.png"     -> "icons/logo-48.png",
+      wx / "icons" / "logo-96.png"     -> "icons/logo-96.png",
+      wx / "manifest.json"             -> "manifest.json"
+    ),
+    webext
+  )
 
-  IO.zip(Seq(
-    webext -> s"docspell-tools-${version}/firefox/docspell-extension.xpi",
-    wx/"native/app_manifest.json" ->s"docspell-tools-${version}/firefox/native/app_manifest.json",
-    wx/"native/native.py" ->s"docspell-tools-${version}/firefox/native/native.py",
-    dir/"ds.sh" -> s"docspell-tools-${version}/ds.sh",
-    dir/"consumedir.sh" -> s"docspell-tools-${version}/consumedir.sh"
-  ), archive)
+  IO.zip(
+    Seq(
+      webext                          -> s"docspell-tools-${version}/firefox/docspell-extension.xpi",
+      wx / "native/app_manifest.json" -> s"docspell-tools-${version}/firefox/native/app_manifest.json",
+      wx / "native/native.py"         -> s"docspell-tools-${version}/firefox/native/native.py",
+      dir / "ds.sh"                   -> s"docspell-tools-${version}/ds.sh",
+      dir / "consumedir.sh"           -> s"docspell-tools-${version}/consumedir.sh"
+    ),
+    archive
+  )
 
   Seq(archive)
 }
 
 // --- aliases
 
-addCommandAlias("make", ";set webapp/elmCompileMode := ElmCompileMode.Production ;root/openapiCodegen ;root/test:compile")
+addCommandAlias(
+  "make",
+  ";set webapp/elmCompileMode := ElmCompileMode.Production ;root/openapiCodegen ;root/test:compile"
+)
 addCommandAlias("make-zip", ";restserver/universal:packageBin ;joex/universal:packageBin")
 addCommandAlias("make-deb", ";restserver/debian:packageBin ;joex/debian:packageBin")
 addCommandAlias("make-tools", ";root/toolsPackage")
