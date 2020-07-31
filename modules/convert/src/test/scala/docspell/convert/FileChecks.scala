@@ -18,7 +18,7 @@ trait FileChecks {
       Files.exists(p) && Files.size(p) > 0
 
     def isType(mime: MimeType): Boolean =
-      TikaMimetype.detect[IO](p).map(_ == mime).unsafeRunSync
+      TikaMimetype.detect[IO](p).map(_ == mime).unsafeRunSync()
 
     def isPDF: Boolean =
       isType(MimeType.pdf)

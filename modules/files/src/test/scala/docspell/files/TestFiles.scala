@@ -20,10 +20,10 @@ object TestFiles {
   lazy val letterDEText =
     ExampleFiles.letter_de_txt
       .readText[IO](8 * 1024, blocker)
-      .unsafeRunSync
+      .unsafeRunSync()
 
   lazy val letterENText =
     ExampleFiles.letter_en_txt
       .readText[IO](8 * 1024, blocker)
-      .unsafeRunSync
+      .unsafeRunSync()
 }
