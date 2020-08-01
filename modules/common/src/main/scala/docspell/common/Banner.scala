@@ -7,7 +7,8 @@ case class Banner(
     jdbcUrl: LenientUri,
     configFile: Option[String],
     appId: Ident,
-    baseUrl: LenientUri
+    baseUrl: LenientUri,
+    ftsUrl: Option[LenientUri]
 ) {
 
   private val banner =
@@ -27,6 +28,7 @@ case class Banner(
       s"Id:       ${appId.id}",
       s"Base-Url: ${baseUrl.asString}",
       s"Database: ${jdbcUrl.asString}",
+      s"Fts:      ${ftsUrl.map(_.asString).getOrElse("-")}",
       s"Config:   ${configFile.getOrElse("")}",
       ""
     )

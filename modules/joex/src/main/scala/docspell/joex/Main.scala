@@ -46,7 +46,8 @@ object Main extends IOApp {
       cfg.jdbc.url,
       Option(System.getProperty("config.file")),
       cfg.appId,
-      cfg.baseUrl
+      cfg.baseUrl,
+      Some(cfg.fullTextSearch.solr.url).filter(_ => cfg.fullTextSearch.enabled)
     )
     logger.info(s"\n${banner.render("***>")}")
     val pools = for {
