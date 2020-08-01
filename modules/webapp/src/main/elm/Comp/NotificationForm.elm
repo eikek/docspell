@@ -133,8 +133,8 @@ init flags =
         initialSchedule =
             Data.Validated.Unknown Data.CalEvent.everyMonth
 
-        ( sm, sc ) =
-            Comp.CalEventInput.init flags Data.CalEvent.everyMonth
+        sm =
+            Comp.CalEventInput.initDefault
     in
     ( { settings = Api.Model.NotificationSettings.empty
       , connectionModel =
@@ -159,7 +159,6 @@ init flags =
     , Cmd.batch
         [ Api.getMailSettings flags "" ConnResp
         , Api.getTags flags "" GetTagsResp
-        , Cmd.map CalEventMsg sc
         ]
     )
 

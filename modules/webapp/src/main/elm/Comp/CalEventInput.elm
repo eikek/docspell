@@ -2,6 +2,7 @@ module Comp.CalEventInput exposing
     ( Model
     , Msg
     , init
+    , initDefault
     , update
     , view
     )
@@ -34,6 +35,11 @@ type Msg
     | SetMinute String
     | SetWeekday String
     | CheckInputMsg CalEvent (Result Http.Error CalEventCheckResult)
+
+
+initDefault : Model
+initDefault =
+    Model Nothing
 
 
 init : Flags -> CalEvent -> ( Model, Cmd Msg )
