@@ -110,7 +110,11 @@ object OFulltext {
           folders <- store.transact(QFolder.getMemberFolders(account))
           ftsR    <- fts.search(fq.withFolders(folders))
           ftsItems = ftsR.results.groupBy(_.itemId)
-          select   = ftsR.results.map(r => QItem.SelectedItem(r.itemId, r.score)).toSet
+          select =
+            ftsItems.values
+              .map(_.sortBy(-_.score).head)
+              .map(r => QItem.SelectedItem(r.itemId, r.score))
+              .toSet
           itemsWithTags <-
             store
               .transact(
