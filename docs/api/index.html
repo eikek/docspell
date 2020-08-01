@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Eike Kettner">
+<meta name="description" content="Simple Document Organizer">
+<meta name="image" property="og:image" content="/img/poster.png">
+<meta name="title" property="og:title" content="Docspell – Simple Document Organizer">
+<meta name="og:image" content="/img/poster.png">
+<meta name="og:title" content="Docspell – Simple Document Organizer">
+<meta name="og:site_name" content="Api - Docspell">
+<meta name="og:url" content="">
+<meta name="og:type" content="website">
+<meta name="og:description" content="Simple Document Organizer">
+<meta name="twitter:title" content="Docspell">
+<meta name="twitter:image" content="/img/poster.png">
+<meta name="twitter:description" content="Simple Document Organizer">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="shortcut icon" href="/favicon-mc.ico" type="image/x-icon">
+<link rel="icon" href="/favicon-mc.ico" type="image/x-icon">
+
+        <title>Api – Docspell Documentation</title>
+        <link rel="stylesheet" href="/styles.css">
+    </head>
+    <body>
+        <section class="hero is-info is-small">
+            <div class="hero-head">
+                <nav class="navbar">
+    <div class="navbar-brand">
+        <a class="navbar-item" href="/">
+            <span class="icon">
+                <img src="/icons/logo-only-36.svg">
+            </span>
+            <span>
+                Docspell
+            </span>
+        </a>
+    </div>
+    <div class="navbar-start">
+        <a target="_blank"
+           href="https://github.com/eikek/docspell"
+           class="navbar-item">
+            <span class="icon">
+                <img src="/icons/github-40.svg">
+            </span>
+            <span>
+                Github
+            </span>
+        </a>
+    </div>
+</nav>
+
+            </div>
+            <div class="hero-body">
+                <h1 class="title">
+                    Api
+                </h1>
+                <h2 class="subtitle">
+                    Docspell Documentation
+                </h2>
+            </div>
+        </section>
+        <nav class="breadcrumb has-succeeds-separator" aria-label="breadcrumbs">
+            <ul>
+                
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;"></a>
+                </li>
+                
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;">Overview</a>
+                </li>
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;api&#x2F;">Api</a>
+                </li>
+            </ul>
+        </nav>
+        
+        <section class="section pt-2">
+            <div class="columns is-desktop">
+                <div class="column is-3">
+                    <div class="menu">
+                        <ul class="menu-list">
+                            
+                            <li>
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;api&#x2F;#authentication">
+                                    Authentication
+                                </a>
+                                <ul>
+                                    
+                                </ul>
+                            </li>
+                            
+                            <li>
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;api&#x2F;#live-api">
+                                    Live Api
+                                </a>
+                                <ul>
+                                    
+                                </ul>
+                            </li>
+                            
+                            <li>
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;api&#x2F;#examples">
+                                    Examples
+                                </a>
+                                <ul>
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;api&#x2F;#login">
+                                            Login
+                                        </a>
+                                    </li>
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;api&#x2F;#get-new-token">
+                                            Get new token
+                                        </a>
+                                    </li>
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;api&#x2F;#get-some-insights">
+                                            Get some insights
+                                        </a>
+                                    </li>
+                                    
+                                </ul>
+                            </li>
+                            
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="column is-9">
+                    <div class="container">
+                        <div class="content doc">
+                            <p>Docspell is designed as a REST server that uses JSON to exchange
+data. The REST api can be used to integrate docspell into your
+workflow.</p>
+<p><a href="/openapi/docspell-openapi.html">Docspell REST Api Doc</a></p>
+<p>The &quot;raw&quot; <code>openapi.yml</code> specification file can be found
+<a href="/openapi/docspell-openapi.yml">here</a>.</p>
+<p>The routes can be divided into protected and unprotected routes. The
+unprotected, or open routes are at <code>/open/*</code> while the protected
+routes are at <code>/sec/*</code>. Open routes don't require authenticated access
+and can be used by any user. The protected routes require an
+authenticated user.</p>
+<h2 id="authentication">Authentication<a class="zola-anchor" href="#authentication" aria-label="Anchor link for: authentication">🔗</a></h2>
+<p>The unprotected route <code>/open/auth/login</code> can be used to login with
+account name and password. The response contains a token that can be
+used for accessing protected routes. The token is only valid for a
+restricted time which can be configured (default is 5 minutes).</p>
+<p>New tokens can be generated using an existing valid token and the
+protected route <code>/sec/auth/session</code>. This will return the same
+response as above, giving a new token.</p>
+<p>This token can be added to requests in two ways: as a cookie header or
+a &quot;normal&quot; http header. If a cookie header is used, the cookie name
+must be <code>docspell_auth</code> and a custom header must be named
+<code>X-Docspell-Auth</code>.</p>
+<h2 id="live-api">Live Api<a class="zola-anchor" href="#live-api" aria-label="Anchor link for: live-api">🔗</a></h2>
+<p>Besides the statically generated documentation at this site, the rest
+server provides a swagger generated api documenation, that allows
+playing around with the api. It requires a running docspell rest
+server. If it is deployed at <code>http://localhost:7880</code>, then check this
+url:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">http://localhost:7880/api/doc
+</span></code></pre><h2 id="examples">Examples<a class="zola-anchor" href="#examples" aria-label="Anchor link for: examples">🔗</a></h2>
+<p>These examples use the great command line tool
+<a href="https://curl.haxx.se/">curl</a>.</p>
+<h3 id="login">Login<a class="zola-anchor" href="#login" aria-label="Anchor link for: login">🔗</a></h3>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1;">$ curl -X POST -d </span><span style="color:#b8bb26;">&#39;{&quot;account&quot;: &quot;smith&quot;, &quot;password&quot;: &quot;test&quot;}&#39;</span><span style="color:#fdf4c1;"> http://localhost:7880/api/v1/open/auth/login
+{</span><span style="color:#b8bb26;">&quot;collective&quot;</span><span style="color:#fdf4c1;">:</span><span style="color:#b8bb26;">&quot;smith&quot;
+</span><span style="color:#fdf4c1;">,</span><span style="color:#b8bb26;">&quot;user&quot;</span><span style="color:#fdf4c1;">:</span><span style="color:#b8bb26;">&quot;smith&quot;
+</span><span style="color:#fdf4c1;">,</span><span style="color:#b8bb26;">&quot;success&quot;</span><span style="color:#fdf4c1;">:true
+,</span><span style="color:#b8bb26;">&quot;message&quot;</span><span style="color:#fdf4c1;">:</span><span style="color:#b8bb26;">&quot;Login successful&quot;
+</span><span style="color:#fdf4c1;">,</span><span style="color:#b8bb26;">&quot;token&quot;</span><span style="color:#fdf4c1;">:</span><span style="color:#b8bb26;">&quot;1568142350115-ZWlrZS9laWtl-$</span><span style="color:#fdf4c1;">2</span><span style="color:#b8bb26;">a$</span><span style="color:#fdf4c1;">1</span><span style="color:#b8bb26;">0$</span><span style="color:#fdf4c1;">rGZUFDAVNIKh4Tj6u6tlI</span><span style="color:#b8bb26;">.-O2euwCvmBT0TlyDmIHR1ZsLQPAI=&quot;
+</span><span style="color:#fdf4c1;">,</span><span style="color:#b8bb26;">&quot;validMs&quot;</span><span style="color:#fdf4c1;">:300000
+</span><span style="color:#fdf4c1aa;">}
+</span></code></pre><h3 id="get-new-token">Get new token<a class="zola-anchor" href="#get-new-token" aria-label="Anchor link for: get-new-token">🔗</a></h3>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1;">$ curl -XPOST -H </span><span style="color:#b8bb26;">&#39;X-Docspell-Auth: 1568142350115-ZWlrZS9laWtl-$2a$10$rGZUFDAVNIKh4Tj6u6tlI.-O2euwCvmBT0TlyDmIHR1ZsLQPAI=&#39;</span><span style="color:#fdf4c1;"> http://localhost:7880/api/v1/sec/auth/session
+{</span><span style="color:#b8bb26;">&quot;collective&quot;</span><span style="color:#fdf4c1;">:</span><span style="color:#b8bb26;">&quot;smith&quot;
+</span><span style="color:#fdf4c1;">,</span><span style="color:#b8bb26;">&quot;user&quot;</span><span style="color:#fdf4c1;">:</span><span style="color:#b8bb26;">&quot;smith&quot;
+</span><span style="color:#fdf4c1;">,</span><span style="color:#b8bb26;">&quot;success&quot;</span><span style="color:#fdf4c1;">:true
+,</span><span style="color:#b8bb26;">&quot;message&quot;</span><span style="color:#fdf4c1;">:</span><span style="color:#b8bb26;">&quot;Login successful&quot;
+</span><span style="color:#fdf4c1;">,</span><span style="color:#b8bb26;">&quot;token&quot;</span><span style="color:#fdf4c1;">:</span><span style="color:#b8bb26;">&quot;1568142446077-ZWlrZS9laWtl-$</span><span style="color:#fdf4c1;">2</span><span style="color:#b8bb26;">a$</span><span style="color:#fdf4c1;">1</span><span style="color:#b8bb26;">0$</span><span style="color:#fdf4c1;">3</span><span style="color:#b8bb26;">B0teJ9rMpsBJPzHfZZPoO-WeA1bkfEONBN8fyzWE8DeaAHtUc=&quot;
+</span><span style="color:#fdf4c1;">,</span><span style="color:#b8bb26;">&quot;validMs&quot;</span><span style="color:#fdf4c1;">:300000
+</span><span style="color:#fdf4c1aa;">}
+</span></code></pre><h3 id="get-some-insights">Get some insights<a class="zola-anchor" href="#get-some-insights" aria-label="Anchor link for: get-some-insights">🔗</a></h3>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1;">$ curl -H </span><span style="color:#b8bb26;">&#39;X-Docspell-Auth: 1568142446077-ZWlrZS9laWtl-$2a$10$3B0teJ9rMpsBJPzHfZZPoO-WeA1bkfEONBN8fyzWE8DeaAHtUc=&#39;</span><span style="color:#fdf4c1;"> http://localhost:7880/api/v1/sec/collective/insights
+{</span><span style="color:#b8bb26;">&quot;incomingCount&quot;</span><span style="color:#fdf4c1;">:3
+,</span><span style="color:#b8bb26;">&quot;outgoingCount&quot;</span><span style="color:#fdf4c1;">:1
+,</span><span style="color:#b8bb26;">&quot;itemSize&quot;</span><span style="color:#fdf4c1;">:207310
+,</span><span style="color:#b8bb26;">&quot;tagCloud&quot;</span><span style="color:#fdf4c1;">:{</span><span style="color:#b8bb26;">&quot;items&quot;</span><span style="color:#fdf4c1;">:[]</span><span style="color:#fdf4c1aa;">}
+}
+</span></code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+
+        
+
+        <footer class="footer">
+    <div class="container">
+        <div class="content has-text-centered">
+            <span>
+                Docspell, 0.9.0
+            </span>
+            <span class="ml-1 mr-1">•</span>
+            <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>
+            <span class="ml-1 mr-1">•</span>
+            <a href="https://github.com/eikek/docspell" target="_blank">
+                Source Code
+            </a>
+            <span class="ml-1 mr-1">•</span>
+            <span>
+                © 2020
+                <a href="https://github.com/eikek" target="_blank">
+                    @eikek
+                </a>
+            </span>
+        </div>
+    </div>
+    
+</footer>
+
+
+    </body>
+</html>

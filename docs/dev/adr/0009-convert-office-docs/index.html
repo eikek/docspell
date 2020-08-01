@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Eike Kettner">
+<meta name="description" content="Simple Document Organizer">
+<meta name="image" property="og:image" content="/img/poster.png">
+<meta name="title" property="og:title" content="Docspell – Simple Document Organizer">
+<meta name="og:image" content="/img/poster.png">
+<meta name="og:title" content="Docspell – Simple Document Organizer">
+<meta name="og:site_name" content="Convert Office Documents - Docspell">
+<meta name="og:url" content="">
+<meta name="og:type" content="website">
+<meta name="og:description" content="Simple Document Organizer">
+<meta name="twitter:title" content="Docspell">
+<meta name="twitter:image" content="/img/poster.png">
+<meta name="twitter:description" content="Simple Document Organizer">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="shortcut icon" href="/favicon-mc.ico" type="image/x-icon">
+<link rel="icon" href="/favicon-mc.ico" type="image/x-icon">
+
+        <title>Convert Office Documents – Docspell Documentation</title>
+        <link rel="stylesheet" href="/styles.css">
+    </head>
+    <body>
+        <section class="hero is-info is-small">
+            <div class="hero-head">
+                <nav class="navbar">
+    <div class="navbar-brand">
+        <a class="navbar-item" href="/">
+            <span class="icon">
+                <img src="/icons/logo-only-36.svg">
+            </span>
+            <span>
+                Docspell
+            </span>
+        </a>
+    </div>
+    <div class="navbar-start">
+        <a target="_blank"
+           href="https://github.com/eikek/docspell"
+           class="navbar-item">
+            <span class="icon">
+                <img src="/icons/github-40.svg">
+            </span>
+            <span>
+                Github
+            </span>
+        </a>
+    </div>
+</nav>
+
+            </div>
+            <div class="hero-body">
+                <h1 class="title">
+                    Convert Office Documents
+                </h1>
+                <h2 class="subtitle">
+                    Docspell Documentation
+                </h2>
+            </div>
+        </section>
+        <nav class="breadcrumb has-succeeds-separator" aria-label="breadcrumbs">
+            <ul>
+                
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;"></a>
+                </li>
+                
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;">Overview</a>
+                </li>
+                
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;">Development</a>
+                </li>
+                
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;">ADRs</a>
+                </li>
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;0009-convert-office-docs&#x2F;">Convert Office Documents</a>
+                </li>
+            </ul>
+        </nav>
+
+        <section class="section pt-2">
+            <div class="columns is-desktop">
+                <div class="column is-3">
+                    <div class="menu">
+                        <ul class="menu-list">
+                            
+                            
+
+                            <p class="menu-label">
+                                ADRs
+                            </p>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0000-use-markdown-architectural-decision-records/"
+                                   >
+                                    Use Markdown Architectural Decision Records
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0001-components/"
+                                   >
+                                    Components
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0002-component-interaction/"
+                                   >
+                                    Component Interaction
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0003-encryption/"
+                                   >
+                                    Encryption
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0004-iso8601vsepoch/"
+                                   >
+                                    Iso8601 Vs Millis As Date-Time Transfer
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0005-job-executor/"
+                                   >
+                                    Joex - Job Executor
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0006-more-file-types/"
+                                   >
+                                    More File Types
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0007-convert-html-files/"
+                                   >
+                                    Convert Html Files
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0008-convert-plain-text/"
+                                   >
+                                    Convert Text Files
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0009-convert-office-docs/"
+                                   class="is-active">
+                                    Convert Office Documents
+                                </a>
+                                
+                                <ul class="menu-list">
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;0009-convert-office-docs&#x2F;#context-and-problem-statement">
+                                            Context and Problem Statement
+                                        </a>
+                                        <ul>
+                                            
+                                        </ul>
+                                    </li>
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;0009-convert-office-docs&#x2F;#considered-options">
+                                            Considered Options
+                                        </a>
+                                        <ul>
+                                            
+                                            <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;0009-convert-office-docs&#x2F;#xwpfconverter">
+                                                    XWPFConverter
+                                                </a>
+                                            </li>
+                                            
+                                            <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;0009-convert-office-docs&#x2F;#pandoc">
+                                                    Pandoc
+                                                </a>
+                                            </li>
+                                            
+                                            <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;0009-convert-office-docs&#x2F;#abiword">
+                                                    Abiword
+                                                </a>
+                                            </li>
+                                            
+                                            <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;0009-convert-office-docs&#x2F;#unoconv">
+                                                    Unoconv
+                                                </a>
+                                            </li>
+                                            
+                                        </ul>
+                                    </li>
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;0009-convert-office-docs&#x2F;#decision-outcome">
+                                            Decision Outcome
+                                        </a>
+                                        <ul>
+                                            
+                                        </ul>
+                                    </li>
+                                    
+                                </ul>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0010-convert-image-files/"
+                                   >
+                                    Convert Image Files
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0011-extract-text/"
+                                   >
+                                    Extract Text From Files
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0012-periodic-tasks/"
+                                   >
+                                    Periodic Tasks
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0013-archive-files/"
+                                   >
+                                    Archive Files
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0014-fulltext-search-engine/"
+                                   >
+                                    Fulltext Search Engine
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0015-convert-pdf-files/"
+                                   >
+                                    Convert Pdf Files
+                                </a>
+                                
+                            </li>
+                            
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="column is-9">
+                    <div class="container">
+                        <div class="content doc">
+                            <h1 id="context-and-problem-statement">Context and Problem Statement<a class="zola-anchor" href="#context-and-problem-statement" aria-label="Anchor link for: context-and-problem-statement">🔗</a></h1>
+<p>How can office documents, like <code>docx</code> or <code>odt</code> be converted into a PDF
+file that looks as much as possible like the original?</p>
+<p>It would be nice to have a java-only solution. But if an external tool
+has a better outcome, then an external tool is fine, too.</p>
+<p>Since Docspell is free software, the tools must also be free.</p>
+<h1 id="considered-options">Considered Options<a class="zola-anchor" href="#considered-options" aria-label="Anchor link for: considered-options">🔗</a></h1>
+<ul>
+<li><a href="https://poi.apache.org">Apache POI</a> together with
+<a href="https://search.maven.org/artifact/fr.opensagres.xdocreport/org.apache.poi.xwpf.converter.pdf/1.0.6/jar">this</a>
+library</li>
+<li><a href="https://pandoc.org/">pandoc</a> external command</li>
+<li><a href="https://www.abisource.com/">abiword</a> external command</li>
+<li><a href="https://github.com/unoconv/unoconv">Unoconv</a> external command</li>
+</ul>
+<p>To choose an option, some documents are converted to pdf and compared.
+Only the formats <code>docx</code> and <code>odt</code> are considered here. These are the
+most used formats. They have to look well, if a <code>xlsx</code> or <code>pptx</code>
+doesn't look so great, that is ok.</p>
+<p>Here is the native view to compare with:</p>
+<p>ODT:</p>
+<figure class="image">
+    <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;example-odt-native.jpg">
+</figure>
+<h2 id="xwpfconverter"><code>XWPFConverter</code><a class="zola-anchor" href="#xwpfconverter" aria-label="Anchor link for: xwpfconverter">🔗</a></h2>
+<p>I couldn't get any example to work. There were exceptions:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">java.lang.IllegalArgumentException: Value for parameter &#39;id&#39; was out of bounds
+    at org.apache.poi.util.IdentifierManager.reserve(IdentifierManager.java:80)
+    at org.apache.poi.xwpf.usermodel.XWPFRun.&lt;init&gt;(XWPFRun.java:101)
+    at org.apache.poi.xwpf.usermodel.XWPFRun.&lt;init&gt;(XWPFRun.java:146)
+    at org.apache.poi.xwpf.usermodel.XWPFParagraph.buildRunsInOrderFromXml(XWPFParagraph.java:135)
+    at org.apache.poi.xwpf.usermodel.XWPFParagraph.&lt;init&gt;(XWPFParagraph.java:88)
+    at org.apache.poi.xwpf.usermodel.XWPFDocument.onDocumentRead(XWPFDocument.java:147)
+    at org.apache.poi.POIXMLDocument.load(POIXMLDocument.java:159)
+    at org.apache.poi.xwpf.usermodel.XWPFDocument.&lt;init&gt;(XWPFDocument.java:124)
+    at docspell.convert.Testing$.withPoi(Testing.scala:17)
+    at docspell.convert.Testing$.$anonfun$run$1(Testing.scala:12)
+    at cats.effect.internals.IORunLoop$.cats$effect$internals$IORunLoop$$loop(IORunLoop.scala:87)
+    at cats.effect.internals.IORunLoop$RestartCallback.signal(IORunLoop.scala:355)
+    at cats.effect.internals.IORunLoop$RestartCallback.apply(IORunLoop.scala:376)
+    at cats.effect.internals.IORunLoop$RestartCallback.apply(IORunLoop.scala:316)
+    at cats.effect.internals.IOShift$Tick.run(IOShift.scala:36)
+    at cats.effect.internals.PoolUtils$$anon$2$$anon$3.run(PoolUtils.scala:51)
+    at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+    at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+    at java.lang.Thread.run(Thread.java:748)
+</span></code></pre>
+<p>The project (not Apache Poi, the other) seems unmaintained. I could
+not find any website and the artifact in maven central is from 2016.</p>
+<h2 id="pandoc">Pandoc<a class="zola-anchor" href="#pandoc" aria-label="Anchor link for: pandoc">🔗</a></h2>
+<p>I know pandoc as a very great tool when converting between markup
+documents. So this tries it with office documents. It supports <code>docx</code>
+and <code>odt</code> from there <code>--list-input-formats</code>.</p>
+<p>From the pandoc manual:</p>
+<blockquote>
+<p>By default, pandoc will use LaTeX to create the PDF, which requires
+that a LaTeX engine be installed (see --pdf-engine below).
+Alternatively, pandoc can use ConTeXt, roff ms, or HTML as an
+intermediate format. To do this, specify an output file with a .pdf
+extension, as before, but add the --pdf-engine option or -t context,
+-t html, or -t ms to the command line. The tool used to generate the
+PDF from the intermediate format may be specified using --pdf-engine.</p>
+</blockquote>
+<p>Trying with latex engine:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">pandoc -f odt -o test.pdf example.odt
+</span></code></pre>
+<p>Results ODT:</p>
+<figure class="image">
+    <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;example-odt-pandoc-latex.jpg">
+</figure>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">pandoc -f odt -o test.pdf example.docx
+</span></code></pre>
+<p>Results DOCX:</p>
+<figure class="image">
+    <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;example-docx-pandoc-latex.jpg">
+</figure>
+<hr />
+<p>Trying with context engine:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">pandoc -f odt -t context -o test.pdf example.odt
+</span></code></pre>
+<p>Results ODT:</p>
+<figure class="image">
+    <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;example-odt-pandoc-context.jpg">
+</figure>
+<p>Results DOCX:</p>
+<figure class="image">
+    <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;example-docx-pandoc-context.jpg">
+</figure>
+<hr />
+<p>Trying with ms engine:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">pandoc -f odt -t ms -o test.pdf example.odt
+</span></code></pre>
+<p>Results ODT:</p>
+<figure class="image">
+    <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;example-odt-pandoc-ms.jpg">
+</figure>
+<p>Results DOCX:</p>
+<figure class="image">
+    <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;example-docx-pandoc-ms.jpg">
+</figure>
+<hr />
+<p>Trying with html engine (this requires <code>wkhtmltopdf</code> to be present):</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">$ pandoc --extract-media . -f odt -t html -o test.pdf example.odt
+</span></code></pre>
+<p>Results ODT:</p>
+<figure class="image">
+    <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;example-odt-pandoc-html.jpg">
+</figure>
+<p>Results DOCX:</p>
+<figure class="image">
+    <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;example-docx-pandoc-html.jpg">
+</figure>
+<h2 id="abiword">Abiword<a class="zola-anchor" href="#abiword" aria-label="Anchor link for: abiword">🔗</a></h2>
+<p>Trying with:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">abiword --to=pdf example.odt
+</span></code></pre>
+<p>Results:</p>
+<figure class="image">
+    <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;example-odt-abiword.jpg">
+</figure>
+<p>Trying with a <code>docx</code> file failed. It worked with a <code>doc</code> file.</p>
+<h2 id="unoconv">Unoconv<a class="zola-anchor" href="#unoconv" aria-label="Anchor link for: unoconv">🔗</a></h2>
+<p>Unoconv relies on libreoffice/openoffice, so installing it will result
+in installing parts of libreoffice, which is a very large dependency.</p>
+<p>Trying with:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">unoconv -f pdf example.odt
+</span></code></pre>
+<p>Results ODT:</p>
+<figure class="image">
+    <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;example-odt-unoconv.jpg">
+</figure>
+<p>Results DOCX:</p>
+<figure class="image">
+    <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;example-docx-unoconv.jpg">
+</figure>
+<h1 id="decision-outcome">Decision Outcome<a class="zola-anchor" href="#decision-outcome" aria-label="Anchor link for: decision-outcome">🔗</a></h1>
+<p>Unoconv.</p>
+<p>The results from <code>unoconv</code> are really good.</p>
+<p>Abiword also is not that bad, it didn't convert the chart, but all
+font markup is there. It would be great to not depend on something as
+big as libreoffice, but the results are so much better.</p>
+<p>Also pandoc deals very well with DOCX files (using the <code>context</code>
+engine). The only thing that was not rendered was the embedded chart
+(like abiword). But all images and font styling was present.</p>
+<p>It will be a configurable external command anyways, so users can
+exchange it at any time with a different one.</p>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="footer">
+    <div class="container">
+        <div class="content has-text-centered">
+            <span>
+                Docspell, 0.9.0
+            </span>
+            <span class="ml-1 mr-1">•</span>
+            <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>
+            <span class="ml-1 mr-1">•</span>
+            <a href="https://github.com/eikek/docspell" target="_blank">
+                Source Code
+            </a>
+            <span class="ml-1 mr-1">•</span>
+            <span>
+                © 2020
+                <a href="https://github.com/eikek" target="_blank">
+                    @eikek
+                </a>
+            </span>
+        </div>
+    </div>
+    
+</footer>
+
+    </body>
+</html>

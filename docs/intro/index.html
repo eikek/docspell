@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Eike Kettner">
+<meta name="description" content="Simple Document Organizer">
+<meta name="image" property="og:image" content="/img/poster.png">
+<meta name="title" property="og:title" content="Docspell – Simple Document Organizer">
+<meta name="og:image" content="/img/poster.png">
+<meta name="og:title" content="Docspell – Simple Document Organizer">
+<meta name="og:site_name" content="Introduction - Docspell">
+<meta name="og:url" content="">
+<meta name="og:type" content="website">
+<meta name="og:description" content="Simple Document Organizer">
+<meta name="twitter:title" content="Docspell">
+<meta name="twitter:image" content="/img/poster.png">
+<meta name="twitter:description" content="Simple Document Organizer">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="shortcut icon" href="/favicon-mc.ico" type="image/x-icon">
+<link rel="icon" href="/favicon-mc.ico" type="image/x-icon">
+
+        <title>Introduction – Docspell Documentation</title>
+        <link rel="stylesheet" href="/styles.css">
+    </head>
+    <body>
+        <section class="hero is-info is-small">
+            <div class="hero-head">
+                <nav class="navbar">
+    <div class="navbar-brand">
+        <a class="navbar-item" href="/">
+            <span class="icon">
+                <img src="/icons/logo-only-36.svg">
+            </span>
+            <span>
+                Docspell
+            </span>
+        </a>
+    </div>
+    <div class="navbar-start">
+        <a target="_blank"
+           href="https://github.com/eikek/docspell"
+           class="navbar-item">
+            <span class="icon">
+                <img src="/icons/github-40.svg">
+            </span>
+            <span>
+                Github
+            </span>
+        </a>
+    </div>
+</nav>
+
+            </div>
+            <div class="hero-body">
+                <h1 class="title">
+                    Introduction
+                </h1>
+                <h2 class="subtitle">
+                    Docspell Documentation
+                </h2>
+            </div>
+        </section>
+        <nav class="breadcrumb has-succeeds-separator" aria-label="breadcrumbs">
+            <ul>
+                
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;"></a>
+                </li>
+                
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;">Overview</a>
+                </li>
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;intro&#x2F;">Introduction</a>
+                </li>
+            </ul>
+        </nav>
+        
+        <section class="section pt-2">
+            <div class="columns is-desktop">
+                <div class="column is-3">
+                    <div class="menu">
+                        <ul class="menu-list">
+                            
+                            <li>
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;intro&#x2F;#introduction">
+                                    Introduction
+                                </a>
+                                <ul>
+                                    
+                                </ul>
+                            </li>
+                            
+                            <li>
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;intro&#x2F;#components">
+                                    Components
+                                </a>
+                                <ul>
+                                    
+                                </ul>
+                            </li>
+                            
+                            <li>
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;intro&#x2F;#terms">
+                                    Terms
+                                </a>
+                                <ul>
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;intro&#x2F;#item">
+                                            Item
+                                        </a>
+                                    </li>
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;intro&#x2F;#collective">
+                                            Collective
+                                        </a>
+                                    </li>
+                                    
+                                </ul>
+                            </li>
+                            
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="column is-9">
+                    <div class="container">
+                        <div class="content doc">
+                            <h1 id="introduction">Introduction<a class="zola-anchor" href="#introduction" aria-label="Anchor link for: introduction">🔗</a></h1>
+<p>Docspell aims to be a simple yet effective document organizer that
+makes stowing documents away very quick and finding them later
+reliable (and also fast). It doesn't require technical background or
+studying huge manuals in order to use it. With this in mind, it is
+rather opinionated and more targeted for home use and small/medium
+organizations.</p>
+<p>Docspell analyzes the text of your files and tries to find metadata
+that will be annotated automatically. This metadata is taken from an
+address book that must be maintained manually. Docspell then looks for
+candidates for:</p>
+<ul>
+<li>Correspondents</li>
+<li>Concerned person or things</li>
+<li>A date</li>
+</ul>
+<p>It will propose a few candidates and sets the most likely one to your
+item.</p>
+<p>This might be wrong, so it is recommended to curate the results.
+However, very often the correct one is either set or within the
+proposals where you fix it by a single click.</p>
+<p>Besides these properties, there are more metadata you can use to
+organize your files, for example tags, folders and notes.</p>
+<p>Docspell is also for programmers. Everything is available via a REST
+or HTTP api and can be easily used within your own scripts and tools,
+for example using <code>curl</code>. There are also features for &quot;advanced use&quot;
+and many configuration options.</p>
+<h1 id="components">Components<a class="zola-anchor" href="#components" aria-label="Anchor link for: components">🔗</a></h1>
+<p>Docspell consists of multiple components that run in separate
+processes:</p>
+<ul>
+<li>REST server</li>
+<li>JOEX, short for <em>job executor</em></li>
+<li>Fulltext Search Index (optional, currently Apache SOLR)</li>
+</ul>
+<p>The REST server provides the Api and the web application. The web
+application is a
+<a href="https://en.wikipedia.org/wiki/Single-page_application">SPA</a> written
+in <a href="https://elm-lang.org">Elm</a> and is a client to the REST api. All
+features are available via a http/rest api.</p>
+<p>The <em>joex</em> is the component that does the “heavy work”, executing
+long-running tasks, like processing files or importing your mails
+periodically. While the joex component also exposes a small REST api
+for controlling it, the main user interface is all inside the rest
+server api.</p>
+<p>The rest server and the job executor can be started multiple times in
+order to scale out. It must be ensured, that all connect to the same
+database. And it is also recommended (though not strictly required),
+that all components can reach each other.</p>
+<p>The fulltext search index is another separate component, where
+currently only <a href="https://lucene.apache.org/solr">SOLR</a> is supported.
+Fulltext search is optional, so the SOLR component is not required if
+docspell is run without fulltext search support.</p>
+<h1 id="terms">Terms<a class="zola-anchor" href="#terms" aria-label="Anchor link for: terms">🔗</a></h1>
+<p>In order to better understand the following pages, some terms are
+explained.</p>
+<h2 id="item">Item<a class="zola-anchor" href="#item" aria-label="Anchor link for: item">🔗</a></h2>
+<p>An <em>item</em> is roughly your document, only that an item may span
+multiple files, which are called <em>attachments</em>. An item has <em>meta
+data</em> associated:</p>
+<ul>
+<li>a <em>correspondent</em>: the other side of the communication. It can be
+an organization or a person.</li>
+<li>a <em>concerning person</em> or <em>equipment</em>: a person or thing that
+this item is about. Maybe it is an insurance contract about your
+car.</li>
+<li><em>tag</em>: an item can be tagged with one or more tags (or labels). A
+tag can have a <em>category</em>. This is intended for grouping tags, for
+example a category <code>doctype</code> could be used to group tags like
+<code>bill</code>, <code>contract</code>, <code>receipt</code> etc. Usually an item is not tagged
+with more than one tag of a category.</li>
+<li>a <em>folder</em>: a folder is similiar to a tag, but an item can only be
+in exactly one folder (or none). Furhtermore folders allow to
+associate users, so that items are only visible to the users who are
+members of a folder.</li>
+<li>an <em>item date</em>: this is the date of the document – if this is not
+set, the created date of the item is used.</li>
+<li>a <em>due date</em>: an optional date indicating that something has to be
+done (e.g. paying a bill, submitting it) about this item until this
+date</li>
+<li>a <em>direction</em>: one of &quot;incoming&quot; or &quot;outgoing&quot;</li>
+<li>a <em>name</em>: some item name, defaults to the file name of the
+attachments</li>
+<li>some <em>notes</em>: arbitrary descriptive text. You can use markdown
+here, which is properly formatted in the web application.</li>
+</ul>
+<h2 id="collective">Collective<a class="zola-anchor" href="#collective" aria-label="Anchor link for: collective">🔗</a></h2>
+<p>The users of the application are part of a <em>collective</em>. A
+<em>collective</em> is a group of users that share access to the same
+items. The account name is therefore comprised of a <em>collective name</em>
+and a <em>user name</em>.</p>
+<p>All users of a collective are equal; they have same permissions to
+access all items. The items don't belong to a user, but to the
+collective.</p>
+<p>That means, to identify yourself when signing in, you have to give the
+collective name and your user name. By default it is separated by a
+slash <code>/</code>, for example <code>smith/john</code>. If your user name is the same as
+the collective name, you can omit one; so <code>smith/smith</code> can be
+abbreviated to just <code>smith</code>.</p>
+<p>By default, all users can see all items of their collective. A
+<em>folder</em> can be used to implement other visibilities: Every user can
+create a folder and associate members. It is possible to put items in
+these folders and docspell shows only items that are either in no
+specific folder or in a folder where the current user is owner or
+member.</p>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+
+        
+
+        <footer class="footer">
+    <div class="container">
+        <div class="content has-text-centered">
+            <span>
+                Docspell, 0.9.0
+            </span>
+            <span class="ml-1 mr-1">•</span>
+            <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>
+            <span class="ml-1 mr-1">•</span>
+            <a href="https://github.com/eikek/docspell" target="_blank">
+                Source Code
+            </a>
+            <span class="ml-1 mr-1">•</span>
+            <span>
+                © 2020
+                <a href="https://github.com/eikek" target="_blank">
+                    @eikek
+                </a>
+            </span>
+        </div>
+    </div>
+    
+</footer>
+
+
+    </body>
+</html>

@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Eike Kettner">
+<meta name="description" content="Simple Document Organizer">
+<meta name="image" property="og:image" content="/img/poster.png">
+<meta name="title" property="og:title" content="Docspell – Simple Document Organizer">
+<meta name="og:image" content="/img/poster.png">
+<meta name="og:title" content="Docspell – Simple Document Organizer">
+<meta name="og:site_name" content="Convert Text Files - Docspell">
+<meta name="og:url" content="">
+<meta name="og:type" content="website">
+<meta name="og:description" content="Simple Document Organizer">
+<meta name="twitter:title" content="Docspell">
+<meta name="twitter:image" content="/img/poster.png">
+<meta name="twitter:description" content="Simple Document Organizer">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="shortcut icon" href="/favicon-mc.ico" type="image/x-icon">
+<link rel="icon" href="/favicon-mc.ico" type="image/x-icon">
+
+        <title>Convert Text Files – Docspell Documentation</title>
+        <link rel="stylesheet" href="/styles.css">
+    </head>
+    <body>
+        <section class="hero is-info is-small">
+            <div class="hero-head">
+                <nav class="navbar">
+    <div class="navbar-brand">
+        <a class="navbar-item" href="/">
+            <span class="icon">
+                <img src="/icons/logo-only-36.svg">
+            </span>
+            <span>
+                Docspell
+            </span>
+        </a>
+    </div>
+    <div class="navbar-start">
+        <a target="_blank"
+           href="https://github.com/eikek/docspell"
+           class="navbar-item">
+            <span class="icon">
+                <img src="/icons/github-40.svg">
+            </span>
+            <span>
+                Github
+            </span>
+        </a>
+    </div>
+</nav>
+
+            </div>
+            <div class="hero-body">
+                <h1 class="title">
+                    Convert Text Files
+                </h1>
+                <h2 class="subtitle">
+                    Docspell Documentation
+                </h2>
+            </div>
+        </section>
+        <nav class="breadcrumb has-succeeds-separator" aria-label="breadcrumbs">
+            <ul>
+                
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;"></a>
+                </li>
+                
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;">Overview</a>
+                </li>
+                
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;">Development</a>
+                </li>
+                
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;">ADRs</a>
+                </li>
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;0008-convert-plain-text&#x2F;">Convert Text Files</a>
+                </li>
+            </ul>
+        </nav>
+
+        <section class="section pt-2">
+            <div class="columns is-desktop">
+                <div class="column is-3">
+                    <div class="menu">
+                        <ul class="menu-list">
+                            
+                            
+
+                            <p class="menu-label">
+                                ADRs
+                            </p>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0000-use-markdown-architectural-decision-records/"
+                                   >
+                                    Use Markdown Architectural Decision Records
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0001-components/"
+                                   >
+                                    Components
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0002-component-interaction/"
+                                   >
+                                    Component Interaction
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0003-encryption/"
+                                   >
+                                    Encryption
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0004-iso8601vsepoch/"
+                                   >
+                                    Iso8601 Vs Millis As Date-Time Transfer
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0005-job-executor/"
+                                   >
+                                    Joex - Job Executor
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0006-more-file-types/"
+                                   >
+                                    More File Types
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0007-convert-html-files/"
+                                   >
+                                    Convert Html Files
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0008-convert-plain-text/"
+                                   class="is-active">
+                                    Convert Text Files
+                                </a>
+                                
+                                <ul class="menu-list">
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;0008-convert-plain-text&#x2F;#context-and-problem-statement">
+                                            Context and Problem Statement
+                                        </a>
+                                        <ul>
+                                            
+                                        </ul>
+                                    </li>
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;0008-convert-plain-text&#x2F;#considered-options">
+                                            Considered Options
+                                        </a>
+                                        <ul>
+                                            
+                                            <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;0008-convert-plain-text&#x2F;#flexmark-markdown-library-for-java">
+                                                    flexmark markdown library for java
+                                                </a>
+                                            </li>
+                                            
+                                            <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;0008-convert-plain-text&#x2F;#pandoc">
+                                                    pandoc
+                                                </a>
+                                            </li>
+                                            
+                                        </ul>
+                                    </li>
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;0008-convert-plain-text&#x2F;#decision-outcome">
+                                            Decision Outcome
+                                        </a>
+                                        <ul>
+                                            
+                                        </ul>
+                                    </li>
+                                    
+                                </ul>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0009-convert-office-docs/"
+                                   >
+                                    Convert Office Documents
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0010-convert-image-files/"
+                                   >
+                                    Convert Image Files
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0011-extract-text/"
+                                   >
+                                    Extract Text From Files
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0012-periodic-tasks/"
+                                   >
+                                    Periodic Tasks
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0013-archive-files/"
+                                   >
+                                    Archive Files
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0014-fulltext-search-engine/"
+                                   >
+                                    Fulltext Search Engine
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0015-convert-pdf-files/"
+                                   >
+                                    Convert Pdf Files
+                                </a>
+                                
+                            </li>
+                            
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="column is-9">
+                    <div class="container">
+                        <div class="content doc">
+                            <h1 id="context-and-problem-statement">Context and Problem Statement<a class="zola-anchor" href="#context-and-problem-statement" aria-label="Anchor link for: context-and-problem-statement">🔗</a></h1>
+<p>How can plain text and markdown documents be converted into a PDF
+files?</p>
+<p>Rendering images is not important here, since the files must be self
+contained when uploaded to Docspell.</p>
+<p>The test file is the current documentation page of Docspell, found in
+<code>microsite/docs/doc.md</code>.</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">---
+layout: docs
+position: 4
+title: Documentation
+---
+
+# {page .title}
+
+
+Docspell assists in organizing large amounts of PDF files that are
+...
+
+## How it works
+
+Documents have two ...
+
+1. You maintain a kind of address book. It should list all possible
+   correspondents and the concerning people/things. This grows
+   incrementally with each new unknown document.
+2. When docspell analyzes a document, it tries to find matches within
+   your address ...
+3. You can inspect ...
+
+The set of meta data that docspell uses to draw suggestions from, must
+be maintained ...
+
+
+## Terms
+
+In order to better understand these pages, some terms should be
+explained first.
+
+### Item
+
+An **Item** is roughly your (pdf) document, only that an item may span
+multiple files, which are called **attachments**. And an item has
+**meta data** associated:
+
+- a **correspondent**: the other side of the communication. It can be
+  an organization or a person.
+- a **concerning person** or **equipment**: a person or thing that
+  this item is about. Maybe it is an insurance contract about your
+  car.
+- ...
+
+### Collective
+
+The users of the application are part of a **collective**. A
+**collective** is a group of users that share access to the same
+items. The account name is therefore comprised of a *collective name*
+and a *user name*.
+
+All users of a collective are equal; they have same permissions to
+access all...
+</span></code></pre>
+<p>Then a plain text file is tried, too (without any markup).</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">Maecenas mauris lectus, lobortis et purus mattis
+
+Duis vehicula mi vel mi pretium
+
+In non mauris justo. Duis vehicula mi vel mi pretium, a viverra erat efficitur. Cras aliquam est ac eros varius, id iaculis dui auctor. Duis pretium neque ligula, et pulvinar mi placerat et. Nulla nec nunc sit amet nunc posuere vestibulum. Ut id neque eget tortor mattis tristique. Donec ante est, blandit sit amet tristique vel, lacinia pulvinar arcu.
+
+Pellentesque scelerisque fermentum erat, id posuere justo pulvinar ut.
+Cras id eros sed enim aliquam lobortis. Sed lobortis nisl ut eros
+efficitur tincidunt. Cras justo mi, porttitor quis mattis vel,
+ultricies ut purus. Ut facilisis et lacus eu cursus.
+
+In eleifend velit vitae libero sollicitudin euismod:
+
+- Fusce vitae vestibulum velit,
+- Pellentesque vulputate lectus quis pellentesque commodo
+
+the end.
+</span></code></pre><h1 id="considered-options">Considered Options<a class="zola-anchor" href="#considered-options" aria-label="Anchor link for: considered-options">🔗</a></h1>
+<ul>
+<li><a href="https://github.com/vsch/flexmark-java">flexmark</a> for markdown to
+HTML, then use existing machinery described in <a href="https://docspell.org/docs/dev/adr/0007-convert-html-files/">adr
+7</a></li>
+<li><a href="https://pandoc.org/">pandoc</a> external command</li>
+</ul>
+<h2 id="flexmark-markdown-library-for-java">flexmark markdown library for java<a class="zola-anchor" href="#flexmark-markdown-library-for-java" aria-label="Anchor link for: flexmark-markdown-library-for-java">🔗</a></h2>
+<p>Process files with <a href="https://github.com/vsch/flexmark-java">flexmark</a>
+and then create a PDF from the resulting html.</p>
+<p>Using the following snippet:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fa5c4b;">def </span><span style="color:#8ec07c;">renderMarkdown</span><span style="color:#fdf4c1aa;">(): </span><span style="color:#8ec07c;">ExitCode </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1aa;">{
+    </span><span style="color:#fa5c4b;">val </span><span style="color:#fdf4c1;">opts </span><span style="color:#fe8019;">= </span><span style="color:#fa5c4b;">new </span><span style="color:#8ec07c;">MutableDataSet</span><span style="color:#fdf4c1aa;">()
+    opts.set(</span><span style="color:#fabd2f;">Parser</span><span style="color:#fdf4c1aa;">.</span><span style="color:#fabd2f;">EXTENSIONS</span><span style="color:#fdf4c1aa;">.asInstanceOf[</span><span style="color:#8ec07c;">DataKey</span><span style="color:#fdf4c1aa;">[</span><span style="color:#fabd2f;">util</span><span style="color:#fdf4c1aa;">.</span><span style="color:#8ec07c;">Collection</span><span style="color:#fdf4c1aa;">[</span><span style="color:#fdf4c1;">_</span><span style="color:#fdf4c1aa;">]]],
+      util.</span><span style="color:#fabd2f;">Arrays</span><span style="color:#fdf4c1aa;">.asList(</span><span style="color:#fabd2f;">TablesExtension</span><span style="color:#fdf4c1aa;">.create(),
+      </span><span style="color:#fabd2f;">StrikethroughExtension</span><span style="color:#fdf4c1aa;">.create()));
+
+    </span><span style="color:#fa5c4b;">val </span><span style="color:#fdf4c1;">parser </span><span style="color:#fe8019;">= </span><span style="color:#fabd2f;">Parser</span><span style="color:#fdf4c1aa;">.builder(opts).build()
+    </span><span style="color:#fa5c4b;">val </span><span style="color:#fdf4c1;">renderer </span><span style="color:#fe8019;">= </span><span style="color:#fabd2f;">HtmlRenderer</span><span style="color:#fdf4c1aa;">.builder(opts).build()
+    </span><span style="color:#fa5c4b;">val </span><span style="color:#fdf4c1;">reader </span><span style="color:#fe8019;">= </span><span style="color:#fabd2f;">Files</span><span style="color:#fdf4c1aa;">.newBufferedReader(</span><span style="color:#fabd2f;">Paths</span><span style="color:#fdf4c1aa;">.get(</span><span style="color:#b8bb26;">&quot;in.txt|md&quot;</span><span style="color:#fdf4c1aa;">))
+    </span><span style="color:#fa5c4b;">val </span><span style="color:#fdf4c1;">doc </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> parser.parseReader(reader)
+    </span><span style="color:#fa5c4b;">val </span><span style="color:#fdf4c1;">html </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> renderer.render(doc)
+    </span><span style="color:#fa5c4b;">val </span><span style="color:#fdf4c1;">body </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;&lt;html&gt;&lt;head&gt;&lt;/head&gt;&lt;body style=\&quot;padding: 0 5em;\&quot;&gt;&quot;</span><span style="color:#fdf4c1aa;"> + html + </span><span style="color:#b8bb26;">&quot;&lt;/body&gt;&lt;/html&gt;&quot;
+    </span><span style="color:#fabd2f;">Files</span><span style="color:#fdf4c1aa;">.write(
+      </span><span style="color:#fabd2f;">Paths</span><span style="color:#fdf4c1aa;">.get(</span><span style="color:#b8bb26;">&quot;test.html&quot;</span><span style="color:#fdf4c1aa;">),
+      body.getBytes(</span><span style="color:#fabd2f;">StandardCharsets</span><span style="color:#fdf4c1aa;">.</span><span style="color:#fabd2f;">UTF_8</span><span style="color:#fdf4c1aa;">))
+
+    </span><span style="color:#fabd2f;">ExitCode</span><span style="color:#fdf4c1aa;">.</span><span style="color:#fabd2f;">Success
+  </span><span style="color:#fdf4c1aa;">}
+</span></code></pre>
+<p>Then run the result through <code>wkhtmltopdf</code>.</p>
+<p>Markdown file:</p>
+<figure class="image">
+    <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;example-md-java.jpg">
+</figure>
+<p>TXT file:</p>
+<figure class="image">
+    <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;example-txt-java.jpg">
+</figure>
+<h2 id="pandoc">pandoc<a class="zola-anchor" href="#pandoc" aria-label="Anchor link for: pandoc">🔗</a></h2>
+<p>Command:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">pandoc -f markdown -t html -o test.pdf microsite/docs/doc.md
+</span></code></pre>
+<p>Markdown/Latex:</p>
+<figure class="image">
+    <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;example-md-pandoc-latex.jpg">
+</figure>
+<p>Markdown/Html:</p>
+<figure class="image">
+    <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;example-md-pandoc-html.jpg">
+</figure>
+<p>Text/Latex:</p>
+<figure class="image">
+    <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;example-txt-pandoc-latex.jpg">
+</figure>
+<p>Text/Html:</p>
+<figure class="image">
+    <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;example-txt-pandoc-html.jpg">
+</figure>
+<h1 id="decision-outcome">Decision Outcome<a class="zola-anchor" href="#decision-outcome" aria-label="Anchor link for: decision-outcome">🔗</a></h1>
+<p>Java library &quot;flexmark&quot;.</p>
+<p>I think all results are great. It depends on the type of document and
+what one expects to see. I guess that most people expect something
+like pandoc-html produces for the kind of files docspell is for (it is
+not for newspaper articles, where pandoc-latex would be best fit).</p>
+<p>But choosing pandoc means yet another external command to depend on.
+And the results from flexmark are really good, too. One can fiddle
+with options and css to make it look better.</p>
+<p>To not introduce another external command, decision is to use flexmark
+and then the already existing html-&gt;pdf conversion.</p>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="footer">
+    <div class="container">
+        <div class="content has-text-centered">
+            <span>
+                Docspell, 0.9.0
+            </span>
+            <span class="ml-1 mr-1">•</span>
+            <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>
+            <span class="ml-1 mr-1">•</span>
+            <a href="https://github.com/eikek/docspell" target="_blank">
+                Source Code
+            </a>
+            <span class="ml-1 mr-1">•</span>
+            <span>
+                © 2020
+                <a href="https://github.com/eikek" target="_blank">
+                    @eikek
+                </a>
+            </span>
+        </div>
+    </div>
+    
+</footer>
+
+    </body>
+</html>

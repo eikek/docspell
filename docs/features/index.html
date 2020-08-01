@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Eike Kettner">
+<meta name="description" content="Simple Document Organizer">
+<meta name="image" property="og:image" content="/img/poster.png">
+<meta name="title" property="og:title" content="Docspell – Simple Document Organizer">
+<meta name="og:image" content="/img/poster.png">
+<meta name="og:title" content="Docspell – Simple Document Organizer">
+<meta name="og:site_name" content="Features and Limitations - Docspell">
+<meta name="og:url" content="">
+<meta name="og:type" content="website">
+<meta name="og:description" content="Simple Document Organizer">
+<meta name="twitter:title" content="Docspell">
+<meta name="twitter:image" content="/img/poster.png">
+<meta name="twitter:description" content="Simple Document Organizer">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="shortcut icon" href="/favicon-mc.ico" type="image/x-icon">
+<link rel="icon" href="/favicon-mc.ico" type="image/x-icon">
+
+        <title>Features and Limitations – Docspell Documentation</title>
+        <link rel="stylesheet" href="/styles.css">
+    </head>
+    <body>
+        <section class="hero is-info is-small">
+            <div class="hero-head">
+                <nav class="navbar">
+    <div class="navbar-brand">
+        <a class="navbar-item" href="/">
+            <span class="icon">
+                <img src="/icons/logo-only-36.svg">
+            </span>
+            <span>
+                Docspell
+            </span>
+        </a>
+    </div>
+    <div class="navbar-start">
+        <a target="_blank"
+           href="https://github.com/eikek/docspell"
+           class="navbar-item">
+            <span class="icon">
+                <img src="/icons/github-40.svg">
+            </span>
+            <span>
+                Github
+            </span>
+        </a>
+    </div>
+</nav>
+
+            </div>
+            <div class="hero-body">
+                <h1 class="title">
+                    Features and Limitations
+                </h1>
+                <h2 class="subtitle">
+                    Docspell Documentation
+                </h2>
+            </div>
+        </section>
+        <nav class="breadcrumb has-succeeds-separator" aria-label="breadcrumbs">
+            <ul>
+                
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;"></a>
+                </li>
+                
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;">Overview</a>
+                </li>
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;features&#x2F;">Features and Limitations</a>
+                </li>
+            </ul>
+        </nav>
+        
+
+        
+        <section class="section pt-2">
+            <div class="container">
+                <div class="content doc">
+                    <h1 id="features">Features<a class="zola-anchor" href="#features" aria-label="Anchor link for: features">🔗</a></h1>
+<ul>
+<li>Multi-account application</li>
+<li>Multiple users per account (multiple users can access the same
+account)</li>
+<li>Handle multiple documents as one unit</li>
+<li>OCR using <a href="https://github.com/tesseract-ocr/tesseract">tesseract</a></li>
+<li><a href="https://docspell.org/docs/webapp/finding/#full-text-search">Full-Text Search</a> based
+on <a href="https://lucene.apache.org/solr">Apache SOLR</a></li>
+<li>Conversion to PDF: all files are converted into a PDF file. PDFs
+with only images (as often returned from scanners) are converted
+into searchable PDF/A pdfs.</li>
+<li>Non-destructive: all your uploaded files are never modified and can
+always be downloaded untouched</li>
+<li>Text is analysed to find and attach meta data automatically</li>
+<li><a href="https://docspell.org/docs/webapp/processing/">Manage document processing</a>: cancel
+jobs, set priorities</li>
+<li>Everything available via a <a href="https://www.openapis.org/">documented</a>
+<a href="https://docspell.org/docs/api/">REST Api</a>; allows to <a href="https://openapi-generator.tech/docs/generators">generate
+clients</a> for
+(almost) any language</li>
+<li>mobile-friendly Web-UI</li>
+<li><a href="https://docspell.org/docs/webapp/uploading/#anonymous-upload">Create “share-urls”</a>
+to upload files anonymously</li>
+<li><a href="https://docspell.org/docs/webapp/mailitem/">Send documents via e-mail</a></li>
+<li><a href="https://docspell.org/docs/webapp/notifydueitems/">E-Mail notification</a> for documents
+with due dates</li>
+<li><a href="https://docspell.org/docs/webapp/scanmailbox/">Read your mailboxes</a> via IMAP to
+import mails into docspell</li>
+<li>REST server and document processing are separate applications which
+can be scaled-out independently</li>
+<li>Everything stored in a SQL database: PostgreSQL, MariaDB or H2
+<ul>
+<li>H2 is embedded, a &quot;one-file-only&quot; database, avoids installing db
+servers</li>
+</ul>
+</li>
+<li>Files supported:
+<ul>
+<li>Documents:
+<ul>
+<li>PDF</li>
+<li>common MS Office (doc, docx, xls, xlsx)</li>
+<li>OpenDocument (odt, ods)</li>
+<li>RichText (rtf)</li>
+<li>Images (jpg, png, tiff)</li>
+<li>HTML</li>
+<li>text/* (treated as Markdown)</li>
+</ul>
+</li>
+<li>Archives (extracted automatically, can be nested)
+<ul>
+<li>zip</li>
+<li><a href="https://en.wikipedia.org/wiki/Email#Filename_extensions">eml</a>
+(e-mail files in plain text MIME)</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Tooling:
+<ul>
+<li><a href="https://docspell.org/docs/tools/consumedir/">Watch a folder</a>: watch folders for
+changes and send files to docspell</li>
+<li><a href="https://docspell.org/docs/tools/ds/">Simple CLI for uploading files</a></li>
+<li><a href="https://docspell.org/docs/tools/browserext/">Firefox plugin</a>: right click on a
+link and send the file to docspell</li>
+<li><a href="https://docspell.org/docs/tools/smtpgateway/">SMTP Gateway</a>: Setup a SMTP server
+that delivers mails directly to docspell.</li>
+</ul>
+</li>
+<li>License: GPLv3</li>
+</ul>
+<h1 id="limitations">Limitations<a class="zola-anchor" href="#limitations" aria-label="Anchor link for: limitations">🔗</a></h1>
+<p>These are current known limitations that may be of interest for
+considering docspell at the moment.</p>
+<ul>
+<li>Documents cannot be modified.</li>
+<li>You can remove and add documents but there is no versioning.</li>
+</ul>
+
+                </div>
+            </div>
+        </section>
+        
+
+        <footer class="footer">
+    <div class="container">
+        <div class="content has-text-centered">
+            <span>
+                Docspell, 0.9.0
+            </span>
+            <span class="ml-1 mr-1">•</span>
+            <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>
+            <span class="ml-1 mr-1">•</span>
+            <a href="https://github.com/eikek/docspell" target="_blank">
+                Source Code
+            </a>
+            <span class="ml-1 mr-1">•</span>
+            <span>
+                © 2020
+                <a href="https://github.com/eikek" target="_blank">
+                    @eikek
+                </a>
+            </span>
+        </div>
+    </div>
+    
+</footer>
+
+
+    </body>
+</html>

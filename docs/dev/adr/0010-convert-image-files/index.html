@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Eike Kettner">
+<meta name="description" content="Simple Document Organizer">
+<meta name="image" property="og:image" content="/img/poster.png">
+<meta name="title" property="og:title" content="Docspell – Simple Document Organizer">
+<meta name="og:image" content="/img/poster.png">
+<meta name="og:title" content="Docspell – Simple Document Organizer">
+<meta name="og:site_name" content="Convert Image Files - Docspell">
+<meta name="og:url" content="">
+<meta name="og:type" content="website">
+<meta name="og:description" content="Simple Document Organizer">
+<meta name="twitter:title" content="Docspell">
+<meta name="twitter:image" content="/img/poster.png">
+<meta name="twitter:description" content="Simple Document Organizer">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="shortcut icon" href="/favicon-mc.ico" type="image/x-icon">
+<link rel="icon" href="/favicon-mc.ico" type="image/x-icon">
+
+        <title>Convert Image Files – Docspell Documentation</title>
+        <link rel="stylesheet" href="/styles.css">
+    </head>
+    <body>
+        <section class="hero is-info is-small">
+            <div class="hero-head">
+                <nav class="navbar">
+    <div class="navbar-brand">
+        <a class="navbar-item" href="/">
+            <span class="icon">
+                <img src="/icons/logo-only-36.svg">
+            </span>
+            <span>
+                Docspell
+            </span>
+        </a>
+    </div>
+    <div class="navbar-start">
+        <a target="_blank"
+           href="https://github.com/eikek/docspell"
+           class="navbar-item">
+            <span class="icon">
+                <img src="/icons/github-40.svg">
+            </span>
+            <span>
+                Github
+            </span>
+        </a>
+    </div>
+</nav>
+
+            </div>
+            <div class="hero-body">
+                <h1 class="title">
+                    Convert Image Files
+                </h1>
+                <h2 class="subtitle">
+                    Docspell Documentation
+                </h2>
+            </div>
+        </section>
+        <nav class="breadcrumb has-succeeds-separator" aria-label="breadcrumbs">
+            <ul>
+                
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;"></a>
+                </li>
+                
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;">Overview</a>
+                </li>
+                
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;">Development</a>
+                </li>
+                
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;">ADRs</a>
+                </li>
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;0010-convert-image-files&#x2F;">Convert Image Files</a>
+                </li>
+            </ul>
+        </nav>
+
+        <section class="section pt-2">
+            <div class="columns is-desktop">
+                <div class="column is-3">
+                    <div class="menu">
+                        <ul class="menu-list">
+                            
+                            
+
+                            <p class="menu-label">
+                                ADRs
+                            </p>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0000-use-markdown-architectural-decision-records/"
+                                   >
+                                    Use Markdown Architectural Decision Records
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0001-components/"
+                                   >
+                                    Components
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0002-component-interaction/"
+                                   >
+                                    Component Interaction
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0003-encryption/"
+                                   >
+                                    Encryption
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0004-iso8601vsepoch/"
+                                   >
+                                    Iso8601 Vs Millis As Date-Time Transfer
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0005-job-executor/"
+                                   >
+                                    Joex - Job Executor
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0006-more-file-types/"
+                                   >
+                                    More File Types
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0007-convert-html-files/"
+                                   >
+                                    Convert Html Files
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0008-convert-plain-text/"
+                                   >
+                                    Convert Text Files
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0009-convert-office-docs/"
+                                   >
+                                    Convert Office Documents
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0010-convert-image-files/"
+                                   class="is-active">
+                                    Convert Image Files
+                                </a>
+                                
+                                <ul class="menu-list">
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;0010-convert-image-files&#x2F;#context-and-problem-statement">
+                                            Context and Problem Statement
+                                        </a>
+                                        <ul>
+                                            
+                                        </ul>
+                                    </li>
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;0010-convert-image-files&#x2F;#considered-options">
+                                            Considered Options
+                                        </a>
+                                        <ul>
+                                            
+                                            <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;0010-convert-image-files&#x2F;#pdfbox">
+                                                    pdfbox
+                                                </a>
+                                            </li>
+                                            
+                                            <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;0010-convert-image-files&#x2F;#img2pdf">
+                                                    img2pdf
+                                                </a>
+                                            </li>
+                                            
+                                            <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;0010-convert-image-files&#x2F;#imagemagick">
+                                                    ImageMagick
+                                                </a>
+                                            </li>
+                                            
+                                            <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;0010-convert-image-files&#x2F;#tesseract">
+                                                    Tesseract
+                                                </a>
+                                            </li>
+                                            
+                                        </ul>
+                                    </li>
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;0010-convert-image-files&#x2F;#decision">
+                                            Decision
+                                        </a>
+                                        <ul>
+                                            
+                                        </ul>
+                                    </li>
+                                    
+                                </ul>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0011-extract-text/"
+                                   >
+                                    Extract Text From Files
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0012-periodic-tasks/"
+                                   >
+                                    Periodic Tasks
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0013-archive-files/"
+                                   >
+                                    Archive Files
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0014-fulltext-search-engine/"
+                                   >
+                                    Fulltext Search Engine
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0015-convert-pdf-files/"
+                                   >
+                                    Convert Pdf Files
+                                </a>
+                                
+                            </li>
+                            
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="column is-9">
+                    <div class="container">
+                        <div class="content doc">
+                            <h1 id="context-and-problem-statement">Context and Problem Statement<a class="zola-anchor" href="#context-and-problem-statement" aria-label="Anchor link for: context-and-problem-statement">🔗</a></h1>
+<p>How to convert image files properly to pdf?</p>
+<p>Since there are thousands of different image formats, there will never
+be support for all. The most common containers should be supported,
+though:</p>
+<ul>
+<li>jpeg (jfif, exif)</li>
+<li>png</li>
+<li>tiff (baseline, single page)</li>
+</ul>
+<p>The focus is on document images, maybe from digital cameras or
+scanners.</p>
+<h1 id="considered-options">Considered Options<a class="zola-anchor" href="#considered-options" aria-label="Anchor link for: considered-options">🔗</a></h1>
+<ul>
+<li><a href="https://pdfbox.apache.org/">pdfbox</a> library</li>
+<li><a href="https://www.imagemagick.org/">imagemagick</a> external command</li>
+<li><a href="https://github.com/josch/img2pdf">img2pdf</a> external command</li>
+<li><a href="https://github.com/tesseract-ocr/tesseract">tesseract</a> external command</li>
+</ul>
+<p>There are no screenshots here, because it doesn't make sense since
+they all look the same on the screen. Instead we look at the files
+properties.</p>
+<p><strong>Input File</strong></p>
+<p>The input files are:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">$ identify input/*
+input/jfif.jpg JPEG 2480x3514 2480x3514+0+0 8-bit sRGB 240229B 0.000u 0:00.000
+input/letter-en.jpg JPEG 1695x2378 1695x2378+0+0 8-bit Gray 256c 467341B 0.000u 0:00.000
+input/letter-en.png PNG 1695x2378 1695x2378+0+0 8-bit Gray 256c 191571B 0.000u 0:00.000
+input/letter-en.tiff TIFF 1695x2378 1695x2378+0+0 8-bit Grayscale Gray 4030880B 0.000u 0:00.000
+</span></code></pre>
+<p>Size:</p>
+<ul>
+<li>jfif.jpg 240k</li>
+<li>letter-en.jpg 467k</li>
+<li>letter-en.png 191k</li>
+<li>letter-en.tiff 4.0M</li>
+</ul>
+<h2 id="pdfbox">pdfbox<a class="zola-anchor" href="#pdfbox" aria-label="Anchor link for: pdfbox">🔗</a></h2>
+<p>Using a java library is preferred, if the quality is good enough.
+There is an
+<a href="https://github.com/apache/pdfbox/blob/2cea31cc63623fd6ece149c60d5f0cc05a696ea7/examples/src/main/java/org/apache/pdfbox/examples/pdmodel/ImageToPDF.java">example</a>
+for this exact use case.</p>
+<p>This is the sample code:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fa5c4b;">def </span><span style="color:#8ec07c;">imgtopdf</span><span style="color:#fdf4c1aa;">(</span><span style="color:#fdf4c1;">file</span><span style="color:#fdf4c1aa;">: </span><span style="color:#8ec07c;">String</span><span style="color:#fdf4c1aa;">): </span><span style="color:#8ec07c;">ExitCode </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1aa;">{
+  </span><span style="color:#fa5c4b;">val </span><span style="color:#fdf4c1;">jpg </span><span style="color:#fe8019;">= </span><span style="color:#fabd2f;">Paths</span><span style="color:#fdf4c1aa;">.get(file).toAbsolutePath
+  </span><span style="color:#fa5c4b;">if </span><span style="color:#fdf4c1aa;">(!</span><span style="color:#fabd2f;">Files</span><span style="color:#fdf4c1aa;">.exists(jpg)) {
+    sys.error(</span><span style="color:#fabd2f;">s</span><span style="color:#b8bb26;">&quot;file doesn&#39;t exist: </span><span style="color:#fdf4c1;">$jpg</span><span style="color:#b8bb26;">&quot;</span><span style="color:#fdf4c1aa;">)
+  }
+  </span><span style="color:#fa5c4b;">val </span><span style="color:#fdf4c1;">pd </span><span style="color:#fe8019;">= </span><span style="color:#fa5c4b;">new </span><span style="color:#8ec07c;">PDDocument</span><span style="color:#fdf4c1aa;">()
+  </span><span style="color:#fa5c4b;">val </span><span style="color:#fdf4c1;">page </span><span style="color:#fe8019;">= </span><span style="color:#fa5c4b;">new </span><span style="color:#8ec07c;">PDPage</span><span style="color:#fdf4c1aa;">(</span><span style="color:#fabd2f;">PDRectangle</span><span style="color:#fdf4c1aa;">.</span><span style="color:#fabd2f;">A4</span><span style="color:#fdf4c1aa;">)
+  pd.addPage(page)
+  </span><span style="color:#fa5c4b;">val </span><span style="color:#fdf4c1;">bimg </span><span style="color:#fe8019;">= </span><span style="color:#fabd2f;">ImageIO</span><span style="color:#fdf4c1aa;">.read(jpg.toFile)
+
+  </span><span style="color:#fa5c4b;">val </span><span style="color:#fdf4c1;">img </span><span style="color:#fe8019;">= </span><span style="color:#fabd2f;">LosslessFactory</span><span style="color:#fdf4c1aa;">.createFromImage(pd, bimg)
+
+  </span><span style="color:#fa5c4b;">val </span><span style="color:#fdf4c1;">stream </span><span style="color:#fe8019;">= </span><span style="color:#fa5c4b;">new </span><span style="color:#8ec07c;">PDPageContentStream</span><span style="color:#fdf4c1aa;">(pd, page)
+  stream.drawImage(img, </span><span style="color:#d3869b;">0</span><span style="color:#fdf4c1aa;">, </span><span style="color:#d3869b;">0</span><span style="color:#fdf4c1aa;">, </span><span style="color:#fabd2f;">PDRectangle</span><span style="color:#fdf4c1aa;">.</span><span style="color:#fabd2f;">A4</span><span style="color:#fdf4c1aa;">.getWidth, </span><span style="color:#fabd2f;">PDRectangle</span><span style="color:#fdf4c1aa;">.</span><span style="color:#fabd2f;">A4</span><span style="color:#fdf4c1aa;">.getHeight)
+  stream.close()
+
+  pd.save(</span><span style="color:#b8bb26;">&quot;test.pdf&quot;</span><span style="color:#fdf4c1aa;">)
+  pd.close()
+
+  </span><span style="color:#fabd2f;">ExitCode</span><span style="color:#fdf4c1aa;">.</span><span style="color:#fabd2f;">Success
+</span><span style="color:#fdf4c1aa;">}
+</span></code></pre>
+<p>Using pdfbox 2.0.18 and twelvemonkeys 3.5. Running time: <code>1384ms</code></p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">$ identify *.pdf
+jfif.jpg.pdf PDF 595x842 595x842+0+0 16-bit sRGB 129660B 0.000u 0:00.000
+letter-en.jpg.pdf PDF 595x842 595x842+0+0 16-bit sRGB 49118B 0.000u 0:00.000
+letter-en.png.pdf PDF 595x842 595x842+0+0 16-bit sRGB 49118B 0.000u 0:00.000
+letter-en.tiff.pdf PDF 595x842 595x842+0+0 16-bit sRGB 49118B 0.000u 0:00.000
+</span></code></pre>
+<p>Size:</p>
+<ul>
+<li>jfif.jpg 1.1M</li>
+<li>letter-en.jpg 142k</li>
+<li>letter-en.png 142k</li>
+<li>letter-en.tiff 142k</li>
+</ul>
+<h2 id="img2pdf">img2pdf<a class="zola-anchor" href="#img2pdf" aria-label="Anchor link for: img2pdf">🔗</a></h2>
+<p>This is a python tool that adds the image into the pdf without
+reencoding.</p>
+<p>Using version 0.3.1. Running time: <code>323ms</code>.</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">$ identify *.pdf
+jfif.jpg.pdf PDF 595x842 595x842+0+0 16-bit sRGB 129708B 0.000u 0:00.000
+letter-en.jpg.pdf PDF 595x842 595x842+0+0 16-bit sRGB 49864B 0.000u 0:00.000
+letter-en.png.pdf PDF 595x842 595x842+0+0 16-bit sRGB 49864B 0.000u 0:00.000
+letter-en.tiff.pdf PDF 595x842 595x842+0+0 16-bit sRGB 49864B 0.000u 0:00.000
+</span></code></pre>
+<p>Size:</p>
+<ul>
+<li>jfif.jpg 241k</li>
+<li>letter-en.jpg 468k</li>
+<li>letter-en.png 191k</li>
+<li>letter-en.tiff 192k</li>
+</ul>
+<h2 id="imagemagick">ImageMagick<a class="zola-anchor" href="#imagemagick" aria-label="Anchor link for: imagemagick">🔗</a></h2>
+<p>The well known imagemagick tool can convert images to pdfs, too.</p>
+<p>Using version 6.9.10-71. Running time: <code>881ms</code>.</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">$ identify *.pdf
+jfif.jpg.pdf PDF 595x843 595x843+0+0 16-bit sRGB 134873B 0.000u 0:00.000
+letter-en.jpg.pdf PDF 1695x2378 1695x2378+0+0 16-bit sRGB 360100B 0.000u 0:00.000
+letter-en.png.pdf PDF 1695x2378 1695x2378+0+0 16-bit sRGB 322418B 0.000u 0:00.000
+letter-en.tiff.pdf PDF 1695x2378 1695x2378+0+0 16-bit sRGB 322418B 0.000u 0:00.000
+</span></code></pre>
+<p>Size:</p>
+<ul>
+<li>jfif.jpg 300k</li>
+<li>letter-en.jpg 390k</li>
+<li>letter-en.png 180k</li>
+<li>letter-en.tiff 5.1M</li>
+</ul>
+<h2 id="tesseract">Tesseract<a class="zola-anchor" href="#tesseract" aria-label="Anchor link for: tesseract">🔗</a></h2>
+<p>Docspell already relies on tesseract for doing OCR. And in contrast to
+all other candidates, it can create PDFs that are searchable. Of
+course, this yields in much longer running time, that cannot be
+compared to the times of the other options.</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">tesseract doc3.jpg out -l deu pdf
+</span></code></pre>
+<p>It can also create both outputs in one go:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">tesseract doc3.jpg out -l deu pdf txt
+</span></code></pre>
+<p>Using tesseract 4. Running time: <code>6661ms</code></p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">$ identify *.pdf
+tesseract/jfif.jpg.pdf PDF 595x843 595x843+0+0 16-bit sRGB 130535B 0.000u 0:00.000
+tesseract/letter-en.jpg.pdf PDF 1743x2446 1743x2446+0+0 16-bit sRGB 328716B 0.000u 0:00.000
+tesseract/letter-en.png.pdf PDF 1743x2446 1743x2446+0+0 16-bit sRGB 328716B 0.000u 0:00.000
+tesseract/letter-en.tiff.pdf PDF 1743x2446 1743x2446+0+0 16-bit sRGB 328716B 0.000u 0:00.000
+</span></code></pre>
+<p>Size:</p>
+<ul>
+<li>jfif.jpg 246k</li>
+<li>letter-en.jpg 473k</li>
+<li>letter-en.png 183k</li>
+<li>letter-en.tiff 183k</li>
+</ul>
+<h1 id="decision">Decision<a class="zola-anchor" href="#decision" aria-label="Anchor link for: decision">🔗</a></h1>
+<p>Tesseract.</p>
+<p>To not use more external tools, imagemagick and img2pdf are not
+chosen, even though img2pdf shows the best results and is fastest.</p>
+<p>Pdfbox library would be the favorite, because results are good and
+with the <a href="https://github.com/haraldk/TwelveMonkeys">twelvemonkeys</a>
+library there is support for many images. The priority is to avoid
+more external commands if possible.</p>
+<p>But since there already is a dependency to tesseract and it can create
+searchable pdfs, the decision is to use tesseract for this. Then PDFs
+with images can be converted to searchable PDFs with images. And text
+extraction is required anyways.</p>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="footer">
+    <div class="container">
+        <div class="content has-text-centered">
+            <span>
+                Docspell, 0.9.0
+            </span>
+            <span class="ml-1 mr-1">•</span>
+            <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>
+            <span class="ml-1 mr-1">•</span>
+            <a href="https://github.com/eikek/docspell" target="_blank">
+                Source Code
+            </a>
+            <span class="ml-1 mr-1">•</span>
+            <span>
+                © 2020
+                <a href="https://github.com/eikek" target="_blank">
+                    @eikek
+                </a>
+            </span>
+        </div>
+    </div>
+    
+</footer>
+
+    </body>
+</html>

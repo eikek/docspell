@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Eike Kettner">
+<meta name="description" content="Simple Document Organizer">
+<meta name="image" property="og:image" content="/img/poster.png">
+<meta name="title" property="og:title" content="Docspell – Simple Document Organizer">
+<meta name="og:image" content="/img/poster.png">
+<meta name="og:title" content="Docspell – Simple Document Organizer">
+<meta name="og:site_name" content="Upload CLI - Docspell">
+<meta name="og:url" content="">
+<meta name="og:type" content="website">
+<meta name="og:description" content="Simple Document Organizer">
+<meta name="twitter:title" content="Docspell">
+<meta name="twitter:image" content="/img/poster.png">
+<meta name="twitter:description" content="Simple Document Organizer">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="shortcut icon" href="/favicon-mc.ico" type="image/x-icon">
+<link rel="icon" href="/favicon-mc.ico" type="image/x-icon">
+
+        <title>Upload CLI – Docspell Documentation</title>
+        <link rel="stylesheet" href="/styles.css">
+    </head>
+    <body>
+        <section class="hero is-info is-small">
+            <div class="hero-head">
+                <nav class="navbar">
+    <div class="navbar-brand">
+        <a class="navbar-item" href="/">
+            <span class="icon">
+                <img src="/icons/logo-only-36.svg">
+            </span>
+            <span>
+                Docspell
+            </span>
+        </a>
+    </div>
+    <div class="navbar-start">
+        <a target="_blank"
+           href="https://github.com/eikek/docspell"
+           class="navbar-item">
+            <span class="icon">
+                <img src="/icons/github-40.svg">
+            </span>
+            <span>
+                Github
+            </span>
+        </a>
+    </div>
+</nav>
+
+            </div>
+            <div class="hero-body">
+                <h1 class="title">
+                    Upload CLI
+                </h1>
+                <h2 class="subtitle">
+                    Docspell Documentation
+                </h2>
+            </div>
+        </section>
+        <nav class="breadcrumb has-succeeds-separator" aria-label="breadcrumbs">
+            <ul>
+                
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;"></a>
+                </li>
+                
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;">Overview</a>
+                </li>
+                
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;">Tools</a>
+                </li>
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;ds&#x2F;">Upload CLI</a>
+                </li>
+            </ul>
+        </nav>
+
+        <section class="section pt-2">
+            <div class="columns is-desktop">
+                <div class="column is-3">
+                    <div class="menu">
+                        <ul class="menu-list">
+                            
+                            
+
+                            <p class="menu-label">
+                                Tools
+                            </p>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/tools/ds/"
+                                   class="is-active">
+                                    Upload Cli
+                                </a>
+                                
+                                <ul class="menu-list">
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;ds&#x2F;#introduction">
+                                            Introduction
+                                        </a>
+                                        <ul>
+                                            
+                                        </ul>
+                                    </li>
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;ds&#x2F;#usage">
+                                            Usage
+                                        </a>
+                                        <ul>
+                                            
+                                        </ul>
+                                    </li>
+                                    
+                                </ul>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/tools/consumedir/"
+                                   >
+                                    Consume Directory
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/tools/browserext/"
+                                   >
+                                    Browser Extension (Firefox)
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/tools/smtpgateway/"
+                                   >
+                                    Smtp Gateway With Exim
+                                </a>
+                                
+                            </li>
+                            
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="column is-9">
+                    <div class="container">
+                        <div class="content doc">
+                            <h1 id="introduction">Introduction<a class="zola-anchor" href="#introduction" aria-label="Anchor link for: introduction">🔗</a></h1>
+<p>The <code>tools/ds.sh</code> is a bash script to quickly upload files from the
+command line. It reads a configuration file containing the URLs to
+upload to. Then each file given to the script will be uploaded to al
+URLs in the config.</p>
+<p>The config file is expected in
+<code>$XDG_CONFIG_HOME/docspell/ds.conf</code>. <code>$XDG_CONFIG_HOME</code> defaults to
+<code>~/.config</code>.</p>
+<p>The config file contains lines with key-value pairs, separated by a
+<code>=</code> sign. Lines starting with <code>#</code> are ignored. Example:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;"># Config file
+url.1 = http://localhost:7880/api/v1/open/upload/item/5DxhjkvWf9S-CkWqF3Kr892-WgoCspFWDo7-XBykwCyAUxQ
+url.2 = http://localhost:7880/api/v1/open/upload/item/6DxhjkvWf9S-CkWqF3Kr892-WgoCspFWDo7-XBykwCyAUxQ
+</span></code></pre>
+<p>The key must start with <code>url</code>. The urls should be <a href="https://docspell.org/docs/webapp/uploading/#anonymous-upload">anonymous upload
+urls</a>.</p>
+<h1 id="usage">Usage<a class="zola-anchor" href="#usage" aria-label="Anchor link for: usage">🔗</a></h1>
+<ul>
+<li>The <code>-c</code> option allows to specifiy a different config file.</li>
+<li>The <code>-h</code> option shows a help overview.</li>
+<li>The <code>-d</code> option deletes files after upload was successful</li>
+<li>The <code>-e</code> option can be used to check for file existence in docspell.
+Instead of uploading, the script only checks whether the file is in
+docspell or not.</li>
+</ul>
+<p>The script takes a list of files as arguments.</p>
+<p>Example:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1;">./ds.sh ~/Downloads/</span><span style="color:#fe8019;">*</span><span style="color:#fdf4c1;">.pdf
+</span></code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="footer">
+    <div class="container">
+        <div class="content has-text-centered">
+            <span>
+                Docspell, 0.9.0
+            </span>
+            <span class="ml-1 mr-1">•</span>
+            <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>
+            <span class="ml-1 mr-1">•</span>
+            <a href="https://github.com/eikek/docspell" target="_blank">
+                Source Code
+            </a>
+            <span class="ml-1 mr-1">•</span>
+            <span>
+                © 2020
+                <a href="https://github.com/eikek" target="_blank">
+                    @eikek
+                </a>
+            </span>
+        </div>
+    </div>
+    
+</footer>
+
+    </body>
+</html>

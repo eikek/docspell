@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Eike Kettner">
+<meta name="description" content="Simple Document Organizer">
+<meta name="image" property="og:image" content="/img/poster.png">
+<meta name="title" property="og:title" content="Docspell – Simple Document Organizer">
+<meta name="og:image" content="/img/poster.png">
+<meta name="og:title" content="Docspell – Simple Document Organizer">
+<meta name="og:site_name" content="Configuration - Docspell">
+<meta name="og:url" content="">
+<meta name="og:type" content="website">
+<meta name="og:description" content="Simple Document Organizer">
+<meta name="twitter:title" content="Docspell">
+<meta name="twitter:image" content="/img/poster.png">
+<meta name="twitter:description" content="Simple Document Organizer">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="shortcut icon" href="/favicon-mc.ico" type="image/x-icon">
+<link rel="icon" href="/favicon-mc.ico" type="image/x-icon">
+
+        <title>Configuration – Docspell Documentation</title>
+        <link rel="stylesheet" href="/styles.css">
+    </head>
+    <body>
+        <section class="hero is-info is-small">
+            <div class="hero-head">
+                <nav class="navbar">
+    <div class="navbar-brand">
+        <a class="navbar-item" href="/">
+            <span class="icon">
+                <img src="/icons/logo-only-36.svg">
+            </span>
+            <span>
+                Docspell
+            </span>
+        </a>
+    </div>
+    <div class="navbar-start">
+        <a target="_blank"
+           href="https://github.com/eikek/docspell"
+           class="navbar-item">
+            <span class="icon">
+                <img src="/icons/github-40.svg">
+            </span>
+            <span>
+                Github
+            </span>
+        </a>
+    </div>
+</nav>
+
+            </div>
+            <div class="hero-body">
+                <h1 class="title">
+                    Configuration
+                </h1>
+                <h2 class="subtitle">
+                    Docspell Documentation
+                </h2>
+            </div>
+        </section>
+        <nav class="breadcrumb has-succeeds-separator" aria-label="breadcrumbs">
+            <ul>
+                
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;"></a>
+                </li>
+                
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;">Overview</a>
+                </li>
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;configure&#x2F;">Configuration</a>
+                </li>
+            </ul>
+        </nav>
+        
+        <section class="section pt-2">
+            <div class="columns is-desktop">
+                <div class="column is-3">
+                    <div class="menu">
+                        <ul class="menu-list">
+                            
+                            <li>
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;configure&#x2F;#important-config-options">
+                                    Important Config Options
+                                </a>
+                                <ul>
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;configure&#x2F;#jdbc">
+                                            JDBC
+                                        </a>
+                                    </li>
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;configure&#x2F;#full-text-search-solr">
+                                            Full-Text Search: SOLR
+                                        </a>
+                                    </li>
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;configure&#x2F;#bind">
+                                            Bind
+                                        </a>
+                                    </li>
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;configure&#x2F;#baseurl">
+                                            Baseurl
+                                        </a>
+                                    </li>
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;configure&#x2F;#app-id">
+                                            App-id
+                                        </a>
+                                    </li>
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;configure&#x2F;#registration-options">
+                                            Registration Options
+                                        </a>
+                                    </li>
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;configure&#x2F;#authentication">
+                                            Authentication
+                                        </a>
+                                    </li>
+                                    
+                                </ul>
+                            </li>
+                            
+                            <li>
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;configure&#x2F;#file-format">
+                                    File Format
+                                </a>
+                                <ul>
+                                    
+                                </ul>
+                            </li>
+                            
+                            <li>
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;configure&#x2F;#default-config">
+                                    Default Config
+                                </a>
+                                <ul>
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;configure&#x2F;#rest-server">
+                                            Rest Server
+                                        </a>
+                                    </li>
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;configure&#x2F;#joex">
+                                            Joex
+                                        </a>
+                                    </li>
+                                    
+                                </ul>
+                            </li>
+                            
+                            <li>
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;configure&#x2F;#logging">
+                                    Logging
+                                </a>
+                                <ul>
+                                    
+                                </ul>
+                            </li>
+                            
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="column is-9">
+                    <div class="container">
+                        <div class="content doc">
+                            <p>Docspell's executable can take one argument – a configuration file. If
+that is not given, the defaults are used. The config file overrides
+default values, so only values that differ from the defaults are
+necessary.</p>
+<p>This applies to the restserver and the joex as well.</p>
+<h1 id="important-config-options">Important Config Options<a class="zola-anchor" href="#important-config-options" aria-label="Anchor link for: important-config-options">🔗</a></h1>
+<p>The configuration of both components uses separate namespaces. The
+configuration for the REST server is below <code>docspell.server</code>, while
+the one for joex is below <code>docspell.joex</code>.</p>
+<h2 id="jdbc">JDBC<a class="zola-anchor" href="#jdbc" aria-label="Anchor link for: jdbc">🔗</a></h2>
+<p>This configures the connection to the database. This has to be
+specified for the rest server and joex. By default, a H2 database in
+the current <code>/tmp</code> directory is configured.</p>
+<p>The config looks like this (both components):</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1;">docspell</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">joex</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">jdbc {
+  </span><span style="color:#fdf4c1;">url </span><span style="color:#fe8019;">= ...
+  </span><span style="color:#fdf4c1;">user </span><span style="color:#fe8019;">= ...
+  </span><span style="color:#fdf4c1;">password </span><span style="color:#fe8019;">= ...</span><span style="color:#fdf4c1aa;">
+}
+
+</span><span style="color:#fdf4c1;">docspell</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">server</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">backend</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">jdbc {
+  </span><span style="color:#fdf4c1;">url </span><span style="color:#fe8019;">= ...
+  </span><span style="color:#fdf4c1;">user </span><span style="color:#fe8019;">= ...
+  </span><span style="color:#fdf4c1;">password </span><span style="color:#fe8019;">= ...</span><span style="color:#fdf4c1aa;">
+}
+</span></code></pre>
+<p>The <code>url</code> is the connection to the database. It must start with
+<code>jdbc</code>, followed by name of the database. The rest is specific to the
+database used: it is either a path to a file for H2 or a host/database
+url for MariaDB and PostgreSQL.</p>
+<p>When using H2, the user and password can be chosen freely on first
+start, but must stay the same on subsequent starts. Usually, the user
+is <code>sa</code> and the password is left empty. Additionally, the url must
+include these options:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;AUTO_SERVER=TRUE
+</span></code></pre><h3 id="examples">Examples<a class="zola-anchor" href="#examples" aria-label="Anchor link for: examples">🔗</a></h3>
+<p>PostgreSQL:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">url = &quot;jdbc:postgresql://localhost:5432/docspelldb&quot;
+</span></code></pre>
+<p>MariaDB:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">url = &quot;jdbc:mariadb://localhost:3306/docspelldb&quot;
+</span></code></pre>
+<p>H2</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">url = &quot;jdbc:h2:///path/to/a/file.db;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;AUTO_SERVER=TRUE&quot;
+</span></code></pre><h2 id="full-text-search-solr">Full-Text Search: SOLR<a class="zola-anchor" href="#full-text-search-solr" aria-label="Anchor link for: full-text-search-solr">🔗</a></h2>
+<p><a href="https://lucene.apache.org/solr">Apache SOLR</a> is used to provide the
+full-text search. Both docspell components must provide the same
+connection setup. This is defined in the <code>full-text-search.solr</code>
+subsection:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fe8019;">...
+  </span><span style="color:#fdf4c1;">full-text-search </span><span style="color:#fdf4c1aa;">{
+    </span><span style="color:#fdf4c1;">enabled </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">true
+    </span><span style="color:#fe8019;">...
+    </span><span style="color:#fdf4c1;">solr </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> {
+      </span><span style="color:#fdf4c1;">url </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;http://localhost:8983/solr/docspell&quot;</span><span style="color:#fdf4c1aa;">
+    }
+  }
+</span></code></pre>
+<p>The default configuration at the end of this page contains more
+information about each setting.</p>
+<p>The <code>solr.url</code> is the mandatory setting that you need to change to
+point to your SOLR instance. Then you need to set the <code>enabled</code> flag
+to <code>true</code>.</p>
+<p>When installing docspell manually, just install solr and create a core
+as described in the <a href="https://lucene.apache.org/solr/guide/8_4/installing-solr.html">solr
+documentation</a>.
+That will provide you with the connection url (the last part is the
+core name).</p>
+<p>While the <code>full-text-search.solr</code> options are the same for joex and
+the restserver, there are some settings that differ. The restserver
+has this additional setting, that may be of interest:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1;">full-text-search </span><span style="color:#fdf4c1aa;">{
+  </span><span style="color:#fdf4c1;">recreate-key </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;test123&quot;</span><span style="color:#fdf4c1aa;">
+}
+</span></code></pre>
+<p>This key is required if you want docspell to drop and re-create the
+entire index. This is possible via a REST call:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1;">$ curl -XPOST http://localhost:7880/api/v1/open/fts/reIndexAll/test123
+</span></code></pre>
+<p>Here the <code>test123</code> is the key defined with <code>recreate-key</code>. If it is
+empty (the default), this REST call is disabled. Otherwise, the POST
+request will submit a system task that is executed by a joex instance
+eventually.</p>
+<p>Using this endpoint, the index will be re-created. This is sometimes
+necessary, for example if you upgrade SOLR or delete the core to
+provide a new one (see
+<a href="https://lucene.apache.org/solr/guide/8_4/reindexing.html">here</a> for
+details). Note that a collective can also re-index their data using a
+similiar endpoint; but this is only deleting their data and doesn't do
+a full re-index.</p>
+<p>The solr index doesn't contain any new information, it can be
+regenerated any time using the above REST call. Thus it doesn't need
+to be backed up.</p>
+<h2 id="bind">Bind<a class="zola-anchor" href="#bind" aria-label="Anchor link for: bind">🔗</a></h2>
+<p>The host and port the http server binds to. This applies to both
+components. The joex component also exposes a small REST api to
+inspect its state and notify the scheduler.</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1;">docspell</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">server</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">bind {
+  </span><span style="color:#fdf4c1;">address </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">localhost
+  port </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">7880</span><span style="color:#fdf4c1aa;">
+}
+</span><span style="color:#fdf4c1;">docspell</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">joex</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">bind {
+  </span><span style="color:#fdf4c1;">address </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">localhost
+  port </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">7878</span><span style="color:#fdf4c1aa;">
+}
+</span></code></pre>
+<p>By default, it binds to <code>localhost</code> and some predefined port. This
+must be changed, if components are on different machines.</p>
+<h2 id="baseurl">Baseurl<a class="zola-anchor" href="#baseurl" aria-label="Anchor link for: baseurl">🔗</a></h2>
+<p>The base url is an important setting that defines the http URL where
+the corresponding component can be reached. It applies to both
+components. For a joex component, the url must be resolvable from a
+REST server component. The REST server also uses this url to create
+absolute urls and to configure the authenication cookie.</p>
+<p>By default it is build using the information from the <code>bind</code> setting.</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">docspell.server.baseurl = ...
+docspell.joex.baseurl = ...
+</span></code></pre><h3 id="examples-1">Examples<a class="zola-anchor" href="#examples-1" aria-label="Anchor link for: examples-1">🔗</a></h3>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">docspell.server.baseurl = &quot;https://docspell.example.com&quot;
+docspell.joex.baseurl = &quot;http://192.168.101.10&quot;
+</span></code></pre><h2 id="app-id">App-id<a class="zola-anchor" href="#app-id" aria-label="Anchor link for: app-id">🔗</a></h2>
+<p>The <code>app-id</code> is the identifier of the corresponding instance. It <em>must
+be unique</em> for all instances. By default the REST server uses <code>rest1</code>
+and joex <code>joex1</code>. It is recommended to overwrite this setting to have
+an explicit and stable identifier.</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1;">docspell</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">server</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">app</span><span style="color:#fe8019;">-</span><span style="color:#fdf4c1aa;">id </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;rest1&quot;
+</span><span style="color:#fdf4c1;">docspell</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">joex</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">app</span><span style="color:#fe8019;">-</span><span style="color:#fdf4c1aa;">id </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;joex1&quot;
+</span></code></pre><h2 id="registration-options">Registration Options<a class="zola-anchor" href="#registration-options" aria-label="Anchor link for: registration-options">🔗</a></h2>
+<p>This defines if and how new users can create accounts. There are 3
+options:</p>
+<ul>
+<li><em>closed</em> no new user can sign up</li>
+<li><em>open</em> new users can sign up</li>
+<li><em>invite</em> new users can sign up but require an invitation key</li>
+</ul>
+<p>This applies only to the REST sevrer component.</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1;">docspell</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">server</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">signup {
+  </span><span style="color:#fdf4c1;">mode </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;open&quot;</span><span style="color:#fdf4c1aa;">
+
+  # If mode </span><span style="color:#fe8019;">== </span><span style="color:#b8bb26;">&#39;invite&#39;</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> a password must be provided to generate
+  # invitation keys</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> It must not be empty</span><span style="color:#fe8019;">.
+  </span><span style="color:#fdf4c1;">new-invite-password </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;&quot;</span><span style="color:#fdf4c1aa;">
+
+  # If mode </span><span style="color:#fe8019;">== </span><span style="color:#b8bb26;">&#39;invite&#39;</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> this is the period an invitation token is
+  # considered valid</span><span style="color:#fe8019;">.
+  </span><span style="color:#fdf4c1;">invite-time </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;3 days&quot;</span><span style="color:#fdf4c1aa;">
+}
+</span></code></pre>
+<p>The mode <code>invite</code> is intended to open the application only to some
+users. The admin can create these invitation keys and distribute them
+to the desired people. For this, the <code>new-invite-password</code> must be
+given. The idea is that only the person who installs docspell knows
+this. If it is not set, then invitation won't work. New invitation
+keys can be generated from within the web application or via REST
+calls (using <code>curl</code>, for example).</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1;">curl -X POST -d </span><span style="color:#b8bb26;">&#39;{&quot;password&quot;:&quot;blabla&quot;}&#39; &quot;http://localhost:7880/api/v1/open/signup/newinvite&quot;
+</span></code></pre><h2 id="authentication">Authentication<a class="zola-anchor" href="#authentication" aria-label="Anchor link for: authentication">🔗</a></h2>
+<p>Authentication works in two ways:</p>
+<ul>
+<li>with an account-name / password pair</li>
+<li>with an authentication token</li>
+</ul>
+<p>The initial authentication must occur with an accountname/password
+pair. This will generate an authentication token which is valid for a
+some time. Subsequent calls to secured routes can use this token. The
+token can be given as a normal http header or via a cookie header.</p>
+<p>These settings apply only to the REST server.</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1;">docspell</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">server</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">auth {
+  </span><span style="color:#fdf4c1;">server-secret </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;hex:caffee&quot;</span><span style="color:#fdf4c1aa;"> # or </span><span style="color:#b8bb26;">&quot;b64:Y2FmZmVlCg==&quot;
+  </span><span style="color:#fdf4c1;">session-valid </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;5 minutes&quot;</span><span style="color:#fdf4c1aa;">
+}
+</span></code></pre>
+<p>The <code>server-secret</code> is used to sign the token. If multiple REST
+servers are deployed, all must share the same server secret. Otherwise
+tokens from one instance are not valid on another instance. The secret
+can be given as Base64 encoded string or in hex form. Use the prefix
+<code>hex:</code> and <code>b64:</code>, respectively. If no prefix is given, the UTF8 bytes
+of the string are used.</p>
+<p>The <code>session-valid</code> deterimens how long a token is valid. This can be
+just some minutes, the web application obtains new ones
+periodically. So a short time is recommended.</p>
+<h1 id="file-format">File Format<a class="zola-anchor" href="#file-format" aria-label="Anchor link for: file-format">🔗</a></h1>
+<p>The format of the configuration files can be
+<a href="https://github.com/lightbend/config/blob/master/HOCON.md#hocon-human-optimized-config-object-notation">HOCON</a>,
+JSON or whatever the used <a href="https://github.com/lightbend/config">config
+library</a> understands. The default
+values below are in HOCON format, which is recommended, since it
+allows comments and has some <a href="https://github.com/lightbend/config#features-of-hocon">advanced
+features</a>.
+Please refer to their documentation for more on this.</p>
+<p>Here are the default configurations.</p>
+<h1 id="default-config">Default Config<a class="zola-anchor" href="#default-config" aria-label="Anchor link for: default-config">🔗</a></h1>
+<h2 id="rest-server">Rest Server<a class="zola-anchor" href="#rest-server" aria-label="Anchor link for: rest-server">🔗</a></h2>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1;">docspell</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">server {
+  # This is shown in the top right corner of the web application
+  </span><span style="color:#fdf4c1;">app-name </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;Docspell&quot;</span><span style="color:#fdf4c1aa;">
+  # This is the id of this node</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> If you run more than one server</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> you
+  # have to make sure to provide unique ids per node</span><span style="color:#fe8019;">.
+  </span><span style="color:#fdf4c1;">app-id </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;rest1&quot;</span><span style="color:#fdf4c1aa;">
+  # This is the base </span><span style="color:#fabd2f;">URL</span><span style="color:#fdf4c1aa;"> this application is deployed to</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> This is used
+  # to create absolute URLs and to configure the cookie</span><span style="color:#fe8019;">.
+  </span><span style="color:#fdf4c1;">base-url </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;http://localhost:7880&quot;</span><span style="color:#fdf4c1aa;">
+  # Where the server binds to</span><span style="color:#fe8019;">.
+</span><span style="color:#fa5c4b;">  bind </span><span style="color:#fdf4c1aa;">{
+    </span><span style="color:#fdf4c1;">address </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;localhost&quot;
+    </span><span style="color:#fdf4c1;">port </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">7880</span><span style="color:#fdf4c1aa;">
+  }
+  # This is a hard limit to restrict the size of a batch that is
+  # returned when searching for items</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> The user can set this limit
+  # within the client config</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> but it is restricted by the server to
+  # the number defined here</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> An admin might choose a lower number
+  # depending </span><span style="color:#d3869b;">on</span><span style="color:#fdf4c1aa;"> the available resources</span><span style="color:#fe8019;">.
+  </span><span style="color:#fdf4c1;">max-item-page-size </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">200</span><span style="color:#fdf4c1aa;">
+  # Authentication</span><span style="color:#fe8019;">.
+</span><span style="color:#fa5c4b;">  auth </span><span style="color:#fdf4c1aa;">{
+    # The secret for this server that is used to sign the authenicator
+    # tokens</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> If multiple servers are running</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> all must share the same
+    # secret</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> You can use base64 or hex strings (prefix </span><span style="color:#fa5c4b;">with</span><span style="color:#fdf4c1aa;"> b64</span><span style="color:#fe8019;">:</span><span style="color:#fdf4c1aa;"> and
+    # hex</span><span style="color:#fe8019;">:,</span><span style="color:#fdf4c1aa;"> respectively)</span><span style="color:#fe8019;">.
+    </span><span style="color:#fdf4c1;">server-secret </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;hex:caffee&quot;</span><span style="color:#fdf4c1aa;">
+    # How long an authentication token is valid</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> The web application
+    # will get a new one periodically</span><span style="color:#fe8019;">.
+    </span><span style="color:#fdf4c1;">session-valid </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;5 minutes&quot;</span><span style="color:#fdf4c1aa;">
+  }
+  # This endpoint allows to upload files to any collective</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> The
+  # intention is that local software integrates </span><span style="color:#fa5c4b;">with</span><span style="color:#fdf4c1aa;"> docspell more
+  # easily</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> Therefore the endpoint is not protected by the usual
+  # means</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">
+  #
+  # For security reasons</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> this endpoint is disabled by default</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> If
+  # enabled</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> you can choose from some ways to protect it</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> It may be a
+  # good idea to further protect this endpoint using a firewall</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> such
+  # that outside traffic is not routed</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">
+  #
+  # </span><span style="color:#fabd2f;">NOTE</span><span style="color:#fe8019;">:</span><span style="color:#fdf4c1aa;"> If all protection methods are disabled</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> the endpoint is not
+  # protected at all</span><span style="color:#fe8019;">!
+  </span><span style="color:#fdf4c1;">integration-endpoint </span><span style="color:#fdf4c1aa;">{
+    </span><span style="color:#fdf4c1;">enabled </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">false</span><span style="color:#fdf4c1aa;">
+    # The priority to use when submitting files through this endpoint</span><span style="color:#fe8019;">.
+    </span><span style="color:#fdf4c1;">priority </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;low&quot;</span><span style="color:#fdf4c1aa;">
+    # IPv4 addresses to allow access</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> An empty list</span><span style="color:#fe8019;">, </span><span style="color:#fa5c4b;">if</span><span style="color:#fdf4c1aa;"> enabled</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;">
+    # prohibits all requests</span><span style="color:#fe8019;">. </span><span style="color:#fabd2f;">IP</span><span style="color:#fdf4c1aa;"> addresses may be specified as simple
+    # globs</span><span style="color:#fe8019;">:</span><span style="color:#fdf4c1aa;"> a part marked as `</span><span style="color:#fe8019;">*</span><span style="color:#b8bb26;">&#39; matches any octet, like in
+    # `192.168.*.*`. The `127.0.0.1&#39;</span><span style="color:#fdf4c1aa;"> (the default) matches the
+    # loopback address</span><span style="color:#fe8019;">.
+    </span><span style="color:#fdf4c1;">allowed-ips </span><span style="color:#fdf4c1aa;">{
+      </span><span style="color:#fdf4c1;">enabled </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">false
+      </span><span style="color:#fdf4c1;">ips </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> [ </span><span style="color:#b8bb26;">&quot;127.0.0.1&quot;</span><span style="color:#fdf4c1aa;"> ]
+    }
+    # Requests are expected to use http basic auth when uploading
+    # files</span><span style="color:#fe8019;">.
+    </span><span style="color:#fdf4c1;">http-basic </span><span style="color:#fdf4c1aa;">{
+      </span><span style="color:#fdf4c1;">enabled </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">false
+      </span><span style="color:#fdf4c1;">realm </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;Docspell Integration&quot;
+      </span><span style="color:#fdf4c1;">user </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;docspell-int&quot;
+      </span><span style="color:#fdf4c1;">password </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;docspell-int&quot;</span><span style="color:#fdf4c1aa;">
+    }
+    # Requests are expected to supply some specific header when
+    # uploading files</span><span style="color:#fe8019;">.
+    </span><span style="color:#fdf4c1;">http-header </span><span style="color:#fdf4c1aa;">{
+      </span><span style="color:#fdf4c1;">enabled </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">false
+      </span><span style="color:#fdf4c1;">header-name </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;Docspell-Integration&quot;
+      </span><span style="color:#fdf4c1;">header-value </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;some-secret&quot;</span><span style="color:#fdf4c1aa;">
+    }
+  }
+  # Configuration of the full</span><span style="color:#fe8019;">-</span><span style="color:#fdf4c1aa;">text search engine</span><span style="color:#fe8019;">.
+  </span><span style="color:#fdf4c1;">full-text-search </span><span style="color:#fdf4c1aa;">{
+    # The full</span><span style="color:#fe8019;">-</span><span style="color:#fdf4c1aa;">text search feature can be disabled</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> It requires an
+    # additional </span><span style="color:#fa5c4b;">index</span><span style="color:#fdf4c1aa;"> server which needs additional memory and disk
+    # space</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> It can be enabled later any time</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">
+    #
+    # Currently the </span><span style="color:#fabd2f;">SOLR</span><span style="color:#fdf4c1aa;"> search platform is supported</span><span style="color:#fe8019;">.
+    </span><span style="color:#fdf4c1;">enabled </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">false</span><span style="color:#fdf4c1aa;">
+    # When re</span><span style="color:#fe8019;">-</span><span style="color:#fdf4c1aa;">creating the complete </span><span style="color:#fa5c4b;">index</span><span style="color:#fdf4c1aa;"> via a </span><span style="color:#fabd2f;">REST</span><span style="color:#fdf4c1aa;"> call</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> this key
+    # is required</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> If left empty (the default)</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> recreating the </span><span style="color:#fa5c4b;">index</span><span style="color:#fdf4c1aa;">
+    # is disabled</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">
+    #
+    # Example curl command</span><span style="color:#fe8019;">:</span><span style="color:#fdf4c1aa;">
+    # curl </span><span style="color:#fe8019;">-</span><span style="color:#fabd2f;">XPOST </span><span style="color:#fdf4c1;">http://localhost:7880/api/v1/open/fts/reIndexAll/test123
+    recreate-key </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;&quot;</span><span style="color:#fdf4c1aa;">
+    # Configuration for the </span><span style="color:#fabd2f;">SOLR</span><span style="color:#fdf4c1aa;"> backend</span><span style="color:#fe8019;">.
+    </span><span style="color:#fdf4c1;">solr </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> {
+      # The </span><span style="color:#fabd2f;">URL</span><span style="color:#fdf4c1aa;"> to solr
+      </span><span style="color:#fdf4c1;">url </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;http://localhost:8983/solr/docspell&quot;</span><span style="color:#fdf4c1aa;">
+      # Used to tell solr when to commit the data
+      </span><span style="color:#fdf4c1;">commit-within </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">1000</span><span style="color:#fdf4c1aa;">
+      # If </span><span style="color:#d3869b;">true</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> logs request and response bodies
+      </span><span style="color:#fdf4c1;">log-verbose </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">false</span><span style="color:#fdf4c1aa;">
+      # The defType parameter to lucene that defines the parser to
+      # use</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> You might want to try </span><span style="color:#b8bb26;">&quot;edismax&quot;</span><span style="color:#fdf4c1aa;"> or look here</span><span style="color:#fe8019;">:</span><span style="color:#fdf4c1aa;">
+      # </span><span style="color:#fdf4c1;">https://lucene.apache.org/solr/guide/8_4/query-syntax-and-parsing.html#query-syntax-and-parsing
+      def-type </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;lucene&quot;</span><span style="color:#fdf4c1aa;">
+      # The default combiner for tokens</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> One of {</span><span style="color:#fabd2f;">AND</span><span style="color:#fe8019;">, </span><span style="color:#fabd2f;">OR</span><span style="color:#fdf4c1aa;">}</span><span style="color:#fe8019;">.
+      </span><span style="color:#fdf4c1;">q-op </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;OR&quot;</span><span style="color:#fdf4c1aa;">
+    }
+  }
+  # Configuration for the backend</span><span style="color:#fe8019;">.
+</span><span style="color:#fa5c4b;">  backend </span><span style="color:#fdf4c1aa;">{
+    # Enable or disable debugging for e</span><span style="color:#fe8019;">-</span><span style="color:#fdf4c1aa;">mail related functionality</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> This
+    # applies to both sending and receiving mails</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> For security reasons
+    # logging is not very extensive </span><span style="color:#d3869b;">on</span><span style="color:#fdf4c1aa;"> authentication failures</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> Setting
+    # this to </span><span style="color:#d3869b;">true</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> results in a lot of data printed to stdout</span><span style="color:#fe8019;">.
+    </span><span style="color:#fdf4c1;">mail-debug </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">false</span><span style="color:#fdf4c1aa;">
+    # The database connection</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">
+    #
+    # By default a </span><span style="color:#fabd2f;">H2</span><span style="color:#fdf4c1aa;"> file</span><span style="color:#fe8019;">-</span><span style="color:#fdf4c1aa;">based database is configured</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> You can
+    # provide a postgresql or mariadb connection here</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> When using </span><span style="color:#fabd2f;">H2</span><span style="color:#fdf4c1aa;">
+    # use the PostgreSQL compatibility mode and </span><span style="color:#fabd2f;">AUTO_SERVER</span><span style="color:#fdf4c1aa;"> feature</span><span style="color:#fe8019;">.
+</span><span style="color:#fa5c4b;">    jdbc </span><span style="color:#fdf4c1aa;">{
+      </span><span style="color:#fdf4c1;">url </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;jdbc:h2://&quot;</span><span style="color:#fdf4c1aa;">${java</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">io</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">tmpdir}</span><span style="color:#b8bb26;">&quot;/docspell-demo.db;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;AUTO_SERVER=TRUE&quot;
+      </span><span style="color:#fdf4c1;">user </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;sa&quot;
+      </span><span style="color:#fdf4c1;">password </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;&quot;</span><span style="color:#fdf4c1aa;">
+    }
+    # Configuration for registering new users</span><span style="color:#fe8019;">.
+</span><span style="color:#fa5c4b;">    signup </span><span style="color:#fdf4c1aa;">{
+      # The mode defines </span><span style="color:#fa5c4b;">if</span><span style="color:#fdf4c1aa;"> new users can signup or not</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> It can have
+      # three values</span><span style="color:#fe8019;">:</span><span style="color:#fdf4c1aa;">
+      #
+      # </span><span style="color:#fe8019;">-</span><span style="color:#fdf4c1aa;"> open</span><span style="color:#fe8019;">:</span><span style="color:#fdf4c1aa;"> every new user can sign up
+      # </span><span style="color:#fe8019;">-</span><span style="color:#fdf4c1aa;"> invite</span><span style="color:#fe8019;">:</span><span style="color:#fdf4c1aa;"> new users can sign up only </span><span style="color:#fa5c4b;">if</span><span style="color:#fdf4c1aa;"> they provide a correct
+      #   invitation key</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> Invitation keys can be generated by the
+      #   server</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">
+      # </span><span style="color:#fe8019;">-</span><span style="color:#fdf4c1aa;"> closed</span><span style="color:#fe8019;">:</span><span style="color:#fdf4c1aa;"> signing up is disabled</span><span style="color:#fe8019;">.
+      </span><span style="color:#fdf4c1;">mode </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;open&quot;</span><span style="color:#fdf4c1aa;">
+      # If mode </span><span style="color:#fe8019;">== </span><span style="color:#b8bb26;">&#39;invite&#39;</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> a password must be provided to generate
+      # invitation keys</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> It must not be empty</span><span style="color:#fe8019;">.
+      </span><span style="color:#fdf4c1;">new-invite-password </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;&quot;</span><span style="color:#fdf4c1aa;">
+      # If mode </span><span style="color:#fe8019;">== </span><span style="color:#b8bb26;">&#39;invite&#39;</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> this is the period an invitation token is
+      # considered valid</span><span style="color:#fe8019;">.
+      </span><span style="color:#fdf4c1;">invite-time </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;3 days&quot;</span><span style="color:#fdf4c1aa;">
+    }
+</span><span style="color:#fa5c4b;">    files </span><span style="color:#fdf4c1aa;">{
+      # Defines the chunk size (in bytes) used to store the files</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">
+      # This will affect the memory footprint when uploading and
+      # downloading files</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> At most this amount is loaded into </span><span style="color:#fabd2f;">RAM</span><span style="color:#fdf4c1aa;"> for
+      # down</span><span style="color:#fe8019;">-</span><span style="color:#fdf4c1aa;"> and uploading</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">
+      #
+      # It also defines the chunk size used for the blobs inside the
+      # database</span><span style="color:#fe8019;">.
+      </span><span style="color:#fdf4c1;">chunk-size </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">524288</span><span style="color:#fdf4c1aa;">
+      # The file content types that are considered valid</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> Docspell
+      # will only pass these files to processing</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> The processing code
+      # itself has also checks for which files are supported and which
+      # not</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> This affects the uploading part and can be used to
+      # restrict file types that should be handed over to processing</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">
+      # By default all files are allowed</span><span style="color:#fe8019;">.
+      </span><span style="color:#fdf4c1;">valid-mime-types </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> [ ]
+    }
+  }
+}
+</span></code></pre><h2 id="joex">Joex<a class="zola-anchor" href="#joex" aria-label="Anchor link for: joex">🔗</a></h2>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1;">docspell</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">joex {
+  # This is the id of this node</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> If you run more than one server</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> you
+  # have to make sure to provide unique ids per node</span><span style="color:#fe8019;">.
+  </span><span style="color:#fdf4c1;">app-id </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;joex1&quot;</span><span style="color:#fdf4c1aa;">
+  # This is the base </span><span style="color:#fabd2f;">URL</span><span style="color:#fdf4c1aa;"> this application is deployed to</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> This is used
+  # to register this joex instance such that docspell rest servers can
+  # reach them
+  </span><span style="color:#fdf4c1;">base-url </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;http://localhost:7878&quot;</span><span style="color:#fdf4c1aa;">
+  # Where the </span><span style="color:#fabd2f;">REST</span><span style="color:#fdf4c1aa;"> server binds to</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">
+  #
+  # </span><span style="color:#fabd2f;">JOEX</span><span style="color:#fdf4c1aa;"> provides a very simple </span><span style="color:#fabd2f;">REST</span><span style="color:#fdf4c1aa;"> interface to inspect its state</span><span style="color:#fe8019;">.
+</span><span style="color:#fa5c4b;">  bind </span><span style="color:#fdf4c1aa;">{
+    </span><span style="color:#fdf4c1;">address </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;localhost&quot;
+    </span><span style="color:#fdf4c1;">port </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">7878</span><span style="color:#fdf4c1aa;">
+  }
+  # The database connection</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">
+  #
+  # By default a </span><span style="color:#fabd2f;">H2</span><span style="color:#fdf4c1aa;"> file</span><span style="color:#fe8019;">-</span><span style="color:#fdf4c1aa;">based database is configured</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> You can provide
+  # a postgresql or mariadb connection here</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> When using </span><span style="color:#fabd2f;">H2</span><span style="color:#fdf4c1aa;"> use the
+  # PostgreSQL compatibility mode and </span><span style="color:#fabd2f;">AUTO_SERVER</span><span style="color:#fdf4c1aa;"> feature</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">
+  #
+  # It must be the same connection as the rest server is using</span><span style="color:#fe8019;">.
+</span><span style="color:#fa5c4b;">  jdbc </span><span style="color:#fdf4c1aa;">{
+    </span><span style="color:#fdf4c1;">url </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;jdbc:h2://&quot;</span><span style="color:#fdf4c1aa;">${java</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">io</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">tmpdir}</span><span style="color:#b8bb26;">&quot;/docspell-demo.db;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;AUTO_SERVER=TRUE&quot;
+    </span><span style="color:#fdf4c1;">user </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;sa&quot;
+    </span><span style="color:#fdf4c1;">password </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;&quot;</span><span style="color:#fdf4c1aa;">
+  }
+  # Enable or disable debugging for e</span><span style="color:#fe8019;">-</span><span style="color:#fdf4c1aa;">mail related functionality</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> This
+  # applies to both sending and receiving mails</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> For security reasons
+  # logging is not very extensive </span><span style="color:#d3869b;">on</span><span style="color:#fdf4c1aa;"> authentication failures</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> Setting
+  # this to </span><span style="color:#d3869b;">true</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> results in a lot of data printed to stdout</span><span style="color:#fe8019;">.
+  </span><span style="color:#fdf4c1;">mail-debug </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">false
+  </span><span style="color:#fdf4c1;">send-mail </span><span style="color:#fdf4c1aa;">{
+    # This is used as the List</span><span style="color:#fe8019;">-</span><span style="color:#fdf4c1aa;">Id e</span><span style="color:#fe8019;">-</span><span style="color:#fdf4c1aa;">mail header when mails are sent
+    # from docspell to its users (example</span><span style="color:#fe8019;">:</span><span style="color:#fdf4c1aa;"> for notification mails)</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> It
+    # is not used when sending to external recipients</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> If it is empty</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;">
+    # </span><span style="color:#d3869b;">no</span><span style="color:#fdf4c1aa;"> such header is added</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> Using this header is often useful when
+    # filtering mails</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">
+    #
+    # It should be a string in angle brackets</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> See
+    # </span><span style="color:#fdf4c1;">https://tools.ietf.org/html/rfc2919</span><span style="color:#fdf4c1aa;"> for a formal specification
+    # of this header</span><span style="color:#fe8019;">.
+    </span><span style="color:#fdf4c1;">list-id </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;&quot;</span><span style="color:#fdf4c1aa;">
+  }
+  # Configuration for the job scheduler</span><span style="color:#fe8019;">.
+</span><span style="color:#fa5c4b;">  scheduler </span><span style="color:#fdf4c1aa;">{
+    # Each scheduler needs a unique name</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> This defaults to the node
+    # name</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> which must be unique</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> too</span><span style="color:#fe8019;">.
+    </span><span style="color:#fdf4c1;">name </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> ${docspell</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">joex</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">app</span><span style="color:#fe8019;">-</span><span style="color:#fdf4c1aa;">id}
+    # Number of processing allowed in parallel</span><span style="color:#fe8019;">.
+    </span><span style="color:#fdf4c1;">pool-size </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">2</span><span style="color:#fdf4c1aa;">
+    # </span><span style="color:#fabd2f;">A</span><span style="color:#fdf4c1aa;"> counting scheme determines the ratio of how high</span><span style="color:#fe8019;">-</span><span style="color:#fdf4c1aa;"> and low</span><span style="color:#fe8019;">-</span><span style="color:#fdf4c1aa;">prio
+    # jobs are run</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> For example</span><span style="color:#fe8019;">: </span><span style="color:#d3869b;">4</span><span style="color:#fe8019;">,</span><span style="color:#d3869b;">1</span><span style="color:#fdf4c1aa;"> means run </span><span style="color:#d3869b;">4</span><span style="color:#fdf4c1aa;"> high prio jobs</span><span style="color:#fe8019;">, </span><span style="color:#fa5c4b;">then</span><span style="color:#fdf4c1aa;">
+    # </span><span style="color:#d3869b;">1</span><span style="color:#fdf4c1aa;"> low prio and </span><span style="color:#fa5c4b;">then start</span><span style="color:#fdf4c1aa;"> over</span><span style="color:#fe8019;">.
+    </span><span style="color:#fdf4c1;">counting-scheme </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;4,1&quot;</span><span style="color:#fdf4c1aa;">
+    # How often a failed job should be retried until it enters failed
+    # state</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> If a job fails</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> it becomes </span><span style="color:#b8bb26;">&quot;stuck&quot;</span><span style="color:#fdf4c1aa;"> and will be retried
+    # after a delay</span><span style="color:#fe8019;">.
+    </span><span style="color:#fdf4c1;">retries </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">2</span><span style="color:#fdf4c1aa;">
+    # The delay until the next try is performed for a failed job</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> This
+    # delay is increased exponentially </span><span style="color:#fa5c4b;">with</span><span style="color:#fdf4c1aa;"> the number of retries</span><span style="color:#fe8019;">.
+    </span><span style="color:#fdf4c1;">retry-delay </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;1 minute&quot;</span><span style="color:#fdf4c1aa;">
+    # The queue size of log statements from a job</span><span style="color:#fe8019;">.
+    </span><span style="color:#fdf4c1;">log-buffer-size </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">500</span><span style="color:#fdf4c1aa;">
+    # If </span><span style="color:#d3869b;">no</span><span style="color:#fdf4c1aa;"> job is left in the queue</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> the scheduler will wait until a
+    # notify is requested (using the </span><span style="color:#fabd2f;">REST</span><span style="color:#fdf4c1aa;"> interface)</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> To also retry
+    # stuck jobs</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> it will notify itself periodically</span><span style="color:#fe8019;">.
+    </span><span style="color:#fdf4c1;">wakeup-period </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;30 minutes&quot;</span><span style="color:#fdf4c1aa;">
+  }
+  </span><span style="color:#fdf4c1;">periodic-scheduler </span><span style="color:#fdf4c1aa;">{
+    # Each scheduler needs a unique name</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> This defaults to the node
+    # name</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> which must be unique</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> too</span><span style="color:#fe8019;">.
+    </span><span style="color:#fdf4c1;">name </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> ${docspell</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">joex</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">app</span><span style="color:#fe8019;">-</span><span style="color:#fdf4c1aa;">id}
+    # </span><span style="color:#fabd2f;">A</span><span style="color:#fdf4c1aa;"> fallback to </span><span style="color:#fa5c4b;">start</span><span style="color:#fdf4c1aa;"> looking for due periodic tasks regularily</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">
+    # Usually joex instances should be notified via </span><span style="color:#fabd2f;">REST</span><span style="color:#fdf4c1aa;"> calls </span><span style="color:#fa5c4b;">if</span><span style="color:#fdf4c1aa;">
+    # external processes change tasks</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> But these requests may get
+    # lost</span><span style="color:#fe8019;">.
+    </span><span style="color:#fdf4c1;">wakeup-period </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;10 minutes&quot;</span><span style="color:#fdf4c1aa;">
+  }
+  # Configuration for the user</span><span style="color:#fe8019;">-</span><span style="color:#fdf4c1aa;">tasks</span><span style="color:#fe8019;">.
+  </span><span style="color:#fdf4c1;">user-tasks </span><span style="color:#fdf4c1aa;">{
+    # Allows to import e</span><span style="color:#fe8019;">-</span><span style="color:#fdf4c1aa;">mails by scanning a mailbox</span><span style="color:#fe8019;">.
+    </span><span style="color:#fdf4c1;">scan-mailbox </span><span style="color:#fdf4c1aa;">{
+      # </span><span style="color:#fabd2f;">A</span><span style="color:#fdf4c1aa;"> limit of how many folders to scan through</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> If a user
+      # configures more than this</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> only upto this limit folders are
+      # scanned and a warning is logged</span><span style="color:#fe8019;">.
+      </span><span style="color:#fdf4c1;">max-folders </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">50</span><span style="color:#fdf4c1aa;">
+      # How many mails (headers only) to retrieve in one chunk</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">
+      #
+      # If this is greater than `max</span><span style="color:#fe8019;">-</span><span style="color:#fdf4c1aa;">mails</span><span style="color:#b8bb26;">&#39; it is set automatically to
+      # the value of `max-mails&#39;</span><span style="color:#fe8019;">.
+      </span><span style="color:#fdf4c1;">mail-chunk-size </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">50</span><span style="color:#fdf4c1aa;">
+      # </span><span style="color:#fabd2f;">A</span><span style="color:#fdf4c1aa;"> limit </span><span style="color:#d3869b;">on</span><span style="color:#fdf4c1aa;"> how many mails to process in one job run</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> This is
+      # meant to avoid too heavy resource allocation to one
+      # </span><span style="color:#fabd2f;">user/collective</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">
+      #
+      # If more than this number of mails is encountered</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> a warning is
+      # logged</span><span style="color:#fe8019;">.
+      </span><span style="color:#fdf4c1;">max-mails </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">500</span><span style="color:#fdf4c1aa;">
+    }
+  }
+  # Docspell uses periodic house keeping tasks</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> like cleaning expired
+  # invites</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> that can be configured here</span><span style="color:#fe8019;">.
+  </span><span style="color:#fdf4c1;">house-keeping </span><span style="color:#fdf4c1aa;">{
+    # When the house keeping tasks execute</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> Default is to run every
+    # week</span><span style="color:#fe8019;">.
+    </span><span style="color:#fdf4c1;">schedule </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;Sun *-*-* 00:00:00&quot;</span><span style="color:#fdf4c1aa;">
+    # This task removes invitation keys that have been created but not
+    # used</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> The timespan here must be greater than the `invite</span><span style="color:#fe8019;">-</span><span style="color:#fdf4c1aa;">time</span><span style="color:#b8bb26;">&#39;
+    # setting in the rest server config file.
+    cleanup-invites = {
+      # Whether this task is enabled.
+      enabled = true
+      # The minimum age of invites to be deleted.
+      older-than = &quot;30 days&quot;
+    }
+    # Jobs store their log output in the database. Normally this data
+    # is only interesting for some period of time. The processing logs
+    # of old files can be removed eventually.
+    cleanup-jobs = {
+      # Whether this task is enabled.
+      enabled = true
+      # The minimum age of jobs to delete. It is matched against the
+      # `finished&#39;</span><span style="color:#fdf4c1aa;"> timestamp</span><span style="color:#fe8019;">.
+      </span><span style="color:#fdf4c1;">older-than </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;30 days&quot;</span><span style="color:#fdf4c1aa;">
+      # This defines how many jobs are deleted in one transaction</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">
+      # Since the data to delete may get large</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> it can be configured
+      # whether more or less memory should be used</span><span style="color:#fe8019;">.
+      </span><span style="color:#fdf4c1;">delete-batch </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;100&quot;</span><span style="color:#fdf4c1aa;">
+    }
+  }
+  # Configuration of text extraction
+</span><span style="color:#fa5c4b;">  extraction </span><span style="color:#fdf4c1aa;">{
+    # For </span><span style="color:#fabd2f;">PDF</span><span style="color:#fdf4c1aa;"> files it is first tried to read the text parts of the
+    # </span><span style="color:#fabd2f;">PDF</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> But PDFs can be complex documents and they may contain text
+    # and images</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> If the returned text is shorter than the value
+    # below</span><span style="color:#fe8019;">, </span><span style="color:#fabd2f;">OCR</span><span style="color:#fdf4c1aa;"> is run afterwards</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> Then both extracted texts are
+    # compared and the longer will be used</span><span style="color:#fe8019;">.
+</span><span style="color:#fa5c4b;">    pdf </span><span style="color:#fdf4c1aa;">{
+      </span><span style="color:#fdf4c1;">min-text-len </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">500</span><span style="color:#fdf4c1aa;">
+    }
+    # Extracting text using </span><span style="color:#fabd2f;">OCR</span><span style="color:#fdf4c1aa;"> works for image and pdf files</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> It will
+    # first run ghostscript to create a gray image from a pdf</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> Then
+    # unpaper is run to optimize the image for the upcoming ocr</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> which
+    # will be done by tesseract</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> All these programs must be available
+    # in your </span><span style="color:#fabd2f;">PATH</span><span style="color:#fdf4c1aa;"> or the absolute path can be specified below</span><span style="color:#fe8019;">.
+</span><span style="color:#fa5c4b;">    ocr </span><span style="color:#fdf4c1aa;">{
+      # Images greater than this size are skipped</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> Note that every
+      # image is loaded completely into memory for doing </span><span style="color:#fabd2f;">OCR</span><span style="color:#fe8019;">.
+      </span><span style="color:#fdf4c1;">max-image-size </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">14000000</span><span style="color:#fdf4c1aa;">
+      # Defines what pages to process</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> If a </span><span style="color:#fabd2f;">PDF </span><span style="color:#fa5c4b;">with </span><span style="color:#d3869b;">600</span><span style="color:#fdf4c1aa;"> pages is
+      # submitted</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> it is probably not necessary to scan through all of
+      # them</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> This would take a long time and occupy resources for </span><span style="color:#d3869b;">no</span><span style="color:#fdf4c1aa;">
+      # value</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> The first few pages should suffice</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> The default is first
+      # </span><span style="color:#d3869b;">10</span><span style="color:#fdf4c1aa;"> pages</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">
+      #
+      # If you want all pages being processed</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> set this number to </span><span style="color:#fe8019;">-</span><span style="color:#d3869b;">1</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">
+      #
+      # Note</span><span style="color:#fe8019;">: </span><span style="color:#fa5c4b;">if</span><span style="color:#fdf4c1aa;"> you change the ghostscript command below</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> be aware that
+      # this setting (</span><span style="color:#fa5c4b;">if</span><span style="color:#fdf4c1aa;"> not </span><span style="color:#fe8019;">-</span><span style="color:#d3869b;">1</span><span style="color:#fdf4c1aa;">) will add another parameter to the
+      # beginning of the command</span><span style="color:#fe8019;">.
+      </span><span style="color:#fdf4c1;">page-range </span><span style="color:#fdf4c1aa;">{
+        </span><span style="color:#fdf4c1;">begin </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">10</span><span style="color:#fdf4c1aa;">
+      }
+      # The ghostscript command</span><span style="color:#fe8019;">.
+</span><span style="color:#fa5c4b;">      ghostscript </span><span style="color:#fdf4c1aa;">{
+</span><span style="color:#fa5c4b;">        command </span><span style="color:#fdf4c1aa;">{
+          </span><span style="color:#fdf4c1;">program </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;gs&quot;
+          </span><span style="color:#fdf4c1;">args </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> [ </span><span style="color:#b8bb26;">&quot;-dNOPAUSE&quot;
+                 </span><span style="color:#fe8019;">, </span><span style="color:#b8bb26;">&quot;-dBATCH&quot;
+                 </span><span style="color:#fe8019;">, </span><span style="color:#b8bb26;">&quot;-dSAFER&quot;
+                 </span><span style="color:#fe8019;">, </span><span style="color:#b8bb26;">&quot;-sDEVICE=tiffscaled8&quot;
+                 </span><span style="color:#fe8019;">, </span><span style="color:#b8bb26;">&quot;-sOutputFile={{outfile}}&quot;
+                 </span><span style="color:#fe8019;">, </span><span style="color:#b8bb26;">&quot;{{infile}}&quot;</span><span style="color:#fdf4c1aa;">
+                 ]
+          </span><span style="color:#fdf4c1;">timeout </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;5 minutes&quot;</span><span style="color:#fdf4c1aa;">
+        }
+        </span><span style="color:#fdf4c1;">working-dir </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> ${java</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">io</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">tmpdir}</span><span style="color:#b8bb26;">&quot;/docspell-extraction&quot;</span><span style="color:#fdf4c1aa;">
+      }
+      # The unpaper command</span><span style="color:#fe8019;">.
+</span><span style="color:#fa5c4b;">      unpaper </span><span style="color:#fdf4c1aa;">{
+</span><span style="color:#fa5c4b;">        command </span><span style="color:#fdf4c1aa;">{
+          </span><span style="color:#fdf4c1;">program </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;unpaper&quot;
+          </span><span style="color:#fdf4c1;">args </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> [ </span><span style="color:#b8bb26;">&quot;{{infile}}&quot;</span><span style="color:#fe8019;">, </span><span style="color:#b8bb26;">&quot;{{outfile}}&quot;</span><span style="color:#fdf4c1aa;"> ]
+          </span><span style="color:#fdf4c1;">timeout </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;5 minutes&quot;</span><span style="color:#fdf4c1aa;">
+        }
+      }
+      # The tesseract command</span><span style="color:#fe8019;">.
+</span><span style="color:#fa5c4b;">      tesseract </span><span style="color:#fdf4c1aa;">{
+</span><span style="color:#fa5c4b;">        command </span><span style="color:#fdf4c1aa;">{
+          </span><span style="color:#fdf4c1;">program </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;tesseract&quot;
+          </span><span style="color:#fdf4c1;">args </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> [</span><span style="color:#b8bb26;">&quot;{{file}}&quot;
+                 </span><span style="color:#fe8019;">, </span><span style="color:#b8bb26;">&quot;stdout&quot;
+                 </span><span style="color:#fe8019;">, </span><span style="color:#b8bb26;">&quot;-l&quot;
+                 </span><span style="color:#fe8019;">, </span><span style="color:#b8bb26;">&quot;{{lang}}&quot;</span><span style="color:#fdf4c1aa;">
+                 ]
+          </span><span style="color:#fdf4c1;">timeout </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;5 minutes&quot;</span><span style="color:#fdf4c1aa;">
+        }
+      }
+    }
+  }
+  # Settings for text analysis
+  </span><span style="color:#fdf4c1;">text-analysis </span><span style="color:#fdf4c1aa;">{
+    # Maximum length of text to be analysed</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">
+    #
+    # All text to analyse must fit into </span><span style="color:#fabd2f;">RAM</span><span style="color:#fe8019;">. </span><span style="color:#fabd2f;">A</span><span style="color:#fdf4c1aa;"> large document may take
+    # too much heap</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> Also</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> most important information is at the
+    # beginning of a document</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> so in most cases the first two pages
+    # should suffice</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> Default is </span><span style="color:#d3869b;">10000</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> which are about </span><span style="color:#d3869b;">2</span><span style="color:#fe8019;">-</span><span style="color:#d3869b;">3</span><span style="color:#fdf4c1aa;"> pages
+    # (just a rough guess</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> of course)</span><span style="color:#fe8019;">.
+    </span><span style="color:#fdf4c1;">max-length </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">10000</span><span style="color:#fdf4c1aa;">
+  }
+  # Configuration for converting files into PDFs</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">
+  #
+  # Most of it is delegated to external tools</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> which can be configured
+  # below</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> They must be in the </span><span style="color:#fabd2f;">PATH</span><span style="color:#fdf4c1aa;"> environment or specify the full
+  # path below via the `program` key</span><span style="color:#fe8019;">.
+</span><span style="color:#fa5c4b;">  convert </span><span style="color:#fdf4c1aa;">{
+    # The chunk size used when storing files</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> This should be the same
+    # as used </span><span style="color:#fa5c4b;">with</span><span style="color:#fdf4c1aa;"> the rest server</span><span style="color:#fe8019;">.
+    </span><span style="color:#fdf4c1;">chunk-size </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">524288</span><span style="color:#fdf4c1aa;">
+    # When reading images</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> this is the maximum size</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> Images that are
+    # larger are not processed</span><span style="color:#fe8019;">.
+    </span><span style="color:#fdf4c1;">max-image-size </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> ${docspell</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">joex</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">extraction</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">ocr</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">max</span><span style="color:#fe8019;">-</span><span style="color:#fdf4c1aa;">image</span><span style="color:#fe8019;">-</span><span style="color:#fdf4c1aa;">size}
+    # Settings when processing markdown files (and other text files)
+    # to </span><span style="color:#fabd2f;">HTML</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">
+    #
+    # In order to support text formats</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> text files are first converted
+    # to </span><span style="color:#fabd2f;">HTML</span><span style="color:#fdf4c1aa;"> using a markdown processor</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> The resulting </span><span style="color:#fabd2f;">HTML</span><span style="color:#fdf4c1aa;"> is </span><span style="color:#fa5c4b;">then</span><span style="color:#fdf4c1aa;">
+    # converted to a </span><span style="color:#fabd2f;">PDF</span><span style="color:#fdf4c1aa;"> file</span><span style="color:#fe8019;">.
+</span><span style="color:#fa5c4b;">    markdown </span><span style="color:#fdf4c1aa;">{
+      # The </span><span style="color:#fabd2f;">CSS</span><span style="color:#fdf4c1aa;"> that is used to style the resulting </span><span style="color:#fabd2f;">HTML</span><span style="color:#fe8019;">.
+      </span><span style="color:#fdf4c1;">internal-css </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;&quot;&quot;
+        body { padding: 2em 5em; }
+      &quot;&quot;&quot;</span><span style="color:#fdf4c1aa;">
+    }
+    # To convert </span><span style="color:#fabd2f;">HTML</span><span style="color:#fdf4c1aa;"> files into </span><span style="color:#fabd2f;">PDF</span><span style="color:#fdf4c1aa;"> files</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> the external tool
+    # wkhtmltopdf is used</span><span style="color:#fe8019;">.
+</span><span style="color:#fa5c4b;">    wkhtmlpdf </span><span style="color:#fdf4c1aa;">{
+      </span><span style="color:#fdf4c1;">command </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> {
+        </span><span style="color:#fdf4c1;">program </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;wkhtmltopdf&quot;
+        </span><span style="color:#fdf4c1;">args </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> [
+          </span><span style="color:#b8bb26;">&quot;-s&quot;</span><span style="color:#fe8019;">,
+          </span><span style="color:#b8bb26;">&quot;A4&quot;</span><span style="color:#fe8019;">,
+          </span><span style="color:#b8bb26;">&quot;--encoding&quot;</span><span style="color:#fe8019;">,
+          </span><span style="color:#b8bb26;">&quot;{{encoding}}&quot;</span><span style="color:#fe8019;">,
+          </span><span style="color:#b8bb26;">&quot;--load-error-handling&quot;</span><span style="color:#fe8019;">, </span><span style="color:#b8bb26;">&quot;ignore&quot;</span><span style="color:#fe8019;">,
+          </span><span style="color:#b8bb26;">&quot;--load-media-error-handling&quot;</span><span style="color:#fe8019;">, </span><span style="color:#b8bb26;">&quot;ignore&quot;</span><span style="color:#fe8019;">,
+          </span><span style="color:#b8bb26;">&quot;-&quot;</span><span style="color:#fe8019;">,
+          </span><span style="color:#b8bb26;">&quot;{{outfile}}&quot;</span><span style="color:#fdf4c1aa;">
+        ]
+        </span><span style="color:#fdf4c1;">timeout </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;2 minutes&quot;</span><span style="color:#fdf4c1aa;">
+      }
+      </span><span style="color:#fdf4c1;">working-dir </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> ${java</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">io</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">tmpdir}</span><span style="color:#b8bb26;">&quot;/docspell-convert&quot;</span><span style="color:#fdf4c1aa;">
+    }
+    # To convert image files to </span><span style="color:#fabd2f;">PDF</span><span style="color:#fdf4c1aa;"> files</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> tesseract is used</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> This
+    # also extracts the text in one go</span><span style="color:#fe8019;">.
+    </span><span style="color:#fdf4c1;">tesseract </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> {
+      </span><span style="color:#fdf4c1;">command </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> {
+        </span><span style="color:#fdf4c1;">program </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;tesseract&quot;
+        </span><span style="color:#fdf4c1;">args </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> [
+          </span><span style="color:#b8bb26;">&quot;{{infile}}&quot;</span><span style="color:#fe8019;">,
+          </span><span style="color:#b8bb26;">&quot;out&quot;</span><span style="color:#fe8019;">,
+          </span><span style="color:#b8bb26;">&quot;-l&quot;</span><span style="color:#fe8019;">,
+          </span><span style="color:#b8bb26;">&quot;{{lang}}&quot;</span><span style="color:#fe8019;">,
+          </span><span style="color:#b8bb26;">&quot;pdf&quot;</span><span style="color:#fe8019;">,
+          </span><span style="color:#b8bb26;">&quot;txt&quot;</span><span style="color:#fdf4c1aa;">
+        ]
+        </span><span style="color:#fdf4c1;">timeout </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;5 minutes&quot;</span><span style="color:#fdf4c1aa;">
+      }
+      </span><span style="color:#fdf4c1;">working-dir </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> ${java</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">io</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">tmpdir}</span><span style="color:#b8bb26;">&quot;/docspell-convert&quot;</span><span style="color:#fdf4c1aa;">
+    }
+    # To convert </span><span style="color:#b8bb26;">&quot;office&quot;</span><span style="color:#fdf4c1aa;"> files to </span><span style="color:#fabd2f;">PDF</span><span style="color:#fdf4c1aa;"> files</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> the external tool
+    # unoconv is used</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> Unoconv uses </span><span style="color:#fabd2f;">libreoffice/openoffice</span><span style="color:#fdf4c1aa;"> for
+    # converting</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> So it supports all formats that are possible to read
+    # </span><span style="color:#fa5c4b;">with </span><span style="color:#fabd2f;">libreoffice/openoffic</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">
+    #
+    # Note</span><span style="color:#fe8019;">:</span><span style="color:#fdf4c1aa;"> to greatly improve performance</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> it is recommended to </span><span style="color:#fa5c4b;">start</span><span style="color:#fdf4c1aa;">
+    # a libreoffice listener by running `unoconv </span><span style="color:#fe8019;">-</span><span style="color:#fdf4c1aa;">l` in a separate
+    # process</span><span style="color:#fe8019;">.
+    </span><span style="color:#fdf4c1;">unoconv </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> {
+      </span><span style="color:#fdf4c1;">command </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> {
+        </span><span style="color:#fdf4c1;">program </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;unoconv&quot;
+        </span><span style="color:#fdf4c1;">args </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> [
+          </span><span style="color:#b8bb26;">&quot;-f&quot;</span><span style="color:#fe8019;">,
+          </span><span style="color:#b8bb26;">&quot;pdf&quot;</span><span style="color:#fe8019;">,
+          </span><span style="color:#b8bb26;">&quot;-o&quot;</span><span style="color:#fe8019;">,
+          </span><span style="color:#b8bb26;">&quot;{{outfile}}&quot;</span><span style="color:#fe8019;">,
+          </span><span style="color:#b8bb26;">&quot;{{infile}}&quot;</span><span style="color:#fdf4c1aa;">
+        ]
+        </span><span style="color:#fdf4c1;">timeout </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;2 minutes&quot;</span><span style="color:#fdf4c1aa;">
+      }
+      </span><span style="color:#fdf4c1;">working-dir </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> ${java</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">io</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">tmpdir}</span><span style="color:#b8bb26;">&quot;/docspell-convert&quot;</span><span style="color:#fdf4c1aa;">
+    }
+    # The tool ocrmypdf can be used to convert pdf files to pdf files
+    # in order to add extracted text as a separate layer</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> This makes
+    # image</span><span style="color:#fe8019;">-</span><span style="color:#fdf4c1aa;">only pdfs searchable and you can select and </span><span style="color:#fabd2f;">copy/paste</span><span style="color:#fdf4c1aa;"> the
+    # text</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> It also converts pdfs into </span><span style="color:#fabd2f;">pdf/a</span><span style="color:#fdf4c1aa;"> type pdfs</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> which are best
+    # suited for archiving</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> So it makes sense to use this even for
+    # text</span><span style="color:#fe8019;">-</span><span style="color:#fdf4c1aa;">only pdfs</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">
+    #
+    # It is recommended to install ocrympdf</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> but it also is optional</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">
+    # If it is enabled but fails</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> the error is not fatal and the
+    # processing will continue using the original pdf for extracting
+    # text</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> You can also disable it to remove the errors from the
+    # processing logs</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">
+    #
+    # The `</span><span style="color:#fe8019;">--</span><span style="color:#fdf4c1aa;">skip</span><span style="color:#fe8019;">-</span><span style="color:#fdf4c1aa;">text` option is necessary to not fail </span><span style="color:#d3869b;">on </span><span style="color:#b8bb26;">&quot;text&quot;</span><span style="color:#fdf4c1aa;"> pdfs
+    # (where ocr is not necessary)</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> In this case</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> the pdf will be
+    # converted to </span><span style="color:#fabd2f;">PDF</span><span style="color:#fe8019;">/</span><span style="color:#fabd2f;">A</span><span style="color:#fe8019;">.
+    </span><span style="color:#fdf4c1;">ocrmypdf </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> {
+      </span><span style="color:#fdf4c1;">enabled </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">true
+      </span><span style="color:#fdf4c1;">command </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> {
+        </span><span style="color:#fdf4c1;">program </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;ocrmypdf&quot;
+        </span><span style="color:#fdf4c1;">args </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> [
+          </span><span style="color:#b8bb26;">&quot;-l&quot;</span><span style="color:#fe8019;">, </span><span style="color:#b8bb26;">&quot;{{lang}}&quot;</span><span style="color:#fe8019;">,
+          </span><span style="color:#b8bb26;">&quot;--skip-text&quot;</span><span style="color:#fe8019;">,
+          </span><span style="color:#b8bb26;">&quot;--deskew&quot;</span><span style="color:#fe8019;">,
+          </span><span style="color:#b8bb26;">&quot;-j&quot;</span><span style="color:#fe8019;">, </span><span style="color:#b8bb26;">&quot;1&quot;</span><span style="color:#fe8019;">,
+          </span><span style="color:#b8bb26;">&quot;{{infile}}&quot;</span><span style="color:#fe8019;">,
+          </span><span style="color:#b8bb26;">&quot;{{outfile}}&quot;</span><span style="color:#fdf4c1aa;">
+        ]
+        </span><span style="color:#fdf4c1;">timeout </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;5 minutes&quot;</span><span style="color:#fdf4c1aa;">
+      }
+      </span><span style="color:#fdf4c1;">working-dir </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> ${java</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">io</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">tmpdir}</span><span style="color:#b8bb26;">&quot;/docspell-convert&quot;</span><span style="color:#fdf4c1aa;">
+    }
+  }
+  # General config for processing documents
+</span><span style="color:#fa5c4b;">  processing </span><span style="color:#fdf4c1aa;">{
+    # Restricts proposals for due dates</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> Only dates earlier than this
+    # number of years in the future are considered</span><span style="color:#fe8019;">.
+    </span><span style="color:#fdf4c1;">max-due-date-years </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">10</span><span style="color:#fdf4c1aa;">
+  }
+  # The same section is also present in the rest</span><span style="color:#fe8019;">-</span><span style="color:#fdf4c1aa;">server config</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> It is
+  # used when submitting files into the job queue for processing</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">
+  #
+  # Currently</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> these settings may affect memory usage of all nodes</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> so
+  # it should be the same </span><span style="color:#d3869b;">on</span><span style="color:#fdf4c1aa;"> all nodes</span><span style="color:#fe8019;">.
+</span><span style="color:#fa5c4b;">  files </span><span style="color:#fdf4c1aa;">{
+    # Defines the chunk size (in bytes) used to store the files</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">
+    # This will affect the memory footprint when uploading and
+    # downloading files</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> At most this amount is loaded into </span><span style="color:#fabd2f;">RAM</span><span style="color:#fdf4c1aa;"> for
+    # down</span><span style="color:#fe8019;">-</span><span style="color:#fdf4c1aa;"> and uploading</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">
+    #
+    # It also defines the chunk size used for the blobs inside the
+    # database</span><span style="color:#fe8019;">.
+    </span><span style="color:#fdf4c1;">chunk-size </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">524288</span><span style="color:#fdf4c1aa;">
+    # The file content types that are considered valid</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> Docspell
+    # will only pass these files to processing</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> The processing code
+    # itself has also checks for which files are supported and which
+    # not</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> This affects the uploading part and can be used to
+    # restrict file types that should be handed over to processing</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">
+    # By default all files are allowed</span><span style="color:#fe8019;">.
+    </span><span style="color:#fdf4c1;">valid-mime-types </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> [ ]
+  }
+  # Configuration of the full</span><span style="color:#fe8019;">-</span><span style="color:#fdf4c1aa;">text search engine</span><span style="color:#fe8019;">.
+  </span><span style="color:#fdf4c1;">full-text-search </span><span style="color:#fdf4c1aa;">{
+    # The full</span><span style="color:#fe8019;">-</span><span style="color:#fdf4c1aa;">text search feature can be disabled</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> It requires an
+    # additional </span><span style="color:#fa5c4b;">index</span><span style="color:#fdf4c1aa;"> server which needs additional memory and disk
+    # space</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> It can be enabled later any time</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">
+    #
+    # Currently the </span><span style="color:#fabd2f;">SOLR</span><span style="color:#fdf4c1aa;"> search platform is supported</span><span style="color:#fe8019;">.
+    </span><span style="color:#fdf4c1;">enabled </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">false</span><span style="color:#fdf4c1aa;">
+    # Configuration for the </span><span style="color:#fabd2f;">SOLR</span><span style="color:#fdf4c1aa;"> backend</span><span style="color:#fe8019;">.
+    </span><span style="color:#fdf4c1;">solr </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> {
+      # The </span><span style="color:#fabd2f;">URL</span><span style="color:#fdf4c1aa;"> to solr
+      </span><span style="color:#fdf4c1;">url </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;http://localhost:8983/solr/docspell&quot;</span><span style="color:#fdf4c1aa;">
+      # Used to tell solr when to commit the data
+      </span><span style="color:#fdf4c1;">commit-within </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">1000</span><span style="color:#fdf4c1aa;">
+      # If </span><span style="color:#d3869b;">true</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> logs request and response bodies
+      </span><span style="color:#fdf4c1;">log-verbose </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">false</span><span style="color:#fdf4c1aa;">
+      # The defType parameter to lucene that defines the parser to
+      # use</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> You might want to try </span><span style="color:#b8bb26;">&quot;edismax&quot;</span><span style="color:#fdf4c1aa;"> or look here</span><span style="color:#fe8019;">:</span><span style="color:#fdf4c1aa;">
+      # </span><span style="color:#fdf4c1;">https://lucene.apache.org/solr/guide/8_4/query-syntax-and-parsing.html#query-syntax-and-parsing
+      def-type </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;lucene&quot;</span><span style="color:#fdf4c1aa;">
+      # The default combiner for tokens</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> One of {</span><span style="color:#fabd2f;">AND</span><span style="color:#fe8019;">, </span><span style="color:#fabd2f;">OR</span><span style="color:#fdf4c1aa;">}</span><span style="color:#fe8019;">.
+      </span><span style="color:#fdf4c1;">q-op </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;OR&quot;</span><span style="color:#fdf4c1aa;">
+    }
+    # Settings for running the </span><span style="color:#fa5c4b;">index</span><span style="color:#fdf4c1aa;"> migration tasks
+    </span><span style="color:#fdf4c1;">migration </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> {
+      # Chunk size to use when indexing data from the database</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> This
+      # many attachments are loaded into memory and pushed to the
+      # full</span><span style="color:#fe8019;">-</span><span style="color:#fdf4c1aa;">text index</span><span style="color:#fe8019;">.
+      </span><span style="color:#fdf4c1;">index-all-chunk </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">10</span><span style="color:#fdf4c1aa;">
+    }
+  }
+}
+</span></code></pre><h1 id="logging">Logging<a class="zola-anchor" href="#logging" aria-label="Anchor link for: logging">🔗</a></h1>
+<p>By default, docspell logs to stdout. This works well, when managed by
+systemd or other inits. Logging is done by
+<a href="https://logback.qos.ch/">logback</a>. Please refer to its documentation
+for how to configure logging.</p>
+<p>If you created your logback config file, it can be added as argument
+to the executable using this syntax:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1;">/path/to/docspell -Dlogback.configurationFile=/path/to/your/logging-config-file
+</span></code></pre>
+<p>To get started, the default config looks like this:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#83a598;">&lt;</span><span style="font-weight:bold;color:#8ec07c;">configuration</span><span style="color:#83a598;">&gt;
+  &lt;</span><span style="font-weight:bold;color:#8ec07c;">appender </span><span style="color:#8ec07c;">name=</span><span style="color:#b8bb26;">&quot;STDOUT&quot; </span><span style="color:#8ec07c;">class=</span><span style="color:#b8bb26;">&quot;ch.qos.logback.core.ConsoleAppender&quot;</span><span style="color:#83a598;">&gt;
+    &lt;</span><span style="font-weight:bold;color:#8ec07c;">withJansi</span><span style="color:#83a598;">&gt;</span><span style="color:#fdf4c1aa;">true</span><span style="color:#83a598;">&lt;/</span><span style="font-weight:bold;color:#8ec07c;">withJansi</span><span style="color:#83a598;">&gt;
+
+    &lt;</span><span style="font-weight:bold;color:#8ec07c;">encoder</span><span style="color:#83a598;">&gt;
+      &lt;</span><span style="font-weight:bold;color:#8ec07c;">pattern</span><span style="color:#83a598;">&gt;</span><span style="color:#fdf4c1aa;">[%thread] %highlight(%-5level) %cyan(%logger{15}) - %msg %n</span><span style="color:#83a598;">&lt;/</span><span style="font-weight:bold;color:#8ec07c;">pattern</span><span style="color:#83a598;">&gt;
+    &lt;/</span><span style="font-weight:bold;color:#8ec07c;">encoder</span><span style="color:#83a598;">&gt;
+  &lt;/</span><span style="font-weight:bold;color:#8ec07c;">appender</span><span style="color:#83a598;">&gt;
+
+  &lt;</span><span style="font-weight:bold;color:#8ec07c;">logger </span><span style="color:#8ec07c;">name=</span><span style="color:#b8bb26;">&quot;docspell&quot; </span><span style="color:#8ec07c;">level=</span><span style="color:#b8bb26;">&quot;debug&quot; </span><span style="color:#83a598;">/&gt;
+  &lt;</span><span style="font-weight:bold;color:#8ec07c;">root </span><span style="color:#8ec07c;">level=</span><span style="color:#b8bb26;">&quot;INFO&quot;</span><span style="color:#83a598;">&gt;
+    &lt;</span><span style="font-weight:bold;color:#8ec07c;">appender-ref </span><span style="color:#8ec07c;">ref=</span><span style="color:#b8bb26;">&quot;STDOUT&quot; </span><span style="color:#83a598;">/&gt;
+  &lt;/</span><span style="font-weight:bold;color:#8ec07c;">root</span><span style="color:#83a598;">&gt;
+&lt;/</span><span style="font-weight:bold;color:#8ec07c;">configuration</span><span style="color:#83a598;">&gt;
+</span></code></pre>
+<p>The <code>&lt;root level=&quot;INFO&quot;&gt;</code> means, that only log statements with level
+&quot;INFO&quot; will be printed. But the <code>&lt;logger name=&quot;docspell&quot; level=&quot;debug&quot;&gt;</code> above says, that for loggers with name &quot;docspell&quot;
+statements with level &quot;DEBUG&quot; will be printed, too.</p>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+
+        
+
+        <footer class="footer">
+    <div class="container">
+        <div class="content has-text-centered">
+            <span>
+                Docspell, 0.9.0
+            </span>
+            <span class="ml-1 mr-1">•</span>
+            <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>
+            <span class="ml-1 mr-1">•</span>
+            <a href="https://github.com/eikek/docspell" target="_blank">
+                Source Code
+            </a>
+            <span class="ml-1 mr-1">•</span>
+            <span>
+                © 2020
+                <a href="https://github.com/eikek" target="_blank">
+                    @eikek
+                </a>
+            </span>
+        </div>
+    </div>
+    
+</footer>
+
+
+    </body>
+</html>

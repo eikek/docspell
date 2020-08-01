@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Eike Kettner">
+<meta name="description" content="Simple Document Organizer">
+<meta name="image" property="og:image" content="/img/poster.png">
+<meta name="title" property="og:title" content="Docspell – Simple Document Organizer">
+<meta name="og:image" content="/img/poster.png">
+<meta name="og:title" content="Docspell – Simple Document Organizer">
+<meta name="og:site_name" content="SMTP Gateway with Exim - Docspell">
+<meta name="og:url" content="">
+<meta name="og:type" content="website">
+<meta name="og:description" content="Simple Document Organizer">
+<meta name="twitter:title" content="Docspell">
+<meta name="twitter:image" content="/img/poster.png">
+<meta name="twitter:description" content="Simple Document Organizer">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="shortcut icon" href="/favicon-mc.ico" type="image/x-icon">
+<link rel="icon" href="/favicon-mc.ico" type="image/x-icon">
+
+        <title>SMTP Gateway with Exim – Docspell Documentation</title>
+        <link rel="stylesheet" href="/styles.css">
+    </head>
+    <body>
+        <section class="hero is-info is-small">
+            <div class="hero-head">
+                <nav class="navbar">
+    <div class="navbar-brand">
+        <a class="navbar-item" href="/">
+            <span class="icon">
+                <img src="/icons/logo-only-36.svg">
+            </span>
+            <span>
+                Docspell
+            </span>
+        </a>
+    </div>
+    <div class="navbar-start">
+        <a target="_blank"
+           href="https://github.com/eikek/docspell"
+           class="navbar-item">
+            <span class="icon">
+                <img src="/icons/github-40.svg">
+            </span>
+            <span>
+                Github
+            </span>
+        </a>
+    </div>
+</nav>
+
+            </div>
+            <div class="hero-body">
+                <h1 class="title">
+                    SMTP Gateway with Exim
+                </h1>
+                <h2 class="subtitle">
+                    Docspell Documentation
+                </h2>
+            </div>
+        </section>
+        <nav class="breadcrumb has-succeeds-separator" aria-label="breadcrumbs">
+            <ul>
+                
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;"></a>
+                </li>
+                
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;">Overview</a>
+                </li>
+                
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;">Tools</a>
+                </li>
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;smtpgateway&#x2F;">SMTP Gateway with Exim</a>
+                </li>
+            </ul>
+        </nav>
+
+        <section class="section pt-2">
+            <div class="columns is-desktop">
+                <div class="column is-3">
+                    <div class="menu">
+                        <ul class="menu-list">
+                            
+                            
+
+                            <p class="menu-label">
+                                Tools
+                            </p>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/tools/ds/"
+                                   >
+                                    Upload Cli
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/tools/consumedir/"
+                                   >
+                                    Consume Directory
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/tools/browserext/"
+                                   >
+                                    Browser Extension (Firefox)
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/tools/smtpgateway/"
+                                   class="is-active">
+                                    Smtp Gateway With Exim
+                                </a>
+                                
+                                <ul class="menu-list">
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;smtpgateway&#x2F;#what-you-need">
+                                            What you need
+                                        </a>
+                                        <ul>
+                                            
+                                        </ul>
+                                    </li>
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;smtpgateway&#x2F;#exim">
+                                            Exim
+                                        </a>
+                                        <ul>
+                                            
+                                        </ul>
+                                    </li>
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;smtpgateway&#x2F;#the-config-file">
+                                            The Config File
+                                        </a>
+                                        <ul>
+                                            
+                                        </ul>
+                                    </li>
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;smtpgateway&#x2F;#install-with-docker">
+                                            Install with Docker
+                                        </a>
+                                        <ul>
+                                            
+                                        </ul>
+                                    </li>
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;smtpgateway&#x2F;#test-run">
+                                            Test Run
+                                        </a>
+                                        <ul>
+                                            
+                                        </ul>
+                                    </li>
+                                    
+                                </ul>
+                                
+                            </li>
+                            
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="column is-9">
+                    <div class="container">
+                        <div class="content doc">
+                            <p>One possible use case for the <a href="https://docspell.org/docs/webapp/uploading/#integration-endpoint">integration
+endpoint</a> is a SMTP
+server that forwards all local mail to docspell. This way there is no
+periodic polling involved and documents (e-mails) get into docspell
+without delay.</p>
+<p>The <code>tools/exim</code> folder contains a docker file and a sample
+<code>exim.conf</code> to help start with this setup. Note that these files
+provide a minimal setup, you might want to add tls and spam protection
+when opening it to the public.</p>
+<h1 id="what-you-need">What you need<a class="zola-anchor" href="#what-you-need" aria-label="Anchor link for: what-you-need">🔗</a></h1>
+<p>You need to own a domain and add the appropriate MX records to point
+to your server. In this document, the domain <code>test.org</code> is used.</p>
+<p>You need to enable the <a href="https://docspell.org/docs/webapp/uploading/#integration-endpoint">integration
+endpoint</a> in the
+docspell configuration.</p>
+<h1 id="exim">Exim<a class="zola-anchor" href="#exim" aria-label="Anchor link for: exim">🔗</a></h1>
+<p><a href="http://exim.org/">Exim</a> is a popular smtp server (message transfer
+agent). It is used here only because of previous knowledge, but same
+can be achieved with other MTAs.</p>
+<h1 id="the-config-file">The Config File<a class="zola-anchor" href="#the-config-file" aria-label="Anchor link for: the-config-file">🔗</a></h1>
+<p>Here is the example config file for exim:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">## Provide certificates to enable StartTLS
+# tls_certificate </span><span style="color:#fe8019;">= /</span><span style="color:#fdf4c1aa;">var</span><span style="color:#fe8019;">/</span><span style="color:#fdf4c1aa;">lib</span><span style="color:#fe8019;">/</span><span style="color:#fdf4c1aa;">acme</span><span style="color:#fe8019;">/</span><span style="color:#fdf4c1aa;">test</span><span style="color:#fe8019;">.</span><span style="color:#fabd2f;">org/fullchain.pem</span><span style="color:#fdf4c1aa;">
+# tls_privatekey </span><span style="color:#fe8019;">= /</span><span style="color:#fdf4c1aa;">var</span><span style="color:#fe8019;">/</span><span style="color:#fdf4c1aa;">lib</span><span style="color:#fe8019;">/</span><span style="color:#fdf4c1aa;">acme</span><span style="color:#fe8019;">/</span><span style="color:#fdf4c1aa;">test</span><span style="color:#fe8019;">.</span><span style="color:#fabd2f;">org/key.pem
+</span><span style="color:#fdf4c1;">tls_advertise_hosts </span><span style="color:#fe8019;">=
+</span><span style="color:#fdf4c1;">primary_hostname </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> test</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">org
+</span><span style="color:#fdf4c1;">domainlist </span><span style="color:#fdf4c1aa;">local_domains </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> test</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">org
+</span><span style="color:#fdf4c1;">timeout_frozen_after </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">1m
+</span><span style="color:#fdf4c1;">acl_smtp_rcpt </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> acl_check_rcpt
+</span><span style="color:#fdf4c1;">acl_smtp_data </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> acl_check_data
+</span><span style="color:#fdf4c1;">never_users </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> root
+</span><span style="color:#fdf4c1;">host_lookup </span><span style="color:#fe8019;">= *
+</span><span style="color:#fdf4c1;">daemon_smtp_ports </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">25
+</span><span style="color:#fdf4c1;">message_size_limit </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">30m
+</span><span style="color:#fdf4c1;">keep_environment </span><span style="color:#fe8019;">= </span><span style="color:#fabd2f;">DS_HEADER </span><span style="color:#fe8019;">: </span><span style="color:#fabd2f;">DS_URL
+</span><span style="color:#fdf4c1;">begin </span><span style="color:#fdf4c1aa;">acl
+</span><span style="color:#fdf4c1;">acl_check_rcpt</span><span style="color:#fe8019;">:
+</span><span style="color:#fa5c4b;">require
+  </span><span style="color:#fdf4c1;">domains </span><span style="color:#fe8019;">= +</span><span style="color:#fdf4c1aa;">local_domains
+</span><span style="color:#fa5c4b;">require
+  </span><span style="color:#fdf4c1;">message </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> Sender verification failed
+  </span><span style="color:#fdf4c1;">verify </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> sender
+</span><span style="color:#fa5c4b;">require
+  </span><span style="color:#fdf4c1;">message </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> Receiver verification failed
+  </span><span style="color:#fdf4c1;">verify </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> recipient
+</span><span style="color:#fa5c4b;">require
+  </span><span style="color:#fdf4c1;">message </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> Recipient unknown
+  </span><span style="color:#fdf4c1;">condition </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> ${run{</span><span style="color:#fe8019;">/</span><span style="color:#fdf4c1aa;">usr</span><span style="color:#fe8019;">/</span><span style="color:#fdf4c1aa;">bin</span><span style="color:#fe8019;">/</span><span style="color:#fdf4c1aa;">curl </span><span style="color:#fe8019;">--</span><span style="color:#fdf4c1aa;">out </span><span style="color:#fe8019;">/</span><span style="color:#fdf4c1aa;">dev</span><span style="color:#fe8019;">/</span><span style="color:#d3869b;">null </span><span style="color:#fe8019;">--</span><span style="color:#fdf4c1aa;">silent </span><span style="color:#fe8019;">--</span><span style="color:#fdf4c1aa;">fail </span><span style="color:#fe8019;">-</span><span style="color:#fabd2f;">H </span><span style="color:#b8bb26;">&quot;Docspell-Integration: ${env{DS_HEADER}{$value} fail}&quot; &quot;${env{DS_URL}{$value} fail}/api/v1/open/integration/item/$local_part&quot;</span><span style="color:#fdf4c1aa;">}{</span><span style="color:#d3869b;">yes</span><span style="color:#fdf4c1aa;">}{</span><span style="color:#d3869b;">no</span><span style="color:#fdf4c1aa;">}}
+</span><span style="color:#fa5c4b;">warn
+  </span><span style="color:#fdf4c1;">message </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> Reverse lookup failed
+  </span><span style="color:#fe8019;">!</span><span style="color:#fdf4c1aa;">verify </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> reverse_host_lookup
+</span><span style="color:#fa5c4b;">accept
+</span><span style="color:#fdf4c1;">acl_check_data</span><span style="color:#fe8019;">:
+</span><span style="color:#fa5c4b;">deny
+  </span><span style="color:#fdf4c1;">message </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> Sender verification failed
+  </span><span style="color:#fe8019;">!</span><span style="color:#fdf4c1aa;">verify </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> header_sender
+</span><span style="color:#fa5c4b;">accept
+</span><span style="color:#fdf4c1;">begin </span><span style="color:#fdf4c1aa;">routers
+</span><span style="color:#fdf4c1;">local_users</span><span style="color:#fe8019;">:
+  </span><span style="color:#fdf4c1;">driver </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> accept
+  </span><span style="color:#fdf4c1;">transport </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> docspell
+</span><span style="color:#fdf4c1;">begin </span><span style="color:#fdf4c1aa;">transports
+</span><span style="color:#fdf4c1;">docspell</span><span style="color:#fe8019;">:
+  </span><span style="color:#fdf4c1;">driver </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> pipe
+  </span><span style="color:#fdf4c1;">command </span><span style="color:#fe8019;">= /</span><span style="color:#fdf4c1aa;">usr</span><span style="color:#fe8019;">/</span><span style="color:#fdf4c1aa;">bin</span><span style="color:#fe8019;">/</span><span style="color:#fdf4c1aa;">curl </span><span style="color:#fe8019;">--</span><span style="color:#fdf4c1aa;">out </span><span style="color:#fe8019;">/</span><span style="color:#fdf4c1aa;">dev</span><span style="color:#fe8019;">/</span><span style="color:#d3869b;">null </span><span style="color:#fe8019;">--</span><span style="color:#fdf4c1aa;">silent </span><span style="color:#fe8019;">--</span><span style="color:#fdf4c1aa;">fail </span><span style="color:#fe8019;">-</span><span style="color:#fabd2f;">H </span><span style="color:#b8bb26;">&quot;Docspell-Integration: ${env{DS_HEADER}{$value} fail}&quot; </span><span style="color:#fe8019;">-</span><span style="color:#fabd2f;">F </span><span style="color:#b8bb26;">&quot;file=@-;filename=</span><span style="color:#d3869b;">\&quot;</span><span style="color:#b8bb26;">$h_subject:</span><span style="color:#d3869b;">\&quot;</span><span style="color:#b8bb26;">&quot; &quot;${env{DS_URL}{$value} fail}/api/v1/open/integration/item/$local_part&quot;
+</span><span style="color:#fa5c4b;">  return_fail_output
+  </span><span style="color:#fdf4c1;">user </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> nobody
+</span><span style="color:#fa5c4b;">  delivery_date_add
+  envelope_to_add
+  return_path_add
+  log_output
+</span></code></pre>
+<p>Exim has good <a href="https://www.exim.org/docs.html">documentation</a>, look
+there for more info. The following is only a quick summary of the file
+above.</p>
+<p>The <code>domainlist local_domains</code> should list your domain. Only mails to
+this domain are allowed, as specified in the first rule in
+<code>acl_check_rcpt</code>. So mails to <code>name@test.org</code> are ok, but
+<code>name@someother.org</code> not.</p>
+<p>Another rule in <code>acl_check_rcpt</code> executes a <code>GET</code> request against the
+integration endpoint. If that fails, the recipient is wrong (or the
+endpoint disabled) and the mail is rejected right away.</p>
+<p>Then the <code>routers</code> define how a mail is handled. There is only one
+router that accepts all mails (that have not been rejected by a rule
+in acls) and uses the <code>docspell</code> transport to deliver it. The
+transport specifies a command via the <code>pipe</code> driver that is run with
+the mail. The mail itself is provided via stdin. So a simple <code>curl</code>
+command can upload it to the integration endpoint. Here are some quick
+notes about the used options (see <code>man curl</code>):</p>
+<ul>
+<li><code>--silent</code> and <code>--out /dev/null</code> don't print upload progress
+information and no output to stdout</li>
+<li><code>--fail</code> return non-zero if http status code is not success</li>
+<li><code>-F</code> use a multipart/form-data request (defaults to a POST request)</li>
+<li><code>&quot;file=@-;filename=\&quot;$_subject:\&quot;&quot;</code> add one part with name <code>file</code>
+and take the data from stdin (<code>@-</code>). Since there is no filename, we
+use the subject of the mail. This is <a href="http://exim.org/exim-html-current/doc/html/spec_html/ch-string_expansions.html">supported by
+exim</a>
+by expanding the subject mail header via <code>$h_subject:</code> (the colon is
+required).</li>
+<li><code>$local_part</code> this is expanded by exim to the recipient address,
+only the part until the <code>@</code> sign.</li>
+<li><code>${env{DS_HEADER}{$value} fail}</code> looks up an environment variable by
+key <code>DS_HEADER</code>. This is usually defined in <code>docker-compose.yml</code>.
+The value must be the &quot;secret&quot; header value as defined in docspell's
+configuration file.</li>
+<li><code>${env{DS_URL}{$value} fail}</code> the url to docspell. It is looked up
+from the environment with key <code>DS_URL</code>, which is usually defined in
+<code>docker-compose.yml</code>. Adding the <code>$local_part</code> at the end means that
+mails to <code>somename@test.org</code> are uploaded to the collective
+<code>somename</code>.</li>
+</ul>
+<h1 id="install-with-docker">Install with Docker<a class="zola-anchor" href="#install-with-docker" aria-label="Anchor link for: install-with-docker">🔗</a></h1>
+<p>Go into the <code>tools/exim</code> directory and build the docker image:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1;">docker build -t ds-exim:latest -f exim.dockerfile .
+</span></code></pre>
+<p>Then start docspell somewhere and configure the integration endpoint
+to use http-header protection; i.e. set this in the config file:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1;">docspell</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">server {
+  </span><span style="color:#fdf4c1;">integration-endpoint </span><span style="color:#fdf4c1aa;">{
+    </span><span style="color:#fdf4c1;">enabled </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">true
+    </span><span style="color:#fdf4c1;">http-header </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> {
+      </span><span style="color:#fdf4c1;">enabled </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">true
+      </span><span style="color:#fdf4c1;">header-value </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;test123&quot;</span><span style="color:#fdf4c1aa;">
+    }
+  }
+}
+</span></code></pre>
+<p>Then edit the <code>docker-compose.yml</code> and change the environment
+variables as needed.</p>
+<p>Finally start the container:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1;">docker-compose up
+</span></code></pre><h1 id="test-run">Test Run<a class="zola-anchor" href="#test-run" aria-label="Anchor link for: test-run">🔗</a></h1>
+<p>Now it is possible to send mails to this MTA which will be immediatly
+uploaded to docspell for the collective corresponding to the
+<code>$local_part</code> of the recipients address. Here is a quick telnet
+session (the collective is named <code>family</code>):</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">~&gt; telnet localhost 25
+Trying ::1...
+Connected to localhost.
+Escape character is &#39;^]&#39;.
+220 test.org ESMTP Exim 4.93 Sun, 14 Jun 2020 19:03:51 +0000
+ehlo localhost
+250-test.org Hello localhost [::1]
+250-SIZE 31457280
+250-8BITMIME
+250-PIPELINING
+250-CHUNKING
+250 HELP
+mail from:&lt;me@test.org&gt;
+250 OK
+rcpt to:&lt;family@test.org&gt;
+250 Accepted
+data
+354 Enter message, ending with &quot;.&quot; on a line by itself
+From: me@test.org
+To: family@test.org
+Subject: This is a test
+
+Test,
+
+this is just a test mail.
+.
+250 OK id=1jkXwf-000007-0d
+quit
+221 test.org closing connection
+Connection closed by foreign host.
+~&gt;
+</span></code></pre>
+<p>The mail is processed and results in an item:</p>
+<figure class="image">
+    <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;exim-mail.png">
+</figure>
+<p>However, if a mail is to an unknown collective or not to the
+configured local domain, the server rejects it immediately:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1;">~</span><span style="color:#fe8019;">&gt;</span><span style="color:#fdf4c1;"> telnet localhost 25
+Trying ::1...
+Connected to localhost.
+Escape character is </span><span style="color:#b8bb26;">&#39;^]&#39;</span><span style="color:#fdf4c1;">.
+220 test.org ESMTP Exim 4.93 Sun, 14 Jun 2020 19:07:04 +0000
+ehlo localhost
+250-test.org Hello localhost </span><span style="color:#fa5c4b;">[</span><span style="color:#fdf4c1;">::1</span><span style="color:#fa5c4b;">]
+</span><span style="color:#fdf4c1;">250-SIZE 31457280
+250-8BITMIME
+250-PIPELINING
+250-CHUNKING
+250 HELP
+mail from:</span><span style="color:#fe8019;">&lt;</span><span style="color:#fdf4c1;">me@test.org</span><span style="color:#fe8019;">&gt;
+</span><span style="color:#d3869b;">250</span><span style="color:#fdf4c1;"> OK
+rcpt to:</span><span style="color:#fe8019;">&lt;</span><span style="color:#fdf4c1;">family22@test.org</span><span style="color:#fe8019;">&gt;
+</span><span style="color:#d3869b;">550</span><span style="color:#fdf4c1;"> Recipient unknown
+rcpt to:</span><span style="color:#fe8019;">&lt;</span><span style="color:#fdf4c1;">family@gmail.com</span><span style="color:#fe8019;">&gt;
+</span><span style="color:#d3869b;">550</span><span style="color:#fdf4c1;"> Administrative prohibition
+quit
+221 test.org closing connection
+Connection closed by foreign host.
+~</span><span style="color:#fe8019;">&gt;
+</span></code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="footer">
+    <div class="container">
+        <div class="content has-text-centered">
+            <span>
+                Docspell, 0.9.0
+            </span>
+            <span class="ml-1 mr-1">•</span>
+            <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>
+            <span class="ml-1 mr-1">•</span>
+            <a href="https://github.com/eikek/docspell" target="_blank">
+                Source Code
+            </a>
+            <span class="ml-1 mr-1">•</span>
+            <span>
+                © 2020
+                <a href="https://github.com/eikek" target="_blank">
+                    @eikek
+                </a>
+            </span>
+        </div>
+    </div>
+    
+</footer>
+
+    </body>
+</html>

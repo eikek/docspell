@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Eike Kettner">
+<meta name="description" content="Simple Document Organizer">
+<meta name="image" property="og:image" content="/img/poster.png">
+<meta name="title" property="og:title" content="Docspell – Simple Document Organizer">
+<meta name="og:image" content="/img/poster.png">
+<meta name="og:title" content="Docspell – Simple Document Organizer">
+<meta name="og:site_name" content="Encryption - Docspell">
+<meta name="og:url" content="">
+<meta name="og:type" content="website">
+<meta name="og:description" content="Simple Document Organizer">
+<meta name="twitter:title" content="Docspell">
+<meta name="twitter:image" content="/img/poster.png">
+<meta name="twitter:description" content="Simple Document Organizer">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="shortcut icon" href="/favicon-mc.ico" type="image/x-icon">
+<link rel="icon" href="/favicon-mc.ico" type="image/x-icon">
+
+        <title>Encryption – Docspell Documentation</title>
+        <link rel="stylesheet" href="/styles.css">
+    </head>
+    <body>
+        <section class="hero is-info is-small">
+            <div class="hero-head">
+                <nav class="navbar">
+    <div class="navbar-brand">
+        <a class="navbar-item" href="/">
+            <span class="icon">
+                <img src="/icons/logo-only-36.svg">
+            </span>
+            <span>
+                Docspell
+            </span>
+        </a>
+    </div>
+    <div class="navbar-start">
+        <a target="_blank"
+           href="https://github.com/eikek/docspell"
+           class="navbar-item">
+            <span class="icon">
+                <img src="/icons/github-40.svg">
+            </span>
+            <span>
+                Github
+            </span>
+        </a>
+    </div>
+</nav>
+
+            </div>
+            <div class="hero-body">
+                <h1 class="title">
+                    Encryption
+                </h1>
+                <h2 class="subtitle">
+                    Docspell Documentation
+                </h2>
+            </div>
+        </section>
+        <nav class="breadcrumb has-succeeds-separator" aria-label="breadcrumbs">
+            <ul>
+                
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;"></a>
+                </li>
+                
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;">Overview</a>
+                </li>
+                
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;">Development</a>
+                </li>
+                
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;">ADRs</a>
+                </li>
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;0003-encryption&#x2F;">Encryption</a>
+                </li>
+            </ul>
+        </nav>
+
+        <section class="section pt-2">
+            <div class="columns is-desktop">
+                <div class="column is-3">
+                    <div class="menu">
+                        <ul class="menu-list">
+                            
+                            
+
+                            <p class="menu-label">
+                                ADRs
+                            </p>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0000-use-markdown-architectural-decision-records/"
+                                   >
+                                    Use Markdown Architectural Decision Records
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0001-components/"
+                                   >
+                                    Components
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0002-component-interaction/"
+                                   >
+                                    Component Interaction
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0003-encryption/"
+                                   class="is-active">
+                                    Encryption
+                                </a>
+                                
+                                <ul class="menu-list">
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;0003-encryption&#x2F;#context-and-problem-statement">
+                                            Context and Problem Statement
+                                        </a>
+                                        <ul>
+                                            
+                                        </ul>
+                                    </li>
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;0003-encryption&#x2F;#decision-drivers">
+                                            Decision Drivers
+                                        </a>
+                                        <ul>
+                                            
+                                        </ul>
+                                    </li>
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;0003-encryption&#x2F;#considered-options">
+                                            Considered Options
+                                        </a>
+                                        <ul>
+                                            
+                                            <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;0003-encryption&#x2F;#public-key-encryption-pke">
+                                                    Public Key Encryption (PKE)
+                                                </a>
+                                            </li>
+                                            
+                                            <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;0003-encryption&#x2F;#no-encryption">
+                                                    No Encryption
+                                                </a>
+                                            </li>
+                                            
+                                        </ul>
+                                    </li>
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;0003-encryption&#x2F;#decision-outcome">
+                                            Decision Outcome
+                                        </a>
+                                        <ul>
+                                            
+                                        </ul>
+                                    </li>
+                                    
+                                </ul>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0004-iso8601vsepoch/"
+                                   >
+                                    Iso8601 Vs Millis As Date-Time Transfer
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0005-job-executor/"
+                                   >
+                                    Joex - Job Executor
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0006-more-file-types/"
+                                   >
+                                    More File Types
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0007-convert-html-files/"
+                                   >
+                                    Convert Html Files
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0008-convert-plain-text/"
+                                   >
+                                    Convert Text Files
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0009-convert-office-docs/"
+                                   >
+                                    Convert Office Documents
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0010-convert-image-files/"
+                                   >
+                                    Convert Image Files
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0011-extract-text/"
+                                   >
+                                    Extract Text From Files
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0012-periodic-tasks/"
+                                   >
+                                    Periodic Tasks
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0013-archive-files/"
+                                   >
+                                    Archive Files
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0014-fulltext-search-engine/"
+                                   >
+                                    Fulltext Search Engine
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0015-convert-pdf-files/"
+                                   >
+                                    Convert Pdf Files
+                                </a>
+                                
+                            </li>
+                            
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="column is-9">
+                    <div class="container">
+                        <div class="content doc">
+                            <h1 id="context-and-problem-statement">Context and Problem Statement<a class="zola-anchor" href="#context-and-problem-statement" aria-label="Anchor link for: context-and-problem-statement">🔗</a></h1>
+<p>Since docspell may store important documents, it should be possible to
+encrypt them on the server. It should be (almost) transparent to the
+user, for example, a user must be able to login and download a file in
+clear form. That is, the server must also decrypt them.</p>
+<p>Then all users of a collective should have access to the files. This
+requires to share the key among users of a collective.</p>
+<p>But, even when files are encrypted, the associated meta data is not!
+So especially access to the database would allow to see tags,
+associated persons and correspondents of documents.</p>
+<p>So in short, encryption means:</p>
+<ul>
+<li>file contents (the blobs and extracted text) is encrypted</li>
+<li>metadata is not</li>
+<li>secret keys are stored at the server (protected by a passphrase),
+such that files can be downloaded in clear form</li>
+</ul>
+<h1 id="decision-drivers">Decision Drivers<a class="zola-anchor" href="#decision-drivers" aria-label="Anchor link for: decision-drivers">🔗</a></h1>
+<ul>
+<li>major driver is to provide most possible privacy for users</li>
+<li>even at the expense of less features; currently I think that the
+associated meta data is enough for finding documents (i.e. full text
+search is not needed)</li>
+</ul>
+<h1 id="considered-options">Considered Options<a class="zola-anchor" href="#considered-options" aria-label="Anchor link for: considered-options">🔗</a></h1>
+<p>It is clear, that only blobs (file contents) can be encrypted, but not
+the associated metadata. And the extracted text must be encrypted,
+too, obviously.</p>
+<h2 id="public-key-encryption-pke">Public Key Encryption (PKE)<a class="zola-anchor" href="#public-key-encryption-pke" aria-label="Anchor link for: public-key-encryption-pke">🔗</a></h2>
+<p>With PKE that the server can automatically encrypt files using
+publicly available key data. It wouldn't require a user to provide a
+passphrase for encryption, only for decryption.</p>
+<p>This would allows for first processing files (extracting text, doing
+text analyisis) and encrypting them (and the text) afterwards.</p>
+<p>The public and secret keys are stored at the database. The secret key
+must be protected. This can be done by encrypting the passphrase to
+the secret key using each users login password. If a user logs in, he
+or she must provide the correct password. Using this password, the
+private key can be unlocked. This requires to store the private key
+passphrase encrypted with every users password in the database. So the
+whole security then depends on users password quality.</p>
+<p>There are plenty of other difficulties with this approach (how about
+password change, new secret keys, adding users etc).</p>
+<p>Using this kind of encryption would protect the data against offline
+attacks and also for accidental leakage (for example, if a bug in the
+software would access a file of another user).</p>
+<h2 id="no-encryption">No Encryption<a class="zola-anchor" href="#no-encryption" aria-label="Anchor link for: no-encryption">🔗</a></h2>
+<p>If only blobs are encrypted, against which type of attack would it
+provide protection?</p>
+<p>The users must still trust the server. First, in order to provide the
+wanted features (document processing), the server must see the file
+contents. Then, it will receive and serve files in clear form, so it
+has access to them anyways.</p>
+<p>With that in mind, the &quot;only&quot; feature is to protect against &quot;stolen
+database&quot; attacks. If the database is somehow leaked, the attackers
+would only see the metadata, but not real documents. It also protects
+against leakage, maybe caused by a pogramming error.</p>
+<p>But the downside is, that it increases complexity <em>a lot</em>. And since
+this is a personal tool for personal use, is it worth the effort?</p>
+<h1 id="decision-outcome">Decision Outcome<a class="zola-anchor" href="#decision-outcome" aria-label="Anchor link for: decision-outcome">🔗</a></h1>
+<p>No encryption, because of its complexity.</p>
+<p>For now, this tool is only meant for &quot;self deployment&quot; and personal
+use. If this changes or there is enough time, this decision should be
+reconsidered.</p>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="footer">
+    <div class="container">
+        <div class="content has-text-centered">
+            <span>
+                Docspell, 0.9.0
+            </span>
+            <span class="ml-1 mr-1">•</span>
+            <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>
+            <span class="ml-1 mr-1">•</span>
+            <a href="https://github.com/eikek/docspell" target="_blank">
+                Source Code
+            </a>
+            <span class="ml-1 mr-1">•</span>
+            <span>
+                © 2020
+                <a href="https://github.com/eikek" target="_blank">
+                    @eikek
+                </a>
+            </span>
+        </div>
+    </div>
+    
+</footer>
+
+    </body>
+</html>

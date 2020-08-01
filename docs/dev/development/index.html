@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Eike Kettner">
+<meta name="description" content="Simple Document Organizer">
+<meta name="image" property="og:image" content="/img/poster.png">
+<meta name="title" property="og:title" content="Docspell – Simple Document Organizer">
+<meta name="og:image" content="/img/poster.png">
+<meta name="og:title" content="Docspell – Simple Document Organizer">
+<meta name="og:site_name" content="Tips &amp; Setup - Docspell">
+<meta name="og:url" content="">
+<meta name="og:type" content="website">
+<meta name="og:description" content="Simple Document Organizer">
+<meta name="twitter:title" content="Docspell">
+<meta name="twitter:image" content="/img/poster.png">
+<meta name="twitter:description" content="Simple Document Organizer">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="shortcut icon" href="/favicon-mc.ico" type="image/x-icon">
+<link rel="icon" href="/favicon-mc.ico" type="image/x-icon">
+
+        <title>Tips &amp; Setup – Docspell Documentation</title>
+        <link rel="stylesheet" href="/styles.css">
+    </head>
+    <body>
+        <section class="hero is-info is-small">
+            <div class="hero-head">
+                <nav class="navbar">
+    <div class="navbar-brand">
+        <a class="navbar-item" href="/">
+            <span class="icon">
+                <img src="/icons/logo-only-36.svg">
+            </span>
+            <span>
+                Docspell
+            </span>
+        </a>
+    </div>
+    <div class="navbar-start">
+        <a target="_blank"
+           href="https://github.com/eikek/docspell"
+           class="navbar-item">
+            <span class="icon">
+                <img src="/icons/github-40.svg">
+            </span>
+            <span>
+                Github
+            </span>
+        </a>
+    </div>
+</nav>
+
+            </div>
+            <div class="hero-body">
+                <h1 class="title">
+                    Tips &amp; Setup
+                </h1>
+                <h2 class="subtitle">
+                    Docspell Documentation
+                </h2>
+            </div>
+        </section>
+        <nav class="breadcrumb has-succeeds-separator" aria-label="breadcrumbs">
+            <ul>
+                
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;"></a>
+                </li>
+                
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;">Overview</a>
+                </li>
+                
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;">Development</a>
+                </li>
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;development&#x2F;">Tips &amp; Setup</a>
+                </li>
+            </ul>
+        </nav>
+
+        <section class="section pt-2">
+            <div class="columns is-desktop">
+                <div class="column is-3">
+                    <div class="menu">
+                        <ul class="menu-list">
+                            
+                            
+
+                            <p class="menu-label">
+                                Development
+                            </p>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/building/"
+                                   >
+                                    Building Docspell
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/development/"
+                                   class="is-active">
+                                    Tips &amp; Setup
+                                </a>
+                                
+                                <ul class="menu-list">
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;development&#x2F;#starting-servers-with-restart">
+                                            Starting Servers with reStart
+                                        </a>
+                                        <ul>
+                                            
+                                        </ul>
+                                    </li>
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;development&#x2F;#custom-config-file">
+                                            Custom config file
+                                        </a>
+                                        <ul>
+                                            
+                                        </ul>
+                                    </li>
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;development&#x2F;#nix-expressions">
+                                            Nix Expressions
+                                        </a>
+                                        <ul>
+                                            
+                                            <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;development&#x2F;#testing-nixos-modules">
+                                                    Testing NixOS Modules
+                                                </a>
+                                            </li>
+                                            
+                                        </ul>
+                                    </li>
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;development&#x2F;#background-info">
+                                            Background Info
+                                        </a>
+                                        <ul>
+                                            
+                                        </ul>
+                                    </li>
+                                    
+                                </ul>
+                                
+                            </li>
+                            
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="column is-9">
+                    <div class="container">
+                        <div class="content doc">
+                            <h1 id="starting-servers-with-restart">Starting Servers with <code>reStart</code><a class="zola-anchor" href="#starting-servers-with-restart" aria-label="Anchor link for: starting-servers-with-restart">🔗</a></h1>
+<p>When developing, it's very convenient to use the <a href="https://github.com/spray/sbt-revolver">revolver sbt
+plugin</a>. Start the sbt console
+and then run:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">sbt:docspell-root&gt; restserver/reStart
+</span></code></pre>
+<p>This starts a REST server. Once this started up, type:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">sbt:docspell-root&gt; joex/reStart
+</span></code></pre>
+<p>if also a joex component is required. Prefixing the commads with <code>~</code>,
+results in recompile+restart once a source file is modified.</p>
+<p>It is possible to start both in the root project:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">sbt:docspell-root&gt; reStart
+</span></code></pre><h1 id="custom-config-file">Custom config file<a class="zola-anchor" href="#custom-config-file" aria-label="Anchor link for: custom-config-file">🔗</a></h1>
+<p>The sbt build is setup such that a file <code>dev.conf</code> in the directory
+<code>local</code> (at root of the source tree) is picked up as config file, if
+it exists. So you can create a custom config file for development. For
+example, a custom database for development may be setup this way:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">#jdbcurl </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;jdbc:h2:///home/dev/workspace/projects/docspell/local/docspell-demo.db;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;AUTO_SERVER=TRUE&quot;
+</span><span style="color:#fdf4c1;">jdbcurl </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;jdbc:postgresql://localhost:5432/docspelldev&quot;
+</span><span style="font-style:italic;color:#928374;">#jdbcurl = &quot;jdbc:mariadb://localhost:3306/docspelldev&quot;
+
+</span><span style="color:#fdf4c1;">docspell</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">server {
+</span><span style="color:#fa5c4b;">  backend </span><span style="color:#fdf4c1aa;">{
+</span><span style="color:#fa5c4b;">    jdbc </span><span style="color:#fdf4c1aa;">{
+      </span><span style="color:#fdf4c1;">url </span><span style="color:#fe8019;">= </span><span style="color:#fa5c4b;">${jdbcurl}
+      </span><span style="color:#fdf4c1;">user </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;dev&quot;
+      </span><span style="color:#fdf4c1;">password </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;dev&quot;</span><span style="color:#fdf4c1aa;">
+    }
+  }
+}
+
+</span><span style="color:#fdf4c1;">docspell</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">joex {
+</span><span style="color:#fa5c4b;">  jdbc </span><span style="color:#fdf4c1aa;">{
+    </span><span style="color:#fdf4c1;">url </span><span style="color:#fe8019;">= </span><span style="color:#fa5c4b;">${jdbcurl}
+    </span><span style="color:#fdf4c1;">user </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;dev&quot;
+    </span><span style="color:#fdf4c1;">password </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;dev&quot;</span><span style="color:#fdf4c1aa;">
+  }
+</span><span style="color:#fa5c4b;">  scheduler </span><span style="color:#fdf4c1aa;">{
+    </span><span style="color:#fdf4c1;">pool-size </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">1</span><span style="color:#fdf4c1aa;">
+  }
+}
+</span></code></pre><h1 id="nix-expressions">Nix Expressions<a class="zola-anchor" href="#nix-expressions" aria-label="Anchor link for: nix-expressions">🔗</a></h1>
+<p>The directory <code>/nix</code> contains nix expressions to install docspell via
+the nix package manager and to integrate it into NixOS.</p>
+<h2 id="testing-nixos-modules">Testing NixOS Modules<a class="zola-anchor" href="#testing-nixos-modules" aria-label="Anchor link for: testing-nixos-modules">🔗</a></h2>
+<p>The modules can be build by building the <code>configuration-test.nix</code> file
+together with some nixpkgs version. For example:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1;">nixos-rebuild build-vm -I nixos-config=./configuration-test.nix \
+  -I nixpkgs=https://github.com/NixOS/nixpkgs-channels/archive/nixos-19.09.tar.gz
+</span></code></pre>
+<p>This will build all modules imported in <code>configuration-test.nix</code> and
+create a virtual machine containing the system. After that completes,
+the system configuration can be found behind the <code>./result/system</code>
+symlink. So it is possible to look at the generated systemd config for
+example:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1;">cat result/system/etc/systemd/system/docspell-joex.service
+</span></code></pre>
+<p>And with some more commands (there probably is an easier way…) the
+config file can be checked:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1;">cat result/system/etc/systemd/system/docspell-joex.service </span><span style="color:#fe8019;">| </span><span style="color:#fdf4c1;">grep ExecStart </span><span style="color:#fe8019;">| </span><span style="color:#fdf4c1;">cut -d</span><span style="color:#b8bb26;">&#39;=&#39;</span><span style="color:#fdf4c1;"> -f2 </span><span style="color:#fe8019;">| </span><span style="color:#fdf4c1;">xargs cat </span><span style="color:#fe8019;">| </span><span style="color:#fdf4c1;">tail -n1 </span><span style="color:#fe8019;">| </span><span style="color:#fdf4c1;">awk </span><span style="color:#b8bb26;">&#39;{print $NF}&#39;</span><span style="color:#fe8019;">| </span><span style="color:#fdf4c1;">sed </span><span style="color:#b8bb26;">&#39;s/.$//&#39; </span><span style="color:#fe8019;">| </span><span style="color:#fdf4c1;">xargs cat </span><span style="color:#fe8019;">| </span><span style="color:#fdf4c1;">jq
+</span></code></pre>
+<p>To see the module in action, the vm can be started (the first line
+sets more memory for the vm):</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fa5c4b;">export </span><span style="color:#fdf4c1;">QEMU_OPTS</span><span style="color:#fe8019;">=</span><span style="color:#b8bb26;">&quot;-m 2048&quot;
+</span><span style="color:#fdf4c1;">./result/bin/run-docspelltest-vm
+</span></code></pre><h1 id="background-info">Background Info<a class="zola-anchor" href="#background-info" aria-label="Anchor link for: background-info">🔗</a></h1>
+<p>There is a list of <a href="https://docspell.org/docs/dev/adr/">ADRs</a> containing
+internal/background info for various topics.</p>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="footer">
+    <div class="container">
+        <div class="content has-text-centered">
+            <span>
+                Docspell, 0.9.0
+            </span>
+            <span class="ml-1 mr-1">•</span>
+            <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>
+            <span class="ml-1 mr-1">•</span>
+            <a href="https://github.com/eikek/docspell" target="_blank">
+                Source Code
+            </a>
+            <span class="ml-1 mr-1">•</span>
+            <span>
+                © 2020
+                <a href="https://github.com/eikek" target="_blank">
+                    @eikek
+                </a>
+            </span>
+        </div>
+    </div>
+    
+</footer>
+
+    </body>
+</html>

@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Eike Kettner">
+<meta name="description" content="Simple Document Organizer">
+<meta name="image" property="og:image" content="/img/poster.png">
+<meta name="title" property="og:title" content="Docspell – Simple Document Organizer">
+<meta name="og:image" content="/img/poster.png">
+<meta name="og:title" content="Docspell – Simple Document Organizer">
+<meta name="og:site_name" content="Reverse Proxy - Docspell">
+<meta name="og:url" content="">
+<meta name="og:type" content="website">
+<meta name="og:description" content="Simple Document Organizer">
+<meta name="twitter:title" content="Docspell">
+<meta name="twitter:image" content="/img/poster.png">
+<meta name="twitter:description" content="Simple Document Organizer">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="shortcut icon" href="/favicon-mc.ico" type="image/x-icon">
+<link rel="icon" href="/favicon-mc.ico" type="image/x-icon">
+
+        <title>Reverse Proxy – Docspell Documentation</title>
+        <link rel="stylesheet" href="/styles.css">
+    </head>
+    <body>
+        <section class="hero is-info is-small">
+            <div class="hero-head">
+                <nav class="navbar">
+    <div class="navbar-brand">
+        <a class="navbar-item" href="/">
+            <span class="icon">
+                <img src="/icons/logo-only-36.svg">
+            </span>
+            <span>
+                Docspell
+            </span>
+        </a>
+    </div>
+    <div class="navbar-start">
+        <a target="_blank"
+           href="https://github.com/eikek/docspell"
+           class="navbar-item">
+            <span class="icon">
+                <img src="/icons/github-40.svg">
+            </span>
+            <span>
+                Github
+            </span>
+        </a>
+    </div>
+</nav>
+
+            </div>
+            <div class="hero-body">
+                <h1 class="title">
+                    Reverse Proxy
+                </h1>
+                <h2 class="subtitle">
+                    Docspell Documentation
+                </h2>
+            </div>
+        </section>
+        <nav class="breadcrumb has-succeeds-separator" aria-label="breadcrumbs">
+            <ul>
+                
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;"></a>
+                </li>
+                
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;">Overview</a>
+                </li>
+                
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;">Installation and Deployment</a>
+                </li>
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;reverseproxy&#x2F;">Reverse Proxy</a>
+                </li>
+            </ul>
+        </nav>
+
+        <section class="section pt-2">
+            <div class="columns is-desktop">
+                <div class="column is-3">
+                    <div class="menu">
+                        <ul class="menu-list">
+                            
+                            
+
+                            <p class="menu-label">
+                                Installation and Deployment
+                            </p>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/install/quickstart/"
+                                   >
+                                    Quickstart
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/install/prereq/"
+                                   >
+                                    Prerequisites
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/install/installing/"
+                                   >
+                                    Installing
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/install/running/"
+                                   >
+                                    Running
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/install/rpi/"
+                                   >
+                                    Raspberry-Pi And Similiar
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/install/reverseproxy/"
+                                   class="is-active">
+                                    Reverse Proxy
+                                </a>
+                                
+                                <ul class="menu-list">
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;reverseproxy&#x2F;#configuring-docspell">
+                                            Configuring Docspell
+                                        </a>
+                                        <ul>
+                                            
+                                        </ul>
+                                    </li>
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;reverseproxy&#x2F;#nginx">
+                                            Nginx
+                                        </a>
+                                        <ul>
+                                            
+                                        </ul>
+                                    </li>
+                                    
+                                </ul>
+                                
+                            </li>
+                            
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="column is-9">
+                    <div class="container">
+                        <div class="content doc">
+                            <p>This contains examples for how to use docspell behind a reverse proxy.</p>
+<p>For the examples below, assume the following:</p>
+<ul>
+<li>Docspell app is available at <code>192.168.1.11:7880</code>. If it is running
+on the same machine as the reverse proxy server, you can set
+<code>localhost:7880</code> instead.</li>
+<li>The external domain/hostname is <code>docspell.example.com</code></li>
+</ul>
+<h1 id="configuring-docspell">Configuring Docspell<a class="zola-anchor" href="#configuring-docspell" aria-label="Anchor link for: configuring-docspell">🔗</a></h1>
+<p>These settings require a complement config part in the docspell
+configuration file:</p>
+<ul>
+<li>First, if Docspell REST server is on a different machine, you need
+to change the <code>bind.address</code> setting to be either <code>0.0.0.0</code> or the
+ip address of the network interface that the reverse proxy server
+connects to.<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1;">docspell</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">server {
+</span><span style="color:#fdf4c1aa;">  </span><span style="font-style:italic;color:#928374;"># Where the server binds to.
+</span><span style="color:#fa5c4b;">  bind </span><span style="color:#fdf4c1aa;">{
+</span><span style="color:#fdf4c1aa;">    </span><span style="color:#fdf4c1;">address </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;192.168.1.11&quot;
+</span><span style="color:#fdf4c1aa;">    </span><span style="color:#fdf4c1;">port </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">7880
+</span><span style="color:#fdf4c1aa;">  }
+</span><span style="color:#fdf4c1aa;">}
+</span></code></pre>Note that a value of <code>0.0.0.0</code> instead of <code>192.168.1.11</code> will bind
+the server to every network interface.</li>
+<li>Docspell needs to know the external url. The <code>base-url</code> setting
+must point to the external address. Using above values, it must be
+set to <code>https://docspell.example.com</code>.<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1;">docspell</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">server {
+</span><span style="color:#fdf4c1aa;">  </span><span style="font-style:italic;color:#928374;"># This is the base URL this application is deployed to. This is used
+</span><span style="color:#fdf4c1aa;">  </span><span style="font-style:italic;color:#928374;"># to create absolute URLs and to configure the cookie.
+</span><span style="color:#fdf4c1aa;">  </span><span style="color:#fdf4c1;">base-url </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;https://docspell.example.com&quot;
+</span><span style="color:#fdf4c1aa;"> </span><span style="color:#fe8019;">...
+</span><span style="color:#fdf4c1aa;">}
+</span></code></pre></li>
+</ul>
+<p>Note that this example assumes that the docspell-joex component is on
+the same machine. This page is only related for exposing the REST
+server and web application.</p>
+<p>If you have examples for more servers, please let me know or add it to
+this site.</p>
+<h1 id="nginx">Nginx<a class="zola-anchor" href="#nginx" aria-label="Anchor link for: nginx">🔗</a></h1>
+<p>This defines two servers: one listens for http traffic and redirects
+to the https variant. Additionally it defines the let's encrypt
+<code>.well-known</code> folder name.</p>
+<p>The https server endpoint is configured with the let's encrypt
+certificates and acts as a proxy for the application at
+<code>192.168.1.11:7880</code>.</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fa5c4b;">server </span><span style="color:#fdf4c1aa;">{
+    </span><span style="color:#fdf4c1;">listen 0.0.0.0:80</span><span style="color:#fdf4c1aa;"> ;
+    </span><span style="color:#fdf4c1;">listen </span><span style="color:#fdf4c1aa;">[</span><span style="color:#fe8019;">::</span><span style="color:#fdf4c1aa;">]</span><span style="color:#fe8019;">:</span><span style="color:#d3869b;">80</span><span style="color:#fdf4c1aa;"> ;
+    </span><span style="color:#fdf4c1;">server_name </span><span style="color:#fdf4c1aa;">docspell</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">example</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">com ;
+</span><span style="color:#fa5c4b;">    location </span><span style="color:#fe8019;">/.</span><span style="color:#fabd2f;">well-known/acme-challenge</span><span style="color:#fdf4c1aa;"> {
+        </span><span style="color:#fdf4c1;">root </span><span style="color:#fe8019;">/</span><span style="color:#fdf4c1aa;">var</span><span style="color:#fe8019;">/</span><span style="color:#fdf4c1aa;">data</span><span style="color:#fe8019;">/</span><span style="color:#fdf4c1aa;">nginx</span><span style="color:#fe8019;">/</span><span style="color:#fabd2f;">ACME</span><span style="color:#fe8019;">-</span><span style="color:#fabd2f;">PUBLIC</span><span style="color:#fdf4c1aa;">;
+        </span><span style="color:#fdf4c1;">auth_basic </span><span style="color:#d3869b;">off</span><span style="color:#fdf4c1aa;">;
+    }
+</span><span style="color:#fa5c4b;">    location </span><span style="color:#fe8019;">/</span><span style="color:#fdf4c1aa;"> {
+        </span><span style="color:#fdf4c1;">return </span><span style="color:#d3869b;">301 </span><span style="color:#fdf4c1;">https://$host$request_uri</span><span style="color:#fdf4c1aa;">;
+    }
+}
+</span><span style="color:#fa5c4b;">server </span><span style="color:#fdf4c1aa;">{
+    </span><span style="color:#fdf4c1;">listen 0.0.0.0:443</span><span style="color:#fdf4c1aa;"> ssl http2 ;
+    </span><span style="color:#fdf4c1;">listen </span><span style="color:#fdf4c1aa;">[</span><span style="color:#fe8019;">::</span><span style="color:#fdf4c1aa;">]</span><span style="color:#fe8019;">:</span><span style="color:#d3869b;">443</span><span style="color:#fdf4c1aa;"> ssl http2 ;
+    </span><span style="color:#fdf4c1;">server_name </span><span style="color:#fdf4c1aa;">docspell</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">example</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">com ;
+</span><span style="color:#fa5c4b;">    location </span><span style="color:#fe8019;">/.</span><span style="color:#fabd2f;">well-known/acme-challenge</span><span style="color:#fdf4c1aa;"> {
+        </span><span style="color:#fdf4c1;">root </span><span style="color:#fe8019;">/</span><span style="color:#fdf4c1aa;">var</span><span style="color:#fe8019;">/</span><span style="color:#fdf4c1aa;">data</span><span style="color:#fe8019;">/</span><span style="color:#fdf4c1aa;">nginx</span><span style="color:#fe8019;">/</span><span style="color:#fabd2f;">ACME</span><span style="color:#fe8019;">-</span><span style="color:#fabd2f;">PUBLIC</span><span style="color:#fdf4c1aa;">;
+        </span><span style="color:#fdf4c1;">auth_basic </span><span style="color:#d3869b;">off</span><span style="color:#fdf4c1aa;">;
+    }
+    </span><span style="color:#fdf4c1;">ssl_certificate </span><span style="color:#fe8019;">/</span><span style="color:#fdf4c1aa;">var</span><span style="color:#fe8019;">/</span><span style="color:#fdf4c1aa;">lib</span><span style="color:#fe8019;">/</span><span style="color:#fdf4c1aa;">acme</span><span style="color:#fe8019;">/</span><span style="color:#fdf4c1aa;">docspell</span><span style="color:#fe8019;">.</span><span style="color:#fabd2f;">example.com/fullchain.pem</span><span style="color:#fdf4c1aa;">;
+    </span><span style="color:#fdf4c1;">ssl_certificate_key </span><span style="color:#fe8019;">/</span><span style="color:#fdf4c1aa;">var</span><span style="color:#fe8019;">/</span><span style="color:#fdf4c1aa;">lib</span><span style="color:#fe8019;">/</span><span style="color:#fdf4c1aa;">acme</span><span style="color:#fe8019;">/</span><span style="color:#fdf4c1aa;">docspell</span><span style="color:#fe8019;">.</span><span style="color:#fabd2f;">example.com/key.pem</span><span style="color:#fdf4c1aa;">;
+    </span><span style="color:#fdf4c1;">ssl_trusted_certificate </span><span style="color:#fe8019;">/</span><span style="color:#fdf4c1aa;">var</span><span style="color:#fe8019;">/</span><span style="color:#fdf4c1aa;">lib</span><span style="color:#fe8019;">/</span><span style="color:#fdf4c1aa;">acme</span><span style="color:#fe8019;">/</span><span style="color:#fdf4c1aa;">docspell</span><span style="color:#fe8019;">.</span><span style="color:#fabd2f;">example.com/full.pem</span><span style="color:#fdf4c1aa;">;
+</span><span style="color:#fa5c4b;">    location </span><span style="color:#fe8019;">/</span><span style="color:#fdf4c1aa;"> {
+        </span><span style="color:#fdf4c1;">proxy_pass http://192.168.1.11:7880</span><span style="color:#fdf4c1aa;">;
+        </span><span style="color:#fdf4c1;">proxy_http_version </span><span style="color:#d3869b;">1</span><span style="color:#fe8019;">.</span><span style="color:#d3869b;">1</span><span style="color:#fdf4c1aa;">;
+        </span><span style="color:#fdf4c1;">proxy_set_header </span><span style="color:#fdf4c1aa;">Upgrade </span><span style="color:#fa5c4b;">$http_upgrade</span><span style="color:#fdf4c1aa;">;
+        </span><span style="color:#fdf4c1;">proxy_set_header </span><span style="color:#fdf4c1aa;">Connection </span><span style="color:#fa5c4b;">$connection_upgrade</span><span style="color:#fdf4c1aa;">;
+    }
+}
+</span></code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="footer">
+    <div class="container">
+        <div class="content has-text-centered">
+            <span>
+                Docspell, 0.9.0
+            </span>
+            <span class="ml-1 mr-1">•</span>
+            <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>
+            <span class="ml-1 mr-1">•</span>
+            <a href="https://github.com/eikek/docspell" target="_blank">
+                Source Code
+            </a>
+            <span class="ml-1 mr-1">•</span>
+            <span>
+                © 2020
+                <a href="https://github.com/eikek" target="_blank">
+                    @eikek
+                </a>
+            </span>
+        </div>
+    </div>
+    
+</footer>
+
+    </body>
+</html>

@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Eike Kettner">
+<meta name="description" content="Simple Document Organizer">
+<meta name="image" property="og:image" content="/img/poster.png">
+<meta name="title" property="og:title" content="Docspell – Simple Document Organizer">
+<meta name="og:image" content="/img/poster.png">
+<meta name="og:title" content="Docspell – Simple Document Organizer">
+<meta name="og:site_name" content="Joex - Job Executor - Docspell">
+<meta name="og:url" content="">
+<meta name="og:type" content="website">
+<meta name="og:description" content="Simple Document Organizer">
+<meta name="twitter:title" content="Docspell">
+<meta name="twitter:image" content="/img/poster.png">
+<meta name="twitter:description" content="Simple Document Organizer">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="shortcut icon" href="/favicon-mc.ico" type="image/x-icon">
+<link rel="icon" href="/favicon-mc.ico" type="image/x-icon">
+
+        <title>Joex - Job Executor – Docspell Documentation</title>
+        <link rel="stylesheet" href="/styles.css">
+    </head>
+    <body>
+        <section class="hero is-info is-small">
+            <div class="hero-head">
+                <nav class="navbar">
+    <div class="navbar-brand">
+        <a class="navbar-item" href="/">
+            <span class="icon">
+                <img src="/icons/logo-only-36.svg">
+            </span>
+            <span>
+                Docspell
+            </span>
+        </a>
+    </div>
+    <div class="navbar-start">
+        <a target="_blank"
+           href="https://github.com/eikek/docspell"
+           class="navbar-item">
+            <span class="icon">
+                <img src="/icons/github-40.svg">
+            </span>
+            <span>
+                Github
+            </span>
+        </a>
+    </div>
+</nav>
+
+            </div>
+            <div class="hero-body">
+                <h1 class="title">
+                    Joex - Job Executor
+                </h1>
+                <h2 class="subtitle">
+                    Docspell Documentation
+                </h2>
+            </div>
+        </section>
+        <nav class="breadcrumb has-succeeds-separator" aria-label="breadcrumbs">
+            <ul>
+                
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;"></a>
+                </li>
+                
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;">Overview</a>
+                </li>
+                
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;">Development</a>
+                </li>
+                
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;">ADRs</a>
+                </li>
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;0005-job-executor&#x2F;">Joex - Job Executor</a>
+                </li>
+            </ul>
+        </nav>
+
+        <section class="section pt-2">
+            <div class="columns is-desktop">
+                <div class="column is-3">
+                    <div class="menu">
+                        <ul class="menu-list">
+                            
+                            
+
+                            <p class="menu-label">
+                                ADRs
+                            </p>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0000-use-markdown-architectural-decision-records/"
+                                   >
+                                    Use Markdown Architectural Decision Records
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0001-components/"
+                                   >
+                                    Components
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0002-component-interaction/"
+                                   >
+                                    Component Interaction
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0003-encryption/"
+                                   >
+                                    Encryption
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0004-iso8601vsepoch/"
+                                   >
+                                    Iso8601 Vs Millis As Date-Time Transfer
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0005-job-executor/"
+                                   class="is-active">
+                                    Joex - Job Executor
+                                </a>
+                                
+                                <ul class="menu-list">
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;0005-job-executor&#x2F;#context-and-problem-statement">
+                                            Context and Problem Statement
+                                        </a>
+                                        <ul>
+                                            
+                                        </ul>
+                                    </li>
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;0005-job-executor&#x2F;#considered-options">
+                                            Considered Options
+                                        </a>
+                                        <ul>
+                                            
+                                            <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;0005-job-executor&#x2F;#more-details">
+                                                    More Details
+                                                </a>
+                                            </li>
+                                            
+                                            <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;0005-job-executor&#x2F;#stuck-jobs">
+                                                    Stuck Jobs
+                                                </a>
+                                            </li>
+                                            
+                                        </ul>
+                                    </li>
+                                    
+                                </ul>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0006-more-file-types/"
+                                   >
+                                    More File Types
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0007-convert-html-files/"
+                                   >
+                                    Convert Html Files
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0008-convert-plain-text/"
+                                   >
+                                    Convert Text Files
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0009-convert-office-docs/"
+                                   >
+                                    Convert Office Documents
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0010-convert-image-files/"
+                                   >
+                                    Convert Image Files
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0011-extract-text/"
+                                   >
+                                    Extract Text From Files
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0012-periodic-tasks/"
+                                   >
+                                    Periodic Tasks
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0013-archive-files/"
+                                   >
+                                    Archive Files
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0014-fulltext-search-engine/"
+                                   >
+                                    Fulltext Search Engine
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0015-convert-pdf-files/"
+                                   >
+                                    Convert Pdf Files
+                                </a>
+                                
+                            </li>
+                            
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="column is-9">
+                    <div class="container">
+                        <div class="content doc">
+                            <h1 id="context-and-problem-statement">Context and Problem Statement<a class="zola-anchor" href="#context-and-problem-statement" aria-label="Anchor link for: context-and-problem-statement">🔗</a></h1>
+<p>Docspell is a multi-user application. When processing user's
+documents, there must be some thought on how to distribute all the
+processing jobs on a much more restricted set of resources. There
+maybe 100 users but only 4 cores that can process documents at a
+time. Doing simply FIFO is not enough since it provides an unfair
+distribution. The first user who submits 20 documents will then occupy
+all cores for quite some time and all other users would need to wait.</p>
+<p>This tries to find a more fair distribution among the users (strictly
+meaning collectives here) of docspell.</p>
+<p>The job executor is a separate component that will run in its own
+process. It takes the next job from the &quot;queue&quot; and executes the
+associated task. This is used to run the document processing jobs
+(text extraction, text analysis etc).</p>
+<ol>
+<li>
+<p>The task execution should survive restarts. State and task code
+must be recreated from some persisted state.</p>
+</li>
+<li>
+<p>The processing should be fair with respect to collectives.</p>
+</li>
+<li>
+<p>It must be possible to run many job executors, possibly on
+different machines. This can be used to quickly enable more
+processing power and removing it once the peak is over.</p>
+</li>
+<li>
+<p>Task execution can fail and it should be able to retry those
+tasks. Reasons are that errors may be temporarily (for example
+talking to a third party service), and to enable repairing without
+stopping the job executor. Some errors might be easily repaired (a
+program was not installed or whatever). In such a case it is good
+to know that the task will be retried later.</p>
+</li>
+</ol>
+<h1 id="considered-options">Considered Options<a class="zola-anchor" href="#considered-options" aria-label="Anchor link for: considered-options">🔗</a></h1>
+<p>In contrast to other ADRs this is just some sketching of thoughts for
+the current implementation.</p>
+<ol>
+<li>
+<p>Job description are serialized and written to the database into a
+table. This becomes the queue. Tasks are identified by names and a
+job executor implementation must have a map of names to code to
+lookup the task to perform. The tasks arguments are serialized into
+a string and written to the database. Tasks must decode the
+string. This can be conveniently done using JSON and the provided
+circe decoders.</p>
+</li>
+<li>
+<p>To provide a fair execution jobs are organized into groups. When a
+new job is requested from the queue, first a group is selected
+using a round-robin strategy. This should ensure good enough
+fairness among groups. A group maps to a collective. Within a
+group, a job is selected based on priority, submitted time (fifo)
+and job state (see notes about stuck jobs).</p>
+</li>
+<li>
+<p>Allowing multiple job executors means that getting the next job can
+fail due to simultaneous running transactions. It is retried until
+it succeeds. Taking a job puts in into <em>scheduled</em> state. Each job
+executor has a unique (manually supplied) id and jobs are marked
+with that id once it is handed to the executor.</p>
+</li>
+<li>
+<p>When a task fails, its state is updated to state <em>stuck</em>. Stuck
+jobs are retried in the future. The queue prefers to return stuck
+jobs that are due at the specific point in time ignoring the
+priority hint.</p>
+</li>
+</ol>
+<h2 id="more-details">More Details<a class="zola-anchor" href="#more-details" aria-label="Anchor link for: more-details">🔗</a></h2>
+<p>A job has these properties</p>
+<ul>
+<li>id (something random)</li>
+<li>group</li>
+<li>taskname (to choose task to run)</li>
+<li>submitted-date</li>
+<li>worker (the id of the job executor)</li>
+<li>state, one of: waiting, scheduled, running, stuck, cancelled,
+failed, success
+<ul>
+<li>waiting: job has been inserted into the queue</li>
+<li>scheduled: job has been handed over to some executore and is
+marked with the job executor id</li>
+<li>running: a task is currently executing</li>
+<li>stuck: a task has failed and is being retried eventually</li>
+<li>cancelled: task has finished and there was a cancel request</li>
+<li>failed: task has failed, execeeded the retries</li>
+<li>success: task has completed successfully</li>
+</ul>
+</li>
+</ul>
+<p>The queue has a <code>take</code> or <code>nextJob</code> operation that takes the worker-id
+and a priority hint and goes roughly like this:</p>
+<ul>
+<li>select the next group using round-robin strategy</li>
+<li>select all jobs with that group, where
+<ul>
+<li>state is stuck and waiting time has elapsed</li>
+<li>state is waiting and have the given priority if possible</li>
+</ul>
+</li>
+<li>jobs are ordered by submitted time, but stuck jobs whose waiting
+time elapsed are preferred</li>
+</ul>
+<p>There are two priorities within a group: high and low. A configured
+counting scheme determines when to select certain priority. For
+example, counting scheme of <code>(2,1)</code> would select two high priority
+jobs and then 1 low priority job. The <code>take</code> operation tries to prefer
+this priority but falls back to the other if no job with this priority
+is available.</p>
+<p>A group corresponds to a collective. Then all collectives get
+(roughly) equal treatment.</p>
+<p>Once there are no jobs in the queue the executor goes into sleep and
+must be waked to run again. If a job is submitted, the executors are
+notified.</p>
+<h2 id="stuck-jobs">Stuck Jobs<a class="zola-anchor" href="#stuck-jobs" aria-label="Anchor link for: stuck-jobs">🔗</a></h2>
+<p>A job is going into <em>stuck</em> state, if the task has failed. In this
+state, the task is rerun after a while until a maximum retry count is
+reached.</p>
+<p>The problem is how to notify all executors when the waiting time has
+elapsed. If one executor puts a job into stuck state, it means that
+all others should start looking into the queue again after <code>x</code>
+minutes. It would be possible to tell all existing executors to
+schedule themselves to wake up in the future, but this would miss all
+executors that show up later.</p>
+<p>The waiting time is increased exponentially after each retry (<code>2 ^ retry</code>) and it is meant as the minimum waiting time. So it is ok if
+all executors wakeup periodically and check for new work. Most of the
+time this should not be necessary and is just a fallback if only stuck
+jobs are in the queue and nothing is submitted for a long time. If the
+system is used, jobs get submitted once in a while and would awake all
+executors.</p>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="footer">
+    <div class="container">
+        <div class="content has-text-centered">
+            <span>
+                Docspell, 0.9.0
+            </span>
+            <span class="ml-1 mr-1">•</span>
+            <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>
+            <span class="ml-1 mr-1">•</span>
+            <a href="https://github.com/eikek/docspell" target="_blank">
+                Source Code
+            </a>
+            <span class="ml-1 mr-1">•</span>
+            <span>
+                © 2020
+                <a href="https://github.com/eikek" target="_blank">
+                    @eikek
+                </a>
+            </span>
+        </div>
+    </div>
+    
+</footer>
+
+    </body>
+</html>

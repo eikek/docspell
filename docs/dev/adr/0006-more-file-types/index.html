@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Eike Kettner">
+<meta name="description" content="Simple Document Organizer">
+<meta name="image" property="og:image" content="/img/poster.png">
+<meta name="title" property="og:title" content="Docspell – Simple Document Organizer">
+<meta name="og:image" content="/img/poster.png">
+<meta name="og:title" content="Docspell – Simple Document Organizer">
+<meta name="og:site_name" content="More File Types - Docspell">
+<meta name="og:url" content="">
+<meta name="og:type" content="website">
+<meta name="og:description" content="Simple Document Organizer">
+<meta name="twitter:title" content="Docspell">
+<meta name="twitter:image" content="/img/poster.png">
+<meta name="twitter:description" content="Simple Document Organizer">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="shortcut icon" href="/favicon-mc.ico" type="image/x-icon">
+<link rel="icon" href="/favicon-mc.ico" type="image/x-icon">
+
+        <title>More File Types – Docspell Documentation</title>
+        <link rel="stylesheet" href="/styles.css">
+    </head>
+    <body>
+        <section class="hero is-info is-small">
+            <div class="hero-head">
+                <nav class="navbar">
+    <div class="navbar-brand">
+        <a class="navbar-item" href="/">
+            <span class="icon">
+                <img src="/icons/logo-only-36.svg">
+            </span>
+            <span>
+                Docspell
+            </span>
+        </a>
+    </div>
+    <div class="navbar-start">
+        <a target="_blank"
+           href="https://github.com/eikek/docspell"
+           class="navbar-item">
+            <span class="icon">
+                <img src="/icons/github-40.svg">
+            </span>
+            <span>
+                Github
+            </span>
+        </a>
+    </div>
+</nav>
+
+            </div>
+            <div class="hero-body">
+                <h1 class="title">
+                    More File Types
+                </h1>
+                <h2 class="subtitle">
+                    Docspell Documentation
+                </h2>
+            </div>
+        </section>
+        <nav class="breadcrumb has-succeeds-separator" aria-label="breadcrumbs">
+            <ul>
+                
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;"></a>
+                </li>
+                
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;">Overview</a>
+                </li>
+                
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;">Development</a>
+                </li>
+                
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;">ADRs</a>
+                </li>
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;0006-more-file-types&#x2F;">More File Types</a>
+                </li>
+            </ul>
+        </nav>
+
+        <section class="section pt-2">
+            <div class="columns is-desktop">
+                <div class="column is-3">
+                    <div class="menu">
+                        <ul class="menu-list">
+                            
+                            
+
+                            <p class="menu-label">
+                                ADRs
+                            </p>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0000-use-markdown-architectural-decision-records/"
+                                   >
+                                    Use Markdown Architectural Decision Records
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0001-components/"
+                                   >
+                                    Components
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0002-component-interaction/"
+                                   >
+                                    Component Interaction
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0003-encryption/"
+                                   >
+                                    Encryption
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0004-iso8601vsepoch/"
+                                   >
+                                    Iso8601 Vs Millis As Date-Time Transfer
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0005-job-executor/"
+                                   >
+                                    Joex - Job Executor
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0006-more-file-types/"
+                                   class="is-active">
+                                    More File Types
+                                </a>
+                                
+                                <ul class="menu-list">
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;0006-more-file-types&#x2F;#context-and-problem-statement">
+                                            Context and Problem Statement
+                                        </a>
+                                        <ul>
+                                            
+                                        </ul>
+                                    </li>
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;0006-more-file-types&#x2F;#decision-drivers">
+                                            Decision Drivers
+                                        </a>
+                                        <ul>
+                                            
+                                        </ul>
+                                    </li>
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;0006-more-file-types&#x2F;#considered-options">
+                                            Considered Options
+                                        </a>
+                                        <ul>
+                                            
+                                        </ul>
+                                    </li>
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;0006-more-file-types&#x2F;#realization">
+                                            Realization
+                                        </a>
+                                        <ul>
+                                            
+                                            <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;0006-more-file-types&#x2F;#data-model">
+                                                    Data Model
+                                                </a>
+                                            </li>
+                                            
+                                            <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;0006-more-file-types&#x2F;#migration">
+                                                    Migration
+                                                </a>
+                                            </li>
+                                            
+                                            <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;0006-more-file-types&#x2F;#processing">
+                                                    Processing
+                                                </a>
+                                            </li>
+                                            
+                                        </ul>
+                                    </li>
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;0006-more-file-types&#x2F;#links">
+                                            Links
+                                        </a>
+                                        <ul>
+                                            
+                                        </ul>
+                                    </li>
+                                    
+                                </ul>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0007-convert-html-files/"
+                                   >
+                                    Convert Html Files
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0008-convert-plain-text/"
+                                   >
+                                    Convert Text Files
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0009-convert-office-docs/"
+                                   >
+                                    Convert Office Documents
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0010-convert-image-files/"
+                                   >
+                                    Convert Image Files
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0011-extract-text/"
+                                   >
+                                    Extract Text From Files
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0012-periodic-tasks/"
+                                   >
+                                    Periodic Tasks
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0013-archive-files/"
+                                   >
+                                    Archive Files
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0014-fulltext-search-engine/"
+                                   >
+                                    Fulltext Search Engine
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/adr/0015-convert-pdf-files/"
+                                   >
+                                    Convert Pdf Files
+                                </a>
+                                
+                            </li>
+                            
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="column is-9">
+                    <div class="container">
+                        <div class="content doc">
+                            <h1 id="context-and-problem-statement">Context and Problem Statement<a class="zola-anchor" href="#context-and-problem-statement" aria-label="Anchor link for: context-and-problem-statement">🔗</a></h1>
+<p>Docspell currently only supports PDF files. This has simplified early
+development and design a lot and so helped with starting the project.
+Handling pdf files is usually easy (to view, to extract text, print
+etc).</p>
+<p>The pdf format has been chosen, because PDFs files are very common and
+can be viewed with many tools on many systems (i.e. non-proprietary
+tools). Docspell also is a document archive and from this perspective,
+it is important that documents can be viewed in 10 years and more. The
+hope is, that the PDF format is best suited for this. Therefore all
+documents in Docspell must be accessible as PDF. The trivial solution
+to this requirement is to only allow PDF files.</p>
+<p>Support for more document types, must then take care of the following:</p>
+<ul>
+<li>extracting text</li>
+<li>converting into pdf</li>
+<li>access original file</li>
+</ul>
+<p>Text should be extracted from the source file, in case conversion is
+not lossless. Since Docspell can already extract text from PDF files
+using OCR, text can also be extracted from the converted file as a
+fallback.</p>
+<p>The original file must always be accessible. The main reason is that
+all uploaded data should be accessible without any modification. And
+since the conversion may not always create best results, the original
+file should be kept.</p>
+<h1 id="decision-drivers">Decision Drivers<a class="zola-anchor" href="#decision-drivers" aria-label="Anchor link for: decision-drivers">🔗</a></h1>
+<p>People expect that software like Docspell support the most common
+document types, like all the “office documents” (<code>docx</code>, <code>rtf</code>, <code>odt</code>,
+<code>xlsx</code>, …) and images. For many people it is more common to create
+those files instead of PDF. Some (older) scanners may not be able to
+scan into PDF files but only to image files.</p>
+<h1 id="considered-options">Considered Options<a class="zola-anchor" href="#considered-options" aria-label="Anchor link for: considered-options">🔗</a></h1>
+<p>This ADR does not evaluate different options. It rather documents why
+this feature is realized and the thoughts that lead to how it is
+implemented.</p>
+<h1 id="realization">Realization<a class="zola-anchor" href="#realization" aria-label="Anchor link for: realization">🔗</a></h1>
+<h2 id="data-model">Data Model<a class="zola-anchor" href="#data-model" aria-label="Anchor link for: data-model">🔗</a></h2>
+<p>The <code>attachment</code> table holds one file. There will be another table
+<code>attachment_source</code> that holds the original file. It looks like this:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fa5c4b;">CREATE TABLE </span><span style="color:#fdf4c1aa;">&quot;</span><span style="color:#8ec07c;">attachment_source</span><span style="color:#fdf4c1aa;">&quot; (
+  </span><span style="color:#b8bb26;">&quot;id&quot; </span><span style="color:#fa5c4b;">varchar</span><span style="color:#fdf4c1aa;">(</span><span style="color:#d3869b;">254</span><span style="color:#fdf4c1aa;">) </span><span style="color:#fe8019;">not </span><span style="color:#d3869b;">null </span><span style="color:#fa5c4b;">primary key</span><span style="color:#fdf4c1aa;">,
+  </span><span style="color:#b8bb26;">&quot;file_id&quot; </span><span style="color:#fa5c4b;">varchar</span><span style="color:#fdf4c1aa;">(</span><span style="color:#d3869b;">254</span><span style="color:#fdf4c1aa;">) </span><span style="color:#fe8019;">not </span><span style="color:#d3869b;">null</span><span style="color:#fdf4c1aa;">,
+  </span><span style="color:#b8bb26;">&quot;filename&quot; </span><span style="color:#fa5c4b;">varchar</span><span style="color:#fdf4c1aa;">(</span><span style="color:#d3869b;">254</span><span style="color:#fdf4c1aa;">),
+  </span><span style="color:#b8bb26;">&quot;created&quot; </span><span style="color:#fa5c4b;">timestamp </span><span style="color:#fe8019;">not </span><span style="color:#d3869b;">null</span><span style="color:#fdf4c1aa;">,
+  </span><span style="color:#fa5c4b;">foreign key</span><span style="color:#fdf4c1aa;"> (</span><span style="color:#b8bb26;">&quot;file_id&quot;</span><span style="color:#fdf4c1aa;">) </span><span style="color:#fa5c4b;">references </span><span style="color:#b8bb26;">&quot;filemeta&quot;</span><span style="color:#fdf4c1aa;">(</span><span style="color:#b8bb26;">&quot;id&quot;</span><span style="color:#fdf4c1aa;">),
+  </span><span style="color:#fa5c4b;">foreign key</span><span style="color:#fdf4c1aa;"> (</span><span style="color:#b8bb26;">&quot;id&quot;</span><span style="color:#fdf4c1aa;">) </span><span style="color:#fa5c4b;">references </span><span style="color:#b8bb26;">&quot;attachment&quot;</span><span style="color:#fdf4c1aa;">(</span><span style="color:#b8bb26;">&quot;attachid&quot;</span><span style="color:#fdf4c1aa;">)
+);
+</span></code></pre>
+<p>The <code>id</code> is the primary key and is the same as the associated
+<code>attachment</code>, creating a <code>1-1</code> relationship (well, more correct is
+<code>0..1-1</code>) between <code>attachment</code> and <code>attachment_source</code>.</p>
+<p>There will always be a <code>attachment_source</code> record for every
+<code>attachment</code> record. If the original file is a PDF already, then both
+table's <code>file_id</code> columns point to the same file. But now the user can
+change the filename of an <code>attachment</code> while the original filename is
+preserved in <code>attachment_source</code>. It must not be possible for the user
+to change anything in <code>attachment_source</code>.</p>
+<p>The <code>attachment</code> table is not touched in order to keep current code
+mostly unchanged and to have a simpler data migration. The downside
+is, that the data model allows to have an <code>attachment</code> record without
+an <code>attachment_source</code> record. OTOH, a foreign key inside <code>attachment</code>
+pointing to an <code>attachment_source</code> is also not correct, because it
+allows the same <code>attachment_source</code> record to be associated with many
+<code>attachment</code> records. This would do even more harm, in my opinion.</p>
+<h2 id="migration">Migration<a class="zola-anchor" href="#migration" aria-label="Anchor link for: migration">🔗</a></h2>
+<p>Creating a new table and not altering existing ones, should simplify
+data migration.</p>
+<p>Since only PDF files where allowed and the user could not change
+anything in the <code>attachment</code> table, the existing data can simply be
+inserted into the new table. This presents the trivial case where the
+attachment and source are the same.</p>
+<h2 id="processing">Processing<a class="zola-anchor" href="#processing" aria-label="Anchor link for: processing">🔗</a></h2>
+<p>The first step in processing is now converting the file into a pdf. If
+it already is a pdf, nothing is done. This step is before text
+extraction, so text can first be tried to extract from the source file
+and only if that fails (or is not supported), text can be extracted
+from the converted pdf file. All remaining steps are untouched.</p>
+<p>If conversion is not supported for the input file, it is skipped. If
+conversion fails, the error is propagated to let the retry mechanism
+take care.</p>
+<h3 id="what-types">What types?<a class="zola-anchor" href="#what-types" aria-label="Anchor link for: what-types">🔗</a></h3>
+<p>Which file types should be supported? At a first step, all major
+office documents, common images, plain text (i.e. markdown) and html
+should be supported. In terms of file extensions: <code>doc</code>, <code>docx</code>,
+<code>xls</code>, <code>xlsx</code>, <code>odt</code>, <code>md</code>, <code>html</code>, <code>txt</code>, <code>jpg</code>, <code>png</code>, <code>tif</code>.</p>
+<p>There is always the preference to use jvm internal libraries in order
+to be more platform independent and to reduce external dependencies.
+But this is not always possible (like doing OCR).</p>
+<figure class="image">
+    <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;process-files.png">
+</figure>
+<h3 id="conversion">Conversion<a class="zola-anchor" href="#conversion" aria-label="Anchor link for: conversion">🔗</a></h3>
+<ul>
+<li>Office documents (<code>doc</code>, <code>docx</code>, <code>xls</code>, <code>xlsx</code>, <code>odt</code>, <code>ods</code>):
+unoconv (see <a href="https://docspell.org/docs/dev/adr/0009-convert-office-docs/">ADR 9</a>)</li>
+<li>HTML (<code>html</code>): wkhtmltopdf (see <a href="https://docspell.org/docs/dev/adr/0007-convert-html-files/">ADR 7</a>)</li>
+<li>Text/Markdown (<code>txt</code>, <code>md</code>): Java-Lib flexmark + wkhtmltopdf</li>
+<li>Images (<code>jpg</code>, <code>png</code>, <code>tif</code>): Tesseract (see <a href="https://docspell.org/docs/dev/adr/0010-convert-image-files/">ADR
+10</a>)</li>
+</ul>
+<h3 id="text-extraction">Text Extraction<a class="zola-anchor" href="#text-extraction" aria-label="Anchor link for: text-extraction">🔗</a></h3>
+<ul>
+<li>Office documents (<code>doc</code>, <code>docx</code>, <code>xls</code>, <code>xlsx</code>): Apache Poi</li>
+<li>Office documends (<code>odt</code>, <code>ods</code>): Apache Tika (including the sources)</li>
+<li>HTML: not supported, extract text from converted PDF</li>
+<li>Images (<code>jpg</code>, <code>png</code>, <code>tif</code>): Tesseract</li>
+<li>Text/Markdown: n.a.</li>
+<li>PDF: Apache PDFBox or Tesseract</li>
+</ul>
+<h1 id="links">Links<a class="zola-anchor" href="#links" aria-label="Anchor link for: links">🔗</a></h1>
+<ul>
+<li><a href="https://docspell.org/docs/dev/adr/0007-convert-html-files/">Convert HTML Files</a></li>
+<li><a href="https://docspell.org/docs/dev/adr/0008-convert-plain-text/">Convert Plain Text</a></li>
+<li><a href="https://docspell.org/docs/dev/adr/0009-convert-office-docs/">Convert Office Documents</a></li>
+<li><a href="https://docspell.org/docs/dev/adr/0010-convert-image-files/">Convert Image Files</a></li>
+<li><a href="https://docspell.org/docs/dev/adr/0011-extract-text/">Extract Text from Files</a></li>
+</ul>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="footer">
+    <div class="container">
+        <div class="content has-text-centered">
+            <span>
+                Docspell, 0.9.0
+            </span>
+            <span class="ml-1 mr-1">•</span>
+            <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>
+            <span class="ml-1 mr-1">•</span>
+            <a href="https://github.com/eikek/docspell" target="_blank">
+                Source Code
+            </a>
+            <span class="ml-1 mr-1">•</span>
+            <span>
+                © 2020
+                <a href="https://github.com/eikek" target="_blank">
+                    @eikek
+                </a>
+            </span>
+        </div>
+    </div>
+    
+</footer>
+
+    </body>
+</html>

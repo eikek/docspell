@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Eike Kettner">
+<meta name="description" content="Simple Document Organizer">
+<meta name="image" property="og:image" content="/img/poster.png">
+<meta name="title" property="og:title" content="Docspell – Simple Document Organizer">
+<meta name="og:image" content="/img/poster.png">
+<meta name="og:title" content="Docspell – Simple Document Organizer">
+<meta name="og:site_name" content="Running - Docspell">
+<meta name="og:url" content="">
+<meta name="og:type" content="website">
+<meta name="og:description" content="Simple Document Organizer">
+<meta name="twitter:title" content="Docspell">
+<meta name="twitter:image" content="/img/poster.png">
+<meta name="twitter:description" content="Simple Document Organizer">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="shortcut icon" href="/favicon-mc.ico" type="image/x-icon">
+<link rel="icon" href="/favicon-mc.ico" type="image/x-icon">
+
+        <title>Running – Docspell Documentation</title>
+        <link rel="stylesheet" href="/styles.css">
+    </head>
+    <body>
+        <section class="hero is-info is-small">
+            <div class="hero-head">
+                <nav class="navbar">
+    <div class="navbar-brand">
+        <a class="navbar-item" href="/">
+            <span class="icon">
+                <img src="/icons/logo-only-36.svg">
+            </span>
+            <span>
+                Docspell
+            </span>
+        </a>
+    </div>
+    <div class="navbar-start">
+        <a target="_blank"
+           href="https://github.com/eikek/docspell"
+           class="navbar-item">
+            <span class="icon">
+                <img src="/icons/github-40.svg">
+            </span>
+            <span>
+                Github
+            </span>
+        </a>
+    </div>
+</nav>
+
+            </div>
+            <div class="hero-body">
+                <h1 class="title">
+                    Running
+                </h1>
+                <h2 class="subtitle">
+                    Docspell Documentation
+                </h2>
+            </div>
+        </section>
+        <nav class="breadcrumb has-succeeds-separator" aria-label="breadcrumbs">
+            <ul>
+                
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;"></a>
+                </li>
+                
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;">Overview</a>
+                </li>
+                
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;">Installation and Deployment</a>
+                </li>
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;running&#x2F;">Running</a>
+                </li>
+            </ul>
+        </nav>
+
+        <section class="section pt-2">
+            <div class="columns is-desktop">
+                <div class="column is-3">
+                    <div class="menu">
+                        <ul class="menu-list">
+                            
+                            
+
+                            <p class="menu-label">
+                                Installation and Deployment
+                            </p>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/install/quickstart/"
+                                   >
+                                    Quickstart
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/install/prereq/"
+                                   >
+                                    Prerequisites
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/install/installing/"
+                                   >
+                                    Installing
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/install/running/"
+                                   class="is-active">
+                                    Running
+                                </a>
+                                
+                                <ul class="menu-list">
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;running&#x2F;#running">
+                                            Running
+                                        </a>
+                                        <ul>
+                                            
+                                            <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;running&#x2F;#options">
+                                                    Options
+                                                </a>
+                                            </li>
+                                            
+                                        </ul>
+                                    </li>
+                                    
+                                </ul>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/install/rpi/"
+                                   >
+                                    Raspberry-Pi And Similiar
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/install/reverseproxy/"
+                                   >
+                                    Reverse Proxy
+                                </a>
+                                
+                            </li>
+                            
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="column is-9">
+                    <div class="container">
+                        <div class="content doc">
+                            <h1 id="running">Running<a class="zola-anchor" href="#running" aria-label="Anchor link for: running">🔗</a></h1>
+<p>Run the start script (in the corresponding <code>bin/</code> directory when using
+the zip files):</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">$ ./docspell-restserver*/bin/docspell-restserver
+$ ./docspell-joex*/bin/docspell-joex
+</span></code></pre>
+<p>This will startup both components using the default configuration. The
+configuration should be adopted to your needs. For example, the
+database connection is configured to use a H2 database in the <code>/tmp</code>
+directory. Please refer to the <a href="https://docspell.org/docs/configure/">configuration
+page</a> for how to create a custom config
+file. Once you have your config file, simply pass it as argument to
+the command:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">$ ./docspell-restserver*/bin/docspell-restserver /path/to/server-config.conf
+$ ./docspell-joex*/bin/docspell-joex /path/to/joex-config.conf
+</span></code></pre>
+<p>After starting the rest server, you can reach the web application at
+path <code>/app</code>, so using default values it would be
+<code>http://localhost:7880/app</code>. There also is a redirect from <code>/</code> to
+<code>/app</code>.</p>
+<p>You should be able to create a new account and sign in. Check the
+<a href="https://docspell.org/docs/configure/">configuration page</a> to further customize
+docspell.</p>
+<h2 id="options">Options<a class="zola-anchor" href="#options" aria-label="Anchor link for: options">🔗</a></h2>
+<p>The start scripts support some options to configure the JVM. One often
+used setting is the maximum heap size of the JVM. By default, java
+determines it based on properties of the current machine. You can
+specify it by given java startup options to the command:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">$ ./docspell-restserver*/bin/docspell-restserver -J-Xmx1G -- /path/to/server-config.conf
+</span></code></pre>
+<p>This would limit the maximum heap to 1GB. The double slash separates
+internal options and the arguments to the program. Another frequently
+used option is to change the default temp directory. Usually it is
+<code>/tmp</code>, but it may be desired to have a dedicated temp directory,
+which can be configured:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">$ ./docspell-restserver*/bin/docspell-restserver -J-Xmx1G -Djava.io.tmpdir=/path/to/othertemp -- /path/to/server-config.conf
+</span></code></pre>
+<p>The command:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">$ ./docspell-restserver*/bin/docspell-restserver -h
+</span></code></pre>
+<p>gives an overview of supported options.</p>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="footer">
+    <div class="container">
+        <div class="content has-text-centered">
+            <span>
+                Docspell, 0.9.0
+            </span>
+            <span class="ml-1 mr-1">•</span>
+            <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>
+            <span class="ml-1 mr-1">•</span>
+            <a href="https://github.com/eikek/docspell" target="_blank">
+                Source Code
+            </a>
+            <span class="ml-1 mr-1">•</span>
+            <span>
+                © 2020
+                <a href="https://github.com/eikek" target="_blank">
+                    @eikek
+                </a>
+            </span>
+        </div>
+    </div>
+    
+</footer>
+
+    </body>
+</html>

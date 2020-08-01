@@ -1112,6 +1112,88 @@
   },
   "description" : "A list of equipments.\n"
 };
+            defs.FolderDetail = {
+  "required" : [ "created", "id", "isMember", "memberCount", "members", "name", "owner" ],
+  "properties" : {
+    "id" : {
+      "type" : "string",
+      "format" : "ident"
+    },
+    "name" : {
+      "type" : "string"
+    },
+    "owner" : {
+      "$ref" : "#/components/schemas/IdName"
+    },
+    "created" : {
+      "type" : "integer",
+      "format" : "date-time"
+    },
+    "isMember" : {
+      "type" : "boolean"
+    },
+    "memberCount" : {
+      "type" : "integer",
+      "format" : "int32"
+    },
+    "members" : {
+      "type" : "array",
+      "items" : {
+        "$ref" : "#/components/schemas/IdName"
+      }
+    }
+  },
+  "description" : "Details about a folder.\n"
+};
+            defs.FolderItem = {
+  "required" : [ "created", "id", "isMember", "memberCount", "name", "owner" ],
+  "properties" : {
+    "id" : {
+      "type" : "string",
+      "format" : "ident"
+    },
+    "name" : {
+      "type" : "string"
+    },
+    "owner" : {
+      "$ref" : "#/components/schemas/IdName"
+    },
+    "created" : {
+      "type" : "integer",
+      "format" : "date-time"
+    },
+    "isMember" : {
+      "type" : "boolean"
+    },
+    "memberCount" : {
+      "type" : "integer",
+      "format" : "int32"
+    }
+  },
+  "description" : "An item in a folder list.\n"
+};
+            defs.FolderList = {
+  "required" : [ "items" ],
+  "properties" : {
+    "items" : {
+      "type" : "array",
+      "items" : {
+        "$ref" : "#/components/schemas/FolderItem"
+      }
+    }
+  },
+  "description" : "A list of folders with their member counts.\n"
+};
+            defs.FolderMember = {
+  "required" : [ "userId" ],
+  "properties" : {
+    "userId" : {
+      "type" : "string",
+      "format" : "ident"
+    }
+  },
+  "description" : "Information to add or remove a folder member.\n"
+};
             defs.GenInvite = {
   "required" : [ "password" ],
   "properties" : {
@@ -1149,6 +1231,22 @@
     }
   },
   "description" : "The identifier and a human readable name of some entity.\n"
+};
+            defs.IdResult = {
+  "required" : [ "id", "message", "success" ],
+  "properties" : {
+    "success" : {
+      "type" : "boolean"
+    },
+    "message" : {
+      "type" : "string"
+    },
+    "id" : {
+      "type" : "string",
+      "format" : "ident"
+    }
+  },
+  "description" : "Some basic result of an operation with an ID as payload. If\nsuccess if `false` the id is not usable.\n"
 };
             defs.ImapSettings = {
   "required" : [ "from", "ignoreCertificates", "imapHost", "name", "sslType" ],
@@ -1271,6 +1369,9 @@
     "inReplyTo" : {
       "$ref" : "#/components/schemas/IdName"
     },
+    "folder" : {
+      "$ref" : "#/components/schemas/IdName"
+    },
     "dueDate" : {
       "type" : "integer",
       "format" : "date-time"
@@ -1384,6 +1485,9 @@
       "$ref" : "#/components/schemas/IdName"
     },
     "concEquip" : {
+      "$ref" : "#/components/schemas/IdName"
+    },
+    "folder" : {
       "$ref" : "#/components/schemas/IdName"
     },
     "fileCount" : {
@@ -1539,6 +1643,10 @@
       "type" : "string",
       "format" : "ident"
     },
+    "folder" : {
+      "type" : "string",
+      "format" : "ident"
+    },
     "dateFrom" : {
       "type" : "integer",
       "format" : "date-time"
@@ -1568,9 +1676,13 @@
     "direction" : {
       "type" : "string",
       "format" : "direction"
+    },
+    "folder" : {
+      "type" : "string",
+      "format" : "ident"
     }
   },
-  "description" : "Meta information for an item upload. The user can specify some\nstructured information with a binary file.\n\nAdditional metadata is not required. However, you have to\nspecifiy whether the corresponding files should become one\nsingle item or if an item is created for each file.\n"
+  "description" : "Meta information for an item upload. The user can specify some\nstructured information with a binary file.\n\nAdditional metadata is not required. However, if there is some\nspecified, you have to specifiy whether the corresponding\nfiles should become one single item or if an item is created\nfor each file.\n\nA direction can be given, `Incoming` is used if not specified.\n\nA folderId can be given, the item is placed into this folder\nafter creation.\n"
 };
             defs.JobDetail = {
   "required" : [ "id", "logs", "name", "priority", "progress", "retries", "state", "submitted" ],
@@ -1715,6 +1827,15 @@
     }
   },
   "description" : "Generic structure for counting something.\n"
+};
+            defs.NewFolder = {
+  "required" : [ "name" ],
+  "properties" : {
+    "name" : {
+      "type" : "string"
+    }
+  },
+  "description" : "Data required to create a new folder.\n"
 };
             defs.NotificationSettings = {
   "required" : [ "capOverdue", "enabled", "id", "recipients", "remindDays", "schedule", "smtpConnection", "tagsExclude", "tagsInclude" ],
@@ -1982,6 +2103,11 @@
       "type" : "string",
       "description" : "The direction to apply to items resulting from importing\nmails. If not set, the value is guessed based on the from\nand to mail headers and your address book.\n",
       "format" : "direction"
+    },
+    "itemFolder" : {
+      "type" : "string",
+      "description" : "The folder id that is applied to items resulting from\nimporting mails. If the folder id is not valid when the\ntask executes, items have no folder set.\n",
+      "format" : "ident"
     }
   },
   "description" : "Settings for the scan mailbox task.\n"
@@ -2096,6 +2222,10 @@
       "type" : "string",
       "format" : "priority"
     },
+    "folder" : {
+      "type" : "string",
+      "format" : "ident"
+    },
     "created" : {
       "type" : "integer",
       "description" : "DateTime",
@@ -2165,8 +2295,12 @@
   "description" : "A list of tags.\n"
 };
             defs.User = {
-  "required" : [ "created", "login", "loginCount", "state" ],
+  "required" : [ "created", "id", "login", "loginCount", "state" ],
   "properties" : {
+    "id" : {
+      "type" : "string",
+      "format" : "ident"
+    },
     "login" : {
       "type" : "string",
       "format" : "ident"
@@ -2390,6 +2524,28 @@
                     <li data-group="Equipment" data-name="secEquipmentPut" class="">
                       <a href="#api-Equipment-secEquipmentPut">secEquipmentPut</a>
                     </li>
+                  <li class="nav-header" data-group="Folder"><a href="#api-Folder">API Methods - Folder</a></li>
+                    <li data-group="Folder" data-name="secFolderGet" class="">
+                      <a href="#api-Folder-secFolderGet">secFolderGet</a>
+                    </li>
+                    <li data-group="Folder" data-name="secFolderIdDelete" class="">
+                      <a href="#api-Folder-secFolderIdDelete">secFolderIdDelete</a>
+                    </li>
+                    <li data-group="Folder" data-name="secFolderIdGet" class="">
+                      <a href="#api-Folder-secFolderIdGet">secFolderIdGet</a>
+                    </li>
+                    <li data-group="Folder" data-name="secFolderIdMemberUserIdDelete" class="">
+                      <a href="#api-Folder-secFolderIdMemberUserIdDelete">secFolderIdMemberUserIdDelete</a>
+                    </li>
+                    <li data-group="Folder" data-name="secFolderIdMemberUserIdPut" class="">
+                      <a href="#api-Folder-secFolderIdMemberUserIdPut">secFolderIdMemberUserIdPut</a>
+                    </li>
+                    <li data-group="Folder" data-name="secFolderIdPut" class="">
+                      <a href="#api-Folder-secFolderIdPut">secFolderIdPut</a>
+                    </li>
+                    <li data-group="Folder" data-name="secFolderPost" class="">
+                      <a href="#api-Folder-secFolderPost">secFolderPost</a>
+                    </li>
                   <li class="nav-header" data-group="FullTextIndex"><a href="#api-FullTextIndex">API Methods - FullTextIndex</a></li>
                     <li data-group="FullTextIndex" data-name="openFtsReIndexAllIdPost" class="">
                       <a href="#api-FullTextIndex-openFtsReIndexAllIdPost">openFtsReIndexAllIdPost</a>
@@ -2450,6 +2606,9 @@
                     </li>
                     <li data-group="Item" data-name="secItemIdDuedatePut" class="">
                       <a href="#api-Item-secItemIdDuedatePut">secItemIdDuedatePut</a>
+                    </li>
+                    <li data-group="Item" data-name="secItemIdFolderPut" class="">
+                      <a href="#api-Item-secItemIdFolderPut">secItemIdFolderPut</a>
                     </li>
                     <li data-group="Item" data-name="secItemIdGet" class="">
                       <a href="#api-Item-secItemIdGet">secItemIdGet</a>
@@ -2629,7 +2788,7 @@
         <div id="header">
           <div id="api-_">
             <h2 id="welcome-to-apidoc">API and SDK Documentation</h2>
-              <div class="app-desc">Version: 0.8.0</div>
+              <div class="app-desc">Version: 0.9.0</div>
             <hr>
             <div>This is the remote API to Docspell, a personal document organizer.</div>
           </div>
@@ -7532,7 +7691,7 @@ except ApiException as e:
                         <div class="clearfix"></div>
                         <p></p>
                         <p class="marked">Returns some information about how many items there are, how
-much space they occupy etc.
+much folder they occupy etc.
 </p>
                         <p></p>
                         <br />
@@ -16415,6 +16574,2508 @@ except ApiException as e:
                       </div>
                       <hr>
                   </section>
+                <section id="api-Folder">
+                  <h1>Folder</h1>
+                    <div id="api-Folder-secFolderGet">
+                      <article id="api-Folder-secFolderGet-0" data-group="User" data-name="secFolderGet" data-version="0">
+                        <div class="pull-left">
+                          <h1>secFolderGet</h1>
+                          <p>Get a list of folders.</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked">Return a list of folders for the current collective.
+
+All folders are returned, including those not owned by the
+current user.
+
+It is possible to restrict the results by a substring match of
+the name.
+</p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="get"><code><span class="pln">/sec/folder</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-Folder-secFolderGet-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-Folder-secFolderGet-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Folder-secFolderGet-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-Folder-secFolderGet-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-Folder-secFolderGet-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-Folder-secFolderGet-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-Folder-secFolderGet-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-Folder-secFolderGet-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-Folder-secFolderGet-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-Folder-secFolderGet-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-Folder-secFolderGet-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-Folder-secFolderGet-0-curl">
+                            <pre class="prettyprint"><code class="language-bsh">curl -X GET -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/folder?q=&full="</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-Folder-secFolderGet-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.FolderApi;
+
+import java.io.File;
+import java.util.*;
+
+public class FolderApiExample {
+
+    public static void main(String[] args) {
+        ApiClient defaultClient = Configuration.getDefaultApiClient();
+
+        // Configure API key authorization: authTokenHeader
+        ApiKeyAuth authTokenHeader = (ApiKeyAuth) defaultClient.getAuthentication("authTokenHeader");
+        authTokenHeader.setApiKey("YOUR API KEY");
+        // Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+        //authTokenHeader.setApiKeyPrefix("Token");
+
+        FolderApi apiInstance = new FolderApi();
+        String q = q_example; // String | A query string.
+        Boolean full = true; // Boolean | Whether to get owning folders
+        try {
+            FolderList result = apiInstance.secFolderGet(q, full);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling FolderApi#secFolderGet");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Folder-secFolderGet-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.FolderApi;
+
+public class FolderApiExample {
+
+    public static void main(String[] args) {
+        FolderApi apiInstance = new FolderApi();
+        String q = q_example; // String | A query string.
+        Boolean full = true; // Boolean | Whether to get owning folders
+        try {
+            FolderList result = apiInstance.secFolderGet(q, full);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling FolderApi#secFolderGet");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-Folder-secFolderGet-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-Folder-secFolderGet-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
+// Configure API key authorization: (authentication scheme: authTokenHeader)
+[apiConfig setApiKey:@"YOUR_API_KEY" forApiKeyIdentifier:@"X-Docspell-Auth"];
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+//[apiConfig setApiKeyPrefix:@"Bearer" forApiKeyIdentifier:@"X-Docspell-Auth"];
+String *q = q_example; // A query string. (optional)
+Boolean *full = true; // Whether to get owning folders (optional)
+
+FolderApi *apiInstance = [[FolderApi alloc] init];
+
+// Get a list of folders.
+[apiInstance secFolderGetWith:q
+    full:full
+              completionHandler: ^(FolderList output, NSError* error) {
+                            if (output) {
+                                NSLog(@"%@", output);
+                            }
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Folder-secFolderGet-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var Docspell = require('docspell');
+var defaultClient = Docspell.ApiClient.instance;
+
+// Configure API key authorization: authTokenHeader
+var authTokenHeader = defaultClient.authentications['authTokenHeader'];
+authTokenHeader.apiKey = "YOUR API KEY"
+// Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+//authTokenHeader.apiKeyPrefix['X-Docspell-Auth'] = "Token"
+
+var api = new Docspell.FolderApi()
+var opts = { 
+  'q': q_example, // {{String}} A query string.
+  'full': true // {{Boolean}} Whether to get owning folders
+};
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+};
+api.secFolderGet(opts, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-Folder-secFolderGet-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-Folder-secFolderGet-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class secFolderGetExample
+    {
+        public void main()
+        {
+
+            // Configure API key authorization: authTokenHeader
+            Configuration.Default.ApiKey.Add("X-Docspell-Auth", "YOUR_API_KEY");
+            // Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+            // Configuration.Default.ApiKeyPrefix.Add("X-Docspell-Auth", "Bearer");
+
+            var apiInstance = new FolderApi();
+            var q = q_example;  // String | A query string. (optional) 
+            var full = true;  // Boolean | Whether to get owning folders (optional) 
+
+            try
+            {
+                // Get a list of folders.
+                FolderList result = apiInstance.secFolderGet(q, full);
+                Debug.WriteLine(result);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling FolderApi.secFolderGet: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Folder-secFolderGet-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+// Configure API key authorization: authTokenHeader
+Swagger\Client\Configuration::getDefaultConfiguration()->setApiKey('X-Docspell-Auth', 'YOUR_API_KEY');
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+// Swagger\Client\Configuration::getDefaultConfiguration()->setApiKeyPrefix('X-Docspell-Auth', 'Bearer');
+
+$api_instance = new Swagger\Client\ApiFolderApi();
+$q = q_example; // String | A query string.
+$full = true; // Boolean | Whether to get owning folders
+
+try {
+    $result = $api_instance->secFolderGet($q, $full);
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling FolderApi->secFolderGet: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Folder-secFolderGet-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::FolderApi;
+
+# Configure API key authorization: authTokenHeader
+$WWW::SwaggerClient::Configuration::api_key->{'X-Docspell-Auth'} = 'YOUR_API_KEY';
+# uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+#$WWW::SwaggerClient::Configuration::api_key_prefix->{'X-Docspell-Auth'} = "Bearer";
+
+my $api_instance = WWW::SwaggerClient::FolderApi->new();
+my $q = q_example; # String | A query string.
+my $full = true; # Boolean | Whether to get owning folders
+
+eval { 
+    my $result = $api_instance->secFolderGet(q => $q, full => $full);
+    print Dumper($result);
+};
+if ($@) {
+    warn "Exception when calling FolderApi->secFolderGet: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Folder-secFolderGet-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# Configure API key authorization: authTokenHeader
+swagger_client.configuration.api_key['X-Docspell-Auth'] = 'YOUR_API_KEY'
+# Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+# swagger_client.configuration.api_key_prefix['X-Docspell-Auth'] = 'Bearer'
+
+# create an instance of the API class
+api_instance = swagger_client.FolderApi()
+q = q_example # String | A query string. (optional)
+full = true # Boolean | Whether to get owning folders (optional)
+
+try: 
+    # Get a list of folders.
+    api_response = api_instance.sec_folder_get(q=q, full=full)
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling FolderApi->secFolderGet: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+
+
+
+
+                            <div class="methodsubtabletitle">Query parameters</div>
+                            <table id="methodsubtable">
+                              <tr>
+                                <th width="150px">Name</th>
+                                <th>Description</th>
+                              </tr>
+                                <tr><td style="width:150px;">q</td>
+                                <td>
+                                
+                                
+                                    <div id="d2e199_secFolderGet_q">
+                                        <div class="json-schema-view">
+                                            <div class="primitive">
+                                                <span class="type">
+                                                    String
+                                                </span>
+                                
+                                                    <div class="inner description">
+                                                        A query string.
+                                                    </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                </tr>
+                                <tr><td style="width:150px;">full</td>
+                                <td>
+                                
+                                
+                                    <div id="d2e199_secFolderGet_full">
+                                        <div class="json-schema-view">
+                                            <div class="primitive">
+                                                <span class="type">
+                                                    Boolean
+                                                </span>
+                                
+                                                    <div class="inner description">
+                                                        Whether to get owning folders
+                                                    </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                </tr>
+                            </table>
+
+                          <h2>Responses</h2>
+                            <h3> Status: 200 - Ok </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-secFolderGet-200-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-secFolderGet-200-schema">
+                                  <div id='responses-secFolderGet-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "Ok",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/FolderList"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-secFolderGet-200-schema-data').val(stringify(schema));
+                                        var result = $('#responses-secFolderGet-200-schema-200');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-secFolderGet-200-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
+                    <div id="api-Folder-secFolderIdDelete">
+                      <article id="api-Folder-secFolderIdDelete-0" data-group="User" data-name="secFolderIdDelete" data-version="0">
+                        <div class="pull-left">
+                          <h1>secFolderIdDelete</h1>
+                          <p>Delete a folder by its id.</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked">Deletes a folder.
+</p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="delete"><code><span class="pln">/sec/folder/{id}</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-Folder-secFolderIdDelete-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-Folder-secFolderIdDelete-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Folder-secFolderIdDelete-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-Folder-secFolderIdDelete-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-Folder-secFolderIdDelete-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-Folder-secFolderIdDelete-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-Folder-secFolderIdDelete-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-Folder-secFolderIdDelete-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-Folder-secFolderIdDelete-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-Folder-secFolderIdDelete-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-Folder-secFolderIdDelete-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-Folder-secFolderIdDelete-0-curl">
+                            <pre class="prettyprint"><code class="language-bsh">curl -X DELETE -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/folder/{id}"</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-Folder-secFolderIdDelete-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.FolderApi;
+
+import java.io.File;
+import java.util.*;
+
+public class FolderApiExample {
+
+    public static void main(String[] args) {
+        ApiClient defaultClient = Configuration.getDefaultApiClient();
+
+        // Configure API key authorization: authTokenHeader
+        ApiKeyAuth authTokenHeader = (ApiKeyAuth) defaultClient.getAuthentication("authTokenHeader");
+        authTokenHeader.setApiKey("YOUR API KEY");
+        // Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+        //authTokenHeader.setApiKeyPrefix("Token");
+
+        FolderApi apiInstance = new FolderApi();
+        String id = id_example; // String | An identifier
+        try {
+            BasicResult result = apiInstance.secFolderIdDelete(id);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling FolderApi#secFolderIdDelete");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Folder-secFolderIdDelete-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.FolderApi;
+
+public class FolderApiExample {
+
+    public static void main(String[] args) {
+        FolderApi apiInstance = new FolderApi();
+        String id = id_example; // String | An identifier
+        try {
+            BasicResult result = apiInstance.secFolderIdDelete(id);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling FolderApi#secFolderIdDelete");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-Folder-secFolderIdDelete-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-Folder-secFolderIdDelete-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
+// Configure API key authorization: (authentication scheme: authTokenHeader)
+[apiConfig setApiKey:@"YOUR_API_KEY" forApiKeyIdentifier:@"X-Docspell-Auth"];
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+//[apiConfig setApiKeyPrefix:@"Bearer" forApiKeyIdentifier:@"X-Docspell-Auth"];
+String *id = id_example; // An identifier
+
+FolderApi *apiInstance = [[FolderApi alloc] init];
+
+// Delete a folder by its id.
+[apiInstance secFolderIdDeleteWith:id
+              completionHandler: ^(BasicResult output, NSError* error) {
+                            if (output) {
+                                NSLog(@"%@", output);
+                            }
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Folder-secFolderIdDelete-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var Docspell = require('docspell');
+var defaultClient = Docspell.ApiClient.instance;
+
+// Configure API key authorization: authTokenHeader
+var authTokenHeader = defaultClient.authentications['authTokenHeader'];
+authTokenHeader.apiKey = "YOUR API KEY"
+// Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+//authTokenHeader.apiKeyPrefix['X-Docspell-Auth'] = "Token"
+
+var api = new Docspell.FolderApi()
+var id = id_example; // {{String}} An identifier
+
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+};
+api.secFolderIdDelete(id, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-Folder-secFolderIdDelete-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-Folder-secFolderIdDelete-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class secFolderIdDeleteExample
+    {
+        public void main()
+        {
+
+            // Configure API key authorization: authTokenHeader
+            Configuration.Default.ApiKey.Add("X-Docspell-Auth", "YOUR_API_KEY");
+            // Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+            // Configuration.Default.ApiKeyPrefix.Add("X-Docspell-Auth", "Bearer");
+
+            var apiInstance = new FolderApi();
+            var id = id_example;  // String | An identifier
+
+            try
+            {
+                // Delete a folder by its id.
+                BasicResult result = apiInstance.secFolderIdDelete(id);
+                Debug.WriteLine(result);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling FolderApi.secFolderIdDelete: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Folder-secFolderIdDelete-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+// Configure API key authorization: authTokenHeader
+Swagger\Client\Configuration::getDefaultConfiguration()->setApiKey('X-Docspell-Auth', 'YOUR_API_KEY');
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+// Swagger\Client\Configuration::getDefaultConfiguration()->setApiKeyPrefix('X-Docspell-Auth', 'Bearer');
+
+$api_instance = new Swagger\Client\ApiFolderApi();
+$id = id_example; // String | An identifier
+
+try {
+    $result = $api_instance->secFolderIdDelete($id);
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling FolderApi->secFolderIdDelete: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Folder-secFolderIdDelete-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::FolderApi;
+
+# Configure API key authorization: authTokenHeader
+$WWW::SwaggerClient::Configuration::api_key->{'X-Docspell-Auth'} = 'YOUR_API_KEY';
+# uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+#$WWW::SwaggerClient::Configuration::api_key_prefix->{'X-Docspell-Auth'} = "Bearer";
+
+my $api_instance = WWW::SwaggerClient::FolderApi->new();
+my $id = id_example; # String | An identifier
+
+eval { 
+    my $result = $api_instance->secFolderIdDelete(id => $id);
+    print Dumper($result);
+};
+if ($@) {
+    warn "Exception when calling FolderApi->secFolderIdDelete: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Folder-secFolderIdDelete-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# Configure API key authorization: authTokenHeader
+swagger_client.configuration.api_key['X-Docspell-Auth'] = 'YOUR_API_KEY'
+# Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+# swagger_client.configuration.api_key_prefix['X-Docspell-Auth'] = 'Bearer'
+
+# create an instance of the API class
+api_instance = swagger_client.FolderApi()
+id = id_example # String | An identifier
+
+try: 
+    # Delete a folder by its id.
+    api_response = api_instance.sec_folder_id_delete(id)
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling FolderApi->secFolderIdDelete: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+                            <div class="methodsubtabletitle">Path parameters</div>
+                            <table id="methodsubtable">
+                                <tr>
+                                  <th width="150px">Name</th>
+                                  <th>Description</th>
+                                </tr>
+                                  <tr><td style="width:150px;">id*</td>
+                                  <td>
+                                  
+                                  
+                                      <div id="d2e199_secFolderIdDelete_id">
+                                          <div class="json-schema-view">
+                                              <div class="primitive">
+                                                  <span class="type">
+                                                      String
+                                                  </span>
+                                  
+                                                      <div class="inner description">
+                                                          An identifier
+                                                      </div>
+                                              </div>
+                                                  <div class="inner required">
+                                                      Required
+                                                  </div>
+                                          </div>
+                                      </div>
+                                  </td>
+                                  </tr>
+                            </table>
+
+
+
+
+
+                          <h2>Responses</h2>
+                            <h3> Status: 200 - Ok </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-secFolderIdDelete-200-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-secFolderIdDelete-200-schema">
+                                  <div id='responses-secFolderIdDelete-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "Ok",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/BasicResult"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-secFolderIdDelete-200-schema-data').val(stringify(schema));
+                                        var result = $('#responses-secFolderIdDelete-200-schema-200');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-secFolderIdDelete-200-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
+                    <div id="api-Folder-secFolderIdGet">
+                      <article id="api-Folder-secFolderIdGet-0" data-group="User" data-name="secFolderIdGet" data-version="0">
+                        <div class="pull-left">
+                          <h1>secFolderIdGet</h1>
+                          <p>Get folder details.</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked">Return details about a folder.
+</p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="get"><code><span class="pln">/sec/folder/{id}</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-Folder-secFolderIdGet-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-Folder-secFolderIdGet-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Folder-secFolderIdGet-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-Folder-secFolderIdGet-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-Folder-secFolderIdGet-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-Folder-secFolderIdGet-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-Folder-secFolderIdGet-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-Folder-secFolderIdGet-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-Folder-secFolderIdGet-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-Folder-secFolderIdGet-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-Folder-secFolderIdGet-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-Folder-secFolderIdGet-0-curl">
+                            <pre class="prettyprint"><code class="language-bsh">curl -X GET -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/folder/{id}"</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-Folder-secFolderIdGet-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.FolderApi;
+
+import java.io.File;
+import java.util.*;
+
+public class FolderApiExample {
+
+    public static void main(String[] args) {
+        ApiClient defaultClient = Configuration.getDefaultApiClient();
+
+        // Configure API key authorization: authTokenHeader
+        ApiKeyAuth authTokenHeader = (ApiKeyAuth) defaultClient.getAuthentication("authTokenHeader");
+        authTokenHeader.setApiKey("YOUR API KEY");
+        // Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+        //authTokenHeader.setApiKeyPrefix("Token");
+
+        FolderApi apiInstance = new FolderApi();
+        String id = id_example; // String | An identifier
+        try {
+            FolderDetail result = apiInstance.secFolderIdGet(id);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling FolderApi#secFolderIdGet");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Folder-secFolderIdGet-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.FolderApi;
+
+public class FolderApiExample {
+
+    public static void main(String[] args) {
+        FolderApi apiInstance = new FolderApi();
+        String id = id_example; // String | An identifier
+        try {
+            FolderDetail result = apiInstance.secFolderIdGet(id);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling FolderApi#secFolderIdGet");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-Folder-secFolderIdGet-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-Folder-secFolderIdGet-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
+// Configure API key authorization: (authentication scheme: authTokenHeader)
+[apiConfig setApiKey:@"YOUR_API_KEY" forApiKeyIdentifier:@"X-Docspell-Auth"];
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+//[apiConfig setApiKeyPrefix:@"Bearer" forApiKeyIdentifier:@"X-Docspell-Auth"];
+String *id = id_example; // An identifier
+
+FolderApi *apiInstance = [[FolderApi alloc] init];
+
+// Get folder details.
+[apiInstance secFolderIdGetWith:id
+              completionHandler: ^(FolderDetail output, NSError* error) {
+                            if (output) {
+                                NSLog(@"%@", output);
+                            }
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Folder-secFolderIdGet-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var Docspell = require('docspell');
+var defaultClient = Docspell.ApiClient.instance;
+
+// Configure API key authorization: authTokenHeader
+var authTokenHeader = defaultClient.authentications['authTokenHeader'];
+authTokenHeader.apiKey = "YOUR API KEY"
+// Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+//authTokenHeader.apiKeyPrefix['X-Docspell-Auth'] = "Token"
+
+var api = new Docspell.FolderApi()
+var id = id_example; // {{String}} An identifier
+
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+};
+api.secFolderIdGet(id, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-Folder-secFolderIdGet-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-Folder-secFolderIdGet-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class secFolderIdGetExample
+    {
+        public void main()
+        {
+
+            // Configure API key authorization: authTokenHeader
+            Configuration.Default.ApiKey.Add("X-Docspell-Auth", "YOUR_API_KEY");
+            // Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+            // Configuration.Default.ApiKeyPrefix.Add("X-Docspell-Auth", "Bearer");
+
+            var apiInstance = new FolderApi();
+            var id = id_example;  // String | An identifier
+
+            try
+            {
+                // Get folder details.
+                FolderDetail result = apiInstance.secFolderIdGet(id);
+                Debug.WriteLine(result);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling FolderApi.secFolderIdGet: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Folder-secFolderIdGet-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+// Configure API key authorization: authTokenHeader
+Swagger\Client\Configuration::getDefaultConfiguration()->setApiKey('X-Docspell-Auth', 'YOUR_API_KEY');
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+// Swagger\Client\Configuration::getDefaultConfiguration()->setApiKeyPrefix('X-Docspell-Auth', 'Bearer');
+
+$api_instance = new Swagger\Client\ApiFolderApi();
+$id = id_example; // String | An identifier
+
+try {
+    $result = $api_instance->secFolderIdGet($id);
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling FolderApi->secFolderIdGet: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Folder-secFolderIdGet-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::FolderApi;
+
+# Configure API key authorization: authTokenHeader
+$WWW::SwaggerClient::Configuration::api_key->{'X-Docspell-Auth'} = 'YOUR_API_KEY';
+# uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+#$WWW::SwaggerClient::Configuration::api_key_prefix->{'X-Docspell-Auth'} = "Bearer";
+
+my $api_instance = WWW::SwaggerClient::FolderApi->new();
+my $id = id_example; # String | An identifier
+
+eval { 
+    my $result = $api_instance->secFolderIdGet(id => $id);
+    print Dumper($result);
+};
+if ($@) {
+    warn "Exception when calling FolderApi->secFolderIdGet: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Folder-secFolderIdGet-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# Configure API key authorization: authTokenHeader
+swagger_client.configuration.api_key['X-Docspell-Auth'] = 'YOUR_API_KEY'
+# Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+# swagger_client.configuration.api_key_prefix['X-Docspell-Auth'] = 'Bearer'
+
+# create an instance of the API class
+api_instance = swagger_client.FolderApi()
+id = id_example # String | An identifier
+
+try: 
+    # Get folder details.
+    api_response = api_instance.sec_folder_id_get(id)
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling FolderApi->secFolderIdGet: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+                            <div class="methodsubtabletitle">Path parameters</div>
+                            <table id="methodsubtable">
+                                <tr>
+                                  <th width="150px">Name</th>
+                                  <th>Description</th>
+                                </tr>
+                                  <tr><td style="width:150px;">id*</td>
+                                  <td>
+                                  
+                                  
+                                      <div id="d2e199_secFolderIdGet_id">
+                                          <div class="json-schema-view">
+                                              <div class="primitive">
+                                                  <span class="type">
+                                                      String
+                                                  </span>
+                                  
+                                                      <div class="inner description">
+                                                          An identifier
+                                                      </div>
+                                              </div>
+                                                  <div class="inner required">
+                                                      Required
+                                                  </div>
+                                          </div>
+                                      </div>
+                                  </td>
+                                  </tr>
+                            </table>
+
+
+
+
+
+                          <h2>Responses</h2>
+                            <h3> Status: 200 - Ok </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-secFolderIdGet-200-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-secFolderIdGet-200-schema">
+                                  <div id='responses-secFolderIdGet-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "Ok",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/FolderDetail"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-secFolderIdGet-200-schema-data').val(stringify(schema));
+                                        var result = $('#responses-secFolderIdGet-200-schema-200');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-secFolderIdGet-200-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
+                    <div id="api-Folder-secFolderIdMemberUserIdDelete">
+                      <article id="api-Folder-secFolderIdMemberUserIdDelete-0" data-group="User" data-name="secFolderIdMemberUserIdDelete" data-version="0">
+                        <div class="pull-left">
+                          <h1>secFolderIdMemberUserIdDelete</h1>
+                          <p>Removes a member from this folder.</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked">Removes a member from this folder.
+</p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="delete"><code><span class="pln">/sec/folder/{id}/member/{userId}</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-Folder-secFolderIdMemberUserIdDelete-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-Folder-secFolderIdMemberUserIdDelete-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Folder-secFolderIdMemberUserIdDelete-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-Folder-secFolderIdMemberUserIdDelete-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-Folder-secFolderIdMemberUserIdDelete-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-Folder-secFolderIdMemberUserIdDelete-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-Folder-secFolderIdMemberUserIdDelete-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-Folder-secFolderIdMemberUserIdDelete-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-Folder-secFolderIdMemberUserIdDelete-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-Folder-secFolderIdMemberUserIdDelete-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-Folder-secFolderIdMemberUserIdDelete-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-Folder-secFolderIdMemberUserIdDelete-0-curl">
+                            <pre class="prettyprint"><code class="language-bsh">curl -X DELETE -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/folder/{id}/member/{userId}"</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-Folder-secFolderIdMemberUserIdDelete-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.FolderApi;
+
+import java.io.File;
+import java.util.*;
+
+public class FolderApiExample {
+
+    public static void main(String[] args) {
+        ApiClient defaultClient = Configuration.getDefaultApiClient();
+
+        // Configure API key authorization: authTokenHeader
+        ApiKeyAuth authTokenHeader = (ApiKeyAuth) defaultClient.getAuthentication("authTokenHeader");
+        authTokenHeader.setApiKey("YOUR API KEY");
+        // Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+        //authTokenHeader.setApiKeyPrefix("Token");
+
+        FolderApi apiInstance = new FolderApi();
+        String id = id_example; // String | An identifier
+        String userId = userId_example; // String | An identifier
+        try {
+            BasicResult result = apiInstance.secFolderIdMemberUserIdDelete(id, userId);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling FolderApi#secFolderIdMemberUserIdDelete");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Folder-secFolderIdMemberUserIdDelete-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.FolderApi;
+
+public class FolderApiExample {
+
+    public static void main(String[] args) {
+        FolderApi apiInstance = new FolderApi();
+        String id = id_example; // String | An identifier
+        String userId = userId_example; // String | An identifier
+        try {
+            BasicResult result = apiInstance.secFolderIdMemberUserIdDelete(id, userId);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling FolderApi#secFolderIdMemberUserIdDelete");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-Folder-secFolderIdMemberUserIdDelete-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-Folder-secFolderIdMemberUserIdDelete-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
+// Configure API key authorization: (authentication scheme: authTokenHeader)
+[apiConfig setApiKey:@"YOUR_API_KEY" forApiKeyIdentifier:@"X-Docspell-Auth"];
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+//[apiConfig setApiKeyPrefix:@"Bearer" forApiKeyIdentifier:@"X-Docspell-Auth"];
+String *id = id_example; // An identifier
+String *userId = userId_example; // An identifier
+
+FolderApi *apiInstance = [[FolderApi alloc] init];
+
+// Removes a member from this folder.
+[apiInstance secFolderIdMemberUserIdDeleteWith:id
+    userId:userId
+              completionHandler: ^(BasicResult output, NSError* error) {
+                            if (output) {
+                                NSLog(@"%@", output);
+                            }
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Folder-secFolderIdMemberUserIdDelete-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var Docspell = require('docspell');
+var defaultClient = Docspell.ApiClient.instance;
+
+// Configure API key authorization: authTokenHeader
+var authTokenHeader = defaultClient.authentications['authTokenHeader'];
+authTokenHeader.apiKey = "YOUR API KEY"
+// Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+//authTokenHeader.apiKeyPrefix['X-Docspell-Auth'] = "Token"
+
+var api = new Docspell.FolderApi()
+var id = id_example; // {{String}} An identifier
+var userId = userId_example; // {{String}} An identifier
+
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+};
+api.secFolderIdMemberUserIdDelete(id, userId, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-Folder-secFolderIdMemberUserIdDelete-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-Folder-secFolderIdMemberUserIdDelete-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class secFolderIdMemberUserIdDeleteExample
+    {
+        public void main()
+        {
+
+            // Configure API key authorization: authTokenHeader
+            Configuration.Default.ApiKey.Add("X-Docspell-Auth", "YOUR_API_KEY");
+            // Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+            // Configuration.Default.ApiKeyPrefix.Add("X-Docspell-Auth", "Bearer");
+
+            var apiInstance = new FolderApi();
+            var id = id_example;  // String | An identifier
+            var userId = userId_example;  // String | An identifier
+
+            try
+            {
+                // Removes a member from this folder.
+                BasicResult result = apiInstance.secFolderIdMemberUserIdDelete(id, userId);
+                Debug.WriteLine(result);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling FolderApi.secFolderIdMemberUserIdDelete: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Folder-secFolderIdMemberUserIdDelete-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+// Configure API key authorization: authTokenHeader
+Swagger\Client\Configuration::getDefaultConfiguration()->setApiKey('X-Docspell-Auth', 'YOUR_API_KEY');
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+// Swagger\Client\Configuration::getDefaultConfiguration()->setApiKeyPrefix('X-Docspell-Auth', 'Bearer');
+
+$api_instance = new Swagger\Client\ApiFolderApi();
+$id = id_example; // String | An identifier
+$userId = userId_example; // String | An identifier
+
+try {
+    $result = $api_instance->secFolderIdMemberUserIdDelete($id, $userId);
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling FolderApi->secFolderIdMemberUserIdDelete: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Folder-secFolderIdMemberUserIdDelete-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::FolderApi;
+
+# Configure API key authorization: authTokenHeader
+$WWW::SwaggerClient::Configuration::api_key->{'X-Docspell-Auth'} = 'YOUR_API_KEY';
+# uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+#$WWW::SwaggerClient::Configuration::api_key_prefix->{'X-Docspell-Auth'} = "Bearer";
+
+my $api_instance = WWW::SwaggerClient::FolderApi->new();
+my $id = id_example; # String | An identifier
+my $userId = userId_example; # String | An identifier
+
+eval { 
+    my $result = $api_instance->secFolderIdMemberUserIdDelete(id => $id, userId => $userId);
+    print Dumper($result);
+};
+if ($@) {
+    warn "Exception when calling FolderApi->secFolderIdMemberUserIdDelete: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Folder-secFolderIdMemberUserIdDelete-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# Configure API key authorization: authTokenHeader
+swagger_client.configuration.api_key['X-Docspell-Auth'] = 'YOUR_API_KEY'
+# Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+# swagger_client.configuration.api_key_prefix['X-Docspell-Auth'] = 'Bearer'
+
+# create an instance of the API class
+api_instance = swagger_client.FolderApi()
+id = id_example # String | An identifier
+userId = userId_example # String | An identifier
+
+try: 
+    # Removes a member from this folder.
+    api_response = api_instance.sec_folder_id_member_user_id_delete(id, userId)
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling FolderApi->secFolderIdMemberUserIdDelete: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+                            <div class="methodsubtabletitle">Path parameters</div>
+                            <table id="methodsubtable">
+                                <tr>
+                                  <th width="150px">Name</th>
+                                  <th>Description</th>
+                                </tr>
+                                  <tr><td style="width:150px;">id*</td>
+                                  <td>
+                                  
+                                  
+                                      <div id="d2e199_secFolderIdMemberUserIdDelete_id">
+                                          <div class="json-schema-view">
+                                              <div class="primitive">
+                                                  <span class="type">
+                                                      String
+                                                  </span>
+                                  
+                                                      <div class="inner description">
+                                                          An identifier
+                                                      </div>
+                                              </div>
+                                                  <div class="inner required">
+                                                      Required
+                                                  </div>
+                                          </div>
+                                      </div>
+                                  </td>
+                                  </tr>
+                                  <tr><td style="width:150px;">userId*</td>
+                                  <td>
+                                  
+                                  
+                                      <div id="d2e199_secFolderIdMemberUserIdDelete_userId">
+                                          <div class="json-schema-view">
+                                              <div class="primitive">
+                                                  <span class="type">
+                                                      String
+                                                  </span>
+                                  
+                                                      <div class="inner description">
+                                                          An identifier
+                                                      </div>
+                                              </div>
+                                                  <div class="inner required">
+                                                      Required
+                                                  </div>
+                                          </div>
+                                      </div>
+                                  </td>
+                                  </tr>
+                            </table>
+
+
+
+
+
+                          <h2>Responses</h2>
+                            <h3> Status: 200 - Ok </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-secFolderIdMemberUserIdDelete-200-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-secFolderIdMemberUserIdDelete-200-schema">
+                                  <div id='responses-secFolderIdMemberUserIdDelete-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "Ok",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/BasicResult"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-secFolderIdMemberUserIdDelete-200-schema-data').val(stringify(schema));
+                                        var result = $('#responses-secFolderIdMemberUserIdDelete-200-schema-200');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-secFolderIdMemberUserIdDelete-200-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
+                    <div id="api-Folder-secFolderIdMemberUserIdPut">
+                      <article id="api-Folder-secFolderIdMemberUserIdPut-0" data-group="User" data-name="secFolderIdMemberUserIdPut" data-version="0">
+                        <div class="pull-left">
+                          <h1>secFolderIdMemberUserIdPut</h1>
+                          <p>Add a member to this folder</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked">Adds a member to this folder (identified by &#x60;id&#x60;).
+</p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="put"><code><span class="pln">/sec/folder/{id}/member/{userId}</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-Folder-secFolderIdMemberUserIdPut-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-Folder-secFolderIdMemberUserIdPut-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Folder-secFolderIdMemberUserIdPut-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-Folder-secFolderIdMemberUserIdPut-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-Folder-secFolderIdMemberUserIdPut-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-Folder-secFolderIdMemberUserIdPut-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-Folder-secFolderIdMemberUserIdPut-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-Folder-secFolderIdMemberUserIdPut-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-Folder-secFolderIdMemberUserIdPut-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-Folder-secFolderIdMemberUserIdPut-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-Folder-secFolderIdMemberUserIdPut-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-Folder-secFolderIdMemberUserIdPut-0-curl">
+                            <pre class="prettyprint"><code class="language-bsh">curl -X PUT -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/folder/{id}/member/{userId}"</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-Folder-secFolderIdMemberUserIdPut-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.FolderApi;
+
+import java.io.File;
+import java.util.*;
+
+public class FolderApiExample {
+
+    public static void main(String[] args) {
+        ApiClient defaultClient = Configuration.getDefaultApiClient();
+
+        // Configure API key authorization: authTokenHeader
+        ApiKeyAuth authTokenHeader = (ApiKeyAuth) defaultClient.getAuthentication("authTokenHeader");
+        authTokenHeader.setApiKey("YOUR API KEY");
+        // Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+        //authTokenHeader.setApiKeyPrefix("Token");
+
+        FolderApi apiInstance = new FolderApi();
+        String id = id_example; // String | An identifier
+        String userId = userId_example; // String | An identifier
+        try {
+            BasicResult result = apiInstance.secFolderIdMemberUserIdPut(id, userId);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling FolderApi#secFolderIdMemberUserIdPut");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Folder-secFolderIdMemberUserIdPut-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.FolderApi;
+
+public class FolderApiExample {
+
+    public static void main(String[] args) {
+        FolderApi apiInstance = new FolderApi();
+        String id = id_example; // String | An identifier
+        String userId = userId_example; // String | An identifier
+        try {
+            BasicResult result = apiInstance.secFolderIdMemberUserIdPut(id, userId);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling FolderApi#secFolderIdMemberUserIdPut");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-Folder-secFolderIdMemberUserIdPut-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-Folder-secFolderIdMemberUserIdPut-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
+// Configure API key authorization: (authentication scheme: authTokenHeader)
+[apiConfig setApiKey:@"YOUR_API_KEY" forApiKeyIdentifier:@"X-Docspell-Auth"];
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+//[apiConfig setApiKeyPrefix:@"Bearer" forApiKeyIdentifier:@"X-Docspell-Auth"];
+String *id = id_example; // An identifier
+String *userId = userId_example; // An identifier
+
+FolderApi *apiInstance = [[FolderApi alloc] init];
+
+// Add a member to this folder
+[apiInstance secFolderIdMemberUserIdPutWith:id
+    userId:userId
+              completionHandler: ^(BasicResult output, NSError* error) {
+                            if (output) {
+                                NSLog(@"%@", output);
+                            }
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Folder-secFolderIdMemberUserIdPut-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var Docspell = require('docspell');
+var defaultClient = Docspell.ApiClient.instance;
+
+// Configure API key authorization: authTokenHeader
+var authTokenHeader = defaultClient.authentications['authTokenHeader'];
+authTokenHeader.apiKey = "YOUR API KEY"
+// Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+//authTokenHeader.apiKeyPrefix['X-Docspell-Auth'] = "Token"
+
+var api = new Docspell.FolderApi()
+var id = id_example; // {{String}} An identifier
+var userId = userId_example; // {{String}} An identifier
+
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+};
+api.secFolderIdMemberUserIdPut(id, userId, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-Folder-secFolderIdMemberUserIdPut-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-Folder-secFolderIdMemberUserIdPut-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class secFolderIdMemberUserIdPutExample
+    {
+        public void main()
+        {
+
+            // Configure API key authorization: authTokenHeader
+            Configuration.Default.ApiKey.Add("X-Docspell-Auth", "YOUR_API_KEY");
+            // Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+            // Configuration.Default.ApiKeyPrefix.Add("X-Docspell-Auth", "Bearer");
+
+            var apiInstance = new FolderApi();
+            var id = id_example;  // String | An identifier
+            var userId = userId_example;  // String | An identifier
+
+            try
+            {
+                // Add a member to this folder
+                BasicResult result = apiInstance.secFolderIdMemberUserIdPut(id, userId);
+                Debug.WriteLine(result);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling FolderApi.secFolderIdMemberUserIdPut: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Folder-secFolderIdMemberUserIdPut-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+// Configure API key authorization: authTokenHeader
+Swagger\Client\Configuration::getDefaultConfiguration()->setApiKey('X-Docspell-Auth', 'YOUR_API_KEY');
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+// Swagger\Client\Configuration::getDefaultConfiguration()->setApiKeyPrefix('X-Docspell-Auth', 'Bearer');
+
+$api_instance = new Swagger\Client\ApiFolderApi();
+$id = id_example; // String | An identifier
+$userId = userId_example; // String | An identifier
+
+try {
+    $result = $api_instance->secFolderIdMemberUserIdPut($id, $userId);
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling FolderApi->secFolderIdMemberUserIdPut: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Folder-secFolderIdMemberUserIdPut-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::FolderApi;
+
+# Configure API key authorization: authTokenHeader
+$WWW::SwaggerClient::Configuration::api_key->{'X-Docspell-Auth'} = 'YOUR_API_KEY';
+# uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+#$WWW::SwaggerClient::Configuration::api_key_prefix->{'X-Docspell-Auth'} = "Bearer";
+
+my $api_instance = WWW::SwaggerClient::FolderApi->new();
+my $id = id_example; # String | An identifier
+my $userId = userId_example; # String | An identifier
+
+eval { 
+    my $result = $api_instance->secFolderIdMemberUserIdPut(id => $id, userId => $userId);
+    print Dumper($result);
+};
+if ($@) {
+    warn "Exception when calling FolderApi->secFolderIdMemberUserIdPut: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Folder-secFolderIdMemberUserIdPut-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# Configure API key authorization: authTokenHeader
+swagger_client.configuration.api_key['X-Docspell-Auth'] = 'YOUR_API_KEY'
+# Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+# swagger_client.configuration.api_key_prefix['X-Docspell-Auth'] = 'Bearer'
+
+# create an instance of the API class
+api_instance = swagger_client.FolderApi()
+id = id_example # String | An identifier
+userId = userId_example # String | An identifier
+
+try: 
+    # Add a member to this folder
+    api_response = api_instance.sec_folder_id_member_user_id_put(id, userId)
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling FolderApi->secFolderIdMemberUserIdPut: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+                            <div class="methodsubtabletitle">Path parameters</div>
+                            <table id="methodsubtable">
+                                <tr>
+                                  <th width="150px">Name</th>
+                                  <th>Description</th>
+                                </tr>
+                                  <tr><td style="width:150px;">id*</td>
+                                  <td>
+                                  
+                                  
+                                      <div id="d2e199_secFolderIdMemberUserIdPut_id">
+                                          <div class="json-schema-view">
+                                              <div class="primitive">
+                                                  <span class="type">
+                                                      String
+                                                  </span>
+                                  
+                                                      <div class="inner description">
+                                                          An identifier
+                                                      </div>
+                                              </div>
+                                                  <div class="inner required">
+                                                      Required
+                                                  </div>
+                                          </div>
+                                      </div>
+                                  </td>
+                                  </tr>
+                                  <tr><td style="width:150px;">userId*</td>
+                                  <td>
+                                  
+                                  
+                                      <div id="d2e199_secFolderIdMemberUserIdPut_userId">
+                                          <div class="json-schema-view">
+                                              <div class="primitive">
+                                                  <span class="type">
+                                                      String
+                                                  </span>
+                                  
+                                                      <div class="inner description">
+                                                          An identifier
+                                                      </div>
+                                              </div>
+                                                  <div class="inner required">
+                                                      Required
+                                                  </div>
+                                          </div>
+                                      </div>
+                                  </td>
+                                  </tr>
+                            </table>
+
+
+
+
+
+                          <h2>Responses</h2>
+                            <h3> Status: 200 - Ok </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-secFolderIdMemberUserIdPut-200-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-secFolderIdMemberUserIdPut-200-schema">
+                                  <div id='responses-secFolderIdMemberUserIdPut-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "Ok",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/BasicResult"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-secFolderIdMemberUserIdPut-200-schema-data').val(stringify(schema));
+                                        var result = $('#responses-secFolderIdMemberUserIdPut-200-schema-200');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-secFolderIdMemberUserIdPut-200-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
+                    <div id="api-Folder-secFolderIdPut">
+                      <article id="api-Folder-secFolderIdPut-0" data-group="User" data-name="secFolderIdPut" data-version="0">
+                        <div class="pull-left">
+                          <h1>secFolderIdPut</h1>
+                          <p>Change the name of a folder</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked">Changes the name of a folder. The new name must not exists.
+</p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="put"><code><span class="pln">/sec/folder/{id}</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-Folder-secFolderIdPut-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-Folder-secFolderIdPut-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Folder-secFolderIdPut-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-Folder-secFolderIdPut-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-Folder-secFolderIdPut-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-Folder-secFolderIdPut-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-Folder-secFolderIdPut-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-Folder-secFolderIdPut-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-Folder-secFolderIdPut-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-Folder-secFolderIdPut-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-Folder-secFolderIdPut-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-Folder-secFolderIdPut-0-curl">
+                            <pre class="prettyprint"><code class="language-bsh">curl -X PUT -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/folder/{id}"</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-Folder-secFolderIdPut-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.FolderApi;
+
+import java.io.File;
+import java.util.*;
+
+public class FolderApiExample {
+
+    public static void main(String[] args) {
+        ApiClient defaultClient = Configuration.getDefaultApiClient();
+
+        // Configure API key authorization: authTokenHeader
+        ApiKeyAuth authTokenHeader = (ApiKeyAuth) defaultClient.getAuthentication("authTokenHeader");
+        authTokenHeader.setApiKey("YOUR API KEY");
+        // Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+        //authTokenHeader.setApiKeyPrefix("Token");
+
+        FolderApi apiInstance = new FolderApi();
+        String id = id_example; // String | An identifier
+        NewFolder body = ; // NewFolder | 
+        try {
+            BasicResult result = apiInstance.secFolderIdPut(id, body);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling FolderApi#secFolderIdPut");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Folder-secFolderIdPut-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.FolderApi;
+
+public class FolderApiExample {
+
+    public static void main(String[] args) {
+        FolderApi apiInstance = new FolderApi();
+        String id = id_example; // String | An identifier
+        NewFolder body = ; // NewFolder | 
+        try {
+            BasicResult result = apiInstance.secFolderIdPut(id, body);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling FolderApi#secFolderIdPut");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-Folder-secFolderIdPut-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-Folder-secFolderIdPut-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
+// Configure API key authorization: (authentication scheme: authTokenHeader)
+[apiConfig setApiKey:@"YOUR_API_KEY" forApiKeyIdentifier:@"X-Docspell-Auth"];
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+//[apiConfig setApiKeyPrefix:@"Bearer" forApiKeyIdentifier:@"X-Docspell-Auth"];
+String *id = id_example; // An identifier
+NewFolder *body = ; //  (optional)
+
+FolderApi *apiInstance = [[FolderApi alloc] init];
+
+// Change the name of a folder
+[apiInstance secFolderIdPutWith:id
+    body:body
+              completionHandler: ^(BasicResult output, NSError* error) {
+                            if (output) {
+                                NSLog(@"%@", output);
+                            }
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Folder-secFolderIdPut-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var Docspell = require('docspell');
+var defaultClient = Docspell.ApiClient.instance;
+
+// Configure API key authorization: authTokenHeader
+var authTokenHeader = defaultClient.authentications['authTokenHeader'];
+authTokenHeader.apiKey = "YOUR API KEY"
+// Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+//authTokenHeader.apiKeyPrefix['X-Docspell-Auth'] = "Token"
+
+var api = new Docspell.FolderApi()
+var id = id_example; // {{String}} An identifier
+var opts = { 
+  'body':  // {{NewFolder}} 
+};
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+};
+api.secFolderIdPut(id, opts, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-Folder-secFolderIdPut-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-Folder-secFolderIdPut-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class secFolderIdPutExample
+    {
+        public void main()
+        {
+
+            // Configure API key authorization: authTokenHeader
+            Configuration.Default.ApiKey.Add("X-Docspell-Auth", "YOUR_API_KEY");
+            // Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+            // Configuration.Default.ApiKeyPrefix.Add("X-Docspell-Auth", "Bearer");
+
+            var apiInstance = new FolderApi();
+            var id = id_example;  // String | An identifier
+            var body = new NewFolder(); // NewFolder |  (optional) 
+
+            try
+            {
+                // Change the name of a folder
+                BasicResult result = apiInstance.secFolderIdPut(id, body);
+                Debug.WriteLine(result);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling FolderApi.secFolderIdPut: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Folder-secFolderIdPut-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+// Configure API key authorization: authTokenHeader
+Swagger\Client\Configuration::getDefaultConfiguration()->setApiKey('X-Docspell-Auth', 'YOUR_API_KEY');
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+// Swagger\Client\Configuration::getDefaultConfiguration()->setApiKeyPrefix('X-Docspell-Auth', 'Bearer');
+
+$api_instance = new Swagger\Client\ApiFolderApi();
+$id = id_example; // String | An identifier
+$body = ; // NewFolder | 
+
+try {
+    $result = $api_instance->secFolderIdPut($id, $body);
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling FolderApi->secFolderIdPut: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Folder-secFolderIdPut-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::FolderApi;
+
+# Configure API key authorization: authTokenHeader
+$WWW::SwaggerClient::Configuration::api_key->{'X-Docspell-Auth'} = 'YOUR_API_KEY';
+# uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+#$WWW::SwaggerClient::Configuration::api_key_prefix->{'X-Docspell-Auth'} = "Bearer";
+
+my $api_instance = WWW::SwaggerClient::FolderApi->new();
+my $id = id_example; # String | An identifier
+my $body = WWW::SwaggerClient::Object::NewFolder->new(); # NewFolder | 
+
+eval { 
+    my $result = $api_instance->secFolderIdPut(id => $id, body => $body);
+    print Dumper($result);
+};
+if ($@) {
+    warn "Exception when calling FolderApi->secFolderIdPut: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Folder-secFolderIdPut-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# Configure API key authorization: authTokenHeader
+swagger_client.configuration.api_key['X-Docspell-Auth'] = 'YOUR_API_KEY'
+# Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+# swagger_client.configuration.api_key_prefix['X-Docspell-Auth'] = 'Bearer'
+
+# create an instance of the API class
+api_instance = swagger_client.FolderApi()
+id = id_example # String | An identifier
+body =  # NewFolder |  (optional)
+
+try: 
+    # Change the name of a folder
+    api_response = api_instance.sec_folder_id_put(id, body=body)
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling FolderApi->secFolderIdPut: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+                            <div class="methodsubtabletitle">Path parameters</div>
+                            <table id="methodsubtable">
+                                <tr>
+                                  <th width="150px">Name</th>
+                                  <th>Description</th>
+                                </tr>
+                                  <tr><td style="width:150px;">id*</td>
+                                  <td>
+                                  
+                                  
+                                      <div id="d2e199_secFolderIdPut_id">
+                                          <div class="json-schema-view">
+                                              <div class="primitive">
+                                                  <span class="type">
+                                                      String
+                                                  </span>
+                                  
+                                                      <div class="inner description">
+                                                          An identifier
+                                                      </div>
+                                              </div>
+                                                  <div class="inner required">
+                                                      Required
+                                                  </div>
+                                          </div>
+                                      </div>
+                                  </td>
+                                  </tr>
+                            </table>
+
+
+                            <div class="methodsubtabletitle">Body parameters</div>
+                            <table id="methodsubtable">
+                              <tr>
+                                <th width="150px">Name</th>
+                                <th>Description</th>
+                              </tr>
+                                <tr><td style="width:150px;">body </td>
+                                <td>
+                                
+                                
+                                <script>
+                                $(document).ready(function() {
+                                  var schemaWrapper = {
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/NewFolder"
+      }
+    }
+  }
+};
+                                  var schema = schemaWrapper.content["application/json"].schema;
+                                  if (schema.$ref != null) {
+                                    schema = defsParser.$refs.get(schema.$ref);
+                                  } else {
+                                    schemaWrapper.components = {};
+                                    schemaWrapper.components.schemas = Object.assign({}, defs);
+                                    $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                      console.log(err);
+                                    });
+                                  }
+                                
+                                  var view = new JSONSchemaView(schema,2,{isBodyParam: true});
+                                  var result = $('#d2e199_secFolderIdPut_body');
+                                  result.empty();
+                                  result.append(view.render());
+                                });
+                                </script>
+                                <div id="d2e199_secFolderIdPut_body"></div>
+                                </td>
+                                </tr>
+                            </table>
+
+
+
+                          <h2>Responses</h2>
+                            <h3> Status: 200 - Ok </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-secFolderIdPut-200-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-secFolderIdPut-200-schema">
+                                  <div id='responses-secFolderIdPut-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "Ok",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/BasicResult"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-secFolderIdPut-200-schema-data').val(stringify(schema));
+                                        var result = $('#responses-secFolderIdPut-200-schema-200');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-secFolderIdPut-200-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
+                    <div id="api-Folder-secFolderPost">
+                      <article id="api-Folder-secFolderPost-0" data-group="User" data-name="secFolderPost" data-version="0">
+                        <div class="pull-left">
+                          <h1>secFolderPost</h1>
+                          <p>Create a new folder</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked">Create a new folder owned by the current user. If a folder with
+the same name already exists, an error is thrown.
+</p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="post"><code><span class="pln">/sec/folder</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-Folder-secFolderPost-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-Folder-secFolderPost-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Folder-secFolderPost-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-Folder-secFolderPost-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-Folder-secFolderPost-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-Folder-secFolderPost-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-Folder-secFolderPost-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-Folder-secFolderPost-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-Folder-secFolderPost-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-Folder-secFolderPost-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-Folder-secFolderPost-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-Folder-secFolderPost-0-curl">
+                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/folder"</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-Folder-secFolderPost-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.FolderApi;
+
+import java.io.File;
+import java.util.*;
+
+public class FolderApiExample {
+
+    public static void main(String[] args) {
+        ApiClient defaultClient = Configuration.getDefaultApiClient();
+
+        // Configure API key authorization: authTokenHeader
+        ApiKeyAuth authTokenHeader = (ApiKeyAuth) defaultClient.getAuthentication("authTokenHeader");
+        authTokenHeader.setApiKey("YOUR API KEY");
+        // Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+        //authTokenHeader.setApiKeyPrefix("Token");
+
+        FolderApi apiInstance = new FolderApi();
+        NewFolder body = ; // NewFolder | 
+        try {
+            IdResult result = apiInstance.secFolderPost(body);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling FolderApi#secFolderPost");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Folder-secFolderPost-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.FolderApi;
+
+public class FolderApiExample {
+
+    public static void main(String[] args) {
+        FolderApi apiInstance = new FolderApi();
+        NewFolder body = ; // NewFolder | 
+        try {
+            IdResult result = apiInstance.secFolderPost(body);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling FolderApi#secFolderPost");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-Folder-secFolderPost-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-Folder-secFolderPost-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
+// Configure API key authorization: (authentication scheme: authTokenHeader)
+[apiConfig setApiKey:@"YOUR_API_KEY" forApiKeyIdentifier:@"X-Docspell-Auth"];
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+//[apiConfig setApiKeyPrefix:@"Bearer" forApiKeyIdentifier:@"X-Docspell-Auth"];
+NewFolder *body = ; //  (optional)
+
+FolderApi *apiInstance = [[FolderApi alloc] init];
+
+// Create a new folder
+[apiInstance secFolderPostWith:body
+              completionHandler: ^(IdResult output, NSError* error) {
+                            if (output) {
+                                NSLog(@"%@", output);
+                            }
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Folder-secFolderPost-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var Docspell = require('docspell');
+var defaultClient = Docspell.ApiClient.instance;
+
+// Configure API key authorization: authTokenHeader
+var authTokenHeader = defaultClient.authentications['authTokenHeader'];
+authTokenHeader.apiKey = "YOUR API KEY"
+// Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+//authTokenHeader.apiKeyPrefix['X-Docspell-Auth'] = "Token"
+
+var api = new Docspell.FolderApi()
+var opts = { 
+  'body':  // {{NewFolder}} 
+};
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+};
+api.secFolderPost(opts, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-Folder-secFolderPost-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-Folder-secFolderPost-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class secFolderPostExample
+    {
+        public void main()
+        {
+
+            // Configure API key authorization: authTokenHeader
+            Configuration.Default.ApiKey.Add("X-Docspell-Auth", "YOUR_API_KEY");
+            // Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+            // Configuration.Default.ApiKeyPrefix.Add("X-Docspell-Auth", "Bearer");
+
+            var apiInstance = new FolderApi();
+            var body = new NewFolder(); // NewFolder |  (optional) 
+
+            try
+            {
+                // Create a new folder
+                IdResult result = apiInstance.secFolderPost(body);
+                Debug.WriteLine(result);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling FolderApi.secFolderPost: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Folder-secFolderPost-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+// Configure API key authorization: authTokenHeader
+Swagger\Client\Configuration::getDefaultConfiguration()->setApiKey('X-Docspell-Auth', 'YOUR_API_KEY');
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+// Swagger\Client\Configuration::getDefaultConfiguration()->setApiKeyPrefix('X-Docspell-Auth', 'Bearer');
+
+$api_instance = new Swagger\Client\ApiFolderApi();
+$body = ; // NewFolder | 
+
+try {
+    $result = $api_instance->secFolderPost($body);
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling FolderApi->secFolderPost: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Folder-secFolderPost-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::FolderApi;
+
+# Configure API key authorization: authTokenHeader
+$WWW::SwaggerClient::Configuration::api_key->{'X-Docspell-Auth'} = 'YOUR_API_KEY';
+# uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+#$WWW::SwaggerClient::Configuration::api_key_prefix->{'X-Docspell-Auth'} = "Bearer";
+
+my $api_instance = WWW::SwaggerClient::FolderApi->new();
+my $body = WWW::SwaggerClient::Object::NewFolder->new(); # NewFolder | 
+
+eval { 
+    my $result = $api_instance->secFolderPost(body => $body);
+    print Dumper($result);
+};
+if ($@) {
+    warn "Exception when calling FolderApi->secFolderPost: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Folder-secFolderPost-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# Configure API key authorization: authTokenHeader
+swagger_client.configuration.api_key['X-Docspell-Auth'] = 'YOUR_API_KEY'
+# Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+# swagger_client.configuration.api_key_prefix['X-Docspell-Auth'] = 'Bearer'
+
+# create an instance of the API class
+api_instance = swagger_client.FolderApi()
+body =  # NewFolder |  (optional)
+
+try: 
+    # Create a new folder
+    api_response = api_instance.sec_folder_post(body=body)
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling FolderApi->secFolderPost: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+
+
+                            <div class="methodsubtabletitle">Body parameters</div>
+                            <table id="methodsubtable">
+                              <tr>
+                                <th width="150px">Name</th>
+                                <th>Description</th>
+                              </tr>
+                                <tr><td style="width:150px;">body </td>
+                                <td>
+                                
+                                
+                                <script>
+                                $(document).ready(function() {
+                                  var schemaWrapper = {
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/NewFolder"
+      }
+    }
+  }
+};
+                                  var schema = schemaWrapper.content["application/json"].schema;
+                                  if (schema.$ref != null) {
+                                    schema = defsParser.$refs.get(schema.$ref);
+                                  } else {
+                                    schemaWrapper.components = {};
+                                    schemaWrapper.components.schemas = Object.assign({}, defs);
+                                    $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                      console.log(err);
+                                    });
+                                  }
+                                
+                                  var view = new JSONSchemaView(schema,2,{isBodyParam: true});
+                                  var result = $('#d2e199_secFolderPost_body');
+                                  result.empty();
+                                  result.append(view.render());
+                                });
+                                </script>
+                                <div id="d2e199_secFolderPost_body"></div>
+                                </td>
+                                </tr>
+                            </table>
+
+
+
+                          <h2>Responses</h2>
+                            <h3> Status: 200 - Ok </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-secFolderPost-200-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-secFolderPost-200-schema">
+                                  <div id='responses-secFolderPost-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "Ok",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/IdResult"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-secFolderPost-200-schema-data').val(stringify(schema));
+                                        var result = $('#responses-secFolderPost-200-schema-200');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-secFolderPost-200-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
+                  </section>
                 <section id="api-FullTextIndex">
                   <h1>FullTextIndex</h1>
                     <div id="api-FullTextIndex-openFtsReIndexAllIdPost">
@@ -23227,6 +25888,395 @@ except ApiException as e:
                                     </script>
                                   </div>
                                   <input id='responses-secItemIdDuedatePut-200-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
+                    <div id="api-Item-secItemIdFolderPut">
+                      <article id="api-Item-secItemIdFolderPut-0" data-group="User" data-name="secItemIdFolderPut" data-version="0">
+                        <div class="pull-left">
+                          <h1>secItemIdFolderPut</h1>
+                          <p>Set a folder for this item.</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked">Updates the folder property for this item to &quot;place&quot; the item
+into a folder. If the request contains an empty object or an
+&#x60;id&#x60; property of &#x60;null&#x60;, the item is moved into the &quot;public&quot;
+or &quot;root&quot; folder.
+</p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="put"><code><span class="pln">/sec/item/{id}/folder</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-Item-secItemIdFolderPut-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-Item-secItemIdFolderPut-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Item-secItemIdFolderPut-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-Item-secItemIdFolderPut-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-Item-secItemIdFolderPut-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-Item-secItemIdFolderPut-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-Item-secItemIdFolderPut-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-Item-secItemIdFolderPut-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-Item-secItemIdFolderPut-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-Item-secItemIdFolderPut-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-Item-secItemIdFolderPut-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-Item-secItemIdFolderPut-0-curl">
+                            <pre class="prettyprint"><code class="language-bsh">curl -X PUT -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/item/{id}/folder"</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-Item-secItemIdFolderPut-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.ItemApi;
+
+import java.io.File;
+import java.util.*;
+
+public class ItemApiExample {
+
+    public static void main(String[] args) {
+        ApiClient defaultClient = Configuration.getDefaultApiClient();
+
+        // Configure API key authorization: authTokenHeader
+        ApiKeyAuth authTokenHeader = (ApiKeyAuth) defaultClient.getAuthentication("authTokenHeader");
+        authTokenHeader.setApiKey("YOUR API KEY");
+        // Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+        //authTokenHeader.setApiKeyPrefix("Token");
+
+        ItemApi apiInstance = new ItemApi();
+        String id = id_example; // String | An identifier
+        OptionalId body = ; // OptionalId | 
+        try {
+            BasicResult result = apiInstance.secItemIdFolderPut(id, body);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling ItemApi#secItemIdFolderPut");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Item-secItemIdFolderPut-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.ItemApi;
+
+public class ItemApiExample {
+
+    public static void main(String[] args) {
+        ItemApi apiInstance = new ItemApi();
+        String id = id_example; // String | An identifier
+        OptionalId body = ; // OptionalId | 
+        try {
+            BasicResult result = apiInstance.secItemIdFolderPut(id, body);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling ItemApi#secItemIdFolderPut");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-Item-secItemIdFolderPut-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-Item-secItemIdFolderPut-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
+// Configure API key authorization: (authentication scheme: authTokenHeader)
+[apiConfig setApiKey:@"YOUR_API_KEY" forApiKeyIdentifier:@"X-Docspell-Auth"];
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+//[apiConfig setApiKeyPrefix:@"Bearer" forApiKeyIdentifier:@"X-Docspell-Auth"];
+String *id = id_example; // An identifier
+OptionalId *body = ; //  (optional)
+
+ItemApi *apiInstance = [[ItemApi alloc] init];
+
+// Set a folder for this item.
+[apiInstance secItemIdFolderPutWith:id
+    body:body
+              completionHandler: ^(BasicResult output, NSError* error) {
+                            if (output) {
+                                NSLog(@"%@", output);
+                            }
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Item-secItemIdFolderPut-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var Docspell = require('docspell');
+var defaultClient = Docspell.ApiClient.instance;
+
+// Configure API key authorization: authTokenHeader
+var authTokenHeader = defaultClient.authentications['authTokenHeader'];
+authTokenHeader.apiKey = "YOUR API KEY"
+// Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+//authTokenHeader.apiKeyPrefix['X-Docspell-Auth'] = "Token"
+
+var api = new Docspell.ItemApi()
+var id = id_example; // {{String}} An identifier
+var opts = { 
+  'body':  // {{OptionalId}} 
+};
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+};
+api.secItemIdFolderPut(id, opts, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-Item-secItemIdFolderPut-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-Item-secItemIdFolderPut-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class secItemIdFolderPutExample
+    {
+        public void main()
+        {
+
+            // Configure API key authorization: authTokenHeader
+            Configuration.Default.ApiKey.Add("X-Docspell-Auth", "YOUR_API_KEY");
+            // Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+            // Configuration.Default.ApiKeyPrefix.Add("X-Docspell-Auth", "Bearer");
+
+            var apiInstance = new ItemApi();
+            var id = id_example;  // String | An identifier
+            var body = new OptionalId(); // OptionalId |  (optional) 
+
+            try
+            {
+                // Set a folder for this item.
+                BasicResult result = apiInstance.secItemIdFolderPut(id, body);
+                Debug.WriteLine(result);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling ItemApi.secItemIdFolderPut: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Item-secItemIdFolderPut-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+// Configure API key authorization: authTokenHeader
+Swagger\Client\Configuration::getDefaultConfiguration()->setApiKey('X-Docspell-Auth', 'YOUR_API_KEY');
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+// Swagger\Client\Configuration::getDefaultConfiguration()->setApiKeyPrefix('X-Docspell-Auth', 'Bearer');
+
+$api_instance = new Swagger\Client\ApiItemApi();
+$id = id_example; // String | An identifier
+$body = ; // OptionalId | 
+
+try {
+    $result = $api_instance->secItemIdFolderPut($id, $body);
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling ItemApi->secItemIdFolderPut: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Item-secItemIdFolderPut-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::ItemApi;
+
+# Configure API key authorization: authTokenHeader
+$WWW::SwaggerClient::Configuration::api_key->{'X-Docspell-Auth'} = 'YOUR_API_KEY';
+# uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+#$WWW::SwaggerClient::Configuration::api_key_prefix->{'X-Docspell-Auth'} = "Bearer";
+
+my $api_instance = WWW::SwaggerClient::ItemApi->new();
+my $id = id_example; # String | An identifier
+my $body = WWW::SwaggerClient::Object::OptionalId->new(); # OptionalId | 
+
+eval { 
+    my $result = $api_instance->secItemIdFolderPut(id => $id, body => $body);
+    print Dumper($result);
+};
+if ($@) {
+    warn "Exception when calling ItemApi->secItemIdFolderPut: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Item-secItemIdFolderPut-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# Configure API key authorization: authTokenHeader
+swagger_client.configuration.api_key['X-Docspell-Auth'] = 'YOUR_API_KEY'
+# Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+# swagger_client.configuration.api_key_prefix['X-Docspell-Auth'] = 'Bearer'
+
+# create an instance of the API class
+api_instance = swagger_client.ItemApi()
+id = id_example # String | An identifier
+body =  # OptionalId |  (optional)
+
+try: 
+    # Set a folder for this item.
+    api_response = api_instance.sec_item_id_folder_put(id, body=body)
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling ItemApi->secItemIdFolderPut: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+                            <div class="methodsubtabletitle">Path parameters</div>
+                            <table id="methodsubtable">
+                                <tr>
+                                  <th width="150px">Name</th>
+                                  <th>Description</th>
+                                </tr>
+                                  <tr><td style="width:150px;">id*</td>
+                                  <td>
+                                  
+                                  
+                                      <div id="d2e199_secItemIdFolderPut_id">
+                                          <div class="json-schema-view">
+                                              <div class="primitive">
+                                                  <span class="type">
+                                                      String
+                                                  </span>
+                                  
+                                                      <div class="inner description">
+                                                          An identifier
+                                                      </div>
+                                              </div>
+                                                  <div class="inner required">
+                                                      Required
+                                                  </div>
+                                          </div>
+                                      </div>
+                                  </td>
+                                  </tr>
+                            </table>
+
+
+                            <div class="methodsubtabletitle">Body parameters</div>
+                            <table id="methodsubtable">
+                              <tr>
+                                <th width="150px">Name</th>
+                                <th>Description</th>
+                              </tr>
+                                <tr><td style="width:150px;">body </td>
+                                <td>
+                                
+                                
+                                <script>
+                                $(document).ready(function() {
+                                  var schemaWrapper = {
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/OptionalId"
+      }
+    }
+  }
+};
+                                  var schema = schemaWrapper.content["application/json"].schema;
+                                  if (schema.$ref != null) {
+                                    schema = defsParser.$refs.get(schema.$ref);
+                                  } else {
+                                    schemaWrapper.components = {};
+                                    schemaWrapper.components.schemas = Object.assign({}, defs);
+                                    $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                      console.log(err);
+                                    });
+                                  }
+                                
+                                  var view = new JSONSchemaView(schema,2,{isBodyParam: true});
+                                  var result = $('#d2e199_secItemIdFolderPut_body');
+                                  result.empty();
+                                  result.append(view.render());
+                                });
+                                </script>
+                                <div id="d2e199_secItemIdFolderPut_body"></div>
+                                </td>
+                                </tr>
+                            </table>
+
+
+
+                          <h2>Responses</h2>
+                            <h3> Status: 200 - Ok </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-secItemIdFolderPut-200-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-secItemIdFolderPut-200-schema">
+                                  <div id='responses-secItemIdFolderPut-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "Ok",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/BasicResult"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-secItemIdFolderPut-200-schema-data').val(stringify(schema));
+                                        var result = $('#responses-secItemIdFolderPut-200-schema-200');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-secItemIdFolderPut-200-schema-data' type='hidden' value=''></input>
                                 </div>
                             </div>
 

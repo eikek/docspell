@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Eike Kettner">
+<meta name="description" content="Simple Document Organizer">
+<meta name="image" property="og:image" content="/img/poster.png">
+<meta name="title" property="og:title" content="Docspell – Simple Document Organizer">
+<meta name="og:image" content="/img/poster.png">
+<meta name="og:title" content="Docspell – Simple Document Organizer">
+<meta name="og:site_name" content="Notify about due items - Docspell">
+<meta name="og:url" content="">
+<meta name="og:type" content="website">
+<meta name="og:description" content="Simple Document Organizer">
+<meta name="twitter:title" content="Docspell">
+<meta name="twitter:image" content="/img/poster.png">
+<meta name="twitter:description" content="Simple Document Organizer">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="shortcut icon" href="/favicon-mc.ico" type="image/x-icon">
+<link rel="icon" href="/favicon-mc.ico" type="image/x-icon">
+
+        <title>Notify about due items – Docspell Documentation</title>
+        <link rel="stylesheet" href="/styles.css">
+    </head>
+    <body>
+        <section class="hero is-info is-small">
+            <div class="hero-head">
+                <nav class="navbar">
+    <div class="navbar-brand">
+        <a class="navbar-item" href="/">
+            <span class="icon">
+                <img src="/icons/logo-only-36.svg">
+            </span>
+            <span>
+                Docspell
+            </span>
+        </a>
+    </div>
+    <div class="navbar-start">
+        <a target="_blank"
+           href="https://github.com/eikek/docspell"
+           class="navbar-item">
+            <span class="icon">
+                <img src="/icons/github-40.svg">
+            </span>
+            <span>
+                Github
+            </span>
+        </a>
+    </div>
+</nav>
+
+            </div>
+            <div class="hero-body">
+                <h1 class="title">
+                    Notify about due items
+                </h1>
+                <h2 class="subtitle">
+                    Docspell Documentation
+                </h2>
+            </div>
+        </section>
+        <nav class="breadcrumb has-succeeds-separator" aria-label="breadcrumbs">
+            <ul>
+                
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;"></a>
+                </li>
+                
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;">Overview</a>
+                </li>
+                
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;">Web-UI</a>
+                </li>
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;notifydueitems&#x2F;">Notify about due items</a>
+                </li>
+            </ul>
+        </nav>
+
+        <section class="section pt-2">
+            <div class="columns is-desktop">
+                <div class="column is-3">
+                    <div class="menu">
+                        <ul class="menu-list">
+                            
+                            
+
+                            <p class="menu-label">
+                                Web-UI
+                            </p>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/webapp/uploading/"
+                                   >
+                                    Uploads
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/webapp/metadata/"
+                                   >
+                                    Meta Data
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/webapp/curate/"
+                                   >
+                                    Curate Items
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/webapp/finding/"
+                                   >
+                                    Finding Items
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/webapp/emailsettings/"
+                                   >
+                                    E-Mail Settings
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/webapp/mailitem/"
+                                   >
+                                    Send Items Via E-Mail
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/webapp/notifydueitems/"
+                                   class="is-active">
+                                    Notify About Due Items
+                                </a>
+                                
+                                <ul class="menu-list">
+                                    
+                                </ul>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/webapp/scanmailbox/"
+                                   >
+                                    Scan Mailboxes
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/webapp/processing/"
+                                   >
+                                    Processing Queue
+                                </a>
+                                
+                            </li>
+                            
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="column is-9">
+                    <div class="container">
+                        <div class="content doc">
+                            <p>A user that provides valid email (smtp) settings, can be notified by
+docspell about due items. You will then receive an e-mail containing a
+list of items, sorted by their due date.</p>
+<p>You need first define smtp settings, please see <a href="https://docspell.org/docs/webapp/emailsettings/#smtp-settings">this
+page</a>.</p>
+<p>Notifying works simply by searching for due items periodically. It
+will be submitted to the job queue and is picked up by an available
+<a href="https://docspell.org/docs/joex/">job executor</a> eventually. This can be setup in
+the user settings page.</p>
+<figure class="image">
+    <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;notify-due-items.jpg">
+</figure>
+<p>At first, the task can be disabled/enabled any time.</p>
+<p>Then two settings are required for sending an e-mail. You need to
+specify the connection to use and the recipients.</p>
+<p>It follows some settings to customize the query for searching items.
+You can choose to only include items that have one or more tags (these
+are <code>and</code>-ed, so all tags must exist on the item). You can also
+provide tags that must <em>not</em> appear on an item (these tags are
+<code>or</code>-ed, so only one such tag is enough ot exclude an item). A common
+use-case would be to manually tag an item with <em>Done</em> once there is
+nothing more to do. Then these items can be excluded from the search.
+The somewhat inverse use-case is to always tag items with a <em>Todo</em> tag
+and remove it once completed.</p>
+<p>The <em>Remind Days</em> field species the number of days the due date may be
+in the future. Each time the task executes, it searches for items with
+a due date lower than <code>today + remindDays</code>.</p>
+<p>If you don't restrict the search using tags, then all items with a due
+date lower than this value are selected. Since items are (usually) not
+deleted, this only makes sense, if you remove the due date once you
+are done with an item.</p>
+<p>The last option is to check <em>cap overdue items</em>, which uses the value
+in <em>Remind Days</em> to further restrict the due date of an item: only
+those with a due date <em>greater than</em> <code>today - remindDays</code> are
+selected. In other words, only items with an overdue time of <em>at most</em>
+<em>Remind Days</em> are included.</p>
+<p>The <em>Schedule</em> field specifies the periodicity. The syntax is similiar
+to a date-time string, like <code>2019-09-15 12:32</code>, where each part is a
+pattern to also match multple values. The ui tries to help a little by
+displaying the next two date-times this task would execute. A more in
+depth help is available
+<a href="https://github.com/eikek/calev#what-are-calendar-events">here</a>. For
+example, to execute the task every monday at noon, you would write:
+<code>Mon *-*-* 12:00</code>. A date-time part can match all values (<code>*</code>), a list
+of values (e.g. <code>1,5,12,19</code>) or a range (e.g. <code>1..9</code>). Long lists may
+be written in a shorter way using a repetition value. It is written
+like this: <code>1/7</code> which is the same as a list with <code>1</code> and all
+multiples of <code>7</code> added to it. In other words, it matches <code>1</code>, <code>1+7</code>,
+<code>1+7+7</code>, <code>1+7+7+7</code> and so on.</p>
+<p>You can click on <em>Start Once</em> to run this task right now, without
+saving the form to the database (&quot;right now&quot; means it is picked up by
+a free job executor).</p>
+<p>If you click <em>Submit</em> these settings are saved and the task runs
+periodically.</p>
+<p>You can see the task executing at the <a href="https://docspell.org/docs/webapp/processing/">processing
+page</a>.</p>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="footer">
+    <div class="container">
+        <div class="content has-text-centered">
+            <span>
+                Docspell, 0.9.0
+            </span>
+            <span class="ml-1 mr-1">•</span>
+            <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>
+            <span class="ml-1 mr-1">•</span>
+            <a href="https://github.com/eikek/docspell" target="_blank">
+                Source Code
+            </a>
+            <span class="ml-1 mr-1">•</span>
+            <span>
+                © 2020
+                <a href="https://github.com/eikek" target="_blank">
+                    @eikek
+                </a>
+            </span>
+        </div>
+    </div>
+    
+</footer>
+
+    </body>
+</html>

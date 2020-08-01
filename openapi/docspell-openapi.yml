@@ -2,7 +2,7 @@ openapi: 3.0.0
 
 info:
   title: Docspell
-  version: 0.8.0
+  version: 0.9.0
   description: |
     This is the remote API to Docspell, a personal document organizer.
 
@@ -795,6 +795,140 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BasicResult"
+  /sec/folder:
+    get:
+      tags: [ Folder ]
+      summary: Get a list of folders.
+      description: |
+        Return a list of folders for the current collective.
+
+        All folders are returned, including those not owned by the
+        current user.
+
+        It is possible to restrict the results by a substring match of
+        the name.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/q"
+        - $ref: "#/components/parameters/owning"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FolderList"
+    post:
+      tags: [ Folder ]
+      summary: Create a new folder
+      description: |
+        Create a new folder owned by the current user. If a folder with
+        the same name already exists, an error is thrown.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewFolder"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IdResult"
+  /sec/folder/{id}:
+    get:
+      tags: [ Folder ]
+      summary: Get folder details.
+      description: |
+        Return details about a folder.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FolderDetail"
+    put:
+      tags: [ Folder ]
+      summary: Change the name of a folder
+      description: |
+        Changes the name of a folder. The new name must not exists.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewFolder"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+    delete:
+      tags: [ Folder ]
+      summary: Delete a folder by its id.
+      description: |
+        Deletes a folder.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+  /sec/folder/{id}/member/{userId}:
+    put:
+      tags: [ Folder ]
+      summary: Add a member to this folder
+      description: |
+        Adds a member to this folder (identified by `id`).
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+        - $ref: "#/components/parameters/userId"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+    delete:
+      tags: [ Folder ]
+      summary: Removes a member from this folder.
+      description: |
+        Removes a member from this folder.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+        - $ref: "#/components/parameters/userId"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
   /sec/collective:
     get:
       tags: [ Collective ]
@@ -850,7 +984,7 @@ paths:
       summary: Get some insights regarding your items.
       description: |
         Returns some information about how many items there are, how
-        much space they occupy etc.
+        much folder they occupy etc.
       security:
         - authTokenHeader: []
       responses:
@@ -1224,6 +1358,31 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/DirectionValue"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+  /sec/item/{id}/folder:
+    put:
+      tags: [ Item ]
+      summary: Set a folder for this item.
+      description: |
+        Updates the folder property for this item to "place" the item
+        into a folder. If the request contains an empty object or an
+        `id` property of `null`, the item is moved into the "public"
+        or "root" folder.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OptionalId"
       responses:
         200:
           description: Ok
@@ -2358,6 +2517,90 @@ paths:
 
 components:
   schemas:
+    FolderList:
+      description: |
+        A list of folders with their member counts.
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/FolderItem"
+    FolderItem:
+      description: |
+        An item in a folder list.
+      required:
+        - id
+        - name
+        - owner
+        - created
+        - isMember
+        - memberCount
+      properties:
+        id:
+          type: string
+          format: ident
+        name:
+          type: string
+        owner:
+          $ref: "#/components/schemas/IdName"
+        created:
+          type: integer
+          format: date-time
+        isMember:
+          type: boolean
+        memberCount:
+          type: integer
+          format: int32
+    NewFolder:
+      description: |
+        Data required to create a new folder.
+      required:
+        - name
+      properties:
+        name:
+          type: string
+    FolderDetail:
+      description: |
+        Details about a folder.
+      required:
+        - id
+        - name
+        - owner
+        - created
+        - isMember
+        - memberCount
+        - members
+      properties:
+        id:
+          type: string
+          format: ident
+        name:
+          type: string
+        owner:
+          $ref: "#/components/schemas/IdName"
+        created:
+          type: integer
+          format: date-time
+        isMember:
+          type: boolean
+        memberCount:
+          type: integer
+          format: int32
+        members:
+          type: array
+          items:
+            $ref: "#/components/schemas/IdName"
+    FolderMember:
+      description: |
+        Information to add or remove a folder member.
+      required:
+        - userId
+      properties:
+        userId:
+          type: string
+          format: ident
     ItemFtsSearch:
       description: |
         Query description for a full-text only search.
@@ -2451,6 +2694,13 @@ components:
             The direction to apply to items resulting from importing
             mails. If not set, the value is guessed based on the from
             and to mail headers and your address book.
+        itemFolder:
+          type: string
+          format: ident
+          description: |
+            The folder id that is applied to items resulting from
+            importing mails. If the folder id is not valid when the
+            task executes, items have no folder set.
     ImapSettingsList:
       description: |
         A list of user email settings.
@@ -2949,6 +3199,8 @@ components:
           $ref: "#/components/schemas/IdName"
         inReplyTo:
           $ref: "#/components/schemas/IdName"
+        folder:
+          $ref: "#/components/schemas/IdName"
         dueDate:
           type: integer
           format: date-time
@@ -3153,11 +3405,15 @@ components:
       description: |
         A user of a collective.
       required:
+        - id
         - login
         - state
         - loginCount
         - created
       properties:
+        id:
+          type: string
+          format: ident
         login:
           type: string
           format: ident
@@ -3188,9 +3444,15 @@ components:
         Meta information for an item upload. The user can specify some
         structured information with a binary file.
 
-        Additional metadata is not required. However, you have to
-        specifiy whether the corresponding files should become one
-        single item or if an item is created for each file.
+        Additional metadata is not required. However, if there is some
+        specified, you have to specifiy whether the corresponding
+        files should become one single item or if an item is created
+        for each file.
+
+        A direction can be given, `Incoming` is used if not specified.
+
+        A folderId can be given, the item is placed into this folder
+        after creation.
       required:
         - multiple
       properties:
@@ -3200,6 +3462,9 @@ components:
         direction:
           type: string
           format: direction
+        folder:
+          type: string
+          format: ident
     Collective:
       description: |
         Information about a collective.
@@ -3270,6 +3535,9 @@ components:
         priority:
           type: string
           format: priority
+        folder:
+          type: string
+          format: ident
         created:
           description: DateTime
           type: integer
@@ -3527,6 +3795,9 @@ components:
         concEquip:
           type: string
           format: ident
+        folder:
+          type: string
+          format: ident
         dateFrom:
           type: integer
           format: date-time
@@ -3579,6 +3850,8 @@ components:
         concPerson:
           $ref: "#/components/schemas/IdName"
         concEquip:
+          $ref: "#/components/schemas/IdName"
+        folder:
           $ref: "#/components/schemas/IdName"
         fileCount:
           type: integer
@@ -3633,6 +3906,22 @@ components:
           type: boolean
         message:
           type: string
+    IdResult:
+      description: |
+        Some basic result of an operation with an ID as payload. If
+        success if `false` the id is not usable.
+      required:
+        - success
+        - message
+        - id
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        id:
+          type: string
+          format: ident
     Tag:
       description: |
         A tag used to annotate items. A tag may have a category which
@@ -3739,6 +4028,13 @@ components:
       required: true
       schema:
         type: string
+    userId:
+      name: userId
+      in: path
+      description: An identifier
+      required: true
+      schema:
+        type: string
     itemId:
       name: itemId
       in: path
@@ -3750,6 +4046,13 @@ components:
       name: full
       in: query
       description: Whether to list full data or just name and id.
+      required: false
+      schema:
+        type: boolean
+    owning:
+      name: full
+      in: query
+      description: Whether to get owning folders
       required: false
       schema:
         type: boolean
