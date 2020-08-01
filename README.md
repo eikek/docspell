@@ -50,12 +50,12 @@ book and only once in a while it has to be revisited.
   `deb` file at your debian based system.
 - Download [provided](https://github.com/eikek/docspell/releases) zip
   file and run the script in `bin/`, as [described
-  here](https://docspell.org/getit#using-zip-files).
+  here](https://docspell.org/docs/install/installing/#download-unpack-run).
 - Using the [nix](https://nixos.org/nix) package manager as [described
-  here](https://docspell.org/doc/nix). A NixOS module is available,
-  too.
+  here](https://docspell.org/docs/install/installing/#nix). A NixOS
+  module is available, too.
 - Using Docker, as [described
-  here](https://docspell.org/getit#docker).
+  here](https://docspell.org/docs/install/installing/#docker).
 
 
 ## Documentation
@@ -65,8 +65,8 @@ information.
 
 Check the feature list and the quickstart guide to try it out:
 
-- [Features](https://docspell.org/features)
-- [Quickstart](https://docspell.org/getit)
+- [Features](https://docspell.org/#feature-selection)
+- [Quickstart](https://docspell.org/#get-started)
 
 
 ## Screenshots
