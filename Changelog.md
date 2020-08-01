@@ -1,5 +1,44 @@
 # Changelog
 
+## v0.9.0
+
+*Soon*
+
+- New feature: folders. Users can create folders and put items into
+  them. Folders can have members (users of the collective) and search
+  results are restricted to items that are in no folder or in a folder
+  where current user is a member. (see #21)
+- Folders can be given to the upload request.
+- Add ocrmypdf utility to convert pdf->pdf with ocr-ed text layer.
+- Extract PDF metadata and use the *keywords* to search for tags and
+  apply them to the item during processing. (See #175)
+- Fix duplicate results when doing fulltext only searches
+- Several small bug fixes and improvements in the UI
+  - Fix position of datepicker (see #186)
+  - Fix race condition when updating calendar-event field
+  - Sort tags by count in collective-insights view
+  - Simplify search bar 
+- New website
+
+### Configuration Changes
+
+- Joex: add a section `docspell.joex.convert.ocrmypdf` for configuring
+  the ocrmypdf tool.
+- Joex: change default value of `….extraction.pdf.min-text-len` from
+  10 to 500.
+
+### REST Api Changes
+
+- Add `/sec/folder/*` routes for managing folders.
+- Add `/sec/item/{id}/folder` for updating an item folder.
+- Change `ItemSearch` structure to be able to search for items in a
+  specific folder.
+- Change `ItemDetail` and `ItemLight` structure, adding the item folder 
+- Change `ItemUploadMeta` structure, adding a folder id field. 
+- Change `Source` structure, adding a folder id field. 
+- Change `User` structure, adding the user id
+
+
 ## v0.8.0
 
 *June 29, 2020*
