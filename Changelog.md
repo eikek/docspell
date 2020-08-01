@@ -2,7 +2,7 @@
 
 ## v0.9.0
 
-*Soon*
+*Aug 1st, 2020*
 
 - New feature: folders. Users can create folders and put items into
   them. Folders can have members (users of the collective) and search
