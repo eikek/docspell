@@ -136,8 +136,8 @@ init flags =
         initialSchedule =
             Data.Validated.Unknown Data.CalEvent.everyMonth
 
-        ( sm, sc ) =
-            Comp.CalEventInput.init flags Data.CalEvent.everyMonth
+        sm =
+            Comp.CalEventInput.initDefault
     in
     ( { settings = Api.Model.ScanMailboxSettings.empty
       , connectionModel =
@@ -168,7 +168,6 @@ init flags =
       }
     , Cmd.batch
         [ Api.getImapSettings flags "" ConnResp
-        , Cmd.map CalEventMsg sc
         , Api.getFolders flags "" False GetFolderResp
         ]
     )
