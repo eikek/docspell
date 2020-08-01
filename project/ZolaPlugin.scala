@@ -35,6 +35,7 @@ object ZolaPlugin extends AutoPlugin {
       zolaBuild := {
         val logger = streams.value.log
         logger.info("Building web site using zola ...")
+        (Compile/resources).value
         buildSite(zolaCommand.value, zolaRootDir.value, zolaOutputDir.value, None, logger)
         logger.info("Website built")
       },
@@ -42,6 +43,7 @@ object ZolaPlugin extends AutoPlugin {
         val logger  = streams.value.log
         val baseurl = zolaTestBaseUrl.value
         logger.info("Building web site (test) using zola ...")
+        (Compile/resources).value
         buildSite(
           zolaCommand.value,
           zolaRootDir.value,
