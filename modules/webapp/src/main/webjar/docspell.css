@@ -104,6 +104,12 @@
     background: rgba(220, 255, 71, 0.6);
 }
 
+.default-layout .qr-code svg {
+    border: 1px solid #ccc;
+    width: 200px;
+    height: 200px;
+}
+
 .markdown-preview {
     overflow: auto;
     max-height: 300px;

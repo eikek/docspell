@@ -23,6 +23,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onCheck, onInput)
 import Http
 import Markdown
+import QRCode
 import Util.Folder exposing (mkFolderOption)
 
 
@@ -95,6 +96,10 @@ type Msg
     | PrioDropdownMsg (Comp.FixedDropdown.Msg Priority)
     | GetFolderResp (Result Http.Error FolderList)
     | FolderDropdownMsg (Comp.Dropdown.Msg IdName)
+
+
+
+--- Update
 
 
 update : Flags -> Msg -> Model -> ( Model, Cmd Msg )
@@ -223,6 +228,18 @@ update flags msg model =
             ( model_, Cmd.map FolderDropdownMsg c2 )
 
 
+
+--- View
+
+
+qrCodeView : String -> Html msg
+qrCodeView message =
+    QRCode.encode message
+        |> Result.map QRCode.toSvg
+        |> Result.withDefault
+            (Html.text "Error generating QR-Code")
+
+
 view : Flags -> UiSettings -> Model -> Html Msg
 view flags settings model =
     let
@@ -299,16 +316,23 @@ disappear then.
 
 urlInfoMessage : Flags -> Model -> Html Msg
 urlInfoMessage flags model =
+    let
+        appUrl =
+            flags.config.baseUrl ++ "/app/upload/" ++ model.source.id
+
+        apiUrl =
+            flags.config.baseUrl ++ "/api/v1/open/upload/item/" ++ model.source.id
+    in
     div
         [ classList
             [ ( "ui info icon message", True )
             , ( "hidden", not model.enabled || model.source.id == "" )
             ]
         ]
-        [ i [ class "info icon" ] []
-        , div [ class "content" ]
-            [ div [ class "header" ]
-                [ text "Public Uploads"
+        [ div [ class "content" ]
+            [ h3 [ class "ui dividingheader" ]
+                [ i [ class "info icon" ] []
+                , text "Public Uploads"
                 ]
             , p []
                 [ text "This source defines URLs that can be used by anyone to send files to "
@@ -318,15 +342,20 @@ urlInfoMessage flags model =
             , dl [ class "ui list" ]
                 [ dt [] [ text "Public Upload Page" ]
                 , dd []
-                    [ let
-                        url =
-                            flags.config.baseUrl ++ "/app/upload/" ++ model.source.id
-                      in
-                      a [ href url, target "_blank" ] [ code [] [ text url ] ]
+                    [ a [ href appUrl, target "_blank" ] [ code [] [ text appUrl ] ]
                     ]
-                , dt [] [ text "Public API Upload URL" ]
+                ]
+            , dl [ class "ui list" ]
+                [ dt [] [ text "Public API Upload URL" ]
                 , dd []
-                    [ code [] [ text (flags.config.baseUrl ++ "/api/v1/open/upload/item/" ++ model.source.id) ]
+                    [ p []
+                        [ code []
+                            [ text apiUrl
+                            ]
+                        ]
+                    , p [ class "qr-code" ]
+                        [ qrCodeView apiUrl
+                        ]
                     ]
                 ]
             ]

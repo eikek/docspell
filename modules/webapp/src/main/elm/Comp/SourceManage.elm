@@ -68,6 +68,10 @@ type Msg
     | RequestDelete
 
 
+
+--- Update
+
+
 update : Flags -> Msg -> Model -> ( Model, Cmd Msg )
 update flags msg model =
     case msg of
@@ -192,6 +196,10 @@ update flags msg model =
                         Cmd.none
             in
             ( { model | deleteConfirm = cm }, cmd )
+
+
+
+--- View
 
 
 view : Flags -> UiSettings -> Model -> Html Msg
