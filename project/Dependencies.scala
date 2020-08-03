@@ -9,6 +9,7 @@ object Dependencies {
   val BitpeaceVersion         = "0.5.0"
   val CalevVersion            = "0.3.1"
   val CirceVersion            = "0.13.0"
+  val ClipboardJsVersion      = "2.0.6"
   val DoobieVersion           = "0.9.0"
   val EmilVersion             = "0.6.2"
   val FastparseVersion        = "2.1.3"
@@ -245,10 +246,11 @@ object Dependencies {
   val betterMonadicFor    = "com.olegpy"    %% "better-monadic-for" % BetterMonadicForVersion
 
   val webjars = Seq(
-    "org.webjars" % "swagger-ui"  % SwaggerUIVersion,
-    "org.webjars" % "Semantic-UI" % SemanticUIVersion,
-    "org.webjars" % "jquery"      % JQueryVersion,
-    "org.webjars" % "viewerjs"    % ViewerJSVersion
+    "org.webjars" % "swagger-ui"   % SwaggerUIVersion,
+    "org.webjars" % "Semantic-UI"  % SemanticUIVersion,
+    "org.webjars" % "jquery"       % JQueryVersion,
+    "org.webjars" % "viewerjs"     % ViewerJSVersion,
+    "org.webjars" % "clipboard.js" % ClipboardJsVersion
   )
 
   val icu4j = Seq(

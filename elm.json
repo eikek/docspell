@@ -21,15 +21,22 @@
             "elm-explorations/markdown": "1.0.0",
             "justinmimbs/date": "3.1.2",
             "norpan/elm-html5-drag-drop": "3.1.4",
+            "pablohirafuji/elm-qrcode": "3.3.1",
             "ryannhg/date-format": "2.3.0",
             "truqu/elm-base64": "2.0.4",
             "ursi/elm-throttle": "1.0.1"
         },
         "indirect": {
+            "avh4/elm-color": "1.0.0",
+            "danfishgold/base64-bytes": "1.0.3",
             "elm/bytes": "1.0.8",
             "elm/parser": "1.1.0",
             "elm/regex": "1.0.0",
-            "elm/virtual-dom": "1.0.2"
+            "elm/svg": "1.0.1",
+            "elm/virtual-dom": "1.0.2",
+            "elm-community/list-extra": "8.2.4",
+            "folkertdev/elm-flate": "2.0.4",
+            "justgook/elm-image": "4.0.0"
         }
     },
     "test-dependencies": {

@@ -126,6 +126,7 @@ object TemplateRoutes {
         Seq(
           "/app/assets" + Webjars.jquery + "/jquery.min.js",
           "/app/assets" + Webjars.semanticui + "/semantic.min.js",
+          "/app/assets" + Webjars.clipboardjs + "/clipboard.min.js",
           s"/app/assets/docspell-webapp/${BuildInfo.version}/docspell-app.js"
         ),
         s"/app/assets/docspell-webapp/${BuildInfo.version}/favicon",

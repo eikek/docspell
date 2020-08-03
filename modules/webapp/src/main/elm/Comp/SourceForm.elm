@@ -97,6 +97,10 @@ type Msg
     | FolderDropdownMsg (Comp.Dropdown.Msg IdName)
 
 
+
+--- Update
+
+
 update : Flags -> Msg -> Model -> ( Model, Cmd Msg )
 update flags msg model =
     case msg of
@@ -223,6 +227,10 @@ update flags msg model =
             ( model_, Cmd.map FolderDropdownMsg c2 )
 
 
+
+--- View
+
+
 view : Flags -> UiSettings -> Model -> Html Msg
 view flags settings model =
     let
@@ -291,43 +299,6 @@ link will be **hidden** from any search results. Use a folder where
 you are a member of to make items visible. This message will
 disappear then.
                       """
-                ]
-            ]
-        , urlInfoMessage flags model
-        ]
-
-
-urlInfoMessage : Flags -> Model -> Html Msg
-urlInfoMessage flags model =
-    div
-        [ classList
-            [ ( "ui info icon message", True )
-            , ( "hidden", not model.enabled || model.source.id == "" )
-            ]
-        ]
-        [ i [ class "info icon" ] []
-        , div [ class "content" ]
-            [ div [ class "header" ]
-                [ text "Public Uploads"
-                ]
-            , p []
-                [ text "This source defines URLs that can be used by anyone to send files to "
-                , text "you. There is a web page that you can share or the API url can be used "
-                , text "with other clients."
-                ]
-            , dl [ class "ui list" ]
-                [ dt [] [ text "Public Upload Page" ]
-                , dd []
-                    [ let
-                        url =
-                            flags.config.baseUrl ++ "/app/upload/" ++ model.source.id
-                      in
-                      a [ href url, target "_blank" ] [ code [] [ text url ] ]
-                    ]
-                , dt [] [ text "Public API Upload URL" ]
-                , dd []
-                    [ code [] [ text (flags.config.baseUrl ++ "/api/v1/open/upload/item/" ++ model.source.id) ]
-                    ]
                 ]
             ]
         ]
