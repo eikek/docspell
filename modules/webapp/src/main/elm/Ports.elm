@@ -1,5 +1,6 @@
 port module Ports exposing
     ( getUiSettings
+    , initClipboard
     , loadUiSettings
     , onUiSettingsSaved
     , removeAccount
@@ -78,3 +79,6 @@ getUiSettings flags =
 
         Nothing ->
             Cmd.none
+
+
+port initClipboard : ( String, String ) -> Cmd msg

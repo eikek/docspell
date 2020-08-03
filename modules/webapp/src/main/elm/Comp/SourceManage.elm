@@ -8,10 +8,10 @@ module Comp.SourceManage exposing
 
 import Api
 import Api.Model.BasicResult exposing (BasicResult)
-import Api.Model.Source
+import Api.Model.Source exposing (Source)
 import Api.Model.SourceList exposing (SourceList)
 import Comp.SourceForm
-import Comp.SourceTable
+import Comp.SourceTable exposing (SelectMode(..))
 import Comp.YesNoDimmer
 import Data.Flags exposing (Flags)
 import Data.UiSettings exposing (UiSettings)
@@ -19,23 +19,20 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onSubmit)
 import Http
+import Ports
+import QRCode
 import Util.Http
 import Util.Maybe
 
 
 type alias Model =
-    { tableModel : Comp.SourceTable.Model
-    , formModel : Comp.SourceForm.Model
-    , viewMode : ViewMode
+    { formModel : Comp.SourceForm.Model
+    , viewMode : SelectMode
     , formError : Maybe String
     , loading : Bool
     , deleteConfirm : Comp.YesNoDimmer.Model
+    , sources : List Source
     }
-
-
-type ViewMode
-    = Table
-    | Form
 
 
 init : Flags -> ( Model, Cmd Msg )
@@ -44,15 +41,29 @@ init flags =
         ( fm, fc ) =
             Comp.SourceForm.init flags
     in
-    ( { tableModel = Comp.SourceTable.emptyModel
-      , formModel = fm
-      , viewMode = Table
+    ( { formModel = fm
+      , viewMode = None
       , formError = Nothing
       , loading = False
       , deleteConfirm = Comp.YesNoDimmer.emptyModel
+      , sources = []
       }
-    , Cmd.map FormMsg fc
+    , Cmd.batch
+        [ Cmd.map FormMsg fc
+        , Ports.initClipboard appClipboardData
+        , Ports.initClipboard apiClipboardData
+        ]
     )
+
+
+appClipboardData : ( String, String )
+appClipboardData =
+    ( "app-url", "#app-url-copy-to-clipboard-btn" )
+
+
+apiClipboardData : ( String, String )
+apiClipboardData =
+    ( "api-url", "#api-url-copy-to-clipboard-btn" )
 
 
 type Msg
@@ -60,12 +71,12 @@ type Msg
     | FormMsg Comp.SourceForm.Msg
     | LoadSources
     | SourceResp (Result Http.Error SourceList)
-    | SetViewMode ViewMode
     | InitNewSource
     | Submit
     | SubmitResp (Result Http.Error BasicResult)
     | YesNoMsg Comp.YesNoDimmer.Msg
     | RequestDelete
+    | SetTableView
 
 
 
@@ -77,29 +88,31 @@ update flags msg model =
     case msg of
         TableMsg m ->
             let
-                ( tm, tc ) =
-                    Comp.SourceTable.update flags m model.tableModel
+                ( tc, sel ) =
+                    Comp.SourceTable.update flags m
 
                 ( m2, c2 ) =
                     ( { model
-                        | tableModel = tm
-                        , viewMode = Maybe.map (\_ -> Form) tm.selected |> Maybe.withDefault Table
+                        | viewMode = sel
                         , formError =
-                            if Util.Maybe.nonEmpty tm.selected then
-                                Nothing
+                            if Comp.SourceTable.isEdit sel then
+                                model.formError
 
                             else
-                                model.formError
+                                Nothing
                       }
                     , Cmd.map TableMsg tc
                     )
 
                 ( m3, c3 ) =
-                    case tm.selected of
-                        Just source ->
+                    case sel of
+                        Edit source ->
                             update flags (FormMsg (Comp.SourceForm.SetSource source)) m2
 
-                        Nothing ->
+                        Display _ ->
+                            ( m2, Cmd.none )
+
+                        None ->
                             ( m2, Cmd.none )
             in
             ( m3, Cmd.batch [ c2, c3 ] )
@@ -115,34 +128,27 @@ update flags msg model =
             ( { model | loading = True }, Api.getSources flags SourceResp )
 
         SourceResp (Ok sources) ->
-            let
-                m2 =
-                    { model | viewMode = Table, loading = False }
-            in
-            update flags (TableMsg (Comp.SourceTable.SetSources sources.items)) m2
+            ( { model
+                | viewMode = None
+                , loading = False
+                , sources = sources.items
+              }
+            , Cmd.none
+            )
 
         SourceResp (Err _) ->
             ( { model | loading = False }, Cmd.none )
 
-        SetViewMode m ->
-            let
-                m2 =
-                    { model | viewMode = m }
-            in
-            case m of
-                Table ->
-                    update flags (TableMsg Comp.SourceTable.Deselect) m2
-
-                Form ->
-                    ( m2, Cmd.none )
+        SetTableView ->
+            ( { model | viewMode = None }, Cmd.none )
 
         InitNewSource ->
             let
-                nm =
-                    { model | viewMode = Form, formError = Nothing }
-
                 source =
                     Api.Model.Source.empty
+
+                nm =
+                    { model | viewMode = Edit source, formError = Nothing }
             in
             update flags (FormMsg (Comp.SourceForm.SetSource source)) nm
 
@@ -164,7 +170,7 @@ update flags msg model =
             if res.success then
                 let
                     ( m2, c2 ) =
-                        update flags (SetViewMode Table) model
+                        update flags SetTableView model
 
                     ( m3, c3 ) =
                         update flags LoadSources m2
@@ -202,13 +208,25 @@ update flags msg model =
 --- View
 
 
+qrCodeView : String -> Html msg
+qrCodeView message =
+    QRCode.encode message
+        |> Result.map QRCode.toSvg
+        |> Result.withDefault
+            (Html.text "Error generating QR-Code")
+
+
 view : Flags -> UiSettings -> Model -> Html Msg
 view flags settings model =
-    if model.viewMode == Table then
-        viewTable model
+    case model.viewMode of
+        None ->
+            viewTable model
 
-    else
-        div [] (viewForm flags settings model)
+        Edit _ ->
+            div [] (viewForm flags settings model)
+
+        Display source ->
+            viewLinks flags settings source
 
 
 viewTable : Model -> Html Msg
@@ -218,7 +236,7 @@ viewTable model =
             [ i [ class "plus icon" ] []
             , text "Create new"
             ]
-        , Html.map TableMsg (Comp.SourceTable.view model.tableModel)
+        , Html.map TableMsg (Comp.SourceTable.view model.sources)
         , div
             [ classList
                 [ ( "ui dimmer", True )
@@ -226,6 +244,112 @@ viewTable model =
                 ]
             ]
             [ div [ class "ui loader" ] []
+            ]
+        ]
+
+
+viewLinks : Flags -> UiSettings -> Source -> Html Msg
+viewLinks flags _ source =
+    let
+        appUrl =
+            flags.config.baseUrl ++ "/app/upload/" ++ source.id
+
+        apiUrl =
+            flags.config.baseUrl ++ "/api/v1/open/upload/item/" ++ source.id
+    in
+    div
+        []
+        [ h3 [ class "ui dividing header" ]
+            [ text "Public Uploads: "
+            , text source.abbrev
+            , div [ class "sub header" ]
+                [ text source.id
+                ]
+            ]
+        , p []
+            [ text "This source defines URLs that can be used by anyone to send files to "
+            , text "you. There is a web page that you can share or the API url can be used "
+            , text "with other clients."
+            ]
+        , p []
+            [ text "There have been "
+            , String.fromInt source.counter |> text
+            , text " items created through this source."
+            ]
+        , h4 [ class "ui header" ]
+            [ text "Public Upload Page"
+            ]
+        , div [ class "ui attached message" ]
+            [ div [ class "ui fluid left action input" ]
+                [ a
+                    [ class "ui left icon button"
+                    , title "Copy to clipboard"
+                    , href "#"
+                    , Tuple.second appClipboardData
+                        |> String.dropLeft 1
+                        |> id
+                    , attribute "data-clipboard-target" "#app-url"
+                    ]
+                    [ i [ class "copy icon" ] []
+                    ]
+                , a
+                    [ class "ui icon button"
+                    , href appUrl
+                    , target "_blank"
+                    , title "Open in new tab/window"
+                    ]
+                    [ i [ class "link external icon" ] []
+                    ]
+                , input
+                    [ type_ "text"
+                    , id "app-url"
+                    , value appUrl
+                    , readonly True
+                    ]
+                    []
+                ]
+            ]
+        , div [ class "ui attached segment" ]
+            [ div [ class "qr-code" ]
+                [ qrCodeView appUrl
+                ]
+            ]
+        , h4 [ class "ui header" ]
+            [ text "Public API Upload URL"
+            ]
+        , div [ class "ui attached message" ]
+            [ div [ class "ui fluid left action input" ]
+                [ a
+                    [ class "ui left icon button"
+                    , title "Copy to clipboard"
+                    , href "#"
+                    , Tuple.second apiClipboardData
+                        |> String.dropLeft 1
+                        |> id
+                    , attribute "data-clipboard-target" "#api-url"
+                    ]
+                    [ i [ class "copy icon" ] []
+                    ]
+                , input
+                    [ type_ "text"
+                    , value apiUrl
+                    , readonly True
+                    , id "api-url"
+                    ]
+                    []
+                ]
+            ]
+        , div [ class "ui attached segment" ]
+            [ div [ class "qr-code" ]
+                [ qrCodeView apiUrl
+                ]
+            ]
+        , div [ class "ui divider" ] []
+        , button
+            [ class "ui button"
+            , onClick SetTableView
+            ]
+            [ text "Back"
             ]
         ]
 
@@ -264,7 +388,7 @@ viewForm flags settings model =
         , button [ class "ui primary button", type_ "submit" ]
             [ text "Submit"
             ]
-        , a [ class "ui secondary button", onClick (SetViewMode Table), href "" ]
+        , a [ class "ui secondary button", onClick SetTableView, href "" ]
             [ text "Cancel"
             ]
         , if not newSource then

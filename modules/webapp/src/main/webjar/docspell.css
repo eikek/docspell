@@ -105,9 +105,11 @@
 }
 
 .default-layout .qr-code svg {
-    border: 1px solid #ccc;
     width: 200px;
     height: 200px;
+}
+.default-layout .qr-code.bordered svg {
+    border: 1px solid #ccc;
 }
 
 .markdown-preview {

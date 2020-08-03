@@ -83,3 +83,13 @@ elmApp.ports.requestUiSettings.subscribe(function(args) {
         }
     }
 });
+
+var docspell_clipboards = {};
+
+elmApp.ports.initClipboard.subscribe(function(args) {
+    var page = args[0];
+    if (!docspell_clipboards[page]) {
+        var sel = args[1];
+        docspell_clipboards[page] = new ClipboardJS(sel);
+    }
+});

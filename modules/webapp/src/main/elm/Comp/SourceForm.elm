@@ -23,7 +23,6 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onCheck, onInput)
 import Http
 import Markdown
-import QRCode
 import Util.Folder exposing (mkFolderOption)
 
 
@@ -232,14 +231,6 @@ update flags msg model =
 --- View
 
 
-qrCodeView : String -> Html msg
-qrCodeView message =
-    QRCode.encode message
-        |> Result.map QRCode.toSvg
-        |> Result.withDefault
-            (Html.text "Error generating QR-Code")
-
-
 view : Flags -> UiSettings -> Model -> Html Msg
 view flags settings model =
     let
@@ -308,55 +299,6 @@ link will be **hidden** from any search results. Use a folder where
 you are a member of to make items visible. This message will
 disappear then.
                       """
-                ]
-            ]
-        , urlInfoMessage flags model
-        ]
-
-
-urlInfoMessage : Flags -> Model -> Html Msg
-urlInfoMessage flags model =
-    let
-        appUrl =
-            flags.config.baseUrl ++ "/app/upload/" ++ model.source.id
-
-        apiUrl =
-            flags.config.baseUrl ++ "/api/v1/open/upload/item/" ++ model.source.id
-    in
-    div
-        [ classList
-            [ ( "ui info icon message", True )
-            , ( "hidden", not model.enabled || model.source.id == "" )
-            ]
-        ]
-        [ div [ class "content" ]
-            [ h3 [ class "ui dividingheader" ]
-                [ i [ class "info icon" ] []
-                , text "Public Uploads"
-                ]
-            , p []
-                [ text "This source defines URLs that can be used by anyone to send files to "
-                , text "you. There is a web page that you can share or the API url can be used "
-                , text "with other clients."
-                ]
-            , dl [ class "ui list" ]
-                [ dt [] [ text "Public Upload Page" ]
-                , dd []
-                    [ a [ href appUrl, target "_blank" ] [ code [] [ text appUrl ] ]
-                    ]
-                ]
-            , dl [ class "ui list" ]
-                [ dt [] [ text "Public API Upload URL" ]
-                , dd []
-                    [ p []
-                        [ code []
-                            [ text apiUrl
-                            ]
-                        ]
-                    , p [ class "qr-code" ]
-                        [ qrCodeView apiUrl
-                        ]
-                    ]
                 ]
             ]
         ]

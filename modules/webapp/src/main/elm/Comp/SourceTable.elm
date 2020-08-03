@@ -1,7 +1,7 @@
 module Comp.SourceTable exposing
-    ( Model
-    , Msg(..)
-    , emptyModel
+    ( Msg
+    , SelectMode(..)
+    , isEdit
     , update
     , view
     )
@@ -14,44 +14,47 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 
 
-type alias Model =
-    { sources : List Source
-    , selected : Maybe Source
-    }
+type SelectMode
+    = Edit Source
+    | Display Source
+    | None
 
 
-emptyModel : Model
-emptyModel =
-    { sources = []
-    , selected = Nothing
-    }
+isEdit : SelectMode -> Bool
+isEdit m =
+    case m of
+        Edit _ ->
+            True
+
+        Display _ ->
+            False
+
+        None ->
+            False
 
 
 type Msg
-    = SetSources (List Source)
-    | Select Source
-    | Deselect
+    = Select Source
+    | Show Source
 
 
-update : Flags -> Msg -> Model -> ( Model, Cmd Msg )
-update _ msg model =
+update : Flags -> Msg -> ( Cmd Msg, SelectMode )
+update _ msg =
     case msg of
-        SetSources list ->
-            ( { model | sources = list, selected = Nothing }, Cmd.none )
-
         Select source ->
-            ( { model | selected = Just source }, Cmd.none )
+            ( Cmd.none, Edit source )
 
-        Deselect ->
-            ( { model | selected = Nothing }, Cmd.none )
+        Show source ->
+            ( Cmd.none, Display source )
 
 
-view : Model -> Html Msg
-view model =
-    table [ class "ui selectable table" ]
+view : List Source -> Html Msg
+view sources =
+    table [ class "ui table" ]
         [ thead []
             [ tr []
-                [ th [ class "collapsing" ] [ text "Abbrev" ]
+                [ th [ class "collapsing" ] []
+                , th [ class "collapsing" ] [ text "Abbrev" ]
                 , th [ class "collapsing" ] [ text "Enabled" ]
                 , th [ class "collapsing" ] [ text "Counter" ]
                 , th [ class "collapsing" ] [ text "Priority" ]
@@ -59,17 +62,37 @@ view model =
                 ]
             ]
         , tbody []
-            (List.map (renderSourceLine model) model.sources)
+            (List.map renderSourceLine sources)
         ]
 
 
-renderSourceLine : Model -> Source -> Html Msg
-renderSourceLine model source =
+renderSourceLine : Source -> Html Msg
+renderSourceLine source =
     tr
-        [ classList [ ( "active", model.selected == Just source ) ]
-        , onClick (Select source)
-        ]
+        []
         [ td [ class "collapsing" ]
+            [ a
+                [ class "ui basic tiny primary button"
+                , href "#"
+                , onClick (Select source)
+                ]
+                [ i [ class "edit icon" ] []
+                , text "Edit"
+                ]
+            , a
+                [ classList
+                    [ ( "ui basic tiny primary button", True )
+                    , ( "disabled", not source.enabled )
+                    ]
+                , href "#"
+                , disabled (not source.enabled)
+                , onClick (Show source)
+                ]
+                [ i [ class "eye icon" ] []
+                , text "Show"
+                ]
+            ]
+        , td [ class "collapsing" ]
             [ text source.abbrev
             ]
         , td [ class "collapsing" ]

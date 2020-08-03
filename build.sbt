@@ -616,9 +616,10 @@ def compileElm(
 
 def createWebjarSource(wj: Seq[ModuleID], out: File): Seq[File] = {
   val target = out / "Webjars.scala"
+  val badChars = "-.".toSet
   val fields = wj
     .map(m =>
-      s"""val ${m.name.toLowerCase.filter(_ != '-')} = "/${m.name}/${m.revision}" """
+      s"""val ${m.name.toLowerCase.filter(c => !badChars.contains(c))} = "/${m.name}/${m.revision}" """
     )
     .mkString("\n\n")
   val content = s"""package docspell.restserver.webapp
