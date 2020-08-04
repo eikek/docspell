@@ -82,7 +82,7 @@ object NotifyDueItemsTask {
           )
       res <-
         ctx.store
-          .transact(QItem.findItems(q, Batch.limit(maxItems)).take(maxItems.toLong))
+          .transact(QItem.findItems(q, 0, Batch.limit(maxItems)).take(maxItems.toLong))
           .compile
           .toVector
     } yield res

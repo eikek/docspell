@@ -17,10 +17,12 @@ import doobie.implicits._
 trait OItemSearch[F[_]] {
   def findItem(id: Ident, collective: Ident): F[Option[ItemData]]
 
-  def findItems(q: Query, batch: Batch): F[Vector[ListItem]]
+  def findItems(maxNoteLen: Int)(q: Query, batch: Batch): F[Vector[ListItem]]
 
   /** Same as `findItems` but does more queries per item to find all tags. */
-  def findItemsWithTags(q: Query, batch: Batch): F[Vector[ListItemWithTags]]
+  def findItemsWithTags(
+      maxNoteLen: Int
+  )(q: Query, batch: Batch): F[Vector[ListItemWithTags]]
 
   def findAttachment(id: Ident, collective: Ident): F[Option[AttachmentData[F]]]
 
@@ -97,14 +99,16 @@ object OItemSearch {
           .transact(QItem.findItem(id))
           .map(opt => opt.flatMap(_.filterCollective(collective)))
 
-      def findItems(q: Query, batch: Batch): F[Vector[ListItem]] =
+      def findItems(maxNoteLen: Int)(q: Query, batch: Batch): F[Vector[ListItem]] =
         store
-          .transact(QItem.findItems(q, batch).take(batch.limit.toLong))
+          .transact(QItem.findItems(q, maxNoteLen, batch).take(batch.limit.toLong))
           .compile
           .toVector
 
-      def findItemsWithTags(q: Query, batch: Batch): F[Vector[ListItemWithTags]] = {
-        val search = QItem.findItems(q, batch)
+      def findItemsWithTags(
+          maxNoteLen: Int
+      )(q: Query, batch: Batch): F[Vector[ListItemWithTags]] = {
+        val search = QItem.findItems(q, maxNoteLen: Int, batch)
         store
           .transact(
             QItem.findItemsWithTags(q.account.collective, search).take(batch.limit.toLong)

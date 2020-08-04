@@ -197,6 +197,7 @@ trait Conversions {
       i.folder.map(mkIdName),
       i.fileCount,
       Nil,
+      i.notes,
       Nil
     )
 

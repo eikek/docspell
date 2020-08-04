@@ -121,4 +121,8 @@ case class Column(name: String, ns: String = "", alias: String = "") {
 
   def decrement[A: Put](a: A): Fragment =
     f ++ fr"=" ++ f ++ fr"- $a"
+
+  def substring(from: Int, many: Int): Fragment =
+    if (many <= 0 || from < 0) fr"${""}"
+    else fr"SUBSTRING(" ++ f ++ fr"FROM $from FOR $many)"
 }
