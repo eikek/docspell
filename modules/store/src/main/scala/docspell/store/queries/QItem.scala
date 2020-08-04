@@ -156,7 +156,8 @@ object QItem {
       corrPerson: Option[IdRef],
       concPerson: Option[IdRef],
       concEquip: Option[IdRef],
-      folder: Option[IdRef]
+      folder: Option[IdRef],
+      notes: Option[String]
   )
 
   case class Query(
@@ -228,6 +229,7 @@ object QItem {
   private def findItemsBase(
       q: Query,
       distinct: Boolean,
+      noteMaxLen: Int,
       moreCols: Seq[Fragment],
       ctes: (String, Fragment)*
   ): Fragment = {
@@ -264,6 +266,9 @@ object QItem {
         EC.name.prefix("e1").f,
         FC.id.prefix("f1").f,
         FC.name.prefix("f1").f,
+        // sql uses 1 for first character
+        IC.notes.prefix("i").substring(1, noteMaxLen),
+        // last column is only for sorting
         q.orderAsc match {
           case Some(co) =>
             coalesce(co(IC).prefix("i").f, IC.created.prefix("i").f)
@@ -307,13 +312,15 @@ object QItem {
       fr"LEFT JOIN folders f1 ON" ++ IC.folder.prefix("i").is(FC.id.prefix("f1"))
   }
 
-  def findItems(q: Query, batch: Batch): Stream[ConnectionIO, ListItem] = {
+  def findItems(
+      q: Query,
+      maxNoteLen: Int,
+      batch: Batch
+  ): Stream[ConnectionIO, ListItem] = {
     val IC = RItem.Columns
     val PC = RPerson.Columns
     val OC = ROrganization.Columns
     val EC = REquipment.Columns
-
-    val query = findItemsBase(q, true, Seq.empty)
 
     // inclusive tags are AND-ed
     val tagSelectsIncl = q.tagsInclude
@@ -404,6 +411,7 @@ object QItem {
       if (batch == Batch.all) Fragment.empty
       else fr"LIMIT ${batch.limit} OFFSET ${batch.offset}"
 
+    val query = findItemsBase(q, true, maxNoteLen, Seq.empty)
     val frag =
       query ++ fr"WHERE" ++ cond ++ order ++ limitOffset
     logger.trace(s"List $batch items: $frag")
@@ -413,6 +421,7 @@ object QItem {
   case class SelectedItem(itemId: Ident, weight: Double)
   def findSelectedItems(
       q: Query,
+      maxNoteLen: Int,
       items: Set[SelectedItem]
   ): Stream[ConnectionIO, ListItem] =
     if (items.isEmpty) Stream.empty
@@ -425,6 +434,7 @@ object QItem {
       val from = findItemsBase(
         q,
         true,
+        maxNoteLen,
         Seq(fr"tids.weight"),
         ("tids(item_id, weight)", fr"(VALUES" ++ values ++ fr")")
       ) ++

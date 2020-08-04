@@ -14,6 +14,7 @@ let
     app-id = "rest1";
     base-url = "http://localhost:7880";
     max-item-page-size = 200;
+    max-note-length = 180;
     bind = {
       address = "localhost";
       port = 7880;
@@ -121,6 +122,17 @@ in {
           within the client config, but it is restricted by the server to
           the number defined here. An admin might choose a lower number
           depending on the available resources.
+        '';
+      };
+
+      max-note-length = mkOption {
+        type = types.int;
+        default = defaults.max-note-length;
+        description = ''
+          The number of characters to return for each item notes when
+          searching. Item notes may be very long, when returning them with
+          all the results from a search, they add quite some data to return.
+          In order to keep this low, a limit can be defined here.
         '';
       };
 

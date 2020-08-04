@@ -26,6 +26,7 @@ type alias StoredUiSettings =
     { itemSearchPageSize : Maybe Int
     , tagCategoryColors : List ( String, String )
     , nativePdfPreview : Bool
+    , itemSearchNoteLength : Maybe Int
     }
 
 
@@ -40,6 +41,7 @@ type alias UiSettings =
     { itemSearchPageSize : Int
     , tagCategoryColors : Dict String Color
     , nativePdfPreview : Bool
+    , itemSearchNoteLength : Int
     }
 
 
@@ -48,6 +50,7 @@ defaults =
     { itemSearchPageSize = 60
     , tagCategoryColors = Dict.empty
     , nativePdfPreview = False
+    , itemSearchNoteLength = 0
     }
 
 
@@ -64,6 +67,8 @@ merge given fallback =
             )
             fallback.tagCategoryColors
     , nativePdfPreview = given.nativePdfPreview
+    , itemSearchNoteLength =
+        choose given.itemSearchNoteLength fallback.itemSearchNoteLength
     }
 
 
@@ -79,6 +84,7 @@ toStoredUiSettings settings =
         Dict.map (\_ -> Data.Color.toString) settings.tagCategoryColors
             |> Dict.toList
     , nativePdfPreview = settings.nativePdfPreview
+    , itemSearchNoteLength = Just settings.itemSearchNoteLength
     }
 
 

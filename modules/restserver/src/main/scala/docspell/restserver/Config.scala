@@ -16,6 +16,7 @@ case class Config(
     auth: Login.Config,
     integrationEndpoint: Config.IntegrationEndpoint,
     maxItemPageSize: Int,
+    maxNoteLength: Int,
     fullTextSearch: Config.FullTextSearch
 )
 

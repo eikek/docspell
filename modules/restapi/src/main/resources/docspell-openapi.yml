@@ -3860,6 +3860,10 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/Tag"
+        notes:
+          description: |
+            Some prefix of the item notes.
+          type: string
         highlighting:
           description: |
             Optional contextual information of a search query. Each

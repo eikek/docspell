@@ -1,6 +1,8 @@
 module Util.String exposing
     ( crazyEncode
     , ellipsis
+    , isBlank
+    , isNothingOrBlank
     , underscoreToSpace
     , withDefault
     )
@@ -31,7 +33,7 @@ ellipsis len str =
         str
 
     else
-        String.left (len - 3) str ++ "..."
+        String.left (len - 1) str ++ "…"
 
 
 withDefault : String -> String -> String
@@ -46,3 +48,14 @@ withDefault default str =
 underscoreToSpace : String -> String
 underscoreToSpace str =
     String.replace "_" " " str
+
+
+isBlank : String -> Bool
+isBlank s =
+    s == "" || (String.trim s == "")
+
+
+isNothingOrBlank : Maybe String -> Bool
+isNothingOrBlank ms =
+    Maybe.map isBlank ms
+        |> Maybe.withDefault True

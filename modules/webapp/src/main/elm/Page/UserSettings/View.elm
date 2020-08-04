@@ -6,6 +6,7 @@ import Comp.ImapSettingsManage
 import Comp.NotificationManage
 import Comp.ScanMailboxManage
 import Comp.UiSettingsManage
+import Data.Flags exposing (Flags)
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -14,8 +15,8 @@ import Page.UserSettings.Data exposing (..)
 import Util.Html exposing (classActive)
 
 
-view : UiSettings -> Model -> Html Msg
-view settings model =
+view : Flags -> UiSettings -> Model -> Html Msg
+view flags settings model =
     div [ class "usersetting-page ui padded grid" ]
         [ div [ class "sixteen wide mobile four wide tablet four wide computer column" ]
             [ h4 [ class "ui top attached ablue-comp header" ]
@@ -51,7 +52,7 @@ view settings model =
                         viewScanMailboxManage settings model
 
                     Just UiSettingsTab ->
-                        viewUiSettings settings model
+                        viewUiSettings flags settings model
 
                     Nothing ->
                         []
@@ -72,8 +73,8 @@ makeTab model tab header icon =
         ]
 
 
-viewUiSettings : UiSettings -> Model -> List (Html Msg)
-viewUiSettings settings model =
+viewUiSettings : Flags -> UiSettings -> Model -> List (Html Msg)
+viewUiSettings flags settings model =
     [ h2 [ class "ui header" ]
         [ i [ class "cog icon" ] []
         , text "UI Settings"
@@ -84,6 +85,7 @@ viewUiSettings settings model =
         ]
     , Html.map UiSettingsMsg
         (Comp.UiSettingsManage.view
+            flags
             settings
             "ui segment"
             model.uiSettingsModel

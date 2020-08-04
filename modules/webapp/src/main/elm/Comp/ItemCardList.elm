@@ -197,6 +197,22 @@ viewItem settings item =
                     )
                 ]
             ]
+        , div
+            [ classList
+                [ ( "content", True )
+                , ( "invisible hidden"
+                  , settings.itemSearchNoteLength
+                        <= 0
+                        || Util.String.isNothingOrBlank item.notes
+                  )
+                ]
+            ]
+            [ span [ class "small-info" ]
+                [ Maybe.withDefault "" item.notes
+                    |> Util.String.ellipsis settings.itemSearchNoteLength
+                    |> text
+                ]
+            ]
         , div [ class "content" ]
             [ div [ class "ui horizontal list" ]
                 [ div

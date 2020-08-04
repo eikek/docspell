@@ -15,20 +15,20 @@ import docspell.store.records.RJob
 
 trait OFulltext[F[_]] {
 
-  def findItems(
+  def findItems(maxNoteLen: Int)(
       q: Query,
       fts: OFulltext.FtsInput,
       batch: Batch
   ): F[Vector[OFulltext.FtsItem]]
 
   /** Same as `findItems` but does more queries per item to find all tags. */
-  def findItemsWithTags(
+  def findItemsWithTags(maxNoteLen: Int)(
       q: Query,
       fts: OFulltext.FtsInput,
       batch: Batch
   ): F[Vector[OFulltext.FtsItemWithTags]]
 
-  def findIndexOnly(
+  def findIndexOnly(maxNoteLen: Int)(
       fts: OFulltext.FtsInput,
       account: AccountId,
       batch: Batch
@@ -92,7 +92,7 @@ object OFulltext {
             else queue.insertIfNew(job) *> joex.notifyAllNodes
         } yield ()
 
-      def findIndexOnly(
+      def findIndexOnly(maxNoteLen: Int)(
           ftsQ: OFulltext.FtsInput,
           account: AccountId,
           batch: Batch
@@ -120,7 +120,7 @@ object OFulltext {
               .transact(
                 QItem.findItemsWithTags(
                   account.collective,
-                  QItem.findSelectedItems(QItem.Query.empty(account), select)
+                  QItem.findSelectedItems(QItem.Query.empty(account), maxNoteLen, select)
                 )
               )
               .take(batch.limit.toLong)
@@ -133,15 +133,23 @@ object OFulltext {
         } yield res
       }
 
-      def findItems(q: Query, ftsQ: FtsInput, batch: Batch): F[Vector[FtsItem]] =
-        findItemsFts(q, ftsQ, batch.first, itemSearch.findItems, convertFtsData[ListItem])
+      def findItems(
+          maxNoteLen: Int
+      )(q: Query, ftsQ: FtsInput, batch: Batch): F[Vector[FtsItem]] =
+        findItemsFts(
+          q,
+          ftsQ,
+          batch.first,
+          itemSearch.findItems(maxNoteLen),
+          convertFtsData[ListItem]
+        )
           .drop(batch.offset.toLong)
           .take(batch.limit.toLong)
           .map({ case (li, fd) => FtsItem(li, fd) })
           .compile
           .toVector
 
-      def findItemsWithTags(
+      def findItemsWithTags(maxNoteLen: Int)(
           q: Query,
           ftsQ: FtsInput,
           batch: Batch
@@ -150,7 +158,7 @@ object OFulltext {
           q,
           ftsQ,
           batch.first,
-          itemSearch.findItemsWithTags,
+          itemSearch.findItemsWithTags(maxNoteLen),
           convertFtsData[ListItemWithTags]
         )
           .drop(batch.offset.toLong)

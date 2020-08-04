@@ -40,7 +40,7 @@ object ItemRoutes {
           resp <- mask.fullText match {
             case Some(fq) if cfg.fullTextSearch.enabled =>
               for {
-                items <- backend.fulltext.findItems(
+                items <- backend.fulltext.findItems(cfg.maxNoteLength)(
                   query,
                   OFulltext.FtsInput(fq),
                   Batch(mask.offset, mask.limit).restrictLimitTo(cfg.maxItemPageSize)
@@ -49,7 +49,7 @@ object ItemRoutes {
               } yield ok
             case _ =>
               for {
-                items <- backend.itemSearch.findItems(
+                items <- backend.itemSearch.findItems(cfg.maxNoteLength)(
                   query,
                   Batch(mask.offset, mask.limit).restrictLimitTo(cfg.maxItemPageSize)
                 )
@@ -67,7 +67,7 @@ object ItemRoutes {
           resp <- mask.fullText match {
             case Some(fq) if cfg.fullTextSearch.enabled =>
               for {
-                items <- backend.fulltext.findItemsWithTags(
+                items <- backend.fulltext.findItemsWithTags(cfg.maxNoteLength)(
                   query,
                   OFulltext.FtsInput(fq),
                   Batch(mask.offset, mask.limit).restrictLimitTo(cfg.maxItemPageSize)
@@ -76,7 +76,7 @@ object ItemRoutes {
               } yield ok
             case _ =>
               for {
-                items <- backend.itemSearch.findItemsWithTags(
+                items <- backend.itemSearch.findItemsWithTags(cfg.maxNoteLength)(
                   query,
                   Batch(mask.offset, mask.limit).restrictLimitTo(cfg.maxItemPageSize)
                 )
@@ -92,7 +92,7 @@ object ItemRoutes {
             case q if q.length > 1 =>
               val ftsIn = OFulltext.FtsInput(q)
               for {
-                items <- backend.fulltext.findIndexOnly(
+                items <- backend.fulltext.findIndexOnly(cfg.maxNoteLength)(
                   ftsIn,
                   user.account,
                   Batch(mask.offset, mask.limit).restrictLimitTo(cfg.maxItemPageSize)
