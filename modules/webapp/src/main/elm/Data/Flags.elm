@@ -16,6 +16,8 @@ type alias Config =
     , docspellAssetPath : String
     , integrationEnabled : Bool
     , fullTextSearchEnabled : Bool
+    , maxPageSize : Int
+    , maxNoteLength : Int
     }
 
 

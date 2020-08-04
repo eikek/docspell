@@ -12,7 +12,7 @@ import Comp.ColorTagger
 import Comp.IntField
 import Data.Color exposing (Color)
 import Data.Flags exposing (Flags)
-import Data.UiSettings exposing (StoredUiSettings, UiSettings)
+import Data.UiSettings exposing (UiSettings)
 import Dict exposing (Dict)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -27,6 +27,8 @@ type alias Model =
     , tagColors : Dict String Color
     , tagColorModel : Comp.ColorTagger.Model
     , nativePdfPreview : Bool
+    , itemSearchNoteLength : Maybe Int
+    , searchNoteLengthModel : Comp.IntField.Model
     }
 
 
@@ -36,7 +38,7 @@ init flags settings =
       , searchPageSizeModel =
             Comp.IntField.init
                 (Just 10)
-                (Just 500)
+                (Just flags.config.maxPageSize)
                 False
                 "Page size"
       , tagColors = settings.tagCategoryColors
@@ -45,6 +47,13 @@ init flags settings =
                 []
                 Data.Color.all
       , nativePdfPreview = settings.nativePdfPreview
+      , itemSearchNoteLength = Just settings.itemSearchNoteLength
+      , searchNoteLengthModel =
+            Comp.IntField.init
+                (Just 0)
+                (Just flags.config.maxNoteLength)
+                False
+                "Max. Note Length"
       }
     , Api.getTags flags "" GetTagsResp
     )
@@ -55,6 +64,7 @@ type Msg
     | TagColorMsg Comp.ColorTagger.Msg
     | GetTagsResp (Result Http.Error TagList)
     | TogglePdfPreview
+    | NoteLengthMsg Comp.IntField.Msg
 
 
 
@@ -76,6 +86,22 @@ update sett msg model =
                     { model
                         | searchPageSizeModel = m
                         , itemSearchPageSize = n
+                    }
+            in
+            ( model_, nextSettings )
+
+        NoteLengthMsg lm ->
+            let
+                ( m, n ) =
+                    Comp.IntField.update lm model.searchNoteLengthModel
+
+                nextSettings =
+                    Maybe.map (\len -> { sett | itemSearchNoteLength = len }) n
+
+                model_ =
+                    { model
+                        | searchNoteLengthModel = m
+                        , itemSearchNoteLength = n
                     }
             in
             ( model_, nextSettings )
@@ -139,18 +165,31 @@ tagColorViewOpts =
     }
 
 
-view : UiSettings -> Model -> Html Msg
-view _ model =
+view : Flags -> UiSettings -> Model -> Html Msg
+view flags _ model =
     div [ class "ui form" ]
         [ div [ class "ui dividing header" ]
             [ text "Item Search"
             ]
         , Html.map SearchPageSizeMsg
             (Comp.IntField.viewWithInfo
-                "Maximum results in one page when searching items."
+                ("Maximum results in one page when searching items. At most "
+                    ++ String.fromInt flags.config.maxPageSize
+                    ++ "."
+                )
                 model.itemSearchPageSize
                 "field"
                 model.searchPageSizeModel
+            )
+        , Html.map NoteLengthMsg
+            (Comp.IntField.viewWithInfo
+                ("Maximum size of the item notes to display in card view. Between 0 - "
+                    ++ String.fromInt flags.config.maxNoteLength
+                    ++ "."
+                )
+                model.itemSearchNoteLength
+                "field"
+                model.searchNoteLengthModel
             )
         , div [ class "ui dividing header" ]
             [ text "Item Detail"

@@ -15,7 +15,9 @@ case class Flags(
     signupMode: SignupConfig.Mode,
     docspellAssetPath: String,
     integrationEnabled: Boolean,
-    fullTextSearchEnabled: Boolean
+    fullTextSearchEnabled: Boolean,
+    maxPageSize: Int,
+    maxNoteLength: Int
 )
 
 object Flags {
@@ -26,7 +28,9 @@ object Flags {
       cfg.backend.signup.mode,
       s"/app/assets/docspell-webapp/${BuildInfo.version}",
       cfg.integrationEndpoint.enabled,
-      cfg.fullTextSearch.enabled
+      cfg.fullTextSearch.enabled,
+      cfg.maxItemPageSize,
+      cfg.maxNoteLength
     )
 
   implicit val jsonEncoder: Encoder[Flags] =

@@ -115,10 +115,10 @@ isSuccess model =
     Maybe.map .success model.message == Just True
 
 
-view : UiSettings -> String -> Model -> Html Msg
-view settings classes model =
+view : Flags -> UiSettings -> String -> Model -> Html Msg
+view flags settings classes model =
     div [ class classes ]
-        [ Html.map UiSettingsFormMsg (Comp.UiSettingsForm.view settings model.formModel)
+        [ Html.map UiSettingsFormMsg (Comp.UiSettingsForm.view flags settings model.formModel)
         , div [ class "ui divider" ] []
         , button
             [ class "ui primary button"

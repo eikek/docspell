@@ -146,7 +146,7 @@ viewQueue model =
 
 viewUserSettings : Model -> Html Msg
 viewUserSettings model =
-    Html.map UserSettingsMsg (Page.UserSettings.View.view model.uiSettings model.userSettingsModel)
+    Html.map UserSettingsMsg (Page.UserSettings.View.view model.flags model.uiSettings model.userSettingsModel)
 
 
 viewCollectiveSettings : Model -> Html Msg
