@@ -12,7 +12,7 @@ import Comp.ColorTagger
 import Comp.IntField
 import Data.Color exposing (Color)
 import Data.Flags exposing (Flags)
-import Data.UiSettings exposing (UiSettings)
+import Data.UiSettings exposing (Pos(..), UiSettings)
 import Dict exposing (Dict)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -29,6 +29,7 @@ type alias Model =
     , nativePdfPreview : Bool
     , itemSearchNoteLength : Maybe Int
     , searchNoteLengthModel : Comp.IntField.Model
+    , itemDetailNotesPosition : Pos
     }
 
 
@@ -54,6 +55,7 @@ init flags settings =
                 (Just flags.config.maxNoteLength)
                 False
                 "Max. Note Length"
+      , itemDetailNotesPosition = settings.itemDetailNotesPosition
       }
     , Api.getTags flags "" GetTagsResp
     )
@@ -65,6 +67,7 @@ type Msg
     | GetTagsResp (Result Http.Error TagList)
     | TogglePdfPreview
     | NoteLengthMsg Comp.IntField.Msg
+    | SetNotesPosition Pos
 
 
 
@@ -105,6 +108,17 @@ update sett msg model =
                     }
             in
             ( model_, nextSettings )
+
+        SetNotesPosition pos ->
+            let
+                model_ =
+                    { model | itemDetailNotesPosition = pos }
+            in
+            if model_.itemDetailNotesPosition == sett.itemDetailNotesPosition then
+                ( model_, Nothing )
+
+            else
+                ( model_, Just { sett | itemDetailNotesPosition = model_.itemDetailNotesPosition } )
 
         TagColorMsg lm ->
             let
@@ -204,6 +218,31 @@ view flags _ model =
                     []
                 , label []
                     [ text "Browser-native PDF preview"
+                    ]
+                ]
+            ]
+        , div [ class "grouped fields" ]
+            [ label [] [ text "Position of item notes" ]
+            , div [ class "field" ]
+                [ div [ class "ui radio checkbox" ]
+                    [ input
+                        [ type_ "radio"
+                        , checked (model.itemDetailNotesPosition == Top)
+                        , onCheck (\_ -> SetNotesPosition Top)
+                        ]
+                        []
+                    , label [] [ text "Top" ]
+                    ]
+                ]
+            , div [ class "field" ]
+                [ div [ class "ui radio checkbox" ]
+                    [ input
+                        [ type_ "radio"
+                        , checked (model.itemDetailNotesPosition == Bottom)
+                        , onCheck (\_ -> SetNotesPosition Bottom)
+                        ]
+                        []
+                    , label [] [ text "Bottom" ]
                     ]
                 ]
             ]

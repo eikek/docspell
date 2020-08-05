@@ -122,7 +122,7 @@ textarea.markdown-editor {
     max-height: 300px;
     width: 100%;
     border: 0;
-    min-height: 10em;
+    min-height: 5em;
 }
 
 .default-layout .job-log {

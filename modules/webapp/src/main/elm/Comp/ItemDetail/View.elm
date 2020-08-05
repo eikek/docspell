@@ -65,11 +65,20 @@ view inav settings model =
                 ]
               <|
                 List.concat
-                    [ [ renderAttachmentsTabMenu model
+                    [ if settings.itemDetailNotesPosition == Data.UiSettings.Top then
+                        [ renderNotes model ]
+
+                      else
+                        []
+                    , [ renderAttachmentsTabMenu model
                       ]
                     , renderAttachmentsTabBody settings model
-                    , [ renderNotes model ]
                     , renderIdInfo model
+                    , if settings.itemDetailNotesPosition == Data.UiSettings.Bottom then
+                        [ renderNotes model ]
+
+                      else
+                        []
                     ]
             ]
         ]
@@ -166,15 +175,22 @@ actionInputDatePicker =
 
 renderIdInfo : Model -> List (Html msg)
 renderIdInfo model =
-    [ div [ class "ui center aligned container" ]
-        [ span [ class "small-info" ]
-            [ text model.item.id
-            , text " • "
-            , text "Created: "
-            , Util.Time.formatDateTime model.item.created |> text
-            , text " • "
-            , text "Updated: "
-            , Util.Time.formatDateTime model.item.updated |> text
+    [ div [ class "ui bottom attached segment" ]
+        [ div [ class "ui center aligned container" ]
+            [ div [ class "ui bulleted mini horizontal list small-info" ]
+                [ div [ class "item" ]
+                    [ i [ class "bullseye icon" ] []
+                    , text model.item.id
+                    ]
+                , div [ class "item" ]
+                    [ i [ class "sun outline icon" ] []
+                    , Util.Time.formatDateTime model.item.created |> text
+                    ]
+                , div [ class "item" ]
+                    [ i [ class "pencil alternate icon" ] []
+                    , Util.Time.formatDateTime model.item.updated |> text
+                    ]
+                ]
             ]
         ]
     ]
@@ -224,7 +240,7 @@ renderNotes model =
                                 [ text "Notes"
                                 ]
                             ]
-                        , div [ class "twelve wide center aligned column" ]
+                        , div [ class "eleven wide center aligned column" ]
                             [ div [ class "ui horizontal bulleted link list" ]
                                 [ Html.map NotesEditMsg
                                     (Comp.MarkdownInput.viewEditLink classes mm)
@@ -234,16 +250,9 @@ renderNotes model =
                                     (Comp.MarkdownInput.viewSplitLink classes mm)
                                 ]
                             ]
-                        , div [ class "right aligned two wide column" ]
-                            [ a
-                                [ classList
-                                    [ ( "ui basic icon link", True )
-                                    , ( "invisible hidden", Util.String.isNothingOrBlank model.item.notes )
-                                    ]
-                                , onClick ToggleEditNotes
-                                , href "#"
-                                ]
-                                [ i [ class "cancel icon" ] []
+                        , div [ class "right aligned three wide column" ]
+                            [ div [ class "ui horizontal link list" ]
+                                [ Comp.MarkdownInput.viewCheatLink "item" mm
                                 ]
                             ]
                         ]
@@ -675,14 +684,16 @@ renderTags settings model =
 
 renderEditMenu : UiSettings -> Model -> List (Html Msg)
 renderEditMenu settings model =
-    [ renderEditButtons model
-    , renderEditForm settings model
+    [ div [ class "ui segments" ]
+        [ renderEditButtons model
+        , renderEditForm settings model
+        ]
     ]
 
 
 renderEditButtons : Model -> Html Msg
 renderEditButtons model =
-    div [ class "ui top attached segment" ]
+    div [ class "ui segment" ]
         [ button
             [ classList
                 [ ( "ui primary button", True )
@@ -723,7 +734,7 @@ renderEditForm settings model =
                 [ i [ class "grey plus link icon" ] []
                 ]
     in
-    div [ class "ui attached segment" ]
+    div [ class "ui segment" ]
         [ div [ class "ui form warning" ]
             [ div [ class "field" ]
                 [ label []
