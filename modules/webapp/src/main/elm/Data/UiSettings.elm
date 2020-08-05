@@ -1,9 +1,12 @@
 module Data.UiSettings exposing
-    ( StoredUiSettings
+    ( Pos(..)
+    , StoredUiSettings
     , UiSettings
     , defaults
     , merge
     , mergeDefaults
+    , posFromString
+    , posToString
     , tagColor
     , tagColorString
     , toStoredUiSettings
@@ -27,6 +30,7 @@ type alias StoredUiSettings =
     , tagCategoryColors : List ( String, String )
     , nativePdfPreview : Bool
     , itemSearchNoteLength : Maybe Int
+    , itemDetailNotesPosition : Maybe String
     }
 
 
@@ -42,7 +46,36 @@ type alias UiSettings =
     , tagCategoryColors : Dict String Color
     , nativePdfPreview : Bool
     , itemSearchNoteLength : Int
+    , itemDetailNotesPosition : Pos
     }
+
+
+type Pos
+    = Top
+    | Bottom
+
+
+posToString : Pos -> String
+posToString pos =
+    case pos of
+        Top ->
+            "top"
+
+        Bottom ->
+            "bottom"
+
+
+posFromString : String -> Maybe Pos
+posFromString str =
+    case str of
+        "top" ->
+            Just Top
+
+        "bottom" ->
+            Just Bottom
+
+        _ ->
+            Nothing
 
 
 defaults : UiSettings
@@ -51,6 +84,7 @@ defaults =
     , tagCategoryColors = Dict.empty
     , nativePdfPreview = False
     , itemSearchNoteLength = 0
+    , itemDetailNotesPosition = Top
     }
 
 
@@ -69,6 +103,9 @@ merge given fallback =
     , nativePdfPreview = given.nativePdfPreview
     , itemSearchNoteLength =
         choose given.itemSearchNoteLength fallback.itemSearchNoteLength
+    , itemDetailNotesPosition =
+        choose (Maybe.andThen posFromString given.itemDetailNotesPosition)
+            fallback.itemDetailNotesPosition
     }
 
 
@@ -85,6 +122,7 @@ toStoredUiSettings settings =
             |> Dict.toList
     , nativePdfPreview = settings.nativePdfPreview
     , itemSearchNoteLength = Just settings.itemSearchNoteLength
+    , itemDetailNotesPosition = Just (posToString settings.itemDetailNotesPosition)
     }
 
 

@@ -3,6 +3,7 @@ module Page.ItemDetail.Update exposing (update)
 import Api
 import Browser.Navigation as Nav
 import Comp.ItemDetail
+import Comp.ItemDetail.Update
 import Data.Flags exposing (Flags)
 import Page.ItemDetail.Data exposing (Model, Msg(..))
 
@@ -13,7 +14,7 @@ update key flags next msg model =
         Init id ->
             let
                 ( lm, lc, ls ) =
-                    Comp.ItemDetail.update key flags next Comp.ItemDetail.Init model.detail
+                    Comp.ItemDetail.update key flags next Comp.ItemDetail.Update.Init model.detail
             in
             ( { model | detail = lm }
             , Cmd.batch [ Api.itemDetail flags id ItemResp, Cmd.map ItemDetailMsg lc ]
@@ -33,7 +34,7 @@ update key flags next msg model =
         ItemResp (Ok item) ->
             let
                 lmsg =
-                    Comp.ItemDetail.SetItem item
+                    Comp.ItemDetail.Update.SetItem item
             in
             update key flags next (ItemDetailMsg lmsg) model
 
