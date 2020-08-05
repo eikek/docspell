@@ -122,11 +122,11 @@ viewSearchBar flags model =
     let
         searchTypeItem =
             Comp.FixedDropdown.Item
-                model.searchType
-                (searchTypeString model.searchType)
+                model.searchTypeForm
+                (searchTypeString model.searchTypeForm)
 
         searchInput =
-            case model.searchType of
+            case model.searchTypeForm of
                 BasicSearch ->
                     model.searchMenuModel.allNameModel
 
@@ -153,7 +153,7 @@ viewSearchBar flags model =
             [ class "item"
             , onClick ToggleSearchMenu
             , href "#"
-            , if model.searchType == ContentOnlySearch then
+            , if model.searchTypeForm == ContentOnlySearch then
                 title "Search menu disabled"
 
               else
@@ -163,7 +163,7 @@ viewSearchBar flags model =
             , i [ class "icons" ]
                 [ i [ class "grey bars icon" ] []
                 , i [ class "bottom left corner search icon" ] []
-                , if model.searchType == ContentOnlySearch then
+                , if model.searchTypeForm == ContentOnlySearch then
                     i [ class "top right red corner delete icon" ] []
 
                   else if hasMoreSearch model then

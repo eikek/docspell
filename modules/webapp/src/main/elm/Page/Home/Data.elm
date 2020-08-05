@@ -37,6 +37,7 @@ type alias Model =
     , throttle : Throttle Msg
     , searchTypeDropdown : Comp.FixedDropdown.Model SearchType
     , searchType : SearchType
+    , searchTypeForm : SearchType
     , contentOnlySearch : Maybe String
     }
 
@@ -63,7 +64,8 @@ init flags =
     , searchTypeDropdown =
         Comp.FixedDropdown.initMap searchTypeString
             searchTypeOptions
-    , searchType = defaultSearchType flags
+    , searchType = BasicSearch
+    , searchTypeForm = defaultSearchType flags
     , contentOnlySearch = Nothing
     }
 
@@ -134,19 +136,15 @@ itemNav id model =
 
 doSearchCmd : Flags -> UiSettings -> Int -> Model -> Cmd Msg
 doSearchCmd flags settings offset model =
-    if model.menuCollapsed then
-        case model.searchType of
-            BasicSearch ->
-                doSearchDefaultCmd flags settings offset model
+    case model.searchType of
+        BasicSearch ->
+            doSearchDefaultCmd flags settings offset model
 
-            ContentSearch ->
-                doSearchDefaultCmd flags settings offset model
+        ContentSearch ->
+            doSearchDefaultCmd flags settings offset model
 
-            ContentOnlySearch ->
-                doSearchIndexCmd flags settings offset model
-
-    else
-        doSearchDefaultCmd flags settings offset model
+        ContentOnlySearch ->
+            doSearchIndexCmd flags settings offset model
 
 
 doSearchDefaultCmd : Flags -> UiSettings -> Int -> Model -> Cmd Msg

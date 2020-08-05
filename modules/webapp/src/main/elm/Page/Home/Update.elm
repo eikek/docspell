@@ -12,6 +12,7 @@ import Throttle
 import Time
 import Util.Html exposing (KeyCode(..))
 import Util.Maybe
+import Util.String
 import Util.Update
 
 
@@ -157,7 +158,7 @@ update key flags settings msg model =
         SetBasicSearch str ->
             let
                 smMsg =
-                    case model.searchType of
+                    case model.searchTypeForm of
                         BasicSearch ->
                             SearchMenuMsg (Comp.SearchMenu.SetAllName str)
 
@@ -183,7 +184,7 @@ update key flags settings msg model =
             withSub
                 ( { model
                     | searchTypeDropdown = sm
-                    , searchType = Maybe.withDefault model.searchType mv
+                    , searchTypeForm = Maybe.withDefault model.searchTypeForm mv
                   }
                 , Cmd.none
                 )
@@ -202,14 +203,27 @@ update key flags settings msg model =
 doSearch : Flags -> UiSettings -> Model -> ( Model, Cmd Msg, Sub Msg )
 doSearch flags settings model =
     let
+        stype =
+            if
+                not model.menuCollapsed
+                    || Util.String.isNothingOrBlank model.contentOnlySearch
+            then
+                BasicSearch
+
+            else
+                model.searchTypeForm
+
+        model_ =
+            { model | searchType = stype }
+
         searchCmd =
-            doSearchCmd flags settings 0 model
+            doSearchCmd flags settings 0 model_
 
         ( newThrottle, cmd ) =
             Throttle.try searchCmd model.throttle
     in
     withSub
-        ( { model
+        ( { model_
             | searchInProgress = cmd /= Cmd.none
             , viewMode = Listing
             , searchOffset = 0
