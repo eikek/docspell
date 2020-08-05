@@ -46,6 +46,7 @@ import Util.Folder exposing (mkFolderOption)
 import Util.Http
 import Util.List
 import Util.Maybe
+import Util.String
 
 
 type Msg
@@ -67,7 +68,6 @@ type Msg
     | SetName String
     | SaveName
     | SetNotes String
-    | ToggleNotes
     | ToggleEditNotes
     | NotesEditMsg Comp.MarkdownInput.Msg
     | SaveNotes
@@ -249,7 +249,12 @@ update key flags next msg model =
                 | item = item
                 , nameModel = item.name
                 , notesModel = item.notes
-                , notesField = ViewNotes
+                , notesField =
+                    if Util.String.isNothingOrBlank item.notes then
+                        EditNotes Comp.MarkdownInput.init
+
+                    else
+                        ViewNotes
                 , itemDate = item.itemDate
                 , dueDate = item.dueDate
                 , visibleAttach = 0
@@ -437,19 +442,6 @@ update key flags next msg model =
                 , Cmd.none
                 )
 
-        ToggleNotes ->
-            noSub
-                ( { model
-                    | notesField =
-                        if model.notesField == ViewNotes then
-                            HideNotes
-
-                        else
-                            ViewNotes
-                  }
-                , Cmd.none
-                )
-
         ToggleEditNotes ->
             noSub
                 ( { model
@@ -474,9 +466,6 @@ update key flags next msg model =
                         ( { model | notesField = EditNotes lm2, notesModel = Util.Maybe.fromString str }
                         , Cmd.none
                         )
-
-                HideNotes ->
-                    noSub ( model, Cmd.none )
 
                 ViewNotes ->
                     noSub ( model, Cmd.none )

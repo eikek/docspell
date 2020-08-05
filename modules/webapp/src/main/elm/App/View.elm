@@ -305,14 +305,16 @@ loginInfo model =
 footer : Model -> Html Msg
 footer model =
     div [ class "ui footer" ]
-        [ a [ href "https://github.com/eikek/docspell" ]
-            [ i [ class "ui github icon" ] []
-            ]
-        , span []
-            [ text "Docspell "
-            , text model.version.version
-            , text " (#"
-            , String.left 8 model.version.gitCommit |> text
-            , text ")"
+        [ div [ class "ui center aligned container" ]
+            [ a [ href "https://github.com/eikek/docspell" ]
+                [ i [ class "ui github icon" ] []
+                ]
+            , span []
+                [ text "Docspell "
+                , text model.version.version
+                , text " (#"
+                , String.left 8 model.version.gitCommit |> text
+                , text ")"
+                ]
             ]
         ]

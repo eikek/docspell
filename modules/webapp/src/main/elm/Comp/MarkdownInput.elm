@@ -4,6 +4,11 @@ module Comp.MarkdownInput exposing
     , init
     , update
     , view
+    , viewCheatLink
+    , viewContent
+    , viewEditLink
+    , viewPreviewLink
+    , viewSplitLink
     )
 
 import Html exposing (..)
@@ -26,7 +31,7 @@ type alias Model =
 
 init : Model
 init =
-    { display = Split
+    { display = Edit
     , cheatSheetUrl = "https://www.markdownguide.org/cheat-sheet"
     }
 
@@ -46,59 +51,96 @@ update txt msg model =
             ( { model | display = dsp }, txt )
 
 
+viewContent : String -> Model -> Html Msg
+viewContent txt model =
+    case model.display of
+        Edit ->
+            editDisplay txt
+
+        Preview ->
+            previewDisplay txt
+
+        Split ->
+            splitDisplay txt
+
+
+viewEditLink : (Bool -> Attribute Msg) -> Model -> Html Msg
+viewEditLink classes model =
+    a
+        [ onClick (SetDisplay Edit)
+        , classes (model.display == Edit)
+        , href "#"
+        ]
+        [ text "Edit"
+        ]
+
+
+viewPreviewLink : (Bool -> Attribute Msg) -> Model -> Html Msg
+viewPreviewLink classes model =
+    a
+        [ onClick (SetDisplay Preview)
+        , classes (model.display == Preview)
+        , href "#"
+        ]
+        [ text "Preview"
+        ]
+
+
+viewSplitLink : (Bool -> Attribute Msg) -> Model -> Html Msg
+viewSplitLink classes model =
+    a
+        [ onClick (SetDisplay Split)
+        , classes (model.display == Split)
+        , href "#"
+        ]
+        [ text "Split"
+        ]
+
+
+viewCheatLink : String -> Model -> Html msg
+viewCheatLink classes model =
+    a
+        [ class classes
+        , target "_new"
+        , href model.cheatSheetUrl
+        ]
+        [ i [ class "ui help icon" ] []
+        , text "Supports Markdown"
+        ]
+
+
 view : String -> Model -> Html Msg
 view txt model =
     div []
         [ div [ class "ui top attached tabular mini menu" ]
-            [ a
-                [ classList
-                    [ ( "ui link item", True )
-                    , ( "active", model.display == Edit )
-                    ]
-                , onClick (SetDisplay Edit)
-                , href "#"
-                ]
-                [ text "Edit"
-                ]
-            , a
-                [ classList
-                    [ ( "ui link item", True )
-                    , ( "active", model.display == Preview )
-                    ]
-                , onClick (SetDisplay Preview)
-                , href "#"
-                ]
-                [ text "Preview"
-                ]
-            , a
-                [ classList
-                    [ ( "ui link item", True )
-                    , ( "active", model.display == Split )
-                    ]
-                , onClick (SetDisplay Split)
-                , href "#"
-                ]
-                [ text "Split"
-                ]
-            , a
-                [ class "ui right floated help-link link item"
-                , target "_new"
-                , href model.cheatSheetUrl
-                ]
-                [ i [ class "ui help icon" ] []
-                , text "Supports Markdown"
-                ]
+            [ viewEditLink
+                (\act ->
+                    classList
+                        [ ( "ui link item", True )
+                        , ( "active", act )
+                        ]
+                )
+                model
+            , viewPreviewLink
+                (\act ->
+                    classList
+                        [ ( "ui link item", True )
+                        , ( "active", act )
+                        ]
+                )
+                model
+            , viewSplitLink
+                (\act ->
+                    classList
+                        [ ( "ui link item", True )
+                        , ( "active", act )
+                        ]
+                )
+                model
+            , viewCheatLink "ui right floated help-link link item" model
             ]
         , div [ class "ui bottom attached segment" ]
-            [ case model.display of
-                Edit ->
-                    editDisplay txt
-
-                Preview ->
-                    previewDisplay txt
-
-                Split ->
-                    splitDisplay txt
+            [ viewContent txt model
             ]
         ]
 
@@ -108,6 +150,7 @@ editDisplay txt =
     textarea
         [ class "markdown-editor"
         , onInput SetText
+        , placeholder "Add notes here…"
         ]
         [ text txt ]
 

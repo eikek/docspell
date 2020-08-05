@@ -79,7 +79,6 @@ type alias Model =
 type NotesField
     = ViewNotes
     | EditNotes Comp.MarkdownInput.Model
-    | HideNotes
 
 
 type alias AttachmentRename =
@@ -95,9 +94,6 @@ isEditNotes field =
             True
 
         ViewNotes ->
-            False
-
-        HideNotes ->
             False
 
 

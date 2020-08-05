@@ -42,6 +42,7 @@
 
 .default-layout .main-content {
     margin-top: 45px;
+    padding-bottom: 2em;
 }
 
 .default-layout .top-menu {
@@ -65,13 +66,6 @@
 }
 .default-layout .ui.multiple.search.dropdown>input.search.long-search {
     width: auto;
-}
-
-.default-layout .ui.segment .item-notes {
-    padding: 0 1em;
-}
-.default-layout .ui.segment.item-notes-display {
-    background: rgba(246, 255, 158, 0.4);
 }
 
 .default-layout .extracted-text {
@@ -263,7 +257,6 @@ label span.muted {
     height: 20px;
   }
 }
-
 
 
 /* Datepicker

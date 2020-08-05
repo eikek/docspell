@@ -39,97 +39,9 @@ view inav settings model =
     div []
         [ Html.map ModalEditMsg (Comp.DetailEdit.viewModal settings model.modalEdit)
         , renderItemInfo settings model
-        , div
-            [ classList
-                [ ( "ui ablue-comp menu", True )
-                , ( "top attached"
-                  , model.mailOpen
-                        || model.addFilesOpen
-                        || isEditNotes model.notesField
-                  )
-                ]
-            ]
-            [ a [ class "item", Page.href HomePage ]
-                [ i [ class "arrow left icon" ] []
-                ]
-            , a
-                [ classList
-                    [ ( "item", True )
-                    , ( "disabled", inav.prev == Nothing )
-                    ]
-                , Maybe.map ItemDetailPage inav.prev
-                    |> Maybe.map Page.href
-                    |> Maybe.withDefault (href "#")
-                ]
-                [ i [ class "caret square left outline icon" ] []
-                ]
-            , a
-                [ classList
-                    [ ( "item", True )
-                    , ( "disabled", inav.next == Nothing )
-                    ]
-                , Maybe.map ItemDetailPage inav.next
-                    |> Maybe.map Page.href
-                    |> Maybe.withDefault (href "#")
-                ]
-                [ i [ class "caret square right outline icon" ] []
-                ]
-            , a
-                [ classList
-                    [ ( "toggle item", True )
-                    , ( "active", model.menuOpen )
-                    ]
-                , title "Edit Metadata"
-                , onClick ToggleMenu
-                , href ""
-                ]
-                [ i [ class "edit icon" ] []
-                ]
-            , a
-                [ classList
-                    [ ( "toggle item", True )
-                    , ( "active", model.mailOpen )
-                    ]
-                , title "Send Mail"
-                , onClick ToggleMail
-                , href "#"
-                ]
-                [ i [ class "mail outline icon" ] []
-                ]
-            , a
-                [ classList
-                    [ ( "toggle item", True )
-                    , ( "active", isEditNotes model.notesField )
-                    ]
-                , if isEditNotes model.notesField then
-                    title "Cancel editing"
-
-                  else
-                    title "Edit Notes"
-                , onClick ToggleEditNotes
-                , href "#"
-                ]
-                [ Icons.editNotesIcon
-                ]
-            , a
-                [ classList
-                    [ ( "toggle item", True )
-                    , ( "active", model.addFilesOpen )
-                    ]
-                , if model.addFilesOpen then
-                    title "Close"
-
-                  else
-                    title "Add Files"
-                , onClick AddFilesToggle
-                , href "#"
-                ]
-                [ Icons.addFilesIcon
-                ]
-            ]
+        , renderDetailMenu inav model
         , renderMailForm settings model
         , renderAddFilesForm model
-        , renderNotes model
         , div [ class "ui grid" ]
             [ Html.map DeleteItemConfirm (Comp.YesNoDimmer.view model.deleteItemConfirm)
             , div
@@ -156,6 +68,7 @@ view inav settings model =
                     [ [ renderAttachmentsTabMenu model
                       ]
                     , renderAttachmentsTabBody settings model
+                    , [ renderNotes model ]
                     , renderIdInfo model
                     ]
             ]
@@ -164,6 +77,82 @@ view inav settings model =
 
 
 --- Helper
+
+
+renderDetailMenu : { prev : Maybe String, next : Maybe String } -> Model -> Html Msg
+renderDetailMenu inav model =
+    div
+        [ classList
+            [ ( "ui ablue-comp menu", True )
+            , ( "top attached"
+              , model.mailOpen
+                    || model.addFilesOpen
+              )
+            ]
+        ]
+        [ a [ class "item", Page.href HomePage ]
+            [ i [ class "arrow left icon" ] []
+            ]
+        , a
+            [ classList
+                [ ( "item", True )
+                , ( "disabled", inav.prev == Nothing )
+                ]
+            , Maybe.map ItemDetailPage inav.prev
+                |> Maybe.map Page.href
+                |> Maybe.withDefault (href "#")
+            ]
+            [ i [ class "caret square left outline icon" ] []
+            ]
+        , a
+            [ classList
+                [ ( "item", True )
+                , ( "disabled", inav.next == Nothing )
+                ]
+            , Maybe.map ItemDetailPage inav.next
+                |> Maybe.map Page.href
+                |> Maybe.withDefault (href "#")
+            ]
+            [ i [ class "caret square right outline icon" ] []
+            ]
+        , a
+            [ classList
+                [ ( "toggle item", True )
+                , ( "active", model.menuOpen )
+                ]
+            , title "Edit Metadata"
+            , onClick ToggleMenu
+            , href ""
+            ]
+            [ i [ class "edit icon" ] []
+            ]
+        , a
+            [ classList
+                [ ( "toggle item", True )
+                , ( "active", model.mailOpen )
+                ]
+            , title "Send Mail"
+            , onClick ToggleMail
+            , href "#"
+            ]
+            [ i [ class "mail outline icon" ] []
+            ]
+        , a
+            [ classList
+                [ ( "toggle item", True )
+                , ( "active", model.addFilesOpen )
+                ]
+            , if model.addFilesOpen then
+                title "Close"
+
+              else
+                title "Add Files"
+            , onClick AddFilesToggle
+            , href "#"
+            ]
+            [ Icons.addFilesIcon
+            ]
+        ]
 
 
 actionInputDatePicker : DatePicker.Settings
@@ -194,59 +183,97 @@ renderIdInfo model =
 renderNotes : Model -> Html Msg
 renderNotes model =
     case model.notesField of
-        HideNotes ->
-            case model.item.notes of
-                Nothing ->
-                    span [ class "invisible hidden" ] []
-
-                Just _ ->
-                    div [ class "ui segment" ]
-                        [ a
-                            [ class "ui top left attached label"
-                            , onClick ToggleNotes
-                            , href "#"
-                            ]
-                            [ i [ class "eye icon" ] []
-                            , text "Show notes…"
-                            ]
-                        ]
-
         ViewNotes ->
-            case model.item.notes of
-                Nothing ->
-                    span [ class "hidden invisible" ] []
-
-                Just str ->
-                    div [ class "ui raised segment item-notes-display" ]
-                        [ Markdown.toHtml [ class "item-notes" ] str
-                        , a
-                            [ class "ui left corner label"
-                            , onClick ToggleNotes
-                            , href "#"
+            div [ class "ui segments" ]
+                [ div [ class "ui segment" ]
+                    [ div [ class "ui two column grid" ]
+                        [ div [ class "column" ]
+                            [ p [ class "ui header" ]
+                                [ text "Notes"
+                                ]
                             ]
-                            [ i [ class "eye slash icon" ] []
+                        , div [ class "right aligned column" ]
+                            [ a
+                                [ class "ui basic icon link"
+                                , onClick ToggleEditNotes
+                                , href "#"
+                                ]
+                                [ i [ class "edit icon" ] []
+                                ]
                             ]
                         ]
+                    ]
+                , div [ class "ui segment" ]
+                    [ Markdown.toHtml [] (Maybe.withDefault "" model.item.notes)
+                    ]
+                ]
 
         EditNotes mm ->
-            div [ class "ui bottom attached segment" ]
-                [ Html.map NotesEditMsg (Comp.MarkdownInput.view (Maybe.withDefault "" model.notesModel) mm)
-                , div [ class "ui secondary menu" ]
-                    [ a
-                        [ class "link item"
-                        , href "#"
-                        , onClick SaveNotes
+            let
+                classes act =
+                    classList
+                        [ ( "item", True )
+                        , ( "active", act )
                         ]
-                        [ i [ class "save outline icon" ] []
-                        , text "Save"
+            in
+            div [ class "ui segments" ]
+                [ div [ class "ui segment" ]
+                    [ div [ class "ui grid" ]
+                        [ div [ class "two wide column" ]
+                            [ p [ class "ui header" ]
+                                [ text "Notes"
+                                ]
+                            ]
+                        , div [ class "twelve wide center aligned column" ]
+                            [ div [ class "ui horizontal bulleted link list" ]
+                                [ Html.map NotesEditMsg
+                                    (Comp.MarkdownInput.viewEditLink classes mm)
+                                , Html.map NotesEditMsg
+                                    (Comp.MarkdownInput.viewPreviewLink classes mm)
+                                , Html.map NotesEditMsg
+                                    (Comp.MarkdownInput.viewSplitLink classes mm)
+                                ]
+                            ]
+                        , div [ class "right aligned two wide column" ]
+                            [ a
+                                [ classList
+                                    [ ( "ui basic icon link", True )
+                                    , ( "invisible hidden", Util.String.isNothingOrBlank model.item.notes )
+                                    ]
+                                , onClick ToggleEditNotes
+                                , href "#"
+                                ]
+                                [ i [ class "cancel icon" ] []
+                                ]
+                            ]
                         ]
-                    , a
-                        [ class "link item"
-                        , href "#"
-                        , onClick ToggleEditNotes
-                        ]
-                        [ i [ class "cancel icon" ] []
-                        , text "Cancel"
+                    ]
+                , div [ class "ui segment" ]
+                    [ Html.map NotesEditMsg
+                        (Comp.MarkdownInput.viewContent
+                            (Maybe.withDefault "" model.notesModel)
+                            mm
+                        )
+                    , div [ class "ui secondary menu" ]
+                        [ a
+                            [ class "link item"
+                            , href "#"
+                            , onClick SaveNotes
+                            ]
+                            [ i [ class "save outline icon" ] []
+                            , text "Save"
+                            ]
+                        , a
+                            [ classList
+                                [ ( "link item", True )
+                                , ( "invisible hidden", Util.String.isNothingOrBlank model.item.notes )
+                                ]
+                            , href "#"
+                            , onClick ToggleEditNotes
+                            ]
+                            [ i [ class "cancel icon" ] []
+                            , text "Cancel"
+                            ]
                         ]
                     ]
                 ]
