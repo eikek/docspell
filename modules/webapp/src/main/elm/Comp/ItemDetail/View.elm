@@ -693,30 +693,38 @@ renderEditMenu settings model =
 
 renderEditButtons : Model -> Html Msg
 renderEditButtons model =
-    div [ class "ui segment" ]
-        [ button
+    div [ class "ui top attached icon ablue-comp menu" ]
+        [ a
             [ classList
-                [ ( "ui primary button", True )
+                [ ( "borderless item", True )
                 , ( "invisible", model.item.state /= "created" )
                 ]
+            , title "Confirm metadata"
+            , href "#"
             , onClick ConfirmItem
             ]
             [ i [ class "check icon" ] []
-            , text "Confirm"
             ]
-        , button
+        , a
             [ classList
-                [ ( "ui primary button", True )
+                [ ( "borderless item", True )
                 , ( "invisible", model.item.state /= "confirmed" )
                 ]
+            , href "#"
+            , title "Unconfirm metadata"
             , onClick UnconfirmItem
             ]
             [ i [ class "eye slash outline icon" ] []
-            , text "Unconfirm"
             ]
-        , button [ class "ui negative button", onClick RequestDelete ]
-            [ i [ class "trash icon" ] []
-            , text "Delete"
+        , div [ class "right floated menu" ]
+            [ a
+                [ class "borderless item"
+                , onClick RequestDelete
+                , href "#"
+                , title "Delete the item"
+                ]
+                [ i [ class "red trash icon" ] []
+                ]
             ]
         ]
 
