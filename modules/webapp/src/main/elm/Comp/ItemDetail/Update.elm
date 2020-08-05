@@ -705,6 +705,13 @@ update key flags next msg model =
                 newOpen =
                     not model.mailOpen
 
+                filesOpen =
+                    if newOpen == True then
+                        False
+
+                    else
+                        model.addFilesOpen
+
                 sendResult =
                     if newOpen then
                         model.mailSendResult
@@ -715,6 +722,7 @@ update key flags next msg model =
             noSub
                 ( { model
                     | mailOpen = newOpen
+                    , addFilesOpen = filesOpen
                     , mailSendResult = sendResult
                   }
                 , Cmd.none
@@ -858,7 +866,15 @@ update key flags next msg model =
 
         AddFilesToggle ->
             noSub
-                ( { model | addFilesOpen = not model.addFilesOpen }
+                ( { model
+                    | addFilesOpen = not model.addFilesOpen
+                    , mailOpen =
+                        if model.addFilesOpen == False then
+                            False
+
+                        else
+                            model.mailOpen
+                  }
                 , Cmd.none
                 )
 
