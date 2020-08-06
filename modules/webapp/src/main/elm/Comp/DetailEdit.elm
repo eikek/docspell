@@ -2,6 +2,9 @@ module Comp.DetailEdit exposing
     ( Model
     , Msg
     , Value(..)
+    , editEquip
+    , editOrg
+    , editPerson
     , initConcPerson
     , initCorrPerson
     , initEquip
@@ -44,6 +47,7 @@ type alias Model =
     { form : FormModel
     , itemId : String
     , submitting : Bool
+    , loading : Bool
     , result : Maybe BasicResult
     }
 
@@ -86,6 +90,7 @@ init itemId fm =
     { form = fm
     , itemId = itemId
     , submitting = False
+    , loading = False
     , result = Nothing
     }
 
@@ -98,6 +103,42 @@ initEquip itemId em =
 initOrg : String -> Comp.OrgForm.Model -> Model
 initOrg itemId om =
     init itemId (OM om)
+
+
+editOrg : Flags -> String -> Comp.OrgForm.Model -> ( Model, Cmd Msg )
+editOrg flags orgId om =
+    ( { form = OM om
+      , itemId = ""
+      , submitting = False
+      , loading = True
+      , result = Nothing
+      }
+    , Api.getOrgFull orgId flags GetOrgResp
+    )
+
+
+editPerson : Flags -> String -> Comp.PersonForm.Model -> ( Model, Cmd Msg )
+editPerson flags persId pm =
+    ( { form = PMC pm
+      , itemId = ""
+      , submitting = False
+      , loading = True
+      , result = Nothing
+      }
+    , Api.getPersonFull persId flags GetPersonResp
+    )
+
+
+editEquip : Flags -> String -> Comp.EquipmentForm.Model -> ( Model, Cmd Msg )
+editEquip flags equipId em =
+    ( { form = EM em
+      , itemId = ""
+      , submitting = False
+      , loading = True
+      , result = Nothing
+      }
+    , Api.getEquipment flags equipId GetEquipResp
+    )
 
 
 initCorrPerson : String -> Comp.PersonForm.Model -> Model
@@ -135,6 +176,9 @@ type Msg
     | Submit
     | Cancel
     | SubmitResp (Result Http.Error BasicResult)
+    | GetOrgResp (Result Http.Error Organization)
+    | GetPersonResp (Result Http.Error Person)
+    | GetEquipResp (Result Http.Error Equipment)
 
 
 type Value
@@ -173,6 +217,87 @@ update flags msg model =
     case msg of
         Cancel ->
             ( model, Cmd.none, Just CancelForm )
+
+        GetOrgResp (Ok org) ->
+            case model.form of
+                OM om ->
+                    let
+                        ( om_, oc_ ) =
+                            Comp.OrgForm.update flags (Comp.OrgForm.SetOrg org) om
+                    in
+                    ( { model
+                        | loading = False
+                        , form = OM om_
+                      }
+                    , Cmd.map OrgMsg oc_
+                    , Nothing
+                    )
+
+                _ ->
+                    ( { model | loading = False }
+                    , Cmd.none
+                    , Nothing
+                    )
+
+        GetOrgResp (Err err) ->
+            ( { model | loading = False, result = Just (BasicResult False (Util.Http.errorToString err)) }
+            , Cmd.none
+            , Nothing
+            )
+
+        GetPersonResp (Ok pers) ->
+            case model.form of
+                PMC pm ->
+                    let
+                        ( pm_, pc_ ) =
+                            Comp.PersonForm.update flags (Comp.PersonForm.SetPerson pers) pm
+                    in
+                    ( { model
+                        | loading = False
+                        , form = PMC pm_
+                      }
+                    , Cmd.map PersonMsg pc_
+                    , Nothing
+                    )
+
+                _ ->
+                    ( { model | loading = False }
+                    , Cmd.none
+                    , Nothing
+                    )
+
+        GetPersonResp (Err err) ->
+            ( { model | loading = False, result = Just (BasicResult False (Util.Http.errorToString err)) }
+            , Cmd.none
+            , Nothing
+            )
+
+        GetEquipResp (Ok equip) ->
+            case model.form of
+                EM em ->
+                    let
+                        ( em_, ec_ ) =
+                            Comp.EquipmentForm.update flags (Comp.EquipmentForm.SetEquipment equip) em
+                    in
+                    ( { model
+                        | loading = False
+                        , form = EM em_
+                      }
+                    , Cmd.map EquipMsg ec_
+                    , Nothing
+                    )
+
+                _ ->
+                    ( { model | loading = False }
+                    , Cmd.none
+                    , Nothing
+                    )
+
+        GetEquipResp (Err err) ->
+            ( { model | loading = False, result = Just (BasicResult False (Util.Http.errorToString err)) }
+            , Cmd.none
+            , Nothing
+            )
 
         SubmitResp (Ok res) ->
             ( { model
@@ -222,7 +347,11 @@ update flags msg model =
                     in
                     if Comp.OrgForm.isValid om then
                         ( { model | submitting = True }
-                        , Api.addCorrOrg flags model.itemId org SubmitResp
+                        , if model.itemId == "" then
+                            Api.postOrg flags org SubmitResp
+
+                          else
+                            Api.addCorrOrg flags model.itemId org SubmitResp
                         , Nothing
                         )
 
@@ -239,7 +368,11 @@ update flags msg model =
                     in
                     if Comp.PersonForm.isValid pm then
                         ( { model | submitting = True }
-                        , Api.addConcPerson flags model.itemId pers SubmitResp
+                        , if model.itemId == "" then
+                            Api.postPerson flags pers SubmitResp
+
+                          else
+                            Api.addConcPerson flags model.itemId pers SubmitResp
                         , Nothing
                         )
 
@@ -256,7 +389,11 @@ update flags msg model =
                     in
                     if Comp.PersonForm.isValid pm then
                         ( { model | submitting = True }
-                        , Api.addCorrPerson flags model.itemId pers SubmitResp
+                        , if model.itemId == "" then
+                            Api.postPerson flags pers SubmitResp
+
+                          else
+                            Api.addCorrPerson flags model.itemId pers SubmitResp
                         , Nothing
                         )
 
@@ -273,7 +410,11 @@ update flags msg model =
                     in
                     if Comp.EquipmentForm.isValid em then
                         ( { model | submitting = True }
-                        , Api.addConcEquip flags model.itemId equip SubmitResp
+                        , if model.itemId == "" then
+                            Api.postEquipment flags equip SubmitResp
+
+                          else
+                            Api.addConcEquip flags model.itemId equip SubmitResp
                         , Nothing
                         )
 
@@ -379,9 +520,9 @@ viewButtons model =
         [ class "ui primary button"
         , href "#"
         , onClick Submit
-        , disabled model.submitting
+        , disabled (model.submitting || model.loading)
         ]
-        [ if model.submitting then
+        [ if model.submitting || model.loading then
             i [ class "ui spinner loading icon" ] []
 
           else

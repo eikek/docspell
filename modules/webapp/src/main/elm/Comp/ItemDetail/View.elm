@@ -741,6 +741,19 @@ renderEditForm settings model =
                 ]
                 [ i [ class "grey plus link icon" ] []
                 ]
+
+        editIconLink tip dm m =
+            a
+                [ classList
+                    [ ( "right-float", True )
+                    , ( "invisible hidden", Comp.Dropdown.notSelected dm )
+                    ]
+                , href "#"
+                , title tip
+                , onClick m
+                ]
+                [ i [ class "grey pencil alternate link icon" ] []
+                ]
     in
     div [ class "ui attached segment" ]
         [ div [ class "ui form warning" ]
@@ -834,6 +847,7 @@ item visible. This message will disappear then.
                     [ Icons.organizationIcon "grey"
                     , text "Organization"
                     , addIconLink "Add new organization" StartCorrOrgModal
+                    , editIconLink "Edit organization" model.corrOrgModel StartEditCorrOrgModal
                     ]
                 , Html.map OrgDropdownMsg (Comp.Dropdown.view settings model.corrOrgModel)
                 , renderOrgSuggestions model
@@ -843,6 +857,9 @@ item visible. This message will disappear then.
                     [ Icons.personIcon "grey"
                     , text "Person"
                     , addIconLink "Add new correspondent person" StartCorrPersonModal
+                    , editIconLink "Edit person"
+                        model.corrPersonModel
+                        (StartEditPersonModal model.corrPersonModel)
                     ]
                 , Html.map CorrPersonMsg (Comp.Dropdown.view settings model.corrPersonModel)
                 , renderCorrPersonSuggestions model
@@ -856,6 +873,9 @@ item visible. This message will disappear then.
                     [ Icons.personIcon "grey"
                     , text "Person"
                     , addIconLink "Add new concerning person" StartConcPersonModal
+                    , editIconLink "Edit person"
+                        model.concPersonModel
+                        (StartEditPersonModal model.concPersonModel)
                     ]
                 , Html.map ConcPersonMsg (Comp.Dropdown.view settings model.concPersonModel)
                 , renderConcPersonSuggestions model
@@ -865,6 +885,9 @@ item visible. This message will disappear then.
                     [ Icons.equipmentIcon "grey"
                     , text "Equipment"
                     , addIconLink "Add new equipment" StartEquipModal
+                    , editIconLink "Edit equipment"
+                        model.concEquipModel
+                        StartEditEquipModal
                     ]
                 , Html.map ConcEquipMsg (Comp.Dropdown.view settings model.concEquipModel)
                 , renderConcEquipSuggestions model

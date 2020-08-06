@@ -31,6 +31,7 @@ module Api exposing
     , getCollective
     , getCollectiveSettings
     , getContacts
+    , getEquipment
     , getEquipments
     , getFolderDetail
     , getFolders
@@ -41,8 +42,10 @@ module Api exposing
     , getJobQueueStateIn
     , getMailSettings
     , getNotifyDueItems
+    , getOrgFull
     , getOrgLight
     , getOrganizations
+    , getPersonFull
     , getPersons
     , getPersonsLight
     , getScanMailbox
@@ -903,6 +906,15 @@ getEquipments flags query receive =
         }
 
 
+getEquipment : Flags -> String -> (Result Http.Error Equipment -> msg) -> Cmd msg
+getEquipment flags id receive =
+    Http2.authGet
+        { url = flags.config.baseUrl ++ "/api/v1/sec/equipment/" ++ id
+        , account = getAccount flags
+        , expect = Http.expectJson receive Api.Model.Equipment.decoder
+        }
+
+
 postEquipment : Flags -> Equipment -> (Result Http.Error BasicResult -> msg) -> Cmd msg
 postEquipment flags equip receive =
     let
@@ -939,6 +951,15 @@ getOrgLight flags receive =
         { url = flags.config.baseUrl ++ "/api/v1/sec/organization"
         , account = getAccount flags
         , expect = Http.expectJson receive Api.Model.ReferenceList.decoder
+        }
+
+
+getOrgFull : String -> Flags -> (Result Http.Error Organization -> msg) -> Cmd msg
+getOrgFull id flags receive =
+    Http2.authGet
+        { url = flags.config.baseUrl ++ "/api/v1/sec/organization/" ++ id
+        , account = getAccount flags
+        , expect = Http.expectJson receive Api.Model.Organization.decoder
         }
 
 
@@ -987,6 +1008,15 @@ getPersonsLight flags receive =
         { url = flags.config.baseUrl ++ "/api/v1/sec/person?full=false"
         , account = getAccount flags
         , expect = Http.expectJson receive Api.Model.ReferenceList.decoder
+        }
+
+
+getPersonFull : String -> Flags -> (Result Http.Error Person -> msg) -> Cmd msg
+getPersonFull id flags receive =
+    Http2.authGet
+        { url = flags.config.baseUrl ++ "/api/v1/sec/person/" ++ id
+        , account = getAccount flags
+        , expect = Http.expectJson receive Api.Model.Person.decoder
         }
 
 
