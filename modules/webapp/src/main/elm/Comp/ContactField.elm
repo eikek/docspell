@@ -5,6 +5,7 @@ module Comp.ContactField exposing
     , getContacts
     , update
     , view
+    , view1
     )
 
 import Api.Model.Contact exposing (Contact)
@@ -81,9 +82,15 @@ update msg model =
                         Comp.Dropdown.getSelected model.kind
                             |> List.head
                             |> Maybe.map Data.ContactType.toString
-                            |> Maybe.withDefault ""
                 in
-                ( { model | items = Contact "" model.value kind :: model.items, value = "" }, Cmd.none )
+                case kind of
+                    Just k ->
+                        ( { model | items = Contact "" model.value k :: model.items, value = "" }
+                        , Cmd.none
+                        )
+
+                    Nothing ->
+                        ( model, Cmd.none )
 
         Select contact ->
             let
@@ -100,12 +107,27 @@ update msg model =
 
 view : UiSettings -> Model -> Html Msg
 view settings model =
+    view1 settings False model
+
+
+view1 : UiSettings -> Bool -> Model -> Html Msg
+view1 settings compact model =
     div []
-        [ div [ class "fields" ]
-            [ div [ class "four wide field" ]
+        [ div [ classList [ ( "fields", not compact ) ] ]
+            [ div
+                [ classList
+                    [ ( "field", True )
+                    , ( "four wide", not compact )
+                    ]
+                ]
                 [ Html.map TypeMsg (Comp.Dropdown.view settings model.kind)
                 ]
-            , div [ class "twelve wide field" ]
+            , div
+                [ classList
+                    [ ( "twelve wide", not compact )
+                    , ( "field", True )
+                    ]
+                ]
                 [ div [ class "ui action input" ]
                     [ input
                         [ type_ "text"

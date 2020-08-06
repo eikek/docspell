@@ -122,6 +122,9 @@ type Msg
     | EditAttachNameResp (Result Http.Error BasicResult)
     | GetFolderResp (Result Http.Error FolderList)
     | FolderDropdownMsg (Comp.Dropdown.Msg IdName)
+    | StartEditCorrOrgModal
+    | StartEditPersonModal (Comp.Dropdown.Model IdName)
+    | StartEditEquipModal
 
 
 update : Nav.Key -> Flags -> Maybe String -> Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
@@ -1046,6 +1049,42 @@ update key flags next msg model =
                 , Cmd.none
                 )
 
+        StartEditCorrOrgModal ->
+            let
+                orgId =
+                    Comp.Dropdown.getSelected model.corrOrgModel
+                        |> List.head
+                        |> Maybe.map .id
+            in
+            case orgId of
+                Just oid ->
+                    let
+                        ( m, c ) =
+                            Comp.DetailEdit.editOrg flags oid Comp.OrgForm.emptyModel
+                    in
+                    noSub ( { model | modalEdit = Just m }, Cmd.map ModalEditMsg c )
+
+                Nothing ->
+                    ( model, Cmd.none, Sub.none )
+
+        StartEditEquipModal ->
+            let
+                equipId =
+                    Comp.Dropdown.getSelected model.concEquipModel
+                        |> List.head
+                        |> Maybe.map .id
+            in
+            case equipId of
+                Just eid ->
+                    let
+                        ( m, c ) =
+                            Comp.DetailEdit.editEquip flags eid Comp.EquipmentForm.emptyModel
+                    in
+                    noSub ( { model | modalEdit = Just m }, Cmd.map ModalEditMsg c )
+
+                Nothing ->
+                    ( model, Cmd.none, Sub.none )
+
         StartCorrPersonModal ->
             noSub
                 ( { model
@@ -1071,6 +1110,24 @@ update key flags next msg model =
                   }
                 , Cmd.none
                 )
+
+        StartEditPersonModal pm ->
+            let
+                persId =
+                    Comp.Dropdown.getSelected pm
+                        |> List.head
+                        |> Maybe.map .id
+            in
+            case persId of
+                Just pid ->
+                    let
+                        ( m, c ) =
+                            Comp.DetailEdit.editPerson flags pid Comp.PersonForm.emptyModel
+                    in
+                    noSub ( { model | modalEdit = Just m }, Cmd.map ModalEditMsg c )
+
+                Nothing ->
+                    ( model, Cmd.none, Sub.none )
 
         StartEquipModal ->
             noSub

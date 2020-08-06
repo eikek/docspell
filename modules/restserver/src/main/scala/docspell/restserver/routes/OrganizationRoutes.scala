@@ -1,5 +1,6 @@
 package docspell.restserver.routes
 
+import cats.data.OptionT
 import cats.effect._
 import cats.implicits._
 
@@ -55,6 +56,12 @@ object OrganizationRoutes {
           delOrg <- backend.organization.deleteOrg(id, user.account.collective)
           resp   <- Ok(basicResult(delOrg, "Organization deleted."))
         } yield resp
+
+      case GET -> Root / Ident(id) =>
+        (for {
+          org  <- OptionT(backend.organization.findOrg(user.account, id))
+          resp <- OptionT.liftF(Ok(mkOrg(org)))
+        } yield resp).getOrElseF(NotFound())
     }
   }
 

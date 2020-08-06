@@ -6,7 +6,7 @@ import Comp.DatePicker
 import Comp.DetailEdit
 import Comp.Dropdown
 import Comp.Dropzone
-import Comp.ItemDetail.Model exposing (Model, NotesField(..), isEditNotes)
+import Comp.ItemDetail.Model exposing (Model, NotesField(..))
 import Comp.ItemDetail.Update exposing (Msg(..))
 import Comp.ItemMail
 import Comp.MarkdownInput
@@ -37,8 +37,7 @@ import Util.Time
 view : { prev : Maybe String, next : Maybe String } -> UiSettings -> Model -> Html Msg
 view inav settings model =
     div []
-        [ Html.map ModalEditMsg (Comp.DetailEdit.viewModal settings model.modalEdit)
-        , renderItemInfo settings model
+        [ renderItemInfo settings model
         , renderDetailMenu inav model
         , renderMailForm settings model
         , renderAddFilesForm model
@@ -684,7 +683,8 @@ renderTags settings model =
 
 renderEditMenu : UiSettings -> Model -> List (Html Msg)
 renderEditMenu settings model =
-    [ div [ class "ui segments" ]
+    [ Html.map ModalEditMsg (Comp.DetailEdit.viewModal settings model.modalEdit)
+    , div []
         [ renderEditButtons model
         , renderEditForm settings model
         ]
@@ -741,8 +741,21 @@ renderEditForm settings model =
                 ]
                 [ i [ class "grey plus link icon" ] []
                 ]
+
+        editIconLink tip dm m =
+            a
+                [ classList
+                    [ ( "right-float", True )
+                    , ( "invisible hidden", Comp.Dropdown.notSelected dm )
+                    ]
+                , href "#"
+                , title tip
+                , onClick m
+                ]
+                [ i [ class "grey pencil alternate link icon" ] []
+                ]
     in
-    div [ class "ui segment" ]
+    div [ class "ui attached segment" ]
         [ div [ class "ui form warning" ]
             [ div [ class "field" ]
                 [ label []
@@ -834,6 +847,7 @@ item visible. This message will disappear then.
                     [ Icons.organizationIcon "grey"
                     , text "Organization"
                     , addIconLink "Add new organization" StartCorrOrgModal
+                    , editIconLink "Edit organization" model.corrOrgModel StartEditCorrOrgModal
                     ]
                 , Html.map OrgDropdownMsg (Comp.Dropdown.view settings model.corrOrgModel)
                 , renderOrgSuggestions model
@@ -843,6 +857,9 @@ item visible. This message will disappear then.
                     [ Icons.personIcon "grey"
                     , text "Person"
                     , addIconLink "Add new correspondent person" StartCorrPersonModal
+                    , editIconLink "Edit person"
+                        model.corrPersonModel
+                        (StartEditPersonModal model.corrPersonModel)
                     ]
                 , Html.map CorrPersonMsg (Comp.Dropdown.view settings model.corrPersonModel)
                 , renderCorrPersonSuggestions model
@@ -856,6 +873,9 @@ item visible. This message will disappear then.
                     [ Icons.personIcon "grey"
                     , text "Person"
                     , addIconLink "Add new concerning person" StartConcPersonModal
+                    , editIconLink "Edit person"
+                        model.concPersonModel
+                        (StartEditPersonModal model.concPersonModel)
                     ]
                 , Html.map ConcPersonMsg (Comp.Dropdown.view settings model.concPersonModel)
                 , renderConcPersonSuggestions model
@@ -865,6 +885,9 @@ item visible. This message will disappear then.
                     [ Icons.equipmentIcon "grey"
                     , text "Equipment"
                     , addIconLink "Add new equipment" StartEquipModal
+                    , editIconLink "Edit equipment"
+                        model.concEquipModel
+                        StartEditEquipModal
                     ]
                 , Html.map ConcEquipMsg (Comp.Dropdown.view settings model.concEquipModel)
                 , renderConcEquipSuggestions model

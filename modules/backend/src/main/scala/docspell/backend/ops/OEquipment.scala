@@ -11,6 +11,8 @@ trait OEquipment[F[_]] {
 
   def findAll(account: AccountId, nameQuery: Option[String]): F[Vector[REquipment]]
 
+  def find(account: AccountId, id: Ident): F[Option[REquipment]]
+
   def add(s: REquipment): F[AddResult]
 
   def update(s: REquipment): F[AddResult]
@@ -24,6 +26,9 @@ object OEquipment {
     Resource.pure[F, OEquipment[F]](new OEquipment[F] {
       def findAll(account: AccountId, nameQuery: Option[String]): F[Vector[REquipment]] =
         store.transact(REquipment.findAll(account.collective, nameQuery, _.name))
+
+      def find(account: AccountId, id: Ident): F[Option[REquipment]] =
+        store.transact(REquipment.findById(id)).map(_.filter(_.cid == account.collective))
 
       def add(e: REquipment): F[AddResult] = {
         def insert = REquipment.insert(e)

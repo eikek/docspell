@@ -1,5 +1,6 @@
 package docspell.restserver.routes
 
+import cats.data.OptionT
 import cats.effect._
 import cats.implicits._
 
@@ -49,6 +50,12 @@ object EquipmentRoutes {
           del  <- backend.equipment.delete(id, user.account.collective)
           resp <- Ok(basicResult(del, "Equipment deleted."))
         } yield resp
+
+      case GET -> Root / Ident(id) =>
+        (for {
+          equip <- OptionT(backend.equipment.find(user.account, id))
+          resp  <- OptionT.liftF(Ok(mkEquipment(equip)))
+        } yield resp).getOrElseF(NotFound())
     }
   }
 }

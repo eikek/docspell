@@ -9,6 +9,7 @@ module Comp.Dropdown exposing
     , makeSingle
     , makeSingleList
     , mkOption
+    , notSelected
     , setMkOption
     , update
     , view
@@ -153,6 +154,11 @@ makeMultiple opts =
 getSelected : Model a -> List a
 getSelected model =
     List.map .value model.selected
+
+
+notSelected : Model a -> Bool
+notSelected model =
+    getSelected model |> List.isEmpty
 
 
 type Msg a
