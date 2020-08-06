@@ -18,7 +18,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onCheck)
 import Http
-import Util.List
+import Util.Tag
 
 
 type alias Model =
@@ -148,8 +148,7 @@ update sett msg model =
         GetTagsResp (Ok tl) ->
             let
                 categories =
-                    List.filterMap .category tl.items
-                        |> Util.List.distinct
+                    Util.Tag.getCategories tl.items
             in
             ( { model
                 | tagColorModel =

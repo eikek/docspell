@@ -124,6 +124,8 @@ trait Conversions {
       m.folder,
       m.tagsInclude.map(Ident.unsafe),
       m.tagsExclude.map(Ident.unsafe),
+      m.tagCategoriesInclude,
+      m.tagCategoriesExclude,
       m.dateFrom,
       m.dateUntil,
       m.dueDateFrom,

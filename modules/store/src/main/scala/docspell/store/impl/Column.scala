@@ -26,6 +26,9 @@ case class Column(name: String, ns: String = "", alias: String = "") {
   def is[A: Put](value: A): Fragment =
     f ++ fr" = $value"
 
+  def lowerIs[A: Put](value: A): Fragment =
+    fr"lower(" ++ f ++ fr") = $value"
+
   def is[A: Put](ov: Option[A]): Fragment =
     ov match {
       case Some(v) => f ++ fr" = $v"

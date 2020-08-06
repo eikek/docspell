@@ -172,6 +172,8 @@ object QItem {
       folder: Option[Ident],
       tagsInclude: List[Ident],
       tagsExclude: List[Ident],
+      tagCategoryIncl: List[String],
+      tagCategoryExcl: List[String],
       dateFrom: Option[Timestamp],
       dateTo: Option[Timestamp],
       dueDateFrom: Option[Timestamp],
@@ -193,6 +195,8 @@ object QItem {
         None,
         None,
         None,
+        Nil,
+        Nil,
         Nil,
         Nil,
         None,
@@ -323,25 +327,21 @@ object QItem {
     val EC = REquipment.Columns
 
     // inclusive tags are AND-ed
-    val tagSelectsIncl = q.tagsInclude
+    val tagSelectsIncl = (q.tagsInclude
       .map(tid =>
         selectSimple(
           List(RTagItem.Columns.itemId),
           RTagItem.table,
           RTagItem.Columns.tagId.is(tid)
         )
-      )
+      ) ++ q.tagCategoryIncl.map(cat =>
+      TagItemName.itemsInCategory(NonEmptyList.of(cat))
+    ))
       .map(f => sql"(" ++ f ++ sql") ")
 
     // exclusive tags are OR-ed
     val tagSelectsExcl =
-      if (q.tagsExclude.isEmpty) Fragment.empty
-      else
-        selectSimple(
-          List(RTagItem.Columns.itemId),
-          RTagItem.table,
-          RTagItem.Columns.tagId.isOneOf(q.tagsExclude)
-        )
+      TagItemName.itemsWithTagOrCategory(q.tagsExclude, q.tagCategoryExcl)
 
     val iFolder  = IC.folder.prefix("i")
     val name     = q.name.map(_.toLowerCase).map(queryWildcard)
@@ -370,11 +370,11 @@ object QItem {
       RPerson.Columns.pid.prefix("p1").isOrDiscard(q.concPerson),
       REquipment.Columns.eid.prefix("e1").isOrDiscard(q.concEquip),
       RFolder.Columns.id.prefix("f1").isOrDiscard(q.folder),
-      if (q.tagsInclude.isEmpty) Fragment.empty
+      if (q.tagsInclude.isEmpty && q.tagCategoryIncl.isEmpty) Fragment.empty
       else
         IC.id.prefix("i") ++ sql" IN (" ++ tagSelectsIncl
           .reduce(_ ++ fr"INTERSECT" ++ _) ++ sql")",
-      if (q.tagsExclude.isEmpty) Fragment.empty
+      if (q.tagsExclude.isEmpty && q.tagCategoryExcl.isEmpty) Fragment.empty
       else IC.id.prefix("i").f ++ sql" NOT IN (" ++ tagSelectsExcl ++ sql")",
       q.dateFrom
         .map(d =>

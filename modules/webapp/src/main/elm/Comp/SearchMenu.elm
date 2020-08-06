@@ -41,6 +41,8 @@ import Util.Update
 type alias Model =
     { tagInclModel : Comp.Dropdown.Model Tag
     , tagExclModel : Comp.Dropdown.Model Tag
+    , tagCatInclModel : Comp.Dropdown.Model String
+    , tagCatExclModel : Comp.Dropdown.Model String
     , directionModel : Comp.Dropdown.Model Direction
     , orgModel : Comp.Dropdown.Model IdName
     , corrPersonModel : Comp.Dropdown.Model IdName
@@ -68,6 +70,8 @@ init : Model
 init =
     { tagInclModel = Util.Tag.makeDropdownModel
     , tagExclModel = Util.Tag.makeDropdownModel
+    , tagCatInclModel = Util.Tag.makeCatDropdownModel
+    , tagCatExclModel = Util.Tag.makeCatDropdownModel
     , directionModel =
         Comp.Dropdown.makeSingleList
             { makeOption =
@@ -157,6 +161,8 @@ type Msg
     | ToggleNameHelp
     | FolderMsg (Comp.Dropdown.Msg IdName)
     | GetFolderResp (Result Http.Error FolderList)
+    | TagCatIncMsg (Comp.Dropdown.Msg String)
+    | TagCatExcMsg (Comp.Dropdown.Msg String)
 
 
 getDirection : Model -> Maybe Direction
@@ -211,6 +217,8 @@ getItemSearch model =
             model.allNameModel
                 |> Maybe.map amendWildcards
         , fullText = model.fulltextModel
+        , tagCategoriesInclude = Comp.Dropdown.getSelected model.tagCatInclModel
+        , tagCategoriesExclude = Comp.Dropdown.getSelected model.tagCatExclModel
     }
 
 
@@ -280,11 +288,17 @@ update flags settings msg model =
             let
                 tagList =
                     Comp.Dropdown.SetOptions tags.items
+
+                catList =
+                    Util.Tag.getCategories tags.items
+                        |> Comp.Dropdown.SetOptions
             in
             noChange <|
                 Util.Update.andThen1
                     [ update flags settings (TagIncMsg tagList) >> .modelCmd
                     , update flags settings (TagExcMsg tagList) >> .modelCmd
+                    , update flags settings (TagCatIncMsg catList) >> .modelCmd
+                    , update flags settings (TagCatExcMsg catList) >> .modelCmd
                     ]
                     model
 
@@ -551,6 +565,28 @@ update flags settings msg model =
                 )
                 (isDropdownChangeMsg lm)
 
+        TagCatIncMsg m ->
+            let
+                ( m2, c2 ) =
+                    Comp.Dropdown.update m model.tagCatInclModel
+            in
+            NextState
+                ( { model | tagCatInclModel = m2 }
+                , Cmd.map TagCatIncMsg c2
+                )
+                (isDropdownChangeMsg m)
+
+        TagCatExcMsg m ->
+            let
+                ( m2, c2 ) =
+                    Comp.Dropdown.update m model.tagCatExclModel
+            in
+            NextState
+                ( { model | tagCatExclModel = m2 }
+                , Cmd.map TagCatExcMsg c2
+                )
+                (isDropdownChangeMsg m)
+
 
 
 -- View
@@ -644,6 +680,14 @@ view flags settings model =
         , div [ class "field" ]
             [ label [] [ text "Exclude (or)" ]
             , Html.map TagExcMsg (Comp.Dropdown.view settings model.tagExclModel)
+            ]
+        , div [ class "field" ]
+            [ label [] [ text "Category Include (and)" ]
+            , Html.map TagCatIncMsg (Comp.Dropdown.view settings model.tagCatInclModel)
+            ]
+        , div [ class "field" ]
+            [ label [] [ text "Category Exclude (or)" ]
+            , Html.map TagCatExcMsg (Comp.Dropdown.view settings model.tagCatExclModel)
             ]
         , formHeader (Icons.searchIcon "") "Content"
         , div
