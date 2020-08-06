@@ -11,6 +11,7 @@ import docspell.store.records._
 
 trait OOrganization[F[_]] {
   def findAllOrg(account: AccountId, query: Option[String]): F[Vector[OrgAndContacts]]
+  def findOrg(account: AccountId, orgId: Ident): F[Option[OrgAndContacts]]
 
   def findAllOrgRefs(account: AccountId, nameQuery: Option[String]): F[Vector[IdRef]]
 
@@ -22,6 +23,8 @@ trait OOrganization[F[_]] {
       account: AccountId,
       query: Option[String]
   ): F[Vector[PersonAndContacts]]
+
+  def findPerson(account: AccountId, persId: Ident): F[Option[PersonAndContacts]]
 
   def findAllPersonRefs(account: AccountId, nameQuery: Option[String]): F[Vector[IdRef]]
 
@@ -53,6 +56,11 @@ object OOrganization {
           .compile
           .toVector
 
+      def findOrg(account: AccountId, orgId: Ident): F[Option[OrgAndContacts]] =
+        store
+          .transact(QOrganization.getOrgAndContact(account.collective, orgId))
+          .map(_.map({ case (org, cont) => OrgAndContacts(org, cont) }))
+
       def findAllOrgRefs(
           account: AccountId,
           nameQuery: Option[String]
@@ -74,6 +82,11 @@ object OOrganization {
           .map({ case (person, cont) => PersonAndContacts(person, cont) })
           .compile
           .toVector
+
+      def findPerson(account: AccountId, persId: Ident): F[Option[PersonAndContacts]] =
+        store
+          .transact(QOrganization.getPersonAndContact(account.collective, persId))
+          .map(_.map({ case (org, cont) => PersonAndContacts(org, cont) }))
 
       def findAllPersonRefs(
           account: AccountId,

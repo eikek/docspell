@@ -52,6 +52,34 @@ object QOrganization {
       })
   }
 
+  def getOrgAndContact(
+      coll: Ident,
+      orgId: Ident
+  ): ConnectionIO[Option[(ROrganization, Vector[RContact])]] = {
+    val oColl = ROrganization.Columns.cid.prefix("o")
+    val oId   = ROrganization.Columns.oid.prefix("o")
+    val cOrg  = RContact.Columns.orgId.prefix("c")
+
+    val cols = ROrganization.Columns.all.map(_.prefix("o")) ++ RContact.Columns.all
+      .map(_.prefix("c"))
+    val from = ROrganization.table ++ fr"o LEFT JOIN" ++
+      RContact.table ++ fr"c ON" ++ cOrg.is(oId)
+
+    val q = and(oColl.is(coll), oId.is(orgId))
+
+    selectSimple(cols, from, q)
+      .query[(ROrganization, Option[RContact])]
+      .stream
+      .groupAdjacentBy(_._1)
+      .map({
+        case (ro, chunk) =>
+          val cs = chunk.toVector.flatMap(_._2)
+          (ro, cs)
+      })
+      .compile
+      .last
+  }
+
   def findPersonAndContact(
       coll: Ident,
       query: Option[String],
@@ -86,6 +114,34 @@ object QOrganization {
           val cs = chunk.toVector.flatMap(_._2)
           (ro, cs)
       })
+  }
+
+  def getPersonAndContact(
+      coll: Ident,
+      persId: Ident
+  ): ConnectionIO[Option[(RPerson, Vector[RContact])]] = {
+    val pColl = PC.cid.prefix("p")
+    val pId   = RPerson.Columns.pid.prefix("p")
+    val cPers = RContact.Columns.personId.prefix("c")
+
+    val cols = RPerson.Columns.all.map(_.prefix("p")) ++ RContact.Columns.all
+      .map(_.prefix("c"))
+    val from = RPerson.table ++ fr"p LEFT JOIN" ++
+      RContact.table ++ fr"c ON" ++ cPers.is(pId)
+
+    val q = and(pColl.is(coll), pId.is(persId))
+
+    selectSimple(cols, from, q)
+      .query[(RPerson, Option[RContact])]
+      .stream
+      .groupAdjacentBy(_._1)
+      .map({
+        case (ro, chunk) =>
+          val cs = chunk.toVector.flatMap(_._2)
+          (ro, cs)
+      })
+      .compile
+      .last
   }
 
   def findPersonByContact(

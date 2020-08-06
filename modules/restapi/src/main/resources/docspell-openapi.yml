@@ -778,6 +778,23 @@ paths:
               schema:
                 $ref: "#/components/schemas/BasicResult"
   /sec/equipment/{id}:
+    get:
+      tags: [ Equipment ]
+      summary: Get details about a single equipment.
+      description: |
+        Loads one equipment by its id.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Equipment"
+
     delete:
       tags: [ Equipment ]
       summary: Delete a equipment.

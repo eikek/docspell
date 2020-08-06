@@ -1,8 +1,10 @@
 package docspell.store.records
 
+import cats.data.NonEmptyList
+
 import docspell.common._
 import docspell.store.impl.Implicits._
-import cats.data.NonEmptyList
+
 import doobie._
 import doobie.implicits._
 
