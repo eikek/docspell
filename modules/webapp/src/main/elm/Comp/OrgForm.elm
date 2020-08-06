@@ -6,6 +6,7 @@ module Comp.OrgForm exposing
     , isValid
     , update
     , view
+    , view1
     )
 
 import Api.Model.Organization exposing (Organization)
@@ -109,6 +110,11 @@ update flags msg model =
 
 view : UiSettings -> Model -> Html Msg
 view settings model =
+    view1 settings False model
+
+
+view1 : UiSettings -> Bool -> Model -> Html Msg
+view1 settings compact model =
     div [ class "ui form" ]
         [ div
             [ classList
@@ -132,7 +138,7 @@ view settings model =
         , h3 [ class "ui dividing header" ]
             [ text "Contacts"
             ]
-        , Html.map ContactMsg (Comp.ContactField.view settings model.contactModel)
+        , Html.map ContactMsg (Comp.ContactField.view1 settings compact model.contactModel)
         , h3 [ class "ui dividing header" ]
             [ text "Notes"
             ]

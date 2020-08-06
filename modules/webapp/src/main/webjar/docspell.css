@@ -170,6 +170,14 @@ textarea.markdown-editor {
     background: rgba(0,0,0,0.2);
 }
 
+@media only screen and (min-width: 992px) {
+    .ui.modal.keep-small {
+        width: inherit;
+        margin: 0 0 0 1rem;
+    }
+}
+
+
 label span.muted {
     font-size: smaller;
     color: rgba(0,0,0,0.6);

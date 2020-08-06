@@ -37,8 +37,7 @@ import Util.Time
 view : { prev : Maybe String, next : Maybe String } -> UiSettings -> Model -> Html Msg
 view inav settings model =
     div []
-        [ Html.map ModalEditMsg (Comp.DetailEdit.viewModal settings model.modalEdit)
-        , renderItemInfo settings model
+        [ renderItemInfo settings model
         , renderDetailMenu inav model
         , renderMailForm settings model
         , renderAddFilesForm model
@@ -684,7 +683,8 @@ renderTags settings model =
 
 renderEditMenu : UiSettings -> Model -> List (Html Msg)
 renderEditMenu settings model =
-    [ div [ class "ui segments" ]
+    [ Html.map ModalEditMsg (Comp.DetailEdit.viewModal settings model.modalEdit)
+    , div [ class "ui segments" ]
         [ renderEditButtons model
         , renderEditForm settings model
         ]

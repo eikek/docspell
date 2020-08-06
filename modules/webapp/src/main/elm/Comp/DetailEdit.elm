@@ -416,13 +416,13 @@ viewIntern settings withButtons model =
             Html.map TagMsg (Comp.TagForm.view tm)
 
         PMR pm ->
-            Html.map PersonMsg (Comp.PersonForm.view settings pm)
+            Html.map PersonMsg (Comp.PersonForm.view1 settings True pm)
 
         PMC pm ->
-            Html.map PersonMsg (Comp.PersonForm.view settings pm)
+            Html.map PersonMsg (Comp.PersonForm.view1 settings True pm)
 
         OM om ->
-            Html.map OrgMsg (Comp.OrgForm.view settings om)
+            Html.map OrgMsg (Comp.OrgForm.view1 settings True om)
 
         EM em ->
             Html.map EquipMsg (Comp.EquipmentForm.view em)
@@ -461,13 +461,18 @@ viewModal settings mm =
     in
     div
         [ classList
-            [ ( "ui inverted modals page dimmer", True )
+            [ ( "ui inverted dimmer", True )
             , ( "invisibe hidden", hidden )
             , ( "active", not hidden )
             ]
         , style "display" "flex !important"
         ]
-        [ div [ class "ui modal active" ]
+        [ div
+            [ classList
+                [ ( "ui modal keep-small", True )
+                , ( "active", not hidden )
+                ]
+            ]
             [ div [ class "header" ]
                 [ Maybe.map .form mm
                     |> Maybe.map headIcon
