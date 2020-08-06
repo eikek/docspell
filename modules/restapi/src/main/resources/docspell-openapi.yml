@@ -3752,6 +3752,14 @@ components:
           items:
             type: string
             format: ident
+        tagCategoriesInclude:
+          type: array
+          items:
+            type: string
+        tagCategoriesExclude:
+          type: array
+          items:
+            type: string
         inbox:
           type: boolean
         offset:
