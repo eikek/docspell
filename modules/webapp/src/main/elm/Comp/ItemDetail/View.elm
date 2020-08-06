@@ -6,7 +6,7 @@ import Comp.DatePicker
 import Comp.DetailEdit
 import Comp.Dropdown
 import Comp.Dropzone
-import Comp.ItemDetail.Model exposing (Model, NotesField(..), isEditNotes)
+import Comp.ItemDetail.Model exposing (Model, NotesField(..))
 import Comp.ItemDetail.Update exposing (Msg(..))
 import Comp.ItemMail
 import Comp.MarkdownInput
@@ -684,7 +684,7 @@ renderTags settings model =
 renderEditMenu : UiSettings -> Model -> List (Html Msg)
 renderEditMenu settings model =
     [ Html.map ModalEditMsg (Comp.DetailEdit.viewModal settings model.modalEdit)
-    , div [ class "ui segments" ]
+    , div []
         [ renderEditButtons model
         , renderEditForm settings model
         ]
@@ -742,7 +742,7 @@ renderEditForm settings model =
                 [ i [ class "grey plus link icon" ] []
                 ]
     in
-    div [ class "ui segment" ]
+    div [ class "ui attached segment" ]
         [ div [ class "ui form warning" ]
             [ div [ class "field" ]
                 [ label []
