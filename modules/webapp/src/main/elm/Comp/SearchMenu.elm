@@ -11,6 +11,7 @@ module Comp.SearchMenu exposing
 import Api
 import Api.Model.Equipment exposing (Equipment)
 import Api.Model.EquipmentList exposing (EquipmentList)
+import Api.Model.FolderItem exposing (FolderItem)
 import Api.Model.FolderList exposing (FolderList)
 import Api.Model.IdName exposing (IdName)
 import Api.Model.ItemSearch exposing (ItemSearch)
@@ -19,6 +20,7 @@ import Api.Model.Tag exposing (Tag)
 import Api.Model.TagList exposing (TagList)
 import Comp.DatePicker
 import Comp.Dropdown exposing (isDropdownChangeMsg)
+import Comp.FolderSelect
 import Data.Direction exposing (Direction)
 import Data.Flags exposing (Flags)
 import Data.Icons as Icons
@@ -48,7 +50,8 @@ type alias Model =
     , corrPersonModel : Comp.Dropdown.Model IdName
     , concPersonModel : Comp.Dropdown.Model IdName
     , concEquipmentModel : Comp.Dropdown.Model Equipment
-    , folderModel : Comp.Dropdown.Model IdName
+    , folderList : Comp.FolderSelect.Model
+    , selectedFolder : Maybe FolderItem
     , inboxCheckbox : Bool
     , fromDateModel : DatePicker
     , fromDate : Maybe Int
@@ -110,14 +113,8 @@ init =
             , labelColor = \_ -> \_ -> ""
             , placeholder = "Choose an equipment"
             }
-    , folderModel =
-        Comp.Dropdown.makeModel
-            { multiple = False
-            , searchable = \n -> n > 5
-            , makeOption = \e -> { value = e.id, text = e.name, additional = "" }
-            , labelColor = \_ -> \_ -> ""
-            , placeholder = "Only items in folder"
-            }
+    , folderList = Comp.FolderSelect.init []
+    , selectedFolder = Nothing
     , inboxCheckbox = False
     , fromDateModel = Comp.DatePicker.emptyModel
     , fromDate = Nothing
@@ -159,7 +156,7 @@ type Msg
     | ResetForm
     | KeyUpMsg (Maybe KeyCode)
     | ToggleNameHelp
-    | FolderMsg (Comp.Dropdown.Msg IdName)
+    | FolderSelectMsg Comp.FolderSelect.Msg
     | GetFolderResp (Result Http.Error FolderList)
     | TagCatIncMsg (Comp.Dropdown.Msg String)
     | TagCatExcMsg (Comp.Dropdown.Msg String)
@@ -203,8 +200,11 @@ getItemSearch model =
         , corrOrg = Comp.Dropdown.getSelected model.orgModel |> List.map .id |> List.head
         , concPerson = Comp.Dropdown.getSelected model.concPersonModel |> List.map .id |> List.head
         , concEquip = Comp.Dropdown.getSelected model.concEquipmentModel |> List.map .id |> List.head
-        , folder = Comp.Dropdown.getSelected model.folderModel |> List.map .id |> List.head
-        , direction = Comp.Dropdown.getSelected model.directionModel |> List.head |> Maybe.map Data.Direction.toString
+        , folder = model.selectedFolder |> Maybe.map .id
+        , direction =
+            Comp.Dropdown.getSelected model.directionModel
+                |> List.head
+                |> Maybe.map Data.Direction.toString
         , inbox = model.inboxCheckbox
         , dateFrom = model.fromDate
         , dateUntil = model.untilDate
@@ -544,26 +544,29 @@ update flags settings msg model =
 
         GetFolderResp (Ok fs) ->
             let
-                opts =
-                    List.filter .isMember fs.items
-                        |> List.map (\e -> IdName e.id e.name)
-                        |> Comp.Dropdown.SetOptions
+                model_ =
+                    { model | folderList = Comp.FolderSelect.init fs.items }
             in
-            update flags settings (FolderMsg opts) model
+            NextState
+                ( model_, Cmd.none )
+                False
 
         GetFolderResp (Err _) ->
             noChange ( model, Cmd.none )
 
-        FolderMsg lm ->
+        FolderSelectMsg lm ->
             let
-                ( m2, c2 ) =
-                    Comp.Dropdown.update lm model.folderModel
+                ( fsm, sel ) =
+                    Comp.FolderSelect.update lm model.folderList
             in
             NextState
-                ( { model | folderModel = m2 }
-                , Cmd.map FolderMsg c2
+                ( { model
+                    | folderList = fsm
+                    , selectedFolder = sel
+                  }
+                , Cmd.none
                 )
-                (isDropdownChangeMsg lm)
+                (model.selectedFolder /= sel)
 
         TagCatIncMsg m ->
             let
@@ -635,43 +638,6 @@ view flags settings model =
                     ]
                 ]
             ]
-        , formHeaderHelp nameIcon "Names" ToggleNameHelp
-        , span
-            [ classList
-                [ ( "small-info", True )
-                , ( "invisible hidden", not model.showNameHelp )
-                ]
-            ]
-            [ text "Use wildcards "
-            , code [] [ text "*" ]
-            , text " at beginning or end. Added automatically if not "
-            , text "present and not quoted. Press "
-            , em [] [ text "Enter" ]
-            , text " to start searching."
-            ]
-        , div [ class "field" ]
-            [ label [] [ text "Names" ]
-            , input
-                [ type_ "text"
-                , onInput SetAllName
-                , Util.Html.onKeyUpCode KeyUpMsg
-                , model.allNameModel |> Maybe.withDefault "" |> value
-                ]
-                []
-            , span
-                [ classList
-                    [ ( "small-info", True )
-                    , ( "invisible hidden", not model.showNameHelp )
-                    ]
-                ]
-                [ text "Looks in correspondents, concerned entities, item name and notes."
-                ]
-            ]
-        , formHeader (Icons.folderIcon "") "Folder"
-        , div [ class "field" ]
-            [ label [] [ text "Folder" ]
-            , Html.map FolderMsg (Comp.Dropdown.view settings model.folderModel)
-            ]
         , formHeader (Icons.tagsIcon "") "Tags"
         , div [ class "field" ]
             [ label [] [ text "Include (and)" ]
@@ -689,23 +655,39 @@ view flags settings model =
             [ label [] [ text "Category Exclude (or)" ]
             , Html.map TagCatExcMsg (Comp.Dropdown.view settings model.tagCatExclModel)
             ]
-        , formHeader (Icons.searchIcon "") "Content"
-        , div
+        , formHeader (Icons.folderIcon "") "Folder"
+        , Html.map FolderSelectMsg
+            (Comp.FolderSelect.view settings.searchMenuFolders model.folderList)
+        , formHeaderHelp nameIcon "Names" ToggleNameHelp
+        , span
             [ classList
-                [ ( "field", True )
-                , ( "invisible hidden", not flags.config.fullTextSearchEnabled )
+                [ ( "small-info", True )
+                , ( "invisible hidden", not model.showNameHelp )
                 ]
             ]
-            [ label [] [ text "Content Search" ]
-            , input
+            [ text "Use wildcards "
+            , code [] [ text "*" ]
+            , text " at beginning or end. Added automatically if not "
+            , text "present and not quoted. Press "
+            , em [] [ text "Enter" ]
+            , text " to start searching."
+            ]
+        , div [ class "field" ]
+            [ input
                 [ type_ "text"
-                , onInput SetFulltext
+                , onInput SetAllName
                 , Util.Html.onKeyUpCode KeyUpMsg
-                , model.fulltextModel |> Maybe.withDefault "" |> value
+                , model.allNameModel |> Maybe.withDefault "" |> value
+                , placeholder "Search in various names…"
                 ]
                 []
-            , span [ class "small-info" ]
-                [ text "Fulltext search in document contents and notes."
+            , span
+                [ classList
+                    [ ( "small-info", True )
+                    , ( "invisible hidden", not model.showNameHelp )
+                    ]
+                ]
+                [ text "Looks in correspondents, concerned entities, item name and notes."
                 ]
             ]
         , formHeader (Icons.correspondentIcon "")
@@ -735,6 +717,25 @@ view flags settings model =
         , div [ class "field" ]
             [ label [] [ text "Equipment" ]
             , Html.map ConcEquipmentMsg (Comp.Dropdown.view settings model.concEquipmentModel)
+            ]
+        , formHeader (Icons.searchIcon "") "Content"
+        , div
+            [ classList
+                [ ( "field", True )
+                , ( "invisible hidden", not flags.config.fullTextSearchEnabled )
+                ]
+            ]
+            [ input
+                [ type_ "text"
+                , onInput SetFulltext
+                , Util.Html.onKeyUpCode KeyUpMsg
+                , model.fulltextModel |> Maybe.withDefault "" |> value
+                , placeholder "Fulltext search in results…"
+                ]
+                []
+            , span [ class "small-info" ]
+                [ text "Fulltext search in document contents and notes."
+                ]
             ]
         , formHeader (Icons.dateIcon "") "Date"
         , div [ class "fields" ]
