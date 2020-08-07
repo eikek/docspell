@@ -602,7 +602,7 @@ viewModal settings mm =
     in
     div
         [ classList
-            [ ( "ui inverted dimmer", True )
+            [ ( "ui inverted dimmer keep-small", True )
             , ( "invisibe hidden", hidden )
             , ( "active", not hidden )
             ]

@@ -170,11 +170,12 @@ textarea.markdown-editor {
     background: rgba(0,0,0,0.2);
 }
 
-@media only screen and (min-width: 992px) {
-    .ui.modal.keep-small {
-        width: inherit;
-        margin: 0 0 0 1rem;
-    }
+
+.ui.dimmer.keep-small {
+    justify-content: start;
+}
+.ui.modal.keep-small {
+    width: 95%;
 }
 
 
