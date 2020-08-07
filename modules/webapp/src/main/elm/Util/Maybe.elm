@@ -57,13 +57,12 @@ fromString str =
 
 filter : (a -> Bool) -> Maybe a -> Maybe a
 filter predicate ma =
-    case ma of
-        Just v ->
+    let
+        check v =
             if predicate v then
                 Just v
 
             else
                 Nothing
-
-        Nothing ->
-            Nothing
+    in
+    Maybe.andThen check ma

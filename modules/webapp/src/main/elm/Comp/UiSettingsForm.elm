@@ -30,6 +30,8 @@ type alias Model =
     , itemSearchNoteLength : Maybe Int
     , searchNoteLengthModel : Comp.IntField.Model
     , itemDetailNotesPosition : Pos
+    , searchMenuFolders : Maybe Int
+    , searchMenuFoldersModel : Comp.IntField.Model
     }
 
 
@@ -56,6 +58,13 @@ init flags settings =
                 False
                 "Max. Note Length"
       , itemDetailNotesPosition = settings.itemDetailNotesPosition
+      , searchMenuFolders = Just settings.searchMenuFolders
+      , searchMenuFoldersModel =
+            Comp.IntField.init
+                (Just 0)
+                (Just 2000)
+                False
+                "Number of folders in search menu"
       }
     , Api.getTags flags "" GetTagsResp
     )
@@ -68,6 +77,7 @@ type Msg
     | TogglePdfPreview
     | NoteLengthMsg Comp.IntField.Msg
     | SetNotesPosition Pos
+    | SearchMenuFolderMsg Comp.IntField.Msg
 
 
 
@@ -105,6 +115,22 @@ update sett msg model =
                     { model
                         | searchNoteLengthModel = m
                         , itemSearchNoteLength = n
+                    }
+            in
+            ( model_, nextSettings )
+
+        SearchMenuFolderMsg lm ->
+            let
+                ( m, n ) =
+                    Comp.IntField.update lm model.searchMenuFoldersModel
+
+                nextSettings =
+                    Maybe.map (\len -> { sett | searchMenuFolders = len }) n
+
+                model_ =
+                    { model
+                        | searchMenuFoldersModel = m
+                        , searchMenuFolders = n
                     }
             in
             ( model_, nextSettings )
@@ -203,6 +229,15 @@ view flags _ model =
                 model.itemSearchNoteLength
                 "field"
                 model.searchNoteLengthModel
+            )
+        , div [ class "ui dividing header" ]
+            [ text "Search Menu" ]
+        , Html.map SearchMenuFolderMsg
+            (Comp.IntField.viewWithInfo
+                "How many folders to display in search menu at once. Other folders can be expanded."
+                model.searchMenuFolders
+                "field"
+                model.searchMenuFoldersModel
             )
         , div [ class "ui dividing header" ]
             [ text "Item Detail"
