@@ -43,6 +43,9 @@ trait OCollective[F[_]] {
 
 object OCollective {
 
+  type TagCount = QCollective.TagCount
+  val TagCount = QCollective.TagCount
+
   type InsightData = QCollective.InsightData
   val insightData = QCollective.InsightData
 

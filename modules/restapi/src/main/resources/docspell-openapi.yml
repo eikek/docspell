@@ -3050,19 +3050,33 @@ components:
         items:
           type: array
           items:
-            $ref: "#/components/schemas/NameCount"
-    NameCount:
+            $ref: "#/components/schemas/TagCount"
+    TagCount:
       description: |
         Generic structure for counting something.
       required:
-        - name
+        - tag
         - count
       properties:
-        name:
-          type: string
+        tag:
+          $ref: "#/components/schemas/TagLight"
         count:
           type: integer
           format: int32
+    TagLight:
+      description: |
+        A subset of tag properties.
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: string
+          format: ident
+        name:
+          type: string
+        category:
+          type: string
     AttachmentMeta:
       description: |
         Extracted meta data of an attachment.

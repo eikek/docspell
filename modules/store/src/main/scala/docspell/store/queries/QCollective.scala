@@ -11,12 +11,13 @@ import doobie._
 import doobie.implicits._
 
 object QCollective {
+  case class TagCount(id: Ident, name: String, category: Option[String], count: Int)
 
   case class InsightData(
       incoming: Int,
       outgoing: Int,
       bytes: Long,
-      tags: Map[String, Int]
+      tags: List[TagCount]
   )
 
   def getInsights(coll: Ident): ConnectionIO[InsightData] = {
@@ -52,7 +53,9 @@ object QCollective {
       ) as t""".query[Option[Long]].unique
 
     val q3 = fr"SELECT" ++ commas(
+      TC.tid.prefix("t").f,
       TC.name.prefix("t").f,
+      TC.category.prefix("t").f,
       fr"count(" ++ RC.itemId.prefix("r").f ++ fr")"
     ) ++
       fr"FROM" ++ RTagItem.table ++ fr"r" ++
@@ -60,14 +63,14 @@ object QCollective {
       .prefix("r")
       .is(TC.tid.prefix("t")) ++
       fr"WHERE" ++ TC.cid.prefix("t").is(coll) ++
-      fr"GROUP BY" ++ TC.name.prefix("t").f
+      fr"GROUP BY" ++ commas(TC.name.prefix("t").f, TC.tid.prefix("t").f, TC.category.prefix("t").f)
 
     for {
       n0 <- q0
       n1 <- q1
       n2 <- fileSize
-      n3 <- q3.query[(String, Int)].to[Vector]
-    } yield InsightData(n0, n1, n2.getOrElse(0L), Map.from(n3))
+      n3 <- q3.query[TagCount].to[List]
+    } yield InsightData(n0, n1, n2.getOrElse(0L), n3)
   }
 
   def getContacts(
