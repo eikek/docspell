@@ -191,22 +191,18 @@ viewItem settings item =
                 , Util.String.underscoreToSpace item.name
                     |> text
                 ]
+            , div
+                [ classList
+                    [ ( "ui right corner label", True )
+                    , ( newColor, True )
+                    , ( "invisible", isConfirmed )
+                    ]
+                , title "New"
+                ]
+                [ i [ class "exclamation icon" ] []
+                ]
             , div [ class "meta" ]
-                [ div
-                    [ classList
-                        [ ( "ui ribbon label", True )
-                        , ( newColor, True )
-                        , ( "invisible", isConfirmed )
-                        ]
-                    ]
-                    [ i [ class "exclamation icon" ] []
-                    , text " New"
-                    ]
-                , span
-                    [ classList
-                        [ ( "right floated", not isConfirmed )
-                        ]
-                    ]
+                [ span []
                     [ Util.Time.formatDate item.date |> text
                     ]
                 ]

@@ -19,14 +19,14 @@ view flags settings model =
     div [ class "home-page ui padded grid" ]
         [ div
             [ classList
-                [ ( "sixteen wide mobile six wide tablet four wide computer column"
+                [ ( "sixteen wide mobile six wide tablet four wide computer search-menu column"
                   , True
                   )
                 , ( "invisible hidden", model.menuCollapsed )
                 ]
             ]
             [ div
-                [ class "ui top attached ablue-comp icon menu"
+                [ class "ui ablue-comp icon menu"
                 ]
                 [ a
                     [ class "borderless item"
@@ -62,7 +62,7 @@ view flags settings model =
                         ]
                     ]
                 ]
-            , div [ class "ui attached fluid segment" ]
+            , div [ class "" ]
                 [ Html.map SearchMenuMsg
                     (Comp.SearchMenu.viewDrop model.dragDropData
                         flags
