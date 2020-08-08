@@ -10,6 +10,7 @@ import Api.Model.FolderItem exposing (FolderItem)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
+import Util.ExpandCollapse
 import Util.List
 
 
@@ -103,44 +104,18 @@ renderItems constr model =
 
 expandToggle : Int -> Model -> List (Html Msg)
 expandToggle max model =
-    if max > List.length model.all then
-        []
-
-    else
-        [ a
-            [ class "item"
-            , onClick ToggleExpand
-            , href "#"
-            ]
-            [ i [ class "angle down icon" ] []
-            , div [ class "content" ]
-                [ div [ class "description" ]
-                    [ em [] [ text "Show More …" ]
-                    ]
-                ]
-            ]
-        ]
+    Util.ExpandCollapse.expandToggle
+        max
+        (List.length model.all)
+        ToggleExpand
 
 
 collapseToggle : Int -> Model -> List (Html Msg)
 collapseToggle max model =
-    if max > List.length model.all then
-        []
-
-    else
-        [ a
-            [ class "item"
-            , onClick ToggleExpand
-            , href "#"
-            ]
-            [ i [ class "angle up icon" ] []
-            , div [ class "content" ]
-                [ div [ class "description" ]
-                    [ em [] [ text "Show Less …" ]
-                    ]
-                ]
-            ]
-        ]
+    Util.ExpandCollapse.collapseToggle
+        max
+        (List.length model.all)
+        ToggleExpand
 
 
 viewItem : Model -> FolderItem -> Html Msg

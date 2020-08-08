@@ -6,7 +6,10 @@ module Comp.TagSelect exposing
     , emptySelection
     , init
     , update
-    , view
+    , view1
+    , view2
+    , viewCats
+    , viewTags
     )
 
 import Api.Model.TagCount exposing (TagCount)
@@ -16,6 +19,7 @@ import Dict exposing (Dict)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
+import Util.ExpandCollapse
 
 
 type alias Model =
@@ -206,8 +210,8 @@ catState model name =
             Deselect
 
 
-view : UiSettings -> Model -> Html Msg
-view settings model =
+viewTags : UiSettings -> Model -> Html Msg
+viewTags settings model =
     div [ class "ui list" ]
         [ div [ class "item" ]
             [ I.tagIcon ""
@@ -216,7 +220,39 @@ view settings model =
                     [ text "Tags"
                     ]
                 , div [ class "ui relaxed list" ]
-                    (List.map (viewTagItem settings model) model.all)
+                    (renderTagItems settings model)
+                ]
+            ]
+        ]
+
+
+viewCats : UiSettings -> Model -> Html Msg
+viewCats settings model =
+    div [ class "ui list" ]
+        [ div [ class "item" ]
+            [ I.tagsIcon ""
+            , div [ class "content" ]
+                [ div [ class "header" ]
+                    [ text "Categories"
+                    ]
+                , div [ class "ui relaxed list" ]
+                    (renderCatItems settings model)
+                ]
+            ]
+        ]
+
+
+view1 : UiSettings -> Model -> Html Msg
+view1 settings model =
+    div [ class "ui list" ]
+        [ div [ class "item" ]
+            [ I.tagIcon ""
+            , div [ class "content" ]
+                [ div [ class "header" ]
+                    [ text "Tags"
+                    ]
+                , div [ class "ui relaxed list" ]
+                    (renderTagItems settings model)
                 ]
             ]
         , div [ class "item" ]
@@ -226,10 +262,79 @@ view settings model =
                     [ text "Categories"
                     ]
                 , div [ class "ui relaxed list" ]
-                    (List.map (viewCategoryItem settings model) model.categories)
+                    (renderCatItems settings model)
                 ]
             ]
         ]
+
+
+view2 : UiSettings -> Model -> List (Html Msg)
+view2 settings model =
+    [ viewTags settings model
+    , viewCats settings model
+    ]
+
+
+renderTagItems : UiSettings -> Model -> List (Html Msg)
+renderTagItems settings model =
+    let
+        tags =
+            model.all
+
+        max =
+            settings.searchMenuTagCount
+
+        exp =
+            Util.ExpandCollapse.expandToggle
+                max
+                (List.length tags)
+                ToggleExpandTags
+
+        cps =
+            Util.ExpandCollapse.collapseToggle
+                max
+                (List.length tags)
+                ToggleExpandTags
+    in
+    if max <= 0 then
+        List.map (viewTagItem settings model) model.all
+
+    else if model.expandedTags then
+        List.map (viewTagItem settings model) model.all ++ cps
+
+    else
+        List.map (viewTagItem settings model) (List.take max model.all) ++ exp
+
+
+renderCatItems : UiSettings -> Model -> List (Html Msg)
+renderCatItems settings model =
+    let
+        cats =
+            model.categories
+
+        max =
+            settings.searchMenuTagCatCount
+
+        exp =
+            Util.ExpandCollapse.expandToggle
+                max
+                (List.length cats)
+                ToggleExpandCats
+
+        cps =
+            Util.ExpandCollapse.collapseToggle
+                max
+                (List.length cats)
+                ToggleExpandCats
+    in
+    if max <= 0 then
+        List.map (viewCategoryItem settings model) model.categories
+
+    else if model.expandedCats then
+        List.map (viewCategoryItem settings model) model.categories ++ cps
+
+    else
+        List.map (viewCategoryItem settings model) (List.take max model.categories) ++ exp
 
 
 viewCategoryItem : UiSettings -> Model -> Category -> Html Msg

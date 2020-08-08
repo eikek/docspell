@@ -555,175 +555,182 @@ view : Flags -> UiSettings -> Model -> Html Msg
 view flags settings model =
     let
         formHeader icon headline =
-            div [ class "ui small dividing header" ]
+            div [ class "ui tiny header" ]
                 [ icon
                 , div [ class "content" ]
                     [ text headline
                     ]
                 ]
 
-        formHeaderHelp icon headline tagger =
-            div [ class "ui small dividing header" ]
-                [ a
-                    [ class "right-float"
-                    , href "#"
-                    , onClick tagger
-                    ]
-                    [ i [ class "small grey help link icon" ] []
-                    ]
-                , icon
-                , div [ class "content" ]
-                    [ text headline
-                    ]
-                ]
-
-        nameIcon =
-            i [ class "left align icon" ] []
+        segmentClass =
+            "ui vertical segment"
     in
     div [ class "ui form" ]
-        [ div [ class "inline field" ]
-            [ div [ class "ui checkbox" ]
-                [ input
-                    [ type_ "checkbox"
-                    , onCheck (\_ -> ToggleInbox)
-                    , checked model.inboxCheckbox
+        [ div [ class segmentClass ]
+            [ div [ class "inline field" ]
+                [ div [ class "ui checkbox" ]
+                    [ input
+                        [ type_ "checkbox"
+                        , onCheck (\_ -> ToggleInbox)
+                        , checked model.inboxCheckbox
+                        ]
+                        []
+                    , label []
+                        [ text "Only New"
+                        ]
+                    ]
+                ]
+            ]
+        , div [ class segmentClass ]
+            [ Html.map TagSelectMsg (Comp.TagSelect.viewTags settings model.tagSelectModel)
+            , Html.map TagSelectMsg (Comp.TagSelect.viewCats settings model.tagSelectModel)
+            , Html.map FolderSelectMsg
+                (Comp.FolderSelect.view settings.searchMenuFolderCount model.folderList)
+            ]
+        , div [ class segmentClass ]
+            [ formHeader (Icons.correspondentIcon "")
+                (case getDirection model of
+                    Just Data.Direction.Incoming ->
+                        "Sender"
+
+                    Just Data.Direction.Outgoing ->
+                        "Recipient"
+
+                    Nothing ->
+                        "Correspondent"
+                )
+            , div [ class "field" ]
+                [ label [] [ text "Organization" ]
+                , Html.map OrgMsg (Comp.Dropdown.view settings model.orgModel)
+                ]
+            , div [ class "field" ]
+                [ label [] [ text "Person" ]
+                , Html.map CorrPersonMsg (Comp.Dropdown.view settings model.corrPersonModel)
+                ]
+            , formHeader Icons.concernedIcon "Concerned"
+            , div [ class "field" ]
+                [ label [] [ text "Person" ]
+                , Html.map ConcPersonMsg (Comp.Dropdown.view settings model.concPersonModel)
+                ]
+            , div [ class "field" ]
+                [ label [] [ text "Equipment" ]
+                , Html.map ConcEquipmentMsg (Comp.Dropdown.view settings model.concEquipmentModel)
+                ]
+            ]
+        , div [ class segmentClass ]
+            [ formHeader (Icons.searchIcon "") "Text Search"
+            , div
+                [ classList
+                    [ ( "field", True )
+                    , ( "invisible hidden", not flags.config.fullTextSearchEnabled )
+                    ]
+                ]
+                [ label [] [ text "Fulltext Search" ]
+                , input
+                    [ type_ "text"
+                    , onInput SetFulltext
+                    , Util.Html.onKeyUpCode KeyUpMsg
+                    , model.fulltextModel |> Maybe.withDefault "" |> value
+                    , placeholder "Fulltext search in results…"
                     ]
                     []
-                , label []
-                    [ text "Only New"
+                , span [ class "small-info" ]
+                    [ text "Fulltext search in document contents and notes."
                     ]
-                ]
-            ]
-        , Html.map TagSelectMsg (Comp.TagSelect.view settings model.tagSelectModel)
-        , Html.map FolderSelectMsg
-            (Comp.FolderSelect.view settings.searchMenuFolderCount model.folderList)
-        , formHeaderHelp nameIcon "Names" ToggleNameHelp
-        , span
-            [ classList
-                [ ( "small-info", True )
-                , ( "invisible hidden", not model.showNameHelp )
-                ]
-            ]
-            [ text "Use wildcards "
-            , code [] [ text "*" ]
-            , text " at beginning or end. Added automatically if not "
-            , text "present and not quoted. Press "
-            , em [] [ text "Enter" ]
-            , text " to start searching."
-            ]
-        , div [ class "field" ]
-            [ input
-                [ type_ "text"
-                , onInput SetAllName
-                , Util.Html.onKeyUpCode KeyUpMsg
-                , model.allNameModel |> Maybe.withDefault "" |> value
-                , placeholder "Search in various names…"
-                ]
-                []
-            , span
-                [ classList
-                    [ ( "small-info", True )
-                    , ( "invisible hidden", not model.showNameHelp )
-                    ]
-                ]
-                [ text "Looks in correspondents, concerned entities, item name and notes."
-                ]
-            ]
-        , formHeader (Icons.correspondentIcon "")
-            (case getDirection model of
-                Just Data.Direction.Incoming ->
-                    "Sender"
-
-                Just Data.Direction.Outgoing ->
-                    "Recipient"
-
-                Nothing ->
-                    "Correspondent"
-            )
-        , div [ class "field" ]
-            [ label [] [ text "Organization" ]
-            , Html.map OrgMsg (Comp.Dropdown.view settings model.orgModel)
-            ]
-        , div [ class "field" ]
-            [ label [] [ text "Person" ]
-            , Html.map CorrPersonMsg (Comp.Dropdown.view settings model.corrPersonModel)
-            ]
-        , formHeader Icons.concernedIcon "Concerned"
-        , div [ class "field" ]
-            [ label [] [ text "Person" ]
-            , Html.map ConcPersonMsg (Comp.Dropdown.view settings model.concPersonModel)
-            ]
-        , div [ class "field" ]
-            [ label [] [ text "Equipment" ]
-            , Html.map ConcEquipmentMsg (Comp.Dropdown.view settings model.concEquipmentModel)
-            ]
-        , formHeader (Icons.searchIcon "") "Content"
-        , div
-            [ classList
-                [ ( "field", True )
-                , ( "invisible hidden", not flags.config.fullTextSearchEnabled )
-                ]
-            ]
-            [ input
-                [ type_ "text"
-                , onInput SetFulltext
-                , Util.Html.onKeyUpCode KeyUpMsg
-                , model.fulltextModel |> Maybe.withDefault "" |> value
-                , placeholder "Fulltext search in results…"
-                ]
-                []
-            , span [ class "small-info" ]
-                [ text "Fulltext search in document contents and notes."
-                ]
-            ]
-        , formHeader (Icons.dateIcon "") "Date"
-        , div [ class "fields" ]
-            [ div [ class "field" ]
-                [ label []
-                    [ text "From"
-                    ]
-                , Html.map FromDateMsg
-                    (Comp.DatePicker.viewTimeDefault
-                        model.fromDate
-                        model.fromDateModel
-                    )
                 ]
             , div [ class "field" ]
                 [ label []
-                    [ text "To"
+                    [ text "Names"
+                    , a
+                        [ class "right-float"
+                        , href "#"
+                        , onClick ToggleNameHelp
+                        ]
+                        [ i [ class "small grey help link icon" ] []
+                        ]
                     ]
-                , Html.map UntilDateMsg
-                    (Comp.DatePicker.viewTimeDefault
-                        model.untilDate
-                        model.untilDateModel
-                    )
+                , input
+                    [ type_ "text"
+                    , onInput SetAllName
+                    , Util.Html.onKeyUpCode KeyUpMsg
+                    , model.allNameModel |> Maybe.withDefault "" |> value
+                    , placeholder "Search in various names…"
+                    ]
+                    []
+                , span
+                    [ classList
+                        [ ( "small-info", True )
+                        ]
+                    ]
+                    [ text "Looks in correspondents, concerned entities, item name and notes."
+                    ]
+                , p
+                    [ classList
+                        [ ( "small-info", True )
+                        , ( "invisible hidden", not model.showNameHelp )
+                        ]
+                    ]
+                    [ text "Use wildcards "
+                    , code [] [ text "*" ]
+                    , text " at beginning or end. They are added automatically on both sides "
+                    , text "if not present in the search term and the term is not quoted. Press "
+                    , em [] [ text "Enter" ]
+                    , text " to start searching."
+                    ]
                 ]
             ]
-        , formHeader (Icons.dueDateIcon "") "Due Date"
-        , div [ class "fields" ]
-            [ div [ class "field" ]
-                [ label []
-                    [ text "Due From"
+        , div [ class segmentClass ]
+            [ formHeader (Icons.dateIcon "") "Date"
+            , div [ class "fields" ]
+                [ div [ class "field" ]
+                    [ label []
+                        [ text "From"
+                        ]
+                    , Html.map FromDateMsg
+                        (Comp.DatePicker.viewTimeDefault
+                            model.fromDate
+                            model.fromDateModel
+                        )
                     ]
-                , Html.map FromDueDateMsg
-                    (Comp.DatePicker.viewTimeDefault
-                        model.fromDueDate
-                        model.fromDueDateModel
-                    )
+                , div [ class "field" ]
+                    [ label []
+                        [ text "To"
+                        ]
+                    , Html.map UntilDateMsg
+                        (Comp.DatePicker.viewTimeDefault
+                            model.untilDate
+                            model.untilDateModel
+                        )
+                    ]
                 ]
+            , formHeader (Icons.dueDateIcon "") "Due Date"
+            , div [ class "fields" ]
+                [ div [ class "field" ]
+                    [ label []
+                        [ text "Due From"
+                        ]
+                    , Html.map FromDueDateMsg
+                        (Comp.DatePicker.viewTimeDefault
+                            model.fromDueDate
+                            model.fromDueDateModel
+                        )
+                    ]
+                , div [ class "field" ]
+                    [ label []
+                        [ text "Due To"
+                        ]
+                    , Html.map UntilDueDateMsg
+                        (Comp.DatePicker.viewTimeDefault
+                            model.untilDueDate
+                            model.untilDueDateModel
+                        )
+                    ]
+                ]
+            ]
+        , div [ class segmentClass ]
+            [ formHeader (Icons.directionIcon "") "Direction"
             , div [ class "field" ]
-                [ label []
-                    [ text "Due To"
-                    ]
-                , Html.map UntilDueDateMsg
-                    (Comp.DatePicker.viewTimeDefault
-                        model.untilDueDate
-                        model.untilDueDateModel
-                    )
+                [ Html.map DirectionMsg (Comp.Dropdown.view settings model.directionModel)
                 ]
-            ]
-        , formHeader (Icons.directionIcon "") "Direction"
-        , div [ class "field" ]
-            [ Html.map DirectionMsg (Comp.Dropdown.view settings model.directionModel)
             ]
         ]
