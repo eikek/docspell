@@ -17,10 +17,11 @@ import Api.Model.IdName exposing (IdName)
 import Api.Model.ItemSearch exposing (ItemSearch)
 import Api.Model.ReferenceList exposing (ReferenceList)
 import Api.Model.Tag exposing (Tag)
-import Api.Model.TagList exposing (TagList)
+import Api.Model.TagCloud exposing (TagCloud)
 import Comp.DatePicker
 import Comp.Dropdown exposing (isDropdownChangeMsg)
 import Comp.FolderSelect
+import Comp.TagSelect
 import Data.Direction exposing (Direction)
 import Data.Flags exposing (Flags)
 import Data.Icons as Icons
@@ -41,8 +42,8 @@ import Util.Update
 
 
 type alias Model =
-    { tagInclModel : Comp.Dropdown.Model Tag
-    , tagExclModel : Comp.Dropdown.Model Tag
+    { tagSelectModel : Comp.TagSelect.Model
+    , tagSelection : Comp.TagSelect.Selection
     , tagCatInclModel : Comp.Dropdown.Model String
     , tagCatExclModel : Comp.Dropdown.Model String
     , directionModel : Comp.Dropdown.Model Direction
@@ -71,8 +72,8 @@ type alias Model =
 
 init : Model
 init =
-    { tagInclModel = Util.Tag.makeDropdownModel
-    , tagExclModel = Util.Tag.makeDropdownModel
+    { tagSelectModel = Comp.TagSelect.init []
+    , tagSelection = Comp.TagSelect.emptySelection
     , tagCatInclModel = Util.Tag.makeCatDropdownModel
     , tagCatExclModel = Util.Tag.makeCatDropdownModel
     , directionModel =
@@ -134,8 +135,7 @@ init =
 
 type Msg
     = Init
-    | TagIncMsg (Comp.Dropdown.Msg Tag)
-    | TagExcMsg (Comp.Dropdown.Msg Tag)
+    | TagSelectMsg Comp.TagSelect.Msg
     | DirectionMsg (Comp.Dropdown.Msg Direction)
     | OrgMsg (Comp.Dropdown.Msg IdName)
     | CorrPersonMsg (Comp.Dropdown.Msg IdName)
@@ -146,7 +146,7 @@ type Msg
     | FromDueDateMsg Comp.DatePicker.Msg
     | UntilDueDateMsg Comp.DatePicker.Msg
     | ToggleInbox
-    | GetTagsResp (Result Http.Error TagList)
+    | GetTagsResp (Result Http.Error TagCloud)
     | GetOrgResp (Result Http.Error ReferenceList)
     | GetEquipResp (Result Http.Error EquipmentList)
     | GetPersonResp (Result Http.Error ReferenceList)
@@ -194,8 +194,8 @@ getItemSearch model =
                 "*" ++ s ++ "*"
     in
     { e
-        | tagsInclude = Comp.Dropdown.getSelected model.tagInclModel |> List.map .id
-        , tagsExclude = Comp.Dropdown.getSelected model.tagExclModel |> List.map .id
+        | tagsInclude = model.tagSelection.include |> List.map .tag |> List.map .id
+        , tagsExclude = model.tagSelection.exclude |> List.map .tag |> List.map .id
         , corrPerson = Comp.Dropdown.getSelected model.corrPersonModel |> List.map .id |> List.head
         , corrOrg = Comp.Dropdown.getSelected model.orgModel |> List.map .id |> List.head
         , concPerson = Comp.Dropdown.getSelected model.concPersonModel |> List.map .id |> List.head
@@ -268,7 +268,7 @@ update flags settings msg model =
             noChange
                 ( mdp
                 , Cmd.batch
-                    [ Api.getTags flags "" GetTagsResp
+                    [ Api.getTagCloud flags GetTagsResp
                     , Api.getOrgLight flags GetOrgResp
                     , Api.getEquipments flags "" GetEquipResp
                     , Api.getPersonsLight flags GetPersonResp
@@ -286,21 +286,24 @@ update flags settings msg model =
 
         GetTagsResp (Ok tags) ->
             let
-                tagList =
-                    Comp.Dropdown.SetOptions tags.items
-
                 catList =
-                    Util.Tag.getCategories tags.items
+                    Util.Tag.getCategories (List.map .tag tags.items)
                         |> Comp.Dropdown.SetOptions
+
+                selectModel =
+                    List.sortBy .count tags.items
+                        |> List.reverse
+                        |> Comp.TagSelect.init
+
+                model_ =
+                    { model | tagSelectModel = selectModel }
             in
             noChange <|
                 Util.Update.andThen1
-                    [ update flags settings (TagIncMsg tagList) >> .modelCmd
-                    , update flags settings (TagExcMsg tagList) >> .modelCmd
-                    , update flags settings (TagCatIncMsg catList) >> .modelCmd
+                    [ update flags settings (TagCatIncMsg catList) >> .modelCmd
                     , update flags settings (TagCatExcMsg catList) >> .modelCmd
                     ]
-                    model
+                    model_
 
         GetTagsResp (Err _) ->
             noChange ( model, Cmd.none )
@@ -340,27 +343,19 @@ update flags settings msg model =
         GetPersonResp (Err _) ->
             noChange ( model, Cmd.none )
 
-        TagIncMsg m ->
+        TagSelectMsg m ->
             let
-                ( m2, c2 ) =
-                    Comp.Dropdown.update m model.tagInclModel
+                ( m_, sel ) =
+                    Comp.TagSelect.update m model.tagSelectModel
             in
             NextState
-                ( { model | tagInclModel = m2 }
-                , Cmd.map TagIncMsg c2
+                ( { model
+                    | tagSelectModel = m_
+                    , tagSelection = sel
+                  }
+                , Cmd.none
                 )
-                (isDropdownChangeMsg m)
-
-        TagExcMsg m ->
-            let
-                ( m2, c2 ) =
-                    Comp.Dropdown.update m model.tagExclModel
-            in
-            NextState
-                ( { model | tagExclModel = m2 }
-                , Cmd.map TagExcMsg c2
-                )
-                (isDropdownChangeMsg m)
+                (sel /= model.tagSelection)
 
         DirectionMsg m ->
             let
@@ -639,14 +634,7 @@ view flags settings model =
                 ]
             ]
         , formHeader (Icons.tagsIcon "") "Tags"
-        , div [ class "field" ]
-            [ label [] [ text "Include (and)" ]
-            , Html.map TagIncMsg (Comp.Dropdown.view settings model.tagInclModel)
-            ]
-        , div [ class "field" ]
-            [ label [] [ text "Exclude (or)" ]
-            , Html.map TagExcMsg (Comp.Dropdown.view settings model.tagExclModel)
-            ]
+        , Html.map TagSelectMsg (Comp.TagSelect.view settings model.tagSelectModel)
         , div [ class "field" ]
             [ label [] [ text "Category Include (and)" ]
             , Html.map TagCatIncMsg (Comp.Dropdown.view settings model.tagCatInclModel)
