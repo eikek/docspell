@@ -48,16 +48,7 @@ update key flags settings msg model =
                         model.searchMenuModel
 
                 dropCmd =
-                    case nextState.dragDrop.dropped of
-                        Just dropped ->
-                            let
-                                _ =
-                                    Debug.log "item/folder" dropped
-                            in
-                            DD.makeUpdateCmd flags (\_ -> DoSearch) nextState.dragDrop.dropped
-
-                        Nothing ->
-                            Cmd.none
+                    DD.makeUpdateCmd flags (\_ -> DoSearch) nextState.dragDrop.dropped
 
                 newModel =
                     { model

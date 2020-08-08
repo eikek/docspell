@@ -15,6 +15,7 @@ module Util.ItemDragDrop exposing
 import Api
 import Api.Model.BasicResult exposing (BasicResult)
 import Api.Model.OptionalId exposing (OptionalId)
+import Api.Model.StringList exposing (StringList)
 import Data.Flags exposing (Flags)
 import Html exposing (Attribute)
 import Html5.DragDrop as DD
@@ -76,12 +77,8 @@ makeUpdateCmd flags receive droppedMaybe =
                 FolderRemove ->
                     Api.setFolder flags dropped.itemId (OptionalId Nothing) receive
 
-                Tag _ ->
-                    let
-                        _ =
-                            Debug.log "dropped" dropped
-                    in
-                    Cmd.none
+                Tag tid ->
+                    Api.toggleTags flags dropped.itemId (StringList [ tid ]) receive
 
         Nothing ->
             Cmd.none

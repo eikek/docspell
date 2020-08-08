@@ -92,6 +92,7 @@ module Api exposing
     , startOnceScanMailbox
     , startReIndex
     , submitNotifyDueItems
+    , toggleTags
     , updateNotifyDueItems
     , updateScanMailbox
     , upload
@@ -148,6 +149,7 @@ import Api.Model.SentMails exposing (SentMails)
 import Api.Model.SimpleMail exposing (SimpleMail)
 import Api.Model.Source exposing (Source)
 import Api.Model.SourceList exposing (SourceList)
+import Api.Model.StringList exposing (StringList)
 import Api.Model.Tag exposing (Tag)
 import Api.Model.TagCloud exposing (TagCloud)
 import Api.Model.TagList exposing (TagList)
@@ -1300,6 +1302,16 @@ setTags flags item tags receive =
         { url = flags.config.baseUrl ++ "/api/v1/sec/item/" ++ item ++ "/tags"
         , account = getAccount flags
         , body = Http.jsonBody (Api.Model.ReferenceList.encode tags)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+toggleTags : Flags -> String -> StringList -> (Result Http.Error BasicResult -> msg) -> Cmd msg
+toggleTags flags item tags receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/item/" ++ item ++ "/tagtoggle"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.StringList.encode tags)
         , expect = Http.expectJson receive Api.Model.BasicResult.decoder
         }
 
