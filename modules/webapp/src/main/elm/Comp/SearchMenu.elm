@@ -1,11 +1,14 @@
 module Comp.SearchMenu exposing
-    ( Model
+    ( DragDropData
+    , Model
     , Msg(..)
     , NextState
     , getItemSearch
     , init
     , update
+    , updateDrop
     , view
+    , viewDrop
     )
 
 import Api
@@ -29,6 +32,7 @@ import DatePicker exposing (DatePicker)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onCheck, onClick, onInput)
+import Html5.DragDrop as DD
 import Http
 import Util.Html exposing (KeyCode(..))
 import Util.Maybe
@@ -127,33 +131,6 @@ init =
     }
 
 
-type Msg
-    = Init
-    | TagSelectMsg Comp.TagSelect.Msg
-    | DirectionMsg (Comp.Dropdown.Msg Direction)
-    | OrgMsg (Comp.Dropdown.Msg IdName)
-    | CorrPersonMsg (Comp.Dropdown.Msg IdName)
-    | ConcPersonMsg (Comp.Dropdown.Msg IdName)
-    | ConcEquipmentMsg (Comp.Dropdown.Msg Equipment)
-    | FromDateMsg Comp.DatePicker.Msg
-    | UntilDateMsg Comp.DatePicker.Msg
-    | FromDueDateMsg Comp.DatePicker.Msg
-    | UntilDueDateMsg Comp.DatePicker.Msg
-    | ToggleInbox
-    | GetTagsResp (Result Http.Error TagCloud)
-    | GetOrgResp (Result Http.Error ReferenceList)
-    | GetEquipResp (Result Http.Error EquipmentList)
-    | GetPersonResp (Result Http.Error ReferenceList)
-    | SetName String
-    | SetAllName String
-    | SetFulltext String
-    | ResetForm
-    | KeyUpMsg (Maybe KeyCode)
-    | ToggleNameHelp
-    | FolderSelectMsg Comp.FolderSelect.Msg
-    | GetFolderResp (Result Http.Error FolderList)
-
-
 getDirection : Model -> Maybe Direction
 getDirection model =
     let
@@ -218,19 +195,53 @@ getItemSearch model =
 -- Update
 
 
-type alias NextState =
-    { modelCmd : ( Model, Cmd Msg )
-    , stateChange : Bool
+type Msg
+    = Init
+    | TagSelectMsg Comp.TagSelect.Msg
+    | DirectionMsg (Comp.Dropdown.Msg Direction)
+    | OrgMsg (Comp.Dropdown.Msg IdName)
+    | CorrPersonMsg (Comp.Dropdown.Msg IdName)
+    | ConcPersonMsg (Comp.Dropdown.Msg IdName)
+    | ConcEquipmentMsg (Comp.Dropdown.Msg Equipment)
+    | FromDateMsg Comp.DatePicker.Msg
+    | UntilDateMsg Comp.DatePicker.Msg
+    | FromDueDateMsg Comp.DatePicker.Msg
+    | UntilDueDateMsg Comp.DatePicker.Msg
+    | ToggleInbox
+    | GetTagsResp (Result Http.Error TagCloud)
+    | GetOrgResp (Result Http.Error ReferenceList)
+    | GetEquipResp (Result Http.Error EquipmentList)
+    | GetPersonResp (Result Http.Error ReferenceList)
+    | SetName String
+    | SetAllName String
+    | SetFulltext String
+    | ResetForm
+    | KeyUpMsg (Maybe KeyCode)
+    | ToggleNameHelp
+    | FolderSelectMsg Comp.FolderSelect.Msg
+    | GetFolderResp (Result Http.Error FolderList)
+
+
+type alias DragDropData =
+    { folderDrop : DD.Model String String
     }
 
 
-noChange : ( Model, Cmd Msg ) -> NextState
-noChange p =
-    NextState p False
+type alias NextState =
+    { model : Model
+    , cmd : Cmd Msg
+    , stateChange : Bool
+    , dragDrop : DragDropData
+    }
 
 
 update : Flags -> UiSettings -> Msg -> Model -> NextState
-update flags settings msg model =
+update =
+    updateDrop (DragDropData DD.init)
+
+
+updateDrop : DragDropData -> Flags -> UiSettings -> Msg -> Model -> NextState
+updateDrop dd flags settings msg model =
     case msg of
         Init ->
             let
@@ -257,9 +268,9 @@ update flags settings msg model =
                             ]
                         )
             in
-            noChange
-                ( mdp
-                , Cmd.batch
+            { model = mdp
+            , cmd =
+                Cmd.batch
                     [ Api.getTagCloud flags GetTagsResp
                     , Api.getOrgLight flags GetOrgResp
                     , Api.getEquipments flags "" GetEquipResp
@@ -267,7 +278,9 @@ update flags settings msg model =
                     , Api.getFolders flags "" False GetFolderResp
                     , cdp
                     ]
-                )
+            , stateChange = False
+            , dragDrop = dd
+            }
 
         ResetForm ->
             let
@@ -286,10 +299,18 @@ update flags settings msg model =
                 model_ =
                     { model | tagSelectModel = selectModel }
             in
-            noChange ( model_, Cmd.none )
+            { model = model_
+            , cmd = Cmd.none
+            , stateChange = False
+            , dragDrop = dd
+            }
 
         GetTagsResp (Err _) ->
-            noChange ( model, Cmd.none )
+            { model = model
+            , cmd = Cmd.none
+            , stateChange = False
+            , dragDrop = dd
+            }
 
         GetEquipResp (Ok equips) ->
             let
@@ -299,7 +320,11 @@ update flags settings msg model =
             update flags settings (ConcEquipmentMsg opts) model
 
         GetEquipResp (Err _) ->
-            noChange ( model, Cmd.none )
+            { model = model
+            , cmd = Cmd.none
+            , stateChange = False
+            , dragDrop = dd
+            }
 
         GetOrgResp (Ok orgs) ->
             let
@@ -309,98 +334,112 @@ update flags settings msg model =
             update flags settings (OrgMsg opts) model
 
         GetOrgResp (Err _) ->
-            noChange ( model, Cmd.none )
+            { model = model
+            , cmd = Cmd.none
+            , stateChange = False
+            , dragDrop = dd
+            }
 
         GetPersonResp (Ok ps) ->
             let
                 opts =
                     Comp.Dropdown.SetOptions ps.items
+
+                next1 =
+                    updateDrop dd flags settings (CorrPersonMsg opts) model
+
+                next2 =
+                    updateDrop next1.dragDrop flags settings (ConcPersonMsg opts) next1.model
             in
-            noChange <|
-                Util.Update.andThen1
-                    [ update flags settings (CorrPersonMsg opts) >> .modelCmd
-                    , update flags settings (ConcPersonMsg opts) >> .modelCmd
-                    ]
-                    model
+            next2
 
         GetPersonResp (Err _) ->
-            noChange ( model, Cmd.none )
+            { model = model
+            , cmd = Cmd.none
+            , stateChange = False
+            , dragDrop = dd
+            }
 
         TagSelectMsg m ->
             let
                 ( m_, sel ) =
                     Comp.TagSelect.update m model.tagSelectModel
             in
-            NextState
-                ( { model
+            { model =
+                { model
                     | tagSelectModel = m_
                     , tagSelection = sel
-                  }
-                , Cmd.none
-                )
-                (sel /= model.tagSelection)
+                }
+            , cmd = Cmd.none
+            , stateChange = sel /= model.tagSelection
+            , dragDrop = dd
+            }
 
         DirectionMsg m ->
             let
                 ( m2, c2 ) =
                     Comp.Dropdown.update m model.directionModel
             in
-            NextState
-                ( { model | directionModel = m2 }
-                , Cmd.map DirectionMsg c2
-                )
-                (isDropdownChangeMsg m)
+            { model = { model | directionModel = m2 }
+            , cmd = Cmd.map DirectionMsg c2
+            , stateChange = isDropdownChangeMsg m
+            , dragDrop = dd
+            }
 
         OrgMsg m ->
             let
                 ( m2, c2 ) =
                     Comp.Dropdown.update m model.orgModel
             in
-            NextState
-                ( { model | orgModel = m2 }
-                , Cmd.map OrgMsg c2
-                )
-                (isDropdownChangeMsg m)
+            { model = { model | orgModel = m2 }
+            , cmd = Cmd.map OrgMsg c2
+            , stateChange = isDropdownChangeMsg m
+            , dragDrop = dd
+            }
 
         CorrPersonMsg m ->
             let
                 ( m2, c2 ) =
                     Comp.Dropdown.update m model.corrPersonModel
             in
-            NextState
-                ( { model | corrPersonModel = m2 }
-                , Cmd.map CorrPersonMsg c2
-                )
-                (isDropdownChangeMsg m)
+            { model = { model | corrPersonModel = m2 }
+            , cmd = Cmd.map CorrPersonMsg c2
+            , stateChange = isDropdownChangeMsg m
+            , dragDrop = dd
+            }
 
         ConcPersonMsg m ->
             let
                 ( m2, c2 ) =
                     Comp.Dropdown.update m model.concPersonModel
             in
-            NextState
-                ( { model | concPersonModel = m2 }
-                , Cmd.map ConcPersonMsg c2
-                )
-                (isDropdownChangeMsg m)
+            { model = { model | concPersonModel = m2 }
+            , cmd = Cmd.map ConcPersonMsg c2
+            , stateChange = isDropdownChangeMsg m
+            , dragDrop = dd
+            }
 
         ConcEquipmentMsg m ->
             let
                 ( m2, c2 ) =
                     Comp.Dropdown.update m model.concEquipmentModel
             in
-            NextState
-                ( { model | concEquipmentModel = m2 }
-                , Cmd.map ConcEquipmentMsg c2
-                )
-                (isDropdownChangeMsg m)
+            { model = { model | concEquipmentModel = m2 }
+            , cmd = Cmd.map ConcEquipmentMsg c2
+            , stateChange = isDropdownChangeMsg m
+            , dragDrop = dd
+            }
 
         ToggleInbox ->
             let
                 current =
                     model.inboxCheckbox
             in
-            NextState ( { model | inboxCheckbox = not current }, Cmd.none ) True
+            { model = { model | inboxCheckbox = not current }
+            , cmd = Cmd.none
+            , stateChange = True
+            , dragDrop = dd
+            }
 
         FromDateMsg m ->
             let
@@ -415,11 +454,11 @@ update flags settings msg model =
                         _ ->
                             Nothing
             in
-            NextState
-                ( { model | fromDateModel = dp, fromDate = nextDate }
-                , Cmd.none
-                )
-                (model.fromDate /= nextDate)
+            { model = { model | fromDateModel = dp, fromDate = nextDate }
+            , cmd = Cmd.none
+            , stateChange = model.fromDate /= nextDate
+            , dragDrop = dd
+            }
 
         UntilDateMsg m ->
             let
@@ -434,11 +473,11 @@ update flags settings msg model =
                         _ ->
                             Nothing
             in
-            NextState
-                ( { model | untilDateModel = dp, untilDate = nextDate }
-                , Cmd.none
-                )
-                (model.untilDate /= nextDate)
+            { model = { model | untilDateModel = dp, untilDate = nextDate }
+            , cmd = Cmd.none
+            , stateChange = model.untilDate /= nextDate
+            , dragDrop = dd
+            }
 
         FromDueDateMsg m ->
             let
@@ -453,11 +492,11 @@ update flags settings msg model =
                         _ ->
                             Nothing
             in
-            NextState
-                ( { model | fromDueDateModel = dp, fromDueDate = nextDate }
-                , Cmd.none
-                )
-                (model.fromDueDate /= nextDate)
+            { model = { model | fromDueDateModel = dp, fromDueDate = nextDate }
+            , cmd = Cmd.none
+            , stateChange = model.fromDueDate /= nextDate
+            , dragDrop = dd
+            }
 
         UntilDueDateMsg m ->
             let
@@ -472,79 +511,98 @@ update flags settings msg model =
                         _ ->
                             Nothing
             in
-            NextState
-                ( { model | untilDueDateModel = dp, untilDueDate = nextDate }
-                , Cmd.none
-                )
-                (model.untilDueDate /= nextDate)
+            { model = { model | untilDueDateModel = dp, untilDueDate = nextDate }
+            , cmd = Cmd.none
+            , stateChange = model.untilDueDate /= nextDate
+            , dragDrop = dd
+            }
 
         SetName str ->
             let
                 next =
                     Util.Maybe.fromString str
             in
-            NextState
-                ( { model | nameModel = next }
-                , Cmd.none
-                )
-                False
+            { model = { model | nameModel = next }
+            , cmd = Cmd.none
+            , stateChange = False
+            , dragDrop = dd
+            }
 
         SetAllName str ->
             let
                 next =
                     Util.Maybe.fromString str
             in
-            NextState
-                ( { model | allNameModel = next }
-                , Cmd.none
-                )
-                False
+            { model = { model | allNameModel = next }
+            , cmd = Cmd.none
+            , stateChange = False
+            , dragDrop = dd
+            }
 
         SetFulltext str ->
             let
                 next =
                     Util.Maybe.fromString str
             in
-            NextState
-                ( { model | fulltextModel = next }
-                , Cmd.none
-                )
-                False
+            { model = { model | fulltextModel = next }
+            , cmd = Cmd.none
+            , stateChange = False
+            , dragDrop = dd
+            }
 
         KeyUpMsg (Just Enter) ->
-            NextState ( model, Cmd.none ) True
+            { model = model
+            , cmd = Cmd.none
+            , stateChange = True
+            , dragDrop = dd
+            }
 
         KeyUpMsg _ ->
-            NextState ( model, Cmd.none ) False
+            { model = model
+            , cmd = Cmd.none
+            , stateChange = False
+            , dragDrop = dd
+            }
 
         ToggleNameHelp ->
-            NextState ( { model | showNameHelp = not model.showNameHelp }, Cmd.none ) False
+            { model = { model | showNameHelp = not model.showNameHelp }
+            , cmd = Cmd.none
+            , stateChange = False
+            , dragDrop = dd
+            }
 
         GetFolderResp (Ok fs) ->
             let
                 model_ =
                     { model | folderList = Comp.FolderSelect.init fs.items }
             in
-            NextState
-                ( model_, Cmd.none )
-                False
+            { model = model_
+            , cmd = Cmd.none
+            , stateChange = False
+            , dragDrop = dd
+            }
 
         GetFolderResp (Err _) ->
-            noChange ( model, Cmd.none )
+            { model = model
+            , cmd = Cmd.none
+            , stateChange = False
+            , dragDrop = dd
+            }
 
         FolderSelectMsg lm ->
             let
-                ( fsm, sel ) =
-                    Comp.FolderSelect.update lm model.folderList
+                ( fsm, sel, dd_ ) =
+                    Comp.FolderSelect.updateDrop dd.folderDrop lm model.folderList
             in
-            NextState
-                ( { model
+            { model =
+                { model
                     | folderList = fsm
                     , selectedFolder = sel
-                  }
-                , Cmd.none
-                )
-                (model.selectedFolder /= sel)
+                }
+            , cmd = Cmd.none
+            , stateChange = model.selectedFolder /= sel
+            , dragDrop = { dd | folderDrop = dd_ }
+            }
 
 
 
@@ -552,7 +610,12 @@ update flags settings msg model =
 
 
 view : Flags -> UiSettings -> Model -> Html Msg
-view flags settings model =
+view =
+    viewDrop (DragDropData DD.init)
+
+
+viewDrop : DragDropData -> Flags -> UiSettings -> Model -> Html Msg
+viewDrop ddd flags settings model =
     let
         formHeader icon headline =
             div [ class "ui tiny header" ]
@@ -585,7 +648,7 @@ view flags settings model =
             [ Html.map TagSelectMsg (Comp.TagSelect.viewTags settings model.tagSelectModel)
             , Html.map TagSelectMsg (Comp.TagSelect.viewCats settings model.tagSelectModel)
             , Html.map FolderSelectMsg
-                (Comp.FolderSelect.view settings.searchMenuFolderCount model.folderList)
+                (Comp.FolderSelect.viewDrop ddd.folderDrop settings.searchMenuFolderCount model.folderList)
             ]
         , div [ class segmentClass ]
             [ formHeader (Icons.correspondentIcon "")

@@ -63,7 +63,12 @@ view flags settings model =
                     ]
                 ]
             , div [ class "ui attached fluid segment" ]
-                [ Html.map SearchMenuMsg (Comp.SearchMenu.view flags settings model.searchMenuModel)
+                [ Html.map SearchMenuMsg
+                    (Comp.SearchMenu.viewDrop model.dragDropData
+                        flags
+                        settings
+                        model.searchMenuModel
+                    )
                 ]
             ]
         , div

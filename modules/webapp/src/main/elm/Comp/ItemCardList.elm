@@ -5,6 +5,7 @@ module Comp.ItemCardList exposing
     , nextItem
     , prevItem
     , update
+    , updateDrag
     , view
     )
 
@@ -20,6 +21,7 @@ import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
+import Html5.DragDrop as DD
 import Markdown
 import Util.List
 import Util.String
@@ -35,6 +37,7 @@ type Msg
     = SetResults ItemLightList
     | AddResults ItemLightList
     | SelectItem ItemLight
+    | ItemDDMsg (DD.Msg String String)
 
 
 init : Model
@@ -60,28 +63,72 @@ prevItem model id =
 
 
 update : Flags -> Msg -> Model -> ( Model, Cmd Msg, Maybe ItemLight )
-update _ msg model =
+update flags msg model =
+    let
+        res =
+            updateDrag DD.init flags msg model
+    in
+    ( res.model, res.cmd, res.selected )
+
+
+type alias UpdateResult =
+    { model : Model
+    , cmd : Cmd Msg
+    , selected : Maybe ItemLight
+    , dragModel : DD.Model String String
+    }
+
+
+updateDrag :
+    DD.Model String String
+    -> Flags
+    -> Msg
+    -> Model
+    -> UpdateResult
+updateDrag dm _ msg model =
     case msg of
         SetResults list ->
             let
                 newModel =
                     { model | results = list }
             in
-            ( newModel, Cmd.none, Nothing )
+            UpdateResult newModel Cmd.none Nothing dm
 
         AddResults list ->
             if list.groups == [] then
-                ( model, Cmd.none, Nothing )
+                UpdateResult model Cmd.none Nothing dm
 
             else
                 let
                     newModel =
                         { model | results = Data.Items.concat model.results list }
                 in
-                ( newModel, Cmd.none, Nothing )
+                UpdateResult newModel Cmd.none Nothing dm
 
         SelectItem item ->
-            ( model, Cmd.none, Just item )
+            UpdateResult model Cmd.none (Just item) dm
+
+        ItemDDMsg lm ->
+            let
+                ( dm_, result ) =
+                    DD.update lm dm
+
+                _ =
+                    case result of
+                        Just ( item, folder, _ ) ->
+                            let
+                                _ =
+                                    Debug.log "item card" item
+
+                                _ =
+                                    Debug.log "folder card" folder
+                            in
+                            Cmd.none
+
+                        Nothing ->
+                            Cmd.none
+            in
+            UpdateResult model Cmd.none Nothing dm_
 
 
 
@@ -139,14 +186,16 @@ viewItem settings item =
             "blue"
     in
     a
-        [ classList
+        ([ classList
             [ ( "ui fluid card", True )
             , ( newColor, not isConfirmed )
             ]
-        , id item.id
-        , href "#"
-        , onClick (SelectItem item)
-        ]
+         , id item.id
+         , href "#"
+         , onClick (SelectItem item)
+         ]
+            ++ DD.draggable ItemDDMsg item.id
+        )
         [ div [ class "content" ]
             [ div
                 [ class "header"

@@ -3,13 +3,16 @@ module Comp.FolderSelect exposing
     , Msg
     , init
     , update
+    , updateDrop
     , view
+    , viewDrop
     )
 
 import Api.Model.FolderItem exposing (FolderItem)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
+import Html5.DragDrop as DD
 import Util.ExpandCollapse
 import Util.List
 
@@ -36,10 +39,24 @@ init all =
 type Msg
     = Toggle FolderItem
     | ToggleExpand
+    | FolderDDMsg (DD.Msg String String)
 
 
 update : Msg -> Model -> ( Model, Maybe FolderItem )
 update msg model =
+    let
+        ( m, f, _ ) =
+            updateDrop DD.init msg model
+    in
+    ( m, f )
+
+
+updateDrop :
+    DD.Model String String
+    -> Msg
+    -> Model
+    -> ( Model, Maybe FolderItem, DD.Model String String )
+updateDrop dropModel msg model =
     case msg of
         Toggle item ->
             let
@@ -53,12 +70,35 @@ update msg model =
                 model_ =
                     { model | selected = selection }
             in
-            ( model_, selectedFolder model_ )
+            ( model_, selectedFolder model_, dropModel )
 
         ToggleExpand ->
             ( { model | expanded = not model.expanded }
             , selectedFolder model
+            , dropModel
             )
+
+        FolderDDMsg lm ->
+            let
+                ( dm_, result ) =
+                    DD.update lm dropModel
+
+                _ =
+                    case result of
+                        Just ( item, folder, _ ) ->
+                            let
+                                _ =
+                                    Debug.log "item menu" item
+
+                                _ =
+                                    Debug.log "folder menu" folder
+                            in
+                            Cmd.none
+
+                        Nothing ->
+                            Cmd.none
+            in
+            ( model, selectedFolder model, dm_ )
 
 
 selectedFolder : Model -> Maybe FolderItem
@@ -75,7 +115,12 @@ selectedFolder model =
 
 
 view : Int -> Model -> Html Msg
-view constr model =
+view =
+    viewDrop DD.init
+
+
+viewDrop : DD.Model String String -> Int -> Model -> Html Msg
+viewDrop dropModel constr model =
     div [ class "ui list" ]
         [ div [ class "item" ]
             [ i [ class "folder open icon" ] []
@@ -84,22 +129,22 @@ view constr model =
                     [ text "Folders"
                     ]
                 , div [ class "ui relaxed list" ]
-                    (renderItems constr model)
+                    (renderItems dropModel constr model)
                 ]
             ]
         ]
 
 
-renderItems : Int -> Model -> List (Html Msg)
-renderItems constr model =
+renderItems : DD.Model String String -> Int -> Model -> List (Html Msg)
+renderItems dropModel constr model =
     if constr <= 0 then
-        List.map (viewItem model) model.all
+        List.map (viewItem dropModel model) model.all
 
     else if model.expanded then
-        List.map (viewItem model) model.all ++ collapseToggle constr model
+        List.map (viewItem dropModel model) model.all ++ collapseToggle constr model
 
     else
-        List.map (viewItem model) (List.take constr model.all) ++ expandToggle constr model
+        List.map (viewItem dropModel model) (List.take constr model.all) ++ expandToggle constr model
 
 
 expandToggle : Int -> Model -> List (Html Msg)
@@ -118,8 +163,8 @@ collapseToggle max model =
         ToggleExpand
 
 
-viewItem : Model -> FolderItem -> Html Msg
-viewItem model item =
+viewItem : DD.Model String String -> Model -> FolderItem -> Html Msg
+viewItem dropModel model item =
     let
         selected =
             Just item.id == model.selected
@@ -130,15 +175,21 @@ viewItem model item =
 
             else
                 "folder outline icon"
+
+        highlightDrop =
+            DD.getDropId dropModel == Just item.id
     in
     a
-        [ classList
+        ([ classList
             [ ( "item", True )
             , ( "active", selected )
+            , ( "current-drop-target", highlightDrop )
             ]
-        , href "#"
-        , onClick (Toggle item)
-        ]
+         , href "#"
+         , onClick (Toggle item)
+         ]
+            ++ DD.droppable FolderDDMsg item.id
+        )
         [ i [ class icon ] []
         , div [ class "content" ]
             [ div [ class "header" ]
