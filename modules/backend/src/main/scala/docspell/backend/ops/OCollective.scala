@@ -27,6 +27,8 @@ trait OCollective[F[_]] {
 
   def insights(collective: Ident): F[InsightData]
 
+  def tagCloud(collective: Ident): F[List[TagCount]]
+
   def changePassword(
       accountId: AccountId,
       current: Password,
@@ -115,6 +117,9 @@ object OCollective {
 
       def insights(collective: Ident): F[InsightData] =
         store.transact(QCollective.getInsights(collective))
+
+      def tagCloud(collective: Ident): F[List[TagCount]] =
+        store.transact(QCollective.tagCloud(collective))
 
       def changePassword(
           accountId: AccountId,

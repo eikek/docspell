@@ -460,6 +460,7 @@ paths:
       responses:
         200:
           description: Ok
+
   /sec/tag:
     get:
       tags: [ Tags ]
@@ -1011,6 +1012,22 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ItemInsights"
+  /sec/collective/cloud:
+    get:
+      tags: [ Collective ]
+      summary: Summary of used tags.
+      description: |
+        Returns all tags and how often each has been applied.
+      security:
+        - authTokenHeader: []
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TagCloud"
+
   /sec/collective/contacts:
     get:
       tags: [ Collective ]
@@ -3059,24 +3076,10 @@ components:
         - count
       properties:
         tag:
-          $ref: "#/components/schemas/TagLight"
+          $ref: "#/components/schemas/Tag"
         count:
           type: integer
           format: int32
-    TagLight:
-      description: |
-        A subset of tag properties.
-      required:
-        - id
-        - name
-      properties:
-        id:
-          type: string
-          format: ident
-        name:
-          type: string
-        category:
-          type: string
     AttachmentMeta:
       description: |
         Extracted meta data of an attachment.
