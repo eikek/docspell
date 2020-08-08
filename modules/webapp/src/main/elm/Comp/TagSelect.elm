@@ -6,10 +6,12 @@ module Comp.TagSelect exposing
     , emptySelection
     , init
     , update
-    , view1
-    , view2
+    , updateDrop
+    , view
     , viewCats
+    , viewDrop
     , viewTags
+    , viewTagsDrop
     )
 
 import Api.Model.TagCount exposing (TagCount)
@@ -20,6 +22,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Util.ExpandCollapse
+import Util.ItemDragDrop as DD
 
 
 type alias Model =
@@ -82,6 +85,7 @@ type Msg
     | ToggleCat String
     | ToggleExpandTags
     | ToggleExpandCats
+    | TagDDMsg DD.Msg
 
 
 type alias Selection =
@@ -99,6 +103,15 @@ emptySelection =
 
 update : Msg -> Model -> ( Model, Selection )
 update msg model =
+    let
+        ( m, s, _ ) =
+            updateDrop DD.init msg model
+    in
+    ( m, s )
+
+
+updateDrop : DD.Model -> Msg -> Model -> ( Model, Selection, DD.DragDropData )
+updateDrop ddm msg model =
     case msg of
         ToggleTag id ->
             let
@@ -108,7 +121,7 @@ update msg model =
                 model_ =
                     { model | selectedTags = next }
             in
-            ( model_, getSelection model_ )
+            ( model_, getSelection model_, DD.DragDropData ddm Nothing )
 
         ToggleCat name ->
             let
@@ -118,17 +131,26 @@ update msg model =
                 model_ =
                     { model | selectedCats = next }
             in
-            ( model_, getSelection model_ )
+            ( model_, getSelection model_, DD.DragDropData ddm Nothing )
 
         ToggleExpandTags ->
             ( { model | expandedTags = not model.expandedTags }
             , getSelection model
+            , DD.DragDropData ddm Nothing
             )
 
         ToggleExpandCats ->
             ( { model | expandedCats = not model.expandedCats }
             , getSelection model
+            , DD.DragDropData ddm Nothing
             )
+
+        TagDDMsg lm ->
+            let
+                ddd =
+                    DD.update lm ddm
+            in
+            ( model, getSelection model, ddd )
 
 
 updateSelection : String -> Dict String Bool -> Dict String Bool
@@ -211,7 +233,12 @@ catState model name =
 
 
 viewTags : UiSettings -> Model -> Html Msg
-viewTags settings model =
+viewTags =
+    viewTagsDrop DD.init
+
+
+viewTagsDrop : DD.Model -> UiSettings -> Model -> Html Msg
+viewTagsDrop ddm settings model =
     div [ class "ui list" ]
         [ div [ class "item" ]
             [ I.tagIcon ""
@@ -220,7 +247,7 @@ viewTags settings model =
                     [ text "Tags"
                     ]
                 , div [ class "ui relaxed list" ]
-                    (renderTagItems settings model)
+                    (renderTagItems ddm settings model)
                 ]
             ]
         ]
@@ -242,8 +269,13 @@ viewCats settings model =
         ]
 
 
-view1 : UiSettings -> Model -> Html Msg
-view1 settings model =
+view : UiSettings -> Model -> Html Msg
+view =
+    viewDrop DD.init
+
+
+viewDrop : DD.Model -> UiSettings -> Model -> Html Msg
+viewDrop ddm settings model =
     div [ class "ui list" ]
         [ div [ class "item" ]
             [ I.tagIcon ""
@@ -252,7 +284,7 @@ view1 settings model =
                     [ text "Tags"
                     ]
                 , div [ class "ui relaxed list" ]
-                    (renderTagItems settings model)
+                    (renderTagItems ddm settings model)
                 ]
             ]
         , div [ class "item" ]
@@ -268,15 +300,8 @@ view1 settings model =
         ]
 
 
-view2 : UiSettings -> Model -> List (Html Msg)
-view2 settings model =
-    [ viewTags settings model
-    , viewCats settings model
-    ]
-
-
-renderTagItems : UiSettings -> Model -> List (Html Msg)
-renderTagItems settings model =
+renderTagItems : DD.Model -> UiSettings -> Model -> List (Html Msg)
+renderTagItems ddm settings model =
     let
         tags =
             model.all
@@ -297,13 +322,13 @@ renderTagItems settings model =
                 ToggleExpandTags
     in
     if max <= 0 then
-        List.map (viewTagItem settings model) model.all
+        List.map (viewTagItem ddm settings model) model.all
 
     else if model.expandedTags then
-        List.map (viewTagItem settings model) model.all ++ cps
+        List.map (viewTagItem ddm settings model) model.all ++ cps
 
     else
-        List.map (viewTagItem settings model) (List.take max model.all) ++ exp
+        List.map (viewTagItem ddm settings model) (List.take max model.all) ++ exp
 
 
 renderCatItems : UiSettings -> Model -> List (Html Msg)
@@ -371,8 +396,8 @@ viewCategoryItem settings model cat =
         ]
 
 
-viewTagItem : UiSettings -> Model -> TagCount -> Html Msg
-viewTagItem settings model tag =
+viewTagItem : DD.Model -> UiSettings -> Model -> TagCount -> Html Msg
+viewTagItem ddm settings model tag =
     let
         state =
             tagState model tag.tag.id
@@ -382,12 +407,20 @@ viewTagItem settings model tag =
 
         icon =
             getIcon state color I.tagIcon
+
+        dropActive =
+            DD.getDropId ddm == Just (DD.Tag tag.tag.id)
     in
     a
-        [ class "item"
-        , href "#"
-        , onClick (ToggleTag tag.tag.id)
-        ]
+        ([ classList
+            [ ( "item", True )
+            , ( "current-drop-target", dropActive )
+            ]
+         , href "#"
+         , onClick (ToggleTag tag.tag.id)
+         ]
+            ++ DD.droppable TagDDMsg (DD.Tag tag.tag.id)
+        )
         [ icon
         , div [ class "content" ]
             [ div

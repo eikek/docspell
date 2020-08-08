@@ -77,6 +77,10 @@ makeUpdateCmd flags receive droppedMaybe =
                     Api.setFolder flags dropped.itemId (OptionalId Nothing) receive
 
                 Tag _ ->
+                    let
+                        _ =
+                            Debug.log "dropped" dropped
+                    in
                     Cmd.none
 
         Nothing ->

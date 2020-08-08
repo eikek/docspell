@@ -356,8 +356,8 @@ updateDrop ddm flags settings msg model =
 
         TagSelectMsg m ->
             let
-                ( m_, sel ) =
-                    Comp.TagSelect.update m model.tagSelectModel
+                ( m_, sel, ddd ) =
+                    Comp.TagSelect.updateDrop ddm m model.tagSelectModel
             in
             { model =
                 { model
@@ -366,7 +366,7 @@ updateDrop ddm flags settings msg model =
                 }
             , cmd = Cmd.none
             , stateChange = sel /= model.tagSelection
-            , dragDrop = DD.DragDropData ddm Nothing
+            , dragDrop = ddd
             }
 
         DirectionMsg m ->
@@ -643,7 +643,7 @@ viewDrop ddd flags settings model =
                 ]
             ]
         , div [ class segmentClass ]
-            [ Html.map TagSelectMsg (Comp.TagSelect.viewTags settings model.tagSelectModel)
+            [ Html.map TagSelectMsg (Comp.TagSelect.viewTagsDrop ddd.model settings model.tagSelectModel)
             , Html.map TagSelectMsg (Comp.TagSelect.viewCats settings model.tagSelectModel)
             , Html.map FolderSelectMsg
                 (Comp.FolderSelect.viewDrop ddd.model settings.searchMenuFolderCount model.folderList)
