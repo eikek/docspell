@@ -24,10 +24,10 @@ type alias Model =
     }
 
 
-init : List FolderItem -> Model
-init all =
+init : Maybe FolderItem -> List FolderItem -> Model
+init selected all =
     { all = List.sortBy .name all
-    , selected = Nothing
+    , selected = Maybe.map .id selected
     , expanded = False
     }
 

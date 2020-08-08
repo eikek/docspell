@@ -41,12 +41,28 @@ type alias Category =
     }
 
 
-init : List TagCount -> Model
-init tags =
+init : Selection -> List TagCount -> Model
+init sel tags =
+    let
+        tagId t =
+            t.tag.id
+
+        constDict mkId flag list =
+            List.map (\e -> ( mkId e, flag )) list
+                |> Dict.fromList
+
+        selTag =
+            constDict tagId True sel.includeTags
+                |> Dict.union (constDict tagId False sel.excludeTags)
+
+        selCat =
+            constDict .name True sel.includeCats
+                |> Dict.union (constDict .name False sel.excludeCats)
+    in
     { all = tags
     , categories = sumCategories tags
-    , selectedTags = Dict.empty
-    , selectedCats = Dict.empty
+    , selectedTags = selTag
+    , selectedCats = selCat
     , expandedTags = False
     , expandedCats = False
     }

@@ -71,7 +71,7 @@ type alias Model =
 
 init : Model
 init =
-    { tagSelectModel = Comp.TagSelect.init []
+    { tagSelectModel = Comp.TagSelect.init Comp.TagSelect.emptySelection []
     , tagSelection = Comp.TagSelect.emptySelection
     , directionModel =
         Comp.Dropdown.makeSingleList
@@ -111,7 +111,7 @@ init =
             , labelColor = \_ -> \_ -> ""
             , placeholder = "Choose an equipment"
             }
-    , folderList = Comp.FolderSelect.init []
+    , folderList = Comp.FolderSelect.init Nothing []
     , selectedFolder = Nothing
     , inboxCheckbox = False
     , fromDateModel = Comp.DatePicker.emptyModel
@@ -288,7 +288,7 @@ updateDrop ddm flags settings msg model =
                 selectModel =
                     List.sortBy .count tags.items
                         |> List.reverse
-                        |> Comp.TagSelect.init
+                        |> Comp.TagSelect.init model.tagSelection
 
                 model_ =
                     { model | tagSelectModel = selectModel }
@@ -571,7 +571,7 @@ updateDrop ddm flags settings msg model =
                     { model
                         | folderList =
                             Util.Folder.onlyVisible flags fs.items
-                                |> Comp.FolderSelect.init
+                                |> Comp.FolderSelect.init model.selectedFolder
                     }
             in
             { model = model_
