@@ -1,5 +1,6 @@
 package docspell.restserver.routes
 
+import cats.data.OptionT
 import cats.effect._
 import cats.implicits._
 
@@ -43,11 +44,21 @@ object UploadRoutes {
     import dsl._
 
     HttpRoutes.of {
-      case req @ POST -> Root / "item" / Ident(id) =>
-        submitFiles(backend, cfg, Left(id))(req, None, Priority.Low, dsl)
+      case req @ POST -> Root / "item" / Ident(srcId) =>
+        (for {
+          _ <- OptionT(backend.collective.findSource(srcId))
+          res <- OptionT.liftF(
+            submitFiles(backend, cfg, Left(srcId))(req, None, Priority.Low, dsl)
+          )
+        } yield res).getOrElseF(NotFound())
 
-      case req @ POST -> Root / "item" / Ident(itemId) / Ident(id) =>
-        submitFiles(backend, cfg, Left(id))(req, Some(itemId), Priority.Low, dsl)
+      case req @ POST -> Root / "item" / Ident(itemId) / Ident(srcId) =>
+        (for {
+          _ <- OptionT(backend.collective.findSource(srcId))
+          res <- OptionT.liftF(
+            submitFiles(backend, cfg, Left(srcId))(req, Some(itemId), Priority.Low, dsl)
+          )
+        } yield res).getOrElseF(NotFound())
     }
   }
 
