@@ -55,6 +55,14 @@ object RTagItem {
         Vector.empty.pure[ConnectionIO]
     }
 
+  def removeAllTags(item: Ident, tags: Seq[Ident]): ConnectionIO[Int] =
+    NonEmptyList.fromList(tags.toList) match {
+      case None =>
+        0.pure[ConnectionIO]
+      case Some(nel) =>
+        deleteFrom(table, and(itemId.is(item), tagId.isIn(nel))).update.run
+    }
+
   def setAllTags(item: Ident, tags: Seq[Ident]): ConnectionIO[Int] =
     if (tags.isEmpty) 0.pure[ConnectionIO]
     else

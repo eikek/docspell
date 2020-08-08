@@ -11,6 +11,7 @@ import Page.Home.Data exposing (..)
 import Throttle
 import Time
 import Util.Html exposing (KeyCode(..))
+import Util.ItemDragDrop as DD
 import Util.Maybe
 import Util.String
 import Util.Update
@@ -39,10 +40,21 @@ update key flags settings msg model =
         SearchMenuMsg m ->
             let
                 nextState =
-                    Comp.SearchMenu.update flags settings m model.searchMenuModel
+                    Comp.SearchMenu.updateDrop
+                        model.dragDropData.model
+                        flags
+                        settings
+                        m
+                        model.searchMenuModel
+
+                dropCmd =
+                    DD.makeUpdateCmd flags (\_ -> DoSearch) nextState.dragDrop.dropped
 
                 newModel =
-                    { model | searchMenuModel = Tuple.first nextState.modelCmd }
+                    { model
+                        | searchMenuModel = nextState.model
+                        , dragDropData = nextState.dragDrop
+                    }
 
                 ( m2, c2, s2 ) =
                     if nextState.stateChange && not model.searchInProgress then
@@ -54,18 +66,22 @@ update key flags settings msg model =
             ( m2
             , Cmd.batch
                 [ c2
-                , Cmd.map SearchMenuMsg (Tuple.second nextState.modelCmd)
+                , Cmd.map SearchMenuMsg nextState.cmd
+                , dropCmd
                 ]
             , s2
             )
 
         ItemCardListMsg m ->
             let
-                ( m2, c2, mitem ) =
-                    Comp.ItemCardList.update flags m model.itemListModel
+                result =
+                    Comp.ItemCardList.updateDrag model.dragDropData.model
+                        flags
+                        m
+                        model.itemListModel
 
                 cmd =
-                    case mitem of
+                    case result.selected of
                         Just item ->
                             Page.set key (ItemDetailPage item.id)
 
@@ -73,8 +89,11 @@ update key flags settings msg model =
                             Cmd.none
             in
             withSub
-                ( { model | itemListModel = m2 }
-                , Cmd.batch [ Cmd.map ItemCardListMsg c2, cmd ]
+                ( { model
+                    | itemListModel = result.model
+                    , dragDropData = DD.DragDropData result.dragModel Nothing
+                  }
+                , Cmd.batch [ Cmd.map ItemCardListMsg result.cmd, cmd ]
                 )
 
         ItemSearchResp (Ok list) ->

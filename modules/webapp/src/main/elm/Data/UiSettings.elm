@@ -2,6 +2,8 @@ module Data.UiSettings exposing
     ( Pos(..)
     , StoredUiSettings
     , UiSettings
+    , catColor
+    , catColorString
     , defaults
     , merge
     , mergeDefaults
@@ -31,6 +33,9 @@ type alias StoredUiSettings =
     , nativePdfPreview : Bool
     , itemSearchNoteLength : Maybe Int
     , itemDetailNotesPosition : Maybe String
+    , searchMenuFolderCount : Maybe Int
+    , searchMenuTagCount : Maybe Int
+    , searchMenuTagCatCount : Maybe Int
     }
 
 
@@ -47,6 +52,9 @@ type alias UiSettings =
     , nativePdfPreview : Bool
     , itemSearchNoteLength : Int
     , itemDetailNotesPosition : Pos
+    , searchMenuFolderCount : Int
+    , searchMenuTagCount : Int
+    , searchMenuTagCatCount : Int
     }
 
 
@@ -85,6 +93,9 @@ defaults =
     , nativePdfPreview = False
     , itemSearchNoteLength = 0
     , itemDetailNotesPosition = Top
+    , searchMenuFolderCount = 3
+    , searchMenuTagCount = 6
+    , searchMenuTagCatCount = 3
     }
 
 
@@ -106,6 +117,13 @@ merge given fallback =
     , itemDetailNotesPosition =
         choose (Maybe.andThen posFromString given.itemDetailNotesPosition)
             fallback.itemDetailNotesPosition
+    , searchMenuFolderCount =
+        choose given.searchMenuFolderCount
+            fallback.searchMenuFolderCount
+    , searchMenuTagCount =
+        choose given.searchMenuTagCount fallback.searchMenuTagCount
+    , searchMenuTagCatCount =
+        choose given.searchMenuTagCatCount fallback.searchMenuTagCatCount
     }
 
 
@@ -123,16 +141,27 @@ toStoredUiSettings settings =
     , nativePdfPreview = settings.nativePdfPreview
     , itemSearchNoteLength = Just settings.itemSearchNoteLength
     , itemDetailNotesPosition = Just (posToString settings.itemDetailNotesPosition)
+    , searchMenuFolderCount = Just settings.searchMenuFolderCount
+    , searchMenuTagCount = Just settings.searchMenuTagCount
+    , searchMenuTagCatCount = Just settings.searchMenuTagCatCount
     }
+
+
+catColor : UiSettings -> String -> Maybe Color
+catColor settings c =
+    Dict.get c settings.tagCategoryColors
 
 
 tagColor : Tag -> UiSettings -> Maybe Color
 tagColor tag settings =
-    let
-        readColor c =
-            Dict.get c settings.tagCategoryColors
-    in
-    Maybe.andThen readColor tag.category
+    Maybe.andThen (catColor settings) tag.category
+
+
+catColorString : UiSettings -> String -> String
+catColorString settings name =
+    catColor settings name
+        |> Maybe.map Data.Color.toString
+        |> Maybe.withDefault ""
 
 
 tagColorString : Tag -> UiSettings -> String

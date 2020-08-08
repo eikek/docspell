@@ -5,20 +5,24 @@ module Comp.SearchMenu exposing
     , getItemSearch
     , init
     , update
+    , updateDrop
     , view
+    , viewDrop
     )
 
 import Api
 import Api.Model.Equipment exposing (Equipment)
 import Api.Model.EquipmentList exposing (EquipmentList)
+import Api.Model.FolderItem exposing (FolderItem)
 import Api.Model.FolderList exposing (FolderList)
 import Api.Model.IdName exposing (IdName)
 import Api.Model.ItemSearch exposing (ItemSearch)
 import Api.Model.ReferenceList exposing (ReferenceList)
-import Api.Model.Tag exposing (Tag)
-import Api.Model.TagList exposing (TagList)
+import Api.Model.TagCloud exposing (TagCloud)
 import Comp.DatePicker
 import Comp.Dropdown exposing (isDropdownChangeMsg)
+import Comp.FolderSelect
+import Comp.TagSelect
 import Data.Direction exposing (Direction)
 import Data.Flags exposing (Flags)
 import Data.Icons as Icons
@@ -28,10 +32,10 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onCheck, onClick, onInput)
 import Http
+import Util.Folder
 import Util.Html exposing (KeyCode(..))
+import Util.ItemDragDrop as DD
 import Util.Maybe
-import Util.Tag
-import Util.Update
 
 
 
@@ -39,16 +43,15 @@ import Util.Update
 
 
 type alias Model =
-    { tagInclModel : Comp.Dropdown.Model Tag
-    , tagExclModel : Comp.Dropdown.Model Tag
-    , tagCatInclModel : Comp.Dropdown.Model String
-    , tagCatExclModel : Comp.Dropdown.Model String
+    { tagSelectModel : Comp.TagSelect.Model
+    , tagSelection : Comp.TagSelect.Selection
     , directionModel : Comp.Dropdown.Model Direction
     , orgModel : Comp.Dropdown.Model IdName
     , corrPersonModel : Comp.Dropdown.Model IdName
     , concPersonModel : Comp.Dropdown.Model IdName
     , concEquipmentModel : Comp.Dropdown.Model Equipment
-    , folderModel : Comp.Dropdown.Model IdName
+    , folderList : Comp.FolderSelect.Model
+    , selectedFolder : Maybe FolderItem
     , inboxCheckbox : Bool
     , fromDateModel : DatePicker
     , fromDate : Maybe Int
@@ -68,10 +71,8 @@ type alias Model =
 
 init : Model
 init =
-    { tagInclModel = Util.Tag.makeDropdownModel
-    , tagExclModel = Util.Tag.makeDropdownModel
-    , tagCatInclModel = Util.Tag.makeCatDropdownModel
-    , tagCatExclModel = Util.Tag.makeCatDropdownModel
+    { tagSelectModel = Comp.TagSelect.init []
+    , tagSelection = Comp.TagSelect.emptySelection
     , directionModel =
         Comp.Dropdown.makeSingleList
             { makeOption =
@@ -110,14 +111,8 @@ init =
             , labelColor = \_ -> \_ -> ""
             , placeholder = "Choose an equipment"
             }
-    , folderModel =
-        Comp.Dropdown.makeModel
-            { multiple = False
-            , searchable = \n -> n > 5
-            , makeOption = \e -> { value = e.id, text = e.name, additional = "" }
-            , labelColor = \_ -> \_ -> ""
-            , placeholder = "Only items in folder"
-            }
+    , folderList = Comp.FolderSelect.init []
+    , selectedFolder = Nothing
     , inboxCheckbox = False
     , fromDateModel = Comp.DatePicker.emptyModel
     , fromDate = Nothing
@@ -133,36 +128,6 @@ init =
     , datePickerInitialized = False
     , showNameHelp = False
     }
-
-
-type Msg
-    = Init
-    | TagIncMsg (Comp.Dropdown.Msg Tag)
-    | TagExcMsg (Comp.Dropdown.Msg Tag)
-    | DirectionMsg (Comp.Dropdown.Msg Direction)
-    | OrgMsg (Comp.Dropdown.Msg IdName)
-    | CorrPersonMsg (Comp.Dropdown.Msg IdName)
-    | ConcPersonMsg (Comp.Dropdown.Msg IdName)
-    | ConcEquipmentMsg (Comp.Dropdown.Msg Equipment)
-    | FromDateMsg Comp.DatePicker.Msg
-    | UntilDateMsg Comp.DatePicker.Msg
-    | FromDueDateMsg Comp.DatePicker.Msg
-    | UntilDueDateMsg Comp.DatePicker.Msg
-    | ToggleInbox
-    | GetTagsResp (Result Http.Error TagList)
-    | GetOrgResp (Result Http.Error ReferenceList)
-    | GetEquipResp (Result Http.Error EquipmentList)
-    | GetPersonResp (Result Http.Error ReferenceList)
-    | SetName String
-    | SetAllName String
-    | SetFulltext String
-    | ResetForm
-    | KeyUpMsg (Maybe KeyCode)
-    | ToggleNameHelp
-    | FolderMsg (Comp.Dropdown.Msg IdName)
-    | GetFolderResp (Result Http.Error FolderList)
-    | TagCatIncMsg (Comp.Dropdown.Msg String)
-    | TagCatExcMsg (Comp.Dropdown.Msg String)
 
 
 getDirection : Model -> Maybe Direction
@@ -197,14 +162,17 @@ getItemSearch model =
                 "*" ++ s ++ "*"
     in
     { e
-        | tagsInclude = Comp.Dropdown.getSelected model.tagInclModel |> List.map .id
-        , tagsExclude = Comp.Dropdown.getSelected model.tagExclModel |> List.map .id
+        | tagsInclude = model.tagSelection.includeTags |> List.map .tag |> List.map .id
+        , tagsExclude = model.tagSelection.excludeTags |> List.map .tag |> List.map .id
         , corrPerson = Comp.Dropdown.getSelected model.corrPersonModel |> List.map .id |> List.head
         , corrOrg = Comp.Dropdown.getSelected model.orgModel |> List.map .id |> List.head
         , concPerson = Comp.Dropdown.getSelected model.concPersonModel |> List.map .id |> List.head
         , concEquip = Comp.Dropdown.getSelected model.concEquipmentModel |> List.map .id |> List.head
-        , folder = Comp.Dropdown.getSelected model.folderModel |> List.map .id |> List.head
-        , direction = Comp.Dropdown.getSelected model.directionModel |> List.head |> Maybe.map Data.Direction.toString
+        , folder = model.selectedFolder |> Maybe.map .id
+        , direction =
+            Comp.Dropdown.getSelected model.directionModel
+                |> List.head
+                |> Maybe.map Data.Direction.toString
         , inbox = model.inboxCheckbox
         , dateFrom = model.fromDate
         , dateUntil = model.untilDate
@@ -217,8 +185,8 @@ getItemSearch model =
             model.allNameModel
                 |> Maybe.map amendWildcards
         , fullText = model.fulltextModel
-        , tagCategoriesInclude = Comp.Dropdown.getSelected model.tagCatInclModel
-        , tagCategoriesExclude = Comp.Dropdown.getSelected model.tagCatExclModel
+        , tagCategoriesInclude = model.tagSelection.includeCats |> List.map .name
+        , tagCategoriesExclude = model.tagSelection.excludeCats |> List.map .name
     }
 
 
@@ -226,19 +194,48 @@ getItemSearch model =
 -- Update
 
 
+type Msg
+    = Init
+    | TagSelectMsg Comp.TagSelect.Msg
+    | DirectionMsg (Comp.Dropdown.Msg Direction)
+    | OrgMsg (Comp.Dropdown.Msg IdName)
+    | CorrPersonMsg (Comp.Dropdown.Msg IdName)
+    | ConcPersonMsg (Comp.Dropdown.Msg IdName)
+    | ConcEquipmentMsg (Comp.Dropdown.Msg Equipment)
+    | FromDateMsg Comp.DatePicker.Msg
+    | UntilDateMsg Comp.DatePicker.Msg
+    | FromDueDateMsg Comp.DatePicker.Msg
+    | UntilDueDateMsg Comp.DatePicker.Msg
+    | ToggleInbox
+    | GetTagsResp (Result Http.Error TagCloud)
+    | GetOrgResp (Result Http.Error ReferenceList)
+    | GetEquipResp (Result Http.Error EquipmentList)
+    | GetPersonResp (Result Http.Error ReferenceList)
+    | SetName String
+    | SetAllName String
+    | SetFulltext String
+    | ResetForm
+    | KeyUpMsg (Maybe KeyCode)
+    | ToggleNameHelp
+    | FolderSelectMsg Comp.FolderSelect.Msg
+    | GetFolderResp (Result Http.Error FolderList)
+
+
 type alias NextState =
-    { modelCmd : ( Model, Cmd Msg )
+    { model : Model
+    , cmd : Cmd Msg
     , stateChange : Bool
+    , dragDrop : DD.DragDropData
     }
 
 
-noChange : ( Model, Cmd Msg ) -> NextState
-noChange p =
-    NextState p False
-
-
 update : Flags -> UiSettings -> Msg -> Model -> NextState
-update flags settings msg model =
+update =
+    updateDrop DD.init
+
+
+updateDrop : DD.Model -> Flags -> UiSettings -> Msg -> Model -> NextState
+updateDrop ddm flags settings msg model =
     case msg of
         Init ->
             let
@@ -265,17 +262,19 @@ update flags settings msg model =
                             ]
                         )
             in
-            noChange
-                ( mdp
-                , Cmd.batch
-                    [ Api.getTags flags "" GetTagsResp
+            { model = mdp
+            , cmd =
+                Cmd.batch
+                    [ Api.getTagCloud flags GetTagsResp
                     , Api.getOrgLight flags GetOrgResp
                     , Api.getEquipments flags "" GetEquipResp
                     , Api.getPersonsLight flags GetPersonResp
                     , Api.getFolders flags "" False GetFolderResp
                     , cdp
                     ]
-                )
+            , stateChange = False
+            , dragDrop = DD.DragDropData ddm Nothing
+            }
 
         ResetForm ->
             let
@@ -286,24 +285,26 @@ update flags settings msg model =
 
         GetTagsResp (Ok tags) ->
             let
-                tagList =
-                    Comp.Dropdown.SetOptions tags.items
+                selectModel =
+                    List.sortBy .count tags.items
+                        |> List.reverse
+                        |> Comp.TagSelect.init
 
-                catList =
-                    Util.Tag.getCategories tags.items
-                        |> Comp.Dropdown.SetOptions
+                model_ =
+                    { model | tagSelectModel = selectModel }
             in
-            noChange <|
-                Util.Update.andThen1
-                    [ update flags settings (TagIncMsg tagList) >> .modelCmd
-                    , update flags settings (TagExcMsg tagList) >> .modelCmd
-                    , update flags settings (TagCatIncMsg catList) >> .modelCmd
-                    , update flags settings (TagCatExcMsg catList) >> .modelCmd
-                    ]
-                    model
+            { model = model_
+            , cmd = Cmd.none
+            , stateChange = False
+            , dragDrop = DD.DragDropData ddm Nothing
+            }
 
         GetTagsResp (Err _) ->
-            noChange ( model, Cmd.none )
+            { model = model
+            , cmd = Cmd.none
+            , stateChange = False
+            , dragDrop = DD.DragDropData ddm Nothing
+            }
 
         GetEquipResp (Ok equips) ->
             let
@@ -313,7 +314,11 @@ update flags settings msg model =
             update flags settings (ConcEquipmentMsg opts) model
 
         GetEquipResp (Err _) ->
-            noChange ( model, Cmd.none )
+            { model = model
+            , cmd = Cmd.none
+            , stateChange = False
+            , dragDrop = DD.DragDropData ddm Nothing
+            }
 
         GetOrgResp (Ok orgs) ->
             let
@@ -323,106 +328,112 @@ update flags settings msg model =
             update flags settings (OrgMsg opts) model
 
         GetOrgResp (Err _) ->
-            noChange ( model, Cmd.none )
+            { model = model
+            , cmd = Cmd.none
+            , stateChange = False
+            , dragDrop = DD.DragDropData ddm Nothing
+            }
 
         GetPersonResp (Ok ps) ->
             let
                 opts =
                     Comp.Dropdown.SetOptions ps.items
+
+                next1 =
+                    updateDrop ddm flags settings (CorrPersonMsg opts) model
+
+                next2 =
+                    updateDrop next1.dragDrop.model flags settings (ConcPersonMsg opts) next1.model
             in
-            noChange <|
-                Util.Update.andThen1
-                    [ update flags settings (CorrPersonMsg opts) >> .modelCmd
-                    , update flags settings (ConcPersonMsg opts) >> .modelCmd
-                    ]
-                    model
+            next2
 
         GetPersonResp (Err _) ->
-            noChange ( model, Cmd.none )
+            { model = model
+            , cmd = Cmd.none
+            , stateChange = False
+            , dragDrop = DD.DragDropData ddm Nothing
+            }
 
-        TagIncMsg m ->
+        TagSelectMsg m ->
             let
-                ( m2, c2 ) =
-                    Comp.Dropdown.update m model.tagInclModel
+                ( m_, sel, ddd ) =
+                    Comp.TagSelect.updateDrop ddm m model.tagSelectModel
             in
-            NextState
-                ( { model | tagInclModel = m2 }
-                , Cmd.map TagIncMsg c2
-                )
-                (isDropdownChangeMsg m)
-
-        TagExcMsg m ->
-            let
-                ( m2, c2 ) =
-                    Comp.Dropdown.update m model.tagExclModel
-            in
-            NextState
-                ( { model | tagExclModel = m2 }
-                , Cmd.map TagExcMsg c2
-                )
-                (isDropdownChangeMsg m)
+            { model =
+                { model
+                    | tagSelectModel = m_
+                    , tagSelection = sel
+                }
+            , cmd = Cmd.none
+            , stateChange = sel /= model.tagSelection
+            , dragDrop = ddd
+            }
 
         DirectionMsg m ->
             let
                 ( m2, c2 ) =
                     Comp.Dropdown.update m model.directionModel
             in
-            NextState
-                ( { model | directionModel = m2 }
-                , Cmd.map DirectionMsg c2
-                )
-                (isDropdownChangeMsg m)
+            { model = { model | directionModel = m2 }
+            , cmd = Cmd.map DirectionMsg c2
+            , stateChange = isDropdownChangeMsg m
+            , dragDrop = DD.DragDropData ddm Nothing
+            }
 
         OrgMsg m ->
             let
                 ( m2, c2 ) =
                     Comp.Dropdown.update m model.orgModel
             in
-            NextState
-                ( { model | orgModel = m2 }
-                , Cmd.map OrgMsg c2
-                )
-                (isDropdownChangeMsg m)
+            { model = { model | orgModel = m2 }
+            , cmd = Cmd.map OrgMsg c2
+            , stateChange = isDropdownChangeMsg m
+            , dragDrop = DD.DragDropData ddm Nothing
+            }
 
         CorrPersonMsg m ->
             let
                 ( m2, c2 ) =
                     Comp.Dropdown.update m model.corrPersonModel
             in
-            NextState
-                ( { model | corrPersonModel = m2 }
-                , Cmd.map CorrPersonMsg c2
-                )
-                (isDropdownChangeMsg m)
+            { model = { model | corrPersonModel = m2 }
+            , cmd = Cmd.map CorrPersonMsg c2
+            , stateChange = isDropdownChangeMsg m
+            , dragDrop = DD.DragDropData ddm Nothing
+            }
 
         ConcPersonMsg m ->
             let
                 ( m2, c2 ) =
                     Comp.Dropdown.update m model.concPersonModel
             in
-            NextState
-                ( { model | concPersonModel = m2 }
-                , Cmd.map ConcPersonMsg c2
-                )
-                (isDropdownChangeMsg m)
+            { model = { model | concPersonModel = m2 }
+            , cmd = Cmd.map ConcPersonMsg c2
+            , stateChange = isDropdownChangeMsg m
+            , dragDrop = DD.DragDropData ddm Nothing
+            }
 
         ConcEquipmentMsg m ->
             let
                 ( m2, c2 ) =
                     Comp.Dropdown.update m model.concEquipmentModel
             in
-            NextState
-                ( { model | concEquipmentModel = m2 }
-                , Cmd.map ConcEquipmentMsg c2
-                )
-                (isDropdownChangeMsg m)
+            { model = { model | concEquipmentModel = m2 }
+            , cmd = Cmd.map ConcEquipmentMsg c2
+            , stateChange = isDropdownChangeMsg m
+            , dragDrop = DD.DragDropData ddm Nothing
+            }
 
         ToggleInbox ->
             let
                 current =
                     model.inboxCheckbox
             in
-            NextState ( { model | inboxCheckbox = not current }, Cmd.none ) True
+            { model = { model | inboxCheckbox = not current }
+            , cmd = Cmd.none
+            , stateChange = True
+            , dragDrop = DD.DragDropData ddm Nothing
+            }
 
         FromDateMsg m ->
             let
@@ -437,11 +448,11 @@ update flags settings msg model =
                         _ ->
                             Nothing
             in
-            NextState
-                ( { model | fromDateModel = dp, fromDate = nextDate }
-                , Cmd.none
-                )
-                (model.fromDate /= nextDate)
+            { model = { model | fromDateModel = dp, fromDate = nextDate }
+            , cmd = Cmd.none
+            , stateChange = model.fromDate /= nextDate
+            , dragDrop = DD.DragDropData ddm Nothing
+            }
 
         UntilDateMsg m ->
             let
@@ -456,11 +467,11 @@ update flags settings msg model =
                         _ ->
                             Nothing
             in
-            NextState
-                ( { model | untilDateModel = dp, untilDate = nextDate }
-                , Cmd.none
-                )
-                (model.untilDate /= nextDate)
+            { model = { model | untilDateModel = dp, untilDate = nextDate }
+            , cmd = Cmd.none
+            , stateChange = model.untilDate /= nextDate
+            , dragDrop = DD.DragDropData ddm Nothing
+            }
 
         FromDueDateMsg m ->
             let
@@ -475,11 +486,11 @@ update flags settings msg model =
                         _ ->
                             Nothing
             in
-            NextState
-                ( { model | fromDueDateModel = dp, fromDueDate = nextDate }
-                , Cmd.none
-                )
-                (model.fromDueDate /= nextDate)
+            { model = { model | fromDueDateModel = dp, fromDueDate = nextDate }
+            , cmd = Cmd.none
+            , stateChange = model.fromDueDate /= nextDate
+            , dragDrop = DD.DragDropData ddm Nothing
+            }
 
         UntilDueDateMsg m ->
             let
@@ -494,98 +505,102 @@ update flags settings msg model =
                         _ ->
                             Nothing
             in
-            NextState
-                ( { model | untilDueDateModel = dp, untilDueDate = nextDate }
-                , Cmd.none
-                )
-                (model.untilDueDate /= nextDate)
+            { model = { model | untilDueDateModel = dp, untilDueDate = nextDate }
+            , cmd = Cmd.none
+            , stateChange = model.untilDueDate /= nextDate
+            , dragDrop = DD.DragDropData ddm Nothing
+            }
 
         SetName str ->
             let
                 next =
                     Util.Maybe.fromString str
             in
-            NextState
-                ( { model | nameModel = next }
-                , Cmd.none
-                )
-                False
+            { model = { model | nameModel = next }
+            , cmd = Cmd.none
+            , stateChange = False
+            , dragDrop = DD.DragDropData ddm Nothing
+            }
 
         SetAllName str ->
             let
                 next =
                     Util.Maybe.fromString str
             in
-            NextState
-                ( { model | allNameModel = next }
-                , Cmd.none
-                )
-                False
+            { model = { model | allNameModel = next }
+            , cmd = Cmd.none
+            , stateChange = False
+            , dragDrop = DD.DragDropData ddm Nothing
+            }
 
         SetFulltext str ->
             let
                 next =
                     Util.Maybe.fromString str
             in
-            NextState
-                ( { model | fulltextModel = next }
-                , Cmd.none
-                )
-                False
+            { model = { model | fulltextModel = next }
+            , cmd = Cmd.none
+            , stateChange = False
+            , dragDrop = DD.DragDropData ddm Nothing
+            }
 
         KeyUpMsg (Just Enter) ->
-            NextState ( model, Cmd.none ) True
+            { model = model
+            , cmd = Cmd.none
+            , stateChange = True
+            , dragDrop = DD.DragDropData ddm Nothing
+            }
 
         KeyUpMsg _ ->
-            NextState ( model, Cmd.none ) False
+            { model = model
+            , cmd = Cmd.none
+            , stateChange = False
+            , dragDrop = DD.DragDropData ddm Nothing
+            }
 
         ToggleNameHelp ->
-            NextState ( { model | showNameHelp = not model.showNameHelp }, Cmd.none ) False
+            { model = { model | showNameHelp = not model.showNameHelp }
+            , cmd = Cmd.none
+            , stateChange = False
+            , dragDrop = DD.DragDropData ddm Nothing
+            }
 
         GetFolderResp (Ok fs) ->
             let
-                opts =
-                    List.filter .isMember fs.items
-                        |> List.map (\e -> IdName e.id e.name)
-                        |> Comp.Dropdown.SetOptions
+                model_ =
+                    { model
+                        | folderList =
+                            Util.Folder.onlyVisible flags fs.items
+                                |> Comp.FolderSelect.init
+                    }
             in
-            update flags settings (FolderMsg opts) model
+            { model = model_
+            , cmd = Cmd.none
+            , stateChange = False
+            , dragDrop = DD.DragDropData ddm Nothing
+            }
 
         GetFolderResp (Err _) ->
-            noChange ( model, Cmd.none )
+            { model = model
+            , cmd = Cmd.none
+            , stateChange = False
+            , dragDrop = DD.DragDropData ddm Nothing
+            }
 
-        FolderMsg lm ->
+        FolderSelectMsg lm ->
             let
-                ( m2, c2 ) =
-                    Comp.Dropdown.update lm model.folderModel
+                ( fsm, sel, ddd ) =
+                    Comp.FolderSelect.updateDrop ddm lm model.folderList
             in
-            NextState
-                ( { model | folderModel = m2 }
-                , Cmd.map FolderMsg c2
-                )
-                (isDropdownChangeMsg lm)
-
-        TagCatIncMsg m ->
-            let
-                ( m2, c2 ) =
-                    Comp.Dropdown.update m model.tagCatInclModel
-            in
-            NextState
-                ( { model | tagCatInclModel = m2 }
-                , Cmd.map TagCatIncMsg c2
-                )
-                (isDropdownChangeMsg m)
-
-        TagCatExcMsg m ->
-            let
-                ( m2, c2 ) =
-                    Comp.Dropdown.update m model.tagCatExclModel
-            in
-            NextState
-                ( { model | tagCatExclModel = m2 }
-                , Cmd.map TagCatExcMsg c2
-                )
-                (isDropdownChangeMsg m)
+            { model =
+                { model
+                    | folderList = fsm
+                    , selectedFolder = sel
+                }
+            , cmd = Cmd.none
+            , stateChange = model.selectedFolder /= sel
+            , dragDrop = ddd
+            }
 
 
 
@@ -593,197 +608,190 @@ update flags settings msg model =
 
 
 view : Flags -> UiSettings -> Model -> Html Msg
-view flags settings model =
+view =
+    viewDrop (DD.DragDropData DD.init Nothing)
+
+
+viewDrop : DD.DragDropData -> Flags -> UiSettings -> Model -> Html Msg
+viewDrop ddd flags settings model =
     let
         formHeader icon headline =
-            div [ class "ui small dividing header" ]
+            div [ class "ui tiny header" ]
                 [ icon
                 , div [ class "content" ]
                     [ text headline
                     ]
                 ]
 
-        formHeaderHelp icon headline tagger =
-            div [ class "ui small dividing header" ]
-                [ a
-                    [ class "right-float"
-                    , href "#"
-                    , onClick tagger
-                    ]
-                    [ i [ class "small grey help link icon" ] []
-                    ]
-                , icon
-                , div [ class "content" ]
-                    [ text headline
-                    ]
-                ]
-
-        nameIcon =
-            i [ class "left align icon" ] []
+        segmentClass =
+            "ui vertical segment"
     in
     div [ class "ui form" ]
-        [ div [ class "inline field" ]
-            [ div [ class "ui checkbox" ]
-                [ input
-                    [ type_ "checkbox"
-                    , onCheck (\_ -> ToggleInbox)
-                    , checked model.inboxCheckbox
+        [ div [ class segmentClass ]
+            [ div [ class "inline field" ]
+                [ div [ class "ui checkbox" ]
+                    [ input
+                        [ type_ "checkbox"
+                        , onCheck (\_ -> ToggleInbox)
+                        , checked model.inboxCheckbox
+                        ]
+                        []
+                    , label []
+                        [ text "Only New"
+                        ]
+                    ]
+                ]
+            ]
+        , div [ class segmentClass ]
+            [ Html.map TagSelectMsg (Comp.TagSelect.viewTagsDrop ddd.model settings model.tagSelectModel)
+            , Html.map TagSelectMsg (Comp.TagSelect.viewCats settings model.tagSelectModel)
+            , Html.map FolderSelectMsg
+                (Comp.FolderSelect.viewDrop ddd.model settings.searchMenuFolderCount model.folderList)
+            ]
+        , div [ class segmentClass ]
+            [ formHeader (Icons.correspondentIcon "")
+                (case getDirection model of
+                    Just Data.Direction.Incoming ->
+                        "Sender"
+
+                    Just Data.Direction.Outgoing ->
+                        "Recipient"
+
+                    Nothing ->
+                        "Correspondent"
+                )
+            , div [ class "field" ]
+                [ label [] [ text "Organization" ]
+                , Html.map OrgMsg (Comp.Dropdown.view settings model.orgModel)
+                ]
+            , div [ class "field" ]
+                [ label [] [ text "Person" ]
+                , Html.map CorrPersonMsg (Comp.Dropdown.view settings model.corrPersonModel)
+                ]
+            , formHeader Icons.concernedIcon "Concerned"
+            , div [ class "field" ]
+                [ label [] [ text "Person" ]
+                , Html.map ConcPersonMsg (Comp.Dropdown.view settings model.concPersonModel)
+                ]
+            , div [ class "field" ]
+                [ label [] [ text "Equipment" ]
+                , Html.map ConcEquipmentMsg (Comp.Dropdown.view settings model.concEquipmentModel)
+                ]
+            ]
+        , div [ class segmentClass ]
+            [ formHeader (Icons.searchIcon "") "Text Search"
+            , div
+                [ classList
+                    [ ( "field", True )
+                    , ( "invisible hidden", not flags.config.fullTextSearchEnabled )
+                    ]
+                ]
+                [ label [] [ text "Fulltext Search" ]
+                , input
+                    [ type_ "text"
+                    , onInput SetFulltext
+                    , Util.Html.onKeyUpCode KeyUpMsg
+                    , model.fulltextModel |> Maybe.withDefault "" |> value
+                    , placeholder "Fulltext search in results…"
                     ]
                     []
-                , label []
-                    [ text "Only New"
+                , span [ class "small-info" ]
+                    [ text "Fulltext search in document contents and notes."
                     ]
-                ]
-            ]
-        , formHeaderHelp nameIcon "Names" ToggleNameHelp
-        , span
-            [ classList
-                [ ( "small-info", True )
-                , ( "invisible hidden", not model.showNameHelp )
-                ]
-            ]
-            [ text "Use wildcards "
-            , code [] [ text "*" ]
-            , text " at beginning or end. Added automatically if not "
-            , text "present and not quoted. Press "
-            , em [] [ text "Enter" ]
-            , text " to start searching."
-            ]
-        , div [ class "field" ]
-            [ label [] [ text "Names" ]
-            , input
-                [ type_ "text"
-                , onInput SetAllName
-                , Util.Html.onKeyUpCode KeyUpMsg
-                , model.allNameModel |> Maybe.withDefault "" |> value
-                ]
-                []
-            , span
-                [ classList
-                    [ ( "small-info", True )
-                    , ( "invisible hidden", not model.showNameHelp )
-                    ]
-                ]
-                [ text "Looks in correspondents, concerned entities, item name and notes."
-                ]
-            ]
-        , formHeader (Icons.folderIcon "") "Folder"
-        , div [ class "field" ]
-            [ label [] [ text "Folder" ]
-            , Html.map FolderMsg (Comp.Dropdown.view settings model.folderModel)
-            ]
-        , formHeader (Icons.tagsIcon "") "Tags"
-        , div [ class "field" ]
-            [ label [] [ text "Include (and)" ]
-            , Html.map TagIncMsg (Comp.Dropdown.view settings model.tagInclModel)
-            ]
-        , div [ class "field" ]
-            [ label [] [ text "Exclude (or)" ]
-            , Html.map TagExcMsg (Comp.Dropdown.view settings model.tagExclModel)
-            ]
-        , div [ class "field" ]
-            [ label [] [ text "Category Include (and)" ]
-            , Html.map TagCatIncMsg (Comp.Dropdown.view settings model.tagCatInclModel)
-            ]
-        , div [ class "field" ]
-            [ label [] [ text "Category Exclude (or)" ]
-            , Html.map TagCatExcMsg (Comp.Dropdown.view settings model.tagCatExclModel)
-            ]
-        , formHeader (Icons.searchIcon "") "Content"
-        , div
-            [ classList
-                [ ( "field", True )
-                , ( "invisible hidden", not flags.config.fullTextSearchEnabled )
-                ]
-            ]
-            [ label [] [ text "Content Search" ]
-            , input
-                [ type_ "text"
-                , onInput SetFulltext
-                , Util.Html.onKeyUpCode KeyUpMsg
-                , model.fulltextModel |> Maybe.withDefault "" |> value
-                ]
-                []
-            , span [ class "small-info" ]
-                [ text "Fulltext search in document contents and notes."
-                ]
-            ]
-        , formHeader (Icons.correspondentIcon "")
-            (case getDirection model of
-                Just Data.Direction.Incoming ->
-                    "Sender"
-
-                Just Data.Direction.Outgoing ->
-                    "Recipient"
-
-                Nothing ->
-                    "Correspondent"
-            )
-        , div [ class "field" ]
-            [ label [] [ text "Organization" ]
-            , Html.map OrgMsg (Comp.Dropdown.view settings model.orgModel)
-            ]
-        , div [ class "field" ]
-            [ label [] [ text "Person" ]
-            , Html.map CorrPersonMsg (Comp.Dropdown.view settings model.corrPersonModel)
-            ]
-        , formHeader Icons.concernedIcon "Concerned"
-        , div [ class "field" ]
-            [ label [] [ text "Person" ]
-            , Html.map ConcPersonMsg (Comp.Dropdown.view settings model.concPersonModel)
-            ]
-        , div [ class "field" ]
-            [ label [] [ text "Equipment" ]
-            , Html.map ConcEquipmentMsg (Comp.Dropdown.view settings model.concEquipmentModel)
-            ]
-        , formHeader (Icons.dateIcon "") "Date"
-        , div [ class "fields" ]
-            [ div [ class "field" ]
-                [ label []
-                    [ text "From"
-                    ]
-                , Html.map FromDateMsg
-                    (Comp.DatePicker.viewTimeDefault
-                        model.fromDate
-                        model.fromDateModel
-                    )
                 ]
             , div [ class "field" ]
                 [ label []
-                    [ text "To"
+                    [ text "Names"
+                    , a
+                        [ class "right-float"
+                        , href "#"
+                        , onClick ToggleNameHelp
+                        ]
+                        [ i [ class "small grey help link icon" ] []
+                        ]
                     ]
-                , Html.map UntilDateMsg
-                    (Comp.DatePicker.viewTimeDefault
-                        model.untilDate
-                        model.untilDateModel
-                    )
+                , input
+                    [ type_ "text"
+                    , onInput SetAllName
+                    , Util.Html.onKeyUpCode KeyUpMsg
+                    , model.allNameModel |> Maybe.withDefault "" |> value
+                    , placeholder "Search in various names…"
+                    ]
+                    []
+                , span
+                    [ classList
+                        [ ( "small-info", True )
+                        ]
+                    ]
+                    [ text "Looks in correspondents, concerned entities, item name and notes."
+                    ]
+                , p
+                    [ classList
+                        [ ( "small-info", True )
+                        , ( "invisible hidden", not model.showNameHelp )
+                        ]
+                    ]
+                    [ text "Use wildcards "
+                    , code [] [ text "*" ]
+                    , text " at beginning or end. They are added automatically on both sides "
+                    , text "if not present in the search term and the term is not quoted. Press "
+                    , em [] [ text "Enter" ]
+                    , text " to start searching."
+                    ]
                 ]
             ]
-        , formHeader (Icons.dueDateIcon "") "Due Date"
-        , div [ class "fields" ]
-            [ div [ class "field" ]
-                [ label []
-                    [ text "Due From"
+        , div [ class segmentClass ]
+            [ formHeader (Icons.dateIcon "") "Date"
+            , div [ class "fields" ]
+                [ div [ class "field" ]
+                    [ label []
+                        [ text "From"
+                        ]
+                    , Html.map FromDateMsg
+                        (Comp.DatePicker.viewTimeDefault
+                            model.fromDate
+                            model.fromDateModel
+                        )
                     ]
-                , Html.map FromDueDateMsg
-                    (Comp.DatePicker.viewTimeDefault
-                        model.fromDueDate
-                        model.fromDueDateModel
-                    )
+                , div [ class "field" ]
+                    [ label []
+                        [ text "To"
+                        ]
+                    , Html.map UntilDateMsg
+                        (Comp.DatePicker.viewTimeDefault
+                            model.untilDate
+                            model.untilDateModel
+                        )
+                    ]
                 ]
+            , formHeader (Icons.dueDateIcon "") "Due Date"
+            , div [ class "fields" ]
+                [ div [ class "field" ]
+                    [ label []
+                        [ text "Due From"
+                        ]
+                    , Html.map FromDueDateMsg
+                        (Comp.DatePicker.viewTimeDefault
+                            model.fromDueDate
+                            model.fromDueDateModel
+                        )
+                    ]
+                , div [ class "field" ]
+                    [ label []
+                        [ text "Due To"
+                        ]
+                    , Html.map UntilDueDateMsg
+                        (Comp.DatePicker.viewTimeDefault
+                            model.untilDueDate
+                            model.untilDueDateModel
+                        )
+                    ]
+                ]
+            ]
+        , div [ class segmentClass ]
+            [ formHeader (Icons.directionIcon "") "Direction"
             , div [ class "field" ]
-                [ label []
-                    [ text "Due To"
-                    ]
-                , Html.map UntilDueDateMsg
-                    (Comp.DatePicker.viewTimeDefault
-                        model.untilDueDate
-                        model.untilDueDateModel
-                    )
+                [ Html.map DirectionMsg (Comp.Dropdown.view settings model.directionModel)
                 ]
-            ]
-        , formHeader (Icons.directionIcon "") "Direction"
-        , div [ class "field" ]
-            [ Html.map DirectionMsg (Comp.Dropdown.view settings model.directionModel)
             ]
         ]

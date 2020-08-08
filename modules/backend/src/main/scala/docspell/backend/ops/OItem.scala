@@ -26,6 +26,9 @@ trait OItem[F[_]] {
   /** Apply all tags to the given item. Tags must exist, but can be IDs or names. */
   def linkTags(item: Ident, tags: List[String], collective: Ident): F[UpdateResult]
 
+  /** Toggles tags of the given item. Tags must exist, but can be IDs or names. */
+  def toggleTags(item: Ident, tags: List[String], collective: Ident): F[UpdateResult]
+
   def setDirection(item: Ident, direction: Direction, collective: Ident): F[AddResult]
 
   def setFolder(item: Ident, folder: Option[Ident], collective: Ident): F[AddResult]
@@ -110,6 +113,28 @@ object OItem {
                   _ <- OptionT.liftF(
                     RTagItem.setAllTags(item, given.map(_.tagId).diff(exist.map(_.tagId)))
                   )
+                } yield UpdateResult.success).getOrElse(UpdateResult.notFound)
+
+              store.transact(db)
+          }
+
+        def toggleTags(
+            item: Ident,
+            tags: List[String],
+            collective: Ident
+        ): F[UpdateResult] =
+          tags.distinct match {
+            case Nil => UpdateResult.success.pure[F]
+            case kws =>
+              val db =
+                (for {
+                  _     <- OptionT(RItem.checkByIdAndCollective(item, collective))
+                  given <- OptionT.liftF(RTag.findAllByNameOrId(kws, collective))
+                  exist <- OptionT.liftF(RTagItem.findAllIn(item, given.map(_.tagId)))
+                  remove = given.map(_.tagId).toSet.intersect(exist.map(_.tagId).toSet)
+                  toadd  = given.map(_.tagId).diff(exist.map(_.tagId))
+                  _ <- OptionT.liftF(RTagItem.setAllTags(item, toadd))
+                  _ <- OptionT.liftF(RTagItem.removeAllTags(item, remove.toSeq))
                 } yield UpdateResult.success).getOrElse(UpdateResult.notFound)
 
               store.transact(db)

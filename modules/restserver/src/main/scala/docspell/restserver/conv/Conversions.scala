@@ -31,8 +31,11 @@ trait Conversions {
       d.incoming,
       d.outgoing,
       d.bytes,
-      TagCloud(d.tags.toList.map(p => NameCount(p._1, p._2)))
+      mkTagCloud(d.tags)
     )
+
+  def mkTagCloud(tags: List[OCollective.TagCount]) =
+    TagCloud(tags.map(tc => TagCount(mkTag(tc.tag), tc.count)))
 
   // attachment meta
   def mkAttachmentMeta(rm: RAttachmentMeta): AttachmentMeta =

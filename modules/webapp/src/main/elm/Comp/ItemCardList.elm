@@ -5,6 +5,7 @@ module Comp.ItemCardList exposing
     , nextItem
     , prevItem
     , update
+    , updateDrag
     , view
     )
 
@@ -21,6 +22,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Markdown
+import Util.ItemDragDrop as DD
 import Util.List
 import Util.String
 import Util.Time
@@ -35,6 +37,7 @@ type Msg
     = SetResults ItemLightList
     | AddResults ItemLightList
     | SelectItem ItemLight
+    | ItemDDMsg DD.Msg
 
 
 init : Model
@@ -60,28 +63,57 @@ prevItem model id =
 
 
 update : Flags -> Msg -> Model -> ( Model, Cmd Msg, Maybe ItemLight )
-update _ msg model =
+update flags msg model =
+    let
+        res =
+            updateDrag DD.init flags msg model
+    in
+    ( res.model, res.cmd, res.selected )
+
+
+type alias UpdateResult =
+    { model : Model
+    , cmd : Cmd Msg
+    , selected : Maybe ItemLight
+    , dragModel : DD.Model
+    }
+
+
+updateDrag :
+    DD.Model
+    -> Flags
+    -> Msg
+    -> Model
+    -> UpdateResult
+updateDrag dm _ msg model =
     case msg of
         SetResults list ->
             let
                 newModel =
                     { model | results = list }
             in
-            ( newModel, Cmd.none, Nothing )
+            UpdateResult newModel Cmd.none Nothing dm
 
         AddResults list ->
             if list.groups == [] then
-                ( model, Cmd.none, Nothing )
+                UpdateResult model Cmd.none Nothing dm
 
             else
                 let
                     newModel =
                         { model | results = Data.Items.concat model.results list }
                 in
-                ( newModel, Cmd.none, Nothing )
+                UpdateResult newModel Cmd.none Nothing dm
 
         SelectItem item ->
-            ( model, Cmd.none, Just item )
+            UpdateResult model Cmd.none (Just item) dm
+
+        ItemDDMsg lm ->
+            let
+                ddd =
+                    DD.update lm dm
+            in
+            UpdateResult model Cmd.none Nothing ddd.model
 
 
 
@@ -139,14 +171,16 @@ viewItem settings item =
             "blue"
     in
     a
-        [ classList
+        ([ classList
             [ ( "ui fluid card", True )
             , ( newColor, not isConfirmed )
             ]
-        , id item.id
-        , href "#"
-        , onClick (SelectItem item)
-        ]
+         , id item.id
+         , href "#"
+         , onClick (SelectItem item)
+         ]
+            ++ DD.draggable ItemDDMsg item.id
+        )
         [ div [ class "content" ]
             [ div
                 [ class "header"
@@ -157,22 +191,18 @@ viewItem settings item =
                 , Util.String.underscoreToSpace item.name
                     |> text
                 ]
+            , div
+                [ classList
+                    [ ( "ui right corner label", True )
+                    , ( newColor, True )
+                    , ( "invisible", isConfirmed )
+                    ]
+                , title "New"
+                ]
+                [ i [ class "exclamation icon" ] []
+                ]
             , div [ class "meta" ]
-                [ div
-                    [ classList
-                        [ ( "ui ribbon label", True )
-                        , ( newColor, True )
-                        , ( "invisible", isConfirmed )
-                        ]
-                    ]
-                    [ i [ class "exclamation icon" ] []
-                    , text " New"
-                    ]
-                , span
-                    [ classList
-                        [ ( "right floated", not isConfirmed )
-                        ]
-                    ]
+                [ span []
                     [ Util.Time.formatDate item.date |> text
                     ]
                 ]

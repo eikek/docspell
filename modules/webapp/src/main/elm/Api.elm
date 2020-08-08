@@ -51,6 +51,7 @@ module Api exposing
     , getScanMailbox
     , getSentMails
     , getSources
+    , getTagCloud
     , getTags
     , getUsers
     , itemDetail
@@ -91,6 +92,7 @@ module Api exposing
     , startOnceScanMailbox
     , startReIndex
     , submitNotifyDueItems
+    , toggleTags
     , updateNotifyDueItems
     , updateScanMailbox
     , upload
@@ -147,7 +149,9 @@ import Api.Model.SentMails exposing (SentMails)
 import Api.Model.SimpleMail exposing (SimpleMail)
 import Api.Model.Source exposing (Source)
 import Api.Model.SourceList exposing (SourceList)
+import Api.Model.StringList exposing (StringList)
 import Api.Model.Tag exposing (Tag)
+import Api.Model.TagCloud exposing (TagCloud)
 import Api.Model.TagList exposing (TagList)
 import Api.Model.User exposing (User)
 import Api.Model.UserList exposing (UserList)
@@ -689,6 +693,10 @@ uploadSingle flags sourceId meta track files receive =
         }
 
 
+
+--- Registration
+
+
 register : Flags -> Registration -> (Result Http.Error BasicResult -> msg) -> Cmd msg
 register flags reg receive =
     Http.post
@@ -705,6 +713,10 @@ newInvite flags req receive =
         , body = Http.jsonBody (Api.Model.GenInvite.encode req)
         , expect = Http.expectJson receive Api.Model.InviteResult.decoder
         }
+
+
+
+--- Login
 
 
 login : Flags -> UserPass -> (Result Http.Error AuthResult -> msg) -> Cmd msg
@@ -736,14 +748,6 @@ loginSession flags receive =
         }
 
 
-versionInfo : Flags -> (Result Http.Error VersionInfo -> msg) -> Cmd msg
-versionInfo flags receive =
-    Http.get
-        { url = flags.config.baseUrl ++ "/api/info/version"
-        , expect = Http.expectJson receive Api.Model.VersionInfo.decoder
-        }
-
-
 refreshSession : Flags -> (Result Http.Error AuthResult -> msg) -> Cmd msg
 refreshSession flags receive =
     case flags.account of
@@ -772,6 +776,31 @@ refreshSessionTask flags =
         , body = Http.emptyBody
         , resolver = Http2.jsonResolver Api.Model.AuthResult.decoder
         , timeout = Nothing
+        }
+
+
+
+--- Version
+
+
+versionInfo : Flags -> (Result Http.Error VersionInfo -> msg) -> Cmd msg
+versionInfo flags receive =
+    Http.get
+        { url = flags.config.baseUrl ++ "/api/info/version"
+        , expect = Http.expectJson receive Api.Model.VersionInfo.decoder
+        }
+
+
+
+--- Collective
+
+
+getTagCloud : Flags -> (Result Http.Error TagCloud -> msg) -> Cmd msg
+getTagCloud flags receive =
+    Http2.authGet
+        { url = flags.config.baseUrl ++ "/api/v1/sec/collective/cloud"
+        , account = getAccount flags
+        , expect = Http.expectJson receive Api.Model.TagCloud.decoder
         }
 
 
@@ -810,6 +839,10 @@ setCollectiveSettings flags settings receive =
         , body = Http.jsonBody (Api.Model.CollectiveSettings.encode settings)
         , expect = Http.expectJson receive Api.Model.BasicResult.decoder
         }
+
+
+
+--- Contacts
 
 
 getContacts :
@@ -1269,6 +1302,16 @@ setTags flags item tags receive =
         { url = flags.config.baseUrl ++ "/api/v1/sec/item/" ++ item ++ "/tags"
         , account = getAccount flags
         , body = Http.jsonBody (Api.Model.ReferenceList.encode tags)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+toggleTags : Flags -> String -> StringList -> (Result Http.Error BasicResult -> msg) -> Cmd msg
+toggleTags flags item tags receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/item/" ++ item ++ "/tagtoggle"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.StringList.encode tags)
         , expect = Http.expectJson receive Api.Model.BasicResult.decoder
         }
 

@@ -23,6 +23,7 @@ import Data.UiSettings exposing (UiSettings)
 import Http
 import Throttle exposing (Throttle)
 import Util.Html exposing (KeyCode(..))
+import Util.ItemDragDrop as DD
 
 
 type alias Model =
@@ -39,6 +40,7 @@ type alias Model =
     , searchType : SearchType
     , searchTypeForm : SearchType
     , contentOnlySearch : Maybe String
+    , dragDropData : DD.DragDropData
     }
 
 
@@ -67,6 +69,8 @@ init flags =
     , searchType = BasicSearch
     , searchTypeForm = defaultSearchType flags
     , contentOnlySearch = Nothing
+    , dragDropData =
+        DD.DragDropData DD.init Nothing
     }
 
 

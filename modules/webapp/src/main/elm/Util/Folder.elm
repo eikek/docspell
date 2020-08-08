@@ -1,6 +1,7 @@
 module Util.Folder exposing
     ( isFolderMember
     , mkFolderOption
+    , onlyVisible
     )
 
 import Api.Model.FolderItem exposing (FolderItem)
@@ -51,3 +52,13 @@ isFolderMember allFolders selected =
     in
     Maybe.map .isMember folder
         |> Maybe.withDefault True
+
+
+onlyVisible : Flags -> List FolderItem -> List FolderItem
+onlyVisible flags folders =
+    let
+        isVisible folder =
+            folder.isMember
+                || (Maybe.map .user flags.account == Just folder.owner.name)
+    in
+    List.filter isVisible folders

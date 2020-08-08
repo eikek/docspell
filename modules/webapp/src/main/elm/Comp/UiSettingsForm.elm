@@ -30,6 +30,12 @@ type alias Model =
     , itemSearchNoteLength : Maybe Int
     , searchNoteLengthModel : Comp.IntField.Model
     , itemDetailNotesPosition : Pos
+    , searchMenuFolderCount : Maybe Int
+    , searchMenuFolderCountModel : Comp.IntField.Model
+    , searchMenuTagCount : Maybe Int
+    , searchMenuTagCountModel : Comp.IntField.Model
+    , searchMenuTagCatCount : Maybe Int
+    , searchMenuTagCatCountModel : Comp.IntField.Model
     }
 
 
@@ -56,6 +62,27 @@ init flags settings =
                 False
                 "Max. Note Length"
       , itemDetailNotesPosition = settings.itemDetailNotesPosition
+      , searchMenuFolderCount = Just settings.searchMenuFolderCount
+      , searchMenuFolderCountModel =
+            Comp.IntField.init
+                (Just 0)
+                (Just 2000)
+                False
+                "Number of folders in search menu"
+      , searchMenuTagCount = Just settings.searchMenuTagCount
+      , searchMenuTagCountModel =
+            Comp.IntField.init
+                (Just 0)
+                (Just 2000)
+                False
+                "Number of tags in search menu"
+      , searchMenuTagCatCount = Just settings.searchMenuTagCatCount
+      , searchMenuTagCatCountModel =
+            Comp.IntField.init
+                (Just 0)
+                (Just 2000)
+                False
+                "Number of categories in search menu"
       }
     , Api.getTags flags "" GetTagsResp
     )
@@ -68,6 +95,9 @@ type Msg
     | TogglePdfPreview
     | NoteLengthMsg Comp.IntField.Msg
     | SetNotesPosition Pos
+    | SearchMenuFolderMsg Comp.IntField.Msg
+    | SearchMenuTagMsg Comp.IntField.Msg
+    | SearchMenuTagCatMsg Comp.IntField.Msg
 
 
 
@@ -105,6 +135,54 @@ update sett msg model =
                     { model
                         | searchNoteLengthModel = m
                         , itemSearchNoteLength = n
+                    }
+            in
+            ( model_, nextSettings )
+
+        SearchMenuFolderMsg lm ->
+            let
+                ( m, n ) =
+                    Comp.IntField.update lm model.searchMenuFolderCountModel
+
+                nextSettings =
+                    Maybe.map (\len -> { sett | searchMenuFolderCount = len }) n
+
+                model_ =
+                    { model
+                        | searchMenuFolderCountModel = m
+                        , searchMenuFolderCount = n
+                    }
+            in
+            ( model_, nextSettings )
+
+        SearchMenuTagMsg lm ->
+            let
+                ( m, n ) =
+                    Comp.IntField.update lm model.searchMenuTagCountModel
+
+                nextSettings =
+                    Maybe.map (\len -> { sett | searchMenuTagCount = len }) n
+
+                model_ =
+                    { model
+                        | searchMenuTagCountModel = m
+                        , searchMenuTagCount = n
+                    }
+            in
+            ( model_, nextSettings )
+
+        SearchMenuTagCatMsg lm ->
+            let
+                ( m, n ) =
+                    Comp.IntField.update lm model.searchMenuTagCatCountModel
+
+                nextSettings =
+                    Maybe.map (\len -> { sett | searchMenuTagCatCount = len }) n
+
+                model_ =
+                    { model
+                        | searchMenuTagCatCountModel = m
+                        , searchMenuTagCatCount = n
                     }
             in
             ( model_, nextSettings )
@@ -203,6 +281,29 @@ view flags _ model =
                 model.itemSearchNoteLength
                 "field"
                 model.searchNoteLengthModel
+            )
+        , div [ class "ui dividing header" ]
+            [ text "Search Menu" ]
+        , Html.map SearchMenuTagMsg
+            (Comp.IntField.viewWithInfo
+                "How many tags to display in search menu at once. Others can be expanded. Use 0 to always show all."
+                model.searchMenuTagCount
+                "field"
+                model.searchMenuTagCountModel
+            )
+        , Html.map SearchMenuTagCatMsg
+            (Comp.IntField.viewWithInfo
+                "How many categories to display in search menu at once. Others can be expanded. Use 0 to always show all."
+                model.searchMenuTagCatCount
+                "field"
+                model.searchMenuTagCatCountModel
+            )
+        , Html.map SearchMenuFolderMsg
+            (Comp.IntField.viewWithInfo
+                "How many folders to display in search menu at once. Other folders can be expanded. Use 0 to always show all."
+                model.searchMenuFolderCount
+                "field"
+                model.searchMenuFolderCountModel
             )
         , div [ class "ui dividing header" ]
             [ text "Item Detail"

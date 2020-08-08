@@ -1,6 +1,6 @@
 module Page.CollectiveSettings.View exposing (view)
 
-import Api.Model.NameCount exposing (NameCount)
+import Api.Model.TagCount exposing (TagCount)
 import Comp.CollectiveSettingsForm
 import Comp.SourceManage
 import Comp.UserManage
@@ -145,14 +145,14 @@ viewInsights model =
     ]
 
 
-makeTagStats : NameCount -> Html Msg
+makeTagStats : TagCount -> Html Msg
 makeTagStats nc =
     div [ class "ui statistic" ]
         [ div [ class "value" ]
             [ String.fromInt nc.count |> text
             ]
         , div [ class "label" ]
-            [ text nc.name
+            [ text nc.tag.name
             ]
         ]
 
