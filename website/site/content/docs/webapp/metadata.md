@@ -33,9 +33,11 @@ workflows, a tag category *state* may exist that includes tags like
 "assignment" semantics. Docspell doesn't propose any workflow, but it
 can help to implement some.
 
-The tags are *not* taken into account when processing. Docspell will
-not automatically associate tags to your items. The tags are only
-meant to be used manually for now.
+The tags are *not* taken into account when creating suggestions from
+analyzed text yet. However, PDF files may contain metadata itself and
+if there is a metadata *keywords* list, these keywords are matched
+against the tags in the database. If they match, the item is tagged
+automatically.
 
 
 ## Organization and Person

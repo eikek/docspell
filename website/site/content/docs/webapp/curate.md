@@ -17,24 +17,24 @@ items:
 
 {{ figure(file="docspell-curate-1.jpg") }}
 
-
-# Check selected items
-
 Then you can go through all new items and check their metadata: Click
 on the first item to open the detail view. This shows the documents
 and the meta data in the header.
+
+# Check selected items
+
+To change something, click the *Edit* button in the menu above the
+document view. This will open a form next to your documents.
 
 {{ figure(file="docspell-curate-2.jpg") }}
 
 
 # Modify if necessary
 
-To change something, click the *Edit* button in the menu above the
-document view. This will open a form next to your documents. You can
-compare the data with the documents and change as you like. Since the
-item status is *New*, you'll see the suggestions docspell found during
-processing. If there were multiple candidates, you can select another
-one by clicking its name in the suggestion list.
+You can compare the data with the documents and change as you like.
+Since the item status is *New*, you'll see the suggestions docspell
+found during processing. If there were multiple candidates, you can
+select another one by clicking its name in the suggestion list.
 
 {{ figure(file="docspell-curate-3.jpg") }}
 

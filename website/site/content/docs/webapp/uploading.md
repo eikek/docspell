@@ -68,7 +68,7 @@ files (it is used by the upload page, the first url).
 For example, the api url can be used to upload files with curl:
 
 ``` bash
-$ curl -XPOST -F file=@test.pdf http://localhost:7880/api/v1/open/upload/item/CqpFTb7UmGe-9nMVPZSmnwc-AHH6nWFh52t-M1JFQ9y7cdH
+$ curl -XPOST -F file=@test.pdf http://192.168.1.95:7880/api/v1/open/upload/item/3H7hvJcDJuk-NrAW4zxsdfj-K6TMPyb6BGP-xKptVxUdqWa
 {"success":true,"message":"Files submitted."}
 ```
 
@@ -174,5 +174,5 @@ uploading two files with meta data:
 curl -XPOST -F meta='{"multiple":false, "direction": "outgoing"}' \
             -F file=@letter-en-source.pdf \
             -F file=@letter-de-source.pdf \
-            http://localhost:7880/api/v1/open/upload/item/CqpFTb7UmGe-9nMVPZSmnwc-AHH6nWFh52t-M1JFQ9y7cdH
+            http://192.168.1.95:7880/api/v1/open/upload/item/3H7hvJcDJuk-NrAW4zxsdfj-K6TMPyb6BGP-xKptVxUdqWa
 ```
