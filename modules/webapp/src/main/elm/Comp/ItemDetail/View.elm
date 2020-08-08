@@ -13,6 +13,7 @@ import Comp.MarkdownInput
 import Comp.SentMails
 import Comp.YesNoDimmer
 import Data.Direction
+import Data.Fields exposing (Field)
 import Data.Icons as Icons
 import Data.UiSettings exposing (UiSettings)
 import DatePicker
@@ -754,17 +755,34 @@ renderEditForm settings model =
                 ]
                 [ i [ class "grey pencil alternate link icon" ] []
                 ]
+
+        fieldVisible field =
+            Data.UiSettings.fieldVisible settings field
+
+        fieldHidden field =
+            Data.UiSettings.fieldHidden settings field
+
+        optional fields html =
+            if
+                List.map fieldVisible fields
+                    |> List.foldl (||) False
+            then
+                html
+
+            else
+                span [ class "invisible hidden" ] []
     in
     div [ class "ui attached segment" ]
         [ div [ class "ui form warning" ]
-            [ div [ class "field" ]
-                [ label []
-                    [ Icons.tagsIcon "grey"
-                    , text "Tags"
-                    , addIconLink "Add new tag" StartTagModal
+            [ optional [ Data.Fields.Tag ] <|
+                div [ class "field" ]
+                    [ label []
+                        [ Icons.tagsIcon "grey"
+                        , text "Tags"
+                        , addIconLink "Add new tag" StartTagModal
+                        ]
+                    , Html.map TagDropdownMsg (Comp.Dropdown.view settings model.tagModel)
                     ]
-                , Html.map TagDropdownMsg (Comp.Dropdown.view settings model.tagModel)
-                ]
             , div [ class " field" ]
                 [ label [] [ text "Name" ]
                 , div [ class "ui action input" ]
@@ -777,121 +795,131 @@ renderEditForm settings model =
                         ]
                     ]
                 ]
-            , div [ class "field" ]
-                [ label []
-                    [ Icons.folderIcon "grey"
-                    , text "Folder"
-                    ]
-                , Html.map FolderDropdownMsg (Comp.Dropdown.view settings model.folderModel)
-                , div
-                    [ classList
-                        [ ( "ui warning message", True )
-                        , ( "hidden", isFolderMember model )
+            , optional [ Data.Fields.Folder ] <|
+                div [ class "field" ]
+                    [ label []
+                        [ Icons.folderIcon "grey"
+                        , text "Folder"
                         ]
-                    ]
-                    [ Markdown.toHtml [] """
+                    , Html.map FolderDropdownMsg (Comp.Dropdown.view settings model.folderModel)
+                    , div
+                        [ classList
+                            [ ( "ui warning message", True )
+                            , ( "hidden", isFolderMember model )
+                            ]
+                        ]
+                        [ Markdown.toHtml [] """
 You are **not a member** of this folder. This item will be **hidden**
 from any search now. Use a folder where you are a member of to make this
 item visible. This message will disappear then.
                       """
-                    ]
-                ]
-            , div [ class "field" ]
-                [ label []
-                    [ Icons.directionIcon "grey"
-                    , text "Direction"
-                    ]
-                , Html.map DirDropdownMsg (Comp.Dropdown.view settings model.directionModel)
-                ]
-            , div [ class "field" ]
-                [ label []
-                    [ Icons.dateIcon "grey"
-                    , text "Date"
-                    ]
-                , div [ class "ui action input" ]
-                    [ Html.map ItemDatePickerMsg
-                        (Comp.DatePicker.viewTime
-                            model.itemDate
-                            actionInputDatePicker
-                            model.itemDatePicker
-                        )
-                    , a [ class "ui icon button", href "", onClick RemoveDate ]
-                        [ i [ class "trash alternate outline icon" ] []
                         ]
                     ]
-                , renderItemDateSuggestions model
-                ]
-            , div [ class " field" ]
-                [ label []
-                    [ Icons.dueDateIcon "grey"
-                    , text "Due Date"
+            , optional [ Data.Fields.Direction ] <|
+                div [ class "field" ]
+                    [ label []
+                        [ Icons.directionIcon "grey"
+                        , text "Direction"
+                        ]
+                    , Html.map DirDropdownMsg (Comp.Dropdown.view settings model.directionModel)
                     ]
-                , div [ class "ui action input" ]
-                    [ Html.map DueDatePickerMsg
-                        (Comp.DatePicker.viewTime
-                            model.dueDate
-                            actionInputDatePicker
-                            model.dueDatePicker
-                        )
-                    , a [ class "ui icon button", href "", onClick RemoveDueDate ]
-                        [ i [ class "trash alternate outline icon" ] [] ]
+            , optional [ Data.Fields.Date ] <|
+                div [ class "field" ]
+                    [ label []
+                        [ Icons.dateIcon "grey"
+                        , text "Date"
+                        ]
+                    , div [ class "ui action input" ]
+                        [ Html.map ItemDatePickerMsg
+                            (Comp.DatePicker.viewTime
+                                model.itemDate
+                                actionInputDatePicker
+                                model.itemDatePicker
+                            )
+                        , a [ class "ui icon button", href "", onClick RemoveDate ]
+                            [ i [ class "trash alternate outline icon" ] []
+                            ]
+                        ]
+                    , renderItemDateSuggestions model
                     ]
-                , renderDueDateSuggestions model
-                ]
-            , h4 [ class "ui dividing header" ]
-                [ Icons.correspondentIcon ""
-                , text "Correspondent"
-                ]
-            , div [ class "field" ]
-                [ label []
-                    [ Icons.organizationIcon "grey"
-                    , text "Organization"
-                    , addIconLink "Add new organization" StartCorrOrgModal
-                    , editIconLink "Edit organization" model.corrOrgModel StartEditCorrOrgModal
+            , optional [ Data.Fields.DueDate ] <|
+                div [ class " field" ]
+                    [ label []
+                        [ Icons.dueDateIcon "grey"
+                        , text "Due Date"
+                        ]
+                    , div [ class "ui action input" ]
+                        [ Html.map DueDatePickerMsg
+                            (Comp.DatePicker.viewTime
+                                model.dueDate
+                                actionInputDatePicker
+                                model.dueDatePicker
+                            )
+                        , a [ class "ui icon button", href "", onClick RemoveDueDate ]
+                            [ i [ class "trash alternate outline icon" ] [] ]
+                        ]
+                    , renderDueDateSuggestions model
                     ]
-                , Html.map OrgDropdownMsg (Comp.Dropdown.view settings model.corrOrgModel)
-                , renderOrgSuggestions model
-                ]
-            , div [ class "field" ]
-                [ label []
-                    [ Icons.personIcon "grey"
-                    , text "Person"
-                    , addIconLink "Add new correspondent person" StartCorrPersonModal
-                    , editIconLink "Edit person"
-                        model.corrPersonModel
-                        (StartEditPersonModal model.corrPersonModel)
+            , optional [ Data.Fields.CorrOrg, Data.Fields.CorrPerson ] <|
+                h4 [ class "ui dividing header" ]
+                    [ Icons.correspondentIcon ""
+                    , text "Correspondent"
                     ]
-                , Html.map CorrPersonMsg (Comp.Dropdown.view settings model.corrPersonModel)
-                , renderCorrPersonSuggestions model
-                ]
-            , h4 [ class "ui dividing header" ]
-                [ Icons.concernedIcon
-                , text "Concerning"
-                ]
-            , div [ class "field" ]
-                [ label []
-                    [ Icons.personIcon "grey"
-                    , text "Person"
-                    , addIconLink "Add new concerning person" StartConcPersonModal
-                    , editIconLink "Edit person"
-                        model.concPersonModel
-                        (StartEditPersonModal model.concPersonModel)
+            , optional [ Data.Fields.CorrOrg ] <|
+                div [ class "field" ]
+                    [ label []
+                        [ Icons.organizationIcon "grey"
+                        , text "Organization"
+                        , addIconLink "Add new organization" StartCorrOrgModal
+                        , editIconLink "Edit organization" model.corrOrgModel StartEditCorrOrgModal
+                        ]
+                    , Html.map OrgDropdownMsg (Comp.Dropdown.view settings model.corrOrgModel)
+                    , renderOrgSuggestions model
                     ]
-                , Html.map ConcPersonMsg (Comp.Dropdown.view settings model.concPersonModel)
-                , renderConcPersonSuggestions model
-                ]
-            , div [ class "field" ]
-                [ label []
-                    [ Icons.equipmentIcon "grey"
-                    , text "Equipment"
-                    , addIconLink "Add new equipment" StartEquipModal
-                    , editIconLink "Edit equipment"
-                        model.concEquipModel
-                        StartEditEquipModal
+            , optional [ Data.Fields.CorrPerson ] <|
+                div [ class "field" ]
+                    [ label []
+                        [ Icons.personIcon "grey"
+                        , text "Person"
+                        , addIconLink "Add new correspondent person" StartCorrPersonModal
+                        , editIconLink "Edit person"
+                            model.corrPersonModel
+                            (StartEditPersonModal model.corrPersonModel)
+                        ]
+                    , Html.map CorrPersonMsg (Comp.Dropdown.view settings model.corrPersonModel)
+                    , renderCorrPersonSuggestions model
                     ]
-                , Html.map ConcEquipMsg (Comp.Dropdown.view settings model.concEquipModel)
-                , renderConcEquipSuggestions model
-                ]
+            , optional [ Data.Fields.ConcPerson, Data.Fields.ConcEquip ] <|
+                h4 [ class "ui dividing header" ]
+                    [ Icons.concernedIcon
+                    , text "Concerning"
+                    ]
+            , optional [ Data.Fields.ConcPerson ] <|
+                div [ class "field" ]
+                    [ label []
+                        [ Icons.personIcon "grey"
+                        , text "Person"
+                        , addIconLink "Add new concerning person" StartConcPersonModal
+                        , editIconLink "Edit person"
+                            model.concPersonModel
+                            (StartEditPersonModal model.concPersonModel)
+                        ]
+                    , Html.map ConcPersonMsg (Comp.Dropdown.view settings model.concPersonModel)
+                    , renderConcPersonSuggestions model
+                    ]
+            , optional [ Data.Fields.ConcEquip ] <|
+                div [ class "field" ]
+                    [ label []
+                        [ Icons.equipmentIcon "grey"
+                        , text "Equipment"
+                        , addIconLink "Add new equipment" StartEquipModal
+                        , editIconLink "Edit equipment"
+                            model.concEquipModel
+                            StartEditEquipModal
+                        ]
+                    , Html.map ConcEquipMsg (Comp.Dropdown.view settings model.concEquipModel)
+                    , renderConcEquipSuggestions model
+                    ]
             ]
         ]
 

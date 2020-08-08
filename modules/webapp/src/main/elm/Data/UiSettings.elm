@@ -5,6 +5,8 @@ module Data.UiSettings exposing
     , catColor
     , catColorString
     , defaults
+    , fieldHidden
+    , fieldVisible
     , merge
     , mergeDefaults
     , posFromString
@@ -16,6 +18,7 @@ module Data.UiSettings exposing
 
 import Api.Model.Tag exposing (Tag)
 import Data.Color exposing (Color)
+import Data.Fields exposing (Field)
 import Dict exposing (Dict)
 
 
@@ -36,6 +39,7 @@ type alias StoredUiSettings =
     , searchMenuFolderCount : Maybe Int
     , searchMenuTagCount : Maybe Int
     , searchMenuTagCatCount : Maybe Int
+    , formFields : Maybe (List String)
     }
 
 
@@ -55,6 +59,7 @@ type alias UiSettings =
     , searchMenuFolderCount : Int
     , searchMenuTagCount : Int
     , searchMenuTagCatCount : Int
+    , formFields : List Field
     }
 
 
@@ -96,6 +101,7 @@ defaults =
     , searchMenuFolderCount = 3
     , searchMenuTagCount = 6
     , searchMenuTagCatCount = 3
+    , formFields = Data.Fields.all
     }
 
 
@@ -124,6 +130,10 @@ merge given fallback =
         choose given.searchMenuTagCount fallback.searchMenuTagCount
     , searchMenuTagCatCount =
         choose given.searchMenuTagCatCount fallback.searchMenuTagCatCount
+    , formFields =
+        choose
+            (Maybe.map Data.Fields.fromList given.formFields)
+            fallback.formFields
     }
 
 
@@ -144,6 +154,9 @@ toStoredUiSettings settings =
     , searchMenuFolderCount = Just settings.searchMenuFolderCount
     , searchMenuTagCount = Just settings.searchMenuTagCount
     , searchMenuTagCatCount = Just settings.searchMenuTagCatCount
+    , formFields =
+        List.map Data.Fields.toString settings.formFields
+            |> Just
     }
 
 
@@ -169,6 +182,16 @@ tagColorString tag settings =
     tagColor tag settings
         |> Maybe.map Data.Color.toString
         |> Maybe.withDefault ""
+
+
+fieldVisible : UiSettings -> Field -> Bool
+fieldVisible settings field =
+    List.member field settings.formFields
+
+
+fieldHidden : UiSettings -> Field -> Bool
+fieldHidden settings field =
+    fieldVisible settings field |> not
 
 
 

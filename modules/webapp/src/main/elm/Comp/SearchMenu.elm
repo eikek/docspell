@@ -24,6 +24,7 @@ import Comp.Dropdown exposing (isDropdownChangeMsg)
 import Comp.FolderSelect
 import Comp.TagSelect
 import Data.Direction exposing (Direction)
+import Data.Fields
 import Data.Flags exposing (Flags)
 import Data.Icons as Icons
 import Data.UiSettings exposing (UiSettings)
@@ -625,6 +626,22 @@ viewDrop ddd flags settings model =
 
         segmentClass =
             "ui vertical segment"
+
+        fieldVisible field =
+            Data.UiSettings.fieldVisible settings field
+
+        fieldHidden field =
+            Data.UiSettings.fieldHidden settings field
+
+        optional fields html =
+            if
+                List.map fieldVisible fields
+                    |> List.foldl (||) False
+            then
+                html
+
+            else
+                span [ class "invisible hidden" ] []
     in
     div [ class "ui form" ]
         [ div [ class segmentClass ]
@@ -642,41 +659,68 @@ viewDrop ddd flags settings model =
                     ]
                 ]
             ]
-        , div [ class segmentClass ]
-            [ Html.map TagSelectMsg (Comp.TagSelect.viewTagsDrop ddd.model settings model.tagSelectModel)
-            , Html.map TagSelectMsg (Comp.TagSelect.viewCats settings model.tagSelectModel)
-            , Html.map FolderSelectMsg
-                (Comp.FolderSelect.viewDrop ddd.model settings.searchMenuFolderCount model.folderList)
+        , div
+            [ classList
+                [ ( segmentClass, True )
+                , ( "invisible hidden", fieldHidden Data.Fields.Tag && fieldHidden Data.Fields.Folder )
+                ]
             ]
-        , div [ class segmentClass ]
-            [ formHeader (Icons.correspondentIcon "")
-                (case getDirection model of
-                    Just Data.Direction.Incoming ->
-                        "Sender"
+            [ optional [ Data.Fields.Tag ] <|
+                Html.map TagSelectMsg (Comp.TagSelect.viewTagsDrop ddd.model settings model.tagSelectModel)
+            , optional [ Data.Fields.Tag ] <|
+                Html.map TagSelectMsg (Comp.TagSelect.viewCats settings model.tagSelectModel)
+            , optional [ Data.Fields.Folder ] <|
+                Html.map FolderSelectMsg
+                    (Comp.FolderSelect.viewDrop ddd.model settings.searchMenuFolderCount model.folderList)
+            ]
+        , div
+            [ classList
+                [ ( segmentClass, True )
+                , ( "hidden invisible", fieldHidden Data.Fields.CorrOrg && fieldHidden Data.Fields.CorrPerson )
+                ]
+            ]
+            [ optional
+                [ Data.Fields.CorrOrg
+                , Data.Fields.CorrPerson
+                ]
+              <|
+                formHeader (Icons.correspondentIcon "")
+                    (case getDirection model of
+                        Just Data.Direction.Incoming ->
+                            "Sender"
 
-                    Just Data.Direction.Outgoing ->
-                        "Recipient"
+                        Just Data.Direction.Outgoing ->
+                            "Recipient"
 
-                    Nothing ->
-                        "Correspondent"
-                )
-            , div [ class "field" ]
-                [ label [] [ text "Organization" ]
-                , Html.map OrgMsg (Comp.Dropdown.view settings model.orgModel)
+                        Nothing ->
+                            "Correspondent"
+                    )
+            , optional [ Data.Fields.CorrOrg ] <|
+                div [ class "field" ]
+                    [ label [] [ text "Organization" ]
+                    , Html.map OrgMsg (Comp.Dropdown.view settings model.orgModel)
+                    ]
+            , optional [ Data.Fields.CorrPerson ] <|
+                div [ class "field" ]
+                    [ label [] [ text "Person" ]
+                    , Html.map CorrPersonMsg (Comp.Dropdown.view settings model.corrPersonModel)
+                    ]
+            , optional
+                [ Data.Fields.ConcPerson
+                , Data.Fields.ConcEquip
                 ]
-            , div [ class "field" ]
-                [ label [] [ text "Person" ]
-                , Html.map CorrPersonMsg (Comp.Dropdown.view settings model.corrPersonModel)
-                ]
-            , formHeader Icons.concernedIcon "Concerned"
-            , div [ class "field" ]
-                [ label [] [ text "Person" ]
-                , Html.map ConcPersonMsg (Comp.Dropdown.view settings model.concPersonModel)
-                ]
-            , div [ class "field" ]
-                [ label [] [ text "Equipment" ]
-                , Html.map ConcEquipmentMsg (Comp.Dropdown.view settings model.concEquipmentModel)
-                ]
+              <|
+                formHeader Icons.concernedIcon "Concerned"
+            , optional [ Data.Fields.ConcPerson ] <|
+                div [ class "field" ]
+                    [ label [] [ text "Person" ]
+                    , Html.map ConcPersonMsg (Comp.Dropdown.view settings model.concPersonModel)
+                    ]
+            , optional [ Data.Fields.ConcEquip ] <|
+                div [ class "field" ]
+                    [ label [] [ text "Equipment" ]
+                    , Html.map ConcEquipmentMsg (Comp.Dropdown.view settings model.concEquipmentModel)
+                    ]
             ]
         , div [ class segmentClass ]
             [ formHeader (Icons.searchIcon "") "Text Search"
@@ -740,55 +784,69 @@ viewDrop ddd flags settings model =
                     ]
                 ]
             ]
-        , div [ class segmentClass ]
-            [ formHeader (Icons.dateIcon "") "Date"
-            , div [ class "fields" ]
-                [ div [ class "field" ]
-                    [ label []
-                        [ text "From"
-                        ]
-                    , Html.map FromDateMsg
-                        (Comp.DatePicker.viewTimeDefault
-                            model.fromDate
-                            model.fromDateModel
-                        )
-                    ]
-                , div [ class "field" ]
-                    [ label []
-                        [ text "To"
-                        ]
-                    , Html.map UntilDateMsg
-                        (Comp.DatePicker.viewTimeDefault
-                            model.untilDate
-                            model.untilDateModel
-                        )
-                    ]
-                ]
-            , formHeader (Icons.dueDateIcon "") "Due Date"
-            , div [ class "fields" ]
-                [ div [ class "field" ]
-                    [ label []
-                        [ text "Due From"
-                        ]
-                    , Html.map FromDueDateMsg
-                        (Comp.DatePicker.viewTimeDefault
-                            model.fromDueDate
-                            model.fromDueDateModel
-                        )
-                    ]
-                , div [ class "field" ]
-                    [ label []
-                        [ text "Due To"
-                        ]
-                    , Html.map UntilDueDateMsg
-                        (Comp.DatePicker.viewTimeDefault
-                            model.untilDueDate
-                            model.untilDueDateModel
-                        )
-                    ]
+        , div
+            [ classList
+                [ ( segmentClass, True )
+                , ( "invisible hidden", fieldHidden Data.Fields.Date && fieldHidden Data.Fields.DueDate )
                 ]
             ]
-        , div [ class segmentClass ]
+            [ optional [ Data.Fields.Date ] <|
+                formHeader (Icons.dateIcon "") "Date"
+            , optional [ Data.Fields.Date ] <|
+                div [ class "fields" ]
+                    [ div [ class "field" ]
+                        [ label []
+                            [ text "From"
+                            ]
+                        , Html.map FromDateMsg
+                            (Comp.DatePicker.viewTimeDefault
+                                model.fromDate
+                                model.fromDateModel
+                            )
+                        ]
+                    , div [ class "field" ]
+                        [ label []
+                            [ text "To"
+                            ]
+                        , Html.map UntilDateMsg
+                            (Comp.DatePicker.viewTimeDefault
+                                model.untilDate
+                                model.untilDateModel
+                            )
+                        ]
+                    ]
+            , optional [ Data.Fields.DueDate ] <|
+                formHeader (Icons.dueDateIcon "") "Due Date"
+            , optional [ Data.Fields.DueDate ] <|
+                div [ class "fields" ]
+                    [ div [ class "field" ]
+                        [ label []
+                            [ text "Due From"
+                            ]
+                        , Html.map FromDueDateMsg
+                            (Comp.DatePicker.viewTimeDefault
+                                model.fromDueDate
+                                model.fromDueDateModel
+                            )
+                        ]
+                    , div [ class "field" ]
+                        [ label []
+                            [ text "Due To"
+                            ]
+                        , Html.map UntilDueDateMsg
+                            (Comp.DatePicker.viewTimeDefault
+                                model.untilDueDate
+                                model.untilDueDateModel
+                            )
+                        ]
+                    ]
+            ]
+        , div
+            [ classList
+                [ ( segmentClass, True )
+                , ( "invisible hidden", fieldHidden Data.Fields.Direction )
+                ]
+            ]
             [ formHeader (Icons.directionIcon "") "Direction"
             , div [ class "field" ]
                 [ Html.map DirectionMsg (Comp.Dropdown.view settings model.directionModel)

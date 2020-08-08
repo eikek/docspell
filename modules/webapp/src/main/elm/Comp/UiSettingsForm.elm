@@ -9,8 +9,10 @@ module Comp.UiSettingsForm exposing
 import Api
 import Api.Model.TagList exposing (TagList)
 import Comp.ColorTagger
+import Comp.FieldListSelect
 import Comp.IntField
 import Data.Color exposing (Color)
+import Data.Fields exposing (Field)
 import Data.Flags exposing (Flags)
 import Data.UiSettings exposing (Pos(..), UiSettings)
 import Dict exposing (Dict)
@@ -36,6 +38,7 @@ type alias Model =
     , searchMenuTagCountModel : Comp.IntField.Model
     , searchMenuTagCatCount : Maybe Int
     , searchMenuTagCatCountModel : Comp.IntField.Model
+    , formFields : List Field
     }
 
 
@@ -83,6 +86,7 @@ init flags settings =
                 (Just 2000)
                 False
                 "Number of categories in search menu"
+      , formFields = settings.formFields
       }
     , Api.getTags flags "" GetTagsResp
     )
@@ -98,6 +102,7 @@ type Msg
     | SearchMenuFolderMsg Comp.IntField.Msg
     | SearchMenuTagMsg Comp.IntField.Msg
     | SearchMenuTagCatMsg Comp.IntField.Msg
+    | FieldListMsg Comp.FieldListSelect.Msg
 
 
 
@@ -240,6 +245,22 @@ update sett msg model =
         GetTagsResp (Err _) ->
             ( model, Nothing )
 
+        FieldListMsg lm ->
+            let
+                selected =
+                    Comp.FieldListSelect.update lm model.formFields
+
+                newSettings =
+                    { sett | formFields = selected }
+            in
+            ( { model | formFields = selected }
+            , if selected /= model.formFields then
+                Just newSettings
+
+              else
+                Nothing
+            )
+
 
 
 --- View
@@ -355,4 +376,11 @@ view flags _ model =
                 tagColorViewOpts
                 model.tagColorModel
             )
+        , div [ class "ui dividing header" ]
+            [ text "Fields"
+            ]
+        , span [ class "small-info" ]
+            [ text "Choose which fields to display in search and edit menus."
+            ]
+        , Html.map FieldListMsg (Comp.FieldListSelect.view model.formFields)
         ]
