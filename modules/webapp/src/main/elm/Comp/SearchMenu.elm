@@ -32,6 +32,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onCheck, onClick, onInput)
 import Http
+import Util.Folder
 import Util.Html exposing (KeyCode(..))
 import Util.ItemDragDrop as DD
 import Util.Maybe
@@ -567,7 +568,11 @@ updateDrop ddm flags settings msg model =
         GetFolderResp (Ok fs) ->
             let
                 model_ =
-                    { model | folderList = Comp.FolderSelect.init fs.items }
+                    { model
+                        | folderList =
+                            Util.Folder.onlyVisible flags fs.items
+                                |> Comp.FolderSelect.init
+                    }
             in
             { model = model_
             , cmd = Cmd.none
