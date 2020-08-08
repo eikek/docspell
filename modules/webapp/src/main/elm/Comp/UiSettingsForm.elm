@@ -30,8 +30,8 @@ type alias Model =
     , itemSearchNoteLength : Maybe Int
     , searchNoteLengthModel : Comp.IntField.Model
     , itemDetailNotesPosition : Pos
-    , searchMenuFolders : Maybe Int
-    , searchMenuFoldersModel : Comp.IntField.Model
+    , searchMenuFolderCount : Maybe Int
+    , searchMenuFolderCountModel : Comp.IntField.Model
     }
 
 
@@ -58,8 +58,8 @@ init flags settings =
                 False
                 "Max. Note Length"
       , itemDetailNotesPosition = settings.itemDetailNotesPosition
-      , searchMenuFolders = Just settings.searchMenuFolders
-      , searchMenuFoldersModel =
+      , searchMenuFolderCount = Just settings.searchMenuFolderCount
+      , searchMenuFolderCountModel =
             Comp.IntField.init
                 (Just 0)
                 (Just 2000)
@@ -122,15 +122,15 @@ update sett msg model =
         SearchMenuFolderMsg lm ->
             let
                 ( m, n ) =
-                    Comp.IntField.update lm model.searchMenuFoldersModel
+                    Comp.IntField.update lm model.searchMenuFolderCountModel
 
                 nextSettings =
-                    Maybe.map (\len -> { sett | searchMenuFolders = len }) n
+                    Maybe.map (\len -> { sett | searchMenuFolderCount = len }) n
 
                 model_ =
                     { model
-                        | searchMenuFoldersModel = m
-                        , searchMenuFolders = n
+                        | searchMenuFolderCountModel = m
+                        , searchMenuFolderCount = n
                     }
             in
             ( model_, nextSettings )
@@ -235,9 +235,9 @@ view flags _ model =
         , Html.map SearchMenuFolderMsg
             (Comp.IntField.viewWithInfo
                 "How many folders to display in search menu at once. Other folders can be expanded."
-                model.searchMenuFolders
+                model.searchMenuFolderCount
                 "field"
-                model.searchMenuFoldersModel
+                model.searchMenuFolderCountModel
             )
         , div [ class "ui dividing header" ]
             [ text "Item Detail"

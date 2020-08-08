@@ -596,7 +596,7 @@ view flags settings model =
             ]
         , Html.map TagSelectMsg (Comp.TagSelect.view settings model.tagSelectModel)
         , Html.map FolderSelectMsg
-            (Comp.FolderSelect.view settings.searchMenuFolders model.folderList)
+            (Comp.FolderSelect.view settings.searchMenuFolderCount model.folderList)
         , formHeaderHelp nameIcon "Names" ToggleNameHelp
         , span
             [ classList

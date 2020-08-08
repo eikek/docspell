@@ -33,7 +33,7 @@ type alias StoredUiSettings =
     , nativePdfPreview : Bool
     , itemSearchNoteLength : Maybe Int
     , itemDetailNotesPosition : Maybe String
-    , searchMenuFolders : Maybe Int
+    , searchMenuFolderCount : Maybe Int
     }
 
 
@@ -50,7 +50,7 @@ type alias UiSettings =
     , nativePdfPreview : Bool
     , itemSearchNoteLength : Int
     , itemDetailNotesPosition : Pos
-    , searchMenuFolders : Int
+    , searchMenuFolderCount : Int
     }
 
 
@@ -89,7 +89,7 @@ defaults =
     , nativePdfPreview = False
     , itemSearchNoteLength = 0
     , itemDetailNotesPosition = Top
-    , searchMenuFolders = 5
+    , searchMenuFolderCount = 4
     }
 
 
@@ -111,9 +111,9 @@ merge given fallback =
     , itemDetailNotesPosition =
         choose (Maybe.andThen posFromString given.itemDetailNotesPosition)
             fallback.itemDetailNotesPosition
-    , searchMenuFolders =
-        choose given.searchMenuFolders
-            fallback.searchMenuFolders
+    , searchMenuFolderCount =
+        choose given.searchMenuFolderCount
+            fallback.searchMenuFolderCount
     }
 
 
@@ -131,7 +131,7 @@ toStoredUiSettings settings =
     , nativePdfPreview = settings.nativePdfPreview
     , itemSearchNoteLength = Just settings.itemSearchNoteLength
     , itemDetailNotesPosition = Just (posToString settings.itemDetailNotesPosition)
-    , searchMenuFolders = Just settings.searchMenuFolders
+    , searchMenuFolderCount = Just settings.searchMenuFolderCount
     }
 
 
