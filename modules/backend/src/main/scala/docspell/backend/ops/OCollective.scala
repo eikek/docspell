@@ -8,7 +8,7 @@ import docspell.backend.PasswordCrypt
 import docspell.backend.ops.OCollective._
 import docspell.common._
 import docspell.store.queries.QCollective
-import docspell.store.records.{RCollective, RContact, RUser}
+import docspell.store.records._
 import docspell.store.{AddResult, Store}
 
 trait OCollective[F[_]] {
@@ -40,6 +40,8 @@ trait OCollective[F[_]] {
       query: Option[String],
       kind: Option[ContactKind]
   ): Stream[F, RContact]
+
+  def findSource(sourceId: Ident): F[Option[RSource]]
 
 }
 
@@ -156,5 +158,7 @@ object OCollective {
       ): Stream[F, RContact] =
         store.transact(QCollective.getContacts(collective, query, kind))
 
+      def findSource(sourceId: Ident): F[Option[RSource]] =
+        store.transact(RSource.find(sourceId))
     })
 }
