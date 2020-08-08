@@ -1377,6 +1377,59 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BasicResult"
+
+  /sec/item/{id}/taglink:
+    post:
+      tags: [Item]
+      summary: Link existing tags to an item.
+      description: |
+        Sets all given tags to the item. The tags must exist,
+        otherwise they are ignored. The tags may be specified as names
+        or ids.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StringList"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
+  /sec/item/{id}/tagtoggle:
+    post:
+      tags: [Item]
+      summary: Toggles existing tags to an item.
+      description: |
+        Toggles all given tags of the item. The tags must exist,
+        otherwise they are ignored. The tags may be specified as names
+        or ids. Tags are either removed or linked from/to the item,
+        depending on whether the item currently is tagged with the
+        corresponding tag.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StringList"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
   /sec/item/{id}/direction:
     put:
       tags: [ Item ]
@@ -2551,6 +2604,16 @@ paths:
 
 components:
   schemas:
+    StringList:
+      description: |
+        A simple list of strings.
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          items:
+            type: string
     FolderList:
       description: |
         A list of folders with their member counts.

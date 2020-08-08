@@ -142,6 +142,20 @@ object ItemRoutes {
           resp <- Ok(Conversions.basicResult(res, "Tag added."))
         } yield resp
 
+      case req @ PUT -> Root / Ident(id) / "taglink" =>
+        for {
+          tags <- req.as[StringList]
+          res  <- backend.item.linkTags(id, tags.items, user.account.collective)
+          resp <- Ok(Conversions.basicResult(res, "Tags linked"))
+        } yield resp
+
+      case req @ POST -> Root / Ident(id) / "tagtoggle" =>
+        for {
+          tags <- req.as[StringList]
+          res  <- backend.item.toggleTags(id, tags.items, user.account.collective)
+          resp <- Ok(Conversions.basicResult(res, "Tags linked"))
+        } yield resp
+
       case req @ PUT -> Root / Ident(id) / "direction" =>
         for {
           dir  <- req.as[DirectionValue]
