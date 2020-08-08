@@ -1,6 +1,5 @@
 module Comp.SearchMenu exposing
-    ( DragDropData
-    , Model
+    ( Model
     , Msg(..)
     , NextState
     , getItemSearch
@@ -32,11 +31,10 @@ import DatePicker exposing (DatePicker)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onCheck, onClick, onInput)
-import Html5.DragDrop as DD
 import Http
 import Util.Html exposing (KeyCode(..))
+import Util.ItemDragDrop as DD
 import Util.Maybe
-import Util.Update
 
 
 
@@ -222,26 +220,21 @@ type Msg
     | GetFolderResp (Result Http.Error FolderList)
 
 
-type alias DragDropData =
-    { folderDrop : DD.Model String String
-    }
-
-
 type alias NextState =
     { model : Model
     , cmd : Cmd Msg
     , stateChange : Bool
-    , dragDrop : DragDropData
+    , dragDrop : DD.DragDropData
     }
 
 
 update : Flags -> UiSettings -> Msg -> Model -> NextState
 update =
-    updateDrop (DragDropData DD.init)
+    updateDrop DD.init
 
 
-updateDrop : DragDropData -> Flags -> UiSettings -> Msg -> Model -> NextState
-updateDrop dd flags settings msg model =
+updateDrop : DD.Model -> Flags -> UiSettings -> Msg -> Model -> NextState
+updateDrop ddm flags settings msg model =
     case msg of
         Init ->
             let
@@ -279,7 +272,7 @@ updateDrop dd flags settings msg model =
                     , cdp
                     ]
             , stateChange = False
-            , dragDrop = dd
+            , dragDrop = DD.DragDropData ddm Nothing
             }
 
         ResetForm ->
@@ -302,14 +295,14 @@ updateDrop dd flags settings msg model =
             { model = model_
             , cmd = Cmd.none
             , stateChange = False
-            , dragDrop = dd
+            , dragDrop = DD.DragDropData ddm Nothing
             }
 
         GetTagsResp (Err _) ->
             { model = model
             , cmd = Cmd.none
             , stateChange = False
-            , dragDrop = dd
+            , dragDrop = DD.DragDropData ddm Nothing
             }
 
         GetEquipResp (Ok equips) ->
@@ -323,7 +316,7 @@ updateDrop dd flags settings msg model =
             { model = model
             , cmd = Cmd.none
             , stateChange = False
-            , dragDrop = dd
+            , dragDrop = DD.DragDropData ddm Nothing
             }
 
         GetOrgResp (Ok orgs) ->
@@ -337,7 +330,7 @@ updateDrop dd flags settings msg model =
             { model = model
             , cmd = Cmd.none
             , stateChange = False
-            , dragDrop = dd
+            , dragDrop = DD.DragDropData ddm Nothing
             }
 
         GetPersonResp (Ok ps) ->
@@ -346,10 +339,10 @@ updateDrop dd flags settings msg model =
                     Comp.Dropdown.SetOptions ps.items
 
                 next1 =
-                    updateDrop dd flags settings (CorrPersonMsg opts) model
+                    updateDrop ddm flags settings (CorrPersonMsg opts) model
 
                 next2 =
-                    updateDrop next1.dragDrop flags settings (ConcPersonMsg opts) next1.model
+                    updateDrop next1.dragDrop.model flags settings (ConcPersonMsg opts) next1.model
             in
             next2
 
@@ -357,7 +350,7 @@ updateDrop dd flags settings msg model =
             { model = model
             , cmd = Cmd.none
             , stateChange = False
-            , dragDrop = dd
+            , dragDrop = DD.DragDropData ddm Nothing
             }
 
         TagSelectMsg m ->
@@ -372,7 +365,7 @@ updateDrop dd flags settings msg model =
                 }
             , cmd = Cmd.none
             , stateChange = sel /= model.tagSelection
-            , dragDrop = dd
+            , dragDrop = DD.DragDropData ddm Nothing
             }
 
         DirectionMsg m ->
@@ -383,7 +376,7 @@ updateDrop dd flags settings msg model =
             { model = { model | directionModel = m2 }
             , cmd = Cmd.map DirectionMsg c2
             , stateChange = isDropdownChangeMsg m
-            , dragDrop = dd
+            , dragDrop = DD.DragDropData ddm Nothing
             }
 
         OrgMsg m ->
@@ -394,7 +387,7 @@ updateDrop dd flags settings msg model =
             { model = { model | orgModel = m2 }
             , cmd = Cmd.map OrgMsg c2
             , stateChange = isDropdownChangeMsg m
-            , dragDrop = dd
+            , dragDrop = DD.DragDropData ddm Nothing
             }
 
         CorrPersonMsg m ->
@@ -405,7 +398,7 @@ updateDrop dd flags settings msg model =
             { model = { model | corrPersonModel = m2 }
             , cmd = Cmd.map CorrPersonMsg c2
             , stateChange = isDropdownChangeMsg m
-            , dragDrop = dd
+            , dragDrop = DD.DragDropData ddm Nothing
             }
 
         ConcPersonMsg m ->
@@ -416,7 +409,7 @@ updateDrop dd flags settings msg model =
             { model = { model | concPersonModel = m2 }
             , cmd = Cmd.map ConcPersonMsg c2
             , stateChange = isDropdownChangeMsg m
-            , dragDrop = dd
+            , dragDrop = DD.DragDropData ddm Nothing
             }
 
         ConcEquipmentMsg m ->
@@ -427,7 +420,7 @@ updateDrop dd flags settings msg model =
             { model = { model | concEquipmentModel = m2 }
             , cmd = Cmd.map ConcEquipmentMsg c2
             , stateChange = isDropdownChangeMsg m
-            , dragDrop = dd
+            , dragDrop = DD.DragDropData ddm Nothing
             }
 
         ToggleInbox ->
@@ -438,7 +431,7 @@ updateDrop dd flags settings msg model =
             { model = { model | inboxCheckbox = not current }
             , cmd = Cmd.none
             , stateChange = True
-            , dragDrop = dd
+            , dragDrop = DD.DragDropData ddm Nothing
             }
 
         FromDateMsg m ->
@@ -457,7 +450,7 @@ updateDrop dd flags settings msg model =
             { model = { model | fromDateModel = dp, fromDate = nextDate }
             , cmd = Cmd.none
             , stateChange = model.fromDate /= nextDate
-            , dragDrop = dd
+            , dragDrop = DD.DragDropData ddm Nothing
             }
 
         UntilDateMsg m ->
@@ -476,7 +469,7 @@ updateDrop dd flags settings msg model =
             { model = { model | untilDateModel = dp, untilDate = nextDate }
             , cmd = Cmd.none
             , stateChange = model.untilDate /= nextDate
-            , dragDrop = dd
+            , dragDrop = DD.DragDropData ddm Nothing
             }
 
         FromDueDateMsg m ->
@@ -495,7 +488,7 @@ updateDrop dd flags settings msg model =
             { model = { model | fromDueDateModel = dp, fromDueDate = nextDate }
             , cmd = Cmd.none
             , stateChange = model.fromDueDate /= nextDate
-            , dragDrop = dd
+            , dragDrop = DD.DragDropData ddm Nothing
             }
 
         UntilDueDateMsg m ->
@@ -514,7 +507,7 @@ updateDrop dd flags settings msg model =
             { model = { model | untilDueDateModel = dp, untilDueDate = nextDate }
             , cmd = Cmd.none
             , stateChange = model.untilDueDate /= nextDate
-            , dragDrop = dd
+            , dragDrop = DD.DragDropData ddm Nothing
             }
 
         SetName str ->
@@ -525,7 +518,7 @@ updateDrop dd flags settings msg model =
             { model = { model | nameModel = next }
             , cmd = Cmd.none
             , stateChange = False
-            , dragDrop = dd
+            , dragDrop = DD.DragDropData ddm Nothing
             }
 
         SetAllName str ->
@@ -536,7 +529,7 @@ updateDrop dd flags settings msg model =
             { model = { model | allNameModel = next }
             , cmd = Cmd.none
             , stateChange = False
-            , dragDrop = dd
+            , dragDrop = DD.DragDropData ddm Nothing
             }
 
         SetFulltext str ->
@@ -547,28 +540,28 @@ updateDrop dd flags settings msg model =
             { model = { model | fulltextModel = next }
             , cmd = Cmd.none
             , stateChange = False
-            , dragDrop = dd
+            , dragDrop = DD.DragDropData ddm Nothing
             }
 
         KeyUpMsg (Just Enter) ->
             { model = model
             , cmd = Cmd.none
             , stateChange = True
-            , dragDrop = dd
+            , dragDrop = DD.DragDropData ddm Nothing
             }
 
         KeyUpMsg _ ->
             { model = model
             , cmd = Cmd.none
             , stateChange = False
-            , dragDrop = dd
+            , dragDrop = DD.DragDropData ddm Nothing
             }
 
         ToggleNameHelp ->
             { model = { model | showNameHelp = not model.showNameHelp }
             , cmd = Cmd.none
             , stateChange = False
-            , dragDrop = dd
+            , dragDrop = DD.DragDropData ddm Nothing
             }
 
         GetFolderResp (Ok fs) ->
@@ -579,20 +572,20 @@ updateDrop dd flags settings msg model =
             { model = model_
             , cmd = Cmd.none
             , stateChange = False
-            , dragDrop = dd
+            , dragDrop = DD.DragDropData ddm Nothing
             }
 
         GetFolderResp (Err _) ->
             { model = model
             , cmd = Cmd.none
             , stateChange = False
-            , dragDrop = dd
+            , dragDrop = DD.DragDropData ddm Nothing
             }
 
         FolderSelectMsg lm ->
             let
-                ( fsm, sel, dd_ ) =
-                    Comp.FolderSelect.updateDrop dd.folderDrop lm model.folderList
+                ( fsm, sel, ddd ) =
+                    Comp.FolderSelect.updateDrop ddm lm model.folderList
             in
             { model =
                 { model
@@ -601,7 +594,7 @@ updateDrop dd flags settings msg model =
                 }
             , cmd = Cmd.none
             , stateChange = model.selectedFolder /= sel
-            , dragDrop = { dd | folderDrop = dd_ }
+            , dragDrop = ddd
             }
 
 
@@ -611,10 +604,10 @@ updateDrop dd flags settings msg model =
 
 view : Flags -> UiSettings -> Model -> Html Msg
 view =
-    viewDrop (DragDropData DD.init)
+    viewDrop (DD.DragDropData DD.init Nothing)
 
 
-viewDrop : DragDropData -> Flags -> UiSettings -> Model -> Html Msg
+viewDrop : DD.DragDropData -> Flags -> UiSettings -> Model -> Html Msg
 viewDrop ddd flags settings model =
     let
         formHeader icon headline =
@@ -648,7 +641,7 @@ viewDrop ddd flags settings model =
             [ Html.map TagSelectMsg (Comp.TagSelect.viewTags settings model.tagSelectModel)
             , Html.map TagSelectMsg (Comp.TagSelect.viewCats settings model.tagSelectModel)
             , Html.map FolderSelectMsg
-                (Comp.FolderSelect.viewDrop ddd.folderDrop settings.searchMenuFolderCount model.folderList)
+                (Comp.FolderSelect.viewDrop ddd.model settings.searchMenuFolderCount model.folderList)
             ]
         , div [ class segmentClass ]
             [ formHeader (Icons.correspondentIcon "")

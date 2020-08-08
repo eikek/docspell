@@ -12,8 +12,8 @@ import Api.Model.FolderItem exposing (FolderItem)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Html5.DragDrop as DD
 import Util.ExpandCollapse
+import Util.ItemDragDrop as DD
 import Util.List
 
 
@@ -39,7 +39,7 @@ init all =
 type Msg
     = Toggle FolderItem
     | ToggleExpand
-    | FolderDDMsg (DD.Msg String String)
+    | FolderDDMsg DD.Msg
 
 
 update : Msg -> Model -> ( Model, Maybe FolderItem )
@@ -52,10 +52,10 @@ update msg model =
 
 
 updateDrop :
-    DD.Model String String
+    DD.Model
     -> Msg
     -> Model
-    -> ( Model, Maybe FolderItem, DD.Model String String )
+    -> ( Model, Maybe FolderItem, DD.DragDropData )
 updateDrop dropModel msg model =
     case msg of
         Toggle item ->
@@ -70,35 +70,20 @@ updateDrop dropModel msg model =
                 model_ =
                     { model | selected = selection }
             in
-            ( model_, selectedFolder model_, dropModel )
+            ( model_, selectedFolder model_, DD.DragDropData dropModel Nothing )
 
         ToggleExpand ->
             ( { model | expanded = not model.expanded }
             , selectedFolder model
-            , dropModel
+            , DD.DragDropData dropModel Nothing
             )
 
         FolderDDMsg lm ->
             let
-                ( dm_, result ) =
+                ddd =
                     DD.update lm dropModel
-
-                _ =
-                    case result of
-                        Just ( item, folder, _ ) ->
-                            let
-                                _ =
-                                    Debug.log "item menu" item
-
-                                _ =
-                                    Debug.log "folder menu" folder
-                            in
-                            Cmd.none
-
-                        Nothing ->
-                            Cmd.none
             in
-            ( model, selectedFolder model, dm_ )
+            ( model, selectedFolder model, ddd )
 
 
 selectedFolder : Model -> Maybe FolderItem
@@ -119,13 +104,23 @@ view =
     viewDrop DD.init
 
 
-viewDrop : DD.Model String String -> Int -> Model -> Html Msg
+viewDrop : DD.Model -> Int -> Model -> Html Msg
 viewDrop dropModel constr model =
+    let
+        highlightDrop =
+            DD.getDropId dropModel == Just DD.FolderRemove
+    in
     div [ class "ui list" ]
         [ div [ class "item" ]
             [ i [ class "folder open icon" ] []
             , div [ class "content" ]
-                [ div [ class "header" ]
+                [ div
+                    (classList
+                        [ ( "header", True )
+                        , ( "current-drop-target", highlightDrop )
+                        ]
+                        :: DD.droppable FolderDDMsg DD.FolderRemove
+                    )
                     [ text "Folders"
                     ]
                 , div [ class "ui relaxed list" ]
@@ -135,7 +130,7 @@ viewDrop dropModel constr model =
         ]
 
 
-renderItems : DD.Model String String -> Int -> Model -> List (Html Msg)
+renderItems : DD.Model -> Int -> Model -> List (Html Msg)
 renderItems dropModel constr model =
     if constr <= 0 then
         List.map (viewItem dropModel model) model.all
@@ -163,7 +158,7 @@ collapseToggle max model =
         ToggleExpand
 
 
-viewItem : DD.Model String String -> Model -> FolderItem -> Html Msg
+viewItem : DD.Model -> Model -> FolderItem -> Html Msg
 viewItem dropModel model item =
     let
         selected =
@@ -177,7 +172,7 @@ viewItem dropModel model item =
                 "folder outline icon"
 
         highlightDrop =
-            DD.getDropId dropModel == Just item.id
+            DD.getDropId dropModel == Just (DD.Folder item.id)
     in
     a
         ([ classList
@@ -188,7 +183,7 @@ viewItem dropModel model item =
          , href "#"
          , onClick (Toggle item)
          ]
-            ++ DD.droppable FolderDDMsg item.id
+            ++ DD.droppable FolderDDMsg (DD.Folder item.id)
         )
         [ i [ class icon ] []
         , div [ class "content" ]

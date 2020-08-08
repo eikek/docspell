@@ -166,7 +166,7 @@ textarea.markdown-editor {
     background: rgba(240,248,255,0.4);
 }
 
-.default-layout .ui.menu .item.current-drop-target, a.item.current-drop-target {
+.default-layout .ui.menu .item.current-drop-target, .header.current-drop-target, .item.current-drop-target {
     background: rgba(0,0,0,0.2);
 }
 

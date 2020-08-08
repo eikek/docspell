@@ -16,14 +16,14 @@ import Api.Model.ItemLightList exposing (ItemLightList)
 import Api.Model.ItemSearch
 import Comp.FixedDropdown
 import Comp.ItemCardList
-import Comp.SearchMenu exposing (DragDropData)
+import Comp.SearchMenu
 import Data.Flags exposing (Flags)
 import Data.Items
 import Data.UiSettings exposing (UiSettings)
-import Html5.DragDrop as DD
 import Http
 import Throttle exposing (Throttle)
 import Util.Html exposing (KeyCode(..))
+import Util.ItemDragDrop as DD
 
 
 type alias Model =
@@ -40,7 +40,7 @@ type alias Model =
     , searchType : SearchType
     , searchTypeForm : SearchType
     , contentOnlySearch : Maybe String
-    , dragDropData : DragDropData
+    , dragDropData : DD.DragDropData
     }
 
 
@@ -70,8 +70,7 @@ init flags =
     , searchTypeForm = defaultSearchType flags
     , contentOnlySearch = Nothing
     , dragDropData =
-        { folderDrop = DD.init
-        }
+        DD.DragDropData DD.init Nothing
     }
 
 

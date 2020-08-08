@@ -21,8 +21,8 @@ import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Html5.DragDrop as DD
 import Markdown
+import Util.ItemDragDrop as DD
 import Util.List
 import Util.String
 import Util.Time
@@ -37,7 +37,7 @@ type Msg
     = SetResults ItemLightList
     | AddResults ItemLightList
     | SelectItem ItemLight
-    | ItemDDMsg (DD.Msg String String)
+    | ItemDDMsg DD.Msg
 
 
 init : Model
@@ -75,12 +75,12 @@ type alias UpdateResult =
     { model : Model
     , cmd : Cmd Msg
     , selected : Maybe ItemLight
-    , dragModel : DD.Model String String
+    , dragModel : DD.Model
     }
 
 
 updateDrag :
-    DD.Model String String
+    DD.Model
     -> Flags
     -> Msg
     -> Model
@@ -110,25 +110,10 @@ updateDrag dm _ msg model =
 
         ItemDDMsg lm ->
             let
-                ( dm_, result ) =
+                ddd =
                     DD.update lm dm
-
-                _ =
-                    case result of
-                        Just ( item, folder, _ ) ->
-                            let
-                                _ =
-                                    Debug.log "item card" item
-
-                                _ =
-                                    Debug.log "folder card" folder
-                            in
-                            Cmd.none
-
-                        Nothing ->
-                            Cmd.none
             in
-            UpdateResult model Cmd.none Nothing dm_
+            UpdateResult model Cmd.none Nothing ddd.model
 
 
 

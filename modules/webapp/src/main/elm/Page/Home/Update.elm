@@ -6,12 +6,12 @@ import Comp.ItemCardList
 import Comp.SearchMenu
 import Data.Flags exposing (Flags)
 import Data.UiSettings exposing (UiSettings)
-import Html5.DragDrop as DD
 import Page exposing (Page(..))
 import Page.Home.Data exposing (..)
 import Throttle
 import Time
 import Util.Html exposing (KeyCode(..))
+import Util.ItemDragDrop as DD
 import Util.Maybe
 import Util.String
 import Util.Update
@@ -41,11 +41,23 @@ update key flags settings msg model =
             let
                 nextState =
                     Comp.SearchMenu.updateDrop
-                        model.dragDropData
+                        model.dragDropData.model
                         flags
                         settings
                         m
                         model.searchMenuModel
+
+                dropCmd =
+                    case nextState.dragDrop.dropped of
+                        Just dropped ->
+                            let
+                                _ =
+                                    Debug.log "item/folder" dropped
+                            in
+                            DD.makeUpdateCmd flags (\_ -> DoSearch) nextState.dragDrop.dropped
+
+                        Nothing ->
+                            Cmd.none
 
                 newModel =
                     { model
@@ -64,6 +76,7 @@ update key flags settings msg model =
             , Cmd.batch
                 [ c2
                 , Cmd.map SearchMenuMsg nextState.cmd
+                , dropCmd
                 ]
             , s2
             )
@@ -71,7 +84,7 @@ update key flags settings msg model =
         ItemCardListMsg m ->
             let
                 result =
-                    Comp.ItemCardList.updateDrag model.dragDropData.folderDrop
+                    Comp.ItemCardList.updateDrag model.dragDropData.model
                         flags
                         m
                         model.itemListModel
@@ -87,7 +100,7 @@ update key flags settings msg model =
             withSub
                 ( { model
                     | itemListModel = result.model
-                    , dragDropData = { folderDrop = result.dragModel }
+                    , dragDropData = DD.DragDropData result.dragModel Nothing
                   }
                 , Cmd.batch [ Cmd.map ItemCardListMsg result.cmd, cmd ]
                 )
