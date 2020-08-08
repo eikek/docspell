@@ -171,8 +171,7 @@ textarea.markdown-editor {
 }
 
 .default-layout .search-menu {
-    border-bottom: 2px solid #d8dfe5;
-    border-right: 2px solid #d8dfe5;
+    box-shadow: 2px 1px 3px rgba(216, 223, 229, 1);
     background-color: aliceblue;
 }
 
