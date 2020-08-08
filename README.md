@@ -74,6 +74,6 @@ Check the feature list and the quickstart guide to try it out:
 Here are some (outdated) screenshots, for getting a first impression
 of the web ui.
 
-![screenshot-1](https://raw.githubusercontent.com/eikek/docspell/master/website/site/content/docs/webapp/docspell-curate-1.jpg)
+![screenshot-1](https://raw.githubusercontent.com/eikek/docspell/master/screenshots/search-view.png)
 ![screenshot-2](https://raw.githubusercontent.com/eikek/docspell/master/website/site/content/docs/webapp/docspell-curate-2.jpg)
 ![screenshot-3](https://raw.githubusercontent.com/eikek/docspell/master/website/site/content/docs/webapp/processing-queue.jpg)
