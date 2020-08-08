@@ -1,5 +1,6 @@
 module Comp.TagSelect exposing
-    ( Model
+    ( Category
+    , Model
     , Msg
     , Selection
     , emptySelection
@@ -19,17 +20,53 @@ import Html.Events exposing (onClick)
 
 type alias Model =
     { all : List TagCount
-    , selected : Dict String Bool
-    , expanded : Bool
+    , categories : List Category
+    , selectedTags : Dict String Bool
+    , selectedCats : Dict String Bool
+    , expandedTags : Bool
+    , expandedCats : Bool
+    }
+
+
+type alias Category =
+    { name : String
+    , count : Int
     }
 
 
 init : List TagCount -> Model
 init tags =
     { all = tags
-    , selected = Dict.empty
-    , expanded = False
+    , categories = sumCategories tags
+    , selectedTags = Dict.empty
+    , selectedCats = Dict.empty
+    , expandedTags = False
+    , expandedCats = False
     }
+
+
+sumCategories : List TagCount -> List Category
+sumCategories tags =
+    let
+        filterCat tc =
+            Maybe.map (\cat -> Category cat tc.count) tc.tag.category
+
+        withCats =
+            List.filterMap filterCat tags
+
+        sum cat mc =
+            Maybe.map ((+) cat.count) mc
+                |> Maybe.withDefault cat.count
+                |> Just
+
+        sumCounts cat dict =
+            Dict.update cat.name (sum cat) dict
+
+        cats =
+            List.foldl sumCounts Dict.empty withCats
+    in
+    Dict.toList cats
+        |> List.map (\( n, c ) -> Category n c)
 
 
 
@@ -37,66 +74,100 @@ init tags =
 
 
 type Msg
-    = Toggle String
-    | ToggleExpand
+    = ToggleTag String
+    | ToggleCat String
+    | ToggleExpandTags
+    | ToggleExpandCats
 
 
 type alias Selection =
-    { include : List TagCount
-    , exclude : List TagCount
+    { includeTags : List TagCount
+    , excludeTags : List TagCount
+    , includeCats : List Category
+    , excludeCats : List Category
     }
 
 
 emptySelection : Selection
 emptySelection =
-    Selection [] []
+    Selection [] [] [] []
 
 
 update : Msg -> Model -> ( Model, Selection )
 update msg model =
     case msg of
-        Toggle id ->
+        ToggleTag id ->
             let
-                current =
-                    Dict.get id model.selected
-
                 next =
-                    case current of
-                        Nothing ->
-                            Dict.insert id True model.selected
-
-                        Just True ->
-                            Dict.insert id False model.selected
-
-                        Just False ->
-                            Dict.remove id model.selected
+                    updateSelection id model.selectedTags
 
                 model_ =
-                    { model | selected = next }
+                    { model | selectedTags = next }
             in
             ( model_, getSelection model_ )
 
-        ToggleExpand ->
-            ( { model | expanded = not model.expanded }
+        ToggleCat name ->
+            let
+                next =
+                    updateSelection name model.selectedCats
+
+                model_ =
+                    { model | selectedCats = next }
+            in
+            ( model_, getSelection model_ )
+
+        ToggleExpandTags ->
+            ( { model | expandedTags = not model.expandedTags }
             , getSelection model
             )
+
+        ToggleExpandCats ->
+            ( { model | expandedCats = not model.expandedCats }
+            , getSelection model
+            )
+
+
+updateSelection : String -> Dict String Bool -> Dict String Bool
+updateSelection id selected =
+    let
+        current =
+            Dict.get id selected
+    in
+    case current of
+        Nothing ->
+            Dict.insert id True selected
+
+        Just True ->
+            Dict.insert id False selected
+
+        Just False ->
+            Dict.remove id selected
 
 
 getSelection : Model -> Selection
 getSelection model =
     let
+        ( inclTags, exclTags ) =
+            getSelection1 (\t -> t.tag.id) model.selectedTags model.all
+
+        ( inclCats, exclCats ) =
+            getSelection1 (\c -> c.name) model.selectedCats model.categories
+    in
+    Selection inclTags exclTags inclCats exclCats
+
+
+getSelection1 : (a -> String) -> Dict String Bool -> List a -> ( List a, List a )
+getSelection1 mkId selected items =
+    let
         selectedOnly t =
-            Dict.member t.tag.id model.selected
+            Dict.member (mkId t) selected
 
         isIncluded t =
-            Dict.get t.tag.id model.selected
+            Dict.get (mkId t) selected
                 |> Maybe.withDefault False
-
-        ( incl, excl ) =
-            List.filter selectedOnly model.all
-                |> List.partition isIncluded
     in
-    Selection incl excl
+    List.filter selectedOnly items
+        |> List.partition isIncluded
 
 
 
@@ -109,9 +180,22 @@ type SelState
     | Deselect
 
 
-selState : Model -> String -> SelState
-selState model id =
-    case Dict.get id model.selected of
+tagState : Model -> String -> SelState
+tagState model id =
+    case Dict.get id model.selectedTags of
+        Just True ->
+            Include
+
+        Just False ->
+            Exclude
+
+        Nothing ->
+            Deselect
+
+
+catState : Model -> String -> SelState
+catState model name =
+    case Dict.get name model.selectedCats of
         Just True ->
             Include
 
@@ -132,36 +216,72 @@ view settings model =
                     [ text "Tags"
                     ]
                 , div [ class "ui relaxed list" ]
-                    (List.map (viewItem settings model) model.all)
+                    (List.map (viewTagItem settings model) model.all)
+                ]
+            ]
+        , div [ class "item" ]
+            [ I.tagsIcon ""
+            , div [ class "content" ]
+                [ div [ class "header" ]
+                    [ text "Categories"
+                    ]
+                , div [ class "ui relaxed list" ]
+                    (List.map (viewCategoryItem settings model) model.categories)
                 ]
             ]
         ]
 
 
-viewItem : UiSettings -> Model -> TagCount -> Html Msg
-viewItem settings model tag =
+viewCategoryItem : UiSettings -> Model -> Category -> Html Msg
+viewCategoryItem settings model cat =
     let
         state =
-            selState model tag.tag.id
+            catState model cat.name
+
+        color =
+            Data.UiSettings.catColorString settings cat.name
+
+        icon =
+            getIcon state color I.tagsIcon
+    in
+    a
+        [ class "item"
+        , href "#"
+        , onClick (ToggleCat cat.name)
+        ]
+        [ icon
+        , div [ class "content" ]
+            [ div
+                [ classList
+                    [ ( "header", state == Include )
+                    , ( "description", state /= Include )
+                    ]
+                ]
+                [ text cat.name
+                , div [ class "ui right floated circular label" ]
+                    [ text (String.fromInt cat.count)
+                    ]
+                ]
+            ]
+        ]
+
+
+viewTagItem : UiSettings -> Model -> TagCount -> Html Msg
+viewTagItem settings model tag =
+    let
+        state =
+            tagState model tag.tag.id
 
         color =
             Data.UiSettings.tagColorString tag.tag settings
 
         icon =
-            case state of
-                Include ->
-                    i [ class ("check icon " ++ color) ] []
-
-                Exclude ->
-                    i [ class ("minus icon " ++ color) ] []
-
-                Deselect ->
-                    I.tagIcon color
+            getIcon state color I.tagIcon
     in
     a
         [ class "item"
         , href "#"
-        , onClick (Toggle tag.tag.id)
+        , onClick (ToggleTag tag.tag.id)
         ]
         [ icon
         , div [ class "content" ]
@@ -178,3 +298,16 @@ viewItem settings model tag =
                 ]
             ]
         ]
+
+
+getIcon : SelState -> String -> (String -> Html msg) -> Html msg
+getIcon state color default =
+    case state of
+        Include ->
+            i [ class ("check icon " ++ color) ] []
+
+        Exclude ->
+            i [ class ("minus icon " ++ color) ] []
+
+        Deselect ->
+            default color

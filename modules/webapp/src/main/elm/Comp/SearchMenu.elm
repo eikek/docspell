@@ -16,7 +16,6 @@ import Api.Model.FolderList exposing (FolderList)
 import Api.Model.IdName exposing (IdName)
 import Api.Model.ItemSearch exposing (ItemSearch)
 import Api.Model.ReferenceList exposing (ReferenceList)
-import Api.Model.Tag exposing (Tag)
 import Api.Model.TagCloud exposing (TagCloud)
 import Comp.DatePicker
 import Comp.Dropdown exposing (isDropdownChangeMsg)
@@ -33,7 +32,6 @@ import Html.Events exposing (onCheck, onClick, onInput)
 import Http
 import Util.Html exposing (KeyCode(..))
 import Util.Maybe
-import Util.Tag
 import Util.Update
 
 
@@ -44,8 +42,6 @@ import Util.Update
 type alias Model =
     { tagSelectModel : Comp.TagSelect.Model
     , tagSelection : Comp.TagSelect.Selection
-    , tagCatInclModel : Comp.Dropdown.Model String
-    , tagCatExclModel : Comp.Dropdown.Model String
     , directionModel : Comp.Dropdown.Model Direction
     , orgModel : Comp.Dropdown.Model IdName
     , corrPersonModel : Comp.Dropdown.Model IdName
@@ -74,8 +70,6 @@ init : Model
 init =
     { tagSelectModel = Comp.TagSelect.init []
     , tagSelection = Comp.TagSelect.emptySelection
-    , tagCatInclModel = Util.Tag.makeCatDropdownModel
-    , tagCatExclModel = Util.Tag.makeCatDropdownModel
     , directionModel =
         Comp.Dropdown.makeSingleList
             { makeOption =
@@ -158,8 +152,6 @@ type Msg
     | ToggleNameHelp
     | FolderSelectMsg Comp.FolderSelect.Msg
     | GetFolderResp (Result Http.Error FolderList)
-    | TagCatIncMsg (Comp.Dropdown.Msg String)
-    | TagCatExcMsg (Comp.Dropdown.Msg String)
 
 
 getDirection : Model -> Maybe Direction
@@ -194,8 +186,8 @@ getItemSearch model =
                 "*" ++ s ++ "*"
     in
     { e
-        | tagsInclude = model.tagSelection.include |> List.map .tag |> List.map .id
-        , tagsExclude = model.tagSelection.exclude |> List.map .tag |> List.map .id
+        | tagsInclude = model.tagSelection.includeTags |> List.map .tag |> List.map .id
+        , tagsExclude = model.tagSelection.excludeTags |> List.map .tag |> List.map .id
         , corrPerson = Comp.Dropdown.getSelected model.corrPersonModel |> List.map .id |> List.head
         , corrOrg = Comp.Dropdown.getSelected model.orgModel |> List.map .id |> List.head
         , concPerson = Comp.Dropdown.getSelected model.concPersonModel |> List.map .id |> List.head
@@ -217,8 +209,8 @@ getItemSearch model =
             model.allNameModel
                 |> Maybe.map amendWildcards
         , fullText = model.fulltextModel
-        , tagCategoriesInclude = Comp.Dropdown.getSelected model.tagCatInclModel
-        , tagCategoriesExclude = Comp.Dropdown.getSelected model.tagCatExclModel
+        , tagCategoriesInclude = model.tagSelection.includeCats |> List.map .name
+        , tagCategoriesExclude = model.tagSelection.excludeCats |> List.map .name
     }
 
 
@@ -286,10 +278,6 @@ update flags settings msg model =
 
         GetTagsResp (Ok tags) ->
             let
-                catList =
-                    Util.Tag.getCategories (List.map .tag tags.items)
-                        |> Comp.Dropdown.SetOptions
-
                 selectModel =
                     List.sortBy .count tags.items
                         |> List.reverse
@@ -298,12 +286,7 @@ update flags settings msg model =
                 model_ =
                     { model | tagSelectModel = selectModel }
             in
-            noChange <|
-                Util.Update.andThen1
-                    [ update flags settings (TagCatIncMsg catList) >> .modelCmd
-                    , update flags settings (TagCatExcMsg catList) >> .modelCmd
-                    ]
-                    model_
+            noChange ( model_, Cmd.none )
 
         GetTagsResp (Err _) ->
             noChange ( model, Cmd.none )
@@ -563,28 +546,6 @@ update flags settings msg model =
                 )
                 (model.selectedFolder /= sel)
 
-        TagCatIncMsg m ->
-            let
-                ( m2, c2 ) =
-                    Comp.Dropdown.update m model.tagCatInclModel
-            in
-            NextState
-                ( { model | tagCatInclModel = m2 }
-                , Cmd.map TagCatIncMsg c2
-                )
-                (isDropdownChangeMsg m)
-
-        TagCatExcMsg m ->
-            let
-                ( m2, c2 ) =
-                    Comp.Dropdown.update m model.tagCatExclModel
-            in
-            NextState
-                ( { model | tagCatExclModel = m2 }
-                , Cmd.map TagCatExcMsg c2
-                )
-                (isDropdownChangeMsg m)
-
 
 
 -- View
@@ -633,17 +594,7 @@ view flags settings model =
                     ]
                 ]
             ]
-        , formHeader (Icons.tagsIcon "") "Tags"
         , Html.map TagSelectMsg (Comp.TagSelect.view settings model.tagSelectModel)
-        , div [ class "field" ]
-            [ label [] [ text "Category Include (and)" ]
-            , Html.map TagCatIncMsg (Comp.Dropdown.view settings model.tagCatInclModel)
-            ]
-        , div [ class "field" ]
-            [ label [] [ text "Category Exclude (or)" ]
-            , Html.map TagCatExcMsg (Comp.Dropdown.view settings model.tagCatExclModel)
-            ]
-        , formHeader (Icons.folderIcon "") "Folder"
         , Html.map FolderSelectMsg
             (Comp.FolderSelect.view settings.searchMenuFolders model.folderList)
         , formHeaderHelp nameIcon "Names" ToggleNameHelp

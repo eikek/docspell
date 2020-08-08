@@ -80,7 +80,7 @@ view constr model =
             [ i [ class "folder open icon" ] []
             , div [ class "content" ]
                 [ div [ class "header" ]
-                    [ text "All"
+                    [ text "Folders"
                     ]
                 , div [ class "ui relaxed list" ]
                     (renderItems constr model)

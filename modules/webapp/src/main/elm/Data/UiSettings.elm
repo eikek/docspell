@@ -2,6 +2,8 @@ module Data.UiSettings exposing
     ( Pos(..)
     , StoredUiSettings
     , UiSettings
+    , catColor
+    , catColorString
     , defaults
     , merge
     , mergeDefaults
@@ -133,13 +135,21 @@ toStoredUiSettings settings =
     }
 
 
+catColor : UiSettings -> String -> Maybe Color
+catColor settings c =
+    Dict.get c settings.tagCategoryColors
+
+
 tagColor : Tag -> UiSettings -> Maybe Color
 tagColor tag settings =
-    let
-        readColor c =
-            Dict.get c settings.tagCategoryColors
-    in
-    Maybe.andThen readColor tag.category
+    Maybe.andThen (catColor settings) tag.category
+
+
+catColorString : UiSettings -> String -> String
+catColorString settings name =
+    catColor settings name
+        |> Maybe.map Data.Color.toString
+        |> Maybe.withDefault ""
 
 
 tagColorString : Tag -> UiSettings -> String
