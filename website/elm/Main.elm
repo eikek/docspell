@@ -2,6 +2,7 @@ module Main exposing (..)
 
 import Browser exposing (Document)
 import Browser.Navigation exposing (Key)
+import Demo
 import ExtraAttr exposing (..)
 import Feature exposing (Feature)
 import GetStarted
@@ -126,6 +127,13 @@ view model =
                        ]
                 )
             ]
+        , demoHero
+        , section [ class "section" ]
+            [ div [ class "container" ]
+                [ Demo.demo Demo.navigateDemo
+                , Demo.demo Demo.processDemo
+                ]
+            ]
         , getStartedHero model
         , div [ class "section" ]
             (GetStarted.getStarted model.flags.version)
@@ -187,6 +195,24 @@ getStartedHero _ =
             [ div [ class "container" ]
                 [ h2 [ class "title" ]
                     [ text "Get Started"
+                    ]
+                ]
+            ]
+        ]
+
+
+demoHero : Html msg
+demoHero =
+    section
+        [ id "demos"
+        , class "hero is-info is-bold"
+        ]
+        [ div
+            [ class "hero-body"
+            ]
+            [ div [ class "container" ]
+                [ h2 [ class "title" ]
+                    [ text "Demo"
                     ]
                 ]
             ]
@@ -306,6 +332,12 @@ mainHero model =
                         , href "#feature-selection"
                         ]
                         [ text "Features"
+                        ]
+                    , a
+                        [ class "button is-info is-medium"
+                        , href "#demos"
+                        ]
+                        [ text "Screencast"
                         ]
                     ]
                 ]
