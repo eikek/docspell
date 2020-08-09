@@ -147,7 +147,7 @@ object OUpload {
           itemId: Option[Ident]
       ): F[OUpload.UploadResult] =
         (for {
-          src <- OptionT(store.transact(RSource.find(sourceId)))
+          src <- OptionT(store.transact(RSource.findEnabled(sourceId)))
           updata = data.copy(
             meta = data.meta.copy(
               sourceAbbrev = src.abbrev,

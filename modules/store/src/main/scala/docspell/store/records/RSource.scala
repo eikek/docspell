@@ -83,8 +83,8 @@ object RSource {
     sql.query[Int].unique.map(_ > 0)
   }
 
-  def find(id: Ident): ConnectionIO[Option[RSource]] = {
-    val sql = selectSimple(all, table, sid.is(id))
+  def findEnabled(id: Ident): ConnectionIO[Option[RSource]] = {
+    val sql = selectSimple(all, table, and(sid.is(id), enabled.is(true)))
     sql.query[RSource].option
   }
 

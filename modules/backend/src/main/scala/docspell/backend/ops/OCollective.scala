@@ -41,7 +41,7 @@ trait OCollective[F[_]] {
       kind: Option[ContactKind]
   ): Stream[F, RContact]
 
-  def findSource(sourceId: Ident): F[Option[RSource]]
+  def findEnabledSource(sourceId: Ident): F[Option[RSource]]
 
 }
 
@@ -158,7 +158,7 @@ object OCollective {
       ): Stream[F, RContact] =
         store.transact(QCollective.getContacts(collective, query, kind))
 
-      def findSource(sourceId: Ident): F[Option[RSource]] =
-        store.transact(RSource.find(sourceId))
+      def findEnabledSource(sourceId: Ident): F[Option[RSource]] =
+        store.transact(RSource.findEnabled(sourceId))
     })
 }

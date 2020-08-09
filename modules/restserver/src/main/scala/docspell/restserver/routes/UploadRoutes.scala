@@ -46,7 +46,7 @@ object UploadRoutes {
     HttpRoutes.of {
       case req @ POST -> Root / "item" / Ident(srcId) =>
         (for {
-          _ <- OptionT(backend.collective.findSource(srcId))
+          _ <- OptionT(backend.collective.findEnabledSource(srcId))
           res <- OptionT.liftF(
             submitFiles(backend, cfg, Left(srcId))(req, None, Priority.Low, dsl)
           )
@@ -54,7 +54,7 @@ object UploadRoutes {
 
       case req @ POST -> Root / "item" / Ident(itemId) / Ident(srcId) =>
         (for {
-          _ <- OptionT(backend.collective.findSource(srcId))
+          _ <- OptionT(backend.collective.findEnabledSource(srcId))
           res <- OptionT.liftF(
             submitFiles(backend, cfg, Left(srcId))(req, Some(itemId), Priority.Low, dsl)
           )
