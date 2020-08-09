@@ -212,7 +212,7 @@ demoHero =
             ]
             [ div [ class "container" ]
                 [ h2 [ class "title" ]
-                    [ text "Demo"
+                    [ text "Screencasts"
                     ]
                 ]
             ]
