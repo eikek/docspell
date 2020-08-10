@@ -40,12 +40,12 @@ demo data =
 navigateDemo =
     { title = "Navigation"
     , url = "/videos/docspell-dd-2020-08-09.mp4"
-    , info = "Shows navigating through documents using tags and tag categories."
+    , info = "Shows basic navigation through documents using tags and tag categories."
     }
 
 
 processDemo =
     { title = "Processing"
     , url = "/videos/docspell-process-2020-08-09.mp4"
-    , info = "Presents the basic idea: maintain an address book and let docspell find matches."
+    , info = "Presents the basic idea: maintain an address book and let docspell find matches for new uploaded documents and attach them automatically."
     }

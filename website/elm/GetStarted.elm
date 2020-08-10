@@ -8,7 +8,7 @@ import Markdown
 
 getStarted : String -> List (Html msg)
 getStarted version =
-    [ div [ class "content container is-size-5" ]
+    [ div [ class "content container" ]
         [ Markdown.toHtml []
             """Docspell consists of several components. The easiest way to get started is probably to use docker and
 [docker-compose](https://docs.docker.com/compose/)."""

@@ -130,8 +130,8 @@ view model =
         , demoHero
         , section [ class "section" ]
             [ div [ class "container" ]
-                [ Demo.demo Demo.navigateDemo
-                , Demo.demo Demo.processDemo
+                [ Demo.demo Demo.processDemo
+                , Demo.demo Demo.navigateDemo
                 ]
             ]
         , getStartedHero model
