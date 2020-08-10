@@ -7,9 +7,7 @@ module Comp.TagSelect exposing
     , init
     , update
     , updateDrop
-    , view
     , viewCats
-    , viewDrop
     , viewTags
     , viewTagsDrop
     )
@@ -20,14 +18,18 @@ import Data.UiSettings exposing (UiSettings)
 import Dict exposing (Dict)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick)
+import Html.Events exposing (onClick, onInput)
+import Simple.Fuzzy
 import Util.ExpandCollapse
 import Util.ItemDragDrop as DD
+import Util.String as S
 
 
 type alias Model =
     { all : List TagCount
+    , filteredTags : List TagCount
     , categories : List Category
+    , filteredCats : List Category
     , selectedTags : Dict String Bool
     , selectedCats : Dict String Bool
     , expandedTags : Bool
@@ -58,9 +60,14 @@ init sel tags =
         selCat =
             constDict .name True sel.includeCats
                 |> Dict.union (constDict .name False sel.excludeCats)
+
+        cats =
+            sumCategories tags
     in
     { all = tags
-    , categories = sumCategories tags
+    , filteredTags = tags
+    , categories = cats
+    , filteredCats = cats
     , selectedTags = selTag
     , selectedCats = selCat
     , expandedTags = False
@@ -102,6 +109,7 @@ type Msg
     | ToggleExpandTags
     | ToggleExpandCats
     | TagDDMsg DD.Msg
+    | Search String
 
 
 type alias Selection =
@@ -167,6 +175,32 @@ updateDrop ddm msg model =
                     DD.update lm ddm
             in
             ( model, getSelection model, ddd )
+
+        Search str ->
+            let
+                forTags t =
+                    Simple.Fuzzy.match str t.tag.name
+
+                forCats c =
+                    Simple.Fuzzy.match str c.name
+            in
+            ( { model
+                | filteredTags =
+                    if S.isBlank str then
+                        model.all
+
+                    else
+                        List.filter forTags model.all
+                , filteredCats =
+                    if S.isBlank str then
+                        model.categories
+
+                    else
+                        List.filter forCats model.categories
+              }
+            , getSelection model
+            , DD.DragDropData ddm Nothing
+            )
 
 
 updateSelection : String -> Dict String Bool -> Dict String Bool
@@ -261,6 +295,15 @@ viewTagsDrop ddm settings model =
             , div [ class "content" ]
                 [ div [ class "header" ]
                     [ text "Tags"
+                    , div [ class "ui small transparent icon right floated input width-70" ]
+                        [ input
+                            [ type_ "text"
+                            , placeholder "Filter …"
+                            , onInput Search
+                            ]
+                            []
+                        , i [ class "search icon" ] []
+                        ]
                     ]
                 , div [ class "ui relaxed list" ]
                     (renderTagItems ddm settings model)
@@ -285,42 +328,11 @@ viewCats settings model =
         ]
 
 
-view : UiSettings -> Model -> Html Msg
-view =
-    viewDrop DD.init
-
-
-viewDrop : DD.Model -> UiSettings -> Model -> Html Msg
-viewDrop ddm settings model =
-    div [ class "ui list" ]
-        [ div [ class "item" ]
-            [ I.tagIcon ""
-            , div [ class "content" ]
-                [ div [ class "header" ]
-                    [ text "Tags"
-                    ]
-                , div [ class "ui relaxed list" ]
-                    (renderTagItems ddm settings model)
-                ]
-            ]
-        , div [ class "item" ]
-            [ I.tagsIcon ""
-            , div [ class "content" ]
-                [ div [ class "header" ]
-                    [ text "Categories"
-                    ]
-                , div [ class "ui relaxed list" ]
-                    (renderCatItems settings model)
-                ]
-            ]
-        ]
-
-
 renderTagItems : DD.Model -> UiSettings -> Model -> List (Html Msg)
 renderTagItems ddm settings model =
     let
         tags =
-            model.all
+            model.filteredTags
 
         max =
             settings.searchMenuTagCount
@@ -338,20 +350,20 @@ renderTagItems ddm settings model =
                 ToggleExpandTags
     in
     if max <= 0 then
-        List.map (viewTagItem ddm settings model) model.all
+        List.map (viewTagItem ddm settings model) tags
 
     else if model.expandedTags then
-        List.map (viewTagItem ddm settings model) model.all ++ cps
+        List.map (viewTagItem ddm settings model) tags ++ cps
 
     else
-        List.map (viewTagItem ddm settings model) (List.take max model.all) ++ exp
+        List.map (viewTagItem ddm settings model) (List.take max tags) ++ exp
 
 
 renderCatItems : UiSettings -> Model -> List (Html Msg)
 renderCatItems settings model =
     let
         cats =
-            model.categories
+            model.filteredCats
 
         max =
             settings.searchMenuTagCatCount
@@ -369,13 +381,13 @@ renderCatItems settings model =
                 ToggleExpandCats
     in
     if max <= 0 then
-        List.map (viewCategoryItem settings model) model.categories
+        List.map (viewCategoryItem settings model) cats
 
     else if model.expandedCats then
-        List.map (viewCategoryItem settings model) model.categories ++ cps
+        List.map (viewCategoryItem settings model) cats ++ cps
 
     else
-        List.map (viewCategoryItem settings model) (List.take max model.categories) ++ exp
+        List.map (viewCategoryItem settings model) (List.take max cats) ++ exp
 
 
 viewCategoryItem : UiSettings -> Model -> Category -> Html Msg
