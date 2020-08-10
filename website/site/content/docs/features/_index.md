@@ -57,6 +57,8 @@ description = "A list of features and limitations."
     - [eml](https://en.wikipedia.org/wiki/Email#Filename_extensions)
       (e-mail files in plain text MIME)
 - Tooling:
+  - [Android App](@/docs/tools/android.md) to quickly upload files
+    from your android devices
   - [Watch a folder](@/docs/tools/consumedir.md): watch folders for
     changes and send files to docspell
   - [Simple CLI for uploading files](@/docs/tools/ds.md)

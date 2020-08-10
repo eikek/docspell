@@ -1,7 +1,7 @@
 +++
 title = "Browser Extension (Firefox)"
 description = "An extension for firefox to upload files from your browser via right-click → upload to docspell."
-weight = 30
+weight = 40
 +++
 
 The idea is to click on a file in firefox and send it to docspell. It

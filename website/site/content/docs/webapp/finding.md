@@ -67,30 +67,69 @@ Clicking the checkbox "Only new" shows items that have not been
 "Confirmed". All items that have been created by docspell and not
 looked at are marked as "new" automatically.
 
+## Tags & Tag Categories
+
+Click on a tag to show only items with this tag, the tag is marked
+with a check (✔) icon. Click again, to show only items that are not
+tagged with the tag. Then the tag is marked with a minus (–) icon.
+Clicking a third time deselects the tag and the icon goes back to an
+"tag" icon.
+
+By default, a few tags are shown and you can expand to list all using
+the *Show more* link. How many tags are displayed can be changed in
+the ui settings (go to *User Settings* ‣ *Ui Settings*).
+
+When multiple tags are checked (✔), only tags are shown that have all
+the tags. When multiple tags are excluded (–), then only tags are
+shown that don't have at least one of these tags.
+
+The same applies to tag categories. You can show all items that have
+at least on tag of a checked (✔) category. Or you can list all items
+that have no tag of a category (–).
+
+You can also use drag&drop to tag items in this view. Simply drag an
+item card and drop it on a tag, this will toggle the tag on the item.
+If the item was tagged already, the tag is removed, otherwise added.
+
+<div class="columns is-centered">
+  <div class="column">
+  {{ imgnormal(file="drop-tag.png", width="400px") }}
+  </div>
+</div>
+
+## Folder
+
+Select a folder to only show items in that folder. Only folders where
+the current user has access are displayed. As with tags, there are
+only a few folders shown and you can expand all with a *Show more*
+link. How many folders are displayed without this link can be
+configured in the ui settings.
+
+If no folder is set, all accessible items are shown. These are all
+items that either have no folder set, or a folder where the current
+user is member.
+
+It is possible to put items into a folder in this view via drag&drop.
+Simply drag an item card and drop it on a folder. If dropped on the
+*Folders* header, the item is moved outside the folder.
+
+## Correspondent
+
+Pick a correspondent to show only these items.
+
+## Concerned
+
+Pick a concerned entity to show only these items.
+
 ## Names
 
 Searches in names of certain properties. The `Names` field is the same
 as the search in the search bar ([see above](#names)).
 
-## Folder
-
-Set a folder to only show items in that folder. If no folder is set,
-all accessible items are shown. These are all items that either have
-no folder set, or a folder where the current user is member.
-
-## Tags
-
-Specify a list of tags that the items must have. When adding tags to
-the "Include" list, an item must have all these tags in order to be
-included in the results.
-
-When adding tags to the "Exclude" list, then an item is removed from
-the results if it has at least one of these tags.
-
 ## Content
 
 You can choose tags or correspondents in the search menu and further
-restrict the results using full text search using the *content* field.
+restrict the results using full text search with the *content* field.
 
 {% infobubble(mode="warning", title="Please note") %}
 This field is intended to be used in conjunction with other fields in
@@ -101,15 +140,6 @@ by fulltext search.
 Use the search-bar with option *Contents Only* to do quick fulltext
 searches.
 {% end %}
-
-
-## Correspondent
-
-Pick a correspondent to show only these items.
-
-## Concerned
-
-Pick a concerned entity to show only these items.
 
 ## Date
 
@@ -178,4 +208,6 @@ contents, attachment names, item name and item notes.
 When using full text search, each item in the result list is annotated
 with the highlighted occurrence of the match.
 
-{{ figure(file="search-content-results.png") }}
+<figure class="image">
+  <img src="/img/fts-feature.png">
+</figure>

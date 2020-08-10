@@ -1,7 +1,7 @@
 +++
 title = "SMTP Gateway with Exim"
 description = "Start a SMTP server that forwards all mails to docspell."
-weight = 40
+weight = 50
 +++
 
 One possible use case for the [integration

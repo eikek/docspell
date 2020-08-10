@@ -1,7 +1,7 @@
 +++
 title = "Consume Directory"
 description = "A script to watch a directory for new files and upload them to docspell."
-weight = 20
+weight = 30
 +++
 
 # Introduction

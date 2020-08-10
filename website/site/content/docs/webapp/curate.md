@@ -43,6 +43,14 @@ When you change something in the form, it is immediatly applied. Only
 when changing text fields, a click on the *Save* symbol next to the
 field is required.
 
+It is also possible to change tags and folders in the list view via
+drag&drop.
+
+<div class="columns is-centered">
+  <div class="column is-narrow">
+  {{ imgnormal(file="drop-tag.png", width="500px") }}
+  </div>
+</div>
 
 # Confirm
 
