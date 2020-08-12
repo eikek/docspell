@@ -279,6 +279,15 @@ object ItemRoutes {
           resp <- Ok(Conversions.basicResult(res, "Attachment moved."))
         } yield resp
 
+      case req @ POST -> Root / Ident(id) / "reprocess" =>
+        for {
+          data <- req.as[StringList]
+          ids = data.items.flatMap(s => Ident.fromString(s).toOption)
+          _    <- logger.fdebug(s"Re-process item ${id.id}")
+          res  <- backend.upload.reprocess(id, ids, user.account, true)
+          resp <- Ok(Conversions.basicResult(res))
+        } yield resp
+
       case DELETE -> Root / Ident(id) =>
         for {
           n <- backend.item.deleteItem(id, user.account.collective)

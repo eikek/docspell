@@ -75,6 +75,14 @@ object RCollective {
     sql.query[RCollective].option
   }
 
+  def findByItem(itemId: Ident): ConnectionIO[Option[RCollective]] = {
+    val iColl = RItem.Columns.cid.prefix("i")
+    val iId   = RItem.Columns.id.prefix("i")
+    val cId   = id.prefix("c")
+    val from  = RItem.table ++ fr"i INNER JOIN" ++ table ++ fr"c ON" ++ iColl.is(cId)
+    selectSimple(all.map(_.prefix("c")), from, iId.is(itemId)).query[RCollective].option
+  }
+
   def existsById(cid: Ident): ConnectionIO[Boolean] = {
     val sql = selectCount(id, table, id.is(cid))
     sql.query[Int].unique.map(_ > 0)
@@ -88,6 +96,20 @@ object RCollective {
   def streamAll(order: Columns.type => Column): Stream[ConnectionIO, RCollective] = {
     val sql = selectSimple(all, table, Fragment.empty) ++ orderBy(order(Columns).f)
     sql.query[RCollective].stream
+  }
+
+  def findByAttachment(attachId: Ident): ConnectionIO[Option[RCollective]] = {
+    val iColl = RItem.Columns.cid.prefix("i")
+    val iId   = RItem.Columns.id.prefix("i")
+    val aItem = RAttachment.Columns.itemId.prefix("a")
+    val aId   = RAttachment.Columns.id.prefix("a")
+    val cId   = Columns.id.prefix("c")
+
+    val from = table ++ fr"c INNER JOIN" ++
+      RItem.table ++ fr"i ON" ++ cId.is(iColl) ++ fr"INNER JOIN" ++
+      RAttachment.table ++ fr"a ON" ++ aItem.is(iId)
+
+    selectSimple(all, from, aId.is(attachId)).query[RCollective].option
   }
 
   case class Settings(language: Language, integrationEnabled: Boolean)

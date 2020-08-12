@@ -14,6 +14,7 @@ import docspell.joex.fts.{MigrationTask, ReIndexTask}
 import docspell.joex.hk._
 import docspell.joex.notify._
 import docspell.joex.process.ItemHandler
+import docspell.joex.process.ReProcessItem
 import docspell.joex.scanmailbox._
 import docspell.joex.scheduler._
 import docspell.joexapi.client.JoexClient
@@ -94,6 +95,13 @@ object JoexAppImpl {
             ProcessItemArgs.taskName,
             ItemHandler.newItem[F](cfg, itemOps, fts),
             ItemHandler.onCancel[F]
+          )
+        )
+        .withTask(
+          JobTask.json(
+            ReProcessItemArgs.taskName,
+            ReProcessItem[F](cfg, fts),
+            ReProcessItem.onCancel[F]
           )
         )
         .withTask(

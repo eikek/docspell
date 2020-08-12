@@ -8,6 +8,28 @@ import docspell.store.records.RJob
 
 object JobFactory {
 
+  def reprocessItem[F[_]: Sync](
+      args: ReProcessItemArgs,
+      account: AccountId,
+      prio: Priority,
+      tracker: Option[Ident]
+  ): F[RJob] =
+    for {
+      id  <- Ident.randomId[F]
+      now <- Timestamp.current[F]
+      job = RJob.newJob(
+        id,
+        ReProcessItemArgs.taskName,
+        account.collective,
+        args,
+        s"Re-process files of item ${args.itemId.id}",
+        now,
+        account.user,
+        prio,
+        tracker
+      )
+    } yield job
+
   def processItem[F[_]: Sync](
       args: ProcessItemArgs,
       account: AccountId,

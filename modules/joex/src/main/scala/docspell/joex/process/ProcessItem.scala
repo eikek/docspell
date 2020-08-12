@@ -27,6 +27,17 @@ object ProcessItem {
       .flatMap(SetGivenData[F](itemOps))
       .flatMap(Task.setProgress(99))
 
+  def processAttachments[F[_]: ConcurrentEffect: ContextShift](
+      cfg: Config,
+      fts: FtsClient[F]
+  )(item: ItemData): Task[F, ProcessItemArgs, ItemData] =
+    ConvertPdf(cfg.convert, item)
+      .flatMap(Task.setProgress(30))
+      .flatMap(TextExtraction(cfg.extraction, fts))
+      .flatMap(Task.setProgress(60))
+      .flatMap(analysisOnly[F](cfg))
+      .flatMap(Task.setProgress(90))
+
   def analysisOnly[F[_]: Sync](
       cfg: Config
   )(item: ItemData): Task[F, ProcessItemArgs, ItemData] =

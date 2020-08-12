@@ -44,6 +44,19 @@ trait OUpload[F[_]] {
       case Left(srcId) =>
         submit(data, srcId, notifyJoex, itemId)
     }
+
+  /** Submits the item for re-processing. The list of attachment ids can
+    * be used to only re-process a subset of the item's attachments.
+    * If this list is empty, all attachments are reprocessed. This
+    * call only submits the job into the queue.
+    */
+  def reprocess(
+      item: Ident,
+      attachments: List[Ident],
+      account: AccountId,
+      notifyJoex: Boolean
+  ): F[OUpload.UploadResult]
+
 }
 
 object OUpload {
@@ -158,6 +171,21 @@ object OUpload {
           accId = AccountId(src.cid, src.sid)
           result <- OptionT.liftF(submit(updata, accId, notifyJoex, itemId))
         } yield result).getOrElse(UploadResult.noSource)
+
+      def reprocess(
+          item: Ident,
+          attachments: List[Ident],
+          account: AccountId,
+          notifyJoex: Boolean
+      ): F[UploadResult] =
+        (for {
+          _ <-
+            OptionT(store.transact(RItem.findByIdAndCollective(item, account.collective)))
+          args = ReProcessItemArgs(item, attachments)
+          job <-
+            OptionT.liftF(JobFactory.reprocessItem[F](args, account, Priority.Low, None))
+          res <- OptionT.liftF(submitJobs(notifyJoex)(Vector(job)))
+        } yield res).getOrElse(UploadResult.noItem)
 
       private def submitJobs(
           notifyJoex: Boolean
