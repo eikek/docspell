@@ -109,7 +109,7 @@ object RCollective {
       RItem.table ++ fr"i ON" ++ cId.is(iColl) ++ fr"INNER JOIN" ++
       RAttachment.table ++ fr"a ON" ++ aItem.is(iId)
 
-    selectSimple(all, from, aId.is(attachId)).query[RCollective].option
+    selectSimple(all.map(_.prefix("c")), from, aId.is(attachId)).query[RCollective].option
   }
 
   case class Settings(language: Language, integrationEnabled: Boolean)

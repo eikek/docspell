@@ -13,6 +13,8 @@ import docspell.ftssolr.SolrFtsClient
 import docspell.joex.fts.{MigrationTask, ReIndexTask}
 import docspell.joex.hk._
 import docspell.joex.notify._
+import docspell.joex.pdfconv.ConvertAllPdfTask
+import docspell.joex.pdfconv.PdfConvTask
 import docspell.joex.process.ItemHandler
 import docspell.joex.process.ReProcessItem
 import docspell.joex.scanmailbox._
@@ -137,6 +139,20 @@ object JoexAppImpl {
             HouseKeepingTask.taskName,
             HouseKeepingTask[F](cfg),
             HouseKeepingTask.onCancel[F]
+          )
+        )
+        .withTask(
+          JobTask.json(
+            PdfConvTask.taskName,
+            PdfConvTask[F](cfg),
+            PdfConvTask.onCancel[F]
+          )
+        )
+        .withTask(
+          JobTask.json(
+            ConvertAllPdfArgs.taskName,
+            ConvertAllPdfTask[F](queue, joex),
+            ConvertAllPdfTask.onCancel[F]
           )
         )
         .resource
