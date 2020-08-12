@@ -57,6 +57,11 @@ trait OUpload[F[_]] {
       notifyJoex: Boolean
   ): F[OUpload.UploadResult]
 
+  def convertAllPdf(
+      collective: Option[Ident],
+      account: AccountId,
+      notifyJoex: Boolean
+  ): F[OUpload.UploadResult]
 }
 
 object OUpload {
@@ -186,6 +191,16 @@ object OUpload {
             OptionT.liftF(JobFactory.reprocessItem[F](args, account, Priority.Low, None))
           res <- OptionT.liftF(submitJobs(notifyJoex)(Vector(job)))
         } yield res).getOrElse(UploadResult.noItem)
+
+      def convertAllPdf(
+          collective: Option[Ident],
+          account: AccountId,
+          notifyJoex: Boolean
+      ): F[OUpload.UploadResult] =
+        for {
+          job <- JobFactory.convertAllPdfs(collective, account, Priority.Low)
+          res <- submitJobs(notifyJoex)(Vector(job))
+        } yield res
 
       private def submitJobs(
           notifyJoex: Boolean

@@ -31,6 +31,13 @@ object ItemRoutes {
     import dsl._
 
     HttpRoutes.of {
+      case POST -> Root / "convertallpdfs" =>
+        for {
+          res <-
+            backend.upload.convertAllPdf(user.account.collective.some, user.account, true)
+          resp <- Ok(Conversions.basicResult(res))
+        } yield resp
+
       case req @ POST -> Root / "search" =>
         for {
           mask <- req.as[ItemSearch]

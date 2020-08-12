@@ -8,6 +8,27 @@ import docspell.store.records.RJob
 
 object JobFactory {
 
+  def convertAllPdfs[F[_]: Sync](
+      collective: Option[Ident],
+      account: AccountId,
+      prio: Priority
+  ): F[RJob] =
+    for {
+      id  <- Ident.randomId[F]
+      now <- Timestamp.current[F]
+      job = RJob.newJob(
+        id,
+        ConvertAllPdfArgs.taskName,
+        account.collective,
+        ConvertAllPdfArgs(collective),
+        s"Convert all pdfs not yet converted",
+        now,
+        account.user,
+        prio,
+        None
+      )
+    } yield job
+
   def reprocessItem[F[_]: Sync](
       args: ReProcessItemArgs,
       account: AccountId,
