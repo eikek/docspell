@@ -209,7 +209,8 @@ object QJob {
     store.transact(RJob.findFromIds(ids))
 
   def queueStateSnapshot(
-      collective: Ident
+      collective: Ident,
+      max: Long
   ): Stream[ConnectionIO, (RJob, Vector[RJobLog])] = {
     val JC                     = RJob.Columns
     val waiting: Set[JobState] = Set(JobState.Waiting, JobState.Stuck, JobState.Scheduled)
@@ -218,18 +219,34 @@ object QJob {
 
     def selectJobs(now: Timestamp): Stream[ConnectionIO, RJob] = {
       val refDate = now.minusHours(24)
-      val sql = selectSimple(
+
+      val runningJobs = (selectSimple(
+        JC.all,
+        RJob.table,
+        and(JC.group.is(collective), JC.state.isOneOf(running.toSeq))
+      ) ++ orderBy(JC.submitted.desc)).query[RJob].stream
+
+      val waitingJobs = (selectSimple(
         JC.all,
         RJob.table,
         and(
           JC.group.is(collective),
-          or(
-            and(JC.state.isOneOf(done.toSeq), JC.submitted.isGt(refDate)),
-            JC.state.isOneOf((running ++ waiting).toSeq)
-          )
+          JC.state.isOneOf(waiting.toSeq),
+          JC.submitted.isGt(refDate)
         )
-      )
-      (sql ++ orderBy(JC.submitted.desc)).query[RJob].stream
+      ) ++ orderBy(JC.submitted.desc)).query[RJob].stream.take(max)
+
+      val doneJobs = (selectSimple(
+        JC.all,
+        RJob.table,
+        and(
+          JC.group.is(collective),
+          JC.state.isOneOf(done.toSeq),
+          JC.submitted.isGt(refDate)
+        )
+      ) ++ orderBy(JC.submitted.desc)).query[RJob].stream.take(max)
+
+      runningJobs ++ waitingJobs ++ doneJobs
     }
 
     def selectLogs(job: RJob): ConnectionIO[Vector[RJobLog]] =
