@@ -126,11 +126,46 @@ object ConvertPdf {
       .compile
       .lastOrError
       .map(fm => Ident.unsafe(fm.id))
-      .flatMap(fmId =>
-        ctx.store
-          .transact(RAttachment.updateFileIdAndName(ra.id, fmId, newName))
-          .map(_ => fmId)
-      )
+      .flatMap(fmId => updateAttachment[F](ctx, ra, fmId, newName).map(_ => fmId))
       .map(fmId => ra.copy(fileId = fmId, name = newName))
   }
+
+  private def updateAttachment[F[_]: Sync](
+      ctx: Context[F, _],
+      ra: RAttachment,
+      fmId: Ident,
+      newName: Option[String]
+  ): F[Unit] =
+    for {
+      oldFile <- ctx.store.transact(RAttachment.findById(ra.id))
+      _ <-
+        ctx.store
+          .transact(RAttachment.updateFileIdAndName(ra.id, fmId, newName))
+      _ <- oldFile match {
+        case Some(raPrev) =>
+          for {
+            sameFile <-
+              ctx.store
+                .transact(RAttachmentSource.isSameFile(ra.id, raPrev.fileId))
+            _ <-
+              if (sameFile) ().pure[F]
+              else
+                ctx.logger.info("Deleting previous attachment file") *>
+                  ctx.store.bitpeace
+                    .delete(raPrev.fileId.id)
+                    .compile
+                    .drain
+                    .attempt
+                    .flatMap {
+                      case Right(_) => ().pure[F]
+                      case Left(ex) =>
+                        ctx.logger
+                          .error(ex)(s"Cannot delete previous attachment file: ${raPrev}")
+
+                    }
+          } yield ()
+        case None =>
+          ().pure[F]
+      }
+    } yield ()
 }

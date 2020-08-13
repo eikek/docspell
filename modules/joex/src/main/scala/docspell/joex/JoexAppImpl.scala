@@ -13,7 +13,10 @@ import docspell.ftssolr.SolrFtsClient
 import docspell.joex.fts.{MigrationTask, ReIndexTask}
 import docspell.joex.hk._
 import docspell.joex.notify._
+import docspell.joex.pdfconv.ConvertAllPdfTask
+import docspell.joex.pdfconv.PdfConvTask
 import docspell.joex.process.ItemHandler
+import docspell.joex.process.ReProcessItem
 import docspell.joex.scanmailbox._
 import docspell.joex.scheduler._
 import docspell.joexapi.client.JoexClient
@@ -84,7 +87,7 @@ object JoexAppImpl {
       joex    <- OJoex(client, store)
       upload  <- OUpload(store, queue, cfg.files, joex)
       fts     <- createFtsClient(cfg)(httpClient)
-      itemOps <- OItem(store, fts)
+      itemOps <- OItem(store, fts, queue, joex)
       javaEmil =
         JavaMailEmil(blocker, Settings.defaultSettings.copy(debug = cfg.mailDebug))
       sch <- SchedulerBuilder(cfg.scheduler, blocker, store)
@@ -94,6 +97,13 @@ object JoexAppImpl {
             ProcessItemArgs.taskName,
             ItemHandler.newItem[F](cfg, itemOps, fts),
             ItemHandler.onCancel[F]
+          )
+        )
+        .withTask(
+          JobTask.json(
+            ReProcessItemArgs.taskName,
+            ReProcessItem[F](cfg, fts),
+            ReProcessItem.onCancel[F]
           )
         )
         .withTask(
@@ -129,6 +139,20 @@ object JoexAppImpl {
             HouseKeepingTask.taskName,
             HouseKeepingTask[F](cfg),
             HouseKeepingTask.onCancel[F]
+          )
+        )
+        .withTask(
+          JobTask.json(
+            PdfConvTask.taskName,
+            PdfConvTask[F](cfg),
+            PdfConvTask.onCancel[F]
+          )
+        )
+        .withTask(
+          JobTask.json(
+            ConvertAllPdfArgs.taskName,
+            ConvertAllPdfTask[F](queue, joex),
+            ConvertAllPdfTask.onCancel[F]
           )
         )
         .resource

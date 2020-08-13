@@ -48,7 +48,9 @@ object OJob {
 
       def queueState(collective: Ident, maxResults: Int): F[CollectiveQueueState] =
         store
-          .transact(QJob.queueStateSnapshot(collective).take(maxResults.toLong))
+          .transact(
+            QJob.queueStateSnapshot(collective, maxResults.toLong)
+          )
           .map(t => JobDetail(t._1, t._2))
           .compile
           .toVector

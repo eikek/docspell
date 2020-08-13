@@ -8,6 +8,50 @@ import docspell.store.records.RJob
 
 object JobFactory {
 
+  def convertAllPdfs[F[_]: Sync](
+      collective: Option[Ident],
+      account: AccountId,
+      prio: Priority
+  ): F[RJob] =
+    for {
+      id  <- Ident.randomId[F]
+      now <- Timestamp.current[F]
+      job = RJob.newJob(
+        id,
+        ConvertAllPdfArgs.taskName,
+        account.collective,
+        ConvertAllPdfArgs(collective),
+        s"Convert all pdfs not yet converted",
+        now,
+        account.user,
+        prio,
+        collective
+          .map(c => c / ConvertAllPdfArgs.taskName)
+          .orElse(ConvertAllPdfArgs.taskName.some)
+      )
+    } yield job
+
+  def reprocessItem[F[_]: Sync](
+      args: ReProcessItemArgs,
+      account: AccountId,
+      prio: Priority
+  ): F[RJob] =
+    for {
+      id  <- Ident.randomId[F]
+      now <- Timestamp.current[F]
+      job = RJob.newJob(
+        id,
+        ReProcessItemArgs.taskName,
+        account.collective,
+        args,
+        s"Re-process files of item ${args.itemId.id}",
+        now,
+        account.user,
+        prio,
+        Some(ReProcessItemArgs.taskName / args.itemId)
+      )
+    } yield job
+
   def processItem[F[_]: Sync](
       args: ProcessItemArgs,
       account: AccountId,

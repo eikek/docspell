@@ -67,7 +67,7 @@ logged in.
 The relevant part of the config file regarding the scheduler is shown
 below with some explanations.
 
-```
+``` conf
 docspell.joex {
   # other settings left out for brevity
 

@@ -42,6 +42,12 @@ object RAttachmentSource {
   def findById(attachId: Ident): ConnectionIO[Option[RAttachmentSource]] =
     selectSimple(all, table, id.is(attachId)).query[RAttachmentSource].option
 
+  def isSameFile(attachId: Ident, file: Ident): ConnectionIO[Boolean] =
+    selectCount(id, table, and(id.is(attachId), fileId.is(file)))
+      .query[Int]
+      .unique
+      .map(_ > 0)
+
   def delete(attachId: Ident): ConnectionIO[Int] =
     deleteFrom(table, id.is(attachId)).update.run
 
@@ -62,6 +68,17 @@ object RAttachmentSource {
     val where = and(aId.is(attachId), bId.is(attachId), iColl.is(collective))
 
     selectSimple(all.map(_.prefix("a")), from, where).query[RAttachmentSource].option
+  }
+
+  def findByItem(itemId: Ident): ConnectionIO[Vector[RAttachmentSource]] = {
+    val sId   = Columns.id.prefix("s")
+    val aId   = RAttachment.Columns.id.prefix("a")
+    val aItem = RAttachment.Columns.itemId.prefix("a")
+
+    val from = table ++ fr"s INNER JOIN" ++ RAttachment.table ++ fr"a ON" ++ sId.is(aId)
+    selectSimple(all.map(_.prefix("s")), from, aItem.is(itemId))
+      .query[RAttachmentSource]
+      .to[Vector]
   }
 
   def findByItemWithMeta(

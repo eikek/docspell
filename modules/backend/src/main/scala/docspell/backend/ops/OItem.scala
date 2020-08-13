@@ -4,10 +4,12 @@ import cats.data.OptionT
 import cats.effect.{Effect, Resource}
 import cats.implicits._
 
+import docspell.backend.JobFactory
 import docspell.common._
 import docspell.ftsclient.FtsClient
 import docspell.store.UpdateResult
 import docspell.store.queries.{QAttachment, QItem}
+import docspell.store.queue.JobQueue
 import docspell.store.records._
 import docspell.store.{AddResult, Store}
 
@@ -76,11 +78,38 @@ trait OItem[F[_]] {
       name: Option[String],
       collective: Ident
   ): F[AddResult]
+
+  /** Submits the item for re-processing. The list of attachment ids can
+    * be used to only re-process a subset of the item's attachments.
+    * If this list is empty, all attachments are reprocessed. This
+    * call only submits the job into the queue.
+    */
+  def reprocess(
+      item: Ident,
+      attachments: List[Ident],
+      account: AccountId,
+      notifyJoex: Boolean
+  ): F[UpdateResult]
+
+  /** Submits a task that finds all non-converted pdfs and triggers
+    * converting them using ocrmypdf. Each file is converted by a
+    * separate task.
+    */
+  def convertAllPdf(
+      collective: Option[Ident],
+      account: AccountId,
+      notifyJoex: Boolean
+  ): F[UpdateResult]
 }
 
 object OItem {
 
-  def apply[F[_]: Effect](store: Store[F], fts: FtsClient[F]): Resource[F, OItem[F]] =
+  def apply[F[_]: Effect](
+      store: Store[F],
+      fts: FtsClient[F],
+      queue: JobQueue[F],
+      joex: OJoex[F]
+  ): Resource[F, OItem[F]] =
     for {
       otag   <- OTag(store)
       oorg   <- OOrganization(store)
@@ -399,6 +428,35 @@ object OItem {
                   .fold(())(identity)
               )
             )
+
+        def reprocess(
+            item: Ident,
+            attachments: List[Ident],
+            account: AccountId,
+            notifyJoex: Boolean
+        ): F[UpdateResult] =
+          (for {
+            _ <- OptionT(
+              store.transact(RItem.findByIdAndCollective(item, account.collective))
+            )
+            args = ReProcessItemArgs(item, attachments)
+            job <- OptionT.liftF(
+              JobFactory.reprocessItem[F](args, account, Priority.Low)
+            )
+            _ <- OptionT.liftF(queue.insertIfNew(job))
+            _ <- OptionT.liftF(if (notifyJoex) joex.notifyAllNodes else ().pure[F])
+          } yield UpdateResult.success).getOrElse(UpdateResult.notFound)
+
+        def convertAllPdf(
+            collective: Option[Ident],
+            account: AccountId,
+            notifyJoex: Boolean
+        ): F[UpdateResult] =
+          for {
+            job <- JobFactory.convertAllPdfs[F](collective, account, Priority.Low)
+            _   <- queue.insertIfNew(job)
+            _   <- if (notifyJoex) joex.notifyAllNodes else ().pure[F]
+          } yield UpdateResult.success
 
         private def onSuccessIgnoreError(update: F[Unit])(ar: AddResult): F[Unit] =
           ar match {

@@ -61,7 +61,7 @@ object BackendApp {
       uploadImpl     <- OUpload(store, queue, cfg.files, joexImpl)
       nodeImpl       <- ONode(store)
       jobImpl        <- OJob(store, joexImpl)
-      itemImpl       <- OItem(store, ftsClient)
+      itemImpl       <- OItem(store, ftsClient, queue, joexImpl)
       itemSearchImpl <- OItemSearch(store)
       fulltextImpl   <- OFulltext(itemSearchImpl, ftsClient, store, queue, joexImpl)
       javaEmil =

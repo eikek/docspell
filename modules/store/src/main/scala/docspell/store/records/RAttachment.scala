@@ -1,6 +1,7 @@
 package docspell.store.records
 
 import cats.implicits._
+import fs2.Stream
 
 import docspell.common._
 import docspell.store.impl.Implicits._
@@ -69,6 +70,16 @@ object RAttachment {
       table,
       id.is(attachId),
       commas(fileId.setTo(fId), name.setTo(fname))
+    ).update.run
+
+  def updateFileId(
+      attachId: Ident,
+      fId: Ident
+  ): ConnectionIO[Int] =
+    updateRow(
+      table,
+      id.is(attachId),
+      fileId.setTo(fId)
     ).update.run
 
   def updatePosition(attachId: Ident, pos: Int): ConnectionIO[Int] =
@@ -187,4 +198,32 @@ object RAttachment {
 
   def findItemId(attachId: Ident): ConnectionIO[Option[Ident]] =
     selectSimple(Seq(itemId), table, id.is(attachId)).query[Ident].option
+
+  def findNonConvertedPdf(
+      coll: Option[Ident],
+      chunkSize: Int
+  ): Stream[ConnectionIO, RAttachment] = {
+    val aId     = Columns.id.prefix("a")
+    val aItem   = Columns.itemId.prefix("a")
+    val aFile   = Columns.fileId.prefix("a")
+    val sId     = RAttachmentSource.Columns.id.prefix("s")
+    val sFile   = RAttachmentSource.Columns.fileId.prefix("s")
+    val iId     = RItem.Columns.id.prefix("i")
+    val iColl   = RItem.Columns.cid.prefix("i")
+    val mId     = RFileMeta.Columns.id.prefix("m")
+    val mType   = RFileMeta.Columns.mimetype.prefix("m")
+    val pdfType = "application/pdf%"
+
+    val from = table ++ fr"a INNER JOIN" ++
+      RAttachmentSource.table ++ fr"s ON" ++ sId.is(aId) ++ fr"INNER JOIN" ++
+      RItem.table ++ fr"i ON" ++ iId.is(aItem) ++ fr"INNER JOIN" ++
+      RFileMeta.table ++ fr"m ON" ++ aFile.is(mId)
+    val where = coll match {
+      case Some(cid) => and(iColl.is(cid), aFile.is(sFile), mType.lowerLike(pdfType))
+      case None      => and(aFile.is(sFile), mType.lowerLike(pdfType))
+    }
+    selectSimple(all.map(_.prefix("a")), from, where)
+      .query[RAttachment]
+      .streamWithChunkSize(chunkSize)
+  }
 }

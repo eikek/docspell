@@ -28,6 +28,8 @@ trait JobQueue[F[_]] {
 
   def insertAll(jobs: Seq[RJob]): F[Unit]
 
+  def insertAllIfNew(jobs: Seq[RJob]): F[Unit]
+
   def nextJob(
       prio: Ident => F[Priority],
       worker: Ident,
@@ -81,5 +83,13 @@ object JobQueue {
               logger.error(ex)("Could not insert job. Skipping it.")
           })
 
+      def insertAllIfNew(jobs: Seq[RJob]): F[Unit] =
+        jobs.toList
+          .traverse(j => insertIfNew(j).attempt)
+          .map(_.foreach {
+            case Right(()) =>
+            case Left(ex) =>
+              logger.error(ex)("Could not insert job. Skipping it.")
+          })
     })
 }
