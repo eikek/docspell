@@ -1,5 +1,75 @@
 # Changelog
 
+## v0.10.0
+
+*Soon*
+
+- Lots of web ui improvements:
+  - Rework the search menu for [tags and
+    folders](https://docspell.org/docs/webapp/finding/#tags-tag-categories):
+    The dropdown field is removed for tags and folders. They are
+    represented as a list and items can be cycled through to be
+    included/excluded or deselected. It is possible to use
+    drag-and-drop to associate tags to items and put items into
+    folders.
+  - Rework page that displays sources; allow to copy the urls and add
+    a qr code
+  - Add item notes to the cards in the list view, can be configured if
+    it is shown or not (see #186, #201)
+  - Improve how the item notes are displayed (see #186)
+  - Fix the *Load more…* button
+  - Allow to search by tag categories (see #203)
+  - Allow to edit metadata in item detail view. Until now it was only
+    possible to add new metadata (see #205)
+  - Do not cover the whole screen with the metadata modal dialog, only
+    the menu is now covered so that it is possible to select text from
+    the document (see #205)
+  - Allow to hide some fields from the menus. What fields to display
+    can be configured in the ui settings (see #195)
+- Implemented some routes that were specified in the openapi, but have
+  not been implemented so far
+- Fix source upload routes where it didn't check whether a source is
+  enabled or not. Further checks are now done as first step to not
+  upload the file into memory for nothing if something fails (e.g. the
+  source doesn't exist)
+- Re-process files. A
+  [route](https://docspell.org/openapi/docspell-openapi.html#api-Item-secItemItemIdReprocessPost)
+  has been added that submits files for re-processing. It is possible
+  to re-process some files of an item or all. There is no UI for this
+  for now. You'd need to run `curl` or something manually to trigger
+  it. It will replace all extracted metadata of the *files*,but
+  doesn't touch the metadata of the item.
+- Add a task to convert all pdfs using the
+  [OCRMyPdf](https://github.com/jbarlow83/OCRmyPDF) tool that can be
+  used in docspell since the last release. This task converts all your
+  existing PDFs into a PDF/A type pdf including the OCR-ed text layer.
+  There is no UI to trigger this task, but a
+  [script](https://docspell.org/docs/tools/convert-all-pdf/) is
+  provided to help with it.
+- There is now an [Android Client
+  App](https://github.com/docspell/android-client) to conveniently
+  upload files from your android devices
+
+### Configuration Changes
+
+- New setting `docspell.server.max-note-length` to specify how much of
+  the item notes should be transeferred with each search result.
+
+### REST Api Changes
+
+- Added `/sec/collective/tagcloud` to return all used tags of a
+  collective. This is the same as returned from the `insights` route,
+  but without all the other data.
+- Added `/sec/item/convertallpdfs` to trigger a task for converting
+  all currently unconverted pdfs
+- Added `/sec/item/{id}/taglink` for associating tags given by name or
+  id
+- Added `/sec/item/{id}/tagtoggle` for toggling tags given by name or
+  id
+- Added `/sec/item/{id}/reprocess` for submitting an item for being
+  re-processed
+
+
 ## v0.9.0
 
 *Aug 1st, 2020*
