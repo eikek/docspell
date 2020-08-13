@@ -87,7 +87,7 @@ object JoexAppImpl {
       joex    <- OJoex(client, store)
       upload  <- OUpload(store, queue, cfg.files, joex)
       fts     <- createFtsClient(cfg)(httpClient)
-      itemOps <- OItem(store, fts)
+      itemOps <- OItem(store, fts, queue, joex)
       javaEmil =
         JavaMailEmil(blocker, Settings.defaultSettings.copy(debug = cfg.mailDebug))
       sch <- SchedulerBuilder(cfg.scheduler, blocker, store)

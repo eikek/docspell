@@ -25,15 +25,16 @@ object JobFactory {
         now,
         account.user,
         prio,
-        None
+        collective
+          .map(c => c / ConvertAllPdfArgs.taskName)
+          .orElse(ConvertAllPdfArgs.taskName.some)
       )
     } yield job
 
   def reprocessItem[F[_]: Sync](
       args: ReProcessItemArgs,
       account: AccountId,
-      prio: Priority,
-      tracker: Option[Ident]
+      prio: Priority
   ): F[RJob] =
     for {
       id  <- Ident.randomId[F]
@@ -47,7 +48,7 @@ object JobFactory {
         now,
         account.user,
         prio,
-        tracker
+        Some(ReProcessItemArgs.taskName / args.itemId)
       )
     } yield job
 

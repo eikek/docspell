@@ -34,8 +34,8 @@ object ItemRoutes {
       case POST -> Root / "convertallpdfs" =>
         for {
           res <-
-            backend.upload.convertAllPdf(user.account.collective.some, user.account, true)
-          resp <- Ok(Conversions.basicResult(res))
+            backend.item.convertAllPdf(user.account.collective.some, user.account, true)
+          resp <- Ok(Conversions.basicResult(res, "Task submitted"))
         } yield resp
 
       case req @ POST -> Root / "search" =>
@@ -288,11 +288,11 @@ object ItemRoutes {
 
       case req @ POST -> Root / Ident(id) / "reprocess" =>
         for {
-          data <- req.as[StringList]
-          ids = data.items.flatMap(s => Ident.fromString(s).toOption)
+          data <- req.as[IdList]
+          ids = data.ids.flatMap(s => Ident.fromString(s).toOption)
           _    <- logger.fdebug(s"Re-process item ${id.id}")
-          res  <- backend.upload.reprocess(id, ids, user.account, true)
-          resp <- Ok(Conversions.basicResult(res))
+          res  <- backend.item.reprocess(id, ids, user.account, true)
+          resp <- Ok(Conversions.basicResult(res, "Re-process task submitted."))
         } yield resp
 
       case DELETE -> Root / Ident(id) =>

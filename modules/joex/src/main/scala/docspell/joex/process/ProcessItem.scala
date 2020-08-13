@@ -17,12 +17,7 @@ object ProcessItem {
   )(item: ItemData): Task[F, ProcessItemArgs, ItemData] =
     ExtractArchive(item)
       .flatMap(Task.setProgress(20))
-      .flatMap(ConvertPdf(cfg.convert, _))
-      .flatMap(Task.setProgress(40))
-      .flatMap(TextExtraction(cfg.extraction, fts))
-      .flatMap(Task.setProgress(60))
-      .flatMap(analysisOnly[F](cfg))
-      .flatMap(Task.setProgress(80))
+      .flatMap(processAttachments0(cfg, fts, (40, 60, 80)))
       .flatMap(LinkProposal[F])
       .flatMap(SetGivenData[F](itemOps))
       .flatMap(Task.setProgress(99))
@@ -31,12 +26,7 @@ object ProcessItem {
       cfg: Config,
       fts: FtsClient[F]
   )(item: ItemData): Task[F, ProcessItemArgs, ItemData] =
-    ConvertPdf(cfg.convert, item)
-      .flatMap(Task.setProgress(30))
-      .flatMap(TextExtraction(cfg.extraction, fts))
-      .flatMap(Task.setProgress(60))
-      .flatMap(analysisOnly[F](cfg))
-      .flatMap(Task.setProgress(90))
+    processAttachments0[F](cfg, fts, (30, 60, 90))(item)
 
   def analysisOnly[F[_]: Sync](
       cfg: Config
@@ -45,4 +35,16 @@ object ProcessItem {
       .flatMap(FindProposal[F](cfg.processing))
       .flatMap(EvalProposals[F])
       .flatMap(SaveProposals[F])
+
+  private def processAttachments0[F[_]: ConcurrentEffect: ContextShift](
+      cfg: Config,
+      fts: FtsClient[F],
+      progress: (Int, Int, Int)
+  )(item: ItemData): Task[F, ProcessItemArgs, ItemData] =
+    ConvertPdf(cfg.convert, item)
+      .flatMap(Task.setProgress(progress._1))
+      .flatMap(TextExtraction(cfg.extraction, fts))
+      .flatMap(Task.setProgress(progress._2))
+      .flatMap(analysisOnly[F](cfg))
+      .flatMap(Task.setProgress(progress._3))
 }
