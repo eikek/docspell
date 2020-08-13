@@ -29,6 +29,8 @@ scripts. For this the next variant exists.
 
 It is also possible to upload files without authentication. This
 should make tools that interact with docspell much easier to write.
+The [Android Client App](@/docs/tools/android.md) uses these urls to
+upload files.
 
 Go to "Collective Settings" and then to the "Source" tab. A *Source*
 identifies an endpoint where files can be uploaded anonymously.
@@ -41,7 +43,7 @@ username is not visible.
 
 Example screenshot:
 
-{{ figure(file="sources-form.png") }}
+{{ figure(file="sources-edit.png") }}
 
 This example shows a source with name "test". Besides a description
 and a name that is only used for displaying purposes, a priority and a
@@ -58,25 +60,26 @@ The source endpoint defines two urls:
 - `/app/upload/<id>`
 - `/api/v1/open/upload/item/<id>`
 
+{{ figure(file="sources-form.png") }}
+
 The first points to a web page where everyone could upload files into
 your account. You could give this url to people for sending files
 directly into your docspell.
 
 The second url is the API url, which accepts the requests to upload
-files (it is used by the upload page, the first url).
+files. This second url can be used with the [Android Client
+App](@/docs/tools/android.md) to upload files.
 
-For example, the api url can be used to upload files with curl:
+Another example is to use curl for uploading files from the command
+line::
 
 ``` bash
 $ curl -XPOST -F file=@test.pdf http://192.168.1.95:7880/api/v1/open/upload/item/3H7hvJcDJuk-NrAW4zxsdfj-K6TMPyb6BGP-xKptVxUdqWa
 {"success":true,"message":"Files submitted."}
 ```
 
-You could add more `-F file=@/path/to/your/file.pdf` to upload
-multiple files (note, the `@` is required by curl, so it knows that
-the following is a file). There is a [script
-provided](@/docs/tools/ds.md) that uses this to upload files from the
-command line.
+There is a [script provided](@/docs/tools/ds.md) that uses curl to
+upload files from the command line more conveniently.
 
 When files are uploaded to an source endpoint, the items resulting
 from this uploads are marked with the name of the source. So you know
