@@ -72,16 +72,16 @@ looked at are marked as "new" automatically.
 Click on a tag to show only items with this tag, the tag is marked
 with a check (✔) icon. Click again, to show only items that are not
 tagged with the tag. Then the tag is marked with a minus (–) icon.
-Clicking a third time deselects the tag and the icon goes back to an
+Clicking a third time deselects the tag and the icon goes back to a
 "tag" icon.
 
-By default, a few tags are shown and you can expand to list all using
-the *Show more* link. How many tags are displayed can be changed in
-the ui settings (go to *User Settings* ‣ *Ui Settings*).
+By default, the most used tags are shown and you can click on *Show
+more…* to list all. How many tags are displayed can be changed in the
+ui settings (go to *User Settings* ‣ *Ui Settings*).
 
-When multiple tags are checked (✔), only tags are shown that have all
-the tags. When multiple tags are excluded (–), then only tags are
-shown that don't have at least one of these tags.
+When multiple tags are checked (✔), only items are shown that have all
+these tags. When multiple tags are excluded (–), then only items are
+shown that don't have these tags.
 
 The same applies to tag categories. You can show all items that have
 at least on tag of a checked (✔) category. Or you can list all items

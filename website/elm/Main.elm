@@ -111,6 +111,13 @@ view model =
     node "body"
         []
         [ mainHero model
+        , demoHero
+        , section [ class "section" ]
+            [ div [ class "container" ]
+                [ Demo.demo Demo.processDemo
+                , Demo.demo Demo.navigateDemo
+                ]
+            ]
         , featureHero model
         , section [ class "section" ]
             [ div [ class "container" ]
@@ -126,13 +133,6 @@ view model =
                             ]
                        ]
                 )
-            ]
-        , demoHero
-        , section [ class "section" ]
-            [ div [ class "container" ]
-                [ Demo.demo Demo.processDemo
-                , Demo.demo Demo.navigateDemo
-                ]
             ]
         , getStartedHero model
         , div [ class "section" ]
@@ -322,10 +322,10 @@ mainHero model =
                     ]
                 , div [ class " buttons is-centered" ]
                     [ a
-                        [ class "button is-primary is-medium"
-                        , href "#get-started"
+                        [ class "button is-info is-medium"
+                        , href "#demos"
                         ]
-                        [ text "Get Started"
+                        [ text "Screencasts"
                         ]
                     , a
                         [ class "button is-info is-medium"
@@ -334,10 +334,10 @@ mainHero model =
                         [ text "Features"
                         ]
                     , a
-                        [ class "button is-info is-medium"
-                        , href "#demos"
+                        [ class "button is-primary is-medium"
+                        , href "#get-started"
                         ]
-                        [ text "Screencast"
+                        [ text "Get Started"
                         ]
                     ]
                 ]
