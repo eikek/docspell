@@ -28,7 +28,7 @@ object CollectiveRoutes {
           resp <- Ok(Conversions.mkItemInsights(ins))
         } yield resp
 
-      case GET -> Root / "cloud" =>
+      case GET -> Root / "tagcloud" =>
         for {
           cloud <- backend.collective.tagCloud(user.account.collective)
           resp  <- Ok(Conversions.mkTagCloud(cloud))

@@ -798,7 +798,7 @@ versionInfo flags receive =
 getTagCloud : Flags -> (Result Http.Error TagCloud -> msg) -> Cmd msg
 getTagCloud flags receive =
     Http2.authGet
-        { url = flags.config.baseUrl ++ "/api/v1/sec/collective/cloud"
+        { url = flags.config.baseUrl ++ "/api/v1/sec/collective/tagcloud"
         , account = getAccount flags
         , expect = Http.expectJson receive Api.Model.TagCloud.decoder
         }

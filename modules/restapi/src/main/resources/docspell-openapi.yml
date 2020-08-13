@@ -1012,7 +1012,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ItemInsights"
-  /sec/collective/cloud:
+  /sec/collective/tagcloud:
     get:
       tags: [ Collective ]
       summary: Summary of used tags.
