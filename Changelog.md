@@ -2,7 +2,7 @@
 
 ## v0.10.0
 
-*Soon*
+*Aug 15, 2020*
 
 - Lots of web ui improvements:
   - Rework the search menu for [tags and
