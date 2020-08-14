@@ -106,7 +106,7 @@ makeSingle :
 makeSingle opts =
     makeModel
         { multiple = False
-        , searchable = \n -> n > 5
+        , searchable = \n -> n > 0
         , makeOption = opts.makeOption
         , labelColor = \_ -> \_ -> ""
         , placeholder = opts.placeholder
@@ -144,7 +144,7 @@ makeMultiple :
 makeMultiple opts =
     makeModel
         { multiple = True
-        , searchable = \n -> n > 5
+        , searchable = \n -> n > 0
         , makeOption = opts.makeOption
         , labelColor = opts.labelColor
         , placeholder = ""
@@ -403,7 +403,6 @@ viewSingle model =
             div
                 [ class "message"
                 , style "display" "inline-block !important"
-                , onClick ToggleMenu
                 ]
                 [ i [ class "delete icon", onClick (RemoveItem item) ] []
                 , text item.option.text
@@ -429,13 +428,28 @@ viewSingle model =
             ]
     in
     div
-        [ classList
+        (classList
             [ ( "ui search dropdown selection", True )
             , ( "open", model.menuOpen )
             ]
-        ]
+            :: (if model.menuOpen then
+                    []
+
+                else
+                    [ onClick ToggleMenu ]
+               )
+        )
         (List.append
-            [ i [ class "dropdown icon", onClick ToggleMenu ] []
+            [ i
+                (class "dropdown icon"
+                    :: (if model.menuOpen then
+                            [ onClick ToggleMenu ]
+
+                        else
+                            []
+                       )
+                )
+                []
             ]
          <|
             if model.menuOpen && isSearchable model then

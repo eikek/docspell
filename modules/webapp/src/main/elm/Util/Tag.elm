@@ -14,7 +14,7 @@ makeDropdownModel : Comp.Dropdown.Model Tag
 makeDropdownModel =
     Comp.Dropdown.makeModel
         { multiple = True
-        , searchable = \n -> n > 5
+        , searchable = \n -> n > 0
         , makeOption = \tag -> { value = tag.id, text = tag.name, additional = "" }
         , labelColor =
             \tag ->
@@ -28,7 +28,7 @@ makeCatDropdownModel : Comp.Dropdown.Model String
 makeCatDropdownModel =
     Comp.Dropdown.makeModel
         { multiple = True
-        , searchable = \n -> n > 5
+        , searchable = \n -> n > 0
         , makeOption = \cat -> { value = cat, text = cat, additional = "" }
         , labelColor = \_ -> \_ -> ""
         , placeholder = "Choose a tag category…"

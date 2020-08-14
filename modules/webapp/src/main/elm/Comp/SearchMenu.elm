@@ -89,7 +89,7 @@ init =
     , orgModel =
         Comp.Dropdown.makeModel
             { multiple = False
-            , searchable = \n -> n > 5
+            , searchable = \n -> n > 0
             , makeOption = \e -> { value = e.id, text = e.name, additional = "" }
             , labelColor = \_ -> \_ -> ""
             , placeholder = "Choose an organization"
@@ -107,7 +107,7 @@ init =
     , concEquipmentModel =
         Comp.Dropdown.makeModel
             { multiple = False
-            , searchable = \n -> n > 5
+            , searchable = \n -> n > 0
             , makeOption = \e -> { value = e.id, text = e.name, additional = "" }
             , labelColor = \_ -> \_ -> ""
             , placeholder = "Choose an equipment"
