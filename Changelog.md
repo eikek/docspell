@@ -15,17 +15,18 @@
   - Rework page that displays sources; allow to copy the urls and add
     a qr code
   - Add item notes to the cards in the list view, can be configured if
-    it is shown or not (see #186, #201)
-  - Improve how the item notes are displayed (see #186)
+    it is shown or not (#186, #201)
+  - Improve how the item notes are displayed in the item detail view
+    (#186, #192)
   - Fix the *Load more…* button
-  - Allow to search by tag categories (see #203)
+  - Allow to search by tag categories (#203)
   - Allow to edit metadata in item detail view. Until now it was only
-    possible to add new metadata (see #205)
+    possible to add new metadata (#205)
   - Do not cover the whole screen with the metadata modal dialog, only
     the menu is now covered so that it is possible to select text from
-    the document (see #205)
+    the document (#205)
   - Allow to hide some fields from the menus. What fields to display
-    can be configured in the ui settings (see #195)
+    can be configured in the ui settings (#195)
 - Implemented some routes that were specified in the openapi, but have
   not been implemented so far
 - Fix source upload routes where it didn't check whether a source is
@@ -38,14 +39,14 @@
   to re-process some files of an item or all. There is no UI for this
   for now. You'd need to run `curl` or something manually to trigger
   it. It will replace all extracted metadata of the *files*,but
-  doesn't touch the metadata of the item.
+  doesn't touch the metadata of the item. (#206)
 - Add a task to convert all pdfs using the
   [OCRMyPdf](https://github.com/jbarlow83/OCRmyPDF) tool that can be
   used in docspell since the last release. This task converts all your
   existing PDFs into a PDF/A type pdf including the OCR-ed text layer.
   There is no UI to trigger this task, but a
   [script](https://docspell.org/docs/tools/convert-all-pdf/) is
-  provided to help with it.
+  provided to help with it. (#206)
 - There is now an [Android Client
   App](https://github.com/docspell/android-client) to conveniently
   upload files from your android devices

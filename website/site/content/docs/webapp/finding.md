@@ -134,7 +134,7 @@ restrict the results using full text search with the *content* field.
 {% infobubble(mode="warning", title="Please note") %}
 This field is intended to be used in conjunction with other fields in
 the search menu. It *may be really slow* if used alone, since first
-the database query is executed and its results are furhter constrained
+the database query is executed and its results are further constrained
 by fulltext search.
 
 Use the search-bar with option *Contents Only* to do quick fulltext

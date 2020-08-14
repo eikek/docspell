@@ -95,7 +95,7 @@ data* associated:
   `bill`, `contract`, `receipt` etc. Usually an item is not tagged
   with more than one tag of a category.
 - a *folder*: a folder is similiar to a tag, but an item can only be
-  in exactly one folder (or none). Furhtermore folders allow to
+  in exactly one folder (or none). Furthermore folders allow to
   associate users, so that items are only visible to the users who are
   members of a folder.
 - an *item date*: this is the date of the document – if this is not

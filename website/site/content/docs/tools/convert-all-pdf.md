@@ -20,6 +20,11 @@ your collective.
 There is no UI part to trigger this route, so you need to use curl or
 the script `convert-all-pdfs.sh` in the `tools/` directory.
 
+# Requirements
+
+It is a bash script that additionally needs
+[curl](https://curl.haxx.se/) and
+[jq](https://stedolan.github.io/jq/).
 
 # Usage
 
