@@ -29,14 +29,15 @@ RUN apk add --no-cache openjdk11-jre \
     libffi-dev\
     qpdf-dev \
     openssl-dev \
+    ocrmypdf \
+  && ln -s /usr/bin/python3 /usr/bin/python \
   && pip3 install --upgrade pip \
-  && pip3 install pdfminer.six==20200517 ocrmypdf \
+  && pip3 install ocrmypdf \
   && curl -Ls $UNO_URL -o /usr/local/bin/unoconv \
   && chmod +x /usr/local/bin/unoconv \
-  && ln -s /usr/bin/python3 /usr/bin/python \
   && mkdir -p /opt \
   && cd /opt \
-  && curl -L -o docspell.zip https://github.com/eikek/docspell/releases/download/v0.9.0/docspell-joex-0.9.0.zip \
+  && curl -L -o docspell.zip https://github.com/eikek/docspell/releases/download/v0.10.0/docspell-joex-0.10.0.zip \
   && unzip docspell.zip \
   && rm docspell.zip \
   && apk del curl unzip libxml2-dev libxslt-dev zlib-dev g++ python3-dev libffi-dev qpdf-dev openssl-dev
