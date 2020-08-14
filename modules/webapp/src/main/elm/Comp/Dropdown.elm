@@ -525,7 +525,6 @@ renderPlaceholder model =
             , ( "text", model.multiple )
             ]
         , style "display" "inline-block !important"
-        , onClick ToggleMenu
         ]
         [ text model.placeholder
         ]
