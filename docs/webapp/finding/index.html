@@ -169,26 +169,14 @@
                                             </li>
                                             
                                             <li>
-                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;finding&#x2F;#names-1">
-                                                    Names
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;finding&#x2F;#tags-tag-categories">
+                                                    Tags &amp; Tag Categories
                                                 </a>
                                             </li>
                                             
                                             <li>
                                                 <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;finding&#x2F;#folder">
                                                     Folder
-                                                </a>
-                                            </li>
-                                            
-                                            <li>
-                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;finding&#x2F;#tags">
-                                                    Tags
-                                                </a>
-                                            </li>
-                                            
-                                            <li>
-                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;finding&#x2F;#content">
-                                                    Content
                                                 </a>
                                             </li>
                                             
@@ -201,6 +189,18 @@
                                             <li>
                                                 <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;finding&#x2F;#concerned">
                                                     Concerned
+                                                </a>
+                                            </li>
+                                            
+                                            <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;finding&#x2F;#names-1">
+                                                    Names
+                                                </a>
+                                            </li>
+                                            
+                                            <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;finding&#x2F;#content">
+                                                    Content
                                                 </a>
                                             </li>
                                             
@@ -353,22 +353,51 @@ bar. It shows some options to constrain the item list:</p>
 <p>Clicking the checkbox &quot;Only new&quot; shows items that have not been
 &quot;Confirmed&quot;. All items that have been created by docspell and not
 looked at are marked as &quot;new&quot; automatically.</p>
+<h2 id="tags-tag-categories">Tags &amp; Tag Categories<a class="zola-anchor" href="#tags-tag-categories" aria-label="Anchor link for: tags-tag-categories">🔗</a></h2>
+<p>Click on a tag to show only items with this tag, the tag is marked
+with a check (✔) icon. Click again, to show only items that are not
+tagged with the tag. Then the tag is marked with a minus (–) icon.
+Clicking a third time deselects the tag and the icon goes back to a
+&quot;tag&quot; icon.</p>
+<p>By default, the most used tags are shown and you can click on <em>Show
+more…</em> to list all. How many tags are displayed can be changed in the
+ui settings (go to <em>User Settings</em> ‣ <em>Ui Settings</em>).</p>
+<p>When multiple tags are checked (✔), only items are shown that have all
+these tags. When multiple tags are excluded (–), then only items are
+shown that don't have these tags.</p>
+<p>The same applies to tag categories. You can show all items that have
+at least on tag of a checked (✔) category. Or you can list all items
+that have no tag of a category (–).</p>
+<p>You can also use drag&amp;drop to tag items in this view. Simply drag an
+item card and drop it on a tag, this will toggle the tag on the item.
+If the item was tagged already, the tag is removed, otherwise added.</p>
+<div class="columns is-centered">
+  <div class="column">
+  <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;drop-tag.png" width="400px">
+  </div>
+</div>
+<h2 id="folder">Folder<a class="zola-anchor" href="#folder" aria-label="Anchor link for: folder">🔗</a></h2>
+<p>Select a folder to only show items in that folder. Only folders where
+the current user has access are displayed. As with tags, there are
+only a few folders shown and you can expand all with a <em>Show more</em>
+link. How many folders are displayed without this link can be
+configured in the ui settings.</p>
+<p>If no folder is set, all accessible items are shown. These are all
+items that either have no folder set, or a folder where the current
+user is member.</p>
+<p>It is possible to put items into a folder in this view via drag&amp;drop.
+Simply drag an item card and drop it on a folder. If dropped on the
+<em>Folders</em> header, the item is moved outside the folder.</p>
+<h2 id="correspondent">Correspondent<a class="zola-anchor" href="#correspondent" aria-label="Anchor link for: correspondent">🔗</a></h2>
+<p>Pick a correspondent to show only these items.</p>
+<h2 id="concerned">Concerned<a class="zola-anchor" href="#concerned" aria-label="Anchor link for: concerned">🔗</a></h2>
+<p>Pick a concerned entity to show only these items.</p>
 <h2 id="names-1">Names<a class="zola-anchor" href="#names-1" aria-label="Anchor link for: names-1">🔗</a></h2>
 <p>Searches in names of certain properties. The <code>Names</code> field is the same
 as the search in the search bar (<a href="https://docspell.org/docs/webapp/finding/#names">see above</a>).</p>
-<h2 id="folder">Folder<a class="zola-anchor" href="#folder" aria-label="Anchor link for: folder">🔗</a></h2>
-<p>Set a folder to only show items in that folder. If no folder is set,
-all accessible items are shown. These are all items that either have
-no folder set, or a folder where the current user is member.</p>
-<h2 id="tags">Tags<a class="zola-anchor" href="#tags" aria-label="Anchor link for: tags">🔗</a></h2>
-<p>Specify a list of tags that the items must have. When adding tags to
-the &quot;Include&quot; list, an item must have all these tags in order to be
-included in the results.</p>
-<p>When adding tags to the &quot;Exclude&quot; list, then an item is removed from
-the results if it has at least one of these tags.</p>
 <h2 id="content">Content<a class="zola-anchor" href="#content" aria-label="Anchor link for: content">🔗</a></h2>
 <p>You can choose tags or correspondents in the search menu and further
-restrict the results using full text search using the <em>content</em> field.</p>
+restrict the results using full text search with the <em>content</em> field.</p>
 <div class="notification is-warning is-light" style="z-index: -1">
     <div class="content ">
         <p class="title is-5">
@@ -377,17 +406,13 @@ restrict the results using full text search using the <em>content</em> field.</p
         <div>
             <p>This field is intended to be used in conjunction with other fields in
 the search menu. It <em>may be really slow</em> if used alone, since first
-the database query is executed and its results are furhter constrained
+the database query is executed and its results are further constrained
 by fulltext search.</p>
 <p>Use the search-bar with option <em>Contents Only</em> to do quick fulltext
 searches.</p>
         </div>
     </div>
 </div>
-<h2 id="correspondent">Correspondent<a class="zola-anchor" href="#correspondent" aria-label="Anchor link for: correspondent">🔗</a></h2>
-<p>Pick a correspondent to show only these items.</p>
-<h2 id="concerned">Concerned<a class="zola-anchor" href="#concerned" aria-label="Anchor link for: concerned">🔗</a></h2>
-<p>Pick a concerned entity to show only these items.</p>
 <h2 id="date">Date<a class="zola-anchor" href="#date" aria-label="Anchor link for: date">🔗</a></h2>
 <p>Specify a date range to show only items whose date property is within
 this range. If you want to see items of a specific day, choose the
@@ -436,7 +461,7 @@ contents, attachment names, item name and item notes.</p>
 <p>When using full text search, each item in the result list is annotated
 with the highlighted occurrence of the match.</p>
 <figure class="image">
-    <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;search-content-results.png">
+  <img src="/img/fts-feature.png">
 </figure>
 
                         </div>
@@ -449,7 +474,7 @@ with the highlighted occurrence of the match.</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell, 0.9.0
+                Docspell, 0.10.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>

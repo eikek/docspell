@@ -519,11 +519,11 @@ function _Debug_crash_UNUSED(identifier, fact1, fact2, fact3, fact4)
 
 function _Debug_regionToString(region)
 {
-	if (region.P.D === region.V.D)
+	if (region.S.E === region.Y.E)
 	{
-		return 'on line ' + region.P.D;
+		return 'on line ' + region.S.E;
 	}
-	return 'on lines ' + region.P.D + ' through ' + region.V.D;
+	return 'on lines ' + region.S.E + ' through ' + region.Y.E;
 }
 
 
@@ -1857,9 +1857,9 @@ var _Platform_worker = F4(function(impl, flagDecoder, debugMetadata, args)
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.aD,
+		impl.aG,
+		impl.aQ,
 		impl.aO,
-		impl.aL,
 		function() { return function() {} }
 	);
 });
@@ -2705,8 +2705,8 @@ var _VirtualDom_mapEventRecord = F2(function(func, record)
 {
 	return {
 		r: func(record.r),
-		Q: record.Q,
-		N: record.N
+		T: record.T,
+		Q: record.Q
 	}
 });
 
@@ -2975,10 +2975,10 @@ function _VirtualDom_makeCallback(eventNode, initialHandler)
 
 		var value = result.a;
 		var message = !tag ? value : tag < 3 ? value.a : value.r;
-		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.Q;
+		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.T;
 		var currentEventNode = (
 			stopPropagation && event.stopPropagation(),
-			(tag == 2 ? value.b : tag == 3 && value.N) && event.preventDefault(),
+			(tag == 2 ? value.b : tag == 3 && value.Q) && event.preventDefault(),
 			eventNode
 		);
 		var tagger;
@@ -3928,11 +3928,11 @@ var _Browser_element = _Debugger_element || F4(function(impl, flagDecoder, debug
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.aD,
+		impl.aG,
+		impl.aQ,
 		impl.aO,
-		impl.aL,
 		function(sendToApp, initialModel) {
-			var view = impl.aP;
+			var view = impl.aR;
 			/**/
 			var domNode = args['node'];
 			//*/
@@ -3964,12 +3964,12 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.aD,
+		impl.aG,
+		impl.aQ,
 		impl.aO,
-		impl.aL,
 		function(sendToApp, initialModel) {
-			var divertHrefToApp = impl.O && impl.O(sendToApp)
-			var view = impl.aP;
+			var divertHrefToApp = impl.R && impl.R(sendToApp)
+			var view = impl.aR;
 			var title = _VirtualDom_doc.title;
 			var bodyNode = _VirtualDom_doc.body;
 			var currNode = _VirtualDom_virtualize(bodyNode);
@@ -3977,12 +3977,12 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 			{
 				_VirtualDom_divertHrefToApp = divertHrefToApp;
 				var doc = view(model);
-				var nextNode = _VirtualDom_node('body')(_List_Nil)(doc.au);
+				var nextNode = _VirtualDom_node('body')(_List_Nil)(doc.ax);
 				var patches = _VirtualDom_diff(currNode, nextNode);
 				bodyNode = _VirtualDom_applyPatches(bodyNode, currNode, patches, sendToApp);
 				currNode = nextNode;
 				_VirtualDom_divertHrefToApp = 0;
-				(title !== doc.aN) && (_VirtualDom_doc.title = title = doc.aN);
+				(title !== doc.L) && (_VirtualDom_doc.title = title = doc.L);
 			});
 		}
 	);
@@ -4038,12 +4038,12 @@ function _Browser_makeAnimator(model, draw)
 
 function _Browser_application(impl)
 {
-	var onUrlChange = impl.aF;
-	var onUrlRequest = impl.aG;
+	var onUrlChange = impl.aI;
+	var onUrlRequest = impl.aJ;
 	var key = function() { key.a(onUrlChange(_Browser_getUrl())); };
 
 	return _Browser_document({
-		O: function(sendToApp)
+		R: function(sendToApp)
 		{
 			key.a = sendToApp;
 			_Browser_window.addEventListener('popstate', key);
@@ -4059,9 +4059,9 @@ function _Browser_application(impl)
 					var next = $elm$url$Url$fromString(href).a;
 					sendToApp(onUrlRequest(
 						(next
-							&& curr.ah === next.ah
-							&& curr.Z === next.Z
-							&& curr.ae.a === next.ae.a
+							&& curr.ak === next.ak
+							&& curr.ab === next.ab
+							&& curr.ah.a === next.ah.a
 						)
 							? $elm$browser$Browser$Internal(next)
 							: $elm$browser$Browser$External(href)
@@ -4069,13 +4069,13 @@ function _Browser_application(impl)
 				}
 			});
 		},
-		aD: function(flags)
+		aG: function(flags)
 		{
-			return A3(impl.aD, flags, _Browser_getUrl(), key);
+			return A3(impl.aG, flags, _Browser_getUrl(), key);
 		},
-		aP: impl.aP,
-		aO: impl.aO,
-		aL: impl.aL
+		aR: impl.aR,
+		aQ: impl.aQ,
+		aO: impl.aO
 	});
 }
 
@@ -4141,17 +4141,17 @@ var _Browser_decodeEvent = F2(function(decoder, event)
 function _Browser_visibilityInfo()
 {
 	return (typeof _VirtualDom_doc.hidden !== 'undefined')
-		? { aB: 'hidden', aw: 'visibilitychange' }
+		? { aE: 'hidden', az: 'visibilitychange' }
 		:
 	(typeof _VirtualDom_doc.mozHidden !== 'undefined')
-		? { aB: 'mozHidden', aw: 'mozvisibilitychange' }
+		? { aE: 'mozHidden', az: 'mozvisibilitychange' }
 		:
 	(typeof _VirtualDom_doc.msHidden !== 'undefined')
-		? { aB: 'msHidden', aw: 'msvisibilitychange' }
+		? { aE: 'msHidden', az: 'msvisibilitychange' }
 		:
 	(typeof _VirtualDom_doc.webkitHidden !== 'undefined')
-		? { aB: 'webkitHidden', aw: 'webkitvisibilitychange' }
-		: { aB: 'hidden', aw: 'visibilitychange' };
+		? { aE: 'webkitHidden', az: 'webkitvisibilitychange' }
+		: { aE: 'hidden', az: 'visibilitychange' };
 }
 
 
@@ -4232,12 +4232,12 @@ var _Browser_call = F2(function(functionName, id)
 function _Browser_getViewport()
 {
 	return {
-		al: _Browser_getScene(),
-		ao: {
-			aq: _Browser_window.pageXOffset,
-			ar: _Browser_window.pageYOffset,
-			ap: _Browser_doc.documentElement.clientWidth,
-			Y: _Browser_doc.documentElement.clientHeight
+		ao: _Browser_getScene(),
+		ar: {
+			at: _Browser_window.pageXOffset,
+			au: _Browser_window.pageYOffset,
+			as: _Browser_doc.documentElement.clientWidth,
+			aa: _Browser_doc.documentElement.clientHeight
 		}
 	};
 }
@@ -4247,8 +4247,8 @@ function _Browser_getScene()
 	var body = _Browser_doc.body;
 	var elem = _Browser_doc.documentElement;
 	return {
-		ap: Math.max(body.scrollWidth, body.offsetWidth, elem.scrollWidth, elem.offsetWidth, elem.clientWidth),
-		Y: Math.max(body.scrollHeight, body.offsetHeight, elem.scrollHeight, elem.offsetHeight, elem.clientHeight)
+		as: Math.max(body.scrollWidth, body.offsetWidth, elem.scrollWidth, elem.offsetWidth, elem.clientWidth),
+		aa: Math.max(body.scrollHeight, body.offsetHeight, elem.scrollHeight, elem.offsetHeight, elem.clientHeight)
 	};
 }
 
@@ -4271,15 +4271,15 @@ function _Browser_getViewportOf(id)
 	return _Browser_withNode(id, function(node)
 	{
 		return {
-			al: {
-				ap: node.scrollWidth,
-				Y: node.scrollHeight
-			},
 			ao: {
-				aq: node.scrollLeft,
-				ar: node.scrollTop,
-				ap: node.clientWidth,
-				Y: node.clientHeight
+				as: node.scrollWidth,
+				aa: node.scrollHeight
+			},
+			ar: {
+				at: node.scrollLeft,
+				au: node.scrollTop,
+				as: node.clientWidth,
+				aa: node.clientHeight
 			}
 		};
 	});
@@ -4309,18 +4309,18 @@ function _Browser_getElement(id)
 		var x = _Browser_window.pageXOffset;
 		var y = _Browser_window.pageYOffset;
 		return {
-			al: _Browser_getScene(),
-			ao: {
-				aq: x,
-				ar: y,
-				ap: _Browser_doc.documentElement.clientWidth,
-				Y: _Browser_doc.documentElement.clientHeight
+			ao: _Browser_getScene(),
+			ar: {
+				at: x,
+				au: y,
+				as: _Browser_doc.documentElement.clientWidth,
+				aa: _Browser_doc.documentElement.clientHeight
 			},
-			ay: {
-				aq: x + rect.left,
-				ar: y + rect.top,
-				ap: rect.width,
-				Y: rect.height
+			aB: {
+				at: x + rect.left,
+				au: y + rect.top,
+				as: rect.width,
+				aa: rect.height
 			}
 		};
 	});
@@ -4513,9 +4513,9 @@ function _Markdown_formatOptions(options)
 {
 	function toHighlight(code, lang)
 	{
-		if (!lang && $elm$core$Maybe$isJust(options.U))
+		if (!lang && $elm$core$Maybe$isJust(options.X))
 		{
-			lang = options.U.a;
+			lang = options.X.a;
 		}
 
 		if (typeof hljs !== 'undefined' && lang && hljs.listLanguages().indexOf(lang) >= 0)
@@ -4526,15 +4526,15 @@ function _Markdown_formatOptions(options)
 		return code;
 	}
 
-	var gfm = options.aA.a;
+	var gfm = options.aD.a;
 
 	return {
 		highlight: toHighlight,
 		gfm: gfm,
-		tables: gfm && gfm.aM,
-		breaks: gfm && gfm.av,
-		sanitize: options.aJ,
-		smartypants: options.aK
+		tables: gfm && gfm.aP,
+		breaks: gfm && gfm.ay,
+		sanitize: options.aM,
+		smartypants: options.aN
 	};
 }
 var $elm$core$List$cons = _List_cons;
@@ -5042,7 +5042,7 @@ var $elm$url$Url$Http = 0;
 var $elm$url$Url$Https = 1;
 var $elm$url$Url$Url = F6(
 	function (protocol, host, port_, path, query, fragment) {
-		return {X: fragment, Z: host, ac: path, ae: port_, ah: protocol, ai: query};
+		return {_: fragment, ab: host, af: path, ah: port_, ak: protocol, al: query};
 	});
 var $elm$core$String$contains = _String_contains;
 var $elm$core$String$length = _String_length;
@@ -5466,8 +5466,8 @@ var $author$project$Main$viewFeatureCount = 10;
 var $author$project$Main$init = function (flags) {
 	return _Utils_Tuple2(
 		{
-			I: A2($elm$core$List$take, $author$project$Main$viewFeatureCount, $author$project$Feature$features),
-			J: flags,
+			J: A2($elm$core$List$take, $author$project$Main$viewFeatureCount, $author$project$Feature$features),
+			K: flags,
 			z: false
 		},
 		$elm$core$Platform$Cmd$none);
@@ -6010,7 +6010,7 @@ var $author$project$Main$update = F2(
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{I: lf}),
+						{J: lf}),
 					$elm$core$Platform$Cmd$none);
 		}
 	});
@@ -6024,13 +6024,19 @@ var $elm$html$Html$Attributes$stringProperty = F2(
 			$elm$json$Json$Encode$string(string));
 	});
 var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
+var $elm$json$Json$Encode$bool = _Json_wrap;
+var $elm$html$Html$Attributes$boolProperty = F2(
+	function (key, bool) {
+		return A2(
+			_VirtualDom_property,
+			key,
+			$elm$json$Json$Encode$bool(bool));
+	});
+var $elm$html$Html$Attributes$controls = $elm$html$Html$Attributes$boolProperty('controls');
 var $elm$html$Html$div = _VirtualDom_node('div');
-var $elm$html$Html$figure = _VirtualDom_node('figure');
 var $elm$html$Html$h2 = _VirtualDom_node('h2');
-var $elm$html$Html$img = _VirtualDom_node('img');
-var $author$project$Feature$isOdd = function (num) {
-	return A2($elm$core$Basics$modBy, 2, num) === 1;
-};
+var $elm$html$Html$p = _VirtualDom_node('p');
+var $elm$html$Html$span = _VirtualDom_node('span');
 var $elm$html$Html$Attributes$src = function (url) {
 	return A2(
 		$elm$html$Html$Attributes$stringProperty,
@@ -6040,11 +6046,11 @@ var $elm$html$Html$Attributes$src = function (url) {
 var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
 var $elm_explorations$markdown$Markdown$defaultOptions = {
-	U: $elm$core$Maybe$Nothing,
-	aA: $elm$core$Maybe$Just(
-		{av: false, aM: false}),
-	aJ: true,
-	aK: false
+	X: $elm$core$Maybe$Nothing,
+	aD: $elm$core$Maybe$Just(
+		{ay: false, aP: false}),
+	aM: true,
+	aN: false
 };
 var $elm$core$Maybe$isJust = function (maybe) {
 	if (!maybe.$) {
@@ -6055,6 +6061,106 @@ var $elm$core$Maybe$isJust = function (maybe) {
 };
 var $elm_explorations$markdown$Markdown$toHtmlWith = _Markdown_toHtml;
 var $elm_explorations$markdown$Markdown$toHtml = $elm_explorations$markdown$Markdown$toHtmlWith($elm_explorations$markdown$Markdown$defaultOptions);
+var $elm$html$Html$video = _VirtualDom_node('video');
+var $author$project$Demo$demo = function (data) {
+	return A2(
+		$elm$html$Html$div,
+		_List_fromArray(
+			[
+				$elm$html$Html$Attributes$class('columns is-vcentered box mb-5')
+			]),
+		_List_fromArray(
+			[
+				A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('column')
+					]),
+				_List_fromArray(
+					[
+						A2(
+						$elm$html$Html$h2,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('title')
+							]),
+						_List_fromArray(
+							[
+								$elm$html$Html$text(data.L)
+							])),
+						(data.D === '') ? A2($elm$html$Html$span, _List_Nil, _List_Nil) : A2(
+						$elm$html$Html$p,
+						_List_Nil,
+						_List_fromArray(
+							[
+								A2($elm_explorations$markdown$Markdown$toHtml, _List_Nil, data.D)
+							])),
+						A2(
+						$elm$html$Html$div,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('mt-5')
+							]),
+						_List_fromArray(
+							[
+								A2(
+								$elm$html$Html$video,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$src(data.M),
+										$elm$html$Html$Attributes$controls(true)
+									]),
+								_List_Nil)
+							]))
+					]))
+			]));
+};
+var $elm$html$Html$Attributes$id = $elm$html$Html$Attributes$stringProperty('id');
+var $elm$html$Html$section = _VirtualDom_node('section');
+var $author$project$Main$demoHero = A2(
+	$elm$html$Html$section,
+	_List_fromArray(
+		[
+			$elm$html$Html$Attributes$id('demos'),
+			$elm$html$Html$Attributes$class('hero is-info is-bold')
+		]),
+	_List_fromArray(
+		[
+			A2(
+			$elm$html$Html$div,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('hero-body')
+				]),
+			_List_fromArray(
+				[
+					A2(
+					$elm$html$Html$div,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$class('container')
+						]),
+					_List_fromArray(
+						[
+							A2(
+							$elm$html$Html$h2,
+							_List_fromArray(
+								[
+									$elm$html$Html$Attributes$class('title')
+								]),
+							_List_fromArray(
+								[
+									$elm$html$Html$text('Screencasts')
+								]))
+						]))
+				]))
+		]));
+var $elm$html$Html$figure = _VirtualDom_node('figure');
+var $elm$html$Html$img = _VirtualDom_node('img');
+var $author$project$Feature$isOdd = function (num) {
+	return A2($elm$core$Basics$modBy, 2, num) === 1;
+};
 var $author$project$Feature$featureBox = F2(
 	function (index, f) {
 		var _v0 = $author$project$Feature$isOdd(index);
@@ -6170,8 +6276,6 @@ var $author$project$Feature$featureBox = F2(
 					]));
 		}
 	});
-var $elm$html$Html$Attributes$id = $elm$html$Html$Attributes$stringProperty('id');
-var $elm$html$Html$section = _VirtualDom_node('section');
 var $author$project$Main$featureHero = function (model) {
 	return A2(
 		$elm$html$Html$section,
@@ -6219,7 +6323,6 @@ var $elm$html$Html$Attributes$href = function (url) {
 		'href',
 		_VirtualDom_noJavaScriptUri(url));
 };
-var $elm$html$Html$span = _VirtualDom_node('span');
 var $elm$html$Html$Attributes$target = $elm$html$Html$Attributes$stringProperty('target');
 var $author$project$Main$footHero = function (model) {
 	return A2(
@@ -6244,7 +6347,7 @@ var $author$project$Main$footHero = function (model) {
 						_List_Nil,
 						_List_fromArray(
 							[
-								$elm$html$Html$text('Docspell, ' + model.J.K)
+								$elm$html$Html$text('Docspell, ' + model.K.N)
 							])),
 						A2(
 						$elm$html$Html$span,
@@ -6329,7 +6432,7 @@ var $author$project$GetStarted$getStarted = function (version) {
 			$elm$html$Html$div,
 			_List_fromArray(
 				[
-					$elm$html$Html$Attributes$class('content container is-size-5')
+					$elm$html$Html$Attributes$class('content container')
 				]),
 			_List_fromArray(
 				[
@@ -6569,7 +6672,7 @@ var $author$project$Icons$logo = A2(
 	$elm$html$Html$img,
 	_List_fromArray(
 		[
-			$elm$html$Html$Attributes$src('icons/logo-only.svg')
+			$elm$html$Html$Attributes$src('icons/logo-only-36.svg')
 		]),
 	_List_Nil);
 var $elm$html$Html$Attributes$width = function (n) {
@@ -6606,7 +6709,6 @@ var $elm$html$Html$Events$onClick = function (msg) {
 		'click',
 		$elm$json$Json$Decode$succeed(msg));
 };
-var $elm$html$Html$p = _VirtualDom_node('p');
 var $author$project$ExtraAttr$role = function (name) {
 	return A2($elm$html$Html$Attributes$attribute, 'role', name);
 };
@@ -6840,12 +6942,12 @@ var $author$project$Main$mainHero = function (model) {
 										$elm$html$Html$a,
 										_List_fromArray(
 											[
-												$elm$html$Html$Attributes$class('button is-primary is-medium'),
-												$elm$html$Html$Attributes$href('#get-started')
+												$elm$html$Html$Attributes$class('button is-info is-medium'),
+												$elm$html$Html$Attributes$href('#demos')
 											]),
 										_List_fromArray(
 											[
-												$elm$html$Html$text('Get Started')
+												$elm$html$Html$text('Screencasts')
 											])),
 										A2(
 										$elm$html$Html$a,
@@ -6857,6 +6959,17 @@ var $author$project$Main$mainHero = function (model) {
 										_List_fromArray(
 											[
 												$elm$html$Html$text('Features')
+											])),
+										A2(
+										$elm$html$Html$a,
+										_List_fromArray(
+											[
+												$elm$html$Html$Attributes$class('button is-primary is-medium'),
+												$elm$html$Html$Attributes$href('#get-started')
+											]),
+										_List_fromArray(
+											[
+												$elm$html$Html$text('Get Started')
 											]))
 									]))
 							]))
@@ -6893,11 +7006,13 @@ var $author$project$Main$mainHero = function (model) {
 					]))
 			]));
 };
+var $author$project$Demo$navigateDemo = {D: 'Shows basic navigation through documents using tags and tag categories.', L: 'Navigation', M: '/videos/docspell-dd-2020-08-09.mp4'};
 var $elm$virtual_dom$VirtualDom$node = function (tag) {
 	return _VirtualDom_node(
 		_VirtualDom_noScript(tag));
 };
 var $elm$html$Html$node = $elm$virtual_dom$VirtualDom$node;
+var $author$project$Demo$processDemo = {D: 'Presents the basic idea: maintain an address book and let docspell find matches for new uploaded documents and attach them automatically.', L: 'Processing', M: '/videos/docspell-process-2020-08-09.mp4'};
 var $author$project$Main$view = function (model) {
 	return A3(
 		$elm$html$Html$node,
@@ -6906,6 +7021,27 @@ var $author$project$Main$view = function (model) {
 		_List_fromArray(
 			[
 				$author$project$Main$mainHero(model),
+				$author$project$Main$demoHero,
+				A2(
+				$elm$html$Html$section,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('section')
+					]),
+				_List_fromArray(
+					[
+						A2(
+						$elm$html$Html$div,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('container')
+							]),
+						_List_fromArray(
+							[
+								$author$project$Demo$demo($author$project$Demo$processDemo),
+								$author$project$Demo$demo($author$project$Demo$navigateDemo)
+							]))
+					])),
 				$author$project$Main$featureHero(model),
 				A2(
 				$elm$html$Html$section,
@@ -6922,7 +7058,7 @@ var $author$project$Main$view = function (model) {
 								$elm$html$Html$Attributes$class('container')
 							]),
 						_Utils_ap(
-							A2($elm$core$List$indexedMap, $author$project$Feature$featureBox, model.I),
+							A2($elm$core$List$indexedMap, $author$project$Feature$featureBox, model.J),
 							_List_fromArray(
 								[
 									A2(
@@ -6973,17 +7109,17 @@ var $author$project$Main$view = function (model) {
 					[
 						$elm$html$Html$Attributes$class('section')
 					]),
-				$author$project$GetStarted$getStarted(model.J.K)),
+				$author$project$GetStarted$getStarted(model.K.N)),
 				$author$project$Main$footHero(model)
 			]));
 };
 var $author$project$Main$main = $elm$browser$Browser$element(
-	{aD: $author$project$Main$init, aL: $author$project$Main$subscriptions, aO: $author$project$Main$update, aP: $author$project$Main$view});
+	{aG: $author$project$Main$init, aO: $author$project$Main$subscriptions, aQ: $author$project$Main$update, aR: $author$project$Main$view});
 _Platform_export({'Main':{'init':$author$project$Main$main(
 	A2(
 		$elm$json$Json$Decode$andThen,
 		function (version) {
 			return $elm$json$Json$Decode$succeed(
-				{K: version});
+				{N: version});
 		},
 		A2($elm$json$Json$Decode$field, 'version', $elm$json$Json$Decode$string)))(0)}});}(this));

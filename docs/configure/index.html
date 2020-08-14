@@ -414,6 +414,11 @@ Please refer to their documentation for more on this.</p>
   # the number defined here</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> An admin might choose a lower number
   # depending </span><span style="color:#d3869b;">on</span><span style="color:#fdf4c1aa;"> the available resources</span><span style="color:#fe8019;">.
   </span><span style="color:#fdf4c1;">max-item-page-size </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">200</span><span style="color:#fdf4c1aa;">
+  # The number of characters to return for each item notes when
+  # searching</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> Item notes may be very long</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> when returning them </span><span style="color:#fa5c4b;">with</span><span style="color:#fdf4c1aa;">
+  # all the results from a search</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> they add quite some data to return</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">
+  # In order to keep this low</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> a limit can be defined here</span><span style="color:#fe8019;">.
+  </span><span style="color:#fdf4c1;">max-note-length </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">180</span><span style="color:#fdf4c1aa;">
   # Authentication</span><span style="color:#fe8019;">.
 </span><span style="color:#fa5c4b;">  auth </span><span style="color:#fdf4c1aa;">{
     # The secret for this server that is used to sign the authenicator
@@ -984,7 +989,7 @@ statements with level &quot;DEBUG&quot; will be printed, too.</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell, 0.9.0
+                Docspell, 0.10.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>

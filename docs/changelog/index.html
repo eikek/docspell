@@ -88,6 +88,78 @@
             <div class="container">
                 <div class="content doc">
                     <h1 id="changelog">Changelog<a class="zola-anchor" href="#changelog" aria-label="Anchor link for: changelog">🔗</a></h1>
+<h2 id="v0-10-0">v0.10.0<a class="zola-anchor" href="#v0-10-0" aria-label="Anchor link for: v0-10-0">🔗</a></h2>
+<p><em>Aug 15, 2020</em></p>
+<ul>
+<li>Lots of web ui improvements:
+<ul>
+<li>Rework the search menu for <a href="https://docspell.org/docs/webapp/finding/#tags-tag-categories">tags and
+folders</a>:
+The dropdown field is removed for tags and folders. They are
+represented as a list and items can be cycled through to be
+included/excluded or deselected. It is possible to use
+drag-and-drop to associate tags to items and put items into
+folders.</li>
+<li>Rework page that displays sources; allow to copy the urls and add
+a qr code</li>
+<li>Add item notes to the cards in the list view, can be configured if
+it is shown or not (#186, #201)</li>
+<li>Improve how the item notes are displayed in the item detail view
+(#186, #192)</li>
+<li>Fix the <em>Load more…</em> button</li>
+<li>Allow to search by tag categories (#203)</li>
+<li>Allow to edit metadata in item detail view. Until now it was only
+possible to add new metadata (#205)</li>
+<li>Do not cover the whole screen with the metadata modal dialog, only
+the menu is now covered so that it is possible to select text from
+the document (#205)</li>
+<li>Allow to hide some fields from the menus. What fields to display
+can be configured in the ui settings (#195)</li>
+</ul>
+</li>
+<li>Implemented some routes that were specified in the openapi, but have
+not been implemented so far</li>
+<li>Fix source upload routes where it didn't check whether a source is
+enabled or not. Further checks are now done as first step to not
+upload the file into memory for nothing if something fails (e.g. the
+source doesn't exist)</li>
+<li>Re-process files. A
+<a href="https://docspell.org/openapi/docspell-openapi.html#api-Item-secItemItemIdReprocessPost">route</a>
+has been added that submits files for re-processing. It is possible
+to re-process some files of an item or all. There is no UI for this
+for now. You'd need to run <code>curl</code> or something manually to trigger
+it. It will replace all extracted metadata of the <em>files</em>,but
+doesn't touch the metadata of the item. (#206)</li>
+<li>Add a task to convert all pdfs using the
+<a href="https://github.com/jbarlow83/OCRmyPDF">OCRMyPdf</a> tool that can be
+used in docspell since the last release. This task converts all your
+existing PDFs into a PDF/A type pdf including the OCR-ed text layer.
+There is no UI to trigger this task, but a
+<a href="https://docspell.org/docs/tools/convert-all-pdf/">script</a> is
+provided to help with it. (#206)</li>
+<li>There is now an <a href="https://github.com/docspell/android-client">Android Client
+App</a> to conveniently
+upload files from your android devices</li>
+</ul>
+<h3 id="configuration-changes">Configuration Changes<a class="zola-anchor" href="#configuration-changes" aria-label="Anchor link for: configuration-changes">🔗</a></h3>
+<ul>
+<li>New setting <code>docspell.server.max-note-length</code> to specify how much of
+the item notes should be transeferred with each search result.</li>
+</ul>
+<h3 id="rest-api-changes">REST Api Changes<a class="zola-anchor" href="#rest-api-changes" aria-label="Anchor link for: rest-api-changes">🔗</a></h3>
+<ul>
+<li>Added <code>/sec/collective/tagcloud</code> to return all used tags of a
+collective. This is the same as returned from the <code>insights</code> route,
+but without all the other data.</li>
+<li>Added <code>/sec/item/convertallpdfs</code> to trigger a task for converting
+all currently unconverted pdfs</li>
+<li>Added <code>/sec/item/{id}/taglink</code> for associating tags given by name or
+id</li>
+<li>Added <code>/sec/item/{id}/tagtoggle</code> for toggling tags given by name or
+id</li>
+<li>Added <code>/sec/item/{id}/reprocess</code> for submitting an item for being
+re-processed</li>
+</ul>
 <h2 id="v0-9-0">v0.9.0<a class="zola-anchor" href="#v0-9-0" aria-label="Anchor link for: v0-9-0">🔗</a></h2>
 <p><em>Aug 1st, 2020</em></p>
 <ul>
@@ -110,14 +182,14 @@ apply them to the item during processing. (See #175)</li>
 </li>
 <li>New website</li>
 </ul>
-<h3 id="configuration-changes">Configuration Changes<a class="zola-anchor" href="#configuration-changes" aria-label="Anchor link for: configuration-changes">🔗</a></h3>
+<h3 id="configuration-changes-1">Configuration Changes<a class="zola-anchor" href="#configuration-changes-1" aria-label="Anchor link for: configuration-changes-1">🔗</a></h3>
 <ul>
 <li>Joex: add a section <code>docspell.joex.convert.ocrmypdf</code> for configuring
 the ocrmypdf tool.</li>
 <li>Joex: change default value of <code>….extraction.pdf.min-text-len</code> from
 10 to 500.</li>
 </ul>
-<h3 id="rest-api-changes">REST Api Changes<a class="zola-anchor" href="#rest-api-changes" aria-label="Anchor link for: rest-api-changes">🔗</a></h3>
+<h3 id="rest-api-changes-1">REST Api Changes<a class="zola-anchor" href="#rest-api-changes-1" aria-label="Anchor link for: rest-api-changes-1">🔗</a></h3>
 <ul>
 <li>Add <code>/sec/folder/*</code> routes for managing folders.</li>
 <li>Add <code>/sec/item/{id}/folder</code> for updating an item folder.</li>
@@ -159,12 +231,12 @@ generated live documentation unusable.</li>
 configures the consumedir container to use the integration endpoint.
 It is still necessary to define an environment variable.</li>
 </ul>
-<h3 id="configuration-changes-1">Configuration Changes<a class="zola-anchor" href="#configuration-changes-1" aria-label="Anchor link for: configuration-changes-1">🔗</a></h3>
+<h3 id="configuration-changes-2">Configuration Changes<a class="zola-anchor" href="#configuration-changes-2" aria-label="Anchor link for: configuration-changes-2">🔗</a></h3>
 <ul>
 <li>Set new default for <code>docspell.server.max-item-page-size</code> to <code>200</code>.</li>
 <li>New <code>full-text-search</code> section for restserver and joex.</li>
 </ul>
-<h3 id="rest-api-changes-1">REST Api Changes<a class="zola-anchor" href="#rest-api-changes-1" aria-label="Anchor link for: rest-api-changes-1">🔗</a></h3>
+<h3 id="rest-api-changes-2">REST Api Changes<a class="zola-anchor" href="#rest-api-changes-2" aria-label="Anchor link for: rest-api-changes-2">🔗</a></h3>
 <ul>
 <li>Add <code>/open/fts/reIndexAll/{key}</code> to re-index the full-text search
 index. The <code>key</code> must be defined in the config file, so only admins
@@ -214,7 +286,7 @@ simple docker based setup. This is a SMTP server that delivers mails
 to docspell instead of using a mbox or maildir. It utilises the
 integration endpoint.</li>
 </ul>
-<h3 id="configuration-changes-2">Configuration Changes<a class="zola-anchor" href="#configuration-changes-2" aria-label="Anchor link for: configuration-changes-2">🔗</a></h3>
+<h3 id="configuration-changes-3">Configuration Changes<a class="zola-anchor" href="#configuration-changes-3" aria-label="Anchor link for: configuration-changes-3">🔗</a></h3>
 <ul>
 <li>Add <code>docspell.server.max-item-page-size</code> for a hard limit of the
 page size when fetching items.</li>
@@ -224,7 +296,7 @@ page size when fetching items.</li>
 <li>Add <code>docspell.server.backend.mail-debug</code> to allow debug mail related
 problems.</li>
 </ul>
-<h3 id="rest-api-changes-2">REST Api Changes<a class="zola-anchor" href="#rest-api-changes-2" aria-label="Anchor link for: rest-api-changes-2">🔗</a></h3>
+<h3 id="rest-api-changes-3">REST Api Changes<a class="zola-anchor" href="#rest-api-changes-3" aria-label="Anchor link for: rest-api-changes-3">🔗</a></h3>
 <ul>
 <li>Add <code>GET /open/integration/item/{id}</code> to allow checking the
 integration endpoint.</li>
@@ -275,7 +347,7 @@ from an item detail to the front-page, the search menu remembers the
 last state, but dates were cleared.</li>
 <li>Fix redirecting <code>/</code> only to <code>/app</code>.</li>
 </ul>
-<h3 id="configuration-changes-3">Configuration Changes<a class="zola-anchor" href="#configuration-changes-3" aria-label="Anchor link for: configuration-changes-3">🔗</a></h3>
+<h3 id="configuration-changes-4">Configuration Changes<a class="zola-anchor" href="#configuration-changes-4" aria-label="Anchor link for: configuration-changes-4">🔗</a></h3>
 <p>The joex and rest-server component have new config sections:</p>
 <ul>
 <li>Add <code>docspell.joex.mail-debug</code> flag to enable debugging e-mail
@@ -288,7 +360,7 @@ corresponding section in the rest server config.</li>
 <li>Add <code>docspell.server.integration-endpoint</code> with sub-sections to
 configure an endpoint for uploading files for admin users.</li>
 </ul>
-<h3 id="rest-api-changes-3">REST Api Changes<a class="zola-anchor" href="#rest-api-changes-3" aria-label="Anchor link for: rest-api-changes-3">🔗</a></h3>
+<h3 id="rest-api-changes-4">REST Api Changes<a class="zola-anchor" href="#rest-api-changes-4" aria-label="Anchor link for: rest-api-changes-4">🔗</a></h3>
 <ul>
 <li>Change <code>/sec/email/settings</code> to <code>/sec/email/settings/smtp</code></li>
 <li>Add <code>/sec/email/settings/imap</code></li>
@@ -317,7 +389,7 @@ happens with e-mails that contain images to attachments.</li>
 </li>
 <li>Fix classpath issue with javax.mail vs jakarta.mail</li>
 </ul>
-<h3 id="configuration-changes-4">Configuration Changes<a class="zola-anchor" href="#configuration-changes-4" aria-label="Anchor link for: configuration-changes-4">🔗</a></h3>
+<h3 id="configuration-changes-5">Configuration Changes<a class="zola-anchor" href="#configuration-changes-5" aria-label="Anchor link for: configuration-changes-5">🔗</a></h3>
 <p>The Joex component has config changes:</p>
 <ul>
 <li>A new section <code>send-mail</code> containing a <code>List-Id</code> e-mail header to
@@ -350,7 +422,7 @@ viewer.</li>
 <li>Bug fixes related to handling text files.</li>
 <li>Add a configurable length limit for text analysis</li>
 </ul>
-<h3 id="configuration-changes-5">Configuration Changes<a class="zola-anchor" href="#configuration-changes-5" aria-label="Anchor link for: configuration-changes-5">🔗</a></h3>
+<h3 id="configuration-changes-6">Configuration Changes<a class="zola-anchor" href="#configuration-changes-6" aria-label="Anchor link for: configuration-changes-6">🔗</a></h3>
 <p>The configuration of the joex component has been changed. </p>
 <ul>
 <li>new section <code>docspell.joex.periodic-scheduler</code> for configuring the
@@ -362,7 +434,7 @@ size limit</li>
 <li>The command for running <code>wkhtmltopdf</code> changed in that the encoding
 is now added at runtime.</li>
 </ul>
-<h3 id="rest-api-changes-4">REST Api Changes<a class="zola-anchor" href="#rest-api-changes-4" aria-label="Anchor link for: rest-api-changes-4">🔗</a></h3>
+<h3 id="rest-api-changes-5">REST Api Changes<a class="zola-anchor" href="#rest-api-changes-5" aria-label="Anchor link for: rest-api-changes-5">🔗</a></h3>
 <p>The REST Api has some additions:</p>
 <ul>
 <li>new route to retrieve the archive file</li>
@@ -391,7 +463,7 @@ equipments.</li>
 <li>The <code>ds.sh</code> script has now an option to check a file for existence
 in docspell.</li>
 </ul>
-<h3 id="configuration-changes-6">Configuration Changes<a class="zola-anchor" href="#configuration-changes-6" aria-label="Anchor link for: configuration-changes-6">🔗</a></h3>
+<h3 id="configuration-changes-7">Configuration Changes<a class="zola-anchor" href="#configuration-changes-7" aria-label="Anchor link for: configuration-changes-7">🔗</a></h3>
 <p>The configuration of the joex component has been changed. </p>
 <ul>
 <li>removed <code>docspell.joex.extraction.allowed-content-types</code></li>
@@ -402,7 +474,7 @@ in docspell.</li>
 <li>added sections in <code>docspell.joex.convert</code> for pdf conversion
 settings</li>
 </ul>
-<h3 id="rest-api-changes-5">REST Api Changes<a class="zola-anchor" href="#rest-api-changes-5" aria-label="Anchor link for: rest-api-changes-5">🔗</a></h3>
+<h3 id="rest-api-changes-6">REST Api Changes<a class="zola-anchor" href="#rest-api-changes-6" aria-label="Anchor link for: rest-api-changes-6">🔗</a></h3>
 <p>The REST Api has some additions:</p>
 <ul>
 <li>new route to retrieve the original file</li>
@@ -445,7 +517,7 @@ Web UI:</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell, 0.9.0
+                Docspell, 0.10.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>

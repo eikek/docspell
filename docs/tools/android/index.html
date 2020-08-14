@@ -10,7 +10,7 @@
 <meta name="title" property="og:title" content="Docspell – Simple Document Organizer">
 <meta name="og:image" content="/img/poster.png">
 <meta name="og:title" content="Docspell – Simple Document Organizer">
-<meta name="og:site_name" content="Browser Extension (Firefox) - Docspell">
+<meta name="og:site_name" content="Android Client - Docspell">
 <meta name="og:url" content="">
 <meta name="og:type" content="website">
 <meta name="og:description" content="Simple Document Organizer">
@@ -22,7 +22,7 @@
 <link rel="shortcut icon" href="/favicon-mc.ico" type="image/x-icon">
 <link rel="icon" href="/favicon-mc.ico" type="image/x-icon">
 
-        <title>Browser Extension (Firefox) – Docspell Documentation</title>
+        <title>Android Client – Docspell Documentation</title>
         <link rel="stylesheet" href="/styles.css">
     </head>
     <body>
@@ -56,7 +56,7 @@
             </div>
             <div class="hero-body">
                 <h1 class="title">
-                    Browser Extension (Firefox)
+                    Android Client
                 </h1>
                 <h2 class="subtitle">
                     Docspell Documentation
@@ -82,7 +82,7 @@
                 </li>
                 
                 <li>
-                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;browserext&#x2F;">Browser Extension (Firefox)</a>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;android&#x2F;">Android Client</a>
                 </li>
             </ul>
         </nav>
@@ -111,9 +111,49 @@
                             
                             <li>
                                 <a href="https://docspell.org/docs/tools/android/"
-                                   >
+                                   class="is-active">
                                     Android Client
                                 </a>
+                                
+                                <ul class="menu-list">
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;android&#x2F;#android-client">
+                                            Android Client
+                                        </a>
+                                        <ul>
+                                            
+                                        </ul>
+                                    </li>
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;android&#x2F;#usage">
+                                            Usage
+                                        </a>
+                                        <ul>
+                                            
+                                            <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;android&#x2F;#create-an-url">
+                                                    Create an URL
+                                                </a>
+                                            </li>
+                                            
+                                            <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;android&#x2F;#edit-and-default">
+                                                    Edit and Default
+                                                </a>
+                                            </li>
+                                            
+                                            <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;android&#x2F;#upload">
+                                                    Upload
+                                                </a>
+                                            </li>
+                                            
+                                        </ul>
+                                    </li>
+                                    
+                                </ul>
                                 
                             </li>
                             
@@ -129,40 +169,9 @@
                             
                             <li>
                                 <a href="https://docspell.org/docs/tools/browserext/"
-                                   class="is-active">
+                                   >
                                     Browser Extension (Firefox)
                                 </a>
-                                
-                                <ul class="menu-list">
-                                    
-                                    <li>
-                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;browserext&#x2F;#install-ds-sh">
-                                            Install ds.sh
-                                        </a>
-                                        <ul>
-                                            
-                                        </ul>
-                                    </li>
-                                    
-                                    <li>
-                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;browserext&#x2F;#install-the-native-part">
-                                            Install the native part
-                                        </a>
-                                        <ul>
-                                            
-                                        </ul>
-                                    </li>
-                                    
-                                    <li>
-                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;browserext&#x2F;#install-the-extension">
-                                            Install the extension
-                                        </a>
-                                        <ul>
-                                            
-                                        </ul>
-                                    </li>
-                                    
-                                </ul>
                                 
                             </li>
                             
@@ -191,63 +200,74 @@
                 <div class="column is-9">
                     <div class="container">
                         <div class="content doc">
-                            <p>The idea is to click on a file in firefox and send it to docspell. It
-is downloaded in the context of your current page. Then handed to an
-application that pushes it to docspell. There is a browser add-on
-implementing this in <code>tools/webextension</code>. This add-on only works with
-firefox.</p>
-<p>Installation is a bit complicated, since you need to install external
-tools and the web extension. Both work together.</p>
-<h1 id="install-ds-sh">Install <code>ds.sh</code><a class="zola-anchor" href="#install-ds-sh" aria-label="Anchor link for: install-ds-sh">🔗</a></h1>
-<p>First copy the <code>ds.sh</code> tool somewhere in your <code>PATH</code>, maybe
-<code>/usr/local/bin</code> as described above.</p>
-<h1 id="install-the-native-part">Install the native part<a class="zola-anchor" href="#install-the-native-part" aria-label="Anchor link for: install-the-native-part">🔗</a></h1>
-<p>Then install the &quot;native&quot; part of the web extension:</p>
-<p>Copy or symlink the <code>native.py</code> script into some known location. For
-example:</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1;">ln -s ~/docspell-checkout/tools/webextension/native/native.py /usr/local/share/docspell/native.py
-</span></code></pre>
-<p>Then copy the <code>app_manifest.json</code> to
-<code>$HOME/.mozilla/native-messaging-hosts/docspell.json</code>. For example:</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1;">cp ~/docspell-checkout/tools/webextension/native/app_manifest.json  ~/.mozilla/native-messaging-hosts/docspell.json
-</span></code></pre>
-<p>See
-<a href="https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Native_manifests#Manifest_location">here</a>
-for details.</p>
-<p>And you might want to modify this json file, so the path to the
-<code>native.py</code> script is correct (it must be absolute).</p>
-<p>If the <code>ds.sh</code> script is in your <code>$PATH</code>, then this should
-work. Otherwise, edit the <code>native.py</code> script and change the path to
-the tool. Or create a file <code>$HOME/.config/docspell/ds.cmd</code> whose
-content is the path to the <code>ds.sh</code> script.</p>
-<h1 id="install-the-extension">Install the extension<a class="zola-anchor" href="#install-the-extension" aria-label="Anchor link for: install-the-extension">🔗</a></h1>
-<p>An extension file can be build using the <code>make-xpi.sh</code> script. But
-installing it in &quot;standard&quot; firefox won't work, because <a href="https://wiki.mozilla.org/Add-ons/Extension_Signing">Mozilla
-requires extensions to be signed by
-them</a>. This means
-creating an account and going through some process…. So here are two
-alternatives:</p>
-<ol>
-<li>Open firefox and type <code>about:debugging</code> in the addressbar. Then
-click on <em>'Load Temporary Add-on...'</em> and select the
-<code>manifest.json</code> file. The extension is now installed. The downside
-is, that the extension will be removed once firefox is closed.</li>
-<li>Use Firefox ESR, which allows to install Add-ons not signed by
-Mozilla. But it has to be configured: Open firefox and type
-<code>about:config</code> in the address bar. Search for key
-<code>xpinstall.signatures.required</code> and set it to <code>false</code>. This is
-described on the last paragraph on <a href="https://support.mozilla.org/en-US/kb/add-on-signing-in-firefox">this
-page</a>.</li>
-</ol>
-<p>When you right click on a file link, there should be a context menu
-entry <em>'Docspell Upload Helper'</em>. The add-on will download this file
-using the browser and then send the file path to the <code>native.py</code>
-script. This script will in turn call <code>ds.sh</code> which finally uploads it
-to your configured URLs.</p>
-<p>Open the Add-ons page (<code>Ctrl</code>+<code>Shift</code>+<code>A</code>), the new add-on should be
-there.</p>
+                            <h1 id="android-client">Android Client<a class="zola-anchor" href="#android-client" aria-label="Anchor link for: android-client">🔗</a></h1>
+<p>There is a simple Android App available to conveniently upload files
+from your android devices. Combined with a scanner app, this allows to
+very quickly scan single page documents like receipts.</p>
+<p>The project lives at a <a href="https://github.com/docspell/android-client">repository on
+github</a>. It is planned to
+be available from the <a href="https://f-droid.org">F-Droid</a> store, meanwhile
+download the APK from
+<a href="https://github.com/docspell/android-client/releases/latest">here</a>.</p>
+<h1 id="usage">Usage<a class="zola-anchor" href="#usage" aria-label="Anchor link for: usage">🔗</a></h1>
+<p>The app is very simple:</p>
+<ul>
+<li>You maintain a list of upload URLs. These can be inserted
+conveniently by scanning the QR code. You need to create these
+upload urls at docspell as described
+<a href="https://docspell.org/docs/webapp/uploading/#anonymous-upload">here</a>.</li>
+<li>Start this app on your device and add a new URL</li>
+<li>Then start some other app, and try to share a file. The <em>Share with</em>
+or <em>Open with</em> dialog should contain now the docspell app. Choose
+it.</li>
+<li>You can now either select an URL from the app, or the upload begins
+immediatly if you set a default URL.</li>
+</ul>
+<div class="columns">
+  <div class="column">
+  <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;screenshot-create.jpg" width="">
+  <p class="has-text-centered subtitle"> (A) </p>
+  </div>
+  <div class="column">
+  <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;screenshot-choose.jpg" width="">
+  <p class="has-text-centered subtitle"> (B) </p>
+  </div>
+  <div class="column">
+  <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;screenshot-options.jpg" width="">
+  <p class="has-text-centered subtitle"> (C) </p>
+  </div>
+</div>
+<div class="columns">
+  <div class="column">
+  <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;screenshot-default.jpg" width="">
+  <p class="has-text-centered subtitle"> (D) </p>
+  </div>
+  <div class="column">
+  <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;screenshot-share.jpg" width="">
+  <p class="has-text-centered subtitle"> (E) </p>
+  </div>
+  <div class="column">
+  <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;screenshot-uploading.jpg" width="">
+  <p class="has-text-centered subtitle"> (F) </p>
+  </div>
+</div>
+<h2 id="create-an-url">Create an URL<a class="zola-anchor" href="#create-an-url" aria-label="Anchor link for: create-an-url">🔗</a></h2>
+<p>Add a new one With the <em>Plus</em> button. The name (A-1) is to distinguish
+it in the list. The url (A-2) is used to upload files. You can add
+multiple URLs. You can give permissions to access the camera and use
+(A-3) to scan a QR code from the screen.</p>
+<h2 id="edit-and-default">Edit and Default<a class="zola-anchor" href="#edit-and-default" aria-label="Anchor link for: edit-and-default">🔗</a></h2>
+<p>Tapping an item in the list switches the view that shows some options.
+You can set one URL as the default (C-1). When uploading a file, the
+screen to choose an URL is skipped then and the file is uploaded
+immediately.</p>
+<p>Other actions are editing the url (C-2), going back (C-3) or deleting the
+item (4).</p>
+<p>The screen (D) shows a default URL with a green background.</p>
+<h2 id="upload">Upload<a class="zola-anchor" href="#upload" aria-label="Anchor link for: upload">🔗</a></h2>
+<p>Use some other app, for example OpenNoteScanner, and share the
+resulting files using the <em>Share With</em> menu (E). Then this app opens
+and uploads the file to your server (F).</p>
 
                         </div>
                     </div>

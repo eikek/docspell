@@ -112,10 +112,16 @@
         <loc>https://docspell.org/docs/tools/</loc>
     </url>
     <url>
+        <loc>https://docspell.org/docs/tools/android/</loc>
+    </url>
+    <url>
         <loc>https://docspell.org/docs/tools/browserext/</loc>
     </url>
     <url>
         <loc>https://docspell.org/docs/tools/consumedir/</loc>
+    </url>
+    <url>
+        <loc>https://docspell.org/docs/tools/convert-all-pdf/</loc>
     </url>
     <url>
         <loc>https://docspell.org/docs/tools/ds/</loc>

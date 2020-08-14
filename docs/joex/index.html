@@ -203,35 +203,35 @@ logged in.</p>
 <p>The relevant part of the config file regarding the scheduler is shown
 below with some explanations.</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">docspell.joex {
-  # other settings left out for brevity
+<code><span style="color:#fdf4c1;">docspell</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">joex {
+  </span><span style="font-style:italic;color:#928374;"># other settings left out for brevity
+</span><span style="color:#fa5c4b;">
+  scheduler </span><span style="color:#fdf4c1aa;">{
 
-  scheduler {
+    # Number of processing allowed in parallel</span><span style="color:#fe8019;">.
+    </span><span style="color:#fdf4c1;">pool-size </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">2</span><span style="color:#fdf4c1aa;">
 
-    # Number of processing allowed in parallel.
-    pool-size = 2
-
-    # A counting scheme determines the ratio of how high- and low-prio
-    # jobs are run. For example: 4,1 means run 4 high prio jobs, then
-    # 1 low prio and then start over.
-    counting-scheme = &quot;4,1&quot;
+    # </span><span style="color:#fabd2f;">A</span><span style="color:#fdf4c1aa;"> counting scheme determines the ratio of how high</span><span style="color:#fe8019;">-</span><span style="color:#fdf4c1aa;"> and low</span><span style="color:#fe8019;">-</span><span style="color:#fdf4c1aa;">prio
+    # jobs are run</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> For example</span><span style="color:#fe8019;">: </span><span style="color:#d3869b;">4</span><span style="color:#fe8019;">,</span><span style="color:#d3869b;">1</span><span style="color:#fdf4c1aa;"> means run </span><span style="color:#d3869b;">4</span><span style="color:#fdf4c1aa;"> high prio jobs</span><span style="color:#fe8019;">, </span><span style="color:#fa5c4b;">then</span><span style="color:#fdf4c1aa;">
+    # </span><span style="color:#d3869b;">1</span><span style="color:#fdf4c1aa;"> low prio and </span><span style="color:#fa5c4b;">then start</span><span style="color:#fdf4c1aa;"> over</span><span style="color:#fe8019;">.
+    </span><span style="color:#fdf4c1;">counting-scheme </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;4,1&quot;</span><span style="color:#fdf4c1aa;">
 
     # How often a failed job should be retried until it enters failed
-    # state. If a job fails, it becomes &quot;stuck&quot; and will be retried
-    # after a delay.
-    retries = 5
+    # state</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> If a job fails</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> it becomes </span><span style="color:#b8bb26;">&quot;stuck&quot;</span><span style="color:#fdf4c1aa;"> and will be retried
+    # after a delay</span><span style="color:#fe8019;">.
+    </span><span style="color:#fdf4c1;">retries </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">5</span><span style="color:#fdf4c1aa;">
 
-    # The delay until the next try is performed for a failed job. This
-    # delay is increased exponentially with the number of retries.
-    retry-delay = &quot;1 minute&quot;
+    # The delay until the next try is performed for a failed job</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> This
+    # delay is increased exponentially </span><span style="color:#fa5c4b;">with</span><span style="color:#fdf4c1aa;"> the number of retries</span><span style="color:#fe8019;">.
+    </span><span style="color:#fdf4c1;">retry-delay </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;1 minute&quot;</span><span style="color:#fdf4c1aa;">
 
-    # The queue size of log statements from a job.
-    log-buffer-size = 500
+    # The queue size of log statements from a job</span><span style="color:#fe8019;">.
+    </span><span style="color:#fdf4c1;">log-buffer-size </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">500</span><span style="color:#fdf4c1aa;">
 
-    # If no job is left in the queue, the scheduler will wait until a
-    # notify is requested (using the REST interface). To also retry
-    # stuck jobs, it will notify itself periodically.
-    wakeup-period = &quot;30 minutes&quot;
+    # If </span><span style="color:#d3869b;">no</span><span style="color:#fdf4c1aa;"> job is left in the queue</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> the scheduler will wait until a
+    # notify is requested (using the </span><span style="color:#fabd2f;">REST</span><span style="color:#fdf4c1aa;"> interface)</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> To also retry
+    # stuck jobs</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> it will notify itself periodically</span><span style="color:#fe8019;">.
+    </span><span style="color:#fdf4c1;">wakeup-period </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;30 minutes&quot;</span><span style="color:#fdf4c1aa;">
   }
 }
 </span></code></pre>
@@ -307,7 +307,7 @@ waiting state. Then send a graceful shutdown request as shown above.</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell, 0.9.0
+                Docspell, 0.10.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>

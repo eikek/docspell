@@ -244,7 +244,9 @@ ad-hoc uploads, it is very inconvenient for automating it by custom
 scripts. For this the next variant exists.</p>
 <h1 id="anonymous-upload">Anonymous Upload<a class="zola-anchor" href="#anonymous-upload" aria-label="Anchor link for: anonymous-upload">🔗</a></h1>
 <p>It is also possible to upload files without authentication. This
-should make tools that interact with docspell much easier to write.</p>
+should make tools that interact with docspell much easier to write.
+The <a href="https://docspell.org/docs/tools/android/">Android Client App</a> uses these urls to
+upload files.</p>
 <p>Go to &quot;Collective Settings&quot; and then to the &quot;Source&quot; tab. A <em>Source</em>
 identifies an endpoint where files can be uploaded anonymously.
 Creating a new source creates a long unique id which is part of an url
@@ -255,7 +257,7 @@ delete it any time and no passwords or secrets are visible, even your
 username is not visible.</p>
 <p>Example screenshot:</p>
 <figure class="image">
-    <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;sources-form.png">
+    <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;sources-edit.png">
 </figure>
 <p>This example shows a source with name &quot;test&quot;. Besides a description
 and a name that is only used for displaying purposes, a priority and a
@@ -269,21 +271,23 @@ this endpoint, into this folder.</p>
 <li><code>/app/upload/&lt;id&gt;</code></li>
 <li><code>/api/v1/open/upload/item/&lt;id&gt;</code></li>
 </ul>
+<figure class="image">
+    <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;sources-form.png">
+</figure>
 <p>The first points to a web page where everyone could upload files into
 your account. You could give this url to people for sending files
 directly into your docspell.</p>
 <p>The second url is the API url, which accepts the requests to upload
-files (it is used by the upload page, the first url).</p>
-<p>For example, the api url can be used to upload files with curl:</p>
+files. This second url can be used with the <a href="https://docspell.org/docs/tools/android/">Android Client
+App</a> to upload files.</p>
+<p>Another example is to use curl for uploading files from the command
+line::</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1;">$ curl -XPOST -F file=@test.pdf http://localhost:7880/api/v1/open/upload/item/CqpFTb7UmGe-9nMVPZSmnwc-AHH6nWFh52t-M1JFQ9y7cdH
+<code><span style="color:#fdf4c1;">$ curl -XPOST -F file=@test.pdf http://192.168.1.95:7880/api/v1/open/upload/item/3H7hvJcDJuk-NrAW4zxsdfj-K6TMPyb6BGP-xKptVxUdqWa
 {</span><span style="color:#b8bb26;">&quot;success&quot;</span><span style="color:#fdf4c1;">:true,</span><span style="color:#b8bb26;">&quot;message&quot;</span><span style="color:#fdf4c1;">:</span><span style="color:#b8bb26;">&quot;Files submitted.&quot;</span><span style="color:#fdf4c1aa;">}
 </span></code></pre>
-<p>You could add more <code>-F file=@/path/to/your/file.pdf</code> to upload
-multiple files (note, the <code>@</code> is required by curl, so it knows that
-the following is a file). There is a <a href="https://docspell.org/docs/tools/ds/">script
-provided</a> that uses this to upload files from the
-command line.</p>
+<p>There is a <a href="https://docspell.org/docs/tools/ds/">script provided</a> that uses curl to
+upload files from the command line more conveniently.</p>
 <p>When files are uploaded to an source endpoint, the items resulting
 from this uploads are marked with the name of the source. So you know
 which source an item originated. There is also a counter incremented
@@ -359,7 +363,7 @@ uploading two files with meta data:</p>
 <code><span style="color:#fdf4c1;">curl -XPOST -F meta=</span><span style="color:#b8bb26;">&#39;{&quot;multiple&quot;:false, &quot;direction&quot;: &quot;outgoing&quot;}&#39; </span><span style="color:#fdf4c1;">\
             -F file=@letter-en-source.pdf \
             -F file=@letter-de-source.pdf \
-            http://localhost:7880/api/v1/open/upload/item/CqpFTb7UmGe-9nMVPZSmnwc-AHH6nWFh52t-M1JFQ9y7cdH
+            http://192.168.1.95:7880/api/v1/open/upload/item/3H7hvJcDJuk-NrAW4zxsdfj-K6TMPyb6BGP-xKptVxUdqWa
 </span></code></pre>
                         </div>
                     </div>
@@ -371,7 +375,7 @@ uploading two files with meta data:</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell, 0.9.0
+                Docspell, 0.10.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>

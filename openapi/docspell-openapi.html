@@ -1219,6 +1219,19 @@
   },
   "description" : "Highlighting information for a single field (maybe attachment\nname or item notes).\n"
 };
+            defs.IdList = {
+  "required" : [ "ids" ],
+  "properties" : {
+    "ids" : {
+      "type" : "array",
+      "items" : {
+        "type" : "string",
+        "format" : "ident"
+      }
+    }
+  },
+  "description" : "A list of identifiers."
+};
             defs.IdName = {
   "required" : [ "id", "name" ],
   "properties" : {
@@ -1500,6 +1513,10 @@
         "$ref" : "#/components/schemas/Tag"
       }
     },
+    "notes" : {
+      "type" : "string",
+      "description" : "Some prefix of the item notes.\n"
+    },
     "highlighting" : {
       "type" : "array",
       "description" : "Optional contextual information of a search query. Each\nitem refers to some field where a search match was found\n(e.g. the name of an attachment or the item notes) and a\nlist of lines giving surrounding context of the macth.\n",
@@ -1596,6 +1613,18 @@
       "items" : {
         "type" : "string",
         "format" : "ident"
+      }
+    },
+    "tagCategoriesInclude" : {
+      "type" : "array",
+      "items" : {
+        "type" : "string"
+      }
+    },
+    "tagCategoriesExclude" : {
+      "type" : "array",
+      "items" : {
+        "type" : "string"
       }
     },
     "inbox" : {
@@ -1814,19 +1843,6 @@
     }
   },
   "description" : "Data to move an attachment to another position.\n"
-};
-            defs.NameCount = {
-  "required" : [ "count", "name" ],
-  "properties" : {
-    "name" : {
-      "type" : "string"
-    },
-    "count" : {
-      "type" : "integer",
-      "format" : "int32"
-    }
-  },
-  "description" : "Generic structure for counting something.\n"
 };
             defs.NewFolder = {
   "required" : [ "name" ],
@@ -2246,6 +2262,18 @@
   },
   "description" : "A list of sources.\n"
 };
+            defs.StringList = {
+  "required" : [ "items" ],
+  "properties" : {
+    "items" : {
+      "type" : "array",
+      "items" : {
+        "type" : "string"
+      }
+    }
+  },
+  "description" : "A simple list of strings.\n"
+};
             defs.Tag = {
   "required" : [ "created", "id", "name" ],
   "properties" : {
@@ -2272,11 +2300,24 @@
     "items" : {
       "type" : "array",
       "items" : {
-        "$ref" : "#/components/schemas/NameCount"
+        "$ref" : "#/components/schemas/TagCount"
       }
     }
   },
   "description" : "A tag \"cloud\"\n"
+};
+            defs.TagCount = {
+  "required" : [ "count", "tag" ],
+  "properties" : {
+    "tag" : {
+      "$ref" : "#/components/schemas/Tag"
+    },
+    "count" : {
+      "type" : "integer",
+      "format" : "int32"
+    }
+  },
+  "description" : "Generic structure for counting something.\n"
 };
             defs.TagList = {
   "required" : [ "count", "items" ],
@@ -2453,6 +2494,9 @@
                     <li data-group="Collective" data-name="secCollectiveSettingsPost" class="">
                       <a href="#api-Collective-secCollectiveSettingsPost">secCollectiveSettingsPost</a>
                     </li>
+                    <li data-group="Collective" data-name="secCollectiveTagcloudGet" class="">
+                      <a href="#api-Collective-secCollectiveTagcloudGet">secCollectiveTagcloudGet</a>
+                    </li>
                     <li data-group="Collective" data-name="secUserChangePasswordPost" class="">
                       <a href="#api-Collective-secUserChangePasswordPost">secUserChangePasswordPost</a>
                     </li>
@@ -2518,6 +2562,9 @@
                     <li data-group="Equipment" data-name="secEquipmentIdDelete" class="">
                       <a href="#api-Equipment-secEquipmentIdDelete">secEquipmentIdDelete</a>
                     </li>
+                    <li data-group="Equipment" data-name="secEquipmentIdGet" class="">
+                      <a href="#api-Equipment-secEquipmentIdGet">secEquipmentIdGet</a>
+                    </li>
                     <li data-group="Equipment" data-name="secEquipmentPost" class="">
                       <a href="#api-Equipment-secEquipmentPost">secEquipmentPost</a>
                     </li>
@@ -2568,6 +2615,9 @@
                       <a href="#api-IntegrationEndpoint-openIntegrationItemIdPost">openIntegrationItemIdPost</a>
                     </li>
                   <li class="nav-header" data-group="Item"><a href="#api-Item">API Methods - Item</a></li>
+                    <li data-group="Item" data-name="secItemConvertallpdfsPost" class="">
+                      <a href="#api-Item-secItemConvertallpdfsPost">secItemConvertallpdfsPost</a>
+                    </li>
                     <li data-group="Item" data-name="secItemIdConcEquipmentPost" class="">
                       <a href="#api-Item-secItemIdConcEquipmentPost">secItemIdConcEquipmentPost</a>
                     </li>
@@ -2622,17 +2672,26 @@
                     <li data-group="Item" data-name="secItemIdProposalsGet" class="">
                       <a href="#api-Item-secItemIdProposalsGet">secItemIdProposalsGet</a>
                     </li>
+                    <li data-group="Item" data-name="secItemIdTaglinkPost" class="">
+                      <a href="#api-Item-secItemIdTaglinkPost">secItemIdTaglinkPost</a>
+                    </li>
                     <li data-group="Item" data-name="secItemIdTagsPost" class="">
                       <a href="#api-Item-secItemIdTagsPost">secItemIdTagsPost</a>
                     </li>
                     <li data-group="Item" data-name="secItemIdTagsPut" class="">
                       <a href="#api-Item-secItemIdTagsPut">secItemIdTagsPut</a>
                     </li>
+                    <li data-group="Item" data-name="secItemIdTagtogglePost" class="">
+                      <a href="#api-Item-secItemIdTagtogglePost">secItemIdTagtogglePost</a>
+                    </li>
                     <li data-group="Item" data-name="secItemIdUnconfirmPost" class="">
                       <a href="#api-Item-secItemIdUnconfirmPost">secItemIdUnconfirmPost</a>
                     </li>
                     <li data-group="Item" data-name="secItemItemIdAttachmentMovebeforePost" class="">
                       <a href="#api-Item-secItemItemIdAttachmentMovebeforePost">secItemItemIdAttachmentMovebeforePost</a>
+                    </li>
+                    <li data-group="Item" data-name="secItemItemIdReprocessPost" class="">
+                      <a href="#api-Item-secItemItemIdReprocessPost">secItemItemIdReprocessPost</a>
                     </li>
                     <li data-group="Item" data-name="secItemSearchIndexPost" class="">
                       <a href="#api-Item-secItemSearchIndexPost">secItemSearchIndexPost</a>
@@ -2788,7 +2847,7 @@
         <div id="header">
           <div id="api-_">
             <h2 id="welcome-to-apidoc">API and SDK Documentation</h2>
-              <div class="app-desc">Version: 0.9.0</div>
+              <div class="app-desc">Version: 0.10.0</div>
             <hr>
             <div>This is the remote API to Docspell, a personal document organizer.</div>
           </div>
@@ -8616,6 +8675,302 @@ except ApiException as e:
                                     </script>
                                   </div>
                                   <input id='responses-secCollectiveSettingsPost-200-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
+                    <div id="api-Collective-secCollectiveTagcloudGet">
+                      <article id="api-Collective-secCollectiveTagcloudGet-0" data-group="User" data-name="secCollectiveTagcloudGet" data-version="0">
+                        <div class="pull-left">
+                          <h1>secCollectiveTagcloudGet</h1>
+                          <p>Summary of used tags.</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked">Returns all tags and how often each has been applied.
+</p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="get"><code><span class="pln">/sec/collective/tagcloud</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-Collective-secCollectiveTagcloudGet-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-Collective-secCollectiveTagcloudGet-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Collective-secCollectiveTagcloudGet-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-Collective-secCollectiveTagcloudGet-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-Collective-secCollectiveTagcloudGet-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-Collective-secCollectiveTagcloudGet-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-Collective-secCollectiveTagcloudGet-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-Collective-secCollectiveTagcloudGet-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-Collective-secCollectiveTagcloudGet-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-Collective-secCollectiveTagcloudGet-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-Collective-secCollectiveTagcloudGet-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-Collective-secCollectiveTagcloudGet-0-curl">
+                            <pre class="prettyprint"><code class="language-bsh">curl -X GET -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/collective/tagcloud"</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-Collective-secCollectiveTagcloudGet-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.CollectiveApi;
+
+import java.io.File;
+import java.util.*;
+
+public class CollectiveApiExample {
+
+    public static void main(String[] args) {
+        ApiClient defaultClient = Configuration.getDefaultApiClient();
+
+        // Configure API key authorization: authTokenHeader
+        ApiKeyAuth authTokenHeader = (ApiKeyAuth) defaultClient.getAuthentication("authTokenHeader");
+        authTokenHeader.setApiKey("YOUR API KEY");
+        // Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+        //authTokenHeader.setApiKeyPrefix("Token");
+
+        CollectiveApi apiInstance = new CollectiveApi();
+        try {
+            TagCloud result = apiInstance.secCollectiveTagcloudGet();
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling CollectiveApi#secCollectiveTagcloudGet");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Collective-secCollectiveTagcloudGet-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.CollectiveApi;
+
+public class CollectiveApiExample {
+
+    public static void main(String[] args) {
+        CollectiveApi apiInstance = new CollectiveApi();
+        try {
+            TagCloud result = apiInstance.secCollectiveTagcloudGet();
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling CollectiveApi#secCollectiveTagcloudGet");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-Collective-secCollectiveTagcloudGet-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-Collective-secCollectiveTagcloudGet-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
+// Configure API key authorization: (authentication scheme: authTokenHeader)
+[apiConfig setApiKey:@"YOUR_API_KEY" forApiKeyIdentifier:@"X-Docspell-Auth"];
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+//[apiConfig setApiKeyPrefix:@"Bearer" forApiKeyIdentifier:@"X-Docspell-Auth"];
+
+CollectiveApi *apiInstance = [[CollectiveApi alloc] init];
+
+// Summary of used tags.
+[apiInstance secCollectiveTagcloudGetWithCompletionHandler: 
+              ^(TagCloud output, NSError* error) {
+                            if (output) {
+                                NSLog(@"%@", output);
+                            }
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Collective-secCollectiveTagcloudGet-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var Docspell = require('docspell');
+var defaultClient = Docspell.ApiClient.instance;
+
+// Configure API key authorization: authTokenHeader
+var authTokenHeader = defaultClient.authentications['authTokenHeader'];
+authTokenHeader.apiKey = "YOUR API KEY"
+// Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+//authTokenHeader.apiKeyPrefix['X-Docspell-Auth'] = "Token"
+
+var api = new Docspell.CollectiveApi()
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+};
+api.secCollectiveTagcloudGet(callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-Collective-secCollectiveTagcloudGet-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-Collective-secCollectiveTagcloudGet-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class secCollectiveTagcloudGetExample
+    {
+        public void main()
+        {
+
+            // Configure API key authorization: authTokenHeader
+            Configuration.Default.ApiKey.Add("X-Docspell-Auth", "YOUR_API_KEY");
+            // Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+            // Configuration.Default.ApiKeyPrefix.Add("X-Docspell-Auth", "Bearer");
+
+            var apiInstance = new CollectiveApi();
+
+            try
+            {
+                // Summary of used tags.
+                TagCloud result = apiInstance.secCollectiveTagcloudGet();
+                Debug.WriteLine(result);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling CollectiveApi.secCollectiveTagcloudGet: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Collective-secCollectiveTagcloudGet-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+// Configure API key authorization: authTokenHeader
+Swagger\Client\Configuration::getDefaultConfiguration()->setApiKey('X-Docspell-Auth', 'YOUR_API_KEY');
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+// Swagger\Client\Configuration::getDefaultConfiguration()->setApiKeyPrefix('X-Docspell-Auth', 'Bearer');
+
+$api_instance = new Swagger\Client\ApiCollectiveApi();
+
+try {
+    $result = $api_instance->secCollectiveTagcloudGet();
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling CollectiveApi->secCollectiveTagcloudGet: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Collective-secCollectiveTagcloudGet-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::CollectiveApi;
+
+# Configure API key authorization: authTokenHeader
+$WWW::SwaggerClient::Configuration::api_key->{'X-Docspell-Auth'} = 'YOUR_API_KEY';
+# uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+#$WWW::SwaggerClient::Configuration::api_key_prefix->{'X-Docspell-Auth'} = "Bearer";
+
+my $api_instance = WWW::SwaggerClient::CollectiveApi->new();
+
+eval { 
+    my $result = $api_instance->secCollectiveTagcloudGet();
+    print Dumper($result);
+};
+if ($@) {
+    warn "Exception when calling CollectiveApi->secCollectiveTagcloudGet: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Collective-secCollectiveTagcloudGet-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# Configure API key authorization: authTokenHeader
+swagger_client.configuration.api_key['X-Docspell-Auth'] = 'YOUR_API_KEY'
+# Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+# swagger_client.configuration.api_key_prefix['X-Docspell-Auth'] = 'Bearer'
+
+# create an instance of the API class
+api_instance = swagger_client.CollectiveApi()
+
+try: 
+    # Summary of used tags.
+    api_response = api_instance.sec_collective_tagcloud_get()
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling CollectiveApi->secCollectiveTagcloudGet: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+
+
+
+
+
+                          <h2>Responses</h2>
+                            <h3> Status: 200 - Ok </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-secCollectiveTagcloudGet-200-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-secCollectiveTagcloudGet-200-schema">
+                                  <div id='responses-secCollectiveTagcloudGet-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "Ok",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/TagCloud"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-secCollectiveTagcloudGet-200-schema-data').val(stringify(schema));
+                                        var result = $('#responses-secCollectiveTagcloudGet-200-schema-200');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-secCollectiveTagcloudGet-200-schema-data' type='hidden' value=''></input>
                                 </div>
                             </div>
 
@@ -15875,6 +16230,340 @@ except ApiException as e:
                         </article>
                       </div>
                       <hr>
+                    <div id="api-Equipment-secEquipmentIdGet">
+                      <article id="api-Equipment-secEquipmentIdGet-0" data-group="User" data-name="secEquipmentIdGet" data-version="0">
+                        <div class="pull-left">
+                          <h1>secEquipmentIdGet</h1>
+                          <p>Get details about a single equipment.</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked">Loads one equipment by its id.
+</p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="get"><code><span class="pln">/sec/equipment/{id}</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-Equipment-secEquipmentIdGet-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-Equipment-secEquipmentIdGet-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Equipment-secEquipmentIdGet-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-Equipment-secEquipmentIdGet-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-Equipment-secEquipmentIdGet-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-Equipment-secEquipmentIdGet-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-Equipment-secEquipmentIdGet-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-Equipment-secEquipmentIdGet-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-Equipment-secEquipmentIdGet-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-Equipment-secEquipmentIdGet-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-Equipment-secEquipmentIdGet-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-Equipment-secEquipmentIdGet-0-curl">
+                            <pre class="prettyprint"><code class="language-bsh">curl -X GET -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/equipment/{id}"</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-Equipment-secEquipmentIdGet-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.EquipmentApi;
+
+import java.io.File;
+import java.util.*;
+
+public class EquipmentApiExample {
+
+    public static void main(String[] args) {
+        ApiClient defaultClient = Configuration.getDefaultApiClient();
+
+        // Configure API key authorization: authTokenHeader
+        ApiKeyAuth authTokenHeader = (ApiKeyAuth) defaultClient.getAuthentication("authTokenHeader");
+        authTokenHeader.setApiKey("YOUR API KEY");
+        // Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+        //authTokenHeader.setApiKeyPrefix("Token");
+
+        EquipmentApi apiInstance = new EquipmentApi();
+        String id = id_example; // String | An identifier
+        try {
+            Equipment result = apiInstance.secEquipmentIdGet(id);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling EquipmentApi#secEquipmentIdGet");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Equipment-secEquipmentIdGet-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.EquipmentApi;
+
+public class EquipmentApiExample {
+
+    public static void main(String[] args) {
+        EquipmentApi apiInstance = new EquipmentApi();
+        String id = id_example; // String | An identifier
+        try {
+            Equipment result = apiInstance.secEquipmentIdGet(id);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling EquipmentApi#secEquipmentIdGet");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-Equipment-secEquipmentIdGet-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-Equipment-secEquipmentIdGet-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
+// Configure API key authorization: (authentication scheme: authTokenHeader)
+[apiConfig setApiKey:@"YOUR_API_KEY" forApiKeyIdentifier:@"X-Docspell-Auth"];
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+//[apiConfig setApiKeyPrefix:@"Bearer" forApiKeyIdentifier:@"X-Docspell-Auth"];
+String *id = id_example; // An identifier
+
+EquipmentApi *apiInstance = [[EquipmentApi alloc] init];
+
+// Get details about a single equipment.
+[apiInstance secEquipmentIdGetWith:id
+              completionHandler: ^(Equipment output, NSError* error) {
+                            if (output) {
+                                NSLog(@"%@", output);
+                            }
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Equipment-secEquipmentIdGet-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var Docspell = require('docspell');
+var defaultClient = Docspell.ApiClient.instance;
+
+// Configure API key authorization: authTokenHeader
+var authTokenHeader = defaultClient.authentications['authTokenHeader'];
+authTokenHeader.apiKey = "YOUR API KEY"
+// Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+//authTokenHeader.apiKeyPrefix['X-Docspell-Auth'] = "Token"
+
+var api = new Docspell.EquipmentApi()
+var id = id_example; // {{String}} An identifier
+
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+};
+api.secEquipmentIdGet(id, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-Equipment-secEquipmentIdGet-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-Equipment-secEquipmentIdGet-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class secEquipmentIdGetExample
+    {
+        public void main()
+        {
+
+            // Configure API key authorization: authTokenHeader
+            Configuration.Default.ApiKey.Add("X-Docspell-Auth", "YOUR_API_KEY");
+            // Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+            // Configuration.Default.ApiKeyPrefix.Add("X-Docspell-Auth", "Bearer");
+
+            var apiInstance = new EquipmentApi();
+            var id = id_example;  // String | An identifier
+
+            try
+            {
+                // Get details about a single equipment.
+                Equipment result = apiInstance.secEquipmentIdGet(id);
+                Debug.WriteLine(result);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling EquipmentApi.secEquipmentIdGet: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Equipment-secEquipmentIdGet-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+// Configure API key authorization: authTokenHeader
+Swagger\Client\Configuration::getDefaultConfiguration()->setApiKey('X-Docspell-Auth', 'YOUR_API_KEY');
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+// Swagger\Client\Configuration::getDefaultConfiguration()->setApiKeyPrefix('X-Docspell-Auth', 'Bearer');
+
+$api_instance = new Swagger\Client\ApiEquipmentApi();
+$id = id_example; // String | An identifier
+
+try {
+    $result = $api_instance->secEquipmentIdGet($id);
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling EquipmentApi->secEquipmentIdGet: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Equipment-secEquipmentIdGet-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::EquipmentApi;
+
+# Configure API key authorization: authTokenHeader
+$WWW::SwaggerClient::Configuration::api_key->{'X-Docspell-Auth'} = 'YOUR_API_KEY';
+# uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+#$WWW::SwaggerClient::Configuration::api_key_prefix->{'X-Docspell-Auth'} = "Bearer";
+
+my $api_instance = WWW::SwaggerClient::EquipmentApi->new();
+my $id = id_example; # String | An identifier
+
+eval { 
+    my $result = $api_instance->secEquipmentIdGet(id => $id);
+    print Dumper($result);
+};
+if ($@) {
+    warn "Exception when calling EquipmentApi->secEquipmentIdGet: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Equipment-secEquipmentIdGet-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# Configure API key authorization: authTokenHeader
+swagger_client.configuration.api_key['X-Docspell-Auth'] = 'YOUR_API_KEY'
+# Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+# swagger_client.configuration.api_key_prefix['X-Docspell-Auth'] = 'Bearer'
+
+# create an instance of the API class
+api_instance = swagger_client.EquipmentApi()
+id = id_example # String | An identifier
+
+try: 
+    # Get details about a single equipment.
+    api_response = api_instance.sec_equipment_id_get(id)
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling EquipmentApi->secEquipmentIdGet: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+                            <div class="methodsubtabletitle">Path parameters</div>
+                            <table id="methodsubtable">
+                                <tr>
+                                  <th width="150px">Name</th>
+                                  <th>Description</th>
+                                </tr>
+                                  <tr><td style="width:150px;">id*</td>
+                                  <td>
+                                  
+                                  
+                                      <div id="d2e199_secEquipmentIdGet_id">
+                                          <div class="json-schema-view">
+                                              <div class="primitive">
+                                                  <span class="type">
+                                                      String
+                                                  </span>
+                                  
+                                                      <div class="inner description">
+                                                          An identifier
+                                                      </div>
+                                              </div>
+                                                  <div class="inner required">
+                                                      Required
+                                                  </div>
+                                          </div>
+                                      </div>
+                                  </td>
+                                  </tr>
+                            </table>
+
+
+
+
+
+                          <h2>Responses</h2>
+                            <h3> Status: 200 - Ok </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-secEquipmentIdGet-200-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-secEquipmentIdGet-200-schema">
+                                  <div id='responses-secEquipmentIdGet-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "Ok",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/Equipment"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-secEquipmentIdGet-200-schema-data').val(stringify(schema));
+                                        var result = $('#responses-secEquipmentIdGet-200-schema-200');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-secEquipmentIdGet-200-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
                     <div id="api-Equipment-secEquipmentPost">
                       <article id="api-Equipment-secEquipmentPost-0" data-group="User" data-name="secEquipmentPost" data-version="0">
                         <div class="pull-left">
@@ -20975,6 +21664,312 @@ except ApiException as e:
                   </section>
                 <section id="api-Item">
                   <h1>Item</h1>
+                    <div id="api-Item-secItemConvertallpdfsPost">
+                      <article id="api-Item-secItemConvertallpdfsPost-0" data-group="User" data-name="secItemConvertallpdfsPost" data-version="0">
+                        <div class="pull-left">
+                          <h1>secItemConvertallpdfsPost</h1>
+                          <p>Convert all non-converted pdfs.</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked">Submits a job that will find all pdf files that have not been
+converted and converts them using the ocrmypdf tool (if
+enabled). This tool has been added in version 0.9.0 and so
+older files can be &quot;migrated&quot; this way, or maybe after
+enabling the tool.
+
+The task finds all files of the current collective and submits
+task for each file to convert. These tasks are submitted with
+a low priority so that normal processing can still proceed.
+
+The body of the request should be empty.
+</p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="post"><code><span class="pln">/sec/item/convertallpdfs</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-Item-secItemConvertallpdfsPost-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-Item-secItemConvertallpdfsPost-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Item-secItemConvertallpdfsPost-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-Item-secItemConvertallpdfsPost-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-Item-secItemConvertallpdfsPost-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-Item-secItemConvertallpdfsPost-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-Item-secItemConvertallpdfsPost-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-Item-secItemConvertallpdfsPost-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-Item-secItemConvertallpdfsPost-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-Item-secItemConvertallpdfsPost-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-Item-secItemConvertallpdfsPost-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-Item-secItemConvertallpdfsPost-0-curl">
+                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/item/convertallpdfs"</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-Item-secItemConvertallpdfsPost-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.ItemApi;
+
+import java.io.File;
+import java.util.*;
+
+public class ItemApiExample {
+
+    public static void main(String[] args) {
+        ApiClient defaultClient = Configuration.getDefaultApiClient();
+
+        // Configure API key authorization: authTokenHeader
+        ApiKeyAuth authTokenHeader = (ApiKeyAuth) defaultClient.getAuthentication("authTokenHeader");
+        authTokenHeader.setApiKey("YOUR API KEY");
+        // Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+        //authTokenHeader.setApiKeyPrefix("Token");
+
+        ItemApi apiInstance = new ItemApi();
+        try {
+            BasicResult result = apiInstance.secItemConvertallpdfsPost();
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling ItemApi#secItemConvertallpdfsPost");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Item-secItemConvertallpdfsPost-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.ItemApi;
+
+public class ItemApiExample {
+
+    public static void main(String[] args) {
+        ItemApi apiInstance = new ItemApi();
+        try {
+            BasicResult result = apiInstance.secItemConvertallpdfsPost();
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling ItemApi#secItemConvertallpdfsPost");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-Item-secItemConvertallpdfsPost-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-Item-secItemConvertallpdfsPost-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
+// Configure API key authorization: (authentication scheme: authTokenHeader)
+[apiConfig setApiKey:@"YOUR_API_KEY" forApiKeyIdentifier:@"X-Docspell-Auth"];
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+//[apiConfig setApiKeyPrefix:@"Bearer" forApiKeyIdentifier:@"X-Docspell-Auth"];
+
+ItemApi *apiInstance = [[ItemApi alloc] init];
+
+// Convert all non-converted pdfs.
+[apiInstance secItemConvertallpdfsPostWithCompletionHandler: 
+              ^(BasicResult output, NSError* error) {
+                            if (output) {
+                                NSLog(@"%@", output);
+                            }
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Item-secItemConvertallpdfsPost-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var Docspell = require('docspell');
+var defaultClient = Docspell.ApiClient.instance;
+
+// Configure API key authorization: authTokenHeader
+var authTokenHeader = defaultClient.authentications['authTokenHeader'];
+authTokenHeader.apiKey = "YOUR API KEY"
+// Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+//authTokenHeader.apiKeyPrefix['X-Docspell-Auth'] = "Token"
+
+var api = new Docspell.ItemApi()
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+};
+api.secItemConvertallpdfsPost(callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-Item-secItemConvertallpdfsPost-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-Item-secItemConvertallpdfsPost-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class secItemConvertallpdfsPostExample
+    {
+        public void main()
+        {
+
+            // Configure API key authorization: authTokenHeader
+            Configuration.Default.ApiKey.Add("X-Docspell-Auth", "YOUR_API_KEY");
+            // Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+            // Configuration.Default.ApiKeyPrefix.Add("X-Docspell-Auth", "Bearer");
+
+            var apiInstance = new ItemApi();
+
+            try
+            {
+                // Convert all non-converted pdfs.
+                BasicResult result = apiInstance.secItemConvertallpdfsPost();
+                Debug.WriteLine(result);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling ItemApi.secItemConvertallpdfsPost: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Item-secItemConvertallpdfsPost-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+// Configure API key authorization: authTokenHeader
+Swagger\Client\Configuration::getDefaultConfiguration()->setApiKey('X-Docspell-Auth', 'YOUR_API_KEY');
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+// Swagger\Client\Configuration::getDefaultConfiguration()->setApiKeyPrefix('X-Docspell-Auth', 'Bearer');
+
+$api_instance = new Swagger\Client\ApiItemApi();
+
+try {
+    $result = $api_instance->secItemConvertallpdfsPost();
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling ItemApi->secItemConvertallpdfsPost: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Item-secItemConvertallpdfsPost-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::ItemApi;
+
+# Configure API key authorization: authTokenHeader
+$WWW::SwaggerClient::Configuration::api_key->{'X-Docspell-Auth'} = 'YOUR_API_KEY';
+# uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+#$WWW::SwaggerClient::Configuration::api_key_prefix->{'X-Docspell-Auth'} = "Bearer";
+
+my $api_instance = WWW::SwaggerClient::ItemApi->new();
+
+eval { 
+    my $result = $api_instance->secItemConvertallpdfsPost();
+    print Dumper($result);
+};
+if ($@) {
+    warn "Exception when calling ItemApi->secItemConvertallpdfsPost: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Item-secItemConvertallpdfsPost-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# Configure API key authorization: authTokenHeader
+swagger_client.configuration.api_key['X-Docspell-Auth'] = 'YOUR_API_KEY'
+# Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+# swagger_client.configuration.api_key_prefix['X-Docspell-Auth'] = 'Bearer'
+
+# create an instance of the API class
+api_instance = swagger_client.ItemApi()
+
+try: 
+    # Convert all non-converted pdfs.
+    api_response = api_instance.sec_item_convertallpdfs_post()
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling ItemApi->secItemConvertallpdfsPost: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+
+
+
+
+
+                          <h2>Responses</h2>
+                            <h3> Status: 200 - Ok </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-secItemConvertallpdfsPost-200-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-secItemConvertallpdfsPost-200-schema">
+                                  <div id='responses-secItemConvertallpdfsPost-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "Ok",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/BasicResult"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-secItemConvertallpdfsPost-200-schema-data').val(stringify(schema));
+                                        var result = $('#responses-secItemConvertallpdfsPost-200-schema-200');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-secItemConvertallpdfsPost-200-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
                     <div id="api-Item-secItemIdConcEquipmentPost">
                       <article id="api-Item-secItemIdConcEquipmentPost-0" data-group="User" data-name="secItemIdConcEquipmentPost" data-version="0">
                         <div class="pull-left">
@@ -27725,6 +28720,394 @@ except ApiException as e:
                         </article>
                       </div>
                       <hr>
+                    <div id="api-Item-secItemIdTaglinkPost">
+                      <article id="api-Item-secItemIdTaglinkPost-0" data-group="User" data-name="secItemIdTaglinkPost" data-version="0">
+                        <div class="pull-left">
+                          <h1>secItemIdTaglinkPost</h1>
+                          <p>Link existing tags to an item.</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked">Sets all given tags to the item. The tags must exist,
+otherwise they are ignored. The tags may be specified as names
+or ids.
+</p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="post"><code><span class="pln">/sec/item/{id}/taglink</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-Item-secItemIdTaglinkPost-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-Item-secItemIdTaglinkPost-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Item-secItemIdTaglinkPost-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-Item-secItemIdTaglinkPost-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-Item-secItemIdTaglinkPost-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-Item-secItemIdTaglinkPost-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-Item-secItemIdTaglinkPost-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-Item-secItemIdTaglinkPost-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-Item-secItemIdTaglinkPost-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-Item-secItemIdTaglinkPost-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-Item-secItemIdTaglinkPost-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-Item-secItemIdTaglinkPost-0-curl">
+                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/item/{id}/taglink"</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-Item-secItemIdTaglinkPost-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.ItemApi;
+
+import java.io.File;
+import java.util.*;
+
+public class ItemApiExample {
+
+    public static void main(String[] args) {
+        ApiClient defaultClient = Configuration.getDefaultApiClient();
+
+        // Configure API key authorization: authTokenHeader
+        ApiKeyAuth authTokenHeader = (ApiKeyAuth) defaultClient.getAuthentication("authTokenHeader");
+        authTokenHeader.setApiKey("YOUR API KEY");
+        // Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+        //authTokenHeader.setApiKeyPrefix("Token");
+
+        ItemApi apiInstance = new ItemApi();
+        String id = id_example; // String | An identifier
+        StringList body = ; // StringList | 
+        try {
+            BasicResult result = apiInstance.secItemIdTaglinkPost(id, body);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling ItemApi#secItemIdTaglinkPost");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Item-secItemIdTaglinkPost-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.ItemApi;
+
+public class ItemApiExample {
+
+    public static void main(String[] args) {
+        ItemApi apiInstance = new ItemApi();
+        String id = id_example; // String | An identifier
+        StringList body = ; // StringList | 
+        try {
+            BasicResult result = apiInstance.secItemIdTaglinkPost(id, body);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling ItemApi#secItemIdTaglinkPost");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-Item-secItemIdTaglinkPost-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-Item-secItemIdTaglinkPost-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
+// Configure API key authorization: (authentication scheme: authTokenHeader)
+[apiConfig setApiKey:@"YOUR_API_KEY" forApiKeyIdentifier:@"X-Docspell-Auth"];
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+//[apiConfig setApiKeyPrefix:@"Bearer" forApiKeyIdentifier:@"X-Docspell-Auth"];
+String *id = id_example; // An identifier
+StringList *body = ; //  (optional)
+
+ItemApi *apiInstance = [[ItemApi alloc] init];
+
+// Link existing tags to an item.
+[apiInstance secItemIdTaglinkPostWith:id
+    body:body
+              completionHandler: ^(BasicResult output, NSError* error) {
+                            if (output) {
+                                NSLog(@"%@", output);
+                            }
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Item-secItemIdTaglinkPost-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var Docspell = require('docspell');
+var defaultClient = Docspell.ApiClient.instance;
+
+// Configure API key authorization: authTokenHeader
+var authTokenHeader = defaultClient.authentications['authTokenHeader'];
+authTokenHeader.apiKey = "YOUR API KEY"
+// Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+//authTokenHeader.apiKeyPrefix['X-Docspell-Auth'] = "Token"
+
+var api = new Docspell.ItemApi()
+var id = id_example; // {{String}} An identifier
+var opts = { 
+  'body':  // {{StringList}} 
+};
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+};
+api.secItemIdTaglinkPost(id, opts, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-Item-secItemIdTaglinkPost-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-Item-secItemIdTaglinkPost-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class secItemIdTaglinkPostExample
+    {
+        public void main()
+        {
+
+            // Configure API key authorization: authTokenHeader
+            Configuration.Default.ApiKey.Add("X-Docspell-Auth", "YOUR_API_KEY");
+            // Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+            // Configuration.Default.ApiKeyPrefix.Add("X-Docspell-Auth", "Bearer");
+
+            var apiInstance = new ItemApi();
+            var id = id_example;  // String | An identifier
+            var body = new StringList(); // StringList |  (optional) 
+
+            try
+            {
+                // Link existing tags to an item.
+                BasicResult result = apiInstance.secItemIdTaglinkPost(id, body);
+                Debug.WriteLine(result);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling ItemApi.secItemIdTaglinkPost: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Item-secItemIdTaglinkPost-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+// Configure API key authorization: authTokenHeader
+Swagger\Client\Configuration::getDefaultConfiguration()->setApiKey('X-Docspell-Auth', 'YOUR_API_KEY');
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+// Swagger\Client\Configuration::getDefaultConfiguration()->setApiKeyPrefix('X-Docspell-Auth', 'Bearer');
+
+$api_instance = new Swagger\Client\ApiItemApi();
+$id = id_example; // String | An identifier
+$body = ; // StringList | 
+
+try {
+    $result = $api_instance->secItemIdTaglinkPost($id, $body);
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling ItemApi->secItemIdTaglinkPost: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Item-secItemIdTaglinkPost-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::ItemApi;
+
+# Configure API key authorization: authTokenHeader
+$WWW::SwaggerClient::Configuration::api_key->{'X-Docspell-Auth'} = 'YOUR_API_KEY';
+# uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+#$WWW::SwaggerClient::Configuration::api_key_prefix->{'X-Docspell-Auth'} = "Bearer";
+
+my $api_instance = WWW::SwaggerClient::ItemApi->new();
+my $id = id_example; # String | An identifier
+my $body = WWW::SwaggerClient::Object::StringList->new(); # StringList | 
+
+eval { 
+    my $result = $api_instance->secItemIdTaglinkPost(id => $id, body => $body);
+    print Dumper($result);
+};
+if ($@) {
+    warn "Exception when calling ItemApi->secItemIdTaglinkPost: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Item-secItemIdTaglinkPost-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# Configure API key authorization: authTokenHeader
+swagger_client.configuration.api_key['X-Docspell-Auth'] = 'YOUR_API_KEY'
+# Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+# swagger_client.configuration.api_key_prefix['X-Docspell-Auth'] = 'Bearer'
+
+# create an instance of the API class
+api_instance = swagger_client.ItemApi()
+id = id_example # String | An identifier
+body =  # StringList |  (optional)
+
+try: 
+    # Link existing tags to an item.
+    api_response = api_instance.sec_item_id_taglink_post(id, body=body)
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling ItemApi->secItemIdTaglinkPost: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+                            <div class="methodsubtabletitle">Path parameters</div>
+                            <table id="methodsubtable">
+                                <tr>
+                                  <th width="150px">Name</th>
+                                  <th>Description</th>
+                                </tr>
+                                  <tr><td style="width:150px;">id*</td>
+                                  <td>
+                                  
+                                  
+                                      <div id="d2e199_secItemIdTaglinkPost_id">
+                                          <div class="json-schema-view">
+                                              <div class="primitive">
+                                                  <span class="type">
+                                                      String
+                                                  </span>
+                                  
+                                                      <div class="inner description">
+                                                          An identifier
+                                                      </div>
+                                              </div>
+                                                  <div class="inner required">
+                                                      Required
+                                                  </div>
+                                          </div>
+                                      </div>
+                                  </td>
+                                  </tr>
+                            </table>
+
+
+                            <div class="methodsubtabletitle">Body parameters</div>
+                            <table id="methodsubtable">
+                              <tr>
+                                <th width="150px">Name</th>
+                                <th>Description</th>
+                              </tr>
+                                <tr><td style="width:150px;">body </td>
+                                <td>
+                                
+                                
+                                <script>
+                                $(document).ready(function() {
+                                  var schemaWrapper = {
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/StringList"
+      }
+    }
+  }
+};
+                                  var schema = schemaWrapper.content["application/json"].schema;
+                                  if (schema.$ref != null) {
+                                    schema = defsParser.$refs.get(schema.$ref);
+                                  } else {
+                                    schemaWrapper.components = {};
+                                    schemaWrapper.components.schemas = Object.assign({}, defs);
+                                    $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                      console.log(err);
+                                    });
+                                  }
+                                
+                                  var view = new JSONSchemaView(schema,2,{isBodyParam: true});
+                                  var result = $('#d2e199_secItemIdTaglinkPost_body');
+                                  result.empty();
+                                  result.append(view.render());
+                                });
+                                </script>
+                                <div id="d2e199_secItemIdTaglinkPost_body"></div>
+                                </td>
+                                </tr>
+                            </table>
+
+
+
+                          <h2>Responses</h2>
+                            <h3> Status: 200 - Ok </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-secItemIdTaglinkPost-200-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-secItemIdTaglinkPost-200-schema">
+                                  <div id='responses-secItemIdTaglinkPost-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "Ok",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/BasicResult"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-secItemIdTaglinkPost-200-schema-data').val(stringify(schema));
+                                        var result = $('#responses-secItemIdTaglinkPost-200-schema-200');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-secItemIdTaglinkPost-200-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
                     <div id="api-Item-secItemIdTagsPost">
                       <article id="api-Item-secItemIdTagsPost-0" data-group="User" data-name="secItemIdTagsPost" data-version="0">
                         <div class="pull-left">
@@ -28501,6 +29884,396 @@ except ApiException as e:
                         </article>
                       </div>
                       <hr>
+                    <div id="api-Item-secItemIdTagtogglePost">
+                      <article id="api-Item-secItemIdTagtogglePost-0" data-group="User" data-name="secItemIdTagtogglePost" data-version="0">
+                        <div class="pull-left">
+                          <h1>secItemIdTagtogglePost</h1>
+                          <p>Toggles existing tags to an item.</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked">Toggles all given tags of the item. The tags must exist,
+otherwise they are ignored. The tags may be specified as names
+or ids. Tags are either removed or linked from/to the item,
+depending on whether the item currently is tagged with the
+corresponding tag.
+</p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="post"><code><span class="pln">/sec/item/{id}/tagtoggle</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-Item-secItemIdTagtogglePost-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-Item-secItemIdTagtogglePost-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Item-secItemIdTagtogglePost-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-Item-secItemIdTagtogglePost-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-Item-secItemIdTagtogglePost-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-Item-secItemIdTagtogglePost-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-Item-secItemIdTagtogglePost-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-Item-secItemIdTagtogglePost-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-Item-secItemIdTagtogglePost-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-Item-secItemIdTagtogglePost-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-Item-secItemIdTagtogglePost-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-Item-secItemIdTagtogglePost-0-curl">
+                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/item/{id}/tagtoggle"</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-Item-secItemIdTagtogglePost-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.ItemApi;
+
+import java.io.File;
+import java.util.*;
+
+public class ItemApiExample {
+
+    public static void main(String[] args) {
+        ApiClient defaultClient = Configuration.getDefaultApiClient();
+
+        // Configure API key authorization: authTokenHeader
+        ApiKeyAuth authTokenHeader = (ApiKeyAuth) defaultClient.getAuthentication("authTokenHeader");
+        authTokenHeader.setApiKey("YOUR API KEY");
+        // Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+        //authTokenHeader.setApiKeyPrefix("Token");
+
+        ItemApi apiInstance = new ItemApi();
+        String id = id_example; // String | An identifier
+        StringList body = ; // StringList | 
+        try {
+            BasicResult result = apiInstance.secItemIdTagtogglePost(id, body);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling ItemApi#secItemIdTagtogglePost");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Item-secItemIdTagtogglePost-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.ItemApi;
+
+public class ItemApiExample {
+
+    public static void main(String[] args) {
+        ItemApi apiInstance = new ItemApi();
+        String id = id_example; // String | An identifier
+        StringList body = ; // StringList | 
+        try {
+            BasicResult result = apiInstance.secItemIdTagtogglePost(id, body);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling ItemApi#secItemIdTagtogglePost");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-Item-secItemIdTagtogglePost-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-Item-secItemIdTagtogglePost-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
+// Configure API key authorization: (authentication scheme: authTokenHeader)
+[apiConfig setApiKey:@"YOUR_API_KEY" forApiKeyIdentifier:@"X-Docspell-Auth"];
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+//[apiConfig setApiKeyPrefix:@"Bearer" forApiKeyIdentifier:@"X-Docspell-Auth"];
+String *id = id_example; // An identifier
+StringList *body = ; //  (optional)
+
+ItemApi *apiInstance = [[ItemApi alloc] init];
+
+// Toggles existing tags to an item.
+[apiInstance secItemIdTagtogglePostWith:id
+    body:body
+              completionHandler: ^(BasicResult output, NSError* error) {
+                            if (output) {
+                                NSLog(@"%@", output);
+                            }
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Item-secItemIdTagtogglePost-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var Docspell = require('docspell');
+var defaultClient = Docspell.ApiClient.instance;
+
+// Configure API key authorization: authTokenHeader
+var authTokenHeader = defaultClient.authentications['authTokenHeader'];
+authTokenHeader.apiKey = "YOUR API KEY"
+// Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+//authTokenHeader.apiKeyPrefix['X-Docspell-Auth'] = "Token"
+
+var api = new Docspell.ItemApi()
+var id = id_example; // {{String}} An identifier
+var opts = { 
+  'body':  // {{StringList}} 
+};
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+};
+api.secItemIdTagtogglePost(id, opts, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-Item-secItemIdTagtogglePost-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-Item-secItemIdTagtogglePost-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class secItemIdTagtogglePostExample
+    {
+        public void main()
+        {
+
+            // Configure API key authorization: authTokenHeader
+            Configuration.Default.ApiKey.Add("X-Docspell-Auth", "YOUR_API_KEY");
+            // Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+            // Configuration.Default.ApiKeyPrefix.Add("X-Docspell-Auth", "Bearer");
+
+            var apiInstance = new ItemApi();
+            var id = id_example;  // String | An identifier
+            var body = new StringList(); // StringList |  (optional) 
+
+            try
+            {
+                // Toggles existing tags to an item.
+                BasicResult result = apiInstance.secItemIdTagtogglePost(id, body);
+                Debug.WriteLine(result);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling ItemApi.secItemIdTagtogglePost: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Item-secItemIdTagtogglePost-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+// Configure API key authorization: authTokenHeader
+Swagger\Client\Configuration::getDefaultConfiguration()->setApiKey('X-Docspell-Auth', 'YOUR_API_KEY');
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+// Swagger\Client\Configuration::getDefaultConfiguration()->setApiKeyPrefix('X-Docspell-Auth', 'Bearer');
+
+$api_instance = new Swagger\Client\ApiItemApi();
+$id = id_example; // String | An identifier
+$body = ; // StringList | 
+
+try {
+    $result = $api_instance->secItemIdTagtogglePost($id, $body);
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling ItemApi->secItemIdTagtogglePost: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Item-secItemIdTagtogglePost-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::ItemApi;
+
+# Configure API key authorization: authTokenHeader
+$WWW::SwaggerClient::Configuration::api_key->{'X-Docspell-Auth'} = 'YOUR_API_KEY';
+# uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+#$WWW::SwaggerClient::Configuration::api_key_prefix->{'X-Docspell-Auth'} = "Bearer";
+
+my $api_instance = WWW::SwaggerClient::ItemApi->new();
+my $id = id_example; # String | An identifier
+my $body = WWW::SwaggerClient::Object::StringList->new(); # StringList | 
+
+eval { 
+    my $result = $api_instance->secItemIdTagtogglePost(id => $id, body => $body);
+    print Dumper($result);
+};
+if ($@) {
+    warn "Exception when calling ItemApi->secItemIdTagtogglePost: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Item-secItemIdTagtogglePost-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# Configure API key authorization: authTokenHeader
+swagger_client.configuration.api_key['X-Docspell-Auth'] = 'YOUR_API_KEY'
+# Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+# swagger_client.configuration.api_key_prefix['X-Docspell-Auth'] = 'Bearer'
+
+# create an instance of the API class
+api_instance = swagger_client.ItemApi()
+id = id_example # String | An identifier
+body =  # StringList |  (optional)
+
+try: 
+    # Toggles existing tags to an item.
+    api_response = api_instance.sec_item_id_tagtoggle_post(id, body=body)
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling ItemApi->secItemIdTagtogglePost: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+                            <div class="methodsubtabletitle">Path parameters</div>
+                            <table id="methodsubtable">
+                                <tr>
+                                  <th width="150px">Name</th>
+                                  <th>Description</th>
+                                </tr>
+                                  <tr><td style="width:150px;">id*</td>
+                                  <td>
+                                  
+                                  
+                                      <div id="d2e199_secItemIdTagtogglePost_id">
+                                          <div class="json-schema-view">
+                                              <div class="primitive">
+                                                  <span class="type">
+                                                      String
+                                                  </span>
+                                  
+                                                      <div class="inner description">
+                                                          An identifier
+                                                      </div>
+                                              </div>
+                                                  <div class="inner required">
+                                                      Required
+                                                  </div>
+                                          </div>
+                                      </div>
+                                  </td>
+                                  </tr>
+                            </table>
+
+
+                            <div class="methodsubtabletitle">Body parameters</div>
+                            <table id="methodsubtable">
+                              <tr>
+                                <th width="150px">Name</th>
+                                <th>Description</th>
+                              </tr>
+                                <tr><td style="width:150px;">body </td>
+                                <td>
+                                
+                                
+                                <script>
+                                $(document).ready(function() {
+                                  var schemaWrapper = {
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/StringList"
+      }
+    }
+  }
+};
+                                  var schema = schemaWrapper.content["application/json"].schema;
+                                  if (schema.$ref != null) {
+                                    schema = defsParser.$refs.get(schema.$ref);
+                                  } else {
+                                    schemaWrapper.components = {};
+                                    schemaWrapper.components.schemas = Object.assign({}, defs);
+                                    $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                      console.log(err);
+                                    });
+                                  }
+                                
+                                  var view = new JSONSchemaView(schema,2,{isBodyParam: true});
+                                  var result = $('#d2e199_secItemIdTagtogglePost_body');
+                                  result.empty();
+                                  result.append(view.render());
+                                });
+                                </script>
+                                <div id="d2e199_secItemIdTagtogglePost_body"></div>
+                                </td>
+                                </tr>
+                            </table>
+
+
+
+                          <h2>Responses</h2>
+                            <h3> Status: 200 - Ok </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-secItemIdTagtogglePost-200-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-secItemIdTagtogglePost-200-schema">
+                                  <div id='responses-secItemIdTagtogglePost-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "Ok",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/BasicResult"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-secItemIdTagtogglePost-200-schema-data').val(stringify(schema));
+                                        var result = $('#responses-secItemIdTagtogglePost-200-schema-200');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-secItemIdTagtogglePost-200-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
                     <div id="api-Item-secItemIdUnconfirmPost">
                       <article id="api-Item-secItemIdUnconfirmPost-0" data-group="User" data-name="secItemIdUnconfirmPost" data-version="0">
                         <div class="pull-left">
@@ -29218,6 +30991,393 @@ except ApiException as e:
                                     </script>
                                   </div>
                                   <input id='responses-secItemItemIdAttachmentMovebeforePost-200-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
+                    <div id="api-Item-secItemItemIdReprocessPost">
+                      <article id="api-Item-secItemItemIdReprocessPost-0" data-group="User" data-name="secItemItemIdReprocessPost" data-version="0">
+                        <div class="pull-left">
+                          <h1>secItemItemIdReprocessPost</h1>
+                          <p>Start reprocessing the files of the item.</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked">This submits a job that will re-process the files (either all
+or the ones specified) of the item and replace the metadata.
+</p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="post"><code><span class="pln">/sec/item/{itemId}/reprocess</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-Item-secItemItemIdReprocessPost-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-Item-secItemItemIdReprocessPost-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Item-secItemItemIdReprocessPost-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-Item-secItemItemIdReprocessPost-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-Item-secItemItemIdReprocessPost-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-Item-secItemItemIdReprocessPost-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-Item-secItemItemIdReprocessPost-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-Item-secItemItemIdReprocessPost-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-Item-secItemItemIdReprocessPost-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-Item-secItemItemIdReprocessPost-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-Item-secItemItemIdReprocessPost-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-Item-secItemItemIdReprocessPost-0-curl">
+                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/item/{itemId}/reprocess"</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-Item-secItemItemIdReprocessPost-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.ItemApi;
+
+import java.io.File;
+import java.util.*;
+
+public class ItemApiExample {
+
+    public static void main(String[] args) {
+        ApiClient defaultClient = Configuration.getDefaultApiClient();
+
+        // Configure API key authorization: authTokenHeader
+        ApiKeyAuth authTokenHeader = (ApiKeyAuth) defaultClient.getAuthentication("authTokenHeader");
+        authTokenHeader.setApiKey("YOUR API KEY");
+        // Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+        //authTokenHeader.setApiKeyPrefix("Token");
+
+        ItemApi apiInstance = new ItemApi();
+        String id = id_example; // String | An identifier
+        IdList body = ; // IdList | 
+        try {
+            BasicResult result = apiInstance.secItemItemIdReprocessPost(id, body);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling ItemApi#secItemItemIdReprocessPost");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Item-secItemItemIdReprocessPost-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.ItemApi;
+
+public class ItemApiExample {
+
+    public static void main(String[] args) {
+        ItemApi apiInstance = new ItemApi();
+        String id = id_example; // String | An identifier
+        IdList body = ; // IdList | 
+        try {
+            BasicResult result = apiInstance.secItemItemIdReprocessPost(id, body);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling ItemApi#secItemItemIdReprocessPost");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-Item-secItemItemIdReprocessPost-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-Item-secItemItemIdReprocessPost-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
+// Configure API key authorization: (authentication scheme: authTokenHeader)
+[apiConfig setApiKey:@"YOUR_API_KEY" forApiKeyIdentifier:@"X-Docspell-Auth"];
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+//[apiConfig setApiKeyPrefix:@"Bearer" forApiKeyIdentifier:@"X-Docspell-Auth"];
+String *id = id_example; // An identifier
+IdList *body = ; //  (optional)
+
+ItemApi *apiInstance = [[ItemApi alloc] init];
+
+// Start reprocessing the files of the item.
+[apiInstance secItemItemIdReprocessPostWith:id
+    body:body
+              completionHandler: ^(BasicResult output, NSError* error) {
+                            if (output) {
+                                NSLog(@"%@", output);
+                            }
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Item-secItemItemIdReprocessPost-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var Docspell = require('docspell');
+var defaultClient = Docspell.ApiClient.instance;
+
+// Configure API key authorization: authTokenHeader
+var authTokenHeader = defaultClient.authentications['authTokenHeader'];
+authTokenHeader.apiKey = "YOUR API KEY"
+// Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+//authTokenHeader.apiKeyPrefix['X-Docspell-Auth'] = "Token"
+
+var api = new Docspell.ItemApi()
+var id = id_example; // {{String}} An identifier
+var opts = { 
+  'body':  // {{IdList}} 
+};
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+};
+api.secItemItemIdReprocessPost(id, opts, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-Item-secItemItemIdReprocessPost-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-Item-secItemItemIdReprocessPost-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class secItemItemIdReprocessPostExample
+    {
+        public void main()
+        {
+
+            // Configure API key authorization: authTokenHeader
+            Configuration.Default.ApiKey.Add("X-Docspell-Auth", "YOUR_API_KEY");
+            // Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+            // Configuration.Default.ApiKeyPrefix.Add("X-Docspell-Auth", "Bearer");
+
+            var apiInstance = new ItemApi();
+            var id = id_example;  // String | An identifier
+            var body = new IdList(); // IdList |  (optional) 
+
+            try
+            {
+                // Start reprocessing the files of the item.
+                BasicResult result = apiInstance.secItemItemIdReprocessPost(id, body);
+                Debug.WriteLine(result);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling ItemApi.secItemItemIdReprocessPost: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Item-secItemItemIdReprocessPost-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+// Configure API key authorization: authTokenHeader
+Swagger\Client\Configuration::getDefaultConfiguration()->setApiKey('X-Docspell-Auth', 'YOUR_API_KEY');
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+// Swagger\Client\Configuration::getDefaultConfiguration()->setApiKeyPrefix('X-Docspell-Auth', 'Bearer');
+
+$api_instance = new Swagger\Client\ApiItemApi();
+$id = id_example; // String | An identifier
+$body = ; // IdList | 
+
+try {
+    $result = $api_instance->secItemItemIdReprocessPost($id, $body);
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling ItemApi->secItemItemIdReprocessPost: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Item-secItemItemIdReprocessPost-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::ItemApi;
+
+# Configure API key authorization: authTokenHeader
+$WWW::SwaggerClient::Configuration::api_key->{'X-Docspell-Auth'} = 'YOUR_API_KEY';
+# uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+#$WWW::SwaggerClient::Configuration::api_key_prefix->{'X-Docspell-Auth'} = "Bearer";
+
+my $api_instance = WWW::SwaggerClient::ItemApi->new();
+my $id = id_example; # String | An identifier
+my $body = WWW::SwaggerClient::Object::IdList->new(); # IdList | 
+
+eval { 
+    my $result = $api_instance->secItemItemIdReprocessPost(id => $id, body => $body);
+    print Dumper($result);
+};
+if ($@) {
+    warn "Exception when calling ItemApi->secItemItemIdReprocessPost: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Item-secItemItemIdReprocessPost-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# Configure API key authorization: authTokenHeader
+swagger_client.configuration.api_key['X-Docspell-Auth'] = 'YOUR_API_KEY'
+# Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+# swagger_client.configuration.api_key_prefix['X-Docspell-Auth'] = 'Bearer'
+
+# create an instance of the API class
+api_instance = swagger_client.ItemApi()
+id = id_example # String | An identifier
+body =  # IdList |  (optional)
+
+try: 
+    # Start reprocessing the files of the item.
+    api_response = api_instance.sec_item_item_id_reprocess_post(id, body=body)
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling ItemApi->secItemItemIdReprocessPost: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+                            <div class="methodsubtabletitle">Path parameters</div>
+                            <table id="methodsubtable">
+                                <tr>
+                                  <th width="150px">Name</th>
+                                  <th>Description</th>
+                                </tr>
+                                  <tr><td style="width:150px;">id*</td>
+                                  <td>
+                                  
+                                  
+                                      <div id="d2e199_secItemItemIdReprocessPost_id">
+                                          <div class="json-schema-view">
+                                              <div class="primitive">
+                                                  <span class="type">
+                                                      String
+                                                  </span>
+                                  
+                                                      <div class="inner description">
+                                                          An identifier
+                                                      </div>
+                                              </div>
+                                                  <div class="inner required">
+                                                      Required
+                                                  </div>
+                                          </div>
+                                      </div>
+                                  </td>
+                                  </tr>
+                            </table>
+
+
+                            <div class="methodsubtabletitle">Body parameters</div>
+                            <table id="methodsubtable">
+                              <tr>
+                                <th width="150px">Name</th>
+                                <th>Description</th>
+                              </tr>
+                                <tr><td style="width:150px;">body </td>
+                                <td>
+                                
+                                
+                                <script>
+                                $(document).ready(function() {
+                                  var schemaWrapper = {
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/IdList"
+      }
+    }
+  }
+};
+                                  var schema = schemaWrapper.content["application/json"].schema;
+                                  if (schema.$ref != null) {
+                                    schema = defsParser.$refs.get(schema.$ref);
+                                  } else {
+                                    schemaWrapper.components = {};
+                                    schemaWrapper.components.schemas = Object.assign({}, defs);
+                                    $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                      console.log(err);
+                                    });
+                                  }
+                                
+                                  var view = new JSONSchemaView(schema,2,{isBodyParam: true});
+                                  var result = $('#d2e199_secItemItemIdReprocessPost_body');
+                                  result.empty();
+                                  result.append(view.render());
+                                });
+                                </script>
+                                <div id="d2e199_secItemItemIdReprocessPost_body"></div>
+                                </td>
+                                </tr>
+                            </table>
+
+
+
+                          <h2>Responses</h2>
+                            <h3> Status: 200 - Ok </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-secItemItemIdReprocessPost-200-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-secItemItemIdReprocessPost-200-schema">
+                                  <div id='responses-secItemItemIdReprocessPost-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "Ok",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/BasicResult"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-secItemItemIdReprocessPost-200-schema-data').val(stringify(schema));
+                                        var result = $('#responses-secItemItemIdReprocessPost-200-schema-200');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-secItemItemIdReprocessPost-200-schema-data' type='hidden' value=''></input>
                                 </div>
                             </div>
 

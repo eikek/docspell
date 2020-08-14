@@ -257,9 +257,11 @@ workflows, a tag category <em>state</em> may exist that includes tags like
 <em>Todo</em> or <em>Waiting</em>. Or you can tag items with user names to provide
 &quot;assignment&quot; semantics. Docspell doesn't propose any workflow, but it
 can help to implement some.</p>
-<p>The tags are <em>not</em> taken into account when processing. Docspell will
-not automatically associate tags to your items. The tags are only
-meant to be used manually for now.</p>
+<p>The tags are <em>not</em> taken into account when creating suggestions from
+analyzed text yet. However, PDF files may contain metadata itself and
+if there is a metadata <em>keywords</em> list, these keywords are matched
+against the tags in the database. If they match, the item is tagged
+automatically.</p>
 <h2 id="organization-and-person">Organization and Person<a class="zola-anchor" href="#organization-and-person" aria-label="Anchor link for: organization-and-person">🔗</a></h2>
 <p>The organization entity represents an non-personal (organization or
 company) correspondent of an item. Docspell will choose one or more
@@ -329,7 +331,7 @@ not (yet) possible to specify it when uploading.</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell, 0.9.0
+                Docspell, 0.10.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>

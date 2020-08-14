@@ -10,7 +10,7 @@
 <meta name="title" property="og:title" content="Docspell – Simple Document Organizer">
 <meta name="og:image" content="/img/poster.png">
 <meta name="og:title" content="Docspell – Simple Document Organizer">
-<meta name="og:site_name" content="Processing Queue - Docspell">
+<meta name="og:site_name" content="Convert All PDFs - Docspell">
 <meta name="og:url" content="">
 <meta name="og:type" content="website">
 <meta name="og:description" content="Simple Document Organizer">
@@ -22,7 +22,7 @@
 <link rel="shortcut icon" href="/favicon-mc.ico" type="image/x-icon">
 <link rel="icon" href="/favicon-mc.ico" type="image/x-icon">
 
-        <title>Processing Queue – Docspell Documentation</title>
+        <title>Convert All PDFs – Docspell Documentation</title>
         <link rel="stylesheet" href="/styles.css">
     </head>
     <body>
@@ -56,7 +56,7 @@
             </div>
             <div class="hero-body">
                 <h1 class="title">
-                    Processing Queue
+                    Convert All PDFs
                 </h1>
                 <h2 class="subtitle">
                     Docspell Documentation
@@ -78,11 +78,11 @@
                 
                 
                 <li>
-                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;">Web-UI</a>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;">Tools</a>
                 </li>
                 
                 <li>
-                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;processing&#x2F;">Processing Queue</a>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;convert-all-pdf&#x2F;">Convert All PDFs</a>
                 </li>
             </ul>
         </nav>
@@ -96,89 +96,89 @@
                             
 
                             <p class="menu-label">
-                                Web-UI
+                                Tools
                             </p>
                             
                             
                             <li>
-                                <a href="https://docspell.org/docs/webapp/uploading/"
+                                <a href="https://docspell.org/docs/tools/ds/"
                                    >
-                                    Uploads
+                                    Upload Cli
                                 </a>
                                 
                             </li>
                             
                             
                             <li>
-                                <a href="https://docspell.org/docs/webapp/metadata/"
+                                <a href="https://docspell.org/docs/tools/android/"
                                    >
-                                    Meta Data
+                                    Android Client
                                 </a>
                                 
                             </li>
                             
                             
                             <li>
-                                <a href="https://docspell.org/docs/webapp/curate/"
+                                <a href="https://docspell.org/docs/tools/consumedir/"
                                    >
-                                    Curate Items
+                                    Consume Directory
                                 </a>
                                 
                             </li>
                             
                             
                             <li>
-                                <a href="https://docspell.org/docs/webapp/finding/"
+                                <a href="https://docspell.org/docs/tools/browserext/"
                                    >
-                                    Finding Items
+                                    Browser Extension (Firefox)
                                 </a>
                                 
                             </li>
                             
                             
                             <li>
-                                <a href="https://docspell.org/docs/webapp/emailsettings/"
+                                <a href="https://docspell.org/docs/tools/smtpgateway/"
                                    >
-                                    E-Mail Settings
+                                    Smtp Gateway With Exim
                                 </a>
                                 
                             </li>
                             
                             
                             <li>
-                                <a href="https://docspell.org/docs/webapp/mailitem/"
-                                   >
-                                    Send Items Via E-Mail
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/webapp/notifydueitems/"
-                                   >
-                                    Notify About Due Items
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/webapp/scanmailbox/"
-                                   >
-                                    Scan Mailboxes
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/webapp/processing/"
+                                <a href="https://docspell.org/docs/tools/convert-all-pdf/"
                                    class="is-active">
-                                    Processing Queue
+                                    Convert All Pdfs
                                 </a>
                                 
                                 <ul class="menu-list">
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;convert-all-pdf&#x2F;#convert-all-pdf-sh">
+                                            convert-all-pdf.sh
+                                        </a>
+                                        <ul>
+                                            
+                                        </ul>
+                                    </li>
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;convert-all-pdf&#x2F;#requirements">
+                                            Requirements
+                                        </a>
+                                        <ul>
+                                            
+                                        </ul>
+                                    </li>
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;convert-all-pdf&#x2F;#usage">
+                                            Usage
+                                        </a>
+                                        <ul>
+                                            
+                                        </ul>
+                                    </li>
                                     
                                 </ul>
                                 
@@ -191,31 +191,40 @@
                 <div class="column is-9">
                     <div class="container">
                         <div class="content doc">
-                            <p>The page <em>Processing Queue</em> shows the current state of document
-processing for your uploads.</p>
-<p>At the top of the page a list of running jobs is shown. Below that,
-the left column shows jobs that wait to be picked up by the job
-executor. On the right are finished jobs. The number of finished jobs
-is cut to some maximum and is also restricted by a date range. The
-page refreshes itself automatically to show the progress.</p>
-<p>Example screenshot:</p>
-<figure class="image">
-    <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;processing-queue.jpg">
-</figure>
-<p>You can cancel running jobs or remove waiting ones from the queue. If
-you click on the small file symbol on finished jobs, you can inspect
-its log messages again. A running job displays the job executor id
-that executes the job.</p>
-<p>The jobs listed here are all long-running tasks for your collective.
-Most of the time it executes the document processing tasks. But user
-defined tasks, like &quot;import mailbox&quot;, are also visible here.</p>
-<p>Since job executors are shared among all collectives, it may happen
-that a job is some time waiting until it is picked up by a job
-executor. You can always start more job executors to help out.</p>
-<p>If a job fails, it is retried after some time. Only if it fails too
-often (can be configured), it then is finished with <em>failed</em> state.</p>
-<p>For the document-processing task, if processing finally fails or a job
-is cancelled, the item is still created, just without suggestions.</p>
+                            <h1 id="convert-all-pdf-sh">convert-all-pdf.sh<a class="zola-anchor" href="#convert-all-pdf-sh" aria-label="Anchor link for: convert-all-pdf-sh">🔗</a></h1>
+<p>With version 0.9.0 there was support added for another external tool,
+<a href="https://github.com/jbarlow83/OCRmyPDF">OCRMyPdf</a>, that can convert
+PDF files such that they contain the OCR-ed text layer. This tool is
+optional and can be disabled.</p>
+<p>In order to convert all previously processed files with this tool,
+there is an
+<a href="/openapi/docspell-openapi.html#api-Item-secItemConvertallpdfsPost">endpoint</a>
+that submits a task to convert all PDF files not already converted for
+your collective.</p>
+<p>There is no UI part to trigger this route, so you need to use curl or
+the script <code>convert-all-pdfs.sh</code> in the <code>tools/</code> directory.</p>
+<h1 id="requirements">Requirements<a class="zola-anchor" href="#requirements" aria-label="Anchor link for: requirements">🔗</a></h1>
+<p>It is a bash script that additionally needs
+<a href="https://curl.haxx.se/">curl</a> and
+<a href="https://stedolan.github.io/jq/">jq</a>.</p>
+<h1 id="usage">Usage<a class="zola-anchor" href="#usage" aria-label="Anchor link for: usage">🔗</a></h1>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">./convert-all-pdfs.sh [docspell-base-url]
+</span></code></pre>
+<p>For example, if docspell is at <code>http://localhost:7880</code>:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">./convert-all-pdfs.sh http://localhost:7880
+</span></code></pre>
+<p>The script asks for your account name and password. It then logs in
+and triggers the said endpoint. After this you should see a few tasks
+running.</p>
+<p>There will be one task per file to convert. All these tasks are
+submitted with a low priority. So files uploaded through the webapp or
+a <a href="https://docspell.org/docs/webapp/uploading/#anonymous-upload">source</a> with a high
+priority, will be preferred as <a href="https://docspell.org/docs/joex/#scheduler-config">configured in the job
+executor</a>. This is to not
+disturb normal processing when many conversion tasks are being
+executed.</p>
 
                         </div>
                     </div>
