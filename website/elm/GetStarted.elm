@@ -13,13 +13,11 @@ getStarted version =
             """Docspell consists of several components. The easiest way to get started is probably to use docker and
 [docker-compose](https://docs.docker.com/compose/)."""
         , Markdown.toHtml []
-            ("""1. Clone the github repository
+            """1. Clone the github repository
    ```bash
    $ git clone https://github.com/eikek/docspell
    ```
-   Alternatively, [download](https://github.com/eikek/docspell/archive/v"""
-                ++ version
-                ++ """.zip) the sources and extract the zip file.
+   Alternatively, [download](https://github.com/eikek/docspell/archive/master.zip) the sources and extract the zip file.
 2. Change into the `docker` directory:
    ```bash
    $ cd docspell/docker
@@ -46,7 +44,6 @@ getStarted version =
 The directory contains a file `docspell.conf` that you can
 [modify](docs/configure) as needed.
     """
-            )
         ]
     , div [ class "content container" ]
         [ div [ class "notification is-info is-light" ]

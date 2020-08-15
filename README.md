@@ -17,7 +17,9 @@ them later using the search feature. But adding this manually to each
 document is a tedious task. What if most of it could be done
 automatically?
 
-It is provided as a REST server and a web application.
+It is provided as a REST server and a web application and is intended
+to be self-hosted.
+
 
 ## How it works
 
@@ -44,7 +46,34 @@ fast as the documents. After a while there is a quite complete address
 book and only once in a while it has to be revisited.
 
 
-## Install
+## Impressions
+
+Checkout the short demo videos (<1min), present on the [project
+page](https://docspell.org/#demos). Here are some screenshots:
+
+![screenshot-1](https://raw.githubusercontent.com/eikek/docspell/master/website/site/content/docs/webapp/docspell-curate-1.jpg)
+![screenshot-2](https://raw.githubusercontent.com/eikek/docspell/master/website/site/content/docs/webapp/docspell-curate-2.jpg)
+
+
+## Try it
+
+Docspell consists of several components. The probably quickest way to
+get started is to use the docker setup as described in the [get started
+page](https://docspell.org/#get-started). This is only three commands
+away:
+
+``` shell
+git clone https://github.com/eikek/docspell
+cd docspell
+docker-compose up
+```
+
+Then go to `http://localhost:7880`, sign up and login. Use the same
+name for collective and user for now. More on that can be found
+[here](https://docspell.org/docs/intro/).
+
+There are other ways, documented
+[here](https://docspell.org/docs/install/quickstart/):
 
 - Install the [provided](https://github.com/eikek/docspell/releases)
   `deb` file at your debian based system.
@@ -54,26 +83,24 @@ book and only once in a while it has to be revisited.
 - Using the [nix](https://nixos.org/nix) package manager as [described
   here](https://docspell.org/docs/install/installing/#nix). A NixOS
   module is available, too.
-- Using Docker, as [described
-  here](https://docspell.org/docs/install/installing/#docker).
 
 
 ## Documentation
 
-The [documentation site](https://docspell.org) provides more
-information.
-
-Check the feature list and the quickstart guide to try it out:
-
-- [Features](https://docspell.org/#feature-selection)
-- [Quickstart](https://docspell.org/#get-started)
+The [project page](https://docspell.org) has lots of information on
+how to [use and setup](https://docspell.org/docs) docspell.
 
 
-## Screenshots
+## Contributions
 
-Here are some (outdated) screenshots, for getting a first impression
-of the web ui.
+Feedback and other contributions are very welcome! There is now a
+[gitter room](https://gitter.im/eikek/docspell) for quick questions.
+You can [open an issue](https://github.com/eikek/docspell/issues/new)
+for questions, problems and other feedback; or make a mail to
+`info [at] docspell.org`.
 
-![screenshot-1](https://raw.githubusercontent.com/eikek/docspell/master/screenshots/search-view.png)
-![screenshot-2](https://raw.githubusercontent.com/eikek/docspell/master/website/site/content/docs/webapp/docspell-curate-2.jpg)
-![screenshot-3](https://raw.githubusercontent.com/eikek/docspell/master/website/site/content/docs/webapp/processing-queue.jpg)
+
+## License
+
+Docspell is free software, distributed under the [GPLv3 or
+later](https://spdx.org/licenses/GPL-3.0-or-later.html).
