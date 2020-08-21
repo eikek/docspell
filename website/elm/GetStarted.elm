@@ -62,6 +62,12 @@ The directory contains a file `docspell.conf` that you can
                     ]
                 , ul []
                     [ li []
+                        [ text "Find out "
+                        , a [ href "/docs/feed" ]
+                            [ text "how files can get into Docspell."
+                            ]
+                        ]
+                    , li []
                         [ text "The "
                         , a [ href "/docs/intro" ]
                             [ text "introduction" ]

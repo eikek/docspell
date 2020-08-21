@@ -1,8 +1,10 @@
 <img align="right" src="./artwork/logo-only.svg" height="150px" style="padding-left: 20px"/>
 
-[![Build Status](https://travis-ci.org/eikek/docspell.svg?branch=master)](https://travis-ci.org/eikek/docspell)
+[![Build Status](https://img.shields.io/travis/eikek/docspell)](https://travis-ci.org/eikek/docspell)
 [![Scala Steward badge](https://img.shields.io/badge/Scala_Steward-helping-blue.svg?style=flat&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAQCAMAAAARSr4IAAAAVFBMVEUAAACHjojlOy5NWlrKzcYRKjGFjIbp293YycuLa3pYY2LSqql4f3pCUFTgSjNodYRmcXUsPD/NTTbjRS+2jomhgnzNc223cGvZS0HaSD0XLjbaSjElhIr+AAAAAXRSTlMAQObYZgAAAHlJREFUCNdNyosOwyAIhWHAQS1Vt7a77/3fcxxdmv0xwmckutAR1nkm4ggbyEcg/wWmlGLDAA3oL50xi6fk5ffZ3E2E3QfZDCcCN2YtbEWZt+Drc6u6rlqv7Uk0LdKqqr5rk2UCRXOk0vmQKGfc94nOJyQjouF9H/wCc9gECEYfONoAAAAASUVORK5CYII=)](https://scala-steward.org)
-
+[![License](https://img.shields.io/github/license/eikek/docspell.svg?style=flat-square)](https://github.com/eikek/docspell/blob/master/LICENSE.txt)
+[![Docker Pulls](https://img.shields.io/docker/pulls/eikek0/docspell?color=steelblue)](https://hub.docker.com/r/eikek0/docspell)
+[![Gitter chat](https://img.shields.io/gitter/room/eikek/docspell?color=blue)](https://gitter.im/eikek/docspell)
 
 # Docspell
 
@@ -65,14 +67,14 @@ away:
 ``` shell
 git clone https://github.com/eikek/docspell
 cd docspell
-docker-compose up
+DOCSPELL_HEADER_VALUE="my-secret-123" docker-compose up
 ```
 
 Then go to `http://localhost:7880`, sign up and login. Use the same
 name for collective and user for now. More on that can be found
 [here](https://docspell.org/docs/intro/).
 
-There are other ways, documented
+Other ways are documented
 [here](https://docspell.org/docs/install/quickstart/):
 
 - Install the [provided](https://github.com/eikek/docspell/releases)

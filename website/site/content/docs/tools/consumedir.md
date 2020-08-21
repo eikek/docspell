@@ -61,7 +61,7 @@ directly into a folder given by `-p`, but below a sub-directory that
 matches a collective name. In order to know for which collective the
 file is, the script uses the first subfolder.
 
-If the endpoint is protected, these credentials can be specified as
+If the endpoint is protected, the credentials can be specified as
 arguments `--iuser` and `--iheader`, respectively. The format is for
 both `<name>:<value>`, so the username cannot contain a colon
 character (but the password can).
