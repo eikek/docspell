@@ -115,8 +115,8 @@
 *June 29, 2020*
 
 - Adds the [full-text
-  search](https://docspell.org/doc/finding#full-text-search) feature
-  (see #69). It requires a separate
+  search](https://docspell.org/docs/webapp/finding/#full-text-search)
+  feature (see #69). It requires a separate
   [Solr](https://lucene.apache.org/solr) instance. Items can be
   searched by documents contents and item/file names. It is possible
   to use full-text search to further confine the results via the
