@@ -6437,7 +6437,7 @@ var $author$project$GetStarted$getStarted = function (version) {
 			_List_fromArray(
 				[
 					A2($elm_explorations$markdown$Markdown$toHtml, _List_Nil, 'Docspell consists of several components. The easiest way to get started is probably to use docker and\n[docker-compose](https://docs.docker.com/compose/).'),
-					A2($elm_explorations$markdown$Markdown$toHtml, _List_Nil, '1. Clone the github repository\n   ```bash\n   $ git clone https://github.com/eikek/docspell\n   ```\n   Alternatively, [download](https://github.com/eikek/docspell/archive/v' + (version + '.zip) the sources and extract the zip file.\n2. Change into the `docker` directory:\n   ```bash\n   $ cd docspell/docker\n   ```\n3. Run `docker-compose up`:\n\n   ```bash\n   $ export DOCSPELL_HEADER_VALUE="my-secret-123"\n   $ docker-compose up\n   ```\n\n   The environment variable defines a secret that is shared between\n   some containers. You can define whatever you like. Please see the\n   [`consumedir.sh`](doc/tools/consumedir#docker) docs for additional\n   info.\n4. Goto <http://localhost:7880>, signup and login. When signing up,\n   you can choose the same name for collective and user. Then login\n   with this name and the password.\n\n5. (Optional) Create a folder `./docs/<collective-name>` (the name you\n   chose for the collective at registration) and place files in there\n   for importing them.\n\nThe directory contains a file `docspell.conf` that you can\n[modify](docs/configure) as needed.\n    '))
+					A2($elm_explorations$markdown$Markdown$toHtml, _List_Nil, '1. Clone the github repository\n   ```bash\n   $ git clone https://github.com/eikek/docspell\n   ```\n   Alternatively, [download](https://github.com/eikek/docspell/archive/master.zip) the sources and extract the zip file.\n2. Change into the `docker` directory:\n   ```bash\n   $ cd docspell/docker\n   ```\n3. Run `docker-compose up`:\n\n   ```bash\n   $ export DOCSPELL_HEADER_VALUE="my-secret-123"\n   $ docker-compose up\n   ```\n\n   The environment variable defines a secret that is shared between\n   some containers. You can define whatever you like. Please see the\n   [`consumedir.sh`](doc/tools/consumedir#docker) docs for additional\n   info.\n4. Goto <http://localhost:7880>, signup and login. When signing up,\n   you can choose the same name for collective and user. Then login\n   with this name and the password.\n\n5. (Optional) Create a folder `./docs/<collective-name>` (the name you\n   chose for the collective at registration) and place files in there\n   for importing them.\n\nThe directory contains a file `docspell.conf` that you can\n[modify](docs/configure) as needed.\n    ')
 				])),
 			A2(
 			$elm$html$Html$div,
@@ -6508,6 +6508,23 @@ var $author$project$GetStarted$getStarted = function (version) {
 									_List_Nil,
 									_List_fromArray(
 										[
+											A2(
+											$elm$html$Html$li,
+											_List_Nil,
+											_List_fromArray(
+												[
+													$elm$html$Html$text('Find out '),
+													A2(
+													$elm$html$Html$a,
+													_List_fromArray(
+														[
+															$elm$html$Html$Attributes$href('/docs/feed')
+														]),
+													_List_fromArray(
+														[
+															$elm$html$Html$text('how files can get into Docspell.')
+														]))
+												])),
 											A2(
 											$elm$html$Html$li,
 											_List_Nil,

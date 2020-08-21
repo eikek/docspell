@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Eike Kettner">
+<meta name="description" content="Simple Document Organizer">
+<meta name="image" property="og:image" content="/img/poster.png">
+<meta name="title" property="og:title" content="Docspell – Simple Document Organizer">
+<meta name="og:image" content="/img/poster.png">
+<meta name="og:title" content="Docspell – Simple Document Organizer">
+<meta name="og:site_name" content="Feed Data into Docspell - Docspell">
+<meta name="og:url" content="">
+<meta name="og:type" content="website">
+<meta name="og:description" content="Simple Document Organizer">
+<meta name="twitter:title" content="Docspell">
+<meta name="twitter:image" content="/img/poster.png">
+<meta name="twitter:description" content="Simple Document Organizer">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="shortcut icon" href="/favicon-mc.ico" type="image/x-icon">
+<link rel="icon" href="/favicon-mc.ico" type="image/x-icon">
+
+        <title>Feed Data into Docspell – Docspell Documentation</title>
+        <link rel="stylesheet" href="/styles.css">
+    </head>
+    <body>
+        <section class="hero is-info is-small">
+            <div class="hero-head">
+                <nav class="navbar">
+    <div class="navbar-brand">
+        <a class="navbar-item" href="/">
+            <span class="icon">
+                <img src="/icons/logo-only-36.svg">
+            </span>
+            <span>
+                Docspell
+            </span>
+        </a>
+    </div>
+    <div class="navbar-start">
+        <a target="_blank"
+           href="https://github.com/eikek/docspell"
+           class="navbar-item">
+            <span class="icon">
+                <img src="/icons/github-40.svg">
+            </span>
+            <span>
+                Github
+            </span>
+        </a>
+    </div>
+</nav>
+
+            </div>
+            <div class="hero-body">
+                <h1 class="title">
+                    Feed Data into Docspell
+                </h1>
+                <h2 class="subtitle">
+                    Docspell Documentation
+                </h2>
+            </div>
+        </section>
+        <nav class="breadcrumb has-succeeds-separator" aria-label="breadcrumbs">
+            <ul>
+                
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;"></a>
+                </li>
+                
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;">Overview</a>
+                </li>
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;feed&#x2F;">Feed Data into Docspell</a>
+                </li>
+            </ul>
+        </nav>
+        
+        <section class="section pt-2">
+            <div class="columns is-desktop">
+                <div class="column is-3">
+                    <div class="menu">
+                        <ul class="menu-list">
+                            
+                            <li>
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;feed&#x2F;#upload-in-webapp">
+                                    Upload in Webapp
+                                </a>
+                                <ul>
+                                    
+                                </ul>
+                            </li>
+                            
+                            <li>
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;feed&#x2F;#scanners">
+                                    Scanners
+                                </a>
+                                <ul>
+                                    
+                                </ul>
+                            </li>
+                            
+                            <li>
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;feed&#x2F;#android">
+                                    Android
+                                </a>
+                                <ul>
+                                    
+                                </ul>
+                            </li>
+                            
+                            <li>
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;feed&#x2F;#poll-e-mails">
+                                    Poll E-Mails
+                                </a>
+                                <ul>
+                                    
+                                </ul>
+                            </li>
+                            
+                            <li>
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;feed&#x2F;#e-mail-server">
+                                    E-Mail Server
+                                </a>
+                                <ul>
+                                    
+                                </ul>
+                            </li>
+                            
+                            <li>
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;feed&#x2F;#command-line">
+                                    Command-Line
+                                </a>
+                                <ul>
+                                    
+                                </ul>
+                            </li>
+                            
+                            <li>
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;feed&#x2F;#browser-extension">
+                                    Browser Extension
+                                </a>
+                                <ul>
+                                    
+                                </ul>
+                            </li>
+                            
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="column is-9">
+                    <div class="container">
+                        <div class="content doc">
+                            <p>One of the main goals is to stow documents away quickly.</p>
+<p>Docspell makes no assumptions about where your documents are. It
+offers just one HTTP endpoint that accepts files. (Well, technically
+you create them in the webapp, and you can create many of them.) This
+endpoint is designed to work conveniently with tools like
+<a href="https://curl.haxx.se/">curl</a> and it should be easy to use from other
+languages, too.</p>
+<p>So the idea is to have most flexibility – that is, it is up to you how
+documents arrive. Of course, there is something prepared:</p>
+<h1 id="upload-in-webapp">Upload in Webapp<a class="zola-anchor" href="#upload-in-webapp" aria-label="Anchor link for: upload-in-webapp">🔗</a></h1>
+<p>This is the simplest way, but also the least flexible. You can just
+login and go to the upload page to submit files.</p>
+<figure class="image">
+    <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;feed&#x2F;web-upload.png">
+</figure>
+<p>This requires to login at the webapp. Since this is complicated from
+other applications, you can create custom hard-to-guess endpoints to
+use with the following options.</p>
+<h1 id="scanners">Scanners<a class="zola-anchor" href="#scanners" aria-label="Anchor link for: scanners">🔗</a></h1>
+<p>If you have a (document) scanner (or think about getting one), it can
+usually be configured to place scanned documents as image or PDF files
+on your NAS. On your NAS, run the provided <code>consumedir.sh</code> script as a
+service (there is a docker container to get started) that watches this
+directory and uploads all incoming files to Docspell. The script can
+watch directories recursively and can skip files already uploaded, so
+you can organize the files as you want in there (rename, move etc).</p>
+<p>The scanner should support 300dpi for better results. Docspell
+converts the files into PDF adding a text layer of image-only files.</p>
+<div class="is-clearfix">
+    <a class="button is-pulled-right is-primary " href="&#x2F;docs&#x2F;tools&#x2F;consumedir">
+        More
+    </a>
+</div>
+<h1 id="android">Android<a class="zola-anchor" href="#android" aria-label="Anchor link for: android">🔗</a></h1>
+<p>There is an android client provided that lets you upload files from
+your android devices. The idea is to use a separate app, like
+<a href="https://github.com/ctodobom/OpenNoteScanner">OpenNoteScanner</a>, to
+&quot;scan&quot; documents using your phone/tablet and then upload it to
+Docspell. For the upload part, you can use the provided app. It hooks
+into the Share-With menu and uploads the file to Docspell.</p>
+<p>This is especially useful to quickly upload small things like shopping
+receipts.</p>
+<div class="columns is-centered">
+  <div class="column is-one-third">
+    <img src="/docs/tools/screenshot-share.jpg">
+  </div>
+  <div class="column is-one-third">
+    <img src="/docs/tools/screenshot-uploading.jpg">
+  </div>
+</div>
+<div class="is-clearfix">
+    <a class="button is-pulled-right is-primary " href="&#x2F;docs&#x2F;tools&#x2F;android">
+        More
+    </a>
+</div>
+<h1 id="poll-e-mails">Poll E-Mails<a class="zola-anchor" href="#poll-e-mails" aria-label="Anchor link for: poll-e-mails">🔗</a></h1>
+<p>Your mailbox can be polled periodically to import mails. For example,
+create a dedicated folder in your e-mail client and move mails in
+there that you want to push to Docspell. You can then define a
+recurring job, that looks into this folders and imports the mails.</p>
+<figure class="image">
+    <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;feed&#x2F;scanmailbox.png">
+</figure>
+<div class="is-clearfix">
+    <a class="button is-pulled-right is-primary " href="&#x2F;docs&#x2F;webapp&#x2F;scanmailbox">
+        More
+    </a>
+</div>
+<h1 id="e-mail-server">E-Mail Server<a class="zola-anchor" href="#e-mail-server" aria-label="Anchor link for: e-mail-server">🔗</a></h1>
+<p>This is a little more involved, but can be quite nice. A SMTP server
+can be setup that simply uploads incoming mails to Docspell (using
+curl), instead of storing the mails on disk. This requires some
+knowledge to setup such a server and it makes sense to own a domain.
+The SMTP server would accept mails to <em>[your-username]@[your-domain]</em>
+and resolves the <em>[your-username]</em> part in Docspell to upload the
+files to the correct account.</p>
+<p>There is a docker container prepared to get started. Click below to
+read more.</p>
+<div class="is-clearfix">
+    <a class="button is-pulled-right is-primary " href="&#x2F;docs&#x2F;tools&#x2F;smtpgateway">
+        More
+    </a>
+</div>
+<h1 id="command-line">Command-Line<a class="zola-anchor" href="#command-line" aria-label="Anchor link for: command-line">🔗</a></h1>
+<p>I like to use the command line, so there is a small script that
+accepts one or more files and uploads them to a configured Docspell
+url. It is possible to let the script delete all successfully uploaded
+files.</p>
+<div class="columns is-centered">
+  <div class="column is-four-fifths">
+    <script id="asciicast-1GbSkyIq03hyzfGfvbcJRtSn8" src="https://asciinema.org/a/1GbSkyIq03hyzfGfvbcJRtSn8.js" async></script>
+  </div>
+</div>
+<p>The script can also be used to only check if a file already exists in
+your account.</p>
+<div class="is-clearfix">
+    <a class="button is-pulled-right is-primary " href="&#x2F;docs&#x2F;tools&#x2F;ds">
+        More
+    </a>
+</div>
+<h1 id="browser-extension">Browser Extension<a class="zola-anchor" href="#browser-extension" aria-label="Anchor link for: browser-extension">🔗</a></h1>
+<p>For Firefox, there is a browser extension that creates a context-menu
+entry if you right-click on a link. It then downloads the file to your
+disk and uploads it to Docspell.</p>
+<div class="is-clearfix">
+    <a class="button is-pulled-right is-primary " href="&#x2F;docs&#x2F;tools&#x2F;browserext">
+        More
+    </a>
+</div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+
+        
+
+        <footer class="footer">
+    <div class="container">
+        <div class="content has-text-centered">
+            <span>
+                Docspell, 0.10.0
+            </span>
+            <span class="ml-1 mr-1">•</span>
+            <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>
+            <span class="ml-1 mr-1">•</span>
+            <a href="https://github.com/eikek/docspell" target="_blank">
+                Source Code
+            </a>
+            <span class="ml-1 mr-1">•</span>
+            <span>
+                © 2020
+                <a href="https://github.com/eikek" target="_blank">
+                    @eikek
+                </a>
+            </span>
+        </div>
+    </div>
+    
+</footer>
+
+
+    </body>
+</html>
