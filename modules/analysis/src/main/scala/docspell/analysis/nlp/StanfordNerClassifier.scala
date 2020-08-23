@@ -1,45 +1,39 @@
 package docspell.analysis.nlp
 
-import java.util.{Properties => JProps}
-
 import scala.jdk.CollectionConverters._
+
+import cats.Applicative
+import cats.implicits._
 
 import docspell.common._
 
 import edu.stanford.nlp.pipeline.{CoreDocument, StanfordCoreNLP}
-import org.log4s.getLogger
 
 object StanfordNerClassifier {
-  private[this] val logger = getLogger
 
-  lazy val germanNerClassifier  = makeClassifier(Language.German)
-  lazy val englishNerClassifier = makeClassifier(Language.English)
-  lazy val frenchNerClassifier  = makeClassifier(Language.French)
+  /** Runs named entity recognition on the given `text`.
+    *
+    * This uses the classifier pipeline from stanford-nlp, see
+    * https://nlp.stanford.edu/software/CRF-NER.html. Creating these
+    * classifiers is quite expensive, it involves loading large model
+    * files. The classifiers are thread-safe and so they are cached.
+    * The `cacheKey` defines the "slot" where classifiers are stored
+    * and retrieved. If for a given `cacheKey` the `settings` change,
+    * a new classifier must be created. It will then replace the
+    * previous one.
+    */
+  def nerAnnotate[F[_]: Applicative](
+      cacheKey: String,
+      cache: PipelineCache[F]
+  )(settings: StanfordSettings, text: String): F[Vector[NerLabel]] =
+    cache
+      .obtain(cacheKey, settings)
+      .map(crf => runClassifier(crf, text))
 
-  def nerAnnotate(lang: Language)(text: String): Vector[NerLabel] = {
-    val nerClassifier = lang match {
-      case Language.English => englishNerClassifier
-      case Language.German  => germanNerClassifier
-      case Language.French  => frenchNerClassifier
-    }
+  def runClassifier(nerClassifier: StanfordCoreNLP, text: String): Vector[NerLabel] = {
     val doc = new CoreDocument(text)
     nerClassifier.annotate(doc)
-
     doc.tokens().asScala.collect(Function.unlift(LabelConverter.toNerLabel)).toVector
   }
 
-  private def makeClassifier(lang: Language): StanfordCoreNLP = {
-    logger.info(s"Creating ${lang.name} Stanford NLP NER classifier...")
-    new StanfordCoreNLP(classifierProperties(lang))
-  }
-
-  private def classifierProperties(lang: Language): JProps =
-    lang match {
-      case Language.German =>
-        Properties.nerGerman(None, false)
-      case Language.English =>
-        Properties.nerEnglish(None)
-      case Language.French =>
-        Properties.nerFrench(None, false)
-    }
 }

@@ -3,6 +3,7 @@ package docspell.analysis.nlp
 import java.util.{Properties => JProps}
 
 import docspell.analysis.nlp.Properties.Implicits._
+import docspell.common._
 
 object Properties {
 
@@ -11,6 +12,19 @@ object Properties {
     for ((k, v) <- ps)
       p.setProperty(k, v)
     p
+  }
+
+  def forSettings(settings: StanfordSettings): JProps = {
+    val regexNerFile = settings.regexNer
+      .map(p => p.normalize().toAbsolutePath().toString())
+    settings.lang match {
+      case Language.German =>
+        Properties.nerGerman(regexNerFile, settings.highRecall)
+      case Language.English =>
+        Properties.nerEnglish(regexNerFile)
+      case Language.French =>
+        Properties.nerFrench(regexNerFile, settings.highRecall)
+    }
   }
 
   def nerGerman(regexNerMappingFile: Option[String], highRecall: Boolean): JProps =

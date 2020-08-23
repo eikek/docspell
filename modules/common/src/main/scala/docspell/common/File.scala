@@ -55,6 +55,9 @@ object File {
   def exists[F[_]: Sync](file: Path): F[Boolean] =
     Sync[F].delay(Files.exists(file))
 
+  def size[F[_]: Sync](file: Path): F[Long] =
+    Sync[F].delay(Files.size(file))
+
   def existsNonEmpty[F[_]: Sync](file: Path, minSize: Long = 0): F[Boolean] =
     Sync[F].delay(Files.exists(file) && Files.size(file) > minSize)
 

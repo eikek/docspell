@@ -6,6 +6,7 @@ import cats.effect._
 import cats.implicits._
 import fs2.concurrent.SignallingRef
 
+import docspell.analysis.TextAnalyser
 import docspell.backend.ops._
 import docspell.common._
 import docspell.ftsclient.FtsClient
@@ -80,14 +81,15 @@ object JoexAppImpl {
     for {
       httpClient <- BlazeClientBuilder[F](clientEC).resource
       client = JoexClient(httpClient)
-      store   <- Store.create(cfg.jdbc, connectEC, blocker)
-      queue   <- JobQueue(store)
-      pstore  <- PeriodicTaskStore.create(store)
-      nodeOps <- ONode(store)
-      joex    <- OJoex(client, store)
-      upload  <- OUpload(store, queue, cfg.files, joex)
-      fts     <- createFtsClient(cfg)(httpClient)
-      itemOps <- OItem(store, fts, queue, joex)
+      store    <- Store.create(cfg.jdbc, connectEC, blocker)
+      queue    <- JobQueue(store)
+      pstore   <- PeriodicTaskStore.create(store)
+      nodeOps  <- ONode(store)
+      joex     <- OJoex(client, store)
+      upload   <- OUpload(store, queue, cfg.files, joex)
+      fts      <- createFtsClient(cfg)(httpClient)
+      itemOps  <- OItem(store, fts, queue, joex)
+      analyser <- TextAnalyser.create[F](cfg.textAnalysis)
       javaEmil =
         JavaMailEmil(blocker, Settings.defaultSettings.copy(debug = cfg.mailDebug))
       sch <- SchedulerBuilder(cfg.scheduler, blocker, store)
@@ -95,14 +97,14 @@ object JoexAppImpl {
         .withTask(
           JobTask.json(
             ProcessItemArgs.taskName,
-            ItemHandler.newItem[F](cfg, itemOps, fts),
+            ItemHandler.newItem[F](cfg, itemOps, fts, analyser),
             ItemHandler.onCancel[F]
           )
         )
         .withTask(
           JobTask.json(
             ReProcessItemArgs.taskName,
-            ReProcessItem[F](cfg, fts),
+            ReProcessItem[F](cfg, fts, analyser),
             ReProcessItem.onCancel[F]
           )
         )
