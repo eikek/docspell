@@ -10,6 +10,7 @@ cache:
     - $HOME/.ivy2/cache
     - $HOME/.sbt/boot
     - $HOME/.coursier/cache
+    - $HOME/.cache/coursier
     - sysconfcpus
 
 install:
