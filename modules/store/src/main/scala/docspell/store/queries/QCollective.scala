@@ -1,5 +1,6 @@
 package docspell.store.queries
 
+import cats.data.OptionT
 import fs2.Stream
 
 import docspell.common.ContactKind
@@ -11,6 +12,20 @@ import doobie._
 import doobie.implicits._
 
 object QCollective {
+
+  case class Names(org: Vector[String], pers: Vector[String], equip: Vector[String])
+  object Names {
+    val empty = Names(Vector.empty, Vector.empty, Vector.empty)
+  }
+
+  def allNames(collective: Ident): ConnectionIO[Names] =
+    (for {
+      orgs <- OptionT.liftF(ROrganization.findAllRef(collective, None, _.name))
+      pers <- OptionT.liftF(RPerson.findAllRef(collective, None, _.name))
+      equp <- OptionT.liftF(REquipment.findAll(collective, None, _.name))
+    } yield Names(orgs.map(_.name), pers.map(_.name), equp.map(_.name)))
+      .getOrElse(Names.empty)
+
   case class TagCount(tag: RTag, count: Int)
 
   case class InsightData(

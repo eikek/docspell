@@ -1,6 +1,7 @@
 package docspell.common
 
 import java.io.IOException
+import java.nio.charset.StandardCharsets
 import java.nio.file._
 import java.nio.file.attribute.BasicFileAttributes
 import java.util.concurrent.atomic.AtomicInteger
@@ -87,4 +88,7 @@ object File {
 
   def readText[F[_]: Sync: ContextShift](file: Path, blocker: Blocker): F[String] =
     readAll[F](file, blocker, 8192).through(fs2.text.utf8Decode).compile.foldMonoid
+
+  def writeString[F[_]: Sync](file: Path, content: String): F[Path] =
+    Sync[F].delay(Files.write(file, content.getBytes(StandardCharsets.UTF_8)))
 }

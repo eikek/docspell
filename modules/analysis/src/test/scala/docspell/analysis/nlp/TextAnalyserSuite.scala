@@ -3,12 +3,17 @@ package docspell.analysis.nlp
 import minitest.SimpleTestSuite
 import docspell.files.TestFiles
 import docspell.common._
+import edu.stanford.nlp.pipeline.StanfordCoreNLP
 
 object TextAnalyserSuite extends SimpleTestSuite {
+  lazy val germanClassifier =
+    new StanfordCoreNLP(Properties.nerGerman(None, false))
+  lazy val englishClassifier =
+    new StanfordCoreNLP(Properties.nerEnglish(None))
 
   test("find english ner labels") {
     val labels =
-      StanfordNerClassifier.nerAnnotate(Language.English)(TestFiles.letterENText)
+      StanfordNerClassifier.runClassifier(englishClassifier, TestFiles.letterENText)
     val expect = Vector(
       NerLabel("Derek", NerTag.Person, 0, 5),
       NerLabel("Jeter", NerTag.Person, 6, 11),
@@ -44,7 +49,7 @@ object TextAnalyserSuite extends SimpleTestSuite {
 
   test("find german ner labels") {
     val labels =
-      StanfordNerClassifier.nerAnnotate(Language.German)(TestFiles.letterDEText)
+      StanfordNerClassifier.runClassifier(germanClassifier, TestFiles.letterDEText)
     val expect = Vector(
       NerLabel("Max", NerTag.Person, 0, 3),
       NerLabel("Mustermann", NerTag.Person, 4, 14),
