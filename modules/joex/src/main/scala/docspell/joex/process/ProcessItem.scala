@@ -7,6 +7,7 @@ import docspell.backend.ops.OItem
 import docspell.common.ProcessItemArgs
 import docspell.ftsclient.FtsClient
 import docspell.joex.Config
+import docspell.joex.analysis.RegexNerFile
 import docspell.joex.scheduler.Task
 
 object ProcessItem {
@@ -15,11 +16,12 @@ object ProcessItem {
       cfg: Config,
       itemOps: OItem[F],
       fts: FtsClient[F],
-      analyser: TextAnalyser[F]
+      analyser: TextAnalyser[F],
+      regexNer: RegexNerFile[F]
   )(item: ItemData): Task[F, ProcessItemArgs, ItemData] =
     ExtractArchive(item)
       .flatMap(Task.setProgress(20))
-      .flatMap(processAttachments0(cfg, fts, analyser, (40, 60, 80)))
+      .flatMap(processAttachments0(cfg, fts, analyser, regexNer, (40, 60, 80)))
       .flatMap(LinkProposal[F])
       .flatMap(SetGivenData[F](itemOps))
       .flatMap(Task.setProgress(99))
@@ -27,15 +29,17 @@ object ProcessItem {
   def processAttachments[F[_]: ConcurrentEffect: ContextShift](
       cfg: Config,
       fts: FtsClient[F],
-      analyser: TextAnalyser[F]
+      analyser: TextAnalyser[F],
+      regexNer: RegexNerFile[F]
   )(item: ItemData): Task[F, ProcessItemArgs, ItemData] =
-    processAttachments0[F](cfg, fts, analyser, (30, 60, 90))(item)
+    processAttachments0[F](cfg, fts, analyser, regexNer, (30, 60, 90))(item)
 
   def analysisOnly[F[_]: Sync](
       cfg: Config,
-      analyser: TextAnalyser[F]
+      analyser: TextAnalyser[F],
+      regexNer: RegexNerFile[F]
   )(item: ItemData): Task[F, ProcessItemArgs, ItemData] =
-    TextAnalysis[F](analyser)(item)
+    TextAnalysis[F](analyser, regexNer)(item)
       .flatMap(FindProposal[F](cfg.processing))
       .flatMap(EvalProposals[F])
       .flatMap(SaveProposals[F])
@@ -44,12 +48,13 @@ object ProcessItem {
       cfg: Config,
       fts: FtsClient[F],
       analyser: TextAnalyser[F],
+      regexNer: RegexNerFile[F],
       progress: (Int, Int, Int)
   )(item: ItemData): Task[F, ProcessItemArgs, ItemData] =
     ConvertPdf(cfg.convert, item)
       .flatMap(Task.setProgress(progress._1))
       .flatMap(TextExtraction(cfg.extraction, fts))
       .flatMap(Task.setProgress(progress._2))
-      .flatMap(analysisOnly[F](cfg, analyser))
+      .flatMap(analysisOnly[F](cfg, analyser, regexNer))
       .flatMap(Task.setProgress(progress._3))
 }

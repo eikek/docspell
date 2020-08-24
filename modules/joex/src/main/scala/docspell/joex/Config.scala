@@ -1,11 +1,14 @@
 package docspell.joex
 
+import java.nio.file.Path
+
 import docspell.analysis.TextAnalysisConfig
 import docspell.backend.Config.Files
 import docspell.common._
 import docspell.convert.ConvertConfig
 import docspell.extract.ExtractConfig
 import docspell.ftssolr.SolrConfig
+import docspell.joex.analysis.RegexNerFile
 import docspell.joex.hk.HouseKeepingConfig
 import docspell.joex.scheduler.{PeriodicSchedulerConfig, SchedulerConfig}
 import docspell.store.JdbcConfig
@@ -20,7 +23,7 @@ case class Config(
     userTasks: Config.UserTasks,
     houseKeeping: HouseKeepingConfig,
     extraction: ExtractConfig,
-    textAnalysis: TextAnalysisConfig,
+    textAnalysis: Config.TextAnalysis,
     convert: ConvertConfig,
     sendMail: MailSendConfig,
     files: Files,
@@ -50,4 +53,19 @@ object Config {
   }
 
   case class Processing(maxDueDateYears: Int)
+
+  case class TextAnalysis(
+      maxLength: Int,
+      workingDir: Path,
+      regexNer: RegexNer
+  ) {
+
+    def textAnalysisConfig: TextAnalysisConfig =
+      TextAnalysisConfig(maxLength)
+
+    def regexNerFileConfig: RegexNerFile.Config =
+      RegexNerFile.Config(regexNer.enabled, workingDir, regexNer.fileCacheTime)
+  }
+
+  case class RegexNer(enabled: Boolean, fileCacheTime: Duration)
 }

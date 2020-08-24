@@ -10,6 +10,7 @@ import docspell.backend.ops.OItem
 import docspell.common.{ItemState, ProcessItemArgs}
 import docspell.ftsclient.FtsClient
 import docspell.joex.Config
+import docspell.joex.analysis.RegexNerFile
 import docspell.joex.scheduler.Task
 import docspell.store.queries.QItem
 import docspell.store.records.RItem
@@ -31,11 +32,12 @@ object ItemHandler {
       cfg: Config,
       itemOps: OItem[F],
       fts: FtsClient[F],
-      analyser: TextAnalyser[F]
+      analyser: TextAnalyser[F],
+      regexNer: RegexNerFile[F]
   ): Task[F, Args, Unit] =
     CreateItem[F]
       .flatMap(itemStateTask(ItemState.Processing))
-      .flatMap(safeProcess[F](cfg, itemOps, fts, analyser))
+      .flatMap(safeProcess[F](cfg, itemOps, fts, analyser, regexNer))
       .map(_ => ())
 
   def itemStateTask[F[_]: Sync, A](
@@ -54,11 +56,12 @@ object ItemHandler {
       cfg: Config,
       itemOps: OItem[F],
       fts: FtsClient[F],
-      analyser: TextAnalyser[F]
+      analyser: TextAnalyser[F],
+      regexNer: RegexNerFile[F]
   )(data: ItemData): Task[F, Args, ItemData] =
     isLastRetry[F].flatMap {
       case true =>
-        ProcessItem[F](cfg, itemOps, fts, analyser)(data).attempt.flatMap({
+        ProcessItem[F](cfg, itemOps, fts, analyser, regexNer)(data).attempt.flatMap({
           case Right(d) =>
             Task.pure(d)
           case Left(ex) =>
@@ -68,7 +71,7 @@ object ItemHandler {
               .andThen(_ => Sync[F].raiseError(ex))
         })
       case false =>
-        ProcessItem[F](cfg, itemOps, fts, analyser)(data)
+        ProcessItem[F](cfg, itemOps, fts, analyser, regexNer)(data)
           .flatMap(itemStateTask(ItemState.Created))
     }
 

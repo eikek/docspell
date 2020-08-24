@@ -8,6 +8,7 @@ import docspell.analysis.TextAnalyser
 import docspell.common._
 import docspell.ftsclient.FtsClient
 import docspell.joex.Config
+import docspell.joex.analysis.RegexNerFile
 import docspell.joex.scheduler.Context
 import docspell.joex.scheduler.Task
 import docspell.store.records.RAttachment
@@ -21,10 +22,11 @@ object ReProcessItem {
   def apply[F[_]: ConcurrentEffect: ContextShift](
       cfg: Config,
       fts: FtsClient[F],
-      analyser: TextAnalyser[F]
+      analyser: TextAnalyser[F],
+      regexNer: RegexNerFile[F]
   ): Task[F, Args, Unit] =
     loadItem[F]
-      .flatMap(safeProcess[F](cfg, fts, analyser))
+      .flatMap(safeProcess[F](cfg, fts, analyser, regexNer))
       .map(_ => ())
 
   def onCancel[F[_]: Sync: ContextShift]: Task[F, Args, Unit] =
@@ -73,6 +75,7 @@ object ReProcessItem {
       cfg: Config,
       fts: FtsClient[F],
       analyser: TextAnalyser[F],
+      regexNer: RegexNerFile[F],
       data: ItemData
   ): Task[F, Args, ItemData] = {
 
@@ -94,7 +97,7 @@ object ReProcessItem {
 
     getLanguage[F].flatMap { lang =>
       ProcessItem
-        .processAttachments[F](cfg, fts, analyser)(data)
+        .processAttachments[F](cfg, fts, analyser, regexNer)(data)
         .contramap[Args](convertArgs(lang))
     }
   }
@@ -113,11 +116,12 @@ object ReProcessItem {
   def safeProcess[F[_]: ConcurrentEffect: ContextShift](
       cfg: Config,
       fts: FtsClient[F],
-      analyser: TextAnalyser[F]
+      analyser: TextAnalyser[F],
+      regexNer: RegexNerFile[F]
   )(data: ItemData): Task[F, Args, ItemData] =
     isLastRetry[F].flatMap {
       case true =>
-        processFiles[F](cfg, fts, analyser, data).attempt
+        processFiles[F](cfg, fts, analyser, regexNer, data).attempt
           .flatMap({
             case Right(d) =>
               Task.pure(d)
@@ -127,7 +131,7 @@ object ReProcessItem {
               ).andThen(_ => Sync[F].raiseError(ex))
           })
       case false =>
-        processFiles[F](cfg, fts, analyser, data)
+        processFiles[F](cfg, fts, analyser, regexNer, data)
     }
 
   private def logWarn[F[_]](msg: => String): Task[F, Args, Unit] =

@@ -12,6 +12,10 @@ import cats.effect._
 import cats.implicits._
 import fs2.Stream
 
+import docspell.common.syntax.all._
+
+import io.circe.Decoder
+
 object File {
 
   def mkDir[F[_]: Sync](dir: Path): F[Path] =
@@ -91,4 +95,10 @@ object File {
 
   def writeString[F[_]: Sync](file: Path, content: String): F[Path] =
     Sync[F].delay(Files.write(file, content.getBytes(StandardCharsets.UTF_8)))
+
+  def readJson[F[_]: Sync: ContextShift, A](file: Path, blocker: Blocker)(implicit
+      d: Decoder[A]
+  ): F[A] =
+    readText[F](file, blocker).map(_.parseJsonAs[A]).rethrow
+
 }

@@ -91,6 +91,11 @@ let
     };
     text-analysis = {
       max-length = 10000;
+      regex-ner = {
+        enabled = true;
+        file-cache-time = "1 minute";
+      };
+      working-dir = "/tmp/docspell-analysis";
     };
     processing = {
       max-due-date-years = 10;
@@ -689,7 +694,48 @@ in {
                 (a rough guess).
               '';
             };
+            working-dir = mkOption {
+              type = types.str;
+              default = defaults.text-analysis.working-dir;
+              description = ''
+                A working directory for the analyser to store temporary/working
+                files.
+              '';
+            };
 
+            regex-ner = mkOption {
+              type = types.submodule({
+                options = {
+                  enabled = mkOption {
+                    type = types.bool;
+                    default = defaults.text-analysis.regex-ner.enabled;
+                    description = ''
+                      Whether to enable custom NER annotation. This uses the address
+                      book of a collective as input for NER tagging (to automatically
+                      find correspondent and concerned entities). If the address book
+                      is large, this can be quite memory intensive and also makes text
+                      analysis slower. But it greatly improves accuracy. If this is
+                      false, NER tagging uses only statistical models (that also work
+                      quite well).
+
+                      This setting might be moved to the collective settings in the
+                      future.
+                    '';
+                  };
+                  file-cache-time = mkOption {
+                    type = types.str;
+                    default = defaults.text-analysis.ner-file-cache-time;
+                    description = ''
+                      The NER annotation uses a file of patterns that is derived from
+                      a collective's address book. This is is the time how long this
+                      file will be kept until a check for a state change is done.
+                    '';
+                  };
+                };
+              });
+              default = defaults.text-analysis.regex-ner;
+              description = "";
+            };
           };
         });
         default = defaults.text-analysis;
