@@ -341,6 +341,7 @@ trait Conversions {
         v.address.city,
         v.address.country,
         v.notes,
+        now,
         now
       )
     } yield OOrganization.OrgAndContacts(org, cont)
@@ -353,6 +354,7 @@ trait Conversions {
     def contacts(oid: Ident) =
       v.contacts.traverse(c => newContact(c, oid.some, None))
     for {
+      now  <- Timestamp.current[F]
       cont <- contacts(v.id)
       org = ROrganization(
         v.id,
@@ -363,7 +365,8 @@ trait Conversions {
         v.address.city,
         v.address.country,
         v.notes,
-        v.created
+        v.created,
+        now
       )
     } yield OOrganization.OrgAndContacts(org, cont)
   }
@@ -398,6 +401,7 @@ trait Conversions {
         v.address.country,
         v.notes,
         v.concerning,
+        now,
         now
       )
     } yield OOrganization.PersonAndContacts(org, cont)
@@ -410,6 +414,7 @@ trait Conversions {
     def contacts(pid: Ident) =
       v.contacts.traverse(c => newContact(c, None, pid.some))
     for {
+      now  <- Timestamp.current[F]
       cont <- contacts(v.id)
       org = RPerson(
         v.id,
@@ -421,7 +426,8 @@ trait Conversions {
         v.address.country,
         v.notes,
         v.concerning,
-        v.created
+        v.created,
+        now
       )
     } yield OOrganization.PersonAndContacts(org, cont)
   }
@@ -536,11 +542,11 @@ trait Conversions {
   def newEquipment[F[_]: Sync](e: Equipment, cid: Ident): F[REquipment] =
     timeId.map({
       case (id, now) =>
-        REquipment(id, cid, e.name, now)
+        REquipment(id, cid, e.name, now, now)
     })
 
-  def changeEquipment(e: Equipment, cid: Ident): REquipment =
-    REquipment(e.id, cid, e.name, e.created)
+  def changeEquipment[F[_]: Sync](e: Equipment, cid: Ident): F[REquipment] =
+    Timestamp.current[F].map(now => REquipment(e.id, cid, e.name, e.created, now))
 
   // idref
 

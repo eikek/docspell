@@ -20,7 +20,8 @@ case class RPerson(
     country: String,
     notes: Option[String],
     concerning: Boolean,
-    created: Timestamp
+    created: Timestamp,
+    updated: Timestamp
 ) {}
 
 object RPerson {
@@ -40,7 +41,20 @@ object RPerson {
     val notes      = Column("notes")
     val concerning = Column("concerning")
     val created    = Column("created")
-    val all        = List(pid, cid, name, street, zip, city, country, notes, concerning, created)
+    val updated    = Column("updated")
+    val all = List(
+      pid,
+      cid,
+      name,
+      street,
+      zip,
+      city,
+      country,
+      notes,
+      concerning,
+      created,
+      updated
+    )
   }
 
   import Columns._
@@ -49,27 +63,32 @@ object RPerson {
     val sql = insertRow(
       table,
       all,
-      fr"${v.pid},${v.cid},${v.name},${v.street},${v.zip},${v.city},${v.country},${v.notes},${v.concerning},${v.created}"
+      fr"${v.pid},${v.cid},${v.name},${v.street},${v.zip},${v.city},${v.country},${v.notes},${v.concerning},${v.created},${v.updated}"
     )
     sql.update.run
   }
 
   def update(v: RPerson): ConnectionIO[Int] = {
-    val sql = updateRow(
-      table,
-      and(pid.is(v.pid), cid.is(v.cid)),
-      commas(
-        cid.setTo(v.cid),
-        name.setTo(v.name),
-        street.setTo(v.street),
-        zip.setTo(v.zip),
-        city.setTo(v.city),
-        country.setTo(v.country),
-        concerning.setTo(v.concerning),
-        notes.setTo(v.notes)
+    def sql(now: Timestamp) =
+      updateRow(
+        table,
+        and(pid.is(v.pid), cid.is(v.cid)),
+        commas(
+          cid.setTo(v.cid),
+          name.setTo(v.name),
+          street.setTo(v.street),
+          zip.setTo(v.zip),
+          city.setTo(v.city),
+          country.setTo(v.country),
+          concerning.setTo(v.concerning),
+          notes.setTo(v.notes),
+          updated.setTo(now)
+        )
       )
-    )
-    sql.update.run
+    for {
+      now <- Timestamp.current[ConnectionIO]
+      n   <- sql(now).update.run
+    } yield n
   }
 
   def existsByName(coll: Ident, pname: String): ConnectionIO[Boolean] =

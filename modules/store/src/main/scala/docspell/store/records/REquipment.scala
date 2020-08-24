@@ -7,7 +7,13 @@ import docspell.store.impl._
 import doobie._
 import doobie.implicits._
 
-case class REquipment(eid: Ident, cid: Ident, name: String, created: Timestamp) {}
+case class REquipment(
+    eid: Ident,
+    cid: Ident,
+    name: String,
+    created: Timestamp,
+    updated: Timestamp
+) {}
 
 object REquipment {
 
@@ -18,25 +24,32 @@ object REquipment {
     val cid     = Column("cid")
     val name    = Column("name")
     val created = Column("created")
-    val all     = List(eid, cid, name, created)
+    val updated = Column("updated")
+    val all     = List(eid, cid, name, created, updated)
   }
   import Columns._
 
   def insert(v: REquipment): ConnectionIO[Int] = {
-    val sql = insertRow(table, all, fr"${v.eid},${v.cid},${v.name},${v.created}")
+    val sql =
+      insertRow(table, all, fr"${v.eid},${v.cid},${v.name},${v.created},${v.updated}")
     sql.update.run
   }
 
   def update(v: REquipment): ConnectionIO[Int] = {
-    val sql = updateRow(
-      table,
-      and(eid.is(v.eid), cid.is(v.cid)),
-      commas(
-        cid.setTo(v.cid),
-        name.setTo(v.name)
+    def sql(now: Timestamp) =
+      updateRow(
+        table,
+        and(eid.is(v.eid), cid.is(v.cid)),
+        commas(
+          cid.setTo(v.cid),
+          name.setTo(v.name),
+          updated.setTo(now)
+        )
       )
-    )
-    sql.update.run
+    for {
+      now <- Timestamp.current[ConnectionIO]
+      n   <- sql(now).update.run
+    } yield n
   }
 
   def existsByName(coll: Ident, ename: String): ConnectionIO[Boolean] = {
