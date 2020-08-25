@@ -9,7 +9,7 @@
 # Docspell
 
 Docspell is a personal document organizer. You'll need a scanner to
-convert your papers into PDF files. Docspell can then assist in
+convert your papers into files. Docspell can then assist in
 organizing the resulting mess :wink:.
 
 You can associate tags, set correspondends, what a document is
