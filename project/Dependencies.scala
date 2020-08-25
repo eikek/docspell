@@ -31,7 +31,7 @@ object Dependencies {
   val PostgresVersion         = "42.2.16"
   val PureConfigVersion       = "0.13.0"
   val Slf4jVersion            = "1.7.30"
-  val StanfordNlpVersion      = "3.9.2"
+  val StanfordNlpVersion      = "4.0.0"
   val TikaVersion             = "1.24.1"
   val YamuscaVersion          = "0.6.2"
   val SwaggerUIVersion        = "3.32.3"
@@ -136,10 +136,15 @@ object Dependencies {
 
   val stanfordNlpModels = Seq(
     ("edu.stanford.nlp" % "stanford-corenlp" % StanfordNlpVersion)
+      .classifier("models"),
+    ("edu.stanford.nlp" % "stanford-corenlp" % StanfordNlpVersion)
       .classifier("models-german"),
-    ("edu.stanford.nlp" % "stanford-corenlp" % StanfordNlpVersion).classifier(
-      "models-english"
-    )
+    ("edu.stanford.nlp" % "stanford-corenlp" % StanfordNlpVersion)
+      .classifier("models-french"),
+    ("edu.stanford.nlp" % "stanford-corenlp" % StanfordNlpVersion)
+      .classifier(
+        "models-english"
+      )
   )
 
   val tika = Seq(

@@ -68,7 +68,18 @@ object NerModelsPlugin extends AutoPlugin {
   }
 
   private val nerModels = List(
-    "german.conll.germeval2014.hgc_175m_600.crf.ser.gz",
-    "english.all.3class.distsim.crf.ser.gz"
+    "german.distsim.crf.ser.gz",
+    "english.conll.4class.distsim.crf.ser.gz",
+    "french-wikiner-4class.crf.ser.gz",
+    "french-mwt-statistical.tsv",
+    "french-mwt.tagger",
+    "french-mwt.tsv",
+    "german-mwt.tsv",
+    "german-ud.tagger",
+    "german-ud.tagger.props",
+    "french-ud.tagger",
+    "french-ud.tagger.props",
+    "english-left3words-distsim.tagger",
+    "english-left3words-distsim.tagger.props"
   )
 }

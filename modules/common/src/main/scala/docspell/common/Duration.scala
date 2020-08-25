@@ -20,6 +20,12 @@ case class Duration(nanos: Long) {
 
   def hours: Long = minutes / 60
 
+  def >(other: Duration): Boolean =
+    nanos > other.nanos
+
+  def <(other: Duration): Boolean =
+    nanos < other.nanos
+
   def toScala: FiniteDuration =
     FiniteDuration(nanos, TimeUnit.NANOSECONDS)
 
@@ -61,6 +67,9 @@ object Duration {
 
   def nanos(n: Long): Duration =
     Duration(n)
+
+  def between(start: Timestamp, end: Timestamp): Duration =
+    apply(JDur.between(start.value, end.value))
 
   def stopTime[F[_]: Sync]: F[F[Duration]] =
     for {

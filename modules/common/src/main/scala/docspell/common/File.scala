@@ -1,6 +1,7 @@
 package docspell.common
 
 import java.io.IOException
+import java.nio.charset.StandardCharsets
 import java.nio.file._
 import java.nio.file.attribute.BasicFileAttributes
 import java.util.concurrent.atomic.AtomicInteger
@@ -10,6 +11,10 @@ import scala.jdk.CollectionConverters._
 import cats.effect._
 import cats.implicits._
 import fs2.Stream
+
+import docspell.common.syntax.all._
+
+import io.circe.Decoder
 
 object File {
 
@@ -55,6 +60,9 @@ object File {
   def exists[F[_]: Sync](file: Path): F[Boolean] =
     Sync[F].delay(Files.exists(file))
 
+  def size[F[_]: Sync](file: Path): F[Long] =
+    Sync[F].delay(Files.size(file))
+
   def existsNonEmpty[F[_]: Sync](file: Path, minSize: Long = 0): F[Boolean] =
     Sync[F].delay(Files.exists(file) && Files.size(file) > minSize)
 
@@ -84,4 +92,13 @@ object File {
 
   def readText[F[_]: Sync: ContextShift](file: Path, blocker: Blocker): F[String] =
     readAll[F](file, blocker, 8192).through(fs2.text.utf8Decode).compile.foldMonoid
+
+  def writeString[F[_]: Sync](file: Path, content: String): F[Path] =
+    Sync[F].delay(Files.write(file, content.getBytes(StandardCharsets.UTF_8)))
+
+  def readJson[F[_]: Sync: ContextShift, A](file: Path, blocker: Blocker)(implicit
+      d: Decoder[A]
+  ): F[A] =
+    readText[F](file, blocker).map(_.parseJsonAs[A]).rethrow
+
 }

@@ -19,7 +19,8 @@ case class ROrganization(
     city: String,
     country: String,
     notes: Option[String],
-    created: Timestamp
+    created: Timestamp,
+    updated: Timestamp
 ) {}
 
 object ROrganization {
@@ -38,7 +39,8 @@ object ROrganization {
     val country = Column("country")
     val notes   = Column("notes")
     val created = Column("created")
-    val all     = List(oid, cid, name, street, zip, city, country, notes, created)
+    val updated = Column("updated")
+    val all     = List(oid, cid, name, street, zip, city, country, notes, created, updated)
   }
 
   import Columns._
@@ -47,26 +49,31 @@ object ROrganization {
     val sql = insertRow(
       table,
       all,
-      fr"${v.oid},${v.cid},${v.name},${v.street},${v.zip},${v.city},${v.country},${v.notes},${v.created}"
+      fr"${v.oid},${v.cid},${v.name},${v.street},${v.zip},${v.city},${v.country},${v.notes},${v.created},${v.updated}"
     )
     sql.update.run
   }
 
   def update(v: ROrganization): ConnectionIO[Int] = {
-    val sql = updateRow(
-      table,
-      and(oid.is(v.oid), cid.is(v.cid)),
-      commas(
-        cid.setTo(v.cid),
-        name.setTo(v.name),
-        street.setTo(v.street),
-        zip.setTo(v.zip),
-        city.setTo(v.city),
-        country.setTo(v.country),
-        notes.setTo(v.notes)
+    def sql(now: Timestamp) =
+      updateRow(
+        table,
+        and(oid.is(v.oid), cid.is(v.cid)),
+        commas(
+          cid.setTo(v.cid),
+          name.setTo(v.name),
+          street.setTo(v.street),
+          zip.setTo(v.zip),
+          city.setTo(v.city),
+          country.setTo(v.country),
+          notes.setTo(v.notes),
+          updated.setTo(now)
+        )
       )
-    )
-    sql.update.run
+    for {
+      now <- Timestamp.current[ConnectionIO]
+      n   <- sql(now).update.run
+    } yield n
   }
 
   def existsByName(coll: Ident, oname: String): ConnectionIO[Boolean] =

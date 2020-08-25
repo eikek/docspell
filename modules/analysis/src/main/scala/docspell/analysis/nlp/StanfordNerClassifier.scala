@@ -1,65 +1,39 @@
 package docspell.analysis.nlp
 
-import java.net.URL
-import java.util.zip.GZIPInputStream
-
 import scala.jdk.CollectionConverters._
-import scala.util.Using
+
+import cats.Applicative
+import cats.implicits._
 
 import docspell.common._
 
-import edu.stanford.nlp.ie.AbstractSequenceClassifier
-import edu.stanford.nlp.ie.crf.CRFClassifier
-import edu.stanford.nlp.ling.{CoreAnnotations, CoreLabel}
-import org.log4s.getLogger
+import edu.stanford.nlp.pipeline.{CoreDocument, StanfordCoreNLP}
 
 object StanfordNerClassifier {
-  private[this] val logger = getLogger
 
-  lazy val germanNerClassifier  = makeClassifier(Language.German)
-  lazy val englishNerClassifier = makeClassifier(Language.English)
+  /** Runs named entity recognition on the given `text`.
+    *
+    * This uses the classifier pipeline from stanford-nlp, see
+    * https://nlp.stanford.edu/software/CRF-NER.html. Creating these
+    * classifiers is quite expensive, it involves loading large model
+    * files. The classifiers are thread-safe and so they are cached.
+    * The `cacheKey` defines the "slot" where classifiers are stored
+    * and retrieved. If for a given `cacheKey` the `settings` change,
+    * a new classifier must be created. It will then replace the
+    * previous one.
+    */
+  def nerAnnotate[F[_]: Applicative](
+      cacheKey: String,
+      cache: PipelineCache[F]
+  )(settings: StanfordSettings, text: String): F[Vector[NerLabel]] =
+    cache
+      .obtain(cacheKey, settings)
+      .map(crf => runClassifier(crf, text))
 
-  def nerAnnotate(lang: Language)(text: String): Vector[NerLabel] = {
-    val nerClassifier = lang match {
-      case Language.English => englishNerClassifier
-      case Language.German  => germanNerClassifier
-    }
-    nerClassifier
-      .classify(text)
-      .asScala
-      .flatMap(a => a.asScala)
-      .collect(Function.unlift { label =>
-        val tag = label.get(classOf[CoreAnnotations.AnswerAnnotation])
-        NerTag
-          .fromString(Option(tag).getOrElse(""))
-          .toOption
-          .map(t => NerLabel(label.word(), t, label.beginPosition(), label.endPosition()))
-      })
-      .toVector
+  def runClassifier(nerClassifier: StanfordCoreNLP, text: String): Vector[NerLabel] = {
+    val doc = new CoreDocument(text)
+    nerClassifier.annotate(doc)
+    doc.tokens().asScala.collect(Function.unlift(LabelConverter.toNerLabel)).toVector
   }
 
-  private def makeClassifier(lang: Language): AbstractSequenceClassifier[CoreLabel] = {
-    logger.info(s"Creating ${lang.name} Stanford NLP NER classifier...")
-    val ner = classifierResource(lang)
-    Using(new GZIPInputStream(ner.openStream())) { in =>
-      CRFClassifier.getClassifier(in).asInstanceOf[AbstractSequenceClassifier[CoreLabel]]
-    }.fold(throw _, identity)
-  }
-
-  private def classifierResource(lang: Language): URL = {
-    def check(u: URL): URL =
-      if (u == null) sys.error(s"NER model url not found for language ${lang.name}")
-      else u
-
-    check(lang match {
-      case Language.German =>
-        getClass.getResource(
-          "/edu/stanford/nlp/models/ner/german.conll.germeval2014.hgc_175m_600.crf.ser.gz"
-        )
-      case Language.English =>
-        getClass.getResource(
-          "/edu/stanford/nlp/models/ner/english.all.3class.distsim.crf.ser.gz"
-        )
-    })
-  }
 }

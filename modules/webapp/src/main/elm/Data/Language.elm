@@ -10,6 +10,7 @@ module Data.Language exposing
 type Language
     = German
     | English
+    | French
 
 
 fromString : String -> Maybe Language
@@ -19,6 +20,9 @@ fromString str =
 
     else if str == "eng" || str == "en" || str == "english" then
         Just English
+
+    else if str == "fra" || str == "fr" || str == "french" then
+        Just French
 
     else
         Nothing
@@ -33,6 +37,9 @@ toIso3 lang =
         English ->
             "eng"
 
+        French ->
+            "fra"
+
 
 toName : Language -> String
 toName lang =
@@ -43,7 +50,10 @@ toName lang =
         English ->
             "English"
 
+        French ->
+            "French"
+
 
 all : List Language
 all =
-    [ German, English ]
+    [ German, English, French ]

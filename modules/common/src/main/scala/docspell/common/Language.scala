@@ -27,7 +27,12 @@ object Language {
     val iso3 = "eng"
   }
 
-  val all: List[Language] = List(German, English)
+  case object French extends Language {
+    val iso2 = "fr"
+    val iso3 = "fra"
+  }
+
+  val all: List[Language] = List(German, English, French)
 
   def fromString(str: String): Either[String, Language] = {
     val lang = str.toLowerCase
