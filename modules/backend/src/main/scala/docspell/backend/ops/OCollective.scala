@@ -15,7 +15,9 @@ trait OCollective[F[_]] {
 
   def find(name: Ident): F[Option[RCollective]]
 
-  def updateSettings(collective: Ident, lang: OCollective.Settings): F[AddResult]
+  def updateSettings(collective: Ident, settings: OCollective.Settings): F[AddResult]
+
+  def findSettings(collective: Ident): F[Option[OCollective.Settings]]
 
   def listUser(collective: Ident): F[Vector[RUser]]
 
@@ -55,6 +57,8 @@ object OCollective {
 
   type Settings = RCollective.Settings
   val Settings = RCollective.Settings
+  type Classifier = RClassifierSetting.Classifier
+  val Classifier = RClassifierSetting.Classifier
 
   sealed trait PassChangeResult
   object PassChangeResult {
@@ -101,6 +105,9 @@ object OCollective {
           .transact(RCollective.updateSettings(collective, sett))
           .attempt
           .map(AddResult.fromUpdate)
+
+      def findSettings(collective: Ident): F[Option[OCollective.Settings]] =
+        store.transact(RCollective.getSettings(collective))
 
       def listUser(collective: Ident): F[Vector[RUser]] =
         store.transact(RUser.findAll(collective, _.login))

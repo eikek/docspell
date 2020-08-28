@@ -3643,12 +3643,14 @@ components:
           description: DateTime
           type: integer
           format: date-time
+
     CollectiveSettings:
       description: |
         Settings for a collective.
       required:
         - language
         - integrationEnabled
+        - classifier
       properties:
         language:
           type: string
@@ -3658,6 +3660,31 @@ components:
           description: |
             Whether the collective has the integration endpoint
             enabled.
+        classifier:
+          $ref: "#/components/schemas/ClassifierSetting"
+
+    ClassifierSetting:
+      description: |
+        Settings for learning a document classifier.
+      required:
+        - enabled
+        - schedule
+        - itemCount
+      properties:
+        enabled:
+          type: boolean
+        category:
+          type: string
+        itemCount:
+          type: integer
+          format: int32
+          description: |
+            The max. number of items to learn from. The newest items
+            are considered.
+        schedule:
+          type: string
+          format: calevent
+
     SourceList:
       description: |
         A list of sources.

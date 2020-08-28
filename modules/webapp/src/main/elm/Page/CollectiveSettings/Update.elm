@@ -77,7 +77,13 @@ update flags msg model =
             ( model, Cmd.none )
 
         CollectiveSettingsResp (Ok data) ->
-            ( { model | settingsModel = Comp.CollectiveSettingsForm.init data }, Cmd.none )
+            let
+                ( cm, cc ) =
+                    Comp.CollectiveSettingsForm.init flags data
+            in
+            ( { model | settingsModel = cm }
+            , Cmd.map SettingsFormMsg cc
+            )
 
         CollectiveSettingsResp (Err _) ->
             ( model, Cmd.none )

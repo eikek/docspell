@@ -218,12 +218,12 @@ loginInfo model =
                         , menuEntry model
                             CollectiveSettingPage
                             [ i [ class "users circle icon" ] []
-                            , text "Collective Settings"
+                            , text "Collective Profile"
                             ]
                         , menuEntry model
                             UserSettingPage
                             [ i [ class "user circle icon" ] []
-                            , text "User Settings"
+                            , text "User Profile"
                             ]
                         , div [ class "divider" ] []
                         , menuEntry model

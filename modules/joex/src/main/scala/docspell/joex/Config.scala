@@ -57,7 +57,8 @@ object Config {
   case class TextAnalysis(
       maxLength: Int,
       workingDir: Path,
-      regexNer: RegexNer
+      regexNer: RegexNer,
+      classification: Classification
   ) {
 
     def textAnalysisConfig: TextAnalysisConfig =
@@ -68,4 +69,10 @@ object Config {
   }
 
   case class RegexNer(enabled: Boolean, fileCacheTime: Duration)
+
+  case class Classification(
+      enabled: Boolean,
+      itemCount: Int,
+      classifiers: List[Map[String, String]]
+  )
 }

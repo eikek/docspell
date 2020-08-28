@@ -185,10 +185,11 @@ viewSettings : Flags -> UiSettings -> Model -> List (Html Msg)
 viewSettings flags settings model =
     [ h2 [ class "ui header" ]
         [ i [ class "cog icon" ] []
-        , text "Settings"
+        , text "Collective Settings"
         ]
     , div [ class "ui segment" ]
-        [ Html.map SettingsFormMsg (Comp.CollectiveSettingsForm.view flags settings model.settingsModel)
+        [ Html.map SettingsFormMsg
+            (Comp.CollectiveSettingsForm.view flags settings model.settingsModel)
         ]
     , div
         [ classList
