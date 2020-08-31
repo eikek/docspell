@@ -4,7 +4,7 @@ import cats.effect._
 import cats.implicits._
 
 import docspell.analysis.TextAnalyser
-import docspell.analysis.nlp.StanfordSettings
+import docspell.analysis.nlp.StanfordNerSettings
 import docspell.common._
 import docspell.joex.analysis.RegexNerFile
 import docspell.joex.process.ItemData.AttachmentDates
@@ -42,7 +42,7 @@ object TextAnalysis {
       analyser: TextAnalyser[F],
       nerFile: RegexNerFile[F]
   )(rm: RAttachmentMeta): F[(RAttachmentMeta, AttachmentDates)] = {
-    val settings = StanfordSettings(ctx.args.meta.language, false, None)
+    val settings = StanfordNerSettings(ctx.args.meta.language, false, None)
     for {
       customNer <- nerFile.makeFile(ctx.args.meta.collective)
       sett = settings.copy(regexNer = customNer)

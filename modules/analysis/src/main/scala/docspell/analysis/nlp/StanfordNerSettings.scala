@@ -19,4 +19,8 @@ import docspell.common._
   * as a last step to tag untagged tokens using the provided list of
   * regexps.
   */
-case class StanfordSettings(lang: Language, highRecall: Boolean, regexNer: Option[Path])
+case class StanfordNerSettings(
+    lang: Language,
+    highRecall: Boolean,
+    regexNer: Option[Path]
+)
