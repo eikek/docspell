@@ -9,7 +9,11 @@ import docspell.backend.ops.OCollective._
 import docspell.common._
 import docspell.store.queries.QCollective
 import docspell.store.records._
+import docspell.store.usertask.UserTask
+import docspell.store.usertask.UserTaskStore
 import docspell.store.{AddResult, Store}
+
+import com.github.eikek.calev.CalEvent
 
 trait OCollective[F[_]] {
 
@@ -95,7 +99,11 @@ object OCollective {
     }
   }
 
-  def apply[F[_]: Effect](store: Store[F]): Resource[F, OCollective[F]] =
+  def apply[F[_]: Effect](
+      store: Store[F],
+      uts: UserTaskStore[F],
+      joex: OJoex[F]
+  ): Resource[F, OCollective[F]] =
     Resource.pure[F, OCollective[F]](new OCollective[F] {
       def find(name: Ident): F[Option[RCollective]] =
         store.transact(RCollective.findById(name))
@@ -105,6 +113,23 @@ object OCollective {
           .transact(RCollective.updateSettings(collective, sett))
           .attempt
           .map(AddResult.fromUpdate)
+          .flatMap(res => updateLearnClassifierTask(collective, sett) *> res.pure[F])
+
+      def updateLearnClassifierTask(coll: Ident, sett: Settings) =
+        for {
+          id <- Ident.randomId[F]
+          on    = sett.classifier.map(_.enabled).getOrElse(false)
+          timer = sett.classifier.map(_.schedule).getOrElse(CalEvent.unsafe(""))
+          ut = UserTask(
+            id,
+            LearnClassifierArgs.taskName,
+            on,
+            timer,
+            LearnClassifierArgs(coll)
+          )
+          _ <- uts.updateOneTask(AccountId(coll, LearnClassifierArgs.taskName), ut)
+          _ <- joex.notifyAllNodes
+        } yield ()
 
       def findSettings(collective: Ident): F[Option[OCollective.Settings]] =
         store.transact(RCollective.getSettings(collective))

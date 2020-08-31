@@ -102,5 +102,9 @@ object RClassifierSetting {
         created
       )
   }
+  object Classifier {
+    def fromRecord(r: RClassifierSetting): Classifier =
+      Classifier(r.enabled, r.schedule, r.itemCount, r.category.some)
+  }
 
 }

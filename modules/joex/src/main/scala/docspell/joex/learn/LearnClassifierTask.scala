@@ -12,10 +12,14 @@ import docspell.backend.ops.OCollective
 import docspell.common._
 import docspell.joex.Config
 import docspell.joex.scheduler._
+import docspell.store.records.RClassifierSetting
 
 object LearnClassifierTask {
 
   type Args = LearnClassifierArgs
+
+  def onCancel[F[_]: Sync]: Task[F, Args, Unit] =
+    Task.log(_.warn("Cancelling learn-classifier task"))
 
   def apply[F[_]: Sync: ContextShift](
       cfg: Config.TextAnalysis,
@@ -24,7 +28,7 @@ object LearnClassifierTask {
   ): Task[F, Args, Unit] =
     Task { ctx =>
       (for {
-        sett <- findActiveSettings[F](ctx.args.collective, cfg)
+        sett <- findActiveSettings[F](ctx, cfg)
         data = selectItems(
           ctx,
           math.min(cfg.classification.itemCount, sett.itemCount),
@@ -52,10 +56,16 @@ object LearnClassifierTask {
     ???
 
   private def findActiveSettings[F[_]: Sync](
-      coll: Ident,
+      ctx: Context[F, Args],
       cfg: Config.TextAnalysis
   ): OptionT[F, OCollective.Classifier] =
-    ???
+    if (cfg.classification.enabled)
+      OptionT(ctx.store.transact(RClassifierSetting.findById(ctx.args.collective)))
+        .filter(_.enabled)
+        .filter(_.category.nonEmpty)
+        .map(OCollective.Classifier.fromRecord)
+    else
+      OptionT.none
 
   private def logInactiveWarning[F[_]: Sync](logger: Logger[F]): F[Unit] =
     logger.warn(
