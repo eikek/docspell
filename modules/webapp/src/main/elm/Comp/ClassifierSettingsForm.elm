@@ -54,7 +54,7 @@ init flags sett =
     in
     ( { enabled = sett.enabled
       , categoryModel = Comp.FixedDropdown.initString []
-      , category = Nothing
+      , category = sett.category
       , scheduleModel = cem
       , schedule = Data.Validated.Unknown newSchedule
       , itemCountModel = Comp.IntField.init (Just 0) Nothing True "Item Count"
@@ -92,7 +92,12 @@ update flags msg model =
             in
             ( { model
                 | categoryModel = Comp.FixedDropdown.initString categories
-                , category = List.head categories
+                , category =
+                    if model.category == Nothing then
+                        List.head categories
+
+                    else
+                        model.category
               }
             , Cmd.none
             )
