@@ -88,6 +88,7 @@ module Api exposing
     , setItemNotes
     , setTags
     , setUnconfirmed
+    , startClassifier
     , startOnceNotifyDueItems
     , startOnceScanMailbox
     , startReIndex
@@ -793,6 +794,19 @@ versionInfo flags receive =
 
 
 --- Collective
+
+
+startClassifier :
+    Flags
+    -> (Result Http.Error BasicResult -> msg)
+    -> Cmd msg
+startClassifier flags receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/collective/classifier/startonce"
+        , account = getAccount flags
+        , body = Http.emptyBody
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
 
 
 getTagCloud : Flags -> (Result Http.Error TagCloud -> msg) -> Cmd msg

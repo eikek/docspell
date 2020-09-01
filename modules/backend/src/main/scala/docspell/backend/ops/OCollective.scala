@@ -8,12 +8,13 @@ import docspell.backend.PasswordCrypt
 import docspell.backend.ops.OCollective._
 import docspell.common._
 import docspell.store.queries.QCollective
+import docspell.store.queue.JobQueue
 import docspell.store.records._
 import docspell.store.usertask.UserTask
 import docspell.store.usertask.UserTaskStore
 import docspell.store.{AddResult, Store}
 
-import com.github.eikek.calev.CalEvent
+import com.github.eikek.calev._
 
 trait OCollective[F[_]] {
 
@@ -49,6 +50,7 @@ trait OCollective[F[_]] {
 
   def findEnabledSource(sourceId: Ident): F[Option[RSource]]
 
+  def startLearnClassifier(collective: Ident): F[Unit]
 }
 
 object OCollective {
@@ -102,6 +104,7 @@ object OCollective {
   def apply[F[_]: Effect](
       store: Store[F],
       uts: UserTaskStore[F],
+      queue: JobQueue[F],
       joex: OJoex[F]
   ): Resource[F, OCollective[F]] =
     Resource.pure[F, OCollective[F]](new OCollective[F] {
@@ -129,6 +132,21 @@ object OCollective {
           )
           _ <- uts.updateOneTask(AccountId(coll, LearnClassifierArgs.taskName), ut)
           _ <- joex.notifyAllNodes
+        } yield ()
+
+      def startLearnClassifier(collective: Ident): F[Unit] =
+        for {
+          id <- Ident.randomId[F]
+          ut <- UserTask(
+            id,
+            LearnClassifierArgs.taskName,
+            true,
+            CalEvent(WeekdayComponent.All, DateEvent.All, TimeEvent.All),
+            LearnClassifierArgs(collective)
+          ).encode.toPeriodicTask(AccountId(collective, LearnClassifierArgs.taskName))
+          job <- ut.toJob
+          _   <- queue.insert(job)
+          _   <- joex.notifyAllNodes
         } yield ()
 
       def findSettings(collective: Ident): F[Option[OCollective.Settings]] =

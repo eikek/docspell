@@ -30,6 +30,7 @@ type alias Model =
     , fullTextConfirmText : String
     , fullTextReIndexResult : Maybe BasicResult
     , classifierModel : Comp.ClassifierSettingsForm.Model
+    , startClassifierResult : Maybe BasicResult
     }
 
 
@@ -60,6 +61,7 @@ init flags settings =
       , fullTextConfirmText = ""
       , fullTextReIndexResult = Nothing
       , classifierModel = cm
+      , startClassifierResult = Nothing
       }
     , Cmd.map ClassifierSettingMsg cc
     )
@@ -91,6 +93,8 @@ type Msg
     | TriggerReIndexResult (Result Http.Error BasicResult)
     | ClassifierSettingMsg Comp.ClassifierSettingsForm.Msg
     | SaveSettings
+    | StartClassifierTask
+    | StartClassifierResp (Result Http.Error BasicResult)
 
 
 update : Flags -> Msg -> Model -> ( Model, Cmd Msg, Maybe CollectiveSettings )
@@ -169,12 +173,30 @@ update flags msg model =
                 _ ->
                     ( model, Cmd.none, Nothing )
 
+        StartClassifierTask ->
+            ( model, Api.startClassifier flags StartClassifierResp, Nothing )
+
+        StartClassifierResp (Ok br) ->
+            ( { model | startClassifierResult = Just br }
+            , Cmd.none
+            , Nothing
+            )
+
+        StartClassifierResp (Err err) ->
+            ( { model
+                | startClassifierResult =
+                    Just (BasicResult False (Util.Http.errorToString err))
+              }
+            , Cmd.none
+            , Nothing
+            )
+
 
 view : Flags -> UiSettings -> Model -> Html Msg
 view flags settings model =
     div
         [ classList
-            [ ( "ui form", True )
+            [ ( "ui form error success", True )
             , ( "error", Maybe.map .success model.fullTextReIndexResult == Just False )
             , ( "success", Maybe.map .success model.fullTextReIndexResult == Just True )
             ]
@@ -250,18 +272,7 @@ view flags settings model =
                 [ text "This starts a task that clears the full-text index and re-indexes all your data again."
                 , text "You must type OK before clicking the button to avoid accidental re-indexing."
                 ]
-            , div
-                [ classList
-                    [ ( "ui message", True )
-                    , ( "error", Maybe.map .success model.fullTextReIndexResult == Just False )
-                    , ( "success", Maybe.map .success model.fullTextReIndexResult == Just True )
-                    , ( "hidden invisible", model.fullTextReIndexResult == Nothing )
-                    ]
-                ]
-                [ Maybe.map .message model.fullTextReIndexResult
-                    |> Maybe.withDefault ""
-                    |> text
-                ]
+            , renderResultMessage model.fullTextReIndexResult
             ]
         , h3
             [ classList
@@ -279,6 +290,19 @@ view flags settings model =
             ]
             [ Html.map ClassifierSettingMsg
                 (Comp.ClassifierSettingsForm.view model.classifierModel)
+            , div [ class "ui vertical segment" ]
+                [ button
+                    [ classList
+                        [ ( "ui small secondary basic button", True )
+                        , ( "disabled", not model.classifierModel.enabled )
+                        ]
+                    , title "Starts a task to train a classifier"
+                    , onClick StartClassifierTask
+                    ]
+                    [ text "Start now"
+                    ]
+                , renderResultMessage model.startClassifierResult
+                ]
             ]
         , div [ class "ui divider" ] []
         , button
@@ -290,4 +314,20 @@ view flags settings model =
             ]
             [ text "Save"
             ]
+        ]
+
+
+renderResultMessage : Maybe BasicResult -> Html msg
+renderResultMessage result =
+    div
+        [ classList
+            [ ( "ui message", True )
+            , ( "error", Maybe.map .success result == Just False )
+            , ( "success", Maybe.map .success result == Just True )
+            , ( "hidden invisible", result == Nothing )
+            ]
+        ]
+        [ Maybe.map .message result
+            |> Maybe.withDefault ""
+            |> text
         ]

@@ -53,7 +53,7 @@ object BackendApp {
       loginImpl      <- Login[F](store)
       signupImpl     <- OSignup[F](store)
       joexImpl       <- OJoex(JoexClient(httpClient), store)
-      collImpl       <- OCollective[F](store, utStore, joexImpl)
+      collImpl       <- OCollective[F](store, utStore, queue, joexImpl)
       sourceImpl     <- OSource[F](store)
       tagImpl        <- OTag[F](store)
       equipImpl      <- OEquipment[F](store)

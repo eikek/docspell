@@ -1047,6 +1047,28 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ContactList"
+
+  /sec/collective/classifier/startonce:
+    post:
+      tags: [ Collective ]
+      summary: Starts the learn-classifier task
+      description: |
+        If the collective has classification enabled, this will submit
+        the task for learning a classifier from existing data. This
+        task is usally run periodically as determined by the
+        collective settings.
+
+        The request is empty, settings are used from the collective.
+      security:
+        - authTokenHeader: []
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
   /sec/user:
     get:
       tags: [ Collective ]

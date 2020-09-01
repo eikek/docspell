@@ -88,6 +88,12 @@ object CollectiveRoutes {
           resp <- Ok(ContactList(res.map(Conversions.mkContact)))
         } yield resp
 
+      case POST -> Root / "classifier" / "startonce" =>
+        for {
+          _    <- backend.collective.startLearnClassifier(user.account.collective)
+          resp <- Ok(BasicResult(true, "Task submitted"))
+        } yield resp
+
       case GET -> Root =>
         for {
           collDb <- backend.collective.find(user.account.collective)
