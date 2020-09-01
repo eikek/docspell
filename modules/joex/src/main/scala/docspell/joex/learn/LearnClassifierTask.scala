@@ -20,6 +20,7 @@ import bitpeace.MimetypeHint
 
 object LearnClassifierTask {
   val noClass = "__NONE__"
+  val pageSep = " --n-- "
 
   type Args = LearnClassifierArgs
 
@@ -80,7 +81,9 @@ object LearnClassifierTask {
     val connStream =
       for {
         item <- QItem.findAllNewesFirst(ctx.args.collective, 10).through(restrictTo(max))
-        tt   <- Stream.eval(QItem.resolveTextAndTag(ctx.args.collective, item, category))
+        tt <- Stream.eval(
+          QItem.resolveTextAndTag(ctx.args.collective, item, category, pageSep)
+        )
       } yield Data(tt.tag.map(_.name).getOrElse(noClass), item.id, tt.text.trim)
     ctx.store.transact(connStream.filter(_.text.nonEmpty))
   }

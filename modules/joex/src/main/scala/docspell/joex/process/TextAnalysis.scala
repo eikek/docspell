@@ -11,6 +11,7 @@ import docspell.analysis.nlp.TextClassifier
 import docspell.common._
 import docspell.joex.Config
 import docspell.joex.analysis.RegexNerFile
+import docspell.joex.learn.LearnClassifierTask
 import docspell.joex.process.ItemData.AttachmentDates
 import docspell.joex.scheduler.Context
 import docspell.joex.scheduler.Task
@@ -76,7 +77,7 @@ object TextAnalysis {
     for {
       model <- findActiveModel(ctx, cfg)
       _     <- OptionT.liftF(ctx.logger.info(s"Guessing tag …"))
-      text = metas.flatMap(_.content).mkString("   ------   ")
+      text = metas.flatMap(_.content).mkString(LearnClassifierTask.pageSep)
       modelData =
         ctx.store.bitpeace
           .get(model.id)
@@ -89,8 +90,7 @@ object TextAnalysis {
           .compile
           .drain
           .flatMap(_ => classifier.classify(ctx.logger, ClassifierModel(modelFile), text))
-
-      })
+      }).filter(_ != LearnClassifierTask.noClass)
       _ <- OptionT.liftF(ctx.logger.debug(s"Guessed tag: ${cls}"))
     } yield cls
 

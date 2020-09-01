@@ -634,7 +634,8 @@ object QItem {
   def resolveTextAndTag(
       collective: Ident,
       itemId: Ident,
-      tagCategory: String
+      tagCategory: String,
+      pageSep: String
   ): ConnectionIO[TextAndTag] = {
     val aId    = RAttachment.Columns.id.prefix("a")
     val aItem  = RAttachment.Columns.itemId.prefix("a")
@@ -682,7 +683,7 @@ object QItem {
         s"Got ${texts.size} text and tag entries for item ${itemId.id}"
       )
       tag = texts.headOption.flatMap(_._2)
-      txt = texts.map(_._1).mkString(" --n-- ")
+      txt = texts.map(_._1).mkString(pageSep)
     } yield TextAndTag(itemId, txt, tag)
   }
 
