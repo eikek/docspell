@@ -33,11 +33,26 @@ workflows, a tag category *state* may exist that includes tags like
 "assignment" semantics. Docspell doesn't propose any workflow, but it
 can help to implement some.
 
-The tags are *not* taken into account when creating suggestions from
-analyzed text yet. However, PDF files may contain metadata itself and
-if there is a metadata *keywords* list, these keywords are matched
-against the tags in the database. If they match, the item is tagged
-automatically.
+Docspell can try to predict a tag for new incoming documents
+automatically based on your existing data. This requires to train an
+algorithm. There are some caveats: the more data you have correctly
+tagged, the better are the results. So it won't work well for maybe
+the first 100 documents. Then the tags must somehow relate to a
+pattern in the document text. Tags like *todo* or *waiting* probably
+won't work, obviously. But the typical "document type" tag, like
+*invoice* and *receipt* is a good fit! That is why you need to provide
+a tag category so only sensible tags are being learned. The algorithm
+goes through all your items and learns patterns in the text that
+relate to the given tags. This training step can be run periodically,
+as specified in your collective settings such that docspell keeps
+learning from your already tagged data! More information about the
+algorithm can be found in the config, where it is possible to
+fine-tune this process.
+
+Another way to have items tagged automatically is when an input PDF
+file contains a list of keywords in its metadata section (this only
+applies to PDF files). These keywords are then matched against the
+tags in the database. If they match, the item is tagged with them.
 
 
 ## Organization and Person
