@@ -38,6 +38,9 @@ case class ItemData(
     copy(metas = next)
   }
 
+  def appendTags(tags: Seq[String]): ItemData =
+    copy(tags = (this.tags ++ tags.toList).distinct)
+
   def changeMeta(
       attachId: Ident,
       f: RAttachmentMeta => RAttachmentMeta
