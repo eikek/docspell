@@ -67,8 +67,8 @@ trait DoobieSyntax {
       Fragment.const(" FROM ") ++ table ++ this.where(where)
 
   def selectDistinct(cols: Seq[Column], table: Fragment, where: Fragment): Fragment =
-    Fragment.const("SELECT DISTINCT(") ++ commas(cols.map(_.f)) ++
-      Fragment.const(") FROM ") ++ table ++ this.where(where)
+    Fragment.const("SELECT DISTINCT ") ++ commas(cols.map(_.f)) ++
+      Fragment.const(" FROM ") ++ table ++ this.where(where)
 
   def selectCount(col: Column, table: Fragment, where: Fragment): Fragment =
     Fragment.const("SELECT COUNT(") ++ col.f ++ Fragment.const(") FROM ") ++ table ++ this

@@ -7,6 +7,7 @@ import cats.effect.concurrent.Ref
 import cats.implicits._
 import fs2.Stream
 
+import docspell.common.syntax.all._
 import docspell.common.{IdRef, _}
 import docspell.store.Store
 import docspell.store.impl.Implicits._
@@ -615,4 +616,74 @@ object QItem {
       .query[NameAndNotes]
       .streamWithChunkSize(chunkSize)
   }
+
+  def findAllNewesFirst(
+      collective: Ident,
+      chunkSize: Int
+  ): Stream[ConnectionIO, Ident] = {
+    val cols = Seq(RItem.Columns.id)
+    (selectSimple(cols, RItem.table, RItem.Columns.cid.is(collective)) ++
+      orderBy(RItem.Columns.created.desc))
+      .query[Ident]
+      .streamWithChunkSize(chunkSize)
+  }
+
+  case class TagName(id: Ident, name: String)
+  case class TextAndTag(itemId: Ident, text: String, tag: Option[TagName])
+
+  def resolveTextAndTag(
+      collective: Ident,
+      itemId: Ident,
+      tagCategory: String
+  ): ConnectionIO[TextAndTag] = {
+    val aId    = RAttachment.Columns.id.prefix("a")
+    val aItem  = RAttachment.Columns.itemId.prefix("a")
+    val mId    = RAttachmentMeta.Columns.id.prefix("m")
+    val mText  = RAttachmentMeta.Columns.content.prefix("m")
+    val tiItem = RTagItem.Columns.itemId.prefix("ti")
+    val tiTag  = RTagItem.Columns.tagId.prefix("ti")
+    val tId    = RTag.Columns.tid.prefix("t")
+    val tName  = RTag.Columns.name.prefix("t")
+    val tCat   = RTag.Columns.category.prefix("t")
+    val iId    = RItem.Columns.id.prefix("i")
+    val iColl  = RItem.Columns.cid.prefix("i")
+
+    val cte = withCTE(
+      "tags" -> selectSimple(
+        Seq(tiItem, tId, tName),
+        RTagItem.table ++ fr"ti INNER JOIN" ++
+          RTag.table ++ fr"t ON" ++ tId.is(tiTag),
+        and(tiItem.is(itemId), tCat.is(tagCategory))
+      )
+    )
+
+    val cols = Seq(mText, tId, tName)
+
+    val from = RItem.table ++ fr"i INNER JOIN" ++
+      RAttachment.table ++ fr"a ON" ++ aItem.is(iId) ++ fr"INNER JOIN" ++
+      RAttachmentMeta.table ++ fr"m ON" ++ aId.is(mId) ++ fr"LEFT JOIN" ++
+      fr"tags t ON" ++ RTagItem.Columns.itemId.prefix("t").is(iId)
+
+    val where =
+      and(
+        iId.is(itemId),
+        iColl.is(collective),
+        mText.isNotNull,
+        mText.isNot("")
+      )
+
+    val q = cte ++ selectDistinct(cols, from, where)
+    for {
+      _ <- logger.ftrace[ConnectionIO](
+        s"query: $q  (${itemId.id}, ${collective.id}, ${tagCategory})"
+      )
+      texts <- q.query[(String, Option[TagName])].to[List]
+      _ <- logger.ftrace[ConnectionIO](
+        s"Got ${texts.size} text and tag entries for item ${itemId.id}"
+      )
+      tag = texts.headOption.flatMap(_._2)
+      txt = texts.map(_._1).mkString(" --n-- ")
+    } yield TextAndTag(itemId, txt, tag)
+  }
+
 }

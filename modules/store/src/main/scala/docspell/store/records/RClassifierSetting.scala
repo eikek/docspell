@@ -61,6 +61,9 @@ object RClassifierSetting {
     sql.update.run
   }
 
+  def updateFile(coll: Ident, fid: Ident): ConnectionIO[Int] =
+    updateRow(table, cid.is(coll), fileId.setTo(fid)).update.run
+
   def updateSettings(v: RClassifierSetting): ConnectionIO[Int] =
     for {
       n1 <- updateRow(
