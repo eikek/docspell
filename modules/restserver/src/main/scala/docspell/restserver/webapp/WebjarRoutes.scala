@@ -1,41 +1,50 @@
 package docspell.restserver.webapp
 
+import cats.data.Kleisli
+import cats.data.OptionT
 import cats.effect._
 
 import org.http4s.HttpRoutes
-import org.http4s.server.staticcontent.NoopCacheStrategy
-import org.http4s.server.staticcontent.WebjarService.{Config => WebjarConfig, WebjarAsset}
-import org.http4s.server.staticcontent.webjarService
+import org.http4s.Method
+import org.http4s.Response
+import org.http4s.StaticFile
 
 object WebjarRoutes {
 
+  private[this] val suffixes = List(
+    ".js",
+    ".css",
+    ".html",
+    ".json",
+    ".jpg",
+    ".png",
+    ".eot",
+    ".woff",
+    ".woff2",
+    ".svg",
+    ".otf",
+    ".ttf",
+    ".yml",
+    ".xml"
+  )
+
   def appRoutes[F[_]: Effect](
       blocker: Blocker
-  )(implicit C: ContextShift[F]): HttpRoutes[F] =
-    webjarService(
-      WebjarConfig(
-        filter = assetFilter,
-        blocker = blocker,
-        cacheStrategy = NoopCacheStrategy[F]
-      )
-    )
-
-  def assetFilter(asset: WebjarAsset): Boolean =
-    List(
-      ".js",
-      ".css",
-      ".html",
-      ".json",
-      ".jpg",
-      ".png",
-      ".eot",
-      ".woff",
-      ".woff2",
-      ".svg",
-      ".otf",
-      ".ttf",
-      ".yml",
-      ".xml"
-    ).exists(e => asset.asset.endsWith(e))
+  )(implicit CS: ContextShift[F]): HttpRoutes[F] =
+    Kleisli {
+      case req if req.method == Method.GET =>
+        val p = req.pathInfo
+        if (p.contains("..") || !suffixes.exists(p.endsWith(_)))
+          OptionT.pure(Response.notFound[F])
+        else
+          StaticFile.fromResource(
+            s"/META-INF/resources/webjars$p",
+            blocker,
+            Some(req),
+            true
+          )
+      case _ =>
+        OptionT.none
+    }
 
 }
