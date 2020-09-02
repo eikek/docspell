@@ -34,12 +34,12 @@ object ProcessItem {
   )(item: ItemData): Task[F, ProcessItemArgs, ItemData] =
     processAttachments0[F](cfg, fts, analyser, regexNer, (30, 60, 90))(item)
 
-  def analysisOnly[F[_]: Sync](
+  def analysisOnly[F[_]: Sync: ContextShift](
       cfg: Config,
       analyser: TextAnalyser[F],
       regexNer: RegexNerFile[F]
   )(item: ItemData): Task[F, ProcessItemArgs, ItemData] =
-    TextAnalysis[F](analyser, regexNer)(item)
+    TextAnalysis[F](cfg.textAnalysis, analyser, regexNer)(item)
       .flatMap(FindProposal[F](cfg.processing))
       .flatMap(EvalProposals[F])
       .flatMap(SaveProposals[F])

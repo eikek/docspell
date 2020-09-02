@@ -1047,6 +1047,28 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ContactList"
+
+  /sec/collective/classifier/startonce:
+    post:
+      tags: [ Collective ]
+      summary: Starts the learn-classifier task
+      description: |
+        If the collective has classification enabled, this will submit
+        the task for learning a classifier from existing data. This
+        task is usally run periodically as determined by the
+        collective settings.
+
+        The request is empty, settings are used from the collective.
+      security:
+        - authTokenHeader: []
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
   /sec/user:
     get:
       tags: [ Collective ]
@@ -3643,12 +3665,14 @@ components:
           description: DateTime
           type: integer
           format: date-time
+
     CollectiveSettings:
       description: |
         Settings for a collective.
       required:
         - language
         - integrationEnabled
+        - classifier
       properties:
         language:
           type: string
@@ -3658,6 +3682,31 @@ components:
           description: |
             Whether the collective has the integration endpoint
             enabled.
+        classifier:
+          $ref: "#/components/schemas/ClassifierSetting"
+
+    ClassifierSetting:
+      description: |
+        Settings for learning a document classifier.
+      required:
+        - enabled
+        - schedule
+        - itemCount
+      properties:
+        enabled:
+          type: boolean
+        category:
+          type: string
+        itemCount:
+          type: integer
+          format: int32
+          description: |
+            The max. number of items to learn from. The newest items
+            are considered.
+        schedule:
+          type: string
+          format: calevent
+
     SourceList:
       description: |
         A list of sources.

@@ -61,14 +61,47 @@ object RCollective {
     updateRow(table, id.is(cid), language.setTo(lang)).update.run
 
   def updateSettings(cid: Ident, settings: Settings): ConnectionIO[Int] =
-    updateRow(
-      table,
-      id.is(cid),
-      commas(
-        language.setTo(settings.language),
-        integration.setTo(settings.integrationEnabled)
-      )
-    ).update.run
+    for {
+      n1 <- updateRow(
+        table,
+        id.is(cid),
+        commas(
+          language.setTo(settings.language),
+          integration.setTo(settings.integrationEnabled)
+        )
+      ).update.run
+      cls <-
+        Timestamp
+          .current[ConnectionIO]
+          .map(now => settings.classifier.map(_.toRecord(cid, now)))
+      n2 <- cls match {
+        case Some(cr) =>
+          RClassifierSetting.updateSettings(cr)
+        case None =>
+          RClassifierSetting.delete(cid)
+      }
+    } yield n1 + n2
+
+  def getSettings(coll: Ident): ConnectionIO[Option[Settings]] = {
+    val cId   = id.prefix("c")
+    val CS    = RClassifierSetting.Columns
+    val csCid = CS.cid.prefix("cs")
+
+    val cols = Seq(
+      language.prefix("c"),
+      integration.prefix("c"),
+      CS.enabled.prefix("cs"),
+      CS.schedule.prefix("cs"),
+      CS.itemCount.prefix("cs"),
+      CS.category.prefix("cs")
+    )
+    val from = table ++ fr"c LEFT JOIN" ++
+      RClassifierSetting.table ++ fr"cs ON" ++ csCid.is(cId)
+
+    selectSimple(cols, from, cId.is(coll))
+      .query[Settings]
+      .option
+  }
 
   def findById(cid: Ident): ConnectionIO[Option[RCollective]] = {
     val sql = selectSimple(all, table, id.is(cid))
@@ -112,5 +145,10 @@ object RCollective {
     selectSimple(all.map(_.prefix("c")), from, aId.is(attachId)).query[RCollective].option
   }
 
-  case class Settings(language: Language, integrationEnabled: Boolean)
+  case class Settings(
+      language: Language,
+      integrationEnabled: Boolean,
+      classifier: Option[RClassifierSetting.Classifier]
+  )
+
 }

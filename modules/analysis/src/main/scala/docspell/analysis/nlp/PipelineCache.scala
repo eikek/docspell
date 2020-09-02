@@ -19,7 +19,7 @@ import org.log4s.getLogger
   */
 trait PipelineCache[F[_]] {
 
-  def obtain(key: String, settings: StanfordSettings): F[StanfordCoreNLP]
+  def obtain(key: String, settings: StanfordNerSettings): F[StanfordCoreNLP]
 
 }
 
@@ -28,7 +28,7 @@ object PipelineCache {
 
   def none[F[_]: Applicative]: PipelineCache[F] =
     new PipelineCache[F] {
-      def obtain(ignored: String, settings: StanfordSettings): F[StanfordCoreNLP] =
+      def obtain(ignored: String, settings: StanfordNerSettings): F[StanfordCoreNLP] =
         makeClassifier(settings).pure[F]
     }
 
@@ -38,7 +38,7 @@ object PipelineCache {
   final private class Impl[F[_]: Sync](data: Ref[F, Map[String, Entry]])
       extends PipelineCache[F] {
 
-    def obtain(key: String, settings: StanfordSettings): F[StanfordCoreNLP] =
+    def obtain(key: String, settings: StanfordNerSettings): F[StanfordCoreNLP] =
       for {
         id  <- makeSettingsId(settings)
         nlp <- data.modify(cache => getOrCreate(key, id, cache, settings))
@@ -48,7 +48,7 @@ object PipelineCache {
         key: String,
         id: String,
         cache: Map[String, Entry],
-        settings: StanfordSettings
+        settings: StanfordNerSettings
     ): (Map[String, Entry], StanfordCoreNLP) =
       cache.get(key) match {
         case Some(entry) =>
@@ -68,7 +68,7 @@ object PipelineCache {
           (cache.updated(key, e), nlp)
       }
 
-    private def makeSettingsId(settings: StanfordSettings): F[String] = {
+    private def makeSettingsId(settings: StanfordNerSettings): F[String] = {
       val base = settings.copy(regexNer = None).toString
       val size: F[Long] =
         settings.regexNer match {
@@ -81,7 +81,7 @@ object PipelineCache {
     }
 
   }
-  private def makeClassifier(settings: StanfordSettings): StanfordCoreNLP = {
+  private def makeClassifier(settings: StanfordNerSettings): StanfordCoreNLP = {
     logger.info(s"Creating ${settings.lang.name} Stanford NLP NER classifier...")
     new StanfordCoreNLP(Properties.forSettings(settings))
   }

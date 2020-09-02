@@ -8,14 +8,21 @@ import docspell.backend.PasswordCrypt
 import docspell.backend.ops.OCollective._
 import docspell.common._
 import docspell.store.queries.QCollective
+import docspell.store.queue.JobQueue
 import docspell.store.records._
+import docspell.store.usertask.UserTask
+import docspell.store.usertask.UserTaskStore
 import docspell.store.{AddResult, Store}
+
+import com.github.eikek.calev._
 
 trait OCollective[F[_]] {
 
   def find(name: Ident): F[Option[RCollective]]
 
-  def updateSettings(collective: Ident, lang: OCollective.Settings): F[AddResult]
+  def updateSettings(collective: Ident, settings: OCollective.Settings): F[AddResult]
+
+  def findSettings(collective: Ident): F[Option[OCollective.Settings]]
 
   def listUser(collective: Ident): F[Vector[RUser]]
 
@@ -43,6 +50,7 @@ trait OCollective[F[_]] {
 
   def findEnabledSource(sourceId: Ident): F[Option[RSource]]
 
+  def startLearnClassifier(collective: Ident): F[Unit]
 }
 
 object OCollective {
@@ -55,6 +63,8 @@ object OCollective {
 
   type Settings = RCollective.Settings
   val Settings = RCollective.Settings
+  type Classifier = RClassifierSetting.Classifier
+  val Classifier = RClassifierSetting.Classifier
 
   sealed trait PassChangeResult
   object PassChangeResult {
@@ -91,7 +101,12 @@ object OCollective {
     }
   }
 
-  def apply[F[_]: Effect](store: Store[F]): Resource[F, OCollective[F]] =
+  def apply[F[_]: Effect](
+      store: Store[F],
+      uts: UserTaskStore[F],
+      queue: JobQueue[F],
+      joex: OJoex[F]
+  ): Resource[F, OCollective[F]] =
     Resource.pure[F, OCollective[F]](new OCollective[F] {
       def find(name: Ident): F[Option[RCollective]] =
         store.transact(RCollective.findById(name))
@@ -101,6 +116,41 @@ object OCollective {
           .transact(RCollective.updateSettings(collective, sett))
           .attempt
           .map(AddResult.fromUpdate)
+          .flatMap(res => updateLearnClassifierTask(collective, sett) *> res.pure[F])
+
+      def updateLearnClassifierTask(coll: Ident, sett: Settings) =
+        for {
+          id <- Ident.randomId[F]
+          on    = sett.classifier.map(_.enabled).getOrElse(false)
+          timer = sett.classifier.map(_.schedule).getOrElse(CalEvent.unsafe(""))
+          ut = UserTask(
+            id,
+            LearnClassifierArgs.taskName,
+            on,
+            timer,
+            LearnClassifierArgs(coll)
+          )
+          _ <- uts.updateOneTask(AccountId(coll, LearnClassifierArgs.taskName), ut)
+          _ <- joex.notifyAllNodes
+        } yield ()
+
+      def startLearnClassifier(collective: Ident): F[Unit] =
+        for {
+          id <- Ident.randomId[F]
+          ut <- UserTask(
+            id,
+            LearnClassifierArgs.taskName,
+            true,
+            CalEvent(WeekdayComponent.All, DateEvent.All, TimeEvent.All),
+            LearnClassifierArgs(collective)
+          ).encode.toPeriodicTask(AccountId(collective, LearnClassifierArgs.taskName))
+          job <- ut.toJob
+          _   <- queue.insert(job)
+          _   <- joex.notifyAllNodes
+        } yield ()
+
+      def findSettings(collective: Ident): F[Option[OCollective.Settings]] =
+        store.transact(RCollective.getSettings(collective))
 
       def listUser(collective: Ident): F[Vector[RUser]] =
         store.transact(RUser.findAll(collective, _.login))

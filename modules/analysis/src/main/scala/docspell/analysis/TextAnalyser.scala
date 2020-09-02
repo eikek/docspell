@@ -7,18 +7,21 @@ import docspell.analysis.contact.Contact
 import docspell.analysis.date.DateFind
 import docspell.analysis.nlp.PipelineCache
 import docspell.analysis.nlp.StanfordNerClassifier
-import docspell.analysis.nlp.StanfordSettings
+import docspell.analysis.nlp.StanfordNerSettings
+import docspell.analysis.nlp.StanfordTextClassifier
+import docspell.analysis.nlp.TextClassifier
 import docspell.common._
 
 trait TextAnalyser[F[_]] {
 
   def annotate(
       logger: Logger[F],
-      settings: StanfordSettings,
+      settings: StanfordNerSettings,
       cacheKey: Ident,
       text: String
   ): F[TextAnalyser.Result]
 
+  def classifier(blocker: Blocker)(implicit CS: ContextShift[F]): TextClassifier[F]
 }
 object TextAnalyser {
 
@@ -35,7 +38,7 @@ object TextAnalyser {
         new TextAnalyser[F] {
           def annotate(
               logger: Logger[F],
-              settings: StanfordSettings,
+              settings: StanfordNerSettings,
               cacheKey: Ident,
               text: String
           ): F[TextAnalyser.Result] =
@@ -48,6 +51,11 @@ object TextAnalyser {
               spans = NerLabelSpan.build(list)
             } yield Result(spans ++ list, dates)
 
+          def classifier(blocker: Blocker)(implicit
+              CS: ContextShift[F]
+          ): TextClassifier[F] =
+            new StanfordTextClassifier[F](cfg.classifier, blocker)
+
           private def textLimit(logger: Logger[F], text: String): F[String] =
             if (text.length <= cfg.maxLength) text.pure[F]
             else
@@ -56,7 +64,7 @@ object TextAnalyser {
                   s" Analysing only first ${cfg.maxLength} characters."
               ) *> text.take(cfg.maxLength).pure[F]
 
-          private def stanfordNer(key: Ident, settings: StanfordSettings, text: String)
+          private def stanfordNer(key: Ident, settings: StanfordNerSettings, text: String)
               : F[Vector[NerLabel]] =
             StanfordNerClassifier.nerAnnotate[F](key.id, cache)(settings, text)
 

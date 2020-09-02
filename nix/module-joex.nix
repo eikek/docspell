@@ -95,6 +95,21 @@ let
         enabled = true;
         file-cache-time = "1 minute";
       };
+      classification = {
+        enabled = true;
+        item-count = 0;
+        classifiers = [
+          { "useSplitWords" = "true";
+            "splitWordsTokenizerRegexp" = ''[\p{L}][\p{L}0-9]*|(?:\$ ?)?[0-9]+(?:\.[0-9]{2})?%?|\s+|.'';
+            "splitWordsIgnoreRegexp" = ''\s+'';
+            "useSplitPrefixSuffixNGrams" = "true";
+            "maxNGramLeng" = "4";
+            "minNGramLeng" = "1";
+            "splitWordShape" = "chris4";
+            "intern" = "true";
+          }
+        ];
+      };
       working-dir = "/tmp/docspell-analysis";
     };
     processing = {
@@ -735,6 +750,59 @@ in {
               });
               default = defaults.text-analysis.regex-ner;
               description = "";
+            };
+
+            classification = mkOption {
+              type = types.submodule({
+                options = {
+                  enabled = mkOption {
+                    type = types.bool;
+                    default = defaults.text-analysis.classification.enabled;
+                    description = ''
+                      Whether to enable classification globally. Each collective can
+                      decide to disable it. If it is disabled here, no collective
+                      can use classification.
+                    '';
+                  };
+                  item-count = mkOption {
+                    type = types.int;
+                    default = defaults.text-analysis.classification.item-count;
+                    description = ''
+                      If concerned with memory consumption, this restricts the
+                      number of items to consider. More are better for training. A
+                      negative value or zero means no train on all items.
+                    '';
+                  };
+                  classifiers = mkOption {
+                    type = types.listOf types.attrs;
+                    default = defaults.text-analysis.classification.classifiers;
+                    description = ''
+                      These settings are used to configure the classifier. If
+                      multiple are given, they are all tried and the "best" is
+                      chosen at the end. See
+                      https://nlp.stanford.edu/nlp/javadoc/javanlp/edu/stanford/nlp/classify/ColumnDataClassifier.html
+                      for more info about these settings. The settings here yielded
+                      good results with *my* dataset.
+                    '';
+                  };
+
+                };
+              });
+              default = defaults.text-analysis.classification;
+              description = ''
+                Settings for doing document classification.
+
+                This works by learning from existing documents. A collective can
+                specify a tag category and the system will try to predict a tag
+                from this category for new incoming documents.
+
+                This requires a satstical model that is computed from all
+                existing documents. This process is run periodically as
+                configured by the collective. It may require a lot of memory,
+                depending on the amount of data.
+
+                It utilises this NLP library: https://nlp.stanford.edu/.
+              '';
             };
           };
         });

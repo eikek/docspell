@@ -2,7 +2,10 @@ package docspell.joex
 
 import java.nio.file.Path
 
+import cats.data.NonEmptyList
+
 import docspell.analysis.TextAnalysisConfig
+import docspell.analysis.nlp.TextClassifierConfig
 import docspell.backend.Config.Files
 import docspell.common._
 import docspell.convert.ConvertConfig
@@ -57,15 +60,30 @@ object Config {
   case class TextAnalysis(
       maxLength: Int,
       workingDir: Path,
-      regexNer: RegexNer
+      regexNer: RegexNer,
+      classification: Classification
   ) {
 
     def textAnalysisConfig: TextAnalysisConfig =
-      TextAnalysisConfig(maxLength)
+      TextAnalysisConfig(
+        maxLength,
+        TextClassifierConfig(
+          workingDir,
+          NonEmptyList
+            .fromList(classification.classifiers)
+            .getOrElse(NonEmptyList.of(Map.empty))
+        )
+      )
 
     def regexNerFileConfig: RegexNerFile.Config =
       RegexNerFile.Config(regexNer.enabled, workingDir, regexNer.fileCacheTime)
   }
 
   case class RegexNer(enabled: Boolean, fileCacheTime: Duration)
+
+  case class Classification(
+      enabled: Boolean,
+      itemCount: Int,
+      classifiers: List[Map[String, String]]
+  )
 }

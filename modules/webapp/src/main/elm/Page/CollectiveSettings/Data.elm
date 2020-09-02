@@ -30,15 +30,21 @@ init flags =
     let
         ( sm, sc ) =
             Comp.SourceManage.init flags
+
+        ( cm, cc ) =
+            Comp.CollectiveSettingsForm.init flags Api.Model.CollectiveSettings.empty
     in
     ( { currentTab = Just InsightsTab
       , sourceModel = sm
       , userModel = Comp.UserManage.emptyModel
-      , settingsModel = Comp.CollectiveSettingsForm.init Api.Model.CollectiveSettings.empty
+      , settingsModel = cm
       , insights = Api.Model.ItemInsights.empty
       , submitResult = Nothing
       }
-    , Cmd.map SourceMsg sc
+    , Cmd.batch
+        [ Cmd.map SourceMsg sc
+        , Cmd.map SettingsFormMsg cc
+        ]
     )
 
 

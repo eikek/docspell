@@ -7,6 +7,9 @@ import docspell.common._
 
 object Properties {
 
+  def fromMap(m: Map[String, String]): JProps =
+    apply(m.toSeq: _*)
+
   def apply(ps: (String, String)*): JProps = {
     val p = new JProps()
     for ((k, v) <- ps)
@@ -14,7 +17,7 @@ object Properties {
     p
   }
 
-  def forSettings(settings: StanfordSettings): JProps = {
+  def forSettings(settings: StanfordNerSettings): JProps = {
     val regexNerFile = settings.regexNer
       .map(p => p.normalize().toAbsolutePath().toString())
     settings.lang match {

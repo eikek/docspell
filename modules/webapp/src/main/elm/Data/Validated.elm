@@ -1,5 +1,6 @@
 module Data.Validated exposing
     ( Validated(..)
+    , isInvalid
     , map
     , map2
     , map3
@@ -12,6 +13,19 @@ type Validated a
     = Valid a
     | Invalid (List String) a
     | Unknown a
+
+
+isInvalid : Validated a -> Bool
+isInvalid v =
+    case v of
+        Valid _ ->
+            False
+
+        Invalid _ _ ->
+            True
+
+        Unknown _ ->
+            False
 
 
 value : Validated a -> a

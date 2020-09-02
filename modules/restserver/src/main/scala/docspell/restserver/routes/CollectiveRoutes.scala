@@ -10,6 +10,7 @@ import docspell.restapi.model._
 import docspell.restserver.conv.Conversions
 import docspell.restserver.http4s._
 
+import com.github.eikek.calev.CalEvent
 import org.http4s.HttpRoutes
 import org.http4s.circe.CirceEntityDecoder._
 import org.http4s.circe.CirceEntityEncoder._
@@ -37,7 +38,18 @@ object CollectiveRoutes {
       case req @ POST -> Root / "settings" =>
         for {
           settings <- req.as[CollectiveSettings]
-          sett = OCollective.Settings(settings.language, settings.integrationEnabled)
+          sett = OCollective.Settings(
+            settings.language,
+            settings.integrationEnabled,
+            Some(
+              OCollective.Classifier(
+                settings.classifier.enabled,
+                settings.classifier.schedule,
+                settings.classifier.itemCount,
+                settings.classifier.category
+              )
+            )
+          )
           res <-
             backend.collective
               .updateSettings(user.account.collective, sett)
@@ -46,8 +58,21 @@ object CollectiveRoutes {
 
       case GET -> Root / "settings" =>
         for {
-          collDb <- backend.collective.find(user.account.collective)
-          sett = collDb.map(c => CollectiveSettings(c.language, c.integrationEnabled))
+          settDb <- backend.collective.findSettings(user.account.collective)
+          sett = settDb.map(c =>
+            CollectiveSettings(
+              c.language,
+              c.integrationEnabled,
+              ClassifierSetting(
+                c.classifier.map(_.enabled).getOrElse(false),
+                c.classifier.flatMap(_.category),
+                c.classifier.map(_.itemCount).getOrElse(0),
+                c.classifier
+                  .map(_.schedule)
+                  .getOrElse(CalEvent.unsafe("*-1/3-01 01:00:00"))
+              )
+            )
+          )
           resp <- sett.toResponse()
         } yield resp
 
@@ -61,6 +86,12 @@ object CollectiveRoutes {
               .compile
               .toList
           resp <- Ok(ContactList(res.map(Conversions.mkContact)))
+        } yield resp
+
+      case POST -> Root / "classifier" / "startonce" =>
+        for {
+          _    <- backend.collective.startLearnClassifier(user.account.collective)
+          resp <- Ok(BasicResult(true, "Task submitted"))
         } yield resp
 
       case GET -> Root =>

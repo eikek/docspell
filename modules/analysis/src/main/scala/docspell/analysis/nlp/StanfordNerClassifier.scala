@@ -25,7 +25,7 @@ object StanfordNerClassifier {
   def nerAnnotate[F[_]: Applicative](
       cacheKey: String,
       cache: PipelineCache[F]
-  )(settings: StanfordSettings, text: String): F[Vector[NerLabel]] =
+  )(settings: StanfordNerSettings, text: String): F[Vector[NerLabel]] =
     cache
       .obtain(cacheKey, settings)
       .map(crf => runClassifier(crf, text))

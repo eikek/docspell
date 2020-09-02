@@ -14,6 +14,7 @@ import docspell.ftssolr.SolrFtsClient
 import docspell.joex.analysis.RegexNerFile
 import docspell.joex.fts.{MigrationTask, ReIndexTask}
 import docspell.joex.hk._
+import docspell.joex.learn.LearnClassifierTask
 import docspell.joex.notify._
 import docspell.joex.pdfconv.ConvertAllPdfTask
 import docspell.joex.pdfconv.PdfConvTask
@@ -157,6 +158,13 @@ object JoexAppImpl {
             ConvertAllPdfArgs.taskName,
             ConvertAllPdfTask[F](queue, joex),
             ConvertAllPdfTask.onCancel[F]
+          )
+        )
+        .withTask(
+          JobTask.json(
+            LearnClassifierArgs.taskName,
+            LearnClassifierTask[F](cfg.textAnalysis, blocker, analyser),
+            LearnClassifierTask.onCancel[F]
           )
         )
         .resource
