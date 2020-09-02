@@ -59,6 +59,7 @@ lazy val noPublish = Seq(
 val elmSettings = Seq(
   elmCompileMode := ElmCompileMode.Debug,
   Compile / resourceGenerators += Def.task {
+    openapiCodegen.value
     compileElm(
       streams.value.log,
       (Compile / baseDirectory).value,
@@ -565,6 +566,18 @@ val root = project
 
 // --- Helpers
 
+def copyWithGZ(src: File, target: File): Seq[File] = {
+  val gzipFilter = "*.html" || "*.css" || "*.js"
+  IO.copy(Seq(src -> target))
+  if (gzipFilter.accept(src)) {
+    val gz = file(target.toString + ".gz")
+    IO.gzip(src, gz)
+    Seq(target, gz)
+  } else {
+    Seq(target)
+  }
+}
+
 def copyWebjarResources(
     src: Seq[File],
     base: File,
@@ -577,18 +590,16 @@ def copyWebjarResources(
   src.flatMap { dir =>
     if (dir.isDirectory) {
       val files = (dir ** "*").filter(_.isFile).get.pair(Path.relativeTo(dir))
-      files.map {
+      files.flatMap {
         case (f, name) =>
           val target = targetDir / name
           IO.createDirectories(Seq(target.getParentFile))
-          IO.copy(Seq(f -> target))
-          target
+          copyWithGZ(f, target)
       }
     } else {
       val target = targetDir / dir.name
       IO.createDirectories(Seq(target.getParentFile))
-      IO.copy(Seq(dir -> target))
-      Seq(target)
+      copyWithGZ(dir, target)
     }
   }
 }
@@ -611,7 +622,9 @@ def compileElm(
   )
   val out = proc.!!
   logger.info(out)
-  Seq(target)
+  val targetGZ = file(target.toString + ".gz")
+  IO.gzip(target, targetGZ)
+  Seq(target, targetGZ)
 }
 
 def createWebjarSource(wj: Seq[ModuleID], out: File): Seq[File] = {
