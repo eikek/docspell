@@ -98,8 +98,8 @@
                             </li>
                             
                             <li>
-                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;feed&#x2F;#scanners">
-                                    Scanners
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;feed&#x2F;#watch-directories">
+                                    Watch Directories
                                 </a>
                                 <ul>
                                     
@@ -176,7 +176,7 @@ login and go to the upload page to submit files.</p>
 <p>This requires to login at the webapp. Since this is complicated from
 other applications, you can create custom hard-to-guess endpoints to
 use with the following options.</p>
-<h1 id="scanners">Scanners<a class="zola-anchor" href="#scanners" aria-label="Anchor link for: scanners">🔗</a></h1>
+<h1 id="watch-directories">Watch Directories<a class="zola-anchor" href="#watch-directories" aria-label="Anchor link for: watch-directories">🔗</a></h1>
 <p>If you have a (document) scanner (or think about getting one), it can
 usually be configured to place scanned documents as image or PDF files
 on your NAS. On your NAS, run the provided <code>consumedir.sh</code> script as a
@@ -231,9 +231,10 @@ recurring job, that looks into this folders and imports the mails.</p>
 can be setup that simply uploads incoming mails to Docspell (using
 curl), instead of storing the mails on disk. This requires some
 knowledge to setup such a server and it makes sense to own a domain.
-The SMTP server would accept mails to <em>[your-username]@[your-domain]</em>
-and resolves the <em>[your-username]</em> part in Docspell to upload the
-files to the correct account.</p>
+Or it can be used internally to connect devices like scanners that
+offer a scan-to-mail option. The SMTP server would accept mails to
+<em>[your-username]@[your-domain]</em> and resolves the <em>[your-username]</em>
+part in Docspell to upload the files to the correct account.</p>
 <p>There is a docker container prepared to get started. Click below to
 read more.</p>
 <div class="is-clearfix">

@@ -6939,11 +6939,11 @@ var $author$project$Main$mainHero = function (model) {
 								$elm$html$Html$p,
 								_List_fromArray(
 									[
-										$elm$html$Html$Attributes$class('content is-medium')
+										$elm$html$Html$Attributes$class('content is-medium narrow-center')
 									]),
 								_List_fromArray(
 									[
-										$elm$html$Html$text('Docspell can assist in organizing your piles of '),
+										$elm$html$Html$text('Docspell assists in organizing your piles of '),
 										$elm$html$Html$text('digital documents, resulting from scanners, e-mails '),
 										$elm$html$Html$text('and other sources with miminal effort.')
 									])),
