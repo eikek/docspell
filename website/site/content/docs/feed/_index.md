@@ -32,7 +32,7 @@ This requires to login at the webapp. Since this is complicated from
 other applications, you can create custom hard-to-guess endpoints to
 use with the following options.
 
-# Scanners
+# Watch Directories
 
 If you have a (document) scanner (or think about getting one), it can
 usually be configured to place scanned documents as image or PDF files
@@ -90,9 +90,10 @@ This is a little more involved, but can be quite nice. A SMTP server
 can be setup that simply uploads incoming mails to Docspell (using
 curl), instead of storing the mails on disk. This requires some
 knowledge to setup such a server and it makes sense to own a domain.
-The SMTP server would accept mails to *[your-username]@[your-domain]*
-and resolves the *[your-username]* part in Docspell to upload the
-files to the correct account.
+Or it can be used internally to connect devices like scanners that
+offer a scan-to-mail option. The SMTP server would accept mails to
+*[your-username]@[your-domain]* and resolves the *[your-username]*
+part in Docspell to upload the files to the correct account.
 
 There is a docker container prepared to get started. Click below to
 read more.

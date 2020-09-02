@@ -315,8 +315,8 @@ mainHero model =
                 , h2 [ class "subtitle is-3" ]
                     [ text "Simple document organizer"
                     ]
-                , p [ class "content is-medium" ]
-                    [ text "Docspell can assist in organizing your piles of "
+                , p [ class "content is-medium narrow-center" ]
+                    [ text "Docspell assists in organizing your piles of "
                     , text "digital documents, resulting from scanners, e-mails "
                     , text "and other sources with miminal effort."
                     ]
