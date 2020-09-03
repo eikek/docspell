@@ -33,7 +33,7 @@ object Dependencies {
   val Slf4jVersion            = "1.7.30"
   val StanfordNlpVersion      = "4.0.0"
   val TikaVersion             = "1.24.1"
-  val YamuscaVersion          = "0.6.2"
+  val YamuscaVersion          = "0.7.0"
   val SwaggerUIVersion        = "3.32.5"
   val SemanticUIVersion       = "2.4.1"
   val TwelveMonkeysVersion    = "3.6"
