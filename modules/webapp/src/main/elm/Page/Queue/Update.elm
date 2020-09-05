@@ -86,6 +86,9 @@ update flags msg model =
         CancelResp (Err _) ->
             ( model, Cmd.none )
 
+        ChangePrio id prio ->
+            ( model, Api.setJobPrio flags id prio CancelResp )
+
 
 getNewTime : Cmd Msg
 getNewTime =

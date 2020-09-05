@@ -143,6 +143,11 @@ dimmerSettings =
 
 renderInfoCard : Model -> JobDetail -> Html Msg
 renderInfoCard model job =
+    let
+        prio =
+            Data.Priority.fromString job.priority
+                |> Maybe.withDefault Data.Priority.Low
+    in
     div
         [ classList
             [ ( "ui fluid card", True )
@@ -195,22 +200,45 @@ renderInfoCard model job =
                   else
                     span [ class "invisible" ] []
                 , div [ class ("ui basic label " ++ jobStateColor job) ]
-                    [ text "Prio"
-                    , div [ class "detail" ]
-                        [ code []
-                            [ Data.Priority.fromString job.priority
-                                |> Maybe.map Data.Priority.toName
-                                |> Maybe.withDefault job.priority
-                                |> text
-                            ]
-                        ]
-                    ]
-                , div [ class ("ui basic label " ++ jobStateColor job) ]
                     [ text "Retries"
                     , div [ class "detail" ]
                         [ job.retries |> String.fromInt |> text
                         ]
                     ]
+                , case job.state of
+                    "waiting" ->
+                        a
+                            [ class ("ui basic label " ++ jobStateColor job)
+                            , onClick (ChangePrio job.id (Data.Priority.next prio))
+                            , href "#"
+                            , title "Change priority of this job"
+                            ]
+                            [ i [ class "sort numeric up icon" ] []
+                            , text "Prio"
+                            , div [ class "detail" ]
+                                [ code []
+                                    [ Data.Priority.fromString job.priority
+                                        |> Maybe.map Data.Priority.toName
+                                        |> Maybe.withDefault job.priority
+                                        |> text
+                                    ]
+                                ]
+                            ]
+
+                    _ ->
+                        div
+                            [ class ("ui basic label " ++ jobStateColor job)
+                            ]
+                            [ text "Prio"
+                            , div [ class "detail" ]
+                                [ code []
+                                    [ Data.Priority.fromString job.priority
+                                        |> Maybe.map Data.Priority.toName
+                                        |> Maybe.withDefault job.priority
+                                        |> text
+                                    ]
+                                ]
+                            ]
                 ]
             , jobStateLabel job
             , div [ class "ui basic label" ]

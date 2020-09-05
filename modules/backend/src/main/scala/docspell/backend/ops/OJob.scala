@@ -5,8 +5,10 @@ import cats.effect._
 import cats.implicits._
 
 import docspell.backend.ops.OJob.{CollectiveQueueState, JobCancelResult}
+import docspell.common.Priority
 import docspell.common.{Ident, JobState}
 import docspell.store.Store
+import docspell.store.UpdateResult
 import docspell.store.queries.QJob
 import docspell.store.records.{RJob, RJobLog}
 
@@ -15,6 +17,8 @@ trait OJob[F[_]] {
   def queueState(collective: Ident, maxResults: Int): F[CollectiveQueueState]
 
   def cancelJob(id: Ident, collective: Ident): F[JobCancelResult]
+
+  def setPriority(id: Ident, collective: Ident, prio: Priority): F[UpdateResult]
 }
 
 object OJob {
@@ -55,6 +59,9 @@ object OJob {
           .compile
           .toVector
           .map(CollectiveQueueState)
+
+      def setPriority(id: Ident, collective: Ident, prio: Priority): F[UpdateResult] =
+        UpdateResult.fromUpdate(store.transact(RJob.setPriority(id, collective, prio)))
 
       def cancelJob(id: Ident, collective: Ident): F[JobCancelResult] = {
         def remove(job: RJob): F[JobCancelResult] =

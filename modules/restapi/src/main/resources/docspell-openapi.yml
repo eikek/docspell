@@ -2167,6 +2167,30 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BasicResult"
+  /sec/queue/{id}/priority:
+    post:
+      tags: [ Job Queue ]
+      summary: Change the priority of a waiting job.
+      description: |
+        A waiting job can change its priority. If the job is not in
+        state waiting, this operation fails.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/JobPriority"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
   /sec/email/settings/smtp:
     get:
       tags: [ E-Mail ]
@@ -2678,6 +2702,18 @@ paths:
 
 components:
   schemas:
+    JobPriority:
+      description: |
+        Transfer the priority of a job.
+      required:
+        - priority
+      properties:
+        priority:
+          type: string
+          format: priority
+          enum:
+            - high
+            - low
     IdList:
       description:
         A list of identifiers.
@@ -3512,6 +3548,9 @@ components:
         priority:
           type: string
           format: priority
+          enum:
+            - high
+            - low
         state:
           type: string
           format: jobstate
@@ -3744,6 +3783,9 @@ components:
         priority:
           type: string
           format: priority
+          enum:
+            - high
+            - low
         folder:
           type: string
           format: ident

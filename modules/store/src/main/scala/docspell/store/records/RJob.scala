@@ -231,6 +231,13 @@ object RJob {
       )
     ).update.run
 
+  def setPriority(jobId: Ident, jobGroup: Ident, prio: Priority): ConnectionIO[Int] =
+    updateRow(
+      table,
+      and(id.is(jobId), group.is(jobGroup), state.is(JobState.waiting)),
+      priority.setTo(prio)
+    ).update.run
+
   def getRetries(jobId: Ident): ConnectionIO[Option[Int]] =
     selectSimple(List(retries), table, id.is(jobId)).query[Int].option
 

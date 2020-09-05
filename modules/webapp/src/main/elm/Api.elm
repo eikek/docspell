@@ -86,6 +86,7 @@ module Api exposing
     , setItemDueDate
     , setItemName
     , setItemNotes
+    , setJobPrio
     , setTags
     , setUnconfirmed
     , startClassifier
@@ -129,6 +130,7 @@ import Api.Model.ItemLightList exposing (ItemLightList)
 import Api.Model.ItemProposals exposing (ItemProposals)
 import Api.Model.ItemSearch exposing (ItemSearch)
 import Api.Model.ItemUploadMeta exposing (ItemUploadMeta)
+import Api.Model.JobPriority exposing (JobPriority)
 import Api.Model.JobQueueState exposing (JobQueueState)
 import Api.Model.MoveAttachment exposing (MoveAttachment)
 import Api.Model.NewFolder exposing (NewFolder)
@@ -160,6 +162,7 @@ import Api.Model.UserPass exposing (UserPass)
 import Api.Model.VersionInfo exposing (VersionInfo)
 import Data.ContactType exposing (ContactType)
 import Data.Flags exposing (Flags)
+import Data.Priority exposing (Priority)
 import File exposing (File)
 import Http
 import Json.Encode as JsonEncode
@@ -1195,6 +1198,21 @@ deleteUser flags user receive =
 
 
 --- Job Queue
+
+
+setJobPrio : Flags -> String -> Priority -> (Result Http.Error BasicResult -> msg) -> Cmd msg
+setJobPrio flags jobid prio receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/queue/" ++ jobid ++ "/priority"
+        , account = getAccount flags
+        , body =
+            Data.Priority.toName prio
+                |> String.toLower
+                |> JobPriority
+                |> Api.Model.JobPriority.encode
+                |> Http.jsonBody
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
 
 
 cancelJob : Flags -> String -> (Result Http.Error BasicResult -> msg) -> Cmd msg

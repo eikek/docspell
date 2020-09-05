@@ -2,6 +2,7 @@ module Data.Priority exposing
     ( Priority(..)
     , all
     , fromString
+    , next
     , toName
     )
 
@@ -36,6 +37,16 @@ toName lang =
 
         High ->
             "High"
+
+
+next : Priority -> Priority
+next prio =
+    case prio of
+        High ->
+            Low
+
+        Low ->
+            High
 
 
 all : List Priority

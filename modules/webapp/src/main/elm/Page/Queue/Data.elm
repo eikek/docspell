@@ -10,6 +10,7 @@ import Api.Model.BasicResult exposing (BasicResult)
 import Api.Model.JobDetail exposing (JobDetail)
 import Api.Model.JobQueueState exposing (JobQueueState)
 import Comp.YesNoDimmer
+import Data.Priority exposing (Priority)
 import Http
 import Time
 import Util.Duration
@@ -53,6 +54,7 @@ type Msg
     | RequestCancelJob JobDetail
     | DimmerMsg JobDetail Comp.YesNoDimmer.Msg
     | CancelResp (Result Http.Error BasicResult)
+    | ChangePrio String Priority
 
 
 getRunningTime : Model -> JobDetail -> Maybe String
