@@ -15,6 +15,7 @@ let
     base-url = "http://localhost:7880";
     max-item-page-size = 200;
     max-note-length = 180;
+    show-classification-settings = true;
     bind = {
       address = "localhost";
       port = 7880;
@@ -133,6 +134,17 @@ in {
           searching. Item notes may be very long, when returning them with
           all the results from a search, they add quite some data to return.
           In order to keep this low, a limit can be defined here.
+        '';
+      };
+
+      show-classification-settings = mkOption {
+        type = types.bool;
+        default = defaults.show-classification-settings;
+        description = ''
+          This defines whether the classification form in the collective
+          settings is displayed or not. If all joex instances have document
+          classification disabled, it makes sense to hide its settings from
+          users.
         '';
       };
 

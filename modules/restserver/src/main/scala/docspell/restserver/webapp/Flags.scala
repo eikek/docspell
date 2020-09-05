@@ -17,7 +17,8 @@ case class Flags(
     integrationEnabled: Boolean,
     fullTextSearchEnabled: Boolean,
     maxPageSize: Int,
-    maxNoteLength: Int
+    maxNoteLength: Int,
+    showClassificationSettings: Boolean
 )
 
 object Flags {
@@ -30,7 +31,8 @@ object Flags {
       cfg.integrationEndpoint.enabled,
       cfg.fullTextSearch.enabled,
       cfg.maxItemPageSize,
-      cfg.maxNoteLength
+      cfg.maxNoteLength,
+      cfg.showClassificationSettings
     )
 
   implicit val jsonEncoder: Encoder[Flags] =

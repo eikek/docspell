@@ -277,7 +277,7 @@ view flags settings model =
         , h3
             [ classList
                 [ ( "ui dividing header", True )
-                , ( "invisible hidden", False )
+                , ( "invisible hidden", not flags.config.showClassificationSettings )
                 ]
             ]
             [ text "Document Classifier"
@@ -285,7 +285,7 @@ view flags settings model =
         , div
             [ classList
                 [ ( "field", True )
-                , ( "invisible hidden", False )
+                , ( "invisible hidden", not flags.config.showClassificationSettings )
                 ]
             ]
             [ Html.map ClassifierSettingMsg

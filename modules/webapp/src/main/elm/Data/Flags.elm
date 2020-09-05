@@ -18,6 +18,7 @@ type alias Config =
     , fullTextSearchEnabled : Bool
     , maxPageSize : Int
     , maxNoteLength : Int
+    , showClassificationSettings : Bool
     }
 
 

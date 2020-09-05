@@ -14,6 +14,7 @@ case class Config(
     bind: Config.Bind,
     backend: BackendConfig,
     auth: Login.Config,
+    showClassificationSettings: Boolean,
     integrationEndpoint: Config.IntegrationEndpoint,
     maxItemPageSize: Int,
     maxNoteLength: Int,
