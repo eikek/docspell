@@ -66,7 +66,7 @@ final class StanfordTextClassifier[F[_]: Sync: ContextShift](
     } yield res
 
   def splitData(logger: Logger[F], in: RawData): F[TrainData] = {
-    val f = if (cfg.classifierConfigs.size > 1) 0.15 else 0.0
+    val f     = if (cfg.classifierConfigs.size > 1) 0.15 else 0.0
     val nTest = (in.count * f).toLong
 
     val td =
