@@ -1,5 +1,53 @@
 # Changelog
 
+## v0.11.0
+
+*Sep 07, 2020*
+
+This release didn't change much on the surface, but contains a lot of
+improvements for processing files.
+
+- Improves the recognition of correspondents and people in the
+  documents. Until now, the analyser didn't know about the existing
+  organizations/people of a collective. Now this data is given to the
+  analyser as input which results in a higher accuracy when finding
+  matches. This may result in high memory usage depending on the size
+  of the collective data and therefore and can be disabled in the
+  config file.
+- Adds text classification. Docspell can now learn from your existing
+  tagged items. Given a tag category, a statistical model is created
+  from your existing documents and used to predict a tag (of that
+  category) for new documents. Creating this model may need a lot of
+  memory and therefore text classification can be disabled globally
+  via the config file. Additionally each collective can enable/disable
+  it. Learning is done periodically via a user-task that can be
+  configured in the collective settings.
+- Adds the language french, supported for text extraction and text
+  analysis. 
+- Fixes some build failures that produced artifcats with source files.
+- Change the job priority of any waiting job from the *Processing*
+  page.
+- Serving static asset files gzipped, to reduce bandwidth
+
+### Configuration Changes
+
+- New settings in `joex.analysis.regex-ner`, `….classification` and
+  `….working-dir` for the classifier and NER feature.
+- New setting in `server.show-classification-settings` to hide/show
+  the classifier settings on the *Collective Settings* page. If
+  classification is disabled globally (i.e. from all joex instances),
+  the feature can be hidden from the users.
+
+### REST Api Changes
+
+- `/sec/collective/classifier/startonce` to start the learning task
+  separately from the schedule.
+- `/sec/queue/{id}/priority` for setting a new priority of a job (only
+  for jobs in waiting state)
+- The `CollectiveSettings` object is amended with a new
+  `ClassifierSetting` object.
+
+
 ## v0.10.0
 
 *Aug 15, 2020*
