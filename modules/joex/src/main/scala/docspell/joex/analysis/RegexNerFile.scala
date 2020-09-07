@@ -157,8 +157,9 @@ object RegexNerFile {
           .reduce(_ ++ fr"UNION ALL" ++ _)
 
       selectSimple(fr"MAX(t)", fr"(" ++ sql ++ fr") as x", Fragment.empty)
-        .query[Timestamp]
+        .query[Option[Timestamp]]
         .option
+        .map(_.flatten)
     }
   }
 }

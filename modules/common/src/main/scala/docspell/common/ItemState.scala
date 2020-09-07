@@ -23,6 +23,11 @@ object ItemState {
   case object Created    extends ItemState
   case object Confirmed  extends ItemState
 
+  def premature: ItemState  = Premature
+  def processing: ItemState = Processing
+  def created: ItemState    = Created
+  def confirmed: ItemState  = Confirmed
+
   def fromString(str: String): Either[String, ItemState] =
     str.toLowerCase match {
       case "premature"  => Right(Premature)

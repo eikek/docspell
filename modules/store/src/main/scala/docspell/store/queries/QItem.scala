@@ -621,8 +621,14 @@ object QItem {
       collective: Ident,
       chunkSize: Int
   ): Stream[ConnectionIO, Ident] = {
-    val cols = Seq(RItem.Columns.id)
-    (selectSimple(cols, RItem.table, RItem.Columns.cid.is(collective)) ++
+    val cols   = Seq(RItem.Columns.id)
+    val iColl  = RItem.Columns.cid
+    val iState = RItem.Columns.state
+    (selectSimple(
+      cols,
+      RItem.table,
+      and(iColl.is(collective), iState.is(ItemState.confirmed))
+    ) ++
       orderBy(RItem.Columns.created.desc))
       .query[Ident]
       .streamWithChunkSize(chunkSize)

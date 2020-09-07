@@ -98,11 +98,14 @@ object TextAnalysis {
       ctx: Context[F, Args],
       cfg: Config.TextAnalysis
   ): OptionT[F, Ident] =
-    if (cfg.classification.enabled)
-      OptionT(ctx.store.transact(RClassifierSetting.findById(ctx.args.meta.collective)))
-        .filter(_.enabled)
-        .mapFilter(_.fileId)
-    else
-      OptionT.none
+    (if (cfg.classification.enabled)
+       OptionT(ctx.store.transact(RClassifierSetting.findById(ctx.args.meta.collective)))
+         .filter(_.enabled)
+         .mapFilter(_.fileId)
+     else
+       OptionT.none[F, Ident]).orElse(
+      OptionT.liftF(ctx.logger.info("Classification is disabled.")) *> OptionT
+        .none[F, Ident]
+    )
 
 }
