@@ -75,7 +75,7 @@ object ZolaPlugin extends AutoPlugin {
         Seq("--base-url", url)
       case None =>
         runYarnInstall("yarn", inDir.getParentFile, logger)
-        runElmCompile("elm", inDir.getParentFile, outDir, logger)
+        runElmCompile("elm", inDir.getParentFile, inDir, logger)
         Seq.empty
     }
     Cmd.run(
@@ -91,13 +91,13 @@ object ZolaPlugin extends AutoPlugin {
   def runYarnInstall(yarnCmd: String, inDir: File, logger: Logger): Unit =
     Cmd.run(Seq(yarnCmd, "install"), inDir, logger)
 
-  def runElmCompile(elmCmd: String, inDir: File, zolaOut: File, logger: Logger): Unit =
+  def runElmCompile(elmCmd: String, inDir: File, zolaRoot: File, logger: Logger): Unit =
     Cmd.run(
       Seq(
         elmCmd,
         "make",
         "--output",
-        (zolaOut / "static" / "js" / "bundle.js").absolutePath.toString,
+        (zolaRoot / "static" / "js" / "bundle.js").absolutePath.toString,
         "--optimize",
         (inDir / "elm" / "Main.elm").toString
       ),
