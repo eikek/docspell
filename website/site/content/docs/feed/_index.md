@@ -50,8 +50,10 @@ converts the files into PDF adding a text layer of image-only files.
 
 # Android
 
-There is an android client provided that lets you upload files from
-your android devices. The idea is to use a separate app, like
+There is an [android
+client](https://github.com/docspell/android-client/releases/latest)
+provided that lets you upload files from your android devices. The
+idea is to use a separate app, like
 [OpenNoteScanner](https://github.com/ctodobom/OpenNoteScanner), to
 "scan" documents using your phone/tablet and then upload it to
 Docspell. For the upload part, you can use the provided app. It hooks
