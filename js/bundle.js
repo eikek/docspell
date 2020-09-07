@@ -5326,7 +5326,7 @@ var $author$project$Feature$features = _List_fromArray(
 	[
 		{g: '\nEach account (a *collective*) can have multiple users that share the\nsame files. For example, everyone in your family can work with your\nfiles while using their own account with their own settings.\n', j: 'Multi-User per Account', k: 'img/user-feature.png'},
 		{g: '\nText is extracted from all files. For scanned documents/images, OCR is used by utilising tesseract. The text is analysed and is available for full-text search.\n', j: 'Text Extraction with OCR', k: 'img/ocr-feature.png'},
-		{g: '\nThe extracted text is analyzed and is used to find properties that can be annotated to your documents automatically.\n', j: 'Text Analysis', k: 'img/analyze-feature.png'},
+		{g: '\nThe extracted text is analyzed using ML algorithms to find properties that can be annotated to your documents automatically.\n', j: 'Text Analysis', k: 'img/analyze-feature.png'},
 		{g: '\nDocspell can read many file types. ZIP and EML (e-mail file format) files are extracted and their contents imported.\n', j: 'Support for many files', k: 'img/filetype-feature.svg'},
 		{g: '\nAll files are converted to PDF. Don\'t worry about the originals. Original files are stored, too and can be downloaded untouched. When creating PDFs from image data (often returned from scanners), the resulting PDF contains the extracted text and is searchable.\n', j: 'Conversion to PDF', k: 'img/convertpdf-feature.svg'},
 		{g: '\nThe extracted text of all files and some properties, like names and notes, are available for full-text search. Full-text search can also be used to further constrain the results of the search-menu where you can search by tags, correspondent, etc.\n', j: 'Full-Text Search', k: 'img/fts-feature.png'},

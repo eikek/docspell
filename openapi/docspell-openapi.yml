@@ -2,7 +2,7 @@ openapi: 3.0.0
 
 info:
   title: Docspell
-  version: 0.10.0
+  version: 0.11.0
   description: |
     This is the remote API to Docspell, a personal document organizer.
 
@@ -1047,6 +1047,28 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ContactList"
+
+  /sec/collective/classifier/startonce:
+    post:
+      tags: [ Collective ]
+      summary: Starts the learn-classifier task
+      description: |
+        If the collective has classification enabled, this will submit
+        the task for learning a classifier from existing data. This
+        task is usally run periodically as determined by the
+        collective settings.
+
+        The request is empty, settings are used from the collective.
+      security:
+        - authTokenHeader: []
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
   /sec/user:
     get:
       tags: [ Collective ]
@@ -2145,6 +2167,30 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BasicResult"
+  /sec/queue/{id}/priority:
+    post:
+      tags: [ Job Queue ]
+      summary: Change the priority of a waiting job.
+      description: |
+        A waiting job can change its priority. If the job is not in
+        state waiting, this operation fails.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/JobPriority"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
   /sec/email/settings/smtp:
     get:
       tags: [ E-Mail ]
@@ -2656,6 +2702,18 @@ paths:
 
 components:
   schemas:
+    JobPriority:
+      description: |
+        Transfer the priority of a job.
+      required:
+        - priority
+      properties:
+        priority:
+          type: string
+          format: priority
+          enum:
+            - high
+            - low
     IdList:
       description:
         A list of identifiers.
@@ -3490,6 +3548,9 @@ components:
         priority:
           type: string
           format: priority
+          enum:
+            - high
+            - low
         state:
           type: string
           format: jobstate
@@ -3643,12 +3704,14 @@ components:
           description: DateTime
           type: integer
           format: date-time
+
     CollectiveSettings:
       description: |
         Settings for a collective.
       required:
         - language
         - integrationEnabled
+        - classifier
       properties:
         language:
           type: string
@@ -3658,6 +3721,31 @@ components:
           description: |
             Whether the collective has the integration endpoint
             enabled.
+        classifier:
+          $ref: "#/components/schemas/ClassifierSetting"
+
+    ClassifierSetting:
+      description: |
+        Settings for learning a document classifier.
+      required:
+        - enabled
+        - schedule
+        - itemCount
+      properties:
+        enabled:
+          type: boolean
+        category:
+          type: string
+        itemCount:
+          type: integer
+          format: int32
+          description: |
+            The max. number of items to learn from. The newest items
+            are considered.
+        schedule:
+          type: string
+          format: calevent
+
     SourceList:
       description: |
         A list of sources.
@@ -3695,6 +3783,9 @@ components:
         priority:
           type: string
           format: priority
+          enum:
+            - high
+            - low
         folder:
           type: string
           format: ident

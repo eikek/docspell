@@ -689,7 +689,7 @@
   <script>
     // Script section to load models into a JS Var
     var defs = {}
-            defs.Address = {
+            defs["Address"] = {
   "required" : [ "city", "country", "street", "zip" ],
   "properties" : {
     "street" : {
@@ -707,7 +707,7 @@
   },
   "description" : "Postal address information.\n"
 };
-            defs.Attachment = {
+            defs["Attachment"] = {
   "required" : [ "contentType", "converted", "id", "size" ],
   "properties" : {
     "id" : {
@@ -731,7 +731,7 @@
   },
   "description" : "Information about an attachment to an item.\n"
 };
-            defs.AttachmentMeta = {
+            defs["AttachmentMeta"] = {
   "required" : [ "content", "labels", "proposals" ],
   "properties" : {
     "content" : {
@@ -749,7 +749,7 @@
   },
   "description" : "Extracted meta data of an attachment.\n"
 };
-            defs.AttachmentSource = {
+            defs["AttachmentSource"] = {
   "required" : [ "contentType", "id", "size" ],
   "properties" : {
     "id" : {
@@ -771,7 +771,7 @@
   },
   "description" : "The source or original file of an attachment.\n"
 };
-            defs.AuthResult = {
+            defs["AuthResult"] = {
   "required" : [ "collective", "message", "success", "user", "validMs" ],
   "properties" : {
     "collective" : {
@@ -798,7 +798,7 @@
   },
   "description" : "The response to a authentication request.\n"
 };
-            defs.BasicItem = {
+            defs["BasicItem"] = {
   "required" : [ "created", "direction", "id", "name", "state" ],
   "properties" : {
     "id" : {
@@ -827,7 +827,7 @@
   },
   "description" : "Basic properties about an item.\n"
 };
-            defs.BasicResult = {
+            defs["BasicResult"] = {
   "required" : [ "message", "success" ],
   "properties" : {
     "success" : {
@@ -839,7 +839,7 @@
   },
   "description" : "Some basic result of an operation.\n"
 };
-            defs.body = {
+            defs["body"] = {
   "type" : "object",
   "properties" : {
     "meta" : {
@@ -854,7 +854,7 @@
     }
   }
 };
-            defs.body_1 = {
+            defs["body_1"] = {
   "type" : "object",
   "properties" : {
     "meta" : {
@@ -869,7 +869,7 @@
     }
   }
 };
-            defs.body_2 = {
+            defs["body_2"] = {
   "type" : "object",
   "properties" : {
     "meta" : {
@@ -884,7 +884,7 @@
     }
   }
 };
-            defs.body_3 = {
+            defs["body_3"] = {
   "type" : "object",
   "properties" : {
     "meta" : {
@@ -899,7 +899,7 @@
     }
   }
 };
-            defs.body_4 = {
+            defs["body_4"] = {
   "type" : "object",
   "properties" : {
     "meta" : {
@@ -914,7 +914,7 @@
     }
   }
 };
-            defs.CalEventCheck = {
+            defs["CalEventCheck"] = {
   "required" : [ "event" ],
   "properties" : {
     "event" : {
@@ -923,7 +923,7 @@
   },
   "description" : "A calendar event.\n"
 };
-            defs.CalEventCheckResult = {
+            defs["CalEventCheckResult"] = {
   "required" : [ "message", "success" ],
   "properties" : {
     "success" : {
@@ -946,7 +946,7 @@
   },
   "description" : "The result of checking a calendar event string.\n"
 };
-            defs.CheckFileResult = {
+            defs["CheckFileResult"] = {
   "required" : [ "exists", "items" ],
   "properties" : {
     "exists" : {
@@ -961,7 +961,28 @@
   },
   "description" : "Results when searching for file checksums.\n"
 };
-            defs.Collective = {
+            defs["ClassifierSetting"] = {
+  "required" : [ "enabled", "itemCount", "schedule" ],
+  "properties" : {
+    "enabled" : {
+      "type" : "boolean"
+    },
+    "category" : {
+      "type" : "string"
+    },
+    "itemCount" : {
+      "type" : "integer",
+      "description" : "The max. number of items to learn from. The newest items\nare considered.\n",
+      "format" : "int32"
+    },
+    "schedule" : {
+      "type" : "string",
+      "format" : "calevent"
+    }
+  },
+  "description" : "Settings for learning a document classifier.\n"
+};
+            defs["Collective"] = {
   "required" : [ "created", "id", "state" ],
   "properties" : {
     "id" : {
@@ -980,8 +1001,8 @@
   },
   "description" : "Information about a collective.\n"
 };
-            defs.CollectiveSettings = {
-  "required" : [ "integrationEnabled", "language" ],
+            defs["CollectiveSettings"] = {
+  "required" : [ "classifier", "integrationEnabled", "language" ],
   "properties" : {
     "language" : {
       "type" : "string",
@@ -990,11 +1011,14 @@
     "integrationEnabled" : {
       "type" : "boolean",
       "description" : "Whether the collective has the integration endpoint\nenabled.\n"
+    },
+    "classifier" : {
+      "$ref" : "#/components/schemas/ClassifierSetting"
     }
   },
   "description" : "Settings for a collective.\n"
 };
-            defs.Contact = {
+            defs["Contact"] = {
   "required" : [ "id", "kind", "value" ],
   "properties" : {
     "id" : {
@@ -1012,7 +1036,7 @@
   },
   "description" : "Contact information.\n"
 };
-            defs.ContactList = {
+            defs["ContactList"] = {
   "required" : [ "items" ],
   "properties" : {
     "items" : {
@@ -1024,7 +1048,7 @@
   },
   "description" : "A list of contacts.\n"
 };
-            defs.DirectionValue = {
+            defs["DirectionValue"] = {
   "required" : [ "direction" ],
   "properties" : {
     "direction" : {
@@ -1034,7 +1058,7 @@
   },
   "description" : "A direction.\n"
 };
-            defs.EmailSettings = {
+            defs["EmailSettings"] = {
   "required" : [ "from", "ignoreCertificates", "name", "smtpHost", "sslType" ],
   "properties" : {
     "name" : {
@@ -1070,7 +1094,7 @@
   },
   "description" : "SMTP settings for sending mail.\n"
 };
-            defs.EmailSettingsList = {
+            defs["EmailSettingsList"] = {
   "required" : [ "items" ],
   "properties" : {
     "items" : {
@@ -1082,7 +1106,7 @@
   },
   "description" : "A list of user email settings.\n"
 };
-            defs.Equipment = {
+            defs["Equipment"] = {
   "required" : [ "created", "id", "name" ],
   "properties" : {
     "id" : {
@@ -1100,7 +1124,7 @@
   },
   "description" : "Some \"thing\" that occurs in documents.\n"
 };
-            defs.EquipmentList = {
+            defs["EquipmentList"] = {
   "required" : [ "items" ],
   "properties" : {
     "items" : {
@@ -1112,7 +1136,7 @@
   },
   "description" : "A list of equipments.\n"
 };
-            defs.FolderDetail = {
+            defs["FolderDetail"] = {
   "required" : [ "created", "id", "isMember", "memberCount", "members", "name", "owner" ],
   "properties" : {
     "id" : {
@@ -1145,7 +1169,7 @@
   },
   "description" : "Details about a folder.\n"
 };
-            defs.FolderItem = {
+            defs["FolderItem"] = {
   "required" : [ "created", "id", "isMember", "memberCount", "name", "owner" ],
   "properties" : {
     "id" : {
@@ -1172,7 +1196,7 @@
   },
   "description" : "An item in a folder list.\n"
 };
-            defs.FolderList = {
+            defs["FolderList"] = {
   "required" : [ "items" ],
   "properties" : {
     "items" : {
@@ -1184,7 +1208,7 @@
   },
   "description" : "A list of folders with their member counts.\n"
 };
-            defs.FolderMember = {
+            defs["FolderMember"] = {
   "required" : [ "userId" ],
   "properties" : {
     "userId" : {
@@ -1194,7 +1218,7 @@
   },
   "description" : "Information to add or remove a folder member.\n"
 };
-            defs.GenInvite = {
+            defs["GenInvite"] = {
   "required" : [ "password" ],
   "properties" : {
     "password" : {
@@ -1204,7 +1228,7 @@
   },
   "description" : "A request to generate a new invitation key.\n"
 };
-            defs.HighlightEntry = {
+            defs["HighlightEntry"] = {
   "required" : [ "lines", "name" ],
   "properties" : {
     "name" : {
@@ -1219,7 +1243,7 @@
   },
   "description" : "Highlighting information for a single field (maybe attachment\nname or item notes).\n"
 };
-            defs.IdList = {
+            defs["IdList"] = {
   "required" : [ "ids" ],
   "properties" : {
     "ids" : {
@@ -1232,7 +1256,7 @@
   },
   "description" : "A list of identifiers."
 };
-            defs.IdName = {
+            defs["IdName"] = {
   "required" : [ "id", "name" ],
   "properties" : {
     "id" : {
@@ -1245,7 +1269,7 @@
   },
   "description" : "The identifier and a human readable name of some entity.\n"
 };
-            defs.IdResult = {
+            defs["IdResult"] = {
   "required" : [ "id", "message", "success" ],
   "properties" : {
     "success" : {
@@ -1261,7 +1285,7 @@
   },
   "description" : "Some basic result of an operation with an ID as payload. If\nsuccess if `false` the id is not usable.\n"
 };
-            defs.ImapSettings = {
+            defs["ImapSettings"] = {
   "required" : [ "from", "ignoreCertificates", "imapHost", "name", "sslType" ],
   "properties" : {
     "name" : {
@@ -1291,7 +1315,7 @@
   },
   "description" : "IMAP settings for sending mail.\n"
 };
-            defs.ImapSettingsList = {
+            defs["ImapSettingsList"] = {
   "required" : [ "items" ],
   "properties" : {
     "items" : {
@@ -1303,21 +1327,21 @@
   },
   "description" : "A list of user email settings.\n"
 };
-            defs.inline_response_200 = {
+            defs["inline_response_200"] = {
   "oneOf" : [ {
     "$ref" : "#/components/schemas/ReferenceList"
   }, {
     "$ref" : "#/components/schemas/OrganizationList"
   } ]
 };
-            defs.inline_response_200_1 = {
+            defs["inline_response_200_1"] = {
   "oneOf" : [ {
     "$ref" : "#/components/schemas/ReferenceList"
   }, {
     "$ref" : "#/components/schemas/PersonList"
   } ]
 };
-            defs.InviteResult = {
+            defs["InviteResult"] = {
   "required" : [ "message", "success" ],
   "properties" : {
     "success" : {
@@ -1333,7 +1357,7 @@
   },
   "description" : "The result when requesting new invitation keys.\n"
 };
-            defs.ItemDetail = {
+            defs["ItemDetail"] = {
   "required" : [ "archives", "attachments", "created", "direction", "id", "name", "source", "sources", "state", "tags", "updated" ],
   "properties" : {
     "id" : {
@@ -1419,7 +1443,7 @@
   },
   "description" : "Detailed information about an item.\n"
 };
-            defs.ItemFtsSearch = {
+            defs["ItemFtsSearch"] = {
   "required" : [ "limit", "offset", "query" ],
   "properties" : {
     "offset" : {
@@ -1438,7 +1462,7 @@
   },
   "description" : "Query description for a full-text only search.\n"
 };
-            defs.ItemInsights = {
+            defs["ItemInsights"] = {
   "required" : [ "incomingCount", "itemSize", "outgoingCount", "tagCloud" ],
   "properties" : {
     "incomingCount" : {
@@ -1459,7 +1483,7 @@
   },
   "description" : "Information about the items in docspell.\n"
 };
-            defs.ItemLight = {
+            defs["ItemLight"] = {
   "required" : [ "date", "fileCount", "id", "name", "source", "state", "tags" ],
   "properties" : {
     "id" : {
@@ -1527,7 +1551,7 @@
   },
   "description" : "An item with only a few important properties.\n"
 };
-            defs.ItemLightGroup = {
+            defs["ItemLightGroup"] = {
   "required" : [ "items", "name" ],
   "properties" : {
     "name" : {
@@ -1542,7 +1566,7 @@
   },
   "description" : "A group of items.\n"
 };
-            defs.ItemLightList = {
+            defs["ItemLightList"] = {
   "required" : [ "groups" ],
   "properties" : {
     "groups" : {
@@ -1554,7 +1578,7 @@
   },
   "description" : "A list of item details.\n"
 };
-            defs.ItemProposals = {
+            defs["ItemProposals"] = {
   "required" : [ "concEquipment", "concPerson", "corrOrg", "corrPerson", "dueDate", "itemDate" ],
   "properties" : {
     "corrOrg" : {
@@ -1598,7 +1622,7 @@
   },
   "description" : "Metadata that has been suggested to an item.\n"
 };
-            defs.ItemSearch = {
+            defs["ItemSearch"] = {
   "required" : [ "inbox", "limit", "offset", "tagsExclude", "tagsInclude" ],
   "properties" : {
     "tagsInclude" : {
@@ -1695,7 +1719,7 @@
   },
   "description" : "A structure for a search form.\n"
 };
-            defs.ItemUploadMeta = {
+            defs["ItemUploadMeta"] = {
   "required" : [ "multiple" ],
   "properties" : {
     "multiple" : {
@@ -1713,7 +1737,7 @@
   },
   "description" : "Meta information for an item upload. The user can specify some\nstructured information with a binary file.\n\nAdditional metadata is not required. However, if there is some\nspecified, you have to specifiy whether the corresponding\nfiles should become one single item or if an item is created\nfor each file.\n\nA direction can be given, `Incoming` is used if not specified.\n\nA folderId can be given, the item is placed into this folder\nafter creation.\n"
 };
-            defs.JobDetail = {
+            defs["JobDetail"] = {
   "required" : [ "id", "logs", "name", "priority", "progress", "retries", "state", "submitted" ],
   "properties" : {
     "id" : {
@@ -1730,7 +1754,8 @@
     },
     "priority" : {
       "type" : "string",
-      "format" : "priority"
+      "format" : "priority",
+      "enum" : [ "high", "low" ]
     },
     "state" : {
       "type" : "string",
@@ -1767,7 +1792,7 @@
   },
   "description" : "Details about a job.\n"
 };
-            defs.JobLogEvent = {
+            defs["JobLogEvent"] = {
   "required" : [ "level", "message", "time" ],
   "properties" : {
     "time" : {
@@ -1785,7 +1810,18 @@
   },
   "description" : "A log output line.\n"
 };
-            defs.JobQueueState = {
+            defs["JobPriority"] = {
+  "required" : [ "priority" ],
+  "properties" : {
+    "priority" : {
+      "type" : "string",
+      "format" : "priority",
+      "enum" : [ "high", "low" ]
+    }
+  },
+  "description" : "Transfer the priority of a job.\n"
+};
+            defs["JobQueueState"] = {
   "required" : [ "completed", "progress", "queued" ],
   "properties" : {
     "progress" : {
@@ -1809,7 +1845,7 @@
   },
   "description" : "Contains all information about the job queue.\n"
 };
-            defs.Label = {
+            defs["Label"] = {
   "required" : [ "beginPos", "endPos", "label", "labelType" ],
   "properties" : {
     "labelType" : {
@@ -1830,7 +1866,7 @@
   },
   "description" : "Extracted label.\n"
 };
-            defs.MoveAttachment = {
+            defs["MoveAttachment"] = {
   "required" : [ "source", "target" ],
   "properties" : {
     "source" : {
@@ -1844,7 +1880,7 @@
   },
   "description" : "Data to move an attachment to another position.\n"
 };
-            defs.NewFolder = {
+            defs["NewFolder"] = {
   "required" : [ "name" ],
   "properties" : {
     "name" : {
@@ -1853,7 +1889,7 @@
   },
   "description" : "Data required to create a new folder.\n"
 };
-            defs.NotificationSettings = {
+            defs["NotificationSettings"] = {
   "required" : [ "capOverdue", "enabled", "id", "recipients", "remindDays", "schedule", "smtpConnection", "tagsExclude", "tagsInclude" ],
   "properties" : {
     "id" : {
@@ -1902,7 +1938,7 @@
   },
   "description" : "Settings for notifying about due items.\n"
 };
-            defs.NotificationSettingsList = {
+            defs["NotificationSettingsList"] = {
   "required" : [ "items" ],
   "properties" : {
     "items" : {
@@ -1914,9 +1950,9 @@
   },
   "description" : "A list of notification settings.\n"
 };
-            defs.OneOfinline_response_200 = {};
-            defs.OneOfinline_response_200_1 = {};
-            defs.OptionalDate = {
+            defs["OneOfinline_response_200"] = {};
+            defs["OneOfinline_response_200_1"] = {};
+            defs["OptionalDate"] = {
   "properties" : {
     "date" : {
       "type" : "integer",
@@ -1925,7 +1961,7 @@
   },
   "description" : "Structure for sending an optional datetime value.\n"
 };
-            defs.OptionalId = {
+            defs["OptionalId"] = {
   "properties" : {
     "id" : {
       "type" : "string",
@@ -1934,7 +1970,7 @@
   },
   "description" : "Structure for sending optional ids.\n"
 };
-            defs.OptionalText = {
+            defs["OptionalText"] = {
   "properties" : {
     "text" : {
       "type" : "string"
@@ -1942,7 +1978,7 @@
   },
   "description" : "Structure for sending optional text.\n"
 };
-            defs.Organization = {
+            defs["Organization"] = {
   "required" : [ "address", "contacts", "created", "id", "name" ],
   "properties" : {
     "id" : {
@@ -1972,7 +2008,7 @@
   },
   "description" : "An organisation.\n"
 };
-            defs.OrganizationList = {
+            defs["OrganizationList"] = {
   "required" : [ "items" ],
   "properties" : {
     "items" : {
@@ -1984,7 +2020,7 @@
   },
   "description" : "A list of full organization values.\n"
 };
-            defs.PasswordChange = {
+            defs["PasswordChange"] = {
   "required" : [ "currentPassword", "newPassword" ],
   "properties" : {
     "currentPassword" : {
@@ -1998,7 +2034,7 @@
   },
   "description" : "Change the password, by given the old and new one.\n"
 };
-            defs.Person = {
+            defs["Person"] = {
   "required" : [ "address", "concerning", "contacts", "created", "id", "name" ],
   "properties" : {
     "id" : {
@@ -2032,7 +2068,7 @@
   },
   "description" : "Basic information about a person.\n"
 };
-            defs.PersonList = {
+            defs["PersonList"] = {
   "required" : [ "items" ],
   "properties" : {
     "items" : {
@@ -2044,7 +2080,7 @@
   },
   "description" : "A list of persons.\n"
 };
-            defs.ReferenceList = {
+            defs["ReferenceList"] = {
   "required" : [ "items" ],
   "properties" : {
     "items" : {
@@ -2056,7 +2092,7 @@
   },
   "description" : "Listing of items."
 };
-            defs.Registration = {
+            defs["Registration"] = {
   "required" : [ "collectiveName", "login", "password" ],
   "properties" : {
     "collectiveName" : {
@@ -2078,7 +2114,7 @@
   },
   "description" : "Data for registering a new account.\n"
 };
-            defs.ScanMailboxSettings = {
+            defs["ScanMailboxSettings"] = {
   "required" : [ "deleteMail", "enabled", "folders", "id", "imapConnection", "schedule" ],
   "properties" : {
     "id" : {
@@ -2128,7 +2164,7 @@
   },
   "description" : "Settings for the scan mailbox task.\n"
 };
-            defs.ScanMailboxSettingsList = {
+            defs["ScanMailboxSettingsList"] = {
   "required" : [ "items" ],
   "properties" : {
     "items" : {
@@ -2140,7 +2176,7 @@
   },
   "description" : "A list of scan-mailbox tasks.\n"
 };
-            defs.SentMail = {
+            defs["SentMail"] = {
   "required" : [ "body", "connection", "created", "id", "recipients", "sender", "subject" ],
   "properties" : {
     "id" : {
@@ -2174,7 +2210,7 @@
   },
   "description" : "A mail that has been sent previously related to an item.\n"
 };
-            defs.SentMails = {
+            defs["SentMails"] = {
   "required" : [ "items" ],
   "properties" : {
     "items" : {
@@ -2186,7 +2222,7 @@
   },
   "description" : "A list of sent mails.\n"
 };
-            defs.SimpleMail = {
+            defs["SimpleMail"] = {
   "required" : [ "addAllAttachments", "attachmentIds", "body", "recipients", "subject" ],
   "properties" : {
     "recipients" : {
@@ -2214,7 +2250,7 @@
   },
   "description" : "A simple e-mail related to an item.\n\nThe mail may contain the item attachments as mail attachments.\nIf all item attachments should be send, set\n`addAllAttachments` to `true`. Otherwise set it to `false` and\nspecify a list of file-ids that you want to include. This list\nis ignored, if `addAllAttachments` is set to `true`.\n"
 };
-            defs.Source = {
+            defs["Source"] = {
   "required" : [ "abbrev", "counter", "created", "enabled", "id", "priority" ],
   "properties" : {
     "id" : {
@@ -2236,7 +2272,8 @@
     },
     "priority" : {
       "type" : "string",
-      "format" : "priority"
+      "format" : "priority",
+      "enum" : [ "high", "low" ]
     },
     "folder" : {
       "type" : "string",
@@ -2250,7 +2287,7 @@
   },
   "description" : "Data about a Source. A source defines the endpoint where\ndocspell receives files.\n"
 };
-            defs.SourceList = {
+            defs["SourceList"] = {
   "required" : [ "items" ],
   "properties" : {
     "items" : {
@@ -2262,7 +2299,7 @@
   },
   "description" : "A list of sources.\n"
 };
-            defs.StringList = {
+            defs["StringList"] = {
   "required" : [ "items" ],
   "properties" : {
     "items" : {
@@ -2274,7 +2311,7 @@
   },
   "description" : "A simple list of strings.\n"
 };
-            defs.Tag = {
+            defs["Tag"] = {
   "required" : [ "created", "id", "name" ],
   "properties" : {
     "id" : {
@@ -2294,7 +2331,7 @@
   },
   "description" : "A tag used to annotate items. A tag may have a category which\ngroups tags together.\n"
 };
-            defs.TagCloud = {
+            defs["TagCloud"] = {
   "required" : [ "items" ],
   "properties" : {
     "items" : {
@@ -2306,7 +2343,7 @@
   },
   "description" : "A tag \"cloud\"\n"
 };
-            defs.TagCount = {
+            defs["TagCount"] = {
   "required" : [ "count", "tag" ],
   "properties" : {
     "tag" : {
@@ -2319,7 +2356,7 @@
   },
   "description" : "Generic structure for counting something.\n"
 };
-            defs.TagList = {
+            defs["TagList"] = {
   "required" : [ "count", "items" ],
   "properties" : {
     "count" : {
@@ -2335,7 +2372,7 @@
   },
   "description" : "A list of tags.\n"
 };
-            defs.User = {
+            defs["User"] = {
   "required" : [ "created", "id", "login", "loginCount", "state" ],
   "properties" : {
     "id" : {
@@ -2375,7 +2412,7 @@
   },
   "description" : "A user of a collective.\n"
 };
-            defs.UserList = {
+            defs["UserList"] = {
   "required" : [ "items" ],
   "properties" : {
     "items" : {
@@ -2387,7 +2424,7 @@
   },
   "description" : "A list of users.\n"
 };
-            defs.UserPass = {
+            defs["UserPass"] = {
   "required" : [ "account", "password" ],
   "properties" : {
     "account" : {
@@ -2399,7 +2436,7 @@
   },
   "description" : "Account name and password.\n"
 };
-            defs.VersionInfo = {
+            defs["VersionInfo"] = {
   "required" : [ "builtAtMillis", "builtAtString", "gitCommit", "gitVersion", "version" ],
   "properties" : {
     "version" : {
@@ -2479,6 +2516,9 @@
                       <a href="#api-Authentication-secAuthSessionPost">secAuthSessionPost</a>
                     </li>
                   <li class="nav-header" data-group="Collective"><a href="#api-Collective">API Methods - Collective</a></li>
+                    <li data-group="Collective" data-name="secCollectiveClassifierStartoncePost" class="">
+                      <a href="#api-Collective-secCollectiveClassifierStartoncePost">secCollectiveClassifierStartoncePost</a>
+                    </li>
                     <li data-group="Collective" data-name="secCollectiveContactsGet" class="">
                       <a href="#api-Collective-secCollectiveContactsGet">secCollectiveContactsGet</a>
                     </li>
@@ -2706,6 +2746,9 @@
                     <li data-group="JobQueue" data-name="secQueueIdCancelPost" class="">
                       <a href="#api-JobQueue-secQueueIdCancelPost">secQueueIdCancelPost</a>
                     </li>
+                    <li data-group="JobQueue" data-name="secQueueIdPriorityPost" class="">
+                      <a href="#api-JobQueue-secQueueIdPriorityPost">secQueueIdPriorityPost</a>
+                    </li>
                     <li data-group="JobQueue" data-name="secQueueStateGet" class="">
                       <a href="#api-JobQueue-secQueueStateGet">secQueueStateGet</a>
                     </li>
@@ -2847,7 +2890,7 @@
         <div id="header">
           <div id="api-_">
             <h2 id="welcome-to-apidoc">API and SDK Documentation</h2>
-              <div class="app-desc">Version: 0.10.0</div>
+              <div class="app-desc">Version: 0.11.0</div>
             <hr>
             <div>This is the remote API to Docspell, a personal document organizer.</div>
           </div>
@@ -2892,7 +2935,10 @@ If the attachment was not uploaded as part of an archive, a
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Attachment-secAttachmentIdArchiveGet-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X GET -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/attachment/{id}/archive"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/octet-stream"\
+"/api/v1/sec/attachment/{id}/archive"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Attachment-secAttachmentIdArchiveGet-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -3232,7 +3278,9 @@ is returned.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Attachment-secAttachmentIdArchiveHead-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X HEAD -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/attachment/{id}/archive"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X HEAD\
+-H "X-Docspell-Auth: [[apiKey]]"\
+"/api/v1/sec/attachment/{id}/archive"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Attachment-secAttachmentIdArchiveHead-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -3560,7 +3608,10 @@ not deleted, if there are remaining attachments available.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Attachment-secAttachmentIdDelete-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X DELETE -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/attachment/{id}"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X DELETE\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v1/sec/attachment/{id}"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Attachment-secAttachmentIdDelete-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -3895,7 +3946,10 @@ id.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Attachment-secAttachmentIdGet-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X GET -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/attachment/{id}"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/octet-stream"\
+"/api/v1/sec/attachment/{id}"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Attachment-secAttachmentIdGet-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -4232,7 +4286,9 @@ attachment with the given id.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Attachment-secAttachmentIdHead-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X HEAD -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/attachment/{id}"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X HEAD\
+-H "X-Docspell-Auth: [[apiKey]]"\
+"/api/v1/sec/attachment/{id}"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Attachment-secAttachmentIdHead-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -4555,7 +4611,10 @@ extracted from the contents.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Attachment-secAttachmentIdMetaGet-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X GET -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/attachment/{id}/meta"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v1/sec/attachment/{id}/meta"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Attachment-secAttachmentIdMetaGet-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -4891,7 +4950,11 @@ collective of the current user.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Attachment-secAttachmentIdNamePost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/attachment/{id}/name"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v1/sec/attachment/{id}/name"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Attachment-secAttachmentIdNamePost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -5281,7 +5344,10 @@ original file as it was uploaded.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Attachment-secAttachmentIdOriginalGet-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X GET -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/attachment/{id}/original"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/octet-stream"\
+"/api/v1/sec/attachment/{id}/original"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Attachment-secAttachmentIdOriginalGet-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -5621,7 +5687,9 @@ original file as it was uploaded.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Attachment-secAttachmentIdOriginalHead-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X HEAD -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/attachment/{id}/original"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X HEAD\
+-H "X-Docspell-Auth: [[apiKey]]"\
+"/api/v1/sec/attachment/{id}/original"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Attachment-secAttachmentIdOriginalHead-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -5949,7 +6017,9 @@ stable url for the preview.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Attachment-secAttachmentIdViewGet-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X GET -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/attachment/{id}/view"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
+-H "X-Docspell-Auth: [[apiKey]]"\
+"/api/v1/sec/attachment/{id}/view"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Attachment-secAttachmentIdViewGet-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -6250,7 +6320,10 @@ used for subsequent calls to protected routes.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Authentication-openAuthLoginPost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST "/api/v1/open/auth/login"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v1/open/auth/login"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Authentication-openAuthLoginPost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -6560,7 +6633,9 @@ strictly necessary.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Authentication-secAuthLogoutPost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/auth/logout"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "X-Docspell-Auth: [[apiKey]]"\
+"/api/v1/sec/auth/logout"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Authentication-secAuthLogoutPost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -6808,7 +6883,10 @@ authentication token based on another valid one.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Authentication-secAuthSessionPost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/auth/session"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v1/sec/auth/session"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Authentication-secAuthSessionPost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -7074,6 +7152,310 @@ except ApiException as e:
                   </section>
                 <section id="api-Collective">
                   <h1>Collective</h1>
+                    <div id="api-Collective-secCollectiveClassifierStartoncePost">
+                      <article id="api-Collective-secCollectiveClassifierStartoncePost-0" data-group="User" data-name="secCollectiveClassifierStartoncePost" data-version="0">
+                        <div class="pull-left">
+                          <h1>secCollectiveClassifierStartoncePost</h1>
+                          <p>Starts the learn-classifier task</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked">If the collective has classification enabled, this will submit
+the task for learning a classifier from existing data. This
+task is usally run periodically as determined by the
+collective settings.
+
+The request is empty, settings are used from the collective.
+</p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="post"><code><span class="pln">/sec/collective/classifier/startonce</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-Collective-secCollectiveClassifierStartoncePost-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-Collective-secCollectiveClassifierStartoncePost-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Collective-secCollectiveClassifierStartoncePost-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-Collective-secCollectiveClassifierStartoncePost-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-Collective-secCollectiveClassifierStartoncePost-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-Collective-secCollectiveClassifierStartoncePost-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-Collective-secCollectiveClassifierStartoncePost-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-Collective-secCollectiveClassifierStartoncePost-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-Collective-secCollectiveClassifierStartoncePost-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-Collective-secCollectiveClassifierStartoncePost-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-Collective-secCollectiveClassifierStartoncePost-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-Collective-secCollectiveClassifierStartoncePost-0-curl">
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v1/sec/collective/classifier/startonce"</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-Collective-secCollectiveClassifierStartoncePost-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.CollectiveApi;
+
+import java.io.File;
+import java.util.*;
+
+public class CollectiveApiExample {
+
+    public static void main(String[] args) {
+        ApiClient defaultClient = Configuration.getDefaultApiClient();
+
+        // Configure API key authorization: authTokenHeader
+        ApiKeyAuth authTokenHeader = (ApiKeyAuth) defaultClient.getAuthentication("authTokenHeader");
+        authTokenHeader.setApiKey("YOUR API KEY");
+        // Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+        //authTokenHeader.setApiKeyPrefix("Token");
+
+        CollectiveApi apiInstance = new CollectiveApi();
+        try {
+            BasicResult result = apiInstance.secCollectiveClassifierStartoncePost();
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling CollectiveApi#secCollectiveClassifierStartoncePost");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Collective-secCollectiveClassifierStartoncePost-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.CollectiveApi;
+
+public class CollectiveApiExample {
+
+    public static void main(String[] args) {
+        CollectiveApi apiInstance = new CollectiveApi();
+        try {
+            BasicResult result = apiInstance.secCollectiveClassifierStartoncePost();
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling CollectiveApi#secCollectiveClassifierStartoncePost");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-Collective-secCollectiveClassifierStartoncePost-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-Collective-secCollectiveClassifierStartoncePost-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
+// Configure API key authorization: (authentication scheme: authTokenHeader)
+[apiConfig setApiKey:@"YOUR_API_KEY" forApiKeyIdentifier:@"X-Docspell-Auth"];
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+//[apiConfig setApiKeyPrefix:@"Bearer" forApiKeyIdentifier:@"X-Docspell-Auth"];
+
+CollectiveApi *apiInstance = [[CollectiveApi alloc] init];
+
+// Starts the learn-classifier task
+[apiInstance secCollectiveClassifierStartoncePostWithCompletionHandler: 
+              ^(BasicResult output, NSError* error) {
+                            if (output) {
+                                NSLog(@"%@", output);
+                            }
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Collective-secCollectiveClassifierStartoncePost-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var Docspell = require('docspell');
+var defaultClient = Docspell.ApiClient.instance;
+
+// Configure API key authorization: authTokenHeader
+var authTokenHeader = defaultClient.authentications['authTokenHeader'];
+authTokenHeader.apiKey = "YOUR API KEY"
+// Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+//authTokenHeader.apiKeyPrefix['X-Docspell-Auth'] = "Token"
+
+var api = new Docspell.CollectiveApi()
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+};
+api.secCollectiveClassifierStartoncePost(callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-Collective-secCollectiveClassifierStartoncePost-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-Collective-secCollectiveClassifierStartoncePost-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class secCollectiveClassifierStartoncePostExample
+    {
+        public void main()
+        {
+
+            // Configure API key authorization: authTokenHeader
+            Configuration.Default.ApiKey.Add("X-Docspell-Auth", "YOUR_API_KEY");
+            // Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+            // Configuration.Default.ApiKeyPrefix.Add("X-Docspell-Auth", "Bearer");
+
+            var apiInstance = new CollectiveApi();
+
+            try
+            {
+                // Starts the learn-classifier task
+                BasicResult result = apiInstance.secCollectiveClassifierStartoncePost();
+                Debug.WriteLine(result);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling CollectiveApi.secCollectiveClassifierStartoncePost: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Collective-secCollectiveClassifierStartoncePost-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+// Configure API key authorization: authTokenHeader
+Swagger\Client\Configuration::getDefaultConfiguration()->setApiKey('X-Docspell-Auth', 'YOUR_API_KEY');
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+// Swagger\Client\Configuration::getDefaultConfiguration()->setApiKeyPrefix('X-Docspell-Auth', 'Bearer');
+
+$api_instance = new Swagger\Client\ApiCollectiveApi();
+
+try {
+    $result = $api_instance->secCollectiveClassifierStartoncePost();
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling CollectiveApi->secCollectiveClassifierStartoncePost: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Collective-secCollectiveClassifierStartoncePost-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::CollectiveApi;
+
+# Configure API key authorization: authTokenHeader
+$WWW::SwaggerClient::Configuration::api_key->{'X-Docspell-Auth'} = 'YOUR_API_KEY';
+# uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+#$WWW::SwaggerClient::Configuration::api_key_prefix->{'X-Docspell-Auth'} = "Bearer";
+
+my $api_instance = WWW::SwaggerClient::CollectiveApi->new();
+
+eval { 
+    my $result = $api_instance->secCollectiveClassifierStartoncePost();
+    print Dumper($result);
+};
+if ($@) {
+    warn "Exception when calling CollectiveApi->secCollectiveClassifierStartoncePost: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Collective-secCollectiveClassifierStartoncePost-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# Configure API key authorization: authTokenHeader
+swagger_client.configuration.api_key['X-Docspell-Auth'] = 'YOUR_API_KEY'
+# Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+# swagger_client.configuration.api_key_prefix['X-Docspell-Auth'] = 'Bearer'
+
+# create an instance of the API class
+api_instance = swagger_client.CollectiveApi()
+
+try: 
+    # Starts the learn-classifier task
+    api_response = api_instance.sec_collective_classifier_startonce_post()
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling CollectiveApi->secCollectiveClassifierStartoncePost: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+
+
+
+
+
+                          <h2>Responses</h2>
+                            <h3> Status: 200 - Ok </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-secCollectiveClassifierStartoncePost-200-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-secCollectiveClassifierStartoncePost-200-schema">
+                                  <div id='responses-secCollectiveClassifierStartoncePost-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "Ok",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/BasicResult"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-secCollectiveClassifierStartoncePost-200-schema-data').val(stringify(schema));
+                                        var result = $('#responses-secCollectiveClassifierStartoncePost-200-schema-200');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-secCollectiveClassifierStartoncePost-200-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
                     <div id="api-Collective-secCollectiveContactsGet">
                       <article id="api-Collective-secCollectiveContactsGet-0" data-group="User" data-name="secCollectiveContactsGet" data-version="0">
                         <div class="pull-left">
@@ -7108,7 +7490,10 @@ address book.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Collective-secCollectiveContactsGet-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X GET -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/collective/contacts?q=&kind="</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v1/sec/collective/contacts?q=&kind="</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Collective-secCollectiveContactsGet-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -7477,7 +7862,10 @@ except ApiException as e:
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Collective-secCollectiveGet-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X GET -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/collective"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v1/sec/collective"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Collective-secCollectiveGet-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -7774,7 +8162,10 @@ much folder they occupy etc.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Collective-secCollectiveInsightsGet-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X GET -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/collective/insights"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v1/sec/collective/insights"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Collective-secCollectiveInsightsGet-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -8070,7 +8461,10 @@ except ApiException as e:
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Collective-secCollectiveSettingsGet-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X GET -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/collective/settings"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v1/sec/collective/settings"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Collective-secCollectiveSettingsGet-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -8366,7 +8760,11 @@ except ApiException as e:
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Collective-secCollectiveSettingsPost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/collective/settings"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v1/sec/collective/settings"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Collective-secCollectiveSettingsPost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -8714,7 +9112,10 @@ except ApiException as e:
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Collective-secCollectiveTagcloudGet-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X GET -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/collective/tagcloud"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v1/sec/collective/tagcloud"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Collective-secCollectiveTagcloudGet-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -9010,7 +9411,11 @@ except ApiException as e:
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Collective-secUserChangePasswordPost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/user/changePassword"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v1/sec/user/changePassword"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Collective-secUserChangePasswordPost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -9358,7 +9763,10 @@ except ApiException as e:
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Collective-secUserGet-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X GET -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/user"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v1/sec/user"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Collective-secUserGet-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -9654,7 +10062,10 @@ except ApiException as e:
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Collective-secUserIdDelete-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X DELETE -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/user/{id}"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X DELETE\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v1/sec/user/{id}"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Collective-secUserIdDelete-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -9989,7 +10400,11 @@ exists, an error is returned.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Collective-secUserPost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/user"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v1/sec/user"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Collective-secUserPost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -10338,7 +10753,11 @@ its id and all properties are changed as given.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Collective-secUserPut-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X PUT -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/user"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X PUT\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v1/sec/user"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Collective-secUserPut-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -10691,7 +11110,11 @@ The item&#x27;s attachment are added to the mail if requested.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-EMail-secEmailSendNameIdPost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/email/send/{name}/{id}"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v1/sec/email/send/{name}/{id}"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-EMail-secEmailSendNameIdPost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -11109,7 +11532,10 @@ id &#x60;id&#x60;.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-EMail-secEmailSentItemIdGet-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X GET -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/email/sent/item/{id}"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v1/sec/email/sent/item/{id}"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-EMail-secEmailSentItemIdGet-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -11443,7 +11869,10 @@ except ApiException as e:
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-EMail-secEmailSentMailMailIdDelete-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X DELETE -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/email/sent/mail/{mailId}"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X DELETE\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v1/sec/email/sent/mail/{mailId}"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-EMail-secEmailSentMailMailIdDelete-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -11777,7 +12206,10 @@ except ApiException as e:
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-EMail-secEmailSentMailMailIdGet-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X GET -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/email/sent/mail/{mailId}"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v1/sec/email/sent/mail/{mailId}"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-EMail-secEmailSentMailMailIdGet-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -12117,7 +12549,10 @@ simple substring search in the connection name.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-EMail-secEmailSettingsImapGet-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X GET -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/email/settings/imap?q="</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v1/sec/email/settings/imap?q="</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-EMail-secEmailSettingsImapGet-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -12449,7 +12884,10 @@ except ApiException as e:
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-EMail-secEmailSettingsImapNameDelete-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X DELETE -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/email/settings/imap/{name}"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X DELETE\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v1/sec/email/settings/imap/{name}"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-EMail-secEmailSettingsImapNameDelete-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -12784,7 +13222,10 @@ name.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-EMail-secEmailSettingsImapNameGet-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X GET -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/email/settings/imap/{name}"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v1/sec/email/settings/imap/{name}"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-EMail-secEmailSettingsImapNameGet-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -13118,7 +13559,11 @@ except ApiException as e:
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-EMail-secEmailSettingsImapNamePut-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X PUT -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/email/settings/imap/{name}"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X PUT\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v1/sec/email/settings/imap/{name}"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-EMail-secEmailSettingsImapNamePut-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -13504,7 +13949,11 @@ except ApiException as e:
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-EMail-secEmailSettingsImapPost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/email/settings/imap"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v1/sec/email/settings/imap"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-EMail-secEmailSettingsImapPost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -13858,7 +14307,10 @@ simple substring search in the connection name.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-EMail-secEmailSettingsSmtpGet-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X GET -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/email/settings/smtp?q="</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v1/sec/email/settings/smtp?q="</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-EMail-secEmailSettingsSmtpGet-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -14190,7 +14642,10 @@ except ApiException as e:
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-EMail-secEmailSettingsSmtpNameDelete-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X DELETE -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/email/settings/smtp/{name}"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X DELETE\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v1/sec/email/settings/smtp/{name}"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-EMail-secEmailSettingsSmtpNameDelete-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -14525,7 +14980,10 @@ name.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-EMail-secEmailSettingsSmtpNameGet-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X GET -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/email/settings/smtp/{name}"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v1/sec/email/settings/smtp/{name}"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-EMail-secEmailSettingsSmtpNameGet-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -14859,7 +15317,11 @@ except ApiException as e:
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-EMail-secEmailSettingsSmtpNamePut-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X PUT -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/email/settings/smtp/{name}"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X PUT\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v1/sec/email/settings/smtp/{name}"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-EMail-secEmailSettingsSmtpNamePut-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -15245,7 +15707,11 @@ except ApiException as e:
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-EMail-secEmailSettingsSmtpPost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/email/settings/smtp"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v1/sec/email/settings/smtp"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-EMail-secEmailSettingsSmtpPost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -15596,7 +16062,10 @@ except ApiException as e:
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Equipment-secEquipmentGet-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X GET -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/equipment?q="</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v1/sec/equipment?q="</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Equipment-secEquipmentGet-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -15929,7 +16398,10 @@ all items.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Equipment-secEquipmentIdDelete-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X DELETE -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/equipment/{id}"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X DELETE\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v1/sec/equipment/{id}"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Equipment-secEquipmentIdDelete-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -16263,7 +16735,10 @@ except ApiException as e:
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Equipment-secEquipmentIdGet-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X GET -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/equipment/{id}"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v1/sec/equipment/{id}"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Equipment-secEquipmentIdGet-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -16598,7 +17073,11 @@ exists, an error is returned.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Equipment-secEquipmentPost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/equipment"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v1/sec/equipment"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Equipment-secEquipmentPost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -16947,7 +17426,11 @@ its id and all properties are changed as given.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Equipment-secEquipmentPut-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X PUT -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/equipment"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X PUT\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v1/sec/equipment"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Equipment-secEquipmentPut-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -17304,7 +17787,10 @@ the name.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Folder-secFolderGet-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X GET -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/folder?q=&full="</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v1/sec/folder?q=&full="</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Folder-secFolderGet-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -17664,7 +18150,10 @@ except ApiException as e:
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Folder-secFolderIdDelete-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X DELETE -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/folder/{id}"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X DELETE\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v1/sec/folder/{id}"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Folder-secFolderIdDelete-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -17998,7 +18487,10 @@ except ApiException as e:
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Folder-secFolderIdGet-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X GET -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/folder/{id}"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v1/sec/folder/{id}"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Folder-secFolderIdGet-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -18332,7 +18824,10 @@ except ApiException as e:
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Folder-secFolderIdMemberUserIdDelete-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X DELETE -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/folder/{id}/member/{userId}"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X DELETE\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v1/sec/folder/{id}/member/{userId}"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Folder-secFolderIdMemberUserIdDelete-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -18697,7 +19192,10 @@ except ApiException as e:
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Folder-secFolderIdMemberUserIdPut-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X PUT -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/folder/{id}/member/{userId}"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X PUT\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v1/sec/folder/{id}/member/{userId}"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Folder-secFolderIdMemberUserIdPut-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -19062,7 +19560,11 @@ except ApiException as e:
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Folder-secFolderIdPut-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X PUT -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/folder/{id}"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X PUT\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v1/sec/folder/{id}"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Folder-secFolderIdPut-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -19449,7 +19951,11 @@ the same name already exists, an error is thrown.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Folder-secFolderPost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/folder"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v1/sec/folder"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Folder-secFolderPost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -19807,7 +20313,9 @@ file to ensure that only admins can call this route.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-FullTextIndex-openFtsReIndexAllIdPost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST "/api/v1/open/fts/reIndexAll/{id}"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "Accept: application/json"\
+"/api/v1/open/fts/reIndexAll/{id}"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-FullTextIndex-openFtsReIndexAllIdPost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -20105,7 +20613,9 @@ will be executed by a job executor.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-FullTextIndex-secFtsReIndexPost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST "/api/v1/sec/fts/reIndex"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "Accept: application/json"\
+"/api/v1/sec/fts/reIndex"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-FullTextIndex-secFtsReIndexPost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -20365,7 +20875,9 @@ except ApiException as e:
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Information-apiInfoVersionGet-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X GET "/api/v1/api/info/version"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
+-H "Accept: application/json"\
+"/api/v1/api/info/version"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Information-apiInfoVersionGet-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -20630,7 +21142,10 @@ checksum.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-IntegrationEndpoint-openIntegrationCheckfileIdChecksumGet-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X GET -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/open/integration/checkfile/{id}/{checksum}"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v1/open/integration/checkfile/{id}/{checksum}"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-IntegrationEndpoint-openIntegrationCheckfileIdChecksumGet-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -21001,7 +21516,9 @@ The response body is empty (an empty json object).
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-IntegrationEndpoint-openIntegrationItemIdGet-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X GET "/api/v1/open/integration/item/{id}"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
+-H "Accept: application/json"\
+"/api/v1/open/integration/item/{id}"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-IntegrationEndpoint-openIntegrationItemIdGet-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -21338,7 +21855,10 @@ required.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-IntegrationEndpoint-openIntegrationItemIdPost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST "/api/v1/open/integration/item/{id}"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "Accept: application/json"\
+-H "Content-Type: multipart/form-data"\
+"/api/v1/open/integration/item/{id}"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-IntegrationEndpoint-openIntegrationItemIdPost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -21707,7 +22227,10 @@ The body of the request should be empty.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Item-secItemConvertallpdfsPost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/item/convertallpdfs"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v1/sec/item/convertallpdfs"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Item-secItemConvertallpdfsPost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -22004,7 +22527,11 @@ of an item.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Item-secItemIdConcEquipmentPost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/item/{id}/concEquipment"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v1/sec/item/{id}/concEquipment"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Item-secItemIdConcEquipmentPost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -22390,7 +22917,11 @@ except ApiException as e:
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Item-secItemIdConcEquipmentPut-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X PUT -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/item/{id}/concEquipment"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X PUT\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v1/sec/item/{id}/concEquipment"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Item-secItemIdConcEquipmentPut-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -22777,7 +23308,11 @@ item.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Item-secItemIdConcPersonPost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/item/{id}/concPerson"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v1/sec/item/{id}/concPerson"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Item-secItemIdConcPersonPost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -23163,7 +23698,11 @@ except ApiException as e:
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Item-secItemIdConcPersonPut-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X PUT -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/item/{id}/concPerson"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X PUT\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v1/sec/item/{id}/concPerson"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Item-secItemIdConcPersonPut-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -23550,7 +24089,10 @@ the associated data to put it in state &quot;confirmed&quot;.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Item-secItemIdConfirmPost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/item/{id}/confirm"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v1/sec/item/{id}/confirm"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Item-secItemIdConfirmPost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -23885,7 +24427,11 @@ organization of an item.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Item-secItemIdCorrOrgPost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/item/{id}/corrOrg"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v1/sec/item/{id}/corrOrg"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Item-secItemIdCorrOrgPost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -24271,7 +24817,11 @@ except ApiException as e:
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Item-secItemIdCorrOrgPut-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X PUT -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/item/{id}/corrOrg"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X PUT\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v1/sec/item/{id}/corrOrg"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Item-secItemIdCorrOrgPut-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -24658,7 +25208,11 @@ an item.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Item-secItemIdCorrPersonPost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/item/{id}/corrPerson"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v1/sec/item/{id}/corrPerson"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Item-secItemIdCorrPersonPost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -25044,7 +25598,11 @@ except ApiException as e:
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Item-secItemIdCorrPersonPut-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X PUT -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/item/{id}/corrPerson"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X PUT\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v1/sec/item/{id}/corrPerson"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Item-secItemIdCorrPersonPut-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -25430,7 +25988,11 @@ except ApiException as e:
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Item-secItemIdDatePut-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X PUT -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/item/{id}/date"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X PUT\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v1/sec/item/{id}/date"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Item-secItemIdDatePut-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -25816,7 +26378,10 @@ except ApiException as e:
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Item-secItemIdDelete-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X DELETE -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/item/{id}"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X DELETE\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v1/sec/item/{id}"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Item-secItemIdDelete-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -26150,7 +26715,11 @@ except ApiException as e:
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Item-secItemIdDirectionPut-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X PUT -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/item/{id}/direction"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X PUT\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v1/sec/item/{id}/direction"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Item-secItemIdDirectionPut-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -26536,7 +27105,11 @@ except ApiException as e:
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Item-secItemIdDuedatePut-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X PUT -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/item/{id}/duedate"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X PUT\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v1/sec/item/{id}/duedate"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Item-secItemIdDuedatePut-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -26925,7 +27498,11 @@ or &quot;root&quot; folder.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Item-secItemIdFolderPut-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X PUT -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/item/{id}/folder"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X PUT\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v1/sec/item/{id}/folder"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Item-secItemIdFolderPut-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -27311,7 +27888,10 @@ except ApiException as e:
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Item-secItemIdGet-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X GET -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/item/{id}"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v1/sec/item/{id}"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Item-secItemIdGet-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -27645,7 +28225,11 @@ except ApiException as e:
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Item-secItemIdNamePut-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X PUT -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/item/{id}/name"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X PUT\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v1/sec/item/{id}/name"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Item-secItemIdNamePut-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -28031,7 +28615,11 @@ except ApiException as e:
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Item-secItemIdNotesPut-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X PUT -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/item/{id}/notes"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X PUT\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v1/sec/item/{id}/notes"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Item-secItemIdNotesPut-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -28419,7 +29007,10 @@ item. This is returned here, without duplicates.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Item-secItemIdProposalsGet-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X GET -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/item/{id}/proposals"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v1/sec/item/{id}/proposals"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Item-secItemIdProposalsGet-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -28755,7 +29346,11 @@ or ids.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Item-secItemIdTaglinkPost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/item/{id}/taglink"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v1/sec/item/{id}/taglink"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Item-secItemIdTaglinkPost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -29145,7 +29740,11 @@ the given data, so it can be left empty. Only &#x60;name&#x60; and
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Item-secItemIdTagsPost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/item/{id}/tags"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v1/sec/item/{id}/tags"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Item-secItemIdTagsPost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -29531,7 +30130,11 @@ except ApiException as e:
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Item-secItemIdTagsPut-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X PUT -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/item/{id}/tags"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X PUT\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v1/sec/item/{id}/tags"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Item-secItemIdTagsPut-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -29921,7 +30524,11 @@ corresponding tag.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Item-secItemIdTagtogglePost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/item/{id}/tagtoggle"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v1/sec/item/{id}/tagtoggle"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Item-secItemIdTagtogglePost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -30308,7 +30915,10 @@ appear as new.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Item-secItemIdUnconfirmPost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/item/{id}/unconfirm"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v1/sec/item/{id}/unconfirm"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Item-secItemIdUnconfirmPost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -30644,7 +31254,11 @@ with a lower position.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Item-secItemItemIdAttachmentMovebeforePost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/item/{itemId}/attachment/movebefore"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v1/sec/item/{itemId}/attachment/movebefore"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Item-secItemItemIdAttachmentMovebeforePost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -31031,7 +31645,11 @@ or the ones specified) of the item and replace the metadata.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Item-secItemItemIdReprocessPost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/item/{itemId}/reprocess"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v1/sec/item/{itemId}/reprocess"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Item-secItemItemIdReprocessPost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -31427,7 +32045,11 @@ destroyed when using the full-text search.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Item-secItemSearchIndexPost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/item/searchIndex"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v1/sec/item/searchIndex"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Item-secItemSearchIndexPost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -31782,7 +32404,11 @@ using full-text search in the documents contents.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Item-secItemSearchPost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/item/search"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v1/sec/item/search"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Item-secItemSearchPost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -32136,7 +32762,11 @@ using full-text search in the documents contents.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Item-secItemSearchWithTagsPost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/item/searchWithTags"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v1/sec/item/searchWithTags"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Item-secItemSearchWithTagsPost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -32489,7 +33119,10 @@ instance. Otherwise the job is removed from the queue.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-JobQueue-secQueueIdCancelPost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/queue/{id}/cancel"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v1/sec/queue/{id}/cancel"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-JobQueue-secQueueIdCancelPost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -32790,6 +33423,397 @@ except ApiException as e:
                         </article>
                       </div>
                       <hr>
+                    <div id="api-JobQueue-secQueueIdPriorityPost">
+                      <article id="api-JobQueue-secQueueIdPriorityPost-0" data-group="User" data-name="secQueueIdPriorityPost" data-version="0">
+                        <div class="pull-left">
+                          <h1>secQueueIdPriorityPost</h1>
+                          <p>Change the priority of a waiting job.</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked">A waiting job can change its priority. If the job is not in
+state waiting, this operation fails.
+</p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="post"><code><span class="pln">/sec/queue/{id}/priority</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-JobQueue-secQueueIdPriorityPost-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-JobQueue-secQueueIdPriorityPost-0-java">Java</a></li>
+                          <li class=""><a href="#examples-JobQueue-secQueueIdPriorityPost-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-JobQueue-secQueueIdPriorityPost-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-JobQueue-secQueueIdPriorityPost-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-JobQueue-secQueueIdPriorityPost-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-JobQueue-secQueueIdPriorityPost-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-JobQueue-secQueueIdPriorityPost-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-JobQueue-secQueueIdPriorityPost-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-JobQueue-secQueueIdPriorityPost-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-JobQueue-secQueueIdPriorityPost-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-JobQueue-secQueueIdPriorityPost-0-curl">
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v1/sec/queue/{id}/priority"</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-JobQueue-secQueueIdPriorityPost-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.JobQueueApi;
+
+import java.io.File;
+import java.util.*;
+
+public class JobQueueApiExample {
+
+    public static void main(String[] args) {
+        ApiClient defaultClient = Configuration.getDefaultApiClient();
+
+        // Configure API key authorization: authTokenHeader
+        ApiKeyAuth authTokenHeader = (ApiKeyAuth) defaultClient.getAuthentication("authTokenHeader");
+        authTokenHeader.setApiKey("YOUR API KEY");
+        // Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+        //authTokenHeader.setApiKeyPrefix("Token");
+
+        JobQueueApi apiInstance = new JobQueueApi();
+        String id = id_example; // String | An identifier
+        JobPriority body = ; // JobPriority | 
+        try {
+            BasicResult result = apiInstance.secQueueIdPriorityPost(id, body);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling JobQueueApi#secQueueIdPriorityPost");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-JobQueue-secQueueIdPriorityPost-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.JobQueueApi;
+
+public class JobQueueApiExample {
+
+    public static void main(String[] args) {
+        JobQueueApi apiInstance = new JobQueueApi();
+        String id = id_example; // String | An identifier
+        JobPriority body = ; // JobPriority | 
+        try {
+            BasicResult result = apiInstance.secQueueIdPriorityPost(id, body);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling JobQueueApi#secQueueIdPriorityPost");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-JobQueue-secQueueIdPriorityPost-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-JobQueue-secQueueIdPriorityPost-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
+// Configure API key authorization: (authentication scheme: authTokenHeader)
+[apiConfig setApiKey:@"YOUR_API_KEY" forApiKeyIdentifier:@"X-Docspell-Auth"];
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+//[apiConfig setApiKeyPrefix:@"Bearer" forApiKeyIdentifier:@"X-Docspell-Auth"];
+String *id = id_example; // An identifier
+JobPriority *body = ; //  (optional)
+
+JobQueueApi *apiInstance = [[JobQueueApi alloc] init];
+
+// Change the priority of a waiting job.
+[apiInstance secQueueIdPriorityPostWith:id
+    body:body
+              completionHandler: ^(BasicResult output, NSError* error) {
+                            if (output) {
+                                NSLog(@"%@", output);
+                            }
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-JobQueue-secQueueIdPriorityPost-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var Docspell = require('docspell');
+var defaultClient = Docspell.ApiClient.instance;
+
+// Configure API key authorization: authTokenHeader
+var authTokenHeader = defaultClient.authentications['authTokenHeader'];
+authTokenHeader.apiKey = "YOUR API KEY"
+// Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+//authTokenHeader.apiKeyPrefix['X-Docspell-Auth'] = "Token"
+
+var api = new Docspell.JobQueueApi()
+var id = id_example; // {{String}} An identifier
+var opts = { 
+  'body':  // {{JobPriority}} 
+};
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+};
+api.secQueueIdPriorityPost(id, opts, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-JobQueue-secQueueIdPriorityPost-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-JobQueue-secQueueIdPriorityPost-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class secQueueIdPriorityPostExample
+    {
+        public void main()
+        {
+
+            // Configure API key authorization: authTokenHeader
+            Configuration.Default.ApiKey.Add("X-Docspell-Auth", "YOUR_API_KEY");
+            // Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+            // Configuration.Default.ApiKeyPrefix.Add("X-Docspell-Auth", "Bearer");
+
+            var apiInstance = new JobQueueApi();
+            var id = id_example;  // String | An identifier
+            var body = new JobPriority(); // JobPriority |  (optional) 
+
+            try
+            {
+                // Change the priority of a waiting job.
+                BasicResult result = apiInstance.secQueueIdPriorityPost(id, body);
+                Debug.WriteLine(result);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling JobQueueApi.secQueueIdPriorityPost: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-JobQueue-secQueueIdPriorityPost-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+// Configure API key authorization: authTokenHeader
+Swagger\Client\Configuration::getDefaultConfiguration()->setApiKey('X-Docspell-Auth', 'YOUR_API_KEY');
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+// Swagger\Client\Configuration::getDefaultConfiguration()->setApiKeyPrefix('X-Docspell-Auth', 'Bearer');
+
+$api_instance = new Swagger\Client\ApiJobQueueApi();
+$id = id_example; // String | An identifier
+$body = ; // JobPriority | 
+
+try {
+    $result = $api_instance->secQueueIdPriorityPost($id, $body);
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling JobQueueApi->secQueueIdPriorityPost: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-JobQueue-secQueueIdPriorityPost-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::JobQueueApi;
+
+# Configure API key authorization: authTokenHeader
+$WWW::SwaggerClient::Configuration::api_key->{'X-Docspell-Auth'} = 'YOUR_API_KEY';
+# uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+#$WWW::SwaggerClient::Configuration::api_key_prefix->{'X-Docspell-Auth'} = "Bearer";
+
+my $api_instance = WWW::SwaggerClient::JobQueueApi->new();
+my $id = id_example; # String | An identifier
+my $body = WWW::SwaggerClient::Object::JobPriority->new(); # JobPriority | 
+
+eval { 
+    my $result = $api_instance->secQueueIdPriorityPost(id => $id, body => $body);
+    print Dumper($result);
+};
+if ($@) {
+    warn "Exception when calling JobQueueApi->secQueueIdPriorityPost: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-JobQueue-secQueueIdPriorityPost-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# Configure API key authorization: authTokenHeader
+swagger_client.configuration.api_key['X-Docspell-Auth'] = 'YOUR_API_KEY'
+# Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+# swagger_client.configuration.api_key_prefix['X-Docspell-Auth'] = 'Bearer'
+
+# create an instance of the API class
+api_instance = swagger_client.JobQueueApi()
+id = id_example # String | An identifier
+body =  # JobPriority |  (optional)
+
+try: 
+    # Change the priority of a waiting job.
+    api_response = api_instance.sec_queue_id_priority_post(id, body=body)
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling JobQueueApi->secQueueIdPriorityPost: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+                            <div class="methodsubtabletitle">Path parameters</div>
+                            <table id="methodsubtable">
+                                <tr>
+                                  <th width="150px">Name</th>
+                                  <th>Description</th>
+                                </tr>
+                                  <tr><td style="width:150px;">id*</td>
+                                  <td>
+                                  
+                                  
+                                      <div id="d2e199_secQueueIdPriorityPost_id">
+                                          <div class="json-schema-view">
+                                              <div class="primitive">
+                                                  <span class="type">
+                                                      String
+                                                  </span>
+                                  
+                                                      <div class="inner description">
+                                                          An identifier
+                                                      </div>
+                                              </div>
+                                                  <div class="inner required">
+                                                      Required
+                                                  </div>
+                                          </div>
+                                      </div>
+                                  </td>
+                                  </tr>
+                            </table>
+
+
+                            <div class="methodsubtabletitle">Body parameters</div>
+                            <table id="methodsubtable">
+                              <tr>
+                                <th width="150px">Name</th>
+                                <th>Description</th>
+                              </tr>
+                                <tr><td style="width:150px;">body </td>
+                                <td>
+                                
+                                
+                                <script>
+                                $(document).ready(function() {
+                                  var schemaWrapper = {
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/JobPriority"
+      }
+    }
+  }
+};
+                                  var schema = schemaWrapper.content["application/json"].schema;
+                                  if (schema.$ref != null) {
+                                    schema = defsParser.$refs.get(schema.$ref);
+                                  } else {
+                                    schemaWrapper.components = {};
+                                    schemaWrapper.components.schemas = Object.assign({}, defs);
+                                    $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                      console.log(err);
+                                    });
+                                  }
+                                
+                                  var view = new JSONSchemaView(schema,2,{isBodyParam: true});
+                                  var result = $('#d2e199_secQueueIdPriorityPost_body');
+                                  result.empty();
+                                  result.append(view.render());
+                                });
+                                </script>
+                                <div id="d2e199_secQueueIdPriorityPost_body"></div>
+                                </td>
+                                </tr>
+                            </table>
+
+
+
+                          <h2>Responses</h2>
+                            <h3> Status: 200 - Ok </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-secQueueIdPriorityPost-200-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-secQueueIdPriorityPost-200-schema">
+                                  <div id='responses-secQueueIdPriorityPost-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "Ok",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/BasicResult"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-secQueueIdPriorityPost-200-schema-data').val(stringify(schema));
+                                        var result = $('#responses-secQueueIdPriorityPost-200-schema-200');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-secQueueIdPriorityPost-200-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
                     <div id="api-JobQueue-secQueueStateGet">
                       <article id="api-JobQueue-secQueueStateGet-0" data-group="User" data-name="secQueueStateGet" data-version="0">
                         <div class="pull-left">
@@ -32825,7 +33849,10 @@ users/collectives share processing resources.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-JobQueue-secQueueStateGet-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X GET -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/queue/state"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v1/sec/queue/state"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-JobQueue-secQueueStateGet-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -33124,7 +34151,10 @@ except ApiException as e:
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Organization-secOrganizationGet-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X GET -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/organization?full=&q="</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v1/sec/organization?full=&q="</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Organization-secOrganizationGet-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -33484,7 +34514,10 @@ except ApiException as e:
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Organization-secOrganizationIdDelete-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X DELETE -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/organization/{id}"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X DELETE\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v1/sec/organization/{id}"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Organization-secOrganizationIdDelete-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -33818,7 +34851,10 @@ except ApiException as e:
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Organization-secOrganizationIdGet-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X GET -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/organization/{id}"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v1/sec/organization/{id}"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Organization-secOrganizationIdGet-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -34153,7 +35189,11 @@ error is returned. The id attribute of the request structure is ignored.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Organization-secOrganizationPost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/organization"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v1/sec/organization"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Organization-secOrganizationPost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -34502,7 +35542,11 @@ all properties are changed as given.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Organization-secOrganizationPut-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X PUT -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/organization"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X PUT\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v1/sec/organization"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Organization-secOrganizationPut-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -34853,7 +35897,10 @@ except ApiException as e:
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Person-secPersonGet-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X GET -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/person?full=&q="</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v1/sec/person?full=&q="</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Person-secPersonGet-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -35213,7 +36260,10 @@ except ApiException as e:
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Person-secPersonIdDelete-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X DELETE -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/person/{id}"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X DELETE\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v1/sec/person/{id}"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Person-secPersonIdDelete-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -35547,7 +36597,10 @@ except ApiException as e:
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Person-secPersonIdGet-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X GET -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/person/{id}"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v1/sec/person/{id}"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Person-secPersonIdGet-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -35882,7 +36935,11 @@ error is returned. The id attribute of the request structure is ignored.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Person-secPersonPost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/person"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v1/sec/person"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Person-secPersonPost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -36231,7 +37288,11 @@ all properties are changed as given.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Person-secPersonPut-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X PUT -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/person"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X PUT\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v1/sec/person"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Person-secPersonPut-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -36586,7 +37647,10 @@ configuration file is required for this action.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Registration-openSignupNewinvitePost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST "/api/v1/open/signup/newinvite"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v1/open/signup/newinvite"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Registration-openSignupNewinvitePost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -36895,7 +37959,10 @@ except ApiException as e:
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Registration-openSignupRegisterPost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST "/api/v1/open/signup/register"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v1/open/signup/register"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Registration-openSignupRegisterPost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -37207,7 +38274,10 @@ except ApiException as e:
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Source-secSourceGet-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X GET -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/source"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v1/sec/source"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Source-secSourceGet-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -37504,7 +38574,10 @@ all items.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Source-secSourceIdDelete-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X DELETE -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/source/{id}"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X DELETE\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v1/sec/source/{id}"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Source-secSourceIdDelete-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -37839,7 +38912,11 @@ exists, an error is returned.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Source-secSourcePost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/source"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v1/sec/source"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Source-secSourcePost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -38188,7 +39265,11 @@ its id and all properties are changed as given.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Source-secSourcePut-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X PUT -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/source"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X PUT\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v1/sec/source"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Source-secSourcePut-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -38539,7 +39620,10 @@ except ApiException as e:
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Tags-secTagGet-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X GET -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/tag?q="</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v1/sec/tag?q="</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Tags-secTagGet-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -38871,7 +39955,10 @@ except ApiException as e:
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Tags-secTagIdDelete-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X DELETE -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/tag/{id}"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X DELETE\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v1/sec/tag/{id}"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Tags-secTagIdDelete-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -39206,7 +40293,11 @@ error is returned. The id in the input structure is ignored.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Tags-secTagPost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/tag"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v1/sec/tag"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Tags-secTagPost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -39555,7 +40646,11 @@ all properties are changed as given.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Tags-secTagPut-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X PUT -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/tag"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X PUT\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v1/sec/tag"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Tags-secTagPut-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -39910,7 +41005,9 @@ checksum.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Upload-openCheckfileIdChecksumGet-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X GET "/api/v1/open/checkfile/{id}/{checksum}"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
+-H "Accept: application/json"\
+"/api/v1/open/checkfile/{id}/{checksum}"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Upload-openCheckfileIdChecksumGet-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -40250,7 +41347,10 @@ item. By default, each file will be a one item.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Upload-openUploadItemIdPost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST "/api/v1/open/upload/item/{id}"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "Accept: application/json"\
+-H "Content-Type: multipart/form-data"\
+"/api/v1/open/upload/item/{id}"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Upload-openUploadItemIdPost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -40619,7 +41719,10 @@ Upload meta data is ignored.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Upload-openUploadItemItemIdIdPost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST "/api/v1/open/upload/item/{itemId}/{id}"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "Accept: application/json"\
+-H "Content-Type: multipart/form-data"\
+"/api/v1/open/upload/item/{itemId}/{id}"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Upload-openUploadItemItemIdIdPost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -41010,7 +42113,10 @@ checksum.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Upload-secCheckfileChecksumGet-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X GET -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/checkfile/{checksum}"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v1/sec/checkfile/{checksum}"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Upload-secCheckfileChecksumGet-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -41358,7 +42464,11 @@ exists.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Upload-secUploadItemIdPost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/upload/{itemId}"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: multipart/form-data"\
+"/api/v1/sec/upload/{itemId}"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Upload-secUploadItemIdPost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -41766,7 +42876,11 @@ item. By default, each file will be a one item.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Upload-secUploadPost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/upload"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: multipart/form-data"\
+"/api/v1/sec/upload"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Upload-secUploadPost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -42129,7 +43243,10 @@ multiple tasks.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-UserTasks-secUsertaskNotifydueitemsGet-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X GET -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/usertask/notifydueitems"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v1/sec/usertask/notifydueitems"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-UserTasks-secUsertaskNotifydueitemsGet-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -42426,7 +43543,10 @@ authenticated user.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-UserTasks-secUsertaskNotifydueitemsIdDelete-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X DELETE -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/usertask/notifydueitems/{id}"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X DELETE\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v1/sec/usertask/notifydueitems/{id}"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-UserTasks-secUsertaskNotifydueitemsIdDelete-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -42758,7 +43878,10 @@ of the authenticated user.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-UserTasks-secUsertaskNotifydueitemsIdGet-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X GET -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/usertask/notifydueitems/{id}"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v1/sec/usertask/notifydueitems/{id}"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-UserTasks-secUsertaskNotifydueitemsIdGet-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -43090,7 +44213,11 @@ user. The id field in the input is ignored.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-UserTasks-secUsertaskNotifydueitemsPost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/usertask/notifydueitems"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v1/sec/usertask/notifydueitems"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-UserTasks-secUsertaskNotifydueitemsPost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -43439,7 +44566,11 @@ looked up by its id.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-UserTasks-secUsertaskNotifydueitemsPut-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X PUT -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/usertask/notifydueitems"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X PUT\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v1/sec/usertask/notifydueitems"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-UserTasks-secUsertaskNotifydueitemsPut-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -43788,7 +44919,11 @@ schedule and not updating the periodic task.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-UserTasks-secUsertaskNotifydueitemsStartoncePost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/usertask/notifydueitems/startonce"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v1/sec/usertask/notifydueitems/startonce"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-UserTasks-secUsertaskNotifydueitemsStartoncePost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -44139,7 +45274,10 @@ these tasks.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-UserTasks-secUsertaskScanmailboxGet-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X GET -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/usertask/scanmailbox"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v1/sec/usertask/scanmailbox"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-UserTasks-secUsertaskScanmailboxGet-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -44436,7 +45574,10 @@ authenticated user.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-UserTasks-secUsertaskScanmailboxIdDelete-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X DELETE -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/usertask/scanmailbox/{id}"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X DELETE\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v1/sec/usertask/scanmailbox/{id}"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-UserTasks-secUsertaskScanmailboxIdDelete-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -44772,7 +45913,10 @@ be imported into docspell.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-UserTasks-secUsertaskScanmailboxIdGet-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X GET -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/usertask/scanmailbox/{id}"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v1/sec/usertask/scanmailbox/{id}"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-UserTasks-secUsertaskScanmailboxIdGet-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -45107,7 +46251,11 @@ the input data is ignored.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-UserTasks-secUsertaskScanmailboxPost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/usertask/scanmailbox"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v1/sec/usertask/scanmailbox"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-UserTasks-secUsertaskScanmailboxPost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -45456,7 +46604,11 @@ looked up by its id.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-UserTasks-secUsertaskScanmailboxPut-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X PUT -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/usertask/scanmailbox"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X PUT\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v1/sec/usertask/scanmailbox"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-UserTasks-secUsertaskScanmailboxPut-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -45805,7 +46957,11 @@ schedule and not updating the periodic task.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-UserTasks-secUsertaskScanmailboxStartoncePost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/usertask/scanmailbox/startonce"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v1/sec/usertask/scanmailbox/startonce"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-UserTasks-secUsertaskScanmailboxStartoncePost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -46157,7 +47313,11 @@ either returns the normal form or an error message.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Utility-secCaleventCheckPost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "X-Docspell-Auth: [[apiKey]]" "/api/v1/sec/calevent/check"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v1/sec/calevent/check"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Utility-secCaleventCheckPost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;

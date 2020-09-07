@@ -419,6 +419,11 @@ Please refer to their documentation for more on this.</p>
   # all the results from a search</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> they add quite some data to return</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">
   # In order to keep this low</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> a limit can be defined here</span><span style="color:#fe8019;">.
   </span><span style="color:#fdf4c1;">max-note-length </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">180</span><span style="color:#fdf4c1aa;">
+  # This defines whether the classification form in the collective
+  # settings is displayed or not</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> If all joex instances have document
+  # classification disabled</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> it makes sense to hide its settings from
+  # users</span><span style="color:#fe8019;">.
+  </span><span style="color:#fdf4c1;">show-classification-settings </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">true</span><span style="color:#fdf4c1aa;">
   # Authentication</span><span style="color:#fe8019;">.
 </span><span style="color:#fa5c4b;">  auth </span><span style="color:#fdf4c1aa;">{
     # The secret for this server that is used to sign the authenicator
@@ -769,179 +774,240 @@ Please refer to their documentation for more on this.</p>
     # should suffice</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> Default is </span><span style="color:#d3869b;">10000</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> which are about </span><span style="color:#d3869b;">2</span><span style="color:#fe8019;">-</span><span style="color:#d3869b;">3</span><span style="color:#fdf4c1aa;"> pages
     # (just a rough guess</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> of course)</span><span style="color:#fe8019;">.
     </span><span style="color:#fdf4c1;">max-length </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">10000</span><span style="color:#fdf4c1aa;">
+    # </span><span style="color:#fabd2f;">A</span><span style="color:#fdf4c1aa;"> working directory for the analyser to store </span><span style="color:#fabd2f;">temporary/working</span><span style="color:#fdf4c1aa;">
+    # files</span><span style="color:#fe8019;">.
+    </span><span style="color:#fdf4c1;">working-dir </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> ${java</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">io</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">tmpdir}</span><span style="color:#b8bb26;">&quot;/docspell-analysis&quot;
+    </span><span style="color:#fdf4c1;">regex-ner </span><span style="color:#fdf4c1aa;">{
+      # Whether to enable custom </span><span style="color:#fabd2f;">NER</span><span style="color:#fdf4c1aa;"> annotation</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> This uses the address
+      # book of a collective as input for </span><span style="color:#fabd2f;">NER</span><span style="color:#fdf4c1aa;"> tagging (to automatically
+      # find correspondent and concerned entities)</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> If the address book
+      # is large</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> this can be quite memory intensive and also makes text
+      # analysis slower</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> But it greatly improves accuracy</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> If this is
+      # </span><span style="color:#d3869b;">false</span><span style="color:#fe8019;">, </span><span style="color:#fabd2f;">NER</span><span style="color:#fdf4c1aa;"> tagging uses only statistical models (that also work
+      # quite well)</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">
+      #
+      # This setting might be moved to the collective settings in the
+      # future</span><span style="color:#fe8019;">.
+      </span><span style="color:#fdf4c1;">enabled </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">true</span><span style="color:#fdf4c1aa;">
+      # The </span><span style="color:#fabd2f;">NER</span><span style="color:#fdf4c1aa;"> annotation uses a file of patterns that is derived from
+      # a collective</span><span style="color:#b8bb26;">&#39;s address book. This is is the time how long this
+      # file will be kept until a check for a state change is done.
+      file-cache-time = &quot;1 minute&quot;
+    }
+    # Settings for doing document classification.
+    #
+    # This works by learning from existing documents. A collective can
+    # specify a tag category and the system will try to predict a tag
+    # from this category for new incoming documents.
+    #
+    # This requires a satstical model that is computed from all
+    # existing documents. This process is run periodically as
+    # configured by the collective. It may require a lot of memory,
+    # depending on the amount of data.
+    #
+    # It utilises this NLP library: https://nlp.stanford.edu/.
+    classification {
+      # Whether to enable classification globally. Each collective can
+      # decide to disable it. If it is disabled here, no collective
+      # can use classification.
+      enabled = true
+      # If concerned with memory consumption, this restricts the
+      # number of items to consider. More are better for training. A
+      # negative value or zero means no train on all items.
+      item-count = 0
+      # These settings are used to configure the classifier. If
+      # multiple are given, they are all tried and the &quot;best&quot; is
+      # chosen at the end. See
+      # https://nlp.stanford.edu/nlp/javadoc/javanlp/edu/stanford/nlp/classify/ColumnDataClassifier.html
+      # for more info about these settings. The settings here yielded
+      # good results with *my* dataset.
+      #
+      # Enclose regexps in triple quotes.
+      classifiers = [
+        { &quot;useSplitWords&quot; = &quot;true&quot;
+          &quot;splitWordsTokenizerRegexp&quot; = &quot;&quot;&quot;[\p{L}][\p{L}0-9]*|(?:\$ ?)?[0-9]+(?:\.[0-9]{2})?%?|\s+|.&quot;&quot;&quot;
+          &quot;splitWordsIgnoreRegexp&quot; = &quot;&quot;&quot;\s+&quot;&quot;&quot;
+          &quot;useSplitPrefixSuffixNGrams&quot; = &quot;true&quot;
+          &quot;maxNGramLeng&quot; = &quot;4&quot;
+          &quot;minNGramLeng&quot; = &quot;1&quot;
+          &quot;splitWordShape&quot; = &quot;chris4&quot;
+          &quot;intern&quot; = &quot;true&quot; # makes it slower but saves memory
+        }
+      ]
+    }
   }
-  # Configuration for converting files into PDFs</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">
+  # Configuration for converting files into PDFs.
   #
-  # Most of it is delegated to external tools</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> which can be configured
-  # below</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> They must be in the </span><span style="color:#fabd2f;">PATH</span><span style="color:#fdf4c1aa;"> environment or specify the full
-  # path below via the `program` key</span><span style="color:#fe8019;">.
-</span><span style="color:#fa5c4b;">  convert </span><span style="color:#fdf4c1aa;">{
-    # The chunk size used when storing files</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> This should be the same
-    # as used </span><span style="color:#fa5c4b;">with</span><span style="color:#fdf4c1aa;"> the rest server</span><span style="color:#fe8019;">.
-    </span><span style="color:#fdf4c1;">chunk-size </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">524288</span><span style="color:#fdf4c1aa;">
-    # When reading images</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> this is the maximum size</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> Images that are
-    # larger are not processed</span><span style="color:#fe8019;">.
-    </span><span style="color:#fdf4c1;">max-image-size </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> ${docspell</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">joex</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">extraction</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">ocr</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">max</span><span style="color:#fe8019;">-</span><span style="color:#fdf4c1aa;">image</span><span style="color:#fe8019;">-</span><span style="color:#fdf4c1aa;">size}
+  # Most of it is delegated to external tools, which can be configured
+  # below. They must be in the PATH environment or specify the full
+  # path below via the `program` key.
+  convert {
+    # The chunk size used when storing files. This should be the same
+    # as used with the rest server.
+    chunk-size = 524288
+    # When reading images, this is the maximum size. Images that are
+    # larger are not processed.
+    max-image-size = ${docspell.joex.extraction.ocr.max-image-size}
     # Settings when processing markdown files (and other text files)
-    # to </span><span style="color:#fabd2f;">HTML</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">
+    # to HTML.
     #
-    # In order to support text formats</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> text files are first converted
-    # to </span><span style="color:#fabd2f;">HTML</span><span style="color:#fdf4c1aa;"> using a markdown processor</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> The resulting </span><span style="color:#fabd2f;">HTML</span><span style="color:#fdf4c1aa;"> is </span><span style="color:#fa5c4b;">then</span><span style="color:#fdf4c1aa;">
-    # converted to a </span><span style="color:#fabd2f;">PDF</span><span style="color:#fdf4c1aa;"> file</span><span style="color:#fe8019;">.
-</span><span style="color:#fa5c4b;">    markdown </span><span style="color:#fdf4c1aa;">{
-      # The </span><span style="color:#fabd2f;">CSS</span><span style="color:#fdf4c1aa;"> that is used to style the resulting </span><span style="color:#fabd2f;">HTML</span><span style="color:#fe8019;">.
-      </span><span style="color:#fdf4c1;">internal-css </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;&quot;&quot;
+    # In order to support text formats, text files are first converted
+    # to HTML using a markdown processor. The resulting HTML is then
+    # converted to a PDF file.
+    markdown {
+      # The CSS that is used to style the resulting HTML.
+      internal-css = &quot;&quot;&quot;
         body { padding: 2em 5em; }
-      &quot;&quot;&quot;</span><span style="color:#fdf4c1aa;">
+      &quot;&quot;&quot;
     }
-    # To convert </span><span style="color:#fabd2f;">HTML</span><span style="color:#fdf4c1aa;"> files into </span><span style="color:#fabd2f;">PDF</span><span style="color:#fdf4c1aa;"> files</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> the external tool
-    # wkhtmltopdf is used</span><span style="color:#fe8019;">.
-</span><span style="color:#fa5c4b;">    wkhtmlpdf </span><span style="color:#fdf4c1aa;">{
-      </span><span style="color:#fdf4c1;">command </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> {
-        </span><span style="color:#fdf4c1;">program </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;wkhtmltopdf&quot;
-        </span><span style="color:#fdf4c1;">args </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> [
-          </span><span style="color:#b8bb26;">&quot;-s&quot;</span><span style="color:#fe8019;">,
-          </span><span style="color:#b8bb26;">&quot;A4&quot;</span><span style="color:#fe8019;">,
-          </span><span style="color:#b8bb26;">&quot;--encoding&quot;</span><span style="color:#fe8019;">,
-          </span><span style="color:#b8bb26;">&quot;{{encoding}}&quot;</span><span style="color:#fe8019;">,
-          </span><span style="color:#b8bb26;">&quot;--load-error-handling&quot;</span><span style="color:#fe8019;">, </span><span style="color:#b8bb26;">&quot;ignore&quot;</span><span style="color:#fe8019;">,
-          </span><span style="color:#b8bb26;">&quot;--load-media-error-handling&quot;</span><span style="color:#fe8019;">, </span><span style="color:#b8bb26;">&quot;ignore&quot;</span><span style="color:#fe8019;">,
-          </span><span style="color:#b8bb26;">&quot;-&quot;</span><span style="color:#fe8019;">,
-          </span><span style="color:#b8bb26;">&quot;{{outfile}}&quot;</span><span style="color:#fdf4c1aa;">
+    # To convert HTML files into PDF files, the external tool
+    # wkhtmltopdf is used.
+    wkhtmlpdf {
+      command = {
+        program = &quot;wkhtmltopdf&quot;
+        args = [
+          &quot;-s&quot;,
+          &quot;A4&quot;,
+          &quot;--encoding&quot;,
+          &quot;{{encoding}}&quot;,
+          &quot;--load-error-handling&quot;, &quot;ignore&quot;,
+          &quot;--load-media-error-handling&quot;, &quot;ignore&quot;,
+          &quot;-&quot;,
+          &quot;{{outfile}}&quot;
         ]
-        </span><span style="color:#fdf4c1;">timeout </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;2 minutes&quot;</span><span style="color:#fdf4c1aa;">
+        timeout = &quot;2 minutes&quot;
       }
-      </span><span style="color:#fdf4c1;">working-dir </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> ${java</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">io</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">tmpdir}</span><span style="color:#b8bb26;">&quot;/docspell-convert&quot;</span><span style="color:#fdf4c1aa;">
+      working-dir = ${java.io.tmpdir}&quot;/docspell-convert&quot;
     }
-    # To convert image files to </span><span style="color:#fabd2f;">PDF</span><span style="color:#fdf4c1aa;"> files</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> tesseract is used</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> This
-    # also extracts the text in one go</span><span style="color:#fe8019;">.
-    </span><span style="color:#fdf4c1;">tesseract </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> {
-      </span><span style="color:#fdf4c1;">command </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> {
-        </span><span style="color:#fdf4c1;">program </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;tesseract&quot;
-        </span><span style="color:#fdf4c1;">args </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> [
-          </span><span style="color:#b8bb26;">&quot;{{infile}}&quot;</span><span style="color:#fe8019;">,
-          </span><span style="color:#b8bb26;">&quot;out&quot;</span><span style="color:#fe8019;">,
-          </span><span style="color:#b8bb26;">&quot;-l&quot;</span><span style="color:#fe8019;">,
-          </span><span style="color:#b8bb26;">&quot;{{lang}}&quot;</span><span style="color:#fe8019;">,
-          </span><span style="color:#b8bb26;">&quot;pdf&quot;</span><span style="color:#fe8019;">,
-          </span><span style="color:#b8bb26;">&quot;txt&quot;</span><span style="color:#fdf4c1aa;">
+    # To convert image files to PDF files, tesseract is used. This
+    # also extracts the text in one go.
+    tesseract = {
+      command = {
+        program = &quot;tesseract&quot;
+        args = [
+          &quot;{{infile}}&quot;,
+          &quot;out&quot;,
+          &quot;-l&quot;,
+          &quot;{{lang}}&quot;,
+          &quot;pdf&quot;,
+          &quot;txt&quot;
         ]
-        </span><span style="color:#fdf4c1;">timeout </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;5 minutes&quot;</span><span style="color:#fdf4c1aa;">
+        timeout = &quot;5 minutes&quot;
       }
-      </span><span style="color:#fdf4c1;">working-dir </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> ${java</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">io</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">tmpdir}</span><span style="color:#b8bb26;">&quot;/docspell-convert&quot;</span><span style="color:#fdf4c1aa;">
+      working-dir = ${java.io.tmpdir}&quot;/docspell-convert&quot;
     }
-    # To convert </span><span style="color:#b8bb26;">&quot;office&quot;</span><span style="color:#fdf4c1aa;"> files to </span><span style="color:#fabd2f;">PDF</span><span style="color:#fdf4c1aa;"> files</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> the external tool
-    # unoconv is used</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> Unoconv uses </span><span style="color:#fabd2f;">libreoffice/openoffice</span><span style="color:#fdf4c1aa;"> for
-    # converting</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> So it supports all formats that are possible to read
-    # </span><span style="color:#fa5c4b;">with </span><span style="color:#fabd2f;">libreoffice/openoffic</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">
+    # To convert &quot;office&quot; files to PDF files, the external tool
+    # unoconv is used. Unoconv uses libreoffice/openoffice for
+    # converting. So it supports all formats that are possible to read
+    # with libreoffice/openoffic.
     #
-    # Note</span><span style="color:#fe8019;">:</span><span style="color:#fdf4c1aa;"> to greatly improve performance</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> it is recommended to </span><span style="color:#fa5c4b;">start</span><span style="color:#fdf4c1aa;">
-    # a libreoffice listener by running `unoconv </span><span style="color:#fe8019;">-</span><span style="color:#fdf4c1aa;">l` in a separate
-    # process</span><span style="color:#fe8019;">.
-    </span><span style="color:#fdf4c1;">unoconv </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> {
-      </span><span style="color:#fdf4c1;">command </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> {
-        </span><span style="color:#fdf4c1;">program </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;unoconv&quot;
-        </span><span style="color:#fdf4c1;">args </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> [
-          </span><span style="color:#b8bb26;">&quot;-f&quot;</span><span style="color:#fe8019;">,
-          </span><span style="color:#b8bb26;">&quot;pdf&quot;</span><span style="color:#fe8019;">,
-          </span><span style="color:#b8bb26;">&quot;-o&quot;</span><span style="color:#fe8019;">,
-          </span><span style="color:#b8bb26;">&quot;{{outfile}}&quot;</span><span style="color:#fe8019;">,
-          </span><span style="color:#b8bb26;">&quot;{{infile}}&quot;</span><span style="color:#fdf4c1aa;">
+    # Note: to greatly improve performance, it is recommended to start
+    # a libreoffice listener by running `unoconv -l` in a separate
+    # process.
+    unoconv = {
+      command = {
+        program = &quot;unoconv&quot;
+        args = [
+          &quot;-f&quot;,
+          &quot;pdf&quot;,
+          &quot;-o&quot;,
+          &quot;{{outfile}}&quot;,
+          &quot;{{infile}}&quot;
         ]
-        </span><span style="color:#fdf4c1;">timeout </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;2 minutes&quot;</span><span style="color:#fdf4c1aa;">
+        timeout = &quot;2 minutes&quot;
       }
-      </span><span style="color:#fdf4c1;">working-dir </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> ${java</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">io</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">tmpdir}</span><span style="color:#b8bb26;">&quot;/docspell-convert&quot;</span><span style="color:#fdf4c1aa;">
+      working-dir = ${java.io.tmpdir}&quot;/docspell-convert&quot;
     }
     # The tool ocrmypdf can be used to convert pdf files to pdf files
-    # in order to add extracted text as a separate layer</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> This makes
-    # image</span><span style="color:#fe8019;">-</span><span style="color:#fdf4c1aa;">only pdfs searchable and you can select and </span><span style="color:#fabd2f;">copy/paste</span><span style="color:#fdf4c1aa;"> the
-    # text</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> It also converts pdfs into </span><span style="color:#fabd2f;">pdf/a</span><span style="color:#fdf4c1aa;"> type pdfs</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> which are best
-    # suited for archiving</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> So it makes sense to use this even for
-    # text</span><span style="color:#fe8019;">-</span><span style="color:#fdf4c1aa;">only pdfs</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">
+    # in order to add extracted text as a separate layer. This makes
+    # image-only pdfs searchable and you can select and copy/paste the
+    # text. It also converts pdfs into pdf/a type pdfs, which are best
+    # suited for archiving. So it makes sense to use this even for
+    # text-only pdfs.
     #
-    # It is recommended to install ocrympdf</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> but it also is optional</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">
-    # If it is enabled but fails</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> the error is not fatal and the
+    # It is recommended to install ocrympdf, but it also is optional.
+    # If it is enabled but fails, the error is not fatal and the
     # processing will continue using the original pdf for extracting
-    # text</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> You can also disable it to remove the errors from the
-    # processing logs</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">
+    # text. You can also disable it to remove the errors from the
+    # processing logs.
     #
-    # The `</span><span style="color:#fe8019;">--</span><span style="color:#fdf4c1aa;">skip</span><span style="color:#fe8019;">-</span><span style="color:#fdf4c1aa;">text` option is necessary to not fail </span><span style="color:#d3869b;">on </span><span style="color:#b8bb26;">&quot;text&quot;</span><span style="color:#fdf4c1aa;"> pdfs
-    # (where ocr is not necessary)</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> In this case</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> the pdf will be
-    # converted to </span><span style="color:#fabd2f;">PDF</span><span style="color:#fe8019;">/</span><span style="color:#fabd2f;">A</span><span style="color:#fe8019;">.
-    </span><span style="color:#fdf4c1;">ocrmypdf </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> {
-      </span><span style="color:#fdf4c1;">enabled </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">true
-      </span><span style="color:#fdf4c1;">command </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> {
-        </span><span style="color:#fdf4c1;">program </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;ocrmypdf&quot;
-        </span><span style="color:#fdf4c1;">args </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> [
-          </span><span style="color:#b8bb26;">&quot;-l&quot;</span><span style="color:#fe8019;">, </span><span style="color:#b8bb26;">&quot;{{lang}}&quot;</span><span style="color:#fe8019;">,
-          </span><span style="color:#b8bb26;">&quot;--skip-text&quot;</span><span style="color:#fe8019;">,
-          </span><span style="color:#b8bb26;">&quot;--deskew&quot;</span><span style="color:#fe8019;">,
-          </span><span style="color:#b8bb26;">&quot;-j&quot;</span><span style="color:#fe8019;">, </span><span style="color:#b8bb26;">&quot;1&quot;</span><span style="color:#fe8019;">,
-          </span><span style="color:#b8bb26;">&quot;{{infile}}&quot;</span><span style="color:#fe8019;">,
-          </span><span style="color:#b8bb26;">&quot;{{outfile}}&quot;</span><span style="color:#fdf4c1aa;">
+    # The `--skip-text` option is necessary to not fail on &quot;text&quot; pdfs
+    # (where ocr is not necessary). In this case, the pdf will be
+    # converted to PDF/A.
+    ocrmypdf = {
+      enabled = true
+      command = {
+        program = &quot;ocrmypdf&quot;
+        args = [
+          &quot;-l&quot;, &quot;{{lang}}&quot;,
+          &quot;--skip-text&quot;,
+          &quot;--deskew&quot;,
+          &quot;-j&quot;, &quot;1&quot;,
+          &quot;{{infile}}&quot;,
+          &quot;{{outfile}}&quot;
         ]
-        </span><span style="color:#fdf4c1;">timeout </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;5 minutes&quot;</span><span style="color:#fdf4c1aa;">
+        timeout = &quot;5 minutes&quot;
       }
-      </span><span style="color:#fdf4c1;">working-dir </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> ${java</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">io</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">tmpdir}</span><span style="color:#b8bb26;">&quot;/docspell-convert&quot;</span><span style="color:#fdf4c1aa;">
+      working-dir = ${java.io.tmpdir}&quot;/docspell-convert&quot;
     }
   }
   # General config for processing documents
-</span><span style="color:#fa5c4b;">  processing </span><span style="color:#fdf4c1aa;">{
-    # Restricts proposals for due dates</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> Only dates earlier than this
-    # number of years in the future are considered</span><span style="color:#fe8019;">.
-    </span><span style="color:#fdf4c1;">max-due-date-years </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">10</span><span style="color:#fdf4c1aa;">
+  processing {
+    # Restricts proposals for due dates. Only dates earlier than this
+    # number of years in the future are considered.
+    max-due-date-years = 10
   }
-  # The same section is also present in the rest</span><span style="color:#fe8019;">-</span><span style="color:#fdf4c1aa;">server config</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> It is
-  # used when submitting files into the job queue for processing</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">
+  # The same section is also present in the rest-server config. It is
+  # used when submitting files into the job queue for processing.
   #
-  # Currently</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> these settings may affect memory usage of all nodes</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> so
-  # it should be the same </span><span style="color:#d3869b;">on</span><span style="color:#fdf4c1aa;"> all nodes</span><span style="color:#fe8019;">.
-</span><span style="color:#fa5c4b;">  files </span><span style="color:#fdf4c1aa;">{
-    # Defines the chunk size (in bytes) used to store the files</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">
+  # Currently, these settings may affect memory usage of all nodes, so
+  # it should be the same on all nodes.
+  files {
+    # Defines the chunk size (in bytes) used to store the files.
     # This will affect the memory footprint when uploading and
-    # downloading files</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> At most this amount is loaded into </span><span style="color:#fabd2f;">RAM</span><span style="color:#fdf4c1aa;"> for
-    # down</span><span style="color:#fe8019;">-</span><span style="color:#fdf4c1aa;"> and uploading</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">
+    # downloading files. At most this amount is loaded into RAM for
+    # down- and uploading.
     #
     # It also defines the chunk size used for the blobs inside the
-    # database</span><span style="color:#fe8019;">.
-    </span><span style="color:#fdf4c1;">chunk-size </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">524288</span><span style="color:#fdf4c1aa;">
-    # The file content types that are considered valid</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> Docspell
-    # will only pass these files to processing</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> The processing code
+    # database.
+    chunk-size = 524288
+    # The file content types that are considered valid. Docspell
+    # will only pass these files to processing. The processing code
     # itself has also checks for which files are supported and which
-    # not</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> This affects the uploading part and can be used to
-    # restrict file types that should be handed over to processing</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">
-    # By default all files are allowed</span><span style="color:#fe8019;">.
-    </span><span style="color:#fdf4c1;">valid-mime-types </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> [ ]
+    # not. This affects the uploading part and can be used to
+    # restrict file types that should be handed over to processing.
+    # By default all files are allowed.
+    valid-mime-types = [ ]
   }
-  # Configuration of the full</span><span style="color:#fe8019;">-</span><span style="color:#fdf4c1aa;">text search engine</span><span style="color:#fe8019;">.
-  </span><span style="color:#fdf4c1;">full-text-search </span><span style="color:#fdf4c1aa;">{
-    # The full</span><span style="color:#fe8019;">-</span><span style="color:#fdf4c1aa;">text search feature can be disabled</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> It requires an
-    # additional </span><span style="color:#fa5c4b;">index</span><span style="color:#fdf4c1aa;"> server which needs additional memory and disk
-    # space</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> It can be enabled later any time</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">
+  # Configuration of the full-text search engine.
+  full-text-search {
+    # The full-text search feature can be disabled. It requires an
+    # additional index server which needs additional memory and disk
+    # space. It can be enabled later any time.
     #
-    # Currently the </span><span style="color:#fabd2f;">SOLR</span><span style="color:#fdf4c1aa;"> search platform is supported</span><span style="color:#fe8019;">.
-    </span><span style="color:#fdf4c1;">enabled </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">false</span><span style="color:#fdf4c1aa;">
-    # Configuration for the </span><span style="color:#fabd2f;">SOLR</span><span style="color:#fdf4c1aa;"> backend</span><span style="color:#fe8019;">.
-    </span><span style="color:#fdf4c1;">solr </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> {
-      # The </span><span style="color:#fabd2f;">URL</span><span style="color:#fdf4c1aa;"> to solr
-      </span><span style="color:#fdf4c1;">url </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;http://localhost:8983/solr/docspell&quot;</span><span style="color:#fdf4c1aa;">
+    # Currently the SOLR search platform is supported.
+    enabled = false
+    # Configuration for the SOLR backend.
+    solr = {
+      # The URL to solr
+      url = &quot;http://localhost:8983/solr/docspell&quot;
       # Used to tell solr when to commit the data
-      </span><span style="color:#fdf4c1;">commit-within </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">1000</span><span style="color:#fdf4c1aa;">
-      # If </span><span style="color:#d3869b;">true</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> logs request and response bodies
-      </span><span style="color:#fdf4c1;">log-verbose </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">false</span><span style="color:#fdf4c1aa;">
+      commit-within = 1000
+      # If true, logs request and response bodies
+      log-verbose = false
       # The defType parameter to lucene that defines the parser to
-      # use</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> You might want to try </span><span style="color:#b8bb26;">&quot;edismax&quot;</span><span style="color:#fdf4c1aa;"> or look here</span><span style="color:#fe8019;">:</span><span style="color:#fdf4c1aa;">
-      # </span><span style="color:#fdf4c1;">https://lucene.apache.org/solr/guide/8_4/query-syntax-and-parsing.html#query-syntax-and-parsing
-      def-type </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;lucene&quot;</span><span style="color:#fdf4c1aa;">
-      # The default combiner for tokens</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> One of {</span><span style="color:#fabd2f;">AND</span><span style="color:#fe8019;">, </span><span style="color:#fabd2f;">OR</span><span style="color:#fdf4c1aa;">}</span><span style="color:#fe8019;">.
-      </span><span style="color:#fdf4c1;">q-op </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;OR&quot;</span><span style="color:#fdf4c1aa;">
+      # use. You might want to try &quot;edismax&quot; or look here:
+      # https://lucene.apache.org/solr/guide/8_4/query-syntax-and-parsing.html#query-syntax-and-parsing
+      def-type = &quot;lucene&quot;
+      # The default combiner for tokens. One of {AND, OR}.
+      q-op = &quot;OR&quot;
     }
-    # Settings for running the </span><span style="color:#fa5c4b;">index</span><span style="color:#fdf4c1aa;"> migration tasks
-    </span><span style="color:#fdf4c1;">migration </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> {
-      # Chunk size to use when indexing data from the database</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;"> This
+    # Settings for running the index migration tasks
+    migration = {
+      # Chunk size to use when indexing data from the database. This
       # many attachments are loaded into memory and pushed to the
-      # full</span><span style="color:#fe8019;">-</span><span style="color:#fdf4c1aa;">text index</span><span style="color:#fe8019;">.
-      </span><span style="color:#fdf4c1;">index-all-chunk </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">10</span><span style="color:#fdf4c1aa;">
+      # full-text index.
+      index-all-chunk = 10
     }
   }
 }
@@ -989,7 +1055,7 @@ statements with level &quot;DEBUG&quot; will be printed, too.</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell, 0.10.0
+                Docspell, 0.11.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>
