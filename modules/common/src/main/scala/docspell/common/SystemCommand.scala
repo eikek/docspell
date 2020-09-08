@@ -20,9 +20,8 @@ object SystemCommand {
 
     def replace(repl: Map[String, String]): Config =
       mapArgs(s =>
-        repl.foldLeft(s) {
-          case (res, (k, v)) =>
-            res.replace(k, v)
+        repl.foldLeft(s) { case (res, (k, v)) =>
+          res.replace(k, v)
         }
       )
 

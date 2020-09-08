@@ -59,9 +59,9 @@ object Migration {
             s"Applying index migration ${m.version}/${m.description} failed"
           ) *>
             ctx.store.transact(RFtsMigration.deleteById(rec.id)) *> Effect[F]
-            .raiseError[Unit](
-              ex
-            )
+              .raiseError[Unit](
+                ex
+              )
       })
     } yield ret).getOrElseF(
       ctx.logger.info(s"Migration ${m.version}/${m.description} already applied.")

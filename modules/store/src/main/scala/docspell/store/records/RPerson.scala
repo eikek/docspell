@@ -128,14 +128,14 @@ object RPerson {
     val q = fr"SELECT DISTINCT" ++ commas(pid.prefix("p").f, name.prefix("p").f) ++
       fr"FROM" ++ table ++ fr"p" ++
       fr"INNER JOIN" ++ RContact.table ++ fr"c ON" ++ CC.personId
-      .prefix("c")
-      .is(pid.prefix("p")) ++
+        .prefix("c")
+        .is(pid.prefix("p")) ++
       fr"WHERE" ++ and(
-      cid.prefix("p").is(coll),
-      CC.kind.prefix("c").is(contactKind),
-      concerning.prefix("p").is(concerningOnly),
-      CC.value.prefix("c").lowerLike(value)
-    )
+        cid.prefix("p").is(coll),
+        CC.kind.prefix("c").is(contactKind),
+        concerning.prefix("p").is(concerningOnly),
+        CC.value.prefix("c").lowerLike(value)
+      )
 
     q.query[IdRef].to[Vector]
   }

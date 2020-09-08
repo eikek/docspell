@@ -19,13 +19,12 @@ object LoginRoutes {
     val dsl: Http4sDsl[F] = new Http4sDsl[F] {}
     import dsl._
 
-    HttpRoutes.of[F] {
-      case req @ POST -> Root / "login" =>
-        for {
-          up   <- req.as[UserPass]
-          res  <- S.loginUserPass(cfg.auth)(Login.UserPass(up.account, up.password))
-          resp <- makeResponse(dsl, cfg, res, up.account)
-        } yield resp
+    HttpRoutes.of[F] { case req @ POST -> Root / "login" =>
+      for {
+        up   <- req.as[UserPass]
+        res  <- S.loginUserPass(cfg.auth)(Login.UserPass(up.account, up.password))
+        resp <- makeResponse(dsl, cfg, res, up.account)
+      } yield resp
     }
   }
 

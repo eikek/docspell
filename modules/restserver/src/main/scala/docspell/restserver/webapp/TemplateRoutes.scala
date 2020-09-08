@@ -40,20 +40,18 @@ object TemplateRoutes {
     import dsl._
     new InnerRoutes[F] {
       def doc =
-        HttpRoutes.of[F] {
-          case GET -> Root =>
-            for {
-              templ <- docTemplate
-              resp  <- Ok(DocData().render(templ), `Content-Type`(`text/html`))
-            } yield resp
+        HttpRoutes.of[F] { case GET -> Root =>
+          for {
+            templ <- docTemplate
+            resp  <- Ok(DocData().render(templ), `Content-Type`(`text/html`))
+          } yield resp
         }
       def app =
-        HttpRoutes.of[F] {
-          case GET -> _ =>
-            for {
-              templ <- indexTemplate
-              resp  <- Ok(IndexData(cfg).render(templ), `Content-Type`(`text/html`))
-            } yield resp
+        HttpRoutes.of[F] { case GET -> _ =>
+          for {
+            templ <- indexTemplate
+            resp  <- Ok(IndexData(cfg).render(templ), `Content-Type`(`text/html`))
+          } yield resp
         }
     }
   }

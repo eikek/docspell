@@ -82,14 +82,14 @@ object QCollective {
     ) ++
       fr"FROM" ++ RTagItem.table ++ fr"r" ++
       fr"INNER JOIN" ++ RTag.table ++ fr"t ON" ++ RC.tagId
-      .prefix("r")
-      .is(TC.tid.prefix("t")) ++
+        .prefix("r")
+        .is(TC.tid.prefix("t")) ++
       fr"WHERE" ++ TC.cid.prefix("t").is(coll) ++
       fr"GROUP BY" ++ commas(
-      TC.name.prefix("t").f,
-      TC.tid.prefix("t").f,
-      TC.category.prefix("t").f
-    )
+        TC.name.prefix("t").f,
+        TC.tid.prefix("t").f,
+        TC.category.prefix("t").f
+      )
 
     q3.query[TagCount].to[List]
   }

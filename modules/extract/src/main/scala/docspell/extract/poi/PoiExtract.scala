@@ -44,14 +44,14 @@ object PoiExtract {
         getDocx(data)
       case PoiType.msoffice =>
         EitherT(getDoc[F](data))
-          .recoverWith({
-            case _ => EitherT(getXls[F](data))
+          .recoverWith({ case _ =>
+            EitherT(getXls[F](data))
           })
           .value
       case PoiType.ooxml =>
         EitherT(getDocx[F](data))
-          .recoverWith({
-            case _ => EitherT(getXlsx[F](data))
+          .recoverWith({ case _ =>
+            EitherT(getXlsx[F](data))
           })
           .value
       case mt =>

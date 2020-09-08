@@ -106,13 +106,13 @@ object ROrganization {
     val q = fr"SELECT DISTINCT" ++ commas(oid.prefix("o").f, name.prefix("o").f) ++
       fr"FROM" ++ table ++ fr"o" ++
       fr"INNER JOIN" ++ RContact.table ++ fr"c ON" ++ CC.orgId
-      .prefix("c")
-      .is(oid.prefix("o")) ++
+        .prefix("c")
+        .is(oid.prefix("o")) ++
       fr"WHERE" ++ and(
-      cid.prefix("o").is(coll),
-      CC.kind.prefix("c").is(contactKind),
-      CC.value.prefix("c").lowerLike(value)
-    )
+        cid.prefix("o").is(coll),
+        CC.kind.prefix("c").is(contactKind),
+        CC.value.prefix("c").lowerLike(value)
+      )
 
     q.query[IdRef].to[Vector]
   }

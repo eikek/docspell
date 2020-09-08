@@ -23,17 +23,16 @@ object MailSendRoutes {
     val dsl = new Http4sDsl[F] {}
     import dsl._
 
-    HttpRoutes.of {
-      case req @ POST -> Root / Ident(name) / Ident(id) =>
-        for {
-          in <- req.as[SimpleMail]
-          mail = convertIn(id, in)
-          res <- mail.traverse(m => backend.mail.sendMail(user.account, name, m))
-          resp <- res.fold(
-            err => Ok(BasicResult(false, s"Invalid mail data: $err")),
-            res => Ok(convertOut(res))
-          )
-        } yield resp
+    HttpRoutes.of { case req @ POST -> Root / Ident(name) / Ident(id) =>
+      for {
+        in <- req.as[SimpleMail]
+        mail = convertIn(id, in)
+        res <- mail.traverse(m => backend.mail.sendMail(user.account, name, m))
+        resp <- res.fold(
+          err => Ok(BasicResult(false, s"Invalid mail data: $err")),
+          res => Ok(convertOut(res))
+        )
+      } yield resp
     }
   }
 

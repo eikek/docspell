@@ -41,20 +41,19 @@ object CreateItem {
               .flatMap(f => ctx.store.bitpeace.get(f.fileMetaId.id).map(fm => (f, fm)))
               .collect({ case (f, Some(fm)) if isValidFile(fm) => f })
               .zipWithIndex
-              .evalMap({
-                case (f, index) =>
-                  Ident
-                    .randomId[F]
-                    .map(id =>
-                      RAttachment(
-                        id,
-                        itemId,
-                        f.fileMetaId,
-                        index.toInt + offset,
-                        now,
-                        f.name
-                      )
+              .evalMap({ case (f, index) =>
+                Ident
+                  .randomId[F]
+                  .map(id =>
+                    RAttachment(
+                      id,
+                      itemId,
+                      f.fileMetaId,
+                      index.toInt + offset,
+                      now,
+                      f.name
                     )
+                  )
               })
           }
           .compile

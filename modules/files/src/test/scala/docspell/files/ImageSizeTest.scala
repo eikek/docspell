@@ -25,22 +25,20 @@ object ImageSizeTest extends SimpleTestSuite {
   )
 
   test("get sizes from input-stream") {
-    files.foreach {
-      case (uri, expect) =>
-        val url = uri.toJavaUrl.fold(sys.error, identity)
-        Using.resource(url.openStream()) { in =>
-          val dim = ImageSize.get(in)
-          assertEquals(dim, expect.some)
-        }
+    files.foreach { case (uri, expect) =>
+      val url = uri.toJavaUrl.fold(sys.error, identity)
+      Using.resource(url.openStream()) { in =>
+        val dim = ImageSize.get(in)
+        assertEquals(dim, expect.some)
+      }
     }
   }
 
   test("get sizes from stream") {
-    files.foreach {
-      case (uri, expect) =>
-        val stream = uri.readURL[IO](8192, blocker)
-        val dim    = ImageSize.get(stream).unsafeRunSync()
-        assertEquals(dim, expect.some)
+    files.foreach { case (uri, expect) =>
+      val stream = uri.readURL[IO](8192, blocker)
+      val dim    = ImageSize.get(stream).unsafeRunSync()
+      assertEquals(dim, expect.some)
     }
   }
 }

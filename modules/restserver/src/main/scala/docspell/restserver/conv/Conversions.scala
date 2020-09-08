@@ -441,9 +441,8 @@ trait Conversions {
       oid: Option[Ident],
       pid: Option[Ident]
   ): F[RContact] =
-    timeId.map {
-      case (id, now) =>
-        RContact(id, c.value, c.kind, pid, oid, now)
+    timeId.map { case (id, now) =>
+      RContact(id, c.value, c.kind, pid, oid, now)
     }
 
   // users
@@ -460,19 +459,18 @@ trait Conversions {
     )
 
   def newUser[F[_]: Sync](u: User, cid: Ident): F[RUser] =
-    timeId.map {
-      case (id, now) =>
-        RUser(
-          id,
-          u.login,
-          cid,
-          u.password.getOrElse(Password.empty),
-          u.state,
-          u.email,
-          0,
-          None,
-          now
-        )
+    timeId.map { case (id, now) =>
+      RUser(
+        id,
+        u.login,
+        cid,
+        u.password.getOrElse(Password.empty),
+        u.state,
+        u.email,
+        0,
+        None,
+        now
+      )
     }
 
   def changeUser(u: User, cid: Ident): RUser =
@@ -494,9 +492,8 @@ trait Conversions {
     Tag(rt.tagId, rt.name, rt.category, rt.created)
 
   def newTag[F[_]: Sync](t: Tag, cid: Ident): F[RTag] =
-    timeId.map {
-      case (id, now) =>
-        RTag(id, cid, t.name, t.category, now)
+    timeId.map { case (id, now) =>
+      RTag(id, cid, t.name, t.category, now)
     }
 
   def changeTag(t: Tag, cid: Ident): RTag =
@@ -517,9 +514,8 @@ trait Conversions {
     )
 
   def newSource[F[_]: Sync](s: Source, cid: Ident): F[RSource] =
-    timeId.map({
-      case (id, now) =>
-        RSource(id, cid, s.abbrev, s.description, 0, s.enabled, s.priority, now, s.folder)
+    timeId.map({ case (id, now) =>
+      RSource(id, cid, s.abbrev, s.description, 0, s.enabled, s.priority, now, s.folder)
     })
 
   def changeSource[F[_]: Sync](s: Source, coll: Ident): RSource =
@@ -540,9 +536,8 @@ trait Conversions {
     Equipment(re.eid, re.name, re.created)
 
   def newEquipment[F[_]: Sync](e: Equipment, cid: Ident): F[REquipment] =
-    timeId.map({
-      case (id, now) =>
-        REquipment(id, cid, e.name, now, now)
+    timeId.map({ case (id, now) =>
+      REquipment(id, cid, e.name, now, now)
     })
 
   def changeEquipment[F[_]: Sync](e: Equipment, cid: Ident): F[REquipment] =

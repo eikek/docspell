@@ -56,8 +56,8 @@ trait DoobieSyntax {
   def insertRows(table: Fragment, cols: List[Column], vals: List[Fragment]): Fragment =
     Fragment.const("INSERT INTO ") ++ table ++ Fragment.const(" (") ++
       commas(cols.map(_.f)) ++ Fragment.const(") VALUES ") ++ commas(
-      vals.map(f => sql"(" ++ f ++ sql")")
-    )
+        vals.map(f => sql"(" ++ f ++ sql")")
+      )
 
   def selectSimple(cols: Seq[Column], table: Fragment, where: Fragment): Fragment =
     selectSimple(commas(cols.map(_.f)), table, where)

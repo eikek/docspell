@@ -103,11 +103,11 @@ object QAttachment {
       .prefix("m")
       .f ++ fr"FROM" ++ RAttachmentMeta.table ++ fr"m" ++
       fr"INNER JOIN" ++ RAttachment.table ++ fr"a ON" ++ AC.id
-      .prefix("a")
-      .is(MC.id.prefix("m")) ++
+        .prefix("a")
+        .is(MC.id.prefix("m")) ++
       fr"INNER JOIN" ++ RItem.table ++ fr"i ON" ++ AC.itemId
-      .prefix("a")
-      .is(IC.id.prefix("i")) ++
+        .prefix("a")
+        .is(IC.id.prefix("i")) ++
       fr"WHERE" ++ and(AC.itemId.prefix("a").is(itemId), IC.cid.prefix("i").is(coll))
 
     for {
@@ -128,15 +128,15 @@ object QAttachment {
         MC.all.map(_.prefix("m").f)
       ) ++ fr"FROM" ++ RItem.table ++ fr"i" ++
         fr"INNER JOIN" ++ RAttachment.table ++ fr"a ON" ++ IC.id
-        .prefix("i")
-        .is(AC.itemId.prefix("a")) ++
+          .prefix("i")
+          .is(AC.itemId.prefix("a")) ++
         fr"INNER JOIN" ++ RAttachmentMeta.table ++ fr"m ON" ++ AC.id
-        .prefix("a")
-        .is(MC.id.prefix("m")) ++
+          .prefix("a")
+          .is(MC.id.prefix("m")) ++
         fr"WHERE" ++ and(
-        AC.id.prefix("a").is(attachId),
-        IC.cid.prefix("i").is(collective)
-      )
+          AC.id.prefix("a").is(attachId),
+          IC.cid.prefix("i").is(collective)
+        )
 
     q.query[RAttachmentMeta].option
   }

@@ -145,10 +145,9 @@ final class StanfordTextClassifier[F[_]: Sync: ContextShift](
 
   def prepend(pre: String, data: Map[String, String]): Map[String, String] =
     data.toList
-      .map({
-        case (k, v) =>
-          if (k.startsWith(pre)) (k, v)
-          else (pre + k, v)
+      .map({ case (k, v) =>
+        if (k.startsWith(pre)) (k, v)
+        else (pre + k, v)
       })
       .toMap
 }

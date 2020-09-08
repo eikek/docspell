@@ -17,23 +17,22 @@ object PoiExtractTest extends SimpleTestSuite {
   )
 
   test("extract text from ms office files") {
-    officeFiles.foreach {
-      case (file, len) =>
-        val str1 = PoiExtract
-          .get[IO](file.readURL[IO](8192, blocker), MimeTypeHint.none)
-          .unsafeRunSync()
-          .fold(throw _, identity)
+    officeFiles.foreach { case (file, len) =>
+      val str1 = PoiExtract
+        .get[IO](file.readURL[IO](8192, blocker), MimeTypeHint.none)
+        .unsafeRunSync()
+        .fold(throw _, identity)
 
-        val str2 = PoiExtract
-          .get[IO](
-            file.readURL[IO](8192, blocker),
-            MimeTypeHint(Some(file.path.segments.last), None)
-          )
-          .unsafeRunSync()
-          .fold(throw _, identity)
+      val str2 = PoiExtract
+        .get[IO](
+          file.readURL[IO](8192, blocker),
+          MimeTypeHint(Some(file.path.segments.last), None)
+        )
+        .unsafeRunSync()
+        .fold(throw _, identity)
 
-        assertEquals(str1, str2)
-        assertEquals(str1.length, len)
+      assertEquals(str1, str2)
+      assertEquals(str1.length, len)
     }
   }
 }
