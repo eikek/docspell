@@ -99,13 +99,12 @@ object RestServer {
     val dsl = new Http4sDsl[F] {}
     import dsl._
 
-    HttpRoutes.of {
-      case GET -> Root =>
-        Response[F](
-          Status.SeeOther,
-          body = Stream.empty,
-          headers = Headers.of(Location(Uri(path = path)))
-        ).pure[F]
+    HttpRoutes.of { case GET -> Root =>
+      Response[F](
+        Status.SeeOther,
+        body = Stream.empty,
+        headers = Headers.of(Location(Uri(path = path)))
+      ).pure[F]
     }
   }
 }

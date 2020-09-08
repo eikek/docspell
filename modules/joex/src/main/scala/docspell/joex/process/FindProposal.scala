@@ -82,10 +82,9 @@ object FindProposal {
   def removeDuplicates(labels: List[NerLabel]): List[NerLabel] =
     labels
       .sortBy(_.startPosition)
-      .foldLeft((Set.empty[String], List.empty[NerLabel])) {
-        case ((seen, result), el) =>
-          if (seen.contains(el.tag.name + el.label.toLowerCase)) (seen, result)
-          else (seen + (el.tag.name + el.label.toLowerCase), el :: result)
+      .foldLeft((Set.empty[String], List.empty[NerLabel])) { case ((seen, result), el) =>
+        if (seen.contains(el.tag.name + el.label.toLowerCase)) (seen, result)
+        else (seen + (el.tag.name + el.label.toLowerCase), el :: result)
       }
       ._2
 

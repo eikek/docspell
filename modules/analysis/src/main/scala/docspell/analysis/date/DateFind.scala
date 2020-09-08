@@ -39,14 +39,14 @@ object DateFind {
   }
 
   private object SimpleDate {
-    val p0 = (readYear >> readMonth >> readDay).map {
-      case ((y, m), d) => SimpleDate(y, m, d)
+    val p0 = (readYear >> readMonth >> readDay).map { case ((y, m), d) =>
+      SimpleDate(y, m, d)
     }
-    val p1 = (readDay >> readMonth >> readYear).map {
-      case ((d, m), y) => SimpleDate(y, m, d)
+    val p1 = (readDay >> readMonth >> readYear).map { case ((d, m), y) =>
+      SimpleDate(y, m, d)
     }
-    val p2 = (readMonth >> readDay >> readYear).map {
-      case ((m, d), y) => SimpleDate(y, m, d)
+    val p2 = (readMonth >> readDay >> readYear).map { case ((m, d), y) =>
+      SimpleDate(y, m, d)
     }
 
     // ymd ✔, ydm, dmy ✔, dym, myd, mdy ✔

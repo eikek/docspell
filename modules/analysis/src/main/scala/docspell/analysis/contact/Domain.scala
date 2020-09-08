@@ -26,18 +26,17 @@ object Domain {
     Tld
       .findTld(str)
       .map(tld => (str.dropRight(tld.length), tld))
-      .map({
-        case (names, tld) =>
-          names.split('.').toList match {
-            case Nil => Left(s"Not a domain: $str")
-            case segs
-                if segs.forall(label =>
-                  label.trim.nonEmpty && label
-                    .forall(c => c.isLetter || c.isDigit || c == '-')
-                ) =>
-              Right(Domain(NonEmptyList.fromListUnsafe(segs), tld))
-            case _ => Left(s"Not a domain: $str")
-          }
+      .map({ case (names, tld) =>
+        names.split('.').toList match {
+          case Nil => Left(s"Not a domain: $str")
+          case segs
+              if segs.forall(label =>
+                label.trim.nonEmpty && label
+                  .forall(c => c.isLetter || c.isDigit || c == '-')
+              ) =>
+            Right(Domain(NonEmptyList.fromListUnsafe(segs), tld))
+          case _ => Left(s"Not a domain: $str")
+        }
       })
       .getOrElse(Left(s"Not a domain $str"))
 

@@ -152,8 +152,8 @@ object RAttachment {
   ): ConnectionIO[Vector[RAttachment]] = {
     val q = selectSimple(all.map(_.prefix("a")), table ++ fr"a", Fragment.empty) ++
       fr"INNER JOIN" ++ RItem.table ++ fr"i ON" ++ RItem.Columns.id
-      .prefix("i")
-      .is(itemId.prefix("a")) ++
+        .prefix("i")
+        .is(itemId.prefix("a")) ++
       fr"WHERE" ++ and(itemId.prefix("a").is(id), RItem.Columns.cid.prefix("i").is(coll))
     q.query[RAttachment].to[Vector]
   }

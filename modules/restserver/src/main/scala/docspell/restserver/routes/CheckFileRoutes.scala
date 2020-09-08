@@ -20,13 +20,12 @@ object CheckFileRoutes {
     val dsl = new Http4sDsl[F] with ResponseGenerator[F] {}
     import dsl._
 
-    HttpRoutes.of {
-      case GET -> Root / checksum =>
-        for {
-          items <-
-            backend.itemSearch.findByFileCollective(checksum, user.account.collective)
-          resp <- Ok(convert(items))
-        } yield resp
+    HttpRoutes.of { case GET -> Root / checksum =>
+      for {
+        items <-
+          backend.itemSearch.findByFileCollective(checksum, user.account.collective)
+        resp <- Ok(convert(items))
+      } yield resp
 
     }
   }
@@ -35,12 +34,11 @@ object CheckFileRoutes {
     val dsl = new Http4sDsl[F] with ResponseGenerator[F] {}
     import dsl._
 
-    HttpRoutes.of {
-      case GET -> Root / Ident(id) / checksum =>
-        for {
-          items <- backend.itemSearch.findByFileSource(checksum, id)
-          resp  <- Ok(convert(items))
-        } yield resp
+    HttpRoutes.of { case GET -> Root / Ident(id) / checksum =>
+      for {
+        items <- backend.itemSearch.findByFileSource(checksum, id)
+        resp  <- Ok(convert(items))
+      } yield resp
     }
   }
 

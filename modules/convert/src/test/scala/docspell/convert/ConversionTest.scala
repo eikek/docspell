@@ -126,10 +126,9 @@ object ConversionTest extends SimpleTestSuite with FileChecks {
           conversion.use { conv =>
             def check(n: Long): Handler[IO, Unit] =
               storePdfTxtHandler(dir.resolve(s"test-$n.pdf"), dir.resolve(s"test-$n.txt"))
-                .map {
-                  case (p, t) =>
-                    assert(p.isNonEmpty && p.isPDF)
-                    assert(t.isNonEmpty && t.isPlainText)
+                .map { case (p, t) =>
+                  assert(p.isNonEmpty && p.isPDF)
+                  assert(t.isNonEmpty && t.isPlainText)
                 }
 
             runConversion(pdfAndTxt, check, conv).compile.drain
@@ -165,12 +164,11 @@ object ConversionTest extends SimpleTestSuite with FileChecks {
       .emits(uris)
       .covary[IO]
       .zipWithIndex
-      .evalMap({
-        case (uri, index) =>
-          val load     = uri.readURL[IO](8192, blocker)
-          val dataType = DataType.filename(uri.path.segments.last)
-          logger.info(s"Processing file ${uri.path.asString}") *>
-            conv.toPDF(dataType, Language.German, handler(index))(load)
+      .evalMap({ case (uri, index) =>
+        val load     = uri.readURL[IO](8192, blocker)
+        val dataType = DataType.filename(uri.path.segments.last)
+        logger.info(s"Processing file ${uri.path.asString}") *>
+          conv.toPDF(dataType, Language.German, handler(index))(load)
       })
 
   def commandsExist: Boolean =

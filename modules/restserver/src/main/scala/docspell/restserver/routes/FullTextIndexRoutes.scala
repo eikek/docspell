@@ -26,13 +26,11 @@ object FullTextIndexRoutes {
       val dsl = Http4sDsl[F]
       import dsl._
 
-      HttpRoutes.of {
-        case POST -> Root / "reIndex" =>
-          for {
-            res <- backend.fulltext.reindexCollective(user.account).attempt
-            resp <-
-              Ok(Conversions.basicResult(res, "Full-text index will be re-created."))
-          } yield resp
+      HttpRoutes.of { case POST -> Root / "reIndex" =>
+        for {
+          res  <- backend.fulltext.reindexCollective(user.account).attempt
+          resp <- Ok(Conversions.basicResult(res, "Full-text index will be re-created."))
+        } yield resp
       }
     }
 
@@ -42,16 +40,14 @@ object FullTextIndexRoutes {
       val dsl = Http4sDsl[F]
       import dsl._
 
-      HttpRoutes.of {
-        case POST -> Root / "reIndexAll" / Ident(id) =>
-          for {
-            res <-
-              if (id.nonEmpty && id == cfg.fullTextSearch.recreateKey)
-                backend.fulltext.reindexAll.attempt
-              else Left(new Exception("The provided key is invalid.")).pure[F]
-            resp <-
-              Ok(Conversions.basicResult(res, "Full-text index will be re-created."))
-          } yield resp
+      HttpRoutes.of { case POST -> Root / "reIndexAll" / Ident(id) =>
+        for {
+          res <-
+            if (id.nonEmpty && id == cfg.fullTextSearch.recreateKey)
+              backend.fulltext.reindexAll.attempt
+            else Left(new Exception("The provided key is invalid.")).pure[F]
+          resp <- Ok(Conversions.basicResult(res, "Full-text index will be re-created."))
+        } yield resp
       }
     }
 

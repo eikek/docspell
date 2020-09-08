@@ -29,9 +29,8 @@ object StanfordTextClassifierSuite extends SimpleTestSuite {
             .repeat
             .take(10)
         )
-        .flatMap({
-          case (a, b) =>
-            Stream.emits(Seq(a, b))
+        .flatMap({ case (a, b) =>
+          Stream.emits(Seq(a, b))
         })
         .covary[IO]
 
@@ -53,23 +52,22 @@ object StanfordTextClassifierSuite extends SimpleTestSuite {
     } yield (dir, blocker)
 
     things
-      .use {
-        case (dir, blocker) =>
-          val classifier = new StanfordTextClassifier[IO](cfg, blocker)
+      .use { case (dir, blocker) =>
+        val classifier = new StanfordTextClassifier[IO](cfg, blocker)
 
-          val modelFile = dir.resolve("test.ser.gz")
-          for {
-            _ <-
-              LenientUri
-                .fromJava(getClass.getResource("/test.ser.gz"))
-                .readURL[IO](4096, blocker)
-                .through(fs2.io.file.writeAll(modelFile, blocker))
-                .compile
-                .drain
-            model = ClassifierModel(modelFile)
-            cat <- classifier.classify(logger, model, "there is receipt always")
-            _ = assertEquals(cat, Some("receipt"))
-          } yield ()
+        val modelFile = dir.resolve("test.ser.gz")
+        for {
+          _ <-
+            LenientUri
+              .fromJava(getClass.getResource("/test.ser.gz"))
+              .readURL[IO](4096, blocker)
+              .through(fs2.io.file.writeAll(modelFile, blocker))
+              .compile
+              .drain
+          model = ClassifierModel(modelFile)
+          cat <- classifier.classify(logger, model, "there is receipt always")
+          _ = assertEquals(cat, Some("receipt"))
+        } yield ()
       }
       .unsafeRunSync()
   }

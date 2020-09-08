@@ -94,23 +94,23 @@ object QItem {
         Fragment.empty
       ) ++
         fr"LEFT JOIN" ++ ROrganization.table ++ fr"o ON" ++ RItem.Columns.corrOrg
-        .prefix("i")
-        .is(ROrganization.Columns.oid.prefix("o")) ++
+          .prefix("i")
+          .is(ROrganization.Columns.oid.prefix("o")) ++
         fr"LEFT JOIN" ++ RPerson.table ++ fr"p0 ON" ++ RItem.Columns.corrPerson
-        .prefix("i")
-        .is(RPerson.Columns.pid.prefix("p0")) ++
+          .prefix("i")
+          .is(RPerson.Columns.pid.prefix("p0")) ++
         fr"LEFT JOIN" ++ RPerson.table ++ fr"p1 ON" ++ RItem.Columns.concPerson
-        .prefix("i")
-        .is(RPerson.Columns.pid.prefix("p1")) ++
+          .prefix("i")
+          .is(RPerson.Columns.pid.prefix("p1")) ++
         fr"LEFT JOIN" ++ REquipment.table ++ fr"e ON" ++ RItem.Columns.concEquipment
-        .prefix("i")
-        .is(REquipment.Columns.eid.prefix("e")) ++
+          .prefix("i")
+          .is(REquipment.Columns.eid.prefix("e")) ++
         fr"LEFT JOIN" ++ RItem.table ++ fr"ref ON" ++ RItem.Columns.inReplyTo
-        .prefix("i")
-        .is(RItem.Columns.id.prefix("ref")) ++
+          .prefix("i")
+          .is(RItem.Columns.id.prefix("ref")) ++
         fr"LEFT JOIN" ++ RFolder.table ++ fr"f ON" ++ RItem.Columns.folder
-        .prefix("i")
-        .is(RFolder.Columns.id.prefix("f")) ++
+          .prefix("i")
+          .is(RFolder.Columns.id.prefix("f")) ++
         fr"WHERE" ++ RItem.Columns.id.prefix("i").is(id)
 
     val q = cq
@@ -312,8 +312,8 @@ object QItem {
       fr"LEFT JOIN orgs o0 ON" ++ IC.corrOrg.prefix("i").is(OC.oid.prefix("o0")) ++
       fr"LEFT JOIN persons p1 ON" ++ IC.concPerson.prefix("i").is(PC.pid.prefix("p1")) ++
       fr"LEFT JOIN equips e1 ON" ++ IC.concEquipment
-      .prefix("i")
-      .is(EC.eid.prefix("e1")) ++
+        .prefix("i")
+        .is(EC.eid.prefix("e1")) ++
       fr"LEFT JOIN folders f1 ON" ++ IC.folder.prefix("i").is(FC.id.prefix("f1"))
   }
 

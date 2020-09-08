@@ -14,17 +14,16 @@ object InfoRoutes {
   def apply[F[_]: Sync](): HttpRoutes[F] = {
     val dsl = new Http4sDsl[F] {}
     import dsl._
-    HttpRoutes.of[F] {
-      case GET -> (Root / "version") =>
-        Ok(
-          VersionInfo(
-            BuildInfo.version,
-            BuildInfo.builtAtMillis,
-            BuildInfo.builtAtString,
-            BuildInfo.gitHeadCommit.getOrElse(""),
-            BuildInfo.gitDescribedVersion.getOrElse("")
-          )
+    HttpRoutes.of[F] { case GET -> (Root / "version") =>
+      Ok(
+        VersionInfo(
+          BuildInfo.version,
+          BuildInfo.builtAtMillis,
+          BuildInfo.builtAtString,
+          BuildInfo.gitHeadCommit.getOrElse(""),
+          BuildInfo.gitDescribedVersion.getOrElse("")
         )
+      )
     }
   }
 }

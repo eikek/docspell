@@ -18,13 +18,12 @@ object CalEventCheckRoutes {
     val dsl = new Http4sDsl[F] {}
     import dsl._
 
-    HttpRoutes.of {
-      case req @ POST -> Root =>
-        for {
-          data <- req.as[CalEventCheck]
-          res  <- testEvent(data.event)
-          resp <- Ok(res)
-        } yield resp
+    HttpRoutes.of { case req @ POST -> Root =>
+      for {
+        data <- req.as[CalEventCheck]
+        res  <- testEvent(data.event)
+        resp <- Ok(res)
+      } yield resp
     }
   }
 
