@@ -89,6 +89,13 @@ in {
           user is created.
         '';
       };
+      jvmArgs = mkOption {
+        type = types.listOf types.str;
+        default = [];
+        example = [ "-J-Xmx1G" ];
+        description = "The options passed to the executable for setting jvm arguments.";
+      };
+
 
       app-name = mkOption {
         type = types.str;
@@ -513,7 +520,8 @@ in {
 
     systemd.services.docspell-restserver =
     let
-      cmd = "${pkgs.docspell.server}/bin/docspell-restserver ${configFile}";
+      args = builtins.concatStringsSep " " cfg.jvmArgs;
+      cmd = "${pkgs.docspell.server}/bin/docspell-restserver ${args} -- ${configFile}";
     in
     {
       description = "Docspell Rest Server";

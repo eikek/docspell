@@ -214,6 +214,12 @@ in {
           is running on the same machine.
         '';
       };
+      jvmArgs = mkOption {
+        type = types.listOf types.str;
+        default = [];
+        example = [ "-J-Xmx1G" ];
+        description = "The options passed to the executable for setting jvm arguments.";
+      };
 
 
       app-id = mkOption {
@@ -1199,7 +1205,8 @@ in {
 
     systemd.services.docspell-joex =
       let
-        cmd = "${pkgs.docspell.joex}/bin/docspell-joex ${configFile}";
+        args = builtins.concatStringsSep " " cfg.jvmArgs;
+        cmd = "${pkgs.docspell.joex}/bin/docspell-joex ${args} -- ${configFile}";
         waitTarget =
           if cfg.waitForTarget != null
           then
