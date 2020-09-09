@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.11.1
+
+*Sep 09, 2020*
+
+This is a bugfix release. The full-text-index requires a schema
+upgrade for the added language that got lost in the previous release.
+
+
 ## v0.11.0
 
 *Sep 07, 2020*
@@ -12,8 +20,8 @@ improvements for processing files.
   organizations/people of a collective. Now this data is given to the
   analyser as input which results in a higher accuracy when finding
   matches. This may result in high memory usage depending on the size
-  of the collective data and therefore and can be disabled in the
-  config file.
+  of the collective data and therefore can be disabled in the config
+  file.
 - Adds text classification. Docspell can now learn from your existing
   tagged items. Given a tag category, a statistical model is created
   from your existing documents and used to predict a tag (of that
