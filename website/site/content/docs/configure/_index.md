@@ -1,7 +1,7 @@
 +++
 title = "Configuration"
 insert_anchor_links = "right"
-description = "There are several tools distributed with docspell, like a program to watch a folder and import files to docspell."
+description = "Describes the configuration file and shows all default settings."
 weight = 40
 [extra]
 mktoc = true
