@@ -51,11 +51,26 @@ object SolrSetup {
             solrEngine,
             "Index all from database",
             FtsMigration.Result.indexAll.pure[F]
+          ),
+          FtsMigration[F](
+            5,
+            solrEngine,
+            "Add content_fr field",
+            addContentFrField.map(_ => FtsMigration.Result.workDone)
+          ),
+          FtsMigration[F](
+            6,
+            solrEngine,
+            "Index all from database",
+            FtsMigration.Result.indexAll.pure[F]
           )
         )
 
       def addFolderField: F[Unit] =
         addStringField(Field.folderId)
+
+      def addContentFrField: F[Unit] =
+        addTextField(Some(Language.French))(Field.content_fr)
 
       def setupCoreSchema: F[Unit] = {
         val cmds0 =
