@@ -88,6 +88,10 @@
             <div class="container">
                 <div class="content doc">
                     <h1 id="changelog">Changelog<a class="zola-anchor" href="#changelog" aria-label="Anchor link for: changelog">🔗</a></h1>
+<h2 id="v0-11-1">v0.11.1<a class="zola-anchor" href="#v0-11-1" aria-label="Anchor link for: v0-11-1">🔗</a></h2>
+<p><em>Sep 09, 2020</em></p>
+<p>This is a bugfix release. The full-text-index requires a schema
+upgrade for the added language that got lost in the previous release.</p>
 <h2 id="v0-11-0">v0.11.0<a class="zola-anchor" href="#v0-11-0" aria-label="Anchor link for: v0-11-0">🔗</a></h2>
 <p><em>Sep 07, 2020</em></p>
 <p>This release didn't change much on the surface, but contains a lot of
@@ -98,8 +102,8 @@ documents. Until now, the analyser didn't know about the existing
 organizations/people of a collective. Now this data is given to the
 analyser as input which results in a higher accuracy when finding
 matches. This may result in high memory usage depending on the size
-of the collective data and therefore and can be disabled in the
-config file.</li>
+of the collective data and therefore can be disabled in the config
+file.</li>
 <li>Adds text classification. Docspell can now learn from your existing
 tagged items. Given a tag category, a statistical model is created
 from your existing documents and used to predict a tag (of that
@@ -562,7 +566,7 @@ Web UI:</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell, 0.11.0
+                Docspell, 0.11.1
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>
