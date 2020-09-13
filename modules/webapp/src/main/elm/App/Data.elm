@@ -49,8 +49,11 @@ type alias Model =
 
 
 init : Key -> Url -> Flags -> UiSettings -> ( Model, Cmd Msg )
-init key url flags settings =
+init key url flags_ settings =
     let
+        flags =
+            initBaseUrl url flags_
+
         page =
             Page.fromUrl url
                 |> Maybe.withDefault (defaultPage flags)
@@ -88,6 +91,30 @@ init key url flags settings =
         , Cmd.map CollSettingsMsg csc
         ]
     )
+
+
+initBaseUrl : Url -> Flags -> Flags
+initBaseUrl url flags_ =
+    let
+        cfg =
+            flags_.config
+
+        baseUrl =
+            if cfg.baseUrl == "" then
+                Url.toString
+                    { url
+                        | path = ""
+                        , query = Nothing
+                        , fragment = Nothing
+                    }
+
+            else
+                cfg.baseUrl
+
+        cfgNew =
+            { cfg | baseUrl = baseUrl }
+    in
+    { flags_ | config = cfgNew }
 
 
 type Msg
