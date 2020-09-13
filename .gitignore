@@ -1,5 +1,6 @@
 #artwork/*.png
 target/
+local/
 node_modules/
 dev.conf
 elm-stuff

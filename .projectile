@@ -1,0 +1,5 @@
+!/local
+!/local/dev.conf
+!/local/test.rest
+!/modules/restapi/target/scala-2.13
+!/modules/webapp/target/elm-src/Api/Model
