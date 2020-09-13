@@ -21,9 +21,10 @@ object LoginRoutes {
 
     HttpRoutes.of[F] { case req @ POST -> Root / "login" =>
       for {
-        up   <- req.as[UserPass]
-        res  <- S.loginUserPass(cfg.auth)(Login.UserPass(up.account, up.password))
-        resp <- makeResponse(dsl, cfg, res, up.account)
+        up  <- req.as[UserPass]
+        res <- S.loginUserPass(cfg.auth)(Login.UserPass(up.account, up.password))
+        remote = req.from.map(_.getHostName())
+        resp <- makeResponse(dsl, cfg, remote, res, up.account)
       } yield resp
     }
   }
@@ -36,16 +37,17 @@ object LoginRoutes {
       case req @ POST -> Root / "session" =>
         Authenticate
           .authenticateRequest(S.loginSession(cfg.auth))(req)
-          .flatMap(res => makeResponse(dsl, cfg, res, ""))
+          .flatMap(res => makeResponse(dsl, cfg, req.from.map(_.getHostName), res, ""))
 
-      case POST -> Root / "logout" =>
-        Ok().map(_.addCookie(CookieData.deleteCookie(cfg)))
+      case req @ POST -> Root / "logout" =>
+        Ok().map(_.addCookie(CookieData.deleteCookie(cfg, req.from.map(_.getHostName))))
     }
   }
 
   def makeResponse[F[_]: Effect](
       dsl: Http4sDsl[F],
       cfg: Config,
+      remoteHost: Option[String],
       res: Login.Result,
       account: String
   ): F[Response[F]] = {
@@ -63,7 +65,7 @@ object LoginRoutes {
               Some(cd.asString),
               cfg.auth.sessionValid.millis
             )
-          ).map(_.addCookie(cd.asCookie(cfg)))
+          ).map(_.addCookie(cd.asCookie(cfg, remoteHost)))
         } yield resp
       case _ =>
         Ok(AuthResult("", account, false, "Login failed.", None, 0L))
