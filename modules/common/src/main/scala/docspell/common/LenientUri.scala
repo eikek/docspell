@@ -83,6 +83,9 @@ case class LenientUri(
       }
     )
 
+  def isLocal: Boolean =
+    host.exists(_.equalsIgnoreCase("localhost"))
+
   def asString: String = {
     val schemePart = scheme.toList.mkString(":")
     val authPart   = authority.map(a => s"//$a").getOrElse("")

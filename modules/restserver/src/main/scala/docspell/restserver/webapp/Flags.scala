@@ -11,7 +11,7 @@ import yamusca.imports._
 
 case class Flags(
     appName: String,
-    baseUrl: LenientUri,
+    baseUrl: String,
     signupMode: SignupConfig.Mode,
     docspellAssetPath: String,
     integrationEnabled: Boolean,
@@ -25,7 +25,7 @@ object Flags {
   def apply(cfg: Config): Flags =
     Flags(
       cfg.appName,
-      cfg.baseUrl,
+      getBaseUrl(cfg),
       cfg.backend.signup.mode,
       s"/app/assets/docspell-webapp/${BuildInfo.version}",
       cfg.integrationEndpoint.enabled,
@@ -34,6 +34,10 @@ object Flags {
       cfg.maxNoteLength,
       cfg.showClassificationSettings
     )
+
+  private def getBaseUrl(cfg: Config): String =
+    if (cfg.baseUrl.isLocal) cfg.baseUrl.path.asString
+    else cfg.baseUrl.asString
 
   implicit val jsonEncoder: Encoder[Flags] =
     deriveEncoder[Flags]
