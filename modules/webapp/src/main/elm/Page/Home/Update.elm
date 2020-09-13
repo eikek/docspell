@@ -105,7 +105,6 @@ update key flags settings msg model =
                     { model
                         | searchInProgress = False
                         , searchOffset = noff
-                        , viewMode = Listing
                         , moreAvailable = list.groups /= []
                     }
             in
@@ -121,7 +120,6 @@ update key flags settings msg model =
                         | searchInProgress = False
                         , moreInProgress = False
                         , searchOffset = noff
-                        , viewMode = Listing
                         , moreAvailable = list.groups /= []
                     }
             in
@@ -244,7 +242,6 @@ doSearch flags settings model =
     withSub
         ( { model_
             | searchInProgress = cmd /= Cmd.none
-            , viewMode = Listing
             , searchOffset = 0
             , throttle = newThrottle
           }
@@ -258,7 +255,7 @@ doSearchMore flags settings model =
         cmd =
             doSearchCmd flags settings model.searchOffset model
     in
-    ( { model | moreInProgress = True, viewMode = Listing }
+    ( { model | moreInProgress = True }
     , cmd
     )
 

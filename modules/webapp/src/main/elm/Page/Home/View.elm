@@ -81,13 +81,8 @@ view flags settings model =
                 ]
             ]
             [ viewSearchBar flags model
-            , case model.viewMode of
-                Listing ->
-                    Html.map ItemCardListMsg
-                        (Comp.ItemCardList.view settings model.itemListModel)
-
-                Detail ->
-                    div [] []
+            , Html.map ItemCardListMsg
+                (Comp.ItemCardList.view settings model.itemListModel)
             ]
         , div
             [ classList

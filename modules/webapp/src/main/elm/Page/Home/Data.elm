@@ -2,7 +2,6 @@ module Page.Home.Data exposing
     ( Model
     , Msg(..)
     , SearchType(..)
-    , ViewMode(..)
     , defaultSearchType
     , doSearchCmd
     , init
@@ -30,7 +29,6 @@ type alias Model =
     { searchMenuModel : Comp.SearchMenu.Model
     , itemListModel : Comp.ItemCardList.Model
     , searchInProgress : Bool
-    , viewMode : ViewMode
     , menuCollapsed : Bool
     , searchOffset : Int
     , moreAvailable : Bool
@@ -57,7 +55,6 @@ init flags =
     { searchMenuModel = Comp.SearchMenu.init
     , itemListModel = Comp.ItemCardList.init
     , searchInProgress = False
-    , viewMode = Listing
     , menuCollapsed = True
     , searchOffset = 0
     , moreAvailable = True
@@ -117,11 +114,6 @@ searchTypeString st =
 
         ContentOnlySearch ->
             "Contents Only"
-
-
-type ViewMode
-    = Listing
-    | Detail
 
 
 itemNav : String -> Model -> { prev : Maybe String, next : Maybe String }
