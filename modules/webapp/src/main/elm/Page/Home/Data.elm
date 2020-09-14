@@ -13,6 +13,7 @@ module Page.Home.Data exposing
 import Api
 import Api.Model.ItemLightList exposing (ItemLightList)
 import Api.Model.ItemSearch
+import Browser.Dom as Dom
 import Comp.FixedDropdown
 import Comp.ItemCardList
 import Comp.SearchMenu
@@ -95,6 +96,7 @@ type Msg
     | SearchTypeMsg (Comp.FixedDropdown.Msg SearchType)
     | KeyUpMsg (Maybe KeyCode)
     | SetContentOnly String
+    | ScrollResult (Result Dom.Error ())
 
 
 type SearchType

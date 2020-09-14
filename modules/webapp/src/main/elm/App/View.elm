@@ -79,7 +79,10 @@ defaultLayout model =
                 , loginInfo model
                 ]
             ]
-        , div [ class "main-content" ]
+        , div
+            [ class "main-content"
+            , id "main-content"
+            ]
             [ case model.page of
                 HomePage _ ->
                     viewHome model

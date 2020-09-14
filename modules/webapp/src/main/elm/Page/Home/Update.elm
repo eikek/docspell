@@ -8,7 +8,8 @@ import Data.Flags exposing (Flags)
 import Data.UiSettings exposing (UiSettings)
 import Page exposing (Page(..))
 import Page.Home.Data exposing (..)
-import Ports
+import Scroll
+import Task
 import Throttle
 import Time
 import Util.Html exposing (KeyCode(..))
@@ -221,6 +222,9 @@ update mId key flags settings msg model =
         KeyUpMsg _ ->
             withSub ( model, Cmd.none )
 
+        ScrollResult res ->
+            withSub ( model, Cmd.none )
+
 
 
 --- Helpers
@@ -228,9 +232,13 @@ update mId key flags settings msg model =
 
 scrollToCard : Maybe String -> Model -> ( Model, Cmd Msg, Sub Msg )
 scrollToCard mId model =
+    let
+        scroll id =
+            Scroll.scroll id 0.5 0.5 0.5 0.5
+    in
     case mId of
         Just id ->
-            ( model, Ports.scrollToElem ( id, 0 ), Sub.none )
+            ( model, Task.attempt ScrollResult (scroll id), Sub.none )
 
         Nothing ->
             ( model, Cmd.none, Sub.none )
