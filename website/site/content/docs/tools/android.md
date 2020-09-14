@@ -10,11 +10,22 @@ There is a simple Android App available to conveniently upload files
 from your android devices. Combined with a scanner app, this allows to
 very quickly scan single page documents like receipts.
 
-The project lives at a [repository on
-github](https://github.com/docspell/android-client). It is planned to
-be available from the [F-Droid](https://f-droid.org) store, meanwhile
-download the APK from
-[here](https://github.com/docspell/android-client/releases/latest).
+<div class="columns is-vcentered is-centered">
+    <div class="column">
+        <a href="https://f-droid.org/packages/org.docspell.docspellshare">
+            <img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png"
+                 alt="Get it on F-Droid"
+                 style="height:120px;"/>
+        </a>
+    </div>
+    <div class="column">
+    Download the APK from <a href="https://github.com/docspell/android-client/releases/latest">here</a>
+    </div>
+</div>
+
+
+The project lives at this [repository on
+github](https://github.com/docspell/android-client).
 
 
 # Usage
