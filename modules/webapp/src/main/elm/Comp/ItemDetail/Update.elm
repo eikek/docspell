@@ -648,7 +648,7 @@ update key flags next msg model =
                         noSub ( model, Page.set key (ItemDetailPage id) )
 
                     Nothing ->
-                        noSub ( model, Page.set key HomePage )
+                        noSub ( model, Page.set key (HomePage Nothing) )
 
             else
                 noSub ( model, Cmd.none )

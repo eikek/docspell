@@ -65,7 +65,7 @@ defaultLayout model =
             [ div [ class "ui fluid container" ]
                 [ a
                     [ class "header item narrow-item"
-                    , Page.href HomePage
+                    , Page.href (HomePage Nothing)
                     ]
                     [ img
                         [ class "image"
@@ -81,7 +81,7 @@ defaultLayout model =
             ]
         , div [ class "main-content" ]
             [ case model.page of
-                HomePage ->
+                HomePage _ ->
                     viewHome model
 
                 LoginPage _ ->
@@ -174,7 +174,16 @@ viewLogin model =
 
 viewHome : Model -> Html Msg
 viewHome model =
-    Html.map HomeMsg (Page.Home.View.view model.flags model.uiSettings model.homeModel)
+    let
+        mid =
+            case model.page of
+                HomePage x ->
+                    x
+
+                _ ->
+                    Nothing
+    in
+    Html.map HomeMsg (Page.Home.View.view mid model.flags model.uiSettings model.homeModel)
 
 
 menuEntry : Model -> Page -> List (Html Msg) -> Html Msg
@@ -206,7 +215,7 @@ loginInfo model =
                             ]
                         ]
                         [ menuEntry model
-                            HomePage
+                            (HomePage Nothing)
                             [ img
                                 [ class "image icon"
                                 , src (model.flags.config.docspellAssetPath ++ "/img/logo-mc-96.png")

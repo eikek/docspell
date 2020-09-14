@@ -25,7 +25,7 @@ update referrer flags msg model =
         AuthResp (Ok lr) ->
             let
                 gotoRef =
-                    Maybe.withDefault HomePage referrer |> Page.goto
+                    Maybe.withDefault (HomePage Nothing) referrer |> Page.goto
             in
             if lr.success then
                 ( { model | result = Just lr, password = "" }, Cmd.batch [ setAccount lr, gotoRef ], Just lr )

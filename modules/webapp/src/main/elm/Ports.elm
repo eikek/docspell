@@ -5,6 +5,7 @@ port module Ports exposing
     , onUiSettingsSaved
     , removeAccount
     , scrollToElem
+    , scrollToTop
     , setAccount
     , setAllProgress
     , setProgress
@@ -30,7 +31,10 @@ port setProgress : ( String, Int ) -> Cmd msg
 port setAllProgress : ( String, Int ) -> Cmd msg
 
 
-port scrollToElem : String -> Cmd msg
+port scrollToElem : ( String, Int ) -> Cmd msg
+
+
+port scrollToTop : () -> Cmd msg
 
 
 port saveUiSettings : ( AuthResult, StoredUiSettings ) -> Cmd msg

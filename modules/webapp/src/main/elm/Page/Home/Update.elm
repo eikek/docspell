@@ -8,6 +8,7 @@ import Data.Flags exposing (Flags)
 import Data.UiSettings exposing (UiSettings)
 import Page exposing (Page(..))
 import Page.Home.Data exposing (..)
+import Ports
 import Throttle
 import Time
 import Util.Html exposing (KeyCode(..))
@@ -17,12 +18,12 @@ import Util.String
 import Util.Update
 
 
-update : Nav.Key -> Flags -> UiSettings -> Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
-update key flags settings msg model =
+update : Maybe String -> Nav.Key -> Flags -> UiSettings -> Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
+update mId key flags settings msg model =
     case msg of
         Init ->
             Util.Update.andThen2
-                [ update key flags settings (SearchMenuMsg Comp.SearchMenu.Init)
+                [ update mId key flags settings (SearchMenuMsg Comp.SearchMenu.Init)
                 , doSearch flags settings
                 ]
                 model
@@ -35,7 +36,7 @@ update key flags settings msg model =
                         , searchType = defaultSearchType flags
                     }
             in
-            update key flags settings (SearchMenuMsg Comp.SearchMenu.ResetForm) nm
+            update mId key flags settings (SearchMenuMsg Comp.SearchMenu.ResetForm) nm
 
         SearchMenuMsg m ->
             let
@@ -108,7 +109,11 @@ update key flags settings msg model =
                         , moreAvailable = list.groups /= []
                     }
             in
-            update key flags settings (ItemCardListMsg (Comp.ItemCardList.SetResults list)) m
+            Util.Update.andThen2
+                [ update mId key flags settings (ItemCardListMsg (Comp.ItemCardList.SetResults list))
+                , scrollToCard mId
+                ]
+                m
 
         ItemSearchAddResp (Ok list) ->
             let
@@ -123,7 +128,11 @@ update key flags settings msg model =
                         , moreAvailable = list.groups /= []
                     }
             in
-            update key flags settings (ItemCardListMsg (Comp.ItemCardList.AddResults list)) m
+            Util.Update.andThen2
+                [ update mId key flags settings (ItemCardListMsg (Comp.ItemCardList.AddResults list))
+                , scrollToCard mId
+                ]
+                m
 
         ItemSearchAddResp (Err _) ->
             withSub
@@ -185,7 +194,7 @@ update key flags settings msg model =
                         ContentOnlySearch ->
                             SetContentOnly str
             in
-            update key flags settings smMsg model
+            update mId key flags settings smMsg model
 
         SetContentOnly str ->
             withSub
@@ -207,7 +216,7 @@ update key flags settings msg model =
                 )
 
         KeyUpMsg (Just Enter) ->
-            update key flags settings DoSearch model
+            update mId key flags settings DoSearch model
 
         KeyUpMsg _ ->
             withSub ( model, Cmd.none )
@@ -215,6 +224,16 @@ update key flags settings msg model =
 
 
 --- Helpers
+
+
+scrollToCard : Maybe String -> Model -> ( Model, Cmd Msg, Sub Msg )
+scrollToCard mId model =
+    case mId of
+        Just id ->
+            ( model, Ports.scrollToElem ( id, 0 ), Sub.none )
+
+        Nothing ->
+            ( model, Cmd.none, Sub.none )
 
 
 doSearch : Flags -> UiSettings -> Model -> ( Model, Cmd Msg, Sub Msg )

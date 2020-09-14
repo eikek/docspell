@@ -6,6 +6,7 @@ import Comp.ItemDetail
 import Comp.ItemDetail.Update
 import Data.Flags exposing (Flags)
 import Page.ItemDetail.Data exposing (Model, Msg(..))
+import Ports
 
 
 update : Nav.Key -> Flags -> Maybe String -> Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
@@ -17,7 +18,11 @@ update key flags next msg model =
                     Comp.ItemDetail.update key flags next Comp.ItemDetail.Update.Init model.detail
             in
             ( { model | detail = lm }
-            , Cmd.batch [ Api.itemDetail flags id ItemResp, Cmd.map ItemDetailMsg lc ]
+            , Cmd.batch
+                [ Api.itemDetail flags id ItemResp
+                , Cmd.map ItemDetailMsg lc
+                , Ports.scrollToTop ()
+                ]
             , Sub.map ItemDetailMsg ls
             )
 

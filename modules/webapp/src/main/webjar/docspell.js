@@ -32,20 +32,36 @@ elmApp.ports.setAllProgress.subscribe(function(input) {
     }, 100);
 });
 
-// elmApp.ports.scrollToElem.subscribe(function(id) {
-//     if (id && id != "") {
-//         window.setTimeout(function() {
-//             var el = document.getElementById(id);
-//             if (el) {
-//                 if (el["scrollIntoViewIfNeeded"]) {
-//                     el.scrollIntoViewIfNeeded();
-//                 } else {
-//                     el.scrollIntoView();
-//                 }
-//             }
-//         }, 20);
-//     }
-// });
+elmApp.ports.scrollToTop.subscribe(function() {
+    window.scrollTo(0, 0);
+});
+
+elmApp.ports.scrollToElem.subscribe(function(argList) {
+    var id = argList && argList.length >= 1
+        ? argList[0] : null;
+    var offset = argList && argList.length >= 2
+        ? argList[1] : null;
+
+    if (id && id != "") {
+        window.setTimeout(function() {
+            var el = document.getElementById(id);
+            if (el) {
+                if (el["scrollIntoViewIfNeeded"]) {
+                    el.scrollIntoViewIfNeeded();
+                } else {
+                    el.scrollIntoView({
+                        behavior: "auto",
+                        block: "center",
+                        inline: "nearest"
+                    });
+                }
+                if (offset && offset != 0) {
+                    window.scrollBy(0, offset);
+                }
+            }
+        }, 20);
+    }
+});
 
 elmApp.ports.saveUiSettings.subscribe(function(args) {
     if (Array.isArray(args) && args.length == 2) {

@@ -24,7 +24,7 @@ import Util.Maybe
 
 
 type Page
-    = HomePage
+    = HomePage (Maybe String)
     | LoginPage (Maybe Page)
     | ManageDataPage
     | CollectiveSettingPage
@@ -39,7 +39,7 @@ type Page
 isSecured : Page -> Bool
 isSecured page =
     case page of
-        HomePage ->
+        HomePage _ ->
             True
 
         LoginPage _ ->
@@ -88,7 +88,7 @@ loginPage p =
 pageName : Page -> String
 pageName page =
     case page of
-        HomePage ->
+        HomePage _ ->
             "Home"
 
         LoginPage _ ->
@@ -147,7 +147,10 @@ uploadId page =
 pageToString : Page -> String
 pageToString page =
     case page of
-        HomePage ->
+        HomePage (Just id) ->
+            "/app/home?item=" ++ id
+
+        HomePage Nothing ->
             "/app/home"
 
         LoginPage referer ->
@@ -227,7 +230,12 @@ pathPrefix =
 parser : Parser (Page -> a) a
 parser =
     oneOf
-        [ Parser.map HomePage (oneOf [ Parser.top, s pathPrefix </> s "home" ])
+        [ Parser.map HomePage
+            (oneOf
+                [ Parser.top <?> itemQuery
+                , s pathPrefix </> s "home" <?> itemQuery
+                ]
+            )
         , Parser.map LoginPage (s pathPrefix </> s "login" <?> pageQuery)
         , Parser.map ManageDataPage (s pathPrefix </> s "managedata")
         , Parser.map CollectiveSettingPage (s pathPrefix </> s "csettings")
@@ -263,3 +271,8 @@ pageQuery =
     in
     Query.string "r"
         |> Query.map parsePage
+
+
+itemQuery : Query.Parser (Maybe String)
+itemQuery =
+    Query.string "item"
