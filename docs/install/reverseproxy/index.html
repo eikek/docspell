@@ -198,24 +198,24 @@ configuration file:</p>
 to change the <code>bind.address</code> setting to be either <code>0.0.0.0</code> or the
 ip address of the network interface that the reverse proxy server
 connects to.<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1;">docspell</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">server {
-</span><span style="color:#fdf4c1aa;">  </span><span style="font-style:italic;color:#928374;"># Where the server binds to.
-</span><span style="color:#fa5c4b;">  bind </span><span style="color:#fdf4c1aa;">{
-</span><span style="color:#fdf4c1aa;">    </span><span style="color:#fdf4c1;">address </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;192.168.1.11&quot;
-</span><span style="color:#fdf4c1aa;">    </span><span style="color:#fdf4c1;">port </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">7880
-</span><span style="color:#fdf4c1aa;">  }
-</span><span style="color:#fdf4c1aa;">}
+<code><span style="color:#fdf4c1;">docspell.server {
+</span><span style="color:#fdf4c1;">  </span><span style="font-style:italic;color:#928374;"># Where the server binds to.
+</span><span style="color:#fdf4c1;">  bind {
+</span><span style="color:#fdf4c1;">    address = </span><span style="color:#b8bb26;">&quot;192.168.1.11&quot;
+</span><span style="color:#fdf4c1;">    port = 7880
+</span><span style="color:#fdf4c1;">  }
+</span><span style="color:#fdf4c1;">}
 </span></code></pre>Note that a value of <code>0.0.0.0</code> instead of <code>192.168.1.11</code> will bind
 the server to every network interface.</li>
 <li>Docspell needs to know the external url. The <code>base-url</code> setting
 must point to the external address. Using above values, it must be
 set to <code>https://docspell.example.com</code>.<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1;">docspell</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">server {
-</span><span style="color:#fdf4c1aa;">  </span><span style="font-style:italic;color:#928374;"># This is the base URL this application is deployed to. This is used
-</span><span style="color:#fdf4c1aa;">  </span><span style="font-style:italic;color:#928374;"># to create absolute URLs and to configure the cookie.
-</span><span style="color:#fdf4c1aa;">  </span><span style="color:#fdf4c1;">base-url </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;https://docspell.example.com&quot;
-</span><span style="color:#fdf4c1aa;"> </span><span style="color:#fe8019;">...
-</span><span style="color:#fdf4c1aa;">}
+<code><span style="color:#fdf4c1;">docspell.server {
+</span><span style="color:#fdf4c1;">  </span><span style="font-style:italic;color:#928374;"># This is the base URL this application is deployed to. This is used
+</span><span style="color:#fdf4c1;">  </span><span style="font-style:italic;color:#928374;"># to create absolute URLs and to configure the cookie.
+</span><span style="color:#fdf4c1;">  base-url = </span><span style="color:#b8bb26;">&quot;https://docspell.example.com&quot;
+</span><span style="color:#fdf4c1;"> ...
+</span><span style="color:#fdf4c1;">}
 </span></code></pre></li>
 </ul>
 <p>Note that this example assumes that the docspell-joex component is on
@@ -231,34 +231,34 @@ to the https variant. Additionally it defines the let's encrypt
 certificates and acts as a proxy for the application at
 <code>192.168.1.11:7880</code>.</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#fa5c4b;">server </span><span style="color:#fdf4c1aa;">{
-    </span><span style="color:#fdf4c1;">listen 0.0.0.0:80</span><span style="color:#fdf4c1aa;"> ;
-    </span><span style="color:#fdf4c1;">listen </span><span style="color:#fdf4c1aa;">[</span><span style="color:#fe8019;">::</span><span style="color:#fdf4c1aa;">]</span><span style="color:#fe8019;">:</span><span style="color:#d3869b;">80</span><span style="color:#fdf4c1aa;"> ;
-    </span><span style="color:#fdf4c1;">server_name </span><span style="color:#fdf4c1aa;">docspell</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">example</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">com ;
-</span><span style="color:#fa5c4b;">    location </span><span style="color:#fe8019;">/.</span><span style="color:#fabd2f;">well-known/acme-challenge</span><span style="color:#fdf4c1aa;"> {
-        </span><span style="color:#fdf4c1;">root </span><span style="color:#fe8019;">/</span><span style="color:#fdf4c1aa;">var</span><span style="color:#fe8019;">/</span><span style="color:#fdf4c1aa;">data</span><span style="color:#fe8019;">/</span><span style="color:#fdf4c1aa;">nginx</span><span style="color:#fe8019;">/</span><span style="color:#fabd2f;">ACME</span><span style="color:#fe8019;">-</span><span style="color:#fabd2f;">PUBLIC</span><span style="color:#fdf4c1aa;">;
-        </span><span style="color:#fdf4c1;">auth_basic </span><span style="color:#d3869b;">off</span><span style="color:#fdf4c1aa;">;
+<code><span style="color:#fdf4c1;">server {
+    listen 0.0.0.0:80 ;
+    listen </span><span style="color:#fa5c4b;">[</span><span style="color:#fdf4c1;">::</span><span style="color:#fa5c4b;">]</span><span style="color:#fdf4c1;">:80 ;
+    server_name docspell.example.com ;
+    location /.well-known/acme-challenge {
+        root /var/data/nginx/ACME-PUBLIC;
+        auth_basic off;
     }
-</span><span style="color:#fa5c4b;">    location </span><span style="color:#fe8019;">/</span><span style="color:#fdf4c1aa;"> {
-        </span><span style="color:#fdf4c1;">return </span><span style="color:#d3869b;">301 </span><span style="color:#fdf4c1;">https://$host$request_uri</span><span style="color:#fdf4c1aa;">;
+    location / {
+        return 301 https://$host$request_uri;
     }
 }
-</span><span style="color:#fa5c4b;">server </span><span style="color:#fdf4c1aa;">{
-    </span><span style="color:#fdf4c1;">listen 0.0.0.0:443</span><span style="color:#fdf4c1aa;"> ssl http2 ;
-    </span><span style="color:#fdf4c1;">listen </span><span style="color:#fdf4c1aa;">[</span><span style="color:#fe8019;">::</span><span style="color:#fdf4c1aa;">]</span><span style="color:#fe8019;">:</span><span style="color:#d3869b;">443</span><span style="color:#fdf4c1aa;"> ssl http2 ;
-    </span><span style="color:#fdf4c1;">server_name </span><span style="color:#fdf4c1aa;">docspell</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">example</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">com ;
-</span><span style="color:#fa5c4b;">    location </span><span style="color:#fe8019;">/.</span><span style="color:#fabd2f;">well-known/acme-challenge</span><span style="color:#fdf4c1aa;"> {
-        </span><span style="color:#fdf4c1;">root </span><span style="color:#fe8019;">/</span><span style="color:#fdf4c1aa;">var</span><span style="color:#fe8019;">/</span><span style="color:#fdf4c1aa;">data</span><span style="color:#fe8019;">/</span><span style="color:#fdf4c1aa;">nginx</span><span style="color:#fe8019;">/</span><span style="color:#fabd2f;">ACME</span><span style="color:#fe8019;">-</span><span style="color:#fabd2f;">PUBLIC</span><span style="color:#fdf4c1aa;">;
-        </span><span style="color:#fdf4c1;">auth_basic </span><span style="color:#d3869b;">off</span><span style="color:#fdf4c1aa;">;
+server {
+    listen 0.0.0.0:443 ssl http2 ;
+    listen </span><span style="color:#fa5c4b;">[</span><span style="color:#fdf4c1;">::</span><span style="color:#fa5c4b;">]</span><span style="color:#fdf4c1;">:443 ssl http2 ;
+    server_name docspell.example.com ;
+    location /.well-known/acme-challenge {
+        root /var/data/nginx/ACME-PUBLIC;
+        auth_basic off;
     }
-    </span><span style="color:#fdf4c1;">ssl_certificate </span><span style="color:#fe8019;">/</span><span style="color:#fdf4c1aa;">var</span><span style="color:#fe8019;">/</span><span style="color:#fdf4c1aa;">lib</span><span style="color:#fe8019;">/</span><span style="color:#fdf4c1aa;">acme</span><span style="color:#fe8019;">/</span><span style="color:#fdf4c1aa;">docspell</span><span style="color:#fe8019;">.</span><span style="color:#fabd2f;">example.com/fullchain.pem</span><span style="color:#fdf4c1aa;">;
-    </span><span style="color:#fdf4c1;">ssl_certificate_key </span><span style="color:#fe8019;">/</span><span style="color:#fdf4c1aa;">var</span><span style="color:#fe8019;">/</span><span style="color:#fdf4c1aa;">lib</span><span style="color:#fe8019;">/</span><span style="color:#fdf4c1aa;">acme</span><span style="color:#fe8019;">/</span><span style="color:#fdf4c1aa;">docspell</span><span style="color:#fe8019;">.</span><span style="color:#fabd2f;">example.com/key.pem</span><span style="color:#fdf4c1aa;">;
-    </span><span style="color:#fdf4c1;">ssl_trusted_certificate </span><span style="color:#fe8019;">/</span><span style="color:#fdf4c1aa;">var</span><span style="color:#fe8019;">/</span><span style="color:#fdf4c1aa;">lib</span><span style="color:#fe8019;">/</span><span style="color:#fdf4c1aa;">acme</span><span style="color:#fe8019;">/</span><span style="color:#fdf4c1aa;">docspell</span><span style="color:#fe8019;">.</span><span style="color:#fabd2f;">example.com/full.pem</span><span style="color:#fdf4c1aa;">;
-</span><span style="color:#fa5c4b;">    location </span><span style="color:#fe8019;">/</span><span style="color:#fdf4c1aa;"> {
-        </span><span style="color:#fdf4c1;">proxy_pass http://192.168.1.11:7880</span><span style="color:#fdf4c1aa;">;
-        </span><span style="color:#fdf4c1;">proxy_http_version </span><span style="color:#d3869b;">1</span><span style="color:#fe8019;">.</span><span style="color:#d3869b;">1</span><span style="color:#fdf4c1aa;">;
-        </span><span style="color:#fdf4c1;">proxy_set_header </span><span style="color:#fdf4c1aa;">Upgrade </span><span style="color:#fa5c4b;">$http_upgrade</span><span style="color:#fdf4c1aa;">;
-        </span><span style="color:#fdf4c1;">proxy_set_header </span><span style="color:#fdf4c1aa;">Connection </span><span style="color:#fa5c4b;">$connection_upgrade</span><span style="color:#fdf4c1aa;">;
+    ssl_certificate /var/lib/acme/docspell.example.com/fullchain.pem;
+    ssl_certificate_key /var/lib/acme/docspell.example.com/key.pem;
+    ssl_trusted_certificate /var/lib/acme/docspell.example.com/full.pem;
+    location / {
+        proxy_pass http://192.168.1.11:7880;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $connection_upgrade;
     }
 }
 </span></code></pre>

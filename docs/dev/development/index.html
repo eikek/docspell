@@ -192,28 +192,28 @@ results in recompile+restart once a source file is modified.</p>
 it exists. So you can create a custom config file for development. For
 example, a custom database for development may be setup this way:</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">#jdbcurl </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;jdbc:h2:///home/dev/workspace/projects/docspell/local/docspell-demo.db;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;AUTO_SERVER=TRUE&quot;
-</span><span style="color:#fdf4c1;">jdbcurl </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;jdbc:postgresql://localhost:5432/docspelldev&quot;
+<code><span style="font-style:italic;color:#928374;">#jdbcurl = &quot;jdbc:h2:///home/dev/workspace/projects/docspell/local/docspell-demo.db;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;AUTO_SERVER=TRUE&quot;
+</span><span style="color:#fdf4c1;">jdbcurl = </span><span style="color:#b8bb26;">&quot;jdbc:postgresql://localhost:5432/docspelldev&quot;
 </span><span style="font-style:italic;color:#928374;">#jdbcurl = &quot;jdbc:mariadb://localhost:3306/docspelldev&quot;
 
-</span><span style="color:#fdf4c1;">docspell</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">server {
-</span><span style="color:#fa5c4b;">  backend </span><span style="color:#fdf4c1aa;">{
-</span><span style="color:#fa5c4b;">    jdbc </span><span style="color:#fdf4c1aa;">{
-      </span><span style="color:#fdf4c1;">url </span><span style="color:#fe8019;">= </span><span style="color:#fa5c4b;">${jdbcurl}
-      </span><span style="color:#fdf4c1;">user </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;dev&quot;
-      </span><span style="color:#fdf4c1;">password </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;dev&quot;</span><span style="color:#fdf4c1aa;">
-    }
+</span><span style="color:#fdf4c1;">docspell.server {
+  backend {
+    jdbc {
+      url = ${jdbcurl}
+      user = </span><span style="color:#b8bb26;">&quot;dev&quot;</span><span style="color:#fdf4c1;">
+      password = </span><span style="color:#b8bb26;">&quot;dev&quot;
+    </span><span style="color:#fdf4c1;">}
   }
 }
 
-</span><span style="color:#fdf4c1;">docspell</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">joex {
-</span><span style="color:#fa5c4b;">  jdbc </span><span style="color:#fdf4c1aa;">{
-    </span><span style="color:#fdf4c1;">url </span><span style="color:#fe8019;">= </span><span style="color:#fa5c4b;">${jdbcurl}
-    </span><span style="color:#fdf4c1;">user </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;dev&quot;
-    </span><span style="color:#fdf4c1;">password </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;dev&quot;</span><span style="color:#fdf4c1aa;">
-  }
-</span><span style="color:#fa5c4b;">  scheduler </span><span style="color:#fdf4c1aa;">{
-    </span><span style="color:#fdf4c1;">pool-size </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">1</span><span style="color:#fdf4c1aa;">
+docspell.joex {
+  jdbc {
+    url = ${jdbcurl}
+    user = </span><span style="color:#b8bb26;">&quot;dev&quot;</span><span style="color:#fdf4c1;">
+    password = </span><span style="color:#b8bb26;">&quot;dev&quot;
+  </span><span style="color:#fdf4c1;">}
+  scheduler {
+    pool-size = 1
   }
 }
 </span></code></pre><h1 id="nix-expressions">Nix Expressions<a class="zola-anchor" href="#nix-expressions" aria-label="Anchor link for: nix-expressions">🔗</a></h1>
