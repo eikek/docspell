@@ -28,7 +28,7 @@ the current `/tmp` directory is configured.
 
 The config looks like this (both components):
 
-``` conf
+``` bash
 docspell.joex.jdbc {
   url = ...
   user = ...
@@ -81,7 +81,7 @@ full-text search. Both docspell components must provide the same
 connection setup. This is defined in the `full-text-search.solr`
 subsection:
 
-``` conf
+``` bash
 ...
   full-text-search {
     enabled = true
@@ -109,7 +109,7 @@ While the `full-text-search.solr` options are the same for joex and
 the restserver, there are some settings that differ. The restserver
 has this additional setting, that may be of interest:
 
-``` conf
+``` bash
 full-text-search {
   recreate-key = "test123"
 }
@@ -145,7 +145,7 @@ The host and port the http server binds to. This applies to both
 components. The joex component also exposes a small REST api to
 inspect its state and notify the scheduler.
 
-``` conf
+``` bash
 docspell.server.bind {
   address = localhost
   port = 7880
@@ -190,7 +190,7 @@ be unique* for all instances. By default the REST server uses `rest1`
 and joex `joex1`. It is recommended to overwrite this setting to have
 an explicit and stable identifier.
 
-``` conf
+``` bash
 docspell.server.app-id = "rest1"
 docspell.joex.app-id = "joex1"
 ```
@@ -206,7 +206,7 @@ options:
 
 This applies only to the REST sevrer component.
 
-``` conf
+``` bash
 docspell.server.signup {
   mode = "open"
 
@@ -246,7 +246,7 @@ token can be given as a normal http header or via a cookie header.
 
 These settings apply only to the REST server.
 
-``` conf
+``` bash
 docspell.server.auth {
   server-secret = "hex:caffee" # or "b64:Y2FmZmVlCg=="
   session-valid = "5 minutes"

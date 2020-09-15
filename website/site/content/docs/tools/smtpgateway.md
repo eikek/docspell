@@ -94,7 +94,7 @@ docker build -t ds-exim:latest -f exim.dockerfile .
 Then start docspell somewhere and configure the integration endpoint
 to use http-header protection; i.e. set this in the config file:
 
-``` conf
+``` bash
 docspell.server {
   integration-endpoint {
     enabled = true
