@@ -8,6 +8,7 @@ import Data.Flags exposing (Flags)
 import Data.UiSettings exposing (UiSettings)
 import Page exposing (Page(..))
 import Page.Home.Data exposing (..)
+import Process
 import Scroll
 import Task
 import Throttle
@@ -82,13 +83,13 @@ update mId key flags settings msg model =
                         m
                         model.itemListModel
 
-                cmd =
+                ( cmd, id ) =
                     case result.selected of
                         Just item ->
-                            Page.set key (ItemDetailPage item.id)
+                            ( Page.set key (ItemDetailPage item.id), Just item.id )
 
                         Nothing ->
-                            Cmd.none
+                            ( Cmd.none, Nothing )
             in
             withSub
                 ( { model
@@ -222,8 +223,15 @@ update mId key flags settings msg model =
         KeyUpMsg _ ->
             withSub ( model, Cmd.none )
 
-        ScrollResult res ->
-            withSub ( model, Cmd.none )
+        ScrollResult _ ->
+            let
+                cmd =
+                    Process.sleep 350 |> Task.perform (always ClearItemDetailId)
+            in
+            withSub ( model, cmd )
+
+        ClearItemDetailId ->
+            withSub ( model, Page.set key (HomePage Nothing) )
 
 
 

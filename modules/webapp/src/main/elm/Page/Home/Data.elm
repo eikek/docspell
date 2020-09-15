@@ -97,6 +97,7 @@ type Msg
     | KeyUpMsg (Maybe KeyCode)
     | SetContentOnly String
     | ScrollResult (Result Dom.Error ())
+    | ClearItemDetailId
 
 
 type SearchType
