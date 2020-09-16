@@ -21,7 +21,7 @@ configuration file:
   to change the `bind.address` setting to be either `0.0.0.0` or the
   ip address of the network interface that the reverse proxy server
   connects to.
-  ``` conf
+  ``` bash
   docspell.server {
     # Where the server binds to.
     bind {
@@ -35,7 +35,7 @@ configuration file:
 - Docspell needs to know the external url. The `base-url` setting
   must point to the external address. Using above values, it must be
   set to `https://docspell.example.com`.
-  ``` conf
+  ``` bash
   docspell.server {
     # This is the base URL this application is deployed to. This is used
     # to create absolute URLs and to configure the cookie.
@@ -61,7 +61,7 @@ The https server endpoint is configured with the let's encrypt
 certificates and acts as a proxy for the application at
 `192.168.1.11:7880`.
 
-``` conf
+``` bash
 server {
     listen 0.0.0.0:80 ;
     listen [::]:80 ;
