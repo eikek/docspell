@@ -99,7 +99,7 @@ renderDetailMenu inav model =
               )
             ]
         ]
-        [ a [ class "item", Page.href HomePage ]
+        [ a [ class "item", Page.href (HomePage (Just model.item.id)) ]
             [ i [ class "arrow left icon" ] []
             ]
         , a

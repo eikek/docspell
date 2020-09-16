@@ -2,7 +2,6 @@ module Page.Home.Data exposing
     ( Model
     , Msg(..)
     , SearchType(..)
-    , ViewMode(..)
     , defaultSearchType
     , doSearchCmd
     , init
@@ -14,6 +13,7 @@ module Page.Home.Data exposing
 import Api
 import Api.Model.ItemLightList exposing (ItemLightList)
 import Api.Model.ItemSearch
+import Browser.Dom as Dom
 import Comp.FixedDropdown
 import Comp.ItemCardList
 import Comp.SearchMenu
@@ -30,7 +30,6 @@ type alias Model =
     { searchMenuModel : Comp.SearchMenu.Model
     , itemListModel : Comp.ItemCardList.Model
     , searchInProgress : Bool
-    , viewMode : ViewMode
     , menuCollapsed : Bool
     , searchOffset : Int
     , moreAvailable : Bool
@@ -57,7 +56,6 @@ init flags =
     { searchMenuModel = Comp.SearchMenu.init
     , itemListModel = Comp.ItemCardList.init
     , searchInProgress = False
-    , viewMode = Listing
     , menuCollapsed = True
     , searchOffset = 0
     , moreAvailable = True
@@ -98,6 +96,8 @@ type Msg
     | SearchTypeMsg (Comp.FixedDropdown.Msg SearchType)
     | KeyUpMsg (Maybe KeyCode)
     | SetContentOnly String
+    | ScrollResult (Result Dom.Error ())
+    | ClearItemDetailId
 
 
 type SearchType
@@ -117,11 +117,6 @@ searchTypeString st =
 
         ContentOnlySearch ->
             "Contents Only"
-
-
-type ViewMode
-    = Listing
-    | Detail
 
 
 itemNav : String -> Model -> { prev : Maybe String, next : Maybe String }

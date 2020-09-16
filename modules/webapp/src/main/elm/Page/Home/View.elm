@@ -14,8 +14,8 @@ import Page.Home.Data exposing (..)
 import Util.Html
 
 
-view : Flags -> UiSettings -> Model -> Html Msg
-view flags settings model =
+view : Maybe String -> Flags -> UiSettings -> Model -> Html Msg
+view current flags settings model =
     div [ class "home-page ui padded grid" ]
         [ div
             [ classList
@@ -81,13 +81,8 @@ view flags settings model =
                 ]
             ]
             [ viewSearchBar flags model
-            , case model.viewMode of
-                Listing ->
-                    Html.map ItemCardListMsg
-                        (Comp.ItemCardList.view settings model.itemListModel)
-
-                Detail ->
-                    div [] []
+            , Html.map ItemCardListMsg
+                (Comp.ItemCardList.view current settings model.itemListModel)
             ]
         , div
             [ classList

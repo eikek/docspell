@@ -41,7 +41,7 @@
 }
 
 .default-layout .main-content {
-    margin-top: 44px;
+    padding-top: 44px;
     padding-bottom: 2em;
 }
 
@@ -96,6 +96,10 @@
 }
 .default-layout .ui.cards .ui.card .content.search-highlight .ui.list .item .content .description strong > em {
     background: rgba(220, 255, 71, 0.6);
+}
+.default-layout .ui.cards .ui.card.current {
+    /* semantic-ui purple */
+    box-shadow: 0 0 6px rgba(0,0,0,0.55);
 }
 
 .default-layout .qr-code svg {

@@ -7,11 +7,11 @@
     "elm-version": "0.19.1",
     "dependencies": {
         "direct": {
-            "CurrySoftware/elm-datepicker": "3.1.0",
+            "CurrySoftware/elm-datepicker": "4.0.0",
             "NoRedInk/elm-json-decode-pipeline": "1.0.0",
             "NoRedInk/elm-simple-fuzzy": "1.0.3",
-            "elm/browser": "1.0.1",
-            "elm/core": "1.0.2",
+            "elm/browser": "1.0.2",
+            "elm/core": "1.0.5",
             "elm/file": "1.0.5",
             "elm/html": "1.0.0",
             "elm/http": "2.0.0",
@@ -24,6 +24,7 @@
             "pablohirafuji/elm-qrcode": "3.3.1",
             "ryannhg/date-format": "2.3.0",
             "truqu/elm-base64": "2.0.4",
+            "ursi/elm-scroll": "1.0.0",
             "ursi/elm-throttle": "1.0.1"
         },
         "indirect": {

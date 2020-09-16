@@ -304,8 +304,16 @@ updateLogin lmsg model =
 updateHome : Page.Home.Data.Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
 updateHome lmsg model =
     let
+        mid =
+            case model.page of
+                HomePage x ->
+                    x
+
+                _ ->
+                    Nothing
+
         ( lm, lc, ls ) =
-            Page.Home.Update.update model.key model.flags model.uiSettings lmsg model.homeModel
+            Page.Home.Update.update mid model.key model.flags model.uiSettings lmsg model.homeModel
     in
     ( { model
         | homeModel = lm
@@ -330,7 +338,7 @@ updateManageData lmsg model =
 initPage : Model -> Page -> ( Model, Cmd Msg, Sub Msg )
 initPage model page =
     case page of
-        HomePage ->
+        HomePage mid ->
             Util.Update.andThen2
                 [ updateHome Page.Home.Data.Init
                 , updateQueue Page.Queue.Data.StopRefresh

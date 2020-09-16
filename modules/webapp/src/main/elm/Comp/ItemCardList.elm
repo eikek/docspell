@@ -120,26 +120,26 @@ updateDrag dm _ msg model =
 --- View
 
 
-view : UiSettings -> Model -> Html Msg
-view settings model =
+view : Maybe String -> UiSettings -> Model -> Html Msg
+view current settings model =
     div [ class "ui container" ]
-        (List.map (viewGroup settings) model.results.groups)
+        (List.map (viewGroup current settings) model.results.groups)
 
 
-viewGroup : UiSettings -> ItemLightGroup -> Html Msg
-viewGroup settings group =
+viewGroup : Maybe String -> UiSettings -> ItemLightGroup -> Html Msg
+viewGroup current settings group =
     div [ class "item-group" ]
         [ div [ class "ui horizontal divider header item-list" ]
             [ i [ class "calendar alternate outline icon" ] []
             , text group.name
             ]
         , div [ class "ui stackable three cards" ]
-            (List.map (viewItem settings) group.items)
+            (List.map (viewItem current settings) group.items)
         ]
 
 
-viewItem : UiSettings -> ItemLight -> Html Msg
-viewItem settings item =
+viewItem : Maybe String -> UiSettings -> ItemLight -> Html Msg
+viewItem current settings item =
     let
         dirIcon =
             i [ class (Data.Direction.iconFromMaybe item.direction) ] []
@@ -174,6 +174,7 @@ viewItem settings item =
         ([ classList
             [ ( "ui fluid card", True )
             , ( newColor, not isConfirmed )
+            , ( "current", current == Just item.id )
             ]
          , id item.id
          , href "#"

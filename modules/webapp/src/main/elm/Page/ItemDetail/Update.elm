@@ -6,6 +6,8 @@ import Comp.ItemDetail
 import Comp.ItemDetail.Update
 import Data.Flags exposing (Flags)
 import Page.ItemDetail.Data exposing (Model, Msg(..))
+import Scroll
+import Task
 
 
 update : Nav.Key -> Flags -> Maybe String -> Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
@@ -15,9 +17,16 @@ update key flags next msg model =
             let
                 ( lm, lc, ls ) =
                     Comp.ItemDetail.update key flags next Comp.ItemDetail.Update.Init model.detail
+
+                task =
+                    Scroll.scroll "main-content" 0 0 0 0
             in
             ( { model | detail = lm }
-            , Cmd.batch [ Api.itemDetail flags id ItemResp, Cmd.map ItemDetailMsg lc ]
+            , Cmd.batch
+                [ Api.itemDetail flags id ItemResp
+                , Cmd.map ItemDetailMsg lc
+                , Task.attempt ScrollResult task
+                ]
             , Sub.map ItemDetailMsg ls
             )
 
@@ -39,4 +48,7 @@ update key flags next msg model =
             update key flags next (ItemDetailMsg lmsg) model
 
         ItemResp (Err _) ->
+            ( model, Cmd.none, Sub.none )
+
+        ScrollResult _ ->
             ( model, Cmd.none, Sub.none )
