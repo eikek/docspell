@@ -208,14 +208,36 @@ update mId key flags settings msg model =
             let
                 ( sm, mv ) =
                     Comp.FixedDropdown.update lm model.searchTypeDropdown
+
+                m0 =
+                    { model
+                        | searchTypeDropdown = sm
+                        , searchTypeForm = Maybe.withDefault model.searchTypeForm mv
+                    }
+
+                next =
+                    case mv of
+                        Just BasicSearch ->
+                            Just
+                                ( { m0 | contentOnlySearch = Nothing }
+                                , Maybe.withDefault "" model.contentOnlySearch
+                                )
+
+                        Just ContentOnlySearch ->
+                            Just
+                                ( { m0 | contentOnlySearch = model.searchMenuModel.allNameModel }
+                                , ""
+                                )
+
+                        _ ->
+                            Nothing
             in
-            withSub
-                ( { model
-                    | searchTypeDropdown = sm
-                    , searchTypeForm = Maybe.withDefault model.searchTypeForm mv
-                  }
-                , Cmd.none
-                )
+            case next of
+                Just ( m_, nstr ) ->
+                    update mId key flags settings (SearchMenuMsg (Comp.SearchMenu.SetAllName nstr)) m_
+
+                Nothing ->
+                    withSub ( m0, Cmd.none )
 
         KeyUpMsg (Just Enter) ->
             update mId key flags settings DoSearch model
