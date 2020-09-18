@@ -209,6 +209,9 @@ update mId key flags settings msg model =
                 ( sm, mv ) =
                     Comp.FixedDropdown.update lm model.searchTypeDropdown
 
+                mvChange =
+                    Util.Maybe.filter (\a -> a /= model.searchTypeForm) mv
+
                 m0 =
                     { model
                         | searchTypeDropdown = sm
@@ -216,7 +219,7 @@ update mId key flags settings msg model =
                     }
 
                 next =
-                    case mv of
+                    case mvChange of
                         Just BasicSearch ->
                             Just
                                 ( { m0 | contentOnlySearch = Nothing }
