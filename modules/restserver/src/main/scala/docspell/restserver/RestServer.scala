@@ -38,6 +38,7 @@ object RestServer {
         "/api/doc"    -> templates.doc,
         "/app/assets" -> WebjarRoutes.appRoutes[F](pools.blocker),
         "/app"        -> templates.app,
+        "/sw.js"      -> templates.serviceWorker,
         "/"           -> redirectTo("/app")
       ).orNotFound
 
