@@ -37,7 +37,7 @@
 }
 .default-layout {
     background: #fff;
-/*    height: 100vh; */
+    height: 100%;
 }
 
 .default-layout .main-content {
@@ -253,7 +253,7 @@ label span.muted {
 
 .login-layout, .register-layout, .newinvite-layout {
     background: #708090;
-    height: 101vh;
+    height: 100%;
 }
 .login-layout > .ui.footer, .register-layout > .ui.footer, .newinvite-layout > .ui.footer {
     background: #708090;

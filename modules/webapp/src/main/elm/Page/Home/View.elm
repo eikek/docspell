@@ -87,6 +87,7 @@ view current flags settings model =
         , div
             [ classList
                 [ ( "sixteen wide column", True )
+                , ( "hidden invisible", resultsBelowLimit settings model )
                 ]
             ]
             [ div [ class "ui basic center aligned segment" ]
@@ -94,7 +95,6 @@ view current flags settings model =
                     [ classList
                         [ ( "ui basic tiny button", True )
                         , ( "disabled", not model.moreAvailable )
-                        , ( "hidden invisible", resultsBelowLimit settings model )
                         ]
                     , disabled (not model.moreAvailable || model.moreInProgress || model.searchInProgress)
                     , title "Load more items"
