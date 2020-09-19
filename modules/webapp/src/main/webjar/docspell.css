@@ -255,6 +255,9 @@ label span.muted {
     background: #708090;
     height: 101vh;
 }
+.login-layout > .ui.footer, .register-layout > .ui.footer, .newinvite-layout > .ui.footer {
+    background: #708090;
+}
 
 .login-layout .login-view, .register-layout .register-view, .newinvite-view {
     background: #fff;
