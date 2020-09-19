@@ -21,11 +21,13 @@ import yamusca.imports._
 object TemplateRoutes {
   private[this] val logger = getLogger
 
-  val `text/html` = new MediaType("text", "html")
+  val `text/html`              = new MediaType("text", "html")
+  val `application/javascript` = new MediaType("application", "javascript")
 
   trait InnerRoutes[F[_]] {
     def doc: HttpRoutes[F]
     def app: HttpRoutes[F]
+    def serviceWorker: HttpRoutes[F]
   }
 
   def apply[F[_]: Effect](blocker: Blocker, cfg: Config)(implicit
@@ -35,6 +37,7 @@ object TemplateRoutes {
       loadResource("/index.html").flatMap(loadTemplate(_, blocker))
     )
     val docTemplate = memo(loadResource("/doc.html").flatMap(loadTemplate(_, blocker)))
+    val swTemplate  = memo(loadResource("/sw.js").flatMap(loadTemplate(_, blocker)))
 
     val dsl = new Http4sDsl[F] {}
     import dsl._
@@ -43,14 +46,31 @@ object TemplateRoutes {
         HttpRoutes.of[F] { case GET -> Root =>
           for {
             templ <- docTemplate
-            resp  <- Ok(DocData().render(templ), `Content-Type`(`text/html`))
+            resp <- Ok(
+              DocData().render(templ),
+              `Content-Type`(`text/html`, Charset.`UTF-8`)
+            )
           } yield resp
         }
       def app =
         HttpRoutes.of[F] { case GET -> _ =>
           for {
             templ <- indexTemplate
-            resp  <- Ok(IndexData(cfg).render(templ), `Content-Type`(`text/html`))
+            resp <- Ok(
+              IndexData(cfg).render(templ),
+              `Content-Type`(`text/html`, Charset.`UTF-8`)
+            )
+          } yield resp
+        }
+
+      def serviceWorker =
+        HttpRoutes.of[F] { case GET -> _ =>
+          for {
+            templ <- swTemplate
+            resp <- Ok(
+              IndexData(cfg).render(templ),
+              `Content-Type`(`application/javascript`, Charset.`UTF-8`)
+            )
           } yield resp
         }
     }
