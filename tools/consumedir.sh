@@ -167,8 +167,8 @@ info() {
 }
 
 getCollective() {
-    file="$(realpath $1)"
-    dir="$(realpath $2)"
+    file=$(realpath "$1")
+    dir=$(realpath "$2")
     collective=${file#"$dir"}
     coll=$(echo $collective | cut -d'/' -f1)
     if [ -z "$coll" ]; then
@@ -179,8 +179,8 @@ getCollective() {
 
 
 upload() {
-    dir="$(realpath $1)"
-    file="$(realpath $2)"
+    dir=$(realpath "$1")
+    file=$(realpath "$2")
     url="$3"
     OPTS="$CURL_OPTS"
     if [ "$integration" = "y" ]; then
@@ -245,7 +245,7 @@ checkFile() {
     else
         url=$(echo "$1" | sed 's,upload/item,checkfile,g')
     fi
-    url="$url/$(checksum $file)"
+    url=$url/$(checksum "$file")
     trace "- Check file via $OPTS: $url"
     tf1=$($MKTEMP_CMD) tf2=$($MKTEMP_CMD)
     $CURL_CMD --fail -o "$tf1" --stderr "$tf2" $OPTS -XGET -s "$url"
@@ -269,7 +269,7 @@ checkFile() {
 }
 
 process() {
-    file="$(realpath $1)"
+    file=$(realpath "$1")
     dir="$2"
     info "---- Processing $file ----------"
     declare -i curlrc=0
@@ -340,11 +340,11 @@ else
     if [ "$recursive" = "y" ]; then
         REC="-r"
     fi
-    $INOTIFY_CMD $REC -m "${watchdir[@]}" -e close_write -e moved_to |
-        while read path action file; do
-            dir=$(findDir "$path")
-            trace "The file '$file' appeared in directory '$path' below '$dir' via '$action'"
+    $INOTIFY_CMD $REC -m --format '%w%f' -e close_write -e moved_to "${watchdir[@]}" |
+        while read pathfile; do
+            dir=$(findDir "$pathfile")
+            trace "The file '$pathfile' appeared below '$dir'"
             sleep 1
-            process "$(realpath "$path$file")" "$dir"
+            process "$(realpath "$pathfile")" "$dir"
         done
 fi
