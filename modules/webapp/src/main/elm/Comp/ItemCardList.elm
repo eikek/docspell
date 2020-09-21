@@ -14,6 +14,7 @@ import Api.Model.ItemLight exposing (ItemLight)
 import Api.Model.ItemLightGroup exposing (ItemLightGroup)
 import Api.Model.ItemLightList exposing (ItemLightList)
 import Data.Direction
+import Data.Fields
 import Data.Flags exposing (Flags)
 import Data.Icons as Icons
 import Data.Items
@@ -169,6 +170,9 @@ viewItem current settings item =
 
         newColor =
             "blue"
+
+        fieldHidden f =
+            Data.UiSettings.fieldHidden settings f
     in
     a
         ([ classList
@@ -183,15 +187,21 @@ viewItem current settings item =
             ++ DD.draggable ItemDDMsg item.id
         )
         [ div [ class "content" ]
-            [ div
-                [ class "header"
-                , Data.Direction.labelFromMaybe item.direction
-                    |> title
-                ]
-                [ dirIcon
-                , Util.String.underscoreToSpace item.name
-                    |> text
-                ]
+            [ if fieldHidden Data.Fields.Direction then
+                div [ class "header" ]
+                    [ Util.String.underscoreToSpace item.name |> text
+                    ]
+
+              else
+                div
+                    [ class "header"
+                    , Data.Direction.labelFromMaybe item.direction
+                        |> title
+                    ]
+                    [ dirIcon
+                    , Util.String.underscoreToSpace item.name
+                        |> text
+                    ]
             , div
                 [ classList
                     [ ( "ui right corner label", True )
@@ -202,16 +212,19 @@ viewItem current settings item =
                 ]
                 [ i [ class "exclamation icon" ] []
                 ]
-            , div [ class "meta" ]
-                [ span []
-                    [ Util.Time.formatDate item.date |> text
+            , div
+                [ classList
+                    [ ( "meta", True )
+                    , ( "invisible hidden", fieldHidden Data.Fields.Date )
                     ]
+                ]
+                [ Util.Time.formatDate item.date |> text
                 ]
             , div [ class "meta description" ]
                 [ div
                     [ classList
                         [ ( "ui right floated tiny labels", True )
-                        , ( "invisible hidden", item.tags == [] )
+                        , ( "invisible hidden", item.tags == [] || fieldHidden Data.Fields.Tag )
                         ]
                     ]
                     (List.map
@@ -247,7 +260,13 @@ viewItem current settings item =
         , div [ class "content" ]
             [ div [ class "ui horizontal list" ]
                 [ div
-                    [ class "item"
+                    [ classList
+                        [ ( "item", True )
+                        , ( "invisible hidden"
+                          , fieldHidden Data.Fields.CorrOrg
+                                && fieldHidden Data.Fields.CorrPerson
+                          )
+                        ]
                     , title "Correspondent"
                     ]
                     [ Icons.correspondentIcon ""
@@ -255,7 +274,13 @@ viewItem current settings item =
                     , Util.String.withDefault "-" corr |> text
                     ]
                 , div
-                    [ class "item"
+                    [ classList
+                        [ ( "item", True )
+                        , ( "invisible hidden"
+                          , fieldHidden Data.Fields.ConcPerson
+                                && fieldHidden Data.Fields.ConcEquip
+                          )
+                        ]
                     , title "Concerning"
                     ]
                     [ Icons.concernedIcon
@@ -263,7 +288,10 @@ viewItem current settings item =
                     , Util.String.withDefault "-" conc |> text
                     ]
                 , div
-                    [ class "item"
+                    [ classList
+                        [ ( "item", True )
+                        , ( "invisible hidden", fieldHidden Data.Fields.Folder )
+                        ]
                     , title "Folder"
                     ]
                     [ Icons.folderIcon ""
@@ -282,7 +310,11 @@ viewItem current settings item =
                     , div
                         [ classList
                             [ ( "item", True )
-                            , ( "invisible hidden", item.dueDate == Nothing )
+                            , ( "invisible hidden"
+                              , item.dueDate
+                                    == Nothing
+                                    || fieldHidden Data.Fields.DueDate
+                              )
                             ]
                         , title ("Due on " ++ dueDate)
                         ]
