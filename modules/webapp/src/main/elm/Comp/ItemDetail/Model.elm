@@ -40,6 +40,7 @@ import Http
 import Page exposing (Page(..))
 import Set exposing (Set)
 import Throttle exposing (Throttle)
+import Util.Html exposing (KeyCode)
 import Util.Tag
 
 
@@ -265,6 +266,7 @@ type Msg
     | ResetHiddenMsg Field (Result Http.Error BasicResult)
     | SaveNameResp (Result Http.Error BasicResult)
     | UpdateThrottle
+    | KeyPress (Maybe KeyCode)
 
 
 type SaveNameState

@@ -14,6 +14,7 @@ import Comp.YesNoDimmer
 import Data.Direction
 import Data.Fields
 import Data.Icons as Icons
+import Data.ItemNav exposing (ItemNav)
 import Data.UiSettings exposing (UiSettings)
 import DatePicker
 import Dict
@@ -27,6 +28,7 @@ import Page exposing (Page(..))
 import Set
 import Util.File exposing (makeFileId)
 import Util.Folder
+import Util.Html exposing (onKeyUpCode)
 import Util.List
 import Util.Maybe
 import Util.Size
@@ -34,9 +36,11 @@ import Util.String
 import Util.Time
 
 
-view : { prev : Maybe String, next : Maybe String } -> UiSettings -> Model -> Html Msg
+view : ItemNav -> UiSettings -> Model -> Html Msg
 view inav settings model =
-    div []
+    div
+        [ onKeyUpCode KeyPress
+        ]
         [ renderItemInfo settings model
         , renderDetailMenu inav model
         , renderMailForm settings model
@@ -87,7 +91,7 @@ view inav settings model =
 --- Helper
 
 
-renderDetailMenu : { prev : Maybe String, next : Maybe String } -> Model -> Html Msg
+renderDetailMenu : ItemNav -> Model -> Html Msg
 renderDetailMenu inav model =
     div
         [ classList
@@ -109,6 +113,7 @@ renderDetailMenu inav model =
             , Maybe.map ItemDetailPage inav.prev
                 |> Maybe.map Page.href
                 |> Maybe.withDefault (href "#")
+            , title "Previous item. Key ','"
             ]
             [ i [ class "caret square left outline icon" ] []
             ]
@@ -120,6 +125,7 @@ renderDetailMenu inav model =
             , Maybe.map ItemDetailPage inav.next
                 |> Maybe.map Page.href
                 |> Maybe.withDefault (href "#")
+            , title "Next item. Key '.'"
             ]
             [ i [ class "caret square right outline icon" ] []
             ]
@@ -718,7 +724,7 @@ renderEditButtons model =
                 [ ( "borderless item", True )
                 , ( "invisible", model.item.state /= "created" )
                 ]
-            , title "Confirm metadata"
+            , title "Confirm metadata. Key 'c'."
             , href "#"
             , onClick ConfirmItem
             ]
@@ -730,7 +736,7 @@ renderEditButtons model =
                 , ( "invisible", model.item.state /= "confirmed" )
                 ]
             , href "#"
-            , title "Unconfirm metadata"
+            , title "Unconfirm metadata. Key 'u'."
             , onClick UnconfirmItem
             ]
             [ i [ class "eye slash outline icon" ] []

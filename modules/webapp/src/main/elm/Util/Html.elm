@@ -46,12 +46,16 @@ type KeyCode
     | Enter
     | Space
     | ESC
+    | Letter_C
     | Letter_N
     | Letter_P
     | Letter_H
     | Letter_J
     | Letter_K
     | Letter_L
+    | Letter_U
+    | Point
+    | Comma
     | Code Int
 
 
@@ -79,6 +83,9 @@ intToKeyCode code =
         27 ->
             Just ESC
 
+        67 ->
+            Just Letter_C
+
         72 ->
             Just Letter_H
 
@@ -96,6 +103,15 @@ intToKeyCode code =
 
         80 ->
             Just Letter_P
+
+        85 ->
+            Just Letter_U
+
+        188 ->
+            Just Comma
+
+        190 ->
+            Just Point
 
         n ->
             Just (Code n)

@@ -18,6 +18,7 @@ import Comp.FixedDropdown
 import Comp.ItemCardList
 import Comp.SearchMenu
 import Data.Flags exposing (Flags)
+import Data.ItemNav exposing (ItemNav)
 import Data.Items
 import Data.UiSettings exposing (UiSettings)
 import Http
@@ -119,7 +120,7 @@ searchTypeString st =
             "Contents Only"
 
 
-itemNav : String -> Model -> { prev : Maybe String, next : Maybe String }
+itemNav : String -> Model -> ItemNav
 itemNav id model =
     let
         prev =
