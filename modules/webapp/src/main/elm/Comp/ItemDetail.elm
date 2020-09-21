@@ -24,7 +24,7 @@ emptyModel =
     Comp.ItemDetail.Model.emptyModel
 
 
-update : Nav.Key -> Flags -> Maybe String -> Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
+update : Nav.Key -> Flags -> Maybe String -> UiSettings -> Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
 update =
     Comp.ItemDetail.Update.update
 
