@@ -6,14 +6,13 @@ import Comp.DatePicker
 import Comp.DetailEdit
 import Comp.Dropdown
 import Comp.Dropzone
-import Comp.ItemDetail.Model exposing (Model, NotesField(..))
-import Comp.ItemDetail.Update exposing (Msg(..))
+import Comp.ItemDetail.Model exposing (Model, Msg(..), NotesField(..), SaveNameState(..))
 import Comp.ItemMail
 import Comp.MarkdownInput
 import Comp.SentMails
 import Comp.YesNoDimmer
 import Data.Direction
-import Data.Fields exposing (Field)
+import Data.Fields
 import Data.Icons as Icons
 import Data.UiSettings exposing (UiSettings)
 import DatePicker
@@ -801,14 +800,16 @@ renderEditForm settings model =
                     ]
             , div [ class " field" ]
                 [ label [] [ text "Name" ]
-                , div [ class "ui action input" ]
+                , div [ class "ui icon input" ]
                     [ input [ type_ "text", value model.nameModel, onInput SetName ] []
-                    , button
-                        [ class "ui icon button"
-                        , onClick SaveName
+                    , i
+                        [ classList
+                            [ ( "green check icon", model.nameState == SaveSuccess )
+                            , ( "red exclamation triangle icon", model.nameState == SaveFailed )
+                            , ( "sync loading icon", model.nameState == Saving )
+                            ]
                         ]
-                        [ i [ class "save outline icon" ] []
-                        ]
+                        []
                     ]
                 ]
             , optional [ Data.Fields.Folder ] <|

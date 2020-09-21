@@ -3,7 +3,7 @@ module Page.ItemDetail.Data exposing (Model, Msg(..), emptyModel)
 import Api.Model.ItemDetail exposing (ItemDetail)
 import Browser.Dom as Dom
 import Comp.ItemDetail
-import Comp.ItemDetail.Update
+import Comp.ItemDetail.Model
 import Http
 
 
@@ -20,6 +20,6 @@ emptyModel =
 
 type Msg
     = Init String
-    | ItemDetailMsg Comp.ItemDetail.Update.Msg
+    | ItemDetailMsg Comp.ItemDetail.Model.Msg
     | ItemResp (Result Http.Error ItemDetail)
     | ScrollResult (Result Dom.Error ())

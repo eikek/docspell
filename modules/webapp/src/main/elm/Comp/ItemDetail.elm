@@ -6,8 +6,8 @@ module Comp.ItemDetail exposing
     )
 
 import Browser.Navigation as Nav
-import Comp.ItemDetail.Model
-import Comp.ItemDetail.Update exposing (Msg)
+import Comp.ItemDetail.Model exposing (Msg(..))
+import Comp.ItemDetail.Update
 import Comp.ItemDetail.View exposing (..)
 import Data.Flags exposing (Flags)
 import Data.UiSettings exposing (UiSettings)

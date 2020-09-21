@@ -3,7 +3,7 @@ module Page.ItemDetail.Update exposing (update)
 import Api
 import Browser.Navigation as Nav
 import Comp.ItemDetail
-import Comp.ItemDetail.Update
+import Comp.ItemDetail.Model
 import Data.Flags exposing (Flags)
 import Data.UiSettings exposing (UiSettings)
 import Page.ItemDetail.Data exposing (Model, Msg(..))
@@ -21,7 +21,7 @@ update key flags next settings msg model =
                         flags
                         next
                         settings
-                        Comp.ItemDetail.Update.Init
+                        Comp.ItemDetail.Model.Init
                         model.detail
 
                 task =
@@ -49,7 +49,7 @@ update key flags next settings msg model =
         ItemResp (Ok item) ->
             let
                 lmsg =
-                    Comp.ItemDetail.Update.SetItem item
+                    Comp.ItemDetail.Model.SetItem item
             in
             update key flags next settings (ItemDetailMsg lmsg) model
 

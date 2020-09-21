@@ -1,17 +1,24 @@
 module Comp.ItemDetail.Model exposing
     ( AttachmentRename
     , Model
+    , Msg(..)
     , NotesField(..)
+    , SaveNameState(..)
     , emptyModel
     , isEditNotes
     )
 
 import Api.Model.BasicResult exposing (BasicResult)
+import Api.Model.EquipmentList exposing (EquipmentList)
 import Api.Model.FolderItem exposing (FolderItem)
+import Api.Model.FolderList exposing (FolderList)
 import Api.Model.IdName exposing (IdName)
 import Api.Model.ItemDetail exposing (ItemDetail)
 import Api.Model.ItemProposals exposing (ItemProposals)
+import Api.Model.ReferenceList exposing (ReferenceList)
+import Api.Model.SentMails exposing (SentMails)
 import Api.Model.Tag exposing (Tag)
+import Api.Model.TagList exposing (TagList)
 import Comp.AttachmentMeta
 import Comp.DatePicker
 import Comp.DetailEdit
@@ -22,14 +29,17 @@ import Comp.MarkdownInput
 import Comp.SentMails
 import Comp.YesNoDimmer
 import Data.Direction exposing (Direction)
+import Data.Fields exposing (Field)
 import DatePicker exposing (DatePicker)
 import Dict exposing (Dict)
 import File exposing (File)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html5.DragDrop as DD
+import Http
 import Page exposing (Page(..))
 import Set exposing (Set)
+import Throttle exposing (Throttle)
 import Util.Tag
 
 
@@ -46,6 +56,8 @@ type alias Model =
     , folderModel : Comp.Dropdown.Model IdName
     , allFolders : List FolderItem
     , nameModel : String
+    , nameState : SaveNameState
+    , nameSaveThrottle : Throttle Msg
     , notesModel : Maybe String
     , notesField : NotesField
     , deleteItemConfirm : Comp.YesNoDimmer.Model
@@ -143,6 +155,8 @@ emptyModel =
             }
     , allFolders = []
     , nameModel = ""
+    , nameState = SaveSuccess
+    , nameSaveThrottle = Throttle.create 1
     , notesModel = Nothing
     , notesField = ViewNotes
     , deleteItemConfirm = Comp.YesNoDimmer.emptyModel
@@ -171,3 +185,89 @@ emptyModel =
     , modalEdit = Nothing
     , attachRename = Nothing
     }
+
+
+type Msg
+    = ToggleMenu
+    | ReloadItem
+    | Init
+    | SetItem ItemDetail
+    | SetActiveAttachment Int
+    | TagDropdownMsg (Comp.Dropdown.Msg Tag)
+    | DirDropdownMsg (Comp.Dropdown.Msg Direction)
+    | OrgDropdownMsg (Comp.Dropdown.Msg IdName)
+    | CorrPersonMsg (Comp.Dropdown.Msg IdName)
+    | ConcPersonMsg (Comp.Dropdown.Msg IdName)
+    | ConcEquipMsg (Comp.Dropdown.Msg IdName)
+    | GetTagsResp (Result Http.Error TagList)
+    | GetOrgResp (Result Http.Error ReferenceList)
+    | GetPersonResp (Result Http.Error ReferenceList)
+    | GetEquipResp (Result Http.Error EquipmentList)
+    | SetName String
+    | SetNotes String
+    | ToggleEditNotes
+    | NotesEditMsg Comp.MarkdownInput.Msg
+    | SaveNotes
+    | ConfirmItem
+    | UnconfirmItem
+    | SetCorrOrgSuggestion IdName
+    | SetCorrPersonSuggestion IdName
+    | SetConcPersonSuggestion IdName
+    | SetConcEquipSuggestion IdName
+    | SetItemDateSuggestion Int
+    | SetDueDateSuggestion Int
+    | ItemDatePickerMsg Comp.DatePicker.Msg
+    | DueDatePickerMsg Comp.DatePicker.Msg
+    | DeleteItemConfirm Comp.YesNoDimmer.Msg
+    | RequestDelete
+    | SaveResp (Result Http.Error BasicResult)
+    | DeleteResp (Result Http.Error BasicResult)
+    | GetItemResp (Result Http.Error ItemDetail)
+    | GetProposalResp (Result Http.Error ItemProposals)
+    | RemoveDueDate
+    | RemoveDate
+    | ItemMailMsg Comp.ItemMail.Msg
+    | ToggleMail
+    | SendMailResp (Result Http.Error BasicResult)
+    | SentMailsMsg Comp.SentMails.Msg
+    | ToggleSentMails
+    | SentMailsResp (Result Http.Error SentMails)
+    | AttachMetaClick String
+    | AttachMetaMsg String Comp.AttachmentMeta.Msg
+    | TogglePdfNativeView Bool
+    | RequestDeleteAttachment String
+    | DeleteAttachConfirm String Comp.YesNoDimmer.Msg
+    | DeleteAttachResp (Result Http.Error BasicResult)
+    | AddFilesToggle
+    | AddFilesMsg Comp.Dropzone.Msg
+    | AddFilesSubmitUpload
+    | AddFilesUploadResp String (Result Http.Error BasicResult)
+    | AddFilesProgress String Http.Progress
+    | AddFilesReset
+    | AttachDDMsg (DD.Msg String String)
+    | ModalEditMsg Comp.DetailEdit.Msg
+    | StartTagModal
+    | StartCorrOrgModal
+    | StartCorrPersonModal
+    | StartConcPersonModal
+    | StartEquipModal
+    | CloseModal
+    | EditAttachNameStart String
+    | EditAttachNameCancel
+    | EditAttachNameSet String
+    | EditAttachNameSubmit
+    | EditAttachNameResp (Result Http.Error BasicResult)
+    | GetFolderResp (Result Http.Error FolderList)
+    | FolderDropdownMsg (Comp.Dropdown.Msg IdName)
+    | StartEditCorrOrgModal
+    | StartEditPersonModal (Comp.Dropdown.Model IdName)
+    | StartEditEquipModal
+    | ResetHiddenMsg Field (Result Http.Error BasicResult)
+    | SaveNameResp (Result Http.Error BasicResult)
+    | UpdateThrottle
+
+
+type SaveNameState
+    = Saving
+    | SaveSuccess
+    | SaveFailed
