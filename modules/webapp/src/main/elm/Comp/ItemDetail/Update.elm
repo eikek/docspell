@@ -1,21 +1,16 @@
-module Comp.ItemDetail.Update exposing (Msg(..), update)
+module Comp.ItemDetail.Update exposing (update)
 
 import Api
 import Api.Model.BasicResult exposing (BasicResult)
 import Api.Model.DirectionValue exposing (DirectionValue)
-import Api.Model.EquipmentList exposing (EquipmentList)
-import Api.Model.FolderList exposing (FolderList)
 import Api.Model.IdName exposing (IdName)
 import Api.Model.ItemDetail exposing (ItemDetail)
-import Api.Model.ItemProposals exposing (ItemProposals)
 import Api.Model.MoveAttachment exposing (MoveAttachment)
 import Api.Model.OptionalDate exposing (OptionalDate)
 import Api.Model.OptionalId exposing (OptionalId)
 import Api.Model.OptionalText exposing (OptionalText)
 import Api.Model.ReferenceList exposing (ReferenceList)
-import Api.Model.SentMails exposing (SentMails)
 import Api.Model.Tag exposing (Tag)
-import Api.Model.TagList exposing (TagList)
 import Browser.Navigation as Nav
 import Comp.AttachmentMeta
 import Comp.DatePicker
@@ -23,7 +18,15 @@ import Comp.DetailEdit
 import Comp.Dropdown exposing (isDropdownChangeMsg)
 import Comp.Dropzone
 import Comp.EquipmentForm
-import Comp.ItemDetail.Model exposing (AttachmentRename, Model, NotesField(..), isEditNotes)
+import Comp.ItemDetail.Model
+    exposing
+        ( AttachmentRename
+        , Model
+        , Msg(..)
+        , NotesField(..)
+        , SaveNameState(..)
+        , isEditNotes
+        )
 import Comp.ItemMail
 import Comp.MarkdownInput
 import Comp.OrgForm
@@ -43,91 +46,14 @@ import Http
 import Page exposing (Page(..))
 import Ports
 import Set exposing (Set)
+import Throttle
+import Time
 import Util.File exposing (makeFileId)
 import Util.Folder exposing (mkFolderOption)
 import Util.Http
 import Util.List
 import Util.Maybe
 import Util.String
-
-
-type Msg
-    = ToggleMenu
-    | ReloadItem
-    | Init
-    | SetItem ItemDetail
-    | SetActiveAttachment Int
-    | TagDropdownMsg (Comp.Dropdown.Msg Tag)
-    | DirDropdownMsg (Comp.Dropdown.Msg Direction)
-    | OrgDropdownMsg (Comp.Dropdown.Msg IdName)
-    | CorrPersonMsg (Comp.Dropdown.Msg IdName)
-    | ConcPersonMsg (Comp.Dropdown.Msg IdName)
-    | ConcEquipMsg (Comp.Dropdown.Msg IdName)
-    | GetTagsResp (Result Http.Error TagList)
-    | GetOrgResp (Result Http.Error ReferenceList)
-    | GetPersonResp (Result Http.Error ReferenceList)
-    | GetEquipResp (Result Http.Error EquipmentList)
-    | SetName String
-    | SaveName
-    | SetNotes String
-    | ToggleEditNotes
-    | NotesEditMsg Comp.MarkdownInput.Msg
-    | SaveNotes
-    | ConfirmItem
-    | UnconfirmItem
-    | SetCorrOrgSuggestion IdName
-    | SetCorrPersonSuggestion IdName
-    | SetConcPersonSuggestion IdName
-    | SetConcEquipSuggestion IdName
-    | SetItemDateSuggestion Int
-    | SetDueDateSuggestion Int
-    | ItemDatePickerMsg Comp.DatePicker.Msg
-    | DueDatePickerMsg Comp.DatePicker.Msg
-    | DeleteItemConfirm Comp.YesNoDimmer.Msg
-    | RequestDelete
-    | SaveResp (Result Http.Error BasicResult)
-    | DeleteResp (Result Http.Error BasicResult)
-    | GetItemResp (Result Http.Error ItemDetail)
-    | GetProposalResp (Result Http.Error ItemProposals)
-    | RemoveDueDate
-    | RemoveDate
-    | ItemMailMsg Comp.ItemMail.Msg
-    | ToggleMail
-    | SendMailResp (Result Http.Error BasicResult)
-    | SentMailsMsg Comp.SentMails.Msg
-    | ToggleSentMails
-    | SentMailsResp (Result Http.Error SentMails)
-    | AttachMetaClick String
-    | AttachMetaMsg String Comp.AttachmentMeta.Msg
-    | TogglePdfNativeView Bool
-    | RequestDeleteAttachment String
-    | DeleteAttachConfirm String Comp.YesNoDimmer.Msg
-    | DeleteAttachResp (Result Http.Error BasicResult)
-    | AddFilesToggle
-    | AddFilesMsg Comp.Dropzone.Msg
-    | AddFilesSubmitUpload
-    | AddFilesUploadResp String (Result Http.Error BasicResult)
-    | AddFilesProgress String Http.Progress
-    | AddFilesReset
-    | AttachDDMsg (DD.Msg String String)
-    | ModalEditMsg Comp.DetailEdit.Msg
-    | StartTagModal
-    | StartCorrOrgModal
-    | StartCorrPersonModal
-    | StartConcPersonModal
-    | StartEquipModal
-    | CloseModal
-    | EditAttachNameStart String
-    | EditAttachNameCancel
-    | EditAttachNameSet String
-    | EditAttachNameSubmit
-    | EditAttachNameResp (Result Http.Error BasicResult)
-    | GetFolderResp (Result Http.Error FolderList)
-    | FolderDropdownMsg (Comp.Dropdown.Msg IdName)
-    | StartEditCorrOrgModal
-    | StartEditPersonModal (Comp.Dropdown.Model IdName)
-    | StartEditEquipModal
-    | ResetHiddenMsg Field (Result Http.Error BasicResult)
 
 
 update : Nav.Key -> Flags -> Maybe String -> UiSettings -> Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
@@ -265,6 +191,7 @@ update key flags next settings msg model =
             ( { m8
                 | item = item
                 , nameModel = item.name
+                , nameState = SaveSuccess
                 , notesModel = item.notes
                 , notesField =
                     if Util.String.isNothingOrBlank item.notes then
@@ -448,10 +375,28 @@ update key flags next settings msg model =
             noSub ( newModel, Cmd.batch [ save, Cmd.map ConcEquipMsg c2 ] )
 
         SetName str ->
-            noSub ( { model | nameModel = str }, Cmd.none )
+            case Util.Maybe.fromString str of
+                Just newName ->
+                    let
+                        nm =
+                            { model | nameModel = newName }
 
-        SaveName ->
-            noSub ( model, setName flags model )
+                        cmd_ =
+                            setName flags nm
+
+                        ( newThrottle, cmd ) =
+                            Throttle.try cmd_ nm.nameSaveThrottle
+                    in
+                    withSub
+                        ( { nm
+                            | nameState = Saving
+                            , nameSaveThrottle = newThrottle
+                          }
+                        , cmd
+                        )
+
+                Nothing ->
+                    noSub ( { model | nameModel = str, nameState = SaveFailed }, Cmd.none )
 
         SetNotes str ->
             noSub
@@ -658,6 +603,25 @@ update key flags next settings msg model =
 
         SaveResp (Err _) ->
             noSub ( model, Cmd.none )
+
+        SaveNameResp (Ok res) ->
+            if res.success then
+                noSub
+                    ( { model
+                        | nameState = SaveSuccess
+                        , item = setItemName model.item model.nameModel
+                      }
+                    , Cmd.none
+                    )
+
+            else
+                noSub
+                    ( { model | nameState = SaveFailed }
+                    , Cmd.none
+                    )
+
+        SaveNameResp (Err _) ->
+            noSub ( { model | nameState = SaveFailed }, Cmd.none )
 
         DeleteResp (Ok res) ->
             if res.success then
@@ -1257,6 +1221,13 @@ update key flags next settings msg model =
         ResetHiddenMsg _ _ ->
             noSub ( model, Cmd.none )
 
+        UpdateThrottle ->
+            let
+                ( newThrottle, cmd ) =
+                    Throttle.update model.nameSaveThrottle
+            in
+            withSub ( { model | nameSaveThrottle = newThrottle }, cmd )
+
 
 
 --- Helper
@@ -1359,7 +1330,7 @@ setName flags model =
         Cmd.none
 
     else
-        Api.setItemName flags model.item.id text SaveResp
+        Api.setItemName flags model.item.id text SaveNameResp
 
 
 setNotes : Flags -> Model -> Cmd Msg
@@ -1394,6 +1365,16 @@ setErrored model fileid =
 noSub : ( Model, Cmd Msg ) -> ( Model, Cmd Msg, Sub Msg )
 noSub ( m, c ) =
     ( m, c, Sub.none )
+
+
+withSub : ( Model, Cmd Msg ) -> ( Model, Cmd Msg, Sub Msg )
+withSub ( m, c ) =
+    ( m
+    , c
+    , Throttle.ifNeeded
+        (Time.every 400 (\_ -> UpdateThrottle))
+        m.nameSaveThrottle
+    )
 
 
 resetField : Flags -> String -> (Field -> Result Http.Error BasicResult -> msg) -> Field -> Cmd msg
@@ -1436,3 +1417,8 @@ resetHiddenFields :
 resetHiddenFields settings flags item tagger =
     List.filter (Data.UiSettings.fieldHidden settings) Data.Fields.all
         |> List.map (resetField flags item tagger)
+
+
+setItemName : ItemDetail -> String -> ItemDetail
+setItemName item name =
+    { item | name = name }
