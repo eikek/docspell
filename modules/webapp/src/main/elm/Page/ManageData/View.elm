@@ -5,6 +5,7 @@ import Comp.FolderManage
 import Comp.OrgManage
 import Comp.PersonManage
 import Comp.TagManage
+import Data.Fields
 import Data.Flags exposing (Flags)
 import Data.Icons as Icons
 import Data.UiSettings exposing (UiSettings)
@@ -54,6 +55,11 @@ view flags settings model =
                         ]
                     , div
                         [ classActive (model.currentTab == Just FolderTab) "link icon item"
+                        , classList
+                            [ ( "invisible hidden"
+                              , Data.UiSettings.fieldHidden settings Data.Fields.Folder
+                              )
+                            ]
                         , onClick (SetTab FolderTab)
                         ]
                         [ Icons.folderIcon ""
