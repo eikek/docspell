@@ -45,6 +45,14 @@ type KeyCode
     | Right
     | Enter
     | Space
+    | ESC
+    | Letter_N
+    | Letter_P
+    | Letter_H
+    | Letter_J
+    | Letter_K
+    | Letter_L
+    | Code Int
 
 
 intToKeyCode : Int -> Maybe KeyCode
@@ -68,8 +76,29 @@ intToKeyCode code =
         32 ->
             Just Space
 
-        _ ->
-            Nothing
+        27 ->
+            Just ESC
+
+        72 ->
+            Just Letter_H
+
+        74 ->
+            Just Letter_J
+
+        75 ->
+            Just Letter_K
+
+        76 ->
+            Just Letter_L
+
+        78 ->
+            Just Letter_N
+
+        80 ->
+            Just Letter_P
+
+        n ->
+            Just (Code n)
 
 
 onKeyUp : (Int -> msg) -> Attribute msg
