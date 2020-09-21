@@ -192,7 +192,13 @@ updateItemDetail lmsg model =
             Page.Home.Data.itemNav model.itemDetailModel.detail.item.id model.homeModel
 
         ( lm, lc, ls ) =
-            Page.ItemDetail.Update.update model.key model.flags inav.next lmsg model.itemDetailModel
+            Page.ItemDetail.Update.update
+                model.key
+                model.flags
+                inav.next
+                model.uiSettings
+                lmsg
+                model.itemDetailModel
     in
     ( { model
         | itemDetailModel = lm

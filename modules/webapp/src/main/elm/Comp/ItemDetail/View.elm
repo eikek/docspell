@@ -553,7 +553,7 @@ renderItemInfo : UiSettings -> Model -> Html Msg
 renderItemInfo settings model =
     let
         date =
-            div
+            ( div
                 [ class "item"
                 , title "Item Date"
                 ]
@@ -561,9 +561,11 @@ renderItemInfo settings model =
                     |> Util.Time.formatDate
                     |> text
                 ]
+            , Data.UiSettings.fieldVisible settings Data.Fields.Date
+            )
 
         duedate =
-            div
+            ( div
                 [ class "item"
                 , title "Due Date"
                 ]
@@ -572,9 +574,12 @@ renderItemInfo settings model =
                     |> Maybe.withDefault ""
                     |> text
                 ]
+            , Data.UiSettings.fieldVisible settings Data.Fields.DueDate
+                && Util.Maybe.nonEmpty model.item.dueDate
+            )
 
         corr =
-            div
+            ( div
                 [ class "item"
                 , title "Correspondent"
                 ]
@@ -585,9 +590,12 @@ renderItemInfo settings model =
                     |> Util.String.withDefault "(None)"
                     |> text
                 ]
+            , Data.UiSettings.fieldVisible settings Data.Fields.CorrOrg
+                || Data.UiSettings.fieldVisible settings Data.Fields.CorrPerson
+            )
 
         conc =
-            div
+            ( div
                 [ class "item"
                 , title "Concerning"
                 ]
@@ -598,9 +606,12 @@ renderItemInfo settings model =
                     |> Util.String.withDefault "(None)"
                     |> text
                 ]
+            , Data.UiSettings.fieldVisible settings Data.Fields.ConcEquip
+                || Data.UiSettings.fieldVisible settings Data.Fields.ConcPerson
+            )
 
         itemfolder =
-            div
+            ( div
                 [ class "item"
                 , title "Folder"
                 ]
@@ -609,21 +620,28 @@ renderItemInfo settings model =
                     |> Maybe.withDefault "-"
                     |> text
                 ]
+            , Data.UiSettings.fieldVisible settings Data.Fields.Folder
+            )
 
         src =
-            div
+            ( div
                 [ class "item"
                 , title "Source"
                 ]
                 [ text model.item.source
                 ]
+            , True
+            )
     in
     div [ class "ui fluid container" ]
         (h2
             [ class "ui header"
             ]
             [ i
-                [ class (Data.Direction.iconFromString model.item.direction)
+                [ classList
+                    [ ( Data.Direction.iconFromString model.item.direction, True )
+                    , ( "hidden invisible", Data.UiSettings.fieldHidden settings Data.Fields.Direction )
+                    ]
                 , title model.item.direction
                 ]
                 []
@@ -638,20 +656,17 @@ renderItemInfo settings model =
                     [ text "New!"
                     ]
                 , div [ class "sub header" ]
-                    [ div [ class "ui horizontal bulleted list" ] <|
-                        List.append
+                    [ div [ class "ui horizontal bulleted list" ]
+                        (List.filter Tuple.second
                             [ date
                             , corr
                             , conc
                             , itemfolder
                             , src
+                            , duedate
                             ]
-                            (if Util.Maybe.isEmpty model.item.dueDate then
-                                []
-
-                             else
-                                [ duedate ]
-                            )
+                            |> List.map Tuple.first
+                        )
                     ]
                 ]
             ]
@@ -661,25 +676,29 @@ renderItemInfo settings model =
 
 renderTags : UiSettings -> Model -> List (Html Msg)
 renderTags settings model =
-    case model.item.tags of
-        [] ->
-            []
+    if Data.UiSettings.fieldHidden settings Data.Fields.Tag then
+        []
 
-        _ ->
-            [ div [ class "ui right aligned fluid container" ] <|
-                List.map
-                    (\t ->
-                        div
-                            [ classList
-                                [ ( "ui tag label", True )
-                                , ( Data.UiSettings.tagColorString t settings, True )
+    else
+        case model.item.tags of
+            [] ->
+                []
+
+            _ ->
+                [ div [ class "ui right aligned fluid container" ] <|
+                    List.map
+                        (\t ->
+                            div
+                                [ classList
+                                    [ ( "ui tag label", True )
+                                    , ( Data.UiSettings.tagColorString t settings, True )
+                                    ]
                                 ]
-                            ]
-                            [ text t.name
-                            ]
-                    )
-                    model.item.tags
-            ]
+                                [ text t.name
+                                ]
+                        )
+                        model.item.tags
+                ]
 
 
 renderEditMenu : UiSettings -> Model -> List (Html Msg)
@@ -758,9 +777,6 @@ renderEditForm settings model =
 
         fieldVisible field =
             Data.UiSettings.fieldVisible settings field
-
-        fieldHidden field =
-            Data.UiSettings.fieldHidden settings field
 
         optional fields html =
             if

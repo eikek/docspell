@@ -31,7 +31,9 @@ import Comp.PersonForm
 import Comp.SentMails
 import Comp.YesNoDimmer
 import Data.Direction exposing (Direction)
+import Data.Fields exposing (Field)
 import Data.Flags exposing (Flags)
+import Data.UiSettings exposing (UiSettings)
 import DatePicker
 import Dict
 import Html exposing (..)
@@ -125,10 +127,11 @@ type Msg
     | StartEditCorrOrgModal
     | StartEditPersonModal (Comp.Dropdown.Model IdName)
     | StartEditEquipModal
+    | ResetHiddenMsg Field (Result Http.Error BasicResult)
 
 
-update : Nav.Key -> Flags -> Maybe String -> Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
-update key flags next msg model =
+update : Nav.Key -> Flags -> Maybe String -> UiSettings -> Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
+update key flags next settings msg model =
     case msg of
         Init ->
             let
@@ -152,12 +155,18 @@ update key flags next msg model =
         SetItem item ->
             let
                 ( m1, c1, s1 ) =
-                    update key flags next (TagDropdownMsg (Comp.Dropdown.SetSelection item.tags)) model
+                    update key
+                        flags
+                        next
+                        settings
+                        (TagDropdownMsg (Comp.Dropdown.SetSelection item.tags))
+                        model
 
                 ( m2, c2, s2 ) =
                     update key
                         flags
                         next
+                        settings
                         (DirDropdownMsg
                             (Comp.Dropdown.SetSelection
                                 (Data.Direction.fromString item.direction
@@ -172,6 +181,7 @@ update key flags next msg model =
                     update key
                         flags
                         next
+                        settings
                         (OrgDropdownMsg
                             (Comp.Dropdown.SetSelection
                                 (item.corrOrg
@@ -186,6 +196,7 @@ update key flags next msg model =
                     update key
                         flags
                         next
+                        settings
                         (CorrPersonMsg
                             (Comp.Dropdown.SetSelection
                                 (item.corrPerson
@@ -200,6 +211,7 @@ update key flags next msg model =
                     update key
                         flags
                         next
+                        settings
                         (ConcPersonMsg
                             (Comp.Dropdown.SetSelection
                                 (item.concPerson
@@ -214,6 +226,7 @@ update key flags next msg model =
                     update key
                         flags
                         next
+                        settings
                         (ConcEquipMsg
                             (Comp.Dropdown.SetSelection
                                 (item.concEquipment
@@ -225,12 +238,13 @@ update key flags next msg model =
                         m5
 
                 ( m7, c7, s7 ) =
-                    update key flags next AddFilesReset m6
+                    update key flags next settings AddFilesReset m6
 
                 ( m8, c8, s8 ) =
                     update key
                         flags
                         next
+                        settings
                         (FolderDropdownMsg
                             (Comp.Dropdown.SetSelection
                                 (item.folder
@@ -477,7 +491,11 @@ update key flags next msg model =
             noSub ( model, setNotes flags model )
 
         ConfirmItem ->
-            noSub ( model, Api.setConfirmed flags model.item.id SaveResp )
+            let
+                resetCmds =
+                    resetHiddenFields settings flags model.item.id ResetHiddenMsg
+            in
+            noSub ( model, Cmd.batch (Api.setConfirmed flags model.item.id SaveResp :: resetCmds) )
 
         UnconfirmItem ->
             noSub ( model, Api.setUnconfirmed flags model.item.id SaveResp )
@@ -535,7 +553,7 @@ update key flags next msg model =
             noSub ( { model | deleteItemConfirm = cm }, cmd )
 
         RequestDelete ->
-            update key flags next (DeleteItemConfirm Comp.YesNoDimmer.activate) model
+            update key flags next settings (DeleteItemConfirm Comp.YesNoDimmer.activate) model
 
         SetCorrOrgSuggestion idname ->
             noSub ( model, setCorrOrg flags model (Just idname) )
@@ -574,7 +592,7 @@ update key flags next msg model =
                         |> List.map mkIdName
                         |> Comp.Dropdown.SetOptions
             in
-            update key flags next (FolderDropdownMsg opts) model_
+            update key flags next settings (FolderDropdownMsg opts) model_
 
         GetFolderResp (Err _) ->
             noSub ( model, Cmd.none )
@@ -585,7 +603,7 @@ update key flags next msg model =
                     Comp.Dropdown.SetOptions tags.items
 
                 ( m1, c1, s1 ) =
-                    update key flags next (TagDropdownMsg tagList) model
+                    update key flags next settings (TagDropdownMsg tagList) model
             in
             ( m1, c1, s1 )
 
@@ -597,7 +615,7 @@ update key flags next msg model =
                 opts =
                     Comp.Dropdown.SetOptions orgs.items
             in
-            update key flags next (OrgDropdownMsg opts) model
+            update key flags next settings (OrgDropdownMsg opts) model
 
         GetOrgResp (Err _) ->
             noSub ( model, Cmd.none )
@@ -608,10 +626,10 @@ update key flags next msg model =
                     Comp.Dropdown.SetOptions ps.items
 
                 ( m1, c1, s1 ) =
-                    update key flags next (CorrPersonMsg opts) model
+                    update key flags next settings (CorrPersonMsg opts) model
 
                 ( m2, c2, s2 ) =
-                    update key flags next (ConcPersonMsg opts) m1
+                    update key flags next settings (ConcPersonMsg opts) m1
             in
             ( m2, Cmd.batch [ c1, c2 ], Sub.batch [ s1, s2 ] )
 
@@ -626,7 +644,7 @@ update key flags next msg model =
                             equips.items
                         )
             in
-            update key flags next (ConcEquipMsg opts) model
+            update key flags next settings (ConcEquipMsg opts) model
 
         GetEquipResp (Err _) ->
             noSub ( model, Cmd.none )
@@ -657,7 +675,7 @@ update key flags next msg model =
             noSub ( model, Cmd.none )
 
         GetItemResp (Ok item) ->
-            update key flags next (SetItem item) model
+            update key flags next settings (SetItem item) model
 
         GetItemResp (Err _) ->
             noSub ( model, Cmd.none )
@@ -852,7 +870,7 @@ update key flags next msg model =
 
         DeleteAttachResp (Ok res) ->
             if res.success then
-                update key flags next ReloadItem model
+                update key flags next settings ReloadItem model
 
             else
                 noSub ( model, Cmd.none )
@@ -864,6 +882,7 @@ update key flags next msg model =
             update key
                 flags
                 next
+                settings
                 (DeleteAttachConfirm id Comp.YesNoDimmer.activate)
                 model
 
@@ -1235,6 +1254,9 @@ update key flags next msg model =
         EditAttachNameResp (Err _) ->
             noSub ( model, Cmd.none )
 
+        ResetHiddenMsg _ _ ->
+            noSub ( model, Cmd.none )
+
 
 
 --- Helper
@@ -1372,3 +1394,45 @@ setErrored model fileid =
 noSub : ( Model, Cmd Msg ) -> ( Model, Cmd Msg, Sub Msg )
 noSub ( m, c ) =
     ( m, c, Sub.none )
+
+
+resetField : Flags -> String -> (Field -> Result Http.Error BasicResult -> msg) -> Field -> Cmd msg
+resetField flags item tagger field =
+    case field of
+        Data.Fields.Tag ->
+            Api.setTags flags item Api.Model.ReferenceList.empty (tagger Data.Fields.Tag)
+
+        Data.Fields.Folder ->
+            Api.setFolder flags item Api.Model.OptionalId.empty (tagger Data.Fields.Folder)
+
+        Data.Fields.CorrOrg ->
+            Api.setCorrOrg flags item Api.Model.OptionalId.empty (tagger Data.Fields.CorrOrg)
+
+        Data.Fields.CorrPerson ->
+            Api.setCorrPerson flags item Api.Model.OptionalId.empty (tagger Data.Fields.CorrPerson)
+
+        Data.Fields.ConcPerson ->
+            Api.setConcPerson flags item Api.Model.OptionalId.empty (tagger Data.Fields.ConcPerson)
+
+        Data.Fields.ConcEquip ->
+            Api.setConcEquip flags item Api.Model.OptionalId.empty (tagger Data.Fields.ConcEquip)
+
+        Data.Fields.Date ->
+            Api.setItemDate flags item Api.Model.OptionalDate.empty (tagger Data.Fields.Date)
+
+        Data.Fields.DueDate ->
+            Api.setItemDueDate flags item Api.Model.OptionalDate.empty (tagger Data.Fields.DueDate)
+
+        Data.Fields.Direction ->
+            Cmd.none
+
+
+resetHiddenFields :
+    UiSettings
+    -> Flags
+    -> String
+    -> (Field -> Result Http.Error BasicResult -> msg)
+    -> List (Cmd msg)
+resetHiddenFields settings flags item tagger =
+    List.filter (Data.UiSettings.fieldHidden settings) Data.Fields.all
+        |> List.map (resetField flags item tagger)
