@@ -41,7 +41,7 @@ view inav settings model =
     div
         []
         [ renderItemInfo settings model
-        , renderDetailMenu inav model
+        , renderDetailMenu settings inav model
         , renderMailForm settings model
         , renderAddFilesForm model
         , div [ class "ui grid" ]
@@ -90,8 +90,16 @@ view inav settings model =
 --- Helper
 
 
-renderDetailMenu : ItemNav -> Model -> Html Msg
-renderDetailMenu inav model =
+renderDetailMenu : UiSettings -> ItemNav -> Model -> Html Msg
+renderDetailMenu settings inav model =
+    let
+        keyDescr name =
+            if settings.itemDetailShortcuts && model.menuOpen then
+                " Key '" ++ name ++ "'."
+
+            else
+                ""
+    in
     div
         [ classList
             [ ( "ui ablue-comp menu", True )
@@ -112,7 +120,7 @@ renderDetailMenu inav model =
             , Maybe.map ItemDetailPage inav.prev
                 |> Maybe.map Page.href
                 |> Maybe.withDefault (href "#")
-            , title "Previous item. Key 'Ctrl-,'"
+            , title ("Previous item." ++ keyDescr "Ctrl-,")
             ]
             [ i [ class "caret square left outline icon" ] []
             ]
@@ -124,7 +132,7 @@ renderDetailMenu inav model =
             , Maybe.map ItemDetailPage inav.next
                 |> Maybe.map Page.href
                 |> Maybe.withDefault (href "#")
-            , title "Next item. Key 'Ctrl-.'"
+            , title ("Next item." ++ keyDescr "Ctrl-.")
             ]
             [ i [ class "caret square right outline icon" ] []
             ]
@@ -708,22 +716,36 @@ renderTags settings model =
 renderEditMenu : UiSettings -> Model -> List (Html Msg)
 renderEditMenu settings model =
     [ Html.map ModalEditMsg (Comp.DetailEdit.viewModal settings model.modalEdit)
-    , div (Comp.KeyInput.eventsM KeyInputMsg)
-        [ renderEditButtons model
+    , div
+        (if settings.itemDetailShortcuts then
+            Comp.KeyInput.eventsM KeyInputMsg
+
+         else
+            []
+        )
+        [ renderEditButtons settings model
         , renderEditForm settings model
         ]
     ]
 
 
-renderEditButtons : Model -> Html Msg
-renderEditButtons model =
+renderEditButtons : UiSettings -> Model -> Html Msg
+renderEditButtons settings model =
+    let
+        keyDescr name =
+            if settings.itemDetailShortcuts then
+                " Key '" ++ name ++ "'."
+
+            else
+                ""
+    in
     div [ class "ui top attached icon ablue-comp menu" ]
         [ a
             [ classList
                 [ ( "borderless item", True )
                 , ( "invisible", model.item.state /= "created" )
                 ]
-            , title "Confirm metadata. Key 'Ctrl-c'."
+            , title ("Confirm metadata." ++ keyDescr "Ctrl-c")
             , href "#"
             , onClick ConfirmItem
             ]
@@ -735,7 +757,7 @@ renderEditButtons model =
                 , ( "invisible", model.item.state /= "confirmed" )
                 ]
             , href "#"
-            , title "Unconfirm metadata. Key 'Ctrl-c'."
+            , title ("Unconfirm metadata." ++ keyDescr "Ctrl-c")
             , onClick UnconfirmItem
             ]
             [ i [ class "eye slash outline icon" ] []

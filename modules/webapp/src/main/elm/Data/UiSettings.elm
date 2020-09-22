@@ -40,6 +40,7 @@ type alias StoredUiSettings =
     , searchMenuTagCount : Maybe Int
     , searchMenuTagCatCount : Maybe Int
     , formFields : Maybe (List String)
+    , itemDetailShortcuts : Bool
     }
 
 
@@ -60,6 +61,7 @@ type alias UiSettings =
     , searchMenuTagCount : Int
     , searchMenuTagCatCount : Int
     , formFields : List Field
+    , itemDetailShortcuts : Bool
     }
 
 
@@ -102,6 +104,7 @@ defaults =
     , searchMenuTagCount = 6
     , searchMenuTagCatCount = 3
     , formFields = Data.Fields.all
+    , itemDetailShortcuts = False
     }
 
 
@@ -134,6 +137,7 @@ merge given fallback =
         choose
             (Maybe.map Data.Fields.fromList given.formFields)
             fallback.formFields
+    , itemDetailShortcuts = given.itemDetailShortcuts
     }
 
 
@@ -157,6 +161,7 @@ toStoredUiSettings settings =
     , formFields =
         List.map Data.Fields.toString settings.formFields
             |> Just
+    , itemDetailShortcuts = settings.itemDetailShortcuts
     }
 
 
