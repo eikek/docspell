@@ -8,6 +8,7 @@ import Comp.Dropdown
 import Comp.Dropzone
 import Comp.ItemDetail.Model exposing (Model, Msg(..), NotesField(..), SaveNameState(..))
 import Comp.ItemMail
+import Comp.KeyInput
 import Comp.MarkdownInput
 import Comp.SentMails
 import Comp.YesNoDimmer
@@ -28,7 +29,6 @@ import Page exposing (Page(..))
 import Set
 import Util.File exposing (makeFileId)
 import Util.Folder
-import Util.Html exposing (onKeyUpCode)
 import Util.List
 import Util.Maybe
 import Util.Size
@@ -39,8 +39,7 @@ import Util.Time
 view : ItemNav -> UiSettings -> Model -> Html Msg
 view inav settings model =
     div
-        [ onKeyUpCode KeyPress
-        ]
+        []
         [ renderItemInfo settings model
         , renderDetailMenu inav model
         , renderMailForm settings model
@@ -113,7 +112,7 @@ renderDetailMenu inav model =
             , Maybe.map ItemDetailPage inav.prev
                 |> Maybe.map Page.href
                 |> Maybe.withDefault (href "#")
-            , title "Previous item. Key ','"
+            , title "Previous item. Key 'Ctrl-,'"
             ]
             [ i [ class "caret square left outline icon" ] []
             ]
@@ -125,7 +124,7 @@ renderDetailMenu inav model =
             , Maybe.map ItemDetailPage inav.next
                 |> Maybe.map Page.href
                 |> Maybe.withDefault (href "#")
-            , title "Next item. Key '.'"
+            , title "Next item. Key 'Ctrl-.'"
             ]
             [ i [ class "caret square right outline icon" ] []
             ]
@@ -709,7 +708,7 @@ renderTags settings model =
 renderEditMenu : UiSettings -> Model -> List (Html Msg)
 renderEditMenu settings model =
     [ Html.map ModalEditMsg (Comp.DetailEdit.viewModal settings model.modalEdit)
-    , div []
+    , div (Comp.KeyInput.eventsM KeyInputMsg)
         [ renderEditButtons model
         , renderEditForm settings model
         ]
@@ -724,7 +723,7 @@ renderEditButtons model =
                 [ ( "borderless item", True )
                 , ( "invisible", model.item.state /= "created" )
                 ]
-            , title "Confirm metadata. Key 'c'."
+            , title "Confirm metadata. Key 'Ctrl-c'."
             , href "#"
             , onClick ConfirmItem
             ]
@@ -736,7 +735,7 @@ renderEditButtons model =
                 , ( "invisible", model.item.state /= "confirmed" )
                 ]
             , href "#"
-            , title "Unconfirm metadata. Key 'u'."
+            , title "Unconfirm metadata. Key 'Ctrl-c'."
             , onClick UnconfirmItem
             ]
             [ i [ class "eye slash outline icon" ] []

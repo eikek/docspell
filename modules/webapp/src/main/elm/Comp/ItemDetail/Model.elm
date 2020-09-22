@@ -25,6 +25,7 @@ import Comp.DetailEdit
 import Comp.Dropdown
 import Comp.Dropzone
 import Comp.ItemMail
+import Comp.KeyInput
 import Comp.MarkdownInput
 import Comp.SentMails
 import Comp.YesNoDimmer
@@ -40,7 +41,6 @@ import Http
 import Page exposing (Page(..))
 import Set exposing (Set)
 import Throttle exposing (Throttle)
-import Util.Html exposing (KeyCode)
 import Util.Tag
 
 
@@ -86,6 +86,7 @@ type alias Model =
     , attachDD : DD.Model String String
     , modalEdit : Maybe Comp.DetailEdit.Model
     , attachRename : Maybe AttachmentRename
+    , keyInputModel : Comp.KeyInput.Model
     }
 
 
@@ -185,6 +186,7 @@ emptyModel =
     , attachDD = DD.init
     , modalEdit = Nothing
     , attachRename = Nothing
+    , keyInputModel = Comp.KeyInput.init
     }
 
 
@@ -266,7 +268,7 @@ type Msg
     | ResetHiddenMsg Field (Result Http.Error BasicResult)
     | SaveNameResp (Result Http.Error BasicResult)
     | UpdateThrottle
-    | KeyPress (Maybe KeyCode)
+    | KeyInputMsg Comp.KeyInput.Msg
 
 
 type SaveNameState

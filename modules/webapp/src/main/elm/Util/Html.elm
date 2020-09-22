@@ -8,6 +8,8 @@ module Util.Html exposing
     , onDragLeave
     , onDragOver
     , onDropFiles
+    , onKeyDown
+    , onKeyDownCode
     , onKeyUp
     , onKeyUpCode
     )
@@ -56,12 +58,24 @@ type KeyCode
     | Letter_U
     | Point
     | Comma
+    | Shift
+    | Ctrl
+    | Super
     | Code Int
 
 
 intToKeyCode : Int -> Maybe KeyCode
 intToKeyCode code =
     case code of
+        16 ->
+            Just Shift
+
+        17 ->
+            Just Ctrl
+
+        91 ->
+            Just Super
+
         38 ->
             Just Up
 
@@ -122,9 +136,19 @@ onKeyUp tagger =
     on "keyup" (D.map tagger keyCode)
 
 
+onKeyDown : (Int -> msg) -> Attribute msg
+onKeyDown tagger =
+    on "keydown" (D.map tagger keyCode)
+
+
 onKeyUpCode : (Maybe KeyCode -> msg) -> Attribute msg
 onKeyUpCode tagger =
     onKeyUp (intToKeyCode >> tagger)
+
+
+onKeyDownCode : (Maybe KeyCode -> msg) -> Attribute msg
+onKeyDownCode tagger =
+    onKeyDown (intToKeyCode >> tagger)
 
 
 onClickk : msg -> Attribute msg

@@ -28,12 +28,13 @@ import Comp.ItemDetail.Model
         , isEditNotes
         )
 import Comp.ItemMail
+import Comp.KeyInput
 import Comp.MarkdownInput
 import Comp.OrgForm
 import Comp.PersonForm
 import Comp.SentMails
 import Comp.YesNoDimmer
-import Data.Direction exposing (Direction)
+import Data.Direction
 import Data.Fields exposing (Field)
 import Data.Flags exposing (Flags)
 import Data.ItemNav exposing (ItemNav)
@@ -51,7 +52,6 @@ import Throttle
 import Time
 import Util.File exposing (makeFileId)
 import Util.Folder exposing (mkFolderOption)
-import Util.Html exposing (KeyCode(..))
 import Util.Http
 import Util.List
 import Util.Maybe
@@ -1230,40 +1230,41 @@ update key flags inav settings msg model =
             in
             withSub ( { model | nameSaveThrottle = newThrottle }, cmd )
 
-        KeyPress n ->
-            case n of
-                Just Letter_C ->
-                    if model.item.state == "created" then
-                        update key flags inav settings ConfirmItem model
+        KeyInputMsg lm ->
+            let
+                ( km, keys ) =
+                    Comp.KeyInput.update lm model.keyInputModel
 
-                    else
-                        noSub ( model, Cmd.none )
+                model_ =
+                    { model | keyInputModel = km }
+            in
+            if keys == Just Comp.KeyInput.ctrlC then
+                if model.item.state == "created" then
+                    update key flags inav settings ConfirmItem model_
 
-                Just Letter_U ->
-                    if model.item.state /= "created" then
-                        update key flags inav settings UnconfirmItem model
+                else
+                    update key flags inav settings UnconfirmItem model_
 
-                    else
-                        noSub ( model, Cmd.none )
+            else if keys == Just Comp.KeyInput.ctrlPoint then
+                case inav.next of
+                    Just id ->
+                        noSub ( model_, Page.set key (ItemDetailPage id) )
 
-                Just Point ->
-                    case inav.next of
-                        Just id ->
-                            noSub ( model, Page.set key (ItemDetailPage id) )
+                    Nothing ->
+                        noSub ( model_, Cmd.none )
 
-                        Nothing ->
-                            noSub ( model, Cmd.none )
+            else if keys == Just Comp.KeyInput.ctrlComma then
+                case inav.prev of
+                    Just id ->
+                        noSub ( model_, Page.set key (ItemDetailPage id) )
 
-                Just Comma ->
-                    case inav.prev of
-                        Just id ->
-                            noSub ( model, Page.set key (ItemDetailPage id) )
+                    Nothing ->
+                        noSub ( model_, Cmd.none )
 
-                        Nothing ->
-                            noSub ( model, Cmd.none )
-
-                _ ->
-                    noSub ( model, Cmd.none )
+            else
+                -- withSub because the keypress may be inside the name
+                -- field and requires to activate the throttle
+                withSub ( model_, Cmd.none )
 
 
 
