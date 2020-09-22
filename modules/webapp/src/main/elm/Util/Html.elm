@@ -8,6 +8,8 @@ module Util.Html exposing
     , onDragLeave
     , onDragOver
     , onDropFiles
+    , onKeyDown
+    , onKeyDownCode
     , onKeyUp
     , onKeyUpCode
     )
@@ -45,11 +47,35 @@ type KeyCode
     | Right
     | Enter
     | Space
+    | ESC
+    | Letter_C
+    | Letter_N
+    | Letter_P
+    | Letter_H
+    | Letter_J
+    | Letter_K
+    | Letter_L
+    | Letter_U
+    | Point
+    | Comma
+    | Shift
+    | Ctrl
+    | Super
+    | Code Int
 
 
 intToKeyCode : Int -> Maybe KeyCode
 intToKeyCode code =
     case code of
+        16 ->
+            Just Shift
+
+        17 ->
+            Just Ctrl
+
+        91 ->
+            Just Super
+
         38 ->
             Just Up
 
@@ -68,8 +94,41 @@ intToKeyCode code =
         32 ->
             Just Space
 
-        _ ->
-            Nothing
+        27 ->
+            Just ESC
+
+        67 ->
+            Just Letter_C
+
+        72 ->
+            Just Letter_H
+
+        74 ->
+            Just Letter_J
+
+        75 ->
+            Just Letter_K
+
+        76 ->
+            Just Letter_L
+
+        78 ->
+            Just Letter_N
+
+        80 ->
+            Just Letter_P
+
+        85 ->
+            Just Letter_U
+
+        188 ->
+            Just Comma
+
+        190 ->
+            Just Point
+
+        n ->
+            Just (Code n)
 
 
 onKeyUp : (Int -> msg) -> Attribute msg
@@ -77,9 +136,19 @@ onKeyUp tagger =
     on "keyup" (D.map tagger keyCode)
 
 
+onKeyDown : (Int -> msg) -> Attribute msg
+onKeyDown tagger =
+    on "keydown" (D.map tagger keyCode)
+
+
 onKeyUpCode : (Maybe KeyCode -> msg) -> Attribute msg
 onKeyUpCode tagger =
     onKeyUp (intToKeyCode >> tagger)
+
+
+onKeyDownCode : (Maybe KeyCode -> msg) -> Attribute msg
+onKeyDownCode tagger =
+    onKeyDown (intToKeyCode >> tagger)
 
 
 onClickk : msg -> Attribute msg

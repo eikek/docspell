@@ -15,6 +15,8 @@ module Comp.FixedDropdown exposing
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
+import Util.Html exposing (KeyCode(..), onKeyUpCode)
+import Util.List
 
 
 type alias Item a =
@@ -26,18 +28,21 @@ type alias Item a =
 type alias Model a =
     { options : List (Item a)
     , menuOpen : Bool
+    , selected : Maybe a
     }
 
 
 type Msg a
     = SelectItem (Item a)
     | ToggleMenu
+    | KeyPress (Maybe KeyCode)
 
 
 init : List (Item a) -> Model a
 init options =
     { options = options
     , menuOpen = False
+    , selected = Nothing
     }
 
 
@@ -60,6 +65,54 @@ initTuple tuples =
     init <| List.map mkItem tuples
 
 
+isSelected : Model a -> Item a -> Bool
+isSelected model item =
+    model.selected == Just item.id
+
+
+movePrevious : Model a -> ( Model a, Maybe a )
+movePrevious model =
+    let
+        prev =
+            Util.List.findPrev (isSelected model) model.options
+    in
+    case prev of
+        Just p ->
+            ( { model | selected = Just p.id, menuOpen = True }, Nothing )
+
+        Nothing ->
+            ( { model
+                | selected =
+                    List.reverse model.options
+                        |> List.head
+                        |> Maybe.map .id
+                , menuOpen = True
+              }
+            , Nothing
+            )
+
+
+moveNext : Model a -> ( Model a, Maybe a )
+moveNext model =
+    let
+        next =
+            Util.List.findNext (isSelected model) model.options
+    in
+    case next of
+        Just n ->
+            ( { model | selected = Just n.id, menuOpen = True }, Nothing )
+
+        Nothing ->
+            ( { model
+                | selected =
+                    List.head model.options
+                        |> Maybe.map .id
+                , menuOpen = True
+              }
+            , Nothing
+            )
+
+
 update : Msg a -> Model a -> ( Model a, Maybe a )
 update msg model =
     case msg of
@@ -68,6 +121,49 @@ update msg model =
 
         SelectItem item ->
             ( model, Just item.id )
+
+        KeyPress (Just Space) ->
+            update ToggleMenu model
+
+        KeyPress (Just Enter) ->
+            if not model.menuOpen then
+                update ToggleMenu model
+
+            else
+                let
+                    selected =
+                        Util.List.find (isSelected model) model.options
+                in
+                case selected of
+                    Just i ->
+                        ( { model | menuOpen = False }, Just i.id )
+
+                    Nothing ->
+                        ( model, Nothing )
+
+        KeyPress (Just Up) ->
+            movePrevious model
+
+        KeyPress (Just Letter_P) ->
+            movePrevious model
+
+        KeyPress (Just Letter_K) ->
+            movePrevious model
+
+        KeyPress (Just Down) ->
+            moveNext model
+
+        KeyPress (Just Letter_N) ->
+            moveNext model
+
+        KeyPress (Just Letter_J) ->
+            moveNext model
+
+        KeyPress (Just ESC) ->
+            ( { model | menuOpen = False }, Nothing )
+
+        KeyPress _ ->
+            ( model, Nothing )
 
 
 viewStyled : String -> Maybe (Item a) -> Model a -> Html (Msg a)
@@ -78,7 +174,9 @@ viewStyled classes selected model =
             , ( classes, True )
             , ( "open", model.menuOpen )
             ]
+        , tabindex 0
         , onClick ToggleMenu
+        , onKeyUpCode KeyPress
         ]
         [ input [ type_ "hidden" ] []
         , i [ class "dropdown icon" ] []
@@ -100,7 +198,7 @@ viewStyled classes selected model =
                 ]
             ]
           <|
-            List.map renderItems model.options
+            List.map (renderItems model) model.options
         ]
 
 
@@ -114,8 +212,14 @@ viewString selected model =
     view (Maybe.map (\s -> Item s s) selected) model
 
 
-renderItems : Item a -> Html (Msg a)
-renderItems item =
-    div [ class "item", onClick (SelectItem item) ]
+renderItems : Model a -> Item a -> Html (Msg a)
+renderItems model item =
+    div
+        [ classList
+            [ ( "item", True )
+            , ( "selected", isSelected model item )
+            ]
+        , onClick (SelectItem item)
+        ]
         [ text item.display
         ]

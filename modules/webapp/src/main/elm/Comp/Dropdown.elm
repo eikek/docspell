@@ -313,7 +313,7 @@ isDropdownChangeMsg cm =
 
         KeyPress code ->
             Util.Html.intToKeyCode code
-                |> Maybe.map (\c -> c == Util.Html.Enter)
+                |> Maybe.map (\c -> c == Util.Html.Enter || c == Util.Html.ESC)
                 |> Maybe.withDefault False
 
         _ ->
@@ -352,7 +352,10 @@ update msg model =
                 m =
                     deselectItem model e |> applyFilter ""
             in
-            ( { m | menuOpen = False }, Cmd.none )
+            ( -- Setting to True, because parent click sets it to False… ugly
+              { m | menuOpen = True }
+            , Cmd.none
+            )
 
         Filter str ->
             let
@@ -369,8 +372,39 @@ update msg model =
                 Just Util.Html.Up ->
                     ( makeNextActive (\n -> n - 1) model, Cmd.none )
 
+                Just Util.Html.Letter_P ->
+                    ( makeNextActive (\n -> n - 1) model, Cmd.none )
+
+                Just Util.Html.Letter_K ->
+                    ( makeNextActive (\n -> n - 1) model, Cmd.none )
+
                 Just Util.Html.Down ->
                     ( makeNextActive ((+) 1) model, Cmd.none )
+
+                Just Util.Html.Letter_N ->
+                    ( makeNextActive ((+) 1) model, Cmd.none )
+
+                Just Util.Html.Letter_J ->
+                    ( makeNextActive ((+) 1) model, Cmd.none )
+
+                Just Util.Html.ESC ->
+                    if model.menuOpen then
+                        ( model, Cmd.none )
+
+                    else
+                        case model.selected of
+                            [ e ] ->
+                                let
+                                    ( m_, c_ ) =
+                                        update (RemoveItem e) model
+                                in
+                                ( { m_ | menuOpen = False }, c_ )
+
+                            _ ->
+                                ( model, Cmd.none )
+
+                Just Util.Html.Space ->
+                    update ToggleMenu model
 
                 Just Util.Html.Enter ->
                     let
@@ -404,7 +438,11 @@ viewSingle model =
                 [ class "message"
                 , style "display" "inline-block !important"
                 ]
-                [ i [ class "delete icon", onClick (RemoveItem item) ] []
+                [ i
+                    [ class "delete icon"
+                    , onClick (RemoveItem item)
+                    ]
+                    []
                 , text item.option.text
                 ]
 
@@ -420,7 +458,6 @@ viewSingle model =
                 [ class "search"
                 , placeholder "Search…"
                 , onInput Filter
-                , onKeyUp KeyPress
                 , value model.filterString
                 ]
                 []
@@ -433,10 +470,15 @@ viewSingle model =
             , ( "open", model.menuOpen )
             ]
             :: (if model.menuOpen then
-                    []
+                    [ tabindex 0
+                    , onKeyUp KeyPress
+                    ]
 
                 else
-                    [ onClick ToggleMenu ]
+                    [ onClick ToggleMenu
+                    , tabindex 0
+                    , onKeyUp KeyPress
+                    ]
                )
         )
         (List.append
@@ -482,6 +524,8 @@ viewMultiple settings model =
             [ ( "ui search dropdown multiple selection", True )
             , ( "open", model.menuOpen )
             ]
+        , tabindex 0
+        , onKeyUp KeyPress
         ]
         (List.concat
             [ [ i [ class "dropdown icon", onClick ToggleMenu ] []
@@ -492,7 +536,6 @@ viewMultiple settings model =
                     [ class "search"
                     , placeholder "Search…"
                     , onInput Filter
-                    , onKeyUp KeyPress
                     , value model.filterString
                     ]
                     []

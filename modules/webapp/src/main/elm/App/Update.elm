@@ -195,7 +195,7 @@ updateItemDetail lmsg model =
             Page.ItemDetail.Update.update
                 model.key
                 model.flags
-                inav.next
+                inav
                 model.uiSettings
                 lmsg
                 model.itemDetailModel

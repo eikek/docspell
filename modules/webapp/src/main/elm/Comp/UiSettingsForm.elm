@@ -39,6 +39,7 @@ type alias Model =
     , searchMenuTagCatCount : Maybe Int
     , searchMenuTagCatCountModel : Comp.IntField.Model
     , formFields : List Field
+    , itemDetailShortcuts : Bool
     }
 
 
@@ -87,6 +88,7 @@ init flags settings =
                 False
                 "Number of categories in search menu"
       , formFields = settings.formFields
+      , itemDetailShortcuts = settings.itemDetailShortcuts
       }
     , Api.getTags flags "" GetTagsResp
     )
@@ -103,6 +105,7 @@ type Msg
     | SearchMenuTagMsg Comp.IntField.Msg
     | SearchMenuTagCatMsg Comp.IntField.Msg
     | FieldListMsg Comp.FieldListSelect.Msg
+    | ToggleItemDetailShortcuts
 
 
 
@@ -261,6 +264,15 @@ update sett msg model =
                 Nothing
             )
 
+        ToggleItemDetailShortcuts ->
+            let
+                flag =
+                    not model.itemDetailShortcuts
+            in
+            ( { model | itemDetailShortcuts = flag }
+            , Just { sett | itemDetailShortcuts = flag }
+            )
+
 
 
 --- View
@@ -339,6 +351,19 @@ view flags _ model =
                     []
                 , label []
                     [ text "Browser-native PDF preview"
+                    ]
+                ]
+            ]
+        , div [ class "field" ]
+            [ div [ class "ui checkbox" ]
+                [ input
+                    [ type_ "checkbox"
+                    , onCheck (\_ -> ToggleItemDetailShortcuts)
+                    , checked model.itemDetailShortcuts
+                    ]
+                    []
+                , label []
+                    [ text "Use keyboard shortcuts for navigation and confirm/unconfirm with open edit menu."
                     ]
                 ]
             ]

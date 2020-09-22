@@ -28,14 +28,16 @@ import Comp.ItemDetail.Model
         , isEditNotes
         )
 import Comp.ItemMail
+import Comp.KeyInput
 import Comp.MarkdownInput
 import Comp.OrgForm
 import Comp.PersonForm
 import Comp.SentMails
 import Comp.YesNoDimmer
-import Data.Direction exposing (Direction)
+import Data.Direction
 import Data.Fields exposing (Field)
 import Data.Flags exposing (Flags)
+import Data.ItemNav exposing (ItemNav)
 import Data.UiSettings exposing (UiSettings)
 import DatePicker
 import Dict
@@ -56,8 +58,8 @@ import Util.Maybe
 import Util.String
 
 
-update : Nav.Key -> Flags -> Maybe String -> UiSettings -> Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
-update key flags next settings msg model =
+update : Nav.Key -> Flags -> ItemNav -> UiSettings -> Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
+update key flags inav settings msg model =
     case msg of
         Init ->
             let
@@ -83,7 +85,7 @@ update key flags next settings msg model =
                 ( m1, c1, s1 ) =
                     update key
                         flags
-                        next
+                        inav
                         settings
                         (TagDropdownMsg (Comp.Dropdown.SetSelection item.tags))
                         model
@@ -91,7 +93,7 @@ update key flags next settings msg model =
                 ( m2, c2, s2 ) =
                     update key
                         flags
-                        next
+                        inav
                         settings
                         (DirDropdownMsg
                             (Comp.Dropdown.SetSelection
@@ -106,7 +108,7 @@ update key flags next settings msg model =
                 ( m3, c3, s3 ) =
                     update key
                         flags
-                        next
+                        inav
                         settings
                         (OrgDropdownMsg
                             (Comp.Dropdown.SetSelection
@@ -121,7 +123,7 @@ update key flags next settings msg model =
                 ( m4, c4, s4 ) =
                     update key
                         flags
-                        next
+                        inav
                         settings
                         (CorrPersonMsg
                             (Comp.Dropdown.SetSelection
@@ -136,7 +138,7 @@ update key flags next settings msg model =
                 ( m5, c5, s5 ) =
                     update key
                         flags
-                        next
+                        inav
                         settings
                         (ConcPersonMsg
                             (Comp.Dropdown.SetSelection
@@ -151,7 +153,7 @@ update key flags next settings msg model =
                 ( m6, c6, s6 ) =
                     update key
                         flags
-                        next
+                        inav
                         settings
                         (ConcEquipMsg
                             (Comp.Dropdown.SetSelection
@@ -164,12 +166,12 @@ update key flags next settings msg model =
                         m5
 
                 ( m7, c7, s7 ) =
-                    update key flags next settings AddFilesReset m6
+                    update key flags inav settings AddFilesReset m6
 
                 ( m8, c8, s8 ) =
                     update key
                         flags
-                        next
+                        inav
                         settings
                         (FolderDropdownMsg
                             (Comp.Dropdown.SetSelection
@@ -498,7 +500,7 @@ update key flags next settings msg model =
             noSub ( { model | deleteItemConfirm = cm }, cmd )
 
         RequestDelete ->
-            update key flags next settings (DeleteItemConfirm Comp.YesNoDimmer.activate) model
+            update key flags inav settings (DeleteItemConfirm Comp.YesNoDimmer.activate) model
 
         SetCorrOrgSuggestion idname ->
             noSub ( model, setCorrOrg flags model (Just idname) )
@@ -537,7 +539,7 @@ update key flags next settings msg model =
                         |> List.map mkIdName
                         |> Comp.Dropdown.SetOptions
             in
-            update key flags next settings (FolderDropdownMsg opts) model_
+            update key flags inav settings (FolderDropdownMsg opts) model_
 
         GetFolderResp (Err _) ->
             noSub ( model, Cmd.none )
@@ -548,7 +550,7 @@ update key flags next settings msg model =
                     Comp.Dropdown.SetOptions tags.items
 
                 ( m1, c1, s1 ) =
-                    update key flags next settings (TagDropdownMsg tagList) model
+                    update key flags inav settings (TagDropdownMsg tagList) model
             in
             ( m1, c1, s1 )
 
@@ -560,7 +562,7 @@ update key flags next settings msg model =
                 opts =
                     Comp.Dropdown.SetOptions orgs.items
             in
-            update key flags next settings (OrgDropdownMsg opts) model
+            update key flags inav settings (OrgDropdownMsg opts) model
 
         GetOrgResp (Err _) ->
             noSub ( model, Cmd.none )
@@ -571,10 +573,10 @@ update key flags next settings msg model =
                     Comp.Dropdown.SetOptions ps.items
 
                 ( m1, c1, s1 ) =
-                    update key flags next settings (CorrPersonMsg opts) model
+                    update key flags inav settings (CorrPersonMsg opts) model
 
                 ( m2, c2, s2 ) =
-                    update key flags next settings (ConcPersonMsg opts) m1
+                    update key flags inav settings (ConcPersonMsg opts) m1
             in
             ( m2, Cmd.batch [ c1, c2 ], Sub.batch [ s1, s2 ] )
 
@@ -589,7 +591,7 @@ update key flags next settings msg model =
                             equips.items
                         )
             in
-            update key flags next settings (ConcEquipMsg opts) model
+            update key flags inav settings (ConcEquipMsg opts) model
 
         GetEquipResp (Err _) ->
             noSub ( model, Cmd.none )
@@ -625,7 +627,7 @@ update key flags next settings msg model =
 
         DeleteResp (Ok res) ->
             if res.success then
-                case next of
+                case inav.next of
                     Just id ->
                         noSub ( model, Page.set key (ItemDetailPage id) )
 
@@ -639,7 +641,7 @@ update key flags next settings msg model =
             noSub ( model, Cmd.none )
 
         GetItemResp (Ok item) ->
-            update key flags next settings (SetItem item) model
+            update key flags inav settings (SetItem item) model
 
         GetItemResp (Err _) ->
             noSub ( model, Cmd.none )
@@ -834,7 +836,7 @@ update key flags next settings msg model =
 
         DeleteAttachResp (Ok res) ->
             if res.success then
-                update key flags next settings ReloadItem model
+                update key flags inav settings ReloadItem model
 
             else
                 noSub ( model, Cmd.none )
@@ -845,7 +847,7 @@ update key flags next settings msg model =
         RequestDeleteAttachment id ->
             update key
                 flags
-                next
+                inav
                 settings
                 (DeleteAttachConfirm id Comp.YesNoDimmer.activate)
                 model
@@ -1227,6 +1229,42 @@ update key flags next settings msg model =
                     Throttle.update model.nameSaveThrottle
             in
             withSub ( { model | nameSaveThrottle = newThrottle }, cmd )
+
+        KeyInputMsg lm ->
+            let
+                ( km, keys ) =
+                    Comp.KeyInput.update lm model.keyInputModel
+
+                model_ =
+                    { model | keyInputModel = km }
+            in
+            if keys == Just Comp.KeyInput.ctrlC then
+                if model.item.state == "created" then
+                    update key flags inav settings ConfirmItem model_
+
+                else
+                    update key flags inav settings UnconfirmItem model_
+
+            else if keys == Just Comp.KeyInput.ctrlPoint then
+                case inav.next of
+                    Just id ->
+                        noSub ( model_, Page.set key (ItemDetailPage id) )
+
+                    Nothing ->
+                        noSub ( model_, Cmd.none )
+
+            else if keys == Just Comp.KeyInput.ctrlComma then
+                case inav.prev of
+                    Just id ->
+                        noSub ( model_, Page.set key (ItemDetailPage id) )
+
+                    Nothing ->
+                        noSub ( model_, Cmd.none )
+
+            else
+                -- withSub because the keypress may be inside the name
+                -- field and requires to activate the throttle
+                withSub ( model_, Cmd.none )
 
 
 

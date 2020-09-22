@@ -5,21 +5,22 @@ import Browser.Navigation as Nav
 import Comp.ItemDetail
 import Comp.ItemDetail.Model
 import Data.Flags exposing (Flags)
+import Data.ItemNav exposing (ItemNav)
 import Data.UiSettings exposing (UiSettings)
 import Page.ItemDetail.Data exposing (Model, Msg(..))
 import Scroll
 import Task
 
 
-update : Nav.Key -> Flags -> Maybe String -> UiSettings -> Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
-update key flags next settings msg model =
+update : Nav.Key -> Flags -> ItemNav -> UiSettings -> Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
+update key flags inav settings msg model =
     case msg of
         Init id ->
             let
                 ( lm, lc, ls ) =
                     Comp.ItemDetail.update key
                         flags
-                        next
+                        inav
                         settings
                         Comp.ItemDetail.Model.Init
                         model.detail
@@ -39,7 +40,7 @@ update key flags next settings msg model =
         ItemDetailMsg lmsg ->
             let
                 ( lm, lc, ls ) =
-                    Comp.ItemDetail.update key flags next settings lmsg model.detail
+                    Comp.ItemDetail.update key flags inav settings lmsg model.detail
             in
             ( { model | detail = lm }
             , Cmd.map ItemDetailMsg lc
@@ -51,7 +52,7 @@ update key flags next settings msg model =
                 lmsg =
                     Comp.ItemDetail.Model.SetItem item
             in
-            update key flags next settings (ItemDetailMsg lmsg) model
+            update key flags inav settings (ItemDetailMsg lmsg) model
 
         ItemResp (Err _) ->
             ( model, Cmd.none, Sub.none )
