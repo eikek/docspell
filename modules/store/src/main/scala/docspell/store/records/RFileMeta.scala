@@ -1,5 +1,8 @@
 package docspell.store.records
 
+import cats.data.NonEmptyList
+import cats.implicits._
+
 import docspell.common._
 import docspell.store.impl.Implicits._
 import docspell.store.impl._
@@ -31,6 +34,17 @@ object RFileMeta {
     import bitpeace.sql._
 
     selectSimple(Columns.all, table, Columns.id.is(fid)).query[FileMeta].option
+  }
+
+  def findByIds(ids: List[Ident]): ConnectionIO[Vector[FileMeta]] = {
+    import bitpeace.sql._
+
+    NonEmptyList.fromList(ids) match {
+      case Some(nel) =>
+        selectSimple(Columns.all, table, Columns.id.isIn(nel)).query[FileMeta].to[Vector]
+      case None =>
+        Vector.empty[FileMeta].pure[ConnectionIO]
+    }
   }
 
   def findMime(fid: Ident): ConnectionIO[Option[MimeType]] = {

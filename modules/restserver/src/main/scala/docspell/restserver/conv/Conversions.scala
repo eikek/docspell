@@ -294,10 +294,21 @@ trait Conversions {
       .map(p => parseMeta(p.body))
       .map(fm =>
         fm.map(m =>
-          (m.multiple, UploadMeta(m.direction, "webapp", m.folder, validFileTypes))
+          (
+            m.multiple,
+            UploadMeta(
+              m.direction,
+              "webapp",
+              m.folder,
+              validFileTypes,
+              m.skipDuplicates.getOrElse(false)
+            )
+          )
         )
       )
-      .getOrElse((true, UploadMeta(None, "webapp", None, validFileTypes)).pure[F])
+      .getOrElse(
+        (true, UploadMeta(None, "webapp", None, validFileTypes, false)).pure[F]
+      )
 
     val files = mp.parts
       .filter(p => p.name.forall(s => !s.equalsIgnoreCase("meta")))

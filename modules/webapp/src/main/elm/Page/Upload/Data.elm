@@ -28,6 +28,7 @@ type alias Model =
     , errored : Set String
     , loading : Set String
     , dropzone : Comp.Dropzone.Model
+    , skipDuplicates : Bool
     }
 
 
@@ -56,6 +57,7 @@ emptyModel =
     , errored = Set.empty
     , loading = Set.empty
     , dropzone = Comp.Dropzone.init dropzoneSettings
+    , skipDuplicates = True
     }
 
 
@@ -67,6 +69,7 @@ type Msg
     | ToggleSingleItem
     | Clear
     | DropzoneMsg Comp.Dropzone.Msg
+    | ToggleSkipDuplicates
 
 
 isLoading : Model -> File -> Bool

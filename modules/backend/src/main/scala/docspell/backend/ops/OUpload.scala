@@ -59,7 +59,8 @@ object OUpload {
       direction: Option[Direction],
       sourceAbbrev: String,
       folderId: Option[Ident],
-      validFileTypes: Seq[MimeType]
+      validFileTypes: Seq[MimeType],
+      skipDuplicates: Boolean
   )
 
   case class UploadData[F[_]](
@@ -125,7 +126,8 @@ object OUpload {
             data.meta.direction,
             data.meta.sourceAbbrev,
             data.meta.folderId,
-            data.meta.validFileTypes
+            data.meta.validFileTypes,
+            data.meta.skipDuplicates
           )
           args =
             if (data.multiple) files.map(f => ProcessItemArgs(meta, List(f)))
