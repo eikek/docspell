@@ -152,6 +152,7 @@ structure:
 { multiple: Bool
 , direction: Maybe String
 , folder: Maybe String
+, skipDuplicates: Bool
 }
 ```
 
@@ -168,6 +169,10 @@ A `folder` id can be specified. Each item created by this request will
 be placed into this folder. Errors are logged (for example, the folder
 may have been deleted before the task is executed) and the item is
 then not put into any folder.
+
+The `skipDuplicates` is optional and set to `false` if not specified.
+It configures the processing task. If set to `true`, the processing
+task will skip all input files that are already present in docspell.
 
 This kind of request is very common and most programming languages
 have support for this. For example, here is another curl command
