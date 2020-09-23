@@ -169,21 +169,47 @@ renderForm model =
             [ div [ class "grouped fields" ]
                 [ div [ class "field" ]
                     [ div [ class "ui radio checkbox" ]
-                        [ input [ type_ "radio", checked model.incoming, onCheck (\_ -> ToggleIncoming) ] []
+                        [ input
+                            [ type_ "radio"
+                            , checked model.incoming
+                            , onCheck (\_ -> ToggleIncoming)
+                            ]
+                            []
                         , label [] [ text "Incoming" ]
                         ]
                     ]
                 , div [ class "field" ]
                     [ div [ class "ui radio checkbox" ]
-                        [ input [ type_ "radio", checked (not model.incoming), onCheck (\_ -> ToggleIncoming) ] []
+                        [ input
+                            [ type_ "radio"
+                            , checked (not model.incoming)
+                            , onCheck (\_ -> ToggleIncoming)
+                            ]
+                            []
                         , label [] [ text "Outgoing" ]
                         ]
                     ]
                 ]
             , div [ class "inline field" ]
                 [ div [ class "ui checkbox" ]
-                    [ input [ type_ "checkbox", checked model.singleItem, onCheck (\_ -> ToggleSingleItem) ] []
+                    [ input
+                        [ type_ "checkbox"
+                        , checked model.singleItem
+                        , onCheck (\_ -> ToggleSingleItem)
+                        ]
+                        []
                     , label [] [ text "All files are one single item" ]
+                    ]
+                ]
+            , div [ class "inline field" ]
+                [ div [ class "ui checkbox" ]
+                    [ input
+                        [ type_ "checkbox"
+                        , checked model.skipDuplicates
+                        , onCheck (\_ -> ToggleSkipDuplicates)
+                        ]
+                        []
+                    , label [] [ text "Skip files already present in docspell" ]
                     ]
                 ]
             ]

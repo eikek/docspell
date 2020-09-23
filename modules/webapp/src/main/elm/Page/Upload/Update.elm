@@ -20,6 +20,9 @@ update sourceId flags msg model =
         ToggleSingleItem ->
             ( { model | singleItem = not model.singleItem }, Cmd.none, Sub.none )
 
+        ToggleSkipDuplicates ->
+            ( { model | skipDuplicates = not model.skipDuplicates }, Cmd.none, Sub.none )
+
         SubmitUpload ->
             let
                 emptyMeta =
@@ -28,6 +31,7 @@ update sourceId flags msg model =
                 meta =
                     { emptyMeta
                         | multiple = not model.singleItem
+                        , skipDuplicates = Just model.skipDuplicates
                         , direction =
                             if model.incoming then
                                 Just "incoming"
