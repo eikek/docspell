@@ -3660,6 +3660,7 @@ components:
           description: DateTime
           type: integer
           format: date-time
+
     ItemUploadMeta:
       description: |
         Meta information for an item upload. The user can specify some
@@ -3674,6 +3675,7 @@ components:
 
         A folderId can be given, the item is placed into this folder
         after creation.
+
       required:
         - multiple
       properties:
@@ -3686,6 +3688,10 @@ components:
         folder:
           type: string
           format: ident
+        skipDuplicates:
+          type: boolean
+          default: false
+
     Collective:
       description: |
         Information about a collective.

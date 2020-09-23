@@ -37,7 +37,8 @@ object ProcessItemArgs {
       direction: Option[Direction],
       sourceAbbrev: String,
       folderId: Option[Ident],
-      validFileTypes: Seq[MimeType]
+      validFileTypes: Seq[MimeType],
+      skipDuplicate: Boolean
   )
 
   object ProcessMeta {

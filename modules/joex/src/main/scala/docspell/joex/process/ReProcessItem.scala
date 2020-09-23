@@ -90,7 +90,8 @@ object ReProcessItem {
               None, //direction
               "",   //source-id
               None, //folder
-              Seq.empty
+              Seq.empty,
+              false
             ),
             Nil
           ).pure[F]
