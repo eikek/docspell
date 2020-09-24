@@ -66,7 +66,7 @@ away:
 
 ``` shell
 git clone https://github.com/eikek/docspell
-cd docspell
+cd docspell/docker
 DOCSPELL_HEADER_VALUE="my-secret-123" docker-compose up
 ```
 
