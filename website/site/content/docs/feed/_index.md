@@ -51,9 +51,9 @@ converts the files into PDF adding a text layer of image-only files.
 # Android
 
 There is an [android
-client](https://github.com/docspell/android-client/releases/latest)
-provided that lets you upload files from your android devices. The
-idea is to use a separate app, like
+client](https://github.com/docspell/android-client) provided that lets
+you upload files from your android devices. The idea is to use a
+separate app, like
 [OpenNoteScanner](https://github.com/ctodobom/OpenNoteScanner), to
 "scan" documents using your phone/tablet and then upload it to
 Docspell. For the upload part, you can use the provided app. It hooks
@@ -69,6 +69,17 @@ receipts.
   <div class="column is-one-third">
     <img src="/docs/tools/screenshot-uploading.jpg">
   </div>
+</div>
+<div class="columns is-vcentered is-centered">
+    <div class="column is-one-third">
+        <a href="https://f-droid.org/packages/org.docspell.docspellshare">
+            <img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png"
+                 alt="Get it on F-Droid"/>
+        </a>
+    </div>
+    <div class="column is-one-third">
+    Download the APK from <a href="https://github.com/docspell/android-client/releases/latest">here</a>
+    </div>
 </div>
 
 {{ buttonright(classes="is-primary ", href="/docs/tools/android", text="More") }}
