@@ -19,19 +19,28 @@ work is done by the joex components.
 ## Joex
 
 Running the joex component on the Raspberry Pi is possible, but will
-result in long processing times for OCR. Files that don't require OCR
-are no problem.
+result in long processing times for OCR and text analysis. The board
+should provide 4G of RAM (like the current RPi4), especially if also a
+database and solr are running next to it. I recommend to give joex a
+heap of 1.5G (`-J-Xmx1536M`). You should also set the joex pool size
+to 1.
 
-Tested on a RPi model 3 (4 cores, 1G RAM) processing a PDF (scanned
-with 300dpi) with two pages took 9:52. You can speed it up
-considerably by uninstalling the `unpaper` command, because this step
-takes quite long. This, of course, reduces the quality of OCR. But
-without `unpaper` the same sample pdf was then processed in 1:24, a
-speedup of 8 minutes.
+When joex processes the first file, some models are built loaded into
+memory which can take a while. Subsequent processing times are faster
+then.
 
-You should limit the joex pool size to 1 and, depending on your model
-and the amount of RAM, set a heap size of at least 500M
-(`-J-Xmx500M`).
+An example: on this [UP
+board](https://up-board.org/up/specifications/) with an Intel Atom
+x5-Z8350 CPU (@1.44Ghz) and 4G RAM, a scanned (300dpi) pdf file with 6
+pages took *3:20 min* to process. This board also runs the SOLR and a
+postgresql database.
 
-For personal setups, when you don't need the processing results asap,
-this can work well enough.
+The same file was processed in 55s on a qemu virtual machine on my i7
+notebook, using 1 CPU and 4G RAM (and identical config for joex). The
+virtual machine only had to host docspell (joex and restserver, but
+the restserver is very lightweight).
+
+The learning task for text classification can also use high amount of
+memory, but this depends on the amount of data you have in docspell.
+If you encounter problems here, you can set the maximum amount of
+items to consider in the collective settings page.
