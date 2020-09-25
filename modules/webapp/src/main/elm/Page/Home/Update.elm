@@ -251,12 +251,18 @@ update mId key flags settings msg model =
         ScrollResult _ ->
             let
                 cmd =
-                    Process.sleep 800 |> Task.perform (always ClearItemDetailId)
+                    Process.sleep 800 |> Task.perform (always (ClearItemDetailId mId))
             in
             withSub ( model, cmd )
 
-        ClearItemDetailId ->
-            withSub ( model, Page.set key (HomePage Nothing) )
+        ClearItemDetailId id ->
+            -- if user clicks quickly away (e.g. on another item), the
+            -- deferred command should be ignored
+            if mId == id then
+                noSub ( model, Page.set key (HomePage Nothing) )
+
+            else
+                noSub ( model, Cmd.none )
 
 
 
@@ -328,3 +334,8 @@ withSub ( m, c ) =
         (Time.every 500 (\_ -> UpdateThrottle))
         m.throttle
     )
+
+
+noSub : ( Model, Cmd Msg ) -> ( Model, Cmd Msg, Sub Msg )
+noSub ( m, c ) =
+    ( m, c, Sub.none )
