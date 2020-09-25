@@ -35,7 +35,7 @@ in
     waitForTarget = "solr-init.target";
     bind.address = "0.0.0.0";
     base-url = "http://localhost:7878";
-    jvmArgs = [ "-J-Xmx2g" ];
+    jvmArgs = [ "-J-Xmx1536M" ];
     inherit full-text-search;
   };
   services.docspell-restserver = {
