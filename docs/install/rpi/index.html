@@ -194,19 +194,27 @@ similiar devices. It doesn't require much resources, because the heavy
 work is done by the joex components.</p>
 <h2 id="joex">Joex<a class="zola-anchor" href="#joex" aria-label="Anchor link for: joex">🔗</a></h2>
 <p>Running the joex component on the Raspberry Pi is possible, but will
-result in long processing times for OCR. Files that don't require OCR
-are no problem.</p>
-<p>Tested on a RPi model 3 (4 cores, 1G RAM) processing a PDF (scanned
-with 300dpi) with two pages took 9:52. You can speed it up
-considerably by uninstalling the <code>unpaper</code> command, because this step
-takes quite long. This, of course, reduces the quality of OCR. But
-without <code>unpaper</code> the same sample pdf was then processed in 1:24, a
-speedup of 8 minutes.</p>
-<p>You should limit the joex pool size to 1 and, depending on your model
-and the amount of RAM, set a heap size of at least 500M
-(<code>-J-Xmx500M</code>).</p>
-<p>For personal setups, when you don't need the processing results asap,
-this can work well enough.</p>
+result in long processing times for OCR and text analysis. The board
+should provide 4G of RAM (like the current RPi4), especially if also a
+database and solr are running next to it. I recommend to give joex a
+heap of 1.5G (<code>-J-Xmx1536M</code>). You should also set the joex pool size
+to 1.</p>
+<p>When joex processes the first file, some models are built loaded into
+memory which can take a while. Subsequent processing times are faster
+then.</p>
+<p>An example: on this <a href="https://up-board.org/up/specifications/">UP
+board</a> with an Intel Atom
+x5-Z8350 CPU (@1.44Ghz) and 4G RAM, a scanned (300dpi) pdf file with 6
+pages took <em>3:20 min</em> to process. This board also runs the SOLR and a
+postgresql database.</p>
+<p>The same file was processed in 55s on a qemu virtual machine on my i7
+notebook, using 1 CPU and 4G RAM (and identical config for joex). The
+virtual machine only had to host docspell (joex and restserver, but
+the restserver is very lightweight).</p>
+<p>The learning task for text classification can also use high amount of
+memory, but this depends on the amount of data you have in docspell.
+If you encounter problems here, you can set the maximum amount of
+items to consider in the collective settings page.</p>
 
                         </div>
                     </div>
