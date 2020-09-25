@@ -758,7 +758,7 @@ update key flags inav settings msg model =
             noSub ( { model | sentMails = sm }, Cmd.none )
 
         ToggleSentMails ->
-            noSub ( { model | sentMailsOpen = not model.sentMailsOpen, visibleAttach = -1 }, Cmd.none )
+            noSub ( { model | sentMailsOpen = not model.sentMailsOpen }, Cmd.none )
 
         SentMailsResp (Ok list) ->
             let
@@ -1265,6 +1265,9 @@ update key flags inav settings msg model =
                 -- withSub because the keypress may be inside the name
                 -- field and requires to activate the throttle
                 withSub ( model_, Cmd.none )
+
+        ToggleAttachMenu ->
+            noSub ( { model | attachMenuOpen = not model.attachMenuOpen }, Cmd.none )
 
 
 

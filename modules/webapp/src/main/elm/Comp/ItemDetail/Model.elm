@@ -47,6 +47,7 @@ import Util.Tag
 type alias Model =
     { item : ItemDetail
     , visibleAttach : Int
+    , attachMenuOpen : Bool
     , menuOpen : Bool
     , tagModel : Comp.Dropdown.Model Tag
     , directionModel : Comp.Dropdown.Model Direction
@@ -115,6 +116,7 @@ emptyModel : Model
 emptyModel =
     { item = Api.Model.ItemDetail.empty
     , visibleAttach = 0
+    , attachMenuOpen = False
     , menuOpen = False
     , tagModel =
         Util.Tag.makeDropdownModel
@@ -269,6 +271,7 @@ type Msg
     | SaveNameResp (Result Http.Error BasicResult)
     | UpdateThrottle
     | KeyInputMsg Comp.KeyInput.Msg
+    | ToggleAttachMenu
 
 
 type SaveNameState

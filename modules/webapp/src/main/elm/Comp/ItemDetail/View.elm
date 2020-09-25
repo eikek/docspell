@@ -6,6 +6,7 @@ import Comp.DatePicker
 import Comp.DetailEdit
 import Comp.Dropdown
 import Comp.Dropzone
+import Comp.ItemDetail.AttachmentTabMenu
 import Comp.ItemDetail.Model exposing (Model, Msg(..), NotesField(..), SaveNameState(..))
 import Comp.ItemMail
 import Comp.KeyInput
@@ -302,15 +303,22 @@ renderNotes model =
 
 attachmentVisible : Model -> Int -> Bool
 attachmentVisible model pos =
-    if model.visibleAttach >= List.length model.item.attachments then
-        pos == 0
+    not model.sentMailsOpen
+        && (if model.visibleAttach >= List.length model.item.attachments then
+                pos == 0
 
-    else
-        model.visibleAttach == pos
+            else
+                model.visibleAttach == pos
+           )
 
 
 renderAttachmentsTabMenu : Model -> Html Msg
 renderAttachmentsTabMenu model =
+    Comp.ItemDetail.AttachmentTabMenu.view model
+
+
+renderAttachmentsTabMenuOld : Model -> Html Msg
+renderAttachmentsTabMenuOld model =
     let
         mailTab =
             if Comp.SentMails.isEmpty model.sentMails then
