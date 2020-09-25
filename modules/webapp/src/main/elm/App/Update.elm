@@ -342,9 +342,13 @@ updateManageData lmsg model =
 
 
 initPage : Model -> Page -> ( Model, Cmd Msg, Sub Msg )
-initPage model page =
+initPage model_ page =
+    let
+        model =
+            { model_ | page = page }
+    in
     case page of
-        HomePage mid ->
+        HomePage _ ->
             Util.Update.andThen2
                 [ updateHome Page.Home.Data.Init
                 , updateQueue Page.Queue.Data.StopRefresh

@@ -26,7 +26,7 @@ update mId key flags settings msg model =
         Init ->
             Util.Update.andThen2
                 [ update mId key flags settings (SearchMenuMsg Comp.SearchMenu.Init)
-                , doSearch flags settings
+                , scrollToCard mId
                 ]
                 model
 
@@ -251,7 +251,7 @@ update mId key flags settings msg model =
         ScrollResult _ ->
             let
                 cmd =
-                    Process.sleep 350 |> Task.perform (always ClearItemDetailId)
+                    Process.sleep 800 |> Task.perform (always ClearItemDetailId)
             in
             withSub ( model, cmd )
 
