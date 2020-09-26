@@ -3,7 +3,7 @@ services:
   restserver:
     image: eikek0/docspell:restserver-latest
     container_name: docspell-restserver
-    command: /opt/docspell.conf
+    command: ${DOCSPELL_RESTSERVER_JVM_ARGS} -- /opt/docspell.conf
     ports:
       - "7880:7880"
     volumes:
@@ -16,7 +16,7 @@ services:
   joex:
     image: eikek0/docspell:joex-latest
     container_name: docspell-joex
-    command: /opt/docspell.conf
+    command: ${DOCSPELL_JOEX_JVM_ARGS:--J-Xmx1536M} -- /opt/docspell.conf
     ports:
       - "7878:7878"
     volumes:
