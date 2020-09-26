@@ -6,6 +6,7 @@ import Comp.DatePicker
 import Comp.DetailEdit
 import Comp.Dropdown
 import Comp.Dropzone
+import Comp.ItemDetail.AttachmentTabMenu
 import Comp.ItemDetail.Model exposing (Model, Msg(..), NotesField(..), SaveNameState(..))
 import Comp.ItemMail
 import Comp.KeyInput
@@ -302,95 +303,18 @@ renderNotes model =
 
 attachmentVisible : Model -> Int -> Bool
 attachmentVisible model pos =
-    if model.visibleAttach >= List.length model.item.attachments then
-        pos == 0
+    not model.sentMailsOpen
+        && (if model.visibleAttach >= List.length model.item.attachments then
+                pos == 0
 
-    else
-        model.visibleAttach == pos
+            else
+                model.visibleAttach == pos
+           )
 
 
 renderAttachmentsTabMenu : Model -> Html Msg
 renderAttachmentsTabMenu model =
-    let
-        mailTab =
-            if Comp.SentMails.isEmpty model.sentMails then
-                []
-
-            else
-                [ div
-                    [ classList
-                        [ ( "right item", True )
-                        , ( "active", model.sentMailsOpen )
-                        ]
-                    , onClick ToggleSentMails
-                    ]
-                    [ text "E-Mails"
-                    ]
-                ]
-
-        highlight el =
-            let
-                dropId =
-                    DD.getDropId model.attachDD
-
-                dragId =
-                    DD.getDragId model.attachDD
-
-                enable =
-                    Just el.id == dropId && dropId /= dragId
-            in
-            [ ( "current-drop-target", enable )
-            ]
-    in
-    div [ class "ui top attached tabular menu" ]
-        (List.indexedMap
-            (\pos ->
-                \el ->
-                    if attachmentVisible model pos then
-                        a
-                            ([ classList <|
-                                [ ( "active item", True )
-                                ]
-                                    ++ highlight el
-                             , title (Maybe.withDefault "No Name" el.name)
-                             , href ""
-                             ]
-                                ++ DD.draggable AttachDDMsg el.id
-                                ++ DD.droppable AttachDDMsg el.id
-                            )
-                            [ Maybe.map (Util.String.ellipsis 30) el.name
-                                |> Maybe.withDefault "No Name"
-                                |> text
-                            , a
-                                [ class "right-tab-icon-link"
-                                , href "#"
-                                , onClick (EditAttachNameStart el.id)
-                                ]
-                                [ i [ class "grey edit link icon" ] []
-                                ]
-                            ]
-
-                    else
-                        a
-                            ([ classList <|
-                                [ ( "item", True )
-                                ]
-                                    ++ highlight el
-                             , title (Maybe.withDefault "No Name" el.name)
-                             , href ""
-                             , onClick (SetActiveAttachment pos)
-                             ]
-                                ++ DD.draggable AttachDDMsg el.id
-                                ++ DD.droppable AttachDDMsg el.id
-                            )
-                            [ Maybe.map (Util.String.ellipsis 20) el.name
-                                |> Maybe.withDefault "No Name"
-                                |> text
-                            ]
-            )
-            model.item.attachments
-            ++ mailTab
-        )
+    Comp.ItemDetail.AttachmentTabMenu.view model
 
 
 renderAttachmentView : UiSettings -> Model -> Int -> Attachment -> Html Msg
