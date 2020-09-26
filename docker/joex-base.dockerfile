@@ -36,3 +36,6 @@ RUN apk add --no-cache openjdk11-jre \
   && curl -Ls $UNO_URL -o /usr/local/bin/unoconv \
   && chmod +x /usr/local/bin/unoconv \
   && apk del curl unzip libxml2-dev libxslt-dev zlib-dev g++ python3-dev py3-pip libffi-dev qpdf-dev openssl-dev
+
+# Required for unoconv
+RUN ln -s /usr/bin/python3 /usr/bin/python
