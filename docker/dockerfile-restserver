@@ -1,0 +1,6 @@
+FROM docspell-dev:base
+
+RUN apk add --no-cache openjdk11-jre bash
+
+EXPOSE 7880
+ENTRYPOINT ["/opt/docspell-restserver/bin/docspell-restserver"]

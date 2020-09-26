@@ -1,0 +1,6 @@
+FROM docspell-dev:base
+
+RUN apk add --no-cache curl bash inotify-tools \
+  && chmod 755 /opt/docspell-tools/*.sh
+
+ENTRYPOINT ["/opt/docspell-tools/consumedir.sh"]

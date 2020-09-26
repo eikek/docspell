@@ -1,0 +1,48 @@
+FROM alpine:latest
+
+ENV ELM_VERSION 0.19.1
+ENV SCALA_VERSION 2.12.6
+ENV SBT_VERSION 1.2.1
+
+RUN apk add --no-cache git curl bash openjdk8
+
+# ELM
+RUN curl -L -o elm.gz https://github.com/elm/compiler/releases/download/$ELM_VERSION/binary-for-linux-64-bit.gz && \
+  gunzip elm.gz && \
+  chmod +x elm && \
+  mv elm /usr/local/bin/
+
+# SBT (Scala)
+ENV PATH /sbt/bin:$PATH
+RUN wget https://piccolo.link/sbt-$SBT_VERSION.tgz && \
+  tar -xzvf sbt-$SBT_VERSION.tgz && \
+  rm sbt-$SBT_VERSION.tgz
+#  sbt sbtVersion
+
+# DOCSPELL
+RUN mkdir /src && \
+  git -C /src clone https://github.com/eikek/docspell
+
+
+RUN SBT_OPTS="-Xms1024M -Xmx8G -Xss2M -XX:MaxMetaspaceSize=8G" && \
+  cd /src/docspell && \
+  sbt -mem 4096 make
+RUN SBT_OPTS="-Xms1024M -Xmx8G -Xss2M -XX:MaxMetaspaceSize=8G" && \
+  cd /src/docspell && \
+  sbt -mem 4096 make-zip
+RUN SBT_OPTS="-Xms1024M -Xmx8G -Xss2M -XX:MaxMetaspaceSize=8G" && \
+  cd /src/docspell && \
+  sbt make-tools && \
+  SBT_OPTS=
+
+RUN mkdir -p /opt && \
+  find "/src/docspell/modules/joex/target/universal/" -name "docspell-joex*.zip" -exec unzip {} -d "/opt/" \; && \
+  mv /opt/docspell-joex-* /opt/docspell-joex && \
+  find "/src/docspell/modules/restserver/target/universal/" -name "docspell-restserver*.zip" -exec unzip {} -d "/opt/" \; && \
+  mv /opt/docspell-restserver-* /opt/docspell-restserver \
+  && find "/src/docspell/tools/target/" -name "docspell-tools-*.zip" -exec unzip {} -d "/opt/" \; \
+  && mv /opt/docspell-tools-* /opt/docspell-tools
+
+# CLEANUP
+# RUN rm -r /src
+RUN apk del git curl bash openjdk8
