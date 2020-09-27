@@ -343,6 +343,7 @@ structure:</p>
 <code><span style="color:#fabd2f;">{</span><span style="color:#fdf4c1aa;"> multiple</span><span style="color:#fe8019;">: </span><span style="color:#fdf4c1;">Bool
 </span><span style="color:#fabd2f;">,</span><span style="color:#fdf4c1aa;"> direction</span><span style="color:#fe8019;">: </span><span style="color:#fdf4c1;">Maybe String
 </span><span style="color:#fabd2f;">,</span><span style="color:#fdf4c1aa;"> folder</span><span style="color:#fe8019;">: </span><span style="color:#fdf4c1;">Maybe String
+</span><span style="color:#fabd2f;">,</span><span style="color:#fdf4c1aa;"> skipDuplicates</span><span style="color:#fe8019;">: </span><span style="color:#fdf4c1;">Bool
 </span><span style="color:#fabd2f;">}
 </span></code></pre>
 <p>The <code>multiple</code> property is by default <code>true</code>. It means that each file
@@ -356,6 +357,9 @@ will create just one item, that will then contain all files.</p>
 be placed into this folder. Errors are logged (for example, the folder
 may have been deleted before the task is executed) and the item is
 then not put into any folder.</p>
+<p>The <code>skipDuplicates</code> is optional and set to <code>false</code> if not specified.
+It configures the processing task. If set to <code>true</code>, the processing
+task will skip all input files that are already present in docspell.</p>
 <p>This kind of request is very common and most programming languages
 have support for this. For example, here is another curl command
 uploading two files with meta data:</p>
@@ -375,7 +379,7 @@ uploading two files with meta data:</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell, 0.11.1
+                Docspell, 0.12.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>

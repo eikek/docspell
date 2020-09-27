@@ -88,6 +88,43 @@
             <div class="container">
                 <div class="content doc">
                     <h1 id="changelog">Changelog<a class="zola-anchor" href="#changelog" aria-label="Anchor link for: changelog">🔗</a></h1>
+<h2 id="v0-12-0">v0.12.0<a class="zola-anchor" href="#v0-12-0" aria-label="Anchor link for: v0-12-0">🔗</a></h2>
+<p><em>27.09.2020</em></p>
+<p>Thanks to a lot of great input from users, this release fixes
+annoyances in the ui.</p>
+<ul>
+<li>Improve startup experience regarding to <code>base-url</code> setting. Docspell
+now uses request headers to determine absolute urls if this setting
+is unchanged. (#250)</li>
+<li>Fixes scrolling issues when going from detail to list view and vice
+versa. (#254)</li>
+<li>Fix quick search component to keep search term between changes.
+(#261)</li>
+<li>Docspell now provides a valid manifest to be an installable &quot;pwa&quot;.</li>
+<li>Fixes <code>consumedir.sh</code> script to work with whitespace in filenames.
+(#269)</li>
+<li>Fix hidden fields feature. Hidden fields are now resetted when
+clicking <em>Confirm</em>. (#256)</li>
+<li>Improve <em>Save Name</em> in item detail: The save button is removed and
+changes are saved while typing. (#255)</li>
+<li>Add keyboard shortcuts in item detail for navigating and
+confirm/unconfirm. (#225)</li>
+<li>Detect duplicate files server side. The processing task is now able
+to detect duplicate files to skip them if desired. The ui has a new
+checkbox when uploading. (#252)</li>
+<li>Improve view of many attachments to an item: The tab menu is
+replaced by a dropdown menu that allows to change attachments also
+on small screens and/or when there are many attachments.</li>
+</ul>
+<h3 id="configuration-changes">Configuration Changes<a class="zola-anchor" href="#configuration-changes" aria-label="Anchor link for: configuration-changes">🔗</a></h3>
+<ul>
+<li>No changes to default config values.</li>
+</ul>
+<h3 id="rest-api-changes">REST Api Changes<a class="zola-anchor" href="#rest-api-changes" aria-label="Anchor link for: rest-api-changes">🔗</a></h3>
+<ul>
+<li>Amend <code>ItemUploadMeta</code> with a <code>skipDuplicates</code> flag for ignoring
+duplicate files on processing.</li>
+</ul>
 <h2 id="v0-11-1">v0.11.1<a class="zola-anchor" href="#v0-11-1" aria-label="Anchor link for: v0-11-1">🔗</a></h2>
 <p><em>Sep 09, 2020</em></p>
 <p>This is a bugfix release. The full-text-index requires a schema
@@ -119,7 +156,7 @@ analysis. </li>
 page.</li>
 <li>Serving static asset files gzipped, to reduce bandwidth</li>
 </ul>
-<h3 id="configuration-changes">Configuration Changes<a class="zola-anchor" href="#configuration-changes" aria-label="Anchor link for: configuration-changes">🔗</a></h3>
+<h3 id="configuration-changes-1">Configuration Changes<a class="zola-anchor" href="#configuration-changes-1" aria-label="Anchor link for: configuration-changes-1">🔗</a></h3>
 <ul>
 <li>New settings in <code>joex.analysis.regex-ner</code>, <code>….classification</code> and
 <code>….working-dir</code> for the classifier and NER feature.</li>
@@ -128,7 +165,7 @@ the classifier settings on the <em>Collective Settings</em> page. If
 classification is disabled globally (i.e. from all joex instances),
 the feature can be hidden from the users.</li>
 </ul>
-<h3 id="rest-api-changes">REST Api Changes<a class="zola-anchor" href="#rest-api-changes" aria-label="Anchor link for: rest-api-changes">🔗</a></h3>
+<h3 id="rest-api-changes-1">REST Api Changes<a class="zola-anchor" href="#rest-api-changes-1" aria-label="Anchor link for: rest-api-changes-1">🔗</a></h3>
 <ul>
 <li><code>/sec/collective/classifier/startonce</code> to start the learning task
 separately from the schedule.</li>
@@ -190,12 +227,12 @@ provided to help with it. (#206)</li>
 App</a> to conveniently
 upload files from your android devices</li>
 </ul>
-<h3 id="configuration-changes-1">Configuration Changes<a class="zola-anchor" href="#configuration-changes-1" aria-label="Anchor link for: configuration-changes-1">🔗</a></h3>
+<h3 id="configuration-changes-2">Configuration Changes<a class="zola-anchor" href="#configuration-changes-2" aria-label="Anchor link for: configuration-changes-2">🔗</a></h3>
 <ul>
 <li>New setting <code>docspell.server.max-note-length</code> to specify how much of
 the item notes should be transeferred with each search result.</li>
 </ul>
-<h3 id="rest-api-changes-1">REST Api Changes<a class="zola-anchor" href="#rest-api-changes-1" aria-label="Anchor link for: rest-api-changes-1">🔗</a></h3>
+<h3 id="rest-api-changes-2">REST Api Changes<a class="zola-anchor" href="#rest-api-changes-2" aria-label="Anchor link for: rest-api-changes-2">🔗</a></h3>
 <ul>
 <li>Added <code>/sec/collective/tagcloud</code> to return all used tags of a
 collective. This is the same as returned from the <code>insights</code> route,
@@ -231,14 +268,14 @@ apply them to the item during processing. (See #175)</li>
 </li>
 <li>New website</li>
 </ul>
-<h3 id="configuration-changes-2">Configuration Changes<a class="zola-anchor" href="#configuration-changes-2" aria-label="Anchor link for: configuration-changes-2">🔗</a></h3>
+<h3 id="configuration-changes-3">Configuration Changes<a class="zola-anchor" href="#configuration-changes-3" aria-label="Anchor link for: configuration-changes-3">🔗</a></h3>
 <ul>
 <li>Joex: add a section <code>docspell.joex.convert.ocrmypdf</code> for configuring
 the ocrmypdf tool.</li>
 <li>Joex: change default value of <code>….extraction.pdf.min-text-len</code> from
 10 to 500.</li>
 </ul>
-<h3 id="rest-api-changes-2">REST Api Changes<a class="zola-anchor" href="#rest-api-changes-2" aria-label="Anchor link for: rest-api-changes-2">🔗</a></h3>
+<h3 id="rest-api-changes-3">REST Api Changes<a class="zola-anchor" href="#rest-api-changes-3" aria-label="Anchor link for: rest-api-changes-3">🔗</a></h3>
 <ul>
 <li>Add <code>/sec/folder/*</code> routes for managing folders.</li>
 <li>Add <code>/sec/item/{id}/folder</code> for updating an item folder.</li>
@@ -280,12 +317,12 @@ generated live documentation unusable.</li>
 configures the consumedir container to use the integration endpoint.
 It is still necessary to define an environment variable.</li>
 </ul>
-<h3 id="configuration-changes-3">Configuration Changes<a class="zola-anchor" href="#configuration-changes-3" aria-label="Anchor link for: configuration-changes-3">🔗</a></h3>
+<h3 id="configuration-changes-4">Configuration Changes<a class="zola-anchor" href="#configuration-changes-4" aria-label="Anchor link for: configuration-changes-4">🔗</a></h3>
 <ul>
 <li>Set new default for <code>docspell.server.max-item-page-size</code> to <code>200</code>.</li>
 <li>New <code>full-text-search</code> section for restserver and joex.</li>
 </ul>
-<h3 id="rest-api-changes-3">REST Api Changes<a class="zola-anchor" href="#rest-api-changes-3" aria-label="Anchor link for: rest-api-changes-3">🔗</a></h3>
+<h3 id="rest-api-changes-4">REST Api Changes<a class="zola-anchor" href="#rest-api-changes-4" aria-label="Anchor link for: rest-api-changes-4">🔗</a></h3>
 <ul>
 <li>Add <code>/open/fts/reIndexAll/{key}</code> to re-index the full-text search
 index. The <code>key</code> must be defined in the config file, so only admins
@@ -335,7 +372,7 @@ simple docker based setup. This is a SMTP server that delivers mails
 to docspell instead of using a mbox or maildir. It utilises the
 integration endpoint.</li>
 </ul>
-<h3 id="configuration-changes-4">Configuration Changes<a class="zola-anchor" href="#configuration-changes-4" aria-label="Anchor link for: configuration-changes-4">🔗</a></h3>
+<h3 id="configuration-changes-5">Configuration Changes<a class="zola-anchor" href="#configuration-changes-5" aria-label="Anchor link for: configuration-changes-5">🔗</a></h3>
 <ul>
 <li>Add <code>docspell.server.max-item-page-size</code> for a hard limit of the
 page size when fetching items.</li>
@@ -345,7 +382,7 @@ page size when fetching items.</li>
 <li>Add <code>docspell.server.backend.mail-debug</code> to allow debug mail related
 problems.</li>
 </ul>
-<h3 id="rest-api-changes-4">REST Api Changes<a class="zola-anchor" href="#rest-api-changes-4" aria-label="Anchor link for: rest-api-changes-4">🔗</a></h3>
+<h3 id="rest-api-changes-5">REST Api Changes<a class="zola-anchor" href="#rest-api-changes-5" aria-label="Anchor link for: rest-api-changes-5">🔗</a></h3>
 <ul>
 <li>Add <code>GET /open/integration/item/{id}</code> to allow checking the
 integration endpoint.</li>
@@ -396,7 +433,7 @@ from an item detail to the front-page, the search menu remembers the
 last state, but dates were cleared.</li>
 <li>Fix redirecting <code>/</code> only to <code>/app</code>.</li>
 </ul>
-<h3 id="configuration-changes-5">Configuration Changes<a class="zola-anchor" href="#configuration-changes-5" aria-label="Anchor link for: configuration-changes-5">🔗</a></h3>
+<h3 id="configuration-changes-6">Configuration Changes<a class="zola-anchor" href="#configuration-changes-6" aria-label="Anchor link for: configuration-changes-6">🔗</a></h3>
 <p>The joex and rest-server component have new config sections:</p>
 <ul>
 <li>Add <code>docspell.joex.mail-debug</code> flag to enable debugging e-mail
@@ -409,7 +446,7 @@ corresponding section in the rest server config.</li>
 <li>Add <code>docspell.server.integration-endpoint</code> with sub-sections to
 configure an endpoint for uploading files for admin users.</li>
 </ul>
-<h3 id="rest-api-changes-5">REST Api Changes<a class="zola-anchor" href="#rest-api-changes-5" aria-label="Anchor link for: rest-api-changes-5">🔗</a></h3>
+<h3 id="rest-api-changes-6">REST Api Changes<a class="zola-anchor" href="#rest-api-changes-6" aria-label="Anchor link for: rest-api-changes-6">🔗</a></h3>
 <ul>
 <li>Change <code>/sec/email/settings</code> to <code>/sec/email/settings/smtp</code></li>
 <li>Add <code>/sec/email/settings/imap</code></li>
@@ -438,7 +475,7 @@ happens with e-mails that contain images to attachments.</li>
 </li>
 <li>Fix classpath issue with javax.mail vs jakarta.mail</li>
 </ul>
-<h3 id="configuration-changes-6">Configuration Changes<a class="zola-anchor" href="#configuration-changes-6" aria-label="Anchor link for: configuration-changes-6">🔗</a></h3>
+<h3 id="configuration-changes-7">Configuration Changes<a class="zola-anchor" href="#configuration-changes-7" aria-label="Anchor link for: configuration-changes-7">🔗</a></h3>
 <p>The Joex component has config changes:</p>
 <ul>
 <li>A new section <code>send-mail</code> containing a <code>List-Id</code> e-mail header to
@@ -471,7 +508,7 @@ viewer.</li>
 <li>Bug fixes related to handling text files.</li>
 <li>Add a configurable length limit for text analysis</li>
 </ul>
-<h3 id="configuration-changes-7">Configuration Changes<a class="zola-anchor" href="#configuration-changes-7" aria-label="Anchor link for: configuration-changes-7">🔗</a></h3>
+<h3 id="configuration-changes-8">Configuration Changes<a class="zola-anchor" href="#configuration-changes-8" aria-label="Anchor link for: configuration-changes-8">🔗</a></h3>
 <p>The configuration of the joex component has been changed. </p>
 <ul>
 <li>new section <code>docspell.joex.periodic-scheduler</code> for configuring the
@@ -483,7 +520,7 @@ size limit</li>
 <li>The command for running <code>wkhtmltopdf</code> changed in that the encoding
 is now added at runtime.</li>
 </ul>
-<h3 id="rest-api-changes-6">REST Api Changes<a class="zola-anchor" href="#rest-api-changes-6" aria-label="Anchor link for: rest-api-changes-6">🔗</a></h3>
+<h3 id="rest-api-changes-7">REST Api Changes<a class="zola-anchor" href="#rest-api-changes-7" aria-label="Anchor link for: rest-api-changes-7">🔗</a></h3>
 <p>The REST Api has some additions:</p>
 <ul>
 <li>new route to retrieve the archive file</li>
@@ -512,7 +549,7 @@ equipments.</li>
 <li>The <code>ds.sh</code> script has now an option to check a file for existence
 in docspell.</li>
 </ul>
-<h3 id="configuration-changes-8">Configuration Changes<a class="zola-anchor" href="#configuration-changes-8" aria-label="Anchor link for: configuration-changes-8">🔗</a></h3>
+<h3 id="configuration-changes-9">Configuration Changes<a class="zola-anchor" href="#configuration-changes-9" aria-label="Anchor link for: configuration-changes-9">🔗</a></h3>
 <p>The configuration of the joex component has been changed. </p>
 <ul>
 <li>removed <code>docspell.joex.extraction.allowed-content-types</code></li>
@@ -523,7 +560,7 @@ in docspell.</li>
 <li>added sections in <code>docspell.joex.convert</code> for pdf conversion
 settings</li>
 </ul>
-<h3 id="rest-api-changes-7">REST Api Changes<a class="zola-anchor" href="#rest-api-changes-7" aria-label="Anchor link for: rest-api-changes-7">🔗</a></h3>
+<h3 id="rest-api-changes-8">REST Api Changes<a class="zola-anchor" href="#rest-api-changes-8" aria-label="Anchor link for: rest-api-changes-8">🔗</a></h3>
 <p>The REST Api has some additions:</p>
 <ul>
 <li>new route to retrieve the original file</li>
@@ -566,7 +603,7 @@ Web UI:</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell, 0.11.1
+                Docspell, 0.12.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>
