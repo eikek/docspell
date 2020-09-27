@@ -39,9 +39,7 @@ select another one by clicking its name in the suggestion list.
 {{ figure(file="docspell-curate-3.jpg") }}
 
 
-When you change something in the form, it is immediatly applied. Only
-when changing text fields, a click on the *Save* symbol next to the
-field is required.
+When you change something in the form, it is immediatly applied.
 
 It is also possible to change tags and folders in the list view via
 drag&drop.
