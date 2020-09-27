@@ -8,7 +8,7 @@ RUN apk add --no-cache openjdk11-jre \
     curl \
   && mkdir -p /opt \
   && cd /opt \
-  && curl -L -o docspell.zip https://github.com/eikek/docspell/releases/download/v0.11.1/docspell-joex-0.11.1.zip \
+  && curl -L -o docspell.zip https://github.com/eikek/docspell/releases/download/v0.12.0/docspell-joex-0.12.0.zip \
   && unzip docspell.zip \
   && rm docspell.zip \
   && apk del curl unzip
