@@ -1,5 +1,45 @@
 # Changelog
 
+## v0.12.0
+
+*28.09.2020*
+
+Thanks to a lot of great input from users, this release fixes
+annoyances in the ui.
+
+- Improve startup experience wrt the `base-url` setting. Docspell now
+  uses request headers to determine absolute urls if this setting is
+  unchanged. (#250)
+- Fixes scrolling issues when going from detail to list view and vice
+  versa. (#254)
+- Fix quick search component to keep search term between changes.
+  (#261)
+- Docspell now provides a valid manifest to be an installable "pwa".
+- Fixes `consumedir.sh` script to work with whitespace in filenames.
+  (#269)
+- Fix hidden fields feature. Hidden fields are now resetted when
+  clicking *Confirm*. (#256)
+- Improve *Save Name* in item detail: The save button is removed and
+  changes are saved while typing. (#255)
+- Add keyboard shortcuts in item detail for navigating and
+  confirm/unconfirm. (#225)
+- Detect duplicate files server side. The processing task is now able
+  to detect duplicate files to skip them if desired. The ui has a new
+  checkbox when uploading. (#252)
+- Improve view of many attachments to an item: The tab menu is
+  replaced by a dropdown menu that allows to change attachments also
+  on small screens and/or when there are many attachments.
+
+### Configuration Changes
+
+- No changes to default config values.
+
+### REST Api Changes
+
+- Amend `ItemUploadMeta` with a `skipDuplicates` flag for ignoring
+  duplicate files on processing.
+
+
 ## v0.11.1
 
 *Sep 09, 2020*
