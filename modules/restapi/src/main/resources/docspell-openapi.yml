@@ -3202,6 +3202,23 @@ paths:
               schema:
                 $ref: "#/components/schemas/BasicResult"
 
+  /sec/customfields:
+    get:
+      tags: [ Custom Fields ]
+      summary: Get all defined custom fields.
+      description: |
+        Get all custom fields defined for the current collective.
+      security:
+        - authTokenHeader: []
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CustomFieldList"
+
+
 components:
   schemas:
     ItemsAndRefs:
@@ -3281,6 +3298,38 @@ components:
           type: integer
           format: date-time
 
+
+    CustomFieldList:
+      description: |
+        A list of known custom fields.
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/CustomField"
+
+    CustomField:
+      description: |
+        A custom field definition.
+      required:
+        - id
+        - name
+        - ftype
+        - created
+      properties:
+        id:
+          type: string
+          format: ident
+        name:
+          type: string
+        ftype:
+          type: string
+          format: customfieldtype
+        created:
+          type: integer
+          format: date-time
 
     JobPriority:
       description: |
@@ -4372,6 +4421,7 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/SourceAndTags"
+
     Source:
       description: |
         Data about a Source. A source defines the endpoint where

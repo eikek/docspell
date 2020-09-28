@@ -36,6 +36,7 @@ trait BackendApp[F[_]] {
   def joex: OJoex[F]
   def userTask: OUserTask[F]
   def folder: OFolder[F]
+  def customFields: OCustomFields[F]
 }
 
 object BackendApp {
@@ -66,27 +67,29 @@ object BackendApp {
       fulltextImpl   <- OFulltext(itemSearchImpl, ftsClient, store, queue, joexImpl)
       javaEmil =
         JavaMailEmil(blocker, Settings.defaultSettings.copy(debug = cfg.mailDebug))
-      mailImpl     <- OMail(store, javaEmil)
-      userTaskImpl <- OUserTask(utStore, queue, joexImpl)
-      folderImpl   <- OFolder(store)
+      mailImpl         <- OMail(store, javaEmil)
+      userTaskImpl     <- OUserTask(utStore, queue, joexImpl)
+      folderImpl       <- OFolder(store)
+      customFieldsImpl <- OCustomFields(store)
     } yield new BackendApp[F] {
-      val login: Login[F]            = loginImpl
-      val signup: OSignup[F]         = signupImpl
-      val collective: OCollective[F] = collImpl
-      val source                     = sourceImpl
-      val tag                        = tagImpl
-      val equipment                  = equipImpl
-      val organization               = orgImpl
-      val upload                     = uploadImpl
-      val node                       = nodeImpl
-      val job                        = jobImpl
-      val item                       = itemImpl
-      val itemSearch                 = itemSearchImpl
-      val fulltext                   = fulltextImpl
-      val mail                       = mailImpl
-      val joex                       = joexImpl
-      val userTask                   = userTaskImpl
-      val folder                     = folderImpl
+      val login        = loginImpl
+      val signup       = signupImpl
+      val collective   = collImpl
+      val source       = sourceImpl
+      val tag          = tagImpl
+      val equipment    = equipImpl
+      val organization = orgImpl
+      val upload       = uploadImpl
+      val node         = nodeImpl
+      val job          = jobImpl
+      val item         = itemImpl
+      val itemSearch   = itemSearchImpl
+      val fulltext     = fulltextImpl
+      val mail         = mailImpl
+      val joex         = joexImpl
+      val userTask     = userTaskImpl
+      val folder       = folderImpl
+      val customFields = customFieldsImpl
     }
 
   def apply[F[_]: ConcurrentEffect: ContextShift](
