@@ -5,12 +5,13 @@ import cats.effect.Sync
 import docspell.store.JdbcConfig
 
 import org.flywaydb.core.Flyway
+import org.flywaydb.core.api.output.MigrateResult
 import org.log4s._
 
 object FlywayMigrate {
   private[this] val logger = getLogger
 
-  def run[F[_]: Sync](jdbc: JdbcConfig): F[Int] =
+  def run[F[_]: Sync](jdbc: JdbcConfig): F[MigrateResult] =
     Sync[F].delay {
       logger.info("Running db migrations...")
       val locations = jdbc.dbmsName match {

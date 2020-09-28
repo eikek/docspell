@@ -22,7 +22,7 @@ final class StoreImpl[F[_]: Effect](jdbc: JdbcConfig, xa: Transactor[F])
     )
 
   def migrate: F[Int] =
-    FlywayMigrate.run[F](jdbc)
+    FlywayMigrate.run[F](jdbc).map(_.migrationsExecuted)
 
   def transact[A](prg: doobie.ConnectionIO[A]): F[A] =
     prg.transact(xa)
