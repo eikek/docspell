@@ -99,7 +99,8 @@ object ZolaPlugin extends AutoPlugin {
         "--output",
         (zolaRoot / "static" / "js" / "bundle.js").absolutePath.toString,
         "--optimize",
-        (inDir / "elm" / "Main.elm").toString
+        (inDir / "elm" / "Main.elm").toString,
+        (inDir / "elm" / "Search.elm").toString
       ),
       inDir,
       logger

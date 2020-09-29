@@ -1,0 +1,16 @@
+<script>
+ var initSearch = function() {
+     var elmSearch = Elm.Search.init({
+         node: document.getElementById("search"),
+         flags: {}
+     });
+     initElmSearch(elmSearch);
+ }
+ if (document.readyState === "complete" ||
+     (document.readyState !== "loading" && !document.documentElement.doScroll)
+ ) {
+     initSearch();
+ } else {
+     document.addEventListener("DOMContentLoaded", initSearch);
+ }
+</script>
