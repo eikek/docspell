@@ -24,6 +24,11 @@
 
         <title>Android Client – Docspell Documentation</title>
         <link rel="stylesheet" href="/styles.css">
+        <script type="application/javascript" src="/search_index.en.js"></script>
+<script type="application/javascript" src="/elasticlunr.min.js"></script>
+<script type="application/javascript" src="/js/bundle.js"></script>
+<script type="application/javascript" src="/js/searchhelper.js"></script>
+
     </head>
     <body>
         <section class="hero is-info is-small">
@@ -55,12 +60,19 @@
 
             </div>
             <div class="hero-body">
-                <h1 class="title">
-                    Android Client
-                </h1>
-                <h2 class="subtitle">
-                    Docspell Documentation
-                </h2>
+                <div class="columns is-vcentered">
+                    <div class="column is-8">
+                        <h1 class="title">
+                            Android Client
+                        </h1>
+                        <h2 class="subtitle">
+                            Docspell Documentation
+                        </h2>
+                    </div>
+                    <div class="column">
+                        <id id="search"></id>
+                    </div>
+                </div>
             </div>
         </section>
         <nav class="breadcrumb has-succeeds-separator" aria-label="breadcrumbs">
@@ -309,19 +321,37 @@ and uploads the file to your server (F).</p>
 </footer>
 
     </body>
-    <!-- Fathom - simple website analytics - https://github.com/usefathom/fathom -->
     <script>
-     (function(f, a, t, h, o, m){
-         a[h]=a[h]||function(){
-             (a[h].q=a[h].q||[]).push(arguments)
-         };
-         o=f.createElement('script'),
-         m=f.getElementsByTagName('script')[0];
-         o.async=1; o.src=t; o.id='fathom-script';
-         m.parentNode.insertBefore(o,m)
-     })(document, window, '//webstats.daheim.site/tracker.js', 'fathom');
-     fathom('set', 'siteId', 'OGJDF');
-     fathom('trackPageview');
-    </script>
-    <!-- / Fathom -->
+ var initSearch = function() {
+     var elmSearch = Elm.Search.init({
+         node: document.getElementById("search"),
+         flags: {}
+     });
+     initElmSearch(elmSearch);
+ }
+ if (document.readyState === "complete" ||
+     (document.readyState !== "loading" && !document.documentElement.doScroll)
+ ) {
+     initSearch();
+ } else {
+     document.addEventListener("DOMContentLoaded", initSearch);
+ }
+</script>
+
+    <!-- Fathom - simple website analytics - https://github.com/usefathom/fathom -->
+<script>
+ (function(f, a, t, h, o, m){
+     a[h]=a[h]||function(){
+         (a[h].q=a[h].q||[]).push(arguments)
+     };
+     o=f.createElement('script'),
+     m=f.getElementsByTagName('script')[0];
+     o.async=1; o.src=t; o.id='fathom-script';
+     m.parentNode.insertBefore(o,m)
+ })(document, window, '//webstats.daheim.site/tracker.js', 'fathom');
+ fathom('set', 'siteId', 'OGJDF');
+ fathom('trackPageview');
+</script>
+<!-- / Fathom -->
+
 </html>

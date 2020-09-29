@@ -24,6 +24,11 @@
 
         <title>Changelog – Docspell Documentation</title>
         <link rel="stylesheet" href="/styles.css">
+        <script type="application/javascript" src="/search_index.en.js"></script>
+<script type="application/javascript" src="/elasticlunr.min.js"></script>
+<script type="application/javascript" src="/js/bundle.js"></script>
+<script type="application/javascript" src="/js/searchhelper.js"></script>
+
     </head>
     <body>
         <section class="hero is-info is-small">
@@ -55,12 +60,19 @@
 
             </div>
             <div class="hero-body">
-                <h1 class="title">
-                    Changelog
-                </h1>
-                <h2 class="subtitle">
-                    Docspell Documentation
-                </h2>
+                <div class="columns is-vcentered">
+                    <div class="column is-8">
+                        <h1 class="title">
+                            Changelog
+                        </h1>
+                        <h2 class="subtitle">
+                            Docspell Documentation
+                        </h2>
+                    </div>
+                    <div class="column">
+                        <div id="search"></div>
+                    </div>
+                </div>
             </div>
         </section>
         <nav class="breadcrumb has-succeeds-separator" aria-label="breadcrumbs">
@@ -89,13 +101,13 @@
                 <div class="content doc">
                     <h1 id="changelog">Changelog<a class="zola-anchor" href="#changelog" aria-label="Anchor link for: changelog">🔗</a></h1>
 <h2 id="v0-12-0">v0.12.0<a class="zola-anchor" href="#v0-12-0" aria-label="Anchor link for: v0-12-0">🔗</a></h2>
-<p><em>27.09.2020</em></p>
+<p><em>28.09.2020</em></p>
 <p>Thanks to a lot of great input from users, this release fixes
 annoyances in the ui.</p>
 <ul>
-<li>Improve startup experience regarding to <code>base-url</code> setting. Docspell
-now uses request headers to determine absolute urls if this setting
-is unchanged. (#250)</li>
+<li>Improve startup experience wrt the <code>base-url</code> setting. Docspell now
+uses request headers to determine absolute urls if this setting is
+unchanged. (#250)</li>
 <li>Fixes scrolling issues when going from detail to list view and vice
 versa. (#254)</li>
 <li>Fix quick search component to keep search term between changes.
@@ -598,7 +610,6 @@ Web UI:</p>
             </div>
         </section>
         
-
         <footer class="footer">
     <div class="container">
         <div class="content has-text-centered">
@@ -623,21 +634,38 @@ Web UI:</p>
     
 </footer>
 
+        <script>
+ var initSearch = function() {
+     var elmSearch = Elm.Search.init({
+         node: document.getElementById("search"),
+         flags: {}
+     });
+     initElmSearch(elmSearch);
+ }
+ if (document.readyState === "complete" ||
+     (document.readyState !== "loading" && !document.documentElement.doScroll)
+ ) {
+     initSearch();
+ } else {
+     document.addEventListener("DOMContentLoaded", initSearch);
+ }
+</script>
+
+        <!-- Fathom - simple website analytics - https://github.com/usefathom/fathom -->
+<script>
+ (function(f, a, t, h, o, m){
+     a[h]=a[h]||function(){
+         (a[h].q=a[h].q||[]).push(arguments)
+     };
+     o=f.createElement('script'),
+     m=f.getElementsByTagName('script')[0];
+     o.async=1; o.src=t; o.id='fathom-script';
+     m.parentNode.insertBefore(o,m)
+ })(document, window, '//webstats.daheim.site/tracker.js', 'fathom');
+ fathom('set', 'siteId', 'OGJDF');
+ fathom('trackPageview');
+</script>
+<!-- / Fathom -->
 
     </body>
-    <!-- Fathom - simple website analytics - https://github.com/usefathom/fathom -->
-    <script>
-     (function(f, a, t, h, o, m){
-         a[h]=a[h]||function(){
-             (a[h].q=a[h].q||[]).push(arguments)
-         };
-         o=f.createElement('script'),
-         m=f.getElementsByTagName('script')[0];
-         o.async=1; o.src=t; o.id='fathom-script';
-         m.parentNode.insertBefore(o,m)
-     })(document, window, '//webstats.daheim.site/tracker.js', 'fathom');
-     fathom('set', 'siteId', 'OGJDF');
-     fathom('trackPageview');
-    </script>
-    <!-- / Fathom -->
 </html>
