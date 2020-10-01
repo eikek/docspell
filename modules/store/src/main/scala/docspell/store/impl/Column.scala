@@ -44,6 +44,9 @@ case class Column(name: String, ns: String = "", alias: String = "") {
   def isNot[A: Put](value: A): Fragment =
     f ++ fr"<> $value"
 
+  def isNot(c: Column): Fragment =
+    f ++ fr"<>" ++ c.f
+
   def isNull: Fragment =
     f ++ fr"is null"
 

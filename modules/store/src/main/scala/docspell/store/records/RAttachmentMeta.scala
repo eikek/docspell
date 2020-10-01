@@ -46,6 +46,9 @@ object RAttachmentMeta {
   def exists(attachId: Ident): ConnectionIO[Boolean] =
     selectCount(id, table, id.is(attachId)).query[Int].unique.map(_ > 0)
 
+  def findById(attachId: Ident): ConnectionIO[Option[RAttachmentMeta]] =
+    selectSimple(all, table, id.is(attachId)).query[RAttachmentMeta].option
+
   def upsert(v: RAttachmentMeta): ConnectionIO[Int] =
     for {
       n0 <- update(v)

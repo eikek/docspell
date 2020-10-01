@@ -48,6 +48,21 @@ object RAttachmentSource {
       .unique
       .map(_ > 0)
 
+  def isConverted(attachId: Ident): ConnectionIO[Boolean] = {
+    val sId   = Columns.id.prefix("s")
+    val sFile = Columns.fileId.prefix("s")
+    val aId   = RAttachment.Columns.id.prefix("a")
+    val aFile = RAttachment.Columns.fileId.prefix("a")
+
+    val from = table ++ fr"s INNER JOIN" ++
+      RAttachment.table ++ fr"a ON" ++ aId.is(sId)
+
+    selectCount(aId, from, and(aId.is(attachId), aFile.isNot(sFile)))
+      .query[Int]
+      .unique
+      .map(_ > 0)
+  }
+
   def delete(attachId: Ident): ConnectionIO[Int] =
     deleteFrom(table, id.is(attachId)).update.run
 
