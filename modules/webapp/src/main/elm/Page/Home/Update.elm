@@ -26,7 +26,7 @@ update mId key flags settings msg model =
         Init ->
             Util.Update.andThen2
                 [ update mId key flags settings (SearchMenuMsg Comp.SearchMenu.Init)
-                , scrollToCard mId
+                , doSearch flags settings
                 ]
                 model
 
