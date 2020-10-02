@@ -38,10 +38,20 @@ object ConvertPdf {
       item: ItemData
   ): Task[F, ProcessItemArgs, ItemData] =
     Task { ctx =>
-      def convert(ra: RAttachment) =
-        findMime(ctx)(ra).flatMap(m =>
-          convertSafe(cfg, JsoupSanitizer.clean, ctx, item)(ra, m)
-        )
+      def convert(ra: RAttachment): F[(RAttachment, Option[RAttachmentMeta])] =
+        isConverted(ctx)(ra).flatMap {
+          case true =>
+            ctx.logger.info(
+              s"Conversion to pdf already done for attachment ${ra.name}."
+            ) *>
+              ctx.store
+                .transact(RAttachmentMeta.findById(ra.id))
+                .map(rmOpt => (ra, rmOpt))
+          case false =>
+            findMime(ctx)(ra).flatMap(m =>
+              convertSafe(cfg, JsoupSanitizer.clean, ctx, item)(ra, m)
+            )
+        }
 
       for {
         ras <- item.attachments.traverse(convert)
@@ -50,6 +60,11 @@ object ConvertPdf {
       } yield item.copy(attachments = nra, metas = nma)
 
     }
+
+  def isConverted[F[_]: Sync](ctx: Context[F, ProcessItemArgs])(
+      ra: RAttachment
+  ): F[Boolean] =
+    ctx.store.transact(RAttachmentSource.isConverted(ra.id))
 
   def findMime[F[_]: Functor](ctx: Context[F, _])(ra: RAttachment): F[Mimetype] =
     OptionT(ctx.store.transact(RFileMeta.findById(ra.fileId)))

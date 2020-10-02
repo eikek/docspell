@@ -7,6 +7,7 @@ import docspell.common._
 import docspell.joex.scheduler.{Context, Task}
 import docspell.store.queries.QItem
 import docspell.store.records.RFileMeta
+import docspell.store.records.RJob
 
 import bitpeace.FileMeta
 import doobie._
@@ -17,7 +18,13 @@ object DuplicateCheck {
   def apply[F[_]: Sync]: Task[F, Args, Args] =
     Task { ctx =>
       if (ctx.args.meta.skipDuplicate)
-        ctx.logger.debug("Checking for duplicate files") *> removeDuplicates(ctx)
+        for {
+          retries <- getRetryCount(ctx)
+          res <-
+            if (retries == 0)
+              ctx.logger.debug("Checking for duplicate files") *> removeDuplicates(ctx)
+            else ctx.args.pure[F]
+        } yield res
       else ctx.logger.debug("Not checking for duplicates") *> ctx.args.pure[F]
     }
 
@@ -29,6 +36,9 @@ object DuplicateCheck {
     } yield ctx.args.copy(files =
       ctx.args.files.filterNot(f => ids.contains(f.fileMetaId.id))
     )
+
+  private def getRetryCount[F[_]: Sync](ctx: Context[F, Args]): F[Int] =
+    ctx.store.transact(RJob.getRetries(ctx.jobId)).map(_.getOrElse(0))
 
   private def deleteDuplicate[F[_]: Sync](
       ctx: Context[F, Args]

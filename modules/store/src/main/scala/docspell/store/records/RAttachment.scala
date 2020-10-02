@@ -1,5 +1,6 @@
 package docspell.store.records
 
+import cats.data.NonEmptyList
 import cats.implicits._
 import fs2.Stream
 
@@ -156,6 +157,36 @@ object RAttachment {
         .is(itemId.prefix("a")) ++
       fr"WHERE" ++ and(itemId.prefix("a").is(id), RItem.Columns.cid.prefix("i").is(coll))
     q.query[RAttachment].to[Vector]
+  }
+
+  def findByItemCollectiveSource(
+      id: Ident,
+      coll: Ident,
+      fileIds: NonEmptyList[Ident]
+  ): ConnectionIO[Vector[RAttachment]] = {
+
+    val iId   = RItem.Columns.id.prefix("i")
+    val iColl = RItem.Columns.cid.prefix("i")
+    val aItem = Columns.itemId.prefix("a")
+    val aId   = Columns.id.prefix("a")
+    val aFile = Columns.fileId.prefix("a")
+    val sId   = RAttachmentSource.Columns.id.prefix("s")
+    val sFile = RAttachmentSource.Columns.fileId.prefix("s")
+    val rId   = RAttachmentArchive.Columns.id.prefix("r")
+    val rFile = RAttachmentArchive.Columns.fileId.prefix("r")
+
+    val from = table ++ fr"a INNER JOIN" ++
+      RItem.table ++ fr"i ON" ++ iId.is(aItem) ++ fr"LEFT JOIN" ++
+      RAttachmentSource.table ++ fr"s ON" ++ sId.is(aId) ++ fr"LEFT JOIN" ++
+      RAttachmentArchive.table ++ fr"r ON" ++ rId.is(aId)
+
+    val cond = and(
+      iId.is(id),
+      iColl.is(coll),
+      or(aFile.isIn(fileIds), sFile.isIn(fileIds), rFile.isIn(fileIds))
+    )
+
+    selectSimple(all.map(_.prefix("a")), from, cond).query[RAttachment].to[Vector]
   }
 
   def findByItemAndCollectiveWithMeta(

@@ -1,5 +1,6 @@
 package docspell.joex.process
 
+import cats.data.NonEmptyList
 import cats.data.OptionT
 import cats.effect.Sync
 import cats.implicits._
@@ -125,21 +126,31 @@ object CreateItem {
       for {
         cand <- ctx.store.transact(QItem.findByFileIds(fileMetaIds.toSeq))
         _ <-
-          if (cand.nonEmpty) ctx.logger.warn("Found existing item with these files.")
+          if (cand.nonEmpty)
+            ctx.logger.warn(s"Found ${cand.size} existing item with these files.")
           else ().pure[F]
         ht <- cand.drop(1).traverse(ri => QItem.delete(ctx.store)(ri.id, ri.cid))
         _ <-
           if (ht.sum > 0)
             ctx.logger.warn(s"Removed ${ht.sum} items with same attachments")
           else ().pure[F]
-        rms <- OptionT(
-          //load attachments but only those mentioned in the task's arguments
-          cand.headOption.traverse(ri =>
-            ctx.store
-              .transact(RAttachment.findByItemAndCollective(ri.id, ri.cid))
-              .map(_.filter(r => fileMetaIds.contains(r.fileId)))
+        rms <- OptionT
+          .fromOption[F](NonEmptyList.fromList(fileMetaIds.toList))
+          .flatMap(fids =>
+            OptionT(
+              //load attachments but only those mentioned in the task's arguments
+              cand.headOption.traverse(ri =>
+                ctx.store
+                  .transact(RAttachment.findByItemCollectiveSource(ri.id, ri.cid, fids))
+                  .flatTap(ats =>
+                    ctx.logger.debug(
+                      s"Found ${ats.size} attachments. Use only those from task args: ${fileMetaIds}"
+                    )
+                  )
+              )
+            )
           )
-        ).getOrElse(Vector.empty)
+          .getOrElse(Vector.empty)
         orig <- rms.traverse(a =>
           ctx.store.transact(RAttachmentSource.findById(a.id)).map(s => (a, s))
         )

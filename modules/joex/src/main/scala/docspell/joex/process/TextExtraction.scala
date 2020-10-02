@@ -20,7 +20,9 @@ object TextExtraction {
   ): Task[F, ProcessItemArgs, ItemData] =
     Task { ctx =>
       for {
-        _     <- ctx.logger.info("Starting text extraction")
+        _ <- ctx.logger.info(
+          s"Starting text extraction for ${item.attachments.size} files"
+        )
         start <- Duration.stopTime[F]
         txt <- item.attachments.traverse(
           extractTextIfEmpty(
@@ -31,9 +33,10 @@ object TextExtraction {
             item
           )
         )
-        _ <- ctx.logger.debug("Storing extracted texts")
+        _ <- ctx.logger.debug("Storing extracted texts …")
         _ <-
           txt.toList.traverse(res => ctx.store.transact(RAttachmentMeta.upsert(res.am)))
+        _ <- ctx.logger.debug(s"Extracted text stored.")
         idxItem = TextData.item(
           item.item.id,
           ctx.args.meta.collective,
