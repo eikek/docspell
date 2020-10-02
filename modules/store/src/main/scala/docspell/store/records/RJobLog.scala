@@ -26,6 +26,10 @@ object RJobLog {
     val created = Column("created")
     val message = Column("message")
     val all     = List(id, jobId, level, created, message)
+
+    // separate column only for sorting, so not included in `all` and
+    // the case class
+    val counter = Column("counter")
   }
   import Columns._
 
@@ -37,7 +41,7 @@ object RJobLog {
     ).update.run
 
   def findLogs(id: Ident): ConnectionIO[Vector[RJobLog]] =
-    (selectSimple(all, table, jobId.is(id)) ++ orderBy(created.asc))
+    (selectSimple(all, table, jobId.is(id)) ++ orderBy(created.asc, counter.asc))
       .query[RJobLog]
       .to[Vector]
 
