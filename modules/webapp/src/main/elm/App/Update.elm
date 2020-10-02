@@ -381,7 +381,11 @@ initPage model_ page =
             updateQueue Page.Queue.Data.StopRefresh model
 
         UploadPage _ ->
-            updateQueue Page.Queue.Data.StopRefresh model
+            Util.Update.andThen2
+                [ updateQueue Page.Queue.Data.StopRefresh
+                , updateUpload Page.Upload.Data.Clear
+                ]
+                model
 
         NewInvitePage ->
             updateQueue Page.Queue.Data.StopRefresh model
