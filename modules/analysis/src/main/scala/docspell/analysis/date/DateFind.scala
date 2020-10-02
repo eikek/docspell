@@ -4,6 +4,7 @@ import java.time.LocalDate
 
 import scala.util.Try
 
+import cats.implicits._
 import fs2.{Pure, Stream}
 
 import docspell.analysis.split._
@@ -56,7 +57,12 @@ object DateFind {
         case Language.German  => p1.or(p0).or(p2)
         case Language.French  => p1.or(p0).or(p2)
       }
-      p.read(parts).toOption
+      p.read(parts) match {
+        case Result.Success(sd, _) =>
+          Either.catchNonFatal(sd.toLocalDate).map(_ => sd).toOption
+        case Result.Failure =>
+          None
+      }
     }
 
     def readYear: Reader[Int] =
