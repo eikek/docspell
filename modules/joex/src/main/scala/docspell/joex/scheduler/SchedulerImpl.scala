@@ -31,8 +31,7 @@ final class SchedulerImpl[F[_]: ConcurrentEffect: ContextShift](
 
   private[this] val logger = getLogger
 
-  /**
-    * On startup, get all jobs in state running from this scheduler
+  /** On startup, get all jobs in state running from this scheduler
     * and put them into waiting state, so they get picked up again.
     */
   def init: F[Unit] =

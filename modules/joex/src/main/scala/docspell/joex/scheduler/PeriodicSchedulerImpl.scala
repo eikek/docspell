@@ -49,8 +49,7 @@ final class PeriodicSchedulerImpl[F[_]: ConcurrentEffect: ContextShift](
 
   // internal
 
-  /**
-    * On startup, get all periodic jobs from this scheduler and remove
+  /** On startup, get all periodic jobs from this scheduler and remove
     * the mark, so they get picked up again.
     */
   def init: F[Unit] =
