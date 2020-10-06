@@ -13,8 +13,7 @@ import docspell.store.records.{RAttachment, RAttachmentSource, RItem}
 
 import bitpeace.FileMeta
 
-/**
-  * Task that creates the item.
+/** Task that creates the item.
   */
 object CreateItem {
 

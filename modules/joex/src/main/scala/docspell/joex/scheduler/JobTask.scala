@@ -8,8 +8,7 @@ import docspell.common.syntax.all._
 
 import io.circe.Decoder
 
-/**
-  * Binds a Task to a name. This is required to lookup the code based
+/** Binds a Task to a name. This is required to lookup the code based
   * on the taskName in the RJob data and to execute it given the
   * arguments that have to be read from a string.
   *
