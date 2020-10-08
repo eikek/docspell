@@ -66,9 +66,3 @@ services:
 
 volumes:
   docspell-solr_data:
-
-networks:
-  internal:
-    external: true
-  docspell:
-    external: false
