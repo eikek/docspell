@@ -39,7 +39,7 @@ services:
     image: postgres:11.7
     container_name: postgres_db
     volumes:
-      - postgres_data:/var/lib/postgresql/data/
+      - docspell-postgres_data:/var/lib/postgresql/data/
     environment:
       - POSTGRES_USER=dbuser
       - POSTGRES_PASSWORD=dbpass
@@ -65,4 +65,5 @@ services:
       start_period: 30s
 
 volumes:
+  docspell-postgres_data:
   docspell-solr_data:
