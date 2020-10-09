@@ -2,7 +2,7 @@ package docspell.restserver.auth
 
 import docspell.backend.auth._
 import docspell.common.AccountId
-import docspell.restserver.Config
+import docspell.common.LenientUri
 
 import org.http4s._
 import org.http4s.util._
@@ -11,14 +11,13 @@ case class CookieData(auth: AuthToken) {
   def accountId: AccountId = auth.account
   def asString: String     = auth.asString
 
-  def asCookie(cfg: Config): ResponseCookie = {
-    val domain = CookieData.getDomain(cfg)
-    val sec    = cfg.baseUrl.scheme.exists(_.endsWith("s"))
-    val path   = cfg.baseUrl.path / "api" / "v1" / "sec"
+  def asCookie(baseUrl: LenientUri): ResponseCookie = {
+    val sec  = baseUrl.scheme.exists(_.endsWith("s"))
+    val path = baseUrl.path / "api" / "v1" / "sec"
     ResponseCookie(
       CookieData.cookieName,
       asString,
-      domain = domain,
+      domain = None,
       path = Some(path.asString),
       httpOnly = true,
       secure = sec
@@ -28,10 +27,6 @@ case class CookieData(auth: AuthToken) {
 object CookieData {
   val cookieName = "docspell_auth"
   val headerName = "X-Docspell-Auth"
-
-  private def getDomain(cfg: Config): Option[String] =
-    if (cfg.baseUrl.isLocal) None
-    else cfg.baseUrl.host
 
   def authenticator[F[_]](r: Request[F]): Either[String, String] =
     fromCookie(r).orElse(fromHeader(r))
@@ -51,14 +46,14 @@ object CookieData {
       .map(_.value)
       .toRight("Couldn't find an authenticator")
 
-  def deleteCookie(cfg: Config): ResponseCookie =
+  def deleteCookie(baseUrl: LenientUri): ResponseCookie =
     ResponseCookie(
       cookieName,
       "",
-      domain = getDomain(cfg),
-      path = Some(cfg.baseUrl.path / "api" / "v1" / "sec").map(_.asString),
+      domain = None,
+      path = Some(baseUrl.path / "api" / "v1" / "sec").map(_.asString),
       httpOnly = true,
-      secure = cfg.baseUrl.scheme.exists(_.endsWith("s")),
+      secure = baseUrl.scheme.exists(_.endsWith("s")),
       maxAge = Some(-1)
     )
 
