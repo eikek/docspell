@@ -7,7 +7,6 @@ import docspell.backend.auth._
 import docspell.restapi.model._
 import docspell.restserver._
 import docspell.restserver.auth._
-import docspell.restserver.http4s.ClientHost
 
 import org.http4s._
 import org.http4s.circe.CirceEntityDecoder._
@@ -24,8 +23,7 @@ object LoginRoutes {
       for {
         up  <- req.as[UserPass]
         res <- S.loginUserPass(cfg.auth)(Login.UserPass(up.account, up.password))
-        remote = ClientHost.get(req)
-        resp <- makeResponse(dsl, cfg, remote, res, up.account)
+        resp <- makeResponse(dsl, cfg, res, up.account)
       } yield resp
     }
   }
@@ -38,17 +36,16 @@ object LoginRoutes {
       case req @ POST -> Root / "session" =>
         Authenticate
           .authenticateRequest(S.loginSession(cfg.auth))(req)
-          .flatMap(res => makeResponse(dsl, cfg, ClientHost.get(req), res, ""))
+          .flatMap(res => makeResponse(dsl, cfg, res, ""))
 
-      case req @ POST -> Root / "logout" =>
-        Ok().map(_.addCookie(CookieData.deleteCookie(cfg, ClientHost.get(req))))
+      case POST -> Root / "logout" =>
+        Ok().map(_.addCookie(CookieData.deleteCookie(cfg)))
     }
   }
 
   def makeResponse[F[_]: Effect](
       dsl: Http4sDsl[F],
       cfg: Config,
-      remoteHost: Option[String],
       res: Login.Result,
       account: String
   ): F[Response[F]] = {
@@ -66,7 +63,7 @@ object LoginRoutes {
               Some(cd.asString),
               cfg.auth.sessionValid.millis
             )
-          ).map(_.addCookie(cd.asCookie(cfg, remoteHost)))
+          ).map(_.addCookie(cd.asCookie(cfg)))
         } yield resp
       case _ =>
         Ok(AuthResult("", account, false, "Login failed.", None, 0L))

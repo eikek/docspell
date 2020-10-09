@@ -9,8 +9,8 @@ import org.http4s.util.CaseInsensitiveString
 object ClientHost {
 
   def get[F[_]](req: Request[F]): Option[String] =
-    xForwardedFor(req)
-      .orElse(xForwardedHost(req))
+    xForwardedHost(req)
+      .orElse(xForwardedFor(req))
       .orElse(host(req))
 
   private def host[F[_]](req: Request[F]): Option[String] =

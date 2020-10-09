@@ -11,8 +11,8 @@ case class CookieData(auth: AuthToken) {
   def accountId: AccountId = auth.account
   def asString: String     = auth.asString
 
-  def asCookie(cfg: Config, host: Option[String]): ResponseCookie = {
-    val domain = CookieData.getDomain(cfg, host)
+  def asCookie(cfg: Config): ResponseCookie = {
+    val domain = CookieData.getDomain(cfg)
     val sec    = cfg.baseUrl.scheme.exists(_.endsWith("s"))
     val path   = cfg.baseUrl.path / "api" / "v1" / "sec"
     ResponseCookie(
@@ -29,8 +29,8 @@ object CookieData {
   val cookieName = "docspell_auth"
   val headerName = "X-Docspell-Auth"
 
-  private def getDomain(cfg: Config, remote: Option[String]): Option[String] =
-    if (cfg.baseUrl.isLocal) remote.orElse(cfg.baseUrl.host)
+  private def getDomain(cfg: Config): Option[String] =
+    if (cfg.baseUrl.isLocal) None
     else cfg.baseUrl.host
 
   def authenticator[F[_]](r: Request[F]): Either[String, String] =
@@ -51,11 +51,11 @@ object CookieData {
       .map(_.value)
       .toRight("Couldn't find an authenticator")
 
-  def deleteCookie(cfg: Config, remoteHost: Option[String]): ResponseCookie =
+  def deleteCookie(cfg: Config): ResponseCookie =
     ResponseCookie(
       cookieName,
       "",
-      domain = getDomain(cfg, remoteHost),
+      domain = getDomain(cfg),
       path = Some(cfg.baseUrl.path / "api" / "v1" / "sec").map(_.asString),
       httpOnly = true,
       secure = cfg.baseUrl.scheme.exists(_.endsWith("s")),
