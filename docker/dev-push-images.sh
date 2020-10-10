@@ -22,20 +22,15 @@ echo && echo pushing docker images for version: $VERSION && echo && echo
 
 if [[ $? -eq 0 ]]; then
   echo pushing restserver
-  docker push ${REPO}docspell-restserver:$VERSION
+  docker push ${REPO}docspell:restserver-$VERSION
 fi
 
 if [[ $? -eq 0 ]]; then
   echo pushing joex
-  docker push  ${REPO}docspell-joex:$VERSION
+  docker push  ${REPO}docspell:joex-$VERSION
 fi
 
 if [[ $? -eq 0 ]]; then
   echo pushing consumedir
-  docker push  ${REPO}docspell-consumedir:$VERSION
-fi
-
-if [[ $? -eq 0 ]]; then
-  echo pushing full
-  docker push  ${REPO}docspell:$VERSION
+  docker push  ${REPO}docspell:consumedir-$VERSION
 fi

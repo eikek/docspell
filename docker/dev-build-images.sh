@@ -16,27 +16,38 @@ if [[ $VERSION == *"SNAPSHOT" ]]; then
   VERSION=latest
 fi
 
-echo && echo building docker images for version: $VERSION && echo && echo
+mkdir -p ./dev-log
+logfile=./dev-log/build_$(date +%Y%m%d_%H%M).log
+exec 1>>"$logfile" 2>&1
+
+echo "########################################################"
+date
+echo && echo building docker images for version: $VERSION && echo
+echo "(Repo: $REPO, SBT-Version: $SBT_VERSION)"
+echo "########################################################" && echo && echo && echo
 
 echo building base
-docker build -f ./base.dockerfile --build-arg SBT_VERSION=${SBT_VERSION} --tag ${REPO}docspell-base:$VERSION .
+time docker build -f ./base.dockerfile --build-arg SBT_VERSION=${SBT_VERSION} --tag ${REPO}docspell:base-$VERSION .
 status=$?
 
 if [[ $status -eq 0 ]]; then
+  echo && echo && echo && echo && echo "########################################################"
   echo building restserver
-  docker build -f ./restserver.dockerfile --tag ${REPO}docspell-restserver:$VERSION .
+  time docker build -f ./restserver.dockerfile --tag ${REPO}docspell:restserver-$VERSION .
   status=$?
 fi
 
 
 if [[ $status -eq 0 ]]; then
+  echo && echo && echo && echo && echo "########################################################"
   echo building joex
-  docker build -f ./joex.dockerfile --tag ${REPO}docspell-joex:$VERSION .
+  time docker build -f ./joex.dockerfile --tag ${REPO}docspell:joex-$VERSION .
   status=$?
 fi
 
 if [[ $status -eq 0 ]]; then
+  echo && echo && echo && echo && echo "########################################################"
   echo building consumedir
-  docker build -f ./consumedir.dockerfile --tag ${REPO}docspell-consumedir:$VERSION .
+  time docker build -f ./consumedir.dockerfile --tag ${REPO}docspell:consumedir-$VERSION .
   status=$?
 fi

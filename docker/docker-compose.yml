@@ -2,7 +2,7 @@ version: '3.7'
 services:
 
   restserver:
-    image: eikek0/docspell-restserver:latest
+    image: eikek0/docspell:restserver-latest
     container_name: docspell-restserver
     ports:
       - "7880:7880"
@@ -15,7 +15,7 @@ services:
       - solr
 
   joex:
-    image: eikek0/docspell-joex:latest
+    image: eikek0/docspell:joex-latest
     container_name: docspell-joex
     ports:
       - "7878:7878"
@@ -26,7 +26,7 @@ services:
       - solr
 
   consumedir:
-    image: eikek0/docspell-consumedir:latest
+    image: eikek0/docspell:consumedir-latest
     container_name: docspell-consumedir
     environment:
       - DOCSPELL_HEADER_VALUE=${DOCSPELL_HEADER_VALUE:-none}
@@ -48,15 +48,11 @@ services:
   solr:
     image: solr:8
     container_name: docspell-solr
-    ports:
-      - "8983:8983"
     volumes:
       - docspell-solr_data:/var/solr
     command:
       - solr-precreate
       - docspell
-    networks:
-      docspell:
     healthcheck:
       test: ["CMD", "curl", "f", "http://localhost:8983/solr/docspell/admin/ping"]
       interval: 1m

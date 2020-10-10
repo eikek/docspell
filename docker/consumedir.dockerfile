@@ -4,7 +4,7 @@ ARG VERSION=latest
 ARG REPO=eikek0/
 
 # hack to use args in from
-FROM ${REPO}docspell-base:${VERSION} as path
+FROM ${REPO}docspell:base-${VERSION} as path
 
 
 FROM alpine:latest

@@ -4,12 +4,12 @@ ARG VERSION=latest
 ARG REPO=eikek0/
 
 # hack to use args in from
-FROM ${REPO}docspell-base:${VERSION} as path
+FROM ${REPO}docspell:base-${VERSION} as path
 
 
 FROM alpine:latest
+ARG UNO_URL=https://raw.githubusercontent.com/unoconv/unoconv/0.9.0/unoconv
 ENV JAVA_OPTS="-Xmx1536M"
-ENV UNO_URL https://raw.githubusercontent.com/unoconv/unoconv/0.9.0/unoconv
 
 RUN apk add --no-cache openjdk11-jre \
     bash \
