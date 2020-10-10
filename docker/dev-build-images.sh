@@ -27,7 +27,7 @@ echo "(Repo: $REPO, SBT-Version: $SBT_VERSION)"
 echo "########################################################" && echo && echo && echo
 
 echo building base
-time docker build -f ./base.dockerfile --build-arg SBT_VERSION=${SBT_VERSION} --tag ${REPO}docspell:base-$VERSION .
+time docker build -f ./base.dockerfile --build-arg SBT_VERSION=${SBT_VERSION} --tag ${REPO}docspell:base-$VERSION ..
 status=$?
 
 if [[ $status -eq 0 ]]; then

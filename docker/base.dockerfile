@@ -20,8 +20,11 @@ RUN tar -xzvf sbt-$SBT_VERSION.tgz
 RUN rm sbt-$SBT_VERSION.tgz
 
 # DOCSPELL
-RUN mkdir /src
-RUN git -C /src clone https://github.com/eikek/docspell
+RUN mkdir -p /src/docspell
+COPY . /src/docspell/
+# for a build without cloned project the following line would replace the one above
+# RUN git -C /src clone https://github.com/eikek/docspell
+
 
 #RUN SBT_OPTS="-Xms1024M -Xmx8G -Xss2M -XX:MaxMetaspaceSize=8G" && \
 WORKDIR /src/docspell
@@ -38,7 +41,8 @@ RUN mv /opt/docspell-restserver-* /opt/docspell-restserver
 RUN find "/src/docspell/tools/target/" -name "docspell-tools-*.zip" -exec unzip {} -d "/opt/" \;
 RUN mv /opt/docspell-tools-* /opt/docspell-tools
 RUN chmod 755 /opt/docspell-tools/*.sh
-COPY ./docspell.conf /opt/docspell.conf
+
+COPY ./docker/docspell.conf /opt/docspell.conf
 
 # CLEANUP
 WORKDIR /
