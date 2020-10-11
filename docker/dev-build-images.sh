@@ -42,6 +42,10 @@ if [[ $status -eq 0 ]]; then
   echo building restserver
   time docker build -f ./restserver.dockerfile --tag ${REPO}:restserver-$VERSION --build-arg REPO=$REPO --build-arg VERSION=$VERSION .
   status=$?
+
+  if [[ $status -eq 0 ]] && [[ "$VERSION" != "SNAPSHOT" ]]; then
+     docker tag ${REPO}:restserver-$VERSION ${REPO}:restserver-LATEST
+  fi
 fi
 
 if [[ $status -eq 0 ]]; then
@@ -55,6 +59,10 @@ if [[ $status -eq 0 ]]; then
   echo building joex
   time docker build -f ./joex.dockerfile --tag ${REPO}:joex-$VERSION --build-arg REPO=$REPO --build-arg VERSION=$VERSION .
   status=$?
+
+  if [[ $status -eq 0 ]] && [[ "$VERSION" != "SNAPSHOT" ]]; then
+     docker tag ${REPO}:joex-$VERSION ${REPO}:joex-LATEST
+  fi
 fi
 
 if [[ $status -eq 0 ]]; then
@@ -62,6 +70,10 @@ if [[ $status -eq 0 ]]; then
   echo building consumedir
   time docker build -f ./consumedir.dockerfile --tag ${REPO}:consumedir-$VERSION --build-arg REPO=$REPO --build-arg VERSION=$VERSION .
   status=$?
+
+  if [[ $status -eq 0 ]] && [[ "$VERSION" != "SNAPSHOT" ]]; then
+     docker tag ${REPO}:consumedir-$VERSION ${REPO}:consumedir-LATEST
+  fi
 fi
 
 echo && echo && echo

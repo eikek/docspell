@@ -19,6 +19,12 @@ echo && echo pushing docker images for version: $VERSION && echo && echo
 # echo pushing base
 # docker ${REPO}-base:$VERSION .
 
+echo pushing restserver
+docker push ${REPO}
+
+exit 0
+
+## still needs to be tested for a tagged version - that's why old version below is kept!
 
 if [[ $? -eq 0 ]]; then
   echo pushing restserver
