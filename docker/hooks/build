@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# remove trailing slash if exists
+DOCKER_REPO=${DOCKER_REPO%/}
+
+
 echo "||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||"
 date
 echo building image \"$IMAGE_NAME\" in repository \"$DOCKER_REPO\" using dockerfile \"$DOCKERFILE_PATH\"
@@ -9,15 +13,18 @@ echo " commit message was \"$COMMIT_MSG\""
 echo && echo && echo
 echo "||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||"
 
-./dev-build-images.sh "$DOCKER_REPO/"
 
-echo "#### pushing images ####"
 ./dev-build-images.sh "$DOCKER_REPO/"
+status=$?
+
+if [[ $status -eq 0 ]]; then
+  echo "#### pushing images ####"
+  ./dev-build-images.sh "$DOCKER_REPO/"
+fi
 
 
 echo && echo && date
 echo "|||||||||||||||||||||||||||||||||||||||||||||  done  |||||||||||||||||||||||||||||||||||||||||||||"
-
 
 
 ###################################
