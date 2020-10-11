@@ -1,6 +1,6 @@
 docker/
 docker/
 !docker/joex-entrypoint.sh
-!docker/docspelk.conf
+!docker/docspell.conf
 .git/
 .gitignore
