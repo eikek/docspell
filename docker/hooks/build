@@ -19,7 +19,7 @@ status=$?
 
 if [[ $status -eq 0 ]]; then
   echo "#### pushing images ####"
-  ./dev-build-images.sh "$DOCKER_REPO/"
+  ./dev-push-images.sh "$DOCKER_REPO/"
 fi
 
 
