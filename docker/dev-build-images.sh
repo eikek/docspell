@@ -17,14 +17,14 @@ if [[ $VERSION == *"SNAPSHOT" ]]; then
 fi
 
 # if automated build by docker, don't spool log to file
-if [[ $LOG_TO_CONSOLE -ne 1 ]]; then
+if [[ $LOG_TO_FILE -eq 1 ]]; then
   logfile=./dev-log/build_$(date +%Y%m%d_%H%M).log
   echo logging to logfile: $logfile
   echo to log to console set 'LOG_TO_CONSOLE' to 1
   mkdir -p ./dev-log
   exec 1>>"$logfile" 2>&1
 else
-  echo "logging to console (LOG_TO_CONSOLE=$LOG_TO_CONSOLE)"
+  echo "logging to console..." && echo
 fi
 
 echo "########################################################"
@@ -40,27 +40,27 @@ status=$?
 if [[ $status -eq 0 ]]; then
   echo && echo && echo && echo && echo "########################################################"
   echo building restserver
-  time docker build -f ./restserver.dockerfile --tag ${REPO}docspell:restserver-$VERSION .
+  time docker build -f ./restserver.dockerfile --tag ${REPO}docspell:restserver-$VERSION --build-arg REPO=$REPO .
   status=$?
 fi
 
 if [[ $status -eq 0 ]]; then
   echo && echo && echo && echo && echo "########################################################"
   echo building joex base
-  time docker build -f ./joex-base.dockerfile --tag ${REPO}docspell:joex-base-$VERSION .
+  time docker build -f ./joex-base.dockerfile --tag ${REPO}docspell:joex-base-$VERSION --build-arg REPO=$REPO .
   status=$?
 fi
 if [[ $status -eq 0 ]]; then
   echo && echo && echo && echo && echo "########################################################"
   echo building joex
-  time docker build -f ./joex.dockerfile --tag ${REPO}docspell:joex-$VERSION .
+  time docker build -f ./joex.dockerfile --tag ${REPO}docspell:joex-$VERSION --build-arg REPO=$REPO .
   status=$?
 fi
 
 if [[ $status -eq 0 ]]; then
   echo && echo && echo && echo && echo "########################################################"
   echo building consumedir
-  time docker build -f ./consumedir.dockerfile --tag ${REPO}docspell:consumedir-$VERSION .
+  time docker build -f ./consumedir.dockerfile --tag ${REPO}docspell:consumedir-$VERSION --build-arg REPO=$REPO .
   status=$?
 fi
 

@@ -1,6 +1,3 @@
 docker/
-docker/
 !docker/joex-entrypoint.sh
 !docker/docspell.conf
-.git/
-.gitignore
