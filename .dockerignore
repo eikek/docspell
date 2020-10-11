@@ -1,2 +1,6 @@
-docker/dev-log
-docker/docs
+docker/
+docker/
+!docker/joex-entrypoint.sh
+!docker/docspelk.conf
+.git/
+.gitignore

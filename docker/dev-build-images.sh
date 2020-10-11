@@ -37,7 +37,12 @@ if [[ $status -eq 0 ]]; then
   status=$?
 fi
 
-
+if [[ $status -eq 0 ]]; then
+  echo && echo && echo && echo && echo "########################################################"
+  echo building joex base
+  time docker build -f ./joex-base.dockerfile --tag ${REPO}docspell:joex-base-$VERSION .
+  status=$?
+fi
 if [[ $status -eq 0 ]]; then
   echo && echo && echo && echo && echo "########################################################"
   echo building joex

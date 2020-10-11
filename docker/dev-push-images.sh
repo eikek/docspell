@@ -26,6 +26,10 @@ if [[ $? -eq 0 ]]; then
 fi
 
 if [[ $? -eq 0 ]]; then
+  echo pushing joex base
+  docker push  ${REPO}docspell:joex-base-$VERSION
+fi
+if [[ $? -eq 0 ]]; then
   echo pushing joex
   docker push  ${REPO}docspell:joex-$VERSION
 fi
