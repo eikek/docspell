@@ -16,9 +16,13 @@ if [[ $VERSION == *"SNAPSHOT" ]]; then
   VERSION=latest
 fi
 
-mkdir -p ./dev-log
-logfile=./dev-log/build_$(date +%Y%m%d_%H%M).log
-exec 1>>"$logfile" 2>&1
+# if automated build by docker, don't spool log to file
+if [[ $LOG_TO_CONSOLE -ne 1 ]]; then
+  logfile=./dev-log/build_$(date +%Y%m%d_%H%M).log
+  echo logging to logfile: $logfile
+  mkdir -p ./dev-log
+  exec 1>>"$logfile" 2>&1
+fi
 
 echo "########################################################"
 date
@@ -56,3 +60,7 @@ if [[ $status -eq 0 ]]; then
   time docker build -f ./consumedir.dockerfile --tag ${REPO}docspell:consumedir-$VERSION .
   status=$?
 fi
+
+echo && echo && echo
+echo "######################## done ########################"
+date
