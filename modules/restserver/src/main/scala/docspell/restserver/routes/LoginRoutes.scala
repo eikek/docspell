@@ -4,10 +4,11 @@ import cats.effect._
 import cats.implicits._
 
 import docspell.backend.auth._
+import docspell.common._
 import docspell.restapi.model._
 import docspell.restserver._
 import docspell.restserver.auth._
-import docspell.restserver.http4s.ClientHost
+import docspell.restserver.http4s.ClientRequestInfo
 
 import org.http4s._
 import org.http4s.circe.CirceEntityDecoder._
@@ -22,10 +23,9 @@ object LoginRoutes {
 
     HttpRoutes.of[F] { case req @ POST -> Root / "login" =>
       for {
-        up  <- req.as[UserPass]
-        res <- S.loginUserPass(cfg.auth)(Login.UserPass(up.account, up.password))
-        remote = ClientHost.get(req)
-        resp <- makeResponse(dsl, cfg, remote, res, up.account)
+        up   <- req.as[UserPass]
+        res  <- S.loginUserPass(cfg.auth)(Login.UserPass(up.account, up.password))
+        resp <- makeResponse(dsl, cfg, req, res, up.account)
       } yield resp
     }
   }
@@ -38,17 +38,20 @@ object LoginRoutes {
       case req @ POST -> Root / "session" =>
         Authenticate
           .authenticateRequest(S.loginSession(cfg.auth))(req)
-          .flatMap(res => makeResponse(dsl, cfg, ClientHost.get(req), res, ""))
+          .flatMap(res => makeResponse(dsl, cfg, req, res, ""))
 
       case req @ POST -> Root / "logout" =>
-        Ok().map(_.addCookie(CookieData.deleteCookie(cfg, ClientHost.get(req))))
+        Ok().map(_.addCookie(CookieData.deleteCookie(getBaseUrl(cfg, req))))
     }
   }
 
-  def makeResponse[F[_]: Effect](
+  private def getBaseUrl[F[_]](cfg: Config, req: Request[F]): LenientUri =
+    ClientRequestInfo.getBaseUrl(cfg, req)
+
+  private def makeResponse[F[_]: Effect](
       dsl: Http4sDsl[F],
       cfg: Config,
-      remoteHost: Option[String],
+      req: Request[F],
       res: Login.Result,
       account: String
   ): F[Response[F]] = {
@@ -66,7 +69,7 @@ object LoginRoutes {
               Some(cd.asString),
               cfg.auth.sessionValid.millis
             )
-          ).map(_.addCookie(cd.asCookie(cfg, remoteHost)))
+          ).map(_.addCookie(cd.asCookie(getBaseUrl(cfg, req))))
         } yield resp
       case _ =>
         Ok(AuthResult("", account, false, "Login failed.", None, 0L))

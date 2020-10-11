@@ -10,6 +10,7 @@ import docspell.common._
 import docspell.restapi.model._
 import docspell.restserver.Config
 import docspell.restserver.conv.Conversions
+import docspell.restserver.http4s.ClientRequestInfo
 import docspell.store.usertask._
 
 import org.http4s._
@@ -40,7 +41,7 @@ object NotifyDueItemsRoutes {
         for {
           data  <- req.as[NotificationSettings]
           newId <- Ident.randomId[F]
-          task  <- makeTask(newId, cfg, user.account, data)
+          task  <- makeTask(newId, getBaseUrl(cfg, req), user.account, data)
           res <-
             ut.executeNow(user.account, task)
               .attempt
@@ -60,7 +61,7 @@ object NotifyDueItemsRoutes {
       case req @ PUT -> Root =>
         def run(data: NotificationSettings) =
           for {
-            task <- makeTask(data.id, cfg, user.account, data)
+            task <- makeTask(data.id, getBaseUrl(cfg, req), user.account, data)
             res <-
               ut.submitNotifyDueItems(user.account, task)
                 .attempt
@@ -78,7 +79,7 @@ object NotifyDueItemsRoutes {
         for {
           data  <- req.as[NotificationSettings]
           newId <- Ident.randomId[F]
-          task  <- makeTask(newId, cfg, user.account, data)
+          task  <- makeTask(newId, getBaseUrl(cfg, req), user.account, data)
           res <-
             ut.submitNotifyDueItems(user.account, task)
               .attempt
@@ -96,9 +97,12 @@ object NotifyDueItemsRoutes {
     }
   }
 
+  private def getBaseUrl[F[_]](cfg: Config, req: Request[F]) =
+    ClientRequestInfo.getBaseUrl(cfg, req)
+
   def makeTask[F[_]: Sync](
       id: Ident,
-      cfg: Config,
+      baseUrl: LenientUri,
       user: AccountId,
       settings: NotificationSettings
   ): F[UserTask[NotifyDueItemsArgs]] =
@@ -112,7 +116,7 @@ object NotifyDueItemsRoutes {
           user,
           settings.smtpConnection,
           settings.recipients,
-          Some(cfg.baseUrl / "app" / "item"),
+          Some(baseUrl / "app" / "item"),
           settings.remindDays,
           if (settings.capOverdue) Some(settings.remindDays)
           else None,
