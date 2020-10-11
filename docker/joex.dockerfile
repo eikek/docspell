@@ -4,10 +4,10 @@ ARG VERSION=latest
 ARG REPO=eikek0/
 
 # hack to use args in from
-FROM ${REPO}docspell:base-${VERSION} as docspell-base
+FROM ${REPO}:base-${VERSION} as docspell-base
 
 # hack to use args in from
-FROM ${REPO}docspell:joex-base-${VERSION} as docspell-joex-base
+FROM ${REPO}:joex-base-${VERSION} as docspell-joex-base
 
 
 FROM docspell-joex-base

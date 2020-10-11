@@ -2,10 +2,10 @@
 
 echo "||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||"
 date
-echo building image "$IMAGE_NAME" in repository "$DOCKER_REPO" using dockerfile "$DOCKERFILE_PATH"
-echo image was triggered by automated build for tag "$DOCKER_TAG"
-echo " based on branch ""$SOURCE_BRANCH""  and commit ""$SOURCE_COMMIT"""
-echo " commit message was ""$COMMIT_MSG"""
+echo building image \"$IMAGE_NAME\" in repository \"$DOCKER_REPO\" using dockerfile \"$DOCKERFILE_PATH\"
+echo image was triggered by automated build for tag \"$DOCKER_TAG\"
+echo " based on branch \"$SOURCE_BRANCH\"  and commit \"$SOURCE_COMMIT\""
+echo " commit message was \"$COMMIT_MSG\""
 echo && echo && echo
 echo "||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||"
 

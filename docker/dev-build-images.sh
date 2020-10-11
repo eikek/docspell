@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-REPO="eikek0/"
+REPO="eikek0/docspell"
 if [ $# -eq 1 ]; then
   REPO=$1
 fi
@@ -20,7 +20,7 @@ fi
 if [[ $LOG_TO_FILE -eq 1 ]]; then
   logfile=./dev-log/build_$(date +%Y%m%d_%H%M).log
   echo logging to logfile: $logfile
-  echo to log to console set 'LOG_TO_CONSOLE' to 1
+  echo In order to log to console set 'LOG_TO_CONSOLE' to 1
   mkdir -p ./dev-log
   exec 1>>"$logfile" 2>&1
 else
@@ -34,33 +34,33 @@ echo "(Repo: $REPO, SBT-Version: $SBT_VERSION)"
 echo "########################################################" && echo && echo && echo
 
 echo building base
-time docker build -f ./base.dockerfile --build-arg SBT_VERSION=${SBT_VERSION} --tag ${REPO}docspell:base-$VERSION ..
+time docker build -f ./base.dockerfile --build-arg SBT_VERSION=${SBT_VERSION} --tag ${REPO}:base-$VERSION ..
 status=$?
 
 if [[ $status -eq 0 ]]; then
   echo && echo && echo && echo && echo "########################################################"
   echo building restserver
-  time docker build -f ./restserver.dockerfile --tag ${REPO}docspell:restserver-$VERSION --build-arg REPO=$REPO .
+  time docker build -f ./restserver.dockerfile --tag ${REPO}:restserver-$VERSION --build-arg REPO=$REPO .
   status=$?
 fi
 
 if [[ $status -eq 0 ]]; then
   echo && echo && echo && echo && echo "########################################################"
   echo building joex base
-  time docker build -f ./joex-base.dockerfile --tag ${REPO}docspell:joex-base-$VERSION --build-arg REPO=$REPO .
+  time docker build -f ./joex-base.dockerfile --tag ${REPO}:joex-base-$VERSION --build-arg REPO=$REPO .
   status=$?
 fi
 if [[ $status -eq 0 ]]; then
   echo && echo && echo && echo && echo "########################################################"
   echo building joex
-  time docker build -f ./joex.dockerfile --tag ${REPO}docspell:joex-$VERSION --build-arg REPO=$REPO .
+  time docker build -f ./joex.dockerfile --tag ${REPO}:joex-$VERSION --build-arg REPO=$REPO .
   status=$?
 fi
 
 if [[ $status -eq 0 ]]; then
   echo && echo && echo && echo && echo "########################################################"
   echo building consumedir
-  time docker build -f ./consumedir.dockerfile --tag ${REPO}docspell:consumedir-$VERSION --build-arg REPO=$REPO .
+  time docker build -f ./consumedir.dockerfile --tag ${REPO}:consumedir-$VERSION --build-arg REPO=$REPO .
   status=$?
 fi
 

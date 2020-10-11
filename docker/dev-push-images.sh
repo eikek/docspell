@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-REPO="eikek0/"
+REPO="eikek0/docspell"
 if [ $# -eq 1 ]; then
   REPO=$1
 fi
@@ -17,24 +17,24 @@ echo && echo pushing docker images for version: $VERSION && echo && echo
 
 # disabled as this doesn't to be on Docker Hub
 # echo pushing base
-# docker ${REPO}docspell-base:$VERSION .
+# docker ${REPO}-base:$VERSION .
 
 
 if [[ $? -eq 0 ]]; then
   echo pushing restserver
-  docker push ${REPO}docspell:restserver-$VERSION
+  docker push ${REPO}:restserver-$VERSION
 fi
 
 if [[ $? -eq 0 ]]; then
   echo pushing joex base
-  docker push  ${REPO}docspell:joex-base-$VERSION
+  docker push  ${REPO}:joex-base-$VERSION
 fi
 if [[ $? -eq 0 ]]; then
   echo pushing joex
-  docker push  ${REPO}docspell:joex-$VERSION
+  docker push  ${REPO}:joex-$VERSION
 fi
 
 if [[ $? -eq 0 ]]; then
   echo pushing consumedir
-  docker push  ${REPO}docspell:consumedir-$VERSION
+  docker push  ${REPO}:consumedir-$VERSION
 fi
