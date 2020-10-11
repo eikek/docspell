@@ -20,8 +20,11 @@ fi
 if [[ $LOG_TO_CONSOLE -ne 1 ]]; then
   logfile=./dev-log/build_$(date +%Y%m%d_%H%M).log
   echo logging to logfile: $logfile
+  echo to log to console set 'LOG_TO_CONSOLE' to 1
   mkdir -p ./dev-log
   exec 1>>"$logfile" 2>&1
+else
+  echo "logging to console (LOG_TO_CONSOLE=$LOG_TO_CONSOLE)"
 fi
 
 echo "########################################################"
