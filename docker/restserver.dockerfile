@@ -1,7 +1,7 @@
 ## RESTSERVER
 
-ARG VERSION=latest
-ARG REPO=eikek0/
+ARG VERSION=
+ARG REPO=
 
 # hack to use args in from
 FROM ${REPO}:base-${VERSION} as docspell-base

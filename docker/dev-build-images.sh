@@ -13,7 +13,7 @@ TMP_VERSION=${TMP_VERSION:25:99}
 VERSION=${TMP_VERSION%\"}
 
 if [[ $VERSION == *"SNAPSHOT" ]]; then
-  VERSION=latest
+  VERSION=SNAPSHOT
 fi
 
 # if automated build by docker, don't spool log to file
@@ -40,27 +40,27 @@ status=$?
 if [[ $status -eq 0 ]]; then
   echo && echo && echo && echo && echo "########################################################"
   echo building restserver
-  time docker build -f ./restserver.dockerfile --tag ${REPO}:restserver-$VERSION --build-arg REPO=$REPO .
+  time docker build -f ./restserver.dockerfile --tag ${REPO}:restserver-$VERSION --build-arg REPO=$REPO --build-arg VERSION=$VERSION .
   status=$?
 fi
 
 if [[ $status -eq 0 ]]; then
   echo && echo && echo && echo && echo "########################################################"
   echo building joex base
-  time docker build -f ./joex-base.dockerfile --tag ${REPO}:joex-base-$VERSION --build-arg REPO=$REPO .
+  time docker build -f ./joex-base.dockerfile --tag ${REPO}:joex-base-$VERSION .
   status=$?
 fi
 if [[ $status -eq 0 ]]; then
   echo && echo && echo && echo && echo "########################################################"
   echo building joex
-  time docker build -f ./joex.dockerfile --tag ${REPO}:joex-$VERSION --build-arg REPO=$REPO .
+  time docker build -f ./joex.dockerfile --tag ${REPO}:joex-$VERSION --build-arg REPO=$REPO --build-arg VERSION=$VERSION .
   status=$?
 fi
 
 if [[ $status -eq 0 ]]; then
   echo && echo && echo && echo && echo "########################################################"
   echo building consumedir
-  time docker build -f ./consumedir.dockerfile --tag ${REPO}:consumedir-$VERSION --build-arg REPO=$REPO .
+  time docker build -f ./consumedir.dockerfile --tag ${REPO}:consumedir-$VERSION --build-arg REPO=$REPO --build-arg VERSION=$VERSION .
   status=$?
 fi
 
