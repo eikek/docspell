@@ -15,7 +15,7 @@ echo "||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 # verify that version.sbt and tag match for non-snapshot (ENV variable DOCKER_VERIFY_TAG must be set to 1)
 if [ $DOCKER_VERIFY_TAG -eq 1 ] && [[ "$DOCKER_TAG" != *"-SNAPSHOT" ]]; then
   echo validating version number...
-  TMP_VERSION=$(cat ../../version.sbt)
+  TMP_VERSION=$(cat ../version.sbt)
   TMP_VERSION=${TMP_VERSION:25:99}
   VERSION=${TMP_VERSION%\"}
   if [ "$DOCKER_TAG" != "v$VERSION" ]; then
