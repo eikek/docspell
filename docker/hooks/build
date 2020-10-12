@@ -9,6 +9,7 @@ if [ $DOCKER_VERIFY_TAG -eq 1 ] && [ "$DOCKER_TAG" != *"-SNAPSHOT" ]; then
   if [ "$DOCKER_TAG" != "base-$SOURCE_BRANCH" ]; then
     echo version number mismatch, aborting!
     exit 1
+  fi
 fi
 
 echo "||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||"
