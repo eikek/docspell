@@ -18,7 +18,7 @@ if [ $DOCKER_VERIFY_TAG -eq 1 ] && [[ "$DOCKER_TAG" != *"-SNAPSHOT" ]]; then
   TMP_VERSION=$(cat ../version.sbt)
   TMP_VERSION=${TMP_VERSION:25:99}
   VERSION=${TMP_VERSION%\"}
-  if [ "$DOCKER_TAG" != "v$VERSION" ]; then
+  if [ "$DOCKER_TAG" != "base-$VERSION" ]; then
     echo "version number mismatch (Docker/Tag: $DOCKER_TAG, Project: $VERSION), aborting!"
     exit 1
   fi
