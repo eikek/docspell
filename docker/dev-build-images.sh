@@ -14,6 +14,8 @@ VERSION=${TMP_VERSION%\"}
 
 if [[ $VERSION == *"SNAPSHOT" ]]; then
   VERSION=SNAPSHOT
+else
+  VERSION=v$VERSION
 fi
 
 # if automated build by docker, don't spool log to file

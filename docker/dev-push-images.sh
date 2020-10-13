@@ -11,6 +11,8 @@ VERSION=${TMP_VERSION%\"}
 
 if [[ $VERSION == *"SNAPSHOT" ]]; then
   VERSION=SNAPSHOT
+else
+  VERSION=v$VERSION
 fi
 
 echo && echo pushing docker images for version: $VERSION && echo && echo
