@@ -4,14 +4,12 @@ ARG VERSION=
 ARG REPO=
 
 # hack to use args in from
-FROM ${REPO}:base-${VERSION} as docspell-base
-
-# hack to use args in from
-FROM ${REPO}:joex-base-${VERSION} as docspell-joex-base
+FROM ${REPO}:base-binaries-${VERSION} as docspell-base-binaries
 
 
-FROM docspell-joex-base
-COPY --from=docspell-base /opt/docspell-joex /opt/docspell-joex
+FROM ${REPO}:joex-base-${VERSION}
+
+COPY --from=docspell-base-binaries /opt/docspell-joex /opt/docspell-joex
 COPY joex-entrypoint.sh /opt/joex-entrypoint.sh
 
 ENTRYPOINT ["/opt/joex-entrypoint.sh"]
