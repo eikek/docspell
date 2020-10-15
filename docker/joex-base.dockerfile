@@ -1,5 +1,9 @@
-FROM alpine:latest
-LABEL maintainer="eikek0 <eike@docspell.org>"
+## JOEX-BASE
+ARG VERSION=
+ARG REPO=
+
+
+FROM ${REPO}:base-${VERSION}
 
 ARG UNO_URL=https://raw.githubusercontent.com/unoconv/unoconv/0.9.0/unoconv
 ENV JAVA_OPTS="-Xmx1536M"

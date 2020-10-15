@@ -35,9 +35,16 @@ echo && echo building docker images for version: $VERSION && echo
 echo "(Repo: $REPO, SBT-Version: $SBT_VERSION)"
 echo "########################################################" && echo && echo && echo
 
-echo building base
-time docker build -f ./base.dockerfile --build-arg SBT_VERSION=${SBT_VERSION} --tag ${REPO}:base-$VERSION ..
+echo building base-binaries
+time docker build -f ./base-binaries.dockerfile --build-arg SBT_VERSION=${SBT_VERSION} --tag ${REPO}:base-binaries-$VERSION ..
 status=$?
+
+if [[ $status -eq 0 ]]; then
+  echo && echo && echo && echo && echo "########################################################"
+  echo building base
+  time docker build -f ./base.dockerfile --tag ${REPO}:base-$VERSION .
+  status=$?
+fi
 
 if [[ $status -eq 0 ]]; then
   echo && echo && echo && echo && echo "########################################################"
@@ -53,7 +60,7 @@ fi
 if [[ $status -eq 0 ]]; then
   echo && echo && echo && echo && echo "########################################################"
   echo building joex base
-  time docker build -f ./joex-base.dockerfile --tag ${REPO}:joex-base-$VERSION .
+  time docker build -f ./joex-base.dockerfile --tag ${REPO}:joex-base-$VERSION --build-arg REPO=$REPO --build-arg VERSION=$VERSION .
   status=$?
 fi
 if [[ $status -eq 0 ]]; then

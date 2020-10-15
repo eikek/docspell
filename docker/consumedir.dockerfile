@@ -4,15 +4,14 @@ ARG VERSION=
 ARG REPO=
 
 # hack to use args in from
-FROM ${REPO}:base-${VERSION} as docspell-base
+FROM ${REPO}:base-binaries-${VERSION} as docspell-base-binaries
 
 
-FROM alpine:latest
-LABEL maintainer="eikek0 <eike@docspell.org>"
+FROM ${REPO}:base-${VERSION}
 
 RUN apk add --no-cache curl bash inotify-tools
 
-COPY --from=docspell-base /opt/docspell-tools /opt/docspell-tools
+COPY --from=docspell-base-binaries /opt/docspell-tools /opt/docspell-tools
 
 ENTRYPOINT /opt/docspell-tools/consumedir.sh --path /opt/docs -i --iheader Docspell-Integration:$DOCSPELL_HEADER_VALUE -m http://docspell-restserver:7880/api/v1/open/integration/item -v
 

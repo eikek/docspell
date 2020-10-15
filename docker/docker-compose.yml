@@ -2,34 +2,40 @@ version: '3.7'
 services:
 
   restserver:
-    image: eikek0/docspell:restserver-latest
+    image: eikek0/docspell:restserver-SNAPSHOT
     container_name: docspell-restserver
+    networks:
+      - docspell
+      - internal
     ports:
       - "7880:7880"
     volumes:
       - ./docspell.conf:/opt/docspell.conf
-    environment:
-      - DOCSPELL_HEADER_VALUE=${DOCSPELL_HEADER_VALUE:-none}
+    env_file: ./.env
     depends_on:
-      - db
       - solr
 
   joex:
-    image: eikek0/docspell:joex-latest
+    image: eikek0/docspell:joex-SNAPSHOT
     container_name: docspell-joex
+    env_file: ./.env
+    networks:
+      - docspell
+      - internal
     ports:
       - "7878:7878"
     volumes:
       - ./docspell.conf:/opt/docspell.conf
     depends_on:
-      - db
       - solr
 
+
   consumedir:
-    image: eikek0/docspell:consumedir-latest
+    image: eikek0/docspell:consumedir-SNAPSHOT
     container_name: docspell-consumedir
-    environment:
-      - DOCSPELL_HEADER_VALUE=${DOCSPELL_HEADER_VALUE:-none}
+    env_file: ./.env
+    networks:
+      - docspell
     volumes:
       - ./docs:/opt/docs
     depends_on:
@@ -38,16 +44,20 @@ services:
   db:
     image: postgres:11.7
     container_name: postgres_db
+    networks:
+      - docspell
     volumes:
       - docspell-postgres_data:/var/lib/postgresql/data/
     environment:
-      - POSTGRES_USER=dbuser
-      - POSTGRES_PASSWORD=dbpass
-      - POSTGRES_DB=dbname
+      - POSTGRES_USER=$DB_USER
+      - POSTGRES_PASSWORD=$DB_PASS
+      - POSTGRES_DB=$DB_NAME
 
   solr:
     image: solr:8
     container_name: docspell-solr
+    networks:
+      - docspell
     volumes:
       - docspell-solr_data:/var/solr
     command:
@@ -60,6 +70,13 @@ services:
       retries: 2
       start_period: 30s
 
+
 volumes:
   docspell-postgres_data:
   docspell-solr_data:
+
+networks:
+  internal:
+    external: true
+  docspell:
+    external: false
