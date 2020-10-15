@@ -2,11 +2,8 @@ version: '3.7'
 services:
 
   restserver:
-    image: eikek0/docspell:restserver-SNAPSHOT
+    image: eikek0/docspell:restserver-LATEST
     container_name: docspell-restserver
-    networks:
-      - docspell
-      - internal
     ports:
       - "7880:7880"
     volumes:
@@ -16,12 +13,9 @@ services:
       - solr
 
   joex:
-    image: eikek0/docspell:joex-SNAPSHOT
+    image: eikek0/docspell:joex-LATEST
     container_name: docspell-joex
     env_file: ./.env
-    networks:
-      - docspell
-      - internal
     ports:
       - "7878:7878"
     volumes:
@@ -31,11 +25,9 @@ services:
 
 
   consumedir:
-    image: eikek0/docspell:consumedir-SNAPSHOT
+    image: eikek0/docspell:consumedir-LATEST
     container_name: docspell-consumedir
     env_file: ./.env
-    networks:
-      - docspell
     volumes:
       - ./docs:/opt/docs
     depends_on:
@@ -44,8 +36,6 @@ services:
   db:
     image: postgres:11.7
     container_name: postgres_db
-    networks:
-      - docspell
     volumes:
       - docspell-postgres_data:/var/lib/postgresql/data/
     environment:
@@ -56,8 +46,6 @@ services:
   solr:
     image: solr:8
     container_name: docspell-solr
-    networks:
-      - docspell
     volumes:
       - docspell-solr_data:/var/solr
     command:
@@ -74,9 +62,3 @@ services:
 volumes:
   docspell-postgres_data:
   docspell-solr_data:
-
-networks:
-  internal:
-    external: true
-  docspell:
-    external: false
