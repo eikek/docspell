@@ -1855,7 +1855,7 @@ paths:
       security:
         - authTokenHeader: []
       parameters:
-        - $ref: "#/components/parameters/id"
+        - $ref: "#/components/parameters/itemId"
       requestBody:
         content:
           application/json:
@@ -3995,6 +3995,8 @@ components:
       required:
         - tagsInclude
         - tagsExclude
+        - tagCategoriesInclude
+        - tagCategoriesExclude
         - inbox
         - offset
         - limit
