@@ -300,12 +300,20 @@ update flags msg model =
             )
 
         SubmitResp (Ok res) ->
+            let
+                ret =
+                    if res.success then
+                        Just (makeValue model.form)
+
+                    else
+                        Nothing
+            in
             ( { model
                 | result = Just res
                 , submitting = False
               }
             , Cmd.none
-            , Just (makeValue model.form)
+            , ret
             )
 
         SubmitResp (Err err) ->
