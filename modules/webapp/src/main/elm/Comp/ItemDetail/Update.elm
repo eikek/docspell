@@ -632,7 +632,7 @@ update key flags inav settings msg model =
                         noSub ( model, Page.set key (ItemDetailPage id) )
 
                     Nothing ->
-                        noSub ( model, Page.set key (HomePage Nothing) )
+                        noSub ( model, Page.set key HomePage )
 
             else
                 noSub ( model, Cmd.none )

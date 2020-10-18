@@ -82,7 +82,7 @@ view current flags settings model =
             ]
             [ viewSearchBar flags model
             , Html.map ItemCardListMsg
-                (Comp.ItemCardList.view current settings model.itemListModel)
+                (Comp.ItemCardList.view model.scrollToCard settings model.itemListModel)
             ]
         , div
             [ classList

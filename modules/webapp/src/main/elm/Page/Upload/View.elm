@@ -77,7 +77,7 @@ renderSuccessMsg public _ =
                   else
                     p []
                         [ text "Your files have been successfully uploaded. They are now being processed. Check the "
-                        , a [ class "ui link", Page.href (HomePage Nothing) ]
+                        , a [ class "ui link", Page.href HomePage ]
                             [ text "Items page"
                             ]
                         , text " later where the files will arrive eventually. Or go to the "
