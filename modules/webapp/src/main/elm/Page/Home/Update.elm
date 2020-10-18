@@ -82,21 +82,13 @@ update mId key flags settings msg model =
                         flags
                         m
                         model.itemListModel
-
-                ( cmd, id ) =
-                    case result.selected of
-                        Just item ->
-                            ( Page.set key (ItemDetailPage item.id), Just item.id )
-
-                        Nothing ->
-                            ( Cmd.none, Nothing )
             in
             withSub
                 ( { model
                     | itemListModel = result.model
                     , dragDropData = DD.DragDropData result.dragModel Nothing
                   }
-                , Cmd.batch [ Cmd.map ItemCardListMsg result.cmd, cmd ]
+                , Cmd.batch [ Cmd.map ItemCardListMsg result.cmd ]
                 )
 
         ItemSearchResp (Ok list) ->
