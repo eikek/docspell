@@ -160,7 +160,7 @@ checkPage flags page =
 defaultPage : Flags -> Page
 defaultPage flags =
     if isSignedIn flags then
-        HomePage Nothing
+        HomePage
 
     else
         LoginPage Nothing

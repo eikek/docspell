@@ -41,6 +41,7 @@ type alias Model =
     , searchTypeForm : SearchType
     , contentOnlySearch : Maybe String
     , dragDropData : DD.DragDropData
+    , scrollToCard : Maybe String
     }
 
 
@@ -70,6 +71,7 @@ init flags =
     , contentOnlySearch = Nothing
     , dragDropData =
         DD.DragDropData DD.init Nothing
+    , scrollToCard = Nothing
     }
 
 
@@ -98,7 +100,7 @@ type Msg
     | KeyUpMsg (Maybe KeyCode)
     | SetContentOnly String
     | ScrollResult (Result Dom.Error ())
-    | ClearItemDetailId (Maybe String)
+    | ClearItemDetailId
 
 
 type SearchType

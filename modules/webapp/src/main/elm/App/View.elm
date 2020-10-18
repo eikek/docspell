@@ -16,6 +16,7 @@ import Page.Queue.View
 import Page.Register.View
 import Page.Upload.View
 import Page.UserSettings.View
+import Util.Maybe
 
 
 view : Model -> Html Msg
@@ -65,7 +66,7 @@ defaultLayout model =
             [ div [ class "ui fluid container" ]
                 [ a
                     [ class "header item narrow-item"
-                    , Page.href (HomePage Nothing)
+                    , Page.href HomePage
                     ]
                     [ img
                         [ class "image"
@@ -84,7 +85,7 @@ defaultLayout model =
             , id "main-content"
             ]
             [ case model.page of
-                HomePage _ ->
+                HomePage ->
                     viewHome model
 
                 LoginPage _ ->
@@ -180,8 +181,8 @@ viewHome model =
     let
         mid =
             case model.page of
-                HomePage x ->
-                    x
+                HomePage ->
+                    Util.Maybe.fromString model.itemDetailModel.detail.item.id
 
                 _ ->
                     Nothing
@@ -218,7 +219,7 @@ loginInfo model =
                             ]
                         ]
                         [ menuEntry model
-                            (HomePage Nothing)
+                            HomePage
                             [ img
                                 [ class "image icon"
                                 , src (model.flags.config.docspellAssetPath ++ "/img/logo-mc-96.png")
