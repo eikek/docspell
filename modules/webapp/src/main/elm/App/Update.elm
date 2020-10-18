@@ -31,6 +31,7 @@ import Page.UserSettings.Data
 import Page.UserSettings.Update
 import Ports
 import Url
+import Util.Maybe
 import Util.Update
 
 
@@ -312,8 +313,8 @@ updateHome lmsg model =
     let
         mid =
             case model.page of
-                HomePage x ->
-                    x
+                HomePage ->
+                    Util.Maybe.fromString model.itemDetailModel.detail.item.id
 
                 _ ->
                     Nothing
@@ -348,7 +349,7 @@ initPage model_ page =
             { model_ | page = page }
     in
     case page of
-        HomePage _ ->
+        HomePage ->
             Util.Update.andThen2
                 [ updateHome Page.Home.Data.Init
                 , updateQueue Page.Queue.Data.StopRefresh

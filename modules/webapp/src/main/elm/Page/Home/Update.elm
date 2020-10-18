@@ -82,21 +82,13 @@ update mId key flags settings msg model =
                         flags
                         m
                         model.itemListModel
-
-                ( cmd, id ) =
-                    case result.selected of
-                        Just item ->
-                            ( Page.set key (ItemDetailPage item.id), Just item.id )
-
-                        Nothing ->
-                            ( Cmd.none, Nothing )
             in
             withSub
                 ( { model
                     | itemListModel = result.model
                     , dragDropData = DD.DragDropData result.dragModel Nothing
                   }
-                , Cmd.batch [ Cmd.map ItemCardListMsg result.cmd, cmd ]
+                , Cmd.batch [ Cmd.map ItemCardListMsg result.cmd ]
                 )
 
         ItemSearchResp (Ok list) ->
@@ -251,18 +243,12 @@ update mId key flags settings msg model =
         ScrollResult _ ->
             let
                 cmd =
-                    Process.sleep 800 |> Task.perform (always (ClearItemDetailId mId))
+                    Process.sleep 800 |> Task.perform (always ClearItemDetailId)
             in
             withSub ( model, cmd )
 
-        ClearItemDetailId id ->
-            -- if user clicks quickly away (e.g. on another item), the
-            -- deferred command should be ignored
-            if mId == id then
-                noSub ( model, Page.set key (HomePage Nothing) )
-
-            else
-                noSub ( model, Cmd.none )
+        ClearItemDetailId ->
+            noSub ( { model | scrollToCard = Nothing }, Cmd.none )
 
 
 
@@ -277,7 +263,10 @@ scrollToCard mId model =
     in
     case mId of
         Just id ->
-            ( model, Task.attempt ScrollResult (scroll id), Sub.none )
+            ( { model | scrollToCard = mId }
+            , Task.attempt ScrollResult (scroll id)
+            , Sub.none
+            )
 
         Nothing ->
             ( model, Cmd.none, Sub.none )

@@ -11,7 +11,7 @@ import Data.UiSettings
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
-import Page
+import Page exposing (Page(..))
 import Ports
 import Url exposing (Url)
 
@@ -73,7 +73,16 @@ init flags url key =
 
 viewDoc : Model -> Document Msg
 viewDoc model =
-    { title = model.flags.config.appName ++ ": " ++ Page.pageName model.page
+    let
+        title =
+            case model.page of
+                ItemDetailPage _ ->
+                    model.itemDetailModel.detail.item.name
+
+                _ ->
+                    Page.pageName model.page
+    in
+    { title = model.flags.config.appName ++ ": " ++ title
     , body = [ view model ]
     }
 

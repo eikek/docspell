@@ -21,8 +21,8 @@ import Data.Items
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick)
 import Markdown
+import Page exposing (Page(..))
 import Util.ItemDragDrop as DD
 import Util.List
 import Util.String
@@ -37,7 +37,6 @@ type alias Model =
 type Msg
     = SetResults ItemLightList
     | AddResults ItemLightList
-    | SelectItem ItemLight
     | ItemDDMsg DD.Msg
 
 
@@ -63,19 +62,18 @@ prevItem model id =
 --- Update
 
 
-update : Flags -> Msg -> Model -> ( Model, Cmd Msg, Maybe ItemLight )
+update : Flags -> Msg -> Model -> ( Model, Cmd Msg )
 update flags msg model =
     let
         res =
             updateDrag DD.init flags msg model
     in
-    ( res.model, res.cmd, res.selected )
+    ( res.model, res.cmd )
 
 
 type alias UpdateResult =
     { model : Model
     , cmd : Cmd Msg
-    , selected : Maybe ItemLight
     , dragModel : DD.Model
     }
 
@@ -93,28 +91,25 @@ updateDrag dm _ msg model =
                 newModel =
                     { model | results = list }
             in
-            UpdateResult newModel Cmd.none Nothing dm
+            UpdateResult newModel Cmd.none dm
 
         AddResults list ->
             if list.groups == [] then
-                UpdateResult model Cmd.none Nothing dm
+                UpdateResult model Cmd.none dm
 
             else
                 let
                     newModel =
                         { model | results = Data.Items.concat model.results list }
                 in
-                UpdateResult newModel Cmd.none Nothing dm
-
-        SelectItem item ->
-            UpdateResult model Cmd.none (Just item) dm
+                UpdateResult newModel Cmd.none dm
 
         ItemDDMsg lm ->
             let
                 ddd =
                     DD.update lm dm
             in
-            UpdateResult model Cmd.none Nothing ddd.model
+            UpdateResult model Cmd.none ddd.model
 
 
 
@@ -181,8 +176,7 @@ viewItem current settings item =
             , ( "current", current == Just item.id )
             ]
          , id item.id
-         , href "#"
-         , onClick (SelectItem item)
+         , Page.href (ItemDetailPage item.id)
          ]
             ++ DD.draggable ItemDDMsg item.id
         )
