@@ -1623,7 +1623,7 @@
   "description" : "Metadata that has been suggested to an item.\n"
 };
             defs["ItemSearch"] = {
-  "required" : [ "inbox", "limit", "offset", "tagsExclude", "tagsInclude" ],
+  "required" : [ "inbox", "limit", "offset", "tagCategoriesExclude", "tagCategoriesInclude", "tagsExclude", "tagsInclude" ],
   "properties" : {
     "tagsInclude" : {
       "type" : "array",
@@ -2837,8 +2837,8 @@
                     <li data-group="Upload" data-name="secUploadItemIdPost" class="">
                       <a href="#api-Upload-secUploadItemIdPost">secUploadItemIdPost</a>
                     </li>
-                    <li data-group="Upload" data-name="secUploadPost" class="">
-                      <a href="#api-Upload-secUploadPost">secUploadPost</a>
+                    <li data-group="Upload" data-name="secUploadItemPost" class="">
+                      <a href="#api-Upload-secUploadItemPost">secUploadItemPost</a>
                     </li>
                   <li class="nav-header" data-group="UserTasks"><a href="#api-UserTasks">API Methods - UserTasks</a></li>
                     <li data-group="UserTasks" data-name="secUsertaskNotifydueitemsGet" class="">
@@ -2894,7 +2894,7 @@
         <div id="header">
           <div id="api-_">
             <h2 id="welcome-to-apidoc">API and SDK Documentation</h2>
-              <div class="app-desc">Version: 0.12.0</div>
+              <div class="app-desc">Version: 0.13.0</div>
             <hr>
             <div>This is the remote API to Docspell, a personal document organizer.</div>
           </div>
@@ -31676,10 +31676,10 @@ public class ItemApiExample {
         //authTokenHeader.setApiKeyPrefix("Token");
 
         ItemApi apiInstance = new ItemApi();
-        String id = id_example; // String | An identifier
+        String itemId = itemId_example; // String | An identifier for an item
         IdList body = ; // IdList | 
         try {
-            BasicResult result = apiInstance.secItemItemIdReprocessPost(id, body);
+            BasicResult result = apiInstance.secItemItemIdReprocessPost(itemId, body);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling ItemApi#secItemItemIdReprocessPost");
@@ -31696,10 +31696,10 @@ public class ItemApiExample {
 
     public static void main(String[] args) {
         ItemApi apiInstance = new ItemApi();
-        String id = id_example; // String | An identifier
+        String itemId = itemId_example; // String | An identifier for an item
         IdList body = ; // IdList | 
         try {
-            BasicResult result = apiInstance.secItemItemIdReprocessPost(id, body);
+            BasicResult result = apiInstance.secItemItemIdReprocessPost(itemId, body);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling ItemApi#secItemItemIdReprocessPost");
@@ -31718,13 +31718,13 @@ public class ItemApiExample {
 [apiConfig setApiKey:@"YOUR_API_KEY" forApiKeyIdentifier:@"X-Docspell-Auth"];
 // Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
 //[apiConfig setApiKeyPrefix:@"Bearer" forApiKeyIdentifier:@"X-Docspell-Auth"];
-String *id = id_example; // An identifier
+String *itemId = itemId_example; // An identifier for an item
 IdList *body = ; //  (optional)
 
 ItemApi *apiInstance = [[ItemApi alloc] init];
 
 // Start reprocessing the files of the item.
-[apiInstance secItemItemIdReprocessPostWith:id
+[apiInstance secItemItemIdReprocessPostWith:itemId
     body:body
               completionHandler: ^(BasicResult output, NSError* error) {
                             if (output) {
@@ -31748,7 +31748,7 @@ authTokenHeader.apiKey = "YOUR API KEY"
 //authTokenHeader.apiKeyPrefix['X-Docspell-Auth'] = "Token"
 
 var api = new Docspell.ItemApi()
-var id = id_example; // {{String}} An identifier
+var itemId = itemId_example; // {{String}} An identifier for an item
 var opts = { 
   'body':  // {{IdList}} 
 };
@@ -31759,7 +31759,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.secItemItemIdReprocessPost(id, opts, callback);
+api.secItemItemIdReprocessPost(itemId, opts, callback);
 </code></pre>
                             </div>
 
@@ -31786,13 +31786,13 @@ namespace Example
             // Configuration.Default.ApiKeyPrefix.Add("X-Docspell-Auth", "Bearer");
 
             var apiInstance = new ItemApi();
-            var id = id_example;  // String | An identifier
+            var itemId = itemId_example;  // String | An identifier for an item
             var body = new IdList(); // IdList |  (optional) 
 
             try
             {
                 // Start reprocessing the files of the item.
-                BasicResult result = apiInstance.secItemItemIdReprocessPost(id, body);
+                BasicResult result = apiInstance.secItemItemIdReprocessPost(itemId, body);
                 Debug.WriteLine(result);
             }
             catch (Exception e)
@@ -31815,11 +31815,11 @@ Swagger\Client\Configuration::getDefaultConfiguration()->setApiKey('X-Docspell-A
 // Swagger\Client\Configuration::getDefaultConfiguration()->setApiKeyPrefix('X-Docspell-Auth', 'Bearer');
 
 $api_instance = new Swagger\Client\ApiItemApi();
-$id = id_example; // String | An identifier
+$itemId = itemId_example; // String | An identifier for an item
 $body = ; // IdList | 
 
 try {
-    $result = $api_instance->secItemItemIdReprocessPost($id, $body);
+    $result = $api_instance->secItemItemIdReprocessPost($itemId, $body);
     print_r($result);
 } catch (Exception $e) {
     echo 'Exception when calling ItemApi->secItemItemIdReprocessPost: ', $e->getMessage(), PHP_EOL;
@@ -31838,11 +31838,11 @@ $WWW::SwaggerClient::Configuration::api_key->{'X-Docspell-Auth'} = 'YOUR_API_KEY
 #$WWW::SwaggerClient::Configuration::api_key_prefix->{'X-Docspell-Auth'} = "Bearer";
 
 my $api_instance = WWW::SwaggerClient::ItemApi->new();
-my $id = id_example; # String | An identifier
+my $itemId = itemId_example; # String | An identifier for an item
 my $body = WWW::SwaggerClient::Object::IdList->new(); # IdList | 
 
 eval { 
-    my $result = $api_instance->secItemItemIdReprocessPost(id => $id, body => $body);
+    my $result = $api_instance->secItemItemIdReprocessPost(itemId => $itemId, body => $body);
     print Dumper($result);
 };
 if ($@) {
@@ -31864,12 +31864,12 @@ swagger_client.configuration.api_key['X-Docspell-Auth'] = 'YOUR_API_KEY'
 
 # create an instance of the API class
 api_instance = swagger_client.ItemApi()
-id = id_example # String | An identifier
+itemId = itemId_example # String | An identifier for an item
 body =  # IdList |  (optional)
 
 try: 
     # Start reprocessing the files of the item.
-    api_response = api_instance.sec_item_item_id_reprocess_post(id, body=body)
+    api_response = api_instance.sec_item_item_id_reprocess_post(itemId, body=body)
     pprint(api_response)
 except ApiException as e:
     print("Exception when calling ItemApi->secItemItemIdReprocessPost: %s\n" % e)</code></pre>
@@ -31884,11 +31884,11 @@ except ApiException as e:
                                   <th width="150px">Name</th>
                                   <th>Description</th>
                                 </tr>
-                                  <tr><td style="width:150px;">id*</td>
+                                  <tr><td style="width:150px;">itemId*</td>
                                   <td>
                                   
                                   
-                                      <div id="d2e199_secItemItemIdReprocessPost_id">
+                                      <div id="d2e199_secItemItemIdReprocessPost_itemId">
                                           <div class="json-schema-view">
                                               <div class="primitive">
                                                   <span class="type">
@@ -31896,7 +31896,7 @@ except ApiException as e:
                                                   </span>
                                   
                                                       <div class="inner description">
-                                                          An identifier
+                                                          An identifier for an item
                                                       </div>
                                               </div>
                                                   <div class="inner required">
@@ -42834,10 +42834,10 @@ except ApiException as e:
                         </article>
                       </div>
                       <hr>
-                    <div id="api-Upload-secUploadPost">
-                      <article id="api-Upload-secUploadPost-0" data-group="User" data-name="secUploadPost" data-version="0">
+                    <div id="api-Upload-secUploadItemPost">
+                      <article id="api-Upload-secUploadItemPost-0" data-group="User" data-name="secUploadItemPost" data-version="0">
                         <div class="pull-left">
-                          <h1>secUploadPost</h1>
+                          <h1>secUploadItemPost</h1>
                           <p>Upload files to docspell.</p>
                         </div>
                         <div class="pull-right"></div>
@@ -42852,7 +42852,7 @@ Everything else is the same as with the
 The request must be a &quot;multipart/form-data&quot; request, where the
 first part is optional and may contain upload metadata as
 JSON. Other parts specify the files. Multiple files can be
-specified, but at least on is required.
+specified, but at least one is required.
 
 The upload meta data can be used to tell, whether multiple
 files are one item, or if each file should become a single
@@ -42860,33 +42860,33 @@ item. By default, each file will be a one item.
 </p>
                         <p></p>
                         <br />
-                        <pre class="prettyprint language-html prettyprinted" data-type="post"><code><span class="pln">/sec/upload</span></code></pre>
+                        <pre class="prettyprint language-html prettyprinted" data-type="post"><code><span class="pln">/sec/upload/item</span></code></pre>
                         <p>
                           <h3>Usage and SDK Samples</h3>
                         </p>
                         <ul class="nav nav-tabs nav-tabs-examples">
-                          <li class="active"><a href="#examples-Upload-secUploadPost-0-curl">Curl</a></li>
-                          <li class=""><a href="#examples-Upload-secUploadPost-0-java">Java</a></li>
-                          <li class=""><a href="#examples-Upload-secUploadPost-0-android">Android</a></li>
-                          <!--<li class=""><a href="#examples-Upload-secUploadPost-0-groovy">Groovy</a></li>-->
-                          <li class=""><a href="#examples-Upload-secUploadPost-0-objc">Obj-C</a></li>
-                          <li class=""><a href="#examples-Upload-secUploadPost-0-javascript">JavaScript</a></li>
-                          <!--<li class=""><a href="#examples-Upload-secUploadPost-0-angular">Angular</a></li>-->
-                          <li class=""><a href="#examples-Upload-secUploadPost-0-csharp">C#</a></li>
-                          <li class=""><a href="#examples-Upload-secUploadPost-0-php">PHP</a></li>
-                          <li class=""><a href="#examples-Upload-secUploadPost-0-perl">Perl</a></li>
-                          <li class=""><a href="#examples-Upload-secUploadPost-0-python">Python</a></li>
+                          <li class="active"><a href="#examples-Upload-secUploadItemPost-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-Upload-secUploadItemPost-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Upload-secUploadItemPost-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-Upload-secUploadItemPost-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-Upload-secUploadItemPost-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-Upload-secUploadItemPost-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-Upload-secUploadItemPost-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-Upload-secUploadItemPost-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-Upload-secUploadItemPost-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-Upload-secUploadItemPost-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-Upload-secUploadItemPost-0-python">Python</a></li>
                         </ul>
 
                         <div class="tab-content">
-                          <div class="tab-pane active" id="examples-Upload-secUploadPost-0-curl">
+                          <div class="tab-pane active" id="examples-Upload-secUploadItemPost-0-curl">
                            <pre class="prettyprint"><code class="language-bsh">curl -X POST\
 -H "X-Docspell-Auth: [[apiKey]]"\
 -H "Accept: application/json"\
 -H "Content-Type: multipart/form-data"\
-"/api/v1/sec/upload"</code></pre>
+"/api/v1/sec/upload/item"</code></pre>
                           </div>
-                          <div class="tab-pane" id="examples-Upload-secUploadPost-0-java">
+                          <div class="tab-pane" id="examples-Upload-secUploadItemPost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
 import io.swagger.client.auth.*;
 import io.swagger.client.model.*;
@@ -42910,17 +42910,17 @@ public class UploadApiExample {
         ItemUploadMeta meta = ; // ItemUploadMeta | 
         array[byte[]] file = ; // array[byte[]] | 
         try {
-            BasicResult result = apiInstance.secUploadPost(meta, file);
+            BasicResult result = apiInstance.secUploadItemPost(meta, file);
             System.out.println(result);
         } catch (ApiException e) {
-            System.err.println("Exception when calling UploadApi#secUploadPost");
+            System.err.println("Exception when calling UploadApi#secUploadItemPost");
             e.printStackTrace();
         }
     }
 }</code></pre>
                           </div>
 
-                          <div class="tab-pane" id="examples-Upload-secUploadPost-0-android">
+                          <div class="tab-pane" id="examples-Upload-secUploadItemPost-0-android">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.UploadApi;
 
 public class UploadApiExample {
@@ -42930,20 +42930,20 @@ public class UploadApiExample {
         ItemUploadMeta meta = ; // ItemUploadMeta | 
         array[byte[]] file = ; // array[byte[]] | 
         try {
-            BasicResult result = apiInstance.secUploadPost(meta, file);
+            BasicResult result = apiInstance.secUploadItemPost(meta, file);
             System.out.println(result);
         } catch (ApiException e) {
-            System.err.println("Exception when calling UploadApi#secUploadPost");
+            System.err.println("Exception when calling UploadApi#secUploadItemPost");
             e.printStackTrace();
         }
     }
 }</code></pre>
                           </div>
   <!--
-  <div class="tab-pane" id="examples-Upload-secUploadPost-0-groovy">
+  <div class="tab-pane" id="examples-Upload-secUploadItemPost-0-groovy">
   <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
   </div> -->
-                            <div class="tab-pane" id="examples-Upload-secUploadPost-0-objc">
+                            <div class="tab-pane" id="examples-Upload-secUploadItemPost-0-objc">
                               <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
 // Configure API key authorization: (authentication scheme: authTokenHeader)
 [apiConfig setApiKey:@"YOUR_API_KEY" forApiKeyIdentifier:@"X-Docspell-Auth"];
@@ -42955,7 +42955,7 @@ array[byte[]] *file = ; //  (optional)
 UploadApi *apiInstance = [[UploadApi alloc] init];
 
 // Upload files to docspell.
-[apiInstance secUploadPostWith:meta
+[apiInstance secUploadItemPostWith:meta
     file:file
               completionHandler: ^(BasicResult output, NSError* error) {
                             if (output) {
@@ -42968,7 +42968,7 @@ UploadApi *apiInstance = [[UploadApi alloc] init];
 </code></pre>
                             </div>
 
-                            <div class="tab-pane" id="examples-Upload-secUploadPost-0-javascript">
+                            <div class="tab-pane" id="examples-Upload-secUploadItemPost-0-javascript">
                               <pre class="prettyprint"><code class="language-js">var Docspell = require('docspell');
 var defaultClient = Docspell.ApiClient.instance;
 
@@ -42990,14 +42990,14 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.secUploadPost(opts, callback);
+api.secUploadItemPost(opts, callback);
 </code></pre>
                             </div>
 
-                            <!--<div class="tab-pane" id="examples-Upload-secUploadPost-0-angular">
+                            <!--<div class="tab-pane" id="examples-Upload-secUploadItemPost-0-angular">
               <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
             </div>-->
-                            <div class="tab-pane" id="examples-Upload-secUploadPost-0-csharp">
+                            <div class="tab-pane" id="examples-Upload-secUploadItemPost-0-csharp">
                               <pre class="prettyprint"><code class="language-cs">using System;
 using System.Diagnostics;
 using IO.Swagger.Api;
@@ -43006,7 +43006,7 @@ using IO.Swagger.Model;
 
 namespace Example
 {
-    public class secUploadPostExample
+    public class secUploadItemPostExample
     {
         public void main()
         {
@@ -43023,12 +43023,12 @@ namespace Example
             try
             {
                 // Upload files to docspell.
-                BasicResult result = apiInstance.secUploadPost(meta, file);
+                BasicResult result = apiInstance.secUploadItemPost(meta, file);
                 Debug.WriteLine(result);
             }
             catch (Exception e)
             {
-                Debug.Print("Exception when calling UploadApi.secUploadPost: " + e.Message );
+                Debug.Print("Exception when calling UploadApi.secUploadItemPost: " + e.Message );
             }
         }
     }
@@ -43036,7 +43036,7 @@ namespace Example
 </code></pre>
                             </div>
 
-                            <div class="tab-pane" id="examples-Upload-secUploadPost-0-php">
+                            <div class="tab-pane" id="examples-Upload-secUploadItemPost-0-php">
                               <pre class="prettyprint"><code class="language-php"><&#63;php
 require_once(__DIR__ . '/vendor/autoload.php');
 
@@ -43050,15 +43050,15 @@ $meta = ; // ItemUploadMeta |
 $file = ; // array[byte[]] | 
 
 try {
-    $result = $api_instance->secUploadPost($meta, $file);
+    $result = $api_instance->secUploadItemPost($meta, $file);
     print_r($result);
 } catch (Exception $e) {
-    echo 'Exception when calling UploadApi->secUploadPost: ', $e->getMessage(), PHP_EOL;
+    echo 'Exception when calling UploadApi->secUploadItemPost: ', $e->getMessage(), PHP_EOL;
 }
 ?></code></pre>
                             </div>
 
-                            <div class="tab-pane" id="examples-Upload-secUploadPost-0-perl">
+                            <div class="tab-pane" id="examples-Upload-secUploadItemPost-0-perl">
                               <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
 use WWW::SwaggerClient::Configuration;
 use WWW::SwaggerClient::UploadApi;
@@ -43073,15 +43073,15 @@ my $meta = ; # ItemUploadMeta |
 my $file = []; # array[byte[]] | 
 
 eval { 
-    my $result = $api_instance->secUploadPost(meta => $meta, file => $file);
+    my $result = $api_instance->secUploadItemPost(meta => $meta, file => $file);
     print Dumper($result);
 };
 if ($@) {
-    warn "Exception when calling UploadApi->secUploadPost: $@\n";
+    warn "Exception when calling UploadApi->secUploadItemPost: $@\n";
 }</code></pre>
                             </div>
 
-                            <div class="tab-pane" id="examples-Upload-secUploadPost-0-python">
+                            <div class="tab-pane" id="examples-Upload-secUploadItemPost-0-python">
                               <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
 import time
 import swagger_client
@@ -43100,10 +43100,10 @@ file =  # array[byte[]] |  (optional)
 
 try: 
     # Upload files to docspell.
-    api_response = api_instance.sec_upload_post(meta=meta, file=file)
+    api_response = api_instance.sec_upload_item_post(meta=meta, file=file)
     pprint(api_response)
 except ApiException as e:
-    print("Exception when calling UploadApi->secUploadPost: %s\n" % e)</code></pre>
+    print("Exception when calling UploadApi->secUploadItemPost: %s\n" % e)</code></pre>
                             </div>
                           </div>
 
@@ -43122,7 +43122,7 @@ except ApiException as e:
                                   <td>
                                   
                                   
-                                      <div id="d2e199_secUploadPost_meta">
+                                      <div id="d2e199_secUploadItemPost_meta">
                                           <div class="json-schema-view">
                                               <div class="primitive">
                                                   <span class="type">
@@ -43138,7 +43138,7 @@ except ApiException as e:
                                   <td>
                                   
                                   
-                                      <div id="d2e199_secUploadPost_file">
+                                      <div id="d2e199_secUploadItemPost_file">
                                           <div class="json-schema-view">
                                               <div class="primitive">
                                                   <span class="type">
@@ -43161,14 +43161,14 @@ except ApiException as e:
 
                             <ul class="nav nav-tabs nav-tabs-examples" >
                                 <li class="active">
-                                  <a data-toggle="tab" href="#responses-secUploadPost-200-schema">Schema</a>
+                                  <a data-toggle="tab" href="#responses-secUploadItemPost-200-schema">Schema</a>
                                 </li>
 
                             </ul>
 
                             <div class="tab-content" style='margin-bottom: 10px;'>
-                                <div class="tab-pane active" id="responses-secUploadPost-200-schema">
-                                  <div id='responses-secUploadPost-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                <div class="tab-pane active" id="responses-secUploadItemPost-200-schema">
+                                  <div id='responses-secUploadItemPost-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
                                     <script>
                                       $(document).ready(function() {
                                         var schemaWrapper = {
@@ -43194,14 +43194,14 @@ except ApiException as e:
 
                                         //console.log(JSON.stringify(schema));
                                         var view = new JSONSchemaView(schema, 3);
-                                        $('#responses-secUploadPost-200-schema-data').val(stringify(schema));
-                                        var result = $('#responses-secUploadPost-200-schema-200');
+                                        $('#responses-secUploadItemPost-200-schema-data').val(stringify(schema));
+                                        var result = $('#responses-secUploadItemPost-200-schema-200');
                                         result.empty();
                                         result.append(view.render());
                                       });
                                     </script>
                                   </div>
-                                  <input id='responses-secUploadPost-200-schema-data' type='hidden' value=''></input>
+                                  <input id='responses-secUploadItemPost-200-schema-data' type='hidden' value=''></input>
                                 </div>
                             </div>
 
