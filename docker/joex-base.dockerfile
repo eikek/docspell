@@ -1,11 +1,14 @@
-FROM alpine:latest
+## JOEX-BASE
+ARG VERSION=
+ARG REPO=
 
-ENV UNO_URL https://raw.githubusercontent.com/unoconv/unoconv/0.9.0/unoconv
 
-LABEL maintainer="eikek0 <eike@docspell.org>"
+FROM ${REPO}:base-${VERSION}
+
+ARG UNO_URL=https://raw.githubusercontent.com/unoconv/unoconv/0.9.0/unoconv
+ENV JAVA_OPTS="-Xmx1536M"
 
 RUN apk add --no-cache openjdk11-jre \
-    unzip \
     bash \
     curl \
     ghostscript \
@@ -35,7 +38,5 @@ RUN apk add --no-cache openjdk11-jre \
   && pip3 install ocrmypdf \
   && curl -Ls $UNO_URL -o /usr/local/bin/unoconv \
   && chmod +x /usr/local/bin/unoconv \
-  && apk del curl unzip libxml2-dev libxslt-dev zlib-dev g++ python3-dev py3-pip libffi-dev qpdf-dev openssl-dev
-
-# Required for unoconv
-RUN ln -s /usr/bin/python3 /usr/bin/python
+  && apk del curl libxml2-dev libxslt-dev zlib-dev g++ python3-dev py3-pip libffi-dev qpdf-dev openssl-dev \
+  && ln -s /usr/bin/python3 /usr/bin/python

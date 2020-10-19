@@ -1,59 +1,69 @@
 version: '3.7'
 services:
+
   restserver:
-    image: eikek0/docspell:restserver-latest
+    image: eikek0/docspell:restserver-LATEST
     container_name: docspell-restserver
-    command: ${DOCSPELL_RESTSERVER_JVM_ARGS} -- /opt/docspell.conf
+    restart: unless-stopped
     ports:
       - "7880:7880"
     volumes:
-      - ${PWD}/docspell.conf:/opt/docspell.conf
-    environment:
-      - DOCSPELL_HEADER_VALUE=${DOCSPELL_HEADER_VALUE:-none}
+      - ./docspell.conf:/opt/docspell.conf
+    env_file: ./.env
     depends_on:
-      - db
       - solr
+
   joex:
-    image: eikek0/docspell:joex-latest
+    image: eikek0/docspell:joex-LATEST
     container_name: docspell-joex
-    command: ${DOCSPELL_JOEX_JVM_ARGS:--J-Xmx1536M} -- /opt/docspell.conf
+    restart: unless-stopped
+    env_file: ./.env
     ports:
       - "7878:7878"
     volumes:
-      - ${PWD}/docspell.conf:/opt/docspell.conf
+      - ./docspell.conf:/opt/docspell.conf
     depends_on:
-      - db
       - solr
+
+
   consumedir:
-    image: eikek0/docspell:consumedir-latest
+    image: eikek0/docspell:consumedir-LATEST
     container_name: docspell-consumedir
-    command: --path /opt/docs -i --iheader "Docspell-Integration:${DOCSPELL_HEADER_VALUE}" -m http://restserver:7880/api/v1/open/integration/item
-    environment:
-      - DOCSPELL_HEADER_VALUE=${DOCSPELL_HEADER_VALUE:-none}
+    restart: unless-stopped
+    env_file: ./.env
     volumes:
-      - ${PWD}/docs:/opt/docs
+      - ./docs:/opt/docs
     depends_on:
       - restserver
+
   db:
     image: postgres:11.7
     container_name: postgres_db
+    restart: unless-stopped
     volumes:
-      - postgres_data:/var/lib/postgresql/data/
+      - docspell-postgres_data:/var/lib/postgresql/data/
     environment:
-      - POSTGRES_USER=dbuser
-      - POSTGRES_PASSWORD=dbpass
-      - POSTGRES_DB=dbname
+      - POSTGRES_USER=$DB_USER
+      - POSTGRES_PASSWORD=$DB_PASS
+      - POSTGRES_DB=$DB_NAME
+
   solr:
     image: solr:8
     container_name: docspell-solr
-    ports:
-      - "8983:8983"
+    restart: unless-stopped
     volumes:
-      - solr_data:/var/solr
+      - docspell-solr_data:/var/solr
     command:
       - solr-precreate
       - docspell
+    healthcheck:
+      test: ["CMD", "curl", "f", "http://localhost:8983/solr/docspell/admin/ping"]
+      interval: 1m
+      timeout: 10s
+      retries: 2
+      start_period: 30s
+
 
 volumes:
-  postgres_data:
-  solr_data:
+  docspell-postgres_data:
+  docspell-solr_data:

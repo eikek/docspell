@@ -1,15 +1,19 @@
-FROM alpine:latest
+## CONSUMEDIR
 
-LABEL maintainer="eikek0 <eike@docspell.org>"
+ARG VERSION=
+ARG REPO=
 
-RUN apk add --no-cache unzip curl bash inotify-tools
+# hack to use args in from
+FROM ${REPO}:base-binaries-${VERSION} as docspell-base-binaries
 
-RUN mkdir -p /opt \
-  && cd /opt \
-  && curl -L -o docspell.zip https://github.com/eikek/docspell/releases/download/v0.12.0/docspell-tools-0.12.0.zip \
-  && unzip docspell.zip \
-  && rm docspell.zip \
-  && apk del unzip \
-  && chmod 755 /opt/docspell-tools-0.12.0/*.sh
 
-ENTRYPOINT ["/opt/docspell-tools-0.12.0/consumedir.sh"]
+FROM ${REPO}:base-${VERSION}
+
+RUN apk add --no-cache curl bash inotify-tools
+
+COPY --from=docspell-base-binaries /opt/docspell-tools /opt/docspell-tools
+
+ENTRYPOINT /opt/docspell-tools/consumedir.sh --path /opt/docs -i --iheader Docspell-Integration:$DOCSPELL_HEADER_VALUE -m http://docspell-restserver:7880/api/v1/open/integration/item -v
+
+HEALTHCHECK --interval=1m --timeout=10s --retries=2 --start-period=10s \
+  CMD pgrep inotifywait

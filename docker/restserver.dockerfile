@@ -1,16 +1,21 @@
-FROM alpine:latest
+## RESTSERVER
 
-LABEL maintainer="eikek0 <eike@docspell.org>"
+ARG VERSION=
+ARG REPO=
 
-RUN apk add --no-cache openjdk11-jre unzip curl bash
+# hack to use args in from
+FROM ${REPO}:base-binaries-${VERSION} as docspell-base-binaries
 
-RUN mkdir -p /opt \
-  && cd /opt \
-  && curl -L -o docspell.zip https://github.com/eikek/docspell/releases/download/v0.12.0/docspell-restserver-0.12.0.zip \
-  && unzip docspell.zip \
-  && rm docspell.zip \
-  && apk del unzip curl
 
+FROM ${REPO}:base-${VERSION}
+
+RUN apk add --no-cache --virtual .restserver-dependencies openjdk11-jre bash
+COPY --from=docspell-base-binaries /opt/docspell-restserver /opt/docspell-restserver
+COPY restserver-entrypoint.sh /opt/restserver-entrypoint.sh
+
+ENTRYPOINT ["/opt/restserver-entrypoint.sh"]
+CMD ["/opt/docspell.conf"]
 EXPOSE 7880
 
-ENTRYPOINT ["/opt/docspell-restserver-0.12.0/bin/docspell-restserver"]
+HEALTHCHECK --interval=1m --timeout=10s --retries=2 --start-period=30s \
+  CMD wget --spider http://localhost:7880

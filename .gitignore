@@ -14,3 +14,5 @@ _site/
 /website/site/templates/shortcodes/server.conf
 /website/site/templates/shortcodes/sample-exim.conf
 /website/site/templates/shortcodes/joex.conf
+/docker/docs
+/docker/dev-log
