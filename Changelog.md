@@ -1,8 +1,39 @@
 # Changelog
 
+## v0.13.0
+
+*Oct 19, 2020*
+
+This release contains bugfixes.
+
+- Improvements to the docker setup: application can be build from any
+  version. Thanks to @totti4ever.
+- The date extraction tried to create invalid dates (#298)
+- Fixed order of job log entries that was undefined if entries were
+  written very fast
+- Fix `content` column for MariaDB (#297)
+- Fixe regarding retrying processing of files: attached files were not
+  correctly found and the duplicate check must not run
+- When "home-page" is rendered, do an initial search. This updates the
+  view correctly if something changed when coming from item details.
+- Reset upload page on init (#294)
+- Fixes regarding `base-url` setting and auth cookie (#308)
+- Fixes in openapi spec (#338, #343)
+- Fixed error messages for modal dialogs (tag/organization/person) (#341)
+
+### REST Api Changes
+
+- No changes, besides some fixes to urls in the spec to be constistent
+  to the app.
+
+### Configuration Changes
+
+- No changes.
+
+
 ## v0.12.0
 
-*28.09.2020*
+*Sep 28, 2020*
 
 Thanks to a lot of great input from users, this release fixes
 annoyances in the ui.
