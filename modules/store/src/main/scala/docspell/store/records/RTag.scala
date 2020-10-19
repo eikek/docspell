@@ -69,7 +69,7 @@ object RTag {
     val sql = selectCount(
       tid,
       table,
-      and(cid.is(tag.collective), name.is(tag.name), category.is(tag.category))
+      and(cid.is(tag.collective), name.is(tag.name))
     )
     sql.query[Int].unique.map(_ > 0)
   }
