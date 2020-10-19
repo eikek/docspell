@@ -212,7 +212,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/CheckFileResult"
-  /sec/upload:
+  /sec/upload/item:
     post:
       tags: [ Upload ]
       summary: Upload files to docspell.
@@ -226,7 +226,7 @@ paths:
         The request must be a "multipart/form-data" request, where the
         first part is optional and may contain upload metadata as
         JSON. Other parts specify the files. Multiple files can be
-        specified, but at least on is required.
+        specified, but at least one is required.
 
         The upload meta data can be used to tell, whether multiple
         files are one item, or if each file should become a single
