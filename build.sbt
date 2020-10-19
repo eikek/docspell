@@ -96,14 +96,13 @@ val webjarSettings = Seq(
 def debianSettings(cfgFile: String) =
   Seq(
     maintainer := "Eike Kettner <eike.kettner@posteo.de>",
-    packageSummary := description.value,
-    packageDescription := description.value,
     mappings in Universal += {
       val conf = (Compile / resourceDirectory).value / "reference.conf"
       if (!conf.exists)
         sys.error(s"File $conf not found")
       conf -> s"conf/$cfgFile.conf"
     },
+    daemonUser := "docspell",
     bashScriptExtraDefines += s"""addJava "-Dconfig.file=$${app_home}/../conf/$cfgFile.conf""""
   )
 
@@ -418,6 +417,9 @@ val joex = project
   .settings(buildInfoSettings)
   .settings(
     name := "docspell-joex",
+    description := "The joex component (job executor) for docspell which executes long-running tasks.",
+    packageSummary := "Docspell Joex",
+    packageDescription := description.value,
     libraryDependencies ++=
       Dependencies.fs2 ++
         Dependencies.http4sServer ++
@@ -450,6 +452,9 @@ val restserver = project
   .settings(buildInfoSettings)
   .settings(
     name := "docspell-restserver",
+    description := "Docspell server providing the user interface and a REST Api.",
+    packageSummary := "Docspell Rest server",
+    packageDescription := description.value,
     libraryDependencies ++=
       Dependencies.http4sServer ++
         Dependencies.http4sCirce ++
