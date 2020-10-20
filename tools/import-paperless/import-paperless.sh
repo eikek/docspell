@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # allows to start small - but affects also tags and correspondents, so they might be missing when linking them!
 # LIMIT=LIMIT 150
