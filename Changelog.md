@@ -8,6 +8,15 @@ This release contains bugfixes.
 
 - Improvements to the docker setup: application can be build from any
   version. Thanks to @totti4ever.
+  - This change required breaking changes in the `docker-compose.yml`
+    file. Please update your `docker-compose.yml` to the new version.
+  - The image tags changed:
+    - the `-latest` is now upper case, `-LATEST`
+    - tagged releases include the version prefixed with a `v`, like in
+      `-v0.13.0`
+    - there are new `-SNAPSHOT` images that are build from the current
+      master branch. *Please note that snapshot versions may not be
+      compatible with each other!*
 - The date extraction tried to create invalid dates (#298)
 - Fixed order of job log entries that was undefined if entries were
   written very fast
