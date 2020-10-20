@@ -232,7 +232,7 @@ object FindProposal {
 
   // The backslash *must* be stripped from search strings.
   private[this] val invalidSearch =
-    "…_[]^<>=&ſ/{}*?@#$|~`+%\"';\\".toSet
+    "…[]^<>=ſ{}|`\"';\\".toSet
 
   private def normalizeSearchValue(str: String): String =
     str.toLowerCase.filter(c => !invalidSearch.contains(c))
