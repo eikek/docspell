@@ -1,5 +1,7 @@
 #!/bin/bash
-LIMIT=150
+
+# allows to start small - but affects also tags and correspondents, so they might be missing when linking them!
+# LIMIT=LIMIT 150
 
 echo "##################### START #####################"
 
@@ -100,7 +102,7 @@ for mode in "${modes[@]}"; do
   OLDIFS=$IFS
   IFS=$'\n'
 
-  tmp_resultset=(`sqlite3 -header $db_path "select ${columns[$mode]} from $mode order by 1 LIMIT $LIMIT;"`)
+  tmp_resultset=(`sqlite3 -header $db_path "select ${columns[$mode]} from $mode order by 1 $LIMIT;"`)
 
   tmp_headers=($(echo "${tmp_resultset[0]}" | tr '|' '\n'))
   len_resultset=${#tmp_resultset[@]}
