@@ -105,7 +105,22 @@
 <p>This release contains bugfixes.</p>
 <ul>
 <li>Improvements to the docker setup: application can be build from any
-version. Thanks to @totti4ever.</li>
+version. Thanks to @totti4ever.
+<ul>
+<li>This change required breaking changes in the <code>docker-compose.yml</code>
+file. Please update your <code>docker-compose.yml</code> to the new version.</li>
+<li>The image tags changed:
+<ul>
+<li>the <code>-latest</code> is now upper case, <code>-LATEST</code></li>
+<li>tagged releases include the version prefixed with a <code>v</code>, like in
+<code>-v0.13.0</code></li>
+<li>there are new <code>-SNAPSHOT</code> images that are build from the current
+master branch. <em>Please note that snapshot versions may not be
+compatible with each other!</em></li>
+</ul>
+</li>
+</ul>
+</li>
 <li>The date extraction tried to create invalid dates (#298)</li>
 <li>Fixed order of job log entries that was undefined if entries were
 written very fast</li>
