@@ -5,7 +5,7 @@
 
 echo "##################### START #####################"
 
-echo "  Docspell - Import from Paperless v '0.1 beta'"
+echo "  Docspell - Import from Paperless v '0.2 beta'"
 echo "         by totti4ever" && echo
 echo "  $(date)"
 echo
@@ -43,7 +43,7 @@ modes=("documents_correspondent" "documents_document" "documents_tag" "documents
 # the columns per table we need
 declare -A columns
 #documents_document: id, title, content, created, modified, added, correspondent_id, file_type, checksum,  storage_type, filename
-columns[documents_document]="id, title, created, added, correspondent_id, file_type, filename"
+columns[documents_document]="id, title, datetime(created,'localtime') as created, added, correspondent_id, file_type, filename"
 #documents_correspondent: id, name, match, matching_algorithm, is_insensitive, slug
 columns[documents_correspondent]="id, name"
 #documents_tag: id, name, colour, match, matching_algorithm, is_insensitive, slug
@@ -185,7 +185,7 @@ for mode in "${modes[@]}"; do
 
       # link orga to document
       printf "%${#len_resultset}s" " "; printf "           "
-      printf "Linking Organization \"${corr2name[${tmp_result_arr[correspondent_id]}]}\" .."
+      printf "Waiting for document to link organization \"${corr2name[${tmp_result_arr[correspondent_id]}]}\" .."
       count=0
       countMax=10
       while [ $count -le $countMax ]; do
@@ -222,12 +222,44 @@ for mode in "${modes[@]}"; do
                   echo "FATAL  Failed to link orga \"${tmp_result_arr[orga_id]}\" (doc_id: ${pl2ds_id[${tmp_result_arr[id]}]})"
                   exit 5
                 fi
+
+                # Set name of document
+                printf "%${#len_resultset}s" " "; printf "           "
+
+                curl_call "curl -s -X PUT '$ds_url/api/v1/sec/item/${pl2ds_id[${tmp_result_arr[id]}]}/name' -H 'Content-Type: application/json' -d '{\"text\":\"${tmp_result_arr[title]}\"}'"
+
+                curl_status=$(echo $curl_result | jq -r ".success")
+                if [ "$curl_status" == "true" ]; then
+                  echo "Set name of item: \"${tmp_result_arr[title]}\""
+
+                else
+                  echo "FATAL  Failed to set item's name \"${tmp_result_arr[title]}\" (doc_id: ${pl2ds_id[${tmp_result_arr[id]}]})"
+                  exit 5
+                fi
+
+
+                # Set created date of document
+                printf "%${#len_resultset}s" " "; printf "           "
+
+                tmp_date=${tmp_result_arr[created]:0:10}
+                curl_call "curl -s -X PUT '$ds_url/api/v1/sec/item/${pl2ds_id[${tmp_result_arr[id]}]}/date' -H 'Content-Type: application/json' -d '{\"date\":$( echo "$(date -d "$tmp_date" +%s) * 1000" | bc )}'"
+
+                curl_status=$(echo $curl_result | jq -r ".success")
+                if [ "$curl_status" == "true" ]; then
+                  echo "Set creation date of item: \"$tmp_date\""
+
+                else
+                  echo "FATAL  Failed to set item's creation date \"$tmp_date\" (doc_id: ${pl2ds_id[${tmp_result_arr[id]}]})"
+                  exit 5
+                fi
+
                 break
 
               elif [ $count2 -ge $count2Max ]; then
                 echo "FATAL  Upload failed (or processing too slow)"
                 exit 6
 
+              # FIXME I think, the loop is not needed here - organizations seem to be there immediately
               else
                 printf "."
               fi
