@@ -53,12 +53,20 @@ update flags settings msg model =
     case msg of
         UiSettingsFormMsg lm ->
             let
+                inSettings =
+                    Maybe.withDefault settings model.settings
+
                 ( m_, sett ) =
-                    Comp.UiSettingsForm.update settings lm model.formModel
+                    Comp.UiSettingsForm.update inSettings lm model.formModel
             in
             ( { model
                 | formModel = m_
-                , settings = sett
+                , settings =
+                    if sett == Nothing then
+                        model.settings
+
+                    else
+                        sett
                 , message =
                     if sett /= Nothing then
                         Nothing
