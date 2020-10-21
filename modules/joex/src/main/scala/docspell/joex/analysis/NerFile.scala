@@ -75,25 +75,26 @@ object NerFile {
   }
 
   object Pattern {
-    def apply(weight: Int)(str: String): Vector[Pattern] = {
+    def apply(weight: Int)(str: String): List[Pattern] = {
       val delims = " \t\n\r".toSet
-      val words =
+      val splitted =
         TextSplitter
           .split(str, delims)
           .map(_.toLower.value.trim)
           .filter(_.nonEmpty)
-          .toVector
-          .map(w => s"(?i)${w}")
-      val tokens =
-        TextSplitter
-          .splitToken(str, delims)
-          .map(_.toLower.value.trim)
-          .filter(_.nonEmpty)
-          .toVector
-          .take(3)
-          .map(w => s"(?i)${w}")
+          .toList
 
-      tokens.map(t => Pattern(t, weight)).prepended(Pattern(words.mkString(" "), weight))
+      Pattern("(?i)" + sanitizeRegex(str), weight) :: splitted
+        .take(3)
+        .map(t => Pattern(s"(?i)${sanitizeRegex(t)}", weight))
     }
+
+    private val invalidChars = """<([{\^-=$!|]})?*+.>""".toSet
+
+    private def sanitizeRegex(str: String): String =
+      str.trim.toLowerCase.foldLeft("") { (res, ch) =>
+        if (invalidChars.contains(ch)) s"${res}\\$ch"
+        else s"$res$ch"
+      }
   }
 }
