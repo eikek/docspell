@@ -5,7 +5,7 @@
 
 echo "##################### START #####################"
 
-echo "  Docspell - Import from Paperless v '0.1 beta'"
+echo "  Docspell - Import from Paperless v '0.2 beta'"
 echo "         by totti4ever" && echo
 echo "  $(date)"
 echo
@@ -259,7 +259,7 @@ for mode in "${modes[@]}"; do
                 echo "FATAL  Upload failed (or processing too slow)"
                 exit 6
 
-              # FIXME I think, the loop is not needed here - organizations seem to be there immediately  
+              # FIXME I think, the loop is not needed here - organizations seem to be there immediately
               else
                 printf "."
               fi
