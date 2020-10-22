@@ -89,7 +89,7 @@ type Msg
     | SearchMenuMsg Comp.SearchMenu.Msg
     | ResetSearch
     | ItemCardListMsg Comp.ItemCardList.Msg
-    | ItemSearchResp (Result Http.Error ItemLightList)
+    | ItemSearchResp Bool (Result Http.Error ItemLightList)
     | ItemSearchAddResp (Result Http.Error ItemLightList)
     | DoSearch
     | ToggleSearchMenu
@@ -136,21 +136,21 @@ itemNav id model =
     }
 
 
-doSearchCmd : Flags -> UiSettings -> Int -> Model -> Cmd Msg
-doSearchCmd flags settings offset model =
+doSearchCmd : Flags -> UiSettings -> Int -> Bool -> Model -> Cmd Msg
+doSearchCmd flags settings offset scroll model =
     case model.searchType of
         BasicSearch ->
-            doSearchDefaultCmd flags settings offset model
+            doSearchDefaultCmd flags settings offset scroll model
 
         ContentSearch ->
-            doSearchDefaultCmd flags settings offset model
+            doSearchDefaultCmd flags settings offset scroll model
 
         ContentOnlySearch ->
-            doSearchIndexCmd flags settings offset model
+            doSearchIndexCmd flags settings offset scroll model
 
 
-doSearchDefaultCmd : Flags -> UiSettings -> Int -> Model -> Cmd Msg
-doSearchDefaultCmd flags settings offset model =
+doSearchDefaultCmd : Flags -> UiSettings -> Int -> Bool -> Model -> Cmd Msg
+doSearchDefaultCmd flags settings offset scroll model =
     let
         smask =
             Comp.SearchMenu.getItemSearch model.searchMenuModel
@@ -162,14 +162,14 @@ doSearchDefaultCmd flags settings offset model =
             }
     in
     if offset == 0 then
-        Api.itemSearch flags mask ItemSearchResp
+        Api.itemSearch flags mask (ItemSearchResp scroll)
 
     else
         Api.itemSearch flags mask ItemSearchAddResp
 
 
-doSearchIndexCmd : Flags -> UiSettings -> Int -> Model -> Cmd Msg
-doSearchIndexCmd flags settings offset model =
+doSearchIndexCmd : Flags -> UiSettings -> Int -> Bool -> Model -> Cmd Msg
+doSearchIndexCmd flags settings offset scroll model =
     case model.contentOnlySearch of
         Just q ->
             let
@@ -180,7 +180,7 @@ doSearchIndexCmd flags settings offset model =
                     }
             in
             if offset == 0 then
-                Api.itemIndexSearch flags mask ItemSearchResp
+                Api.itemIndexSearch flags mask (ItemSearchResp scroll)
 
             else
                 Api.itemIndexSearch flags mask ItemSearchAddResp
@@ -195,7 +195,7 @@ doSearchIndexCmd flags settings offset model =
                 mask =
                     { emptyMask | limit = settings.itemSearchPageSize }
             in
-            Api.itemSearch flags mask ItemSearchResp
+            Api.itemSearch flags mask (ItemSearchResp scroll)
 
 
 resultsBelowLimit : UiSettings -> Model -> Bool

@@ -26,7 +26,7 @@ update mId key flags settings msg model =
         Init ->
             Util.Update.andThen2
                 [ update mId key flags settings (SearchMenuMsg Comp.SearchMenu.Init)
-                , doSearch flags settings
+                , doSearch flags settings True
                 ]
                 model
 
@@ -61,7 +61,7 @@ update mId key flags settings msg model =
 
                 ( m2, c2, s2 ) =
                     if nextState.stateChange && not model.searchInProgress then
-                        doSearch flags settings newModel
+                        doSearch flags settings False newModel
 
                     else
                         withSub ( newModel, Cmd.none )
@@ -91,7 +91,7 @@ update mId key flags settings msg model =
                 , Cmd.batch [ Cmd.map ItemCardListMsg result.cmd ]
                 )
 
-        ItemSearchResp (Ok list) ->
+        ItemSearchResp scroll (Ok list) ->
             let
                 noff =
                     settings.itemSearchPageSize
@@ -105,7 +105,11 @@ update mId key flags settings msg model =
             in
             Util.Update.andThen2
                 [ update mId key flags settings (ItemCardListMsg (Comp.ItemCardList.SetResults list))
-                , scrollToCard mId
+                , if scroll then
+                    scrollToCard mId
+
+                  else
+                    \next -> ( next, Cmd.none, Sub.none )
                 ]
                 m
 
@@ -124,7 +128,6 @@ update mId key flags settings msg model =
             in
             Util.Update.andThen2
                 [ update mId key flags settings (ItemCardListMsg (Comp.ItemCardList.AddResults list))
-                , scrollToCard mId
                 ]
                 m
 
@@ -136,7 +139,7 @@ update mId key flags settings msg model =
                 , Cmd.none
                 )
 
-        ItemSearchResp (Err _) ->
+        ItemSearchResp _ (Err _) ->
             withSub
                 ( { model
                     | searchInProgress = False
@@ -153,7 +156,7 @@ update mId key flags settings msg model =
                 withSub ( model, Cmd.none )
 
             else
-                doSearch flags settings nm
+                doSearch flags settings False nm
 
         ToggleSearchMenu ->
             withSub
@@ -272,8 +275,8 @@ scrollToCard mId model =
             ( model, Cmd.none, Sub.none )
 
 
-doSearch : Flags -> UiSettings -> Model -> ( Model, Cmd Msg, Sub Msg )
-doSearch flags settings model =
+doSearch : Flags -> UiSettings -> Bool -> Model -> ( Model, Cmd Msg, Sub Msg )
+doSearch flags settings scroll model =
     let
         stype =
             if
@@ -289,7 +292,7 @@ doSearch flags settings model =
             { model | searchType = stype }
 
         searchCmd =
-            doSearchCmd flags settings 0 model_
+            doSearchCmd flags settings 0 scroll model_
 
         ( newThrottle, cmd ) =
             Throttle.try searchCmd model.throttle
@@ -308,7 +311,7 @@ doSearchMore : Flags -> UiSettings -> Model -> ( Model, Cmd Msg )
 doSearchMore flags settings model =
     let
         cmd =
-            doSearchCmd flags settings model.searchOffset model
+            doSearchCmd flags settings model.searchOffset False model
     in
     ( { model | moreInProgress = True }
     , cmd
