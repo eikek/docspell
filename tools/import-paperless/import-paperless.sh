@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
 
 # allows to start small - but affects also tags and correspondents, so they might be missing when linking them!
-# LIMIT=LIMIT 150
+# LIMIT="LIMIT 0"
+# LIMIT_DOC="LIMIT 5"
+SKIP_EXISTING_DOCS=true
 
 echo "##################### START #####################"
 
-echo "  Docspell - Import from Paperless v '0.2 beta'"
+echo "  Docspell - Import from Paperless v '0.3 beta'"
 echo "         by totti4ever" && echo
 echo "  $(date)"
 echo
@@ -43,7 +45,7 @@ modes=("documents_correspondent" "documents_document" "documents_tag" "documents
 # the columns per table we need
 declare -A columns
 #documents_document: id, title, content, created, modified, added, correspondent_id, file_type, checksum,  storage_type, filename
-columns[documents_document]="id, title, datetime(created,'localtime') as created, added, correspondent_id, file_type, filename"
+columns[documents_document]="id, title, datetime(created,'localtime') as created, correspondent_id, file_type, filename"
 #documents_correspondent: id, name, match, matching_algorithm, is_insensitive, slug
 columns[documents_correspondent]="id, name"
 #documents_tag: id, name, colour, match, matching_algorithm, is_insensitive, slug
@@ -56,14 +58,15 @@ declare -A corr2name
 declare -A tag2name
 declare -A doc2name
 declare -A pl2ds_id
+if [ "$SKIP_EXISTING_DOCS" == "true" ]; then declare -A doc_skip; fi
 
-############# FUCNTIONS
+############# FUNCTIONS
 function curl_call() {
   curl_cmd="$1 -H 'X-Docspell-Auth: $ds_token'"
   curl_result=$(eval $curl_cmd)
 
-  if [ "$curl_result" == '"Authentication failed."' ]; then
-    printf "\nNew login required... "
+  if [ "$curl_result" == '"Authentication failed."' ] || [ "$curl_result" == 'Response timed out' ]; then
+    printf "\nNew login required ($curl_result)... "
     login
     printf "%${#len_resultset}s" " "; printf "           .."
     curl_call $1
@@ -102,7 +105,13 @@ for mode in "${modes[@]}"; do
   OLDIFS=$IFS
   IFS=$'\n'
 
-  tmp_resultset=(`sqlite3 -header $db_path "select ${columns[$mode]} from $mode order by 1 $LIMIT;"`)
+  if [ "$mode" == "documents_document" ] || [ "$mode" == "documents_document_tags" ]; then
+    tmp_limit=$LIMIT_DOC
+  else
+    tmp_limit=$LIMIT
+  fi
+  tmp_resultset=(`sqlite3 -header $db_path "select ${columns[$mode]} from $mode order by 1 DESC $tmp_limit;"`)
+
 
   tmp_headers=($(echo "${tmp_resultset[0]}" | tr '|' '\n'))
   len_resultset=${#tmp_resultset[@]}
@@ -111,7 +120,7 @@ for mode in "${modes[@]}"; do
   for ((i=1;i<$len_resultset;i++)); do
 
     # split result into array
-    tmp_result=($(echo "${tmp_resultset[$i]}" | tr '|' '\n'))
+    tmp_result=($(echo "${tmp_resultset[$i]/'||'/'| |'}" | tr '|' '\n'))
 
     # process single result array
     len_result=${#tmp_result[@]}
@@ -167,131 +176,143 @@ for mode in "${modes[@]}"; do
 
       # upload if not existent
       if [ $? -eq 0 ] && [ "$curl_status" == "false" ]; then
-        echo -n "File does not exist, uploading... "
+        echo -n "File does not exist, uploading.."
         curl_call "curl -s -X POST '$ds_url/api/v1/sec/upload/item' -H 'Content-Type: multipart/form-data' -F 'file=@$tmp_filepath;type=application/${tmp_result_arr[file_type]}'"
 
         curl_status=$(echo $curl_result | jq -r ".success")
         if [ "$curl_status" == "true" ]; then
-          echo "done"
+          printf ". ."
 
         else
-          echo "FATAL  upload failed"
+          echo -e "FATAL  upload failed\nCmd: $curl_cmd\nResp: $curl_result\nStatus: $curl_status"
           exit 4
         fi
 
       else
-        echo "File already exists, nothing to upload"
+        printf "File already exists"
+        if [ "$SKIP_EXISTING_DOCS" == "true" ]; then
+          echo ", skipping this item for all types" && echo
+          doc_skip[${tmp_result_arr[id]}]="true"
+        else
+          printf ", nothing to upload.Fetching ID.."
+        fi
       fi
 
-      # link orga to document
-      printf "%${#len_resultset}s" " "; printf "           "
-      printf "Waiting for document to link organization \"${corr2name[${tmp_result_arr[correspondent_id]}]}\" .."
-      count=0
-      countMax=10
-      while [ $count -le $countMax ]; do
-        # get Docspell id of document
-        curl_call "curl -s -X GET '$ds_url/api/v1/sec/checkfile/$tmp_checksum'"
-        curl_status=$(echo $curl_result | jq -r ".exists")
-        res=$?
+      # skip if needed (SKIP_EXISTING_DOCS)
+      if [ ! ${doc_skip[${tmp_result_arr[id]}]+abc} ]; then
 
-        if [ $res -eq 0 ] && [ "$curl_status" == "true" ]; then
-          curl_status=$(echo $curl_result | jq -r ".items[0].id")
-          # paperless id to docspell id for later use
-          pl2ds_id[${tmp_result_arr[id]}]=$curl_status
+        # waitig for document and get document id
+        count=0
+        countMax=25
+        while [ $count -le $countMax ]; do
+          # get Docspell id of document
+          curl_call "curl -s -X GET '$ds_url/api/v1/sec/checkfile/$tmp_checksum'"
+          curl_status=$(echo $curl_result | jq -r ".exists")
+          res=$?
 
-          if [ ! "${pl2ds_id[${tmp_result_arr[id]}]}" == "" ] && [ ! "${corr2name[${tmp_result_arr[correspondent_id]}]}" == "" ]; then
-            count2=0
-            count2Max=5
-            while [ $count2 -le $count2Max ]; do
-              curl_call "curl -s -X GET '$ds_url/api/v1/sec/organization' -G --data-urlencode 'q=${corr2name[${tmp_result_arr[correspondent_id]}]}'"
+          # file id returned
+          if [ $res -eq 0 ] && [ "$curl_status" == "true" ]; then
+            curl_status=$(echo $curl_result | jq -r ".items[0].id")
+            # paperless id to docspell id for later use
+            pl2ds_id[${tmp_result_arr[id]}]=$curl_status
+            echo ".done"
+            break
 
-              # Search for exact match of paperless correspondent in docspell organizations
-              curl_status=$(echo $curl_result | jq -r ".items[] | select(.name==\"${corr2name[${tmp_result_arr[correspondent_id]}]}\") | .name")
+          # unknown error
+          elif [ $res -ne 0 ]; then
+            echo -e "FATAL  Error:\n  Err-Code: $? / $res\n  Command: $curl_cmd\n  Result: $curl_result\n  Status: $curl_status"
+            exit 7
 
-              if [ "$curl_status" == "${corr2name[${tmp_result_arr[correspondent_id]}]}" ]; then
-                curl_status=$(echo $curl_result | jq -r ".items[] | select(.name==\"${corr2name[${tmp_result_arr[correspondent_id]}]}\") | .id")
-
-                # Set actual link to document
-                curl_call "curl -s -X PUT '$ds_url/api/v1/sec/item/${pl2ds_id[${tmp_result_arr[id]}]}/corrOrg' -H 'Content-Type: application/json' -d '{\"id\":\"$curl_status\"}'"
-
-                curl_status=$(echo $curl_result | jq -r ".success")
-                if [ "$curl_status" == "true" ]; then
-                  echo ". done"
-
-                else
-                  echo "FATAL  Failed to link orga \"${tmp_result_arr[orga_id]}\" (doc_id: ${pl2ds_id[${tmp_result_arr[id]}]})"
-                  exit 5
-                fi
-
-                # Set name of document
-                printf "%${#len_resultset}s" " "; printf "           "
-
-                curl_call "curl -s -X PUT '$ds_url/api/v1/sec/item/${pl2ds_id[${tmp_result_arr[id]}]}/name' -H 'Content-Type: application/json' -d '{\"text\":\"${tmp_result_arr[title]}\"}'"
-
-                curl_status=$(echo $curl_result | jq -r ".success")
-                if [ "$curl_status" == "true" ]; then
-                  echo "Set name of item: \"${tmp_result_arr[title]}\""
-
-                else
-                  echo "FATAL  Failed to set item's name \"${tmp_result_arr[title]}\" (doc_id: ${pl2ds_id[${tmp_result_arr[id]}]})"
-                  exit 5
-                fi
-
-
-                # Set created date of document
-                printf "%${#len_resultset}s" " "; printf "           "
-
-                tmp_date=${tmp_result_arr[created]:0:10}
-                curl_call "curl -s -X PUT '$ds_url/api/v1/sec/item/${pl2ds_id[${tmp_result_arr[id]}]}/date' -H 'Content-Type: application/json' -d '{\"date\":$( echo "$(date -d "$tmp_date" +%s) * 1000" | bc )}'"
-
-                curl_status=$(echo $curl_result | jq -r ".success")
-                if [ "$curl_status" == "true" ]; then
-                  echo "Set creation date of item: \"$tmp_date\""
-
-                else
-                  echo "FATAL  Failed to set item's creation date \"$tmp_date\" (doc_id: ${pl2ds_id[${tmp_result_arr[id]}]})"
-                  exit 5
-                fi
-
-                break
-
-              elif [ $count2 -ge $count2Max ]; then
-                echo "FATAL  Upload failed (or processing too slow)"
-                exit 6
-
-              # FIXME I think, the loop is not needed here - organizations seem to be there immediately
-              else
-                printf "."
-              fi
-
-              sleep $(( count2*count2 ))
-              ((count2++))
-            done
+          # counter too high
+          elif [ $count -ge $countMax ]; then
+            echo "FATAL  Upload failed (or processing too slow)"
+            exit 8
 
           else
-            echo "Something went wrong, no information on doc_id and/or org_id (${pl2ds_id[${tmp_result_arr[id]}]} // ${corr2name[${tmp_result_arr[correspondent_id]}]})"
-
+              printf "."
           fi
-          break
+          sleep $(( count * count ))
+          ((count++))
+        done
 
-        elif [ $res -ne 0 ]; then
-          echo -e "FATAL  Error:\n  Err-Code: $? / $res\n  Command: $curl_cmd\n  Result: $curl_result\n  Status: $curl_status"
-          exit 7
 
-        elif [ $count -ge $countMax ]; then
-          echo "FATAL  Upload failed (or processing too slow)"
-          exit 8
+        # link orga to document
+        printf "%${#len_resultset}s" " "; printf "           "
+        if [ ! "${tmp_result_arr[correspondent_id]/' '/''}" == "" ]; then
+
+          # check for availability of document id and name of organization
+          if [ ! "${pl2ds_id[${tmp_result_arr[id]}]}" == "" ] && [ ! "${corr2name[${tmp_result_arr[correspondent_id]}]}" == "" ]; then
+            printf "Set link to organization \"${corr2name[${tmp_result_arr[correspondent_id]}]}\" .."
+
+            # get organizations matching doc's orga (can be several when parts match)
+            curl_call "curl -s -X GET '$ds_url/api/v1/sec/organization' -G --data-urlencode 'q=${corr2name[${tmp_result_arr[correspondent_id]}]}'"
+
+            # Search for exact match of paperless correspondent in fetched organizations from Docspell
+            curl_status=$(echo $curl_result | jq -r ".items[] | select(.name==\"${corr2name[${tmp_result_arr[correspondent_id]}]}\") | .name")
+
+            # double-check that found organization matches doc's correspondent
+            if [ "$curl_status" == "${corr2name[${tmp_result_arr[correspondent_id]}]}" ]; then
+              curl_status=$(echo $curl_result | jq -r ".items[] | select(.name==\"${corr2name[${tmp_result_arr[correspondent_id]}]}\") | .id")
+
+              # Set actual link to document
+              curl_call "curl -s -X PUT '$ds_url/api/v1/sec/item/${pl2ds_id[${tmp_result_arr[id]}]}/corrOrg' -H 'Content-Type: application/json' -d '{\"id\":\"$curl_status\"}'"
+
+              curl_status=$(echo $curl_result | jq -r ".success")
+              if [ "$curl_status" == "true" ]; then
+                echo ". done"
+
+              # unknown error
+              else
+                echo "FATAL  Failed to link orga \"${tmp_result_arr[orga_id]}\" (doc_id: ${pl2ds_id[${tmp_result_arr[id]}]})"
+                exit 5
+              fi
+            else
+              echo "FATAL  Unknown error"
+              exit 6
+            fi
+          else
+            echo "WARNING  Something went wrong, no information on doc_id and/or org_id (${pl2ds_id[${tmp_result_arr[id]}]} // ${corr2name[${tmp_result_arr[correspondent_id]}]}) - Limits are $LIMIT / $LIMIT_DOC"
+          fi
+        else
+          echo "No correspondent set in Paperless, skipping."
+        fi
+
+        # Set name of document
+        printf "%${#len_resultset}s" " "; printf "           "
+
+        curl_call "curl -s -X PUT '$ds_url/api/v1/sec/item/${pl2ds_id[${tmp_result_arr[id]}]}/name' -H 'Content-Type: application/json' -d '{\"text\":\"${tmp_result_arr[title]}\"}'"
+
+        curl_status=$(echo $curl_result | jq -r ".success")
+        if [ "$curl_status" == "true" ]; then
+          echo "Set name of item: \"${tmp_result_arr[title]}\""
 
         else
-            printf "."
+          echo "FATAL  Failed to set item's name \"${tmp_result_arr[title]}\" (doc_id: ${pl2ds_id[${tmp_result_arr[id]}]})"
+          exit 5
         fi
-        sleep $(( count * count ))
-        ((count++))
-      done
-      echo
 
-      # TAGS
-      elif [ "$mode" == "documents_tag" ]; then
+
+        # Set created date of document
+        printf "%${#len_resultset}s" " "; printf "           "
+
+        tmp_date="${tmp_result_arr[created]:0:10} 12:00:00" #fix for timezone variations
+        curl_call "curl -s -X PUT '$ds_url/api/v1/sec/item/${pl2ds_id[${tmp_result_arr[id]}]}/date' -H 'Content-Type: application/json' -d '{\"date\":$( echo "$(date -d "$tmp_date" +%s) * 1000" | bc )}'"
+
+        curl_status=$(echo $curl_result | jq -r ".success")
+        if [ "$curl_status" == "true" ]; then
+          echo "Set creation date of item: \"${tmp_date:0:10}\""
+
+        else
+          echo "FATAL  Failed to set item's creation date \"$tmp_date\" (doc_id: ${pl2ds_id[${tmp_result_arr[id]}]})"
+          exit 5
+        fi
+        echo
+
+      fi  # done with documents
+
+    # TAGS
+    elif [ "$mode" == "documents_tag" ]; then
+      if [ ! "${tmp_result_arr[name]}" == "" ] && [ ! "${tmp_result_arr[id]}" == "" ]; then
         echo "\"${tmp_result_arr[name]}\" [id: ${tmp_result_arr[id]}]"
         printf "%${#len_resultset}s" " "; printf "           "
 
@@ -309,26 +330,39 @@ for mode in "${modes[@]}"; do
           echo "FATAL  Error during creation of tag: $(echo $curl_result | jq -r '.message')"
           exit 9
         fi
-
-
-      # TAGS 2 DOCUMENTS
-      elif [ "$mode" == "documents_document_tags" ]; then
-        echo "Tag \"${tag2name[${tmp_result_arr[tag_id]}]}\" (id: ${tmp_result_arr[tag_id]}) for \"${doc2name[${tmp_result_arr[document_id]}]}\" (id: ${tmp_result_arr[document_id]})"
-        printf "%${#len_resultset}s" " "; printf "           "
-
-        #link tags to documents
-        curl_call "curl -s -X PUT '$ds_url/api/v1/sec/item/${pl2ds_id[${tmp_result_arr[document_id]}]}/taglink' -H 'Content-Type: application/json' -d '{\"items\":[\"${tag2name[${tmp_result_arr[tag_id]}]}\"]}'"
-
-        curl_status=$(echo $curl_result | jq -r ".success")
-        if [ "$curl_status" == "true" ]; then
-          echo '...applied'
-        else
-          echo "Failed to link tag \"${tmp_result_arr[tag_id]}\" (doc_id: ${pl2ds_id[${tmp_result_arr[document_id]}]})"
-        fi
+      else
+        echo "WARNING  Error on tag processing, no id and/or name (${tmp_result_arr[id]} / ${tmp_result_arr[name]}) - Limits are $LIMIT / $LIMIT_DOC"
       fi
 
-  done
-done
+
+    # TAGS 2 DOCUMENTS
+    elif [ "$mode" == "documents_document_tags" ]; then
+      # if doc_skip is not set for document_id
+      if [ ! ${doc_skip[${tmp_result_arr[document_id]}]+abc} ]; then
+        if [ ! "${tag2name[${tmp_result_arr[tag_id]}]}" == "" ] && [ ! "${tmp_result_arr[tag_id]}" == "" ]; then
+          echo "Tag \"${tag2name[${tmp_result_arr[tag_id]}]}\" (id: ${tmp_result_arr[tag_id]}) for \"${doc2name[${tmp_result_arr[document_id]}]}\" (id: ${tmp_result_arr[document_id]})"
+          printf "%${#len_resultset}s" " "; printf "           "
+
+          #link tags to documents
+          curl_call "curl -s -X PUT '$ds_url/api/v1/sec/item/${pl2ds_id[${tmp_result_arr[document_id]}]}/taglink' -H 'Content-Type: application/json' -d '{\"items\":[\"${tag2name[${tmp_result_arr[tag_id]}]}\"]}'"
+
+          curl_status=$(echo $curl_result | jq -r ".success")
+          if [ "$curl_status" == "true" ]; then
+            echo '...applied'
+          else
+            echo "Failed to link tag \"${tmp_result_arr[tag_id]}\" (doc_id: ${pl2ds_id[${tmp_result_arr[document_id]}]})"
+          fi
+        else
+          echo "WARNING  Error on tag processing, no id and/or name (${tmp_result_arr[id]} / ${tmp_result_arr[name]}) - Limits are $LIMIT / $LIMIT_DOC"
+        fi
+      else
+        echo -en "\r"
+        sleep 0.1
+      fi
+    fi  # done with mode processing
+
+  done  # with single resultset
+done  # with modes
 
 echo ################# DONE #################
 date
