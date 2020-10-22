@@ -14,8 +14,8 @@ import Page.Home.Data exposing (..)
 import Util.Html
 
 
-view : Maybe String -> Flags -> UiSettings -> Model -> Html Msg
-view current flags settings model =
+view : Flags -> UiSettings -> Model -> Html Msg
+view flags settings model =
     div [ class "home-page ui padded grid" ]
         [ div
             [ classList

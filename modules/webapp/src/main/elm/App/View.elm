@@ -178,16 +178,7 @@ viewLogin model =
 
 viewHome : Model -> Html Msg
 viewHome model =
-    let
-        mid =
-            case model.page of
-                HomePage ->
-                    Util.Maybe.fromString model.itemDetailModel.detail.item.id
-
-                _ ->
-                    Nothing
-    in
-    Html.map HomeMsg (Page.Home.View.view mid model.flags model.uiSettings model.homeModel)
+    Html.map HomeMsg (Page.Home.View.view model.flags model.uiSettings model.homeModel)
 
 
 menuEntry : Model -> Page -> List (Html Msg) -> Html Msg
