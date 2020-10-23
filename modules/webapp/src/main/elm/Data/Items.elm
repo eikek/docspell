@@ -1,12 +1,14 @@
 module Data.Items exposing
     ( concat
     , first
+    , idSet
     , length
     )
 
 import Api.Model.ItemLight exposing (ItemLight)
 import Api.Model.ItemLightGroup exposing (ItemLightGroup)
 import Api.Model.ItemLightList exposing (ItemLightList)
+import Set exposing (Set)
 import Util.List
 
 
@@ -65,3 +67,15 @@ lastGroup : ItemLightList -> Maybe ItemLightGroup
 lastGroup list =
     List.reverse list.groups
         |> List.head
+
+
+idSet : ItemLightList -> Set String
+idSet items =
+    List.map idSetGroup items.groups
+        |> List.foldl Set.union Set.empty
+
+
+idSetGroup : ItemLightGroup -> Set String
+idSetGroup group =
+    List.map .id group.items
+        |> Set.fromList

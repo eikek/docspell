@@ -24,7 +24,6 @@ import File exposing (File)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onCheck, onClick, onInput)
-import Html5.DragDrop as DD
 import Markdown
 import Page exposing (Page(..))
 import Set
