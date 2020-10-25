@@ -1,9 +1,14 @@
 module Page.Home.Update exposing (update)
 
+import Api
+import Api.Model.IdList exposing (IdList)
+import Api.Model.ItemLightList exposing (ItemLightList)
+import Api.Model.ItemSearch exposing (ItemSearch)
 import Browser.Navigation as Nav
 import Comp.FixedDropdown
 import Comp.ItemCardList
 import Comp.ItemDetail.EditMenu
+import Comp.ItemDetail.FormChange
 import Comp.SearchMenu
 import Comp.YesNoDimmer
 import Data.Flags exposing (Flags)
@@ -14,7 +19,7 @@ import Page exposing (Page(..))
 import Page.Home.Data exposing (..)
 import Process
 import Scroll
-import Set
+import Set exposing (Set)
 import Task
 import Throttle
 import Time
@@ -424,17 +429,79 @@ update mId key flags settings msg model =
                         sub_ =
                             Sub.map EditMenuMsg res.sub
 
-                        _ =
-                            Debug.log "change" res.change
+                        upCmd =
+                            Comp.ItemDetail.FormChange.multiUpdate flags
+                                svm.ids
+                                res.change
+                                MultiUpdateResp
                     in
-                    ( { model | viewMode = SelectView svm_ }, cmd_, sub_ )
+                    ( { model | viewMode = SelectView svm_ }, Cmd.batch [ cmd_, upCmd ], sub_ )
 
                 _ ->
                     noSub ( model, Cmd.none )
 
+        MultiUpdateResp (Ok res) ->
+            if res.success then
+                case model.viewMode of
+                    SelectView svm ->
+                        -- replace changed items in the view
+                        noSub ( model, loadChangedItems flags svm.ids )
+
+                    _ ->
+                        noSub ( model, Cmd.none )
+
+            else
+                noSub ( model, Cmd.none )
+
+        MultiUpdateResp (Err _) ->
+            noSub ( model, Cmd.none )
+
+        ReplaceChangedItemsResp (Ok items) ->
+            noSub ( replaceItems model items, Cmd.none )
+
+        ReplaceChangedItemsResp (Err _) ->
+            noSub ( model, Cmd.none )
+
 
 
 --- Helpers
+
+
+replaceItems : Model -> ItemLightList -> Model
+replaceItems model newItems =
+    let
+        listModel =
+            model.itemListModel
+
+        changed =
+            Data.Items.replaceIn listModel.results newItems
+
+        newList =
+            { listModel | results = changed }
+    in
+    { model | itemListModel = newList }
+
+
+loadChangedItems : Flags -> Set String -> Cmd Msg
+loadChangedItems flags ids =
+    if Set.isEmpty ids then
+        Cmd.none
+
+    else
+        let
+            searchInit =
+                Api.Model.ItemSearch.empty
+
+            idList =
+                IdList (Set.toList ids)
+
+            search =
+                { searchInit
+                    | itemSubset = Just idList
+                    , limit = Set.size ids
+                }
+        in
+        Api.itemSearch flags search ReplaceChangedItemsResp
 
 
 scrollToCard : Maybe String -> Model -> ( Model, Cmd Msg, Sub Msg )

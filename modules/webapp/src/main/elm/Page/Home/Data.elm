@@ -17,6 +17,7 @@ module Page.Home.Data exposing
     )
 
 import Api
+import Api.Model.BasicResult exposing (BasicResult)
 import Api.Model.ItemLightList exposing (ItemLightList)
 import Api.Model.ItemSearch
 import Browser.Dom as Dom
@@ -27,7 +28,6 @@ import Comp.SearchMenu
 import Comp.YesNoDimmer
 import Data.Flags exposing (Flags)
 import Data.ItemNav exposing (ItemNav)
-import Data.ItemSelection exposing (ItemSelection)
 import Data.Items
 import Data.UiSettings exposing (UiSettings)
 import Http
@@ -167,6 +167,8 @@ type Msg
     | DeleteSelectedConfirmMsg Comp.YesNoDimmer.Msg
     | EditSelectedItems
     | EditMenuMsg Comp.ItemDetail.EditMenu.Msg
+    | MultiUpdateResp (Result Http.Error BasicResult)
+    | ReplaceChangedItemsResp (Result Http.Error ItemLightList)
 
 
 type SearchType
