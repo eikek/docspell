@@ -134,7 +134,9 @@ trait Conversions {
       m.dueDateFrom,
       m.dueDateUntil,
       m.allNames,
-      None,
+      m.itemSubset
+        .map(_.ids.flatMap(i => Ident.fromString(i).toOption).toSet)
+        .filter(_.nonEmpty),
       None
     )
 
