@@ -77,10 +77,14 @@ module Api exposing
     , setAttachmentName
     , setCollectiveSettings
     , setConcEquip
+    , setConcEquipmentMultiple
     , setConcPerson
+    , setConcPersonMultiple
     , setConfirmed
     , setCorrOrg
+    , setCorrOrgMultiple
     , setCorrPerson
+    , setCorrPersonMultiple
     , setDateMultiple
     , setDirection
     , setDirectionMultiple
@@ -1371,6 +1375,62 @@ setDueDateMultiple flags data receive =
         { url = flags.config.baseUrl ++ "/api/v1/sec/items/duedate"
         , account = getAccount flags
         , body = Http.jsonBody (Api.Model.ItemsAndDate.encode data)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+setCorrOrgMultiple :
+    Flags
+    -> ItemsAndRef
+    -> (Result Http.Error BasicResult -> msg)
+    -> Cmd msg
+setCorrOrgMultiple flags data receive =
+    Http2.authPut
+        { url = flags.config.baseUrl ++ "/api/v1/sec/items/corrOrg"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.ItemsAndRef.encode data)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+setCorrPersonMultiple :
+    Flags
+    -> ItemsAndRef
+    -> (Result Http.Error BasicResult -> msg)
+    -> Cmd msg
+setCorrPersonMultiple flags data receive =
+    Http2.authPut
+        { url = flags.config.baseUrl ++ "/api/v1/sec/items/corrPerson"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.ItemsAndRef.encode data)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+setConcPersonMultiple :
+    Flags
+    -> ItemsAndRef
+    -> (Result Http.Error BasicResult -> msg)
+    -> Cmd msg
+setConcPersonMultiple flags data receive =
+    Http2.authPut
+        { url = flags.config.baseUrl ++ "/api/v1/sec/items/concPerson"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.ItemsAndRef.encode data)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+setConcEquipmentMultiple :
+    Flags
+    -> ItemsAndRef
+    -> (Result Http.Error BasicResult -> msg)
+    -> Cmd msg
+setConcEquipmentMultiple flags data receive =
+    Http2.authPut
+        { url = flags.config.baseUrl ++ "/api/v1/sec/items/concEquipment"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.ItemsAndRef.encode data)
         , expect = Http.expectJson receive Api.Model.BasicResult.decoder
         }
 

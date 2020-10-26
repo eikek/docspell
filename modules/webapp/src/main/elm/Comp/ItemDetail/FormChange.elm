@@ -86,5 +86,33 @@ multiUpdate flags ids change receive =
             in
             Api.setDueDateMultiple flags data receive
 
+        OrgChange ref ->
+            let
+                data =
+                    ItemsAndRef items (Maybe.map .id ref)
+            in
+            Api.setCorrOrgMultiple flags data receive
+
+        CorrPersonChange ref ->
+            let
+                data =
+                    ItemsAndRef items (Maybe.map .id ref)
+            in
+            Api.setCorrPersonMultiple flags data receive
+
+        ConcPersonChange ref ->
+            let
+                data =
+                    ItemsAndRef items (Maybe.map .id ref)
+            in
+            Api.setConcPersonMultiple flags data receive
+
+        EquipChange ref ->
+            let
+                data =
+                    ItemsAndRef items (Maybe.map .id ref)
+            in
+            Api.setConcEquipmentMultiple flags data receive
+
         _ ->
             Cmd.none

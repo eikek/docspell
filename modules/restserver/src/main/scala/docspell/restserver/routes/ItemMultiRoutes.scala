@@ -19,7 +19,6 @@ import org.http4s.circe.CirceEntityEncoder._
 import org.http4s.dsl.Http4sDsl
 
 object ItemMultiRoutes {
-//  private[this] val logger = getLogger
 
   def apply[F[_]: Effect](
       backend: BackendApp[F],
@@ -118,33 +117,37 @@ object ItemMultiRoutes {
           resp  <- Ok(Conversions.basicResult(res, "Item due date updated"))
         } yield resp
 
-      // case req @ PUT -> Root / "corrOrg" =>
-      //   for {
-      //     idref <- req.as[OptionalId]
-      //     res   <- backend.item.setCorrOrg(id, idref.id, user.account.collective)
-      //     resp  <- Ok(Conversions.basicResult(res, "Correspondent organization updated"))
-      //   } yield resp
+      case req @ PUT -> Root / "corrOrg" =>
+        for {
+          json  <- req.as[ItemsAndRef]
+          items <- readIds[F](json.items)
+          res   <- backend.item.setCorrOrg(items, json.ref, user.account.collective)
+          resp  <- Ok(Conversions.basicResult(res, "Correspondent organization updated"))
+        } yield resp
 
-      // case req @ PUT -> Root / "corrPerson" =>
-      //   for {
-      //     idref <- req.as[OptionalId]
-      //     res   <- backend.item.setCorrPerson(id, idref.id, user.account.collective)
-      //     resp  <- Ok(Conversions.basicResult(res, "Correspondent person updated"))
-      //   } yield resp
+      case req @ PUT -> Root / "corrPerson" =>
+        for {
+          json  <- req.as[ItemsAndRef]
+          items <- readIds[F](json.items)
+          res   <- backend.item.setCorrPerson(items, json.ref, user.account.collective)
+          resp  <- Ok(Conversions.basicResult(res, "Correspondent person updated"))
+        } yield resp
 
-      // case req @ PUT -> Root / "concPerson" =>
-      //   for {
-      //     idref <- req.as[OptionalId]
-      //     res   <- backend.item.setConcPerson(id, idref.id, user.account.collective)
-      //     resp  <- Ok(Conversions.basicResult(res, "Concerned person updated"))
-      //   } yield resp
+      case req @ PUT -> Root / "concPerson" =>
+        for {
+          json  <- req.as[ItemsAndRef]
+          items <- readIds[F](json.items)
+          res   <- backend.item.setConcPerson(items, json.ref, user.account.collective)
+          resp  <- Ok(Conversions.basicResult(res, "Concerned person updated"))
+        } yield resp
 
-      // case req @ PUT -> Root / "concEquipment" =>
-      //   for {
-      //     idref <- req.as[OptionalId]
-      //     res   <- backend.item.setConcEquip(id, idref.id, user.account.collective)
-      //     resp  <- Ok(Conversions.basicResult(res, "Concerned equipment updated"))
-      //   } yield resp
+      case req @ PUT -> Root / "concEquipment" =>
+        for {
+          json  <- req.as[ItemsAndRef]
+          items <- readIds[F](json.items)
+          res   <- backend.item.setConcEquip(items, json.ref, user.account.collective)
+          resp  <- Ok(Conversions.basicResult(res, "Concerned equipment updated"))
+        } yield resp
 
       // case req @ POST -> Root / "reprocess" =>
       //   for {

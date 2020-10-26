@@ -185,8 +185,12 @@ object ItemRoutes {
       case req @ PUT -> Root / Ident(id) / "corrOrg" =>
         for {
           idref <- req.as[OptionalId]
-          res   <- backend.item.setCorrOrg(id, idref.id, user.account.collective)
-          resp  <- Ok(Conversions.basicResult(res, "Correspondent organization updated"))
+          res <- backend.item.setCorrOrg(
+            NonEmptyList.of(id),
+            idref.id,
+            user.account.collective
+          )
+          resp <- Ok(Conversions.basicResult(res, "Correspondent organization updated"))
         } yield resp
 
       case req @ POST -> Root / Ident(id) / "corrOrg" =>
@@ -200,8 +204,12 @@ object ItemRoutes {
       case req @ PUT -> Root / Ident(id) / "corrPerson" =>
         for {
           idref <- req.as[OptionalId]
-          res   <- backend.item.setCorrPerson(id, idref.id, user.account.collective)
-          resp  <- Ok(Conversions.basicResult(res, "Correspondent person updated"))
+          res <- backend.item.setCorrPerson(
+            NonEmptyList.of(id),
+            idref.id,
+            user.account.collective
+          )
+          resp <- Ok(Conversions.basicResult(res, "Correspondent person updated"))
         } yield resp
 
       case req @ POST -> Root / Ident(id) / "corrPerson" =>
@@ -215,8 +223,12 @@ object ItemRoutes {
       case req @ PUT -> Root / Ident(id) / "concPerson" =>
         for {
           idref <- req.as[OptionalId]
-          res   <- backend.item.setConcPerson(id, idref.id, user.account.collective)
-          resp  <- Ok(Conversions.basicResult(res, "Concerned person updated"))
+          res <- backend.item.setConcPerson(
+            NonEmptyList.of(id),
+            idref.id,
+            user.account.collective
+          )
+          resp <- Ok(Conversions.basicResult(res, "Concerned person updated"))
         } yield resp
 
       case req @ POST -> Root / Ident(id) / "concPerson" =>
@@ -230,8 +242,12 @@ object ItemRoutes {
       case req @ PUT -> Root / Ident(id) / "concEquipment" =>
         for {
           idref <- req.as[OptionalId]
-          res   <- backend.item.setConcEquip(id, idref.id, user.account.collective)
-          resp  <- Ok(Conversions.basicResult(res, "Concerned equipment updated"))
+          res <- backend.item.setConcEquip(
+            NonEmptyList.of(id),
+            idref.id,
+            user.account.collective
+          )
+          resp <- Ok(Conversions.basicResult(res, "Concerned equipment updated"))
         } yield resp
 
       case req @ POST -> Root / Ident(id) / "concEquipment" =>

@@ -66,22 +66,38 @@ object LinkProposal {
       case MetaProposalType.CorrOrg =>
         ctx.logger.debug(s"Updating item organization with: ${value.id}") *>
           ctx.store.transact(
-            RItem.updateCorrOrg(itemId, ctx.args.meta.collective, Some(value))
+            RItem.updateCorrOrg(
+              NonEmptyList.of(itemId),
+              ctx.args.meta.collective,
+              Some(value)
+            )
           )
       case MetaProposalType.ConcPerson =>
         ctx.logger.debug(s"Updating item concerning person with: $value") *>
           ctx.store.transact(
-            RItem.updateConcPerson(itemId, ctx.args.meta.collective, Some(value))
+            RItem.updateConcPerson(
+              NonEmptyList.of(itemId),
+              ctx.args.meta.collective,
+              Some(value)
+            )
           )
       case MetaProposalType.CorrPerson =>
         ctx.logger.debug(s"Updating item correspondent person with: $value") *>
           ctx.store.transact(
-            RItem.updateCorrPerson(itemId, ctx.args.meta.collective, Some(value))
+            RItem.updateCorrPerson(
+              NonEmptyList.of(itemId),
+              ctx.args.meta.collective,
+              Some(value)
+            )
           )
       case MetaProposalType.ConcEquip =>
         ctx.logger.debug(s"Updating item concerning equipment with: $value") *>
           ctx.store.transact(
-            RItem.updateConcEquip(itemId, ctx.args.meta.collective, Some(value))
+            RItem.updateConcEquip(
+              NonEmptyList.of(itemId),
+              ctx.args.meta.collective,
+              Some(value)
+            )
           )
       case MetaProposalType.DocDate =>
         MetaProposal.parseDate(value) match {

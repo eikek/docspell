@@ -63,19 +63,35 @@ trait OItem[F[_]] {
       collective: Ident
   ): F[UpdateResult]
 
-  def setCorrOrg(item: Ident, org: Option[Ident], collective: Ident): F[AddResult]
+  def setCorrOrg(
+      items: NonEmptyList[Ident],
+      org: Option[Ident],
+      collective: Ident
+  ): F[UpdateResult]
 
   def addCorrOrg(item: Ident, org: OOrganization.OrgAndContacts): F[AddResult]
 
-  def setCorrPerson(item: Ident, person: Option[Ident], collective: Ident): F[AddResult]
+  def setCorrPerson(
+      items: NonEmptyList[Ident],
+      person: Option[Ident],
+      collective: Ident
+  ): F[UpdateResult]
 
   def addCorrPerson(item: Ident, person: OOrganization.PersonAndContacts): F[AddResult]
 
-  def setConcPerson(item: Ident, person: Option[Ident], collective: Ident): F[AddResult]
+  def setConcPerson(
+      items: NonEmptyList[Ident],
+      person: Option[Ident],
+      collective: Ident
+  ): F[UpdateResult]
 
   def addConcPerson(item: Ident, person: OOrganization.PersonAndContacts): F[AddResult]
 
-  def setConcEquip(item: Ident, equip: Option[Ident], collective: Ident): F[AddResult]
+  def setConcEquip(
+      items: NonEmptyList[Ident],
+      equip: Option[Ident],
+      collective: Ident
+  ): F[UpdateResult]
 
   def addConcEquip(item: Ident, equip: REquipment): F[AddResult]
 
@@ -304,11 +320,15 @@ object OItem {
               else UpdateResult.success
           } yield res
 
-        def setCorrOrg(item: Ident, org: Option[Ident], collective: Ident): F[AddResult] =
-          store
-            .transact(RItem.updateCorrOrg(item, collective, org))
-            .attempt
-            .map(AddResult.fromUpdate)
+        def setCorrOrg(
+            items: NonEmptyList[Ident],
+            org: Option[Ident],
+            collective: Ident
+        ): F[UpdateResult] =
+          UpdateResult.fromUpdate(
+            store
+              .transact(RItem.updateCorrOrg(items, collective, org))
+          )
 
         def addCorrOrg(item: Ident, org: OOrganization.OrgAndContacts): F[AddResult] =
           (for {
@@ -319,7 +339,11 @@ object OItem {
               case AddResult.Success =>
                 OptionT.liftF(
                   store.transact(
-                    RItem.updateCorrOrg(item, org.org.cid, Some(org.org.oid))
+                    RItem.updateCorrOrg(
+                      NonEmptyList.of(item),
+                      org.org.cid,
+                      Some(org.org.oid)
+                    )
                   )
                 )
               case AddResult.EntityExists(_) =>
@@ -331,14 +355,14 @@ object OItem {
             .getOrElse(AddResult.Failure(new Exception("Collective mismatch")))
 
         def setCorrPerson(
-            item: Ident,
+            items: NonEmptyList[Ident],
             person: Option[Ident],
             collective: Ident
-        ): F[AddResult] =
-          store
-            .transact(RItem.updateCorrPerson(item, collective, person))
-            .attempt
-            .map(AddResult.fromUpdate)
+        ): F[UpdateResult] =
+          UpdateResult.fromUpdate(
+            store
+              .transact(RItem.updateCorrPerson(items, collective, person))
+          )
 
         def addCorrPerson(
             item: Ident,
@@ -353,7 +377,11 @@ object OItem {
                 OptionT.liftF(
                   store.transact(
                     RItem
-                      .updateCorrPerson(item, person.person.cid, Some(person.person.pid))
+                      .updateCorrPerson(
+                        NonEmptyList.of(item),
+                        person.person.cid,
+                        Some(person.person.pid)
+                      )
                   )
                 )
               case AddResult.EntityExists(_) =>
@@ -365,14 +393,14 @@ object OItem {
             .getOrElse(AddResult.Failure(new Exception("Collective mismatch")))
 
         def setConcPerson(
-            item: Ident,
+            items: NonEmptyList[Ident],
             person: Option[Ident],
             collective: Ident
-        ): F[AddResult] =
-          store
-            .transact(RItem.updateConcPerson(item, collective, person))
-            .attempt
-            .map(AddResult.fromUpdate)
+        ): F[UpdateResult] =
+          UpdateResult.fromUpdate(
+            store
+              .transact(RItem.updateConcPerson(items, collective, person))
+          )
 
         def addConcPerson(
             item: Ident,
@@ -387,7 +415,11 @@ object OItem {
                 OptionT.liftF(
                   store.transact(
                     RItem
-                      .updateConcPerson(item, person.person.cid, Some(person.person.pid))
+                      .updateConcPerson(
+                        NonEmptyList.of(item),
+                        person.person.cid,
+                        Some(person.person.pid)
+                      )
                   )
                 )
               case AddResult.EntityExists(_) =>
@@ -399,14 +431,14 @@ object OItem {
             .getOrElse(AddResult.Failure(new Exception("Collective mismatch")))
 
         def setConcEquip(
-            item: Ident,
+            items: NonEmptyList[Ident],
             equip: Option[Ident],
             collective: Ident
-        ): F[AddResult] =
-          store
-            .transact(RItem.updateConcEquip(item, collective, equip))
-            .attempt
-            .map(AddResult.fromUpdate)
+        ): F[UpdateResult] =
+          UpdateResult.fromUpdate(
+            store
+              .transact(RItem.updateConcEquip(items, collective, equip))
+          )
 
         def addConcEquip(item: Ident, equip: REquipment): F[AddResult] =
           (for {
@@ -417,7 +449,8 @@ object OItem {
               case AddResult.Success =>
                 OptionT.liftF(
                   store.transact(
-                    RItem.updateConcEquip(item, equip.cid, Some(equip.eid))
+                    RItem
+                      .updateConcEquip(NonEmptyList.of(item), equip.cid, Some(equip.eid))
                   )
                 )
               case AddResult.EntityExists(_) =>

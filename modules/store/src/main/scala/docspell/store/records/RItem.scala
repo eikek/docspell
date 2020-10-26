@@ -159,12 +159,16 @@ object RItem {
       ).update.run
     } yield n
 
-  def updateCorrOrg(itemId: Ident, coll: Ident, org: Option[Ident]): ConnectionIO[Int] =
+  def updateCorrOrg(
+      itemIds: NonEmptyList[Ident],
+      coll: Ident,
+      org: Option[Ident]
+  ): ConnectionIO[Int] =
     for {
       t <- currentTime
       n <- updateRow(
         table,
-        and(id.is(itemId), cid.is(coll)),
+        and(id.isIn(itemIds), cid.is(coll)),
         commas(corrOrg.setTo(org), updated.setTo(t))
       ).update.run
     } yield n
@@ -180,7 +184,7 @@ object RItem {
     } yield n
 
   def updateCorrPerson(
-      itemId: Ident,
+      itemIds: NonEmptyList[Ident],
       coll: Ident,
       person: Option[Ident]
   ): ConnectionIO[Int] =
@@ -188,7 +192,7 @@ object RItem {
       t <- currentTime
       n <- updateRow(
         table,
-        and(id.is(itemId), cid.is(coll)),
+        and(id.isIn(itemIds), cid.is(coll)),
         commas(corrPerson.setTo(person), updated.setTo(t))
       ).update.run
     } yield n
@@ -204,7 +208,7 @@ object RItem {
     } yield n
 
   def updateConcPerson(
-      itemId: Ident,
+      itemIds: NonEmptyList[Ident],
       coll: Ident,
       person: Option[Ident]
   ): ConnectionIO[Int] =
@@ -212,7 +216,7 @@ object RItem {
       t <- currentTime
       n <- updateRow(
         table,
-        and(id.is(itemId), cid.is(coll)),
+        and(id.isIn(itemIds), cid.is(coll)),
         commas(concPerson.setTo(person), updated.setTo(t))
       ).update.run
     } yield n
@@ -228,7 +232,7 @@ object RItem {
     } yield n
 
   def updateConcEquip(
-      itemId: Ident,
+      itemIds: NonEmptyList[Ident],
       coll: Ident,
       equip: Option[Ident]
   ): ConnectionIO[Int] =
@@ -236,7 +240,7 @@ object RItem {
       t <- currentTime
       n <- updateRow(
         table,
-        and(id.is(itemId), cid.is(coll)),
+        and(id.isIn(itemIds), cid.is(coll)),
         commas(concEquipment.setTo(equip), updated.setTo(t))
       ).update.run
     } yield n
