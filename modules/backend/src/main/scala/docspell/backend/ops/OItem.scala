@@ -49,7 +49,11 @@ trait OItem[F[_]] {
   /** Toggles tags of the given item. Tags must exist, but can be IDs or names. */
   def toggleTags(item: Ident, tags: List[String], collective: Ident): F[UpdateResult]
 
-  def setDirection(item: Ident, direction: Direction, collective: Ident): F[AddResult]
+  def setDirection(
+      item: NonEmptyList[Ident],
+      direction: Direction,
+      collective: Ident
+  ): F[UpdateResult]
 
   def setFolder(item: Ident, folder: Option[Ident], collective: Ident): F[UpdateResult]
 
@@ -252,14 +256,14 @@ object OItem {
             .getOrElse(AddResult.Failure(new Exception("Collective mismatch")))
 
         def setDirection(
-            item: Ident,
+            items: NonEmptyList[Ident],
             direction: Direction,
             collective: Ident
-        ): F[AddResult] =
-          store
-            .transact(RItem.updateDirection(item, collective, direction))
-            .attempt
-            .map(AddResult.fromUpdate)
+        ): F[UpdateResult] =
+          UpdateResult.fromUpdate(
+            store
+              .transact(RItem.updateDirection(items, collective, direction))
+          )
 
         def setFolder(
             item: Ident,

@@ -145,12 +145,16 @@ object RItem {
       ).update.run
     } yield n
 
-  def updateDirection(itemId: Ident, coll: Ident, dir: Direction): ConnectionIO[Int] =
+  def updateDirection(
+      itemIds: NonEmptyList[Ident],
+      coll: Ident,
+      dir: Direction
+  ): ConnectionIO[Int] =
     for {
       t <- currentTime
       n <- updateRow(
         table,
-        and(id.is(itemId), cid.is(coll)),
+        and(id.isIn(itemIds), cid.is(coll)),
         commas(incoming.setTo(dir), updated.setTo(t))
       ).update.run
     } yield n

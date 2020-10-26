@@ -94,12 +94,13 @@ object ItemMultiRoutes {
           resp  <- Ok(Conversions.basicResult(res, "Folder updated"))
         } yield resp
 
-      // case req @ PUT -> Root / "direction" =>
-      //   for {
-      //     dir  <- req.as[DirectionValue]
-      //     res  <- backend.item.setDirection(id, dir.direction, user.account.collective)
-      //     resp <- Ok(Conversions.basicResult(res, "Direction updated"))
-      //   } yield resp
+      case req @ PUT -> Root / "direction" =>
+        for {
+          json  <- req.as[ItemsAndDirection]
+          items <- readIds[F](json.items)
+          res   <- backend.item.setDirection(items, json.direction, user.account.collective)
+          resp  <- Ok(Conversions.basicResult(res, "Direction updated"))
+        } yield resp
 
       // case req @ PUT -> Root / "corrOrg" =>
       //   for {

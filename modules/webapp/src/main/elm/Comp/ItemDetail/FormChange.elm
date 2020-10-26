@@ -6,6 +6,7 @@ module Comp.ItemDetail.FormChange exposing
 import Api
 import Api.Model.BasicResult exposing (BasicResult)
 import Api.Model.IdName exposing (IdName)
+import Api.Model.ItemsAndDirection exposing (ItemsAndDirection)
 import Api.Model.ItemsAndName exposing (ItemsAndName)
 import Api.Model.ItemsAndRef exposing (ItemsAndRef)
 import Api.Model.ItemsAndRefs exposing (ItemsAndRefs)
@@ -62,6 +63,13 @@ multiUpdate flags ids change receive =
                     ItemsAndRef items (Maybe.map .id id)
             in
             Api.setFolderMultiple flags data receive
+
+        DirectionChange dir ->
+            let
+                data =
+                    ItemsAndDirection items (Data.Direction.toString dir)
+            in
+            Api.setDirectionMultiple flags data receive
 
         _ ->
             Cmd.none

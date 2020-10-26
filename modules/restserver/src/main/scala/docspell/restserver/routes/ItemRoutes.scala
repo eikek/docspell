@@ -1,5 +1,6 @@
 package docspell.restserver.routes
 
+import cats.data.NonEmptyList
 import cats.effect._
 import cats.implicits._
 
@@ -165,8 +166,12 @@ object ItemRoutes {
 
       case req @ PUT -> Root / Ident(id) / "direction" =>
         for {
-          dir  <- req.as[DirectionValue]
-          res  <- backend.item.setDirection(id, dir.direction, user.account.collective)
+          dir <- req.as[DirectionValue]
+          res <- backend.item.setDirection(
+            NonEmptyList.of(id),
+            dir.direction,
+            user.account.collective
+          )
           resp <- Ok(Conversions.basicResult(res, "Direction updated"))
         } yield resp
 
