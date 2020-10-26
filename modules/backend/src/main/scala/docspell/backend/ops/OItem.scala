@@ -51,7 +51,7 @@ trait OItem[F[_]] {
 
   def setDirection(item: Ident, direction: Direction, collective: Ident): F[AddResult]
 
-  def setFolder(item: Ident, folder: Option[Ident], collective: Ident): F[AddResult]
+  def setFolder(item: Ident, folder: Option[Ident], collective: Ident): F[UpdateResult]
 
   def setCorrOrg(item: Ident, org: Option[Ident], collective: Ident): F[AddResult]
 
@@ -69,9 +69,15 @@ trait OItem[F[_]] {
 
   def addConcEquip(item: Ident, equip: REquipment): F[AddResult]
 
-  def setNotes(item: Ident, notes: Option[String], collective: Ident): F[AddResult]
+  def setNotes(item: Ident, notes: Option[String], collective: Ident): F[UpdateResult]
 
-  def setName(item: Ident, name: String, collective: Ident): F[AddResult]
+  def setName(item: Ident, name: String, collective: Ident): F[UpdateResult]
+
+  def setNameMultiple(
+      items: NonEmptyList[Ident],
+      name: String,
+      collective: Ident
+  ): F[UpdateResult]
 
   def setState(item: Ident, state: ItemState, collective: Ident): F[AddResult] =
     setStates(NonEmptyList.of(item), state, collective)
@@ -102,7 +108,7 @@ trait OItem[F[_]] {
       attachId: Ident,
       name: Option[String],
       collective: Ident
-  ): F[AddResult]
+  ): F[UpdateResult]
 
   /** Submits the item for re-processing. The list of attachment ids can
     * be used to only re-process a subset of the item's attachments.
@@ -253,11 +259,12 @@ object OItem {
             item: Ident,
             folder: Option[Ident],
             collective: Ident
-        ): F[AddResult] =
-          store
-            .transact(RItem.updateFolder(item, collective, folder))
-            .attempt
-            .map(AddResult.fromUpdate)
+        ): F[UpdateResult] =
+          UpdateResult
+            .fromUpdate(
+              store
+                .transact(RItem.updateFolder(item, collective, folder))
+            )
             .flatTap(
               onSuccessIgnoreError(fts.updateFolder(logger, item, collective, folder))
             )
@@ -390,23 +397,46 @@ object OItem {
             item: Ident,
             notes: Option[String],
             collective: Ident
-        ): F[AddResult] =
-          store
-            .transact(RItem.updateNotes(item, collective, notes))
-            .attempt
-            .map(AddResult.fromUpdate)
+        ): F[UpdateResult] =
+          UpdateResult
+            .fromUpdate(
+              store
+                .transact(RItem.updateNotes(item, collective, notes))
+            )
             .flatTap(
               onSuccessIgnoreError(fts.updateItemNotes(logger, item, collective, notes))
             )
 
-        def setName(item: Ident, name: String, collective: Ident): F[AddResult] =
-          store
-            .transact(RItem.updateName(item, collective, name))
-            .attempt
-            .map(AddResult.fromUpdate)
+        def setName(item: Ident, name: String, collective: Ident): F[UpdateResult] =
+          UpdateResult
+            .fromUpdate(
+              store
+                .transact(RItem.updateName(item, collective, name))
+            )
             .flatTap(
               onSuccessIgnoreError(fts.updateItemName(logger, item, collective, name))
             )
+
+        def setNameMultiple(
+            items: NonEmptyList[Ident],
+            name: String,
+            collective: Ident
+        ): F[UpdateResult] =
+          for {
+            results <- items.traverse(i => setName(i, name, collective))
+            err <- results.traverse {
+              case UpdateResult.NotFound =>
+                logger.info("An item was not found when updating the name") *> 0.pure[F]
+              case UpdateResult.Failure(err) =>
+                logger.error(err)("An item failed to update its name") *> 1.pure[F]
+              case UpdateResult.Success =>
+                0.pure[F]
+            }
+            res =
+              if (results.size == err.fold)
+                UpdateResult.failure(new Exception("All items failed to update"))
+              else UpdateResult.success
+          } yield res
 
         def setStates(
             items: NonEmptyList[Ident],
@@ -455,11 +485,12 @@ object OItem {
             attachId: Ident,
             name: Option[String],
             collective: Ident
-        ): F[AddResult] =
-          store
-            .transact(RAttachment.updateName(attachId, collective, name))
-            .attempt
-            .map(AddResult.fromUpdate)
+        ): F[UpdateResult] =
+          UpdateResult
+            .fromUpdate(
+              store
+                .transact(RAttachment.updateName(attachId, collective, name))
+            )
             .flatTap(
               onSuccessIgnoreError(
                 OptionT(store.transact(RAttachment.findItemId(attachId)))
@@ -499,17 +530,17 @@ object OItem {
             _   <- if (notifyJoex) joex.notifyAllNodes else ().pure[F]
           } yield UpdateResult.success
 
-        private def onSuccessIgnoreError(update: F[Unit])(ar: AddResult): F[Unit] =
+        private def onSuccessIgnoreError(update: F[Unit])(ar: UpdateResult): F[Unit] =
           ar match {
-            case AddResult.Success =>
+            case UpdateResult.Success =>
               update.attempt.flatMap {
                 case Right(()) => ().pure[F]
                 case Left(ex) =>
                   logger.warn(s"Error updating full-text index: ${ex.getMessage}")
               }
-            case AddResult.Failure(_) =>
+            case UpdateResult.Failure(_) =>
               ().pure[F]
-            case AddResult.EntityExists(_) =>
+            case UpdateResult.NotFound =>
               ().pure[F]
           }
       })

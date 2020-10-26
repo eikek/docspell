@@ -6,6 +6,7 @@ module Comp.ItemDetail.FormChange exposing
 import Api
 import Api.Model.BasicResult exposing (BasicResult)
 import Api.Model.IdName exposing (IdName)
+import Api.Model.ItemsAndName exposing (ItemsAndName)
 import Api.Model.ItemsAndRefs exposing (ItemsAndRefs)
 import Api.Model.ReferenceList exposing (ReferenceList)
 import Data.Direction exposing (Direction)
@@ -46,6 +47,13 @@ multiUpdate flags ids change receive =
                     ItemsAndRefs items (List.map .id tags.items)
             in
             Api.setTagsMultiple flags data receive
+
+        NameChange name ->
+            let
+                data =
+                    ItemsAndName items name
+            in
+            Api.setNameMultiple flags data receive
 
         _ ->
             Cmd.none

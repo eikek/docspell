@@ -74,6 +74,19 @@ object ItemMultiRoutes {
           resp <- Ok(Conversions.basicResult(res, "Tags added."))
         } yield resp
 
+      case req @ PUT -> Root / "name" =>
+        for {
+          json <- req.as[ItemsAndName]
+          items <- readIds[F](json.items)
+          res <- backend.item.setNameMultiple(
+            items,
+            json.name.notEmpty.getOrElse(""),
+            user.account.collective
+          )
+          resp <- Ok(Conversions.basicResult(res, "Name updated"))
+        } yield resp
+
+
       // case req @ PUT -> Root / "direction" =>
       //   for {
       //     dir  <- req.as[DirectionValue]
@@ -116,17 +129,6 @@ object ItemMultiRoutes {
       //     resp  <- Ok(Conversions.basicResult(res, "Concerned equipment updated"))
       //   } yield resp
 
-      // case req @ PUT -> Root / "name" =>
-      //   for {
-      //     text <- req.as[OptionalText]
-      //     res <- backend.item.setName(
-      //       id,
-      //       text.text.notEmpty.getOrElse(""),
-      //       user.account.collective
-      //     )
-      //     resp <- Ok(Conversions.basicResult(res, "Name updated"))
-      //   } yield resp
-
       // case req @ PUT -> Root / "duedate" =>
       //   for {
       //     date <- req.as[OptionalDate]
@@ -164,6 +166,10 @@ object ItemMultiRoutes {
   implicit final class OptionString(opt: Option[String]) {
     def notEmpty: Option[String] =
       opt.map(_.trim).filter(_.nonEmpty)
+  }
+  implicit final class StringOps(str: String) {
+    def notEmpty: Option[String] =
+      Option(str).notEmpty
   }
 
   private def readId[F[_]](

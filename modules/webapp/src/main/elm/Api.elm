@@ -88,6 +88,7 @@ module Api exposing
     , setItemName
     , setItemNotes
     , setJobPrio
+    , setNameMultiple
     , setTags
     , setTagsMultiple
     , setUnconfirmed
@@ -132,6 +133,7 @@ import Api.Model.ItemLightList exposing (ItemLightList)
 import Api.Model.ItemProposals exposing (ItemProposals)
 import Api.Model.ItemSearch exposing (ItemSearch)
 import Api.Model.ItemUploadMeta exposing (ItemUploadMeta)
+import Api.Model.ItemsAndName exposing (ItemsAndName)
 import Api.Model.ItemsAndRefs exposing (ItemsAndRefs)
 import Api.Model.JobPriority exposing (JobPriority)
 import Api.Model.JobQueueState exposing (JobQueueState)
@@ -1292,6 +1294,20 @@ addTagsMultiple flags data receive =
         { url = flags.config.baseUrl ++ "/api/v1/sec/items/tags"
         , account = getAccount flags
         , body = Http.jsonBody (Api.Model.ItemsAndRefs.encode data)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+setNameMultiple :
+    Flags
+    -> ItemsAndName
+    -> (Result Http.Error BasicResult -> msg)
+    -> Cmd msg
+setNameMultiple flags data receive =
+    Http2.authPut
+        { url = flags.config.baseUrl ++ "/api/v1/sec/items/name"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.ItemsAndName.encode data)
         , expect = Http.expectJson receive Api.Model.BasicResult.decoder
         }
 
