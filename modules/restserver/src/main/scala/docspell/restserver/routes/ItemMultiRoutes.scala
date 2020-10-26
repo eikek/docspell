@@ -149,14 +149,13 @@ object ItemMultiRoutes {
           resp  <- Ok(Conversions.basicResult(res, "Concerned equipment updated"))
         } yield resp
 
-      // case req @ POST -> Root / "reprocess" =>
-      //   for {
-      //     data <- req.as[IdList]
-      //     ids = data.ids.flatMap(s => Ident.fromString(s).toOption)
-      //     _    <- logger.fdebug(s"Re-process item ${id.id}")
-      //     res  <- backend.item.reprocess(id, ids, user.account, true)
-      //     resp <- Ok(Conversions.basicResult(res, "Re-process task submitted."))
-      //   } yield resp
+      case req @ POST -> Root / "reprocess" =>
+        for {
+          json <- req.as[IdList]
+          items <- readIds[F](json.ids)
+          res  <- backend.item.reprocessAll(items, user.account, true)
+          resp <- Ok(Conversions.basicResult(res, "Re-process task(s) submitted."))
+        } yield resp
 
       // case POST -> Root / "deleteAll" =>
       //   for {

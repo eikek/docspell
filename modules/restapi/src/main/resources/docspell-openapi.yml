@@ -2225,6 +2225,31 @@ paths:
               schema:
                 $ref: "#/components/schemas/BasicResult"
 
+  /sec/items/reprocess:
+    post:
+      tags:
+        - Item (Multi Edit)
+      summary: Submit multiple items to re-processing
+      description: |
+        Given a list of item-ids, submits all these items for
+        reprocessing. All attachments of these items will be
+        reprocessed. Item metadata is not changed.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/IdList"
+
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
 
   /sec/attachment/{id}:
     delete:

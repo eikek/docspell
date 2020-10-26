@@ -114,5 +114,5 @@ multiUpdate flags ids change receive =
             in
             Api.setConcEquipmentMultiple flags data receive
 
-        _ ->
+        NoFormChange ->
             Cmd.none

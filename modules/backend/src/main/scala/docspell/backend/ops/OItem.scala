@@ -152,6 +152,12 @@ trait OItem[F[_]] {
       notifyJoex: Boolean
   ): F[UpdateResult]
 
+  def reprocessAll(
+      items: NonEmptyList[Ident],
+      account: AccountId,
+      notifyJoex: Boolean
+  ): F[UpdateResult]
+
   /** Submits a task that finds all non-converted pdfs and triggers
     * converting them using ocrmypdf. Each file is converted by a
     * separate task.
@@ -586,6 +592,20 @@ object OItem {
             _ <- OptionT.liftF(queue.insertIfNew(job))
             _ <- OptionT.liftF(if (notifyJoex) joex.notifyAllNodes else ().pure[F])
           } yield UpdateResult.success).getOrElse(UpdateResult.notFound)
+
+        def reprocessAll(
+            items: NonEmptyList[Ident],
+            account: AccountId,
+            notifyJoex: Boolean
+        ): F[UpdateResult] =
+          UpdateResult.fromUpdate(for {
+            items <- store.transact(RItem.filterItems(items, account.collective))
+            jobs <- items
+              .map(item => ReProcessItemArgs(item, Nil))
+              .traverse(arg => JobFactory.reprocessItem[F](arg, account, Priority.Low))
+            _ <- queue.insertAllIfNew(jobs)
+            _ <- if (notifyJoex) joex.notifyAllNodes else ().pure[F]
+          } yield items.size)
 
         def convertAllPdf(
             collective: Option[Ident],
