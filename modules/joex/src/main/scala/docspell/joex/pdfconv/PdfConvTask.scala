@@ -110,7 +110,7 @@ object PdfConvTask {
           ctx.logger.warn(s"Unable to convert '${mime}' file ${ctx.args}: $reason")
 
         case ConversionResult.Failure(ex) =>
-          ctx.logger.error(ex)(s"Failure converting file ${ctx.args}: ${ex.getMessage}")
+          Sync[F].raiseError(ex)
       })
 
     def ocrMyPdf(lang: Language): F[Unit] =
