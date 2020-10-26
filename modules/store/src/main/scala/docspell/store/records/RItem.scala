@@ -285,18 +285,8 @@ object RItem {
       ).update.run
     } yield n
 
-  def updateDate(itemId: Ident, coll: Ident, date: Option[Timestamp]): ConnectionIO[Int] =
-    for {
-      t <- currentTime
-      n <- updateRow(
-        table,
-        and(id.is(itemId), cid.is(coll)),
-        commas(itemDate.setTo(date), updated.setTo(t))
-      ).update.run
-    } yield n
-
-  def updateDueDate(
-      itemId: Ident,
+  def updateDate(
+      itemIds: NonEmptyList[Ident],
       coll: Ident,
       date: Option[Timestamp]
   ): ConnectionIO[Int] =
@@ -304,7 +294,21 @@ object RItem {
       t <- currentTime
       n <- updateRow(
         table,
-        and(id.is(itemId), cid.is(coll)),
+        and(id.isIn(itemIds), cid.is(coll)),
+        commas(itemDate.setTo(date), updated.setTo(t))
+      ).update.run
+    } yield n
+
+  def updateDueDate(
+      itemIds: NonEmptyList[Ident],
+      coll: Ident,
+      date: Option[Timestamp]
+  ): ConnectionIO[Int] =
+    for {
+      t <- currentTime
+      n <- updateRow(
+        table,
+        and(id.isIn(itemIds), cid.is(coll)),
         commas(dueDate.setTo(date), updated.setTo(t))
       ).update.run
     } yield n

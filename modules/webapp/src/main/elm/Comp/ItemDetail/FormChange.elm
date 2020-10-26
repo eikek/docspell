@@ -6,6 +6,7 @@ module Comp.ItemDetail.FormChange exposing
 import Api
 import Api.Model.BasicResult exposing (BasicResult)
 import Api.Model.IdName exposing (IdName)
+import Api.Model.ItemsAndDate exposing (ItemsAndDate)
 import Api.Model.ItemsAndDirection exposing (ItemsAndDirection)
 import Api.Model.ItemsAndName exposing (ItemsAndName)
 import Api.Model.ItemsAndRef exposing (ItemsAndRef)
@@ -70,6 +71,20 @@ multiUpdate flags ids change receive =
                     ItemsAndDirection items (Data.Direction.toString dir)
             in
             Api.setDirectionMultiple flags data receive
+
+        ItemDateChange date ->
+            let
+                data =
+                    ItemsAndDate items date
+            in
+            Api.setDateMultiple flags data receive
+
+        DueDateChange date ->
+            let
+                data =
+                    ItemsAndDate items date
+            in
+            Api.setDueDateMultiple flags data receive
 
         _ ->
             Cmd.none

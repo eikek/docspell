@@ -264,7 +264,11 @@ object ItemRoutes {
         for {
           date <- req.as[OptionalDate]
           _    <- logger.fdebug(s"Setting item due date to ${date.date}")
-          res  <- backend.item.setItemDueDate(id, date.date, user.account.collective)
+          res <- backend.item.setItemDueDate(
+            NonEmptyList.of(id),
+            date.date,
+            user.account.collective
+          )
           resp <- Ok(Conversions.basicResult(res, "Item due date updated"))
         } yield resp
 
@@ -272,7 +276,11 @@ object ItemRoutes {
         for {
           date <- req.as[OptionalDate]
           _    <- logger.fdebug(s"Setting item date to ${date.date}")
-          res  <- backend.item.setItemDate(id, date.date, user.account.collective)
+          res <- backend.item.setItemDate(
+            NonEmptyList.of(id),
+            date.date,
+            user.account.collective
+          )
           resp <- Ok(Conversions.basicResult(res, "Item date updated"))
         } yield resp
 

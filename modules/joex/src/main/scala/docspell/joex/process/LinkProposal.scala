@@ -1,5 +1,6 @@
 package docspell.joex.process
 
+import cats.data.NonEmptyList
 import cats.effect.Sync
 import cats.implicits._
 
@@ -88,7 +89,11 @@ object LinkProposal {
             val ts = Timestamp.from(ld.atStartOfDay(Timestamp.UTC))
             ctx.logger.debug(s"Updating item date ${value.id}") *>
               ctx.store.transact(
-                RItem.updateDate(itemId, ctx.args.meta.collective, Some(ts))
+                RItem.updateDate(
+                  NonEmptyList.of(itemId),
+                  ctx.args.meta.collective,
+                  Some(ts)
+                )
               )
           case None =>
             ctx.logger.info(s"Cannot read value '${value.id}' into a date.") *>
@@ -100,7 +105,11 @@ object LinkProposal {
             val ts = Timestamp.from(ld.atStartOfDay(Timestamp.UTC))
             ctx.logger.debug(s"Updating item due-date suggestion ${value.id}") *>
               ctx.store.transact(
-                RItem.updateDueDate(itemId, ctx.args.meta.collective, Some(ts))
+                RItem.updateDueDate(
+                  NonEmptyList.of(itemId),
+                  ctx.args.meta.collective,
+                  Some(ts)
+                )
               )
           case None =>
             ctx.logger.info(s"Cannot read value '${value.id}' into a date.") *>

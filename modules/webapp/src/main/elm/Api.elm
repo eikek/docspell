@@ -81,8 +81,10 @@ module Api exposing
     , setConfirmed
     , setCorrOrg
     , setCorrPerson
+    , setDateMultiple
     , setDirection
     , setDirectionMultiple
+    , setDueDateMultiple
     , setFolder
     , setFolderMultiple
     , setItemDate
@@ -135,6 +137,7 @@ import Api.Model.ItemLightList exposing (ItemLightList)
 import Api.Model.ItemProposals exposing (ItemProposals)
 import Api.Model.ItemSearch exposing (ItemSearch)
 import Api.Model.ItemUploadMeta exposing (ItemUploadMeta)
+import Api.Model.ItemsAndDate exposing (ItemsAndDate)
 import Api.Model.ItemsAndDirection exposing (ItemsAndDirection)
 import Api.Model.ItemsAndName exposing (ItemsAndName)
 import Api.Model.ItemsAndRef exposing (ItemsAndRef)
@@ -1340,6 +1343,34 @@ setDirectionMultiple flags data receive =
         { url = flags.config.baseUrl ++ "/api/v1/sec/items/direction"
         , account = getAccount flags
         , body = Http.jsonBody (Api.Model.ItemsAndDirection.encode data)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+setDateMultiple :
+    Flags
+    -> ItemsAndDate
+    -> (Result Http.Error BasicResult -> msg)
+    -> Cmd msg
+setDateMultiple flags data receive =
+    Http2.authPut
+        { url = flags.config.baseUrl ++ "/api/v1/sec/items/date"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.ItemsAndDate.encode data)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+setDueDateMultiple :
+    Flags
+    -> ItemsAndDate
+    -> (Result Http.Error BasicResult -> msg)
+    -> Cmd msg
+setDueDateMultiple flags data receive =
+    Http2.authPut
+        { url = flags.config.baseUrl ++ "/api/v1/sec/items/duedate"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.ItemsAndDate.encode data)
         , expect = Http.expectJson receive Api.Model.BasicResult.decoder
         }
 

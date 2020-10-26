@@ -98,13 +98,17 @@ trait OItem[F[_]] {
       collective: Ident
   ): F[AddResult]
 
-  def setItemDate(item: Ident, date: Option[Timestamp], collective: Ident): F[AddResult]
-
-  def setItemDueDate(
-      item: Ident,
+  def setItemDate(
+      item: NonEmptyList[Ident],
       date: Option[Timestamp],
       collective: Ident
-  ): F[AddResult]
+  ): F[UpdateResult]
+
+  def setItemDueDate(
+      item: NonEmptyList[Ident],
+      date: Option[Timestamp],
+      collective: Ident
+  ): F[UpdateResult]
 
   def getProposals(item: Ident, collective: Ident): F[MetaProposalList]
 
@@ -480,24 +484,24 @@ object OItem {
             .map(AddResult.fromUpdate)
 
         def setItemDate(
-            item: Ident,
+            items: NonEmptyList[Ident],
             date: Option[Timestamp],
             collective: Ident
-        ): F[AddResult] =
-          store
-            .transact(RItem.updateDate(item, collective, date))
-            .attempt
-            .map(AddResult.fromUpdate)
+        ): F[UpdateResult] =
+          UpdateResult.fromUpdate(
+            store
+              .transact(RItem.updateDate(items, collective, date))
+          )
 
         def setItemDueDate(
-            item: Ident,
+            items: NonEmptyList[Ident],
             date: Option[Timestamp],
             collective: Ident
-        ): F[AddResult] =
-          store
-            .transact(RItem.updateDueDate(item, collective, date))
-            .attempt
-            .map(AddResult.fromUpdate)
+        ): F[UpdateResult] =
+          UpdateResult.fromUpdate(
+            store
+              .transact(RItem.updateDueDate(items, collective, date))
+          )
 
         def deleteItem(itemId: Ident, collective: Ident): F[Int] =
           QItem

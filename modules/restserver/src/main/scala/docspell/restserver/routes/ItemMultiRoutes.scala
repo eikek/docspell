@@ -102,6 +102,22 @@ object ItemMultiRoutes {
           resp  <- Ok(Conversions.basicResult(res, "Direction updated"))
         } yield resp
 
+      case req @ PUT -> Root / "date" =>
+        for {
+          json  <- req.as[ItemsAndDate]
+          items <- readIds[F](json.items)
+          res   <- backend.item.setItemDate(items, json.date, user.account.collective)
+          resp  <- Ok(Conversions.basicResult(res, "Item date updated"))
+        } yield resp
+
+      case req @ PUT -> Root / "duedate" =>
+        for {
+          json  <- req.as[ItemsAndDate]
+          items <- readIds[F](json.items)
+          res   <- backend.item.setItemDueDate(items, json.date, user.account.collective)
+          resp  <- Ok(Conversions.basicResult(res, "Item due date updated"))
+        } yield resp
+
       // case req @ PUT -> Root / "corrOrg" =>
       //   for {
       //     idref <- req.as[OptionalId]
@@ -128,22 +144,6 @@ object ItemMultiRoutes {
       //     idref <- req.as[OptionalId]
       //     res   <- backend.item.setConcEquip(id, idref.id, user.account.collective)
       //     resp  <- Ok(Conversions.basicResult(res, "Concerned equipment updated"))
-      //   } yield resp
-
-      // case req @ PUT -> Root / "duedate" =>
-      //   for {
-      //     date <- req.as[OptionalDate]
-      //     _    <- logger.fdebug(s"Setting item due date to ${date.date}")
-      //     res  <- backend.item.setItemDueDate(id, date.date, user.account.collective)
-      //     resp <- Ok(Conversions.basicResult(res, "Item due date updated"))
-      //   } yield resp
-
-      // case req @ PUT -> Root / "date" =>
-      //   for {
-      //     date <- req.as[OptionalDate]
-      //     _    <- logger.fdebug(s"Setting item date to ${date.date}")
-      //     res  <- backend.item.setItemDate(id, date.date, user.account.collective)
-      //     resp <- Ok(Conversions.basicResult(res, "Item date updated"))
       //   } yield resp
 
       // case req @ POST -> Root / "reprocess" =>
