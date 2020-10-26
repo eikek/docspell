@@ -5,6 +5,7 @@ module Api exposing
     , addCorrPerson
     , addMember
     , addTag
+    , addTagsMultiple
     , cancelJob
     , changeFolderName
     , changePassword
@@ -88,6 +89,7 @@ module Api exposing
     , setItemNotes
     , setJobPrio
     , setTags
+    , setTagsMultiple
     , setUnconfirmed
     , startClassifier
     , startOnceNotifyDueItems
@@ -130,6 +132,7 @@ import Api.Model.ItemLightList exposing (ItemLightList)
 import Api.Model.ItemProposals exposing (ItemProposals)
 import Api.Model.ItemSearch exposing (ItemSearch)
 import Api.Model.ItemUploadMeta exposing (ItemUploadMeta)
+import Api.Model.ItemsAndRefs exposing (ItemsAndRefs)
 import Api.Model.JobPriority exposing (JobPriority)
 import Api.Model.JobQueueState exposing (JobQueueState)
 import Api.Model.MoveAttachment exposing (MoveAttachment)
@@ -1258,6 +1261,38 @@ getJobQueueStateTask flags =
         , body = Http.emptyBody
         , resolver = Http2.jsonResolver Api.Model.JobQueueState.decoder
         , timeout = Nothing
+        }
+
+
+
+--- Item (Mulit Edit)
+
+
+setTagsMultiple :
+    Flags
+    -> ItemsAndRefs
+    -> (Result Http.Error BasicResult -> msg)
+    -> Cmd msg
+setTagsMultiple flags data receive =
+    Http2.authPut
+        { url = flags.config.baseUrl ++ "/api/v1/sec/items/tags"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.ItemsAndRefs.encode data)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+addTagsMultiple :
+    Flags
+    -> ItemsAndRefs
+    -> (Result Http.Error BasicResult -> msg)
+    -> Cmd msg
+addTagsMultiple flags data receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/items/tags"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.ItemsAndRefs.encode data)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
         }
 
 

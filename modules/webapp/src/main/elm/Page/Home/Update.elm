@@ -435,7 +435,10 @@ update mId key flags settings msg model =
                                 res.change
                                 MultiUpdateResp
                     in
-                    ( { model | viewMode = SelectView svm_ }, Cmd.batch [ cmd_, upCmd ], sub_ )
+                    ( { model | viewMode = SelectView svm_ }
+                    , Cmd.batch [ cmd_, upCmd ]
+                    , sub_
+                    )
 
                 _ ->
                     noSub ( model, Cmd.none )

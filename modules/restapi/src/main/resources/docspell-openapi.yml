@@ -1927,7 +1927,10 @@ paths:
         - Item (Multi Edit)
       summary: Add tags to multiple items
       description: |
-        Add the given tags to all given items.
+        Add the given tags to all given items. The tags that are
+        currently attached to the items are not changed. If there are
+        new tags in the given list, then they are added. Otherwise,
+        the item is left unchanged.
       security:
         - authTokenHeader: []
       requestBody:
@@ -1948,7 +1951,7 @@ paths:
       summary: Sets tags to multiple items
       description: |
         Sets the given tags to all given items. If the tag list is
-        empty, then tags are removed from the items.
+        empty, then all tags are removed from the items.
       security:
         - authTokenHeader: []
       requestBody:

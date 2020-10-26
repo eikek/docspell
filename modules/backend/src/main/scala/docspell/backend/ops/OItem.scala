@@ -1,5 +1,6 @@
 package docspell.backend.ops
 
+import cats.data.NonEmptyList
 import cats.data.OptionT
 import cats.effect.{Effect, Resource}
 import cats.implicits._
@@ -13,20 +14,37 @@ import docspell.store.queue.JobQueue
 import docspell.store.records._
 import docspell.store.{AddResult, Store}
 
-import doobie._
 import doobie.implicits._
 import org.log4s.getLogger
 
 trait OItem[F[_]] {
 
   /** Sets the given tags (removing all existing ones). */
-  def setTags(item: Ident, tagIds: List[Ident], collective: Ident): F[AddResult]
+  def setTags(item: Ident, tagIds: List[Ident], collective: Ident): F[UpdateResult]
+
+  /** Sets tags for multiple items. The tags of the items will be
+    * replaced with the given ones. Same as `setTags` but for multiple
+    * items.
+    */
+  def setTagsMultipleItems(
+      items: NonEmptyList[Ident],
+      tags: List[Ident],
+      collective: Ident
+  ): F[UpdateResult]
 
   /** Create a new tag and add it to the item. */
   def addNewTag(item: Ident, tag: RTag): F[AddResult]
 
-  /** Apply all tags to the given item. Tags must exist, but can be IDs or names. */
+  /** Apply all tags to the given item. Tags must exist, but can be IDs
+    * or names. Existing tags on the item are left unchanged.
+    */
   def linkTags(item: Ident, tags: List[String], collective: Ident): F[UpdateResult]
+
+  def linkTagsMultipleItems(
+      items: NonEmptyList[Ident],
+      tags: List[String],
+      collective: Ident
+  ): F[UpdateResult]
 
   /** Toggles tags of the given item. Tags must exist, but can be IDs or names. */
   def toggleTags(item: Ident, tags: List[String], collective: Ident): F[UpdateResult]
@@ -55,7 +73,14 @@ trait OItem[F[_]] {
 
   def setName(item: Ident, name: String, collective: Ident): F[AddResult]
 
-  def setState(item: Ident, state: ItemState, collective: Ident): F[AddResult]
+  def setState(item: Ident, state: ItemState, collective: Ident): F[AddResult] =
+    setStates(NonEmptyList.of(item), state, collective)
+
+  def setStates(
+      item: NonEmptyList[Ident],
+      state: ItemState,
+      collective: Ident
+  ): F[AddResult]
 
   def setItemDate(item: Ident, date: Option[Timestamp], collective: Ident): F[AddResult]
 
@@ -131,20 +156,29 @@ object OItem {
             tags: List[String],
             collective: Ident
         ): F[UpdateResult] =
+          linkTagsMultipleItems(NonEmptyList.of(item), tags, collective)
+
+        def linkTagsMultipleItems(
+            items: NonEmptyList[Ident],
+            tags: List[String],
+            collective: Ident
+        ): F[UpdateResult] =
           tags.distinct match {
             case Nil => UpdateResult.success.pure[F]
-            case kws =>
-              val db =
+            case ws =>
+              store.transact {
                 (for {
-                  _     <- OptionT(RItem.checkByIdAndCollective(item, collective))
-                  given <- OptionT.liftF(RTag.findAllByNameOrId(kws, collective))
-                  exist <- OptionT.liftF(RTagItem.findAllIn(item, given.map(_.tagId)))
+                  itemIds <- OptionT
+                    .liftF(RItem.filterItems(items, collective))
+                    .filter(_.nonEmpty)
+                  given <- OptionT.liftF(RTag.findAllByNameOrId(ws, collective))
                   _ <- OptionT.liftF(
-                    RTagItem.setAllTags(item, given.map(_.tagId).diff(exist.map(_.tagId)))
+                    itemIds.traverse(item =>
+                      RTagItem.appendTags(item, given.map(_.tagId).toList)
+                    )
                   )
                 } yield UpdateResult.success).getOrElse(UpdateResult.notFound)
-
-              store.transact(db)
+              }
           }
 
         def toggleTags(
@@ -169,20 +203,23 @@ object OItem {
               store.transact(db)
           }
 
-        def setTags(item: Ident, tagIds: List[Ident], collective: Ident): F[AddResult] = {
-          val db = for {
-            cid <- RItem.getCollective(item)
-            nd <-
-              if (cid.contains(collective)) RTagItem.deleteItemTags(item)
-              else 0.pure[ConnectionIO]
-            ni <-
-              if (tagIds.nonEmpty && cid.contains(collective))
-                RTagItem.insertItemTags(item, tagIds)
-              else 0.pure[ConnectionIO]
-          } yield nd + ni
+        def setTags(
+            item: Ident,
+            tagIds: List[Ident],
+            collective: Ident
+        ): F[UpdateResult] =
+          setTagsMultipleItems(NonEmptyList.of(item), tagIds, collective)
 
-          store.transact(db).attempt.map(AddResult.fromUpdate)
-        }
+        def setTagsMultipleItems(
+            items: NonEmptyList[Ident],
+            tags: List[Ident],
+            collective: Ident
+        ): F[UpdateResult] =
+          UpdateResult.fromUpdate(store.transact(for {
+            k   <- RTagItem.deleteItemTags(items, collective)
+            res <- items.traverse(i => RTagItem.setAllTags(i, tags))
+            n = res.fold
+          } yield k + n))
 
         def addNewTag(item: Ident, tag: RTag): F[AddResult] =
           (for {
@@ -192,7 +229,7 @@ object OItem {
             _ <- addres match {
               case AddResult.Success =>
                 OptionT.liftF(
-                  store.transact(RTagItem.insertItemTags(item, List(tag.tagId)))
+                  store.transact(RTagItem.setAllTags(item, List(tag.tagId)))
                 )
               case AddResult.EntityExists(_) =>
                 OptionT.pure[F](0)
@@ -371,9 +408,13 @@ object OItem {
               onSuccessIgnoreError(fts.updateItemName(logger, item, collective, name))
             )
 
-        def setState(item: Ident, state: ItemState, collective: Ident): F[AddResult] =
+        def setStates(
+            items: NonEmptyList[Ident],
+            state: ItemState,
+            collective: Ident
+        ): F[AddResult] =
           store
-            .transact(RItem.updateStateForCollective(item, state, collective))
+            .transact(RItem.updateStateForCollective(items, state, collective))
             .attempt
             .map(AddResult.fromUpdate)
 

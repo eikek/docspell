@@ -40,5 +40,12 @@ multiUpdate flags ids change receive =
             Set.toList ids
     in
     case change of
+        TagChange tags ->
+            let
+                data =
+                    ItemsAndRefs items (List.map .id tags.items)
+            in
+            Api.setTagsMultiple flags data receive
+
         _ ->
             Cmd.none
