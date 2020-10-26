@@ -83,6 +83,7 @@ module Api exposing
     , setCorrPerson
     , setDirection
     , setFolder
+    , setFolderMultiple
     , setItemDate
     , setItemDueDate
     , setItemName
@@ -134,6 +135,7 @@ import Api.Model.ItemProposals exposing (ItemProposals)
 import Api.Model.ItemSearch exposing (ItemSearch)
 import Api.Model.ItemUploadMeta exposing (ItemUploadMeta)
 import Api.Model.ItemsAndName exposing (ItemsAndName)
+import Api.Model.ItemsAndRef exposing (ItemsAndRef)
 import Api.Model.ItemsAndRefs exposing (ItemsAndRefs)
 import Api.Model.JobPriority exposing (JobPriority)
 import Api.Model.JobQueueState exposing (JobQueueState)
@@ -1308,6 +1310,20 @@ setNameMultiple flags data receive =
         { url = flags.config.baseUrl ++ "/api/v1/sec/items/name"
         , account = getAccount flags
         , body = Http.jsonBody (Api.Model.ItemsAndName.encode data)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+setFolderMultiple :
+    Flags
+    -> ItemsAndRef
+    -> (Result Http.Error BasicResult -> msg)
+    -> Cmd msg
+setFolderMultiple flags data receive =
+    Http2.authPut
+        { url = flags.config.baseUrl ++ "/api/v1/sec/items/folder"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.ItemsAndRef.encode data)
         , expect = Http.expectJson receive Api.Model.BasicResult.decoder
         }
 

@@ -76,7 +76,7 @@ object ItemMultiRoutes {
 
       case req @ PUT -> Root / "name" =>
         for {
-          json <- req.as[ItemsAndName]
+          json  <- req.as[ItemsAndName]
           items <- readIds[F](json.items)
           res <- backend.item.setNameMultiple(
             items,
@@ -86,19 +86,19 @@ object ItemMultiRoutes {
           resp <- Ok(Conversions.basicResult(res, "Name updated"))
         } yield resp
 
+      case req @ PUT -> Root / "folder" =>
+        for {
+          json  <- req.as[ItemsAndRef]
+          items <- readIds[F](json.items)
+          res   <- backend.item.setFolderMultiple(items, json.ref, user.account.collective)
+          resp  <- Ok(Conversions.basicResult(res, "Folder updated"))
+        } yield resp
 
       // case req @ PUT -> Root / "direction" =>
       //   for {
       //     dir  <- req.as[DirectionValue]
       //     res  <- backend.item.setDirection(id, dir.direction, user.account.collective)
       //     resp <- Ok(Conversions.basicResult(res, "Direction updated"))
-      //   } yield resp
-
-      // case req @ PUT -> Root / "folder" =>
-      //   for {
-      //     idref <- req.as[OptionalId]
-      //     res   <- backend.item.setFolder(id, idref.id, user.account.collective)
-      //     resp  <- Ok(Conversions.basicResult(res, "Folder updated"))
       //   } yield resp
 
       // case req @ PUT -> Root / "corrOrg" =>

@@ -7,6 +7,7 @@ import Api
 import Api.Model.BasicResult exposing (BasicResult)
 import Api.Model.IdName exposing (IdName)
 import Api.Model.ItemsAndName exposing (ItemsAndName)
+import Api.Model.ItemsAndRef exposing (ItemsAndRef)
 import Api.Model.ItemsAndRefs exposing (ItemsAndRefs)
 import Api.Model.ReferenceList exposing (ReferenceList)
 import Data.Direction exposing (Direction)
@@ -54,6 +55,13 @@ multiUpdate flags ids change receive =
                     ItemsAndName items name
             in
             Api.setNameMultiple flags data receive
+
+        FolderChange id ->
+            let
+                data =
+                    ItemsAndRef items (Maybe.map .id id)
+            in
+            Api.setFolderMultiple flags data receive
 
         _ ->
             Cmd.none

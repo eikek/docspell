@@ -53,6 +53,12 @@ trait OItem[F[_]] {
 
   def setFolder(item: Ident, folder: Option[Ident], collective: Ident): F[UpdateResult]
 
+  def setFolderMultiple(
+      items: NonEmptyList[Ident],
+      folder: Option[Ident],
+      collective: Ident
+  ): F[UpdateResult]
+
   def setCorrOrg(item: Ident, org: Option[Ident], collective: Ident): F[AddResult]
 
   def addCorrOrg(item: Ident, org: OOrganization.OrgAndContacts): F[AddResult]
@@ -268,6 +274,27 @@ object OItem {
             .flatTap(
               onSuccessIgnoreError(fts.updateFolder(logger, item, collective, folder))
             )
+
+        def setFolderMultiple(
+            items: NonEmptyList[Ident],
+            folder: Option[Ident],
+            collective: Ident
+        ): F[UpdateResult] =
+          for {
+            results <- items.traverse(i => setFolder(i, folder, collective))
+            err <- results.traverse {
+              case UpdateResult.NotFound =>
+                logger.info("An item was not found when updating the folder") *> 0.pure[F]
+              case UpdateResult.Failure(err) =>
+                logger.error(err)("An item failed to update its folder") *> 1.pure[F]
+              case UpdateResult.Success =>
+                0.pure[F]
+            }
+            res =
+              if (results.size == err.fold)
+                UpdateResult.failure(new Exception("All items failed to update"))
+              else UpdateResult.success
+          } yield res
 
         def setCorrOrg(item: Ident, org: Option[Ident], collective: Ident): F[AddResult] =
           store
