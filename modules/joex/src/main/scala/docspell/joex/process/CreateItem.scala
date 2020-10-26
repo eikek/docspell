@@ -121,9 +121,10 @@ object CreateItem {
 
   private def findExisting[F[_]: Sync]: Task[F, ProcessItemArgs, Option[ItemData]] =
     Task { ctx =>
+      val states      = ItemState.invalidStates.toList.toSet
       val fileMetaIds = ctx.args.files.map(_.fileMetaId).toSet
       for {
-        cand <- ctx.store.transact(QItem.findByFileIds(fileMetaIds.toSeq))
+        cand <- ctx.store.transact(QItem.findByFileIds(fileMetaIds.toSeq, states))
         _ <-
           if (cand.nonEmpty)
             ctx.logger.warn(s"Found ${cand.size} existing item with these files.")
