@@ -169,6 +169,7 @@ type Msg
     | EditMenuMsg Comp.ItemDetail.EditMenu.Msg
     | MultiUpdateResp (Result Http.Error BasicResult)
     | ReplaceChangedItemsResp (Result Http.Error ItemLightList)
+    | DeleteAllResp (Result Http.Error BasicResult)
 
 
 type SearchType

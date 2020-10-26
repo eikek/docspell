@@ -130,6 +130,8 @@ trait OItem[F[_]] {
 
   def deleteItem(itemId: Ident, collective: Ident): F[Int]
 
+  def deleteItemMultiple(items: NonEmptyList[Ident], collective: Ident): F[Int]
+
   def deleteAttachment(id: Ident, collective: Ident): F[Int]
 
   def moveAttachmentBefore(itemId: Ident, source: Ident, target: Ident): F[AddResult]
@@ -546,6 +548,13 @@ object OItem {
           QItem
             .delete(store)(itemId, collective)
             .flatTap(_ => fts.removeItem(logger, itemId))
+
+        def deleteItemMultiple(items: NonEmptyList[Ident], collective: Ident): F[Int] =
+          for {
+            itemIds <- store.transact(RItem.filterItems(items, collective))
+            results <- itemIds.traverse(item => deleteItem(item, collective))
+            n = results.fold(0)(_ + _)
+          } yield n
 
         def getProposals(item: Ident, collective: Ident): F[MetaProposalList] =
           store.transact(QAttachment.getMetaProposals(item, collective))

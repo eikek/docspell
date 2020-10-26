@@ -346,7 +346,7 @@ update mId key flags settings msg model =
 
                         cmd =
                             if confirmed then
-                                Cmd.none
+                                Api.deleteAllItems flags svm.ids DeleteAllResp
 
                             else
                                 Cmd.none
@@ -372,6 +372,20 @@ update mId key flags settings msg model =
 
                 _ ->
                     noSub ( model, Cmd.none )
+
+        DeleteAllResp (Ok res) ->
+            if res.success then
+                let
+                    nm =
+                        { model | viewMode = SearchView }
+                in
+                doSearch flags settings False nm
+
+            else
+                noSub ( model, Cmd.none )
+
+        DeleteAllResp (Err _) ->
+            noSub ( model, Cmd.none )
 
         RequestDeleteSelected ->
             case model.viewMode of

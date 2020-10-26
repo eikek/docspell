@@ -151,18 +151,23 @@ object ItemMultiRoutes {
 
       case req @ POST -> Root / "reprocess" =>
         for {
-          json <- req.as[IdList]
+          json  <- req.as[IdList]
           items <- readIds[F](json.ids)
-          res  <- backend.item.reprocessAll(items, user.account, true)
-          resp <- Ok(Conversions.basicResult(res, "Re-process task(s) submitted."))
+          res   <- backend.item.reprocessAll(items, user.account, true)
+          resp  <- Ok(Conversions.basicResult(res, "Re-process task(s) submitted."))
         } yield resp
 
-      // case POST -> Root / "deleteAll" =>
-      //   for {
-      //     n <- backend.item.deleteItem(id, user.account.collective)
-      //     res = BasicResult(n > 0, if (n > 0) "Item deleted" else "Item deletion failed.")
-      //     resp <- Ok(res)
-      //   } yield resp
+      case req @ POST -> Root / "deleteAll" =>
+        for {
+          json  <- req.as[IdList]
+          items <- readIds[F](json.ids)
+          n     <- backend.item.deleteItemMultiple(items, user.account.collective)
+          res = BasicResult(
+            n > 0,
+            if (n > 0) "Item(s) deleted" else "Item deletion failed."
+          )
+          resp <- Ok(res)
+        } yield resp
     }
   }
 
