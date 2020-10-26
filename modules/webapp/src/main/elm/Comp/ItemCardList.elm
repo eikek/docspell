@@ -235,6 +235,7 @@ viewItem cfg settings item =
                 Data.ItemSelection.Active ids ->
                     div [ class "header" ]
                         [ Util.Html.checkbox (Set.member item.id ids)
+                        , dirIcon
                         , Util.String.underscoreToSpace item.name
                             |> text
                         ]
