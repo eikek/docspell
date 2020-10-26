@@ -23,7 +23,8 @@ import Api.Model.ItemSearch
 import Browser.Dom as Dom
 import Comp.FixedDropdown
 import Comp.ItemCardList
-import Comp.ItemDetail.EditMenu
+import Comp.ItemDetail.EditMenu exposing (SaveNameState(..))
+import Comp.ItemDetail.FormChange exposing (FormChange)
 import Comp.SearchMenu
 import Comp.YesNoDimmer
 import Data.Flags exposing (Flags)
@@ -60,6 +61,7 @@ type alias SelectViewModel =
     , action : SelectActionMode
     , deleteAllConfirm : Comp.YesNoDimmer.Model
     , editModel : Comp.ItemDetail.EditMenu.Model
+    , saveNameState : SaveNameState
     }
 
 
@@ -69,6 +71,7 @@ initSelectViewModel =
     , action = NoneAction
     , deleteAllConfirm = Comp.YesNoDimmer.initActive
     , editModel = Comp.ItemDetail.EditMenu.init
+    , saveNameState = SaveSuccess
     }
 
 
@@ -167,7 +170,7 @@ type Msg
     | DeleteSelectedConfirmMsg Comp.YesNoDimmer.Msg
     | EditSelectedItems
     | EditMenuMsg Comp.ItemDetail.EditMenu.Msg
-    | MultiUpdateResp (Result Http.Error BasicResult)
+    | MultiUpdateResp FormChange (Result Http.Error BasicResult)
     | ReplaceChangedItemsResp (Result Http.Error ItemLightList)
     | DeleteAllResp (Result Http.Error BasicResult)
 

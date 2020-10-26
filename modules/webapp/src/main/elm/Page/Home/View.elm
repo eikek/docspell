@@ -174,8 +174,11 @@ viewLeftMenu flags settings model =
             case svm.action of
                 EditSelected ->
                     let
-                        cfg =
+                        cfg_ =
                             Comp.ItemDetail.EditMenu.defaultViewConfig
+
+                        cfg =
+                            { cfg_ | nameState = svm.saveNameState }
                     in
                     [ div [ class "ui dividing header" ]
                         [ text "Multi-Edit"
@@ -208,7 +211,7 @@ viewBar flags model =
 
 
 viewActionBar : Flags -> SelectViewModel -> Model -> Html Msg
-viewActionBar _ svm model =
+viewActionBar _ svm _ =
     let
         selectCount =
             Set.size svm.ids |> String.fromInt

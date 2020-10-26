@@ -3,12 +3,12 @@ module Page.Home.Update exposing (update)
 import Api
 import Api.Model.IdList exposing (IdList)
 import Api.Model.ItemLightList exposing (ItemLightList)
-import Api.Model.ItemSearch exposing (ItemSearch)
+import Api.Model.ItemSearch
 import Browser.Navigation as Nav
 import Comp.FixedDropdown
 import Comp.ItemCardList
-import Comp.ItemDetail.EditMenu
-import Comp.ItemDetail.FormChange
+import Comp.ItemDetail.EditMenu exposing (SaveNameState(..))
+import Comp.ItemDetail.FormChange exposing (FormChange(..))
 import Comp.SearchMenu
 import Comp.YesNoDimmer
 import Data.Flags exposing (Flags)
@@ -435,7 +435,16 @@ update mId key flags settings msg model =
                             Comp.ItemDetail.EditMenu.update flags lmsg svm.editModel
 
                         svm_ =
-                            { svm | editModel = res.model }
+                            { svm
+                                | editModel = res.model
+                                , saveNameState =
+                                    case res.change of
+                                        NameChange _ ->
+                                            Saving
+
+                                        _ ->
+                                            svm.saveNameState
+                            }
 
                         cmd_ =
                             Cmd.map EditMenuMsg res.cmd
@@ -447,7 +456,7 @@ update mId key flags settings msg model =
                             Comp.ItemDetail.FormChange.multiUpdate flags
                                 svm.ids
                                 res.change
-                                MultiUpdateResp
+                                (MultiUpdateResp res.change)
                     in
                     ( { model | viewMode = SelectView svm_ }
                     , Cmd.batch [ cmd_, upCmd ]
@@ -457,21 +466,28 @@ update mId key flags settings msg model =
                 _ ->
                     noSub ( model, Cmd.none )
 
-        MultiUpdateResp (Ok res) ->
+        MultiUpdateResp change (Ok res) ->
+            let
+                nm =
+                    updateSelectViewNameState res.success model change
+            in
             if res.success then
                 case model.viewMode of
                     SelectView svm ->
                         -- replace changed items in the view
-                        noSub ( model, loadChangedItems flags svm.ids )
+                        noSub ( nm, loadChangedItems flags svm.ids )
 
                     _ ->
-                        noSub ( model, Cmd.none )
+                        noSub ( nm, Cmd.none )
 
             else
-                noSub ( model, Cmd.none )
+                noSub ( nm, Cmd.none )
 
-        MultiUpdateResp (Err _) ->
-            noSub ( model, Cmd.none )
+        MultiUpdateResp change (Err _) ->
+            ( updateSelectViewNameState False model change
+            , Cmd.none
+            , Sub.none
+            )
 
         ReplaceChangedItemsResp (Ok items) ->
             noSub ( replaceItems model items, Cmd.none )
@@ -482,6 +498,32 @@ update mId key flags settings msg model =
 
 
 --- Helpers
+
+
+updateSelectViewNameState : Bool -> Model -> FormChange -> Model
+updateSelectViewNameState success model change =
+    case model.viewMode of
+        SelectView svm ->
+            case change of
+                NameChange _ ->
+                    let
+                        svm_ =
+                            { svm
+                                | saveNameState =
+                                    if success then
+                                        SaveSuccess
+
+                                    else
+                                        SaveFailed
+                            }
+                    in
+                    { model | viewMode = SelectView svm_ }
+
+                _ ->
+                    model
+
+        _ ->
+            model
 
 
 replaceItems : Model -> ItemLightList -> Model
