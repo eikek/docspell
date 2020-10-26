@@ -58,6 +58,13 @@ private[extern] object ExternConv {
       }
       .compile
       .lastOrError
+      .attempt
+      .flatMap {
+        case Right(v) =>
+          v.pure[F]
+        case Left(ex) =>
+          handler.run(ConversionResult.failure(ex))
+      }
 
   def readResult[F[_]: Sync: ContextShift](
       blocker: Blocker,
