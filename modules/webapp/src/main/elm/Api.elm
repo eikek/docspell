@@ -5,6 +5,7 @@ module Api exposing
     , addCorrPerson
     , addMember
     , addTag
+    , addTagsMultiple
     , cancelJob
     , changeFolderName
     , changePassword
@@ -14,6 +15,7 @@ module Api exposing
     , createNewFolder
     , createNotifyDueItems
     , createScanMailbox
+    , deleteAllItems
     , deleteAttachment
     , deleteEquip
     , deleteFolder
@@ -76,18 +78,28 @@ module Api exposing
     , setAttachmentName
     , setCollectiveSettings
     , setConcEquip
+    , setConcEquipmentMultiple
     , setConcPerson
+    , setConcPersonMultiple
     , setConfirmed
     , setCorrOrg
+    , setCorrOrgMultiple
     , setCorrPerson
+    , setCorrPersonMultiple
+    , setDateMultiple
     , setDirection
+    , setDirectionMultiple
+    , setDueDateMultiple
     , setFolder
+    , setFolderMultiple
     , setItemDate
     , setItemDueDate
     , setItemName
     , setItemNotes
     , setJobPrio
+    , setNameMultiple
     , setTags
+    , setTagsMultiple
     , setUnconfirmed
     , startClassifier
     , startOnceNotifyDueItems
@@ -119,6 +131,7 @@ import Api.Model.EquipmentList exposing (EquipmentList)
 import Api.Model.FolderDetail exposing (FolderDetail)
 import Api.Model.FolderList exposing (FolderList)
 import Api.Model.GenInvite exposing (GenInvite)
+import Api.Model.IdList exposing (IdList)
 import Api.Model.IdResult exposing (IdResult)
 import Api.Model.ImapSettings exposing (ImapSettings)
 import Api.Model.ImapSettingsList exposing (ImapSettingsList)
@@ -130,6 +143,11 @@ import Api.Model.ItemLightList exposing (ItemLightList)
 import Api.Model.ItemProposals exposing (ItemProposals)
 import Api.Model.ItemSearch exposing (ItemSearch)
 import Api.Model.ItemUploadMeta exposing (ItemUploadMeta)
+import Api.Model.ItemsAndDate exposing (ItemsAndDate)
+import Api.Model.ItemsAndDirection exposing (ItemsAndDirection)
+import Api.Model.ItemsAndName exposing (ItemsAndName)
+import Api.Model.ItemsAndRef exposing (ItemsAndRef)
+import Api.Model.ItemsAndRefs exposing (ItemsAndRefs)
 import Api.Model.JobPriority exposing (JobPriority)
 import Api.Model.JobQueueState exposing (JobQueueState)
 import Api.Model.MoveAttachment exposing (MoveAttachment)
@@ -166,6 +184,7 @@ import Data.Priority exposing (Priority)
 import File exposing (File)
 import Http
 import Json.Encode as JsonEncode
+import Set exposing (Set)
 import Task
 import Url
 import Util.File
@@ -1258,6 +1277,178 @@ getJobQueueStateTask flags =
         , body = Http.emptyBody
         , resolver = Http2.jsonResolver Api.Model.JobQueueState.decoder
         , timeout = Nothing
+        }
+
+
+
+--- Item (Mulit Edit)
+
+
+setTagsMultiple :
+    Flags
+    -> ItemsAndRefs
+    -> (Result Http.Error BasicResult -> msg)
+    -> Cmd msg
+setTagsMultiple flags data receive =
+    Http2.authPut
+        { url = flags.config.baseUrl ++ "/api/v1/sec/items/tags"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.ItemsAndRefs.encode data)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+addTagsMultiple :
+    Flags
+    -> ItemsAndRefs
+    -> (Result Http.Error BasicResult -> msg)
+    -> Cmd msg
+addTagsMultiple flags data receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/items/tags"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.ItemsAndRefs.encode data)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+setNameMultiple :
+    Flags
+    -> ItemsAndName
+    -> (Result Http.Error BasicResult -> msg)
+    -> Cmd msg
+setNameMultiple flags data receive =
+    Http2.authPut
+        { url = flags.config.baseUrl ++ "/api/v1/sec/items/name"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.ItemsAndName.encode data)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+setFolderMultiple :
+    Flags
+    -> ItemsAndRef
+    -> (Result Http.Error BasicResult -> msg)
+    -> Cmd msg
+setFolderMultiple flags data receive =
+    Http2.authPut
+        { url = flags.config.baseUrl ++ "/api/v1/sec/items/folder"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.ItemsAndRef.encode data)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+setDirectionMultiple :
+    Flags
+    -> ItemsAndDirection
+    -> (Result Http.Error BasicResult -> msg)
+    -> Cmd msg
+setDirectionMultiple flags data receive =
+    Http2.authPut
+        { url = flags.config.baseUrl ++ "/api/v1/sec/items/direction"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.ItemsAndDirection.encode data)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+setDateMultiple :
+    Flags
+    -> ItemsAndDate
+    -> (Result Http.Error BasicResult -> msg)
+    -> Cmd msg
+setDateMultiple flags data receive =
+    Http2.authPut
+        { url = flags.config.baseUrl ++ "/api/v1/sec/items/date"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.ItemsAndDate.encode data)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+setDueDateMultiple :
+    Flags
+    -> ItemsAndDate
+    -> (Result Http.Error BasicResult -> msg)
+    -> Cmd msg
+setDueDateMultiple flags data receive =
+    Http2.authPut
+        { url = flags.config.baseUrl ++ "/api/v1/sec/items/duedate"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.ItemsAndDate.encode data)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+setCorrOrgMultiple :
+    Flags
+    -> ItemsAndRef
+    -> (Result Http.Error BasicResult -> msg)
+    -> Cmd msg
+setCorrOrgMultiple flags data receive =
+    Http2.authPut
+        { url = flags.config.baseUrl ++ "/api/v1/sec/items/corrOrg"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.ItemsAndRef.encode data)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+setCorrPersonMultiple :
+    Flags
+    -> ItemsAndRef
+    -> (Result Http.Error BasicResult -> msg)
+    -> Cmd msg
+setCorrPersonMultiple flags data receive =
+    Http2.authPut
+        { url = flags.config.baseUrl ++ "/api/v1/sec/items/corrPerson"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.ItemsAndRef.encode data)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+setConcPersonMultiple :
+    Flags
+    -> ItemsAndRef
+    -> (Result Http.Error BasicResult -> msg)
+    -> Cmd msg
+setConcPersonMultiple flags data receive =
+    Http2.authPut
+        { url = flags.config.baseUrl ++ "/api/v1/sec/items/concPerson"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.ItemsAndRef.encode data)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+setConcEquipmentMultiple :
+    Flags
+    -> ItemsAndRef
+    -> (Result Http.Error BasicResult -> msg)
+    -> Cmd msg
+setConcEquipmentMultiple flags data receive =
+    Http2.authPut
+        { url = flags.config.baseUrl ++ "/api/v1/sec/items/concEquipment"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.ItemsAndRef.encode data)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+deleteAllItems :
+    Flags
+    -> Set String
+    -> (Result Http.Error BasicResult -> msg)
+    -> Cmd msg
+deleteAllItems flags ids receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/items/deleteAll"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.IdList.encode (IdList (Set.toList ids)))
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
         }
 
 

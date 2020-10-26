@@ -1,6 +1,7 @@
 module Comp.ItemCardList exposing
     ( Model
     , Msg(..)
+    , ViewConfig
     , init
     , nextItem
     , prevItem
@@ -17,12 +18,16 @@ import Data.Direction
 import Data.Fields
 import Data.Flags exposing (Flags)
 import Data.Icons as Icons
+import Data.ItemSelection exposing (ItemSelection)
 import Data.Items
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Html.Events exposing (onClick)
 import Markdown
 import Page exposing (Page(..))
+import Set exposing (Set)
+import Util.Html
 import Util.ItemDragDrop as DD
 import Util.List
 import Util.String
@@ -38,6 +43,7 @@ type Msg
     = SetResults ItemLightList
     | AddResults ItemLightList
     | ItemDDMsg DD.Msg
+    | ToggleSelectItem (Set String) String
 
 
 init : Model
@@ -75,6 +81,7 @@ type alias UpdateResult =
     { model : Model
     , cmd : Cmd Msg
     , dragModel : DD.Model
+    , selection : ItemSelection
     }
 
 
@@ -91,51 +98,78 @@ updateDrag dm _ msg model =
                 newModel =
                     { model | results = list }
             in
-            UpdateResult newModel Cmd.none dm
+            UpdateResult newModel Cmd.none dm Data.ItemSelection.Inactive
 
         AddResults list ->
             if list.groups == [] then
-                UpdateResult model Cmd.none dm
+                UpdateResult model Cmd.none dm Data.ItemSelection.Inactive
 
             else
                 let
                     newModel =
                         { model | results = Data.Items.concat model.results list }
                 in
-                UpdateResult newModel Cmd.none dm
+                UpdateResult newModel Cmd.none dm Data.ItemSelection.Inactive
 
         ItemDDMsg lm ->
             let
                 ddd =
                     DD.update lm dm
             in
-            UpdateResult model Cmd.none ddd.model
+            UpdateResult model Cmd.none ddd.model Data.ItemSelection.Inactive
+
+        ToggleSelectItem ids id ->
+            let
+                newSet =
+                    if Set.member id ids then
+                        Set.remove id ids
+
+                    else
+                        Set.insert id ids
+            in
+            UpdateResult model Cmd.none dm (Data.ItemSelection.Active newSet)
 
 
 
 --- View
 
 
-view : Maybe String -> UiSettings -> Model -> Html Msg
-view current settings model =
+type alias ViewConfig =
+    { current : Maybe String
+    , selection : ItemSelection
+    }
+
+
+isSelected : ViewConfig -> String -> Bool
+isSelected cfg id =
+    case cfg.selection of
+        Data.ItemSelection.Active ids ->
+            Set.member id ids
+
+        Data.ItemSelection.Inactive ->
+            False
+
+
+view : ViewConfig -> UiSettings -> Model -> Html Msg
+view cfg settings model =
     div [ class "ui container" ]
-        (List.map (viewGroup current settings) model.results.groups)
+        (List.map (viewGroup cfg settings) model.results.groups)
 
 
-viewGroup : Maybe String -> UiSettings -> ItemLightGroup -> Html Msg
-viewGroup current settings group =
+viewGroup : ViewConfig -> UiSettings -> ItemLightGroup -> Html Msg
+viewGroup cfg settings group =
     div [ class "item-group" ]
         [ div [ class "ui horizontal divider header item-list" ]
             [ i [ class "calendar alternate outline icon" ] []
             , text group.name
             ]
         , div [ class "ui stackable three cards" ]
-            (List.map (viewItem current settings) group.items)
+            (List.map (viewItem cfg settings) group.items)
         ]
 
 
-viewItem : Maybe String -> UiSettings -> ItemLight -> Html Msg
-viewItem current settings item =
+viewItem : ViewConfig -> UiSettings -> ItemLight -> Html Msg
+viewItem cfg settings item =
     let
         dirIcon =
             i [ class (Data.Direction.iconFromMaybe item.direction) ] []
@@ -163,43 +197,69 @@ viewItem current settings item =
         isConfirmed =
             item.state /= "created"
 
-        newColor =
-            "blue"
+        cardColor =
+            if isSelected cfg item.id then
+                "purple"
+
+            else if not isConfirmed then
+                "blue"
+
+            else
+                ""
 
         fieldHidden f =
             Data.UiSettings.fieldHidden settings f
+
+        cardAction =
+            case cfg.selection of
+                Data.ItemSelection.Inactive ->
+                    Page.href (ItemDetailPage item.id)
+
+                Data.ItemSelection.Active ids ->
+                    onClick (ToggleSelectItem ids item.id)
     in
     a
         ([ classList
             [ ( "ui fluid card", True )
-            , ( newColor, not isConfirmed )
-            , ( "current", current == Just item.id )
+            , ( cardColor, True )
+            , ( "current", cfg.current == Just item.id )
             ]
          , id item.id
-         , Page.href (ItemDetailPage item.id)
+         , href "#"
+         , cardAction
          ]
             ++ DD.draggable ItemDDMsg item.id
         )
         [ div [ class "content" ]
-            [ if fieldHidden Data.Fields.Direction then
-                div [ class "header" ]
-                    [ Util.String.underscoreToSpace item.name |> text
-                    ]
+            [ case cfg.selection of
+                Data.ItemSelection.Active ids ->
+                    div [ class "header" ]
+                        [ Util.Html.checkbox (Set.member item.id ids)
+                        , dirIcon
+                        , Util.String.underscoreToSpace item.name
+                            |> text
+                        ]
 
-              else
-                div
-                    [ class "header"
-                    , Data.Direction.labelFromMaybe item.direction
-                        |> title
-                    ]
-                    [ dirIcon
-                    , Util.String.underscoreToSpace item.name
-                        |> text
-                    ]
+                Data.ItemSelection.Inactive ->
+                    if fieldHidden Data.Fields.Direction then
+                        div [ class "header" ]
+                            [ Util.String.underscoreToSpace item.name |> text
+                            ]
+
+                    else
+                        div
+                            [ class "header"
+                            , Data.Direction.labelFromMaybe item.direction
+                                |> title
+                            ]
+                            [ dirIcon
+                            , Util.String.underscoreToSpace item.name
+                                |> text
+                            ]
             , div
                 [ classList
                     [ ( "ui right corner label", True )
-                    , ( newColor, True )
+                    , ( cardColor, True )
                     , ( "invisible", isConfirmed )
                     ]
                 , title "New"

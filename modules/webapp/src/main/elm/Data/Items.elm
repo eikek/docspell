@@ -1,12 +1,16 @@
 module Data.Items exposing
     ( concat
     , first
+    , idSet
     , length
+    , replaceIn
     )
 
 import Api.Model.ItemLight exposing (ItemLight)
 import Api.Model.ItemLightGroup exposing (ItemLightGroup)
 import Api.Model.ItemLightList exposing (ItemLightList)
+import Dict exposing (Dict)
+import Set exposing (Set)
 import Util.List
 
 
@@ -65,3 +69,54 @@ lastGroup : ItemLightList -> Maybe ItemLightGroup
 lastGroup list =
     List.reverse list.groups
         |> List.head
+
+
+idSet : ItemLightList -> Set String
+idSet items =
+    List.map idSetGroup items.groups
+        |> List.foldl Set.union Set.empty
+
+
+idSetGroup : ItemLightGroup -> Set String
+idSetGroup group =
+    List.map .id group.items
+        |> Set.fromList
+
+
+replaceIn : ItemLightList -> ItemLightList -> ItemLightList
+replaceIn origin replacements =
+    let
+        newItems =
+            mkItemDict replacements
+
+        replaceItem item =
+            case Dict.get item.id newItems of
+                Just ni ->
+                    ni
+
+                Nothing ->
+                    item
+
+        replaceGroup g =
+            List.map replaceItem g.items
+                |> ItemLightGroup g.name
+    in
+    List.map replaceGroup origin.groups
+        |> ItemLightList
+
+
+
+--- Helper
+
+
+mkItemDict : ItemLightList -> Dict String ItemLight
+mkItemDict list =
+    let
+        insertItems : Dict String ItemLight -> List ItemLight -> Dict String ItemLight
+        insertItems dict items =
+            List.foldl (\i -> \d -> Dict.insert i.id i d) dict items
+
+        insertGroup dict groups =
+            List.foldl (\g -> \d -> insertItems d g.items) dict groups
+    in
+    insertGroup Dict.empty list.groups

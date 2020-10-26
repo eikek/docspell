@@ -1,5 +1,6 @@
 package docspell.joex.process
 
+import cats.data.NonEmptyList
 import cats.effect.Sync
 import cats.implicits._
 
@@ -65,22 +66,38 @@ object LinkProposal {
       case MetaProposalType.CorrOrg =>
         ctx.logger.debug(s"Updating item organization with: ${value.id}") *>
           ctx.store.transact(
-            RItem.updateCorrOrg(itemId, ctx.args.meta.collective, Some(value))
+            RItem.updateCorrOrg(
+              NonEmptyList.of(itemId),
+              ctx.args.meta.collective,
+              Some(value)
+            )
           )
       case MetaProposalType.ConcPerson =>
         ctx.logger.debug(s"Updating item concerning person with: $value") *>
           ctx.store.transact(
-            RItem.updateConcPerson(itemId, ctx.args.meta.collective, Some(value))
+            RItem.updateConcPerson(
+              NonEmptyList.of(itemId),
+              ctx.args.meta.collective,
+              Some(value)
+            )
           )
       case MetaProposalType.CorrPerson =>
         ctx.logger.debug(s"Updating item correspondent person with: $value") *>
           ctx.store.transact(
-            RItem.updateCorrPerson(itemId, ctx.args.meta.collective, Some(value))
+            RItem.updateCorrPerson(
+              NonEmptyList.of(itemId),
+              ctx.args.meta.collective,
+              Some(value)
+            )
           )
       case MetaProposalType.ConcEquip =>
         ctx.logger.debug(s"Updating item concerning equipment with: $value") *>
           ctx.store.transact(
-            RItem.updateConcEquip(itemId, ctx.args.meta.collective, Some(value))
+            RItem.updateConcEquip(
+              NonEmptyList.of(itemId),
+              ctx.args.meta.collective,
+              Some(value)
+            )
           )
       case MetaProposalType.DocDate =>
         MetaProposal.parseDate(value) match {
@@ -88,7 +105,11 @@ object LinkProposal {
             val ts = Timestamp.from(ld.atStartOfDay(Timestamp.UTC))
             ctx.logger.debug(s"Updating item date ${value.id}") *>
               ctx.store.transact(
-                RItem.updateDate(itemId, ctx.args.meta.collective, Some(ts))
+                RItem.updateDate(
+                  NonEmptyList.of(itemId),
+                  ctx.args.meta.collective,
+                  Some(ts)
+                )
               )
           case None =>
             ctx.logger.info(s"Cannot read value '${value.id}' into a date.") *>
@@ -100,7 +121,11 @@ object LinkProposal {
             val ts = Timestamp.from(ld.atStartOfDay(Timestamp.UTC))
             ctx.logger.debug(s"Updating item due-date suggestion ${value.id}") *>
               ctx.store.transact(
-                RItem.updateDueDate(itemId, ctx.args.meta.collective, Some(ts))
+                RItem.updateDueDate(
+                  NonEmptyList.of(itemId),
+                  ctx.args.meta.collective,
+                  Some(ts)
+                )
               )
           case None =>
             ctx.logger.info(s"Cannot read value '${value.id}' into a date.") *>

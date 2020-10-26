@@ -132,7 +132,7 @@ object RItem {
     } yield n
 
   def updateStateForCollective(
-      itemId: Ident,
+      itemIds: NonEmptyList[Ident],
       itemState: ItemState,
       coll: Ident
   ): ConnectionIO[Int] =
@@ -140,27 +140,35 @@ object RItem {
       t <- currentTime
       n <- updateRow(
         table,
-        and(id.is(itemId), cid.is(coll)),
+        and(id.isIn(itemIds), cid.is(coll)),
         commas(state.setTo(itemState), updated.setTo(t))
       ).update.run
     } yield n
 
-  def updateDirection(itemId: Ident, coll: Ident, dir: Direction): ConnectionIO[Int] =
+  def updateDirection(
+      itemIds: NonEmptyList[Ident],
+      coll: Ident,
+      dir: Direction
+  ): ConnectionIO[Int] =
     for {
       t <- currentTime
       n <- updateRow(
         table,
-        and(id.is(itemId), cid.is(coll)),
+        and(id.isIn(itemIds), cid.is(coll)),
         commas(incoming.setTo(dir), updated.setTo(t))
       ).update.run
     } yield n
 
-  def updateCorrOrg(itemId: Ident, coll: Ident, org: Option[Ident]): ConnectionIO[Int] =
+  def updateCorrOrg(
+      itemIds: NonEmptyList[Ident],
+      coll: Ident,
+      org: Option[Ident]
+  ): ConnectionIO[Int] =
     for {
       t <- currentTime
       n <- updateRow(
         table,
-        and(id.is(itemId), cid.is(coll)),
+        and(id.isIn(itemIds), cid.is(coll)),
         commas(corrOrg.setTo(org), updated.setTo(t))
       ).update.run
     } yield n
@@ -176,7 +184,7 @@ object RItem {
     } yield n
 
   def updateCorrPerson(
-      itemId: Ident,
+      itemIds: NonEmptyList[Ident],
       coll: Ident,
       person: Option[Ident]
   ): ConnectionIO[Int] =
@@ -184,7 +192,7 @@ object RItem {
       t <- currentTime
       n <- updateRow(
         table,
-        and(id.is(itemId), cid.is(coll)),
+        and(id.isIn(itemIds), cid.is(coll)),
         commas(corrPerson.setTo(person), updated.setTo(t))
       ).update.run
     } yield n
@@ -200,7 +208,7 @@ object RItem {
     } yield n
 
   def updateConcPerson(
-      itemId: Ident,
+      itemIds: NonEmptyList[Ident],
       coll: Ident,
       person: Option[Ident]
   ): ConnectionIO[Int] =
@@ -208,7 +216,7 @@ object RItem {
       t <- currentTime
       n <- updateRow(
         table,
-        and(id.is(itemId), cid.is(coll)),
+        and(id.isIn(itemIds), cid.is(coll)),
         commas(concPerson.setTo(person), updated.setTo(t))
       ).update.run
     } yield n
@@ -224,7 +232,7 @@ object RItem {
     } yield n
 
   def updateConcEquip(
-      itemId: Ident,
+      itemIds: NonEmptyList[Ident],
       coll: Ident,
       equip: Option[Ident]
   ): ConnectionIO[Int] =
@@ -232,7 +240,7 @@ object RItem {
       t <- currentTime
       n <- updateRow(
         table,
-        and(id.is(itemId), cid.is(coll)),
+        and(id.isIn(itemIds), cid.is(coll)),
         commas(concEquipment.setTo(equip), updated.setTo(t))
       ).update.run
     } yield n
@@ -281,18 +289,8 @@ object RItem {
       ).update.run
     } yield n
 
-  def updateDate(itemId: Ident, coll: Ident, date: Option[Timestamp]): ConnectionIO[Int] =
-    for {
-      t <- currentTime
-      n <- updateRow(
-        table,
-        and(id.is(itemId), cid.is(coll)),
-        commas(itemDate.setTo(date), updated.setTo(t))
-      ).update.run
-    } yield n
-
-  def updateDueDate(
-      itemId: Ident,
+  def updateDate(
+      itemIds: NonEmptyList[Ident],
       coll: Ident,
       date: Option[Timestamp]
   ): ConnectionIO[Int] =
@@ -300,7 +298,21 @@ object RItem {
       t <- currentTime
       n <- updateRow(
         table,
-        and(id.is(itemId), cid.is(coll)),
+        and(id.isIn(itemIds), cid.is(coll)),
+        commas(itemDate.setTo(date), updated.setTo(t))
+      ).update.run
+    } yield n
+
+  def updateDueDate(
+      itemIds: NonEmptyList[Ident],
+      coll: Ident,
+      date: Option[Timestamp]
+  ): ConnectionIO[Int] =
+    for {
+      t <- currentTime
+      n <- updateRow(
+        table,
+        and(id.isIn(itemIds), cid.is(coll)),
         commas(dueDate.setTo(date), updated.setTo(t))
       ).update.run
     } yield n
@@ -324,4 +336,10 @@ object RItem {
     val empty: Option[Ident] = None
     updateRow(table, folder.is(folderId), folder.setTo(empty)).update.run
   }
+
+  def filterItemsFragment(items: NonEmptyList[Ident], coll: Ident): Fragment =
+    selectSimple(Seq(id), table, and(cid.is(coll), id.isIn(items)))
+
+  def filterItems(items: NonEmptyList[Ident], coll: Ident): ConnectionIO[Vector[Ident]] =
+    filterItemsFragment(items, coll).query[Ident].to[Vector]
 }

@@ -6,6 +6,8 @@ module Comp.YesNoDimmer exposing
     , defaultSettings
     , disable
     , emptyModel
+    , initActive
+    , initInactive
     , update
     , view
     , view2
@@ -27,6 +29,18 @@ emptyModel =
     }
 
 
+initInactive : Model
+initInactive =
+    { active = False
+    }
+
+
+initActive : Model
+initActive =
+    { active = True
+    }
+
+
 type Msg
     = Activate
     | Disable
@@ -40,6 +54,7 @@ type alias Settings =
     , confirmButton : String
     , cancelButton : String
     , invertedDimmer : Bool
+    , extraClass : String
     }
 
 
@@ -51,6 +66,7 @@ defaultSettings =
     , confirmButton = "Yes, do it!"
     , cancelButton = "No"
     , invertedDimmer = False
+    , extraClass = ""
     }
 
 
@@ -87,6 +103,7 @@ view2 active settings model =
     div
         [ classList
             [ ( "ui dimmer", True )
+            , ( settings.extraClass, True )
             , ( "inverted", settings.invertedDimmer )
             , ( "active", active && model.active )
             ]

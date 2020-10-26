@@ -2,26 +2,36 @@ module Page.Home.Data exposing
     ( Model
     , Msg(..)
     , SearchType(..)
+    , SelectActionMode(..)
+    , SelectViewModel
+    , ViewMode(..)
     , defaultSearchType
     , doSearchCmd
     , init
+    , initSelectViewModel
     , itemNav
+    , menuCollapsed
     , resultsBelowLimit
     , searchTypeString
+    , selectActive
     )
 
 import Api
+import Api.Model.BasicResult exposing (BasicResult)
 import Api.Model.ItemLightList exposing (ItemLightList)
 import Api.Model.ItemSearch
 import Browser.Dom as Dom
 import Comp.FixedDropdown
 import Comp.ItemCardList
+import Comp.ItemDetail.EditMenu
 import Comp.SearchMenu
+import Comp.YesNoDimmer
 import Data.Flags exposing (Flags)
 import Data.ItemNav exposing (ItemNav)
 import Data.Items
 import Data.UiSettings exposing (UiSettings)
 import Http
+import Set exposing (Set)
 import Throttle exposing (Throttle)
 import Util.Html exposing (KeyCode(..))
 import Util.ItemDragDrop as DD
@@ -31,7 +41,7 @@ type alias Model =
     { searchMenuModel : Comp.SearchMenu.Model
     , itemListModel : Comp.ItemCardList.Model
     , searchInProgress : Bool
-    , menuCollapsed : Bool
+    , viewMode : ViewMode
     , searchOffset : Int
     , moreAvailable : Bool
     , moreInProgress : Bool
@@ -43,6 +53,29 @@ type alias Model =
     , dragDropData : DD.DragDropData
     , scrollToCard : Maybe String
     }
+
+
+type alias SelectViewModel =
+    { ids : Set String
+    , action : SelectActionMode
+    , deleteAllConfirm : Comp.YesNoDimmer.Model
+    , editModel : Comp.ItemDetail.EditMenu.Model
+    }
+
+
+initSelectViewModel : SelectViewModel
+initSelectViewModel =
+    { ids = Set.empty
+    , action = NoneAction
+    , deleteAllConfirm = Comp.YesNoDimmer.initActive
+    , editModel = Comp.ItemDetail.EditMenu.init
+    }
+
+
+type ViewMode
+    = SimpleView
+    | SearchView
+    | SelectView SelectViewModel
 
 
 init : Flags -> Model
@@ -58,7 +91,6 @@ init flags =
     { searchMenuModel = Comp.SearchMenu.init
     , itemListModel = Comp.ItemCardList.init
     , searchInProgress = False
-    , menuCollapsed = True
     , searchOffset = 0
     , moreAvailable = True
     , moreInProgress = False
@@ -72,6 +104,7 @@ init flags =
     , dragDropData =
         DD.DragDropData DD.init Nothing
     , scrollToCard = Nothing
+    , viewMode = SimpleView
     }
 
 
@@ -84,6 +117,32 @@ defaultSearchType flags =
         BasicSearch
 
 
+menuCollapsed : Model -> Bool
+menuCollapsed model =
+    case model.viewMode of
+        SimpleView ->
+            True
+
+        SearchView ->
+            False
+
+        SelectView _ ->
+            False
+
+
+selectActive : Model -> Bool
+selectActive model =
+    case model.viewMode of
+        SimpleView ->
+            False
+
+        SearchView ->
+            False
+
+        SelectView _ ->
+            True
+
+
 type Msg
     = Init
     | SearchMenuMsg Comp.SearchMenu.Msg
@@ -93,6 +152,7 @@ type Msg
     | ItemSearchAddResp (Result Http.Error ItemLightList)
     | DoSearch
     | ToggleSearchMenu
+    | ToggleSelectView
     | LoadMore
     | UpdateThrottle
     | SetBasicSearch String
@@ -101,12 +161,27 @@ type Msg
     | SetContentOnly String
     | ScrollResult (Result Dom.Error ())
     | ClearItemDetailId
+    | SelectAllItems
+    | SelectNoItems
+    | RequestDeleteSelected
+    | DeleteSelectedConfirmMsg Comp.YesNoDimmer.Msg
+    | EditSelectedItems
+    | EditMenuMsg Comp.ItemDetail.EditMenu.Msg
+    | MultiUpdateResp (Result Http.Error BasicResult)
+    | ReplaceChangedItemsResp (Result Http.Error ItemLightList)
+    | DeleteAllResp (Result Http.Error BasicResult)
 
 
 type SearchType
     = BasicSearch
     | ContentSearch
     | ContentOnlySearch
+
+
+type SelectActionMode
+    = NoneAction
+    | DeleteSelected
+    | EditSelected
 
 
 searchTypeString : SearchType -> String
