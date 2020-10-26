@@ -68,7 +68,7 @@ view flags settings model =
                             , ( "active", selectActive model )
                             ]
                         , href "#"
-                        , title "Select items"
+                        , title "Toggle select items"
                         , onClick ToggleSelectView
                         ]
                         [ i [ class "tasks icon" ] []
