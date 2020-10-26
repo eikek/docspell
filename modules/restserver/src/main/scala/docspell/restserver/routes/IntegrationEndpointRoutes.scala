@@ -99,11 +99,12 @@ object IntegrationEndpointRoutes {
       multipart <- req.as[Multipart[F]]
       updata <- readMultipart(
         multipart,
+        cfg.integrationEndpoint.sourceName,
         logger,
         cfg.integrationEndpoint.priority,
         cfg.backend.files.validMimeTypes
       )
-      account = AccountId(coll, Ident.unsafe("docspell-system"))
+      account = AccountId(coll, DocspellSystem.user)
       result <- backend.upload.submit(updata, account, true, None)
       res    <- Ok(basicResult(result))
     } yield res

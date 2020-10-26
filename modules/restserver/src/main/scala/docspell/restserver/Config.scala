@@ -28,6 +28,7 @@ object Config {
   case class IntegrationEndpoint(
       enabled: Boolean,
       priority: Priority,
+      sourceName: String,
       allowedIps: IntegrationEndpoint.AllowedIps,
       httpBasic: IntegrationEndpoint.HttpBasic,
       httpHeader: IntegrationEndpoint.HttpHeader
