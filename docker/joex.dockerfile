@@ -9,7 +9,7 @@ FROM ${REPO}:base-binaries-${VERSION} as docspell-base-binaries
 
 FROM ${REPO}:joex-base-${VERSION}
 
-ENV OCRMYPDF_VERSION=latest
+ENV OCRMYPDF_VERSION=v11.2.1
 
 COPY --from=docspell-base-binaries /opt/docspell-joex /opt/docspell-joex
 COPY joex-entrypoint.sh /opt/joex-entrypoint.sh
