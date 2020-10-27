@@ -59,3 +59,10 @@ update key flags inav settings msg model =
 
         ScrollResult _ ->
             ( model, Cmd.none, Sub.none )
+
+        UiSettingsUpdated ->
+            let
+                lmsg =
+                    ItemDetailMsg Comp.ItemDetail.Model.UiSettingsUpdated
+            in
+            update key flags inav settings lmsg model

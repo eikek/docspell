@@ -23,3 +23,4 @@ type Msg
     | ItemDetailMsg Comp.ItemDetail.Model.Msg
     | ItemResp (Result Http.Error ItemDetail)
     | ScrollResult (Result Dom.Error ())
+    | UiSettingsUpdated

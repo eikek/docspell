@@ -181,7 +181,8 @@ updateWithSub msg model =
         GetUiSettings settings ->
             Util.Update.andThen2
                 [ updateUserSettings Page.UserSettings.Data.UpdateSettings
-                , updateHome Page.Home.Data.DoSearch
+                , updateHome Page.Home.Data.UiSettingsUpdated
+                , updateItemDetail Page.ItemDetail.Data.UiSettingsUpdated
                 ]
                 { model | uiSettings = settings }
 

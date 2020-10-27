@@ -495,6 +495,31 @@ update mId key flags settings msg model =
         ReplaceChangedItemsResp (Err _) ->
             noSub ( model, Cmd.none )
 
+        UiSettingsUpdated ->
+            let
+                defaultViewMode =
+                    if settings.searchMenuVisible then
+                        SearchView
+
+                    else
+                        SimpleView
+
+                viewMode =
+                    case model.viewMode of
+                        SimpleView ->
+                            defaultViewMode
+
+                        SearchView ->
+                            defaultViewMode
+
+                        sv ->
+                            sv
+
+                model_ =
+                    { model | viewMode = viewMode }
+            in
+            update mId key flags settings DoSearch model_
+
 
 
 --- Helpers

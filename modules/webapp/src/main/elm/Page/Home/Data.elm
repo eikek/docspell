@@ -81,8 +81,8 @@ type ViewMode
     | SelectView SelectViewModel
 
 
-init : Flags -> Model
-init flags =
+init : Flags -> ViewMode -> Model
+init flags viewMode =
     let
         searchTypeOptions =
             if flags.config.fullTextSearchEnabled then
@@ -107,7 +107,7 @@ init flags =
     , dragDropData =
         DD.DragDropData DD.init Nothing
     , scrollToCard = Nothing
-    , viewMode = SimpleView
+    , viewMode = viewMode
     }
 
 
@@ -173,6 +173,7 @@ type Msg
     | MultiUpdateResp FormChange (Result Http.Error BasicResult)
     | ReplaceChangedItemsResp (Result Http.Error ItemLightList)
     | DeleteAllResp (Result Http.Error BasicResult)
+    | UiSettingsUpdated
 
 
 type SearchType

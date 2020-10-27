@@ -66,12 +66,19 @@ init key url flags_ settings =
 
         ( csm, csc ) =
             Page.CollectiveSettings.Data.init flags
+
+        homeViewMode =
+            if settings.searchMenuVisible then
+                Page.Home.Data.SearchView
+
+            else
+                Page.Home.Data.SimpleView
     in
     ( { flags = flags
       , key = key
       , page = page
       , version = Api.Model.VersionInfo.empty
-      , homeModel = Page.Home.Data.init flags
+      , homeModel = Page.Home.Data.init flags homeViewMode
       , loginModel = Page.Login.Data.emptyModel
       , manageDataModel = mdm
       , collSettingsModel = csm
