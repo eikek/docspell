@@ -92,7 +92,7 @@ replaceIn origin replacements =
         replaceItem item =
             case Dict.get item.id newItems of
                 Just ni ->
-                    ni
+                    { ni | highlighting = item.highlighting }
 
                 Nothing ->
                     item
