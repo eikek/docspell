@@ -272,6 +272,7 @@ type Msg
     | UpdateThrottle
     | KeyInputMsg Comp.KeyInput.Msg
     | ToggleAttachMenu
+    | UiSettingsUpdated
 
 
 type SaveNameState

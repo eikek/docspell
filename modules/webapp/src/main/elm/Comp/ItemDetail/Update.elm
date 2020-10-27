@@ -1269,6 +1269,15 @@ update key flags inav settings msg model =
         ToggleAttachMenu ->
             noSub ( { model | attachMenuOpen = not model.attachMenuOpen }, Cmd.none )
 
+        UiSettingsUpdated ->
+            let
+                model_ =
+                    { model
+                        | menuOpen = settings.editMenuVisible
+                    }
+            in
+            noSub ( model_, Cmd.none )
+
 
 
 --- Helper

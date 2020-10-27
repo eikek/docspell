@@ -40,6 +40,8 @@ type alias Model =
     , searchMenuTagCatCountModel : Comp.IntField.Model
     , formFields : List Field
     , itemDetailShortcuts : Bool
+    , searchMenuVisible : Bool
+    , editMenuVisible : Bool
     }
 
 
@@ -89,6 +91,8 @@ init flags settings =
                 "Number of categories in search menu"
       , formFields = settings.formFields
       , itemDetailShortcuts = settings.itemDetailShortcuts
+      , searchMenuVisible = settings.searchMenuVisible
+      , editMenuVisible = settings.editMenuVisible
       }
     , Api.getTags flags "" GetTagsResp
     )
@@ -106,6 +110,8 @@ type Msg
     | SearchMenuTagCatMsg Comp.IntField.Msg
     | FieldListMsg Comp.FieldListSelect.Msg
     | ToggleItemDetailShortcuts
+    | ToggleSearchMenuVisible
+    | ToggleEditMenuVisible
 
 
 
@@ -273,6 +279,24 @@ update sett msg model =
             , Just { sett | itemDetailShortcuts = flag }
             )
 
+        ToggleSearchMenuVisible ->
+            let
+                flag =
+                    not model.searchMenuVisible
+            in
+            ( { model | searchMenuVisible = flag }
+            , Just { sett | searchMenuVisible = flag }
+            )
+
+        ToggleEditMenuVisible ->
+            let
+                flag =
+                    not model.editMenuVisible
+            in
+            ( { model | editMenuVisible = flag }
+            , Just { sett | editMenuVisible = flag }
+            )
+
 
 
 --- View
@@ -317,6 +341,19 @@ view flags _ model =
             )
         , div [ class "ui dividing header" ]
             [ text "Search Menu" ]
+        , div [ class "field" ]
+            [ div [ class "ui checkbox" ]
+                [ input
+                    [ type_ "checkbox"
+                    , onCheck (\_ -> ToggleSearchMenuVisible)
+                    , checked model.searchMenuVisible
+                    ]
+                    []
+                , label []
+                    [ text "Show search side menu by default"
+                    ]
+                ]
+            ]
         , Html.map SearchMenuTagMsg
             (Comp.IntField.viewWithInfo
                 "How many tags to display in search menu at once. Others can be expanded. Use 0 to always show all."
@@ -364,6 +401,19 @@ view flags _ model =
                     []
                 , label []
                     [ text "Use keyboard shortcuts for navigation and confirm/unconfirm with open edit menu."
+                    ]
+                ]
+            ]
+        , div [ class "field" ]
+            [ div [ class "ui checkbox" ]
+                [ input
+                    [ type_ "checkbox"
+                    , onCheck (\_ -> ToggleEditMenuVisible)
+                    , checked model.editMenuVisible
+                    ]
+                    []
+                , label []
+                    [ text "Show edit side menu by default"
                     ]
                 ]
             ]

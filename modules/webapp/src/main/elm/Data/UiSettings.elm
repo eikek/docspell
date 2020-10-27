@@ -41,6 +41,8 @@ type alias StoredUiSettings =
     , searchMenuTagCatCount : Maybe Int
     , formFields : Maybe (List String)
     , itemDetailShortcuts : Bool
+    , searchMenuVisible : Bool
+    , editMenuVisible : Bool
     }
 
 
@@ -62,6 +64,8 @@ type alias UiSettings =
     , searchMenuTagCatCount : Int
     , formFields : List Field
     , itemDetailShortcuts : Bool
+    , searchMenuVisible : Bool
+    , editMenuVisible : Bool
     }
 
 
@@ -99,12 +103,14 @@ defaults =
     , tagCategoryColors = Dict.empty
     , nativePdfPreview = False
     , itemSearchNoteLength = 0
-    , itemDetailNotesPosition = Top
+    , itemDetailNotesPosition = Bottom
     , searchMenuFolderCount = 3
     , searchMenuTagCount = 6
     , searchMenuTagCatCount = 3
     , formFields = Data.Fields.all
     , itemDetailShortcuts = False
+    , searchMenuVisible = False
+    , editMenuVisible = False
     }
 
 
@@ -138,6 +144,8 @@ merge given fallback =
             (Maybe.map Data.Fields.fromList given.formFields)
             fallback.formFields
     , itemDetailShortcuts = given.itemDetailShortcuts
+    , searchMenuVisible = given.searchMenuVisible
+    , editMenuVisible = given.editMenuVisible
     }
 
 
@@ -162,6 +170,8 @@ toStoredUiSettings settings =
         List.map Data.Fields.toString settings.formFields
             |> Just
     , itemDetailShortcuts = settings.itemDetailShortcuts
+    , searchMenuVisible = settings.searchMenuVisible
+    , editMenuVisible = settings.editMenuVisible
     }
 
 
