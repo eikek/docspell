@@ -7,9 +7,9 @@ unoconv -l &
 if [ -S "/var/run/docker.sock" ]; then
   echo "Found 'docker.sock': Installing Docker and redirecting 'ocrmypdf' command to official dockerfile by jbarlow83"
   apk --no-cache add docker
-  docker pull jbarlow83/ocrmypdf
+  docker pull -q jbarlow83/ocrmypdf:$OCRMYPDF_VERSION
   function ocrmypdf () {
-    docker run jbarlow83/ocrmypdf $@
+    docker run jbarlow83/ocrmypdf:$OCRMYPDF_VERSION $@
   }
   echo "Using OCRmyPDF v$(ocrmypdf --version)" && echo
 fi
