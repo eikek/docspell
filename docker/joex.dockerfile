@@ -13,6 +13,7 @@ ENV OCRMYPDF_VERSION=v11.2.1
 
 COPY --from=docspell-base-binaries /opt/docspell-joex /opt/docspell-joex
 COPY joex-entrypoint.sh /opt/joex-entrypoint.sh
+COPY joex-ocrmypdf.sh /usr/local/bin/joex-ocrmypdf.sh
 
 ENTRYPOINT ["/opt/joex-entrypoint.sh"]
 CMD ["/opt/docspell.conf"]
