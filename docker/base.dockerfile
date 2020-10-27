@@ -7,3 +7,5 @@ ENV DB_TYPE=postgresql \
   DB_NAME=dbname \
   DB_USER=dbuser \
   DB_PASS=dbpass
+
+RUN apk add --no-cache tzdata
