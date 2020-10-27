@@ -1,15 +1,25 @@
 module Page.Home.Update exposing (update)
 
+import Api
+import Api.Model.IdList exposing (IdList)
+import Api.Model.ItemLightList exposing (ItemLightList)
+import Api.Model.ItemSearch
 import Browser.Navigation as Nav
 import Comp.FixedDropdown
 import Comp.ItemCardList
+import Comp.ItemDetail.EditMenu exposing (SaveNameState(..))
+import Comp.ItemDetail.FormChange exposing (FormChange(..))
 import Comp.SearchMenu
+import Comp.YesNoDimmer
 import Data.Flags exposing (Flags)
+import Data.ItemSelection
+import Data.Items
 import Data.UiSettings exposing (UiSettings)
 import Page exposing (Page(..))
 import Page.Home.Data exposing (..)
 import Process
 import Scroll
+import Set exposing (Set)
 import Task
 import Throttle
 import Time
@@ -26,7 +36,7 @@ update mId key flags settings msg model =
         Init ->
             Util.Update.andThen2
                 [ update mId key flags settings (SearchMenuMsg Comp.SearchMenu.Init)
-                , doSearch flags settings
+                , doSearch flags settings True
                 ]
                 model
 
@@ -61,7 +71,7 @@ update mId key flags settings msg model =
 
                 ( m2, c2, s2 ) =
                     if nextState.stateChange && not model.searchInProgress then
-                        doSearch flags settings newModel
+                        doSearch flags settings False newModel
 
                     else
                         withSub ( newModel, Cmd.none )
@@ -82,16 +92,25 @@ update mId key flags settings msg model =
                         flags
                         m
                         model.itemListModel
+
+                nextView =
+                    case ( model.viewMode, result.selection ) of
+                        ( SelectView svm, Data.ItemSelection.Active ids ) ->
+                            SelectView { svm | ids = ids }
+
+                        ( v, _ ) ->
+                            v
             in
             withSub
                 ( { model
                     | itemListModel = result.model
+                    , viewMode = nextView
                     , dragDropData = DD.DragDropData result.dragModel Nothing
                   }
                 , Cmd.batch [ Cmd.map ItemCardListMsg result.cmd ]
                 )
 
-        ItemSearchResp (Ok list) ->
+        ItemSearchResp scroll (Ok list) ->
             let
                 noff =
                     settings.itemSearchPageSize
@@ -105,7 +124,11 @@ update mId key flags settings msg model =
             in
             Util.Update.andThen2
                 [ update mId key flags settings (ItemCardListMsg (Comp.ItemCardList.SetResults list))
-                , scrollToCard mId
+                , if scroll then
+                    scrollToCard mId
+
+                  else
+                    \next -> ( next, Cmd.none, Sub.none )
                 ]
                 m
 
@@ -124,7 +147,6 @@ update mId key flags settings msg model =
             in
             Util.Update.andThen2
                 [ update mId key flags settings (ItemCardListMsg (Comp.ItemCardList.AddResults list))
-                , scrollToCard mId
                 ]
                 m
 
@@ -136,7 +158,7 @@ update mId key flags settings msg model =
                 , Cmd.none
                 )
 
-        ItemSearchResp (Err _) ->
+        ItemSearchResp _ (Err _) ->
             withSub
                 ( { model
                     | searchInProgress = False
@@ -153,12 +175,44 @@ update mId key flags settings msg model =
                 withSub ( model, Cmd.none )
 
             else
-                doSearch flags settings nm
+                doSearch flags settings False nm
 
         ToggleSearchMenu ->
+            let
+                nextView =
+                    case model.viewMode of
+                        SimpleView ->
+                            SearchView
+
+                        SearchView ->
+                            SimpleView
+
+                        SelectView _ ->
+                            SimpleView
+            in
             withSub
-                ( { model | menuCollapsed = not model.menuCollapsed }
+                ( { model | viewMode = nextView }
                 , Cmd.none
+                )
+
+        ToggleSelectView ->
+            let
+                ( nextView, cmd ) =
+                    case model.viewMode of
+                        SimpleView ->
+                            ( SelectView initSelectViewModel, loadEditModel flags )
+
+                        SearchView ->
+                            ( SelectView initSelectViewModel, loadEditModel flags )
+
+                        SelectView _ ->
+                            ( SearchView, Cmd.none )
+            in
+            withSub
+                ( { model
+                    | viewMode = nextView
+                  }
+                , cmd
                 )
 
         LoadMore ->
@@ -250,9 +304,263 @@ update mId key flags settings msg model =
         ClearItemDetailId ->
             noSub ( { model | scrollToCard = Nothing }, Cmd.none )
 
+        SelectAllItems ->
+            case model.viewMode of
+                SelectView svm ->
+                    let
+                        visible =
+                            Data.Items.idSet model.itemListModel.results
+
+                        svm_ =
+                            { svm | ids = Set.union svm.ids visible }
+                    in
+                    noSub
+                        ( { model | viewMode = SelectView svm_ }
+                        , Cmd.none
+                        )
+
+                _ ->
+                    noSub ( model, Cmd.none )
+
+        SelectNoItems ->
+            case model.viewMode of
+                SelectView svm ->
+                    let
+                        svm_ =
+                            { svm | ids = Set.empty }
+                    in
+                    noSub
+                        ( { model | viewMode = SelectView svm_ }
+                        , Cmd.none
+                        )
+
+                _ ->
+                    noSub ( model, Cmd.none )
+
+        DeleteSelectedConfirmMsg lmsg ->
+            case model.viewMode of
+                SelectView svm ->
+                    let
+                        ( confirmModel, confirmed ) =
+                            Comp.YesNoDimmer.update lmsg svm.deleteAllConfirm
+
+                        cmd =
+                            if confirmed then
+                                Api.deleteAllItems flags svm.ids DeleteAllResp
+
+                            else
+                                Cmd.none
+
+                        act =
+                            if confirmModel.active || confirmed then
+                                DeleteSelected
+
+                            else
+                                NoneAction
+                    in
+                    noSub
+                        ( { model
+                            | viewMode =
+                                SelectView
+                                    { svm
+                                        | deleteAllConfirm = confirmModel
+                                        , action = act
+                                    }
+                          }
+                        , cmd
+                        )
+
+                _ ->
+                    noSub ( model, Cmd.none )
+
+        DeleteAllResp (Ok res) ->
+            if res.success then
+                let
+                    nm =
+                        { model | viewMode = SearchView }
+                in
+                doSearch flags settings False nm
+
+            else
+                noSub ( model, Cmd.none )
+
+        DeleteAllResp (Err _) ->
+            noSub ( model, Cmd.none )
+
+        RequestDeleteSelected ->
+            case model.viewMode of
+                SelectView svm ->
+                    if svm.ids == Set.empty then
+                        noSub ( model, Cmd.none )
+
+                    else
+                        let
+                            lmsg =
+                                DeleteSelectedConfirmMsg Comp.YesNoDimmer.activate
+
+                            model_ =
+                                { model | viewMode = SelectView { svm | action = DeleteSelected } }
+                        in
+                        update mId key flags settings lmsg model_
+
+                _ ->
+                    noSub ( model, Cmd.none )
+
+        EditSelectedItems ->
+            case model.viewMode of
+                SelectView svm ->
+                    if svm.action == EditSelected then
+                        noSub
+                            ( { model | viewMode = SelectView { svm | action = NoneAction } }
+                            , Cmd.none
+                            )
+
+                    else if svm.ids == Set.empty then
+                        noSub ( model, Cmd.none )
+
+                    else
+                        noSub
+                            ( { model | viewMode = SelectView { svm | action = EditSelected } }
+                            , Cmd.none
+                            )
+
+                _ ->
+                    noSub ( model, Cmd.none )
+
+        EditMenuMsg lmsg ->
+            case model.viewMode of
+                SelectView svm ->
+                    let
+                        res =
+                            Comp.ItemDetail.EditMenu.update flags lmsg svm.editModel
+
+                        svm_ =
+                            { svm
+                                | editModel = res.model
+                                , saveNameState =
+                                    case res.change of
+                                        NameChange _ ->
+                                            Saving
+
+                                        _ ->
+                                            svm.saveNameState
+                            }
+
+                        cmd_ =
+                            Cmd.map EditMenuMsg res.cmd
+
+                        sub_ =
+                            Sub.map EditMenuMsg res.sub
+
+                        upCmd =
+                            Comp.ItemDetail.FormChange.multiUpdate flags
+                                svm.ids
+                                res.change
+                                (MultiUpdateResp res.change)
+                    in
+                    ( { model | viewMode = SelectView svm_ }
+                    , Cmd.batch [ cmd_, upCmd ]
+                    , sub_
+                    )
+
+                _ ->
+                    noSub ( model, Cmd.none )
+
+        MultiUpdateResp change (Ok res) ->
+            let
+                nm =
+                    updateSelectViewNameState res.success model change
+            in
+            if res.success then
+                case model.viewMode of
+                    SelectView svm ->
+                        -- replace changed items in the view
+                        noSub ( nm, loadChangedItems flags svm.ids )
+
+                    _ ->
+                        noSub ( nm, Cmd.none )
+
+            else
+                noSub ( nm, Cmd.none )
+
+        MultiUpdateResp change (Err _) ->
+            ( updateSelectViewNameState False model change
+            , Cmd.none
+            , Sub.none
+            )
+
+        ReplaceChangedItemsResp (Ok items) ->
+            noSub ( replaceItems model items, Cmd.none )
+
+        ReplaceChangedItemsResp (Err _) ->
+            noSub ( model, Cmd.none )
+
 
 
 --- Helpers
+
+
+updateSelectViewNameState : Bool -> Model -> FormChange -> Model
+updateSelectViewNameState success model change =
+    case model.viewMode of
+        SelectView svm ->
+            case change of
+                NameChange _ ->
+                    let
+                        svm_ =
+                            { svm
+                                | saveNameState =
+                                    if success then
+                                        SaveSuccess
+
+                                    else
+                                        SaveFailed
+                            }
+                    in
+                    { model | viewMode = SelectView svm_ }
+
+                _ ->
+                    model
+
+        _ ->
+            model
+
+
+replaceItems : Model -> ItemLightList -> Model
+replaceItems model newItems =
+    let
+        listModel =
+            model.itemListModel
+
+        changed =
+            Data.Items.replaceIn listModel.results newItems
+
+        newList =
+            { listModel | results = changed }
+    in
+    { model | itemListModel = newList }
+
+
+loadChangedItems : Flags -> Set String -> Cmd Msg
+loadChangedItems flags ids =
+    if Set.isEmpty ids then
+        Cmd.none
+
+    else
+        let
+            searchInit =
+                Api.Model.ItemSearch.empty
+
+            idList =
+                IdList (Set.toList ids)
+
+            search =
+                { searchInit
+                    | itemSubset = Just idList
+                    , limit = Set.size ids
+                }
+        in
+        Api.itemSearch flags search ReplaceChangedItemsResp
 
 
 scrollToCard : Maybe String -> Model -> ( Model, Cmd Msg, Sub Msg )
@@ -272,12 +580,17 @@ scrollToCard mId model =
             ( model, Cmd.none, Sub.none )
 
 
-doSearch : Flags -> UiSettings -> Model -> ( Model, Cmd Msg, Sub Msg )
-doSearch flags settings model =
+loadEditModel : Flags -> Cmd Msg
+loadEditModel flags =
+    Cmd.map EditMenuMsg (Comp.ItemDetail.EditMenu.loadModel flags)
+
+
+doSearch : Flags -> UiSettings -> Bool -> Model -> ( Model, Cmd Msg, Sub Msg )
+doSearch flags settings scroll model =
     let
         stype =
             if
-                not model.menuCollapsed
+                not (menuCollapsed model)
                     || Util.String.isNothingOrBlank model.contentOnlySearch
             then
                 BasicSearch
@@ -289,7 +602,7 @@ doSearch flags settings model =
             { model | searchType = stype }
 
         searchCmd =
-            doSearchCmd flags settings 0 model_
+            doSearchCmd flags settings 0 scroll model_
 
         ( newThrottle, cmd ) =
             Throttle.try searchCmd model.throttle
@@ -308,7 +621,7 @@ doSearchMore : Flags -> UiSettings -> Model -> ( Model, Cmd Msg )
 doSearchMore flags settings model =
     let
         cmd =
-            doSearchCmd flags settings model.searchOffset model
+            doSearchCmd flags settings model.searchOffset False model
     in
     ( { model | moreInProgress = True }
     , cmd

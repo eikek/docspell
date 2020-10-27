@@ -3,26 +3,51 @@ module Page.Home.View exposing (view)
 import Api.Model.ItemSearch
 import Comp.FixedDropdown
 import Comp.ItemCardList
+import Comp.ItemDetail.EditMenu
 import Comp.SearchMenu
+import Comp.YesNoDimmer
 import Data.Flags exposing (Flags)
+import Data.ItemSelection
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Page exposing (Page(..))
 import Page.Home.Data exposing (..)
+import Set
 import Util.Html
 
 
-view : Maybe String -> Flags -> UiSettings -> Model -> Html Msg
-view current flags settings model =
+view : Flags -> UiSettings -> Model -> Html Msg
+view flags settings model =
+    let
+        itemViewCfg =
+            case model.viewMode of
+                SelectView svm ->
+                    Comp.ItemCardList.ViewConfig
+                        model.scrollToCard
+                        (Data.ItemSelection.Active svm.ids)
+
+                _ ->
+                    Comp.ItemCardList.ViewConfig
+                        model.scrollToCard
+                        Data.ItemSelection.Inactive
+
+        selectAction =
+            case model.viewMode of
+                SelectView svm ->
+                    svm.action
+
+                _ ->
+                    NoneAction
+    in
     div [ class "home-page ui padded grid" ]
         [ div
             [ classList
                 [ ( "sixteen wide mobile six wide tablet four wide computer search-menu column"
                   , True
                   )
-                , ( "invisible hidden", model.menuCollapsed )
+                , ( "invisible hidden", menuCollapsed model )
                 ]
             ]
             [ div
@@ -38,6 +63,17 @@ view current flags settings model =
                     ]
                 , div [ class "right floated menu" ]
                     [ a
+                        [ classList
+                            [ ( "borderless item", True )
+                            , ( "active", selectActive model )
+                            ]
+                        , href "#"
+                        , title "Toggle select items"
+                        , onClick ToggleSelectView
+                        ]
+                        [ i [ class "tasks icon" ] []
+                        ]
+                    , a
                         [ class "borderless item"
                         , onClick ResetSearch
                         , title "Reset form"
@@ -63,26 +99,30 @@ view current flags settings model =
                     ]
                 ]
             , div [ class "" ]
-                [ Html.map SearchMenuMsg
-                    (Comp.SearchMenu.viewDrop model.dragDropData
-                        flags
-                        settings
-                        model.searchMenuModel
-                    )
-                ]
+                (viewLeftMenu flags settings model)
             ]
         , div
             [ classList
                 [ ( "sixteen wide mobile ten wide tablet twelve wide computer column"
-                  , not model.menuCollapsed
+                  , not (menuCollapsed model)
                   )
-                , ( "sixteen wide column", model.menuCollapsed )
+                , ( "sixteen wide column", menuCollapsed model )
                 , ( "item-card-list", True )
                 ]
             ]
-            [ viewSearchBar flags model
+            [ viewBar flags model
+            , case model.viewMode of
+                SelectView svm ->
+                    Html.map DeleteSelectedConfirmMsg
+                        (Comp.YesNoDimmer.view2 (selectAction == DeleteSelected)
+                            deleteAllDimmer
+                            svm.deleteAllConfirm
+                        )
+
+                _ ->
+                    span [ class "invisible" ] []
             , Html.map ItemCardListMsg
-                (Comp.ItemCardList.view model.scrollToCard settings model.itemListModel)
+                (Comp.ItemCardList.view itemViewCfg settings model.itemListModel)
             ]
         , div
             [ classList
@@ -117,6 +157,116 @@ view current flags settings model =
         ]
 
 
+viewLeftMenu : Flags -> UiSettings -> Model -> List (Html Msg)
+viewLeftMenu flags settings model =
+    let
+        searchMenu =
+            [ Html.map SearchMenuMsg
+                (Comp.SearchMenu.viewDrop model.dragDropData
+                    flags
+                    settings
+                    model.searchMenuModel
+                )
+            ]
+    in
+    case model.viewMode of
+        SelectView svm ->
+            case svm.action of
+                EditSelected ->
+                    let
+                        cfg_ =
+                            Comp.ItemDetail.EditMenu.defaultViewConfig
+
+                        cfg =
+                            { cfg_ | nameState = svm.saveNameState }
+                    in
+                    [ div [ class "ui dividing header" ]
+                        [ text "Multi-Edit"
+                        ]
+                    , div [ class "ui info message" ]
+                        [ text "Note that a change here immediatly affects all selected items on the right!"
+                        ]
+                    , Html.map EditMenuMsg
+                        (Comp.ItemDetail.EditMenu.view cfg settings svm.editModel)
+                    ]
+
+                _ ->
+                    searchMenu
+
+        _ ->
+            searchMenu
+
+
+viewBar : Flags -> Model -> Html Msg
+viewBar flags model =
+    case model.viewMode of
+        SimpleView ->
+            viewSearchBar flags model
+
+        SearchView ->
+            div [ class "hidden invisible" ] []
+
+        SelectView svm ->
+            viewActionBar flags svm model
+
+
+viewActionBar : Flags -> SelectViewModel -> Model -> Html Msg
+viewActionBar _ svm _ =
+    let
+        selectCount =
+            Set.size svm.ids |> String.fromInt
+    in
+    div
+        [ class "ui ablue-comp icon menu"
+        ]
+        [ a
+            [ classList
+                [ ( "borderless item", True )
+                , ( "active", svm.action == EditSelected )
+                ]
+            , href "#"
+            , title <| "Edit " ++ selectCount ++ " selected items"
+            , onClick EditSelectedItems
+            ]
+            [ i [ class "ui edit icon" ] []
+            ]
+        , a
+            [ classList
+                [ ( "borderless item", True )
+                , ( "active", svm.action == DeleteSelected )
+                ]
+            , href "#"
+            , title <| "Delete " ++ selectCount ++ " selected items"
+            , onClick RequestDeleteSelected
+            ]
+            [ i [ class "trash icon" ] []
+            ]
+        , div [ class "right menu" ]
+            [ a
+                [ class "item"
+                , href "#"
+                , onClick SelectAllItems
+                , title "Select all"
+                ]
+                [ i [ class "check square outline icon" ] []
+                ]
+            , a
+                [ class "borderless item"
+                , href "#"
+                , title "Select none"
+                , onClick SelectNoItems
+                ]
+                [ i [ class "square outline icon" ] []
+                ]
+            , div [ class "borderless label item" ]
+                [ div [ class "ui circular purple icon label" ]
+                    [ text selectCount
+                    ]
+                ]
+            ]
+        ]
+
+
 viewSearchBar : Flags -> Model -> Html Msg
 viewSearchBar flags model =
     let
@@ -145,7 +295,7 @@ viewSearchBar flags model =
     in
     div
         [ classList
-            [ ( "invisible hidden", not model.menuCollapsed )
+            [ ( "invisible hidden", not (menuCollapsed model) )
             , ( "ui secondary stackable menu container", True )
             ]
         ]
@@ -221,3 +371,15 @@ hasMoreSearch model =
                     Api.Model.ItemSearch.empty
     in
     is_ /= Api.Model.ItemSearch.empty
+
+
+deleteAllDimmer : Comp.YesNoDimmer.Settings
+deleteAllDimmer =
+    { message = "Really delete all selected items?"
+    , headerIcon = "exclamation icon"
+    , headerClass = "ui inverted icon header"
+    , confirmButton = "Yes"
+    , cancelButton = "No"
+    , invertedDimmer = False
+    , extraClass = "top aligned"
+    }

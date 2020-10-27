@@ -78,6 +78,7 @@ object UploadRoutes {
       multipart <- req.as[Multipart[F]]
       updata <- readMultipart(
         multipart,
+        "webapp",
         logger,
         prio,
         cfg.backend.files.validMimeTypes

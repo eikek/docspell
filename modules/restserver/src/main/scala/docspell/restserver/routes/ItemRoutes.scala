@@ -1,5 +1,6 @@
 package docspell.restserver.routes
 
+import cats.data.NonEmptyList
 import cats.effect._
 import cats.implicits._
 
@@ -165,8 +166,12 @@ object ItemRoutes {
 
       case req @ PUT -> Root / Ident(id) / "direction" =>
         for {
-          dir  <- req.as[DirectionValue]
-          res  <- backend.item.setDirection(id, dir.direction, user.account.collective)
+          dir <- req.as[DirectionValue]
+          res <- backend.item.setDirection(
+            NonEmptyList.of(id),
+            dir.direction,
+            user.account.collective
+          )
           resp <- Ok(Conversions.basicResult(res, "Direction updated"))
         } yield resp
 
@@ -180,8 +185,12 @@ object ItemRoutes {
       case req @ PUT -> Root / Ident(id) / "corrOrg" =>
         for {
           idref <- req.as[OptionalId]
-          res   <- backend.item.setCorrOrg(id, idref.id, user.account.collective)
-          resp  <- Ok(Conversions.basicResult(res, "Correspondent organization updated"))
+          res <- backend.item.setCorrOrg(
+            NonEmptyList.of(id),
+            idref.id,
+            user.account.collective
+          )
+          resp <- Ok(Conversions.basicResult(res, "Correspondent organization updated"))
         } yield resp
 
       case req @ POST -> Root / Ident(id) / "corrOrg" =>
@@ -195,8 +204,12 @@ object ItemRoutes {
       case req @ PUT -> Root / Ident(id) / "corrPerson" =>
         for {
           idref <- req.as[OptionalId]
-          res   <- backend.item.setCorrPerson(id, idref.id, user.account.collective)
-          resp  <- Ok(Conversions.basicResult(res, "Correspondent person updated"))
+          res <- backend.item.setCorrPerson(
+            NonEmptyList.of(id),
+            idref.id,
+            user.account.collective
+          )
+          resp <- Ok(Conversions.basicResult(res, "Correspondent person updated"))
         } yield resp
 
       case req @ POST -> Root / Ident(id) / "corrPerson" =>
@@ -210,8 +223,12 @@ object ItemRoutes {
       case req @ PUT -> Root / Ident(id) / "concPerson" =>
         for {
           idref <- req.as[OptionalId]
-          res   <- backend.item.setConcPerson(id, idref.id, user.account.collective)
-          resp  <- Ok(Conversions.basicResult(res, "Concerned person updated"))
+          res <- backend.item.setConcPerson(
+            NonEmptyList.of(id),
+            idref.id,
+            user.account.collective
+          )
+          resp <- Ok(Conversions.basicResult(res, "Concerned person updated"))
         } yield resp
 
       case req @ POST -> Root / Ident(id) / "concPerson" =>
@@ -225,8 +242,12 @@ object ItemRoutes {
       case req @ PUT -> Root / Ident(id) / "concEquipment" =>
         for {
           idref <- req.as[OptionalId]
-          res   <- backend.item.setConcEquip(id, idref.id, user.account.collective)
-          resp  <- Ok(Conversions.basicResult(res, "Concerned equipment updated"))
+          res <- backend.item.setConcEquip(
+            NonEmptyList.of(id),
+            idref.id,
+            user.account.collective
+          )
+          resp <- Ok(Conversions.basicResult(res, "Concerned equipment updated"))
         } yield resp
 
       case req @ POST -> Root / Ident(id) / "concEquipment" =>
@@ -259,7 +280,11 @@ object ItemRoutes {
         for {
           date <- req.as[OptionalDate]
           _    <- logger.fdebug(s"Setting item due date to ${date.date}")
-          res  <- backend.item.setItemDueDate(id, date.date, user.account.collective)
+          res <- backend.item.setItemDueDate(
+            NonEmptyList.of(id),
+            date.date,
+            user.account.collective
+          )
           resp <- Ok(Conversions.basicResult(res, "Item due date updated"))
         } yield resp
 
@@ -267,7 +292,11 @@ object ItemRoutes {
         for {
           date <- req.as[OptionalDate]
           _    <- logger.fdebug(s"Setting item date to ${date.date}")
-          res  <- backend.item.setItemDate(id, date.date, user.account.collective)
+          res <- backend.item.setItemDate(
+            NonEmptyList.of(id),
+            date.date,
+            user.account.collective
+          )
           resp <- Ok(Conversions.basicResult(res, "Item date updated"))
         } yield resp
 

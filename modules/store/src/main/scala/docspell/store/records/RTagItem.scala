@@ -30,17 +30,16 @@ object RTagItem {
   def deleteItemTags(item: Ident): ConnectionIO[Int] =
     deleteFrom(table, itemId.is(item)).update.run
 
+  def deleteItemTags(items: NonEmptyList[Ident], cid: Ident): ConnectionIO[Int] = {
+    val itemsFiltered =
+      RItem.filterItemsFragment(items, cid)
+    val sql = fr"DELETE FROM" ++ table ++ fr"WHERE" ++ itemId.isIn(itemsFiltered)
+
+    sql.update.run
+  }
+
   def deleteTag(tid: Ident): ConnectionIO[Int] =
     deleteFrom(table, tagId.is(tid)).update.run
-
-  def insertItemTags(item: Ident, tags: Seq[Ident]): ConnectionIO[Int] =
-    for {
-      tagValues <- tags.toList.traverse(id =>
-        Ident.randomId[ConnectionIO].map(rid => RTagItem(rid, item, id))
-      )
-      tagFrag = tagValues.map(v => fr"${v.tagItemId},${v.itemId},${v.tagId}")
-      ins <- insertRows(table, all, tagFrag).update.run
-    } yield ins
 
   def findByItem(item: Ident): ConnectionIO[Vector[RTagItem]] =
     selectSimple(all, table, itemId.is(item)).query[RTagItem].to[Vector]
@@ -76,4 +75,12 @@ object RTagItem {
           entities.map(v => fr"${v.tagItemId},${v.itemId},${v.tagId}")
         ).update.run
       } yield n
+
+  def appendTags(item: Ident, tags: List[Ident]): ConnectionIO[Int] =
+    for {
+      existing <- findByItem(item)
+      toadd = tags.toSet.diff(existing.map(_.tagId).toSet)
+      n <- setAllTags(item, toadd.toSeq)
+    } yield n
+
 }

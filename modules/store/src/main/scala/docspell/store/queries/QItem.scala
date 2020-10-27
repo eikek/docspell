@@ -493,13 +493,15 @@ object QItem {
 
   private def findByFileIdsQuery(
       fileMetaIds: NonEmptyList[Ident],
-      limit: Option[Int]
+      limit: Option[Int],
+      states: Set[ItemState]
   ): Fragment = {
     val IC      = RItem.Columns.all.map(_.prefix("i"))
     val aItem   = RAttachment.Columns.itemId.prefix("a")
     val aId     = RAttachment.Columns.id.prefix("a")
     val aFileId = RAttachment.Columns.fileId.prefix("a")
     val iId     = RItem.Columns.id.prefix("i")
+    val iState  = RItem.Columns.state.prefix("i")
     val sId     = RAttachmentSource.Columns.id.prefix("s")
     val sFileId = RAttachmentSource.Columns.fileId.prefix("s")
     val rId     = RAttachmentArchive.Columns.id.prefix("r")
@@ -516,11 +518,15 @@ object QItem {
         fr"LEFT OUTER JOIN" ++ RAttachmentArchive.table ++ fr"r ON" ++ aId.is(rId) ++
         fr"LEFT OUTER JOIN" ++ RFileMeta.table ++ fr"m3 ON" ++ m3Id.is(rFileId)
 
-    val q = selectSimple(
-      IC,
-      from,
-      and(or(m1Id.isIn(fileMetaIds), m2Id.isIn(fileMetaIds), m3Id.isIn(fileMetaIds)))
-    )
+    val fileCond =
+      or(m1Id.isIn(fileMetaIds), m2Id.isIn(fileMetaIds), m3Id.isIn(fileMetaIds))
+    val cond = NonEmptyList.fromList(states.toList) match {
+      case Some(nel) =>
+        and(fileCond, iState.isIn(nel))
+      case None =>
+        fileCond
+    }
+    val q = selectSimple(IC, from, cond)
 
     limit match {
       case Some(n) => q ++ fr"LIMIT $n"
@@ -531,15 +537,18 @@ object QItem {
   def findOneByFileIds(fileMetaIds: Seq[Ident]): ConnectionIO[Option[RItem]] =
     NonEmptyList.fromList(fileMetaIds.toList) match {
       case Some(nel) =>
-        findByFileIdsQuery(nel, Some(1)).query[RItem].option
+        findByFileIdsQuery(nel, Some(1), Set.empty).query[RItem].option
       case None =>
         (None: Option[RItem]).pure[ConnectionIO]
     }
 
-  def findByFileIds(fileMetaIds: Seq[Ident]): ConnectionIO[Vector[RItem]] =
+  def findByFileIds(
+      fileMetaIds: Seq[Ident],
+      states: Set[ItemState]
+  ): ConnectionIO[Vector[RItem]] =
     NonEmptyList.fromList(fileMetaIds.toList) match {
       case Some(nel) =>
-        findByFileIdsQuery(nel, None).query[RItem].to[Vector]
+        findByFileIdsQuery(nel, None, states).query[RItem].to[Vector]
       case None =>
         Vector.empty[RItem].pure[ConnectionIO]
     }

@@ -23,6 +23,7 @@ let
     integration-endpoint = {
       enabled = false;
       priority = "low";
+      source-name = "integration";
       allowed-ips = {
         enabled = false;
         ips = [ "127.0.0.1" ];
@@ -213,6 +214,13 @@ in {
               type = types.str;
               default = defaults.integration-endpoint.priority;
               description = "The priority to use when submitting files through this endpoint.";
+            };
+            source-name = mkOption {
+              type = types.str;
+              default = defaults.integration-endpoint.source-name;
+              description = ''
+                The name used for the item "source" property when uploaded through this endpoint.
+              '';
             };
             allowed-ips = mkOption {
               type = types.submodule({

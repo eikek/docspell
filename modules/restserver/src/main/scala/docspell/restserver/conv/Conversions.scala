@@ -134,7 +134,9 @@ trait Conversions {
       m.dueDateFrom,
       m.dueDateUntil,
       m.allNames,
-      None,
+      m.itemSubset
+        .map(_.ids.flatMap(i => Ident.fromString(i).toOption).toSet)
+        .filter(_.nonEmpty),
       None
     )
 
@@ -271,6 +273,7 @@ trait Conversions {
   // upload
   def readMultipart[F[_]: Effect](
       mp: Multipart[F],
+      sourceName: String,
       logger: Logger,
       prio: Priority,
       validFileTypes: Seq[MimeType]
@@ -298,7 +301,7 @@ trait Conversions {
             m.multiple,
             UploadMeta(
               m.direction,
-              "webapp",
+              sourceName,
               m.folder,
               validFileTypes,
               m.skipDuplicates.getOrElse(false)
@@ -307,7 +310,7 @@ trait Conversions {
         )
       )
       .getOrElse(
-        (true, UploadMeta(None, "webapp", None, validFileTypes, false)).pure[F]
+        (true, UploadMeta(None, sourceName, None, validFileTypes, false)).pure[F]
       )
 
     val files = mp.parts

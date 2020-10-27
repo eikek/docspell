@@ -1,5 +1,6 @@
 package docspell.backend.ops
 
+import cats.data.NonEmptyList
 import cats.data.OptionT
 import cats.effect.{Effect, Resource}
 import cats.implicits._
@@ -13,61 +14,123 @@ import docspell.store.queue.JobQueue
 import docspell.store.records._
 import docspell.store.{AddResult, Store}
 
-import doobie._
 import doobie.implicits._
 import org.log4s.getLogger
 
 trait OItem[F[_]] {
 
   /** Sets the given tags (removing all existing ones). */
-  def setTags(item: Ident, tagIds: List[Ident], collective: Ident): F[AddResult]
+  def setTags(item: Ident, tagIds: List[Ident], collective: Ident): F[UpdateResult]
+
+  /** Sets tags for multiple items. The tags of the items will be
+    * replaced with the given ones. Same as `setTags` but for multiple
+    * items.
+    */
+  def setTagsMultipleItems(
+      items: NonEmptyList[Ident],
+      tags: List[Ident],
+      collective: Ident
+  ): F[UpdateResult]
 
   /** Create a new tag and add it to the item. */
   def addNewTag(item: Ident, tag: RTag): F[AddResult]
 
-  /** Apply all tags to the given item. Tags must exist, but can be IDs or names. */
+  /** Apply all tags to the given item. Tags must exist, but can be IDs
+    * or names. Existing tags on the item are left unchanged.
+    */
   def linkTags(item: Ident, tags: List[String], collective: Ident): F[UpdateResult]
+
+  def linkTagsMultipleItems(
+      items: NonEmptyList[Ident],
+      tags: List[String],
+      collective: Ident
+  ): F[UpdateResult]
 
   /** Toggles tags of the given item. Tags must exist, but can be IDs or names. */
   def toggleTags(item: Ident, tags: List[String], collective: Ident): F[UpdateResult]
 
-  def setDirection(item: Ident, direction: Direction, collective: Ident): F[AddResult]
+  def setDirection(
+      item: NonEmptyList[Ident],
+      direction: Direction,
+      collective: Ident
+  ): F[UpdateResult]
 
-  def setFolder(item: Ident, folder: Option[Ident], collective: Ident): F[AddResult]
+  def setFolder(item: Ident, folder: Option[Ident], collective: Ident): F[UpdateResult]
 
-  def setCorrOrg(item: Ident, org: Option[Ident], collective: Ident): F[AddResult]
+  def setFolderMultiple(
+      items: NonEmptyList[Ident],
+      folder: Option[Ident],
+      collective: Ident
+  ): F[UpdateResult]
+
+  def setCorrOrg(
+      items: NonEmptyList[Ident],
+      org: Option[Ident],
+      collective: Ident
+  ): F[UpdateResult]
 
   def addCorrOrg(item: Ident, org: OOrganization.OrgAndContacts): F[AddResult]
 
-  def setCorrPerson(item: Ident, person: Option[Ident], collective: Ident): F[AddResult]
+  def setCorrPerson(
+      items: NonEmptyList[Ident],
+      person: Option[Ident],
+      collective: Ident
+  ): F[UpdateResult]
 
   def addCorrPerson(item: Ident, person: OOrganization.PersonAndContacts): F[AddResult]
 
-  def setConcPerson(item: Ident, person: Option[Ident], collective: Ident): F[AddResult]
+  def setConcPerson(
+      items: NonEmptyList[Ident],
+      person: Option[Ident],
+      collective: Ident
+  ): F[UpdateResult]
 
   def addConcPerson(item: Ident, person: OOrganization.PersonAndContacts): F[AddResult]
 
-  def setConcEquip(item: Ident, equip: Option[Ident], collective: Ident): F[AddResult]
+  def setConcEquip(
+      items: NonEmptyList[Ident],
+      equip: Option[Ident],
+      collective: Ident
+  ): F[UpdateResult]
 
   def addConcEquip(item: Ident, equip: REquipment): F[AddResult]
 
-  def setNotes(item: Ident, notes: Option[String], collective: Ident): F[AddResult]
+  def setNotes(item: Ident, notes: Option[String], collective: Ident): F[UpdateResult]
 
-  def setName(item: Ident, name: String, collective: Ident): F[AddResult]
+  def setName(item: Ident, name: String, collective: Ident): F[UpdateResult]
 
-  def setState(item: Ident, state: ItemState, collective: Ident): F[AddResult]
+  def setNameMultiple(
+      items: NonEmptyList[Ident],
+      name: String,
+      collective: Ident
+  ): F[UpdateResult]
 
-  def setItemDate(item: Ident, date: Option[Timestamp], collective: Ident): F[AddResult]
+  def setState(item: Ident, state: ItemState, collective: Ident): F[AddResult] =
+    setStates(NonEmptyList.of(item), state, collective)
 
-  def setItemDueDate(
-      item: Ident,
-      date: Option[Timestamp],
+  def setStates(
+      item: NonEmptyList[Ident],
+      state: ItemState,
       collective: Ident
   ): F[AddResult]
+
+  def setItemDate(
+      item: NonEmptyList[Ident],
+      date: Option[Timestamp],
+      collective: Ident
+  ): F[UpdateResult]
+
+  def setItemDueDate(
+      item: NonEmptyList[Ident],
+      date: Option[Timestamp],
+      collective: Ident
+  ): F[UpdateResult]
 
   def getProposals(item: Ident, collective: Ident): F[MetaProposalList]
 
   def deleteItem(itemId: Ident, collective: Ident): F[Int]
+
+  def deleteItemMultiple(items: NonEmptyList[Ident], collective: Ident): F[Int]
 
   def deleteAttachment(id: Ident, collective: Ident): F[Int]
 
@@ -77,7 +140,7 @@ trait OItem[F[_]] {
       attachId: Ident,
       name: Option[String],
       collective: Ident
-  ): F[AddResult]
+  ): F[UpdateResult]
 
   /** Submits the item for re-processing. The list of attachment ids can
     * be used to only re-process a subset of the item's attachments.
@@ -87,6 +150,12 @@ trait OItem[F[_]] {
   def reprocess(
       item: Ident,
       attachments: List[Ident],
+      account: AccountId,
+      notifyJoex: Boolean
+  ): F[UpdateResult]
+
+  def reprocessAll(
+      items: NonEmptyList[Ident],
       account: AccountId,
       notifyJoex: Boolean
   ): F[UpdateResult]
@@ -131,20 +200,29 @@ object OItem {
             tags: List[String],
             collective: Ident
         ): F[UpdateResult] =
+          linkTagsMultipleItems(NonEmptyList.of(item), tags, collective)
+
+        def linkTagsMultipleItems(
+            items: NonEmptyList[Ident],
+            tags: List[String],
+            collective: Ident
+        ): F[UpdateResult] =
           tags.distinct match {
             case Nil => UpdateResult.success.pure[F]
-            case kws =>
-              val db =
+            case ws =>
+              store.transact {
                 (for {
-                  _     <- OptionT(RItem.checkByIdAndCollective(item, collective))
-                  given <- OptionT.liftF(RTag.findAllByNameOrId(kws, collective))
-                  exist <- OptionT.liftF(RTagItem.findAllIn(item, given.map(_.tagId)))
+                  itemIds <- OptionT
+                    .liftF(RItem.filterItems(items, collective))
+                    .filter(_.nonEmpty)
+                  given <- OptionT.liftF(RTag.findAllByNameOrId(ws, collective))
                   _ <- OptionT.liftF(
-                    RTagItem.setAllTags(item, given.map(_.tagId).diff(exist.map(_.tagId)))
+                    itemIds.traverse(item =>
+                      RTagItem.appendTags(item, given.map(_.tagId).toList)
+                    )
                   )
                 } yield UpdateResult.success).getOrElse(UpdateResult.notFound)
-
-              store.transact(db)
+              }
           }
 
         def toggleTags(
@@ -169,20 +247,23 @@ object OItem {
               store.transact(db)
           }
 
-        def setTags(item: Ident, tagIds: List[Ident], collective: Ident): F[AddResult] = {
-          val db = for {
-            cid <- RItem.getCollective(item)
-            nd <-
-              if (cid.contains(collective)) RTagItem.deleteItemTags(item)
-              else 0.pure[ConnectionIO]
-            ni <-
-              if (tagIds.nonEmpty && cid.contains(collective))
-                RTagItem.insertItemTags(item, tagIds)
-              else 0.pure[ConnectionIO]
-          } yield nd + ni
+        def setTags(
+            item: Ident,
+            tagIds: List[Ident],
+            collective: Ident
+        ): F[UpdateResult] =
+          setTagsMultipleItems(NonEmptyList.of(item), tagIds, collective)
 
-          store.transact(db).attempt.map(AddResult.fromUpdate)
-        }
+        def setTagsMultipleItems(
+            items: NonEmptyList[Ident],
+            tags: List[Ident],
+            collective: Ident
+        ): F[UpdateResult] =
+          UpdateResult.fromUpdate(store.transact(for {
+            k   <- RTagItem.deleteItemTags(items, collective)
+            res <- items.traverse(i => RTagItem.setAllTags(i, tags))
+            n = res.fold
+          } yield k + n))
 
         def addNewTag(item: Ident, tag: RTag): F[AddResult] =
           (for {
@@ -192,7 +273,7 @@ object OItem {
             _ <- addres match {
               case AddResult.Success =>
                 OptionT.liftF(
-                  store.transact(RTagItem.insertItemTags(item, List(tag.tagId)))
+                  store.transact(RTagItem.setAllTags(item, List(tag.tagId)))
                 )
               case AddResult.EntityExists(_) =>
                 OptionT.pure[F](0)
@@ -203,33 +284,59 @@ object OItem {
             .getOrElse(AddResult.Failure(new Exception("Collective mismatch")))
 
         def setDirection(
-            item: Ident,
+            items: NonEmptyList[Ident],
             direction: Direction,
             collective: Ident
-        ): F[AddResult] =
-          store
-            .transact(RItem.updateDirection(item, collective, direction))
-            .attempt
-            .map(AddResult.fromUpdate)
+        ): F[UpdateResult] =
+          UpdateResult.fromUpdate(
+            store
+              .transact(RItem.updateDirection(items, collective, direction))
+          )
 
         def setFolder(
             item: Ident,
             folder: Option[Ident],
             collective: Ident
-        ): F[AddResult] =
-          store
-            .transact(RItem.updateFolder(item, collective, folder))
-            .attempt
-            .map(AddResult.fromUpdate)
+        ): F[UpdateResult] =
+          UpdateResult
+            .fromUpdate(
+              store
+                .transact(RItem.updateFolder(item, collective, folder))
+            )
             .flatTap(
               onSuccessIgnoreError(fts.updateFolder(logger, item, collective, folder))
             )
 
-        def setCorrOrg(item: Ident, org: Option[Ident], collective: Ident): F[AddResult] =
-          store
-            .transact(RItem.updateCorrOrg(item, collective, org))
-            .attempt
-            .map(AddResult.fromUpdate)
+        def setFolderMultiple(
+            items: NonEmptyList[Ident],
+            folder: Option[Ident],
+            collective: Ident
+        ): F[UpdateResult] =
+          for {
+            results <- items.traverse(i => setFolder(i, folder, collective))
+            err <- results.traverse {
+              case UpdateResult.NotFound =>
+                logger.info("An item was not found when updating the folder") *> 0.pure[F]
+              case UpdateResult.Failure(err) =>
+                logger.error(err)("An item failed to update its folder") *> 1.pure[F]
+              case UpdateResult.Success =>
+                0.pure[F]
+            }
+            res =
+              if (results.size == err.fold)
+                UpdateResult.failure(new Exception("All items failed to update"))
+              else UpdateResult.success
+          } yield res
+
+        def setCorrOrg(
+            items: NonEmptyList[Ident],
+            org: Option[Ident],
+            collective: Ident
+        ): F[UpdateResult] =
+          UpdateResult.fromUpdate(
+            store
+              .transact(RItem.updateCorrOrg(items, collective, org))
+          )
 
         def addCorrOrg(item: Ident, org: OOrganization.OrgAndContacts): F[AddResult] =
           (for {
@@ -240,7 +347,11 @@ object OItem {
               case AddResult.Success =>
                 OptionT.liftF(
                   store.transact(
-                    RItem.updateCorrOrg(item, org.org.cid, Some(org.org.oid))
+                    RItem.updateCorrOrg(
+                      NonEmptyList.of(item),
+                      org.org.cid,
+                      Some(org.org.oid)
+                    )
                   )
                 )
               case AddResult.EntityExists(_) =>
@@ -252,14 +363,14 @@ object OItem {
             .getOrElse(AddResult.Failure(new Exception("Collective mismatch")))
 
         def setCorrPerson(
-            item: Ident,
+            items: NonEmptyList[Ident],
             person: Option[Ident],
             collective: Ident
-        ): F[AddResult] =
-          store
-            .transact(RItem.updateCorrPerson(item, collective, person))
-            .attempt
-            .map(AddResult.fromUpdate)
+        ): F[UpdateResult] =
+          UpdateResult.fromUpdate(
+            store
+              .transact(RItem.updateCorrPerson(items, collective, person))
+          )
 
         def addCorrPerson(
             item: Ident,
@@ -274,7 +385,11 @@ object OItem {
                 OptionT.liftF(
                   store.transact(
                     RItem
-                      .updateCorrPerson(item, person.person.cid, Some(person.person.pid))
+                      .updateCorrPerson(
+                        NonEmptyList.of(item),
+                        person.person.cid,
+                        Some(person.person.pid)
+                      )
                   )
                 )
               case AddResult.EntityExists(_) =>
@@ -286,14 +401,14 @@ object OItem {
             .getOrElse(AddResult.Failure(new Exception("Collective mismatch")))
 
         def setConcPerson(
-            item: Ident,
+            items: NonEmptyList[Ident],
             person: Option[Ident],
             collective: Ident
-        ): F[AddResult] =
-          store
-            .transact(RItem.updateConcPerson(item, collective, person))
-            .attempt
-            .map(AddResult.fromUpdate)
+        ): F[UpdateResult] =
+          UpdateResult.fromUpdate(
+            store
+              .transact(RItem.updateConcPerson(items, collective, person))
+          )
 
         def addConcPerson(
             item: Ident,
@@ -308,7 +423,11 @@ object OItem {
                 OptionT.liftF(
                   store.transact(
                     RItem
-                      .updateConcPerson(item, person.person.cid, Some(person.person.pid))
+                      .updateConcPerson(
+                        NonEmptyList.of(item),
+                        person.person.cid,
+                        Some(person.person.pid)
+                      )
                   )
                 )
               case AddResult.EntityExists(_) =>
@@ -320,14 +439,14 @@ object OItem {
             .getOrElse(AddResult.Failure(new Exception("Collective mismatch")))
 
         def setConcEquip(
-            item: Ident,
+            items: NonEmptyList[Ident],
             equip: Option[Ident],
             collective: Ident
-        ): F[AddResult] =
-          store
-            .transact(RItem.updateConcEquip(item, collective, equip))
-            .attempt
-            .map(AddResult.fromUpdate)
+        ): F[UpdateResult] =
+          UpdateResult.fromUpdate(
+            store
+              .transact(RItem.updateConcEquip(items, collective, equip))
+          )
 
         def addConcEquip(item: Ident, equip: REquipment): F[AddResult] =
           (for {
@@ -338,7 +457,8 @@ object OItem {
               case AddResult.Success =>
                 OptionT.liftF(
                   store.transact(
-                    RItem.updateConcEquip(item, equip.cid, Some(equip.eid))
+                    RItem
+                      .updateConcEquip(NonEmptyList.of(item), equip.cid, Some(equip.eid))
                   )
                 )
               case AddResult.EntityExists(_) =>
@@ -353,54 +473,88 @@ object OItem {
             item: Ident,
             notes: Option[String],
             collective: Ident
-        ): F[AddResult] =
-          store
-            .transact(RItem.updateNotes(item, collective, notes))
-            .attempt
-            .map(AddResult.fromUpdate)
+        ): F[UpdateResult] =
+          UpdateResult
+            .fromUpdate(
+              store
+                .transact(RItem.updateNotes(item, collective, notes))
+            )
             .flatTap(
               onSuccessIgnoreError(fts.updateItemNotes(logger, item, collective, notes))
             )
 
-        def setName(item: Ident, name: String, collective: Ident): F[AddResult] =
-          store
-            .transact(RItem.updateName(item, collective, name))
-            .attempt
-            .map(AddResult.fromUpdate)
+        def setName(item: Ident, name: String, collective: Ident): F[UpdateResult] =
+          UpdateResult
+            .fromUpdate(
+              store
+                .transact(RItem.updateName(item, collective, name))
+            )
             .flatTap(
               onSuccessIgnoreError(fts.updateItemName(logger, item, collective, name))
             )
 
-        def setState(item: Ident, state: ItemState, collective: Ident): F[AddResult] =
+        def setNameMultiple(
+            items: NonEmptyList[Ident],
+            name: String,
+            collective: Ident
+        ): F[UpdateResult] =
+          for {
+            results <- items.traverse(i => setName(i, name, collective))
+            err <- results.traverse {
+              case UpdateResult.NotFound =>
+                logger.info("An item was not found when updating the name") *> 0.pure[F]
+              case UpdateResult.Failure(err) =>
+                logger.error(err)("An item failed to update its name") *> 1.pure[F]
+              case UpdateResult.Success =>
+                0.pure[F]
+            }
+            res =
+              if (results.size == err.fold)
+                UpdateResult.failure(new Exception("All items failed to update"))
+              else UpdateResult.success
+          } yield res
+
+        def setStates(
+            items: NonEmptyList[Ident],
+            state: ItemState,
+            collective: Ident
+        ): F[AddResult] =
           store
-            .transact(RItem.updateStateForCollective(item, state, collective))
+            .transact(RItem.updateStateForCollective(items, state, collective))
             .attempt
             .map(AddResult.fromUpdate)
 
         def setItemDate(
-            item: Ident,
+            items: NonEmptyList[Ident],
             date: Option[Timestamp],
             collective: Ident
-        ): F[AddResult] =
-          store
-            .transact(RItem.updateDate(item, collective, date))
-            .attempt
-            .map(AddResult.fromUpdate)
+        ): F[UpdateResult] =
+          UpdateResult.fromUpdate(
+            store
+              .transact(RItem.updateDate(items, collective, date))
+          )
 
         def setItemDueDate(
-            item: Ident,
+            items: NonEmptyList[Ident],
             date: Option[Timestamp],
             collective: Ident
-        ): F[AddResult] =
-          store
-            .transact(RItem.updateDueDate(item, collective, date))
-            .attempt
-            .map(AddResult.fromUpdate)
+        ): F[UpdateResult] =
+          UpdateResult.fromUpdate(
+            store
+              .transact(RItem.updateDueDate(items, collective, date))
+          )
 
         def deleteItem(itemId: Ident, collective: Ident): F[Int] =
           QItem
             .delete(store)(itemId, collective)
             .flatTap(_ => fts.removeItem(logger, itemId))
+
+        def deleteItemMultiple(items: NonEmptyList[Ident], collective: Ident): F[Int] =
+          for {
+            itemIds <- store.transact(RItem.filterItems(items, collective))
+            results <- itemIds.traverse(item => deleteItem(item, collective))
+            n = results.fold(0)(_ + _)
+          } yield n
 
         def getProposals(item: Ident, collective: Ident): F[MetaProposalList] =
           store.transact(QAttachment.getMetaProposals(item, collective))
@@ -414,11 +568,12 @@ object OItem {
             attachId: Ident,
             name: Option[String],
             collective: Ident
-        ): F[AddResult] =
-          store
-            .transact(RAttachment.updateName(attachId, collective, name))
-            .attempt
-            .map(AddResult.fromUpdate)
+        ): F[UpdateResult] =
+          UpdateResult
+            .fromUpdate(
+              store
+                .transact(RAttachment.updateName(attachId, collective, name))
+            )
             .flatTap(
               onSuccessIgnoreError(
                 OptionT(store.transact(RAttachment.findItemId(attachId)))
@@ -447,6 +602,20 @@ object OItem {
             _ <- OptionT.liftF(if (notifyJoex) joex.notifyAllNodes else ().pure[F])
           } yield UpdateResult.success).getOrElse(UpdateResult.notFound)
 
+        def reprocessAll(
+            items: NonEmptyList[Ident],
+            account: AccountId,
+            notifyJoex: Boolean
+        ): F[UpdateResult] =
+          UpdateResult.fromUpdate(for {
+            items <- store.transact(RItem.filterItems(items, account.collective))
+            jobs <- items
+              .map(item => ReProcessItemArgs(item, Nil))
+              .traverse(arg => JobFactory.reprocessItem[F](arg, account, Priority.Low))
+            _ <- queue.insertAllIfNew(jobs)
+            _ <- if (notifyJoex) joex.notifyAllNodes else ().pure[F]
+          } yield items.size)
+
         def convertAllPdf(
             collective: Option[Ident],
             account: AccountId,
@@ -458,17 +627,17 @@ object OItem {
             _   <- if (notifyJoex) joex.notifyAllNodes else ().pure[F]
           } yield UpdateResult.success
 
-        private def onSuccessIgnoreError(update: F[Unit])(ar: AddResult): F[Unit] =
+        private def onSuccessIgnoreError(update: F[Unit])(ar: UpdateResult): F[Unit] =
           ar match {
-            case AddResult.Success =>
+            case UpdateResult.Success =>
               update.attempt.flatMap {
                 case Right(()) => ().pure[F]
                 case Left(ex) =>
                   logger.warn(s"Error updating full-text index: ${ex.getMessage}")
               }
-            case AddResult.Failure(_) =>
+            case UpdateResult.Failure(_) =>
               ().pure[F]
-            case AddResult.EntityExists(_) =>
+            case UpdateResult.NotFound =>
               ().pure[F]
           }
       })

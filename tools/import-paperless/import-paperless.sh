@@ -66,7 +66,7 @@ function curl_call() {
   curl_result=$(eval $curl_cmd)
 
   if [ "$curl_result" == '"Authentication failed."' ] || [ "$curl_result" == 'Response timed out' ]; then
-    printf "\nNew login required (§curl_result)... "
+    printf "\nNew login required ($curl_result)... "
     login
     printf "%${#len_resultset}s" " "; printf "           .."
     curl_call $1

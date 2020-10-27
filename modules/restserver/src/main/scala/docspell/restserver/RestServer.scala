@@ -73,6 +73,7 @@ object RestServer {
       "collective"              -> CollectiveRoutes(restApp.backend, token),
       "queue"                   -> JobQueueRoutes(restApp.backend, token),
       "item"                    -> ItemRoutes(cfg, restApp.backend, token),
+      "items"                   -> ItemMultiRoutes(restApp.backend, token),
       "attachment"              -> AttachmentRoutes(restApp.backend, token),
       "upload"                  -> UploadRoutes.secured(restApp.backend, cfg, token),
       "checkfile"               -> CheckFileRoutes.secured(restApp.backend, token),

@@ -2,7 +2,8 @@ package docspell.common
 
 object DocspellSystem {
 
-  val taskGroup            = Ident.unsafe("docspell-system")
+  val user                 = Ident.unsafe("docspell-system")
+  val taskGroup            = user
   val migrationTaskTracker = Ident.unsafe("full-text-index-tracker")
 
 }
