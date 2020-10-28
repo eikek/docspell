@@ -23,6 +23,7 @@ ds_password=$3
 ds_consumedir_path=${4%/}
 ds_archive_path=$ds_consumedir_path/_archive/$ds_collective
 
+
 if [ $# -ne 4 ]; then
   echo "FATAL  Exactly four parameters needed"
   exit -3
