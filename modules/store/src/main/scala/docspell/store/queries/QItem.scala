@@ -328,17 +328,14 @@ object QItem {
     val EC = REquipment.Columns
 
     // inclusive tags are AND-ed
-    val tagSelectsIncl = (q.tagsInclude
+    val tagSelectsIncl = q.tagsInclude
       .map(tid =>
         selectSimple(
           List(RTagItem.Columns.itemId),
           RTagItem.table,
           RTagItem.Columns.tagId.is(tid)
         )
-      ) ++ q.tagCategoryIncl.map(cat =>
-      TagItemName.itemsInCategory(NonEmptyList.of(cat))
-    ))
-      .map(f => sql"(" ++ f ++ sql") ")
+      ) ++ q.tagCategoryIncl.map(cat => TagItemName.itemsInCategory(NonEmptyList.of(cat)))
 
     // exclusive tags are OR-ed
     val tagSelectsExcl =
