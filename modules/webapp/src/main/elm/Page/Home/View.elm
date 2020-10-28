@@ -59,7 +59,7 @@ view flags settings model =
                     , onClick ToggleSearchMenu
                     , title "Hide menu"
                     ]
-                    [ i [ class "ui angle down icon" ] []
+                    [ i [ class "ui angle left icon" ] []
                     ]
                 , div [ class "right floated menu" ]
                     [ a
@@ -300,7 +300,7 @@ viewSearchBar flags model =
             ]
         ]
         [ a
-            [ class "item"
+            [ class "search-menu-toggle ui blue icon button"
             , onClick ToggleSearchMenu
             , href "#"
             , if model.searchTypeForm == ContentOnlySearch then
@@ -309,19 +309,7 @@ viewSearchBar flags model =
               else
                 title "Open search menu"
             ]
-            [ i [ class "angle left icon" ] []
-            , i [ class "icons" ]
-                [ i [ class "grey bars icon" ] []
-                , i [ class "bottom left corner search icon" ] []
-                , if model.searchTypeForm == ContentOnlySearch then
-                    i [ class "top right red corner delete icon" ] []
-
-                  else if hasMoreSearch model then
-                    i [ class "top right blue corner circle icon" ] []
-
-                  else
-                    span [ class "hidden invisible" ] []
-                ]
+            [ i [ class "angle right icon" ] []
             ]
         , div [ class "item" ]
             [ div [ class "ui left icon right action input" ]
@@ -333,7 +321,15 @@ viewSearchBar flags model =
                     , href "#"
                     , onClick DoSearch
                     ]
-                    []
+                    (if hasMoreSearch model && model.searchTypeForm == BasicSearch then
+                        [ i [ class "icons search-corner-icons" ]
+                            [ i [ class "tiny blue circle icon" ] []
+                            ]
+                        ]
+
+                     else
+                        []
+                    )
                 , input
                     [ type_ "text"
                     , placeholder "Quick Search …"

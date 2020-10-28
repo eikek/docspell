@@ -31,6 +31,19 @@
     margin: 0 1em;
 }
 
+.default-layout .ui.menu a.search-menu-toggle {
+    position: absolute;
+    left: -2px;
+    top: 18px;
+    z-index: 2;
+}
+
+.default-layout .icons.search-corner-icons {
+    position: relative;
+    top: 10px;
+    left: 8px;
+}
+
 .default-layout .ui.icon.menu .label.item {
     padding: 0 0.5em 0 0;
 }
