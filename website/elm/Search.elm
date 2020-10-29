@@ -104,8 +104,8 @@ view model =
         [ class "form"
         , onSubmit SubmitSearch
         ]
-        [ div [ class "dropdown field is-active is-fullwidth" ]
-            [ div [ class "control has-icons-right is-fullwidth" ]
+        [ div [ class "dropdown field is-active is-fullwidth has-addons" ]
+            [ div [ class "control is-fullwidth" ]
                 [ input
                     [ class "input"
                     , type_ "text"
@@ -114,7 +114,13 @@ view model =
                     , value model.searchInput
                     ]
                     []
-                , span [ class "icon is-right is-small" ]
+                ]
+            , div [ class "control" ]
+                [ button
+                    [ class "button is-primary"
+                    , href "#"
+                    , onClick SubmitSearch
+                    ]
                     [ img [ src "/icons/search-20.svg" ] []
                     ]
                 ]

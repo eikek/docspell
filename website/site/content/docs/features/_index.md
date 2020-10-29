@@ -38,6 +38,7 @@ description = "A list of features and limitations."
   with due dates
 - [Read your mailboxes](@/docs/webapp/scanmailbox.md) via IMAP to
   import mails into docspell
+- [Edit multiple items](@/docs/webapp/multiedit.md) at once
 - REST server and document processing are separate applications which
   can be scaled-out independently
 - Everything stored in a SQL database: PostgreSQL, MariaDB or H2
