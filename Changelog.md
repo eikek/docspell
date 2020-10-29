@@ -1,5 +1,62 @@
 # Changelog
 
+## v0.14.0
+
+*Soon*
+
+This release contains many bug fixes, thank you all so much for
+helping out! There is also a new feature and some more scripts in
+tools.
+
+- Show/hide side menus via ui settings (#351)
+- Extend docker image to use newest ocrmypdf version (#393, thanks
+  @totti4ever)
+- Adds two more scripts to the `tools/` section (thanks to
+  @totti4ever):
+  - one script to import data from paperless, and
+  - a script to check clean a directory from files that are already in
+    docspell
+- Fix bug that would stop processing when pdf conversion fails (#392,
+  #387)
+- Fix bug to have a separate, configurable source identifier for the
+  integration upload endpoint (#389)
+- Edit/delete multiple items at once (#253)
+- Fixes ui bug to not highlight the last viewed item when searching
+  again. (#373)
+- Fixes bug when saving multiple changes to the ui settings (#368)
+- Fixes uniqueness check for equipments (#370)
+- Fixes a bug when doing document classification where user input was
+  not correctly escaped for regexes (#356)
+- Add an import script for paperless! (#358, #359, thanks @totti4ever)
+- Fixes debian packages to have both (joex + restserver) the same user
+  to make H2 work (#336)
+- Fixes a bug when searching with multiple tags using MariaDB (#404)
+
+### REST Api Changes
+
+- Routes for managing multiple items:
+  - `/sec/items/deleteAll`
+  - `/sec/items/tags`
+  - `/sec/items/name`
+  - `/sec/items/folder`
+  - `/sec/items/direction`
+  - `/sec/items/date`
+  - `/sec/items/duedate`
+  - `/sec/items/corrOrg`
+  - `/sec/items/corrPerson`
+  - `/sec/items/concPerson`
+  - `/sec/items/concEquipment`
+  - `/sec/items/confirm`
+  - `/sec/items/unconfirm`
+  - `/sec/items/reprocess`
+- Adds another parameter to `ItemSearch` structure to enable searching
+  in a subset of items giving their ids.
+
+### Configuration Changes
+
+- new setting `….integration-endpoint.source-name` to define the
+  source name for files uploaded through this endpoint
+
 ## v0.13.0
 
 *Oct 19, 2020*

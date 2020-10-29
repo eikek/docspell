@@ -87,6 +87,13 @@ The directory contains a file `docspell.conf` that you can
                             ]
                         , text "."
                         ]
+                    , li []
+                        [ text "Chat on "
+                        , a [ href "https://gitter.im/eikek/docspell" ]
+                            [ text "Gitter"
+                            ]
+                        , text " for questions and feedback."
+                        ]
                     ]
                 ]
             ]
