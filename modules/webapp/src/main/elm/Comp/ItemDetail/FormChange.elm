@@ -30,6 +30,7 @@ type FormChange
     | ItemDateChange (Maybe Int)
     | DueDateChange (Maybe Int)
     | NameChange String
+    | ConfirmChange Bool
 
 
 multiUpdate :
@@ -113,6 +114,13 @@ multiUpdate flags ids change receive =
                     ItemsAndRef items (Maybe.map .id ref)
             in
             Api.setConcEquipmentMultiple flags data receive
+
+        ConfirmChange flag ->
+            if flag then
+                Api.confirmMultiple flags ids receive
+
+            else
+                Api.unconfirmMultiple flags ids receive
 
         NoFormChange ->
             Cmd.none

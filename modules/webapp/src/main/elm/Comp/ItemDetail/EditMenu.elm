@@ -81,6 +81,7 @@ type Msg
     | UpdateThrottle
     | RemoveDueDate
     | RemoveDate
+    | ConfirmMsg Bool
     | FolderDropdownMsg (Comp.Dropdown.Msg IdName)
     | TagDropdownMsg (Comp.Dropdown.Msg Tag)
     | DirDropdownMsg (Comp.Dropdown.Msg Direction)
@@ -201,6 +202,9 @@ resultNone model =
 update : Flags -> Msg -> Model -> UpdateResult
 update flags msg model =
     case msg of
+        ConfirmMsg flag ->
+            resultNoCmd (ConfirmChange flag) model
+
         TagDropdownMsg m ->
             let
                 ( m2, _ ) =
@@ -553,7 +557,26 @@ renderEditForm cfg settings model =
     in
     div [ class cfg.menuClass ]
         [ div [ class "ui form warning" ]
-            [ optional [ Data.Fields.Tag ] <|
+            [ div [ class "field" ]
+                [ div
+                    [ class "ui fluid buttons"
+                    ]
+                    [ button
+                        [ class "ui primary button"
+                        , onClick (ConfirmMsg True)
+                        ]
+                        [ text "Confirm"
+                        ]
+                    , div [ class "or" ] []
+                    , button
+                        [ class "ui secondary button"
+                        , onClick (ConfirmMsg False)
+                        ]
+                        [ text "Unconfirm"
+                        ]
+                    ]
+                ]
+            , optional [ Data.Fields.Tag ] <|
                 div [ class "field" ]
                     [ label []
                         [ Icons.tagsIcon "grey"

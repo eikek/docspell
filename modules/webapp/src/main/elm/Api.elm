@@ -10,6 +10,7 @@ module Api exposing
     , changeFolderName
     , changePassword
     , checkCalEvent
+    , confirmMultiple
     , createImapSettings
     , createMailSettings
     , createNewFolder
@@ -107,6 +108,7 @@ module Api exposing
     , startReIndex
     , submitNotifyDueItems
     , toggleTags
+    , unconfirmMultiple
     , updateNotifyDueItems
     , updateScanMailbox
     , upload
@@ -1282,6 +1284,34 @@ getJobQueueStateTask flags =
 
 
 --- Item (Mulit Edit)
+
+
+confirmMultiple :
+    Flags
+    -> Set String
+    -> (Result Http.Error BasicResult -> msg)
+    -> Cmd msg
+confirmMultiple flags ids receive =
+    Http2.authPut
+        { url = flags.config.baseUrl ++ "/api/v1/sec/items/confirm"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.IdList.encode (IdList (Set.toList ids)))
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+unconfirmMultiple :
+    Flags
+    -> Set String
+    -> (Result Http.Error BasicResult -> msg)
+    -> Cmd msg
+unconfirmMultiple flags ids receive =
+    Http2.authPut
+        { url = flags.config.baseUrl ++ "/api/v1/sec/items/unconfirm"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.IdList.encode (IdList (Set.toList ids)))
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
 
 
 setTagsMultiple :
