@@ -146,7 +146,7 @@ do
       rm "$tmp_filepath"
     else
       created=$(echo $curl_result | jq -r ".items[0].created")
-      cur_dir="$ds_archive_path/$(date -d @$(echo "(1603892183000+500)/1000" | bc) +%Y-%m
+      cur_dir="$ds_archive_path/$(date -d @$(echo "($created+500)/1000" | bc) +%Y-%m
 )"
       echo "... moving to archive by month added ('$cur_dir')"
       mkdir -p "$cur_dir"
