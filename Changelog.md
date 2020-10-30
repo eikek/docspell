@@ -8,19 +8,19 @@ This release contains many bug fixes, thank you all so much for
 helping out! There is also a new feature and some more scripts in
 tools.
 
+- Edit/delete multiple items at once (#253)
 - Show/hide side menus via ui settings (#351)
-- Extend docker image to use newest ocrmypdf version (#393, thanks
-  @totti4ever)
 - Adds two more scripts to the `tools/` section (thanks to
   @totti4ever):
   - one script to import data from paperless (#358, #359), and
   - a script to check clean a directory from files that are already in
     docspell (#403)
+- Extend docker image to use newest ocrmypdf version (#393, thanks
+  @totti4ever)
 - Fix bug that would stop processing when pdf conversion fails (#392,
   #387)
 - Fix bug to have a separate, configurable source identifier for the
   integration upload endpoint (#389)
-- Edit/delete multiple items at once (#253)
 - Fixes ui bug to not highlight the last viewed item when searching
   again. (#373)
 - Fixes bug when saving multiple changes to the ui settings (#368)
