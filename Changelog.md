@@ -13,9 +13,9 @@ tools.
   @totti4ever)
 - Adds two more scripts to the `tools/` section (thanks to
   @totti4ever):
-  - one script to import data from paperless, and
+  - one script to import data from paperless (#358, #359), and
   - a script to check clean a directory from files that are already in
-    docspell
+    docspell (#403)
 - Fix bug that would stop processing when pdf conversion fails (#392,
   #387)
 - Fix bug to have a separate, configurable source identifier for the
@@ -27,7 +27,6 @@ tools.
 - Fixes uniqueness check for equipments (#370)
 - Fixes a bug when doing document classification where user input was
   not correctly escaped for regexes (#356)
-- Add an import script for paperless! (#358, #359, thanks @totti4ever)
 - Fixes debian packages to have both (joex + restserver) the same user
   to make H2 work (#336)
 - Fixes a bug when searching with multiple tags using MariaDB (#404)
