@@ -21,7 +21,7 @@ object Dependencies {
   val Icu4jVersion            = "68.1"
   val JsoupVersion            = "1.13.1"
   val KindProjectorVersion    = "0.10.3"
-  val Log4sVersion            = "1.8.2"
+  val Log4sVersion            = "1.9.0"
   val LogbackVersion          = "1.2.3"
   val MariaDbVersion          = "2.7.0"
   val MiniTestVersion         = "2.8.2"
