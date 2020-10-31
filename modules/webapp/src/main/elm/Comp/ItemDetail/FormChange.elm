@@ -20,7 +20,9 @@ import Set exposing (Set)
 
 type FormChange
     = NoFormChange
-    | TagChange ReferenceList
+    | AddTagChange ReferenceList
+    | ReplaceTagChange ReferenceList
+    | RemoveTagChange ReferenceList
     | FolderChange (Maybe IdName)
     | DirectionChange Direction
     | OrgChange (Maybe IdName)
@@ -45,12 +47,26 @@ multiUpdate flags ids change receive =
             Set.toList ids
     in
     case change of
-        TagChange tags ->
+        ReplaceTagChange tags ->
             let
                 data =
                     ItemsAndRefs items (List.map .id tags.items)
             in
             Api.setTagsMultiple flags data receive
+
+        AddTagChange tags ->
+            let
+                data =
+                    ItemsAndRefs items (List.map .id tags.items)
+            in
+            Api.addTagsMultiple flags data receive
+
+        RemoveTagChange tags ->
+            let
+                data =
+                    ItemsAndRefs items (List.map .id tags.items)
+            in
+            Api.removeTagsMultiple flags data receive
 
         NameChange name ->
             let
