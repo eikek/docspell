@@ -75,6 +75,7 @@ module Api exposing
     , refreshSession
     , register
     , removeMember
+    , removeTagsMultiple
     , sendMail
     , setAttachmentName
     , setCollectiveSettings
@@ -1336,6 +1337,20 @@ addTagsMultiple :
 addTagsMultiple flags data receive =
     Http2.authPost
         { url = flags.config.baseUrl ++ "/api/v1/sec/items/tags"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.ItemsAndRefs.encode data)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+removeTagsMultiple :
+    Flags
+    -> ItemsAndRefs
+    -> (Result Http.Error BasicResult -> msg)
+    -> Cmd msg
+removeTagsMultiple flags data receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/items/tagsremove"
         , account = getAccount flags
         , body = Http.jsonBody (Api.Model.ItemsAndRefs.encode data)
         , expect = Http.expectJson receive Api.Model.BasicResult.decoder
