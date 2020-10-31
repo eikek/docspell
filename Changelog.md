@@ -8,7 +8,7 @@ This release contains many bug fixes, thank you all so much for
 helping out! There is also a new feature and some more scripts in
 tools.
 
-- Edit/delete multiple items at once (#253)
+- Edit/delete multiple items at once (#253, #412)
 - Show/hide side menus via ui settings (#351)
 - Adds two more scripts to the `tools/` section (thanks to
   @totti4ever):
@@ -36,6 +36,7 @@ tools.
 - Routes for managing multiple items:
   - `/sec/items/deleteAll`
   - `/sec/items/tags`
+  - `/sec/items/tagsremove`
   - `/sec/items/name`
   - `/sec/items/folder`
   - `/sec/items/direction`
