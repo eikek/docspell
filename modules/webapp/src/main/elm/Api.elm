@@ -10,6 +10,7 @@ module Api exposing
     , changeFolderName
     , changePassword
     , checkCalEvent
+    , confirmMultiple
     , createImapSettings
     , createMailSettings
     , createNewFolder
@@ -74,6 +75,7 @@ module Api exposing
     , refreshSession
     , register
     , removeMember
+    , removeTagsMultiple
     , sendMail
     , setAttachmentName
     , setCollectiveSettings
@@ -107,6 +109,7 @@ module Api exposing
     , startReIndex
     , submitNotifyDueItems
     , toggleTags
+    , unconfirmMultiple
     , updateNotifyDueItems
     , updateScanMailbox
     , upload
@@ -1284,6 +1287,34 @@ getJobQueueStateTask flags =
 --- Item (Mulit Edit)
 
 
+confirmMultiple :
+    Flags
+    -> Set String
+    -> (Result Http.Error BasicResult -> msg)
+    -> Cmd msg
+confirmMultiple flags ids receive =
+    Http2.authPut
+        { url = flags.config.baseUrl ++ "/api/v1/sec/items/confirm"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.IdList.encode (IdList (Set.toList ids)))
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+unconfirmMultiple :
+    Flags
+    -> Set String
+    -> (Result Http.Error BasicResult -> msg)
+    -> Cmd msg
+unconfirmMultiple flags ids receive =
+    Http2.authPut
+        { url = flags.config.baseUrl ++ "/api/v1/sec/items/unconfirm"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.IdList.encode (IdList (Set.toList ids)))
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
 setTagsMultiple :
     Flags
     -> ItemsAndRefs
@@ -1306,6 +1337,20 @@ addTagsMultiple :
 addTagsMultiple flags data receive =
     Http2.authPost
         { url = flags.config.baseUrl ++ "/api/v1/sec/items/tags"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.ItemsAndRefs.encode data)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+removeTagsMultiple :
+    Flags
+    -> ItemsAndRefs
+    -> (Result Http.Error BasicResult -> msg)
+    -> Cmd msg
+removeTagsMultiple flags data receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/items/tagsremove"
         , account = getAccount flags
         , body = Http.jsonBody (Api.Model.ItemsAndRefs.encode data)
         , expect = Http.expectJson receive Api.Model.BasicResult.decoder

@@ -53,6 +53,12 @@ type SaveNameState
     | SaveFailed
 
 
+type TagEditMode
+    = AddTags
+    | RemoveTags
+    | ReplaceTags
+
+
 type alias Model =
     { tagModel : Comp.Dropdown.Model Tag
     , nameModel : String
@@ -70,6 +76,7 @@ type alias Model =
     , concPersonModel : Comp.Dropdown.Model IdName
     , concEquipModel : Comp.Dropdown.Model IdName
     , modalEdit : Maybe Comp.DetailEdit.Model
+    , tagEditMode : TagEditMode
     }
 
 
@@ -81,6 +88,8 @@ type Msg
     | UpdateThrottle
     | RemoveDueDate
     | RemoveDate
+    | ConfirmMsg Bool
+    | ToggleTagEditMode
     | FolderDropdownMsg (Comp.Dropdown.Msg IdName)
     | TagDropdownMsg (Comp.Dropdown.Msg Tag)
     | DirDropdownMsg (Comp.Dropdown.Msg Direction)
@@ -145,6 +154,7 @@ init =
     , dueDate = Nothing
     , dueDatePicker = Comp.DatePicker.emptyModel
     , modalEdit = Nothing
+    , tagEditMode = AddTags
     }
 
 
@@ -201,6 +211,9 @@ resultNone model =
 update : Flags -> Msg -> Model -> UpdateResult
 update flags msg model =
     case msg of
+        ConfirmMsg flag ->
+            resultNoCmd (ConfirmChange flag) model
+
         TagDropdownMsg m ->
             let
                 ( m2, _ ) =
@@ -209,18 +222,47 @@ update flags msg model =
                 newModel =
                     { model | tagModel = m2 }
 
+                mkChange list =
+                    case model.tagEditMode of
+                        AddTags ->
+                            AddTagChange list
+
+                        RemoveTags ->
+                            RemoveTagChange list
+
+                        ReplaceTags ->
+                            ReplaceTagChange list
+
                 change =
                     if isDropdownChangeMsg m then
                         Comp.Dropdown.getSelected newModel.tagModel
                             |> Util.List.distinct
                             |> List.map (\t -> IdName t.id t.name)
                             |> ReferenceList
-                            |> TagChange
+                            |> mkChange
 
                     else
                         NoFormChange
             in
             resultNoCmd change newModel
+
+        ToggleTagEditMode ->
+            let
+                ( m2, _ ) =
+                    Comp.Dropdown.update (Comp.Dropdown.SetSelection []) model.tagModel
+
+                newModel =
+                    { model | tagModel = m2 }
+            in
+            case model.tagEditMode of
+                AddTags ->
+                    resultNone { newModel | tagEditMode = RemoveTags }
+
+                RemoveTags ->
+                    resultNone { newModel | tagEditMode = ReplaceTags }
+
+                ReplaceTags ->
+                    resultNone { newModel | tagEditMode = AddTags }
 
         GetTagsResp (Ok tags) ->
             let
@@ -550,16 +592,66 @@ renderEditForm cfg settings model =
 
             else
                 span [ class "invisible hidden" ] []
+
+        tagModeIcon =
+            case model.tagEditMode of
+                AddTags ->
+                    i [ class "grey plus link icon" ] []
+
+                RemoveTags ->
+                    i [ class "grey eraser link icon" ] []
+
+                ReplaceTags ->
+                    i [ class "grey redo alternate link icon" ] []
+
+        tagModeMsg =
+            case model.tagEditMode of
+                AddTags ->
+                    "Tags chosen here are *added* to all selected items."
+
+                RemoveTags ->
+                    "Tags chosen here are *removed* from all selected items."
+
+                ReplaceTags ->
+                    "Tags chosen here *replace* those on selected items."
     in
     div [ class cfg.menuClass ]
         [ div [ class "ui form warning" ]
-            [ optional [ Data.Fields.Tag ] <|
+            [ div [ class "field" ]
+                [ div
+                    [ class "ui fluid buttons"
+                    ]
+                    [ button
+                        [ class "ui primary button"
+                        , onClick (ConfirmMsg True)
+                        ]
+                        [ text "Confirm"
+                        ]
+                    , div [ class "or" ] []
+                    , button
+                        [ class "ui secondary button"
+                        , onClick (ConfirmMsg False)
+                        ]
+                        [ text "Unconfirm"
+                        ]
+                    ]
+                ]
+            , optional [ Data.Fields.Tag ] <|
                 div [ class "field" ]
                     [ label []
                         [ Icons.tagsIcon "grey"
                         , text "Tags"
+                        , a
+                            [ class "right-float"
+                            , href "#"
+                            , title "Change tag edit mode"
+                            , onClick ToggleTagEditMode
+                            ]
+                            [ tagModeIcon
+                            ]
                         ]
                     , Html.map TagDropdownMsg (Comp.Dropdown.view settings model.tagModel)
+                    , Markdown.toHtml [ class "small-info" ] tagModeMsg
                     ]
             , div [ class " field" ]
                 [ label [] [ text "Name" ]

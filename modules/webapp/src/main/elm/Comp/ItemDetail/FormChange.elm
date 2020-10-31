@@ -20,7 +20,9 @@ import Set exposing (Set)
 
 type FormChange
     = NoFormChange
-    | TagChange ReferenceList
+    | AddTagChange ReferenceList
+    | ReplaceTagChange ReferenceList
+    | RemoveTagChange ReferenceList
     | FolderChange (Maybe IdName)
     | DirectionChange Direction
     | OrgChange (Maybe IdName)
@@ -30,6 +32,7 @@ type FormChange
     | ItemDateChange (Maybe Int)
     | DueDateChange (Maybe Int)
     | NameChange String
+    | ConfirmChange Bool
 
 
 multiUpdate :
@@ -44,12 +47,26 @@ multiUpdate flags ids change receive =
             Set.toList ids
     in
     case change of
-        TagChange tags ->
+        ReplaceTagChange tags ->
             let
                 data =
                     ItemsAndRefs items (List.map .id tags.items)
             in
             Api.setTagsMultiple flags data receive
+
+        AddTagChange tags ->
+            let
+                data =
+                    ItemsAndRefs items (List.map .id tags.items)
+            in
+            Api.addTagsMultiple flags data receive
+
+        RemoveTagChange tags ->
+            let
+                data =
+                    ItemsAndRefs items (List.map .id tags.items)
+            in
+            Api.removeTagsMultiple flags data receive
 
         NameChange name ->
             let
@@ -113,6 +130,13 @@ multiUpdate flags ids change receive =
                     ItemsAndRef items (Maybe.map .id ref)
             in
             Api.setConcEquipmentMultiple flags data receive
+
+        ConfirmChange flag ->
+            if flag then
+                Api.confirmMultiple flags ids receive
+
+            else
+                Api.unconfirmMultiple flags ids receive
 
         NoFormChange ->
             Cmd.none

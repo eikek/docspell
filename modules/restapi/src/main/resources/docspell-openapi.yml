@@ -1945,6 +1945,29 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BasicResult"
+
+  /sec/items/tagsremove:
+    post:
+      tags:
+        - Item (Multi Edit)
+      summary: Remove tags from multiple items
+      description: |
+        Remove the given tags from all given items.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ItemsAndRefs"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
     put:
       tags:
         - Item (Multi Edit)

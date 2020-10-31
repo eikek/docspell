@@ -73,6 +73,18 @@ object ItemMultiRoutes {
           resp <- Ok(Conversions.basicResult(res, "Tags added."))
         } yield resp
 
+      case req @ POST -> Root / "tagsremove" =>
+        for {
+          json  <- req.as[ItemsAndRefs]
+          items <- readIds[F](json.items)
+          res <- backend.item.removeTagsMultipleItems(
+            items,
+            json.refs,
+            user.account.collective
+          )
+          resp <- Ok(Conversions.basicResult(res, "Tags removed"))
+        } yield resp
+
       case req @ PUT -> Root / "name" =>
         for {
           json  <- req.as[ItemsAndName]

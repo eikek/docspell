@@ -59,7 +59,7 @@ view flags settings model =
                     , onClick ToggleSearchMenu
                     , title "Hide menu"
                     ]
-                    [ i [ class "ui angle left icon" ] []
+                    [ i [ class "chevron left icon" ] []
                     ]
                 , div [ class "right floated menu" ]
                     [ a
@@ -303,13 +303,9 @@ viewSearchBar flags model =
             [ class "search-menu-toggle ui blue icon button"
             , onClick ToggleSearchMenu
             , href "#"
-            , if model.searchTypeForm == ContentOnlySearch then
-                title "Search menu disabled"
-
-              else
-                title "Open search menu"
+            , title "Open search menu"
             ]
-            [ i [ class "angle right icon" ] []
+            [ i [ class "filter icon" ] []
             ]
         , div [ class "item" ]
             [ div [ class "ui left icon right action input" ]

@@ -46,6 +46,12 @@ trait OItem[F[_]] {
       collective: Ident
   ): F[UpdateResult]
 
+  def removeTagsMultipleItems(
+      items: NonEmptyList[Ident],
+      tags: List[String],
+      collective: Ident
+  ): F[UpdateResult]
+
   /** Toggles tags of the given item. Tags must exist, but can be IDs or names. */
   def toggleTags(item: Ident, tags: List[String], collective: Ident): F[UpdateResult]
 
@@ -219,6 +225,29 @@ object OItem {
                   _ <- OptionT.liftF(
                     itemIds.traverse(item =>
                       RTagItem.appendTags(item, given.map(_.tagId).toList)
+                    )
+                  )
+                } yield UpdateResult.success).getOrElse(UpdateResult.notFound)
+              }
+          }
+
+        def removeTagsMultipleItems(
+            items: NonEmptyList[Ident],
+            tags: List[String],
+            collective: Ident
+        ): F[UpdateResult] =
+          tags.distinct match {
+            case Nil => UpdateResult.success.pure[F]
+            case ws =>
+              store.transact {
+                (for {
+                  itemIds <- OptionT
+                    .liftF(RItem.filterItems(items, collective))
+                    .filter(_.nonEmpty)
+                  given <- OptionT.liftF(RTag.findAllByNameOrId(ws, collective))
+                  _ <- OptionT.liftF(
+                    itemIds.traverse(item =>
+                      RTagItem.removeAllTags(item, given.map(_.tagId).toList)
                     )
                   )
                 } yield UpdateResult.success).getOrElse(UpdateResult.notFound)

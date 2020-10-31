@@ -173,13 +173,12 @@ footHero model =
                 [ text " • "
                 ]
             , span []
-                [ text "© 2020 "
-                ]
-            , a
-                [ href "https://github.com/eikek"
-                , target "_blank"
-                ]
-                [ text "@eikek"
+                [ a
+                    [ href "https://gitter.im/eikek/docspell"
+                    , target "_blank"
+                    ]
+                    [ text "Chat on Gitter"
+                    ]
                 ]
             ]
         ]
