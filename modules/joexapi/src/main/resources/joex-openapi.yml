@@ -2,7 +2,7 @@ openapi: 3.0.0
 
 info:
   title: Docspell JOEX
-  version: 0.14.0
+  version: 0.15.0-SNAPSHOT
 
 servers:
   - url: /api/v1
