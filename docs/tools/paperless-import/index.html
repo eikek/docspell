@@ -10,7 +10,7 @@
 <meta name="title" property="og:title" content="Docspell – Simple Document Organizer">
 <meta name="og:image" content="/img/poster.png">
 <meta name="og:title" content="Docspell – Simple Document Organizer">
-<meta name="og:site_name" content="Browser Extension (Firefox) - Docspell">
+<meta name="og:site_name" content="Paperless Import - Docspell">
 <meta name="og:url" content="">
 <meta name="og:type" content="website">
 <meta name="og:description" content="Simple Document Organizer">
@@ -22,7 +22,7 @@
 <link rel="shortcut icon" href="/favicon-mc.ico" type="image/x-icon">
 <link rel="icon" href="/favicon-mc.ico" type="image/x-icon">
 
-        <title>Browser Extension (Firefox) – Docspell Documentation</title>
+        <title>Paperless Import – Docspell Documentation</title>
         <link rel="stylesheet" href="/styles.css">
         <script type="application/javascript" src="/search_index.en.js"></script>
 <script type="application/javascript" src="/elasticlunr.min.js"></script>
@@ -63,7 +63,7 @@
                 <div class="columns is-vcentered">
                     <div class="column is-8">
                         <h1 class="title">
-                            Browser Extension (Firefox)
+                            Paperless Import
                         </h1>
                         <h2 class="subtitle">
                             Docspell Documentation
@@ -94,7 +94,7 @@
                 </li>
                 
                 <li>
-                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;browserext&#x2F;">Browser Extension (Firefox)</a>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;paperless-import&#x2F;">Paperless Import</a>
                 </li>
             </ul>
         </nav>
@@ -150,24 +150,15 @@
                             
                             <li>
                                 <a href="https://docspell.org/docs/tools/paperless-import/"
-                                   >
-                                    Paperless Import
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/tools/browserext/"
                                    class="is-active">
-                                    Browser Extension (Firefox)
+                                    Paperless Import
                                 </a>
                                 
                                 <ul class="menu-list">
                                     
                                     <li>
-                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;browserext&#x2F;#install-ds-sh">
-                                            Install ds.sh
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;paperless-import&#x2F;#introduction">
+                                            Introduction
                                         </a>
                                         <ul>
                                             
@@ -175,17 +166,8 @@
                                     </li>
                                     
                                     <li>
-                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;browserext&#x2F;#install-the-native-part">
-                                            Install the native part
-                                        </a>
-                                        <ul>
-                                            
-                                        </ul>
-                                    </li>
-                                    
-                                    <li>
-                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;browserext&#x2F;#install-the-extension">
-                                            Install the extension
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;paperless-import&#x2F;#usage">
+                                            Usage
                                         </a>
                                         <ul>
                                             
@@ -193,6 +175,15 @@
                                     </li>
                                     
                                 </ul>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/tools/browserext/"
+                                   >
+                                    Browser Extension (Firefox)
+                                </a>
                                 
                             </li>
                             
@@ -221,63 +212,44 @@
                 <div class="column is-9">
                     <div class="container">
                         <div class="content doc">
-                            <p>The idea is to click on a file in firefox and send it to docspell. It
-is downloaded in the context of your current page. Then handed to an
-application that pushes it to docspell. There is a browser add-on
-implementing this in <code>tools/webextension</code>. This add-on only works with
-firefox.</p>
-<p>Installation is a bit complicated, since you need to install external
-tools and the web extension. Both work together.</p>
-<h1 id="install-ds-sh">Install <code>ds.sh</code><a class="zola-anchor" href="#install-ds-sh" aria-label="Anchor link for: install-ds-sh">🔗</a></h1>
-<p>First copy the <code>ds.sh</code> tool somewhere in your <code>PATH</code>, maybe
-<code>/usr/local/bin</code> as described above.</p>
-<h1 id="install-the-native-part">Install the native part<a class="zola-anchor" href="#install-the-native-part" aria-label="Anchor link for: install-the-native-part">🔗</a></h1>
-<p>Then install the &quot;native&quot; part of the web extension:</p>
-<p>Copy or symlink the <code>native.py</code> script into some known location. For
-example:</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1;">ln -s ~/docspell-checkout/tools/webextension/native/native.py /usr/local/share/docspell/native.py
-</span></code></pre>
-<p>Then copy the <code>app_manifest.json</code> to
-<code>$HOME/.mozilla/native-messaging-hosts/docspell.json</code>. For example:</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1;">cp ~/docspell-checkout/tools/webextension/native/app_manifest.json  ~/.mozilla/native-messaging-hosts/docspell.json
-</span></code></pre>
-<p>See
-<a href="https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Native_manifests#Manifest_location">here</a>
-for details.</p>
-<p>And you might want to modify this json file, so the path to the
-<code>native.py</code> script is correct (it must be absolute).</p>
-<p>If the <code>ds.sh</code> script is in your <code>$PATH</code>, then this should
-work. Otherwise, edit the <code>native.py</code> script and change the path to
-the tool. Or create a file <code>$HOME/.config/docspell/ds.cmd</code> whose
-content is the path to the <code>ds.sh</code> script.</p>
-<h1 id="install-the-extension">Install the extension<a class="zola-anchor" href="#install-the-extension" aria-label="Anchor link for: install-the-extension">🔗</a></h1>
-<p>An extension file can be build using the <code>make-xpi.sh</code> script. But
-installing it in &quot;standard&quot; firefox won't work, because <a href="https://wiki.mozilla.org/Add-ons/Extension_Signing">Mozilla
-requires extensions to be signed by
-them</a>. This means
-creating an account and going through some process…. So here are two
-alternatives:</p>
+                            <h1 id="introduction">Introduction<a class="zola-anchor" href="#introduction" aria-label="Anchor link for: introduction">🔗</a></h1>
+<p>Coming from
+<a href="https://github.com/the-paperless-project/paperless/">paperless</a>, the
+script in <code>tools/import-paperless</code> can be used to get started by
+importing your data from paperless into docspell.</p>
+<p><a href="https://github.com/eikek/docspell/tree/master/tools/import-paperless">https://github.com/eikek/docspell/tree/master/tools/import-paperless</a></p>
+<p>The script imports the files and also tags and correspondents.</p>
+<h1 id="usage">Usage<a class="zola-anchor" href="#usage" aria-label="Anchor link for: usage">🔗</a></h1>
+<p>Copy the script to the machine where paperless is running. Run it with
+the following arguments:</p>
 <ol>
-<li>Open firefox and type <code>about:debugging</code> in the addressbar. Then
-click on <em>'Load Temporary Add-on...'</em> and select the
-<code>manifest.json</code> file. The extension is now installed. The downside
-is, that the extension will be removed once firefox is closed.</li>
-<li>Use Firefox ESR, which allows to install Add-ons not signed by
-Mozilla. But it has to be configured: Open firefox and type
-<code>about:config</code> in the address bar. Search for key
-<code>xpinstall.signatures.required</code> and set it to <code>false</code>. This is
-described on the last paragraph on <a href="https://support.mozilla.org/en-US/kb/add-on-signing-in-firefox">this
-page</a>.</li>
+<li>URL of Docspell, including http(s)</li>
+<li>Username for Docspell, possibly including Collective (if other name as user)</li>
+<li>Password for Docspell</li>
+<li>Path to Paperless' database file (<code>db.sqlite3</code>). When using Paperless with docker, it is in the mapped directory <code>/usr/src/paperless/data</code></li>
+<li>Path to Paperless' document base directory. When using Paperless with docker, it is the mapped directory <code>/usr/src/paperless/media/documents/origin/</code></li>
 </ol>
-<p>When you right click on a file link, there should be a context menu
-entry <em>'Docspell Upload Helper'</em>. The add-on will download this file
-using the browser and then send the file path to the <code>native.py</code>
-script. This script will in turn call <code>ds.sh</code> which finally uploads it
-to your configured URLs.</p>
-<p>Open the Add-ons page (<code>Ctrl</code>+<code>Shift</code>+<code>A</code>), the new add-on should be
-there.</p>
+<p>Some settings can be changed inside the script, right at the top:</p>
+<ul>
+<li>
+<p><code>LIMIT=&quot;LIMIT 0&quot;</code> (default: inactive): For testing purposes, limits
+the number of tags and correspondents read from Paperless (this will
+most likely lead to warnings when processing the documents)</p>
+</li>
+<li>
+<p><code>LIMIT_DOC=&quot;LIMIT 5&quot;</code> (default: inactive): For testing purposes,
+limits the number of documents and document-to-tag relations read
+from Paperless</p>
+</li>
+<li>
+<p><code>SKIP_EXISTING_DOCS=true</code> (default: true): Won't touch already
+existing documents. If set to <code>false</code> documents, which exist
+already, won't be uploaded again, but the tags, correspondent, date
+and title from Paperless will be applied.</p>
+<p><strong>Warning</strong> In case you already had set these information in Docspell,
+they will be overwritten!</p>
+</li>
+</ul>
 
                         </div>
                     </div>

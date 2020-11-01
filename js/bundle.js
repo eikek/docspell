@@ -5534,6 +5534,7 @@ var $author$project$Search$SetSearch = function (a) {
 	return {$: 0, a: a};
 };
 var $author$project$Search$SubmitSearch = {$: 1};
+var $elm$html$Html$button = _VirtualDom_node('button');
 var $elm$html$Html$Attributes$stringProperty = F2(
 	function (key, string) {
 		return A2(
@@ -5544,15 +5545,37 @@ var $elm$html$Html$Attributes$stringProperty = F2(
 var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
 var $elm$html$Html$div = _VirtualDom_node('div');
 var $elm$html$Html$form = _VirtualDom_node('form');
+var $elm$html$Html$Attributes$href = function (url) {
+	return A2(
+		$elm$html$Html$Attributes$stringProperty,
+		'href',
+		_VirtualDom_noJavaScriptUri(url));
+};
 var $elm$html$Html$img = _VirtualDom_node('img');
 var $elm$html$Html$input = _VirtualDom_node('input');
+var $elm$virtual_dom$VirtualDom$Normal = function (a) {
+	return {$: 0, a: a};
+};
+var $elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
+var $elm$html$Html$Events$on = F2(
+	function (event, decoder) {
+		return A2(
+			$elm$virtual_dom$VirtualDom$on,
+			event,
+			$elm$virtual_dom$VirtualDom$Normal(decoder));
+	});
+var $elm$html$Html$Events$onClick = function (msg) {
+	return A2(
+		$elm$html$Html$Events$on,
+		'click',
+		$elm$json$Json$Decode$succeed(msg));
+};
 var $elm$html$Html$Events$alwaysStop = function (x) {
 	return _Utils_Tuple2(x, true);
 };
 var $elm$virtual_dom$VirtualDom$MayStopPropagation = function (a) {
 	return {$: 1, a: a};
 };
-var $elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
 var $elm$html$Html$Events$stopPropagationOn = F2(
 	function (event, decoder) {
 		return A2(
@@ -5601,7 +5624,6 @@ var $elm$html$Html$Events$onSubmit = function (msg) {
 			$elm$json$Json$Decode$succeed(msg)));
 };
 var $elm$html$Html$Attributes$placeholder = $elm$html$Html$Attributes$stringProperty('placeholder');
-var $elm$html$Html$span = _VirtualDom_node('span');
 var $elm$html$Html$Attributes$src = function (url) {
 	return A2(
 		$elm$html$Html$Attributes$stringProperty,
@@ -5654,12 +5676,6 @@ var $elm$core$List$intersperse = F2(
 		}
 	});
 var $elm$html$Html$a = _VirtualDom_node('a');
-var $elm$html$Html$Attributes$href = function (url) {
-	return A2(
-		$elm$html$Html$Attributes$stringProperty,
-		'href',
-		_VirtualDom_noJavaScriptUri(url));
-};
 var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
 var $elm_explorations$markdown$Markdown$defaultOptions = {
@@ -5755,7 +5771,7 @@ var $author$project$Search$view = function (model) {
 				$elm$html$Html$div,
 				_List_fromArray(
 					[
-						$elm$html$Html$Attributes$class('dropdown field is-active is-fullwidth')
+						$elm$html$Html$Attributes$class('dropdown field is-active is-fullwidth has-addons')
 					]),
 				_List_fromArray(
 					[
@@ -5763,7 +5779,7 @@ var $author$project$Search$view = function (model) {
 						$elm$html$Html$div,
 						_List_fromArray(
 							[
-								$elm$html$Html$Attributes$class('control has-icons-right is-fullwidth')
+								$elm$html$Html$Attributes$class('control is-fullwidth')
 							]),
 						_List_fromArray(
 							[
@@ -5777,12 +5793,23 @@ var $author$project$Search$view = function (model) {
 										$elm$html$Html$Events$onInput($author$project$Search$SetSearch),
 										$elm$html$Html$Attributes$value(model.F)
 									]),
-								_List_Nil),
+								_List_Nil)
+							])),
+						A2(
+						$elm$html$Html$div,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('control')
+							]),
+						_List_fromArray(
+							[
 								A2(
-								$elm$html$Html$span,
+								$elm$html$Html$button,
 								_List_fromArray(
 									[
-										$elm$html$Html$Attributes$class('icon is-right is-small')
+										$elm$html$Html$Attributes$class('button is-primary'),
+										$elm$html$Html$Attributes$href('#'),
+										$elm$html$Html$Events$onClick($author$project$Search$SubmitSearch)
 									]),
 								_List_fromArray(
 									[
@@ -6371,6 +6398,7 @@ var $elm$html$Html$Attributes$boolProperty = F2(
 var $elm$html$Html$Attributes$controls = $elm$html$Html$Attributes$boolProperty('controls');
 var $elm$html$Html$h2 = _VirtualDom_node('h2');
 var $elm$html$Html$p = _VirtualDom_node('p');
+var $elm$html$Html$span = _VirtualDom_node('span');
 var $elm$html$Html$video = _VirtualDom_node('video');
 var $author$project$Demo$demo = function (data) {
 	return A2(
@@ -6709,18 +6737,17 @@ var $author$project$Main$footHero = function (model) {
 						_List_Nil,
 						_List_fromArray(
 							[
-								$elm$html$Html$text('© 2020 ')
-							])),
-						A2(
-						$elm$html$Html$a,
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$href('https://github.com/eikek'),
-								$elm$html$Html$Attributes$target('_blank')
-							]),
-						_List_fromArray(
-							[
-								$elm$html$Html$text('@eikek')
+								A2(
+								$elm$html$Html$a,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$href('https://gitter.im/eikek/docspell'),
+										$elm$html$Html$Attributes$target('_blank')
+									]),
+								_List_fromArray(
+									[
+										$elm$html$Html$text('Chat on Gitter')
+									]))
 							]))
 					]))
 			]));
@@ -6881,6 +6908,24 @@ var $author$project$GetStarted$getStarted = function (version) {
 															$elm$html$Html$text('github')
 														])),
 													$elm$html$Html$text('.')
+												])),
+											A2(
+											$elm$html$Html$li,
+											_List_Nil,
+											_List_fromArray(
+												[
+													$elm$html$Html$text('Chat on '),
+													A2(
+													$elm$html$Html$a,
+													_List_fromArray(
+														[
+															$elm$html$Html$Attributes$href('https://gitter.im/eikek/docspell')
+														]),
+													_List_fromArray(
+														[
+															$elm$html$Html$text('Gitter')
+														])),
+													$elm$html$Html$text(' for questions and feedback.')
 												]))
 										]))
 								]))
@@ -6991,22 +7036,6 @@ var $author$project$Icons$logoWidth = function (w) {
 		_List_Nil);
 };
 var $elm$html$Html$nav = _VirtualDom_node('nav');
-var $elm$virtual_dom$VirtualDom$Normal = function (a) {
-	return {$: 0, a: a};
-};
-var $elm$html$Html$Events$on = F2(
-	function (event, decoder) {
-		return A2(
-			$elm$virtual_dom$VirtualDom$on,
-			event,
-			$elm$virtual_dom$VirtualDom$Normal(decoder));
-	});
-var $elm$html$Html$Events$onClick = function (msg) {
-	return A2(
-		$elm$html$Html$Events$on,
-		'click',
-		$elm$json$Json$Decode$succeed(msg));
-};
 var $author$project$ExtraAttr$role = function (name) {
 	return A2($elm$html$Html$Attributes$attribute, 'role', name);
 };

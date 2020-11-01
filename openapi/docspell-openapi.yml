@@ -2,7 +2,7 @@ openapi: 3.0.0
 
 info:
   title: Docspell
-  version: 0.13.0
+  version: 0.14.0
   description: |
     This is the remote API to Docspell, a personal document organizer.
 
@@ -1384,7 +1384,9 @@ paths:
       tags: [ Item ]
       summary: Set new set of tags.
       description: |
-        Update the tags associated to an item.
+        Update the tags associated to an item. This will remove all
+        existing ones and sets the given tags, such that after this
+        returns, the item has exactly the tags as given.
       security:
         - authTokenHeader: []
       parameters:
@@ -1845,6 +1847,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ItemProposals"
+
   /sec/item/{itemId}/reprocess:
     post:
       tags: [ Item ]
@@ -1894,6 +1897,382 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BasicResult"
+
+
+  /sec/items/deleteAll:
+    post:
+      tags:
+        - Item (Multi Edit)
+      summary: Delete multiple items.
+      description: |
+        Given a list of item ids, deletes all of them.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/IdList"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
+  /sec/items/tags:
+    post:
+      tags:
+        - Item (Multi Edit)
+      summary: Add tags to multiple items
+      description: |
+        Add the given tags to all given items. The tags that are
+        currently attached to the items are not changed. If there are
+        new tags in the given list, then they are added. Otherwise,
+        the item is left unchanged.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ItemsAndRefs"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
+  /sec/items/tagsremove:
+    post:
+      tags:
+        - Item (Multi Edit)
+      summary: Remove tags from multiple items
+      description: |
+        Remove the given tags from all given items.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ItemsAndRefs"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
+    put:
+      tags:
+        - Item (Multi Edit)
+      summary: Sets tags to multiple items
+      description: |
+        Sets the given tags to all given items. If the tag list is
+        empty, then all tags are removed from the items.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ItemsAndRefs"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
+  /sec/items/name:
+    put:
+      tags:
+        - Item (Multi Edit)
+      summary: Change the name of multiple items
+      description: |
+        Sets the name of multiple items at once. The name must not be
+        empty.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ItemsAndName"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
+  /sec/items/folder:
+    put:
+      tags:
+        - Item (Multi Edit)
+      summary: Sets a folder to multiple items.
+      description: |
+        Given a folder id, sets it on all given items. If the folder
+        reference is not present, the folder is removed from all
+        items.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ItemsAndRef"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
+  /sec/items/direction:
+    put:
+      tags:
+        - Item (Multi Edit)
+      summary: Set the direction of multiple items
+      description: |
+        Given multiple item ids and a direction value, sets it to all
+        items.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ItemsAndDirection"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
+  /sec/items/date:
+    put:
+      tags:
+        - Item (Multi Edit)
+      summary: Set the date of multiple items
+      description: |
+        Given multiple item ids and a date, sets it to all items as
+        the item date. If no date is present, remove the date from the
+        items.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ItemsAndDate"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
+  /sec/items/duedate:
+    put:
+      tags:
+        - Item (Multi Edit)
+      summary: Set the direction of multiple items
+      description: |
+        Given multiple item ids and a date value, sets it to all items
+        as the due date. If the date is missing, remove the due-date
+        from the items.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ItemsAndDate"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
+  /sec/items/corrOrg:
+    put:
+      tags:
+        - Item (Multi Edit)
+      summary: Sets an organization to multiple items.
+      description: |
+        Given an organization id, sets it on all given items. If the
+        organization is missing, the reference is removed from all
+        items.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ItemsAndRef"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
+  /sec/items/corrPerson:
+    put:
+      tags:
+        - Item (Multi Edit)
+      summary: Sets an correspondent person to multiple items.
+      description: |
+        Given an person id, sets it on all given items as
+        correspondent person. If the person is missing, the reference
+        is removed from all items.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ItemsAndRef"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
+  /sec/items/concPerson:
+    put:
+      tags:
+        - Item (Multi Edit)
+      summary: Sets an concerning person to multiple items.
+      description: |
+        Given an person id, sets it on all given items as concerning
+        person. If the person is missing, it is removed from all
+        items.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ItemsAndRef"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
+  /sec/items/concEquipment:
+    put:
+      tags:
+        - Item (Multi Edit)
+      summary: Sets an equipment to multiple items.
+      description: |
+        Given an equipment id, sets it on all given items. If no
+        equipment is given, the reference is removed from all given
+        items.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ItemsAndRef"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
+  /sec/items/confirm:
+    put:
+      tags:
+        - Item (Multi Edit)
+      summary: Confirm multiple items.
+      description: |
+        Given a list of item ids, confirm all of them.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/IdList"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
+  /sec/items/unconfirm:
+    put:
+      tags:
+        - Item (Multi Edit)
+      summary: Un-confirm multiple items.
+      description: |
+        Given a list of item ids, un-confirm all of them.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/IdList"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
+  /sec/items/reprocess:
+    post:
+      tags:
+        - Item (Multi Edit)
+      summary: Submit multiple items to re-processing
+      description: |
+        Given a list of item-ids, submits all these items for
+        reprocessing. All attachments of these items will be
+        reprocessed. Item metadata is not changed.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/IdList"
+
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
 
   /sec/attachment/{id}:
     delete:
@@ -2702,6 +3081,84 @@ paths:
 
 components:
   schemas:
+    ItemsAndRefs:
+      description: |
+        Holds a list of item ids and a list of ids of some other
+        related entity (e.g. tags).
+      required:
+        - items
+        - refs
+      properties:
+        items:
+          type: array
+          items:
+            type: string
+            format: ident
+        refs:
+          type: array
+          items:
+            type: string
+            format: ident
+    ItemsAndRef:
+      description: |
+        Holds a list of item ids and a single optional id of some
+        other related entity (e.g. person, org).
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          items:
+            type: string
+            format: ident
+        ref:
+          type: string
+          format: ident
+    ItemsAndName:
+      description: |
+        Holds a list of item ids and an item name.
+      required:
+        - items
+        - name
+      properties:
+        items:
+          type: array
+          items:
+            type: string
+            format: ident
+        name:
+          type: string
+    ItemsAndDirection:
+      description: |
+        Holds a list of item ids and a direction value.
+      required:
+        - items
+        - direction
+      properties:
+        items:
+          type: array
+          items:
+            type: string
+            format: ident
+        direction:
+          type: string
+          format: direction
+    ItemsAndDate:
+      description: |
+        Holds a list of item ids and a date value.
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          items:
+            type: string
+            format: ident
+        date:
+          type: integer
+          format: date-time
+
+
     JobPriority:
       description: |
         Transfer the priority of a job.
@@ -3828,7 +4285,7 @@ components:
           format: date-time
     ReferenceList:
       description:
-        Listing of items.
+        Listing of entities with their id and a name.
       required:
         - items
       properties:
@@ -4077,6 +4534,8 @@ components:
         dueDateUntil:
           type: integer
           format: date-time
+        itemSubset:
+          $ref: "#/components/schemas/IdList"
     ItemLight:
       description: |
         An item with only a few important properties.
