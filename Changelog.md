@@ -2,7 +2,7 @@
 
 ## v0.14.0
 
-*Soon*
+*Nov 1st, 2020*
 
 This release contains many bug fixes, thank you all so much for
 helping out! There is also a new feature and some more scripts in
