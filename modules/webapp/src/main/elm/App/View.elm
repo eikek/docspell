@@ -207,6 +207,7 @@ loginInfo model =
                         [ classList
                             [ ( "left menu", True )
                             , ( "transition visible", model.navMenuOpen )
+                            , ( "transition hidden", not model.navMenuOpen )
                             ]
                         ]
                         [ menuEntry model

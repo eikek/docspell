@@ -4,6 +4,7 @@ import Api
 import Api.Model.ItemUploadMeta
 import Comp.Dropzone
 import Data.Flags exposing (Flags)
+import Dict
 import Http
 import Page.Upload.Data exposing (..)
 import Ports
@@ -64,8 +65,12 @@ update sourceId flags msg model =
 
                 ( cm2, _, _ ) =
                     Comp.Dropzone.update (Comp.Dropzone.setActive False) model.dropzone
+
+                nowLoading =
+                    List.map (\fid -> ( fid, 0 )) fileids
+                        |> Dict.fromList
             in
-            ( { model | loading = Set.fromList fileids, dropzone = cm2 }, uploads, tracker )
+            ( { model | loading = nowLoading, dropzone = cm2 }, uploads, tracker )
 
         SingleUploadResp fileid (Ok res) ->
             let
@@ -85,13 +90,13 @@ update sourceId flags msg model =
 
                 load =
                     if fileid == uploadAllTracker then
-                        Set.empty
+                        Dict.empty
 
                     else
-                        Set.remove fileid model.loading
+                        Dict.remove fileid model.loading
             in
             ( { model | completed = compl, errored = errs, loading = load }
-            , Ports.setProgress ( fileid, 100 )
+            , Cmd.none
             , Sub.none
             )
 
@@ -102,10 +107,10 @@ update sourceId flags msg model =
 
                 load =
                     if fileid == uploadAllTracker then
-                        Set.empty
+                        Dict.empty
 
                     else
-                        Set.remove fileid model.loading
+                        Dict.remove fileid model.loading
             in
             ( { model | errored = errs, loading = load }, Cmd.none, Sub.none )
 
@@ -121,17 +126,17 @@ update sourceId flags msg model =
                         _ ->
                             0
 
-                updateBars =
-                    if percent == 0 then
-                        Cmd.none
-
-                    else if model.singleItem then
-                        Ports.setAllProgress ( uploadAllTracker, percent )
+                newLoading =
+                    if model.singleItem then
+                        Dict.insert uploadAllTracker percent model.loading
 
                     else
-                        Ports.setProgress ( fileid, percent )
+                        Dict.insert fileid percent model.loading
             in
-            ( model, updateBars, Sub.none )
+            ( { model | loading = newLoading }
+            , Cmd.none
+            , Sub.none
+            )
 
         Clear ->
             ( emptyModel, Cmd.none, Sub.none )

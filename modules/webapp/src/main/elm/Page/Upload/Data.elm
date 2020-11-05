@@ -14,6 +14,7 @@ module Page.Upload.Data exposing
 
 import Api.Model.BasicResult exposing (BasicResult)
 import Comp.Dropzone
+import Dict exposing (Dict)
 import File exposing (File)
 import Http
 import Set exposing (Set)
@@ -26,7 +27,7 @@ type alias Model =
     , files : List File
     , completed : Set String
     , errored : Set String
-    , loading : Set String
+    , loading : Dict String Int
     , dropzone : Comp.Dropzone.Model
     , skipDuplicates : Bool
     }
@@ -55,7 +56,7 @@ emptyModel =
     , files = []
     , completed = Set.empty
     , errored = Set.empty
-    , loading = Set.empty
+    , loading = Dict.empty
     , dropzone = Comp.Dropzone.init dropzoneSettings
     , skipDuplicates = True
     }
@@ -74,7 +75,7 @@ type Msg
 
 isLoading : Model -> File -> Bool
 isLoading model file =
-    Set.member (makeFileId file) model.loading
+    Dict.member (makeFileId file) model.loading
 
 
 isCompleted : Model -> File -> Bool
