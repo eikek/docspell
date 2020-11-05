@@ -83,7 +83,7 @@ type alias Model =
     , selectedFiles : List File
     , completed : Set String
     , errored : Set String
-    , loading : Set String
+    , loading : Dict String Int
     , attachDD : DD.Model String String
     , modalEdit : Maybe Comp.DetailEdit.Model
     , attachRename : Maybe AttachmentRename
@@ -184,7 +184,7 @@ emptyModel =
     , selectedFiles = []
     , completed = Set.empty
     , errored = Set.empty
-    , loading = Set.empty
+    , loading = Dict.empty
     , attachDD = DD.init
     , modalEdit = Nothing
     , attachRename = Nothing

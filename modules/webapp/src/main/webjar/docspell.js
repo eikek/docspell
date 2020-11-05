@@ -1,4 +1,24 @@
 /* Docspell JS */
+function forEachIn(obj, fn) {
+    var index = 0;
+    for (var key in obj) {
+        if (obj.hasOwnProperty(key)) {
+            fn(obj[key], key, index++);
+        }
+    }
+}
+
+function extend() {
+    var result = {};
+    for (var i = 0; i < arguments.length; i++) {
+        forEachIn(arguments[i],
+            function(obj, key) {
+                result[key] = obj;
+            });
+    }
+    return result;
+}
+
 
 var elmApp = Elm.Main.init({
     node: document.getElementById("docspell-app"),
@@ -16,21 +36,6 @@ elmApp.ports.removeAccount.subscribe(function() {
     localStorage.removeItem("account");
 });
 
-elmApp.ports.setProgress.subscribe(function(input) {
-    var id = input[0];
-    var percent = input[1];
-    setTimeout(function () {
-        $("#"+id).progress({percent: percent});
-    }, 100);
-});
-
-elmApp.ports.setAllProgress.subscribe(function(input) {
-    var id = input[0];
-    var percent = input[1];
-    setTimeout(function () {
-        $("."+id).progress({percent: percent});
-    }, 100);
-});
 
 elmApp.ports.saveUiSettings.subscribe(function(args) {
     if (Array.isArray(args) && args.length == 2) {
@@ -58,7 +63,7 @@ elmApp.ports.requestUiSettings.subscribe(function(args) {
             var settings = localStorage.getItem(key);
             var data = settings ? JSON.parse(settings) : null;
             if (data && defaults) {
-                $.extend(defaults, data);
+                var defaults = extend(defaults, data);
                 elmApp.ports.receiveUiSettings.send(defaults);
             } else if (defaults) {
                 elmApp.ports.receiveUiSettings.send(defaults);

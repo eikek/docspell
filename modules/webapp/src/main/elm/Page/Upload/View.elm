@@ -1,6 +1,8 @@
 module Page.Upload.View exposing (view)
 
 import Comp.Dropzone
+import Comp.Progress
+import Dict
 import File exposing (File)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -117,6 +119,20 @@ renderUploads model =
         ]
 
 
+getProgress : Model -> File -> Int
+getProgress model file =
+    let
+        key =
+            if model.singleItem then
+                uploadAllTracker
+
+            else
+                makeFileId file
+    in
+    Dict.get key model.loading
+        |> Maybe.withDefault 0
+
+
 renderFileItem : Model -> Maybe String -> File -> Html Msg
 renderFileItem model mtracker file =
     let
@@ -147,16 +163,7 @@ renderFileItem model mtracker file =
                 [ text size
                 ]
             , div [ class "description" ]
-                [ div
-                    [ classList
-                        [ ( "ui small indicating progress", True )
-                        , ( uploadAllTracker, Util.Maybe.nonEmpty mtracker )
-                        ]
-                    , id (makeFileId file)
-                    ]
-                    [ div [ class "bar" ]
-                        []
-                    ]
+                [ Comp.Progress.smallIndicating (getProgress model file)
                 ]
             ]
         ]

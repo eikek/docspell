@@ -1011,7 +1011,7 @@ isIdle model file =
 
 isLoading : Model -> File -> Bool
 isLoading model file =
-    Set.member (makeFileId file) model.loading
+    Dict.member (makeFileId file) model.loading
 
 
 isCompleted : Model -> File -> Bool

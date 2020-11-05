@@ -886,7 +886,7 @@ update key flags inav settings msg model =
                     , addFilesModel = Comp.Dropzone.init Comp.Dropzone.defaultSettings
                     , completed = Set.empty
                     , errored = Set.empty
-                    , loading = Set.empty
+                    , loading = Dict.empty
                   }
                 , Cmd.none
                 )
@@ -904,8 +904,12 @@ update key flags inav settings msg model =
 
                 ( cm2, _, _ ) =
                     Comp.Dropzone.update (Comp.Dropzone.setActive False) model.addFilesModel
+
+                newLoading =
+                    List.map (\fid -> ( fid, 0 )) fileids
+                        |> Dict.fromList
             in
-            ( { model | loading = Set.fromList fileids, addFilesModel = cm2 }
+            ( { model | loading = newLoading, addFilesModel = cm2 }
             , uploads
             , tracker
             )
@@ -927,14 +931,18 @@ update key flags inav settings msg model =
                         model.errored
 
                 load =
-                    Set.remove fileid model.loading
+                    Dict.remove fileid model.loading
 
                 newModel =
-                    { model | completed = compl, errored = errs, loading = load }
+                    { model
+                        | completed = compl
+                        , errored = errs
+                        , loading = load
+                    }
             in
             noSub
                 ( newModel
-                , Ports.setProgress ( fileid, 100 )
+                , Cmd.none
                 )
 
         AddFilesUploadResp fileid (Err _) ->
@@ -943,7 +951,7 @@ update key flags inav settings msg model =
                     setErrored model fileid
 
                 load =
-                    Set.remove fileid model.loading
+                    Dict.remove fileid model.loading
             in
             noSub ( { model | errored = errs, loading = load }, Cmd.none )
 
@@ -959,14 +967,13 @@ update key flags inav settings msg model =
                         _ ->
                             0
 
-                updateBars =
-                    if percent == 0 then
-                        Cmd.none
-
-                    else
-                        Ports.setProgress ( fileid, percent )
+                newLoading =
+                    Dict.insert fileid percent model.loading
             in
-            noSub ( model, updateBars )
+            noSub
+                ( { model | loading = newLoading }
+                , Cmd.none
+                )
 
         AttachDDMsg lm ->
             let

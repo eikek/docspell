@@ -138,12 +138,10 @@ object TemplateRoutes {
       IndexData(
         Flags(cfg),
         Seq(
-          "/app/assets" + Webjars.semanticui + "/semantic.min.css",
+          "/app/assets" + Webjars.fomanticslimdefault + "/semantic.min.css",
           s"/app/assets/docspell-webapp/${BuildInfo.version}/docspell.css"
         ),
         Seq(
-          "/app/assets" + Webjars.jquery + "/jquery.min.js",
-          "/app/assets" + Webjars.semanticui + "/semantic.min.js",
           "/app/assets" + Webjars.clipboardjs + "/clipboard.min.js",
           s"/app/assets/docspell-webapp/${BuildInfo.version}/docspell-app.js"
         ),

@@ -35,7 +35,7 @@ object Dependencies {
   val TikaVersion             = "1.24.1"
   val YamuscaVersion          = "0.7.0"
   val SwaggerUIVersion        = "3.36.1"
-  val SemanticUIVersion       = "2.4.1"
+  val FomanticUIVersion       = "2.8.7-0.2"
   val TwelveMonkeysVersion    = "3.6"
   val JQueryVersion           = "3.5.1"
   val ViewerJSVersion         = "0.5.8"
@@ -251,11 +251,10 @@ object Dependencies {
   val betterMonadicFor    = "com.olegpy"    %% "better-monadic-for" % BetterMonadicForVersion
 
   val webjars = Seq(
-    "org.webjars" % "swagger-ui"   % SwaggerUIVersion,
-    "org.webjars" % "Semantic-UI"  % SemanticUIVersion,
-    "org.webjars" % "jquery"       % JQueryVersion,
-    "org.webjars" % "viewerjs"     % ViewerJSVersion,
-    "org.webjars" % "clipboard.js" % ClipboardJsVersion
+    "org.webjars"      % "swagger-ui"            % SwaggerUIVersion,
+    "com.github.eikek" % "fomantic-slim-default" % FomanticUIVersion,
+    "org.webjars"      % "viewerjs"              % ViewerJSVersion,
+    "org.webjars"      % "clipboard.js"          % ClipboardJsVersion
   )
 
   val icu4j = Seq(

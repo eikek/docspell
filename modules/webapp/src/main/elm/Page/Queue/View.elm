@@ -2,6 +2,7 @@ module Page.Queue.View exposing (view)
 
 import Api.Model.JobDetail exposing (JobDetail)
 import Api.Model.JobLogEvent exposing (JobLogEvent)
+import Comp.Progress
 import Comp.YesNoDimmer
 import Data.Priority
 import Html exposing (..)
@@ -69,10 +70,7 @@ renderCompleted model =
 renderProgressCard : Model -> JobDetail -> Html Msg
 renderProgressCard model job =
     div [ class "ui fluid card" ]
-        [ div [ id job.id, class "ui top attached indicating progress" ]
-            [ div [ class "bar" ]
-                []
-            ]
+        [ Comp.Progress.topAttachedIndicating job.progress
         , Html.map (DimmerMsg job) (Comp.YesNoDimmer.view2 (model.cancelJobRequest == Just job.id) dimmerSettings model.deleteConfirm)
         , div [ class "content" ]
             [ div [ class "right floated meta" ]

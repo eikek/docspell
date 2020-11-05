@@ -29,9 +29,6 @@ update flags msg model =
 
         StateResp (Ok s) ->
             let
-                progressCmd =
-                    List.map (\job -> Ports.setProgress ( job.id, job.progress )) s.progress
-
                 refresh =
                     if model.pollingInterval <= 0 || model.stopRefresh then
                         Cmd.none
@@ -42,7 +39,7 @@ update flags msg model =
                             , getNewTime
                             ]
             in
-            ( { model | state = s, stopRefresh = False }, Cmd.batch (refresh :: progressCmd) )
+            ( { model | state = s, stopRefresh = False }, refresh )
 
         StateResp (Err err) ->
             ( { model | error = Util.Http.errorToString err }, Cmd.none )

@@ -5,8 +5,6 @@ port module Ports exposing
     , onUiSettingsSaved
     , removeAccount
     , setAccount
-    , setAllProgress
-    , setProgress
     , storeUiSettings
     )
 
@@ -21,12 +19,6 @@ port setAccount : AuthResult -> Cmd msg
 
 
 port removeAccount : () -> Cmd msg
-
-
-port setProgress : ( String, Int ) -> Cmd msg
-
-
-port setAllProgress : ( String, Int ) -> Cmd msg
 
 
 port saveUiSettings : ( AuthResult, StoredUiSettings ) -> Cmd msg
