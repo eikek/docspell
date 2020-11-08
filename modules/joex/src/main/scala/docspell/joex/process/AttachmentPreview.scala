@@ -30,16 +30,21 @@ object AttachmentPreview {
         _ <- ctx.logger.info(
           s"Creating preview images for ${item.attachments.size} files…"
         )
-        _ <- item.attachments.traverse(createPreview(ctx, cfg))
+        preview <- PdfboxPreview(24)
+        _       <- item.attachments.traverse(createPreview(ctx, preview, cfg))
       } yield item
     }
 
-  def createPreview[F[_]: Sync](ctx: Context[F, _], cfg: ConvertConfig)(
+  def createPreview[F[_]: Sync](
+      ctx: Context[F, _],
+      preview: PdfboxPreview[F],
+      cfg: ConvertConfig
+  )(
       ra: RAttachment
   ): F[Option[RAttachmentPreview]] =
     findMime[F](ctx)(ra).flatMap {
       case MimeType.PdfMatch(_) =>
-        PdfboxPreview(48).flatMap(_.previewPNG(loadFile(ctx)(ra))).flatMap {
+        preview.previewPNG(loadFile(ctx)(ra)).flatMap {
           case Some(out) =>
             createRecord(ctx, out, ra, cfg.chunkSize).map(_.some)
           case None =>
