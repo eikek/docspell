@@ -72,6 +72,31 @@ object RAttachmentPreview {
       .to[Vector]
   }
 
+  def findByItemAndCollective(
+      itemId: Ident,
+      coll: Ident
+  ): ConnectionIO[Option[RAttachmentPreview]] = {
+    val sId   = Columns.id.prefix("s")
+    val aId   = RAttachment.Columns.id.prefix("a")
+    val aItem = RAttachment.Columns.itemId.prefix("a")
+    val aPos  = RAttachment.Columns.position.prefix("a")
+    val iId   = RItem.Columns.id.prefix("i")
+    val iColl = RItem.Columns.cid.prefix("i")
+
+    val from =
+      table ++ fr"s INNER JOIN" ++ RAttachment.table ++ fr"a ON" ++ sId.is(aId) ++
+        fr"INNER JOIN" ++ RItem.table ++ fr"i ON" ++ iId.is(aItem)
+
+    selectSimple(
+      all.map(_.prefix("s")) ++ List(aPos),
+      from,
+      and(aItem.is(itemId), iColl.is(coll))
+    )
+      .query[(RAttachmentPreview, Int)]
+      .to[Vector]
+      .map(_.sortBy(_._2).headOption.map(_._1))
+  }
+
   def findByItemWithMeta(
       id: Ident
   ): ConnectionIO[Vector[(RAttachmentPreview, FileMeta)]] = {

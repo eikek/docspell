@@ -1,5 +1,6 @@
 package docspell.restserver.http4s
 
+import cats.data.NonEmptyList
 import fs2.text.utf8Encode
 import fs2.{Pure, Stream}
 
@@ -27,4 +28,12 @@ object Responses {
 
   def unauthorized[F[_]]: Response[F] =
     pureUnauthorized.copy(body = pureUnauthorized.body.covary[F])
+
+  def noCache[F[_]](r: Response[F]): Response[F] =
+    r.withHeaders(
+      `Cache-Control`(
+        NonEmptyList.of(CacheDirective.`no-cache`(), CacheDirective.`private`())
+      )
+    )
+
 }
