@@ -30,6 +30,7 @@ module Api exposing
     , deleteSource
     , deleteTag
     , deleteUser
+    , fileURL
     , getAttachmentMeta
     , getCollective
     , getCollectiveSettings
@@ -59,6 +60,7 @@ module Api exposing
     , getUsers
     , itemDetail
     , itemIndexSearch
+    , itemPreviewURL
     , itemSearch
     , login
     , loginSession
@@ -1499,6 +1501,16 @@ deleteAllItems flags ids receive =
 
 
 --- Item
+
+
+itemPreviewURL : String -> String
+itemPreviewURL itemId =
+    "/api/v1/sec/item/" ++ itemId ++ "/preview"
+
+
+fileURL : String -> String
+fileURL attachId =
+    "/api/v1/sec/attachment/" ++ attachId
 
 
 setAttachmentName :

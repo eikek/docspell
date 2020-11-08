@@ -93,6 +93,15 @@
     padding: 0.8em;
 }
 
+.default-layout .ui.card div.image {
+    background: #fff;
+}
+.default-layout img.preview-image {
+    max-width: 200px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 .default-layout .menu .item.active a.right-tab-icon-link {
     position: relative;
     right: -8px;

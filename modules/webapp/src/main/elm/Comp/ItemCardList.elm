@@ -10,6 +10,7 @@ module Comp.ItemCardList exposing
     , view
     )
 
+import Api
 import Api.Model.HighlightEntry exposing (HighlightEntry)
 import Api.Model.ItemLight exposing (ItemLight)
 import Api.Model.ItemLightGroup exposing (ItemLightGroup)
@@ -230,7 +231,18 @@ viewItem cfg settings item =
          ]
             ++ DD.draggable ItemDDMsg item.id
         )
-        [ div [ class "content" ]
+        [ if fieldHidden Data.Fields.PreviewImage then
+            span [ class "invisible" ] []
+
+          else
+            div [ class "image" ]
+                [ img
+                    [ class "preview-image"
+                    , src (Api.itemPreviewURL item.id)
+                    ]
+                    []
+                ]
+        , div [ class "content" ]
             [ case cfg.selection of
                 Data.ItemSelection.Active ids ->
                     div [ class "header" ]
