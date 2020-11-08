@@ -54,6 +54,7 @@ object ProcessItem {
     ConvertPdf(cfg.convert, item)
       .flatMap(Task.setProgress(progress._1))
       .flatMap(TextExtraction(cfg.extraction, fts))
+      .flatMap(AttachmentPreview(cfg.convert))
       .flatMap(Task.setProgress(progress._2))
       .flatMap(analysisOnly[F](cfg, analyser, regexNer))
       .flatMap(Task.setProgress(progress._3))
