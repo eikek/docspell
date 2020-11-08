@@ -32,7 +32,16 @@ object AttachmentPreview {
           s"Creating preview images for ${item.attachments.size} files…"
         )
         preview <- PdfboxPreview(24)
-        _       <- item.attachments.traverse(createPreview(ctx, preview, cfg.chunkSize))
+        _ <- item.attachments
+          .traverse(createPreview(ctx, preview, cfg.chunkSize))
+          .attempt
+          .flatMap {
+            case Right(_) => ().pure[F]
+            case Left(ex) =>
+              ctx.logger.error(ex)(
+                s"Creating preview images failed, continuing without it."
+              )
+          }
       } yield item
     }
 
