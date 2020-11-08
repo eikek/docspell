@@ -15,6 +15,7 @@ import docspell.store.records._
 import docspell.store.syntax.MimeTypes._
 
 import bitpeace.{Mimetype, MimetypeHint, RangeDef}
+import docspell.store.queries.QAttachment
 
 /** Goes through all attachments that must be already converted into a
   * pdf. If it is a pdf, the first page is converted into a small
@@ -31,14 +32,14 @@ object AttachmentPreview {
           s"Creating preview images for ${item.attachments.size} files…"
         )
         preview <- PdfboxPreview(24)
-        _       <- item.attachments.traverse(createPreview(ctx, preview, cfg))
+        _       <- item.attachments.traverse(createPreview(ctx, preview, cfg.chunkSize))
       } yield item
     }
 
   def createPreview[F[_]: Sync](
       ctx: Context[F, _],
       preview: PdfboxPreview[F],
-      cfg: ConvertConfig
+      chunkSize: Int
   )(
       ra: RAttachment
   ): F[Option[RAttachmentPreview]] =
@@ -46,7 +47,7 @@ object AttachmentPreview {
       case MimeType.PdfMatch(_) =>
         preview.previewPNG(loadFile(ctx)(ra)).flatMap {
           case Some(out) =>
-            createRecord(ctx, out, ra, cfg.chunkSize).map(_.some)
+            createRecord(ctx, out, ra, chunkSize).map(_.some)
           case None =>
             (None: Option[RAttachmentPreview]).pure[F]
         }
@@ -55,7 +56,7 @@ object AttachmentPreview {
         (None: Option[RAttachmentPreview]).pure[F]
     }
 
-  def createRecord[F[_]: Sync](
+  private def createRecord[F[_]: Sync](
       ctx: Context[F, _],
       png: Stream[F, Byte],
       ra: RAttachment,
@@ -75,6 +76,7 @@ object AttachmentPreview {
         .lastOrError
       now <- Timestamp.current[F]
       rp = RAttachmentPreview(ra.id, Ident.unsafe(fileMeta.id), name.map(_.fullName), now)
+      _ <- QAttachment.deletePreview(ctx.store)(ra.id)
       _ <- ctx.store.transact(RAttachmentPreview.insert(rp))
     } yield rp
   }

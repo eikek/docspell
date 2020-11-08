@@ -231,6 +231,38 @@ object RAttachment {
   def findItemId(attachId: Ident): ConnectionIO[Option[Ident]] =
     selectSimple(Seq(itemId), table, id.is(attachId)).query[Ident].option
 
+  def findWithoutPreview(
+      coll: Option[Ident],
+      chunkSize: Int
+  ): Stream[ConnectionIO, RAttachment] = {
+    val aId   = Columns.id.prefix("a")
+    val aItem = Columns.itemId.prefix("a")
+    val pId   = RAttachmentPreview.Columns.id.prefix("p")
+    val iId   = RItem.Columns.id.prefix("i")
+    val iColl = RItem.Columns.cid.prefix("i")
+
+    val cols = all.map(_.prefix("a"))
+    val baseJoin =
+      table ++ fr"a LEFT OUTER JOIN" ++
+        RAttachmentPreview.table ++ fr"p ON" ++ pId.is(aId)
+
+    val baseCond =
+      Seq(pId.isNull)
+
+    coll match {
+      case Some(cid) =>
+        val join = baseJoin ++ fr"INNER JOIN" ++ RItem.table ++ fr"i ON" ++ iId.is(aItem)
+        val cond = and(baseCond ++ Seq(iColl.is(cid)))
+        selectSimple(cols, join, cond)
+          .query[RAttachment]
+          .streamWithChunkSize(chunkSize)
+      case None =>
+        selectSimple(cols, baseJoin, and(baseCond))
+          .query[RAttachment]
+          .streamWithChunkSize(chunkSize)
+    }
+  }
+
   def findNonConvertedPdf(
       coll: Option[Ident],
       chunkSize: Int

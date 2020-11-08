@@ -18,6 +18,7 @@ import docspell.joex.learn.LearnClassifierTask
 import docspell.joex.notify._
 import docspell.joex.pdfconv.ConvertAllPdfTask
 import docspell.joex.pdfconv.PdfConvTask
+import docspell.joex.preview._
 import docspell.joex.process.ItemHandler
 import docspell.joex.process.ReProcessItem
 import docspell.joex.scanmailbox._
@@ -68,7 +69,10 @@ final class JoexAppImpl[F[_]: ConcurrentEffect: ContextShift: Timer](
     HouseKeepingTask
       .periodicTask[F](cfg.houseKeeping.schedule)
       .flatMap(pstore.insert) *>
-      MigrationTask.job.flatMap(queue.insertIfNew)
+      MigrationTask.job.flatMap(queue.insertIfNew) *>
+      AllPreviewsTask
+        .job(MakePreviewArgs.StoreMode.WhenMissing, None)
+        .flatMap(queue.insertIfNew)
 }
 
 object JoexAppImpl {
@@ -165,6 +169,20 @@ object JoexAppImpl {
             LearnClassifierArgs.taskName,
             LearnClassifierTask[F](cfg.textAnalysis, blocker, analyser),
             LearnClassifierTask.onCancel[F]
+          )
+        )
+        .withTask(
+          JobTask.json(
+            MakePreviewArgs.taskName,
+            MakePreviewTask[F](cfg.convert),
+            MakePreviewTask.onCancel[F]
+          )
+        )
+        .withTask(
+          JobTask.json(
+            AllPreviewsArgs.taskName,
+            AllPreviewsTask[F](queue, joex),
+            AllPreviewsTask.onCancel[F]
           )
         )
         .resource

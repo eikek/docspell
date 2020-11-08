@@ -17,6 +17,22 @@ import doobie.implicits._
 object QAttachment {
   private[this] val logger = org.log4s.getLogger
 
+  def deletePreview[F[_]: Sync](store: Store[F])(attachId: Ident): F[Int] = {
+    val findPreview =
+      for {
+        rp <- RAttachmentPreview.findById(attachId)
+      } yield rp.toSeq
+
+    Stream
+      .evalSeq(store.transact(findPreview))
+      .map(_.fileId.id)
+      .flatMap(store.bitpeace.delete)
+      .map(flag => if (flag) 1 else 0)
+      .evalMap(_ => store.transact(RAttachmentPreview.delete(attachId)))
+      .compile
+      .foldMonoid
+  }
+
   /** Deletes an attachment, its related source and meta data records.
     * It will only delete an related archive file, if this is the last
     * attachment in that archive.
