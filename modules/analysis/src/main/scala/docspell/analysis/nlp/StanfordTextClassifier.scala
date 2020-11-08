@@ -37,14 +37,19 @@ final class StanfordTextClassifier[F[_]: Sync: ContextShift](
   def classify(
       logger: Logger[F],
       model: ClassifierModel,
-      text: String
+      txt: String
   ): F[Option[String]] =
-    Sync[F].delay {
-      val cls = ColumnDataClassifier.getClassifier(
-        model.model.normalize().toAbsolutePath().toString()
-      )
-      val cat = cls.classOf(cls.makeDatumFromLine("\t\t" + normalisedText(text)))
-      Option(cat)
+    Option(txt).map(_.trim).filter(_.nonEmpty) match {
+      case Some(text) =>
+        Sync[F].delay {
+          val cls = ColumnDataClassifier.getClassifier(
+            model.model.normalize().toAbsolutePath().toString()
+          )
+          val cat = cls.classOf(cls.makeDatumFromLine("\t\t" + normalisedText(text)))
+          Option(cat)
+        }
+      case None =>
+        (None: Option[String]).pure[F]
     }
 
   // --- helpers
