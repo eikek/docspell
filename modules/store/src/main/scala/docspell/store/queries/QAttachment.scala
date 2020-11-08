@@ -27,18 +27,19 @@ object QAttachment {
     val loadFiles = for {
       ra <- RAttachment.findByIdAndCollective(attachId, coll).map(_.map(_.fileId))
       rs <- RAttachmentSource.findByIdAndCollective(attachId, coll).map(_.map(_.fileId))
+      rp <- RAttachmentPreview.findByIdAndCollective(attachId, coll).map(_.map(_.fileId))
       ne <- RAttachmentArchive.countEntries(attachId)
-    } yield (ra, rs, ne)
+    } yield (ra.toSeq ++ rs.toSeq ++ rp.toSeq, ne)
 
     for {
       files <- store.transact(loadFiles)
       k <-
-        if (files._3 == 1) deleteArchive(store)(attachId)
+        if (files._2 == 1) deleteArchive(store)(attachId)
         else store.transact(RAttachmentArchive.delete(attachId))
       n <- store.transact(RAttachment.delete(attachId))
       f <-
         Stream
-          .emits(files._1.toSeq ++ files._2.toSeq)
+          .emits(files._1)
           .map(_.id)
           .flatMap(store.bitpeace.delete)
           .map(flag => if (flag) 1 else 0)
@@ -55,13 +56,14 @@ object QAttachment {
     for {
       _ <- logger.fdebug[F](s"Deleting attachment: ${ra.id.id}")
       s <- store.transact(RAttachmentSource.findById(ra.id))
+      p <- store.transact(RAttachmentPreview.findById(ra.id))
       n <- store.transact(RAttachment.delete(ra.id))
       _ <- logger.fdebug[F](
-        s"Deleted $n meta records (source, meta, archive). Deleting binaries now."
+        s"Deleted $n meta records (source, meta, preview, archive). Deleting binaries now."
       )
       f <-
         Stream
-          .emits(ra.fileId.id +: (s.map(_.fileId.id).toSeq))
+          .emits(ra.fileId.id +: (s.map(_.fileId.id).toSeq ++ p.map(_.fileId.id).toSeq))
           .flatMap(store.bitpeace.delete)
           .map(flag => if (flag) 1 else 0)
           .compile
