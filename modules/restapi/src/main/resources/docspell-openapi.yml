@@ -2446,6 +2446,45 @@ paths:
               schema:
                 type: string
                 format: binary
+  /sec/attachment/{id}/preview:
+    head:
+      tags: [ Attachment ]
+      summary: Get a preview image of an attachment file.
+      description: |
+        Checks if an image file showing a preview of the attachment is
+        available. If not available, a 404 is returned.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        200:
+          description: Ok
+        404:
+          description: NotFound
+    get:
+      tags: [ Attachment ]
+      summary: Get a preview image of an attachment file.
+      description: |
+        Gets a image file showing a preview of the attachment. Usually
+        it is a small image of the first page of the document.If not
+        available, a 404 is returned. However, if the query parameter
+        `withFallback` is `true`, a fallback preview image is
+        returned. You can also use the `HEAD` method to check for
+        existence.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+        - $ref: "#/components/parameters/withFallback"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
   /sec/attachment/{id}/meta:
     get:
       tags: [ Attachment ]
@@ -4822,3 +4861,10 @@ components:
         One of the available contact kinds.
       schema:
         type: string
+    withFallback:
+      name: withFallback
+      in: query
+      description: Whether to provide a fallback or not.
+      required: false
+      schema:
+        type: boolean

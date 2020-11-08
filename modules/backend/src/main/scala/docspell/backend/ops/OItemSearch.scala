@@ -36,6 +36,11 @@ trait OItemSearch[F[_]] {
       collective: Ident
   ): F[Option[AttachmentArchiveData[F]]]
 
+  def findAttachmentPreview(
+      id: Ident,
+      collective: Ident
+  ): F[Option[AttachmentPreviewData[F]]]
+
   def findAttachmentMeta(id: Ident, collective: Ident): F[Option[RAttachmentMeta]]
 
   def findByFileCollective(checksum: String, collective: Ident): F[Vector[RItem]]
@@ -75,6 +80,15 @@ object OItemSearch {
 
   case class AttachmentSourceData[F[_]](
       rs: RAttachmentSource,
+      meta: FileMeta,
+      data: Stream[F, Byte]
+  ) extends BinaryData[F] {
+    val name   = rs.name
+    val fileId = rs.fileId
+  }
+
+  case class AttachmentPreviewData[F[_]](
+      rs: RAttachmentPreview,
       meta: FileMeta,
       data: Stream[F, Byte]
   ) extends BinaryData[F] {
@@ -152,6 +166,26 @@ object OItemSearch {
 
             case None =>
               (None: Option[AttachmentSourceData[F]]).pure[F]
+          })
+
+      def findAttachmentPreview(
+          id: Ident,
+          collective: Ident
+      ): F[Option[AttachmentPreviewData[F]]] =
+        store
+          .transact(RAttachmentPreview.findByIdAndCollective(id, collective))
+          .flatMap({
+            case Some(ra) =>
+              makeBinaryData(ra.fileId) { m =>
+                AttachmentPreviewData[F](
+                  ra,
+                  m,
+                  store.bitpeace.fetchData2(RangeDef.all)(Stream.emit(m))
+                )
+              }
+
+            case None =>
+              (None: Option[AttachmentPreviewData[F]]).pure[F]
           })
 
       def findAttachmentArchive(
