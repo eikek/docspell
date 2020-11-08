@@ -6,6 +6,7 @@ import docspell.convert.flexmark.MarkdownConfig
 
 case class ConvertConfig(
     chunkSize: Int,
+    convertedFilenamePart: String,
     maxImageSize: Int,
     markdown: MarkdownConfig,
     wkhtmlpdf: WkHtmlPdfConfig,

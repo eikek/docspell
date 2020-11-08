@@ -135,7 +135,11 @@ object ConvertPdf {
   ) = {
     val hint =
       MimeTypeHint.advertised(MimeType.pdf).withName(ra.name.getOrElse("file.pdf"))
-    val newName = ra.name.map(n => s"$n.pdf")
+    val newName =
+      ra.name
+        .map(FileName.apply)
+        .map(_.withExtension("pdf").withPart(cfg.convertedFilenamePart, '.'))
+        .map(_.fullName)
     ctx.store.bitpeace
       .saveNew(pdf, cfg.chunkSize, MimetypeHint(hint.filename, hint.advertised))
       .compile
