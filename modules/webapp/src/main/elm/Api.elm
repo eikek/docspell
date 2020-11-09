@@ -6,6 +6,7 @@ module Api exposing
     , addMember
     , addTag
     , addTagsMultiple
+    , attachmentPreviewURL
     , cancelJob
     , changeFolderName
     , changePassword
@@ -58,9 +59,9 @@ module Api exposing
     , getTagCloud
     , getTags
     , getUsers
+    , itemBasePreviewURL
     , itemDetail
     , itemIndexSearch
-    , itemPreviewURL
     , itemSearch
     , login
     , loginSession
@@ -1504,16 +1505,9 @@ deleteAllItems flags ids receive =
 --- Item
 
 
-itemPreviewURL : ItemLight -> String
-itemPreviewURL item =
-    let
-        makeUrl a =
-            "/api/v1/sec/attachment/" ++ a.id ++ "/preview?withFallback=true"
-    in
-    List.sortBy .position item.attachments
-        |> List.head
-        |> Maybe.map makeUrl
-        |> Maybe.withDefault (itemBasePreviewURL item.id)
+attachmentPreviewURL : String -> String
+attachmentPreviewURL id =
+    "/api/v1/sec/attachment/" ++ id ++ "/preview?withFallback=true"
 
 
 itemBasePreviewURL : String -> String
