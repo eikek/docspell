@@ -179,7 +179,7 @@ view cfg settings model item =
         pageCountLabel =
             div
                 [ classList
-                    [ ( "card-attachment-nav", True )
+                    [ ( "card-attachment-nav top", True )
                     , ( "invisible", pageCount == 0 || (item.fileCount == 1 && pageCount == 1) )
                     ]
                 ]
@@ -227,7 +227,10 @@ view cfg settings model item =
             span [ class "invisible" ] []
 
           else
-            div [ class "image" ]
+            div
+                [ class "image ds-card-image"
+                , Data.UiSettings.cardPreviewSize settings
+                ]
                 [ img
                     [ class "preview-image"
                     , src previewUrl

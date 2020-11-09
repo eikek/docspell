@@ -92,18 +92,45 @@
     background: floralwhite;
     padding: 0.8em;
 }
+
 .default-layout .ui.card .link.content:hover {
     box-shadow: 0 0 0 1px #d4d4d5,0 2px 4px 0 rgba(34,36,38,.12),0 2px 10px 0 rgba(34,36,38,.15);
 }
 .default-layout .image .card-attachment-nav {
     position: absolute;
-    bottom: 2px;
     right: 2px;
     z-index: 10;
+}
+.default-layout .image .card-attachment-nav.bottom {
+    bottom: 2px;
+}
+.default-layout .image .card-attachment-nav.top {
+    top: 2px;
+}
+.default-layout .image.ds-card-image {
+    overflow: auto;
+}
+.default-layout .image.ds-card-image.small {
+    max-height: 120px;
+}
+.default-layout .image.ds-card-image.medium {
+    max-height: 240px;
+}
+.default-layout .image.ds-card-image.large {
+    max-height: 600px;
 }
 .default-layout img.preview-image {
     margin-left: auto;
     margin-right: auto;
+}
+.default-layout img.preview-image.small {
+    max-width: 80px;
+}
+.default-layout img.preview-image.medium {
+    max-width: 160px;
+}
+.default-layout img.preview-image.large {
+    max-width: none;
 }
 
 .default-layout .menu .item.active a.right-tab-icon-link {

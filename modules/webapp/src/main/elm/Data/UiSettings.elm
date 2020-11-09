@@ -226,15 +226,8 @@ fieldHidden settings field =
 
 cardPreviewSize : UiSettings -> Attribute msg
 cardPreviewSize settings =
-    case settings.cardPreviewSize of
-        Data.BasicSize.Small ->
-            HA.style "max-width" "80px"
-
-        Data.BasicSize.Medium ->
-            HA.style "max-width" "160px"
-
-        Data.BasicSize.Large ->
-            HA.style "max-width" "none"
+    Data.BasicSize.asString settings.cardPreviewSize
+        |> HA.class
 
 
 
