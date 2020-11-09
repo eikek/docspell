@@ -33,7 +33,7 @@ object RestServer {
         "/api/info"     -> routes.InfoRoutes(),
         "/api/v1/open/" -> openRoutes(cfg, restApp),
         "/api/v1/sec/" -> Authenticate(restApp.backend.login, cfg.auth) { token =>
-          securedRoutes(cfg, restApp, token)
+          securedRoutes(cfg, pools, restApp, token)
         },
         "/api/doc"    -> templates.doc,
         "/app/assets" -> WebjarRoutes.appRoutes[F](pools.blocker),
@@ -57,8 +57,9 @@ object RestServer {
       )
   }.drain
 
-  def securedRoutes[F[_]: Effect](
+  def securedRoutes[F[_]: Effect: ContextShift](
       cfg: Config,
+      pools: Pools,
       restApp: RestApp[F],
       token: AuthToken
   ): HttpRoutes[F] =
@@ -72,9 +73,9 @@ object RestServer {
       "user"                    -> UserRoutes(restApp.backend, token),
       "collective"              -> CollectiveRoutes(restApp.backend, token),
       "queue"                   -> JobQueueRoutes(restApp.backend, token),
-      "item"                    -> ItemRoutes(cfg, restApp.backend, token),
+      "item"                    -> ItemRoutes(cfg, pools.blocker, restApp.backend, token),
       "items"                   -> ItemMultiRoutes(restApp.backend, token),
-      "attachment"              -> AttachmentRoutes(restApp.backend, token),
+      "attachment"              -> AttachmentRoutes(pools.blocker, restApp.backend, token),
       "upload"                  -> UploadRoutes.secured(restApp.backend, cfg, token),
       "checkfile"               -> CheckFileRoutes.secured(restApp.backend, token),
       "email/send"              -> MailSendRoutes(restApp.backend, token),

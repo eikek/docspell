@@ -15,6 +15,7 @@ import docspell.restserver.Config
 import docspell.restserver.conv.Conversions
 import docspell.restserver.http4s.BinaryUtil
 import docspell.restserver.http4s.Responses
+import docspell.restserver.http4s.{QueryParam => QP}
 
 import org.http4s.HttpRoutes
 import org.http4s.circe.CirceEntityDecoder._
@@ -26,8 +27,9 @@ import org.log4s._
 object ItemRoutes {
   private[this] val logger = getLogger
 
-  def apply[F[_]: Effect](
+  def apply[F[_]: Effect: ContextShift](
       cfg: Config,
+      blocker: Blocker,
       backend: BackendApp[F],
       user: AuthToken
   ): HttpRoutes[F] = {
@@ -318,18 +320,24 @@ object ItemRoutes {
           resp <- Ok(Conversions.basicResult(res, "Attachment moved."))
         } yield resp
 
-      case req @ GET -> Root / Ident(id) / "preview" =>
+      case req @ GET -> Root / Ident(id) / "preview" :? QP.WithFallback(flag) =>
+        def notFound =
+          NotFound(BasicResult(false, "Not found"))
         for {
           preview <- backend.itemSearch.findItemPreview(id, user.account.collective)
-          inm     = req.headers.get(`If-None-Match`).flatMap(_.tags)
-          matches = BinaryUtil.matchETag(preview.map(_.meta), inm)
+          inm      = req.headers.get(`If-None-Match`).flatMap(_.tags)
+          matches  = BinaryUtil.matchETag(preview.map(_.meta), inm)
+          fallback = flag.getOrElse(false)
           resp <-
             preview
               .map { data =>
                 if (matches) BinaryUtil.withResponseHeaders(dsl, NotModified())(data)
                 else BinaryUtil.makeByteResp(dsl)(data).map(Responses.noCache)
               }
-              .getOrElse(NotFound(BasicResult(false, "Not found")))
+              .getOrElse(
+                if (fallback) BinaryUtil.noPreview(blocker, req.some).getOrElseF(notFound)
+                else notFound
+              )
         } yield resp
 
       case HEAD -> Root / Ident(id) / "preview" =>

@@ -1,6 +1,7 @@
 package docspell.restserver.http4s
 
 import cats.data.NonEmptyList
+import cats.data.OptionT
 import cats.effect._
 import cats.implicits._
 
@@ -50,5 +51,17 @@ object BinaryUtil {
       case _ =>
         false
     }
+
+  def noPreview[F[_]: Sync: ContextShift](
+      blocker: Blocker,
+      req: Option[Request[F]]
+  ): OptionT[F, Response[F]] =
+    StaticFile.fromResource(
+      name = "/docspell/restserver/no-preview.svg",
+      blocker = blocker,
+      req = req,
+      preferGzipped = true,
+      classloader = getClass.getClassLoader().some
+    )
 
 }

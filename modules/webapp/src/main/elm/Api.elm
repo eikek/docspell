@@ -1505,7 +1505,7 @@ deleteAllItems flags ids receive =
 
 itemPreviewURL : String -> String
 itemPreviewURL itemId =
-    "/api/v1/sec/item/" ++ itemId ++ "/preview"
+    "/api/v1/sec/item/" ++ itemId ++ "/preview?withFallback=true"
 
 
 fileURL : String -> String

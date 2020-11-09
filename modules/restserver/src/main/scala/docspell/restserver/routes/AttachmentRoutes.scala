@@ -11,6 +11,7 @@ import docspell.common.MakePreviewArgs
 import docspell.restapi.model._
 import docspell.restserver.conv.Conversions
 import docspell.restserver.http4s.BinaryUtil
+import docspell.restserver.http4s.{QueryParam => QP}
 import docspell.restserver.webapp.Webjars
 
 import org.http4s._
@@ -21,7 +22,11 @@ import org.http4s.headers._
 
 object AttachmentRoutes {
 
-  def apply[F[_]: Effect](backend: BackendApp[F], user: AuthToken): HttpRoutes[F] = {
+  def apply[F[_]: Effect: ContextShift](
+      blocker: Blocker,
+      backend: BackendApp[F],
+      user: AuthToken
+  ): HttpRoutes[F] = {
     val dsl = new Http4sDsl[F] {}
     import dsl._
 
@@ -105,19 +110,25 @@ object AttachmentRoutes {
               .getOrElse(NotFound(BasicResult(false, "Not found")))
         } yield resp
 
-      case req @ GET -> Root / Ident(id) / "preview" =>
+      case req @ GET -> Root / Ident(id) / "preview" :? QP.WithFallback(flag) =>
+        def notFound =
+          NotFound(BasicResult(false, "Not found"))
         for {
           fileData <-
             backend.itemSearch.findAttachmentPreview(id, user.account.collective)
-          inm     = req.headers.get(`If-None-Match`).flatMap(_.tags)
-          matches = BinaryUtil.matchETag(fileData.map(_.meta), inm)
+          inm      = req.headers.get(`If-None-Match`).flatMap(_.tags)
+          matches  = BinaryUtil.matchETag(fileData.map(_.meta), inm)
+          fallback = flag.getOrElse(false)
           resp <-
             fileData
               .map { data =>
                 if (matches) withResponseHeaders(NotModified())(data)
                 else makeByteResp(data)
               }
-              .getOrElse(NotFound(BasicResult(false, "Not found")))
+              .getOrElse(
+                if (fallback) BinaryUtil.noPreview(blocker, req.some).getOrElseF(notFound)
+                else notFound
+              )
         } yield resp
 
       case HEAD -> Root / Ident(id) / "preview" =>
