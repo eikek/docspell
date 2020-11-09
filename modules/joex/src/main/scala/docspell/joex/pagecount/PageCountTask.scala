@@ -48,8 +48,8 @@ object MakePageCountTask {
   private def pageCountExists[F[_]: Sync](ctx: Context[F, Args]): F[Boolean] =
     ctx.store.transact(
       RAttachmentMeta
-        .findById(ctx.args.attachment)
-        .map(_.flatMap(_.pages).exists(_ > 0))
+        .findPageCountById(ctx.args.attachment)
+        .map(_.exists(_ > 0))
     )
 
 }

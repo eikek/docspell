@@ -56,22 +56,15 @@ object AllPreviewsTask {
   private def createJobs[F[_]: Sync](
       ctx: Context[F, Args]
   )(ras: Chunk[RAttachment]): Stream[F, RJob] = {
-    val collectiveOrSystem = ctx.args.collective.getOrElse(DocspellSystem.taskGroup)
+    val collectiveOrSystem = {
+      val cid = ctx.args.collective.getOrElse(DocspellSystem.taskGroup)
+      AccountId(cid, DocspellSystem.user)
+    }
 
     def mkJob(ra: RAttachment): F[RJob] =
-      for {
-        id  <- Ident.randomId[F]
-        now <- Timestamp.current[F]
-      } yield RJob.newJob(
-        id,
-        MakePreviewArgs.taskName,
-        collectiveOrSystem,
+      JobFactory.makePreview(
         MakePreviewArgs(ra.id, ctx.args.storeMode),
-        s"Create preview ${ra.id.id}/${ra.name.getOrElse("-")}",
-        now,
-        collectiveOrSystem,
-        Priority.Low,
-        Some(MakePreviewArgs.taskName / ra.id)
+        collectiveOrSystem.some
       )
 
     val jobs = ras.traverse(mkJob)

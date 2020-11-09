@@ -256,16 +256,17 @@ object RAttachment {
   }
 
   def findAllWithoutPageCount(chunkSize: Int): Stream[ConnectionIO, RAttachment] = {
-    val aId    = Columns.id.prefix("a")
-    val mId    = RAttachmentMeta.Columns.id.prefix("m")
-    val mPages = RAttachmentMeta.Columns.pages.prefix("m")
+    val aId      = Columns.id.prefix("a")
+    val aCreated = Columns.created.prefix("a")
+    val mId      = RAttachmentMeta.Columns.id.prefix("m")
+    val mPages   = RAttachmentMeta.Columns.pages.prefix("m")
 
     val cols = all.map(_.prefix("a"))
     val join = table ++ fr"a LEFT OUTER JOIN" ++
       RAttachmentMeta.table ++ fr"m ON" ++ aId.is(mId)
     val cond = mPages.isNull
 
-    selectSimple(cols, join, cond)
+    (selectSimple(cols, join, cond) ++ orderBy(aCreated.desc))
       .query[RAttachment]
       .streamWithChunkSize(chunkSize)
   }
@@ -274,11 +275,12 @@ object RAttachment {
       coll: Option[Ident],
       chunkSize: Int
   ): Stream[ConnectionIO, RAttachment] = {
-    val aId   = Columns.id.prefix("a")
-    val aItem = Columns.itemId.prefix("a")
-    val pId   = RAttachmentPreview.Columns.id.prefix("p")
-    val iId   = RItem.Columns.id.prefix("i")
-    val iColl = RItem.Columns.cid.prefix("i")
+    val aId      = Columns.id.prefix("a")
+    val aItem    = Columns.itemId.prefix("a")
+    val aCreated = Columns.created.prefix("a")
+    val pId      = RAttachmentPreview.Columns.id.prefix("p")
+    val iId      = RItem.Columns.id.prefix("i")
+    val iColl    = RItem.Columns.cid.prefix("i")
 
     val cols = all.map(_.prefix("a"))
     val baseJoin =
@@ -292,11 +294,11 @@ object RAttachment {
       case Some(cid) =>
         val join = baseJoin ++ fr"INNER JOIN" ++ RItem.table ++ fr"i ON" ++ iId.is(aItem)
         val cond = and(baseCond ++ Seq(iColl.is(cid)))
-        selectSimple(cols, join, cond)
+        (selectSimple(cols, join, cond) ++ orderBy(aCreated.desc))
           .query[RAttachment]
           .streamWithChunkSize(chunkSize)
       case None =>
-        selectSimple(cols, baseJoin, and(baseCond))
+        (selectSimple(cols, baseJoin, and(baseCond)) ++ orderBy(aCreated.desc))
           .query[RAttachment]
           .streamWithChunkSize(chunkSize)
     }

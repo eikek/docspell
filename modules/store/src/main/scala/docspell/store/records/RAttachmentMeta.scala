@@ -54,6 +54,12 @@ object RAttachmentMeta {
   def findById(attachId: Ident): ConnectionIO[Option[RAttachmentMeta]] =
     selectSimple(all, table, id.is(attachId)).query[RAttachmentMeta].option
 
+  def findPageCountById(attachId: Ident): ConnectionIO[Option[Int]] =
+    selectSimple(Seq(pages), table, id.is(attachId))
+      .query[Option[Int]]
+      .option
+      .map(_.flatten)
+
   def upsert(v: RAttachmentMeta): ConnectionIO[Int] =
     for {
       n0 <- update(v)
