@@ -7,6 +7,7 @@ import docspell.backend.BackendApp
 import docspell.backend.auth.AuthToken
 import docspell.backend.ops._
 import docspell.common.Ident
+import docspell.common.MakePreviewArgs
 import docspell.restapi.model._
 import docspell.restserver.conv.Conversions
 import docspell.restserver.http4s.BinaryUtil
@@ -127,6 +128,18 @@ object AttachmentRoutes {
             fileData
               .map(data => withResponseHeaders(Ok())(data))
               .getOrElse(NotFound(BasicResult(false, "Not found")))
+        } yield resp
+
+      case POST -> Root / Ident(id) / "preview" =>
+        for {
+          res <- backend.item.generatePreview(
+            MakePreviewArgs.replace(id),
+            user.account,
+            true
+          )
+          resp <- Ok(
+            Conversions.basicResult(res, "Generating preview image task submitted.")
+          )
         } yield resp
 
       case GET -> Root / Ident(id) / "view" =>

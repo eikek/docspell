@@ -1,13 +1,16 @@
 package docspell.joex.preview
 
-import fs2.{Chunk, Stream}
-import docspell.common._
 import cats.effect._
 import cats.implicits._
-import docspell.store.queue.JobQueue
+import fs2.{Chunk, Stream}
+
+import docspell.backend.JobFactory
 import docspell.backend.ops.OJoex
-import docspell.joex.scheduler.Task
+import docspell.common.MakePreviewArgs.StoreMode
+import docspell.common._
 import docspell.joex.scheduler.Context
+import docspell.joex.scheduler.Task
+import docspell.store.queue.JobQueue
 import docspell.store.records.RAttachment
 import docspell.store.records.RJob
 
@@ -33,7 +36,7 @@ object AllPreviewsTask {
       queue: JobQueue[F]
   ): F[Int] =
     ctx.store
-      .transact(RAttachment.findWithoutPreview(ctx.args.collective, 50))
+      .transact(findAttachments(ctx))
       .chunks
       .flatMap(createJobs[F](ctx))
       .chunks
@@ -41,6 +44,14 @@ object AllPreviewsTask {
       .evalTap(n => ctx.logger.debug(s"Submitted $n jobs …"))
       .compile
       .foldMonoid
+
+  private def findAttachments[F[_]](ctx: Context[F, Args]) =
+    ctx.args.storeMode match {
+      case StoreMode.Replace =>
+        RAttachment.findAll(ctx.args.collective, 50)
+      case StoreMode.WhenMissing =>
+        RAttachment.findWithoutPreview(ctx.args.collective, 50)
+    }
 
   private def createJobs[F[_]: Sync](
       ctx: Context[F, Args]
@@ -68,19 +79,6 @@ object AllPreviewsTask {
   }
 
   def job[F[_]: Sync](storeMode: MakePreviewArgs.StoreMode, cid: Option[Ident]): F[RJob] =
-    for {
-      id  <- Ident.randomId[F]
-      now <- Timestamp.current[F]
-    } yield RJob.newJob(
-      id,
-      AllPreviewsArgs.taskName,
-      cid.getOrElse(DocspellSystem.taskGroup),
-      AllPreviewsArgs(cid, storeMode),
-      "Create preview images",
-      now,
-      DocspellSystem.taskGroup,
-      Priority.Low,
-      Some(DocspellSystem.allPreviewTaskTracker)
-    )
+    JobFactory.allPreviews(AllPreviewsArgs(cid, storeMode), None)
 
 }

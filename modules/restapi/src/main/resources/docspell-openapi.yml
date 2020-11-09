@@ -2526,6 +2526,24 @@ paths:
               schema:
                 type: string
                 format: binary
+    post:
+      tags: [ Attachment ]
+      summary: (Re)generate a preview image.
+      description: |
+        Submits a task that generates a preview image for this
+        attachment. The existing preview will be replaced.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
   /sec/attachment/{id}/meta:
     get:
       tags: [ Attachment ]

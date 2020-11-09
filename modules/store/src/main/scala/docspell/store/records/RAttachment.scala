@@ -231,6 +231,30 @@ object RAttachment {
   def findItemId(attachId: Ident): ConnectionIO[Option[Ident]] =
     selectSimple(Seq(itemId), table, id.is(attachId)).query[Ident].option
 
+  def findAll(
+      coll: Option[Ident],
+      chunkSize: Int
+  ): Stream[ConnectionIO, RAttachment] = {
+    val aItem = Columns.itemId.prefix("a")
+    val iId   = RItem.Columns.id.prefix("i")
+    val iColl = RItem.Columns.cid.prefix("i")
+
+    val cols = all.map(_.prefix("a"))
+
+    coll match {
+      case Some(cid) =>
+        val join = table ++ fr"a INNER JOIN" ++ RItem.table ++ fr"i ON" ++ iId.is(aItem)
+        val cond = iColl.is(cid)
+        selectSimple(cols, join, cond)
+          .query[RAttachment]
+          .streamWithChunkSize(chunkSize)
+      case None =>
+        selectSimple(cols, table, Fragment.empty)
+          .query[RAttachment]
+          .streamWithChunkSize(chunkSize)
+    }
+  }
+
   def findWithoutPreview(
       coll: Option[Ident],
       chunkSize: Int

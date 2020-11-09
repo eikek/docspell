@@ -21,7 +21,7 @@ object PdfboxPreviewTest extends SimpleTestSuite {
       val data = file.readURL[IO](8192, blocker)
       val sha256out =
         Stream
-          .eval(PdfboxPreview[IO](48))
+          .eval(PdfboxPreview[IO](PreviewConfig(48)))
           .evalMap(_.previewPNG(data))
           .flatMap(_.get)
           .through(fs2.hash.sha256)

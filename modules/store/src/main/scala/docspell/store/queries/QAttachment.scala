@@ -26,9 +26,9 @@ object QAttachment {
     Stream
       .evalSeq(store.transact(findPreview))
       .map(_.fileId.id)
+      .evalTap(_ => store.transact(RAttachmentPreview.delete(attachId)))
       .flatMap(store.bitpeace.delete)
       .map(flag => if (flag) 1 else 0)
-      .evalMap(_ => store.transact(RAttachmentPreview.delete(attachId)))
       .compile
       .foldMonoid
   }

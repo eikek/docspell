@@ -4,9 +4,11 @@ import cats.effect.{Effect, Resource}
 import cats.implicits._
 import fs2.Stream
 
+import docspell.backend.JobFactory
 import docspell.backend.PasswordCrypt
 import docspell.backend.ops.OCollective._
 import docspell.common._
+import docspell.store.UpdateResult
 import docspell.store.queries.QCollective
 import docspell.store.queue.JobQueue
 import docspell.store.records._
@@ -51,6 +53,15 @@ trait OCollective[F[_]] {
   def findEnabledSource(sourceId: Ident): F[Option[RSource]]
 
   def startLearnClassifier(collective: Ident): F[Unit]
+
+  /** Submits a task that (re)generates the preview images for all
+    * attachments of the given collective.
+    */
+  def generatePreviews(
+      storeMode: MakePreviewArgs.StoreMode,
+      account: AccountId,
+      notifyJoex: Boolean
+  ): F[UpdateResult]
 }
 
 object OCollective {
@@ -210,5 +221,20 @@ object OCollective {
 
       def findEnabledSource(sourceId: Ident): F[Option[RSource]] =
         store.transact(RSource.findEnabled(sourceId))
+
+      def generatePreviews(
+          storeMode: MakePreviewArgs.StoreMode,
+          account: AccountId,
+          notifyJoex: Boolean
+      ): F[UpdateResult] =
+        for {
+          job <- JobFactory.allPreviews[F](
+            AllPreviewsArgs(Some(account.collective), storeMode),
+            Some(account.user)
+          )
+          _ <- queue.insertIfNew(job)
+          _ <- if (notifyJoex) joex.notifyAllNodes else ().pure[F]
+        } yield UpdateResult.success
+
     })
 }

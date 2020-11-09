@@ -9,13 +9,14 @@ import fs2.Stream
 import docspell.common._
 import docspell.convert._
 import docspell.extract.pdfbox.PdfboxPreview
+import docspell.extract.pdfbox.PreviewConfig
 import docspell.joex.scheduler._
+import docspell.store.queries.QAttachment
 import docspell.store.records.RAttachment
 import docspell.store.records._
 import docspell.store.syntax.MimeTypes._
 
 import bitpeace.{Mimetype, MimetypeHint, RangeDef}
-import docspell.store.queries.QAttachment
 
 /** Goes through all attachments that must be already converted into a
   * pdf. If it is a pdf, the first page is converted into a small
@@ -23,7 +24,7 @@ import docspell.store.queries.QAttachment
   */
 object AttachmentPreview {
 
-  def apply[F[_]: Sync: ContextShift](cfg: ConvertConfig)(
+  def apply[F[_]: Sync: ContextShift](cfg: ConvertConfig, pcfg: PreviewConfig)(
       item: ItemData
   ): Task[F, ProcessItemArgs, ItemData] =
     Task { ctx =>
@@ -31,7 +32,7 @@ object AttachmentPreview {
         _ <- ctx.logger.info(
           s"Creating preview images for ${item.attachments.size} files…"
         )
-        preview <- PdfboxPreview(24)
+        preview <- PdfboxPreview(pcfg)
         _ <- item.attachments
           .traverse(createPreview(ctx, preview, cfg.chunkSize))
           .attempt

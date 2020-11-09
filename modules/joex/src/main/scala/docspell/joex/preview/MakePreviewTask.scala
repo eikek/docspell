@@ -1,25 +1,27 @@
 package docspell.joex.preview
 
-import cats.implicits._
 import cats.effect._
+import cats.implicits._
+
 import docspell.common._
-import docspell.joex.scheduler.Task
-import docspell.store.records.RAttachmentPreview
-import docspell.joex.scheduler.Context
-import docspell.joex.process.AttachmentPreview
 import docspell.convert.ConvertConfig
 import docspell.extract.pdfbox.PdfboxPreview
+import docspell.extract.pdfbox.PreviewConfig
+import docspell.joex.process.AttachmentPreview
+import docspell.joex.scheduler.Context
+import docspell.joex.scheduler.Task
 import docspell.store.records.RAttachment
+import docspell.store.records.RAttachmentPreview
 
 object MakePreviewTask {
 
   type Args = MakePreviewArgs
 
-  def apply[F[_]: Sync](cfg: ConvertConfig): Task[F, Args, Unit] =
+  def apply[F[_]: Sync](cfg: ConvertConfig, pcfg: PreviewConfig): Task[F, Args, Unit] =
     Task { ctx =>
       for {
         exists  <- previewExists(ctx)
-        preview <- PdfboxPreview(30)
+        preview <- PdfboxPreview(pcfg)
         _ <-
           if (exists)
             ctx.logger.info(
@@ -44,7 +46,9 @@ object MakePreviewTask {
       ra <- ctx.store.transact(RAttachment.findById(ctx.args.attachment))
       _ <- ra
         .map(AttachmentPreview.createPreview(ctx, preview, cfg.chunkSize))
-        .getOrElse(().pure[F])
+        .getOrElse(
+          ctx.logger.warn(s"No attachment found with id: ${ctx.args.attachment}")
+        )
     } yield ()
 
   private def previewExists[F[_]: Sync](ctx: Context[F, Args]): F[Boolean] =

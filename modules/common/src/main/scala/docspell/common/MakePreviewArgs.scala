@@ -18,6 +18,12 @@ object MakePreviewArgs {
 
   val taskName = Ident.unsafe("make-preview")
 
+  def replace(attach: Ident): MakePreviewArgs =
+    MakePreviewArgs(attach, StoreMode.Replace)
+
+  def whenMissing(attach: Ident): MakePreviewArgs =
+    MakePreviewArgs(attach, StoreMode.WhenMissing)
+
   sealed trait StoreMode extends Product {
     final def name: String =
       productPrefix.toLowerCase()

@@ -174,7 +174,7 @@ object JoexAppImpl {
         .withTask(
           JobTask.json(
             MakePreviewArgs.taskName,
-            MakePreviewTask[F](cfg.convert),
+            MakePreviewTask[F](cfg.convert, cfg.extraction.preview),
             MakePreviewTask.onCancel[F]
           )
         )

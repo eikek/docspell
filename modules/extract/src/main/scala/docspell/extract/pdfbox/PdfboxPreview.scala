@@ -21,11 +21,13 @@ trait PdfboxPreview[F[_]] {
 
 object PdfboxPreview {
 
-  def apply[F[_]: Sync](dpi: Float): F[PdfboxPreview[F]] =
+  def apply[F[_]: Sync](cfg: PreviewConfig): F[PdfboxPreview[F]] =
     Sync[F].pure(new PdfboxPreview[F] {
 
       def previewImage(pdf: Stream[F, Byte]): F[Option[BufferedImage]] =
-        PdfLoader.withDocumentStream(pdf)(doc => Sync[F].delay(getPageImage(doc, 0, dpi)))
+        PdfLoader.withDocumentStream(pdf)(doc =>
+          Sync[F].delay(getPageImage(doc, 0, cfg.dpi))
+        )
 
       def previewPNG(pdf: Stream[F, Byte]): F[Option[Stream[F, Byte]]] =
         previewImage(pdf).map(_.map(pngStream[F]))
