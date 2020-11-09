@@ -22,6 +22,7 @@ import bitpeace.FileMeta
 import org.http4s.headers.`Content-Type`
 import org.http4s.multipart.Multipart
 import org.log4s.Logger
+import docspell.store.queries.QItem
 
 trait Conversions {
 
@@ -204,6 +205,7 @@ trait Conversions {
       i.folder.map(mkIdName),
       i.fileCount,
       Nil,
+      Nil,
       i.notes,
       Nil
     )
@@ -215,7 +217,11 @@ trait Conversions {
   }
 
   def mkItemLightWithTags(i: OItemSearch.ListItemWithTags): ItemLight =
-    mkItemLight(i.item).copy(tags = i.tags.map(mkTag))
+    mkItemLight(i.item)
+      .copy(tags = i.tags.map(mkTag), attachments = i.attachments.map(mkAttachmentLight))
+
+  private def mkAttachmentLight(qa: QItem.AttachmentLight): AttachmentLight =
+    AttachmentLight(qa.id, qa.position, qa.name, qa.pageCount)
 
   def mkItemLightWithTags(i: OFulltext.FtsItemWithTags): ItemLight = {
     val il        = mkItemLightWithTags(i.item)

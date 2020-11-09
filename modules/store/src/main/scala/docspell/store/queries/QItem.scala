@@ -443,7 +443,17 @@ object QItem {
       from.query[ListItem].stream
     }
 
-  case class ListItemWithTags(item: ListItem, tags: List[RTag])
+  case class AttachmentLight(
+      id: Ident,
+      position: Int,
+      name: Option[String],
+      pageCount: Option[Int]
+  )
+  case class ListItemWithTags(
+      item: ListItem,
+      tags: List[RTag],
+      attachments: List[AttachmentLight]
+  )
 
   /** Same as `findItems` but resolves the tags for each item. Note that
     * this is implemented by running an additional query per item.
@@ -476,8 +486,29 @@ object QItem {
       item         <- search
       tagItems     <- Stream.eval(RTagItem.findByItem(item.id))
       tags         <- Stream.eval(tagItems.traverse(ti => findTag(resolvedTags, ti)))
+      attachs      <- Stream.eval(findAttachmentLight(item.id))
       ftags = tags.flatten.filter(t => t.collective == collective)
-    } yield ListItemWithTags(item, ftags.toList.sortBy(_.name))
+    } yield ListItemWithTags(
+      item,
+      ftags.toList.sortBy(_.name),
+      attachs.sortBy(_.position)
+    )
+  }
+
+  private def findAttachmentLight(item: Ident): ConnectionIO[List[AttachmentLight]] = {
+    val aId    = RAttachment.Columns.id.prefix("a")
+    val aItem  = RAttachment.Columns.itemId.prefix("a")
+    val aPos   = RAttachment.Columns.position.prefix("a")
+    val aName  = RAttachment.Columns.name.prefix("a")
+    val mId    = RAttachmentMeta.Columns.id.prefix("m")
+    val mPages = RAttachmentMeta.Columns.pages.prefix("m")
+
+    val cols = Seq(aId, aPos, aName, mPages)
+    val join = RAttachment.table ++
+      fr"a LEFT OUTER JOIN" ++ RAttachmentMeta.table ++ fr"m ON" ++ aId.is(mId)
+    val cond = aItem.is(item)
+
+    selectSimple(cols, join, cond).query[AttachmentLight].to[List]
   }
 
   def delete[F[_]: Sync](store: Store[F])(itemId: Ident, collective: Ident): F[Int] =

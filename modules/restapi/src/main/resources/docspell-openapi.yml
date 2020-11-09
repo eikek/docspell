@@ -1291,10 +1291,11 @@ paths:
       summary: Search for items.
       description: |
         Search for items given a search form. The results are grouped
-        by month and are sorted by item date (newest first). Tags are
-        *not* resolved. The results will always contain an empty list
-        for item tags. Use `/searchWithTags` to also retrieve all tags
-        of an item.
+        by month and are sorted by item date (newest first). Tags and
+        attachments are *not* resolved. The results will always
+        contain an empty list for item tags and attachments. Use
+        `/searchWithTags` to also retrieve all tags and a list of
+        attachments of an item.
 
         The `fulltext` field can be used to restrict the results by
         using full-text search in the documents contents.
@@ -1318,9 +1319,10 @@ paths:
       summary: Search for items.
       description: |
         Search for items given a search form. The results are grouped
-        by month by default. For each item, its tags are also
-        returned. This uses more queries and is therefore slower, but
-        returns all tags to an item.
+        by month by default. For each item, its tags and attachments
+        are also returned. This uses more queries and is therefore
+        slower, but returns all tags to an item as well as their
+        attachments with some minor details.
 
         The `fulltext` field can be used to restrict the results by
         using full-text search in the documents contents.
@@ -4703,6 +4705,10 @@ components:
         fileCount:
           type: integer
           format: int32
+        attachments:
+          type: array
+          items:
+            $ref: "#/components/schemas/AttachmentLight"
         tags:
           type: array
           items:
@@ -4720,6 +4726,24 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/HighlightEntry"
+    AttachmentLight:
+      description: |
+        Some little details about an attachment.
+      required:
+        - id
+        - position
+      properties:
+        id:
+          type: string
+          format: ident
+        position:
+          type: integer
+          format: int32
+        name:
+          type: string
+        pageCount:
+          type: integer
+          format: int32
     HighlightEntry:
       description: |
         Highlighting information for a single field (maybe attachment
