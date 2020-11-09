@@ -1069,6 +1069,29 @@ paths:
               schema:
                 $ref: "#/components/schemas/BasicResult"
 
+  /sec/collective/previews:
+    post:
+      tags: [ Collective ]
+      summary: Starts the generate previews task
+      description: |
+        Submits a task that re-generates preview images of all
+        attachments of the current collective. Each existing preview
+        image will be replaced.
+
+        This can be used after changing the `preview` settings.
+
+        If only preview images of selected attachments should be
+        regenerated, see the `/sec/attachment/{id}/preview` endpoint.
+      security:
+        - authTokenHeader: []
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
   /sec/user:
     get:
       tags: [ Collective ]

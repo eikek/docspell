@@ -93,9 +93,6 @@
     padding: 0.8em;
 }
 
-.default-layout .ui.card div.image {
-    background: #fff;
-}
 .default-layout img.preview-image {
     max-width: 160px;
     margin-left: auto;
