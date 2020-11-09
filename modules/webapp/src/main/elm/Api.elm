@@ -144,6 +144,7 @@ import Api.Model.InviteResult exposing (InviteResult)
 import Api.Model.ItemDetail exposing (ItemDetail)
 import Api.Model.ItemFtsSearch exposing (ItemFtsSearch)
 import Api.Model.ItemInsights exposing (ItemInsights)
+import Api.Model.ItemLight exposing (ItemLight)
 import Api.Model.ItemLightList exposing (ItemLightList)
 import Api.Model.ItemProposals exposing (ItemProposals)
 import Api.Model.ItemSearch exposing (ItemSearch)
@@ -1503,8 +1504,20 @@ deleteAllItems flags ids receive =
 --- Item
 
 
-itemPreviewURL : String -> String
-itemPreviewURL itemId =
+itemPreviewURL : ItemLight -> String
+itemPreviewURL item =
+    let
+        makeUrl a =
+            "/api/v1/sec/attachment/" ++ a.id ++ "/preview?withFallback=true"
+    in
+    List.sortBy .position item.attachments
+        |> List.head
+        |> Maybe.map makeUrl
+        |> Maybe.withDefault (itemBasePreviewURL item.id)
+
+
+itemBasePreviewURL : String -> String
+itemBasePreviewURL itemId =
     "/api/v1/sec/item/" ++ itemId ++ "/preview?withFallback=true"
 
 
