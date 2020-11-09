@@ -255,6 +255,21 @@ object RAttachment {
     }
   }
 
+  def findAllWithoutPageCount(chunkSize: Int): Stream[ConnectionIO, RAttachment] = {
+    val aId    = Columns.id.prefix("a")
+    val mId    = RAttachmentMeta.Columns.id.prefix("m")
+    val mPages = RAttachmentMeta.Columns.pages.prefix("m")
+
+    val cols = all.map(_.prefix("a"))
+    val join = table ++ fr"a LEFT OUTER JOIN" ++
+      RAttachmentMeta.table ++ fr"m ON" ++ aId.is(mId)
+    val cond = mPages.isNull
+
+    selectSimple(cols, join, cond)
+      .query[RAttachment]
+      .streamWithChunkSize(chunkSize)
+  }
+
   def findWithoutPreview(
       coll: Option[Ident],
       chunkSize: Int

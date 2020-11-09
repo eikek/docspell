@@ -15,6 +15,7 @@ import docspell.common.syntax.all._
 import docspell.ftsclient.FtsResult
 import docspell.restapi.model._
 import docspell.restserver.conv.Conversions._
+import docspell.store.queries.QItem
 import docspell.store.records._
 import docspell.store.{AddResult, UpdateResult}
 
@@ -22,7 +23,6 @@ import bitpeace.FileMeta
 import org.http4s.headers.`Content-Type`
 import org.http4s.multipart.Multipart
 import org.log4s.Logger
-import docspell.store.queries.QItem
 
 trait Conversions {
 
