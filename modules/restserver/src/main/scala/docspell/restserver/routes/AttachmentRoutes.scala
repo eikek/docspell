@@ -1,6 +1,5 @@
 package docspell.restserver.routes
 
-import cats.data.NonEmptyList
 import cats.effect._
 import cats.implicits._
 
@@ -8,42 +7,36 @@ import docspell.backend.BackendApp
 import docspell.backend.auth.AuthToken
 import docspell.backend.ops._
 import docspell.common.Ident
+import docspell.common.MakePreviewArgs
 import docspell.restapi.model._
 import docspell.restserver.conv.Conversions
+import docspell.restserver.http4s.BinaryUtil
+import docspell.restserver.http4s.{QueryParam => QP}
 import docspell.restserver.webapp.Webjars
 
-import bitpeace.FileMeta
 import org.http4s._
 import org.http4s.circe.CirceEntityDecoder._
 import org.http4s.circe.CirceEntityEncoder._
 import org.http4s.dsl.Http4sDsl
-import org.http4s.headers.ETag.EntityTag
 import org.http4s.headers._
 
 object AttachmentRoutes {
 
-  def apply[F[_]: Effect](backend: BackendApp[F], user: AuthToken): HttpRoutes[F] = {
+  def apply[F[_]: Effect: ContextShift](
+      blocker: Blocker,
+      backend: BackendApp[F],
+      user: AuthToken
+  ): HttpRoutes[F] = {
     val dsl = new Http4sDsl[F] {}
     import dsl._
 
-    def withResponseHeaders(
-        resp: F[Response[F]]
-    )(data: OItemSearch.BinaryData[F]): F[Response[F]] = {
-      val mt             = MediaType.unsafeParse(data.meta.mimetype.asString)
-      val ctype          = `Content-Type`(mt)
-      val cntLen: Header = `Content-Length`.unsafeFromLong(data.meta.length)
-      val eTag: Header   = ETag(data.meta.checksum)
-      val disp: Header =
-        `Content-Disposition`("inline", Map("filename" -> data.name.getOrElse("")))
-
-      resp.map(r =>
-        if (r.status == NotModified) r.withHeaders(ctype, eTag, disp)
-        else r.withHeaders(ctype, cntLen, eTag, disp)
-      )
-    }
+    def withResponseHeaders(resp: F[Response[F]])(
+        data: OItemSearch.BinaryData[F]
+    ): F[Response[F]] =
+      BinaryUtil.withResponseHeaders[F](dsl, resp)(data)
 
     def makeByteResp(data: OItemSearch.BinaryData[F]): F[Response[F]] =
-      withResponseHeaders(Ok(data.data.take(data.meta.length)))(data)
+      BinaryUtil.makeByteResp(dsl)(data)
 
     HttpRoutes.of {
       case HEAD -> Root / Ident(id) =>
@@ -59,7 +52,7 @@ object AttachmentRoutes {
         for {
           fileData <- backend.itemSearch.findAttachment(id, user.account.collective)
           inm     = req.headers.get(`If-None-Match`).flatMap(_.tags)
-          matches = matchETag(fileData.map(_.meta), inm)
+          matches = BinaryUtil.matchETag(fileData.map(_.meta), inm)
           resp <-
             fileData
               .map { data =>
@@ -82,7 +75,7 @@ object AttachmentRoutes {
         for {
           fileData <- backend.itemSearch.findAttachmentSource(id, user.account.collective)
           inm     = req.headers.get(`If-None-Match`).flatMap(_.tags)
-          matches = matchETag(fileData.map(_.meta), inm)
+          matches = BinaryUtil.matchETag(fileData.map(_.meta), inm)
           resp <-
             fileData
               .map { data =>
@@ -107,7 +100,7 @@ object AttachmentRoutes {
           fileData <-
             backend.itemSearch.findAttachmentArchive(id, user.account.collective)
           inm     = req.headers.get(`If-None-Match`).flatMap(_.tags)
-          matches = matchETag(fileData.map(_.meta), inm)
+          matches = BinaryUtil.matchETag(fileData.map(_.meta), inm)
           resp <-
             fileData
               .map { data =>
@@ -115,6 +108,49 @@ object AttachmentRoutes {
                 else makeByteResp(data)
               }
               .getOrElse(NotFound(BasicResult(false, "Not found")))
+        } yield resp
+
+      case req @ GET -> Root / Ident(id) / "preview" :? QP.WithFallback(flag) =>
+        def notFound =
+          NotFound(BasicResult(false, "Not found"))
+        for {
+          fileData <-
+            backend.itemSearch.findAttachmentPreview(id, user.account.collective)
+          inm      = req.headers.get(`If-None-Match`).flatMap(_.tags)
+          matches  = BinaryUtil.matchETag(fileData.map(_.meta), inm)
+          fallback = flag.getOrElse(false)
+          resp <-
+            fileData
+              .map { data =>
+                if (matches) withResponseHeaders(NotModified())(data)
+                else makeByteResp(data)
+              }
+              .getOrElse(
+                if (fallback) BinaryUtil.noPreview(blocker, req.some).getOrElseF(notFound)
+                else notFound
+              )
+        } yield resp
+
+      case HEAD -> Root / Ident(id) / "preview" =>
+        for {
+          fileData <-
+            backend.itemSearch.findAttachmentPreview(id, user.account.collective)
+          resp <-
+            fileData
+              .map(data => withResponseHeaders(Ok())(data))
+              .getOrElse(NotFound(BasicResult(false, "Not found")))
+        } yield resp
+
+      case POST -> Root / Ident(id) / "preview" =>
+        for {
+          res <- backend.item.generatePreview(
+            MakePreviewArgs.replace(id),
+            user.account,
+            true
+          )
+          resp <- Ok(
+            Conversions.basicResult(res, "Generating preview image task submitted.")
+          )
         } yield resp
 
       case GET -> Root / Ident(id) / "view" =>
@@ -148,16 +184,4 @@ object AttachmentRoutes {
         } yield resp
     }
   }
-
-  private def matchETag[F[_]](
-      fileData: Option[FileMeta],
-      noneMatch: Option[NonEmptyList[EntityTag]]
-  ): Boolean =
-    (fileData, noneMatch) match {
-      case (Some(meta), Some(nm)) =>
-        meta.checksum == nm.head.tag
-      case _ =>
-        false
-    }
-
 }

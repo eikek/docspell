@@ -1,5 +1,6 @@
 module Comp.ItemDetail.View exposing (view)
 
+import Api
 import Api.Model.Attachment exposing (Attachment)
 import Comp.AttachmentMeta
 import Comp.DatePicker
@@ -320,7 +321,7 @@ renderAttachmentView : UiSettings -> Model -> Int -> Attachment -> Html Msg
 renderAttachmentView settings model pos attach =
     let
         fileUrl =
-            "/api/v1/sec/attachment/" ++ attach.id
+            Api.fileURL attach.id
 
         attachName =
             Maybe.withDefault "No name" attach.name

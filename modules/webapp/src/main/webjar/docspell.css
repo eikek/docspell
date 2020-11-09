@@ -93,6 +93,11 @@
     padding: 0.8em;
 }
 
+.default-layout img.preview-image {
+    margin-left: auto;
+    margin-right: auto;
+}
+
 .default-layout .menu .item.active a.right-tab-icon-link {
     position: relative;
     right: -8px;

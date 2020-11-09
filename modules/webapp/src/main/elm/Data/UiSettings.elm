@@ -2,6 +2,7 @@ module Data.UiSettings exposing
     ( Pos(..)
     , StoredUiSettings
     , UiSettings
+    , cardPreviewSize
     , catColor
     , catColorString
     , defaults
@@ -17,9 +18,12 @@ module Data.UiSettings exposing
     )
 
 import Api.Model.Tag exposing (Tag)
+import Data.BasicSize exposing (BasicSize)
 import Data.Color exposing (Color)
 import Data.Fields exposing (Field)
 import Dict exposing (Dict)
+import Html exposing (Attribute)
+import Html.Attributes as HA
 
 
 {-| Settings for the web ui. All fields should be optional, since it
@@ -43,6 +47,7 @@ type alias StoredUiSettings =
     , itemDetailShortcuts : Bool
     , searchMenuVisible : Bool
     , editMenuVisible : Bool
+    , cardPreviewSize : Maybe String
     }
 
 
@@ -66,6 +71,7 @@ type alias UiSettings =
     , itemDetailShortcuts : Bool
     , searchMenuVisible : Bool
     , editMenuVisible : Bool
+    , cardPreviewSize : BasicSize
     }
 
 
@@ -111,6 +117,7 @@ defaults =
     , itemDetailShortcuts = False
     , searchMenuVisible = False
     , editMenuVisible = False
+    , cardPreviewSize = Data.BasicSize.Medium
     }
 
 
@@ -146,6 +153,10 @@ merge given fallback =
     , itemDetailShortcuts = given.itemDetailShortcuts
     , searchMenuVisible = given.searchMenuVisible
     , editMenuVisible = given.editMenuVisible
+    , cardPreviewSize =
+        given.cardPreviewSize
+            |> Maybe.andThen Data.BasicSize.fromString
+            |> Maybe.withDefault fallback.cardPreviewSize
     }
 
 
@@ -172,6 +183,10 @@ toStoredUiSettings settings =
     , itemDetailShortcuts = settings.itemDetailShortcuts
     , searchMenuVisible = settings.searchMenuVisible
     , editMenuVisible = settings.editMenuVisible
+    , cardPreviewSize =
+        settings.cardPreviewSize
+            |> Data.BasicSize.asString
+            |> Just
     }
 
 
@@ -207,6 +222,19 @@ fieldVisible settings field =
 fieldHidden : UiSettings -> Field -> Bool
 fieldHidden settings field =
     fieldVisible settings field |> not
+
+
+cardPreviewSize : UiSettings -> Attribute msg
+cardPreviewSize settings =
+    case settings.cardPreviewSize of
+        Data.BasicSize.Small ->
+            HA.style "max-width" "80px"
+
+        Data.BasicSize.Medium ->
+            HA.style "max-width" "160px"
+
+        Data.BasicSize.Large ->
+            HA.style "max-width" "none"
 
 
 

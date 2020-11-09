@@ -23,6 +23,7 @@ object ConversionTest extends SimpleTestSuite with FileChecks {
 
   val convertConfig = ConvertConfig(
     8192,
+    "converted",
     3000 * 3000,
     MarkdownConfig("body { padding: 2em 5em; }"),
     WkHtmlPdfConfig(

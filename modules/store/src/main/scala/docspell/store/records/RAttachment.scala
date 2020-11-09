@@ -224,11 +224,68 @@ object RAttachment {
     for {
       n0 <- RAttachmentMeta.delete(attachId)
       n1 <- RAttachmentSource.delete(attachId)
-      n2 <- deleteFrom(table, id.is(attachId)).update.run
-    } yield n0 + n1 + n2
+      n2 <- RAttachmentPreview.delete(attachId)
+      n3 <- deleteFrom(table, id.is(attachId)).update.run
+    } yield n0 + n1 + n2 + n3
 
   def findItemId(attachId: Ident): ConnectionIO[Option[Ident]] =
     selectSimple(Seq(itemId), table, id.is(attachId)).query[Ident].option
+
+  def findAll(
+      coll: Option[Ident],
+      chunkSize: Int
+  ): Stream[ConnectionIO, RAttachment] = {
+    val aItem = Columns.itemId.prefix("a")
+    val iId   = RItem.Columns.id.prefix("i")
+    val iColl = RItem.Columns.cid.prefix("i")
+
+    val cols = all.map(_.prefix("a"))
+
+    coll match {
+      case Some(cid) =>
+        val join = table ++ fr"a INNER JOIN" ++ RItem.table ++ fr"i ON" ++ iId.is(aItem)
+        val cond = iColl.is(cid)
+        selectSimple(cols, join, cond)
+          .query[RAttachment]
+          .streamWithChunkSize(chunkSize)
+      case None =>
+        selectSimple(cols, table, Fragment.empty)
+          .query[RAttachment]
+          .streamWithChunkSize(chunkSize)
+    }
+  }
+
+  def findWithoutPreview(
+      coll: Option[Ident],
+      chunkSize: Int
+  ): Stream[ConnectionIO, RAttachment] = {
+    val aId   = Columns.id.prefix("a")
+    val aItem = Columns.itemId.prefix("a")
+    val pId   = RAttachmentPreview.Columns.id.prefix("p")
+    val iId   = RItem.Columns.id.prefix("i")
+    val iColl = RItem.Columns.cid.prefix("i")
+
+    val cols = all.map(_.prefix("a"))
+    val baseJoin =
+      table ++ fr"a LEFT OUTER JOIN" ++
+        RAttachmentPreview.table ++ fr"p ON" ++ pId.is(aId)
+
+    val baseCond =
+      Seq(pId.isNull)
+
+    coll match {
+      case Some(cid) =>
+        val join = baseJoin ++ fr"INNER JOIN" ++ RItem.table ++ fr"i ON" ++ iId.is(aItem)
+        val cond = and(baseCond ++ Seq(iColl.is(cid)))
+        selectSimple(cols, join, cond)
+          .query[RAttachment]
+          .streamWithChunkSize(chunkSize)
+      case None =>
+        selectSimple(cols, baseJoin, and(baseCond))
+          .query[RAttachment]
+          .streamWithChunkSize(chunkSize)
+    }
+  }
 
   def findNonConvertedPdf(
       coll: Option[Ident],

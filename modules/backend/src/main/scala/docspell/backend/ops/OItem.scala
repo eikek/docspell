@@ -175,6 +175,15 @@ trait OItem[F[_]] {
       account: AccountId,
       notifyJoex: Boolean
   ): F[UpdateResult]
+
+  /** Submits a task that (re)generates the preview image for an
+    * attachment.
+    */
+  def generatePreview(
+      args: MakePreviewArgs,
+      account: AccountId,
+      notifyJoex: Boolean
+  ): F[UpdateResult]
 }
 
 object OItem {
@@ -652,6 +661,17 @@ object OItem {
         ): F[UpdateResult] =
           for {
             job <- JobFactory.convertAllPdfs[F](collective, account, Priority.Low)
+            _   <- queue.insertIfNew(job)
+            _   <- if (notifyJoex) joex.notifyAllNodes else ().pure[F]
+          } yield UpdateResult.success
+
+        def generatePreview(
+            args: MakePreviewArgs,
+            account: AccountId,
+            notifyJoex: Boolean
+        ): F[UpdateResult] =
+          for {
+            job <- JobFactory.makePreview[F](args, account.some)
             _   <- queue.insertIfNew(job)
             _   <- if (notifyJoex) joex.notifyAllNodes else ().pure[F]
           } yield UpdateResult.success

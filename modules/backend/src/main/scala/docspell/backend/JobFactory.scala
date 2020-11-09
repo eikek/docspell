@@ -8,6 +8,45 @@ import docspell.store.records.RJob
 
 object JobFactory {
 
+  def makePreview[F[_]: Sync](
+      args: MakePreviewArgs,
+      account: Option[AccountId]
+  ): F[RJob] =
+    for {
+      id  <- Ident.randomId[F]
+      now <- Timestamp.current[F]
+      job = RJob.newJob(
+        id,
+        MakePreviewArgs.taskName,
+        account.map(_.collective).getOrElse(DocspellSystem.taskGroup),
+        args,
+        s"Generate preview image",
+        now,
+        account.map(_.user).getOrElse(DocspellSystem.user),
+        Priority.Low,
+        Some(MakePreviewArgs.taskName / args.attachment)
+      )
+    } yield job
+
+  def allPreviews[F[_]: Sync](
+      args: AllPreviewsArgs,
+      submitter: Option[Ident]
+  ): F[RJob] =
+    for {
+      id  <- Ident.randomId[F]
+      now <- Timestamp.current[F]
+    } yield RJob.newJob(
+      id,
+      AllPreviewsArgs.taskName,
+      args.collective.getOrElse(DocspellSystem.taskGroup),
+      args,
+      "Create preview images",
+      now,
+      submitter.getOrElse(DocspellSystem.taskGroup),
+      Priority.Low,
+      Some(DocspellSystem.allPreviewTaskTracker)
+    )
+
   def convertAllPdfs[F[_]: Sync](
       collective: Option[Ident],
       account: AccountId,

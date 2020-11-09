@@ -29,4 +29,6 @@ object QueryParam {
   object ContactKindOpt extends OptionalQueryParamDecoderMatcher[ContactKind]("kind")
 
   object QueryOpt extends OptionalQueryParamDecoderMatcher[QueryString]("q")
+
+  object WithFallback extends OptionalQueryParamDecoderMatcher[Boolean]("withFallback")
 }

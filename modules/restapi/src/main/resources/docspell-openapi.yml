@@ -1069,6 +1069,29 @@ paths:
               schema:
                 $ref: "#/components/schemas/BasicResult"
 
+  /sec/collective/previews:
+    post:
+      tags: [ Collective ]
+      summary: Starts the generate previews task
+      description: |
+        Submits a task that re-generates preview images of all
+        attachments of the current collective. Each existing preview
+        image will be replaced.
+
+        This can be used after changing the `preview` settings.
+
+        If only preview images of selected attachments should be
+        regenerated, see the `/sec/attachment/{id}/preview` endpoint.
+      security:
+        - authTokenHeader: []
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
   /sec/user:
     get:
       tags: [ Collective ]
@@ -1847,6 +1870,47 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ItemProposals"
+  /sec/item/{id}/preview:
+    head:
+      tags: [ Attachment ]
+      summary: Get a preview image of an attachment file.
+      description: |
+        Checks if an image file showing a preview of the item is
+        available. If not available, a 404 is returned. The preview is
+        currently the an image of the first page of the first
+        attachment.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        200:
+          description: Ok
+        404:
+          description: NotFound
+    get:
+      tags: [ Attachment ]
+      summary: Get a preview image of an attachment file.
+      description: |
+        Gets a image file showing a preview of the item. Usually it is
+        a small image of the first page of the first attachment. If
+        not available, a 404 is returned. However, if the query
+        parameter `withFallback` is `true`, a fallback preview image
+        is returned. You can also use the `HEAD` method to check for
+        existence.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+        - $ref: "#/components/parameters/withFallback"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
 
   /sec/item/{itemId}/reprocess:
     post:
@@ -2446,6 +2510,63 @@ paths:
               schema:
                 type: string
                 format: binary
+  /sec/attachment/{id}/preview:
+    head:
+      tags: [ Attachment ]
+      summary: Get a preview image of an attachment file.
+      description: |
+        Checks if an image file showing a preview of the attachment is
+        available. If not available, a 404 is returned.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        200:
+          description: Ok
+        404:
+          description: NotFound
+    get:
+      tags: [ Attachment ]
+      summary: Get a preview image of an attachment file.
+      description: |
+        Gets a image file showing a preview of the attachment. Usually
+        it is a small image of the first page of the document.If not
+        available, a 404 is returned. However, if the query parameter
+        `withFallback` is `true`, a fallback preview image is
+        returned. You can also use the `HEAD` method to check for
+        existence.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+        - $ref: "#/components/parameters/withFallback"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+    post:
+      tags: [ Attachment ]
+      summary: (Re)generate a preview image.
+      description: |
+        Submits a task that generates a preview image for this
+        attachment. The existing preview will be replaced.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
   /sec/attachment/{id}/meta:
     get:
       tags: [ Attachment ]
@@ -4822,3 +4943,10 @@ components:
         One of the available contact kinds.
       schema:
         type: string
+    withFallback:
+      name: withFallback
+      in: query
+      description: Whether to provide a fallback or not.
+      required: false
+      schema:
+        type: boolean
