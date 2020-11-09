@@ -180,7 +180,7 @@ view cfg settings model item =
             div
                 [ classList
                     [ ( "card-attachment-nav", True )
-                    , ( "invisible", pageCount == 0 )
+                    , ( "invisible", pageCount == 0 || (item.fileCount == 1 && pageCount == 1) )
                     ]
                 ]
                 [ if item.fileCount == 1 then
