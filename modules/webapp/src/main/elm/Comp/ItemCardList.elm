@@ -219,15 +219,13 @@ viewItem cfg settings item =
                 Data.ItemSelection.Active ids ->
                     onClick (ToggleSelectItem ids item.id)
     in
-    a
+    div
         ([ classList
             [ ( "ui fluid card", True )
             , ( cardColor, True )
             , ( "current", cfg.current == Just item.id )
             ]
          , id item.id
-         , href "#"
-         , cardAction
          ]
             ++ DD.draggable ItemDDMsg item.id
         )
@@ -243,7 +241,11 @@ viewItem cfg settings item =
                     ]
                     []
                 ]
-        , div [ class "content" ]
+        , a
+            [ class "content"
+            , href "#"
+            , cardAction
+            ]
             [ case cfg.selection of
                 Data.ItemSelection.Active ids ->
                     div [ class "header" ]
