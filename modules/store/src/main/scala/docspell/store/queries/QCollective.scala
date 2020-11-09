@@ -61,6 +61,9 @@ object QCollective {
          select a.file_id,m.length from attachment_source a
          inner join filemeta m on m.id = a.file_id where a.id in (select aid from attachs)
          union distinct
+         select p.file_id,m.length from attachment_preview p
+         inner join filemeta m on m.id = p.file_id where p.id in (select aid from attachs)
+         union distinct
          select a.file_id,m.length from attachment_archive a
          inner join filemeta m on m.id = a.file_id where a.id in (select aid from attachs)
       ) as t""".query[Option[Long]].unique
