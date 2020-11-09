@@ -6,6 +6,7 @@ module Api exposing
     , addMember
     , addTag
     , addTagsMultiple
+    , attachmentPreviewURL
     , cancelJob
     , changeFolderName
     , changePassword
@@ -58,9 +59,9 @@ module Api exposing
     , getTagCloud
     , getTags
     , getUsers
+    , itemBasePreviewURL
     , itemDetail
     , itemIndexSearch
-    , itemPreviewURL
     , itemSearch
     , login
     , loginSession
@@ -144,6 +145,7 @@ import Api.Model.InviteResult exposing (InviteResult)
 import Api.Model.ItemDetail exposing (ItemDetail)
 import Api.Model.ItemFtsSearch exposing (ItemFtsSearch)
 import Api.Model.ItemInsights exposing (ItemInsights)
+import Api.Model.ItemLight exposing (ItemLight)
 import Api.Model.ItemLightList exposing (ItemLightList)
 import Api.Model.ItemProposals exposing (ItemProposals)
 import Api.Model.ItemSearch exposing (ItemSearch)
@@ -1503,8 +1505,13 @@ deleteAllItems flags ids receive =
 --- Item
 
 
-itemPreviewURL : String -> String
-itemPreviewURL itemId =
+attachmentPreviewURL : String -> String
+attachmentPreviewURL id =
+    "/api/v1/sec/attachment/" ++ id ++ "/preview?withFallback=true"
+
+
+itemBasePreviewURL : String -> String
+itemBasePreviewURL itemId =
     "/api/v1/sec/item/" ++ itemId ++ "/preview?withFallback=true"
 
 

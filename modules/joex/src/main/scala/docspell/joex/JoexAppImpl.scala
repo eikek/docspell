@@ -16,6 +16,7 @@ import docspell.joex.fts.{MigrationTask, ReIndexTask}
 import docspell.joex.hk._
 import docspell.joex.learn.LearnClassifierTask
 import docspell.joex.notify._
+import docspell.joex.pagecount._
 import docspell.joex.pdfconv.ConvertAllPdfTask
 import docspell.joex.pdfconv.PdfConvTask
 import docspell.joex.preview._
@@ -72,7 +73,8 @@ final class JoexAppImpl[F[_]: ConcurrentEffect: ContextShift: Timer](
       MigrationTask.job.flatMap(queue.insertIfNew) *>
       AllPreviewsTask
         .job(MakePreviewArgs.StoreMode.WhenMissing, None)
-        .flatMap(queue.insertIfNew)
+        .flatMap(queue.insertIfNew) *>
+      AllPageCountTask.job.flatMap(queue.insertIfNew)
 }
 
 object JoexAppImpl {
@@ -183,6 +185,20 @@ object JoexAppImpl {
             AllPreviewsArgs.taskName,
             AllPreviewsTask[F](queue, joex),
             AllPreviewsTask.onCancel[F]
+          )
+        )
+        .withTask(
+          JobTask.json(
+            MakePageCountArgs.taskName,
+            MakePageCountTask[F](),
+            MakePageCountTask.onCancel[F]
+          )
+        )
+        .withTask(
+          JobTask.json(
+            AllPageCountTask.taskName,
+            AllPageCountTask[F](queue, joex),
+            AllPageCountTask.onCancel[F]
           )
         )
         .resource

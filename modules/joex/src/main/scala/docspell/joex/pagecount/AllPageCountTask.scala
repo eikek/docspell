@@ -1,4 +1,4 @@
-package docspell.joex.preview
+package docspell.joex.pagecount
 
 import cats.effect._
 import cats.implicits._
@@ -6,7 +6,6 @@ import fs2.{Chunk, Stream}
 
 import docspell.backend.JobFactory
 import docspell.backend.ops.OJoex
-import docspell.common.MakePreviewArgs.StoreMode
 import docspell.common._
 import docspell.joex.scheduler.Context
 import docspell.joex.scheduler.Task
@@ -14,9 +13,10 @@ import docspell.store.queue.JobQueue
 import docspell.store.records.RAttachment
 import docspell.store.records.RJob
 
-object AllPreviewsTask {
+object AllPageCountTask {
 
-  type Args = AllPreviewsArgs
+  val taskName = Ident.unsafe("all-page-count")
+  type Args = Unit
 
   def apply[F[_]: Sync](queue: JobQueue[F], joex: OJoex[F]): Task[F, Args, Unit] =
     Task { ctx =>
@@ -36,42 +36,40 @@ object AllPreviewsTask {
       queue: JobQueue[F]
   ): F[Int] =
     ctx.store
-      .transact(findAttachments(ctx))
+      .transact(findAttachments)
       .chunks
-      .flatMap(createJobs[F](ctx))
+      .flatMap(createJobs[F])
       .chunks
       .evalMap(jobs => queue.insertAllIfNew(jobs.toVector).map(_ => jobs.size))
       .evalTap(n => ctx.logger.debug(s"Submitted $n jobs …"))
       .compile
       .foldMonoid
 
-  private def findAttachments[F[_]](ctx: Context[F, Args]) =
-    ctx.args.storeMode match {
-      case StoreMode.Replace =>
-        RAttachment.findAll(ctx.args.collective, 50)
-      case StoreMode.WhenMissing =>
-        RAttachment.findWithoutPreview(ctx.args.collective, 50)
-    }
+  private def findAttachments[F[_]] =
+    RAttachment.findAllWithoutPageCount(50)
 
-  private def createJobs[F[_]: Sync](
-      ctx: Context[F, Args]
-  )(ras: Chunk[RAttachment]): Stream[F, RJob] = {
-    val collectiveOrSystem = {
-      val cid = ctx.args.collective.getOrElse(DocspellSystem.taskGroup)
-      AccountId(cid, DocspellSystem.user)
-    }
-
+  private def createJobs[F[_]: Sync](ras: Chunk[RAttachment]): Stream[F, RJob] = {
     def mkJob(ra: RAttachment): F[RJob] =
-      JobFactory.makePreview(
-        MakePreviewArgs(ra.id, ctx.args.storeMode),
-        collectiveOrSystem.some
-      )
+      JobFactory.makePageCount(MakePageCountArgs(ra.id), None)
 
     val jobs = ras.traverse(mkJob)
     Stream.evalUnChunk(jobs)
   }
 
-  def job[F[_]: Sync](storeMode: MakePreviewArgs.StoreMode, cid: Option[Ident]): F[RJob] =
-    JobFactory.allPreviews(AllPreviewsArgs(cid, storeMode), None)
+  def job[F[_]: Sync]: F[RJob] =
+    for {
+      id  <- Ident.randomId[F]
+      now <- Timestamp.current[F]
+    } yield RJob.newJob(
+      id,
+      AllPageCountTask.taskName,
+      DocspellSystem.taskGroup,
+      (),
+      "Create all page-counts",
+      now,
+      DocspellSystem.taskGroup,
+      Priority.Low,
+      Some(DocspellSystem.allPageCountTaskTracker)
+    )
 
 }

@@ -307,7 +307,7 @@ viewSearchBar flags model =
             ]
             [ i [ class "filter icon" ] []
             ]
-        , div [ class "item" ]
+        , div [ class "right fitted item" ]
             [ div [ class "ui left icon right action input" ]
                 [ i
                     [ classList

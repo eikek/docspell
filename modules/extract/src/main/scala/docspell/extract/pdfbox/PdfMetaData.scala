@@ -8,7 +8,8 @@ final case class PdfMetaData(
     subject: Option[String],
     keywords: Option[String],
     creator: Option[String],
-    creationDate: Option[Timestamp]
+    creationDate: Option[Timestamp],
+    pageCount: Int
 ) {
 
   def isEmpty: Boolean =
@@ -17,7 +18,8 @@ final case class PdfMetaData(
       subject.isEmpty &&
       keywords.isEmpty &&
       creator.isEmpty &&
-      creationDate.isEmpty
+      creationDate.isEmpty &&
+      pageCount <= 0
 
   def nonEmpty: Boolean =
     !isEmpty
@@ -36,5 +38,5 @@ final case class PdfMetaData(
 }
 
 object PdfMetaData {
-  val empty = PdfMetaData(None, None, None, None, None, None)
+  val empty = PdfMetaData(None, None, None, None, None, None, 0)
 }

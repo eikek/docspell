@@ -10,46 +10,38 @@ module Comp.ItemCardList exposing
     , view
     )
 
-import Api
-import Api.Model.HighlightEntry exposing (HighlightEntry)
 import Api.Model.ItemLight exposing (ItemLight)
 import Api.Model.ItemLightGroup exposing (ItemLightGroup)
 import Api.Model.ItemLightList exposing (ItemLightList)
-import Data.Direction
-import Data.Fields
+import Comp.ItemCard
 import Data.Flags exposing (Flags)
-import Data.Icons as Icons
 import Data.ItemSelection exposing (ItemSelection)
 import Data.Items
 import Data.UiSettings exposing (UiSettings)
+import Dict exposing (Dict)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick)
-import Markdown
 import Page exposing (Page(..))
-import Set exposing (Set)
-import Util.Html
 import Util.ItemDragDrop as DD
 import Util.List
-import Util.String
-import Util.Time
 
 
 type alias Model =
     { results : ItemLightList
+    , itemCards : Dict String Comp.ItemCard.Model
     }
 
 
 type Msg
     = SetResults ItemLightList
     | AddResults ItemLightList
-    | ItemDDMsg DD.Msg
-    | ToggleSelectItem (Set String) String
+    | ItemCardMsg ItemLight Comp.ItemCard.Msg
 
 
 init : Model
 init =
     { results = Api.Model.ItemLightList.empty
+    , itemCards = Dict.empty
     }
 
 
@@ -112,23 +104,22 @@ updateDrag dm _ msg model =
                 in
                 UpdateResult newModel Cmd.none dm Data.ItemSelection.Inactive
 
-        ItemDDMsg lm ->
+        ItemCardMsg item lm ->
             let
-                ddd =
-                    DD.update lm dm
-            in
-            UpdateResult model Cmd.none ddd.model Data.ItemSelection.Inactive
+                cardModel =
+                    Dict.get item.id model.itemCards
+                        |> Maybe.withDefault Comp.ItemCard.init
 
-        ToggleSelectItem ids id ->
-            let
-                newSet =
-                    if Set.member id ids then
-                        Set.remove id ids
+                result =
+                    Comp.ItemCard.update dm lm cardModel
 
-                    else
-                        Set.insert id ids
+                cards =
+                    Dict.insert item.id result.model model.itemCards
             in
-            UpdateResult model Cmd.none dm (Data.ItemSelection.Active newSet)
+            UpdateResult { model | itemCards = cards }
+                Cmd.none
+                result.dragModel
+                result.selection
 
 
 
@@ -141,295 +132,42 @@ type alias ViewConfig =
     }
 
 
-isSelected : ViewConfig -> String -> Bool
-isSelected cfg id =
-    case cfg.selection of
-        Data.ItemSelection.Active ids ->
-            Set.member id ids
-
-        Data.ItemSelection.Inactive ->
-            False
-
-
 view : ViewConfig -> UiSettings -> Model -> Html Msg
 view cfg settings model =
     div [ class "ui container" ]
-        (List.map (viewGroup cfg settings) model.results.groups)
+        (List.map (viewGroup model cfg settings) model.results.groups)
 
 
-viewGroup : ViewConfig -> UiSettings -> ItemLightGroup -> Html Msg
-viewGroup cfg settings group =
+viewGroup : Model -> ViewConfig -> UiSettings -> ItemLightGroup -> Html Msg
+viewGroup model cfg settings group =
     div [ class "item-group" ]
         [ div [ class "ui horizontal divider header item-list" ]
             [ i [ class "calendar alternate outline icon" ] []
             , text group.name
             ]
         , div [ class "ui stackable three cards" ]
-            (List.map (viewItem cfg settings) group.items)
+            (List.map (viewItem model cfg settings) group.items)
         ]
 
 
-viewItem : ViewConfig -> UiSettings -> ItemLight -> Html Msg
-viewItem cfg settings item =
+viewItem : Model -> ViewConfig -> UiSettings -> ItemLight -> Html Msg
+viewItem model cfg settings item =
     let
-        dirIcon =
-            i [ class (Data.Direction.iconFromMaybe item.direction) ] []
-
-        corr =
-            List.filterMap identity [ item.corrOrg, item.corrPerson ]
-                |> List.map .name
-                |> List.intersperse ", "
-                |> String.concat
-
-        conc =
-            List.filterMap identity [ item.concPerson, item.concEquip ]
-                |> List.map .name
-                |> List.intersperse ", "
-                |> String.concat
-
-        folder =
-            Maybe.map .name item.folder
-                |> Maybe.withDefault ""
-
-        dueDate =
-            Maybe.map Util.Time.formatDateShort item.dueDate
-                |> Maybe.withDefault ""
-
-        isConfirmed =
-            item.state /= "created"
-
-        cardColor =
-            if isSelected cfg item.id then
-                "purple"
-
-            else if not isConfirmed then
-                "blue"
+        currentClass =
+            if cfg.current == Just item.id then
+                "current"
 
             else
                 ""
 
-        fieldHidden f =
-            Data.UiSettings.fieldHidden settings f
+        vvcfg =
+            Comp.ItemCard.ViewConfig cfg.selection currentClass
 
-        cardAction =
-            case cfg.selection of
-                Data.ItemSelection.Inactive ->
-                    Page.href (ItemDetailPage item.id)
+        cardModel =
+            Dict.get item.id model.itemCards
+                |> Maybe.withDefault Comp.ItemCard.init
 
-                Data.ItemSelection.Active ids ->
-                    onClick (ToggleSelectItem ids item.id)
+        cardHtml =
+            Comp.ItemCard.view vvcfg settings cardModel item
     in
-    a
-        ([ classList
-            [ ( "ui fluid card", True )
-            , ( cardColor, True )
-            , ( "current", cfg.current == Just item.id )
-            ]
-         , id item.id
-         , href "#"
-         , cardAction
-         ]
-            ++ DD.draggable ItemDDMsg item.id
-        )
-        [ if fieldHidden Data.Fields.PreviewImage then
-            span [ class "invisible" ] []
-
-          else
-            div [ class "image" ]
-                [ img
-                    [ class "preview-image"
-                    , src (Api.itemPreviewURL item.id)
-                    , Data.UiSettings.cardPreviewSize settings
-                    ]
-                    []
-                ]
-        , div [ class "content" ]
-            [ case cfg.selection of
-                Data.ItemSelection.Active ids ->
-                    div [ class "header" ]
-                        [ Util.Html.checkbox (Set.member item.id ids)
-                        , dirIcon
-                        , Util.String.underscoreToSpace item.name
-                            |> text
-                        ]
-
-                Data.ItemSelection.Inactive ->
-                    if fieldHidden Data.Fields.Direction then
-                        div [ class "header" ]
-                            [ Util.String.underscoreToSpace item.name |> text
-                            ]
-
-                    else
-                        div
-                            [ class "header"
-                            , Data.Direction.labelFromMaybe item.direction
-                                |> title
-                            ]
-                            [ dirIcon
-                            , Util.String.underscoreToSpace item.name
-                                |> text
-                            ]
-            , div
-                [ classList
-                    [ ( "ui right corner label", True )
-                    , ( cardColor, True )
-                    , ( "invisible", isConfirmed )
-                    ]
-                , title "New"
-                ]
-                [ i [ class "exclamation icon" ] []
-                ]
-            , div
-                [ classList
-                    [ ( "meta", True )
-                    , ( "invisible hidden", fieldHidden Data.Fields.Date )
-                    ]
-                ]
-                [ Util.Time.formatDate item.date |> text
-                ]
-            , div [ class "meta description" ]
-                [ div
-                    [ classList
-                        [ ( "ui right floated tiny labels", True )
-                        , ( "invisible hidden", item.tags == [] || fieldHidden Data.Fields.Tag )
-                        ]
-                    ]
-                    (List.map
-                        (\tag ->
-                            div
-                                [ classList
-                                    [ ( "ui basic label", True )
-                                    , ( Data.UiSettings.tagColorString tag settings, True )
-                                    ]
-                                ]
-                                [ text tag.name ]
-                        )
-                        item.tags
-                    )
-                ]
-            ]
-        , div
-            [ classList
-                [ ( "content", True )
-                , ( "invisible hidden"
-                  , settings.itemSearchNoteLength
-                        <= 0
-                        || Util.String.isNothingOrBlank item.notes
-                  )
-                ]
-            ]
-            [ span [ class "small-info" ]
-                [ Maybe.withDefault "" item.notes
-                    |> Util.String.ellipsis settings.itemSearchNoteLength
-                    |> text
-                ]
-            ]
-        , div [ class "content" ]
-            [ div [ class "ui horizontal list" ]
-                [ div
-                    [ classList
-                        [ ( "item", True )
-                        , ( "invisible hidden"
-                          , fieldHidden Data.Fields.CorrOrg
-                                && fieldHidden Data.Fields.CorrPerson
-                          )
-                        ]
-                    , title "Correspondent"
-                    ]
-                    [ Icons.correspondentIcon ""
-                    , text " "
-                    , Util.String.withDefault "-" corr |> text
-                    ]
-                , div
-                    [ classList
-                        [ ( "item", True )
-                        , ( "invisible hidden"
-                          , fieldHidden Data.Fields.ConcPerson
-                                && fieldHidden Data.Fields.ConcEquip
-                          )
-                        ]
-                    , title "Concerning"
-                    ]
-                    [ Icons.concernedIcon
-                    , text " "
-                    , Util.String.withDefault "-" conc |> text
-                    ]
-                , div
-                    [ classList
-                        [ ( "item", True )
-                        , ( "invisible hidden", fieldHidden Data.Fields.Folder )
-                        ]
-                    , title "Folder"
-                    ]
-                    [ Icons.folderIcon ""
-                    , text " "
-                    , Util.String.withDefault "-" folder |> text
-                    ]
-                ]
-            , div [ class "right floated meta" ]
-                [ div [ class "ui horizontal list" ]
-                    [ div
-                        [ class "item"
-                        , title "Source"
-                        ]
-                        [ text item.source
-                        ]
-                    , div
-                        [ classList
-                            [ ( "item", True )
-                            , ( "invisible hidden"
-                              , item.dueDate
-                                    == Nothing
-                                    || fieldHidden Data.Fields.DueDate
-                              )
-                            ]
-                        , title ("Due on " ++ dueDate)
-                        ]
-                        [ div
-                            [ class "ui basic grey label"
-                            ]
-                            [ Icons.dueDateIcon ""
-                            , text (" " ++ dueDate)
-                            ]
-                        ]
-                    ]
-                ]
-            ]
-        , div
-            [ classList
-                [ ( "content search-highlight", True )
-                , ( "invisible hidden", item.highlighting == [] )
-                ]
-            ]
-            [ div [ class "ui list" ]
-                (List.map renderHighlightEntry item.highlighting)
-            ]
-        ]
-
-
-renderHighlightEntry : HighlightEntry -> Html Msg
-renderHighlightEntry entry =
-    let
-        stripWhitespace str =
-            String.trim str
-                |> String.replace "```" ""
-                |> String.replace "\t" "  "
-                |> String.replace "\n\n" "\n"
-                |> String.lines
-                |> List.map String.trim
-                |> String.join "\n"
-    in
-    div [ class "item" ]
-        [ div [ class "content" ]
-            (div [ class "header" ]
-                [ i [ class "caret right icon" ] []
-                , text (entry.name ++ ":")
-                ]
-                :: List.map
-                    (\str ->
-                        Markdown.toHtml [ class "description" ] <|
-                            (stripWhitespace str ++ "…")
-                    )
-                    entry.lines
-            )
-        ]
+    Html.map (ItemCardMsg item) cardHtml

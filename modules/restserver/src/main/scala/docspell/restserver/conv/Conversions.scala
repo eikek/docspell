@@ -15,6 +15,7 @@ import docspell.common.syntax.all._
 import docspell.ftsclient.FtsResult
 import docspell.restapi.model._
 import docspell.restserver.conv.Conversions._
+import docspell.store.queries.QItem
 import docspell.store.records._
 import docspell.store.{AddResult, UpdateResult}
 
@@ -204,6 +205,7 @@ trait Conversions {
       i.folder.map(mkIdName),
       i.fileCount,
       Nil,
+      Nil,
       i.notes,
       Nil
     )
@@ -215,7 +217,11 @@ trait Conversions {
   }
 
   def mkItemLightWithTags(i: OItemSearch.ListItemWithTags): ItemLight =
-    mkItemLight(i.item).copy(tags = i.tags.map(mkTag))
+    mkItemLight(i.item)
+      .copy(tags = i.tags.map(mkTag), attachments = i.attachments.map(mkAttachmentLight))
+
+  private def mkAttachmentLight(qa: QItem.AttachmentLight): AttachmentLight =
+    AttachmentLight(qa.id, qa.position, qa.name, qa.pageCount)
 
   def mkItemLightWithTags(i: OFulltext.FtsItemWithTags): ItemLight = {
     val il        = mkItemLightWithTags(i.item)

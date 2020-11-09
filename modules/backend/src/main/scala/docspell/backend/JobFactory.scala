@@ -8,6 +8,26 @@ import docspell.store.records.RJob
 
 object JobFactory {
 
+  def makePageCount[F[_]: Sync](
+      args: MakePageCountArgs,
+      account: Option[AccountId]
+  ): F[RJob] =
+    for {
+      id  <- Ident.randomId[F]
+      now <- Timestamp.current[F]
+      job = RJob.newJob(
+        id,
+        MakePageCountArgs.taskName,
+        account.map(_.collective).getOrElse(DocspellSystem.taskGroup),
+        args,
+        s"Find page-count metadata for ${args.attachment.id}",
+        now,
+        account.map(_.user).getOrElse(DocspellSystem.user),
+        Priority.Low,
+        Some(MakePageCountArgs.taskName / args.attachment)
+      )
+    } yield job
+
   def makePreview[F[_]: Sync](
       args: MakePreviewArgs,
       account: Option[AccountId]

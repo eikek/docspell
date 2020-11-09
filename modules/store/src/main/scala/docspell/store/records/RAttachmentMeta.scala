@@ -13,17 +13,21 @@ case class RAttachmentMeta(
     id: Ident, //same as RAttachment.id
     content: Option[String],
     nerlabels: List[NerLabel],
-    proposals: MetaProposalList
+    proposals: MetaProposalList,
+    pages: Option[Int]
 ) {
 
   def setContentIfEmpty(txt: Option[String]): RAttachmentMeta =
     if (content.forall(_.trim.isEmpty)) copy(content = txt)
     else this
+
+  def withPageCount(count: Option[Int]): RAttachmentMeta =
+    copy(pages = count)
 }
 
 object RAttachmentMeta {
   def empty(attachId: Ident) =
-    RAttachmentMeta(attachId, None, Nil, MetaProposalList.empty)
+    RAttachmentMeta(attachId, None, Nil, MetaProposalList.empty, None)
 
   val table = fr"attachmentmeta"
 
@@ -32,7 +36,8 @@ object RAttachmentMeta {
     val content   = Column("content")
     val nerlabels = Column("nerlabels")
     val proposals = Column("itemproposals")
-    val all       = List(id, content, nerlabels, proposals)
+    val pages     = Column("page_count")
+    val all       = List(id, content, nerlabels, proposals, pages)
   }
   import Columns._
 
@@ -40,7 +45,7 @@ object RAttachmentMeta {
     insertRow(
       table,
       all,
-      fr"${v.id},${v.content},${v.nerlabels},${v.proposals}"
+      fr"${v.id},${v.content},${v.nerlabels},${v.proposals},${v.pages}"
     ).update.run
 
   def exists(attachId: Ident): ConnectionIO[Boolean] =
@@ -48,6 +53,12 @@ object RAttachmentMeta {
 
   def findById(attachId: Ident): ConnectionIO[Option[RAttachmentMeta]] =
     selectSimple(all, table, id.is(attachId)).query[RAttachmentMeta].option
+
+  def findPageCountById(attachId: Ident): ConnectionIO[Option[Int]] =
+    selectSimple(Seq(pages), table, id.is(attachId))
+      .query[Option[Int]]
+      .option
+      .map(_.flatten)
 
   def upsert(v: RAttachmentMeta): ConnectionIO[Int] =
     for {
@@ -83,6 +94,9 @@ object RAttachmentMeta {
         proposals.setTo(plist)
       )
     ).update.run
+
+  def updatePageCount(mid: Ident, pageCount: Option[Int]): ConnectionIO[Int] =
+    updateRow(table, id.is(mid), pages.setTo(pageCount)).update.run
 
   def delete(attachId: Ident): ConnectionIO[Int] =
     deleteFrom(table, id.is(attachId)).update.run
