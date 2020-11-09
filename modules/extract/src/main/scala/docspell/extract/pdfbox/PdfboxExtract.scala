@@ -20,21 +20,23 @@ object PdfboxExtract {
   def getTextAndMetaData[F[_]: Sync](
       data: Stream[F, Byte]
   ): F[Either[Throwable, (Text, Option[PdfMetaData])]] =
-    data.compile
-      .to(Array)
-      .map(bytes =>
-        Using(PDDocument.load(bytes)) { doc =>
-          for {
-            txt <- readText(doc)
-            md  <- readMetaData(doc)
-          } yield (txt, Some(md).filter(_.nonEmpty))
-        }.toEither.flatten
-      )
+    PdfLoader
+      .withDocumentStream(data) { doc =>
+        (for {
+          txt <- readText(doc)
+          md  <- readMetaData(doc)
+        } yield (txt, Some(md).filter(_.nonEmpty))).pure[F]
+      }
+      .attempt
+      .map(_.flatten)
 
   def getText[F[_]: Sync](data: Stream[F, Byte]): F[Either[Throwable, Text]] =
-    data.compile
-      .to(Array)
-      .map(bytes => Using(PDDocument.load(bytes))(readText).toEither.flatten)
+    PdfLoader
+      .withDocumentStream(data) { doc =>
+        readText(doc).pure[F]
+      }
+      .attempt
+      .map(_.flatten)
 
   def getText(is: InputStream): Either[Throwable, Text] =
     Using(PDDocument.load(is))(readText).toEither.flatten
@@ -51,9 +53,10 @@ object PdfboxExtract {
     }.toEither
 
   def getMetaData[F[_]: Sync](data: Stream[F, Byte]): F[Either[Throwable, PdfMetaData]] =
-    data.compile
-      .to(Array)
-      .map(bytes => Using(PDDocument.load(bytes))(readMetaData).toEither.flatten)
+    PdfLoader
+      .withDocumentStream(data)(doc => readMetaData(doc).pure[F])
+      .attempt
+      .map(_.flatten)
 
   def getMetaData(is: InputStream): Either[Throwable, PdfMetaData] =
     Using(PDDocument.load(is))(readMetaData).toEither.flatten
@@ -73,7 +76,8 @@ object PdfboxExtract {
         mkValue(info.getSubject),
         mkValue(info.getKeywords),
         mkValue(info.getCreator),
-        Option(info.getCreationDate).map(c => Timestamp(c.toInstant))
+        Option(info.getCreationDate).map(c => Timestamp(c.toInstant)),
+        doc.getNumberOfPages()
       )
     }.toEither
 }
