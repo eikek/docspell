@@ -8,9 +8,11 @@ module Comp.UiSettingsForm exposing
 
 import Api
 import Api.Model.TagList exposing (TagList)
+import Comp.BasicSizeField
 import Comp.ColorTagger
 import Comp.FieldListSelect
 import Comp.IntField
+import Data.BasicSize exposing (BasicSize)
 import Data.Color exposing (Color)
 import Data.Fields exposing (Field)
 import Data.Flags exposing (Flags)
@@ -42,6 +44,7 @@ type alias Model =
     , itemDetailShortcuts : Bool
     , searchMenuVisible : Bool
     , editMenuVisible : Bool
+    , cardPreviewSize : BasicSize
     }
 
 
@@ -93,6 +96,7 @@ init flags settings =
       , itemDetailShortcuts = settings.itemDetailShortcuts
       , searchMenuVisible = settings.searchMenuVisible
       , editMenuVisible = settings.editMenuVisible
+      , cardPreviewSize = settings.cardPreviewSize
       }
     , Api.getTags flags "" GetTagsResp
     )
@@ -112,6 +116,7 @@ type Msg
     | ToggleItemDetailShortcuts
     | ToggleSearchMenuVisible
     | ToggleEditMenuVisible
+    | CardPreviewSizeMsg Comp.BasicSizeField.Msg
 
 
 
@@ -297,6 +302,23 @@ update sett msg model =
             , Just { sett | editMenuVisible = flag }
             )
 
+        CardPreviewSizeMsg lm ->
+            let
+                next =
+                    Comp.BasicSizeField.update lm
+                        |> Maybe.withDefault model.cardPreviewSize
+
+                newSettings =
+                    if next /= model.cardPreviewSize then
+                        Just { sett | cardPreviewSize = next }
+
+                    else
+                        Nothing
+            in
+            ( { model | cardPreviewSize = next }
+            , newSettings
+            )
+
 
 
 --- View
@@ -329,6 +351,9 @@ view flags _ model =
                 "field"
                 model.searchPageSizeModel
             )
+        , div [ class "ui dividing header" ]
+            [ text "Item Cards"
+            ]
         , Html.map NoteLengthMsg
             (Comp.IntField.viewWithInfo
                 ("Maximum size of the item notes to display in card view. Between 0 - "
@@ -338,6 +363,11 @@ view flags _ model =
                 model.itemSearchNoteLength
                 "field"
                 model.searchNoteLengthModel
+            )
+        , Html.map CardPreviewSizeMsg
+            (Comp.BasicSizeField.view
+                "Size of item preview"
+                model.cardPreviewSize
             )
         , div [ class "ui dividing header" ]
             [ text "Search Menu" ]

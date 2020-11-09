@@ -239,6 +239,7 @@ viewItem cfg settings item =
                 [ img
                     [ class "preview-image"
                     , src (Api.itemPreviewURL item.id)
+                    , Data.UiSettings.cardPreviewSize settings
                     ]
                     []
                 ]
