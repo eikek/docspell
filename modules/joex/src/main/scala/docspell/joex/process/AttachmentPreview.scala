@@ -57,13 +57,17 @@ object AttachmentPreview {
       case MimeType.PdfMatch(_) =>
         preview.previewPNG(loadFile(ctx)(ra)).flatMap {
           case Some(out) =>
-            createRecord(ctx, out, ra, chunkSize).map(_.some)
+            ctx.logger.debug("Preview generated, saving to database…") *>
+              createRecord(ctx, out, ra, chunkSize).map(_.some)
           case None =>
-            (None: Option[RAttachmentPreview]).pure[F]
+            ctx.logger
+              .info(s"Preview could not be generated. Maybe the pdf has no pages?") *>
+              (None: Option[RAttachmentPreview]).pure[F]
         }
 
-      case _ =>
-        (None: Option[RAttachmentPreview]).pure[F]
+      case mt =>
+        ctx.logger.warn(s"Not a pdf file, but ${mt.asString}, cannot get page count.") *>
+          (None: Option[RAttachmentPreview]).pure[F]
     }
 
   private def createRecord[F[_]: Sync](
