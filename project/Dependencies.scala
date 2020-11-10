@@ -21,6 +21,7 @@ object Dependencies {
   val Icu4jVersion            = "68.1"
   val JsoupVersion            = "1.13.1"
   val KindProjectorVersion    = "0.10.3"
+  val LevigoJbig2Version      = "2.0"
   val Log4sVersion            = "1.9.0"
   val LogbackVersion          = "1.2.3"
   val MariaDbVersion          = "2.7.0"
@@ -85,12 +86,16 @@ object Dependencies {
     "com.twelvemonkeys.imageio" % "imageio-tiff" % TwelveMonkeysVersion
   )
 
+  val levigoJbig2 = Seq(
+    "com.levigo.jbig2" % "levigo-jbig2-imageio" % LevigoJbig2Version
+  )
+
   val pdfbox = Seq(
     ("org.apache.pdfbox" % "pdfbox" % PdfboxVersion).excludeAll(
       ExclusionRule("org.bouncycastle"),
       ExclusionRule("commons-logging")
     )
-  ) ++ jclOverSlf4j
+  ) ++ jclOverSlf4j ++ levigoJbig2
 
   val emilCommon = Seq(
     "com.github.eikek" %% "emil-common" % EmilVersion
