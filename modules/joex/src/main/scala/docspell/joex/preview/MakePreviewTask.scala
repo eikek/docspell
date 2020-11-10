@@ -47,7 +47,7 @@ object MakePreviewTask {
       _ <- ra
         .map(AttachmentPreview.createPreview(ctx, preview, cfg.chunkSize))
         .getOrElse(
-          ctx.logger.warn(s"No attachment found with id: ${ctx.args.attachment}")
+          ctx.logger.error(s"No attachment found with id: ${ctx.args.attachment}")
         )
     } yield ()
 
