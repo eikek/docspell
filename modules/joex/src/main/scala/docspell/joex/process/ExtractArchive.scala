@@ -95,12 +95,12 @@ object ExtractArchive {
       case MimeType.ZipMatch(_) if ra.name.exists(_.endsWith(".zip")) =>
         ctx.logger.info(s"Extracting zip archive ${ra.name.getOrElse("<noname>")}.") *>
           extractZip(ctx, archive)(ra, pos)
-            .flatTap(_ => cleanupParents(ctx, ra, archive))
+            .flatMap(cleanupParents(ctx, ra, archive))
 
       case MimeType.EmailMatch(_) =>
         ctx.logger.info(s"Reading e-mail ${ra.name.getOrElse("<noname>")}") *>
           extractMail(ctx, archive)(ra, pos)
-            .flatTap(_ => cleanupParents(ctx, ra, archive))
+            .flatMap(cleanupParents(ctx, ra, archive))
 
       case _ =>
         ctx.logger.debug(s"Not an archive: ${mime.asString}") *>
@@ -111,7 +111,7 @@ object ExtractArchive {
       ctx: Context[F, _],
       ra: RAttachment,
       archive: Option[RAttachmentArchive]
-  ): F[Unit] =
+  )(extracted: Extracted): F[Extracted] =
     archive match {
       case Some(_) =>
         for {
@@ -121,36 +121,37 @@ object ExtractArchive {
           _ <- ctx.store.transact(RAttachmentArchive.delete(ra.id))
           _ <- ctx.store.transact(RAttachment.delete(ra.id))
           _ <- ctx.store.bitpeace.delete(ra.fileId.id).compile.drain
-        } yield ()
+        } yield extracted
       case None =>
         for {
           _ <- ctx.logger.debug(
             s"Extracted attachment ${ra.name}. Remove it from the item."
           )
           _ <- ctx.store.transact(RAttachment.delete(ra.id))
-        } yield ()
+        } yield extracted.copy(files = extracted.files.filter(_.id != ra.id))
     }
 
   def extractZip[F[_]: ConcurrentEffect: ContextShift](
-      ctx: Context[F, _],
+      ctx: Context[F, ProcessItemArgs],
       archive: Option[RAttachmentArchive]
   )(ra: RAttachment, pos: Int): F[Extracted] = {
     val zipData = ctx.store.bitpeace
       .get(ra.fileId.id)
       .unNoneTerminate
       .through(ctx.store.bitpeace.fetchData2(RangeDef.all))
-
-    zipData
-      .through(Zip.unzipP[F](8192, ctx.blocker))
-      .zipWithIndex
-      .flatMap(handleEntry(ctx, ra, pos, archive, None))
-      .foldMonoid
-      .compile
-      .lastOrError
+    val glob = ctx.args.meta.fileFilter.getOrElse(Glob.all)
+    ctx.logger.debug(s"Filtering zip entries with '${glob.asString}'") *>
+      zipData
+        .through(Zip.unzipP[F](8192, ctx.blocker, glob))
+        .zipWithIndex
+        .flatMap(handleEntry(ctx, ra, pos, archive, None))
+        .foldMonoid
+        .compile
+        .lastOrError
   }
 
   def extractMail[F[_]: ConcurrentEffect: ContextShift](
-      ctx: Context[F, _],
+      ctx: Context[F, ProcessItemArgs],
       archive: Option[RAttachmentArchive]
   )(ra: RAttachment, pos: Int): F[Extracted] = {
     val email: Stream[F, Byte] = ctx.store.bitpeace
@@ -158,24 +159,26 @@ object ExtractArchive {
       .unNoneTerminate
       .through(ctx.store.bitpeace.fetchData2(RangeDef.all))
 
-    email
-      .through(ReadMail.bytesToMail[F](ctx.logger))
-      .flatMap { mail =>
-        val mId = mail.header.messageId
-        val givenMeta =
-          for {
-            _ <- ctx.logger.debug(s"Use mail date for item date: ${mail.header.date}")
-            s <- Sync[F].delay(extractMailMeta(mail))
-          } yield s
+    val glob = ctx.args.meta.fileFilter.getOrElse(Glob.all)
+    ctx.logger.debug(s"Filtering email attachments with '${glob.asString}'") *>
+      email
+        .through(ReadMail.bytesToMail[F](ctx.logger))
+        .flatMap { mail =>
+          val mId = mail.header.messageId
+          val givenMeta =
+            for {
+              _ <- ctx.logger.debug(s"Use mail date for item date: ${mail.header.date}")
+              s <- Sync[F].delay(extractMailMeta(mail))
+            } yield s
 
-        ReadMail
-          .mailToEntries(ctx.logger)(mail)
-          .zipWithIndex
-          .flatMap(handleEntry(ctx, ra, pos, archive, mId)) ++ Stream.eval(givenMeta)
-      }
-      .foldMonoid
-      .compile
-      .lastOrError
+          ReadMail
+            .mailToEntries(ctx.logger, glob)(mail)
+            .zipWithIndex
+            .flatMap(handleEntry(ctx, ra, pos, archive, mId)) ++ Stream.eval(givenMeta)
+        }
+        .foldMonoid
+        .compile
+        .lastOrError
   }
 
   def extractMailMeta[F[_]](mail: Mail[F]): Extracted =
@@ -238,6 +241,9 @@ object ExtractArchive {
         meta.fillEmptyFrom(e.meta),
         positions ++ e.positions
       )
+
+    def filterNames(filter: Glob): Extracted =
+      copy(files = files.filter(ra => filter.matches(ra.name.getOrElse(""))))
 
     def setMeta(m: MetaProposal): Extracted =
       setMeta(MetaProposalList.of(m))

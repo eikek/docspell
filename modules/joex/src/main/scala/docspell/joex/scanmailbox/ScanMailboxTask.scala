@@ -256,7 +256,7 @@ object ScanMailboxTask {
           args.itemFolder,
           Seq.empty,
           true,
-          args.fileFilter,
+          args.fileFilter.getOrElse(Glob.all),
           args.tags.getOrElse(Nil)
         )
         data = OUpload.UploadData(

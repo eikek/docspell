@@ -311,14 +311,15 @@ trait Conversions {
               m.folder,
               validFileTypes,
               m.skipDuplicates.getOrElse(false),
-              m.fileFilter,
+              m.fileFilter.getOrElse(Glob.all),
               m.tags.map(_.items).getOrElse(Nil)
             )
           )
         )
       )
       .getOrElse(
-        (true, UploadMeta(None, sourceName, None, validFileTypes, false, None, Nil)).pure[F]
+        (true, UploadMeta(None, sourceName, None, validFileTypes, false, Glob.all, Nil))
+          .pure[F]
       )
 
     val files = mp.parts

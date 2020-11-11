@@ -61,7 +61,7 @@ object OUpload {
       folderId: Option[Ident],
       validFileTypes: Seq[MimeType],
       skipDuplicates: Boolean,
-      fileFilter: Option[Glob],
+      fileFilter: Glob,
       tags: List[String]
   )
 
@@ -130,7 +130,7 @@ object OUpload {
             data.meta.folderId,
             data.meta.validFileTypes,
             data.meta.skipDuplicates,
-            data.meta.fileFilter,
+            data.meta.fileFilter.some,
             data.meta.tags.some
           )
           args =

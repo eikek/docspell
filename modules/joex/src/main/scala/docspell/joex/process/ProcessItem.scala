@@ -25,6 +25,7 @@ object ProcessItem {
       .flatMap(LinkProposal[F])
       .flatMap(SetGivenData[F](itemOps))
       .flatMap(Task.setProgress(99))
+      .flatMap(RemoveEmptyItem(itemOps))
 
   def processAttachments[F[_]: ConcurrentEffect: ContextShift](
       cfg: Config,

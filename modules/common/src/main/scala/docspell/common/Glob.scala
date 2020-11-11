@@ -1,27 +1,81 @@
 package docspell.common
 
-import cats.implicits._
 import cats.data.NonEmptyList
+import cats.implicits._
+
 import io.circe.{Decoder, Encoder}
 
-/** A very simple glob supporting only `*` and `?`. */
-final case class Glob(pattern: Glob.Pattern) {
-  def matches(in: String): Boolean =
-    pattern.parts
-      .zipWith(Glob.split(in, Glob.separator))(_.matches(_))
-      .forall(identity)
+trait Glob {
 
-  def asString: String =
-    pattern.asString
+  /** Matches the input string against this glob. */
+  def matches(in: String): Boolean
+
+  /** If this glob consists of multiple segments, it is the same as
+    * `matches`. If it is only a single segment, it is matched against
+    * the last segment of the input string that is assumed to be a
+    * pathname separated by slash.
+    *
+    * Example:
+    *  test.*  <>  "/a/b/test.txt" => true
+    *  /test.* <>  "/a/b/test.txt" => false
+    */
+  def matchFilenameOrPath(in: String): Boolean
+
+  def asString: String
 }
 
 object Glob {
   private val separator = '/'
+  private val anyChar   = '|'
 
-  def apply(str: String): Glob =
-    Glob(Pattern(split(str, separator).map(makeSegment)))
+  val all = new Glob {
+    def matches(in: String)             = true
+    def matchFilenameOrPath(in: String) = true
+    val asString                        = "*"
+  }
 
-  case class Pattern(parts: NonEmptyList[Segment])  {
+  def pattern(pattern: Pattern): Glob =
+    PatternGlob(pattern)
+
+  /** A simple glob supporting `*` and `?`. */
+  final private case class PatternGlob(pattern: Pattern) extends Glob {
+    def matches(in: String): Boolean =
+      pattern.parts
+        .zipWith(Glob.split(in, Glob.separator))(_.matches(_))
+        .forall(identity)
+
+    def matchFilenameOrPath(in: String): Boolean =
+      if (pattern.parts.tail.isEmpty) matches(split(in, separator).last)
+      else matches(in)
+
+    def asString: String =
+      pattern.asString
+  }
+
+  final private case class AnyGlob(globs: NonEmptyList[Glob]) extends Glob {
+    def matches(in: String) =
+      globs.exists(_.matches(in))
+    def matchFilenameOrPath(in: String) =
+      globs.exists(_.matchFilenameOrPath(in))
+    def asString =
+      globs.toList.map(_.asString).mkString(anyChar.toString)
+  }
+
+  def apply(in: String): Glob = {
+    def single(str: String) =
+      PatternGlob(Pattern(split(str, separator).map(makeSegment)))
+
+    if (in == "*") all
+    else
+      split(in, anyChar) match {
+        case NonEmptyList(_, Nil) =>
+          single(in)
+        case nel =>
+          AnyGlob(nel.map(_.trim).map(single))
+      }
+  }
+
+  case class Pattern(parts: NonEmptyList[Segment]) {
     def asString =
       parts.map(_.asString).toList.mkString(separator.toString)
   }
