@@ -60,7 +60,9 @@ object OUpload {
       sourceAbbrev: String,
       folderId: Option[Ident],
       validFileTypes: Seq[MimeType],
-      skipDuplicates: Boolean
+      skipDuplicates: Boolean,
+      fileFilter: Option[Glob],
+      tags: List[String]
   )
 
   case class UploadData[F[_]](
@@ -127,7 +129,9 @@ object OUpload {
             data.meta.sourceAbbrev,
             data.meta.folderId,
             data.meta.validFileTypes,
-            data.meta.skipDuplicates
+            data.meta.skipDuplicates,
+            data.meta.fileFilter,
+            data.meta.tags.some
           )
           args =
             if (data.multiple) files.map(f => ProcessItemArgs(meta, List(f)))

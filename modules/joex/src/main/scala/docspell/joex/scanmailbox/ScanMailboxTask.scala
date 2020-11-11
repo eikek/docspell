@@ -255,7 +255,9 @@ object ScanMailboxTask {
           s"mailbox-${ctx.args.account.user.id}",
           args.itemFolder,
           Seq.empty,
-          true
+          true,
+          args.fileFilter,
+          args.tags.getOrElse(Nil)
         )
         data = OUpload.UploadData(
           multiple = false,

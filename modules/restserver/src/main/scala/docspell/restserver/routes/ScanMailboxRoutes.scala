@@ -113,7 +113,9 @@ object ScanMailboxRoutes {
           settings.targetFolder,
           settings.deleteMail,
           settings.direction,
-          settings.itemFolder
+          settings.itemFolder,
+          settings.fileFilter,
+          settings.tags.map(_.items)
         )
       )
     )
@@ -141,6 +143,8 @@ object ScanMailboxRoutes {
       task.args.targetFolder,
       task.args.deleteMail,
       task.args.direction,
-      task.args.itemFolder
+      task.args.itemFolder,
+      task.args.tags.map(StringList.apply),
+      task.args.fileFilter
     )
 }

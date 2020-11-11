@@ -38,7 +38,9 @@ object ProcessItemArgs {
       sourceAbbrev: String,
       folderId: Option[Ident],
       validFileTypes: Seq[MimeType],
-      skipDuplicate: Boolean
+      skipDuplicate: Boolean,
+      fileFilter: Option[Glob],
+      tags: Option[List[String]]
   )
 
   object ProcessMeta {
