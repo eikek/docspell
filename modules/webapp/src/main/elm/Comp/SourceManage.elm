@@ -8,8 +8,9 @@ module Comp.SourceManage exposing
 
 import Api
 import Api.Model.BasicResult exposing (BasicResult)
-import Api.Model.Source exposing (Source)
+import Api.Model.SourceAndTags exposing (SourceAndTags)
 import Api.Model.SourceList exposing (SourceList)
+import Api.Model.SourceTagIn exposing (SourceTagIn)
 import Comp.SourceForm
 import Comp.SourceTable exposing (SelectMode(..))
 import Comp.YesNoDimmer
@@ -31,7 +32,7 @@ type alias Model =
     , formError : Maybe String
     , loading : Bool
     , deleteConfirm : Comp.YesNoDimmer.Model
-    , sources : List Source
+    , sources : List SourceAndTags
     }
 
 
@@ -145,7 +146,7 @@ update flags msg model =
         InitNewSource ->
             let
                 source =
-                    Api.Model.Source.empty
+                    Api.Model.SourceAndTags.empty
 
                 nm =
                     { model | viewMode = Edit source, formError = Nothing }
@@ -196,7 +197,7 @@ update flags msg model =
 
                 cmd =
                     if confirmed then
-                        Api.deleteSource flags src.id SubmitResp
+                        Api.deleteSource flags src.source.id SubmitResp
 
                     else
                         Cmd.none
@@ -248,22 +249,22 @@ viewTable model =
         ]
 
 
-viewLinks : Flags -> UiSettings -> Source -> Html Msg
+viewLinks : Flags -> UiSettings -> SourceAndTags -> Html Msg
 viewLinks flags _ source =
     let
         appUrl =
-            flags.config.baseUrl ++ "/app/upload/" ++ source.id
+            flags.config.baseUrl ++ "/app/upload/" ++ source.source.id
 
         apiUrl =
-            flags.config.baseUrl ++ "/api/v1/open/upload/item/" ++ source.id
+            flags.config.baseUrl ++ "/api/v1/open/upload/item/" ++ source.source.id
     in
     div
         []
         [ h3 [ class "ui dividing header" ]
             [ text "Public Uploads: "
-            , text source.abbrev
+            , text source.source.abbrev
             , div [ class "sub header" ]
-                [ text source.id
+                [ text source.source.id
                 ]
             ]
         , p []
@@ -273,7 +274,7 @@ viewLinks flags _ source =
             ]
         , p []
             [ text "There have been "
-            , String.fromInt source.counter |> text
+            , String.fromInt source.source.counter |> text
             , text " items created through this source."
             ]
         , h4 [ class "ui header" ]
@@ -358,7 +359,7 @@ viewForm : Flags -> UiSettings -> Model -> List (Html Msg)
 viewForm flags settings model =
     let
         newSource =
-            model.formModel.source.id == ""
+            model.formModel.source.source.id == ""
     in
     [ if newSource then
         h3 [ class "ui top attached header" ]
@@ -367,10 +368,10 @@ viewForm flags settings model =
 
       else
         h3 [ class "ui top attached header" ]
-            [ text ("Edit: " ++ model.formModel.source.abbrev)
+            [ text ("Edit: " ++ model.formModel.source.source.abbrev)
             , div [ class "sub header" ]
                 [ text "Id: "
-                , text model.formModel.source.id
+                , text model.formModel.source.source.id
                 ]
             ]
     , Html.form [ class "ui attached segment", onSubmit Submit ]

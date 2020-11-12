@@ -1211,7 +1211,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Source"
+              $ref: "#/components/schemas/SourceTagIn"
       responses:
         200:
           description: Ok
@@ -1231,7 +1231,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Source"
+              $ref: "#/components/schemas/SourceTagIn"
       responses:
         200:
           description: Ok
@@ -4366,7 +4366,7 @@ components:
         items:
           type: array
           items:
-            $ref: "#/components/schemas/Source"
+            $ref: "#/components/schemas/SourceAndTags"
     Source:
       description: |
         Data about a Source. A source defines the endpoint where
@@ -4400,10 +4400,38 @@ components:
         folder:
           type: string
           format: ident
+        fileFilter:
+          type: string
+          format: glob
         created:
           description: DateTime
           type: integer
           format: date-time
+    SourceTagIn:
+      description: |
+        A source and optional tags (ids or names) for updating/adding.
+      required:
+        - source
+        - tags
+      properties:
+        source:
+          $ref: "#/components/schema/Source"
+        tags:
+          type: array
+          items:
+            type: string
+    SourceAndTags:
+      description: |
+        A source and optional tags.
+      required:
+        - source
+        - tags
+      properties:
+        source:
+          $ref: "#/components/schema/Source"
+        tags:
+          $ref: "#/components/schema/TagList"
+
     EquipmentList:
       description: |
         A list of equipments.

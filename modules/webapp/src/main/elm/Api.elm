@@ -175,8 +175,9 @@ import Api.Model.ScanMailboxSettings exposing (ScanMailboxSettings)
 import Api.Model.ScanMailboxSettingsList exposing (ScanMailboxSettingsList)
 import Api.Model.SentMails exposing (SentMails)
 import Api.Model.SimpleMail exposing (SimpleMail)
-import Api.Model.Source exposing (Source)
+import Api.Model.SourceAndTags exposing (SourceAndTags)
 import Api.Model.SourceList exposing (SourceList)
+import Api.Model.SourceTagIn exposing (SourceTagIn)
 import Api.Model.StringList exposing (StringList)
 import Api.Model.Tag exposing (Tag)
 import Api.Model.TagCloud exposing (TagCloud)
@@ -1144,17 +1145,22 @@ getSources flags receive =
         }
 
 
-postSource : Flags -> Source -> (Result Http.Error BasicResult -> msg) -> Cmd msg
+postSource : Flags -> SourceAndTags -> (Result Http.Error BasicResult -> msg) -> Cmd msg
 postSource flags source receive =
     let
+        st =
+            { source = source.source
+            , tags = List.map .id source.tags.items
+            }
+
         params =
             { url = flags.config.baseUrl ++ "/api/v1/sec/source"
             , account = getAccount flags
-            , body = Http.jsonBody (Api.Model.Source.encode source)
+            , body = Http.jsonBody (Api.Model.SourceTagIn.encode st)
             , expect = Http.expectJson receive Api.Model.BasicResult.decoder
             }
     in
-    if source.id == "" then
+    if source.source.id == "" then
         Http2.authPost params
 
     else

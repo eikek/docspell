@@ -104,6 +104,18 @@ object RTag {
     ) ++ orderBy(name.prefix("t").asc)).query[RTag].to[Vector]
   }
 
+  def findBySource(source: Ident): ConnectionIO[Vector[RTag]] = {
+    val rcol = all.map(_.prefix("t"))
+    (selectSimple(
+      rcol,
+      table ++ fr"t," ++ RTagSource.table ++ fr"s",
+      and(
+        RTagSource.Columns.sourceId.prefix("s").is(source),
+        RTagSource.Columns.tagId.prefix("s").is(tid.prefix("t"))
+      )
+    ) ++ orderBy(name.prefix("t").asc)).query[RTag].to[Vector]
+  }
+
   def findAllByNameOrId(
       nameOrIds: List[String],
       coll: Ident
