@@ -91,6 +91,9 @@ trait DoobieMeta extends EmilDoobieMeta {
 
   implicit val metaCalEvent: Meta[CalEvent] =
     Meta[String].timap(CalEvent.unsafe)(_.asString)
+
+  implicit val metaGlob: Meta[Glob] =
+    Meta[String].timap(Glob.apply)(_.asString)
 }
 
 object DoobieMeta extends DoobieMeta {

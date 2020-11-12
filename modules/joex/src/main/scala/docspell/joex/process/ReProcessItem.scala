@@ -91,7 +91,9 @@ object ReProcessItem {
               "",   //source-id
               None, //folder
               Seq.empty,
-              false
+              false,
+              None,
+              None
             ),
             Nil
           ).pure[F]

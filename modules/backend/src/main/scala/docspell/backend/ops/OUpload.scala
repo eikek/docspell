@@ -25,6 +25,11 @@ trait OUpload[F[_]] {
       itemId: Option[Ident]
   ): F[OUpload.UploadResult]
 
+  /** Submit files via a given source identifier. The source is looked
+    * up to identify the collective the files belong to. Metadata
+    * defined in the source is used as a fallback to those specified
+    * here (in UploadData).
+    */
   def submit(
       data: OUpload.UploadData[F],
       sourceId: Ident,
@@ -60,7 +65,9 @@ object OUpload {
       sourceAbbrev: String,
       folderId: Option[Ident],
       validFileTypes: Seq[MimeType],
-      skipDuplicates: Boolean
+      skipDuplicates: Boolean,
+      fileFilter: Glob,
+      tags: List[String]
   )
 
   case class UploadData[F[_]](
@@ -127,7 +134,9 @@ object OUpload {
             data.meta.sourceAbbrev,
             data.meta.folderId,
             data.meta.validFileTypes,
-            data.meta.skipDuplicates
+            data.meta.skipDuplicates,
+            data.meta.fileFilter.some,
+            data.meta.tags.some
           )
           args =
             if (data.multiple) files.map(f => ProcessItemArgs(meta, List(f)))
@@ -149,15 +158,19 @@ object OUpload {
           itemId: Option[Ident]
       ): F[OUpload.UploadResult] =
         (for {
-          src <- OptionT(store.transact(RSource.findEnabled(sourceId)))
+          src <- OptionT(store.transact(SourceData.findEnabled(sourceId)))
           updata = data.copy(
             meta = data.meta.copy(
-              sourceAbbrev = src.abbrev,
-              folderId = data.meta.folderId.orElse(src.folderId)
+              sourceAbbrev = src.source.abbrev,
+              folderId = data.meta.folderId.orElse(src.source.folderId),
+              fileFilter =
+                if (data.meta.fileFilter == Glob.all) src.source.fileFilterOrAll
+                else data.meta.fileFilter,
+              tags = (data.meta.tags ++ src.tags.map(_.tagId.id)).distinct
             ),
-            priority = src.priority
+            priority = src.source.priority
           )
-          accId = AccountId(src.cid, src.sid)
+          accId = AccountId(src.source.cid, src.source.sid)
           result <- OptionT.liftF(submit(updata, accId, notifyJoex, itemId))
         } yield result).getOrElse(UploadResult.noSource)
 

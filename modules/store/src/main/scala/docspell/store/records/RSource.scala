@@ -16,8 +16,13 @@ case class RSource(
     enabled: Boolean,
     priority: Priority,
     created: Timestamp,
-    folderId: Option[Ident]
-) {}
+    folderId: Option[Ident],
+    fileFilter: Option[Glob]
+) {
+
+  def fileFilterOrAll: Glob =
+    fileFilter.getOrElse(Glob.all)
+}
 
 object RSource {
 
@@ -34,9 +39,21 @@ object RSource {
     val priority    = Column("priority")
     val created     = Column("created")
     val folder      = Column("folder_id")
+    val fileFilter  = Column("file_filter")
 
     val all =
-      List(sid, cid, abbrev, description, counter, enabled, priority, created, folder)
+      List(
+        sid,
+        cid,
+        abbrev,
+        description,
+        counter,
+        enabled,
+        priority,
+        created,
+        folder,
+        fileFilter
+      )
   }
 
   import Columns._
@@ -45,7 +62,7 @@ object RSource {
     val sql = insertRow(
       table,
       all,
-      fr"${v.sid},${v.cid},${v.abbrev},${v.description},${v.counter},${v.enabled},${v.priority},${v.created},${v.folderId}"
+      fr"${v.sid},${v.cid},${v.abbrev},${v.description},${v.counter},${v.enabled},${v.priority},${v.created},${v.folderId},${v.fileFilter}"
     )
     sql.update.run
   }
@@ -60,7 +77,8 @@ object RSource {
         description.setTo(v.description),
         enabled.setTo(v.enabled),
         priority.setTo(v.priority),
-        folder.setTo(v.folderId)
+        folder.setTo(v.folderId),
+        fileFilter.setTo(v.fileFilter)
       )
     )
     sql.update.run
@@ -83,10 +101,11 @@ object RSource {
     sql.query[Int].unique.map(_ > 0)
   }
 
-  def findEnabled(id: Ident): ConnectionIO[Option[RSource]] = {
-    val sql = selectSimple(all, table, and(sid.is(id), enabled.is(true)))
-    sql.query[RSource].option
-  }
+  def findEnabled(id: Ident): ConnectionIO[Option[RSource]] =
+    findEnabledSql(id).query[RSource].option
+
+  private[records] def findEnabledSql(id: Ident): Fragment =
+    selectSimple(all, table, and(sid.is(id), enabled.is(true)))
 
   def findCollective(sourceId: Ident): ConnectionIO[Option[Ident]] =
     selectSimple(List(cid), table, sid.is(sourceId)).query[Ident].option
@@ -94,10 +113,11 @@ object RSource {
   def findAll(
       coll: Ident,
       order: Columns.type => Column
-  ): ConnectionIO[Vector[RSource]] = {
-    val sql = selectSimple(all, table, cid.is(coll)) ++ orderBy(order(Columns).f)
-    sql.query[RSource].to[Vector]
-  }
+  ): ConnectionIO[Vector[RSource]] =
+    findAllSql(coll, order).query[RSource].to[Vector]
+
+  private[records] def findAllSql(coll: Ident, order: Columns.type => Column): Fragment =
+    selectSimple(all, table, cid.is(coll)) ++ orderBy(order(Columns).f)
 
   def delete(sourceId: Ident, coll: Ident): ConnectionIO[Int] =
     deleteFrom(table, and(sid.is(sourceId), cid.is(coll))).update.run

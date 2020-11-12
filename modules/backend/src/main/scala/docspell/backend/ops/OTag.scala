@@ -4,6 +4,7 @@ import cats.effect.{Effect, Resource}
 import cats.implicits._
 
 import docspell.common.{AccountId, Ident}
+import docspell.store.records.RTagSource
 import docspell.store.records.{RTag, RTagItem}
 import docspell.store.{AddResult, Store}
 
@@ -49,8 +50,9 @@ object OTag {
         val io = for {
           optTag <- RTag.findByIdAndCollective(id, collective)
           n0     <- optTag.traverse(t => RTagItem.deleteTag(t.tagId))
-          n1     <- optTag.traverse(t => RTag.delete(t.tagId, collective))
-        } yield n0.getOrElse(0) + n1.getOrElse(0)
+          n1     <- optTag.traverse(t => RTagSource.deleteTag(t.tagId))
+          n2     <- optTag.traverse(t => RTag.delete(t.tagId, collective))
+        } yield (n0 |+| n1 |+| n2).getOrElse(0)
         store.transact(io).attempt.map(AddResult.fromUpdate)
       }
 

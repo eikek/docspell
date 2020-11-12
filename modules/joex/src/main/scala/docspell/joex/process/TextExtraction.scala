@@ -47,7 +47,9 @@ object TextExtraction {
         _   <- fts.indexData(ctx.logger, (idxItem +: txt.map(_.td)).toSeq: _*)
         dur <- start
         _   <- ctx.logger.info(s"Text extraction finished in ${dur.formatExact}")
-      } yield item.copy(metas = txt.map(_.am), tags = txt.flatMap(_.tags).distinct.toList)
+      } yield item
+        .copy(metas = txt.map(_.am))
+        .appendTags(txt.flatMap(_.tags).distinct.toList)
     }
 
   // --  helpers

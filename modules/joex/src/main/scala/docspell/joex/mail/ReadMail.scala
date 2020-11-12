@@ -16,9 +16,10 @@ import emil.{MimeType => _, _}
 object ReadMail {
 
   def readBytesP[F[_]: ConcurrentEffect: ContextShift](
-      logger: Logger[F]
+      logger: Logger[F],
+      glob: Glob
   ): Pipe[F, Byte, Binary[F]] =
-    _.through(bytesToMail(logger)).flatMap(mailToEntries[F](logger))
+    _.through(bytesToMail(logger)).flatMap(mailToEntries[F](logger, glob))
 
   def bytesToMail[F[_]: Sync](logger: Logger[F]): Pipe[F, Byte, Mail[F]] =
     s =>
@@ -26,7 +27,8 @@ object ReadMail {
         s.through(Mail.readBytes[F])
 
   def mailToEntries[F[_]: ConcurrentEffect: ContextShift](
-      logger: Logger[F]
+      logger: Logger[F],
+      glob: Glob
   )(mail: Mail[F]): Stream[F, Binary[F]] = {
     val bodyEntry: F[Option[Binary[F]]] =
       if (mail.body.isEmpty) (None: Option[Binary[F]]).pure[F]
@@ -48,10 +50,12 @@ object ReadMail {
     ) >>
       (Stream
         .eval(bodyEntry)
-        .flatMap(e => Stream.emits(e.toSeq)) ++
+        .flatMap(e => Stream.emits(e.toSeq))
+        .filter(a => glob.matches(a.name)) ++
         Stream
           .eval(TnefExtract.replace(mail))
           .flatMap(m => Stream.emits(m.attachments.all))
+          .filter(a => a.filename.exists(glob.matches))
           .map(a =>
             Binary(a.filename.getOrElse("noname"), a.mimeType.toLocal, a.content)
           ))

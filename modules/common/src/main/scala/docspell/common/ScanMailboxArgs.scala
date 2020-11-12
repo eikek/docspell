@@ -29,7 +29,11 @@ case class ScanMailboxArgs(
     // set the direction when submitting
     direction: Option[Direction],
     // set a folder for items
-    itemFolder: Option[Ident]
+    itemFolder: Option[Ident],
+    // set a filter for files when importing archives
+    fileFilter: Option[Glob],
+    // set a list of tags to apply to new item
+    tags: Option[List[String]]
 )
 
 object ScanMailboxArgs {

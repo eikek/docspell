@@ -12,7 +12,9 @@ import Api
 import Api.Model.FolderItem exposing (FolderItem)
 import Api.Model.FolderList exposing (FolderList)
 import Api.Model.IdName exposing (IdName)
-import Api.Model.Source exposing (Source)
+import Api.Model.SourceAndTags exposing (SourceAndTags)
+import Api.Model.Tag exposing (Tag)
+import Api.Model.TagList exposing (TagList)
 import Comp.Dropdown exposing (isDropdownChangeMsg)
 import Comp.FixedDropdown
 import Data.Flags exposing (Flags)
@@ -24,10 +26,13 @@ import Html.Events exposing (onCheck, onInput)
 import Http
 import Markdown
 import Util.Folder exposing (mkFolderOption)
+import Util.Maybe
+import Util.Tag
+import Util.Update
 
 
 type alias Model =
-    { source : Source
+    { source : SourceAndTags
     , abbrev : String
     , description : Maybe String
     , priorityModel : Comp.FixedDropdown.Model Priority
@@ -36,12 +41,14 @@ type alias Model =
     , folderModel : Comp.Dropdown.Model IdName
     , allFolders : List FolderItem
     , folderId : Maybe String
+    , tagModel : Comp.Dropdown.Model Tag
+    , fileFilter : Maybe String
     }
 
 
 emptyModel : Model
 emptyModel =
-    { source = Api.Model.Source.empty
+    { source = Api.Model.SourceAndTags.empty
     , abbrev = ""
     , description = Nothing
     , priorityModel =
@@ -57,13 +64,18 @@ emptyModel =
             }
     , allFolders = []
     , folderId = Nothing
+    , tagModel = Util.Tag.makeDropdownModel
+    , fileFilter = Nothing
     }
 
 
 init : Flags -> ( Model, Cmd Msg )
 init flags =
     ( emptyModel
-    , Api.getFolders flags "" False GetFolderResp
+    , Cmd.batch
+        [ Api.getFolders flags "" False GetFolderResp
+        , Api.getTags flags "" GetTagResp
+        ]
     )
 
 
@@ -72,29 +84,42 @@ isValid model =
     model.abbrev /= ""
 
 
-getSource : Model -> Source
+getSource : Model -> SourceAndTags
 getSource model =
     let
-        s =
+        st =
             model.source
+
+        s =
+            st.source
+
+        tags =
+            Comp.Dropdown.getSelected model.tagModel
+
+        n =
+            { s
+                | abbrev = model.abbrev
+                , description = model.description
+                , enabled = model.enabled
+                , priority = Data.Priority.toName model.priority
+                , folder = model.folderId
+                , fileFilter = model.fileFilter
+            }
     in
-    { s
-        | abbrev = model.abbrev
-        , description = model.description
-        , enabled = model.enabled
-        , priority = Data.Priority.toName model.priority
-        , folder = model.folderId
-    }
+    { st | source = n, tags = TagList (List.length tags) tags }
 
 
 type Msg
     = SetAbbrev String
-    | SetSource Source
+    | SetSource SourceAndTags
     | SetDescr String
     | ToggleEnabled
     | PrioDropdownMsg (Comp.FixedDropdown.Msg Priority)
     | GetFolderResp (Result Http.Error FolderList)
     | FolderDropdownMsg (Comp.Dropdown.Msg IdName)
+    | GetTagResp (Result Http.Error TagList)
+    | TagDropdownMsg (Comp.Dropdown.Msg Tag)
+    | SetFileFilter String
 
 
 
@@ -106,29 +131,34 @@ update flags msg model =
     case msg of
         SetSource t ->
             let
-                post =
+                stpost =
                     model.source
+
+                post =
+                    stpost.source
 
                 np =
                     { post
-                        | id = t.id
-                        , abbrev = t.abbrev
-                        , description = t.description
-                        , priority = t.priority
-                        , enabled = t.enabled
-                        , folder = t.folder
+                        | id = t.source.id
+                        , abbrev = t.source.abbrev
+                        , description = t.source.description
+                        , priority = t.source.priority
+                        , enabled = t.source.enabled
+                        , folder = t.source.folder
+                        , fileFilter = t.source.fileFilter
                     }
 
                 newModel =
                     { model
-                        | source = np
-                        , abbrev = t.abbrev
-                        , description = t.description
+                        | source = { stpost | source = np }
+                        , abbrev = t.source.abbrev
+                        , description = t.source.description
                         , priority =
-                            Data.Priority.fromString t.priority
+                            Data.Priority.fromString t.source.priority
                                 |> Maybe.withDefault Data.Priority.Low
-                        , enabled = t.enabled
-                        , folderId = t.folder
+                        , enabled = t.source.enabled
+                        , folderId = t.source.folder
+                        , fileFilter = t.source.fileFilter
                     }
 
                 mkIdName id =
@@ -143,14 +173,21 @@ update flags msg model =
                         model.allFolders
 
                 sel =
-                    case Maybe.map mkIdName t.folder of
+                    case Maybe.map mkIdName t.source.folder of
                         Just idref ->
                             idref
 
                         Nothing ->
                             []
+
+                tags =
+                    Comp.Dropdown.SetSelection t.tags.items
             in
-            update flags (FolderDropdownMsg (Comp.Dropdown.SetSelection sel)) newModel
+            Util.Update.andThen1
+                [ update flags (FolderDropdownMsg (Comp.Dropdown.SetSelection sel))
+                , update flags (TagDropdownMsg tags)
+                ]
+                newModel
 
         ToggleEnabled ->
             ( { model | enabled = not model.enabled }, Cmd.none )
@@ -159,14 +196,7 @@ update flags msg model =
             ( { model | abbrev = n }, Cmd.none )
 
         SetDescr d ->
-            ( { model
-                | description =
-                    if d /= "" then
-                        Just d
-
-                    else
-                        Nothing
-              }
+            ( { model | description = Util.Maybe.fromString d }
             , Cmd.none
             )
 
@@ -226,6 +256,31 @@ update flags msg model =
             in
             ( model_, Cmd.map FolderDropdownMsg c2 )
 
+        GetTagResp (Ok list) ->
+            let
+                opts =
+                    Comp.Dropdown.SetOptions list.items
+            in
+            update flags (TagDropdownMsg opts) model
+
+        GetTagResp (Err _) ->
+            ( model, Cmd.none )
+
+        TagDropdownMsg lm ->
+            let
+                ( m2, c2 ) =
+                    Comp.Dropdown.update lm model.tagModel
+
+                newModel =
+                    { model | tagModel = m2 }
+            in
+            ( newModel, Cmd.map TagDropdownMsg c2 )
+
+        SetFileFilter d ->
+            ( { model | fileFilter = Util.Maybe.fromString d }
+            , Cmd.none
+            )
+
 
 
 --- View
@@ -260,6 +315,7 @@ view flags settings model =
             , textarea
                 [ onInput SetDescr
                 , model.description |> Maybe.withDefault "" |> value
+                , rows 3
                 ]
                 []
             ]
@@ -281,12 +337,26 @@ view flags settings model =
                     (Just priorityItem)
                     model.priorityModel
                 )
+            , div [ class "small-info" ]
+                [ text "The priority used by the scheduler when processing uploaded files."
+                ]
+            ]
+        , div [ class "ui dividing header" ]
+            [ text "Metadata"
+            ]
+        , div [ class "ui message" ]
+            [ text "Metadata specified here is automatically attached to each item uploaded "
+            , text "through this source, unless it is overriden in the upload request meta data. "
+            , text "Tags from the request are added to those defined here."
             ]
         , div [ class "field" ]
             [ label []
                 [ text "Folder"
                 ]
             , Html.map FolderDropdownMsg (Comp.Dropdown.view settings model.folderModel)
+            , div [ class "small-info" ]
+                [ text "Choose a folder to automatically put items into."
+                ]
             , div
                 [ classList
                     [ ( "ui warning message", True )
@@ -299,6 +369,38 @@ link will be **hidden** from any search results. Use a folder where
 you are a member of to make items visible. This message will
 disappear then.
                       """
+                ]
+            ]
+        , div [ class "field" ]
+            [ label [] [ text "Tags" ]
+            , Html.map TagDropdownMsg (Comp.Dropdown.view settings model.tagModel)
+            , div [ class "small-info" ]
+                [ text "Choose tags that should be applied to items."
+                ]
+            ]
+        , div
+            [ class "field"
+            ]
+            [ label [] [ text "File Filter" ]
+            , input
+                [ type_ "text"
+                , onInput SetFileFilter
+                , placeholder "File Filter"
+                , model.fileFilter
+                    |> Maybe.withDefault ""
+                    |> value
+                ]
+                []
+            , div [ class "small-info" ]
+                [ text "Specify a file glob to filter files when uploading archives "
+                , text "(e.g. for email and zip). For example, to only extract pdf files: "
+                , code []
+                    [ text "*.pdf"
+                    ]
+                , text ". Globs can be combined via OR, like this: "
+                , code []
+                    [ text "*.pdf|mail.html"
+                    ]
                 ]
             ]
         ]

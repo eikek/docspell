@@ -310,13 +310,16 @@ trait Conversions {
               sourceName,
               m.folder,
               validFileTypes,
-              m.skipDuplicates.getOrElse(false)
+              m.skipDuplicates.getOrElse(false),
+              m.fileFilter.getOrElse(Glob.all),
+              m.tags.map(_.items).getOrElse(Nil)
             )
           )
         )
       )
       .getOrElse(
-        (true, UploadMeta(None, sourceName, None, validFileTypes, false)).pure[F]
+        (true, UploadMeta(None, sourceName, None, validFileTypes, false, Glob.all, Nil))
+          .pure[F]
       )
 
     val files = mp.parts
@@ -521,21 +524,36 @@ trait Conversions {
 
   // sources
 
-  def mkSource(s: RSource): Source =
-    Source(
-      s.sid,
-      s.abbrev,
-      s.description,
-      s.counter,
-      s.enabled,
-      s.priority,
-      s.folderId,
-      s.created
+  def mkSource(s: SourceData): SourceAndTags =
+    SourceAndTags(
+      Source(
+        s.source.sid,
+        s.source.abbrev,
+        s.source.description,
+        s.source.counter,
+        s.source.enabled,
+        s.source.priority,
+        s.source.folderId,
+        s.source.fileFilter,
+        s.source.created
+      ),
+      TagList(s.tags.length, s.tags.map(mkTag).toList)
     )
 
   def newSource[F[_]: Sync](s: Source, cid: Ident): F[RSource] =
     timeId.map({ case (id, now) =>
-      RSource(id, cid, s.abbrev, s.description, 0, s.enabled, s.priority, now, s.folder)
+      RSource(
+        id,
+        cid,
+        s.abbrev,
+        s.description,
+        0,
+        s.enabled,
+        s.priority,
+        now,
+        s.folder,
+        s.fileFilter
+      )
     })
 
   def changeSource[F[_]: Sync](s: Source, coll: Ident): RSource =
@@ -548,7 +566,8 @@ trait Conversions {
       s.enabled,
       s.priority,
       s.created,
-      s.folder
+      s.folder,
+      s.fileFilter
     )
 
   // equipment

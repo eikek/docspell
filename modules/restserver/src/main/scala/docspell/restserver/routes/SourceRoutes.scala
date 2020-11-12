@@ -30,17 +30,17 @@ object SourceRoutes {
 
       case req @ POST -> Root =>
         for {
-          data  <- req.as[Source]
-          src   <- newSource(data, user.account.collective)
-          added <- backend.source.add(src)
+          data  <- req.as[SourceTagIn]
+          src   <- newSource(data.source, user.account.collective)
+          added <- backend.source.add(src, data.tags)
           resp  <- Ok(basicResult(added, "Source added."))
         } yield resp
 
       case req @ PUT -> Root =>
         for {
-          data <- req.as[Source]
-          src = changeSource(data, user.account.collective)
-          updated <- backend.source.update(src)
+          data <- req.as[SourceTagIn]
+          src = changeSource(data.source, user.account.collective)
+          updated <- backend.source.update(src, data.tags)
           resp    <- Ok(basicResult(updated, "Source updated."))
         } yield resp
 

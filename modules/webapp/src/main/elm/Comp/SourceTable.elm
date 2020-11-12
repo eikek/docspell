@@ -6,7 +6,7 @@ module Comp.SourceTable exposing
     , view
     )
 
-import Api.Model.Source exposing (Source)
+import Api.Model.SourceAndTags exposing (SourceAndTags)
 import Data.Flags exposing (Flags)
 import Data.Priority
 import Html exposing (..)
@@ -15,8 +15,8 @@ import Html.Events exposing (onClick)
 
 
 type SelectMode
-    = Edit Source
-    | Display Source
+    = Edit SourceAndTags
+    | Display SourceAndTags
     | None
 
 
@@ -34,8 +34,8 @@ isEdit m =
 
 
 type Msg
-    = Select Source
-    | Show Source
+    = Select SourceAndTags
+    | Show SourceAndTags
 
 
 update : Flags -> Msg -> ( Cmd Msg, SelectMode )
@@ -48,7 +48,7 @@ update _ msg =
             ( Cmd.none, Display source )
 
 
-view : List Source -> Html Msg
+view : List SourceAndTags -> Html Msg
 view sources =
     table [ class "ui table" ]
         [ thead []
@@ -66,7 +66,7 @@ view sources =
         ]
 
 
-renderSourceLine : Source -> Html Msg
+renderSourceLine : SourceAndTags -> Html Msg
 renderSourceLine source =
     tr
         []
@@ -82,10 +82,10 @@ renderSourceLine source =
             , a
                 [ classList
                     [ ( "ui basic tiny primary button", True )
-                    , ( "disabled", not source.enabled )
+                    , ( "disabled", not source.source.enabled )
                     ]
                 , href "#"
-                , disabled (not source.enabled)
+                , disabled (not source.source.enabled)
                 , onClick (Show source)
                 ]
                 [ i [ class "eye icon" ] []
@@ -93,25 +93,25 @@ renderSourceLine source =
                 ]
             ]
         , td [ class "collapsing" ]
-            [ text source.abbrev
+            [ text source.source.abbrev
             ]
         , td [ class "collapsing" ]
-            [ if source.enabled then
+            [ if source.source.enabled then
                 i [ class "check square outline icon" ] []
 
               else
                 i [ class "minus square outline icon" ] []
             ]
         , td [ class "collapsing" ]
-            [ source.counter |> String.fromInt |> text
+            [ source.source.counter |> String.fromInt |> text
             ]
         , td [ class "collapsing" ]
-            [ Data.Priority.fromString source.priority
+            [ Data.Priority.fromString source.source.priority
                 |> Maybe.map Data.Priority.toName
-                |> Maybe.withDefault source.priority
+                |> Maybe.withDefault source.source.priority
                 |> text
             ]
         , td []
-            [ text source.id
+            [ text source.source.id
             ]
         ]

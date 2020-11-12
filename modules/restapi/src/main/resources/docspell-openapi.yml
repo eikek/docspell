@@ -1211,7 +1211,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Source"
+              $ref: "#/components/schemas/SourceTagIn"
       responses:
         200:
           description: Ok
@@ -1231,7 +1231,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Source"
+              $ref: "#/components/schemas/SourceTagIn"
       responses:
         200:
           description: Ok
@@ -3499,6 +3499,14 @@ components:
             The folder id that is applied to items resulting from
             importing mails. If the folder id is not valid when the
             task executes, items have no folder set.
+        tags:
+          $ref: "#/components/schemas/StringList"
+        fileFilter:
+          description: |
+            A glob to filter attachments to import.
+          type: string
+          format: glob
+
     ImapSettingsList:
       description: |
         A list of user email settings.
@@ -4256,6 +4264,18 @@ components:
         A folderId can be given, the item is placed into this folder
         after creation.
 
+        The `fileFilter` is an optional glob for filtering files to
+        import. Only applicable if archive files are uploaded. It
+        applies to all of them. For example, to only import pdf files
+        when uploading e-mails, use `*.pdf`. If the pattern doesn't
+        contain a slash `/`, then it is applied to all file names.
+        Otherwise it is applied to the complete path in the archive
+        (useful for zip files). Note that the archive file itself is
+        always saved completely, too.
+
+        The `tags` input allows to provide tags that should be applied
+        to the item being created. This only works if the tags already
+        exist. It is possible to specify their ids or names.
       required:
         - multiple
       properties:
@@ -4271,6 +4291,11 @@ components:
         skipDuplicates:
           type: boolean
           default: false
+        tags:
+          $ref: "#/components/schemas/StringList"
+        fileFilter:
+          type: string
+          format: glob
 
     Collective:
       description: |
@@ -4341,7 +4366,7 @@ components:
         items:
           type: array
           items:
-            $ref: "#/components/schemas/Source"
+            $ref: "#/components/schemas/SourceAndTags"
     Source:
       description: |
         Data about a Source. A source defines the endpoint where
@@ -4375,10 +4400,38 @@ components:
         folder:
           type: string
           format: ident
+        fileFilter:
+          type: string
+          format: glob
         created:
           description: DateTime
           type: integer
           format: date-time
+    SourceTagIn:
+      description: |
+        A source and optional tags (ids or names) for updating/adding.
+      required:
+        - source
+        - tags
+      properties:
+        source:
+          $ref: "#/components/schema/Source"
+        tags:
+          type: array
+          items:
+            type: string
+    SourceAndTags:
+      description: |
+        A source and optional tags.
+      required:
+        - source
+        - tags
+      properties:
+        source:
+          $ref: "#/components/schema/Source"
+        tags:
+          $ref: "#/components/schema/TagList"
+
     EquipmentList:
       description: |
         A list of equipments.

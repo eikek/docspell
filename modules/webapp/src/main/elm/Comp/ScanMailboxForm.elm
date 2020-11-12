@@ -15,6 +15,9 @@ import Api.Model.FolderList exposing (FolderList)
 import Api.Model.IdName exposing (IdName)
 import Api.Model.ImapSettingsList exposing (ImapSettingsList)
 import Api.Model.ScanMailboxSettings exposing (ScanMailboxSettings)
+import Api.Model.StringList exposing (StringList)
+import Api.Model.Tag exposing (Tag)
+import Api.Model.TagList exposing (TagList)
 import Comp.CalEventInput
 import Comp.Dropdown exposing (isDropdownChangeMsg)
 import Comp.IntField
@@ -34,6 +37,7 @@ import Util.Folder exposing (mkFolderOption)
 import Util.Http
 import Util.List
 import Util.Maybe
+import Util.Tag
 import Util.Update
 
 
@@ -56,6 +60,9 @@ type alias Model =
     , folderModel : Comp.Dropdown.Model IdName
     , allFolders : List FolderItem
     , itemFolderId : Maybe String
+    , tagModel : Comp.Dropdown.Model Tag
+    , existingTags : List String
+    , fileFilter : Maybe String
     }
 
 
@@ -84,6 +91,9 @@ type Msg
     | YesNoDeleteMsg Comp.YesNoDimmer.Msg
     | GetFolderResp (Result Http.Error FolderList)
     | FolderDropdownMsg (Comp.Dropdown.Msg IdName)
+    | GetTagResp (Result Http.Error TagList)
+    | TagDropdownMsg (Comp.Dropdown.Msg Tag)
+    | SetFileFilter String
 
 
 initWith : Flags -> ScanMailboxSettings -> ( Model, Cmd Msg )
@@ -120,12 +130,18 @@ initWith flags s =
         , formMsg = Nothing
         , yesNoDelete = Comp.YesNoDimmer.emptyModel
         , itemFolderId = s.itemFolder
+        , tagModel = Util.Tag.makeDropdownModel
+        , existingTags =
+            Maybe.map .items s.tags
+                |> Maybe.withDefault []
+        , fileFilter = s.fileFilter
       }
     , Cmd.batch
         [ Api.getImapSettings flags "" ConnResp
         , nc
         , Cmd.map CalEventMsg sc
         , Api.getFolders flags "" False GetFolderResp
+        , Api.getTags flags "" GetTagResp
         ]
     )
 
@@ -134,7 +150,7 @@ init : Flags -> ( Model, Cmd Msg )
 init flags =
     let
         initialSchedule =
-            Data.Validated.Unknown Data.CalEvent.everyMonth
+            Data.Validated.Valid Data.CalEvent.everyMonth
 
         sm =
             Comp.CalEventInput.initDefault
@@ -156,7 +172,7 @@ init flags =
       , schedule = initialSchedule
       , scheduleModel = sm
       , formMsg = Nothing
-      , loading = 2
+      , loading = 3
       , yesNoDelete = Comp.YesNoDimmer.emptyModel
       , folderModel =
             Comp.Dropdown.makeSingle
@@ -165,10 +181,14 @@ init flags =
                 }
       , allFolders = []
       , itemFolderId = Nothing
+      , tagModel = Util.Tag.makeDropdownModel
+      , existingTags = []
+      , fileFilter = Nothing
       }
     , Cmd.batch
         [ Api.getImapSettings flags "" ConnResp
         , Api.getFolders flags "" False GetFolderResp
+        , Api.getTags flags "" GetTagResp
         ]
     )
 
@@ -196,9 +216,9 @@ makeSettings model =
             else
                 Valid model.folders
 
-        make smtp timer folders =
+        make imap timer folders =
             { prev
-                | imapConnection = smtp
+                | imapConnection = imap
                 , enabled = model.enabled
                 , receivedSinceHours = model.receivedHours
                 , deleteMail = model.deleteMail
@@ -207,6 +227,16 @@ makeSettings model =
                 , direction = Maybe.map Data.Direction.toString model.direction
                 , schedule = Data.CalEvent.makeEvent timer
                 , itemFolder = model.itemFolderId
+                , fileFilter = model.fileFilter
+                , tags =
+                    case Comp.Dropdown.getSelected model.tagModel of
+                        [] ->
+                            Nothing
+
+                        els ->
+                            List.map .id els
+                                |> StringList
+                                |> Just
             }
     in
     Data.Validated.map3 make
@@ -501,6 +531,61 @@ update flags msg model =
             in
             ( model_, NoAction, Cmd.map FolderDropdownMsg c2 )
 
+        GetTagResp (Ok list) ->
+            let
+                contains el =
+                    List.member el model.existingTags
+
+                isExistingTag t =
+                    contains t.id || contains t.name
+
+                selected =
+                    List.filter isExistingTag list.items
+                        |> Comp.Dropdown.SetSelection
+
+                opts =
+                    Comp.Dropdown.SetOptions list.items
+
+                ( tagModel_, tagcmd ) =
+                    Util.Update.andThen1
+                        [ Comp.Dropdown.update selected
+                        , Comp.Dropdown.update opts
+                        ]
+                        model.tagModel
+
+                nextModel =
+                    { model
+                        | loading = model.loading - 1
+                        , tagModel = tagModel_
+                    }
+            in
+            ( nextModel
+            , NoAction
+            , Cmd.map TagDropdownMsg tagcmd
+            )
+
+        GetTagResp (Err _) ->
+            ( { model | loading = model.loading - 1 }
+            , NoAction
+            , Cmd.none
+            )
+
+        TagDropdownMsg lm ->
+            let
+                ( m2, c2 ) =
+                    Comp.Dropdown.update lm model.tagModel
+
+                newModel =
+                    { model | tagModel = m2 }
+            in
+            ( newModel, NoAction, Cmd.map TagDropdownMsg c2 )
+
+        SetFileFilter str ->
+            ( { model | fileFilter = Util.Maybe.fromString str }
+            , NoAction
+            , Cmd.none
+            )
+
 
 
 --- View
@@ -603,6 +688,9 @@ view extraClasses settings model =
                 , text " is not set."
                 ]
             ]
+        , div [ class "ui dividing header" ]
+            [ text "Metadata"
+            ]
         , div [ class "required field" ]
             [ label [] [ text "Item direction" ]
             , div [ class "grouped fields" ]
@@ -667,6 +755,49 @@ where you are a member of to make items visible. This message will
 disappear then.
                       """
                 ]
+            ]
+        , div [ class "field" ]
+            [ label [] [ text "Tags" ]
+            , Html.map TagDropdownMsg (Comp.Dropdown.view settings model.tagModel)
+            , div [ class "small-info" ]
+                [ text "Choose tags that should be applied to items."
+                ]
+            ]
+        , div
+            [ class "field"
+            ]
+            [ label [] [ text "File Filter" ]
+            , input
+                [ type_ "text"
+                , onInput SetFileFilter
+                , placeholder "File Filter"
+                , model.fileFilter
+                    |> Maybe.withDefault ""
+                    |> value
+                ]
+                []
+            , div [ class "small-info" ]
+                [ text "Specify a file glob to filter attachments. For example, to only extract pdf files: "
+                , code []
+                    [ text "*.pdf"
+                    ]
+                , text ". If you want to include the mail body, allow html files or "
+                , code []
+                    [ text "mail.html"
+                    ]
+                , text ". Globs can be combined via OR, like this: "
+                , code []
+                    [ text "*.pdf|mail.html"
+                    ]
+                , text "No file filter defaults to "
+                , code []
+                    [ text "*"
+                    ]
+                , text " that includes all"
+                ]
+            ]
+        , div [ class "ui dividing header" ]
+            [ text "Schedule"
             ]
         , div [ class "required field" ]
             [ label []

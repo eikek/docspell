@@ -4,6 +4,7 @@ import minitest._
 import cats.effect._
 import cats.implicits._
 import scala.concurrent.ExecutionContext
+import docspell.common.Glob
 
 object ZipTest extends SimpleTestSuite {
 
@@ -12,7 +13,7 @@ object ZipTest extends SimpleTestSuite {
 
   test("unzip") {
     val zipFile = ExampleFiles.letters_zip.readURL[IO](8192, blocker)
-    val uncomp  = zipFile.through(Zip.unzip(8192, blocker))
+    val uncomp  = zipFile.through(Zip.unzip(8192, blocker, Glob.all))
 
     uncomp
       .evalMap { entry =>
