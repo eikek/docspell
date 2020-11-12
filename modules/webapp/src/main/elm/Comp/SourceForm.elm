@@ -392,9 +392,14 @@ disappear then.
                 ]
                 []
             , div [ class "small-info" ]
-                [ text "Specify a file glob to filter files when uploading archives (e.g. for email and zip). For example, to only extract pdf files: "
+                [ text "Specify a file glob to filter files when uploading archives "
+                , text "(e.g. for email and zip). For example, to only extract pdf files: "
                 , code []
                     [ text "*.pdf"
+                    ]
+                , text ". Globs can be combined via OR, like this: "
+                , code []
+                    [ text "*.pdf|mail.html"
                     ]
                 ]
             ]
