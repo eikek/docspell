@@ -672,14 +672,20 @@ def packageTools(logger: Logger, dir: File, version: String): Seq[File] = {
     webext
   )
 
+  val excludes = Seq(wx, target)
+
+  val files =
+    (dir ** "*")
+      .filter(f => !excludes.exists(p => f.absolutePath.startsWith(p.absolutePath)))
+      .pair(sbt.io.Path.relativeTo(dir))
+      .map({case (f, name) => (f, s"docspell-tools-${version}/$name") })
+
   IO.zip(
     Seq(
       webext                          -> s"docspell-tools-${version}/firefox/docspell-extension.xpi",
       wx / "native/app_manifest.json" -> s"docspell-tools-${version}/firefox/native/app_manifest.json",
-      wx / "native/native.py"         -> s"docspell-tools-${version}/firefox/native/native.py",
-      dir / "ds.sh"                   -> s"docspell-tools-${version}/ds.sh",
-      dir / "consumedir.sh"           -> s"docspell-tools-${version}/consumedir.sh"
-    ),
+      wx / "native/native.py"         -> s"docspell-tools-${version}/firefox/native/native.py"
+    ) ++ files,
     archive
   )
 
