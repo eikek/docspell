@@ -122,10 +122,7 @@ view cfg settings model item =
             item.state /= "created"
 
         cardColor =
-            if isSelected cfg item.id then
-                "purple"
-
-            else if not isConfirmed then
+            if not isConfirmed then
                 "blue"
 
             else
@@ -141,6 +138,25 @@ view cfg settings model item =
 
                 Data.ItemSelection.Active ids ->
                     onClick (ToggleSelectItem ids item.id)
+
+        selectedDimmer =
+            div
+                [ classList
+                    [ ( "ui light dimmer", True )
+                    , ( "active", isSelected cfg item.id )
+                    ]
+                ]
+                [ div [ class "content" ]
+                    [ a
+                        [ cardAction
+                        ]
+                        [ i [ class "huge icons purple" ]
+                            [ i [ class "big circle outline icon" ] []
+                            , i [ class "check icon" ] []
+                            ]
+                        ]
+                    ]
+                ]
     in
     div
         ([ classList
@@ -152,16 +168,21 @@ view cfg settings model item =
          ]
             ++ DD.draggable ItemDDMsg item.id
         )
-        [ if fieldHidden Data.Fields.PreviewImage then
-            span [ class "invisible" ] []
+        ((if fieldHidden Data.Fields.PreviewImage then
+            []
 
           else
-            previewImage settings model item
-        , mainContent cardAction cardColor isConfirmed settings cfg item
-        , notesContent settings item
-        , metaDataContent settings item
-        , fulltextResultsContent item
-        ]
+            [ selectedDimmer
+            , previewMenu model item (currentAttachment model item)
+            , previewImage settings cardAction model item
+            ]
+         )
+            ++ [ mainContent cardAction cardColor isConfirmed settings cfg item
+               , notesContent settings item
+               , metaDataContent settings item
+               , fulltextResultsContent item
+               ]
+        )
 
 
 fulltextResultsContent : ItemLight -> Html Msg
@@ -306,35 +327,25 @@ mainContent cardAction cardColor isConfirmed settings cfg item =
             Data.UiSettings.fieldHidden settings f
     in
     a
-        [ class "link content"
+        [ class "content"
         , href "#"
         , cardAction
         ]
-        [ case cfg.selection of
-            Data.ItemSelection.Active ids ->
-                div [ class "header" ]
-                    [ Util.Html.checkbox (Set.member item.id ids)
-                    , dirIcon
-                    , Util.String.underscoreToSpace item.name
-                        |> text
-                    ]
+        [ if fieldHidden Data.Fields.Direction then
+            div [ class "header" ]
+                [ Util.String.underscoreToSpace item.name |> text
+                ]
 
-            Data.ItemSelection.Inactive ->
-                if fieldHidden Data.Fields.Direction then
-                    div [ class "header" ]
-                        [ Util.String.underscoreToSpace item.name |> text
-                        ]
-
-                else
-                    div
-                        [ class "header"
-                        , Data.Direction.labelFromMaybe item.direction
-                            |> title
-                        ]
-                        [ dirIcon
-                        , Util.String.underscoreToSpace item.name
-                            |> text
-                        ]
+          else
+            div
+                [ class "header"
+                , Data.Direction.labelFromMaybe item.direction
+                    |> title
+                ]
+                [ dirIcon
+                , Util.String.underscoreToSpace item.name
+                    |> text
+                ]
         , div
             [ classList
                 [ ( "ui right corner label", True )
@@ -376,20 +387,21 @@ mainContent cardAction cardColor isConfirmed settings cfg item =
         ]
 
 
-previewImage : UiSettings -> Model -> ItemLight -> Html Msg
-previewImage settings model item =
+previewImage : UiSettings -> Attribute Msg -> Model -> ItemLight -> Html Msg
+previewImage settings cardAction model item =
     let
+        mainAttach =
+            currentAttachment model item
+
         previewUrl =
             Maybe.map .id mainAttach
                 |> Maybe.map Api.attachmentPreviewURL
                 |> Maybe.withDefault (Api.itemBasePreviewURL item.id)
-
-        mainAttach =
-            currentAttachment model item
     in
-    div
+    a
         [ class "image ds-card-image"
         , Data.UiSettings.cardPreviewSize settings
+        , cardAction
         ]
         [ img
             [ class "preview-image"
@@ -397,52 +409,73 @@ previewImage settings model item =
             , Data.UiSettings.cardPreviewSize settings
             ]
             []
-        , pageCountLabel model item mainAttach
         ]
 
 
-pageCountLabel : Model -> ItemLight -> Maybe AttachmentLight -> Html Msg
-pageCountLabel model item mainAttach =
+previewMenu : Model -> ItemLight -> Maybe AttachmentLight -> Html Msg
+previewMenu model item mainAttach =
     let
         pageCount =
             Maybe.andThen .pageCount mainAttach
                 |> Maybe.withDefault 0
-    in
-    div
-        [ classList
-            [ ( "card-attachment-nav top", True )
-            , ( "invisible", pageCount == 0 || (item.fileCount == 1 && pageCount == 1) )
-            ]
-        ]
-        [ if item.fileCount == 1 then
-            div
-                [ class "ui secondary basic mini label"
-                , title "Number of pages"
-                ]
-                [ text "p."
-                , text (String.fromInt pageCount)
-                ]
 
-          else
-            div [ class "ui left labeled mini button" ]
-                [ div [ class "ui basic right pointing mini label" ]
-                    [ currentPosition model item
-                        |> String.fromInt
-                        |> text
-                    , text "/"
-                    , text (String.fromInt item.fileCount)
-                    , text " p."
-                    , text (String.fromInt pageCount)
+        attachUrl =
+            Maybe.map .id mainAttach
+                |> Maybe.map ((++) "/api/v1/sec/attachment/")
+                |> Maybe.withDefault "/api/v1/sec/attachment/none"
+
+        gotoFileBtn =
+            a
+                [ class "ui compact basic icon button"
+                , href attachUrl
+                , target "_self"
+                ]
+                [ i [ class "eye icon" ] []
+                ]
+    in
+    if pageCount == 0 || (item.fileCount == 1 && pageCount == 1) then
+        div [ class "card-attachment-nav" ]
+            [ gotoFileBtn
+            ]
+
+    else if item.fileCount == 1 then
+        div [ class "card-attachment-nav" ]
+            [ div [ class "ui small top attached basic icon buttons" ]
+                [ gotoFileBtn
+                ]
+            , div [ class "ui attached basic fitted center aligned blue segment" ]
+                [ span
+                    [ title "Number of pages"
                     ]
+                    [ text (String.fromInt pageCount)
+                    , text "p."
+                    ]
+                ]
+            ]
+
+    else
+        div [ class "card-attachment-nav" ]
+            [ div [ class "ui small top attached basic icon buttons" ]
+                [ gotoFileBtn
                 , a
-                    [ class "ui mini icon secondary button"
+                    [ class "ui compact icon button"
                     , href "#"
                     , onClick (CyclePreview item)
                     ]
                     [ i [ class "arrow right icon" ] []
                     ]
                 ]
-        ]
+            , div [ class "ui attached basic blue fitted center aligned segment" ]
+                [ currentPosition model item
+                    |> String.fromInt
+                    |> text
+                , text "/"
+                , text (String.fromInt item.fileCount)
+                , text ", "
+                , text (String.fromInt pageCount)
+                , text "p."
+                ]
+            ]
 
 
 renderHighlightEntry : HighlightEntry -> Html Msg
