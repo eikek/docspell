@@ -122,10 +122,7 @@ view cfg settings model item =
             item.state /= "created"
 
         cardColor =
-            if isSelected cfg item.id then
-                "purple"
-
-            else if not isConfirmed then
+            if not isConfirmed then
                 "blue"
 
             else
@@ -141,6 +138,25 @@ view cfg settings model item =
 
                 Data.ItemSelection.Active ids ->
                     onClick (ToggleSelectItem ids item.id)
+
+        selectedDimmer =
+            div
+                [ classList
+                    [ ( "ui light dimmer", True )
+                    , ( "active", isSelected cfg item.id )
+                    ]
+                ]
+                [ div [ class "content" ]
+                    [ a
+                        [ cardAction
+                        ]
+                        [ i [ class "huge icons purple" ]
+                            [ i [ class "big circle outline icon" ] []
+                            , i [ class "check icon" ] []
+                            ]
+                        ]
+                    ]
+                ]
     in
     div
         ([ classList
@@ -156,7 +172,8 @@ view cfg settings model item =
             []
 
           else
-            [ previewMenu model item (currentAttachment model item)
+            [ selectedDimmer
+            , previewMenu model item (currentAttachment model item)
             , previewImage settings cardAction model item
             ]
          )
@@ -310,35 +327,25 @@ mainContent cardAction cardColor isConfirmed settings cfg item =
             Data.UiSettings.fieldHidden settings f
     in
     a
-        [ class "link content"
+        [ class "content"
         , href "#"
         , cardAction
         ]
-        [ case cfg.selection of
-            Data.ItemSelection.Active ids ->
-                div [ class "header" ]
-                    [ Util.Html.checkbox (Set.member item.id ids)
-                    , dirIcon
-                    , Util.String.underscoreToSpace item.name
-                        |> text
-                    ]
+        [ if fieldHidden Data.Fields.Direction then
+            div [ class "header" ]
+                [ Util.String.underscoreToSpace item.name |> text
+                ]
 
-            Data.ItemSelection.Inactive ->
-                if fieldHidden Data.Fields.Direction then
-                    div [ class "header" ]
-                        [ Util.String.underscoreToSpace item.name |> text
-                        ]
-
-                else
-                    div
-                        [ class "header"
-                        , Data.Direction.labelFromMaybe item.direction
-                            |> title
-                        ]
-                        [ dirIcon
-                        , Util.String.underscoreToSpace item.name
-                            |> text
-                        ]
+          else
+            div
+                [ class "header"
+                , Data.Direction.labelFromMaybe item.direction
+                    |> title
+                ]
+                [ dirIcon
+                , Util.String.underscoreToSpace item.name
+                    |> text
+                ]
         , div
             [ classList
                 [ ( "ui right corner label", True )
