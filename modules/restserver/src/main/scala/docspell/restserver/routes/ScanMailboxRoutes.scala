@@ -115,7 +115,8 @@ object ScanMailboxRoutes {
           settings.direction,
           settings.itemFolder,
           settings.fileFilter,
-          settings.tags.map(_.items)
+          settings.tags.map(_.items),
+          settings.subjectFilter
         )
       )
     )
@@ -137,7 +138,7 @@ object ScanMailboxRoutes {
       task.id,
       task.enabled,
       conn.getOrElse(Ident.unsafe("")),
-      task.args.folders, //folders
+      task.args.folders,
       task.timer,
       task.args.receivedSince.map(_.hours.toInt),
       task.args.targetFolder,
@@ -145,6 +146,7 @@ object ScanMailboxRoutes {
       task.args.direction,
       task.args.itemFolder,
       task.args.tags.map(StringList.apply),
-      task.args.fileFilter
+      task.args.fileFilter,
+      task.args.subjectFilter
     )
 }

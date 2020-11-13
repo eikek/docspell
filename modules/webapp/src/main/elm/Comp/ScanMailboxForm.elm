@@ -63,6 +63,7 @@ type alias Model =
     , tagModel : Comp.Dropdown.Model Tag
     , existingTags : List String
     , fileFilter : Maybe String
+    , subjectFilter : Maybe String
     }
 
 
@@ -94,6 +95,7 @@ type Msg
     | GetTagResp (Result Http.Error TagList)
     | TagDropdownMsg (Comp.Dropdown.Msg Tag)
     | SetFileFilter String
+    | SetSubjectFilter String
 
 
 initWith : Flags -> ScanMailboxSettings -> ( Model, Cmd Msg )
@@ -135,6 +137,7 @@ initWith flags s =
             Maybe.map .items s.tags
                 |> Maybe.withDefault []
         , fileFilter = s.fileFilter
+        , subjectFilter = s.subjectFilter
       }
     , Cmd.batch
         [ Api.getImapSettings flags "" ConnResp
@@ -184,6 +187,7 @@ init flags =
       , tagModel = Util.Tag.makeDropdownModel
       , existingTags = []
       , fileFilter = Nothing
+      , subjectFilter = Nothing
       }
     , Cmd.batch
         [ Api.getImapSettings flags "" ConnResp
@@ -228,6 +232,7 @@ makeSettings model =
                 , schedule = Data.CalEvent.makeEvent timer
                 , itemFolder = model.itemFolderId
                 , fileFilter = model.fileFilter
+                , subjectFilter = model.subjectFilter
                 , tags =
                     case Comp.Dropdown.getSelected model.tagModel of
                         [] ->
@@ -586,6 +591,12 @@ update flags msg model =
             , Cmd.none
             )
 
+        SetSubjectFilter str ->
+            ( { model | subjectFilter = Util.Maybe.fromString str }
+            , NoAction
+            , Cmd.none
+            )
+
 
 
 --- View
@@ -653,13 +664,6 @@ view extraClasses settings model =
                 [ text "The folders to go through"
                 ]
             ]
-        , Html.map ReceivedHoursMsg
-            (Comp.IntField.viewWithInfo
-                "Select mails newer than `now - receivedHours`"
-                model.receivedHours
-                "field"
-                model.receivedHoursModel
-            )
         , div [ class "field" ]
             [ label [] [ text "Target folder" ]
             , input
@@ -686,6 +690,74 @@ view extraClasses settings model =
                 [ text "Whether to delete all mails successfully imported into docspell. This only applies if "
                 , em [] [ text "target folder" ]
                 , text " is not set."
+                ]
+            ]
+        , div [ class "ui dividing header" ]
+            [ text "Filter"
+            ]
+        , Html.map ReceivedHoursMsg
+            (Comp.IntField.viewWithInfo
+                "Select mails newer than `now - receivedHours`"
+                model.receivedHours
+                "field"
+                model.receivedHoursModel
+            )
+        , div
+            [ class "field"
+            ]
+            [ label [] [ text "File Filter" ]
+            , input
+                [ type_ "text"
+                , onInput SetFileFilter
+                , placeholder "File Filter"
+                , model.fileFilter
+                    |> Maybe.withDefault ""
+                    |> value
+                ]
+                []
+            , div [ class "small-info" ]
+                [ text "Specify a file glob to filter attachments. For example, to only extract pdf files: "
+                , code []
+                    [ text "*.pdf"
+                    ]
+                , text ". If you want to include the mail body, allow html files or "
+                , code []
+                    [ text "mail.html"
+                    ]
+                , text ". Globs can be combined via OR, like this: "
+                , code []
+                    [ text "*.pdf|mail.html"
+                    ]
+                , text ". No file filter defaults to "
+                , code []
+                    [ text "*"
+                    ]
+                , text " that includes all"
+                ]
+            ]
+        , div
+            [ class "field"
+            ]
+            [ label [] [ text "Subject Filter" ]
+            , input
+                [ type_ "text"
+                , onInput SetSubjectFilter
+                , placeholder "Subject Filter"
+                , model.subjectFilter
+                    |> Maybe.withDefault ""
+                    |> value
+                ]
+                []
+            , div [ class "small-info" ]
+                [ text "Specify a file glob to filter mails by subject. For example: "
+                , code []
+                    [ text "*Scanned Document*"
+                    ]
+                , text ". No file filter defaults to "
+                , code []
+                    [ text "*"
+                    ]
+                , text " that includes all"
                 ]
             ]
         , div [ class "ui dividing header" ]
@@ -761,39 +833,6 @@ disappear then.
             , Html.map TagDropdownMsg (Comp.Dropdown.view settings model.tagModel)
             , div [ class "small-info" ]
                 [ text "Choose tags that should be applied to items."
-                ]
-            ]
-        , div
-            [ class "field"
-            ]
-            [ label [] [ text "File Filter" ]
-            , input
-                [ type_ "text"
-                , onInput SetFileFilter
-                , placeholder "File Filter"
-                , model.fileFilter
-                    |> Maybe.withDefault ""
-                    |> value
-                ]
-                []
-            , div [ class "small-info" ]
-                [ text "Specify a file glob to filter attachments. For example, to only extract pdf files: "
-                , code []
-                    [ text "*.pdf"
-                    ]
-                , text ". If you want to include the mail body, allow html files or "
-                , code []
-                    [ text "mail.html"
-                    ]
-                , text ". Globs can be combined via OR, like this: "
-                , code []
-                    [ text "*.pdf|mail.html"
-                    ]
-                , text "No file filter defaults to "
-                , code []
-                    [ text "*"
-                    ]
-                , text " that includes all"
                 ]
             ]
         , div [ class "ui dividing header" ]

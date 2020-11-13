@@ -33,7 +33,9 @@ case class ScanMailboxArgs(
     // set a filter for files when importing archives
     fileFilter: Option[Glob],
     // set a list of tags to apply to new item
-    tags: Option[List[String]]
+    tags: Option[List[String]],
+    // a glob filter for the mail subject
+    subjectFilter: Option[Glob]
 )
 
 object ScanMailboxArgs {

@@ -3503,7 +3503,12 @@ components:
           $ref: "#/components/schemas/StringList"
         fileFilter:
           description: |
-            A glob to filter attachments to import.
+            A glob to filter attachments to import by file name.
+          type: string
+          format: glob
+        subjectFilter:
+          description: |
+            A glob to filter attachments to import by subject.
           type: string
           format: glob
 

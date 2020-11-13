@@ -142,7 +142,7 @@ object ScanMailboxTask {
         _       <- Kleisli.liftF(ctx.logger.info(s"Processing folder $name"))
         folder  <- requireFolder(a)(name)
         search  <- searchMails(a)(folder)
-        headers <- Kleisli.liftF(filterMessageIds(search.mails))
+        headers <- Kleisli.liftF(filterSubjects(search.mails).flatMap(filterMessageIds))
         _       <- headers.traverse(handleOne(ctx.args, a, upload))
       } yield ScanResult(name, search.mails.size, search.count - search.mails.size)
 
@@ -177,6 +177,26 @@ object ScanMailboxTask {
         )
       } yield mails
     }
+
+    def filterSubjects(headers: Vector[MailHeader]): F[Vector[MailHeader]] =
+      ctx.args.subjectFilter match {
+        case Some(sf) =>
+          def check(mh: MailHeader): F[Option[MailHeader]] =
+            if (sf.matches(mh.subject))
+              ctx.logger.debug(
+                s"Including mail '${mh.subject}', it matches the filter."
+              ) *> Option(mh).pure[F]
+            else
+              ctx.logger.debug(
+                s"Excluding mail '${mh.subject}', it doesn't match the filter."
+              ) *> (None: Option[MailHeader]).pure[F]
+          ctx.logger.info(
+            s"Filtering mails on subject using filter: ${sf.asString}"
+          ) *> headers.traverseFilter(check)
+
+        case None =>
+          ctx.logger.debug("Not matching on subjects. No filter given") *> headers.pure[F]
+      }
 
     def filterMessageIds(headers: Vector[MailHeader]): F[Vector[MailHeader]] =
       NonEmptyList.fromFoldable(headers.flatMap(_.messageId)) match {
