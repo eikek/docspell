@@ -148,7 +148,12 @@ type alias ViewConfig =
 
 view : ViewConfig -> UiSettings -> Model -> Html Msg
 view cfg settings model =
-    div [ class "ui container" ]
+    div
+        [ classList
+            [ ( "ui container", True )
+            , ( "multi-select-mode", isMultiSelectMode cfg )
+            ]
+        ]
         (List.map (viewGroup model cfg settings) model.results.groups)
 
 
@@ -185,3 +190,17 @@ viewItem model cfg settings item =
             Comp.ItemCard.view vvcfg settings cardModel item
     in
     Html.map (ItemCardMsg item) cardHtml
+
+
+
+--- Helpers
+
+
+isMultiSelectMode : ViewConfig -> Bool
+isMultiSelectMode cfg =
+    case cfg.selection of
+        Data.ItemSelection.Active _ ->
+            True
+
+        Data.ItemSelection.Inactive ->
+            False
