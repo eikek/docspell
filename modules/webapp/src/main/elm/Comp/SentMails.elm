@@ -103,10 +103,12 @@ view model =
         Nothing ->
             table [ class "ui selectable pointer very basic table" ]
                 [ thead []
-                    [ th [ class "collapsing" ] [ text "Recipients" ]
-                    , th [] [ text "Subject" ]
-                    , th [ class "collapsible" ] [ text "Sent" ]
-                    , th [ class "collapsible" ] [ text "Sender" ]
+                    [ tr []
+                        [ th [ class "collapsing" ] [ text "Recipients" ]
+                        , th [] [ text "Subject" ]
+                        , th [ class "collapsible" ] [ text "Sent" ]
+                        , th [ class "collapsible" ] [ text "Sender" ]
+                        ]
                     ]
                 , tbody [] <|
                     List.map

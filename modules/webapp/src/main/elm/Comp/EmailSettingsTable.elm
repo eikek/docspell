@@ -46,9 +46,11 @@ view : Model -> Html Msg
 view model =
     table [ class "ui selectable pointer table" ]
         [ thead []
-            [ th [ class "collapsible" ] [ text "Name" ]
-            , th [] [ text "Host/Port" ]
-            , th [] [ text "From" ]
+            [ tr []
+                [ th [ class "collapsible" ] [ text "Name" ]
+                , th [] [ text "Host/Port" ]
+                , th [] [ text "From" ]
+                ]
             ]
         , tbody []
             (List.map (renderLine model) model.emailSettings)

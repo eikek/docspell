@@ -131,7 +131,7 @@ init : Flags -> ( Model, Cmd Msg )
 init flags =
     let
         initialSchedule =
-            Data.Validated.Unknown Data.CalEvent.everyMonth
+            Data.Validated.Valid Data.CalEvent.everyMonth
 
         sm =
             Comp.CalEventInput.initDefault
