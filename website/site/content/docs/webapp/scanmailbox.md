@@ -29,6 +29,8 @@ You can enable or disable this task. A disabled task will not run
 periodically. You can still choose to run it manually if you click the
 `Start Once` button.
 
+## E-Mail Settings
+
 Then you need to specify which [IMAP
 connection](@/docs/webapp/emailsettings.md#imap-settings) to use.
 
@@ -41,12 +43,6 @@ mails in your inbox. Any other folder is usually case-sensitive
 except the INBOX folder). Type in a folder name and click the add
 button on the right.
 
-Then the field *Received Since Hours* defines how many hours to go
-back and look for mails. Usually there are many mails in your inbox
-and importing them all at once is not feasible or desirable. It can
-work together with the *Schedule* field below. For example, you could
-run this task all 6 hours and read mails from 8 hours back.
-
 The next two settings tell docspell what to do once a mail has been
 submitted to docspell. It can be moved into another folder in your
 mail account. This moves it out of the way for the next run. You can
@@ -55,19 +51,51 @@ deleted and not moved to your trash folder*. If both options are off,
 nothing happens with that mail, it simply stays (and could be re-read
 on the next run).
 
-When docspell creates an item from a mail, it needs to set a direction
-value (incoming or outgoing). If you know that all mails you want to
-import have a specific directon, then you can set it here. Otherwise,
-*automatic* means that docspell chooses a direction based on the
-`From` header of a mail. If the `From` header is an e-mail address
-that belongs to a “concerning” person in your address book, then it is
-set to "outgoing". Otherwise it is set to "incoming". To support this,
-you need to add your own e-mail address(es) to your address book.
+## Filtering
+
+The following properties allow to filter mails that are imported.
+
+Then the field *Received Since Hours* defines how many hours to go
+back and look for mails. Usually there are many mails in your inbox
+and importing them all at once is not feasible or desirable. It can
+work together with the *Schedule* field below. For example, you could
+run this task all 6 hours and read mails from 8 hours back.
+
+The *File Filter* can be specified as a glob to only import mail
+attachments based on their file name. For example, a value of `*.pdf`
+will only import files that have a `pdf` extension. The mail body is
+named `mail.html` by convention and would be excluded when only
+specifying `*.pdf`. You can combine multiple globs using OR via the
+pipe `|` symbol. For example, to also include the mail body as well as
+all pdf attachments: `*.pdf|mail.html`.
+
+The *Subject Filter* is a glob filter that is applied to the mail
+subject. This can be used to only import mails whose subject have some
+pattern. For example, if your scanner mails to you with a certain
+subject like _"Scanned Document 214"_, you could include those via a
+`Scanned Document*` pattern.
+
+## Metadata
+
+The last properties allow to specify some metadata that are
+automatically attached to the items being created.
+
+Every item in docspell has a direction value (incoming or outgoing).
+If you know that all mails you want to import have a specific
+directon, then you can set it here. Otherwise, *automatic* means that
+docspell chooses a direction based on the `From` header of a mail. If
+the `From` header is an e-mail address that belongs to a “concerning”
+person in your address book, then it is set to "outgoing". Otherwise
+it is set to "incoming". To support this, you need to add your own
+e-mail address(es) to your address book.
 
 The *Item Folder* setting is used to put all items that are created
 from mails into the specified [folder](metadata#folders). If you
 define a folder here, where you are not a member, you won't find
 resulting items.
+
+The *Tags* setting can be used to associate a fixed number of tags to
+all items that are imported from this mail task.
 
 The last field is the *Schedule* which defines when and how often this
 task should run. The syntax is similiar to a date-time string, like

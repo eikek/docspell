@@ -45,14 +45,14 @@ The URL can be any docspell url that accepts uploads without
 authentication. This is usually a [source
 url](@/docs/webapp/uploading.md#anonymous-upload). It is also possible
 to use the script with the [integration
-endpoint](@/docs/webapp/uploading.md#integration-endpoint).
+endpoint](@/docs/api/upload.md#integration-endpoint).
 
 
 ## Integration Endpoint
 
 When given the `-i` or `--integration` option, the script changes its
 behaviour slightly to work with the [integration
-endpoint](@/docs/webapp/uploading.md#integration-endpoint).
+endpoint](@/docs/api/upload.md#integration-endpoint).
 
 First, if `-i` is given, it implies `-r` – so the directories are
 watched or traversed recursively. The script then assumes that there
@@ -121,7 +121,7 @@ directory, `./docs` in current directory, for new files. If a new file
 is detected, it is pushed to docspell.
 
 This utilizes the [integration
-endpoint](@/docs/webapp/uploading.md#integration-endpoint), which is
+endpoint](@/docs/api/upload.md#integration-endpoint), which is
 enabled in the config file, to allow uploading documents for all
 collectives. A subfolder must be created for each registered
 collective. The docker containers are configured to use http-header

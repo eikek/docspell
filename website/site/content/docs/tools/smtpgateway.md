@@ -5,8 +5,8 @@ weight = 50
 +++
 
 One possible use case for the [integration
-endpoint](@/docs/webapp/uploading.md#integration-endpoint) is a SMTP
-server that forwards all local mail to docspell. This way there is no
+endpoint](@/docs/api/upload.md#integration-endpoint) is a SMTP server
+that forwards all local mail to docspell. This way there is no
 periodic polling involved and documents (e-mails) get into docspell
 without delay.
 
@@ -22,8 +22,8 @@ You need to own a domain and add the appropriate MX records to point
 to your server. In this document, the domain `test.org` is used.
 
 You need to enable the [integration
-endpoint](@/docs/webapp/uploading.md#integration-endpoint) in the
-docspell configuration.
+endpoint](@/docs/api/upload.md#integration-endpoint) in the docspell
+configuration.
 
 # Exim
 
