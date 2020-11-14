@@ -191,6 +191,40 @@ getItemSearch model =
     }
 
 
+resetModel : Model -> Model
+resetModel model =
+    let
+        emptyDropdown dm =
+            Comp.Dropdown.update (Comp.Dropdown.SetSelection []) dm
+                |> Tuple.first
+
+        emptyFolder fm =
+            Comp.FolderSelect.deselect fm
+                |> Maybe.map (\msg -> Comp.FolderSelect.update msg fm)
+                |> Maybe.map Tuple.first
+                |> Maybe.withDefault fm
+    in
+    { model
+        | tagSelection = Comp.TagSelect.emptySelection
+        , tagSelectModel = Comp.TagSelect.reset model.tagSelectModel
+        , directionModel = emptyDropdown model.directionModel
+        , orgModel = emptyDropdown model.orgModel
+        , corrPersonModel = emptyDropdown model.corrPersonModel
+        , concPersonModel = emptyDropdown model.concPersonModel
+        , concEquipmentModel = emptyDropdown model.concEquipmentModel
+        , folderList = emptyFolder model.folderList
+        , selectedFolder = Nothing
+        , inboxCheckbox = False
+        , fromDate = Nothing
+        , untilDate = Nothing
+        , fromDueDate = Nothing
+        , untilDueDate = Nothing
+        , nameModel = Nothing
+        , allNameModel = Nothing
+        , fulltextModel = Nothing
+    }
+
+
 
 -- Update
 
@@ -220,6 +254,11 @@ type Msg
     | ToggleNameHelp
     | FolderSelectMsg Comp.FolderSelect.Msg
     | GetFolderResp (Result Http.Error FolderList)
+    | SetCorrOrg IdName
+    | SetCorrPerson IdName
+    | SetConcPerson IdName
+    | SetConcEquip IdName
+    | SetFolder IdName
 
 
 type alias NextState =
@@ -237,6 +276,26 @@ update =
 
 updateDrop : DD.Model -> Flags -> UiSettings -> Msg -> Model -> NextState
 updateDrop ddm flags settings msg model =
+    let
+        resetAndSet : Msg -> NextState
+        resetAndSet m =
+            let
+                reset =
+                    resetModel model
+
+                set =
+                    updateDrop ddm
+                        flags
+                        settings
+                        m
+                        reset
+            in
+            { model = set.model
+            , cmd = set.cmd
+            , stateChange = True
+            , dragDrop = set.dragDrop
+            }
+    in
     case msg of
         Init ->
             let
@@ -278,11 +337,39 @@ updateDrop ddm flags settings msg model =
             }
 
         ResetForm ->
+            { model = resetModel model
+            , cmd = Cmd.none
+            , stateChange = True
+            , dragDrop = DD.DragDropData ddm Nothing
+            }
+
+        SetCorrOrg id ->
+            resetAndSet (OrgMsg (Comp.Dropdown.SetSelection [ id ]))
+
+        SetCorrPerson id ->
+            resetAndSet (CorrPersonMsg (Comp.Dropdown.SetSelection [ id ]))
+
+        SetConcPerson id ->
+            resetAndSet (ConcPersonMsg (Comp.Dropdown.SetSelection [ id ]))
+
+        SetFolder id ->
+            case Comp.FolderSelect.setSelected id.id model.folderList of
+                Just lm ->
+                    resetAndSet (FolderSelectMsg lm)
+
+                Nothing ->
+                    { model = model
+                    , cmd = Cmd.none
+                    , stateChange = False
+                    , dragDrop = DD.DragDropData ddm Nothing
+                    }
+
+        SetConcEquip id ->
             let
-                next =
-                    update flags settings Init init
+                equip =
+                    Equipment id.id id.name 0
             in
-            { next | stateChange = True }
+            resetAndSet (ConcEquipmentMsg (Comp.Dropdown.SetSelection [ equip ]))
 
         GetTagsResp (Ok tags) ->
             let

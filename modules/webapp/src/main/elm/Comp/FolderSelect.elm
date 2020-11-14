@@ -1,7 +1,9 @@
 module Comp.FolderSelect exposing
     ( Model
     , Msg
+    , deselect
     , init
+    , setSelected
     , update
     , updateDrop
     , view
@@ -30,6 +32,23 @@ init selected all =
     , selected = Maybe.map .id selected
     , expanded = False
     }
+
+
+setSelected : String -> Model -> Maybe Msg
+setSelected id model =
+    List.filter (\fi -> fi.id == id) model.all
+        |> List.head
+        |> Maybe.map Toggle
+
+
+deselect : Model -> Maybe Msg
+deselect model =
+    case model.selected of
+        Just id ->
+            setSelected id model
+
+        Nothing ->
+            Nothing
 
 
 

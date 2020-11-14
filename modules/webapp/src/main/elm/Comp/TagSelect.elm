@@ -5,6 +5,7 @@ module Comp.TagSelect exposing
     , Selection
     , emptySelection
     , init
+    , reset
     , update
     , updateDrop
     , viewCats
@@ -72,6 +73,14 @@ init sel tags =
     , selectedCats = selCat
     , expandedTags = False
     , expandedCats = False
+    }
+
+
+reset : Model -> Model
+reset model =
+    { model
+        | selectedTags = Dict.empty
+        , selectedCats = Dict.empty
     }
 
 
