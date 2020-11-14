@@ -26,6 +26,7 @@ import Comp.Dropdown
 import Comp.Dropzone
 import Comp.ItemMail
 import Comp.KeyInput
+import Comp.LinkTarget exposing (LinkTarget)
 import Comp.MarkdownInput
 import Comp.SentMails
 import Comp.YesNoDimmer
@@ -273,6 +274,7 @@ type Msg
     | KeyInputMsg Comp.KeyInput.Msg
     | ToggleAttachMenu
     | UiSettingsUpdated
+    | SetLinkTarget LinkTarget
 
 
 type SaveNameState

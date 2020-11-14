@@ -1285,6 +1285,9 @@ update key flags inav settings msg model =
             in
             noSub ( model_, Cmd.none )
 
+        SetLinkTarget lt ->
+            noSub ( model, Cmd.none )
+
 
 
 --- Helper

@@ -11,6 +11,7 @@ import Comp.ItemDetail.AttachmentTabMenu
 import Comp.ItemDetail.Model exposing (Model, Msg(..), NotesField(..), SaveNameState(..))
 import Comp.ItemMail
 import Comp.KeyInput
+import Comp.LinkTarget
 import Comp.MarkdownInput
 import Comp.SentMails
 import Comp.YesNoDimmer
@@ -519,13 +520,9 @@ renderItemInfo settings model =
                 [ class "item"
                 , title "Correspondent"
                 ]
-                [ Icons.correspondentIcon ""
-                , List.filterMap identity [ model.item.corrOrg, model.item.corrPerson ]
-                    |> List.map .name
-                    |> String.join ", "
-                    |> Util.String.withDefault "(None)"
-                    |> text
-                ]
+                (Icons.correspondentIcon ""
+                    :: Comp.LinkTarget.makeCorrLink model.item SetLinkTarget
+                )
             , Data.UiSettings.fieldVisible settings Data.Fields.CorrOrg
                 || Data.UiSettings.fieldVisible settings Data.Fields.CorrPerson
             )
@@ -535,13 +532,9 @@ renderItemInfo settings model =
                 [ class "item"
                 , title "Concerning"
                 ]
-                [ Icons.concernedIcon
-                , List.filterMap identity [ model.item.concPerson, model.item.concEquipment ]
-                    |> List.map .name
-                    |> String.join ", "
-                    |> Util.String.withDefault "(None)"
-                    |> text
-                ]
+                (Icons.concernedIcon
+                    :: Comp.LinkTarget.makeConcLink model.item SetLinkTarget
+                )
             , Data.UiSettings.fieldVisible settings Data.Fields.ConcEquip
                 || Data.UiSettings.fieldVisible settings Data.Fields.ConcPerson
             )
@@ -552,9 +545,7 @@ renderItemInfo settings model =
                 , title "Folder"
                 ]
                 [ Icons.folderIcon ""
-                , Maybe.map .name model.item.folder
-                    |> Maybe.withDefault "-"
-                    |> text
+                , Comp.LinkTarget.makeFolderLink model.item SetLinkTarget
                 ]
             , Data.UiSettings.fieldVisible settings Data.Fields.Folder
             )
@@ -592,7 +583,7 @@ renderItemInfo settings model =
                     [ text "New!"
                     ]
                 , div [ class "sub header" ]
-                    [ div [ class "ui horizontal bulleted list" ]
+                    [ div [ class "ui horizontal bulleted link list" ]
                         (List.filter Tuple.second
                             [ date
                             , corr
