@@ -1,5 +1,72 @@
 # Changelog
 
+## v0.15.0
+
+*Soon*
+
+This release adds the "preview feature", where a thumbnail of the
+first page of each attachment can be shown in the overview. Additional
+there are some bugfixes and UI improvements.
+
+- Feature: create a thumbnail of every file. The scale factor can be
+  configured in the config file. The user can choose in the ui, what
+  size to display and whether to display it or not. (#327)
+- Feature: Display the number of pages in the overview (#325)
+- Feature: Extend the upload request to allow to specify a file filter
+  and a list of tags (#346, #385):
+  - file filter: this is a glob that selects files when an archive
+    file (a zip or e-mail file) is uploaded
+  - tag list: allows to specify a list of tags that are automatically
+    set on the item that is being created
+  - these two settings are added to the scan-mailbox form and the
+    source-form
+- Feature: Filter mails to import by subject (#384)
+- Feature: Add quick links to item-detail and overview to jump to a
+  specific search view; e.g. click on correspondent takes you to the
+  overview with this correspondent selected in the search menu (#355)
+- Improved css assets (#349)
+  - Moved from [Semantic-UI](https://semantic-ui.com/) to
+    [Fomantic-UI](https://fomantic-ui.com/), which is an actively
+    maintained fork of the former
+  - Removed the request to obtain a google font. Now you can use
+    docspell without hassle in environments without internet
+    connection
+  - jquery could be dropped as a js dependency
+  - This is a foundation for adding/changing themes eventually.
+- Improved ui for multi select mode when selecting items
+- Fix a bug when creating new scan-mailbox settings (#382)
+- Fix a build issue that resulted in missing scripts in the tools zip
+  file.
+- Fix a bug that added the `.pdf` extension twice. The filename can
+  now be defined in the config file. (#397)
+
+### REST Api Changes
+
+- New endpoints for getting/re-generating preview images:
+  - `sec/item/{id}/preview`
+  - `sec/attachment/{id}/preview`
+  - `sec/collective/previews` to re-generate all previews of a
+    collective
+- Changes in data structures:
+  - `ScanMailboxSettings` adds a list of tags, a file- and subject
+    filter
+  - `ItemUploadMeta` adds a list of tags and a file filter
+  - `SourceList` now contains the `Source` and its associated `Tag`s
+  - `Source` has an additional file filter
+  - new `SourceTagIn` structure to use when updating/adding sources
+  - Renamed `concEquip` to `concEquipment` in `ItemLight`
+  - `ItemLight` has an additional `attachments` list containing basic
+    infos about the associated attachments
+
+### Configuration Change
+
+- Joex: `….extraction.preview.dpi` to specify the dpi to use when
+  creating the thumbnail. Higher value results in better quality
+  images, but also larger ones
+- Joex: `….convert.converted-filename-part` to specify the part that
+  is used for the pdf-converted file
+
+
 ## v0.14.0
 
 *Nov 1st, 2020*
