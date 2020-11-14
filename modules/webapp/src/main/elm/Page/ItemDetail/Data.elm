@@ -1,9 +1,15 @@
-module Page.ItemDetail.Data exposing (Model, Msg(..), emptyModel)
+module Page.ItemDetail.Data exposing
+    ( Model
+    , Msg(..)
+    , UpdateResult
+    , emptyModel
+    )
 
 import Api.Model.ItemDetail exposing (ItemDetail)
 import Browser.Dom as Dom
 import Comp.ItemDetail
 import Comp.ItemDetail.Model
+import Comp.LinkTarget exposing (LinkTarget)
 import Http
 
 
@@ -24,3 +30,11 @@ type Msg
     | ItemResp (Result Http.Error ItemDetail)
     | ScrollResult (Result Dom.Error ())
     | UiSettingsUpdated
+
+
+type alias UpdateResult =
+    { model : Model
+    , cmd : Cmd Msg
+    , sub : Sub Msg
+    , linkTarget : LinkTarget
+    }

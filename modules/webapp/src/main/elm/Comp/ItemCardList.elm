@@ -14,6 +14,7 @@ import Api.Model.ItemLight exposing (ItemLight)
 import Api.Model.ItemLightGroup exposing (ItemLightGroup)
 import Api.Model.ItemLightList exposing (ItemLightList)
 import Comp.ItemCard
+import Comp.LinkTarget exposing (LinkTarget)
 import Data.Flags exposing (Flags)
 import Data.ItemSelection exposing (ItemSelection)
 import Data.Items
@@ -75,6 +76,7 @@ type alias UpdateResult =
     , cmd : Cmd Msg
     , dragModel : DD.Model
     , selection : ItemSelection
+    , linkTarget : LinkTarget
     }
 
 
@@ -91,18 +93,30 @@ updateDrag dm _ msg model =
                 newModel =
                     { model | results = list }
             in
-            UpdateResult newModel Cmd.none dm Data.ItemSelection.Inactive
+            UpdateResult newModel
+                Cmd.none
+                dm
+                Data.ItemSelection.Inactive
+                Comp.LinkTarget.LinkNone
 
         AddResults list ->
             if list.groups == [] then
-                UpdateResult model Cmd.none dm Data.ItemSelection.Inactive
+                UpdateResult model
+                    Cmd.none
+                    dm
+                    Data.ItemSelection.Inactive
+                    Comp.LinkTarget.LinkNone
 
             else
                 let
                     newModel =
                         { model | results = Data.Items.concat model.results list }
                 in
-                UpdateResult newModel Cmd.none dm Data.ItemSelection.Inactive
+                UpdateResult newModel
+                    Cmd.none
+                    dm
+                    Data.ItemSelection.Inactive
+                    Comp.LinkTarget.LinkNone
 
         ItemCardMsg item lm ->
             let
@@ -120,6 +134,7 @@ updateDrag dm _ msg model =
                 Cmd.none
                 result.dragModel
                 result.selection
+                result.linkTarget
 
 
 
@@ -134,7 +149,12 @@ type alias ViewConfig =
 
 view : ViewConfig -> UiSettings -> Model -> Html Msg
 view cfg settings model =
-    div [ class "ui container" ]
+    div
+        [ classList
+            [ ( "ui container", True )
+            , ( "multi-select-mode", isMultiSelectMode cfg )
+            ]
+        ]
         (List.map (viewGroup model cfg settings) model.results.groups)
 
 
@@ -171,3 +191,17 @@ viewItem model cfg settings item =
             Comp.ItemCard.view vvcfg settings cardModel item
     in
     Html.map (ItemCardMsg item) cardHtml
+
+
+
+--- Helpers
+
+
+isMultiSelectMode : ViewConfig -> Bool
+isMultiSelectMode cfg =
+    case cfg.selection of
+        Data.ItemSelection.Active _ ->
+            True
+
+        Data.ItemSelection.Inactive ->
+            False

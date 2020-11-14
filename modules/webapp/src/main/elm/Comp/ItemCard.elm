@@ -1,10 +1,19 @@
-module Comp.ItemCard exposing (..)
+module Comp.ItemCard exposing
+    ( Model
+    , Msg
+    , UpdateResult
+    , ViewConfig
+    , init
+    , update
+    , view
+    )
 
 import Api
 import Api.Model.AttachmentLight exposing (AttachmentLight)
 import Api.Model.HighlightEntry exposing (HighlightEntry)
+import Api.Model.IdName exposing (IdName)
 import Api.Model.ItemLight exposing (ItemLight)
-import Data.BasicSize
+import Comp.LinkTarget exposing (LinkTarget(..))
 import Data.Direction
 import Data.Fields
 import Data.Icons as Icons
@@ -16,7 +25,6 @@ import Html.Events exposing (onClick)
 import Markdown
 import Page exposing (Page(..))
 import Set exposing (Set)
-import Util.Html
 import Util.ItemDragDrop as DD
 import Util.List
 import Util.Maybe
@@ -33,6 +41,7 @@ type Msg
     = CyclePreview ItemLight
     | ToggleSelectItem (Set String) String
     | ItemDDMsg DD.Msg
+    | SetLinkTarget LinkTarget
 
 
 type alias ViewConfig =
@@ -45,6 +54,7 @@ type alias UpdateResult =
     { model : Model
     , dragModel : DD.Model
     , selection : ItemSelection
+    , linkTarget : LinkTarget
     }
 
 
@@ -89,7 +99,7 @@ update ddm msg model =
                 ddd =
                     DD.update lm ddm
             in
-            UpdateResult model ddd.model Data.ItemSelection.Inactive
+            UpdateResult model ddd.model Data.ItemSelection.Inactive LinkNone
 
         ToggleSelectItem ids id ->
             let
@@ -100,7 +110,7 @@ update ddm msg model =
                     else
                         Set.insert id ids
             in
-            UpdateResult model ddm (Data.ItemSelection.Active newSet)
+            UpdateResult model ddm (Data.ItemSelection.Active newSet) LinkNone
 
         CyclePreview item ->
             let
@@ -113,6 +123,10 @@ update ddm msg model =
             UpdateResult { model | previewAttach = next }
                 ddm
                 Data.ItemSelection.Inactive
+                LinkNone
+
+        SetLinkTarget target ->
+            UpdateResult model ddm Data.ItemSelection.Inactive target
 
 
 view : ViewConfig -> UiSettings -> Model -> ItemLight -> Html Msg
@@ -204,31 +218,15 @@ metaDataContent settings item =
         fieldHidden f =
             Data.UiSettings.fieldHidden settings f
 
-        corr =
-            List.filterMap identity [ item.corrOrg, item.corrPerson ]
-                |> List.map .name
-                |> List.intersperse ", "
-                |> String.concat
-
-        conc =
-            List.filterMap identity [ item.concPerson, item.concEquip ]
-                |> List.map .name
-                |> List.intersperse ", "
-                |> String.concat
-
-        folder =
-            Maybe.map .name item.folder
-                |> Maybe.withDefault ""
-
         dueDate =
             Maybe.map Util.Time.formatDateShort item.dueDate
                 |> Maybe.withDefault ""
     in
     div [ class "content" ]
-        [ div [ class "ui horizontal list" ]
+        [ div [ class "ui horizontal link list" ]
             [ div
                 [ classList
-                    [ ( "item", True )
+                    [ ( "link item", True )
                     , ( "invisible hidden"
                       , fieldHidden Data.Fields.CorrOrg
                             && fieldHidden Data.Fields.CorrPerson
@@ -236,10 +234,9 @@ metaDataContent settings item =
                     ]
                 , title "Correspondent"
                 ]
-                [ Icons.correspondentIcon ""
-                , text " "
-                , Util.String.withDefault "-" corr |> text
-                ]
+                (Icons.correspondentIcon ""
+                    :: Comp.LinkTarget.makeCorrLink item SetLinkTarget
+                )
             , div
                 [ classList
                     [ ( "item", True )
@@ -250,10 +247,9 @@ metaDataContent settings item =
                     ]
                 , title "Concerning"
                 ]
-                [ Icons.concernedIcon
-                , text " "
-                , Util.String.withDefault "-" conc |> text
-                ]
+                (Icons.concernedIcon
+                    :: Comp.LinkTarget.makeConcLink item SetLinkTarget
+                )
             , div
                 [ classList
                     [ ( "item", True )
@@ -262,8 +258,7 @@ metaDataContent settings item =
                 , title "Folder"
                 ]
                 [ Icons.folderIcon ""
-                , text " "
-                , Util.String.withDefault "-" folder |> text
+                , Comp.LinkTarget.makeFolderLink item SetLinkTarget
                 ]
             ]
         , div [ class "right floated meta" ]
@@ -318,7 +313,7 @@ notesContent settings item =
 
 
 mainContent : Attribute Msg -> String -> Bool -> UiSettings -> ViewConfig -> ItemLight -> Html Msg
-mainContent cardAction cardColor isConfirmed settings cfg item =
+mainContent cardAction cardColor isConfirmed settings _ item =
     let
         dirIcon =
             i [ class (Data.Direction.iconFromMaybe item.direction) ] []
@@ -429,6 +424,7 @@ previewMenu model item mainAttach =
                 [ class "ui compact basic icon button"
                 , href attachUrl
                 , target "_self"
+                , title "Open attachment file"
                 ]
                 [ i [ class "eye icon" ] []
                 ]

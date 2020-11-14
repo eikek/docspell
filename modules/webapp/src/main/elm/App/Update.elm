@@ -7,6 +7,7 @@ import Api
 import App.Data exposing (..)
 import Browser exposing (UrlRequest(..))
 import Browser.Navigation as Nav
+import Comp.LinkTarget
 import Data.Flags
 import Page exposing (Page(..))
 import Page.CollectiveSettings.Data
@@ -193,7 +194,7 @@ updateItemDetail lmsg model =
         inav =
             Page.Home.Data.itemNav model.itemDetailModel.detail.item.id model.homeModel
 
-        ( lm, lc, ls ) =
+        result =
             Page.ItemDetail.Update.update
                 model.key
                 model.flags
@@ -201,12 +202,18 @@ updateItemDetail lmsg model =
                 model.uiSettings
                 lmsg
                 model.itemDetailModel
+
+        model_ =
+            { model
+                | itemDetailModel = result.model
+            }
+
+        ( hm, hc, hs ) =
+            updateHome (Page.Home.Data.SetLinkTarget result.linkTarget) model_
     in
-    ( { model
-        | itemDetailModel = lm
-      }
-    , Cmd.map ItemDetailMsg lc
-    , Sub.map ItemDetailMsg ls
+    ( hm
+    , Cmd.batch [ Cmd.map ItemDetailMsg result.cmd, hc ]
+    , Sub.batch [ Sub.map ItemDetailMsg result.sub, hs ]
     )
 
 

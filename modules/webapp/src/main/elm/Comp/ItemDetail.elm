@@ -6,7 +6,7 @@ module Comp.ItemDetail exposing
     )
 
 import Browser.Navigation as Nav
-import Comp.ItemDetail.Model exposing (Msg(..))
+import Comp.ItemDetail.Model exposing (Msg(..), UpdateResult)
 import Comp.ItemDetail.Update
 import Comp.ItemDetail.View exposing (..)
 import Data.Flags exposing (Flags)
@@ -25,7 +25,7 @@ emptyModel =
     Comp.ItemDetail.Model.emptyModel
 
 
-update : Nav.Key -> Flags -> ItemNav -> UiSettings -> Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
+update : Nav.Key -> Flags -> ItemNav -> UiSettings -> Msg -> Model -> UpdateResult
 update =
     Comp.ItemDetail.Update.update
 

@@ -25,10 +25,15 @@ import Comp.ItemDetail.Model
         , Msg(..)
         , NotesField(..)
         , SaveNameState(..)
+        , UpdateResult
         , isEditNotes
+        , resultModel
+        , resultModelCmd
+        , resultModelCmdSub
         )
 import Comp.ItemMail
 import Comp.KeyInput
+import Comp.LinkTarget
 import Comp.MarkdownInput
 import Comp.OrgForm
 import Comp.PersonForm
@@ -46,7 +51,6 @@ import Html.Attributes exposing (..)
 import Html5.DragDrop as DD
 import Http
 import Page exposing (Page(..))
-import Ports
 import Set exposing (Set)
 import Throttle
 import Time
@@ -58,7 +62,7 @@ import Util.Maybe
 import Util.String
 
 
-update : Nav.Key -> Flags -> ItemNav -> UiSettings -> Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
+update : Nav.Key -> Flags -> ItemNav -> UiSettings -> Msg -> Model -> UpdateResult
 update key flags inav settings msg model =
     case msg of
         Init ->
@@ -69,7 +73,7 @@ update key flags inav settings msg model =
                 ( im, ic ) =
                     Comp.ItemMail.init flags
             in
-            noSub
+            resultModelCmd
                 ( { model | itemDatePicker = dp, dueDatePicker = dp, itemMail = im, visibleAttach = 0 }
                 , Cmd.batch
                     [ getOptions flags
@@ -82,7 +86,7 @@ update key flags inav settings msg model =
 
         SetItem item ->
             let
-                ( m1, c1, s1 ) =
+                res1 =
                     update key
                         flags
                         inav
@@ -90,7 +94,7 @@ update key flags inav settings msg model =
                         (TagDropdownMsg (Comp.Dropdown.SetSelection item.tags))
                         model
 
-                ( m2, c2, s2 ) =
+                res2 =
                     update key
                         flags
                         inav
@@ -103,9 +107,9 @@ update key flags inav settings msg model =
                                 )
                             )
                         )
-                        m1
+                        res1.model
 
-                ( m3, c3, s3 ) =
+                res3 =
                     update key
                         flags
                         inav
@@ -118,9 +122,9 @@ update key flags inav settings msg model =
                                 )
                             )
                         )
-                        m2
+                        res2.model
 
-                ( m4, c4, s4 ) =
+                res4 =
                     update key
                         flags
                         inav
@@ -133,9 +137,9 @@ update key flags inav settings msg model =
                                 )
                             )
                         )
-                        m3
+                        res3.model
 
-                ( m5, c5, s5 ) =
+                res5 =
                     update key
                         flags
                         inav
@@ -148,9 +152,9 @@ update key flags inav settings msg model =
                                 )
                             )
                         )
-                        m4
+                        res4.model
 
-                ( m6, c6, s6 ) =
+                res6 =
                     update key
                         flags
                         inav
@@ -163,12 +167,12 @@ update key flags inav settings msg model =
                                 )
                             )
                         )
-                        m5
+                        res5.model
 
-                ( m7, c7, s7 ) =
-                    update key flags inav settings AddFilesReset m6
+                res7 =
+                    update key flags inav settings AddFilesReset res6.model
 
-                ( m8, c8, s8 ) =
+                res8 =
                     update key
                         flags
                         inav
@@ -181,7 +185,7 @@ update key flags inav settings msg model =
                                 )
                             )
                         )
-                        m7
+                        res7.model
 
                 proposalCmd =
                     if item.state == "created" then
@@ -189,58 +193,73 @@ update key flags inav settings msg model =
 
                     else
                         Cmd.none
-            in
-            ( { m8
-                | item = item
-                , nameModel = item.name
-                , nameState = SaveSuccess
-                , notesModel = item.notes
-                , notesField =
-                    if Util.String.isNothingOrBlank item.notes then
-                        EditNotes Comp.MarkdownInput.init
 
-                    else
-                        ViewNotes
-                , itemDate = item.itemDate
-                , dueDate = item.dueDate
-                , visibleAttach = 0
-                , modalEdit = Nothing
-              }
-            , Cmd.batch
-                [ c1
-                , c2
-                , c3
-                , c4
-                , c5
-                , c6
-                , c7
-                , c8
-                , getOptions flags
-                , proposalCmd
-                , Api.getSentMails flags item.id SentMailsResp
-                ]
-            , Sub.batch [ s1, s2, s3, s4, s5, s6, s7, s8 ]
-            )
+                lastModel =
+                    res8.model
+            in
+            { model =
+                { lastModel
+                    | item = item
+                    , nameModel = item.name
+                    , nameState = SaveSuccess
+                    , notesModel = item.notes
+                    , notesField =
+                        if Util.String.isNothingOrBlank item.notes then
+                            EditNotes Comp.MarkdownInput.init
+
+                        else
+                            ViewNotes
+                    , itemDate = item.itemDate
+                    , dueDate = item.dueDate
+                    , visibleAttach = 0
+                    , modalEdit = Nothing
+                }
+            , cmd =
+                Cmd.batch
+                    [ res1.cmd
+                    , res2.cmd
+                    , res3.cmd
+                    , res4.cmd
+                    , res5.cmd
+                    , res6.cmd
+                    , res7.cmd
+                    , res8.cmd
+                    , getOptions flags
+                    , proposalCmd
+                    , Api.getSentMails flags item.id SentMailsResp
+                    ]
+            , sub =
+                Sub.batch
+                    [ res1.sub
+                    , res2.sub
+                    , res3.sub
+                    , res4.sub
+                    , res5.sub
+                    , res6.sub
+                    , res7.sub
+                    , res8.sub
+                    ]
+            , linkTarget = Comp.LinkTarget.LinkNone
+            }
 
         SetActiveAttachment pos ->
-            noSub
-                ( { model
+            resultModel
+                { model
                     | visibleAttach = pos
                     , sentMailsOpen = False
                     , attachRename = Nothing
-                  }
-                , Cmd.none
-                )
+                }
 
         ToggleMenu ->
-            noSub ( { model | menuOpen = not model.menuOpen }, Cmd.none )
+            resultModel
+                { model | menuOpen = not model.menuOpen }
 
         ReloadItem ->
             if model.item.id == "" then
-                noSub ( model, Cmd.none )
+                resultModel model
 
             else
-                noSub ( model, Api.itemDetail flags model.item.id GetItemResp )
+                resultModelCmd ( model, Api.itemDetail flags model.item.id GetItemResp )
 
         FolderDropdownMsg m ->
             let
@@ -260,7 +279,7 @@ update key flags inav settings msg model =
                     else
                         Cmd.none
             in
-            noSub ( newModel, Cmd.batch [ save, Cmd.map FolderDropdownMsg c2 ] )
+            resultModelCmd ( newModel, Cmd.batch [ save, Cmd.map FolderDropdownMsg c2 ] )
 
         TagDropdownMsg m ->
             let
@@ -277,7 +296,7 @@ update key flags inav settings msg model =
                     else
                         Cmd.none
             in
-            noSub ( newModel, Cmd.batch [ save, Cmd.map TagDropdownMsg c2 ] )
+            resultModelCmd ( newModel, Cmd.batch [ save, Cmd.map TagDropdownMsg c2 ] )
 
         DirDropdownMsg m ->
             let
@@ -294,7 +313,7 @@ update key flags inav settings msg model =
                     else
                         Cmd.none
             in
-            noSub ( newModel, Cmd.batch [ save, Cmd.map DirDropdownMsg c2 ] )
+            resultModelCmd ( newModel, Cmd.batch [ save, Cmd.map DirDropdownMsg c2 ] )
 
         OrgDropdownMsg m ->
             let
@@ -314,7 +333,7 @@ update key flags inav settings msg model =
                     else
                         Cmd.none
             in
-            noSub ( newModel, Cmd.batch [ save, Cmd.map OrgDropdownMsg c2 ] )
+            resultModelCmd ( newModel, Cmd.batch [ save, Cmd.map OrgDropdownMsg c2 ] )
 
         CorrPersonMsg m ->
             let
@@ -334,7 +353,7 @@ update key flags inav settings msg model =
                     else
                         Cmd.none
             in
-            noSub ( newModel, Cmd.batch [ save, Cmd.map CorrPersonMsg c2 ] )
+            resultModelCmd ( newModel, Cmd.batch [ save, Cmd.map CorrPersonMsg c2 ] )
 
         ConcPersonMsg m ->
             let
@@ -354,7 +373,7 @@ update key flags inav settings msg model =
                     else
                         Cmd.none
             in
-            noSub ( newModel, Cmd.batch [ save, Cmd.map ConcPersonMsg c2 ] )
+            resultModelCmd ( newModel, Cmd.batch [ save, Cmd.map ConcPersonMsg c2 ] )
 
         ConcEquipMsg m ->
             let
@@ -374,7 +393,7 @@ update key flags inav settings msg model =
                     else
                         Cmd.none
             in
-            noSub ( newModel, Cmd.batch [ save, Cmd.map ConcEquipMsg c2 ] )
+            resultModelCmd ( newModel, Cmd.batch [ save, Cmd.map ConcEquipMsg c2 ] )
 
         SetName str ->
             case Util.Maybe.fromString str of
@@ -398,26 +417,22 @@ update key flags inav settings msg model =
                         )
 
                 Nothing ->
-                    noSub ( { model | nameModel = str, nameState = SaveFailed }, Cmd.none )
+                    resultModel { model | nameModel = str, nameState = SaveFailed }
 
         SetNotes str ->
-            noSub
-                ( { model | notesModel = Util.Maybe.fromString str }
-                , Cmd.none
-                )
+            resultModel
+                { model | notesModel = Util.Maybe.fromString str }
 
         ToggleEditNotes ->
-            noSub
-                ( { model
+            resultModel
+                { model
                     | notesField =
                         if isEditNotes model.notesField then
                             ViewNotes
 
                         else
                             EditNotes Comp.MarkdownInput.init
-                  }
-                , Cmd.none
-                )
+                }
 
         NotesEditMsg lm ->
             case model.notesField of
@@ -426,26 +441,24 @@ update key flags inav settings msg model =
                         ( lm2, str ) =
                             Comp.MarkdownInput.update (Maybe.withDefault "" model.notesModel) lm em
                     in
-                    noSub
-                        ( { model | notesField = EditNotes lm2, notesModel = Util.Maybe.fromString str }
-                        , Cmd.none
-                        )
+                    resultModel
+                        { model | notesField = EditNotes lm2, notesModel = Util.Maybe.fromString str }
 
                 ViewNotes ->
-                    noSub ( model, Cmd.none )
+                    resultModel model
 
         SaveNotes ->
-            noSub ( model, setNotes flags model )
+            resultModelCmd ( model, setNotes flags model )
 
         ConfirmItem ->
             let
                 resetCmds =
                     resetHiddenFields settings flags model.item.id ResetHiddenMsg
             in
-            noSub ( model, Cmd.batch (Api.setConfirmed flags model.item.id SaveResp :: resetCmds) )
+            resultModelCmd ( model, Cmd.batch (Api.setConfirmed flags model.item.id SaveResp :: resetCmds) )
 
         UnconfirmItem ->
-            noSub ( model, Api.setUnconfirmed flags model.item.id SaveResp )
+            resultModelCmd ( model, Api.setUnconfirmed flags model.item.id SaveResp )
 
         ItemDatePickerMsg m ->
             let
@@ -458,13 +471,13 @@ update key flags inav settings msg model =
                         newModel =
                             { model | itemDatePicker = dp, itemDate = Just (Comp.DatePicker.midOfDay date) }
                     in
-                    noSub ( newModel, setDate flags newModel newModel.itemDate )
+                    resultModelCmd ( newModel, setDate flags newModel newModel.itemDate )
 
                 _ ->
-                    noSub ( { model | itemDatePicker = dp }, Cmd.none )
+                    resultModel { model | itemDatePicker = dp }
 
         RemoveDate ->
-            noSub ( { model | itemDate = Nothing }, setDate flags model Nothing )
+            resultModelCmd ( { model | itemDate = Nothing }, setDate flags model Nothing )
 
         DueDatePickerMsg m ->
             let
@@ -477,13 +490,13 @@ update key flags inav settings msg model =
                         newModel =
                             { model | dueDatePicker = dp, dueDate = Just (Comp.DatePicker.midOfDay date) }
                     in
-                    noSub ( newModel, setDueDate flags newModel newModel.dueDate )
+                    resultModelCmd ( newModel, setDueDate flags newModel newModel.dueDate )
 
                 _ ->
-                    noSub ( { model | dueDatePicker = dp }, Cmd.none )
+                    resultModel { model | dueDatePicker = dp }
 
         RemoveDueDate ->
-            noSub ( { model | dueDate = Nothing }, setDueDate flags model Nothing )
+            resultModelCmd ( { model | dueDate = Nothing }, setDueDate flags model Nothing )
 
         DeleteItemConfirm m ->
             let
@@ -497,28 +510,28 @@ update key flags inav settings msg model =
                     else
                         Cmd.none
             in
-            noSub ( { model | deleteItemConfirm = cm }, cmd )
+            resultModelCmd ( { model | deleteItemConfirm = cm }, cmd )
 
         RequestDelete ->
             update key flags inav settings (DeleteItemConfirm Comp.YesNoDimmer.activate) model
 
         SetCorrOrgSuggestion idname ->
-            noSub ( model, setCorrOrg flags model (Just idname) )
+            resultModelCmd ( model, setCorrOrg flags model (Just idname) )
 
         SetCorrPersonSuggestion idname ->
-            noSub ( model, setCorrPerson flags model (Just idname) )
+            resultModelCmd ( model, setCorrPerson flags model (Just idname) )
 
         SetConcPersonSuggestion idname ->
-            noSub ( model, setConcPerson flags model (Just idname) )
+            resultModelCmd ( model, setConcPerson flags model (Just idname) )
 
         SetConcEquipSuggestion idname ->
-            noSub ( model, setConcEquip flags model (Just idname) )
+            resultModelCmd ( model, setConcEquip flags model (Just idname) )
 
         SetItemDateSuggestion date ->
-            noSub ( model, setDate flags model (Just date) )
+            resultModelCmd ( model, setDate flags model (Just date) )
 
         SetDueDateSuggestion date ->
-            noSub ( model, setDueDate flags model (Just date) )
+            resultModelCmd ( model, setDueDate flags model (Just date) )
 
         GetFolderResp (Ok fs) ->
             let
@@ -542,20 +555,17 @@ update key flags inav settings msg model =
             update key flags inav settings (FolderDropdownMsg opts) model_
 
         GetFolderResp (Err _) ->
-            noSub ( model, Cmd.none )
+            resultModel model
 
         GetTagsResp (Ok tags) ->
             let
                 tagList =
                     Comp.Dropdown.SetOptions tags.items
-
-                ( m1, c1, s1 ) =
-                    update key flags inav settings (TagDropdownMsg tagList) model
             in
-            ( m1, c1, s1 )
+            update key flags inav settings (TagDropdownMsg tagList) model
 
         GetTagsResp (Err _) ->
-            noSub ( model, Cmd.none )
+            resultModel model
 
         GetOrgResp (Ok orgs) ->
             let
@@ -565,23 +575,27 @@ update key flags inav settings msg model =
             update key flags inav settings (OrgDropdownMsg opts) model
 
         GetOrgResp (Err _) ->
-            noSub ( model, Cmd.none )
+            resultModel model
 
         GetPersonResp (Ok ps) ->
             let
                 opts =
                     Comp.Dropdown.SetOptions ps.items
 
-                ( m1, c1, s1 ) =
+                res1 =
                     update key flags inav settings (CorrPersonMsg opts) model
 
-                ( m2, c2, s2 ) =
-                    update key flags inav settings (ConcPersonMsg opts) m1
+                res2 =
+                    update key flags inav settings (ConcPersonMsg opts) res1.model
             in
-            ( m2, Cmd.batch [ c1, c2 ], Sub.batch [ s1, s2 ] )
+            { model = res2.model
+            , cmd = Cmd.batch [ res1.cmd, res2.cmd ]
+            , sub = Sub.batch [ res1.sub, res2.sub ]
+            , linkTarget = Comp.LinkTarget.LinkNone
+            }
 
         GetPersonResp (Err _) ->
-            noSub ( model, Cmd.none )
+            resultModel model
 
         GetEquipResp (Ok equips) ->
             let
@@ -594,63 +608,59 @@ update key flags inav settings msg model =
             update key flags inav settings (ConcEquipMsg opts) model
 
         GetEquipResp (Err _) ->
-            noSub ( model, Cmd.none )
+            resultModel model
 
         SaveResp (Ok res) ->
             if res.success then
-                noSub ( model, Api.itemDetail flags model.item.id GetItemResp )
+                resultModelCmd ( model, Api.itemDetail flags model.item.id GetItemResp )
 
             else
-                noSub ( model, Cmd.none )
+                resultModel model
 
         SaveResp (Err _) ->
-            noSub ( model, Cmd.none )
+            resultModel model
 
         SaveNameResp (Ok res) ->
             if res.success then
-                noSub
-                    ( { model
+                resultModel
+                    { model
                         | nameState = SaveSuccess
                         , item = setItemName model.item model.nameModel
-                      }
-                    , Cmd.none
-                    )
+                    }
 
             else
-                noSub
-                    ( { model | nameState = SaveFailed }
-                    , Cmd.none
-                    )
+                resultModel
+                    { model | nameState = SaveFailed }
 
         SaveNameResp (Err _) ->
-            noSub ( { model | nameState = SaveFailed }, Cmd.none )
+            resultModel { model | nameState = SaveFailed }
 
         DeleteResp (Ok res) ->
             if res.success then
                 case inav.next of
                     Just id ->
-                        noSub ( model, Page.set key (ItemDetailPage id) )
+                        resultModelCmd ( model, Page.set key (ItemDetailPage id) )
 
                     Nothing ->
-                        noSub ( model, Page.set key HomePage )
+                        resultModelCmd ( model, Page.set key HomePage )
 
             else
-                noSub ( model, Cmd.none )
+                resultModel model
 
         DeleteResp (Err _) ->
-            noSub ( model, Cmd.none )
+            resultModel model
 
         GetItemResp (Ok item) ->
             update key flags inav settings (SetItem item) model
 
         GetItemResp (Err _) ->
-            noSub ( model, Cmd.none )
+            resultModel model
 
         GetProposalResp (Ok ip) ->
-            noSub ( { model | itemProposals = ip }, Cmd.none )
+            resultModel { model | itemProposals = ip }
 
         GetProposalResp (Err _) ->
-            noSub ( model, Cmd.none )
+            resultModel model
 
         ItemMailMsg m ->
             let
@@ -659,10 +669,10 @@ update key flags inav settings msg model =
             in
             case fa of
                 Comp.ItemMail.FormNone ->
-                    noSub ( { model | itemMail = im }, Cmd.map ItemMailMsg ic )
+                    resultModelCmd ( { model | itemMail = im }, Cmd.map ItemMailMsg ic )
 
                 Comp.ItemMail.FormCancel ->
-                    noSub
+                    resultModelCmd
                         ( { model
                             | itemMail = Comp.ItemMail.clear im
                             , mailOpen = False
@@ -679,7 +689,7 @@ update key flags inav settings msg model =
                             , conn = sm.conn
                             }
                     in
-                    noSub
+                    resultModelCmd
                         ( { model | mailSending = True }
                         , Cmd.batch
                             [ Cmd.map ItemMailMsg ic
@@ -706,14 +716,12 @@ update key flags inav settings msg model =
                     else
                         Nothing
             in
-            noSub
-                ( { model
+            resultModel
+                { model
                     | mailOpen = newOpen
                     , addFilesOpen = filesOpen
                     , mailSendResult = sendResult
-                  }
-                , Cmd.none
-                )
+                }
 
         SendMailResp (Ok br) ->
             let
@@ -724,7 +732,7 @@ update key flags inav settings msg model =
                     else
                         model.itemMail
             in
-            noSub
+            resultModelCmd
                 ( { model
                     | itemMail = mm
                     , mailSending = False
@@ -742,41 +750,37 @@ update key flags inav settings msg model =
                 errmsg =
                     Util.Http.errorToString err
             in
-            noSub
-                ( { model
+            resultModel
+                { model
                     | mailSendResult = Just (BasicResult False errmsg)
                     , mailSending = False
-                  }
-                , Cmd.none
-                )
+                }
 
         SentMailsMsg m ->
             let
                 sm =
                     Comp.SentMails.update m model.sentMails
             in
-            noSub ( { model | sentMails = sm }, Cmd.none )
+            resultModel { model | sentMails = sm }
 
         ToggleSentMails ->
-            noSub ( { model | sentMailsOpen = not model.sentMailsOpen }, Cmd.none )
+            resultModel { model | sentMailsOpen = not model.sentMailsOpen }
 
         SentMailsResp (Ok list) ->
             let
                 sm =
                     Comp.SentMails.initMails list.items
             in
-            noSub ( { model | sentMails = sm }, Cmd.none )
+            resultModel { model | sentMails = sm }
 
         SentMailsResp (Err _) ->
-            noSub ( model, Cmd.none )
+            resultModel model
 
         AttachMetaClick id ->
             case Dict.get id model.attachMeta of
                 Just _ ->
-                    noSub
-                        ( { model | attachMetaOpen = not model.attachMetaOpen }
-                        , Cmd.none
-                        )
+                    resultModel
+                        { model | attachMetaOpen = not model.attachMetaOpen }
 
                 Nothing ->
                     let
@@ -786,7 +790,7 @@ update key flags inav settings msg model =
                         nextMeta =
                             Dict.insert id am model.attachMeta
                     in
-                    noSub
+                    resultModelCmd
                         ( { model | attachMeta = nextMeta, attachMetaOpen = True }
                         , Cmd.map (AttachMetaMsg id) ac
                         )
@@ -798,17 +802,15 @@ update key flags inav settings msg model =
                         am =
                             Comp.AttachmentMeta.update lmsg cm
                     in
-                    noSub
-                        ( { model | attachMeta = Dict.insert id am model.attachMeta }
-                        , Cmd.none
-                        )
+                    resultModel
+                        { model | attachMeta = Dict.insert id am model.attachMeta }
 
                 Nothing ->
-                    noSub ( model, Cmd.none )
+                    resultModel model
 
         TogglePdfNativeView default ->
-            noSub
-                ( { model
+            resultModel
+                { model
                     | pdfNativeView =
                         case model.pdfNativeView of
                             Just flag ->
@@ -816,9 +818,7 @@ update key flags inav settings msg model =
 
                             Nothing ->
                                 Just (not default)
-                  }
-                , Cmd.none
-                )
+                }
 
         DeleteAttachConfirm attachId lmsg ->
             let
@@ -832,17 +832,17 @@ update key flags inav settings msg model =
                     else
                         Cmd.none
             in
-            noSub ( { model | deleteAttachConfirm = cm }, cmd )
+            resultModelCmd ( { model | deleteAttachConfirm = cm }, cmd )
 
         DeleteAttachResp (Ok res) ->
             if res.success then
                 update key flags inav settings ReloadItem model
 
             else
-                noSub ( model, Cmd.none )
+                resultModel model
 
         DeleteAttachResp (Err _) ->
-            noSub ( model, Cmd.none )
+            resultModel model
 
         RequestDeleteAttachment id ->
             update key
@@ -853,8 +853,8 @@ update key flags inav settings msg model =
                 model
 
         AddFilesToggle ->
-            noSub
-                ( { model
+            resultModel
+                { model
                     | addFilesOpen = not model.addFilesOpen
                     , mailOpen =
                         if model.addFilesOpen == False then
@@ -862,9 +862,7 @@ update key flags inav settings msg model =
 
                         else
                             model.mailOpen
-                  }
-                , Cmd.none
-                )
+                }
 
         AddFilesMsg lm ->
             let
@@ -874,22 +872,20 @@ update key flags inav settings msg model =
                 nextFiles =
                     model.selectedFiles ++ df
             in
-            noSub
+            resultModelCmd
                 ( { model | addFilesModel = dm, selectedFiles = nextFiles }
                 , Cmd.map AddFilesMsg dc
                 )
 
         AddFilesReset ->
-            noSub
-                ( { model
+            resultModel
+                { model
                     | selectedFiles = []
                     , addFilesModel = Comp.Dropzone.init Comp.Dropzone.defaultSettings
                     , completed = Set.empty
                     , errored = Set.empty
                     , loading = Dict.empty
-                  }
-                , Cmd.none
-                )
+                }
 
         AddFilesSubmitUpload ->
             let
@@ -909,10 +905,11 @@ update key flags inav settings msg model =
                     List.map (\fid -> ( fid, 0 )) fileids
                         |> Dict.fromList
             in
-            ( { model | loading = newLoading, addFilesModel = cm2 }
-            , uploads
-            , tracker
-            )
+            resultModelCmdSub
+                ( { model | loading = newLoading, addFilesModel = cm2 }
+                , uploads
+                , tracker
+                )
 
         AddFilesUploadResp fileid (Ok res) ->
             let
@@ -940,10 +937,7 @@ update key flags inav settings msg model =
                         , loading = load
                     }
             in
-            noSub
-                ( newModel
-                , Cmd.none
-                )
+            resultModel newModel
 
         AddFilesUploadResp fileid (Err _) ->
             let
@@ -953,7 +947,7 @@ update key flags inav settings msg model =
                 load =
                     Dict.remove fileid model.loading
             in
-            noSub ( { model | errored = errs, loading = load }, Cmd.none )
+            resultModel { model | errored = errs, loading = load }
 
         AddFilesProgress fileid progress ->
             let
@@ -970,10 +964,8 @@ update key flags inav settings msg model =
                 newLoading =
                     Dict.insert fileid percent model.loading
             in
-            noSub
-                ( { model | loading = newLoading }
-                , Cmd.none
-                )
+            resultModel
+                { model | loading = newLoading }
 
         AttachDDMsg lm ->
             let
@@ -995,7 +987,7 @@ update key flags inav settings msg model =
                         Nothing ->
                             Cmd.none
             in
-            noSub ( { model | attachDD = model_ }, cmd )
+            resultModelCmd ( { model | attachDD = model_ }, cmd )
 
         ModalEditMsg lm ->
             case model.modalEdit of
@@ -1015,31 +1007,27 @@ update key flags inav settings msg model =
                                 Nothing ->
                                     ( { model | modalEdit = Just mm_ }, Cmd.none )
                     in
-                    noSub ( model_, Cmd.batch [ cmd_, Cmd.map ModalEditMsg mc_ ] )
+                    resultModelCmd ( model_, Cmd.batch [ cmd_, Cmd.map ModalEditMsg mc_ ] )
 
                 Nothing ->
-                    noSub ( model, Cmd.none )
+                    resultModel model
 
         StartTagModal ->
-            noSub
-                ( { model
+            resultModel
+                { model
                     | modalEdit = Just (Comp.DetailEdit.initTagByName model.item.id "")
-                  }
-                , Cmd.none
-                )
+                }
 
         StartCorrOrgModal ->
-            noSub
-                ( { model
+            resultModel
+                { model
                     | modalEdit =
                         Just
                             (Comp.DetailEdit.initOrg
                                 model.item.id
                                 Comp.OrgForm.emptyModel
                             )
-                  }
-                , Cmd.none
-                )
+                }
 
         StartEditCorrOrgModal ->
             let
@@ -1054,10 +1042,10 @@ update key flags inav settings msg model =
                         ( m, c ) =
                             Comp.DetailEdit.editOrg flags oid Comp.OrgForm.emptyModel
                     in
-                    noSub ( { model | modalEdit = Just m }, Cmd.map ModalEditMsg c )
+                    resultModelCmd ( { model | modalEdit = Just m }, Cmd.map ModalEditMsg c )
 
                 Nothing ->
-                    ( model, Cmd.none, Sub.none )
+                    resultModel model
 
         StartEditEquipModal ->
             let
@@ -1072,36 +1060,32 @@ update key flags inav settings msg model =
                         ( m, c ) =
                             Comp.DetailEdit.editEquip flags eid Comp.EquipmentForm.emptyModel
                     in
-                    noSub ( { model | modalEdit = Just m }, Cmd.map ModalEditMsg c )
+                    resultModelCmd ( { model | modalEdit = Just m }, Cmd.map ModalEditMsg c )
 
                 Nothing ->
-                    ( model, Cmd.none, Sub.none )
+                    resultModel model
 
         StartCorrPersonModal ->
-            noSub
-                ( { model
+            resultModel
+                { model
                     | modalEdit =
                         Just
                             (Comp.DetailEdit.initCorrPerson
                                 model.item.id
                                 Comp.PersonForm.emptyModel
                             )
-                  }
-                , Cmd.none
-                )
+                }
 
         StartConcPersonModal ->
-            noSub
-                ( { model
+            resultModel
+                { model
                     | modalEdit =
                         Just
                             (Comp.DetailEdit.initConcPerson
                                 model.item.id
                                 Comp.PersonForm.emptyModel
                             )
-                  }
-                , Cmd.none
-                )
+                }
 
         StartEditPersonModal pm ->
             let
@@ -1116,26 +1100,24 @@ update key flags inav settings msg model =
                         ( m, c ) =
                             Comp.DetailEdit.editPerson flags pid Comp.PersonForm.emptyModel
                     in
-                    noSub ( { model | modalEdit = Just m }, Cmd.map ModalEditMsg c )
+                    resultModelCmd ( { model | modalEdit = Just m }, Cmd.map ModalEditMsg c )
 
                 Nothing ->
-                    ( model, Cmd.none, Sub.none )
+                    resultModel model
 
         StartEquipModal ->
-            noSub
-                ( { model
+            resultModel
+                { model
                     | modalEdit =
                         Just
                             (Comp.DetailEdit.initEquip
                                 model.item.id
                                 Comp.EquipmentForm.emptyModel
                             )
-                  }
-                , Cmd.none
-                )
+                }
 
         CloseModal ->
-            noSub ( { model | modalEdit = Nothing }, Cmd.none )
+            resultModel { model | modalEdit = Nothing }
 
         EditAttachNameStart id ->
             case model.attachRename of
@@ -1147,27 +1129,25 @@ update key flags inav settings msg model =
                     in
                     case name of
                         Just n ->
-                            noSub ( { model | attachRename = Just (AttachmentRename id n) }, Cmd.none )
+                            resultModel { model | attachRename = Just (AttachmentRename id n) }
 
                         Nothing ->
-                            noSub ( model, Cmd.none )
+                            resultModel model
 
                 Just _ ->
-                    noSub ( { model | attachRename = Nothing }, Cmd.none )
+                    resultModel { model | attachRename = Nothing }
 
         EditAttachNameCancel ->
-            noSub ( { model | attachRename = Nothing }, Cmd.none )
+            resultModel { model | attachRename = Nothing }
 
         EditAttachNameSet str ->
             case model.attachRename of
                 Just m ->
-                    noSub
-                        ( { model | attachRename = Just { m | newName = str } }
-                        , Cmd.none
-                        )
+                    resultModel
+                        { model | attachRename = Just { m | newName = str } }
 
                 Nothing ->
-                    noSub ( model, Cmd.none )
+                    resultModel model
 
         EditAttachNameSubmit ->
             let
@@ -1183,7 +1163,7 @@ update key flags inav settings msg model =
             in
             case ma of
                 Just m ->
-                    noSub
+                    resultModelCmd
                         ( model
                         , Api.setAttachmentName
                             flags
@@ -1193,7 +1173,7 @@ update key flags inav settings msg model =
                         )
 
                 Nothing ->
-                    noSub ( { model | attachRename = Nothing }, Cmd.none )
+                    resultModel { model | attachRename = Nothing }
 
         EditAttachNameResp (Ok res) ->
             if res.success then
@@ -1210,25 +1190,23 @@ update key flags inav settings msg model =
                             changeItem i =
                                 { i | attachments = List.map changeName i.attachments }
                         in
-                        noSub
-                            ( { model
+                        resultModel
+                            { model
                                 | attachRename = Nothing
                                 , item = changeItem model.item
-                              }
-                            , Cmd.none
-                            )
+                            }
 
                     Nothing ->
-                        noSub ( model, Cmd.none )
+                        resultModel model
 
             else
-                noSub ( model, Cmd.none )
+                resultModel model
 
         EditAttachNameResp (Err _) ->
-            noSub ( model, Cmd.none )
+            resultModel model
 
         ResetHiddenMsg _ _ ->
-            noSub ( model, Cmd.none )
+            resultModel model
 
         UpdateThrottle ->
             let
@@ -1255,18 +1233,18 @@ update key flags inav settings msg model =
             else if keys == Just Comp.KeyInput.ctrlPoint then
                 case inav.next of
                     Just id ->
-                        noSub ( model_, Page.set key (ItemDetailPage id) )
+                        resultModelCmd ( model_, Page.set key (ItemDetailPage id) )
 
                     Nothing ->
-                        noSub ( model_, Cmd.none )
+                        resultModel model_
 
             else if keys == Just Comp.KeyInput.ctrlComma then
                 case inav.prev of
                     Just id ->
-                        noSub ( model_, Page.set key (ItemDetailPage id) )
+                        resultModelCmd ( model_, Page.set key (ItemDetailPage id) )
 
                     Nothing ->
-                        noSub ( model_, Cmd.none )
+                        resultModel model_
 
             else
                 -- withSub because the keypress may be inside the name
@@ -1274,7 +1252,7 @@ update key flags inav settings msg model =
                 withSub ( model_, Cmd.none )
 
         ToggleAttachMenu ->
-            noSub ( { model | attachMenuOpen = not model.attachMenuOpen }, Cmd.none )
+            resultModel { model | attachMenuOpen = not model.attachMenuOpen }
 
         UiSettingsUpdated ->
             let
@@ -1283,7 +1261,14 @@ update key flags inav settings msg model =
                         | menuOpen = settings.editMenuVisible
                     }
             in
-            noSub ( model_, Cmd.none )
+            resultModel model_
+
+        SetLinkTarget lt ->
+            { model = model
+            , cmd = Cmd.none
+            , sub = Sub.none
+            , linkTarget = lt
+            }
 
 
 
@@ -1419,19 +1404,16 @@ setErrored model fileid =
     Set.insert fileid model.errored
 
 
-noSub : ( Model, Cmd Msg ) -> ( Model, Cmd Msg, Sub Msg )
-noSub ( m, c ) =
-    ( m, c, Sub.none )
-
-
-withSub : ( Model, Cmd Msg ) -> ( Model, Cmd Msg, Sub Msg )
+withSub : ( Model, Cmd Msg ) -> UpdateResult
 withSub ( m, c ) =
-    ( m
-    , c
-    , Throttle.ifNeeded
-        (Time.every 400 (\_ -> UpdateThrottle))
-        m.nameSaveThrottle
-    )
+    { model = m
+    , cmd = c
+    , sub =
+        Throttle.ifNeeded
+            (Time.every 400 (\_ -> UpdateThrottle))
+            m.nameSaveThrottle
+    , linkTarget = Comp.LinkTarget.LinkNone
+    }
 
 
 resetField : Flags -> String -> (Field -> Result Http.Error BasicResult -> msg) -> Field -> Cmd msg

@@ -4,8 +4,12 @@ module Comp.ItemDetail.Model exposing
     , Msg(..)
     , NotesField(..)
     , SaveNameState(..)
+    , UpdateResult
     , emptyModel
     , isEditNotes
+    , resultModel
+    , resultModelCmd
+    , resultModelCmdSub
     )
 
 import Api.Model.BasicResult exposing (BasicResult)
@@ -26,6 +30,7 @@ import Comp.Dropdown
 import Comp.Dropzone
 import Comp.ItemMail
 import Comp.KeyInput
+import Comp.LinkTarget exposing (LinkTarget)
 import Comp.MarkdownInput
 import Comp.SentMails
 import Comp.YesNoDimmer
@@ -273,9 +278,33 @@ type Msg
     | KeyInputMsg Comp.KeyInput.Msg
     | ToggleAttachMenu
     | UiSettingsUpdated
+    | SetLinkTarget LinkTarget
 
 
 type SaveNameState
     = Saving
     | SaveSuccess
     | SaveFailed
+
+
+type alias UpdateResult =
+    { model : Model
+    , cmd : Cmd Msg
+    , sub : Sub Msg
+    , linkTarget : LinkTarget
+    }
+
+
+resultModel : Model -> UpdateResult
+resultModel model =
+    UpdateResult model Cmd.none Sub.none Comp.LinkTarget.LinkNone
+
+
+resultModelCmd : ( Model, Cmd Msg ) -> UpdateResult
+resultModelCmd ( model, cmd ) =
+    UpdateResult model cmd Sub.none Comp.LinkTarget.LinkNone
+
+
+resultModelCmdSub : ( Model, Cmd Msg, Sub Msg ) -> UpdateResult
+resultModelCmdSub ( model, cmd, sub ) =
+    UpdateResult model cmd sub Comp.LinkTarget.LinkNone
