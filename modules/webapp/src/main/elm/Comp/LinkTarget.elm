@@ -36,7 +36,7 @@ makeCorrLink item tagger =
 
 
 makeConcLink :
-    { a | concPerson : Maybe IdName, concEquip : Maybe IdName }
+    { a | concPerson : Maybe IdName, concEquipment : Maybe IdName }
     -> (LinkTarget -> msg)
     -> List (Html msg)
 makeConcLink item tagger =
@@ -47,7 +47,7 @@ makeConcLink item tagger =
         makeEquip idname =
             makeLink (LinkConcEquip >> tagger) idname
     in
-    combine (Maybe.map makePerson item.concPerson) (Maybe.map makeEquip item.concEquip)
+    combine (Maybe.map makePerson item.concPerson) (Maybe.map makeEquip item.concEquipment)
 
 
 makeFolderLink :
