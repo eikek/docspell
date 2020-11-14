@@ -10,6 +10,7 @@ import Comp.ItemCard
 import Comp.ItemCardList
 import Comp.ItemDetail.EditMenu exposing (SaveNameState(..))
 import Comp.ItemDetail.FormChange exposing (FormChange(..))
+import Comp.LinkTarget
 import Comp.SearchMenu
 import Comp.YesNoDimmer
 import Data.Flags exposing (Flags)
@@ -97,22 +98,22 @@ update mId key flags settings msg model =
 
                 searchMsg =
                     case result.linkTarget of
-                        Comp.ItemCard.LinkNone ->
+                        Comp.LinkTarget.LinkNone ->
                             Cmd.none
 
-                        Comp.ItemCard.LinkCorrOrg id ->
+                        Comp.LinkTarget.LinkCorrOrg id ->
                             Util.Update.cmdUnit (SearchMenuMsg (Comp.SearchMenu.SetCorrOrg id))
 
-                        Comp.ItemCard.LinkCorrPerson id ->
+                        Comp.LinkTarget.LinkCorrPerson id ->
                             Util.Update.cmdUnit (SearchMenuMsg (Comp.SearchMenu.SetCorrPerson id))
 
-                        Comp.ItemCard.LinkConcPerson id ->
+                        Comp.LinkTarget.LinkConcPerson id ->
                             Util.Update.cmdUnit (SearchMenuMsg (Comp.SearchMenu.SetConcPerson id))
 
-                        Comp.ItemCard.LinkConcEquip id ->
+                        Comp.LinkTarget.LinkConcEquip id ->
                             Util.Update.cmdUnit (SearchMenuMsg (Comp.SearchMenu.SetConcEquip id))
 
-                        Comp.ItemCard.LinkFolder id ->
+                        Comp.LinkTarget.LinkFolder id ->
                             Util.Update.cmdUnit (SearchMenuMsg (Comp.SearchMenu.SetFolder id))
 
                 nextView =

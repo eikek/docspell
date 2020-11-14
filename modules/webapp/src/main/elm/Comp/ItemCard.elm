@@ -1,6 +1,5 @@
 module Comp.ItemCard exposing
-    ( LinkTarget(..)
-    , Model
+    ( Model
     , Msg
     , UpdateResult
     , ViewConfig
@@ -14,6 +13,7 @@ import Api.Model.AttachmentLight exposing (AttachmentLight)
 import Api.Model.HighlightEntry exposing (HighlightEntry)
 import Api.Model.IdName exposing (IdName)
 import Api.Model.ItemLight exposing (ItemLight)
+import Comp.LinkTarget exposing (LinkTarget(..))
 import Data.Direction
 import Data.Fields
 import Data.Icons as Icons
@@ -48,15 +48,6 @@ type alias ViewConfig =
     { selection : ItemSelection
     , extraClasses : String
     }
-
-
-type LinkTarget
-    = LinkCorrOrg IdName
-    | LinkCorrPerson IdName
-    | LinkConcPerson IdName
-    | LinkConcEquip IdName
-    | LinkFolder IdName
-    | LinkNone
 
 
 type alias UpdateResult =
@@ -227,46 +218,6 @@ metaDataContent settings item =
         fieldHidden f =
             Data.UiSettings.fieldHidden settings f
 
-        default =
-            text "-"
-
-        makeLink tagger idname =
-            a
-                [ onClick (tagger idname)
-                , href "#"
-                ]
-                [ text idname.name
-                ]
-
-        combine ma mb =
-            case ( ma, mb ) of
-                ( Just a, Just b ) ->
-                    [ a, text ", ", b ]
-
-                ( Just a, Nothing ) ->
-                    [ a ]
-
-                ( Nothing, Just b ) ->
-                    [ b ]
-
-                ( Nothing, Nothing ) ->
-                    [ default ]
-
-        corrOrg =
-            Maybe.map (makeLink (LinkCorrOrg >> SetLinkTarget)) item.corrOrg
-
-        corrPerson =
-            Maybe.map (makeLink (LinkCorrPerson >> SetLinkTarget)) item.corrPerson
-
-        concPerson =
-            Maybe.map (makeLink (LinkConcPerson >> SetLinkTarget)) item.concPerson
-
-        concEquip =
-            Maybe.map (makeLink (LinkConcEquip >> SetLinkTarget)) item.concEquip
-
-        folder =
-            Maybe.map (makeLink (LinkFolder >> SetLinkTarget)) item.folder
-
         dueDate =
             Maybe.map Util.Time.formatDateShort item.dueDate
                 |> Maybe.withDefault ""
@@ -284,7 +235,7 @@ metaDataContent settings item =
                 , title "Correspondent"
                 ]
                 (Icons.correspondentIcon ""
-                    :: combine corrOrg corrPerson
+                    :: Comp.LinkTarget.makeCorrLink item SetLinkTarget
                 )
             , div
                 [ classList
@@ -297,7 +248,7 @@ metaDataContent settings item =
                 , title "Concerning"
                 ]
                 (Icons.concernedIcon
-                    :: combine concPerson concEquip
+                    :: Comp.LinkTarget.makeConcLink item SetLinkTarget
                 )
             , div
                 [ classList
@@ -307,7 +258,7 @@ metaDataContent settings item =
                 , title "Folder"
                 ]
                 [ Icons.folderIcon ""
-                , Maybe.withDefault default folder
+                , Comp.LinkTarget.makeFolderLink item SetLinkTarget
                 ]
             ]
         , div [ class "right floated meta" ]

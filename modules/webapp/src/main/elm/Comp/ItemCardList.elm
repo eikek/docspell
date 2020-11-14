@@ -14,6 +14,7 @@ import Api.Model.ItemLight exposing (ItemLight)
 import Api.Model.ItemLightGroup exposing (ItemLightGroup)
 import Api.Model.ItemLightList exposing (ItemLightList)
 import Comp.ItemCard
+import Comp.LinkTarget exposing (LinkTarget)
 import Data.Flags exposing (Flags)
 import Data.ItemSelection exposing (ItemSelection)
 import Data.Items
@@ -75,7 +76,7 @@ type alias UpdateResult =
     , cmd : Cmd Msg
     , dragModel : DD.Model
     , selection : ItemSelection
-    , linkTarget : Comp.ItemCard.LinkTarget
+    , linkTarget : LinkTarget
     }
 
 
@@ -96,7 +97,7 @@ updateDrag dm _ msg model =
                 Cmd.none
                 dm
                 Data.ItemSelection.Inactive
-                Comp.ItemCard.LinkNone
+                Comp.LinkTarget.LinkNone
 
         AddResults list ->
             if list.groups == [] then
@@ -104,7 +105,7 @@ updateDrag dm _ msg model =
                     Cmd.none
                     dm
                     Data.ItemSelection.Inactive
-                    Comp.ItemCard.LinkNone
+                    Comp.LinkTarget.LinkNone
 
             else
                 let
@@ -115,7 +116,7 @@ updateDrag dm _ msg model =
                     Cmd.none
                     dm
                     Data.ItemSelection.Inactive
-                    Comp.ItemCard.LinkNone
+                    Comp.LinkTarget.LinkNone
 
         ItemCardMsg item lm ->
             let
