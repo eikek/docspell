@@ -259,6 +259,7 @@ type Msg
     | SetConcPerson IdName
     | SetConcEquip IdName
     | SetFolder IdName
+    | SetTag String
 
 
 type alias NextState =
@@ -370,6 +371,9 @@ updateDrop ddm flags settings msg model =
                     Equipment id.id id.name 0
             in
             resetAndSet (ConcEquipmentMsg (Comp.Dropdown.SetSelection [ equip ]))
+
+        SetTag id ->
+            resetAndSet (TagSelectMsg (Comp.TagSelect.toggleTag id))
 
         GetTagsResp (Ok tags) ->
             let

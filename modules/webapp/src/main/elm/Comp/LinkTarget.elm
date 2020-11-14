@@ -3,6 +3,7 @@ module Comp.LinkTarget exposing
     , makeConcLink
     , makeCorrLink
     , makeFolderLink
+    , makeTagLink
     )
 
 import Api.Model.IdName exposing (IdName)
@@ -17,6 +18,7 @@ type LinkTarget
     | LinkConcPerson IdName
     | LinkConcEquip IdName
     | LinkFolder IdName
+    | LinkTag IdName
     | LinkNone
 
 
@@ -27,10 +29,10 @@ makeCorrLink :
 makeCorrLink item tagger =
     let
         makeOrg idname =
-            makeLink (LinkCorrOrg >> tagger) idname
+            makeLink [] (LinkCorrOrg >> tagger) idname
 
         makePerson idname =
-            makeLink (LinkCorrPerson >> tagger) idname
+            makeLink [] (LinkCorrPerson >> tagger) idname
     in
     combine (Maybe.map makeOrg item.corrOrg) (Maybe.map makePerson item.corrPerson)
 
@@ -42,10 +44,10 @@ makeConcLink :
 makeConcLink item tagger =
     let
         makePerson idname =
-            makeLink (LinkConcPerson >> tagger) idname
+            makeLink [] (LinkConcPerson >> tagger) idname
 
         makeEquip idname =
-            makeLink (LinkConcEquip >> tagger) idname
+            makeLink [] (LinkConcEquip >> tagger) idname
     in
     combine (Maybe.map makePerson item.concPerson) (Maybe.map makeEquip item.concEquipment)
 
@@ -57,10 +59,19 @@ makeFolderLink :
 makeFolderLink item tagger =
     let
         makeFolder idname =
-            makeLink (LinkFolder >> tagger) idname
+            makeLink [] (LinkFolder >> tagger) idname
     in
     Maybe.map makeFolder item.folder
         |> Maybe.withDefault (text "-")
+
+
+makeTagLink :
+    IdName
+    -> List ( String, Bool )
+    -> (LinkTarget -> msg)
+    -> Html msg
+makeTagLink tagId classes tagger =
+    makeLink classes (LinkTag >> tagger) tagId
 
 
 
@@ -83,11 +94,12 @@ combine ma mb =
             [ text "-" ]
 
 
-makeLink : (IdName -> msg) -> IdName -> Html msg
-makeLink tagger idname =
+makeLink : List ( String, Bool ) -> (IdName -> msg) -> IdName -> Html msg
+makeLink classes tagger idname =
     a
         [ onClick (tagger idname)
         , href "#"
+        , classList classes
         ]
         [ text idname.name
         ]

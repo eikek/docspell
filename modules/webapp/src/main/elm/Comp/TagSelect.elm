@@ -6,6 +6,7 @@ module Comp.TagSelect exposing
     , emptySelection
     , init
     , reset
+    , toggleTag
     , update
     , updateDrop
     , viewCats
@@ -82,6 +83,11 @@ reset model =
         | selectedTags = Dict.empty
         , selectedCats = Dict.empty
     }
+
+
+toggleTag : String -> Msg
+toggleTag id =
+    ToggleTag id
 
 
 sumCategories : List TagCount -> List Category

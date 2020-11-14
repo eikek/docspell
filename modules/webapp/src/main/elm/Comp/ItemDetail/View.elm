@@ -2,6 +2,7 @@ module Comp.ItemDetail.View exposing (view)
 
 import Api
 import Api.Model.Attachment exposing (Attachment)
+import Api.Model.IdName exposing (IdName)
 import Comp.AttachmentMeta
 import Comp.DatePicker
 import Comp.DetailEdit
@@ -615,14 +616,12 @@ renderTags settings model =
                 [ div [ class "ui right aligned fluid container" ] <|
                     List.map
                         (\t ->
-                            div
-                                [ classList
-                                    [ ( "ui tag label", True )
-                                    , ( Data.UiSettings.tagColorString t settings, True )
-                                    ]
+                            Comp.LinkTarget.makeTagLink
+                                (IdName t.id t.name)
+                                [ ( "ui tag label", True )
+                                , ( Data.UiSettings.tagColorString t settings, True )
                                 ]
-                                [ text t.name
-                                ]
+                                SetLinkTarget
                         )
                         model.item.tags
                 ]
