@@ -67,6 +67,10 @@ description = "A list of features and limitations."
     link and send the file to docspell
   - [SMTP Gateway](@/docs/tools/smtpgateway.md): Setup a SMTP server
     that delivers mails directly to docspell.
+  - [Paperless Import](@/docs/tools/paperless-import.md) for importing
+    your data from paperless
+  - [Directory Cleaner](@/docs/tools/consumedir-cleaner.md) clean
+    directories with files that have been uploaded to docspell
 - License: GPLv3
 
 

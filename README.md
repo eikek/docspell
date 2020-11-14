@@ -53,8 +53,8 @@ book and only once in a while it has to be revisited.
 Checkout the short demo videos (<1min), present on the [project
 page](https://docspell.org/#demos). Here are some screenshots:
 
-![screenshot-1](https://raw.githubusercontent.com/eikek/docspell/master/website/site/content/docs/webapp/docspell-curate-1.jpg)
-![screenshot-2](https://raw.githubusercontent.com/eikek/docspell/master/website/site/content/docs/webapp/docspell-curate-2.jpg)
+![screenshot-1](website/site/content/docs/webapp/docspell-curate-1.jpg)
+![screenshot-2](website/site/content/docs/webapp/docspell-curate-2.jpg)
 
 
 ## Try it

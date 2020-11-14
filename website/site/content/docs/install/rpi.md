@@ -8,6 +8,10 @@ weight = 40
 Both component can run next to each other on a raspberry pi or
 similiar device.
 
+There is a [project on
+github](https://github.com/docspell/rpi-scripts) that can help with
+setting up a raspberry pi with docspell.
+
 
 ## REST Server
 
