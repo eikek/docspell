@@ -47,6 +47,7 @@ update mId key flags settings msg model =
                     { model
                         | searchOffset = 0
                         , searchType = defaultSearchType flags
+                        , contentOnlySearch = Nothing
                     }
             in
             update mId key flags settings (SearchMenuMsg Comp.SearchMenu.ResetForm) nm

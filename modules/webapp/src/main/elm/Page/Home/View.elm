@@ -311,39 +311,49 @@ viewSearchBar flags model =
             ]
             [ i [ class "filter icon" ] []
             ]
-        , div [ class "right fitted item" ]
-            [ div [ class "ui left icon right action input" ]
-                [ i
-                    [ classList
-                        [ ( "search link icon", not model.searchInProgress )
-                        , ( "loading spinner icon", model.searchInProgress )
-                        ]
-                    , href "#"
-                    , onClick DoSearch
-                    ]
-                    (if hasMoreSearch model && model.searchTypeForm == BasicSearch then
-                        [ i [ class "icons search-corner-icons" ]
-                            [ i [ class "tiny blue circle icon" ] []
+        , div [ class "right menu" ]
+            [ div [ class "fitted item" ]
+                [ div [ class "ui left icon right action input" ]
+                    [ i
+                        [ classList
+                            [ ( "search link icon", not model.searchInProgress )
+                            , ( "loading spinner icon", model.searchInProgress )
                             ]
+                        , href "#"
+                        , onClick DoSearch
                         ]
+                        (if hasMoreSearch model && model.searchTypeForm == BasicSearch then
+                            [ i [ class "icons search-corner-icons" ]
+                                [ i [ class "tiny blue circle icon" ] []
+                                ]
+                            ]
 
-                     else
+                         else
+                            []
+                        )
+                    , input
+                        [ type_ "text"
+                        , placeholder "Quick Search …"
+                        , onInput SetBasicSearch
+                        , Util.Html.onKeyUpCode KeyUpMsg
+                        , Maybe.map value searchInput
+                            |> Maybe.withDefault (value "")
+                        ]
                         []
-                    )
-                , input
-                    [ type_ "text"
-                    , placeholder "Quick Search …"
-                    , onInput SetBasicSearch
-                    , Util.Html.onKeyUpCode KeyUpMsg
-                    , Maybe.map value searchInput
-                        |> Maybe.withDefault (value "")
+                    , Html.map SearchTypeMsg
+                        (Comp.FixedDropdown.viewStyled searchTypeClass
+                            (Just searchTypeItem)
+                            model.searchTypeDropdown
+                        )
+                    , a
+                        [ class "ui icon basic button"
+                        , href "#"
+                        , onClick ResetSearch
+                        , title "Reset search form"
+                        ]
+                        [ i [ class "undo icon" ] []
+                        ]
                     ]
-                    []
-                , Html.map SearchTypeMsg
-                    (Comp.FixedDropdown.viewStyled searchTypeClass
-                        (Just searchTypeItem)
-                        model.searchTypeDropdown
-                    )
                 ]
             ]
         ]
