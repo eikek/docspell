@@ -57,7 +57,10 @@ let
     };
     extraction = {
       pdf = {
-        min-text-len = 10;
+        min-text-len = 500;
+      };
+      preview = {
+        dpi = 32;
       };
 
       ocr = {
@@ -117,6 +120,7 @@ let
     };
     convert = {
       chunk-size = 524288;
+      converted-filename-part = "converted";
       max-image-size = 14000000;
 
       markdown = {
@@ -544,6 +548,28 @@ in {
               default = defaults.extraction.pdf;
               description = "Settings for PDF extraction";
             };
+            preview = mkOption {
+              type = types.submodule({
+                options = {
+                  dpi = mkOption {
+                    type = types.int;
+                    default = defaults.extraction.preview.dpi;
+                    description = ''
+                      When rendering a pdf page, use this dpi. This results in
+                      scaling the image. A standard A4 page rendered at 96dpi
+                      results in roughly 790x1100px image. Using 32 results in
+                      roughly 200x300px image.
+
+                      Note, when this is changed, you might want to re-generate
+                      preview images. Check the api for this, there is an endpoint
+                      to regenerate all for a collective.
+                    '';
+                  };
+                };
+              });
+              default = defaults.extraction.preview;
+              description = "";
+            };
             ocr = mkOption {
               type = types.submodule({
                 options = {
@@ -844,6 +870,16 @@ in {
                 as used with the rest server.
               '';
             };
+            converted-filename-part = mkOption {
+              type = types.str;
+              default = defaults.convert.converted-filename-part;
+              description = ''
+                A string used to change the filename of the converted pdf file.
+                If empty, the original file name is used for the pdf file ( the
+                extension is always replaced with `pdf`).
+              '';
+            };
+
             max-image-size = mkOption {
               type = types.int;
               default = defaults.convert.max-image-size;
