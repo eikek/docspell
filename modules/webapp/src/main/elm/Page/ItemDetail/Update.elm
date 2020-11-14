@@ -4,20 +4,22 @@ import Api
 import Browser.Navigation as Nav
 import Comp.ItemDetail
 import Comp.ItemDetail.Model
+import Comp.LinkTarget
 import Data.Flags exposing (Flags)
 import Data.ItemNav exposing (ItemNav)
 import Data.UiSettings exposing (UiSettings)
-import Page.ItemDetail.Data exposing (Model, Msg(..))
+import Page exposing (Page(..))
+import Page.ItemDetail.Data exposing (Model, Msg(..), UpdateResult)
 import Scroll
 import Task
 
 
-update : Nav.Key -> Flags -> ItemNav -> UiSettings -> Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
+update : Nav.Key -> Flags -> ItemNav -> UiSettings -> Msg -> Model -> UpdateResult
 update key flags inav settings msg model =
     case msg of
         Init id ->
             let
-                ( lm, lc, ls ) =
+                result =
                     Comp.ItemDetail.update key
                         flags
                         inav
@@ -28,24 +30,35 @@ update key flags inav settings msg model =
                 task =
                     Scroll.scroll "main-content" 0 0 0 0
             in
-            ( { model | detail = lm }
-            , Cmd.batch
-                [ Api.itemDetail flags id ItemResp
-                , Cmd.map ItemDetailMsg lc
-                , Task.attempt ScrollResult task
-                ]
-            , Sub.map ItemDetailMsg ls
-            )
+            { model = { model | detail = result.model }
+            , cmd =
+                Cmd.batch
+                    [ Api.itemDetail flags id ItemResp
+                    , Cmd.map ItemDetailMsg result.cmd
+                    , Task.attempt ScrollResult task
+                    ]
+            , sub = Sub.map ItemDetailMsg result.sub
+            , linkTarget = result.linkTarget
+            }
 
         ItemDetailMsg lmsg ->
             let
-                ( lm, lc, ls ) =
+                result =
                     Comp.ItemDetail.update key flags inav settings lmsg model.detail
+
+                pageSwitch =
+                    case result.linkTarget of
+                        Comp.LinkTarget.LinkNone ->
+                            Cmd.none
+
+                        _ ->
+                            Page.set key HomePage
             in
-            ( { model | detail = lm }
-            , Cmd.map ItemDetailMsg lc
-            , Sub.map ItemDetailMsg ls
-            )
+            { model = { model | detail = result.model }
+            , cmd = Cmd.batch [ pageSwitch, Cmd.map ItemDetailMsg result.cmd ]
+            , sub = Sub.map ItemDetailMsg result.sub
+            , linkTarget = result.linkTarget
+            }
 
         ItemResp (Ok item) ->
             let
@@ -55,10 +68,10 @@ update key flags inav settings msg model =
             update key flags inav settings (ItemDetailMsg lmsg) model
 
         ItemResp (Err _) ->
-            ( model, Cmd.none, Sub.none )
+            UpdateResult model Cmd.none Sub.none Comp.LinkTarget.LinkNone
 
         ScrollResult _ ->
-            ( model, Cmd.none, Sub.none )
+            UpdateResult model Cmd.none Sub.none Comp.LinkTarget.LinkNone
 
         UiSettingsUpdated ->
             let

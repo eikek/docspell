@@ -25,6 +25,7 @@ import Comp.FixedDropdown
 import Comp.ItemCardList
 import Comp.ItemDetail.EditMenu exposing (SaveNameState(..))
 import Comp.ItemDetail.FormChange exposing (FormChange)
+import Comp.LinkTarget exposing (LinkTarget)
 import Comp.SearchMenu
 import Comp.YesNoDimmer
 import Data.Flags exposing (Flags)
@@ -174,6 +175,7 @@ type Msg
     | ReplaceChangedItemsResp (Result Http.Error ItemLightList)
     | DeleteAllResp (Result Http.Error BasicResult)
     | UiSettingsUpdated
+    | SetLinkTarget LinkTarget
 
 
 type SearchType

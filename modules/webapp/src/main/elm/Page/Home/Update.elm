@@ -10,7 +10,7 @@ import Comp.ItemCard
 import Comp.ItemCardList
 import Comp.ItemDetail.EditMenu exposing (SaveNameState(..))
 import Comp.ItemDetail.FormChange exposing (FormChange(..))
-import Comp.LinkTarget
+import Comp.LinkTarget exposing (LinkTarget)
 import Comp.SearchMenu
 import Comp.YesNoDimmer
 import Data.Flags exposing (Flags)
@@ -88,6 +88,14 @@ update mId key flags settings msg model =
             , s2
             )
 
+        SetLinkTarget lt ->
+            case linkTargetMsg lt of
+                Just m ->
+                    update mId key flags settings m model
+
+                Nothing ->
+                    ( model, Cmd.none, Sub.none )
+
         ItemCardListMsg m ->
             let
                 result =
@@ -97,24 +105,8 @@ update mId key flags settings msg model =
                         model.itemListModel
 
                 searchMsg =
-                    case result.linkTarget of
-                        Comp.LinkTarget.LinkNone ->
-                            Cmd.none
-
-                        Comp.LinkTarget.LinkCorrOrg id ->
-                            Util.Update.cmdUnit (SearchMenuMsg (Comp.SearchMenu.SetCorrOrg id))
-
-                        Comp.LinkTarget.LinkCorrPerson id ->
-                            Util.Update.cmdUnit (SearchMenuMsg (Comp.SearchMenu.SetCorrPerson id))
-
-                        Comp.LinkTarget.LinkConcPerson id ->
-                            Util.Update.cmdUnit (SearchMenuMsg (Comp.SearchMenu.SetConcPerson id))
-
-                        Comp.LinkTarget.LinkConcEquip id ->
-                            Util.Update.cmdUnit (SearchMenuMsg (Comp.SearchMenu.SetConcEquip id))
-
-                        Comp.LinkTarget.LinkFolder id ->
-                            Util.Update.cmdUnit (SearchMenuMsg (Comp.SearchMenu.SetFolder id))
+                    Maybe.map Util.Update.cmdUnit (linkTargetMsg result.linkTarget)
+                        |> Maybe.withDefault Cmd.none
 
                 nextView =
                     case ( model.viewMode, result.selection ) of
@@ -663,6 +655,28 @@ doSearch flags settings scroll model =
           }
         , cmd
         )
+
+
+linkTargetMsg : LinkTarget -> Maybe Msg
+linkTargetMsg linkTarget =
+    case linkTarget of
+        Comp.LinkTarget.LinkNone ->
+            Nothing
+
+        Comp.LinkTarget.LinkCorrOrg id ->
+            Just <| SearchMenuMsg (Comp.SearchMenu.SetCorrOrg id)
+
+        Comp.LinkTarget.LinkCorrPerson id ->
+            Just <| SearchMenuMsg (Comp.SearchMenu.SetCorrPerson id)
+
+        Comp.LinkTarget.LinkConcPerson id ->
+            Just <| SearchMenuMsg (Comp.SearchMenu.SetConcPerson id)
+
+        Comp.LinkTarget.LinkConcEquip id ->
+            Just <| SearchMenuMsg (Comp.SearchMenu.SetConcEquip id)
+
+        Comp.LinkTarget.LinkFolder id ->
+            Just <| SearchMenuMsg (Comp.SearchMenu.SetFolder id)
 
 
 doSearchMore : Flags -> UiSettings -> Model -> ( Model, Cmd Msg )
