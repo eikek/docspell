@@ -300,7 +300,11 @@ viewSearchBar flags model =
             ]
         ]
         [ a
-            [ class "search-menu-toggle ui blue icon button"
+            [ classList
+                [ ( "search-menu-toggle ui icon button", True )
+                , ( "primary", not (searchMenuFilled model) )
+                , ( "secondary", searchMenuFilled model )
+                ]
             , onClick ToggleSearchMenu
             , href "#"
             , title "Open search menu"
@@ -343,6 +347,15 @@ viewSearchBar flags model =
                 ]
             ]
         ]
+
+
+searchMenuFilled : Model -> Bool
+searchMenuFilled model =
+    let
+        is =
+            Comp.SearchMenu.getItemSearch model.searchMenuModel
+    in
+    is /= Api.Model.ItemSearch.empty
 
 
 hasMoreSearch : Model -> Bool

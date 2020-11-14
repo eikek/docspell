@@ -1,4 +1,10 @@
-module Util.Update exposing (andThen1, andThen2)
+module Util.Update exposing
+    ( andThen1
+    , andThen2
+    , cmdUnit
+    )
+
+import Task
 
 
 andThen1 : List (a -> ( a, Cmd b )) -> a -> ( a, Cmd b )
@@ -36,3 +42,8 @@ andThen2 fs m =
     in
     List.foldl update init fs
         |> combine
+
+
+cmdUnit : a -> Cmd a
+cmdUnit a =
+    Task.perform (\_ -> a) (Task.succeed ())

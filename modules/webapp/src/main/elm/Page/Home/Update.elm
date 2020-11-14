@@ -6,6 +6,7 @@ import Api.Model.ItemLightList exposing (ItemLightList)
 import Api.Model.ItemSearch
 import Browser.Navigation as Nav
 import Comp.FixedDropdown
+import Comp.ItemCard
 import Comp.ItemCardList
 import Comp.ItemDetail.EditMenu exposing (SaveNameState(..))
 import Comp.ItemDetail.FormChange exposing (FormChange(..))
@@ -93,6 +94,26 @@ update mId key flags settings msg model =
                         m
                         model.itemListModel
 
+                searchMsg =
+                    case result.linkTarget of
+                        Comp.ItemCard.LinkNone ->
+                            Cmd.none
+
+                        Comp.ItemCard.LinkCorrOrg id ->
+                            Util.Update.cmdUnit (SearchMenuMsg (Comp.SearchMenu.SetCorrOrg id))
+
+                        Comp.ItemCard.LinkCorrPerson id ->
+                            Util.Update.cmdUnit (SearchMenuMsg (Comp.SearchMenu.SetCorrPerson id))
+
+                        Comp.ItemCard.LinkConcPerson id ->
+                            Util.Update.cmdUnit (SearchMenuMsg (Comp.SearchMenu.SetConcPerson id))
+
+                        Comp.ItemCard.LinkConcEquip id ->
+                            Util.Update.cmdUnit (SearchMenuMsg (Comp.SearchMenu.SetConcEquip id))
+
+                        Comp.ItemCard.LinkFolder id ->
+                            Util.Update.cmdUnit (SearchMenuMsg (Comp.SearchMenu.SetFolder id))
+
                 nextView =
                     case ( model.viewMode, result.selection ) of
                         ( SelectView svm, Data.ItemSelection.Active ids ) ->
@@ -107,7 +128,7 @@ update mId key flags settings msg model =
                     , viewMode = nextView
                     , dragDropData = DD.DragDropData result.dragModel Nothing
                   }
-                , Cmd.batch [ Cmd.map ItemCardListMsg result.cmd ]
+                , Cmd.batch [ Cmd.map ItemCardListMsg result.cmd, searchMsg ]
                 )
 
         ItemSearchResp scroll (Ok list) ->
