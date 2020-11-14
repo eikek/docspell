@@ -75,6 +75,7 @@ type alias UpdateResult =
     , cmd : Cmd Msg
     , dragModel : DD.Model
     , selection : ItemSelection
+    , linkTarget : Comp.ItemCard.LinkTarget
     }
 
 
@@ -91,18 +92,30 @@ updateDrag dm _ msg model =
                 newModel =
                     { model | results = list }
             in
-            UpdateResult newModel Cmd.none dm Data.ItemSelection.Inactive
+            UpdateResult newModel
+                Cmd.none
+                dm
+                Data.ItemSelection.Inactive
+                Comp.ItemCard.LinkNone
 
         AddResults list ->
             if list.groups == [] then
-                UpdateResult model Cmd.none dm Data.ItemSelection.Inactive
+                UpdateResult model
+                    Cmd.none
+                    dm
+                    Data.ItemSelection.Inactive
+                    Comp.ItemCard.LinkNone
 
             else
                 let
                     newModel =
                         { model | results = Data.Items.concat model.results list }
                 in
-                UpdateResult newModel Cmd.none dm Data.ItemSelection.Inactive
+                UpdateResult newModel
+                    Cmd.none
+                    dm
+                    Data.ItemSelection.Inactive
+                    Comp.ItemCard.LinkNone
 
         ItemCardMsg item lm ->
             let
@@ -120,6 +133,7 @@ updateDrag dm _ msg model =
                 Cmd.none
                 result.dragModel
                 result.selection
+                result.linkTarget
 
 
 

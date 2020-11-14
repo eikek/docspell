@@ -1,10 +1,19 @@
-module Comp.ItemCard exposing (..)
+module Comp.ItemCard exposing
+    ( LinkTarget(..)
+    , Model
+    , Msg
+    , UpdateResult
+    , ViewConfig
+    , init
+    , update
+    , view
+    )
 
 import Api
 import Api.Model.AttachmentLight exposing (AttachmentLight)
 import Api.Model.HighlightEntry exposing (HighlightEntry)
+import Api.Model.IdName exposing (IdName)
 import Api.Model.ItemLight exposing (ItemLight)
-import Data.BasicSize
 import Data.Direction
 import Data.Fields
 import Data.Icons as Icons
@@ -16,7 +25,6 @@ import Html.Events exposing (onClick)
 import Markdown
 import Page exposing (Page(..))
 import Set exposing (Set)
-import Util.Html
 import Util.ItemDragDrop as DD
 import Util.List
 import Util.Maybe
@@ -33,6 +41,7 @@ type Msg
     = CyclePreview ItemLight
     | ToggleSelectItem (Set String) String
     | ItemDDMsg DD.Msg
+    | SetLinkTarget LinkTarget
 
 
 type alias ViewConfig =
@@ -41,10 +50,20 @@ type alias ViewConfig =
     }
 
 
+type LinkTarget
+    = LinkCorrOrg IdName
+    | LinkCorrPerson IdName
+    | LinkConcPerson IdName
+    | LinkConcEquip IdName
+    | LinkFolder IdName
+    | LinkNone
+
+
 type alias UpdateResult =
     { model : Model
     , dragModel : DD.Model
     , selection : ItemSelection
+    , linkTarget : LinkTarget
     }
 
 
@@ -89,7 +108,7 @@ update ddm msg model =
                 ddd =
                     DD.update lm ddm
             in
-            UpdateResult model ddd.model Data.ItemSelection.Inactive
+            UpdateResult model ddd.model Data.ItemSelection.Inactive LinkNone
 
         ToggleSelectItem ids id ->
             let
@@ -100,7 +119,7 @@ update ddm msg model =
                     else
                         Set.insert id ids
             in
-            UpdateResult model ddm (Data.ItemSelection.Active newSet)
+            UpdateResult model ddm (Data.ItemSelection.Active newSet) LinkNone
 
         CyclePreview item ->
             let
@@ -113,6 +132,10 @@ update ddm msg model =
             UpdateResult { model | previewAttach = next }
                 ddm
                 Data.ItemSelection.Inactive
+                LinkNone
+
+        SetLinkTarget target ->
+            UpdateResult model ddm Data.ItemSelection.Inactive target
 
 
 view : ViewConfig -> UiSettings -> Model -> ItemLight -> Html Msg
@@ -204,31 +227,55 @@ metaDataContent settings item =
         fieldHidden f =
             Data.UiSettings.fieldHidden settings f
 
-        corr =
-            List.filterMap identity [ item.corrOrg, item.corrPerson ]
-                |> List.map .name
-                |> List.intersperse ", "
-                |> String.concat
+        default =
+            text "-"
 
-        conc =
-            List.filterMap identity [ item.concPerson, item.concEquip ]
-                |> List.map .name
-                |> List.intersperse ", "
-                |> String.concat
+        makeLink tagger idname =
+            a
+                [ onClick (tagger idname)
+                , href "#"
+                ]
+                [ text idname.name
+                ]
+
+        combine ma mb =
+            case ( ma, mb ) of
+                ( Just a, Just b ) ->
+                    [ a, text ", ", b ]
+
+                ( Just a, Nothing ) ->
+                    [ a ]
+
+                ( Nothing, Just b ) ->
+                    [ b ]
+
+                ( Nothing, Nothing ) ->
+                    [ default ]
+
+        corrOrg =
+            Maybe.map (makeLink (LinkCorrOrg >> SetLinkTarget)) item.corrOrg
+
+        corrPerson =
+            Maybe.map (makeLink (LinkCorrPerson >> SetLinkTarget)) item.corrPerson
+
+        concPerson =
+            Maybe.map (makeLink (LinkConcPerson >> SetLinkTarget)) item.concPerson
+
+        concEquip =
+            Maybe.map (makeLink (LinkConcEquip >> SetLinkTarget)) item.concEquip
 
         folder =
-            Maybe.map .name item.folder
-                |> Maybe.withDefault ""
+            Maybe.map (makeLink (LinkFolder >> SetLinkTarget)) item.folder
 
         dueDate =
             Maybe.map Util.Time.formatDateShort item.dueDate
                 |> Maybe.withDefault ""
     in
     div [ class "content" ]
-        [ div [ class "ui horizontal list" ]
+        [ div [ class "ui horizontal link list" ]
             [ div
                 [ classList
-                    [ ( "item", True )
+                    [ ( "link item", True )
                     , ( "invisible hidden"
                       , fieldHidden Data.Fields.CorrOrg
                             && fieldHidden Data.Fields.CorrPerson
@@ -236,10 +283,9 @@ metaDataContent settings item =
                     ]
                 , title "Correspondent"
                 ]
-                [ Icons.correspondentIcon ""
-                , text " "
-                , Util.String.withDefault "-" corr |> text
-                ]
+                (Icons.correspondentIcon ""
+                    :: combine corrOrg corrPerson
+                )
             , div
                 [ classList
                     [ ( "item", True )
@@ -250,10 +296,9 @@ metaDataContent settings item =
                     ]
                 , title "Concerning"
                 ]
-                [ Icons.concernedIcon
-                , text " "
-                , Util.String.withDefault "-" conc |> text
-                ]
+                (Icons.concernedIcon
+                    :: combine concPerson concEquip
+                )
             , div
                 [ classList
                     [ ( "item", True )
@@ -262,8 +307,7 @@ metaDataContent settings item =
                 , title "Folder"
                 ]
                 [ Icons.folderIcon ""
-                , text " "
-                , Util.String.withDefault "-" folder |> text
+                , Maybe.withDefault default folder
                 ]
             ]
         , div [ class "right floated meta" ]
@@ -318,7 +362,7 @@ notesContent settings item =
 
 
 mainContent : Attribute Msg -> String -> Bool -> UiSettings -> ViewConfig -> ItemLight -> Html Msg
-mainContent cardAction cardColor isConfirmed settings cfg item =
+mainContent cardAction cardColor isConfirmed settings _ item =
     let
         dirIcon =
             i [ class (Data.Direction.iconFromMaybe item.direction) ] []
@@ -429,6 +473,7 @@ previewMenu model item mainAttach =
                 [ class "ui compact basic icon button"
                 , href attachUrl
                 , target "_self"
+                , title "Open attachment file"
                 ]
                 [ i [ class "eye icon" ] []
                 ]
