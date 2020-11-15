@@ -100,14 +100,6 @@ Note that you don't need to backup the SOLR instance (if you're using
 fulltext search), since it can be recreated by Docspell.
 
 
-## There are no thumbnails of my documents?
-
-Thumbnails are currently not implemented. I experimented with this
-early and found that I don't need them :-) My documents were too
-similar and I found myself looking always at correspondent and tags.
-But it is planned to add thumbnails! I just don't have an ETA.
-
-
 ## What if my documents already contain OCR-ed text?
 
 Documents are not ocr-ed twice normally. Doscpell first extracts the
