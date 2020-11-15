@@ -411,10 +411,647 @@ Please refer to their documentation for more on this.</p>
 <p>Here are the default configurations.</p>
 <h1 id="default-config">Default Config<a class="zola-anchor" href="#default-config" aria-label="Anchor link for: default-config">🔗</a></h1>
 <h2 id="rest-server">Rest Server<a class="zola-anchor" href="#rest-server" aria-label="Anchor link for: rest-server">🔗</a></h2>
-<p><code> bash&lt;!--\n--&gt;&lt;!--\n--&gt;docspell.server {&lt;!--\n--&gt;&lt;!--\n--&gt;  # This is shown in the top right corner of the web application&lt;!--\n--&gt;  app-name = &quot;Docspell&quot;&lt;!--\n--&gt;&lt;!--\n--&gt;  # This is the id of this node. If you run more than one server, you&lt;!--\n--&gt;  # have to make sure to provide unique ids per node.&lt;!--\n--&gt;  app-id = &quot;rest1&quot;&lt;!--\n--&gt;&lt;!--\n--&gt;  # This is the base URL this application is deployed to. This is used&lt;!--\n--&gt;  # to create absolute URLs and to configure the cookie.&lt;!--\n--&gt;  #&lt;!--\n--&gt;  # If default is not changed, the HOST line of the login request is&lt;!--\n--&gt;  # used instead or the value of the `X-Forwarded-For` header. If set&lt;!--\n--&gt;  # to some other value, the request is not inspected.&lt;!--\n--&gt;  base-url = &quot;http://localhost:7880&quot;&lt;!--\n--&gt;&lt;!--\n--&gt;  # Where the server binds to.&lt;!--\n--&gt;  bind {&lt;!--\n--&gt;    address = &quot;localhost&quot;&lt;!--\n--&gt;    port = 7880&lt;!--\n--&gt;  }&lt;!--\n--&gt;&lt;!--\n--&gt;  # This is a hard limit to restrict the size of a batch that is&lt;!--\n--&gt;  # returned when searching for items. The user can set this limit&lt;!--\n--&gt;  # within the client config, but it is restricted by the server to&lt;!--\n--&gt;  # the number defined here. An admin might choose a lower number&lt;!--\n--&gt;  # depending on the available resources.&lt;!--\n--&gt;  max-item-page-size = 200&lt;!--\n--&gt;&lt;!--\n--&gt;  # The number of characters to return for each item notes when&lt;!--\n--&gt;  # searching. Item notes may be very long, when returning them with&lt;!--\n--&gt;  # all the results from a search, they add quite some data to return.&lt;!--\n--&gt;  # In order to keep this low, a limit can be defined here.&lt;!--\n--&gt;  max-note-length = 180&lt;!--\n--&gt;&lt;!--\n--&gt;&lt;!--\n--&gt;  # This defines whether the classification form in the collective&lt;!--\n--&gt;  # settings is displayed or not. If all joex instances have document&lt;!--\n--&gt;  # classification disabled, it makes sense to hide its settings from&lt;!--\n--&gt;  # users.&lt;!--\n--&gt;  show-classification-settings = true&lt;!--\n--&gt;&lt;!--\n--&gt;  # Authentication.&lt;!--\n--&gt;  auth {&lt;!--\n--&gt;&lt;!--\n--&gt;    # The secret for this server that is used to sign the authenicator&lt;!--\n--&gt;    # tokens. If multiple servers are running, all must share the same&lt;!--\n--&gt;    # secret. You can use base64 or hex strings (prefix with b64: and&lt;!--\n--&gt;    # hex:, respectively).&lt;!--\n--&gt;    server-secret = &quot;hex:caffee&quot;&lt;!--\n--&gt;&lt;!--\n--&gt;    # How long an authentication token is valid. The web application&lt;!--\n--&gt;    # will get a new one periodically.&lt;!--\n--&gt;    session-valid = &quot;5 minutes&quot;&lt;!--\n--&gt;  }&lt;!--\n--&gt;&lt;!--\n--&gt;  # This endpoint allows to upload files to any collective. The&lt;!--\n--&gt;  # intention is that local software integrates with docspell more&lt;!--\n--&gt;  # easily. Therefore the endpoint is not protected by the usual&lt;!--\n--&gt;  # means.&lt;!--\n--&gt;  #&lt;!--\n--&gt;  # For security reasons, this endpoint is disabled by default. If&lt;!--\n--&gt;  # enabled, you can choose from some ways to protect it. It may be a&lt;!--\n--&gt;  # good idea to further protect this endpoint using a firewall, such&lt;!--\n--&gt;  # that outside traffic is not routed.&lt;!--\n--&gt;  #&lt;!--\n--&gt;  # NOTE: If all protection methods are disabled, the endpoint is not&lt;!--\n--&gt;  # protected at all!&lt;!--\n--&gt;  integration-endpoint {&lt;!--\n--&gt;    enabled = false&lt;!--\n--&gt;&lt;!--\n--&gt;    # The priority to use when submitting files through this endpoint.&lt;!--\n--&gt;    priority = &quot;low&quot;&lt;!--\n--&gt;&lt;!--\n--&gt;    # The name used for the item &quot;source&quot; property when uploaded&lt;!--\n--&gt;    # through this endpoint.&lt;!--\n--&gt;    source-name = &quot;integration&quot;&lt;!--\n--&gt;&lt;!--\n--&gt;    # IPv4 addresses to allow access. An empty list, if enabled,&lt;!--\n--&gt;    # prohibits all requests. IP addresses may be specified as simple&lt;!--\n--&gt;    # globs: a part marked as `*' matches any octet, like in&lt;!--\n--&gt;    # `192.168.*.*`. The `127.0.0.1' (the default) matches the&lt;!--\n--&gt;    # loopback address.&lt;!--\n--&gt;    allowed-ips {&lt;!--\n--&gt;      enabled = false&lt;!--\n--&gt;      ips = [ &quot;127.0.0.1&quot; ]&lt;!--\n--&gt;    }&lt;!--\n--&gt;&lt;!--\n--&gt;    # Requests are expected to use http basic auth when uploading&lt;!--\n--&gt;    # files.&lt;!--\n--&gt;    http-basic {&lt;!--\n--&gt;      enabled = false&lt;!--\n--&gt;      realm = &quot;Docspell Integration&quot;&lt;!--\n--&gt;      user = &quot;docspell-int&quot;&lt;!--\n--&gt;      password = &quot;docspell-int&quot;&lt;!--\n--&gt;    }&lt;!--\n--&gt;&lt;!--\n--&gt;    # Requests are expected to supply some specific header when&lt;!--\n--&gt;    # uploading files.&lt;!--\n--&gt;    http-header {&lt;!--\n--&gt;      enabled = false&lt;!--\n--&gt;      header-name = &quot;Docspell-Integration&quot;&lt;!--\n--&gt;      header-value = &quot;some-secret&quot;&lt;!--\n--&gt;    }&lt;!--\n--&gt;  }&lt;!--\n--&gt;&lt;!--\n--&gt;  # Configuration of the full-text search engine.&lt;!--\n--&gt;  full-text-search {&lt;!--\n--&gt;    # The full-text search feature can be disabled. It requires an&lt;!--\n--&gt;    # additional index server which needs additional memory and disk&lt;!--\n--&gt;    # space. It can be enabled later any time.&lt;!--\n--&gt;    #&lt;!--\n--&gt;    # Currently the SOLR search platform is supported.&lt;!--\n--&gt;    enabled = false&lt;!--\n--&gt;&lt;!--\n--&gt;    # When re-creating the complete index via a REST call, this key&lt;!--\n--&gt;    # is required. If left empty (the default), recreating the index&lt;!--\n--&gt;    # is disabled.&lt;!--\n--&gt;    #&lt;!--\n--&gt;    # Example curl command:&lt;!--\n--&gt;    # curl -XPOST http://localhost:7880/api/v1/open/fts/reIndexAll/test123&lt;!--\n--&gt;    recreate-key = &quot;&quot;&lt;!--\n--&gt;&lt;!--\n--&gt;    # Configuration for the SOLR backend.&lt;!--\n--&gt;    solr = {&lt;!--\n--&gt;      # The URL to solr&lt;!--\n--&gt;      url = &quot;http://localhost:8983/solr/docspell&quot;&lt;!--\n--&gt;      # Used to tell solr when to commit the data&lt;!--\n--&gt;      commit-within = 1000&lt;!--\n--&gt;      # If true, logs request and response bodies&lt;!--\n--&gt;      log-verbose = false&lt;!--\n--&gt;      # The defType parameter to lucene that defines the parser to&lt;!--\n--&gt;      # use. You might want to try &quot;edismax&quot; or look here:&lt;!--\n--&gt;      # https://lucene.apache.org/solr/guide/8_4/query-syntax-and-parsing.html#query-syntax-and-parsing&lt;!--\n--&gt;      def-type = &quot;lucene&quot;&lt;!--\n--&gt;      # The default combiner for tokens. One of {AND, OR}.&lt;!--\n--&gt;      q-op = &quot;OR&quot;&lt;!--\n--&gt;    }&lt;!--\n--&gt;  }&lt;!--\n--&gt;&lt;!--\n--&gt;  # Configuration for the backend.&lt;!--\n--&gt;  backend {&lt;!--\n--&gt;    # Enable or disable debugging for e-mail related functionality. This&lt;!--\n--&gt;    # applies to both sending and receiving mails. For security reasons&lt;!--\n--&gt;    # logging is not very extensive on authentication failures. Setting&lt;!--\n--&gt;    # this to true, results in a lot of data printed to stdout.&lt;!--\n--&gt;    mail-debug = false&lt;!--\n--&gt;&lt;!--\n--&gt;    # The database connection.&lt;!--\n--&gt;    #&lt;!--\n--&gt;    # By default a H2 file-based database is configured. You can&lt;!--\n--&gt;    # provide a postgresql or mariadb connection here. When using H2&lt;!--\n--&gt;    # use the PostgreSQL compatibility mode and AUTO_SERVER feature.&lt;!--\n--&gt;    jdbc {&lt;!--\n--&gt;      url = &quot;jdbc:h2://&quot;${java.io.tmpdir}&quot;/docspell-demo.db;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;AUTO_SERVER=TRUE&quot;&lt;!--\n--&gt;      user = &quot;sa&quot;&lt;!--\n--&gt;      password = &quot;&quot;&lt;!--\n--&gt;    }&lt;!--\n--&gt;&lt;!--\n--&gt;    # Configuration for registering new users.&lt;!--\n--&gt;    signup {&lt;!--\n--&gt;&lt;!--\n--&gt;      # The mode defines if new users can signup or not. It can have&lt;!--\n--&gt;      # three values:&lt;!--\n--&gt;      #&lt;!--\n--&gt;      # - open: every new user can sign up&lt;!--\n--&gt;      # - invite: new users can sign up only if they provide a correct&lt;!--\n--&gt;      #   invitation key. Invitation keys can be generated by the&lt;!--\n--&gt;      #   server.&lt;!--\n--&gt;      # - closed: signing up is disabled.&lt;!--\n--&gt;      mode = &quot;open&quot;&lt;!--\n--&gt;&lt;!--\n--&gt;      # If mode == 'invite', a password must be provided to generate&lt;!--\n--&gt;      # invitation keys. It must not be empty.&lt;!--\n--&gt;      new-invite-password = &quot;&quot;&lt;!--\n--&gt;&lt;!--\n--&gt;      # If mode == 'invite', this is the period an invitation token is&lt;!--\n--&gt;      # considered valid.&lt;!--\n--&gt;      invite-time = &quot;3 days&quot;&lt;!--\n--&gt;    }&lt;!--\n--&gt;&lt;!--\n--&gt;    files {&lt;!--\n--&gt;      # Defines the chunk size (in bytes) used to store the files.&lt;!--\n--&gt;      # This will affect the memory footprint when uploading and&lt;!--\n--&gt;      # downloading files. At most this amount is loaded into RAM for&lt;!--\n--&gt;      # down- and uploading.&lt;!--\n--&gt;      #&lt;!--\n--&gt;      # It also defines the chunk size used for the blobs inside the&lt;!--\n--&gt;      # database.&lt;!--\n--&gt;      chunk-size = 524288&lt;!--\n--&gt;&lt;!--\n--&gt;      # The file content types that are considered valid. Docspell&lt;!--\n--&gt;      # will only pass these files to processing. The processing code&lt;!--\n--&gt;      # itself has also checks for which files are supported and which&lt;!--\n--&gt;      # not. This affects the uploading part and can be used to&lt;!--\n--&gt;      # restrict file types that should be handed over to processing.&lt;!--\n--&gt;      # By default all files are allowed.&lt;!--\n--&gt;      valid-mime-types = [ ]&lt;!--\n--&gt;    }&lt;!--\n--&gt;  }&lt;!--\n--&gt;}&lt;!--\n--&gt;</code></p>
-<h2 id="joex">Joex<a class="zola-anchor" href="#joex" aria-label="Anchor link for: joex">🔗</a></h2>
-<p><code> bash&lt;!--\n--&gt;&lt;!--\n--&gt;docspell.joex {&lt;!--\n--&gt;&lt;!--\n--&gt;  # This is the id of this node. If you run more than one server, you&lt;!--\n--&gt;  # have to make sure to provide unique ids per node.&lt;!--\n--&gt;  app-id = &quot;joex1&quot;&lt;!--\n--&gt;&lt;!--\n--&gt;&lt;!--\n--&gt;  # This is the base URL this application is deployed to. This is used&lt;!--\n--&gt;  # to register this joex instance such that docspell rest servers can&lt;!--\n--&gt;  # reach them&lt;!--\n--&gt;  base-url = &quot;http://localhost:7878&quot;&lt;!--\n--&gt;&lt;!--\n--&gt;  # Where the REST server binds to.&lt;!--\n--&gt;  #&lt;!--\n--&gt;  # JOEX provides a very simple REST interface to inspect its state.&lt;!--\n--&gt;  bind {&lt;!--\n--&gt;    address = &quot;localhost&quot;&lt;!--\n--&gt;    port = 7878&lt;!--\n--&gt;  }&lt;!--\n--&gt;&lt;!--\n--&gt;  # The database connection.&lt;!--\n--&gt;  #&lt;!--\n--&gt;  # By default a H2 file-based database is configured. You can provide&lt;!--\n--&gt;  # a postgresql or mariadb connection here. When using H2 use the&lt;!--\n--&gt;  # PostgreSQL compatibility mode and AUTO_SERVER feature.&lt;!--\n--&gt;  #&lt;!--\n--&gt;  # It must be the same connection as the rest server is using.&lt;!--\n--&gt;  jdbc {&lt;!--\n--&gt;    url = &quot;jdbc:h2://&quot;${java.io.tmpdir}&quot;/docspell-demo.db;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;AUTO_SERVER=TRUE&quot;&lt;!--\n--&gt;    user = &quot;sa&quot;&lt;!--\n--&gt;    password = &quot;&quot;&lt;!--\n--&gt;  }&lt;!--\n--&gt;&lt;!--\n--&gt;  # Enable or disable debugging for e-mail related functionality. This&lt;!--\n--&gt;  # applies to both sending and receiving mails. For security reasons&lt;!--\n--&gt;  # logging is not very extensive on authentication failures. Setting&lt;!--\n--&gt;  # this to true, results in a lot of data printed to stdout.&lt;!--\n--&gt;  mail-debug = false&lt;!--\n--&gt;&lt;!--\n--&gt;  send-mail {&lt;!--\n--&gt;    # This is used as the List-Id e-mail header when mails are sent&lt;!--\n--&gt;    # from docspell to its users (example: for notification mails). It&lt;!--\n--&gt;    # is not used when sending to external recipients. If it is empty,&lt;!--\n--&gt;    # no such header is added. Using this header is often useful when&lt;!--\n--&gt;    # filtering mails.&lt;!--\n--&gt;    #&lt;!--\n--&gt;    # It should be a string in angle brackets. See&lt;!--\n--&gt;    # https://tools.ietf.org/html/rfc2919 for a formal specification&lt;!--\n--&gt;    # of this header.&lt;!--\n--&gt;    list-id = &quot;&quot;&lt;!--\n--&gt;  }&lt;!--\n--&gt;&lt;!--\n--&gt;  # Configuration for the job scheduler.&lt;!--\n--&gt;  scheduler {&lt;!--\n--&gt;&lt;!--\n--&gt;    # Each scheduler needs a unique name. This defaults to the node&lt;!--\n--&gt;    # name, which must be unique, too.&lt;!--\n--&gt;    name = ${docspell.joex.app-id}&lt;!--\n--&gt;&lt;!--\n--&gt;    # Number of processing allowed in parallel.&lt;!--\n--&gt;    pool-size = 2&lt;!--\n--&gt;&lt;!--\n--&gt;    # A counting scheme determines the ratio of how high- and low-prio&lt;!--\n--&gt;    # jobs are run. For example: 4,1 means run 4 high prio jobs, then&lt;!--\n--&gt;    # 1 low prio and then start over.&lt;!--\n--&gt;    counting-scheme = &quot;4,1&quot;&lt;!--\n--&gt;&lt;!--\n--&gt;    # How often a failed job should be retried until it enters failed&lt;!--\n--&gt;    # state. If a job fails, it becomes &quot;stuck&quot; and will be retried&lt;!--\n--&gt;    # after a delay.&lt;!--\n--&gt;    retries = 2&lt;!--\n--&gt;&lt;!--\n--&gt;    # The delay until the next try is performed for a failed job. This&lt;!--\n--&gt;    # delay is increased exponentially with the number of retries.&lt;!--\n--&gt;    retry-delay = &quot;1 minute&quot;&lt;!--\n--&gt;&lt;!--\n--&gt;    # The queue size of log statements from a job.&lt;!--\n--&gt;    log-buffer-size = 500&lt;!--\n--&gt;&lt;!--\n--&gt;    # If no job is left in the queue, the scheduler will wait until a&lt;!--\n--&gt;    # notify is requested (using the REST interface). To also retry&lt;!--\n--&gt;    # stuck jobs, it will notify itself periodically.&lt;!--\n--&gt;    wakeup-period = &quot;30 minutes&quot;&lt;!--\n--&gt;  }&lt;!--\n--&gt;&lt;!--\n--&gt;  periodic-scheduler {&lt;!--\n--&gt;&lt;!--\n--&gt;    # Each scheduler needs a unique name. This defaults to the node&lt;!--\n--&gt;    # name, which must be unique, too.&lt;!--\n--&gt;    name = ${docspell.joex.app-id}&lt;!--\n--&gt;&lt;!--\n--&gt;    # A fallback to start looking for due periodic tasks regularily.&lt;!--\n--&gt;    # Usually joex instances should be notified via REST calls if&lt;!--\n--&gt;    # external processes change tasks. But these requests may get&lt;!--\n--&gt;    # lost.&lt;!--\n--&gt;    wakeup-period = &quot;10 minutes&quot;&lt;!--\n--&gt;  }&lt;!--\n--&gt;&lt;!--\n--&gt;  # Configuration for the user-tasks.&lt;!--\n--&gt;  user-tasks {&lt;!--\n--&gt;    # Allows to import e-mails by scanning a mailbox.&lt;!--\n--&gt;    scan-mailbox {&lt;!--\n--&gt;      # A limit of how many folders to scan through. If a user&lt;!--\n--&gt;      # configures more than this, only upto this limit folders are&lt;!--\n--&gt;      # scanned and a warning is logged.&lt;!--\n--&gt;      max-folders = 50&lt;!--\n--&gt;&lt;!--\n--&gt;      # How many mails (headers only) to retrieve in one chunk.&lt;!--\n--&gt;      #&lt;!--\n--&gt;      # If this is greater than `max-mails' it is set automatically to&lt;!--\n--&gt;      # the value of `max-mails'.&lt;!--\n--&gt;      mail-chunk-size = 50&lt;!--\n--&gt;&lt;!--\n--&gt;      # A limit on how many mails to process in one job run. This is&lt;!--\n--&gt;      # meant to avoid too heavy resource allocation to one&lt;!--\n--&gt;      # user/collective.&lt;!--\n--&gt;      #&lt;!--\n--&gt;      # If more than this number of mails is encountered, a warning is&lt;!--\n--&gt;      # logged.&lt;!--\n--&gt;      max-mails = 500&lt;!--\n--&gt;    }&lt;!--\n--&gt;  }&lt;!--\n--&gt;&lt;!--\n--&gt;&lt;!--\n--&gt;  # Docspell uses periodic house keeping tasks, like cleaning expired&lt;!--\n--&gt;  # invites, that can be configured here.&lt;!--\n--&gt;  house-keeping {&lt;!--\n--&gt;&lt;!--\n--&gt;    # When the house keeping tasks execute. Default is to run every&lt;!--\n--&gt;    # week.&lt;!--\n--&gt;    schedule = &quot;Sun *-*-* 00:00:00&quot;&lt;!--\n--&gt;&lt;!--\n--&gt;    # This task removes invitation keys that have been created but not&lt;!--\n--&gt;    # used. The timespan here must be greater than the `invite-time'&lt;!--\n--&gt;    # setting in the rest server config file.&lt;!--\n--&gt;    cleanup-invites = {&lt;!--\n--&gt;&lt;!--\n--&gt;      # Whether this task is enabled.&lt;!--\n--&gt;      enabled = true&lt;!--\n--&gt;&lt;!--\n--&gt;      # The minimum age of invites to be deleted.&lt;!--\n--&gt;      older-than = &quot;30 days&quot;&lt;!--\n--&gt;    }&lt;!--\n--&gt;&lt;!--\n--&gt;    # Jobs store their log output in the database. Normally this data&lt;!--\n--&gt;    # is only interesting for some period of time. The processing logs&lt;!--\n--&gt;    # of old files can be removed eventually.&lt;!--\n--&gt;    cleanup-jobs = {&lt;!--\n--&gt;&lt;!--\n--&gt;      # Whether this task is enabled.&lt;!--\n--&gt;      enabled = true&lt;!--\n--&gt;&lt;!--\n--&gt;      # The minimum age of jobs to delete. It is matched against the&lt;!--\n--&gt;      # `finished' timestamp.&lt;!--\n--&gt;      older-than = &quot;30 days&quot;&lt;!--\n--&gt;&lt;!--\n--&gt;      # This defines how many jobs are deleted in one transaction.&lt;!--\n--&gt;      # Since the data to delete may get large, it can be configured&lt;!--\n--&gt;      # whether more or less memory should be used.&lt;!--\n--&gt;      delete-batch = &quot;100&quot;&lt;!--\n--&gt;    }&lt;!--\n--&gt;  }&lt;!--\n--&gt;&lt;!--\n--&gt;  # Configuration of text extraction&lt;!--\n--&gt;  extraction {&lt;!--\n--&gt;    # For PDF files it is first tried to read the text parts of the&lt;!--\n--&gt;    # PDF. But PDFs can be complex documents and they may contain text&lt;!--\n--&gt;    # and images. If the returned text is shorter than the value&lt;!--\n--&gt;    # below, OCR is run afterwards. Then both extracted texts are&lt;!--\n--&gt;    # compared and the longer will be used.&lt;!--\n--&gt;    pdf {&lt;!--\n--&gt;      min-text-len = 500&lt;!--\n--&gt;    }&lt;!--\n--&gt;&lt;!--\n--&gt;    preview {&lt;!--\n--&gt;      # When rendering a pdf page, use this dpi. This results in&lt;!--\n--&gt;      # scaling the image. A standard A4 page rendered at 96dpi&lt;!--\n--&gt;      # results in roughly 790x1100px image. Using 32 results in&lt;!--\n--&gt;      # roughly 200x300px image.&lt;!--\n--&gt;      #&lt;!--\n--&gt;      # Note, when this is changed, you might want to re-generate&lt;!--\n--&gt;      # preview images. Check the api for this, there is an endpoint&lt;!--\n--&gt;      # to regenerate all for a collective.&lt;!--\n--&gt;      dpi = 32&lt;!--\n--&gt;    }&lt;!--\n--&gt;&lt;!--\n--&gt;    # Extracting text using OCR works for image and pdf files. It will&lt;!--\n--&gt;    # first run ghostscript to create a gray image from a pdf. Then&lt;!--\n--&gt;    # unpaper is run to optimize the image for the upcoming ocr, which&lt;!--\n--&gt;    # will be done by tesseract. All these programs must be available&lt;!--\n--&gt;    # in your PATH or the absolute path can be specified below.&lt;!--\n--&gt;    ocr {&lt;!--\n--&gt;&lt;!--\n--&gt;      # Images greater than this size are skipped. Note that every&lt;!--\n--&gt;      # image is loaded completely into memory for doing OCR.&lt;!--\n--&gt;      max-image-size = 14000000&lt;!--\n--&gt;&lt;!--\n--&gt;      # Defines what pages to process. If a PDF with 600 pages is&lt;!--\n--&gt;      # submitted, it is probably not necessary to scan through all of&lt;!--\n--&gt;      # them. This would take a long time and occupy resources for no&lt;!--\n--&gt;      # value. The first few pages should suffice. The default is first&lt;!--\n--&gt;      # 10 pages.&lt;!--\n--&gt;      #&lt;!--\n--&gt;      # If you want all pages being processed, set this number to -1.&lt;!--\n--&gt;      #&lt;!--\n--&gt;      # Note: if you change the ghostscript command below, be aware that&lt;!--\n--&gt;      # this setting (if not -1) will add another parameter to the&lt;!--\n--&gt;      # beginning of the command.&lt;!--\n--&gt;      page-range {&lt;!--\n--&gt;        begin = 10&lt;!--\n--&gt;      }&lt;!--\n--&gt;&lt;!--\n--&gt;      # The ghostscript command.&lt;!--\n--&gt;      ghostscript {&lt;!--\n--&gt;        command {&lt;!--\n--&gt;          program = &quot;gs&quot;&lt;!--\n--&gt;          args = [ &quot;-dNOPAUSE&quot;&lt;!--\n--&gt;                 , &quot;-dBATCH&quot;&lt;!--\n--&gt;                 , &quot;-dSAFER&quot;&lt;!--\n--&gt;                 , &quot;-sDEVICE=tiffscaled8&quot;&lt;!--\n--&gt;                 , &quot;-sOutputFile={{outfile}}&quot;&lt;!--\n--&gt;                 , &quot;{{infile}}&quot;&lt;!--\n--&gt;                 ]&lt;!--\n--&gt;          timeout = &quot;5 minutes&quot;&lt;!--\n--&gt;        }&lt;!--\n--&gt;        working-dir = ${java.io.tmpdir}&quot;/docspell-extraction&quot;&lt;!--\n--&gt;      }&lt;!--\n--&gt;&lt;!--\n--&gt;      # The unpaper command.&lt;!--\n--&gt;      unpaper {&lt;!--\n--&gt;        command {&lt;!--\n--&gt;          program = &quot;unpaper&quot;&lt;!--\n--&gt;          args = [ &quot;{{infile}}&quot;, &quot;{{outfile}}&quot; ]&lt;!--\n--&gt;          timeout = &quot;5 minutes&quot;&lt;!--\n--&gt;        }&lt;!--\n--&gt;      }&lt;!--\n--&gt;&lt;!--\n--&gt;      # The tesseract command.&lt;!--\n--&gt;      tesseract {&lt;!--\n--&gt;        command {&lt;!--\n--&gt;          program = &quot;tesseract&quot;&lt;!--\n--&gt;          args = [&quot;{{file}}&quot;&lt;!--\n--&gt;                 , &quot;stdout&quot;&lt;!--\n--&gt;                 , &quot;-l&quot;&lt;!--\n--&gt;                 , &quot;{{lang}}&quot;&lt;!--\n--&gt;                 ]&lt;!--\n--&gt;          timeout = &quot;5 minutes&quot;&lt;!--\n--&gt;        }&lt;!--\n--&gt;      }&lt;!--\n--&gt;    }&lt;!--\n--&gt;  }&lt;!--\n--&gt;&lt;!--\n--&gt;  # Settings for text analysis&lt;!--\n--&gt;  text-analysis {&lt;!--\n--&gt;    # Maximum length of text to be analysed.&lt;!--\n--&gt;    #&lt;!--\n--&gt;    # All text to analyse must fit into RAM. A large document may take&lt;!--\n--&gt;    # too much heap. Also, most important information is at the&lt;!--\n--&gt;    # beginning of a document, so in most cases the first two pages&lt;!--\n--&gt;    # should suffice. Default is 10000, which are about 2-3 pages&lt;!--\n--&gt;    # (just a rough guess, of course).&lt;!--\n--&gt;    max-length = 10000&lt;!--\n--&gt;&lt;!--\n--&gt;    # A working directory for the analyser to store temporary/working&lt;!--\n--&gt;    # files.&lt;!--\n--&gt;    working-dir = ${java.io.tmpdir}&quot;/docspell-analysis&quot;&lt;!--\n--&gt;&lt;!--\n--&gt;    regex-ner {&lt;!--\n--&gt;      # Whether to enable custom NER annotation. This uses the address&lt;!--\n--&gt;      # book of a collective as input for NER tagging (to automatically&lt;!--\n--&gt;      # find correspondent and concerned entities). If the address book&lt;!--\n--&gt;      # is large, this can be quite memory intensive and also makes text&lt;!--\n--&gt;      # analysis slower. But it greatly improves accuracy. If this is&lt;!--\n--&gt;      # false, NER tagging uses only statistical models (that also work&lt;!--\n--&gt;      # quite well).&lt;!--\n--&gt;      #&lt;!--\n--&gt;      # This setting might be moved to the collective settings in the&lt;!--\n--&gt;      # future.&lt;!--\n--&gt;      enabled = true&lt;!--\n--&gt;&lt;!--\n--&gt;      # The NER annotation uses a file of patterns that is derived from&lt;!--\n--&gt;      # a collective's address book. This is is the time how long this&lt;!--\n--&gt;      # file will be kept until a check for a state change is done.&lt;!--\n--&gt;      file-cache-time = &quot;1 minute&quot;&lt;!--\n--&gt;    }&lt;!--\n--&gt;&lt;!--\n--&gt;    # Settings for doing document classification.&lt;!--\n--&gt;    #&lt;!--\n--&gt;    # This works by learning from existing documents. A collective can&lt;!--\n--&gt;    # specify a tag category and the system will try to predict a tag&lt;!--\n--&gt;    # from this category for new incoming documents.&lt;!--\n--&gt;    #&lt;!--\n--&gt;    # This requires a satstical model that is computed from all&lt;!--\n--&gt;    # existing documents. This process is run periodically as&lt;!--\n--&gt;    # configured by the collective. It may require a lot of memory,&lt;!--\n--&gt;    # depending on the amount of data.&lt;!--\n--&gt;    #&lt;!--\n--&gt;    # It utilises this NLP library: https://nlp.stanford.edu/.&lt;!--\n--&gt;    classification {&lt;!--\n--&gt;      # Whether to enable classification globally. Each collective can&lt;!--\n--&gt;      # decide to disable it. If it is disabled here, no collective&lt;!--\n--&gt;      # can use classification.&lt;!--\n--&gt;      enabled = true&lt;!--\n--&gt;&lt;!--\n--&gt;      # If concerned with memory consumption, this restricts the&lt;!--\n--&gt;      # number of items to consider. More are better for training. A&lt;!--\n--&gt;      # negative value or zero means no train on all items.&lt;!--\n--&gt;      item-count = 0&lt;!--\n--&gt;&lt;!--\n--&gt;      # These settings are used to configure the classifier. If&lt;!--\n--&gt;      # multiple are given, they are all tried and the &quot;best&quot; is&lt;!--\n--&gt;      # chosen at the end. See&lt;!--\n--&gt;      # https://nlp.stanford.edu/nlp/javadoc/javanlp/edu/stanford/nlp/classify/ColumnDataClassifier.html&lt;!--\n--&gt;      # for more info about these settings. The settings here yielded&lt;!--\n--&gt;      # good results with *my* dataset.&lt;!--\n--&gt;      #&lt;!--\n--&gt;      # Enclose regexps in triple quotes.&lt;!--\n--&gt;      classifiers = [&lt;!--\n--&gt;        { &quot;useSplitWords&quot; = &quot;true&quot;&lt;!--\n--&gt;          &quot;splitWordsTokenizerRegexp&quot; = &quot;&quot;&quot;[\p{L}][\p{L}0-9]*|(?:\$ ?)?[0-9]+(?:\.[0-9]{2})?%?|\s+|.&quot;&quot;&quot;&lt;!--\n--&gt;          &quot;splitWordsIgnoreRegexp&quot; = &quot;&quot;&quot;\s+&quot;&quot;&quot;&lt;!--\n--&gt;          &quot;useSplitPrefixSuffixNGrams&quot; = &quot;true&quot;&lt;!--\n--&gt;          &quot;maxNGramLeng&quot; = &quot;4&quot;&lt;!--\n--&gt;          &quot;minNGramLeng&quot; = &quot;1&quot;&lt;!--\n--&gt;          &quot;splitWordShape&quot; = &quot;chris4&quot;&lt;!--\n--&gt;          &quot;intern&quot; = &quot;true&quot; # makes it slower but saves memory&lt;!--\n--&gt;        }&lt;!--\n--&gt;      ]&lt;!--\n--&gt;    }&lt;!--\n--&gt;  }&lt;!--\n--&gt;&lt;!--\n--&gt;  # Configuration for converting files into PDFs.&lt;!--\n--&gt;  #&lt;!--\n--&gt;  # Most of it is delegated to external tools, which can be configured&lt;!--\n--&gt;  # below. They must be in the PATH environment or specify the full&lt;!--\n--&gt;  # path below via the `program` key.&lt;!--\n--&gt;  convert {&lt;!--\n--&gt;&lt;!--\n--&gt;    # The chunk size used when storing files. This should be the same&lt;!--\n--&gt;    # as used with the rest server.&lt;!--\n--&gt;    chunk-size = 524288&lt;!--\n--&gt;&lt;!--\n--&gt;    # A string used to change the filename of the converted pdf file.&lt;!--\n--&gt;    # If empty, the original file name is used for the pdf file ( the&lt;!--\n--&gt;    # extension is always replaced with `pdf`).&lt;!--\n--&gt;    converted-filename-part = &quot;converted&quot;&lt;!--\n--&gt;&lt;!--\n--&gt;    # When reading images, this is the maximum size. Images that are&lt;!--\n--&gt;    # larger are not processed.&lt;!--\n--&gt;    max-image-size = ${docspell.joex.extraction.ocr.max-image-size}&lt;!--\n--&gt;&lt;!--\n--&gt;    # Settings when processing markdown files (and other text files)&lt;!--\n--&gt;    # to HTML.&lt;!--\n--&gt;    #&lt;!--\n--&gt;    # In order to support text formats, text files are first converted&lt;!--\n--&gt;    # to HTML using a markdown processor. The resulting HTML is then&lt;!--\n--&gt;    # converted to a PDF file.&lt;!--\n--&gt;    markdown {&lt;!--\n--&gt;&lt;!--\n--&gt;      # The CSS that is used to style the resulting HTML.&lt;!--\n--&gt;      internal-css = &quot;&quot;&quot;&lt;!--\n--&gt;        body { padding: 2em 5em; }&lt;!--\n--&gt;      &quot;&quot;&quot;&lt;!--\n--&gt;    }&lt;!--\n--&gt;&lt;!--\n--&gt;    # To convert HTML files into PDF files, the external tool&lt;!--\n--&gt;    # wkhtmltopdf is used.&lt;!--\n--&gt;    wkhtmlpdf {&lt;!--\n--&gt;      command = {&lt;!--\n--&gt;        program = &quot;wkhtmltopdf&quot;&lt;!--\n--&gt;        args = [&lt;!--\n--&gt;          &quot;-s&quot;,&lt;!--\n--&gt;          &quot;A4&quot;,&lt;!--\n--&gt;          &quot;--encoding&quot;,&lt;!--\n--&gt;          &quot;{{encoding}}&quot;,&lt;!--\n--&gt;          &quot;--load-error-handling&quot;, &quot;ignore&quot;,&lt;!--\n--&gt;          &quot;--load-media-error-handling&quot;, &quot;ignore&quot;,&lt;!--\n--&gt;          &quot;-&quot;,&lt;!--\n--&gt;          &quot;{{outfile}}&quot;&lt;!--\n--&gt;        ]&lt;!--\n--&gt;        timeout = &quot;2 minutes&quot;&lt;!--\n--&gt;      }&lt;!--\n--&gt;      working-dir = ${java.io.tmpdir}&quot;/docspell-convert&quot;&lt;!--\n--&gt;    }&lt;!--\n--&gt;&lt;!--\n--&gt;    # To convert image files to PDF files, tesseract is used. This&lt;!--\n--&gt;    # also extracts the text in one go.&lt;!--\n--&gt;    tesseract = {&lt;!--\n--&gt;      command = {&lt;!--\n--&gt;        program = &quot;tesseract&quot;&lt;!--\n--&gt;        args = [&lt;!--\n--&gt;          &quot;{{infile}}&quot;,&lt;!--\n--&gt;          &quot;out&quot;,&lt;!--\n--&gt;          &quot;-l&quot;,&lt;!--\n--&gt;          &quot;{{lang}}&quot;,&lt;!--\n--&gt;          &quot;pdf&quot;,&lt;!--\n--&gt;          &quot;txt&quot;&lt;!--\n--&gt;        ]&lt;!--\n--&gt;        timeout = &quot;5 minutes&quot;&lt;!--\n--&gt;      }&lt;!--\n--&gt;      working-dir = ${java.io.tmpdir}&quot;/docspell-convert&quot;&lt;!--\n--&gt;    }&lt;!--\n--&gt;&lt;!--\n--&gt;    # To convert &quot;office&quot; files to PDF files, the external tool&lt;!--\n--&gt;    # unoconv is used. Unoconv uses libreoffice/openoffice for&lt;!--\n--&gt;    # converting. So it supports all formats that are possible to read&lt;!--\n--&gt;    # with libreoffice/openoffic.&lt;!--\n--&gt;    #&lt;!--\n--&gt;    # Note: to greatly improve performance, it is recommended to start&lt;!--\n--&gt;    # a libreoffice listener by running `unoconv -l` in a separate&lt;!--\n--&gt;    # process.&lt;!--\n--&gt;    unoconv = {&lt;!--\n--&gt;      command = {&lt;!--\n--&gt;        program = &quot;unoconv&quot;&lt;!--\n--&gt;        args = [&lt;!--\n--&gt;          &quot;-f&quot;,&lt;!--\n--&gt;          &quot;pdf&quot;,&lt;!--\n--&gt;          &quot;-o&quot;,&lt;!--\n--&gt;          &quot;{{outfile}}&quot;,&lt;!--\n--&gt;          &quot;{{infile}}&quot;&lt;!--\n--&gt;        ]&lt;!--\n--&gt;        timeout = &quot;2 minutes&quot;&lt;!--\n--&gt;      }&lt;!--\n--&gt;      working-dir = ${java.io.tmpdir}&quot;/docspell-convert&quot;&lt;!--\n--&gt;    }&lt;!--\n--&gt;&lt;!--\n--&gt;    # The tool ocrmypdf can be used to convert pdf files to pdf files&lt;!--\n--&gt;    # in order to add extracted text as a separate layer. This makes&lt;!--\n--&gt;    # image-only pdfs searchable and you can select and copy/paste the&lt;!--\n--&gt;    # text. It also converts pdfs into pdf/a type pdfs, which are best&lt;!--\n--&gt;    # suited for archiving. So it makes sense to use this even for&lt;!--\n--&gt;    # text-only pdfs.&lt;!--\n--&gt;    #&lt;!--\n--&gt;    # It is recommended to install ocrympdf, but it also is optional.&lt;!--\n--&gt;    # If it is enabled but fails, the error is not fatal and the&lt;!--\n--&gt;    # processing will continue using the original pdf for extracting&lt;!--\n--&gt;    # text. You can also disable it to remove the errors from the&lt;!--\n--&gt;    # processing logs.&lt;!--\n--&gt;    #&lt;!--\n--&gt;    # The `--skip-text` option is necessary to not fail on &quot;text&quot; pdfs&lt;!--\n--&gt;    # (where ocr is not necessary). In this case, the pdf will be&lt;!--\n--&gt;    # converted to PDF/A.&lt;!--\n--&gt;    ocrmypdf = {&lt;!--\n--&gt;      enabled = true&lt;!--\n--&gt;      command = {&lt;!--\n--&gt;        program = &quot;ocrmypdf&quot;&lt;!--\n--&gt;        args = [&lt;!--\n--&gt;          &quot;-l&quot;, &quot;{{lang}}&quot;,&lt;!--\n--&gt;          &quot;--skip-text&quot;,&lt;!--\n--&gt;          &quot;--deskew&quot;,&lt;!--\n--&gt;          &quot;-j&quot;, &quot;1&quot;,&lt;!--\n--&gt;          &quot;{{infile}}&quot;,&lt;!--\n--&gt;          &quot;{{outfile}}&quot;&lt;!--\n--&gt;        ]&lt;!--\n--&gt;        timeout = &quot;5 minutes&quot;&lt;!--\n--&gt;      }&lt;!--\n--&gt;      working-dir = ${java.io.tmpdir}&quot;/docspell-convert&quot;&lt;!--\n--&gt;    }&lt;!--\n--&gt;  }&lt;!--\n--&gt;&lt;!--\n--&gt;  # General config for processing documents&lt;!--\n--&gt;  processing {&lt;!--\n--&gt;    # Restricts proposals for due dates. Only dates earlier than this&lt;!--\n--&gt;    # number of years in the future are considered.&lt;!--\n--&gt;    max-due-date-years = 10&lt;!--\n--&gt;  }&lt;!--\n--&gt;&lt;!--\n--&gt;  # The same section is also present in the rest-server config. It is&lt;!--\n--&gt;  # used when submitting files into the job queue for processing.&lt;!--\n--&gt;  #&lt;!--\n--&gt;  # Currently, these settings may affect memory usage of all nodes, so&lt;!--\n--&gt;  # it should be the same on all nodes.&lt;!--\n--&gt;  files {&lt;!--\n--&gt;    # Defines the chunk size (in bytes) used to store the files.&lt;!--\n--&gt;    # This will affect the memory footprint when uploading and&lt;!--\n--&gt;    # downloading files. At most this amount is loaded into RAM for&lt;!--\n--&gt;    # down- and uploading.&lt;!--\n--&gt;    #&lt;!--\n--&gt;    # It also defines the chunk size used for the blobs inside the&lt;!--\n--&gt;    # database.&lt;!--\n--&gt;    chunk-size = 524288&lt;!--\n--&gt;&lt;!--\n--&gt;    # The file content types that are considered valid. Docspell&lt;!--\n--&gt;    # will only pass these files to processing. The processing code&lt;!--\n--&gt;    # itself has also checks for which files are supported and which&lt;!--\n--&gt;    # not. This affects the uploading part and can be used to&lt;!--\n--&gt;    # restrict file types that should be handed over to processing.&lt;!--\n--&gt;    # By default all files are allowed.&lt;!--\n--&gt;    valid-mime-types = [ ]&lt;!--\n--&gt;  }&lt;!--\n--&gt;&lt;!--\n--&gt;  # Configuration of the full-text search engine.&lt;!--\n--&gt;  full-text-search {&lt;!--\n--&gt;    # The full-text search feature can be disabled. It requires an&lt;!--\n--&gt;    # additional index server which needs additional memory and disk&lt;!--\n--&gt;    # space. It can be enabled later any time.&lt;!--\n--&gt;    #&lt;!--\n--&gt;    # Currently the SOLR search platform is supported.&lt;!--\n--&gt;    enabled = false&lt;!--\n--&gt;&lt;!--\n--&gt;    # Configuration for the SOLR backend.&lt;!--\n--&gt;    solr = {&lt;!--\n--&gt;      # The URL to solr&lt;!--\n--&gt;      url = &quot;http://localhost:8983/solr/docspell&quot;&lt;!--\n--&gt;      # Used to tell solr when to commit the data&lt;!--\n--&gt;      commit-within = 1000&lt;!--\n--&gt;      # If true, logs request and response bodies&lt;!--\n--&gt;      log-verbose = false&lt;!--\n--&gt;      # The defType parameter to lucene that defines the parser to&lt;!--\n--&gt;      # use. You might want to try &quot;edismax&quot; or look here:&lt;!--\n--&gt;      # https://lucene.apache.org/solr/guide/8_4/query-syntax-and-parsing.html#query-syntax-and-parsing&lt;!--\n--&gt;      def-type = &quot;lucene&quot;&lt;!--\n--&gt;      # The default combiner for tokens. One of {AND, OR}.&lt;!--\n--&gt;      q-op = &quot;OR&quot;&lt;!--\n--&gt;    }&lt;!--\n--&gt;&lt;!--\n--&gt;    # Settings for running the index migration tasks&lt;!--\n--&gt;    migration = {&lt;!--\n--&gt;      # Chunk size to use when indexing data from the database. This&lt;!--\n--&gt;      # many attachments are loaded into memory and pushed to the&lt;!--\n--&gt;      # full-text index.&lt;!--\n--&gt;      index-all-chunk = 10&lt;!--\n--&gt;    }&lt;!--\n--&gt;  }&lt;!--\n--&gt;}&lt;!--\n--&gt;</code></p>
-<h1 id="logging">Logging<a class="zola-anchor" href="#logging" aria-label="Anchor link for: logging">🔗</a></h1>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1;">docspell.server {
+  </span><span style="font-style:italic;color:#928374;"># This is shown in the top right corner of the web application
+</span><span style="color:#fdf4c1;">  app-name = </span><span style="color:#b8bb26;">&quot;Docspell&quot;
+  </span><span style="font-style:italic;color:#928374;"># This is the id of this node. If you run more than one server, you
+  # have to make sure to provide unique ids per node.
+</span><span style="color:#fdf4c1;">  app-id = </span><span style="color:#b8bb26;">&quot;rest1&quot;
+  </span><span style="font-style:italic;color:#928374;"># This is the base URL this application is deployed to. This is used
+  # to create absolute URLs and to configure the cookie.
+  #
+  # If default is not changed, the HOST line of the login request is
+  # used instead or the value of the `X-Forwarded-For` header. If set
+  # to some other value, the request is not inspected.
+</span><span style="color:#fdf4c1;">  base-url = </span><span style="color:#b8bb26;">&quot;http://localhost:7880&quot;
+  </span><span style="font-style:italic;color:#928374;"># Where the server binds to.
+</span><span style="color:#fdf4c1;">  bind {
+    address = </span><span style="color:#b8bb26;">&quot;localhost&quot;</span><span style="color:#fdf4c1;">
+    port = 7880
+  }
+  </span><span style="font-style:italic;color:#928374;"># This is a hard limit to restrict the size of a batch that is
+  # returned when searching for items. The user can set this limit
+  # within the client config, but it is restricted by the server to
+  # the number defined here. An admin might choose a lower number
+  # depending on the available resources.
+</span><span style="color:#fdf4c1;">  max-item-page-size = 200
+  </span><span style="font-style:italic;color:#928374;"># The number of characters to return for each item notes when
+  # searching. Item notes may be very long, when returning them with
+  # all the results from a search, they add quite some data to return.
+  # In order to keep this low, a limit can be defined here.
+</span><span style="color:#fdf4c1;">  max-note-length = 180
+  </span><span style="font-style:italic;color:#928374;"># This defines whether the classification form in the collective
+  # settings is displayed or not. If all joex instances have document
+  # classification disabled, it makes sense to hide its settings from
+  # users.
+</span><span style="color:#fdf4c1;">  show-classification-settings = true
+  </span><span style="font-style:italic;color:#928374;"># Authentication.
+</span><span style="color:#fdf4c1;">  auth {
+    </span><span style="font-style:italic;color:#928374;"># The secret for this server that is used to sign the authenicator
+    # tokens. If multiple servers are running, all must share the same
+    # secret. You can use base64 or hex strings (prefix with b64: and
+    # hex:, respectively).
+</span><span style="color:#fdf4c1;">    server-secret = </span><span style="color:#b8bb26;">&quot;hex:caffee&quot;
+    </span><span style="font-style:italic;color:#928374;"># How long an authentication token is valid. The web application
+    # will get a new one periodically.
+</span><span style="color:#fdf4c1;">    session-valid = </span><span style="color:#b8bb26;">&quot;5 minutes&quot;
+  </span><span style="color:#fdf4c1;">}
+  </span><span style="font-style:italic;color:#928374;"># This endpoint allows to upload files to any collective. The
+  # intention is that local software integrates with docspell more
+  # easily. Therefore the endpoint is not protected by the usual
+  # means.
+  #
+  # For security reasons, this endpoint is disabled by default. If
+  # enabled, you can choose from some ways to protect it. It may be a
+  # good idea to further protect this endpoint using a firewall, such
+  # that outside traffic is not routed.
+  #
+  # NOTE: If all protection methods are disabled, the endpoint is not
+  # protected at all!
+</span><span style="color:#fdf4c1;">  integration-endpoint {
+    enabled = false
+    </span><span style="font-style:italic;color:#928374;"># The priority to use when submitting files through this endpoint.
+</span><span style="color:#fdf4c1;">    priority = </span><span style="color:#b8bb26;">&quot;low&quot;
+    </span><span style="font-style:italic;color:#928374;"># The name used for the item &quot;source&quot; property when uploaded
+    # through this endpoint.
+</span><span style="color:#fdf4c1;">    source-name = </span><span style="color:#b8bb26;">&quot;integration&quot;
+    </span><span style="font-style:italic;color:#928374;"># IPv4 addresses to allow access. An empty list, if enabled,
+    # prohibits all requests. IP addresses may be specified as simple
+    # globs: a part marked as `*&#39; matches any octet, like in
+    # `192.168.*.*`. The `127.0.0.1&#39; (the default) matches the
+    # loopback address.
+</span><span style="color:#fdf4c1;">    allowed-ips {
+      enabled = false
+      ips = </span><span style="color:#fa5c4b;">[ </span><span style="color:#b8bb26;">&quot;127.0.0.1&quot; </span><span style="color:#fa5c4b;">]
+    </span><span style="color:#fdf4c1;">}
+    </span><span style="font-style:italic;color:#928374;"># Requests are expected to use http basic auth when uploading
+    # files.
+</span><span style="color:#fdf4c1;">    http-basic {
+      enabled = false
+      realm = </span><span style="color:#b8bb26;">&quot;Docspell Integration&quot;</span><span style="color:#fdf4c1;">
+      user = </span><span style="color:#b8bb26;">&quot;docspell-int&quot;</span><span style="color:#fdf4c1;">
+      password = </span><span style="color:#b8bb26;">&quot;docspell-int&quot;
+    </span><span style="color:#fdf4c1;">}
+    </span><span style="font-style:italic;color:#928374;"># Requests are expected to supply some specific header when
+    # uploading files.
+</span><span style="color:#fdf4c1;">    http-header {
+      enabled = false
+      header-name = </span><span style="color:#b8bb26;">&quot;Docspell-Integration&quot;</span><span style="color:#fdf4c1;">
+      header-value = </span><span style="color:#b8bb26;">&quot;some-secret&quot;
+    </span><span style="color:#fdf4c1;">}
+  }
+  </span><span style="font-style:italic;color:#928374;"># Configuration of the full-text search engine.
+</span><span style="color:#fdf4c1;">  full-text-search {
+    </span><span style="font-style:italic;color:#928374;"># The full-text search feature can be disabled. It requires an
+    # additional index server which needs additional memory and disk
+    # space. It can be enabled later any time.
+    #
+    # Currently the SOLR search platform is supported.
+</span><span style="color:#fdf4c1;">    enabled = false
+    </span><span style="font-style:italic;color:#928374;"># When re-creating the complete index via a REST call, this key
+    # is required. If left empty (the default), recreating the index
+    # is disabled.
+    #
+    # Example curl command:
+    # curl -XPOST http://localhost:7880/api/v1/open/fts/reIndexAll/test123
+</span><span style="color:#fdf4c1;">    recreate-key = </span><span style="color:#b8bb26;">&quot;&quot;
+    </span><span style="font-style:italic;color:#928374;"># Configuration for the SOLR backend.
+</span><span style="color:#fdf4c1;">    solr = {
+      </span><span style="font-style:italic;color:#928374;"># The URL to solr
+</span><span style="color:#fdf4c1;">      url = </span><span style="color:#b8bb26;">&quot;http://localhost:8983/solr/docspell&quot;
+      </span><span style="font-style:italic;color:#928374;"># Used to tell solr when to commit the data
+</span><span style="color:#fdf4c1;">      commit-within = 1000
+      </span><span style="font-style:italic;color:#928374;"># If true, logs request and response bodies
+</span><span style="color:#fdf4c1;">      log-verbose = false
+      </span><span style="font-style:italic;color:#928374;"># The defType parameter to lucene that defines the parser to
+      # use. You might want to try &quot;edismax&quot; or look here:
+      # https://lucene.apache.org/solr/guide/8_4/query-syntax-and-parsing.html#query-syntax-and-parsing
+</span><span style="color:#fdf4c1;">      def-type = </span><span style="color:#b8bb26;">&quot;lucene&quot;
+      </span><span style="font-style:italic;color:#928374;"># The default combiner for tokens. One of {AND, OR}.
+</span><span style="color:#fdf4c1;">      q-op = </span><span style="color:#b8bb26;">&quot;OR&quot;
+    </span><span style="color:#fdf4c1;">}
+  }
+  </span><span style="font-style:italic;color:#928374;"># Configuration for the backend.
+</span><span style="color:#fdf4c1;">  backend {
+    </span><span style="font-style:italic;color:#928374;"># Enable or disable debugging for e-mail related functionality. This
+    # applies to both sending and receiving mails. For security reasons
+    # logging is not very extensive on authentication failures. Setting
+    # this to true, results in a lot of data printed to stdout.
+</span><span style="color:#fdf4c1;">    mail-debug = false
+    </span><span style="font-style:italic;color:#928374;"># The database connection.
+    #
+    # By default a H2 file-based database is configured. You can
+    # provide a postgresql or mariadb connection here. When using H2
+    # use the PostgreSQL compatibility mode and AUTO_SERVER feature.
+</span><span style="color:#fdf4c1;">    jdbc {
+      url = </span><span style="color:#b8bb26;">&quot;jdbc:h2://&quot;</span><span style="color:#fdf4c1;">${java.io.tmpdir}</span><span style="color:#b8bb26;">&quot;/docspell-demo.db;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;AUTO_SERVER=TRUE&quot;</span><span style="color:#fdf4c1;">
+      user = </span><span style="color:#b8bb26;">&quot;sa&quot;</span><span style="color:#fdf4c1;">
+      password = </span><span style="color:#b8bb26;">&quot;&quot;
+    </span><span style="color:#fdf4c1;">}
+    </span><span style="font-style:italic;color:#928374;"># Configuration for registering new users.
+</span><span style="color:#fdf4c1;">    signup {
+      </span><span style="font-style:italic;color:#928374;"># The mode defines if new users can signup or not. It can have
+      # three values:
+      #
+      # - open: every new user can sign up
+      # - invite: new users can sign up only if they provide a correct
+      #   invitation key. Invitation keys can be generated by the
+      #   server.
+      # - closed: signing up is disabled.
+</span><span style="color:#fdf4c1;">      mode = </span><span style="color:#b8bb26;">&quot;open&quot;
+      </span><span style="font-style:italic;color:#928374;"># If mode == &#39;invite&#39;, a password must be provided to generate
+      # invitation keys. It must not be empty.
+</span><span style="color:#fdf4c1;">      new-invite-password = </span><span style="color:#b8bb26;">&quot;&quot;
+      </span><span style="font-style:italic;color:#928374;"># If mode == &#39;invite&#39;, this is the period an invitation token is
+      # considered valid.
+</span><span style="color:#fdf4c1;">      invite-time = </span><span style="color:#b8bb26;">&quot;3 days&quot;
+    </span><span style="color:#fdf4c1;">}
+    files {
+      </span><span style="font-style:italic;color:#928374;"># Defines the chunk size (in bytes) used to store the files.
+      # This will affect the memory footprint when uploading and
+      # downloading files. At most this amount is loaded into RAM for
+      # down- and uploading.
+      #
+      # It also defines the chunk size used for the blobs inside the
+      # database.
+</span><span style="color:#fdf4c1;">      chunk-size = 524288
+      </span><span style="font-style:italic;color:#928374;"># The file content types that are considered valid. Docspell
+      # will only pass these files to processing. The processing code
+      # itself has also checks for which files are supported and which
+      # not. This affects the uploading part and can be used to
+      # restrict file types that should be handed over to processing.
+      # By default all files are allowed.
+</span><span style="color:#fdf4c1;">      valid-mime-types = </span><span style="color:#fa5c4b;">[ ]
+    </span><span style="color:#fdf4c1;">}
+  }
+}
+</span></code></pre><h2 id="joex">Joex<a class="zola-anchor" href="#joex" aria-label="Anchor link for: joex">🔗</a></h2>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1;">docspell.joex {
+  </span><span style="font-style:italic;color:#928374;"># This is the id of this node. If you run more than one server, you
+  # have to make sure to provide unique ids per node.
+</span><span style="color:#fdf4c1;">  app-id = </span><span style="color:#b8bb26;">&quot;joex1&quot;
+  </span><span style="font-style:italic;color:#928374;"># This is the base URL this application is deployed to. This is used
+  # to register this joex instance such that docspell rest servers can
+  # reach them
+</span><span style="color:#fdf4c1;">  base-url = </span><span style="color:#b8bb26;">&quot;http://localhost:7878&quot;
+  </span><span style="font-style:italic;color:#928374;"># Where the REST server binds to.
+  #
+  # JOEX provides a very simple REST interface to inspect its state.
+</span><span style="color:#fdf4c1;">  bind {
+    address = </span><span style="color:#b8bb26;">&quot;localhost&quot;</span><span style="color:#fdf4c1;">
+    port = 7878
+  }
+  </span><span style="font-style:italic;color:#928374;"># The database connection.
+  #
+  # By default a H2 file-based database is configured. You can provide
+  # a postgresql or mariadb connection here. When using H2 use the
+  # PostgreSQL compatibility mode and AUTO_SERVER feature.
+  #
+  # It must be the same connection as the rest server is using.
+</span><span style="color:#fdf4c1;">  jdbc {
+    url = </span><span style="color:#b8bb26;">&quot;jdbc:h2://&quot;</span><span style="color:#fdf4c1;">${java.io.tmpdir}</span><span style="color:#b8bb26;">&quot;/docspell-demo.db;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;AUTO_SERVER=TRUE&quot;</span><span style="color:#fdf4c1;">
+    user = </span><span style="color:#b8bb26;">&quot;sa&quot;</span><span style="color:#fdf4c1;">
+    password = </span><span style="color:#b8bb26;">&quot;&quot;
+  </span><span style="color:#fdf4c1;">}
+  </span><span style="font-style:italic;color:#928374;"># Enable or disable debugging for e-mail related functionality. This
+  # applies to both sending and receiving mails. For security reasons
+  # logging is not very extensive on authentication failures. Setting
+  # this to true, results in a lot of data printed to stdout.
+</span><span style="color:#fdf4c1;">  mail-debug = false
+  send-mail {
+    </span><span style="font-style:italic;color:#928374;"># This is used as the List-Id e-mail header when mails are sent
+    # from docspell to its users (example: for notification mails). It
+    # is not used when sending to external recipients. If it is empty,
+    # no such header is added. Using this header is often useful when
+    # filtering mails.
+    #
+    # It should be a string in angle brackets. See
+    # https://tools.ietf.org/html/rfc2919 for a formal specification
+    # of this header.
+</span><span style="color:#fdf4c1;">    list-id = </span><span style="color:#b8bb26;">&quot;&quot;
+  </span><span style="color:#fdf4c1;">}
+  </span><span style="font-style:italic;color:#928374;"># Configuration for the job scheduler.
+</span><span style="color:#fdf4c1;">  scheduler {
+    </span><span style="font-style:italic;color:#928374;"># Each scheduler needs a unique name. This defaults to the node
+    # name, which must be unique, too.
+</span><span style="color:#fdf4c1;">    name = ${docspell.joex.app</span><span style="color:#fe8019;">-</span><span style="color:#fdf4c1;">id}
+    </span><span style="font-style:italic;color:#928374;"># Number of processing allowed in parallel.
+</span><span style="color:#fdf4c1;">    pool-size = 2
+    </span><span style="font-style:italic;color:#928374;"># A counting scheme determines the ratio of how high- and low-prio
+    # jobs are run. For example: 4,1 means run 4 high prio jobs, then
+    # 1 low prio and then start over.
+</span><span style="color:#fdf4c1;">    counting-scheme = </span><span style="color:#b8bb26;">&quot;4,1&quot;
+    </span><span style="font-style:italic;color:#928374;"># How often a failed job should be retried until it enters failed
+    # state. If a job fails, it becomes &quot;stuck&quot; and will be retried
+    # after a delay.
+</span><span style="color:#fdf4c1;">    retries = 2
+    </span><span style="font-style:italic;color:#928374;"># The delay until the next try is performed for a failed job. This
+    # delay is increased exponentially with the number of retries.
+</span><span style="color:#fdf4c1;">    retry-delay = </span><span style="color:#b8bb26;">&quot;1 minute&quot;
+    </span><span style="font-style:italic;color:#928374;"># The queue size of log statements from a job.
+</span><span style="color:#fdf4c1;">    log-buffer-size = 500
+    </span><span style="font-style:italic;color:#928374;"># If no job is left in the queue, the scheduler will wait until a
+    # notify is requested (using the REST interface). To also retry
+    # stuck jobs, it will notify itself periodically.
+</span><span style="color:#fdf4c1;">    wakeup-period = </span><span style="color:#b8bb26;">&quot;30 minutes&quot;
+  </span><span style="color:#fdf4c1;">}
+  periodic-scheduler {
+    </span><span style="font-style:italic;color:#928374;"># Each scheduler needs a unique name. This defaults to the node
+    # name, which must be unique, too.
+</span><span style="color:#fdf4c1;">    name = ${docspell.joex.app</span><span style="color:#fe8019;">-</span><span style="color:#fdf4c1;">id}
+    </span><span style="font-style:italic;color:#928374;"># A fallback to start looking for due periodic tasks regularily.
+    # Usually joex instances should be notified via REST calls if
+    # external processes change tasks. But these requests may get
+    # lost.
+</span><span style="color:#fdf4c1;">    wakeup-period = </span><span style="color:#b8bb26;">&quot;10 minutes&quot;
+  </span><span style="color:#fdf4c1;">}
+  </span><span style="font-style:italic;color:#928374;"># Configuration for the user-tasks.
+</span><span style="color:#fdf4c1;">  user-tasks {
+    </span><span style="font-style:italic;color:#928374;"># Allows to import e-mails by scanning a mailbox.
+</span><span style="color:#fdf4c1;">    scan-mailbox {
+      </span><span style="font-style:italic;color:#928374;"># A limit of how many folders to scan through. If a user
+      # configures more than this, only upto this limit folders are
+      # scanned and a warning is logged.
+</span><span style="color:#fdf4c1;">      max-folders = 50
+      </span><span style="font-style:italic;color:#928374;"># How many mails (headers only) to retrieve in one chunk.
+      #
+      # If this is greater than `max-mails&#39; it is set automatically to
+      # the value of `max-mails&#39;.
+</span><span style="color:#fdf4c1;">      mail-chunk-size = 50
+      </span><span style="font-style:italic;color:#928374;"># A limit on how many mails to process in one job run. This is
+      # meant to avoid too heavy resource allocation to one
+      # user/collective.
+      #
+      # If more than this number of mails is encountered, a warning is
+      # logged.
+</span><span style="color:#fdf4c1;">      max-mails = 500
+    }
+  }
+  </span><span style="font-style:italic;color:#928374;"># Docspell uses periodic house keeping tasks, like cleaning expired
+  # invites, that can be configured here.
+</span><span style="color:#fdf4c1;">  house-keeping {
+    </span><span style="font-style:italic;color:#928374;"># When the house keeping tasks execute. Default is to run every
+    # week.
+</span><span style="color:#fdf4c1;">    schedule = </span><span style="color:#b8bb26;">&quot;Sun *-*-* 00:00:00&quot;
+    </span><span style="font-style:italic;color:#928374;"># This task removes invitation keys that have been created but not
+    # used. The timespan here must be greater than the `invite-time&#39;
+    # setting in the rest server config file.
+</span><span style="color:#fdf4c1;">    cleanup-invites = {
+      </span><span style="font-style:italic;color:#928374;"># Whether this task is enabled.
+</span><span style="color:#fdf4c1;">      enabled = true
+      </span><span style="font-style:italic;color:#928374;"># The minimum age of invites to be deleted.
+</span><span style="color:#fdf4c1;">      older-than = </span><span style="color:#b8bb26;">&quot;30 days&quot;
+    </span><span style="color:#fdf4c1;">}
+    </span><span style="font-style:italic;color:#928374;"># Jobs store their log output in the database. Normally this data
+    # is only interesting for some period of time. The processing logs
+    # of old files can be removed eventually.
+</span><span style="color:#fdf4c1;">    cleanup-jobs = {
+      </span><span style="font-style:italic;color:#928374;"># Whether this task is enabled.
+</span><span style="color:#fdf4c1;">      enabled = true
+      </span><span style="font-style:italic;color:#928374;"># The minimum age of jobs to delete. It is matched against the
+      # `finished&#39; timestamp.
+</span><span style="color:#fdf4c1;">      older-than = </span><span style="color:#b8bb26;">&quot;30 days&quot;
+      </span><span style="font-style:italic;color:#928374;"># This defines how many jobs are deleted in one transaction.
+      # Since the data to delete may get large, it can be configured
+      # whether more or less memory should be used.
+</span><span style="color:#fdf4c1;">      delete-batch = </span><span style="color:#b8bb26;">&quot;100&quot;
+    </span><span style="color:#fdf4c1;">}
+  }
+  </span><span style="font-style:italic;color:#928374;"># Configuration of text extraction
+</span><span style="color:#fdf4c1;">  extraction {
+    </span><span style="font-style:italic;color:#928374;"># For PDF files it is first tried to read the text parts of the
+    # PDF. But PDFs can be complex documents and they may contain text
+    # and images. If the returned text is shorter than the value
+    # below, OCR is run afterwards. Then both extracted texts are
+    # compared and the longer will be used.
+</span><span style="color:#fdf4c1;">    pdf {
+      min-text-len = 500
+    }
+    preview {
+      </span><span style="font-style:italic;color:#928374;"># When rendering a pdf page, use this dpi. This results in
+      # scaling the image. A standard A4 page rendered at 96dpi
+      # results in roughly 790x1100px image. Using 32 results in
+      # roughly 200x300px image.
+      #
+      # Note, when this is changed, you might want to re-generate
+      # preview images. Check the api for this, there is an endpoint
+      # to regenerate all for a collective.
+</span><span style="color:#fdf4c1;">      dpi = 32
+    }
+    </span><span style="font-style:italic;color:#928374;"># Extracting text using OCR works for image and pdf files. It will
+    # first run ghostscript to create a gray image from a pdf. Then
+    # unpaper is run to optimize the image for the upcoming ocr, which
+    # will be done by tesseract. All these programs must be available
+    # in your PATH or the absolute path can be specified below.
+</span><span style="color:#fdf4c1;">    ocr {
+      </span><span style="font-style:italic;color:#928374;"># Images greater than this size are skipped. Note that every
+      # image is loaded completely into memory for doing OCR.
+</span><span style="color:#fdf4c1;">      max-image-size = 14000000
+      </span><span style="font-style:italic;color:#928374;"># Defines what pages to process. If a PDF with 600 pages is
+      # submitted, it is probably not necessary to scan through all of
+      # them. This would take a long time and occupy resources for no
+      # value. The first few pages should suffice. The default is first
+      # 10 pages.
+      #
+      # If you want all pages being processed, set this number to -1.
+      #
+      # Note: if you change the ghostscript command below, be aware that
+      # this setting (if not -1) will add another parameter to the
+      # beginning of the command.
+</span><span style="color:#fdf4c1;">      page-range {
+        begin = 10
+      }
+      </span><span style="font-style:italic;color:#928374;"># The ghostscript command.
+</span><span style="color:#fdf4c1;">      ghostscript {
+        command {
+          program = </span><span style="color:#b8bb26;">&quot;gs&quot;</span><span style="color:#fdf4c1;">
+          args = [ </span><span style="color:#b8bb26;">&quot;-dNOPAUSE&quot;
+                 </span><span style="color:#fdf4c1;">, </span><span style="color:#b8bb26;">&quot;-dBATCH&quot;
+                 </span><span style="color:#fdf4c1;">, </span><span style="color:#b8bb26;">&quot;-dSAFER&quot;
+                 </span><span style="color:#fdf4c1;">, </span><span style="color:#b8bb26;">&quot;-sDEVICE=tiffscaled8&quot;
+                 </span><span style="color:#fdf4c1;">, </span><span style="color:#b8bb26;">&quot;-sOutputFile={{outfile}}&quot;
+                 </span><span style="color:#fdf4c1;">, </span><span style="color:#b8bb26;">&quot;{{infile}}&quot;</span><span style="color:#fdf4c1;">
+                 ]
+          timeout = </span><span style="color:#b8bb26;">&quot;5 minutes&quot;
+        </span><span style="color:#fdf4c1;">}
+        working-dir = ${java.io.tmpdir}</span><span style="color:#b8bb26;">&quot;/docspell-extraction&quot;
+      </span><span style="color:#fdf4c1;">}
+      </span><span style="font-style:italic;color:#928374;"># The unpaper command.
+</span><span style="color:#fdf4c1;">      unpaper {
+        command {
+          program = </span><span style="color:#b8bb26;">&quot;unpaper&quot;</span><span style="color:#fdf4c1;">
+          args = </span><span style="color:#fa5c4b;">[ </span><span style="color:#b8bb26;">&quot;{{infile}}&quot;</span><span style="color:#fdf4c1;">, </span><span style="color:#b8bb26;">&quot;{{outfile}}&quot; </span><span style="color:#fa5c4b;">]</span><span style="color:#fdf4c1;">
+          timeout = </span><span style="color:#b8bb26;">&quot;5 minutes&quot;
+        </span><span style="color:#fdf4c1;">}
+      }
+      </span><span style="font-style:italic;color:#928374;"># The tesseract command.
+</span><span style="color:#fdf4c1;">      tesseract {
+        command {
+          program = </span><span style="color:#b8bb26;">&quot;tesseract&quot;</span><span style="color:#fdf4c1;">
+          args = [</span><span style="color:#b8bb26;">&quot;{{file}}&quot;
+                 </span><span style="color:#fdf4c1;">, </span><span style="color:#b8bb26;">&quot;stdout&quot;
+                 </span><span style="color:#fdf4c1;">, </span><span style="color:#b8bb26;">&quot;-l&quot;
+                 </span><span style="color:#fdf4c1;">, </span><span style="color:#b8bb26;">&quot;{{lang}}&quot;</span><span style="color:#fdf4c1;">
+                 ]
+          timeout = </span><span style="color:#b8bb26;">&quot;5 minutes&quot;
+        </span><span style="color:#fdf4c1;">}
+      }
+    }
+  }
+  </span><span style="font-style:italic;color:#928374;"># Settings for text analysis
+</span><span style="color:#fdf4c1;">  text-analysis {
+    </span><span style="font-style:italic;color:#928374;"># Maximum length of text to be analysed.
+    #
+    # All text to analyse must fit into RAM. A large document may take
+    # too much heap. Also, most important information is at the
+    # beginning of a document, so in most cases the first two pages
+    # should suffice. Default is 10000, which are about 2-3 pages
+    # (just a rough guess, of course).
+</span><span style="color:#fdf4c1;">    max-length = 10000
+    </span><span style="font-style:italic;color:#928374;"># A working directory for the analyser to store temporary/working
+    # files.
+</span><span style="color:#fdf4c1;">    working-dir = ${java.io.tmpdir}</span><span style="color:#b8bb26;">&quot;/docspell-analysis&quot;</span><span style="color:#fdf4c1;">
+    regex-ner {
+      </span><span style="font-style:italic;color:#928374;"># Whether to enable custom NER annotation. This uses the address
+      # book of a collective as input for NER tagging (to automatically
+      # find correspondent and concerned entities). If the address book
+      # is large, this can be quite memory intensive and also makes text
+      # analysis slower. But it greatly improves accuracy. If this is
+      # false, NER tagging uses only statistical models (that also work
+      # quite well).
+      #
+      # This setting might be moved to the collective settings in the
+      # future.
+</span><span style="color:#fdf4c1;">      enabled = true
+      </span><span style="font-style:italic;color:#928374;"># The NER annotation uses a file of patterns that is derived from
+      # a collective&#39;s address book. This is is the time how long this
+      # file will be kept until a check for a state change is done.
+</span><span style="color:#fdf4c1;">      file-cache-time = </span><span style="color:#b8bb26;">&quot;1 minute&quot;
+    </span><span style="color:#fdf4c1;">}
+    </span><span style="font-style:italic;color:#928374;"># Settings for doing document classification.
+    #
+    # This works by learning from existing documents. A collective can
+    # specify a tag category and the system will try to predict a tag
+    # from this category for new incoming documents.
+    #
+    # This requires a satstical model that is computed from all
+    # existing documents. This process is run periodically as
+    # configured by the collective. It may require a lot of memory,
+    # depending on the amount of data.
+    #
+    # It utilises this NLP library: https://nlp.stanford.edu/.
+</span><span style="color:#fdf4c1;">    classification {
+      </span><span style="font-style:italic;color:#928374;"># Whether to enable classification globally. Each collective can
+      # decide to disable it. If it is disabled here, no collective
+      # can use classification.
+</span><span style="color:#fdf4c1;">      enabled = true
+      </span><span style="font-style:italic;color:#928374;"># If concerned with memory consumption, this restricts the
+      # number of items to consider. More are better for training. A
+      # negative value or zero means no train on all items.
+</span><span style="color:#fdf4c1;">      item-count = 0
+      </span><span style="font-style:italic;color:#928374;"># These settings are used to configure the classifier. If
+      # multiple are given, they are all tried and the &quot;best&quot; is
+      # chosen at the end. See
+      # https://nlp.stanford.edu/nlp/javadoc/javanlp/edu/stanford/nlp/classify/ColumnDataClassifier.html
+      # for more info about these settings. The settings here yielded
+      # good results with *my* dataset.
+      #
+      # Enclose regexps in triple quotes.
+</span><span style="color:#fdf4c1;">      classifiers = [
+        { </span><span style="color:#b8bb26;">&quot;useSplitWords&quot;</span><span style="color:#fdf4c1;"> = </span><span style="color:#b8bb26;">&quot;true&quot;
+          &quot;splitWordsTokenizerRegexp&quot;</span><span style="color:#fdf4c1;"> = </span><span style="color:#b8bb26;">&quot;&quot;&quot;[\p{L}][\p{L}0-9]*|(?:\$ ?)?[0-9]+(?:\.[0-9]{2})?%?|\s+|.&quot;&quot;&quot;
+          &quot;splitWordsIgnoreRegexp&quot;</span><span style="color:#fdf4c1;"> = </span><span style="color:#b8bb26;">&quot;&quot;&quot;\s+&quot;&quot;&quot;
+          &quot;useSplitPrefixSuffixNGrams&quot;</span><span style="color:#fdf4c1;"> = </span><span style="color:#b8bb26;">&quot;true&quot;
+          &quot;maxNGramLeng&quot;</span><span style="color:#fdf4c1;"> = </span><span style="color:#b8bb26;">&quot;4&quot;
+          &quot;minNGramLeng&quot;</span><span style="color:#fdf4c1;"> = </span><span style="color:#b8bb26;">&quot;1&quot;
+          &quot;splitWordShape&quot;</span><span style="color:#fdf4c1;"> = </span><span style="color:#b8bb26;">&quot;chris4&quot;
+          &quot;intern&quot;</span><span style="color:#fdf4c1;"> = </span><span style="color:#b8bb26;">&quot;true&quot; </span><span style="font-style:italic;color:#928374;"># makes it slower but saves memory
+        </span><span style="color:#fdf4c1;">}
+      ]
+    }
+  }
+  </span><span style="font-style:italic;color:#928374;"># Configuration for converting files into PDFs.
+  #
+  # Most of it is delegated to external tools, which can be configured
+  # below. They must be in the PATH environment or specify the full
+  # path below via the `program` key.
+</span><span style="color:#fdf4c1;">  convert {
+    </span><span style="font-style:italic;color:#928374;"># The chunk size used when storing files. This should be the same
+    # as used with the rest server.
+</span><span style="color:#fdf4c1;">    chunk-size = 524288
+    </span><span style="font-style:italic;color:#928374;"># A string used to change the filename of the converted pdf file.
+    # If empty, the original file name is used for the pdf file ( the
+    # extension is always replaced with `pdf`).
+</span><span style="color:#fdf4c1;">    converted-filename-part = </span><span style="color:#b8bb26;">&quot;converted&quot;
+    </span><span style="font-style:italic;color:#928374;"># When reading images, this is the maximum size. Images that are
+    # larger are not processed.
+</span><span style="color:#fdf4c1;">    max-image-size = ${docspell.joex.extraction.ocr.max</span><span style="color:#fe8019;">-</span><span style="color:#fdf4c1;">image-size}
+    </span><span style="font-style:italic;color:#928374;"># Settings when processing markdown files (and other text files)
+    # to HTML.
+    #
+    # In order to support text formats, text files are first converted
+    # to HTML using a markdown processor. The resulting HTML is then
+    # converted to a PDF file.
+</span><span style="color:#fdf4c1;">    markdown {
+      </span><span style="font-style:italic;color:#928374;"># The CSS that is used to style the resulting HTML.
+</span><span style="color:#fdf4c1;">      internal-css = </span><span style="color:#b8bb26;">&quot;&quot;&quot;
+        body { padding: 2em 5em; }
+      &quot;&quot;&quot;
+    </span><span style="color:#fdf4c1;">}
+    </span><span style="font-style:italic;color:#928374;"># To convert HTML files into PDF files, the external tool
+    # wkhtmltopdf is used.
+</span><span style="color:#fdf4c1;">    wkhtmlpdf {
+      command = {
+        program = </span><span style="color:#b8bb26;">&quot;wkhtmltopdf&quot;</span><span style="color:#fdf4c1;">
+        args = [
+          </span><span style="color:#b8bb26;">&quot;-s&quot;</span><span style="color:#fdf4c1;">,
+          </span><span style="color:#b8bb26;">&quot;A4&quot;</span><span style="color:#fdf4c1;">,
+          </span><span style="color:#b8bb26;">&quot;--encoding&quot;</span><span style="color:#fdf4c1;">,
+          </span><span style="color:#b8bb26;">&quot;{{encoding}}&quot;</span><span style="color:#fdf4c1;">,
+          </span><span style="color:#b8bb26;">&quot;--load-error-handling&quot;</span><span style="color:#fdf4c1;">, </span><span style="color:#b8bb26;">&quot;ignore&quot;</span><span style="color:#fdf4c1;">,
+          </span><span style="color:#b8bb26;">&quot;--load-media-error-handling&quot;</span><span style="color:#fdf4c1;">, </span><span style="color:#b8bb26;">&quot;ignore&quot;</span><span style="color:#fdf4c1;">,
+          </span><span style="color:#b8bb26;">&quot;-&quot;</span><span style="color:#fdf4c1;">,
+          </span><span style="color:#b8bb26;">&quot;{{outfile}}&quot;</span><span style="color:#fdf4c1;">
+        ]
+        timeout = </span><span style="color:#b8bb26;">&quot;2 minutes&quot;
+      </span><span style="color:#fdf4c1;">}
+      working-dir = ${java.io.tmpdir}</span><span style="color:#b8bb26;">&quot;/docspell-convert&quot;
+    </span><span style="color:#fdf4c1;">}
+    </span><span style="font-style:italic;color:#928374;"># To convert image files to PDF files, tesseract is used. This
+    # also extracts the text in one go.
+</span><span style="color:#fdf4c1;">    tesseract = {
+      command = {
+        program = </span><span style="color:#b8bb26;">&quot;tesseract&quot;</span><span style="color:#fdf4c1;">
+        args = [
+          </span><span style="color:#b8bb26;">&quot;{{infile}}&quot;</span><span style="color:#fdf4c1;">,
+          </span><span style="color:#b8bb26;">&quot;out&quot;</span><span style="color:#fdf4c1;">,
+          </span><span style="color:#b8bb26;">&quot;-l&quot;</span><span style="color:#fdf4c1;">,
+          </span><span style="color:#b8bb26;">&quot;{{lang}}&quot;</span><span style="color:#fdf4c1;">,
+          </span><span style="color:#b8bb26;">&quot;pdf&quot;</span><span style="color:#fdf4c1;">,
+          </span><span style="color:#b8bb26;">&quot;txt&quot;</span><span style="color:#fdf4c1;">
+        ]
+        timeout = </span><span style="color:#b8bb26;">&quot;5 minutes&quot;
+      </span><span style="color:#fdf4c1;">}
+      working-dir = ${java.io.tmpdir}</span><span style="color:#b8bb26;">&quot;/docspell-convert&quot;
+    </span><span style="color:#fdf4c1;">}
+    </span><span style="font-style:italic;color:#928374;"># To convert &quot;office&quot; files to PDF files, the external tool
+    # unoconv is used. Unoconv uses libreoffice/openoffice for
+    # converting. So it supports all formats that are possible to read
+    # with libreoffice/openoffic.
+    #
+    # Note: to greatly improve performance, it is recommended to start
+    # a libreoffice listener by running `unoconv -l` in a separate
+    # process.
+</span><span style="color:#fdf4c1;">    unoconv = {
+      command = {
+        program = </span><span style="color:#b8bb26;">&quot;unoconv&quot;</span><span style="color:#fdf4c1;">
+        args = [
+          </span><span style="color:#b8bb26;">&quot;-f&quot;</span><span style="color:#fdf4c1;">,
+          </span><span style="color:#b8bb26;">&quot;pdf&quot;</span><span style="color:#fdf4c1;">,
+          </span><span style="color:#b8bb26;">&quot;-o&quot;</span><span style="color:#fdf4c1;">,
+          </span><span style="color:#b8bb26;">&quot;{{outfile}}&quot;</span><span style="color:#fdf4c1;">,
+          </span><span style="color:#b8bb26;">&quot;{{infile}}&quot;</span><span style="color:#fdf4c1;">
+        ]
+        timeout = </span><span style="color:#b8bb26;">&quot;2 minutes&quot;
+      </span><span style="color:#fdf4c1;">}
+      working-dir = ${java.io.tmpdir}</span><span style="color:#b8bb26;">&quot;/docspell-convert&quot;
+    </span><span style="color:#fdf4c1;">}
+    </span><span style="font-style:italic;color:#928374;"># The tool ocrmypdf can be used to convert pdf files to pdf files
+    # in order to add extracted text as a separate layer. This makes
+    # image-only pdfs searchable and you can select and copy/paste the
+    # text. It also converts pdfs into pdf/a type pdfs, which are best
+    # suited for archiving. So it makes sense to use this even for
+    # text-only pdfs.
+    #
+    # It is recommended to install ocrympdf, but it also is optional.
+    # If it is enabled but fails, the error is not fatal and the
+    # processing will continue using the original pdf for extracting
+    # text. You can also disable it to remove the errors from the
+    # processing logs.
+    #
+    # The `--skip-text` option is necessary to not fail on &quot;text&quot; pdfs
+    # (where ocr is not necessary). In this case, the pdf will be
+    # converted to PDF/A.
+</span><span style="color:#fdf4c1;">    ocrmypdf = {
+      enabled = true
+      command = {
+        program = </span><span style="color:#b8bb26;">&quot;ocrmypdf&quot;</span><span style="color:#fdf4c1;">
+        args = [
+          </span><span style="color:#b8bb26;">&quot;-l&quot;</span><span style="color:#fdf4c1;">, </span><span style="color:#b8bb26;">&quot;{{lang}}&quot;</span><span style="color:#fdf4c1;">,
+          </span><span style="color:#b8bb26;">&quot;--skip-text&quot;</span><span style="color:#fdf4c1;">,
+          </span><span style="color:#b8bb26;">&quot;--deskew&quot;</span><span style="color:#fdf4c1;">,
+          </span><span style="color:#b8bb26;">&quot;-j&quot;</span><span style="color:#fdf4c1;">, </span><span style="color:#b8bb26;">&quot;1&quot;</span><span style="color:#fdf4c1;">,
+          </span><span style="color:#b8bb26;">&quot;{{infile}}&quot;</span><span style="color:#fdf4c1;">,
+          </span><span style="color:#b8bb26;">&quot;{{outfile}}&quot;</span><span style="color:#fdf4c1;">
+        ]
+        timeout = </span><span style="color:#b8bb26;">&quot;5 minutes&quot;
+      </span><span style="color:#fdf4c1;">}
+      working-dir = ${java.io.tmpdir}</span><span style="color:#b8bb26;">&quot;/docspell-convert&quot;
+    </span><span style="color:#fdf4c1;">}
+  }
+  </span><span style="font-style:italic;color:#928374;"># General config for processing documents
+</span><span style="color:#fdf4c1;">  processing {
+    </span><span style="font-style:italic;color:#928374;"># Restricts proposals for due dates. Only dates earlier than this
+    # number of years in the future are considered.
+</span><span style="color:#fdf4c1;">    max-due-date-years = 10
+  }
+  </span><span style="font-style:italic;color:#928374;"># The same section is also present in the rest-server config. It is
+  # used when submitting files into the job queue for processing.
+  #
+  # Currently, these settings may affect memory usage of all nodes, so
+  # it should be the same on all nodes.
+</span><span style="color:#fdf4c1;">  files {
+    </span><span style="font-style:italic;color:#928374;"># Defines the chunk size (in bytes) used to store the files.
+    # This will affect the memory footprint when uploading and
+    # downloading files. At most this amount is loaded into RAM for
+    # down- and uploading.
+    #
+    # It also defines the chunk size used for the blobs inside the
+    # database.
+</span><span style="color:#fdf4c1;">    chunk-size = 524288
+    </span><span style="font-style:italic;color:#928374;"># The file content types that are considered valid. Docspell
+    # will only pass these files to processing. The processing code
+    # itself has also checks for which files are supported and which
+    # not. This affects the uploading part and can be used to
+    # restrict file types that should be handed over to processing.
+    # By default all files are allowed.
+</span><span style="color:#fdf4c1;">    valid-mime-types = </span><span style="color:#fa5c4b;">[ ]
+  </span><span style="color:#fdf4c1;">}
+  </span><span style="font-style:italic;color:#928374;"># Configuration of the full-text search engine.
+</span><span style="color:#fdf4c1;">  full-text-search {
+    </span><span style="font-style:italic;color:#928374;"># The full-text search feature can be disabled. It requires an
+    # additional index server which needs additional memory and disk
+    # space. It can be enabled later any time.
+    #
+    # Currently the SOLR search platform is supported.
+</span><span style="color:#fdf4c1;">    enabled = false
+    </span><span style="font-style:italic;color:#928374;"># Configuration for the SOLR backend.
+</span><span style="color:#fdf4c1;">    solr = {
+      </span><span style="font-style:italic;color:#928374;"># The URL to solr
+</span><span style="color:#fdf4c1;">      url = </span><span style="color:#b8bb26;">&quot;http://localhost:8983/solr/docspell&quot;
+      </span><span style="font-style:italic;color:#928374;"># Used to tell solr when to commit the data
+</span><span style="color:#fdf4c1;">      commit-within = 1000
+      </span><span style="font-style:italic;color:#928374;"># If true, logs request and response bodies
+</span><span style="color:#fdf4c1;">      log-verbose = false
+      </span><span style="font-style:italic;color:#928374;"># The defType parameter to lucene that defines the parser to
+      # use. You might want to try &quot;edismax&quot; or look here:
+      # https://lucene.apache.org/solr/guide/8_4/query-syntax-and-parsing.html#query-syntax-and-parsing
+</span><span style="color:#fdf4c1;">      def-type = </span><span style="color:#b8bb26;">&quot;lucene&quot;
+      </span><span style="font-style:italic;color:#928374;"># The default combiner for tokens. One of {AND, OR}.
+</span><span style="color:#fdf4c1;">      q-op = </span><span style="color:#b8bb26;">&quot;OR&quot;
+    </span><span style="color:#fdf4c1;">}
+    </span><span style="font-style:italic;color:#928374;"># Settings for running the index migration tasks
+</span><span style="color:#fdf4c1;">    migration = {
+      </span><span style="font-style:italic;color:#928374;"># Chunk size to use when indexing data from the database. This
+      # many attachments are loaded into memory and pushed to the
+      # full-text index.
+</span><span style="color:#fdf4c1;">      index-all-chunk = 10
+    }
+  }
+}
+</span></code></pre><h1 id="logging">Logging<a class="zola-anchor" href="#logging" aria-label="Anchor link for: logging">🔗</a></h1>
 <p>By default, docspell logs to stdout. This works well, when managed by
 systemd or other inits. Logging is done by
 <a href="https://logback.qos.ch/">logback</a>. Please refer to its documentation
