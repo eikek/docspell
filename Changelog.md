@@ -2,7 +2,7 @@
 
 ## v0.15.0
 
-*Soon*
+*Nov 15, 2020*
 
 This release adds the "preview feature", where a thumbnail of the
 first page of each attachment can be shown in the overview. Additional
