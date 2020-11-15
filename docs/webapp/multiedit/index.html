@@ -162,6 +162,12 @@
                                         </a>
                                         <ul>
                                             
+                                            <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;multiedit&#x2F;#tags">
+                                                    Tags
+                                                </a>
+                                            </li>
+                                            
                                         </ul>
                                     </li>
                                     
@@ -239,18 +245,19 @@
                 <div class="column is-9">
                     <div class="container">
                         <div class="content doc">
-                            <h2 id="toggle-selection-mode">Toggle Selection Mode<a class="zola-anchor" href="#toggle-selection-mode" aria-label="Anchor link for: toggle-selection-mode">🔗</a></h2>
-<p>Docspell allows to edit and delete multiple items. Search the items
-you want to edit or delete and then select them by changing into
-&quot;select mode&quot;. This changes the view slightly by adding a menu to the
-main area and the item cards contain a check box:</p>
+                            <p>Docspell allows to edit and delete multiple items at once.</p>
+<h2 id="toggle-selection-mode">Toggle Selection Mode<a class="zola-anchor" href="#toggle-selection-mode" aria-label="Anchor link for: toggle-selection-mode">🔗</a></h2>
+<p>Search the items you want to edit or delete and then select them by
+changing into &quot;select mode&quot;. This changes the view slightly by adding
+a menu to the main area and the item cards have a dashed border:</p>
 <figure class="image">
     <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;multiedit-01.png">
 </figure>
 <p>Then select items by clicking on the card. You can also change the
 search form and add more items to the selection. The top left shows
 how many items are selected and allows to select and deselect all
-visible items. Selected items are displayed in a different color.</p>
+visible items. Selected items are displayed grey-ed out with a big
+check icon. Clicking this icon deselects the item.</p>
 <figure class="image">
     <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;multiedit-02.png">
 </figure>
@@ -271,6 +278,17 @@ to &quot;normal&quot; mode.</p>
 <figure class="image">
     <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;multiedit-05.png">
 </figure>
+<h3 id="tags">Tags<a class="zola-anchor" href="#tags" aria-label="Anchor link for: tags">🔗</a></h3>
+<p>Tags are a bit special, because they can hold multiple values.
+Therefore the tag field can work in three modes:</p>
+<ol>
+<li><em>Add-Mode</em> all tags you select are added to the items (the default)</li>
+<li><em>Remove-Mode</em> all tags you select are removed from the items</li>
+<li><em>Replace-Mode</em> all tags you select are being replaced on the items
+(existing tags are removed, before adding selected tags)</li>
+</ol>
+<p>You can change the modes using the small icon above the tag input
+field (on the right).</p>
 <h2 id="choose-an-action-delete">Choose an Action: Delete<a class="zola-anchor" href="#choose-an-action-delete" aria-label="Anchor link for: choose-an-action-delete">🔗</a></h2>
 <p>When choosing the delete action, a confirmation dialog shows up. If
 you confirm the deletion, then all selected items are deleted at the
