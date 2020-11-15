@@ -187,7 +187,7 @@ view cfg settings model item =
 
           else
             [ selectedDimmer
-            , previewMenu model item (currentAttachment model item)
+            , previewMenu settings model item (currentAttachment model item)
             , previewImage settings cardAction model item
             ]
          )
@@ -407,16 +407,23 @@ previewImage settings cardAction model item =
         ]
 
 
-previewMenu : Model -> ItemLight -> Maybe AttachmentLight -> Html Msg
-previewMenu model item mainAttach =
+previewMenu : UiSettings -> Model -> ItemLight -> Maybe AttachmentLight -> Html Msg
+previewMenu settings model item mainAttach =
     let
         pageCount =
             Maybe.andThen .pageCount mainAttach
                 |> Maybe.withDefault 0
 
+        mkAttachUrl id =
+            if settings.nativePdfPreview then
+                Api.fileURL id
+
+            else
+                Api.fileURL id ++ "/view"
+
         attachUrl =
             Maybe.map .id mainAttach
-                |> Maybe.map ((++) "/api/v1/sec/attachment/")
+                |> Maybe.map mkAttachUrl
                 |> Maybe.withDefault "/api/v1/sec/attachment/none"
 
         gotoFileBtn =
