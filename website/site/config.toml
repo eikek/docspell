@@ -26,4 +26,4 @@ skip_anchor_prefixes = [
 
 [extra]
 # Put all your custom variables here
-version = "0.15.0-SNAPSHOT"
+version = "0.15.0"
