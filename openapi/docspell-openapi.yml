@@ -2,7 +2,7 @@ openapi: 3.0.0
 
 info:
   title: Docspell
-  version: 0.14.0
+  version: 0.15.0
   description: |
     This is the remote API to Docspell, a personal document organizer.
 
@@ -1069,6 +1069,29 @@ paths:
               schema:
                 $ref: "#/components/schemas/BasicResult"
 
+  /sec/collective/previews:
+    post:
+      tags: [ Collective ]
+      summary: Starts the generate previews task
+      description: |
+        Submits a task that re-generates preview images of all
+        attachments of the current collective. Each existing preview
+        image will be replaced.
+
+        This can be used after changing the `preview` settings.
+
+        If only preview images of selected attachments should be
+        regenerated, see the `/sec/attachment/{id}/preview` endpoint.
+      security:
+        - authTokenHeader: []
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
   /sec/user:
     get:
       tags: [ Collective ]
@@ -1188,7 +1211,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Source"
+              $ref: "#/components/schemas/SourceTagIn"
       responses:
         200:
           description: Ok
@@ -1208,7 +1231,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Source"
+              $ref: "#/components/schemas/SourceTagIn"
       responses:
         200:
           description: Ok
@@ -1268,10 +1291,11 @@ paths:
       summary: Search for items.
       description: |
         Search for items given a search form. The results are grouped
-        by month and are sorted by item date (newest first). Tags are
-        *not* resolved. The results will always contain an empty list
-        for item tags. Use `/searchWithTags` to also retrieve all tags
-        of an item.
+        by month and are sorted by item date (newest first). Tags and
+        attachments are *not* resolved. The results will always
+        contain an empty list for item tags and attachments. Use
+        `/searchWithTags` to also retrieve all tags and a list of
+        attachments of an item.
 
         The `fulltext` field can be used to restrict the results by
         using full-text search in the documents contents.
@@ -1295,9 +1319,10 @@ paths:
       summary: Search for items.
       description: |
         Search for items given a search form. The results are grouped
-        by month by default. For each item, its tags are also
-        returned. This uses more queries and is therefore slower, but
-        returns all tags to an item.
+        by month by default. For each item, its tags and attachments
+        are also returned. This uses more queries and is therefore
+        slower, but returns all tags to an item as well as their
+        attachments with some minor details.
 
         The `fulltext` field can be used to restrict the results by
         using full-text search in the documents contents.
@@ -1847,6 +1872,47 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ItemProposals"
+  /sec/item/{id}/preview:
+    head:
+      tags: [ Attachment ]
+      summary: Get a preview image of an attachment file.
+      description: |
+        Checks if an image file showing a preview of the item is
+        available. If not available, a 404 is returned. The preview is
+        currently the an image of the first page of the first
+        attachment.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        200:
+          description: Ok
+        404:
+          description: NotFound
+    get:
+      tags: [ Attachment ]
+      summary: Get a preview image of an attachment file.
+      description: |
+        Gets a image file showing a preview of the item. Usually it is
+        a small image of the first page of the first attachment. If
+        not available, a 404 is returned. However, if the query
+        parameter `withFallback` is `true`, a fallback preview image
+        is returned. You can also use the `HEAD` method to check for
+        existence.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+        - $ref: "#/components/parameters/withFallback"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
 
   /sec/item/{itemId}/reprocess:
     post:
@@ -2446,6 +2512,63 @@ paths:
               schema:
                 type: string
                 format: binary
+  /sec/attachment/{id}/preview:
+    head:
+      tags: [ Attachment ]
+      summary: Get a preview image of an attachment file.
+      description: |
+        Checks if an image file showing a preview of the attachment is
+        available. If not available, a 404 is returned.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        200:
+          description: Ok
+        404:
+          description: NotFound
+    get:
+      tags: [ Attachment ]
+      summary: Get a preview image of an attachment file.
+      description: |
+        Gets a image file showing a preview of the attachment. Usually
+        it is a small image of the first page of the document.If not
+        available, a 404 is returned. However, if the query parameter
+        `withFallback` is `true`, a fallback preview image is
+        returned. You can also use the `HEAD` method to check for
+        existence.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+        - $ref: "#/components/parameters/withFallback"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+    post:
+      tags: [ Attachment ]
+      summary: (Re)generate a preview image.
+      description: |
+        Submits a task that generates a preview image for this
+        attachment. The existing preview will be replaced.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
   /sec/attachment/{id}/meta:
     get:
       tags: [ Attachment ]
@@ -3376,6 +3499,19 @@ components:
             The folder id that is applied to items resulting from
             importing mails. If the folder id is not valid when the
             task executes, items have no folder set.
+        tags:
+          $ref: "#/components/schemas/StringList"
+        fileFilter:
+          description: |
+            A glob to filter attachments to import by file name.
+          type: string
+          format: glob
+        subjectFilter:
+          description: |
+            A glob to filter attachments to import by subject.
+          type: string
+          format: glob
+
     ImapSettingsList:
       description: |
         A list of user email settings.
@@ -4133,6 +4269,18 @@ components:
         A folderId can be given, the item is placed into this folder
         after creation.
 
+        The `fileFilter` is an optional glob for filtering files to
+        import. Only applicable if archive files are uploaded. It
+        applies to all of them. For example, to only import pdf files
+        when uploading e-mails, use `*.pdf`. If the pattern doesn't
+        contain a slash `/`, then it is applied to all file names.
+        Otherwise it is applied to the complete path in the archive
+        (useful for zip files). Note that the archive file itself is
+        always saved completely, too.
+
+        The `tags` input allows to provide tags that should be applied
+        to the item being created. This only works if the tags already
+        exist. It is possible to specify their ids or names.
       required:
         - multiple
       properties:
@@ -4148,6 +4296,11 @@ components:
         skipDuplicates:
           type: boolean
           default: false
+        tags:
+          $ref: "#/components/schemas/StringList"
+        fileFilter:
+          type: string
+          format: glob
 
     Collective:
       description: |
@@ -4218,7 +4371,7 @@ components:
         items:
           type: array
           items:
-            $ref: "#/components/schemas/Source"
+            $ref: "#/components/schemas/SourceAndTags"
     Source:
       description: |
         Data about a Source. A source defines the endpoint where
@@ -4252,10 +4405,38 @@ components:
         folder:
           type: string
           format: ident
+        fileFilter:
+          type: string
+          format: glob
         created:
           description: DateTime
           type: integer
           format: date-time
+    SourceTagIn:
+      description: |
+        A source and optional tags (ids or names) for updating/adding.
+      required:
+        - source
+        - tags
+      properties:
+        source:
+          $ref: "#/components/schema/Source"
+        tags:
+          type: array
+          items:
+            type: string
+    SourceAndTags:
+      description: |
+        A source and optional tags.
+      required:
+        - source
+        - tags
+      properties:
+        source:
+          $ref: "#/components/schema/Source"
+        tags:
+          $ref: "#/components/schema/TagList"
+
     EquipmentList:
       description: |
         A list of equipments.
@@ -4575,13 +4756,17 @@ components:
           $ref: "#/components/schemas/IdName"
         concPerson:
           $ref: "#/components/schemas/IdName"
-        concEquip:
+        concEquipment:
           $ref: "#/components/schemas/IdName"
         folder:
           $ref: "#/components/schemas/IdName"
         fileCount:
           type: integer
           format: int32
+        attachments:
+          type: array
+          items:
+            $ref: "#/components/schemas/AttachmentLight"
         tags:
           type: array
           items:
@@ -4599,6 +4784,24 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/HighlightEntry"
+    AttachmentLight:
+      description: |
+        Some little details about an attachment.
+      required:
+        - id
+        - position
+      properties:
+        id:
+          type: string
+          format: ident
+        position:
+          type: integer
+          format: int32
+        name:
+          type: string
+        pageCount:
+          type: integer
+          format: int32
     HighlightEntry:
       description: |
         Highlighting information for a single field (maybe attachment
@@ -4822,3 +5025,10 @@ components:
         One of the available contact kinds.
       schema:
         type: string
+    withFallback:
+      name: withFallback
+      in: query
+      description: Whether to provide a fallback or not.
+      required: false
+      schema:
+        type: boolean

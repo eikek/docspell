@@ -7333,13 +7333,13 @@ var $author$project$Main$mainHero = function (model) {
 					]))
 			]));
 };
-var $author$project$Demo$navigateDemo = {D: 'Shows basic navigation through documents using tags and tag categories.', O: 'Navigation', P: '/videos/docspell-dd-2020-08-09.mp4'};
+var $author$project$Demo$navigateDemo = {D: 'Shows basic navigation through documents using tags and tag categories.', O: 'Navigation', P: '/videos/docspell-navigate-2020-11-14.mp4'};
 var $elm$virtual_dom$VirtualDom$node = function (tag) {
 	return _VirtualDom_node(
 		_VirtualDom_noScript(tag));
 };
 var $elm$html$Html$node = $elm$virtual_dom$VirtualDom$node;
-var $author$project$Demo$processDemo = {D: 'Presents the basic idea: maintain an address book and let docspell find matches for new uploaded documents and attach them automatically.', O: 'Processing', P: '/videos/docspell-process-2020-08-09.mp4'};
+var $author$project$Demo$processDemo = {D: 'Presents the basic idea: maintain an address book and let docspell find matches for new uploaded documents and attach them automatically.', O: 'Processing', P: '/videos/docspell-process-2020-11-14.mp4'};
 var $author$project$Main$view = function (model) {
 	return A3(
 		$elm$html$Html$node,

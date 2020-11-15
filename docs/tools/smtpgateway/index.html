@@ -239,9 +239,9 @@
                 <div class="column is-9">
                     <div class="container">
                         <div class="content doc">
-                            <p>One possible use case for the <a href="https://docspell.org/docs/webapp/uploading/#integration-endpoint">integration
-endpoint</a> is a SMTP
-server that forwards all local mail to docspell. This way there is no
+                            <p>One possible use case for the <a href="https://docspell.org/docs/api/upload/#integration-endpoint">integration
+endpoint</a> is a SMTP server
+that forwards all local mail to docspell. This way there is no
 periodic polling involved and documents (e-mails) get into docspell
 without delay.</p>
 <p>The <code>tools/exim</code> folder contains a docker file and a sample
@@ -251,67 +251,16 @@ when opening it to the public.</p>
 <h1 id="what-you-need">What you need<a class="zola-anchor" href="#what-you-need" aria-label="Anchor link for: what-you-need">🔗</a></h1>
 <p>You need to own a domain and add the appropriate MX records to point
 to your server. In this document, the domain <code>test.org</code> is used.</p>
-<p>You need to enable the <a href="https://docspell.org/docs/webapp/uploading/#integration-endpoint">integration
-endpoint</a> in the
-docspell configuration.</p>
+<p>You need to enable the <a href="https://docspell.org/docs/api/upload/#integration-endpoint">integration
+endpoint</a> in the docspell
+configuration.</p>
 <h1 id="exim">Exim<a class="zola-anchor" href="#exim" aria-label="Anchor link for: exim">🔗</a></h1>
 <p><a href="http://exim.org/">Exim</a> is a popular smtp server (message transfer
 agent). It is used here only because of previous knowledge, but same
 can be achieved with other MTAs.</p>
 <h1 id="the-config-file">The Config File<a class="zola-anchor" href="#the-config-file" aria-label="Anchor link for: the-config-file">🔗</a></h1>
 <p>Here is the example config file for exim:</p>
-<pre style="background-color:#282828;">
-<code><span style="font-style:italic;color:#928374;">## Provide certificates to enable StartTLS
-# tls_certificate = /var/lib/acme/test.org/fullchain.pem
-# tls_privatekey = /var/lib/acme/test.org/key.pem
-</span><span style="color:#fdf4c1;">tls_advertise_hosts =
-primary_hostname = test.org
-domainlist local_domains = test.org
-timeout_frozen_after = 1m
-acl_smtp_rcpt = acl_check_rcpt
-acl_smtp_data = acl_check_data
-never_users = root
-host_lookup = </span><span style="color:#fe8019;">*
-</span><span style="color:#fdf4c1;">daemon_smtp_ports = 25
-message_size_limit = 30m
-keep_environment = DS_HEADER : DS_URL
-begin acl
-acl_check_rcpt:
-require
-  domains = +local_domains
-require
-  message = Sender verification failed
-  verify = sender
-require
-  message = Receiver verification failed
-  verify = recipient
-require
-  message = Recipient unknown
-  condition = ${run{</span><span style="color:#fe8019;">/</span><span style="color:#fdf4c1;">usr</span><span style="color:#fe8019;">/</span><span style="color:#fdf4c1;">bin/curl --out /dev/null --silent --fail -H </span><span style="color:#b8bb26;">&quot;Docspell-Integration: ${</span><span style="color:#fdf4c1;">env{DS_HEADER</span><span style="color:#b8bb26;">}{$</span><span style="color:#fdf4c1;">value</span><span style="color:#b8bb26;">} fail}&quot; &quot;${</span><span style="color:#fdf4c1;">env{DS_URL</span><span style="color:#b8bb26;">}{$</span><span style="color:#fdf4c1;">value</span><span style="color:#b8bb26;">} fail}/api/v1/open/integration/item/$</span><span style="color:#fdf4c1;">local_part</span><span style="color:#b8bb26;">&quot;</span><span style="color:#fdf4c1;">}{yes}{no}</span><span style="color:#fdf4c1aa;">}
-</span><span style="color:#fdf4c1;">warn
-  message = Reverse lookup failed
-  </span><span style="color:#fdf4c1aa;">!</span><span style="color:#fdf4c1;">verify = reverse_host_lookup
-accept
-acl_check_data:
-deny
-  message = Sender verification failed
-  </span><span style="color:#fdf4c1aa;">!</span><span style="color:#fdf4c1;">verify = header_sender
-accept
-begin routers
-local_users:
-  driver = accept
-  transport = docspell
-begin transports
-docspell:
-  driver = pipe
-  </span><span style="color:#fabd2f;">command</span><span style="color:#fdf4c1;"> = /usr/bin/curl --out /dev/null --silent --fail -H </span><span style="color:#b8bb26;">&quot;Docspell-Integration: ${</span><span style="color:#fdf4c1;">env{DS_HEADER</span><span style="color:#b8bb26;">}{$</span><span style="color:#fdf4c1;">value</span><span style="color:#b8bb26;">} fail}&quot;</span><span style="color:#fdf4c1;"> -F </span><span style="color:#b8bb26;">&quot;file=@-;filename=\&quot;$</span><span style="color:#fdf4c1;">h_subject</span><span style="color:#b8bb26;">:\&quot;&quot; &quot;${</span><span style="color:#fdf4c1;">env{DS_URL</span><span style="color:#b8bb26;">}{$</span><span style="color:#fdf4c1;">value</span><span style="color:#b8bb26;">} fail}/api/v1/open/integration/item/$</span><span style="color:#fdf4c1;">local_part</span><span style="color:#b8bb26;">&quot;
-  </span><span style="color:#fdf4c1;">return_fail_output
-  user = nobody
-  delivery_date_add
-  envelope_to_add
-  return_path_add
-  log_output
-</span></code></pre>
+<p><code> bash&lt;!--\n--&gt;&lt;!--\n--&gt;## Provide certificates to enable StartTLS&lt;!--\n--&gt;# tls_certificate = /var/lib/acme/test.org/fullchain.pem&lt;!--\n--&gt;# tls_privatekey = /var/lib/acme/test.org/key.pem&lt;!--\n--&gt;tls_advertise_hosts =&lt;!--\n--&gt;&lt;!--\n--&gt;primary_hostname = test.org&lt;!--\n--&gt;domainlist local_domains = test.org&lt;!--\n--&gt;timeout_frozen_after = 1m&lt;!--\n--&gt;acl_smtp_rcpt = acl_check_rcpt&lt;!--\n--&gt;acl_smtp_data = acl_check_data&lt;!--\n--&gt;never_users = root&lt;!--\n--&gt;host_lookup = *&lt;!--\n--&gt;daemon_smtp_ports = 25&lt;!--\n--&gt;&lt;!--\n--&gt;message_size_limit = 30m&lt;!--\n--&gt;&lt;!--\n--&gt;keep_environment = DS_HEADER : DS_URL&lt;!--\n--&gt;&lt;!--\n--&gt;begin acl&lt;!--\n--&gt;acl_check_rcpt:&lt;!--\n--&gt;require&lt;!--\n--&gt;  domains = +local_domains&lt;!--\n--&gt;require&lt;!--\n--&gt;  message = Sender verification failed&lt;!--\n--&gt;  verify = sender&lt;!--\n--&gt;require&lt;!--\n--&gt;  message = Receiver verification failed&lt;!--\n--&gt;  verify = recipient&lt;!--\n--&gt;require&lt;!--\n--&gt;  message = Recipient unknown&lt;!--\n--&gt;  condition = ${run{/usr/bin/curl --out /dev/null --silent --fail -H &quot;Docspell-Integration: ${env{DS_HEADER}{$value} fail}&quot; &quot;${env{DS_URL}{$value} fail}/api/v1/open/integration/item/$local_part&quot;}{yes}{no}}&lt;!--\n--&gt;warn&lt;!--\n--&gt;  message = Reverse lookup failed&lt;!--\n--&gt;  !verify = reverse_host_lookup&lt;!--\n--&gt;accept&lt;!--\n--&gt;&lt;!--\n--&gt;acl_check_data:&lt;!--\n--&gt;deny&lt;!--\n--&gt;  message = Sender verification failed&lt;!--\n--&gt;  !verify = header_sender&lt;!--\n--&gt;accept&lt;!--\n--&gt;&lt;!--\n--&gt;begin routers&lt;!--\n--&gt;local_users:&lt;!--\n--&gt;  driver = accept&lt;!--\n--&gt;  transport = docspell&lt;!--\n--&gt;&lt;!--\n--&gt;begin transports&lt;!--\n--&gt;docspell:&lt;!--\n--&gt;  driver = pipe&lt;!--\n--&gt;  command = /usr/bin/curl --out /dev/null --silent --fail -H &quot;Docspell-Integration: ${env{DS_HEADER}{$value} fail}&quot; -F &quot;file=@-;filename=\&quot;$h_subject:\&quot;&quot; &quot;${env{DS_URL}{$value} fail}/api/v1/open/integration/item/$local_part&quot;&lt;!--\n--&gt;  return_fail_output&lt;!--\n--&gt;  user = nobody&lt;!--\n--&gt;  delivery_date_add&lt;!--\n--&gt;  envelope_to_add&lt;!--\n--&gt;  return_path_add&lt;!--\n--&gt;  log_output&lt;!--\n--&gt;</code></p>
 <p>Exim has good <a href="https://www.exim.org/docs.html">documentation</a>, look
 there for more info. The following is only a quick summary of the file
 above.</p>
@@ -415,6 +364,11 @@ Connection closed by foreign host.
 </span></code></pre>
 <p>The mail is processed and results in an item:</p>
 <figure class="image">
+    
+    
+    
+    
+
     <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;exim-mail.png">
 </figure>
 <p>However, if a mail is to an unknown collective or not to the
@@ -453,7 +407,7 @@ Connection closed by foreign host.
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell, 0.14.0
+                Docspell, 0.15.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>

@@ -198,6 +198,24 @@
                                         </a>
                                         <ul>
                                             
+                                            <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;scanmailbox&#x2F;#e-mail-settings">
+                                                    E-Mail Settings
+                                                </a>
+                                            </li>
+                                            
+                                            <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;scanmailbox&#x2F;#filtering">
+                                                    Filtering
+                                                </a>
+                                            </li>
+                                            
+                                            <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;scanmailbox&#x2F;#metadata">
+                                                    Metadata
+                                                </a>
+                                            </li>
+                                            
                                         </ul>
                                     </li>
                                     
@@ -248,16 +266,27 @@ tasks that connects to your mailbox and import mails into docspell. It
 is possible to define multiple tasks, for example, if you have
 multiple e-mail accounts you want to import periodically.</p>
 <figure class="image">
+    
+    
+    
+    
+
     <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;scanmailbox-list.png">
 </figure>
 <h1 id="details">Details<a class="zola-anchor" href="#details" aria-label="Anchor link for: details">🔗</a></h1>
 <p>Creating a task requires the following information:</p>
 <figure class="image">
+    
+    
+    
+    
+
     <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;scanmailbox-detail.png">
 </figure>
 <p>You can enable or disable this task. A disabled task will not run
 periodically. You can still choose to run it manually if you click the
 <code>Start Once</code> button.</p>
+<h2 id="e-mail-settings">E-Mail Settings<a class="zola-anchor" href="#e-mail-settings" aria-label="Anchor link for: e-mail-settings">🔗</a></h2>
 <p>Then you need to specify which <a href="https://docspell.org/docs/webapp/emailsettings/#imap-settings">IMAP
 connection</a> to use.</p>
 <p>A list of folders is required. Docspell will only look into these
@@ -268,11 +297,6 @@ mails in your inbox. Any other folder is usually case-sensitive
 (depends on the imap server, but usually they are case sensitive
 except the INBOX folder). Type in a folder name and click the add
 button on the right.</p>
-<p>Then the field <em>Received Since Hours</em> defines how many hours to go
-back and look for mails. Usually there are many mails in your inbox
-and importing them all at once is not feasible or desirable. It can
-work together with the <em>Schedule</em> field below. For example, you could
-run this task all 6 hours and read mails from 8 hours back.</p>
 <p>The next two settings tell docspell what to do once a mail has been
 submitted to docspell. It can be moved into another folder in your
 mail account. This moves it out of the way for the next run. You can
@@ -280,18 +304,42 @@ also choose to delete the mail, but <em>note that it will really be
 deleted and not moved to your trash folder</em>. If both options are off,
 nothing happens with that mail, it simply stays (and could be re-read
 on the next run).</p>
-<p>When docspell creates an item from a mail, it needs to set a direction
-value (incoming or outgoing). If you know that all mails you want to
-import have a specific directon, then you can set it here. Otherwise,
-<em>automatic</em> means that docspell chooses a direction based on the
-<code>From</code> header of a mail. If the <code>From</code> header is an e-mail address
-that belongs to a “concerning” person in your address book, then it is
-set to &quot;outgoing&quot;. Otherwise it is set to &quot;incoming&quot;. To support this,
-you need to add your own e-mail address(es) to your address book.</p>
+<h2 id="filtering">Filtering<a class="zola-anchor" href="#filtering" aria-label="Anchor link for: filtering">🔗</a></h2>
+<p>The following properties allow to filter mails that are imported.</p>
+<p>Then the field <em>Received Since Hours</em> defines how many hours to go
+back and look for mails. Usually there are many mails in your inbox
+and importing them all at once is not feasible or desirable. It can
+work together with the <em>Schedule</em> field below. For example, you could
+run this task all 6 hours and read mails from 8 hours back.</p>
+<p>The <em>File Filter</em> can be specified as a glob to only import mail
+attachments based on their file name. For example, a value of <code>*.pdf</code>
+will only import files that have a <code>pdf</code> extension. The mail body is
+named <code>mail.html</code> by convention and would be excluded when only
+specifying <code>*.pdf</code>. You can combine multiple globs using OR via the
+pipe <code>|</code> symbol. For example, to also include the mail body as well as
+all pdf attachments: <code>*.pdf|mail.html</code>.</p>
+<p>The <em>Subject Filter</em> is a glob filter that is applied to the mail
+subject. This can be used to only import mails whose subject have some
+pattern. For example, if your scanner mails to you with a certain
+subject like <em>&quot;Scanned Document 214&quot;</em>, you could include those via a
+<code>Scanned Document*</code> pattern.</p>
+<h2 id="metadata">Metadata<a class="zola-anchor" href="#metadata" aria-label="Anchor link for: metadata">🔗</a></h2>
+<p>The last properties allow to specify some metadata that are
+automatically attached to the items being created.</p>
+<p>Every item in docspell has a direction value (incoming or outgoing).
+If you know that all mails you want to import have a specific
+directon, then you can set it here. Otherwise, <em>automatic</em> means that
+docspell chooses a direction based on the <code>From</code> header of a mail. If
+the <code>From</code> header is an e-mail address that belongs to a “concerning”
+person in your address book, then it is set to &quot;outgoing&quot;. Otherwise
+it is set to &quot;incoming&quot;. To support this, you need to add your own
+e-mail address(es) to your address book.</p>
 <p>The <em>Item Folder</em> setting is used to put all items that are created
 from mails into the specified <a href="https://docspell.org/docs/webapp/scanmailbox/metadata#folders">folder</a>. If you
 define a folder here, where you are not a member, you won't find
 resulting items.</p>
+<p>The <em>Tags</em> setting can be used to associate a fixed number of tags to
+all items that are imported from this mail task.</p>
 <p>The last field is the <em>Schedule</em> which defines when and how often this
 task should run. The syntax is similiar to a date-time string, like
 <code>2019-09-15 12:32</code>, where each part is a pattern to also match multple
@@ -344,7 +392,7 @@ task run only, it is meant to reduce resource allocation of one task.</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell, 0.14.0
+                Docspell, 0.15.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>

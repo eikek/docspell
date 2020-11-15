@@ -263,11 +263,11 @@ added):</p>
 <p>The URL can be any docspell url that accepts uploads without
 authentication. This is usually a <a href="https://docspell.org/docs/webapp/uploading/#anonymous-upload">source
 url</a>. It is also possible
-to use the script with the <a href="https://docspell.org/docs/webapp/uploading/#integration-endpoint">integration
+to use the script with the <a href="https://docspell.org/docs/api/upload/#integration-endpoint">integration
 endpoint</a>.</p>
 <h2 id="integration-endpoint">Integration Endpoint<a class="zola-anchor" href="#integration-endpoint" aria-label="Anchor link for: integration-endpoint">🔗</a></h2>
 <p>When given the <code>-i</code> or <code>--integration</code> option, the script changes its
-behaviour slightly to work with the <a href="https://docspell.org/docs/webapp/uploading/#integration-endpoint">integration
+behaviour slightly to work with the <a href="https://docspell.org/docs/api/upload/#integration-endpoint">integration
 endpoint</a>.</p>
 <p>First, if <code>-i</code> is given, it implies <code>-r</code> – so the directories are
 watched or traversed recursively. The script then assumes that there
@@ -318,7 +318,7 @@ url as described <a href="https://docspell.org/docs/webapp/uploading/#anonymous-
 <p>The provided docker image runs this script to watch a single
 directory, <code>./docs</code> in current directory, for new files. If a new file
 is detected, it is pushed to docspell.</p>
-<p>This utilizes the <a href="https://docspell.org/docs/webapp/uploading/#integration-endpoint">integration
+<p>This utilizes the <a href="https://docspell.org/docs/api/upload/#integration-endpoint">integration
 endpoint</a>, which is
 enabled in the config file, to allow uploading documents for all
 collectives. A subfolder must be created for each registered
@@ -346,7 +346,7 @@ the <code>consumedir</code> container will push it to docspell.</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell, 0.14.0
+                Docspell, 0.15.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>
