@@ -213,7 +213,7 @@ options:
 This applies only to the REST sevrer component.
 
 ``` bash
-docspell.server.signup {
+docspell.server.backend.signup {
   mode = "open"
 
   # If mode == 'invite', a password must be provided to generate
