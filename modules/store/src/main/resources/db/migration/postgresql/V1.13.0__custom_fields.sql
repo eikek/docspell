@@ -1,6 +1,7 @@
 CREATE TABLE "custom_field" (
   "id" varchar(254) not null primary key,
   "name" varchar(254) not null,
+  "label" varchar(254),
   "cid" varchar(254) not null,
   "ftype" varchar(100) not null,
   "created" timestamp not null,

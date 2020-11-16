@@ -342,8 +342,8 @@ object QItem {
       TagItemName.itemsWithTagOrCategory(q.tagsExclude, q.tagCategoryExcl)
 
     val iFolder  = IC.folder.prefix("i")
-    val name     = q.name.map(_.toLowerCase).map(queryWildcard)
-    val allNames = q.allNames.map(_.toLowerCase).map(queryWildcard)
+    val name     = q.name.map(_.toLowerCase).map(QueryWildcard.apply)
+    val allNames = q.allNames.map(_.toLowerCase).map(QueryWildcard.apply)
     val cond = and(
       IC.cid.prefix("i").is(q.account.collective),
       IC.state.prefix("i").isOneOf(q.states),
@@ -516,8 +516,9 @@ object QItem {
       rn <- QAttachment.deleteItemAttachments(store)(itemId, collective)
       tn <- store.transact(RTagItem.deleteItemTags(itemId))
       mn <- store.transact(RSentMail.deleteByItem(itemId))
+      cf <- store.transact(RCustomFieldValue.deleteByItem(itemId))
       n  <- store.transact(RItem.deleteByIdAndCollective(itemId, collective))
-    } yield tn + rn + n + mn
+    } yield tn + rn + n + mn + cf
 
   private def findByFileIdsQuery(
       fileMetaIds: NonEmptyList[Ident],
@@ -616,18 +617,6 @@ object QItem {
       )
     ).query[RItem]
       .to[Vector]
-  }
-
-  private def queryWildcard(value: String): String = {
-    def prefix(n: String) =
-      if (n.startsWith("*")) s"%${n.substring(1)}"
-      else n
-
-    def suffix(n: String) =
-      if (n.endsWith("*")) s"${n.dropRight(1)}%"
-      else n
-
-    prefix(suffix(value))
   }
 
   final case class NameAndNotes(

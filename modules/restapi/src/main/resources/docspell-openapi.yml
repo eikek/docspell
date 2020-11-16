@@ -3210,6 +3210,8 @@ paths:
         Get all custom fields defined for the current collective.
       security:
         - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/q"
       responses:
         200:
           description: Ok
@@ -3217,6 +3219,79 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/CustomFieldList"
+    post:
+      tags: [ Custom Fields ]
+      summary: Create a new custom field
+      description: |
+        Creates a new custom field.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewCustomField"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
+  /sec/customfields/{id}:
+    get:
+      tags: [ Custom Fields ]
+      summary: Get details about a custom field.
+      description: |
+        Returns the details about a custom field.
+      security:
+        - authTokenHeader: []
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CustomField"
+    put:
+      tags: [ Custom Fields ]
+      summary: Change a custom field
+      description: |
+        Change properties of a custom field.
+
+        Changing the label has no further impliciations, since it is
+        only used for displaying. The name and type on the other hand
+        have consequences: name must be unique and the type determines
+        how the value is stored internally.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewCustomField"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+    delete:
+      tags: [ Custom Fields ]
+      summary: Deletes a custom field.
+      description: |
+        Deletes the custom field and all its relations.
+      security:
+        - authTokenHeader: []
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
 
 
 components:
@@ -3310,6 +3385,22 @@ components:
           items:
             $ref: "#/components/schemas/CustomField"
 
+    NewCustomField:
+      description: |
+        Data for creating a custom field.
+      required:
+        - name
+        - ftype
+      properties:
+        name:
+          type: string
+          format: ident
+        label:
+          type: string
+        ftype:
+          type: string
+          format: customfieldtype
+
     CustomField:
       description: |
         A custom field definition.
@@ -3317,6 +3408,7 @@ components:
         - id
         - name
         - ftype
+        - usages
         - created
       properties:
         id:
@@ -3324,9 +3416,15 @@ components:
           format: ident
         name:
           type: string
+          format: ident
+        label:
+          type: string
         ftype:
           type: string
           format: customfieldtype
+        usages:
+          type: integer
+          format: int32
         created:
           type: integer
           format: date-time

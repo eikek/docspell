@@ -42,7 +42,6 @@ object CustomFieldType {
   def unsafe(str: String): CustomFieldType =
     fromString(str).fold(sys.error, identity)
 
-
   implicit val jsonDecoder: Decoder[CustomFieldType] =
     Decoder.decodeString.emap(fromString)
 

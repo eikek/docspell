@@ -39,4 +39,12 @@ object RCustomFieldValue {
     sql.update.run
   }
 
+  def countField(fieldId: Ident): ConnectionIO[Int] =
+    selectCount(Columns.id, table, Columns.field.is(fieldId)).query[Int].unique
+
+  def deleteByField(fieldId: Ident): ConnectionIO[Int] =
+    deleteFrom(table, Columns.field.is(fieldId)).update.run
+
+  def deleteByItem(item: Ident): ConnectionIO[Int] =
+    deleteFrom(table, Columns.itemId.is(item)).update.run
 }
