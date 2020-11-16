@@ -4420,7 +4420,7 @@ components:
         - tags
       properties:
         source:
-          $ref: "#/components/schema/Source"
+          $ref: "#/components/schemas/Source"
         tags:
           type: array
           items:
@@ -4433,9 +4433,9 @@ components:
         - tags
       properties:
         source:
-          $ref: "#/components/schema/Source"
+          $ref: "#/components/schemas/Source"
         tags:
-          $ref: "#/components/schema/TagList"
+          $ref: "#/components/schemas/TagList"
 
     EquipmentList:
       description: |
