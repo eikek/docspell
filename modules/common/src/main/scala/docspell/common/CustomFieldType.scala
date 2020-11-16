@@ -1,25 +1,83 @@
 package docspell.common
 
+import java.time.LocalDate
+
+import cats.implicits._
+
 import io.circe._
 
 sealed trait CustomFieldType { self: Product =>
 
+  type ValueType
+
   final def name: String =
     self.productPrefix.toLowerCase()
 
+  def valueString(value: ValueType): String
+
+  def parseValue(value: String): Either[String, ValueType]
 }
 
 object CustomFieldType {
 
-  case object Text extends CustomFieldType
+  case object Text extends CustomFieldType {
 
-  case object Numeric extends CustomFieldType
+    type ValueType = String
 
-  case object Date extends CustomFieldType
+    def valueString(value: String): String =
+      value
 
-  case object Bool extends CustomFieldType
+    def parseValue(value: String): Either[String, String] =
+      Right(value)
+  }
 
-  case object Money extends CustomFieldType
+  case object Numeric extends CustomFieldType {
+    type ValueType = BigDecimal
+
+    def valueString(value: BigDecimal): String =
+      value.toString
+
+    def parseValue(value: String): Either[String, BigDecimal] =
+      Either
+        .catchNonFatal(BigDecimal.exact(value))
+        .leftMap(_ => s"Could not parse decimal value from: $value")
+  }
+
+  case object Date extends CustomFieldType {
+    type ValueType = LocalDate
+
+    def valueString(value: LocalDate): String =
+      value.toString
+
+    def parseValue(value: String): Either[String, LocalDate] =
+      Either
+        .catchNonFatal(LocalDate.parse(value))
+        .leftMap(_.getMessage)
+  }
+
+  case object Bool extends CustomFieldType {
+    type ValueType = Boolean
+
+    def valueString(value: Boolean): String =
+      value.toString
+
+    def parseValue(value: String): Either[String, Boolean] =
+      Right(value.equalsIgnoreCase("true"))
+
+  }
+
+  case object Money extends CustomFieldType {
+    type ValueType = BigDecimal
+
+    def valueString(value: BigDecimal): String =
+      Numeric.valueString(value)
+
+    def parseValue(value: String): Either[String, BigDecimal] =
+      Numeric.parseValue(value).map(round)
+
+    def round(v: BigDecimal): BigDecimal =
+      v.setScale(2, BigDecimal.RoundingMode.HALF_EVEN)
+  }
 
   def text: CustomFieldType    = Text
   def numeric: CustomFieldType = Numeric

@@ -7,6 +7,7 @@ import cats.implicits._
 import fs2.Stream
 
 import docspell.backend.ops.OCollective.{InsightData, PassChangeResult}
+import docspell.backend.ops.OCustomFields.SetValueResult
 import docspell.backend.ops.OJob.JobCancelResult
 import docspell.backend.ops.OUpload.{UploadData, UploadMeta, UploadResult}
 import docspell.backend.ops._
@@ -588,6 +589,18 @@ trait Conversions {
     IdName(ref.id, ref.name)
 
   // basic result
+
+  def basicResult(r: SetValueResult): BasicResult =
+    r match {
+      case SetValueResult.FieldNotFound =>
+        BasicResult(false, "The given field is unknown")
+      case SetValueResult.ItemNotFound =>
+        BasicResult(false, "The given item is unknown")
+      case SetValueResult.ValueInvalid(msg) =>
+        BasicResult(false, s"The value is invalid: $msg")
+      case SetValueResult.Success =>
+        BasicResult(true, "Custom field value set successfully.")
+    }
 
   def basicResult(cr: JobCancelResult): BasicResult =
     cr match {

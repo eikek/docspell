@@ -13,8 +13,7 @@ CREATE TABLE "custom_field_value" (
   "id" varchar(254) not null primary key,
   "item_id" varchar(254) not null,
   "field" varchar(254) not null,
-  "value_text" varchar(300),
-  "value_numeric" numeric,
+  "field_value" varchar(300) not null,
   foreign key ("item_id") references "item"("itemid"),
   foreign key ("field") references "custom_field"("id"),
   unique ("item_id", "field")

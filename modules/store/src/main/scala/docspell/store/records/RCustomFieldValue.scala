@@ -11,8 +11,7 @@ case class RCustomFieldValue(
     id: Ident,
     itemId: Ident,
     field: Ident,
-    valueText: Option[String],
-    valueNumeric: Option[BigDecimal]
+    value: String
 )
 
 object RCustomFieldValue {
@@ -21,23 +20,33 @@ object RCustomFieldValue {
 
   object Columns {
 
-    val id           = Column("id")
-    val itemId       = Column("item_id")
-    val field        = Column("field")
-    val valueText    = Column("value_text")
-    val valueNumeric = Column("value_numeric")
+    val id     = Column("id")
+    val itemId = Column("item_id")
+    val field  = Column("field")
+    val value  = Column("field_value")
 
-    val all = List(id, itemId, field, valueText, valueNumeric)
+    val all = List(id, itemId, field, value)
   }
 
   def insert(value: RCustomFieldValue): ConnectionIO[Int] = {
     val sql = insertRow(
       table,
       Columns.all,
-      fr"${value.id},${value.itemId},${value.field},${value.valueText},${value.valueNumeric}"
+      fr"${value.id},${value.itemId},${value.field},${value.value}"
     )
     sql.update.run
   }
+
+  def updateValue(
+      fieldId: Ident,
+      item: Ident,
+      value: String
+  ): ConnectionIO[Int] =
+    updateRow(
+      table,
+      and(Columns.itemId.is(item), Columns.field.is(fieldId)),
+      Columns.value.setTo(value)
+    ).update.run
 
   def countField(fieldId: Ident): ConnectionIO[Int] =
     selectCount(Columns.id, table, Columns.field.is(fieldId)).query[Int].unique
@@ -47,4 +56,7 @@ object RCustomFieldValue {
 
   def deleteByItem(item: Ident): ConnectionIO[Int] =
     deleteFrom(table, Columns.itemId.is(item)).update.run
+
+  def deleteValue(fieldId: Ident, item: Ident): ConnectionIO[Int] =
+    deleteFrom(table, and(Columns.id.is(fieldId), Columns.itemId.is(item))).update.run
 }

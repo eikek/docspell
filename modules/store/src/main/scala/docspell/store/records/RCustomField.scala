@@ -1,5 +1,7 @@
 package docspell.store.records
 
+import cats.implicits._
+
 import docspell.common._
 import docspell.store.impl.Column
 import docspell.store.impl.Implicits._
@@ -43,7 +45,7 @@ object RCustomField {
   }
 
   def exists(fname: Ident, coll: Ident): ConnectionIO[Boolean] =
-    ???
+    selectCount(id, table, and(name.is(fname), cid.is(coll))).query[Int].unique.map(_ > 0)
 
   def findById(fid: Ident, coll: Ident): ConnectionIO[Option[RCustomField]] =
     selectSimple(all, table, and(id.is(fid), cid.is(coll))).query[RCustomField].option
@@ -69,4 +71,19 @@ object RCustomField {
         ftype.setTo(value.ftype)
       )
     ).update.run
+
+  def setValue(f: RCustomField, item: Ident, fval: String): ConnectionIO[Int] =
+    for {
+      n <- RCustomFieldValue.updateValue(f.id, item, fval)
+      k <-
+        if (n == 0)
+          Ident
+            .randomId[ConnectionIO]
+            .flatMap(nId =>
+              RCustomFieldValue
+                .insert(RCustomFieldValue(nId, item, f.id, fval))
+            )
+        else 0.pure[ConnectionIO]
+    } yield n + k
+
 }

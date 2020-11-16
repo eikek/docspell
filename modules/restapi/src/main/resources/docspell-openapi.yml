@@ -1914,6 +1914,50 @@ paths:
                 type: string
                 format: binary
 
+  /sec/item/{id}/customfield:
+    put:
+      tags: [ Item ]
+      summary: Set the value of a custom field.
+      description: |
+        Sets the value for a custom field to this item. If a value
+        already exists, it is overwritten.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CustomFieldValue"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+  /sec/item/{itemId}/customfield/{id}:
+    delete:
+      tags: [ Item ]
+      summary: Removes the value for a custom field
+      description: |
+        Removes the value for the given custom field. The `id` may be
+        the id of a custom field or its name.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+        - $ref: "#/components/parameters/itemId"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
+
   /sec/item/{itemId}/reprocess:
     post:
       tags: [ Item ]
@@ -3240,6 +3284,8 @@ paths:
                 $ref: "#/components/schemas/BasicResult"
 
   /sec/customfields/{id}:
+    parameters:
+      - $ref: "#/components/parameters/id"
     get:
       tags: [ Custom Fields ]
       summary: Get details about a custom field.
@@ -3384,6 +3430,19 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/CustomField"
+
+    CustomFieldValue:
+      description: |
+        Data structure to update the value of a custom field.
+      required:
+        - field
+        - value
+      properties:
+        field:
+          type: string
+          format: ident
+        value:
+          type: string
 
     NewCustomField:
       description: |
