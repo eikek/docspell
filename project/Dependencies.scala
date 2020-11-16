@@ -32,7 +32,7 @@ object Dependencies {
   val PostgresVersion         = "42.2.18"
   val PureConfigVersion       = "0.14.0"
   val Slf4jVersion            = "1.7.30"
-  val StanfordNlpVersion      = "4.0.0"
+  val StanfordNlpVersion      = "4.2.0"
   val TikaVersion             = "1.24.1"
   val YamuscaVersion          = "0.7.0"
   val SwaggerUIVersion        = "3.36.2"
