@@ -1,6 +1,7 @@
 package docspell.backend.ops
 
 import cats.data.EitherT
+import cats.data.NonEmptyList
 import cats.data.OptionT
 import cats.effect._
 import cats.implicits._
@@ -20,6 +21,7 @@ import docspell.store.records.RCustomFieldValue
 import docspell.store.records.RItem
 
 import doobie._
+import org.log4s.getLogger
 
 trait OCustomFields[F[_]] {
 
@@ -40,6 +42,8 @@ trait OCustomFields[F[_]] {
 
   /** Sets a value given a field an an item. Existing values are overwritten. */
   def setValue(item: Ident, value: SetValue): F[SetValueResult]
+
+  def setValueMultiple(items: NonEmptyList[Ident], value: SetValue): F[SetValueResult]
 
   /** Deletes a value for a given field an item. */
   def deleteValue(in: RemoveValue): F[UpdateResult]
@@ -79,7 +83,7 @@ object OCustomFields {
 
   case class RemoveValue(
       field: Ident,
-      item: Ident,
+      item: NonEmptyList[Ident],
       collective: Ident
   )
 
@@ -88,8 +92,10 @@ object OCustomFields {
   ): Resource[F, OCustomFields[F]] =
     Resource.pure[F, OCustomFields[F]](new OCustomFields[F] {
 
+      private[this] val logger = Logger.log4s[ConnectionIO](getLogger)
+
       def findAll(coll: Ident, nameQuery: Option[String]): F[Vector[CustomFieldData]] =
-        store.transact(QCustomField.findAllLike(coll, nameQuery))
+        store.transact(QCustomField.findAllLike(coll, nameQuery.filter(_.nonEmpty)))
 
       def findById(coll: Ident, field: Ident): F[Option[CustomFieldData]] =
         store.transact(QCustomField.findById(field, coll))
@@ -113,6 +119,7 @@ object OCustomFields {
         val update =
           for {
             field <- OptionT(RCustomField.findByIdOrName(fieldIdOrName, coll))
+            _     <- OptionT.liftF(logger.info(s"Deleting field: $field"))
             n     <- OptionT.liftF(RCustomFieldValue.deleteByField(field.id))
             k     <- OptionT.liftF(RCustomField.deleteById(field.id, coll))
           } yield n + k
@@ -121,15 +128,16 @@ object OCustomFields {
       }
 
       def setValue(item: Ident, value: SetValue): F[SetValueResult] =
+        setValueMultiple(NonEmptyList.of(item), value)
+
+      def setValueMultiple(
+          items: NonEmptyList[Ident],
+          value: SetValue
+      ): F[SetValueResult] =
         (for {
           field <- EitherT.fromOptionF(
             store.transact(RCustomField.findByIdOrName(value.field, value.collective)),
             SetValueResult.fieldNotFound
-          )
-          _ <- EitherT(
-            store
-              .transact(RItem.existsByIdAndCollective(item, value.collective))
-              .map(flag => if (flag) Right(()) else Left(SetValueResult.itemNotFound))
           )
           fval <- EitherT.fromEither[F](
             field.ftype
@@ -137,8 +145,15 @@ object OCustomFields {
               .leftMap(SetValueResult.valueInvalid)
               .map(field.ftype.valueString)
           )
+          _ <- EitherT(
+            store
+              .transact(RItem.existsByIdsAndCollective(items, value.collective))
+              .map(flag => if (flag) Right(()) else Left(SetValueResult.itemNotFound))
+          )
           nu <- EitherT.right[SetValueResult](
-            store.transact(RCustomField.setValue(field, item, fval))
+            items
+              .traverse(item => store.transact(RCustomField.setValue(field, item, fval)))
+              .map(_.toList.sum)
           )
         } yield nu).fold(identity, _ => SetValueResult.success)
 

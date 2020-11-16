@@ -1,5 +1,7 @@
 package docspell.store.records
 
+import cats.data.NonEmptyList
+
 import docspell.common._
 import docspell.store.impl.Column
 import docspell.store.impl.Implicits._
@@ -57,6 +59,6 @@ object RCustomFieldValue {
   def deleteByItem(item: Ident): ConnectionIO[Int] =
     deleteFrom(table, Columns.itemId.is(item)).update.run
 
-  def deleteValue(fieldId: Ident, item: Ident): ConnectionIO[Int] =
-    deleteFrom(table, and(Columns.id.is(fieldId), Columns.itemId.is(item))).update.run
+  def deleteValue(fieldId: Ident, items: NonEmptyList[Ident]): ConnectionIO[Int] =
+    deleteFrom(table, and(Columns.id.is(fieldId), Columns.itemId.isIn(items))).update.run
 }

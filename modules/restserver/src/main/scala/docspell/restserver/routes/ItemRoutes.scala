@@ -372,7 +372,7 @@ object ItemRoutes {
       case DELETE -> Root / Ident(id) / "customfield" / Ident(fieldId) =>
         for {
           res <- backend.customFields.deleteValue(
-            RemoveValue(fieldId, id, user.account.collective)
+            RemoveValue(fieldId, NonEmptyList.of(id), user.account.collective)
           )
           resp <- Ok(Conversions.basicResult(res, "Custom field value removed."))
         } yield resp

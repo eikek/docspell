@@ -56,7 +56,7 @@ object CustomFieldRoutes {
 
       case DELETE -> Root / Ident(id) =>
         for {
-          res  <- backend.customFields.delete(id, user.account.collective)
+          res  <- backend.customFields.delete(user.account.collective, id)
           resp <- Ok(convertResult(res))
         } yield resp
     }

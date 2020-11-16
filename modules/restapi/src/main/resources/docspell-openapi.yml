@@ -2383,6 +2383,52 @@ paths:
               schema:
                 $ref: "#/components/schemas/BasicResult"
 
+  /sec/items/customfield:
+    put:
+      tags: [ Item (Multi Edit) ]
+      summary: Set the value of a custom field for multiple items
+      description: |
+        Sets the value for a custom field to multiple given items. If
+        a value already exists, it is overwritten.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ItemsAndFieldValue"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
+  /sec/items/customfieldremove:
+    post:
+      tags: [ Item (Multi Edit) ]
+      summary: Removes the value for a custom field on multiple items
+      description: |
+        Removes the value for the given custom field from multiple
+        items. The field may be specified by its id or name.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/itemId"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ItemsAndName"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
 
   /sec/attachment/{id}:
     delete:
@@ -3246,7 +3292,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/BasicResult"
 
-  /sec/customfields:
+  /sec/customfield:
     get:
       tags: [ Custom Fields ]
       summary: Get all defined custom fields.
@@ -3283,7 +3329,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/BasicResult"
 
-  /sec/customfields/{id}:
+  /sec/customfield/{id}:
     parameters:
       - $ref: "#/components/parameters/id"
     get:
@@ -3342,6 +3388,21 @@ paths:
 
 components:
   schemas:
+    ItemsAndFieldValue:
+      description: |
+        Holds a list of item ids and a custom field value.
+      required:
+        - items
+        - field
+      properties:
+        items:
+          type: array
+          items:
+            type: string
+            format: ident
+        field:
+          $ref: "#/components/schemas/CustomFieldValue"
+
     ItemsAndRefs:
       description: |
         Holds a list of item ids and a list of ids of some other
@@ -3459,6 +3520,12 @@ components:
         ftype:
           type: string
           format: customfieldtype
+          enum:
+            - text
+            - numeric
+            - date
+            - bool
+            - money
 
     CustomField:
       description: |
@@ -3481,6 +3548,12 @@ components:
         ftype:
           type: string
           format: customfieldtype
+          enum:
+            - text
+            - numeric
+            - date
+            - bool
+            - money
         usages:
           type: integer
           format: int32
