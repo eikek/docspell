@@ -1449,6 +1449,9 @@ resetField flags item tagger field =
         Data.Fields.PreviewImage ->
             Cmd.none
 
+        Data.Fields.CustomFields ->
+            Cmd.none
+
 
 resetHiddenFields :
     UiSettings

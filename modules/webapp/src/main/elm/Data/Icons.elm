@@ -5,6 +5,8 @@ module Data.Icons exposing
     , concernedIcon
     , correspondent
     , correspondentIcon
+    , customField
+    , customFieldIcon
     , date
     , dateIcon
     , direction
@@ -31,6 +33,16 @@ module Data.Icons exposing
 
 import Html exposing (Html, i)
 import Html.Attributes exposing (class)
+
+
+customField : String
+customField =
+    "highlighter icon"
+
+
+customFieldIcon : String -> Html msg
+customFieldIcon classes =
+    i [ class (customField ++ " " ++ classes) ] []
 
 
 search : String

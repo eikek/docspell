@@ -19,6 +19,7 @@ module Api exposing
     , createScanMailbox
     , deleteAllItems
     , deleteAttachment
+    , deleteCustomField
     , deleteEquip
     , deleteFolder
     , deleteImapSettings
@@ -36,6 +37,7 @@ module Api exposing
     , getCollective
     , getCollectiveSettings
     , getContacts
+    , getCustomFields
     , getEquipment
     , getEquipments
     , getFolderDetail
@@ -68,12 +70,14 @@ module Api exposing
     , logout
     , moveAttachmentBefore
     , newInvite
+    , postCustomField
     , postEquipment
     , postNewUser
     , postOrg
     , postPerson
     , postSource
     , postTag
+    , putCustomField
     , putUser
     , refreshSession
     , register
@@ -129,6 +133,7 @@ import Api.Model.CalEventCheckResult exposing (CalEventCheckResult)
 import Api.Model.Collective exposing (Collective)
 import Api.Model.CollectiveSettings exposing (CollectiveSettings)
 import Api.Model.ContactList exposing (ContactList)
+import Api.Model.CustomFieldList exposing (CustomFieldList)
 import Api.Model.DirectionValue exposing (DirectionValue)
 import Api.Model.EmailSettings exposing (EmailSettings)
 import Api.Model.EmailSettingsList exposing (EmailSettingsList)
@@ -145,7 +150,6 @@ import Api.Model.InviteResult exposing (InviteResult)
 import Api.Model.ItemDetail exposing (ItemDetail)
 import Api.Model.ItemFtsSearch exposing (ItemFtsSearch)
 import Api.Model.ItemInsights exposing (ItemInsights)
-import Api.Model.ItemLight exposing (ItemLight)
 import Api.Model.ItemLightList exposing (ItemLightList)
 import Api.Model.ItemProposals exposing (ItemProposals)
 import Api.Model.ItemSearch exposing (ItemSearch)
@@ -158,6 +162,7 @@ import Api.Model.ItemsAndRefs exposing (ItemsAndRefs)
 import Api.Model.JobPriority exposing (JobPriority)
 import Api.Model.JobQueueState exposing (JobQueueState)
 import Api.Model.MoveAttachment exposing (MoveAttachment)
+import Api.Model.NewCustomField exposing (NewCustomField)
 import Api.Model.NewFolder exposing (NewFolder)
 import Api.Model.NotificationSettings exposing (NotificationSettings)
 import Api.Model.NotificationSettingsList exposing (NotificationSettingsList)
@@ -177,7 +182,7 @@ import Api.Model.SentMails exposing (SentMails)
 import Api.Model.SimpleMail exposing (SimpleMail)
 import Api.Model.SourceAndTags exposing (SourceAndTags)
 import Api.Model.SourceList exposing (SourceList)
-import Api.Model.SourceTagIn exposing (SourceTagIn)
+import Api.Model.SourceTagIn
 import Api.Model.StringList exposing (StringList)
 import Api.Model.Tag exposing (Tag)
 import Api.Model.TagCloud exposing (TagCloud)
@@ -197,6 +202,60 @@ import Task
 import Url
 import Util.File
 import Util.Http as Http2
+
+
+
+--- Custom Fields
+
+
+getCustomFields : Flags -> String -> (Result Http.Error CustomFieldList -> msg) -> Cmd msg
+getCustomFields flags query receive =
+    Http2.authGet
+        { url =
+            flags.config.baseUrl
+                ++ "/api/v1/sec/customfield?q="
+                ++ Url.percentEncode query
+        , account = getAccount flags
+        , expect = Http.expectJson receive Api.Model.CustomFieldList.decoder
+        }
+
+
+postCustomField :
+    Flags
+    -> NewCustomField
+    -> (Result Http.Error BasicResult -> msg)
+    -> Cmd msg
+postCustomField flags field receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/customfield"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.NewCustomField.encode field)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+putCustomField :
+    Flags
+    -> String
+    -> NewCustomField
+    -> (Result Http.Error BasicResult -> msg)
+    -> Cmd msg
+putCustomField flags id field receive =
+    Http2.authPut
+        { url = flags.config.baseUrl ++ "/api/v1/sec/customfield/" ++ id
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.NewCustomField.encode field)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+deleteCustomField : Flags -> String -> (Result Http.Error BasicResult -> msg) -> Cmd msg
+deleteCustomField flags id receive =
+    Http2.authDelete
+        { url = flags.config.baseUrl ++ "/api/v1/sec/customfield/" ++ id
+        , account = getAccount flags
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
 
 
 
