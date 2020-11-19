@@ -24,6 +24,7 @@ import Api.Model.SentMails exposing (SentMails)
 import Api.Model.Tag exposing (Tag)
 import Api.Model.TagList exposing (TagList)
 import Comp.AttachmentMeta
+import Comp.CustomFieldMultiInput
 import Comp.DatePicker
 import Comp.DetailEdit
 import Comp.Dropdown
@@ -93,6 +94,7 @@ type alias Model =
     , modalEdit : Maybe Comp.DetailEdit.Model
     , attachRename : Maybe AttachmentRename
     , keyInputModel : Comp.KeyInput.Model
+    , customFieldsModel : Comp.CustomFieldMultiInput.Model
     }
 
 
@@ -194,6 +196,7 @@ emptyModel =
     , modalEdit = Nothing
     , attachRename = Nothing
     , keyInputModel = Comp.KeyInput.init
+    , customFieldsModel = Comp.CustomFieldMultiInput.initWith []
     }
 
 
@@ -279,6 +282,7 @@ type Msg
     | ToggleAttachMenu
     | UiSettingsUpdated
     | SetLinkTarget LinkTarget
+    | CustomFieldMsg Comp.CustomFieldMultiInput.Msg
 
 
 type SaveNameState

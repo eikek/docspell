@@ -235,6 +235,17 @@ textarea.markdown-editor {
     background-color: aliceblue;
 }
 
+.default-layout .ui.action.input .elm-datepicker--container {
+    width: 100%;
+}
+.default-layout .ui.action.input .elm-datepicker--container input.elm-datepicker--input {
+    width: 100%;
+    padding-left: 2.67142857em;
+    padding-right: 1em;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
 .ui.dimmer.keep-small {
     justify-content: start;
 }

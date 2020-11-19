@@ -13,6 +13,7 @@ import Api.Model.ReferenceList exposing (ReferenceList)
 import Api.Model.Tag exposing (Tag)
 import Browser.Navigation as Nav
 import Comp.AttachmentMeta
+import Comp.CustomFieldMultiInput
 import Comp.DatePicker
 import Comp.DetailEdit
 import Comp.Dropdown exposing (isDropdownChangeMsg)
@@ -72,14 +73,24 @@ update key flags inav settings msg model =
 
                 ( im, ic ) =
                     Comp.ItemMail.init flags
+
+                ( cm, cc ) =
+                    Comp.CustomFieldMultiInput.init flags
             in
             resultModelCmd
-                ( { model | itemDatePicker = dp, dueDatePicker = dp, itemMail = im, visibleAttach = 0 }
+                ( { model
+                    | itemDatePicker = dp
+                    , dueDatePicker = dp
+                    , itemMail = im
+                    , visibleAttach = 0
+                    , customFieldsModel = cm
+                  }
                 , Cmd.batch
                     [ getOptions flags
                     , Cmd.map ItemDatePickerMsg dpc
                     , Cmd.map DueDatePickerMsg dpc
                     , Cmd.map ItemMailMsg ic
+                    , Cmd.map CustomFieldMsg cc
                     , Api.getSentMails flags model.item.id SentMailsResp
                     ]
                 )
@@ -1268,6 +1279,26 @@ update key flags inav settings msg model =
             , cmd = Cmd.none
             , sub = Sub.none
             , linkTarget = lt
+            }
+
+        CustomFieldMsg lm ->
+            let
+                result =
+                    Comp.CustomFieldMultiInput.update lm model.customFieldsModel
+
+                model_ =
+                    { model | customFieldsModel = result.model }
+
+                cmd_ =
+                    Cmd.map CustomFieldMsg result.cmd
+
+                sub_ =
+                    Sub.map CustomFieldMsg result.subs
+            in
+            { model = model_
+            , cmd = cmd_
+            , sub = sub_
+            , linkTarget = Comp.LinkTarget.LinkNone
             }
 
 

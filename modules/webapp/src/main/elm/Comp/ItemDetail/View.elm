@@ -4,6 +4,7 @@ import Api
 import Api.Model.Attachment exposing (Attachment)
 import Api.Model.IdName exposing (IdName)
 import Comp.AttachmentMeta
+import Comp.CustomFieldMultiInput
 import Comp.DatePicker
 import Comp.DetailEdit
 import Comp.Dropdown
@@ -730,16 +731,7 @@ renderEditForm settings model =
     in
     div [ class "ui attached segment" ]
         [ div [ class "ui form warning" ]
-            [ optional [ Data.Fields.Tag ] <|
-                div [ class "field" ]
-                    [ label []
-                        [ Icons.tagsIcon "grey"
-                        , text "Tags"
-                        , addIconLink "Add new tag" StartTagModal
-                        ]
-                    , Html.map TagDropdownMsg (Comp.Dropdown.view settings model.tagModel)
-                    ]
-            , div [ class " field" ]
+            [ div [ class " field" ]
                 [ label [] [ text "Name" ]
                 , div [ class "ui icon input" ]
                     [ input [ type_ "text", value model.nameModel, onInput SetName ] []
@@ -753,6 +745,15 @@ renderEditForm settings model =
                         []
                     ]
                 ]
+            , optional [ Data.Fields.Tag ] <|
+                div [ class "field" ]
+                    [ label []
+                        [ Icons.tagsIcon "grey"
+                        , text "Tags"
+                        , addIconLink "Add new tag" StartTagModal
+                        ]
+                    , Html.map TagDropdownMsg (Comp.Dropdown.view settings model.tagModel)
+                    ]
             , optional [ Data.Fields.Folder ] <|
                 div [ class "field" ]
                     [ label []
@@ -773,21 +774,26 @@ item visible. This message will disappear then.
                       """
                         ]
                     ]
-            , optional [ Data.Fields.Direction ] <|
-                div [ class "field" ]
-                    [ label []
-                        [ Icons.directionIcon "grey"
-                        , text "Direction"
-                        ]
-                    , Html.map DirDropdownMsg (Comp.Dropdown.view settings model.directionModel)
+            , optional [ Data.Fields.CustomFields ] <|
+                h4 [ class "ui dividing header" ]
+                    [ Icons.customFieldIcon ""
+                    , text "Custom Fields"
+                    ]
+            , optional [ Data.Fields.CustomFields ] <|
+                Html.map CustomFieldMsg
+                    (Comp.CustomFieldMultiInput.view "field" model.customFieldsModel)
+            , optional [ Data.Fields.DueDate, Data.Fields.Date ] <|
+                h4 [ class "ui dividing header" ]
+                    [ Icons.dateIcon ""
+                    , text "Dates"
                     ]
             , optional [ Data.Fields.Date ] <|
                 div [ class "field" ]
                     [ label []
                         [ Icons.dateIcon "grey"
-                        , text "Date"
+                        , text "Item Date"
                         ]
-                    , div [ class "ui action input" ]
+                    , div [ class "ui left icon action input" ]
                         [ Html.map ItemDatePickerMsg
                             (Comp.DatePicker.viewTime
                                 model.itemDate
@@ -797,6 +803,7 @@ item visible. This message will disappear then.
                         , a [ class "ui icon button", href "", onClick RemoveDate ]
                             [ i [ class "trash alternate outline icon" ] []
                             ]
+                        , Icons.dateIcon ""
                         ]
                     , renderItemDateSuggestions model
                     ]
@@ -806,7 +813,7 @@ item visible. This message will disappear then.
                         [ Icons.dueDateIcon "grey"
                         , text "Due Date"
                         ]
-                    , div [ class "ui action input" ]
+                    , div [ class "ui left icon action input" ]
                         [ Html.map DueDatePickerMsg
                             (Comp.DatePicker.viewTime
                                 model.dueDate
@@ -815,6 +822,7 @@ item visible. This message will disappear then.
                             )
                         , a [ class "ui icon button", href "", onClick RemoveDueDate ]
                             [ i [ class "trash alternate outline icon" ] [] ]
+                        , Icons.dueDateIcon ""
                         ]
                     , renderDueDateSuggestions model
                     ]
@@ -877,6 +885,14 @@ item visible. This message will disappear then.
                         ]
                     , Html.map ConcEquipMsg (Comp.Dropdown.view settings model.concEquipModel)
                     , renderConcEquipSuggestions model
+                    ]
+            , optional [ Data.Fields.Direction ] <|
+                div [ class "field" ]
+                    [ label []
+                        [ Icons.directionIcon "grey"
+                        , text "Direction"
+                        ]
+                    , Html.map DirDropdownMsg (Comp.Dropdown.view settings model.directionModel)
                     ]
             ]
         ]
