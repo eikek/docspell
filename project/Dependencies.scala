@@ -37,7 +37,7 @@ object Dependencies {
   val YamuscaVersion          = "0.7.0"
   val SwaggerUIVersion        = "3.36.2"
   val FomanticUIVersion       = "2.8.7-3"
-  val TwelveMonkeysVersion    = "3.6"
+  val TwelveMonkeysVersion    = "3.6.1"
   val JQueryVersion           = "3.5.1"
   val ViewerJSVersion         = "0.5.8"
 
