@@ -26,10 +26,7 @@ import Util.Maybe
 
 type alias Model =
     { fieldModels : Dict String Comp.CustomFieldInput.Model
-    , fieldSelect :
-        { selected : Maybe CustomField
-        , dropdown : Comp.FixedDropdown.Model CustomField
-        }
+    , fieldSelect : FieldSelect
     , visibleFields : List CustomField
     , availableFields : List CustomField
     }
@@ -51,13 +48,16 @@ type FieldResult
     | FieldCreateNew
 
 
+type alias FieldSelect =
+    { selected : Maybe CustomField
+    , dropdown : Comp.FixedDropdown.Model CustomField
+    }
+
+
 initWith : List CustomField -> Model
 initWith fields =
     { fieldModels = Dict.empty
-    , fieldSelect =
-        { selected = List.head fields
-        , dropdown = Comp.FixedDropdown.init (List.map mkItem fields)
-        }
+    , fieldSelect = mkFieldSelect fields
     , visibleFields = []
     , availableFields = fields
     }
@@ -73,6 +73,13 @@ init flags =
 initCmd : Flags -> Cmd Msg
 initCmd flags =
     Api.getCustomFields flags "" CustomFieldResp
+
+
+mkFieldSelect : List CustomField -> FieldSelect
+mkFieldSelect fields =
+    { selected = Nothing
+    , dropdown = Comp.FixedDropdown.init (List.map mkItem fields)
+    }
 
 
 
@@ -103,10 +110,7 @@ update msg model =
                 model_ =
                     { model
                         | availableFields = list.items
-                        , fieldSelect =
-                            { selected = List.head list.items
-                            , dropdown = Comp.FixedDropdown.init (List.map mkItem list.items)
-                            }
+                        , fieldSelect = mkFieldSelect list.items
                     }
             in
             UpdateResult model_ Cmd.none Sub.none NoResult
@@ -130,7 +134,12 @@ update msg model =
                             }
                     }
             in
-            UpdateResult model_ Cmd.none Sub.none NoResult
+            case sel of
+                Just field ->
+                    update (ApplyField field) model
+
+                Nothing ->
+                    UpdateResult model_ Cmd.none Sub.none NoResult
 
         ApplyField f ->
             let
@@ -146,12 +155,20 @@ update msg model =
                 visible =
                     f :: model.visibleFields
 
+                fSelect =
+                    mkFieldSelect avail
+
+                -- have to re-state the open menu when this is invoked
+                -- from a click in the dropdown
+                fSelectDropdown =
+                    fSelect.dropdown
+
+                dropdownOpen =
+                    { fSelectDropdown | menuOpen = True }
+
                 model_ =
                     { model
-                        | fieldSelect =
-                            { selected = List.head avail
-                            , dropdown = Comp.FixedDropdown.init (List.map mkItem avail)
-                            }
+                        | fieldSelect = { fSelect | dropdown = dropdownOpen }
                         , availableFields = avail
                         , visibleFields = visible
                         , fieldModels = Dict.insert f.name fm model.fieldModels
@@ -174,10 +191,7 @@ update msg model =
                     { model
                         | availableFields = avail
                         , visibleFields = visible
-                        , fieldSelect =
-                            { selected = List.head avail
-                            , dropdown = Comp.FixedDropdown.init (List.map mkItem avail)
-                            }
+                        , fieldSelect = mkFieldSelect avail
                     }
             in
             UpdateResult model_ Cmd.none Sub.none (FieldValueRemove f)
@@ -237,18 +251,6 @@ viewMenuBar model =
     div [ class "ui action input field" ]
         [ Html.map FieldSelectMsg
             (Comp.FixedDropdown.viewStyled "fluid" (Maybe.map mkItem selected) dropdown)
-        , a
-            [ class "ui primary icon button"
-            , href "#"
-            , case selected of
-                Just f ->
-                    onClick (ApplyField f)
-
-                Nothing ->
-                    class "disabled"
-            ]
-            [ i [ class "check icon" ] []
-            ]
         , addFieldLink "" model
         ]
 
