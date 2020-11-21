@@ -60,5 +60,8 @@ object RCustomFieldValue {
     deleteFrom(table, Columns.itemId.is(item)).update.run
 
   def deleteValue(fieldId: Ident, items: NonEmptyList[Ident]): ConnectionIO[Int] =
-    deleteFrom(table, and(Columns.id.is(fieldId), Columns.itemId.isIn(items))).update.run
+    deleteFrom(
+      table,
+      and(Columns.field.is(fieldId), Columns.itemId.isIn(items))
+    ).update.run
 }

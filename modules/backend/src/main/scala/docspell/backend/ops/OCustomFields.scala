@@ -161,6 +161,7 @@ object OCustomFields {
         val update =
           for {
             field <- OptionT(RCustomField.findByIdOrName(in.field, in.collective))
+            _     <- OptionT.liftF(logger.debug(s"Field found by '${in.field}': $field"))
             n     <- OptionT.liftF(RCustomFieldValue.deleteValue(field.id, in.item))
           } yield n
 
