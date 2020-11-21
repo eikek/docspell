@@ -1,8 +1,10 @@
 module Comp.CustomFieldMultiInput exposing
-    ( Model
+    ( FieldResult(..)
+    , Model
     , Msg
     , UpdateResult
     , init
+    , initCmd
     , initWith
     , update
     , view
@@ -64,8 +66,13 @@ initWith fields =
 init : Flags -> ( Model, Cmd Msg )
 init flags =
     ( initWith []
-    , Api.getCustomFields flags "" CustomFieldResp
+    , initCmd flags
     )
+
+
+initCmd : Flags -> Cmd Msg
+initCmd flags =
+    Api.getCustomFields flags "" CustomFieldResp
 
 
 

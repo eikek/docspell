@@ -2,6 +2,7 @@ module Comp.ItemDetail.Update exposing (update)
 
 import Api
 import Api.Model.BasicResult exposing (BasicResult)
+import Api.Model.CustomFieldValue exposing (CustomFieldValue)
 import Api.Model.DirectionValue exposing (DirectionValue)
 import Api.Model.IdName exposing (IdName)
 import Api.Model.ItemDetail exposing (ItemDetail)
@@ -13,7 +14,7 @@ import Api.Model.ReferenceList exposing (ReferenceList)
 import Api.Model.Tag exposing (Tag)
 import Browser.Navigation as Nav
 import Comp.AttachmentMeta
-import Comp.CustomFieldMultiInput
+import Comp.CustomFieldMultiInput exposing (FieldResult(..))
 import Comp.DatePicker
 import Comp.DetailEdit
 import Comp.Dropdown exposing (isDropdownChangeMsg)
@@ -238,6 +239,7 @@ update key flags inav settings msg model =
                     , getOptions flags
                     , proposalCmd
                     , Api.getSentMails flags item.id SentMailsResp
+                    , Cmd.map CustomFieldMsg (Comp.CustomFieldMultiInput.initCmd flags)
                     ]
             , sub =
                 Sub.batch
@@ -1286,17 +1288,38 @@ update key flags inav settings msg model =
                 result =
                     Comp.CustomFieldMultiInput.update lm model.customFieldsModel
 
-                model_ =
-                    { model | customFieldsModel = result.model }
-
                 cmd_ =
                     Cmd.map CustomFieldMsg result.cmd
 
+                action =
+                    case result.result of
+                        NoResult ->
+                            Cmd.none
+
+                        FieldValueRemove field ->
+                            Api.deleteCustomValue flags model.item.id field.id SaveResp
+
+                        FieldValueChange field value ->
+                            Api.putCustomValue flags model.item.id (CustomFieldValue field.id value) SaveResp
+
+                        FieldCreateNew ->
+                            Cmd.none
+
                 sub_ =
                     Sub.map CustomFieldMsg result.subs
+
+                modalEdit =
+                    if result.result == FieldCreateNew then
+                        Just (Comp.DetailEdit.initCustomField model.item.id)
+
+                    else
+                        Nothing
+
+                model_ =
+                    { model | customFieldsModel = result.model, modalEdit = modalEdit }
             in
             { model = model_
-            , cmd = cmd_
+            , cmd = Cmd.batch [ cmd_, action ]
             , sub = sub_
             , linkTarget = Comp.LinkTarget.LinkNone
             }

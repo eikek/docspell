@@ -7,6 +7,7 @@ module Comp.DetailEdit exposing
     , editPerson
     , initConcPerson
     , initCorrPerson
+    , initCustomField
     , initEquip
     , initOrg
     , initTag
@@ -26,9 +27,11 @@ rendered in a modal.
 import Api
 import Api.Model.BasicResult exposing (BasicResult)
 import Api.Model.Equipment exposing (Equipment)
+import Api.Model.NewCustomField exposing (NewCustomField)
 import Api.Model.Organization exposing (Organization)
 import Api.Model.Person exposing (Person)
 import Api.Model.Tag exposing (Tag)
+import Comp.CustomFieldForm
 import Comp.EquipmentForm
 import Comp.OrgForm
 import Comp.PersonForm
@@ -36,6 +39,7 @@ import Comp.TagForm
 import Data.Flags exposing (Flags)
 import Data.Icons as Icons
 import Data.UiSettings exposing (UiSettings)
+import Data.Validated
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
@@ -58,6 +62,7 @@ type FormModel
     | PMC Comp.PersonForm.Model
     | OM Comp.OrgForm.Model
     | EM Comp.EquipmentForm.Model
+    | CFM Comp.CustomFieldForm.Model
 
 
 fold :
@@ -65,9 +70,10 @@ fold :
     -> (Comp.PersonForm.Model -> a)
     -> (Comp.OrgForm.Model -> a)
     -> (Comp.EquipmentForm.Model -> a)
+    -> (Comp.CustomFieldForm.Model -> a)
     -> FormModel
     -> a
-fold ft fp fo fe model =
+fold ft fp fo fe fcf model =
     case model of
         TM tm ->
             ft tm
@@ -83,6 +89,9 @@ fold ft fp fo fe model =
 
         EM em ->
             fe em
+
+        CFM fm ->
+            fcf fm
 
 
 init : String -> FormModel -> Model
@@ -168,11 +177,21 @@ initTagByName itemId name =
     initTag itemId tm_
 
 
+initCustomField : String -> Model
+initCustomField itemId =
+    let
+        cfm =
+            Comp.CustomFieldForm.initEmpty
+    in
+    init itemId (CFM cfm)
+
+
 type Msg
     = TagMsg Comp.TagForm.Msg
     | PersonMsg Comp.PersonForm.Msg
     | OrgMsg Comp.OrgForm.Msg
     | EquipMsg Comp.EquipmentForm.Msg
+    | CustomFieldMsg Comp.CustomFieldForm.Msg
     | Submit
     | Cancel
     | SubmitResp (Result Http.Error BasicResult)
@@ -186,6 +205,7 @@ type Value
     | SubmitPerson Person
     | SubmitOrg Organization
     | SubmitEquip Equipment
+    | SubmitCustomField NewCustomField
     | CancelForm
 
 
@@ -206,6 +226,18 @@ makeValue fm =
 
         EM em ->
             SubmitEquip (Comp.EquipmentForm.getEquipment em)
+
+        CFM fieldModel ->
+            let
+                cfield =
+                    Comp.CustomFieldForm.makeField fieldModel
+            in
+            case cfield of
+                Data.Validated.Valid field ->
+                    SubmitCustomField field
+
+                _ ->
+                    CancelForm
 
 
 
@@ -432,6 +464,24 @@ update flags msg model =
                         , Nothing
                         )
 
+                CFM fm ->
+                    let
+                        cfield =
+                            Comp.CustomFieldForm.makeField fm
+                    in
+                    case cfield of
+                        Data.Validated.Valid newField ->
+                            ( { model | submitting = True }
+                            , Api.postCustomField flags newField SubmitResp
+                            , Nothing
+                            )
+
+                        _ ->
+                            ( { model | result = failMsg }
+                            , Cmd.none
+                            , Nothing
+                            )
+
         TagMsg lm ->
             case model.form of
                 TM tm ->
@@ -517,9 +567,34 @@ update flags msg model =
                 _ ->
                     ( model, Cmd.none, Nothing )
 
+        CustomFieldMsg lm ->
+            case model.form of
+                CFM fm ->
+                    let
+                        ( fm_, fc_, _ ) =
+                            Comp.CustomFieldForm.update flags lm fm
+                    in
+                    ( { model
+                        | form = CFM fm_
+                        , result = Nothing
+                      }
+                    , Cmd.map CustomFieldMsg fc_
+                    , Nothing
+                    )
+
+                _ ->
+                    ( model, Cmd.none, Nothing )
+
 
 
 --- View
+
+
+customFieldFormSettings : Comp.CustomFieldForm.ViewSettings
+customFieldFormSettings =
+    { classes = "ui error form"
+    , showControls = False
+    }
 
 
 viewButtons : Model -> List (Html Msg)
@@ -575,6 +650,9 @@ viewIntern settings withButtons model =
 
         EM em ->
             Html.map EquipMsg (Comp.EquipmentForm.view em)
+
+        CFM fm ->
+            Html.map CustomFieldMsg (Comp.CustomFieldForm.view customFieldFormSettings fm)
     ]
         ++ (if withButtons then
                 div [ class "ui divider" ] [] :: viewButtons model
@@ -601,12 +679,14 @@ viewModal settings mm =
                 (\_ -> "Add Person")
                 (\_ -> "Add Organization")
                 (\_ -> "Add Equipment")
+                (\_ -> "Add Custom Field")
 
         headIcon =
             fold (\_ -> Icons.tagIcon "")
                 (\_ -> Icons.personIcon "")
                 (\_ -> Icons.organizationIcon "")
                 (\_ -> Icons.equipmentIcon "")
+                (\_ -> Icons.customFieldIcon "")
     in
     div
         [ classList

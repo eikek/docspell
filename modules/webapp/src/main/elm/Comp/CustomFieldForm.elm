@@ -1,8 +1,11 @@
-module Comp.CustomFieldDetail exposing
+module Comp.CustomFieldForm exposing
     ( Model
     , Msg
+    , ViewSettings
+    , fullViewSettings
     , init
     , initEmpty
+    , makeField
     , update
     , view
     )
@@ -181,13 +184,26 @@ update flags msg model =
 --- View
 
 
-view : Flags -> Model -> Html Msg
-view _ model =
+type alias ViewSettings =
+    { classes : String
+    , showControls : Bool
+    }
+
+
+fullViewSettings : ViewSettings
+fullViewSettings =
+    { classes = "ui error form segment"
+    , showControls = True
+    }
+
+
+view : ViewSettings -> Model -> Html Msg
+view viewSettings model =
     let
         mkItem cft =
             Comp.FixedDropdown.Item cft (Data.CustomFieldType.label cft)
     in
-    div [ class "ui error form segment" ]
+    div [ class viewSettings.classes ]
         ([ Html.map DeleteMsg (Comp.YesNoDimmer.view model.deleteDimmer)
          , if model.field.id == "" then
             div []
@@ -253,7 +269,12 @@ view _ model =
                 ]
             ]
          ]
-            ++ viewButtons model
+            ++ (if viewSettings.showControls then
+                    viewButtons model
+
+                else
+                    []
+               )
         )
 
 

@@ -10,7 +10,7 @@ module Comp.CustomFieldManage exposing
 import Api
 import Api.Model.CustomField exposing (CustomField)
 import Api.Model.CustomFieldList exposing (CustomFieldList)
-import Comp.CustomFieldDetail
+import Comp.CustomFieldForm
 import Comp.CustomFieldTable
 import Data.Flags exposing (Flags)
 import Html exposing (..)
@@ -21,7 +21,7 @@ import Http
 
 type alias Model =
     { tableModel : Comp.CustomFieldTable.Model
-    , detailModel : Maybe Comp.CustomFieldDetail.Model
+    , detailModel : Maybe Comp.CustomFieldForm.Model
     , fields : List CustomField
     , query : String
     , loading : Bool
@@ -30,7 +30,7 @@ type alias Model =
 
 type Msg
     = TableMsg Comp.CustomFieldTable.Msg
-    | DetailMsg Comp.CustomFieldDetail.Msg
+    | DetailMsg Comp.CustomFieldForm.Msg
     | CustomFieldListResp (Result Http.Error CustomFieldList)
     | SetQuery String
     | InitNewCustomField
@@ -68,7 +68,7 @@ update flags msg model =
                 detail =
                     case action of
                         Comp.CustomFieldTable.EditAction item ->
-                            Comp.CustomFieldDetail.init item |> Just
+                            Comp.CustomFieldForm.init item |> Just
 
                         Comp.CustomFieldTable.NoAction ->
                             model.detailModel
@@ -80,7 +80,7 @@ update flags msg model =
                 Just detail ->
                     let
                         ( dm, dc, back ) =
-                            Comp.CustomFieldDetail.update flags lm detail
+                            Comp.CustomFieldForm.update flags lm detail
 
                         cmd =
                             if back then
@@ -120,7 +120,7 @@ update flags msg model =
         InitNewCustomField ->
             let
                 sd =
-                    Comp.CustomFieldDetail.initEmpty
+                    Comp.CustomFieldForm.initEmpty
             in
             ( { model | detailModel = Just sd }
             , Cmd.none
@@ -141,10 +141,14 @@ view flags model =
             viewTable model
 
 
-viewDetail : Flags -> Comp.CustomFieldDetail.Model -> Html Msg
+viewDetail : Flags -> Comp.CustomFieldForm.Model -> Html Msg
 viewDetail flags detailModel =
+    let
+        viewSettings =
+            Comp.CustomFieldForm.fullViewSettings
+    in
     div []
-        [ Html.map DetailMsg (Comp.CustomFieldDetail.view flags detailModel)
+        [ Html.map DetailMsg (Comp.CustomFieldForm.view viewSettings detailModel)
         ]
 
 
