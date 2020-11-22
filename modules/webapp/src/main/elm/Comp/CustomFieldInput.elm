@@ -13,6 +13,7 @@ import Api.Model.CustomField exposing (CustomField)
 import Api.Model.ItemFieldValue exposing (ItemFieldValue)
 import Comp.DatePicker
 import Data.CustomFieldType exposing (CustomFieldType)
+import Data.Icons as Icons
 import Data.Money
 import Date exposing (Date)
 import DatePicker exposing (DatePicker)
@@ -350,7 +351,7 @@ makeInput icon model =
                     ]
                     []
                 , removeButton ""
-                , i [ class (iconOr "pen icon") ] []
+                , i [ class (iconOr <| Icons.customFieldType Data.CustomFieldType.Text) ] []
                 ]
 
         NumberField nm ->
@@ -362,7 +363,7 @@ makeInput icon model =
                     ]
                     []
                 , removeButton ""
-                , i [ class (iconOr "hashtag icon") ] []
+                , i [ class (iconOr <| Icons.customFieldType Data.CustomFieldType.Numeric) ] []
                 ]
 
         MoneyField nm ->
@@ -374,7 +375,7 @@ makeInput icon model =
                     ]
                     []
                 , removeButton ""
-                , i [ class (iconOr "money bill icon") ] []
+                , i [ class (iconOr <| Icons.customFieldType Data.CustomFieldType.Money) ] []
                 ]
 
         BoolField b ->
@@ -397,5 +398,5 @@ makeInput icon model =
             div [ class "ui action left icon input" ]
                 [ Html.map DateMsg (Comp.DatePicker.view v Comp.DatePicker.defaultSettings dp)
                 , removeButton ""
-                , i [ class (iconOr "calendar icon") ] []
+                , i [ class (iconOr <| Icons.customFieldType Data.CustomFieldType.Date) ] []
                 ]

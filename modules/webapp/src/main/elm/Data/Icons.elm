@@ -7,6 +7,8 @@ module Data.Icons exposing
     , correspondentIcon
     , customField
     , customFieldIcon
+    , customFieldType
+    , customFieldTypeIcon
     , date
     , dateIcon
     , direction
@@ -32,8 +34,34 @@ module Data.Icons exposing
     , tagsIcon
     )
 
+import Data.CustomFieldType exposing (CustomFieldType)
 import Html exposing (Html, i)
 import Html.Attributes exposing (class)
+
+
+customFieldType : CustomFieldType -> String
+customFieldType ftype =
+    case ftype of
+        Data.CustomFieldType.Text ->
+            "pen icon"
+
+        Data.CustomFieldType.Numeric ->
+            "hashtag icon"
+
+        Data.CustomFieldType.Date ->
+            "calendar icon"
+
+        Data.CustomFieldType.Boolean ->
+            "question icon"
+
+        Data.CustomFieldType.Money ->
+            "money bill icon"
+
+
+customFieldTypeIcon : String -> CustomFieldType -> Html msg
+customFieldTypeIcon classes ftype =
+    i [ class (customFieldType ftype ++ " " ++ classes) ]
+        []
 
 
 customField : String

@@ -51,9 +51,13 @@ type alias VisibleField =
 
 visibleFields : Model -> List CustomField
 visibleFields model =
+    let
+        labelThenName cv =
+            Maybe.withDefault cv.name cv.label
+    in
     Dict.toList model.visibleFields
         |> List.map (Tuple.second >> .field)
-        |> List.sortBy .name
+        |> List.sortBy labelThenName
 
 
 currentOptions : List CustomField -> Dict String VisibleField -> List CustomField

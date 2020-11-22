@@ -17,6 +17,7 @@ import Comp.LinkTarget
 import Comp.MarkdownInput
 import Comp.SentMails
 import Comp.YesNoDimmer
+import Data.CustomFieldType
 import Data.Direction
 import Data.Fields
 import Data.Icons as Icons
@@ -599,33 +600,71 @@ renderItemInfo settings model =
                     ]
                 ]
             ]
-            :: renderTags settings model
+            :: renderTagsAndFields settings model
         )
+
+
+renderTagsAndFields : UiSettings -> Model -> List (Html Msg)
+renderTagsAndFields settings model =
+    [ div [ class "ui fluid right aligned container" ]
+        (renderTags settings model ++ renderCustomValues settings model)
+    ]
 
 
 renderTags : UiSettings -> Model -> List (Html Msg)
 renderTags settings model =
-    if Data.UiSettings.fieldHidden settings Data.Fields.Tag then
+    let
+        tagView t =
+            Comp.LinkTarget.makeTagLink
+                (IdName t.id t.name)
+                [ ( "ui tag label", True )
+                , ( Data.UiSettings.tagColorString t settings, True )
+                ]
+                SetLinkTarget
+    in
+    if Data.UiSettings.fieldHidden settings Data.Fields.Tag || model.item.tags == [] then
         []
 
     else
-        case model.item.tags of
-            [] ->
-                []
+        List.map tagView model.item.tags
 
-            _ ->
-                [ div [ class "ui right aligned fluid container" ] <|
-                    List.map
-                        (\t ->
-                            Comp.LinkTarget.makeTagLink
-                                (IdName t.id t.name)
-                                [ ( "ui tag label", True )
-                                , ( Data.UiSettings.tagColorString t settings, True )
-                                ]
-                                SetLinkTarget
-                        )
-                        model.item.tags
+
+renderCustomValues : UiSettings -> Model -> List (Html Msg)
+renderCustomValues settings model =
+    let
+        cfIcon cv =
+            Data.CustomFieldType.fromString cv.ftype
+                |> Maybe.map (Icons.customFieldTypeIcon "")
+                |> Maybe.withDefault (i [ class "question circle outline icon" ] [])
+
+        renderBool cv =
+            if cv.value == "true" then
+                i [ class "check icon" ] []
+
+            else
+                i [ class "minus icon" ] []
+
+        fieldView cv =
+            div [ class "ui secondary basic label" ]
+                [ cfIcon cv
+                , Maybe.withDefault cv.name cv.label |> text
+                , div [ class "detail" ]
+                    [ if Data.CustomFieldType.fromString cv.ftype == Just Data.CustomFieldType.Boolean then
+                        renderBool cv
+
+                      else
+                        text cv.value
+                    ]
                 ]
+
+        labelThenName cv =
+            Maybe.withDefault cv.name cv.label
+    in
+    if Data.UiSettings.fieldHidden settings Data.Fields.CustomFields || model.item.customfields == [] then
+        []
+
+    else
+        List.map fieldView (List.sortBy labelThenName model.item.customfields)
 
 
 renderEditMenu : UiSettings -> Model -> List (Html Msg)
