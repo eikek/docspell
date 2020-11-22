@@ -2,6 +2,7 @@ module Data.Money exposing
     ( Money
     , format
     , fromString
+    , normalizeInput
     , roundMoney
     )
 
@@ -13,8 +14,11 @@ type alias Money =
 fromString : String -> Result String Money
 fromString str =
     let
+        input =
+            normalizeInput str
+
         points =
-            String.indexes "." str
+            String.indexes "." input
 
         len =
             String.length str
@@ -22,7 +26,7 @@ fromString str =
     case points of
         index :: [] ->
             if index == (len - 3) then
-                String.toFloat str
+                String.toFloat input
                     |> Maybe.map Ok
                     |> Maybe.withDefault (Err "Two digits required after the dot.")
 
@@ -41,3 +45,8 @@ format money =
 roundMoney : Float -> Float
 roundMoney input =
     (round (input * 100) |> toFloat) / 100
+
+
+normalizeInput : String -> String
+normalizeInput str =
+    String.replace "," "." str

@@ -131,14 +131,17 @@ initWith value =
                 Data.CustomFieldType.Numeric ->
                     let
                         ( fm, _ ) =
-                            updateFloatModel value.value string2Float
+                            updateFloatModel value.value string2Float identity
                     in
                     NumberField fm
 
                 Data.CustomFieldType.Money ->
                     let
                         ( fm, _ ) =
-                            updateFloatModel value.value Data.Money.fromString
+                            updateFloatModel
+                                value.value
+                                Data.Money.fromString
+                                Data.Money.normalizeInput
                     in
                     MoneyField fm
 
@@ -175,14 +178,18 @@ type alias UpdateResult =
     }
 
 
-updateFloatModel : String -> (String -> Result String Float) -> ( FloatModel, FieldResult )
-updateFloatModel msg parse =
+updateFloatModel :
+    String
+    -> (String -> Result String Float)
+    -> (String -> String)
+    -> ( FloatModel, FieldResult )
+updateFloatModel msg parse normalize =
     case parse msg of
         Ok n ->
-            ( { input = msg
+            ( { input = normalize msg
               , result = Ok n
               }
-            , Value msg
+            , Value (normalize msg)
             )
 
         Err err ->
@@ -216,7 +223,7 @@ update msg model =
         ( NumberMsg str, NumberField _ ) ->
             let
                 ( fm, res ) =
-                    updateFloatModel str string2Float
+                    updateFloatModel str string2Float identity
 
                 model_ =
                     { model | fieldModel = NumberField fm }
@@ -229,6 +236,7 @@ update msg model =
                     updateFloatModel
                         str
                         Data.Money.fromString
+                        Data.Money.normalizeInput
 
                 model_ =
                     { model | fieldModel = MoneyField fm }
