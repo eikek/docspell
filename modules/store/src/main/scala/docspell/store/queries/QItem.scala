@@ -60,6 +60,13 @@ object QItem {
 
   }
 
+  case class ItemFieldValue(
+      fieldId: Ident,
+      fieldName: Ident,
+      fieldLabel: Option[String],
+      fieldType: CustomFieldType,
+      value: String
+  )
   case class ItemData(
       item: RItem,
       corrOrg: Option[ROrganization],
@@ -71,7 +78,8 @@ object QItem {
       tags: Vector[RTag],
       attachments: Vector[(RAttachment, FileMeta)],
       sources: Vector[(RAttachmentSource, FileMeta)],
-      archives: Vector[(RAttachmentArchive, FileMeta)]
+      archives: Vector[(RAttachmentArchive, FileMeta)],
+      customFields: Vector[ItemFieldValue]
   ) {
 
     def filterCollective(coll: Ident): Option[ItemData] =
@@ -126,11 +134,12 @@ object QItem {
         )
       ]
       .option
-    val attachs  = RAttachment.findByItemWithMeta(id)
-    val sources  = RAttachmentSource.findByItemWithMeta(id)
-    val archives = RAttachmentArchive.findByItemWithMeta(id)
-
-    val tags = RTag.findByItem(id)
+    logger.trace(s"Find item query: $cq")
+    val attachs      = RAttachment.findByItemWithMeta(id)
+    val sources      = RAttachmentSource.findByItemWithMeta(id)
+    val archives     = RAttachmentArchive.findByItemWithMeta(id)
+    val tags         = RTag.findByItem(id)
+    val customfields = findCustomFieldValues(id)
 
     for {
       data <- q
@@ -138,9 +147,30 @@ object QItem {
       srcs <- sources
       arch <- archives
       ts   <- tags
+      cfs  <- customfields
     } yield data.map(d =>
-      ItemData(d._1, d._2, d._3, d._4, d._5, d._6, d._7, ts, att, srcs, arch)
+      ItemData(d._1, d._2, d._3, d._4, d._5, d._6, d._7, ts, att, srcs, arch, cfs)
     )
+  }
+
+  def findCustomFieldValues(itemId: Ident): ConnectionIO[Vector[ItemFieldValue]] = {
+    val cfId    = RCustomField.Columns.id.prefix("cf")
+    val cfName  = RCustomField.Columns.name.prefix("cf")
+    val cfLabel = RCustomField.Columns.label.prefix("cf")
+    val cfType  = RCustomField.Columns.ftype.prefix("cf")
+    val cvItem  = RCustomFieldValue.Columns.itemId.prefix("cvf")
+    val cvValue = RCustomFieldValue.Columns.value.prefix("cvf")
+    val cvField = RCustomFieldValue.Columns.field.prefix("cvf")
+
+    val cfFrom =
+      RCustomFieldValue.table ++ fr"cvf INNER JOIN" ++ RCustomField.table ++ fr"cf ON" ++ cvField
+        .is(cfId)
+
+    selectSimple(
+      Seq(cfId, cfName, cfLabel, cfType, cvValue),
+      cfFrom,
+      cvItem.is(itemId)
+    ).query[ItemFieldValue].to[Vector]
   }
 
   case class ListItem(

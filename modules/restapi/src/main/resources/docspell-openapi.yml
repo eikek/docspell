@@ -3492,6 +3492,35 @@ components:
           items:
             $ref: "#/components/schemas/CustomField"
 
+    ItemFieldValue:
+      description: |
+        Information about a custom field on an item.
+      required:
+        - id
+        - name
+        - ftype
+        - value
+      properties:
+        id:
+          type: string
+          format: ident
+        name:
+          type: string
+          format: ident
+        label:
+          type: string
+        ftype:
+          type: string
+          format: customfieldtype
+          enum:
+            - text
+            - numeric
+            - date
+            - bool
+            - money
+        value:
+          type: string
+
     CustomFieldValue:
       description: |
         Data structure to update the value of a custom field.
@@ -4253,6 +4282,7 @@ components:
         - sources
         - archives
         - tags
+        - customfields
       properties:
         id:
           type: string
@@ -4312,6 +4342,10 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/Tag"
+        customfields:
+          type: array
+          items:
+            $ref: "#/components/schemas/ItemFieldValue"
     Attachment:
       description: |
         Information about an attachment to an item.

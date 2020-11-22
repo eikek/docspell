@@ -96,8 +96,12 @@ trait Conversions {
       data.attachments.map((mkAttachment(data) _).tupled).toList,
       data.sources.map((mkAttachmentSource _).tupled).toList,
       data.archives.map((mkAttachmentArchive _).tupled).toList,
-      data.tags.map(mkTag).toList
+      data.tags.map(mkTag).toList,
+      data.customFields.map(mkItemFieldValue).toList
     )
+
+  def mkItemFieldValue(v: OItemSearch.ItemFieldValue): ItemFieldValue =
+    ItemFieldValue(v.fieldId, v.fieldName, v.fieldLabel, v.fieldType, v.value)
 
   def mkAttachment(
       item: OItemSearch.ItemData
