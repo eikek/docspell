@@ -13,6 +13,7 @@ import Api.Model.CustomField exposing (CustomField)
 import Api.Model.ItemFieldValue exposing (ItemFieldValue)
 import Comp.DatePicker
 import Data.CustomFieldType exposing (CustomFieldType)
+import Data.Money
 import Date exposing (Date)
 import DatePicker exposing (DatePicker)
 import Html exposing (..)
@@ -130,14 +131,14 @@ initWith value =
                 Data.CustomFieldType.Numeric ->
                     let
                         ( fm, _ ) =
-                            updateFloatModel value.value identity
+                            updateFloatModel value.value string2Float
                     in
                     NumberField fm
 
                 Data.CustomFieldType.Money ->
                     let
                         ( fm, _ ) =
-                            updateFloatModel value.value identity
+                            updateFloatModel value.value Data.Money.fromString
                     in
                     MoneyField fm
 
@@ -174,35 +175,32 @@ type alias UpdateResult =
     }
 
 
-updateFloatModel : String -> (Float -> Float) -> ( FloatModel, FieldResult )
-updateFloatModel msg rounding =
-    case String.toFloat msg of
-        Just n ->
-            let
-                fieldVal =
-                    if String.endsWith "." msg || String.endsWith ".0" msg then
-                        msg
-
-                    else
-                        String.fromFloat (rounding n)
-            in
-            ( { input = fieldVal
-              , result = Ok (rounding n)
+updateFloatModel : String -> (String -> Result String Float) -> ( FloatModel, FieldResult )
+updateFloatModel msg parse =
+    case parse msg of
+        Ok n ->
+            ( { input = msg
+              , result = Ok n
               }
-            , Value (String.fromFloat (rounding n))
+            , Value msg
             )
 
-        Nothing ->
+        Err err ->
             ( { input = msg
-              , result = Err ("Not a number: " ++ msg)
+              , result = Err err
               }
             , NoResult
             )
 
 
-roundScale2 : Float -> Float
-roundScale2 input =
-    (round (input * 100) |> toFloat) / 100
+string2Float : String -> Result String Float
+string2Float str =
+    case String.toFloat str of
+        Just n ->
+            Ok n
+
+        Nothing ->
+            Err ("Not a number: " ++ str)
 
 
 update : Msg -> Model -> UpdateResult
@@ -218,7 +216,7 @@ update msg model =
         ( NumberMsg str, NumberField _ ) ->
             let
                 ( fm, res ) =
-                    updateFloatModel str identity
+                    updateFloatModel str string2Float
 
                 model_ =
                     { model | fieldModel = NumberField fm }
@@ -228,7 +226,9 @@ update msg model =
         ( MoneyMsg str, MoneyField _ ) ->
             let
                 ( fm, res ) =
-                    updateFloatModel str roundScale2
+                    updateFloatModel
+                        str
+                        Data.Money.fromString
 
                 model_ =
                     { model | fieldModel = MoneyField fm }

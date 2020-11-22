@@ -7,6 +7,7 @@ module Comp.CustomFieldMultiInput exposing
     , init
     , initCmd
     , initWith
+    , nonEmpty
     , setValues
     , update
     , view
@@ -57,6 +58,11 @@ type alias FieldSelect =
     { selected : Maybe CustomField
     , dropdown : Comp.FixedDropdown.Model CustomField
     }
+
+
+nonEmpty : Model -> Bool
+nonEmpty model =
+    not (List.isEmpty model.availableFields && List.isEmpty model.visibleFields)
 
 
 initWith : List CustomField -> Model

@@ -729,6 +729,10 @@ renderEditForm settings model =
             else
                 span [ class "invisible hidden" ] []
 
+        showCustomFields =
+            fieldVisible Data.Fields.CustomFields
+                && Comp.CustomFieldMultiInput.nonEmpty model.customFieldsModel
+
         customFieldSettings =
             Comp.CustomFieldMultiInput.ViewSettings True "field"
     in
@@ -777,14 +781,20 @@ item visible. This message will disappear then.
                       """
                         ]
                     ]
-            , optional [ Data.Fields.CustomFields ] <|
+            , if showCustomFields then
                 h4 [ class "ui dividing header" ]
                     [ Icons.customFieldIcon ""
                     , text "Custom Fields"
                     ]
-            , optional [ Data.Fields.CustomFields ] <|
+
+              else
+                span [ class "hidden invisible" ] []
+            , if showCustomFields then
                 Html.map CustomFieldMsg
                     (Comp.CustomFieldMultiInput.view customFieldSettings model.customFieldsModel)
+
+              else
+                span [ class "hidden invisible" ] []
             , optional [ Data.Fields.DueDate, Data.Fields.Date ] <|
                 h4 [ class "ui dividing header" ]
                     [ Icons.itemDatesIcon ""
