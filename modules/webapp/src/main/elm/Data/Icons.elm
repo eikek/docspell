@@ -19,6 +19,7 @@ module Data.Icons exposing
     , equipmentIcon
     , folder
     , folderIcon
+    , itemDatesIcon
     , organization
     , organizationIcon
     , person
@@ -83,6 +84,20 @@ correspondent =
 correspondentIcon : String -> Html msg
 correspondentIcon classes =
     i [ class (correspondent ++ " " ++ classes) ] []
+
+
+itemDates : String
+itemDates =
+    "calendar alternate outline icon"
+
+
+itemDatesIcon : String -> Html msg
+itemDatesIcon classes =
+    i
+        [ class classes
+        , class itemDates
+        ]
+        []
 
 
 date : String

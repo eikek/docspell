@@ -21,6 +21,7 @@ module Api exposing
     , deleteAttachment
     , deleteCustomField
     , deleteCustomValue
+    , deleteCustomValueMultiple
     , deleteEquip
     , deleteFolder
     , deleteImapSettings
@@ -80,6 +81,7 @@ module Api exposing
     , postTag
     , putCustomField
     , putCustomValue
+    , putCustomValueMultiple
     , putUser
     , refreshSession
     , register
@@ -159,6 +161,7 @@ import Api.Model.ItemSearch exposing (ItemSearch)
 import Api.Model.ItemUploadMeta exposing (ItemUploadMeta)
 import Api.Model.ItemsAndDate exposing (ItemsAndDate)
 import Api.Model.ItemsAndDirection exposing (ItemsAndDirection)
+import Api.Model.ItemsAndFieldValue exposing (ItemsAndFieldValue)
 import Api.Model.ItemsAndName exposing (ItemsAndName)
 import Api.Model.ItemsAndRef exposing (ItemsAndRef)
 import Api.Model.ItemsAndRefs exposing (ItemsAndRefs)
@@ -209,6 +212,34 @@ import Util.Http as Http2
 
 
 --- Custom Fields
+
+
+putCustomValueMultiple :
+    Flags
+    -> ItemsAndFieldValue
+    -> (Result Http.Error BasicResult -> msg)
+    -> Cmd msg
+putCustomValueMultiple flags data receive =
+    Http2.authPut
+        { url = flags.config.baseUrl ++ "/api/v1/sec/items/customfield"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.ItemsAndFieldValue.encode data)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+deleteCustomValueMultiple :
+    Flags
+    -> ItemsAndName
+    -> (Result Http.Error BasicResult -> msg)
+    -> Cmd msg
+deleteCustomValueMultiple flags data receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/items/customfieldremove"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.ItemsAndName.encode data)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
 
 
 deleteCustomValue :

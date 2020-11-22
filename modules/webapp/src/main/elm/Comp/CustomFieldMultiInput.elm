@@ -3,6 +3,7 @@ module Comp.CustomFieldMultiInput exposing
     , Model
     , Msg
     , UpdateResult
+    , ViewSettings
     , init
     , initCmd
     , initWith
@@ -287,25 +288,46 @@ update msg model =
             UpdateResult model_ (Cmd.batch cmdList) Sub.none NoResult
 
 
-view : String -> Model -> Html Msg
-view classes model =
-    div [ class classes ]
-        (viewMenuBar model
+
+--- View
+
+
+type alias ViewSettings =
+    { showAddButton : Bool
+    , classes : String
+    }
+
+
+view : ViewSettings -> Model -> Html Msg
+view viewSettings model =
+    div [ class viewSettings.classes ]
+        (viewMenuBar viewSettings model
             :: List.map (viewCustomField model) model.visibleFields
         )
 
 
-viewMenuBar : Model -> Html Msg
-viewMenuBar model =
+viewMenuBar : ViewSettings -> Model -> Html Msg
+viewMenuBar viewSettings model =
     let
         { dropdown, selected } =
             model.fieldSelect
     in
-    div [ class "ui action input field" ]
-        [ Html.map FieldSelectMsg
-            (Comp.FixedDropdown.viewStyled "fluid" (Maybe.map mkItem selected) dropdown)
-        , addFieldLink "" model
+    div
+        [ classList
+            [ ( "field", True )
+            , ( "ui action input", viewSettings.showAddButton )
+            ]
         ]
+        (Html.map FieldSelectMsg
+            (Comp.FixedDropdown.viewStyled "fluid" (Maybe.map mkItem selected) dropdown)
+            :: (if viewSettings.showAddButton then
+                    [ addFieldLink "" model
+                    ]
+
+                else
+                    []
+               )
+        )
 
 
 viewCustomField : Model -> CustomField -> Html Msg

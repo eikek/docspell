@@ -728,6 +728,9 @@ renderEditForm settings model =
 
             else
                 span [ class "invisible hidden" ] []
+
+        customFieldSettings =
+            Comp.CustomFieldMultiInput.ViewSettings True "field"
     in
     div [ class "ui attached segment" ]
         [ div [ class "ui form warning" ]
@@ -781,11 +784,11 @@ item visible. This message will disappear then.
                     ]
             , optional [ Data.Fields.CustomFields ] <|
                 Html.map CustomFieldMsg
-                    (Comp.CustomFieldMultiInput.view "field" model.customFieldsModel)
+                    (Comp.CustomFieldMultiInput.view customFieldSettings model.customFieldsModel)
             , optional [ Data.Fields.DueDate, Data.Fields.Date ] <|
                 h4 [ class "ui dividing header" ]
-                    [ Icons.dateIcon ""
-                    , text "Dates"
+                    [ Icons.itemDatesIcon ""
+                    , text "Item Dates"
                     ]
             , optional [ Data.Fields.Date ] <|
                 div [ class "field" ]
