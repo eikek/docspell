@@ -598,6 +598,7 @@ nameThrottleSub model =
 type alias ViewConfig =
     { menuClass : String
     , nameState : SaveNameState
+    , customFieldState : String -> SaveNameState
     }
 
 
@@ -605,6 +606,7 @@ defaultViewConfig : ViewConfig
 defaultViewConfig =
     { menuClass = "ui vertical segment"
     , nameState = SaveSuccess
+    , customFieldState = \_ -> SaveSuccess
     }
 
 
@@ -651,8 +653,22 @@ renderEditForm cfg settings model =
                 ReplaceTags ->
                     "Tags chosen here *replace* those on selected items."
 
+        customFieldIcon field =
+            case cfg.customFieldState field.id of
+                SaveSuccess ->
+                    Nothing
+
+                SaveFailed ->
+                    Just "red exclamation triangle icon"
+
+                Saving ->
+                    Just "refresh loading icon"
+
         customFieldSettings =
-            Comp.CustomFieldMultiInput.ViewSettings False "field"
+            Comp.CustomFieldMultiInput.ViewSettings
+                False
+                "field"
+                customFieldIcon
     in
     div [ class cfg.menuClass ]
         [ div [ class "ui form warning" ]

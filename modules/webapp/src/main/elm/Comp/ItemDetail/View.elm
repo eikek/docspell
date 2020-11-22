@@ -773,7 +773,10 @@ renderEditForm settings model =
                 && Comp.CustomFieldMultiInput.nonEmpty model.customFieldsModel
 
         customFieldSettings =
-            Comp.CustomFieldMultiInput.ViewSettings True "field"
+            Comp.CustomFieldMultiInput.ViewSettings
+                True
+                "field"
+                (\f -> Dict.get f.id model.customFieldSavingIcon)
     in
     div [ class "ui attached segment" ]
         [ div [ class "ui form warning" ]

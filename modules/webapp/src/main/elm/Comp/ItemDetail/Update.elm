@@ -1300,19 +1300,32 @@ update key flags inav settings msg model =
                 cmd_ =
                     Cmd.map CustomFieldMsg result.cmd
 
-                action =
+                loadingIcon =
+                    "refresh loading icon"
+
+                ( action, icons ) =
                     case result.result of
                         NoFieldChange ->
-                            Cmd.none
+                            ( Cmd.none, model.customFieldSavingIcon )
 
                         FieldValueRemove field ->
-                            Api.deleteCustomValue flags model.item.id field.id SaveResp
+                            ( Api.deleteCustomValue flags
+                                model.item.id
+                                field.id
+                                (CustomFieldSaveResp field.id)
+                            , Dict.insert field.id loadingIcon model.customFieldSavingIcon
+                            )
 
                         FieldValueChange field value ->
-                            Api.putCustomValue flags model.item.id (CustomFieldValue field.id value) SaveResp
+                            ( Api.putCustomValue flags
+                                model.item.id
+                                (CustomFieldValue field.id value)
+                                (CustomFieldSaveResp field.id)
+                            , Dict.insert field.id loadingIcon model.customFieldSavingIcon
+                            )
 
                         FieldCreateNew ->
-                            Cmd.none
+                            ( Cmd.none, model.customFieldSavingIcon )
 
                 sub_ =
                     Sub.map CustomFieldMsg result.subs
@@ -1325,13 +1338,34 @@ update key flags inav settings msg model =
                         Nothing
 
                 model_ =
-                    { model | customFieldsModel = result.model, modalEdit = modalEdit }
+                    { model
+                        | customFieldsModel = result.model
+                        , modalEdit = modalEdit
+                        , customFieldSavingIcon = icons
+                    }
             in
             { model = model_
             , cmd = Cmd.batch [ cmd_, action ]
             , sub = sub_
             , linkTarget = Comp.LinkTarget.LinkNone
             }
+
+        CustomFieldSaveResp fieldId (Ok res) ->
+            let
+                model_ =
+                    { model | customFieldSavingIcon = Dict.remove fieldId model.customFieldSavingIcon }
+            in
+            if res.success then
+                resultModelCmd
+                    ( model_
+                    , Api.itemDetail flags model.item.id GetItemResp
+                    )
+
+            else
+                resultModel model_
+
+        CustomFieldSaveResp fieldId (Err _) ->
+            resultModel { model | customFieldSavingIcon = Dict.remove fieldId model.customFieldSavingIcon }
 
 
 

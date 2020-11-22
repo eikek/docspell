@@ -309,6 +309,7 @@ update msg model =
 type alias ViewSettings =
     { showAddButton : Bool
     , classes : String
+    , fieldIcon : CustomField -> Maybe String
     }
 
 
@@ -316,7 +317,7 @@ view : ViewSettings -> Model -> Html Msg
 view viewSettings model =
     div [ class viewSettings.classes ]
         (viewMenuBar viewSettings model
-            :: List.map (viewCustomField model) (visibleFields model)
+            :: List.map (viewCustomField viewSettings model) (visibleFields model)
         )
 
 
@@ -344,8 +345,8 @@ viewMenuBar viewSettings model =
         )
 
 
-viewCustomField : Model -> CustomField -> Html Msg
-viewCustomField model field =
+viewCustomField : ViewSettings -> Model -> CustomField -> Html Msg
+viewCustomField viewSettings model field =
     let
         visibleField =
             Dict.get field.name model.visibleFields
@@ -353,7 +354,10 @@ viewCustomField model field =
     case visibleField of
         Just vf ->
             Html.map (CustomFieldInputMsg field)
-                (Comp.CustomFieldInput.view "field" Nothing vf.inputModel)
+                (Comp.CustomFieldInput.view "field"
+                    (viewSettings.fieldIcon vf.field)
+                    vf.inputModel
+                )
 
         Nothing ->
             span [] []

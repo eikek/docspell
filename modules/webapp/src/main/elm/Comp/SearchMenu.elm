@@ -854,7 +854,7 @@ viewDrop ddd flags settings model =
             [ formHeader (Icons.customFieldIcon "") "Custom Fields"
             , Html.map CustomFieldMsg
                 (Comp.CustomFieldMultiInput.view
-                    (Comp.CustomFieldMultiInput.ViewSettings False "field")
+                    (Comp.CustomFieldMultiInput.ViewSettings False "field" (\_ -> Nothing))
                     model.customFieldModel
                 )
             ]

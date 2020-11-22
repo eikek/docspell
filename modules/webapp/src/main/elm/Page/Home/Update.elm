@@ -459,6 +459,16 @@ update mId key flags settings msg model =
 
                                         _ ->
                                             svm.saveNameState
+                                , saveCustomFieldState =
+                                    case res.change of
+                                        CustomValueChange field _ ->
+                                            Set.insert field.id svm.saveCustomFieldState
+
+                                        RemoveCustomValue field ->
+                                            Set.insert field.id svm.saveCustomFieldState
+
+                                        _ ->
+                                            svm.saveCustomFieldState
                             }
 
                         cmd_ =
@@ -542,6 +552,16 @@ update mId key flags settings msg model =
 
 updateSelectViewNameState : Bool -> Model -> FormChange -> Model
 updateSelectViewNameState success model change =
+    let
+        removeCustomField field svm =
+            { model
+                | viewMode =
+                    SelectView
+                        { svm
+                            | saveCustomFieldState = Set.remove field.id svm.saveCustomFieldState
+                        }
+            }
+    in
     case model.viewMode of
         SelectView svm ->
             case change of
@@ -558,6 +578,12 @@ updateSelectViewNameState success model change =
                             }
                     in
                     { model | viewMode = SelectView svm_ }
+
+                RemoveCustomValue field ->
+                    removeCustomField field svm
+
+                CustomValueChange field _ ->
+                    removeCustomField field svm
 
                 _ ->
                     model

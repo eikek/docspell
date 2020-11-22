@@ -95,6 +95,7 @@ type alias Model =
     , attachRename : Maybe AttachmentRename
     , keyInputModel : Comp.KeyInput.Model
     , customFieldsModel : Comp.CustomFieldMultiInput.Model
+    , customFieldSavingIcon : Dict String String
     }
 
 
@@ -197,6 +198,7 @@ emptyModel =
     , attachRename = Nothing
     , keyInputModel = Comp.KeyInput.init
     , customFieldsModel = Comp.CustomFieldMultiInput.initWith []
+    , customFieldSavingIcon = Dict.empty
     }
 
 
@@ -283,6 +285,7 @@ type Msg
     | UiSettingsUpdated
     | SetLinkTarget LinkTarget
     | CustomFieldMsg Comp.CustomFieldMultiInput.Msg
+    | CustomFieldSaveResp String (Result Http.Error BasicResult)
 
 
 type SaveNameState
