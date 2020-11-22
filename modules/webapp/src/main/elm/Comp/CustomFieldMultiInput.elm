@@ -1,13 +1,14 @@
 module Comp.CustomFieldMultiInput exposing
-    ( FieldResult(..)
-    , Model
+    ( Model
     , Msg
     , UpdateResult
     , ViewSettings
     , init
     , initCmd
     , initWith
+    , isEmpty
     , nonEmpty
+    , reset
     , setValues
     , update
     , view
@@ -19,22 +20,47 @@ import Api.Model.CustomFieldList exposing (CustomFieldList)
 import Api.Model.ItemFieldValue exposing (ItemFieldValue)
 import Comp.CustomFieldInput
 import Comp.FixedDropdown
+import Data.CustomFieldChange exposing (CustomFieldChange(..))
 import Data.Flags exposing (Flags)
 import Dict exposing (Dict)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Http
-import Util.List
 import Util.Maybe
 
 
 type alias Model =
-    { fieldModels : Dict String Comp.CustomFieldInput.Model
-    , fieldSelect : FieldSelect
-    , visibleFields : List CustomField
-    , availableFields : List CustomField
+    { fieldSelect : FieldSelect
+    , visibleFields : Dict String VisibleField
+    , allFields : List CustomField
     }
+
+
+type alias FieldSelect =
+    { selected : Maybe CustomField
+    , dropdown : Comp.FixedDropdown.Model CustomField
+    }
+
+
+type alias VisibleField =
+    { field : CustomField
+    , inputModel : Comp.CustomFieldInput.Model
+    }
+
+
+visibleFields : Model -> List CustomField
+visibleFields model =
+    Dict.toList model.visibleFields
+        |> List.map (Tuple.second >> .field)
+        |> List.sortBy .name
+
+
+currentOptions : List CustomField -> Dict String VisibleField -> List CustomField
+currentOptions all visible =
+    List.filter
+        (\e -> not <| Dict.member e.name visible)
+        all
 
 
 type Msg
@@ -47,30 +73,21 @@ type Msg
     | SetValues (List ItemFieldValue)
 
 
-type FieldResult
-    = NoResult
-    | FieldValueRemove CustomField
-    | FieldValueChange CustomField String
-    | FieldCreateNew
-
-
-type alias FieldSelect =
-    { selected : Maybe CustomField
-    , dropdown : Comp.FixedDropdown.Model CustomField
-    }
-
-
 nonEmpty : Model -> Bool
 nonEmpty model =
-    not (List.isEmpty model.availableFields && List.isEmpty model.visibleFields)
+    not (isEmpty model)
+
+
+isEmpty : Model -> Bool
+isEmpty model =
+    List.isEmpty model.allFields
 
 
 initWith : List CustomField -> Model
 initWith fields =
-    { fieldModels = Dict.empty
-    , fieldSelect = mkFieldSelect fields
-    , visibleFields = []
-    , availableFields = fields
+    { fieldSelect = mkFieldSelect (currentOptions fields Dict.empty)
+    , visibleFields = Dict.empty
+    , allFields = fields
     }
 
 
@@ -91,6 +108,18 @@ setValues values =
     SetValues values
 
 
+reset : Model -> Model
+reset model =
+    let
+        opts =
+            currentOptions model.allFields Dict.empty
+    in
+    { model
+        | fieldSelect = mkFieldSelect opts
+        , visibleFields = Dict.empty
+    }
+
+
 mkFieldSelect : List CustomField -> FieldSelect
 mkFieldSelect fields =
     { selected = Nothing
@@ -106,7 +135,7 @@ type alias UpdateResult =
     { model : Model
     , cmd : Cmd Msg
     , subs : Sub Msg
-    , result : FieldResult
+    , result : CustomFieldChange
     }
 
 
@@ -123,21 +152,16 @@ update msg model =
 
         CustomFieldResp (Ok list) ->
             let
-                avail =
-                    List.filter
-                        (\e -> not <| Dict.member e.name model.fieldModels)
-                        list.items
-
                 model_ =
                     { model
-                        | availableFields = avail
-                        , fieldSelect = mkFieldSelect avail
+                        | allFields = list.items
+                        , fieldSelect = mkFieldSelect (currentOptions list.items model.visibleFields)
                     }
             in
-            UpdateResult model_ Cmd.none Sub.none NoResult
+            UpdateResult model_ Cmd.none Sub.none NoFieldChange
 
         CustomFieldResp (Err _) ->
-            UpdateResult model Cmd.none Sub.none NoResult
+            UpdateResult model Cmd.none Sub.none NoFieldChange
 
         FieldSelectMsg lm ->
             let
@@ -160,26 +184,18 @@ update msg model =
                     update (ApplyField field) model
 
                 Nothing ->
-                    UpdateResult model_ Cmd.none Sub.none NoResult
+                    UpdateResult model_ Cmd.none Sub.none NoFieldChange
 
         ApplyField f ->
             let
-                notSelected e =
-                    e /= f && (not <| Dict.member e.name model.fieldModels)
-
                 ( fm, fc ) =
                     Comp.CustomFieldInput.init f
 
-                avail =
-                    List.filter notSelected model.availableFields
-
                 visible =
-                    f
-                        :: model.visibleFields
-                        |> List.sortBy .name
+                    Dict.insert f.name (VisibleField f fm) model.visibleFields
 
                 fSelect =
-                    mkFieldSelect avail
+                    mkFieldSelect (currentOptions model.allFields visible)
 
                 -- have to re-state the open menu when this is invoked
                 -- from a click in the dropdown
@@ -192,46 +208,43 @@ update msg model =
                 model_ =
                     { model
                         | fieldSelect = { fSelect | dropdown = dropdownOpen }
-                        , availableFields = avail
                         , visibleFields = visible
-                        , fieldModels = Dict.insert f.name fm model.fieldModels
                     }
 
                 cmd_ =
                     Cmd.map (CustomFieldInputMsg f) fc
             in
-            UpdateResult model_ cmd_ Sub.none NoResult
+            UpdateResult model_ cmd_ Sub.none NoFieldChange
 
         RemoveField f ->
             let
-                avail =
-                    f :: model.availableFields
-
                 visible =
-                    List.filter (\e -> e /= f) model.visibleFields
+                    Dict.remove f.name model.visibleFields
 
                 model_ =
                     { model
-                        | availableFields = avail
-                        , visibleFields = visible
-                        , fieldSelect = mkFieldSelect avail
+                        | visibleFields = visible
+                        , fieldSelect = mkFieldSelect (currentOptions model.allFields visible)
                     }
             in
             UpdateResult model_ Cmd.none Sub.none (FieldValueRemove f)
 
-        CustomFieldInputMsg field lm ->
+        CustomFieldInputMsg f lm ->
             let
-                fieldModel =
-                    Dict.get field.name model.fieldModels
+                visibleField =
+                    Dict.get f.name model.visibleFields
             in
-            case fieldModel of
-                Just fm ->
+            case visibleField of
+                Just { field, inputModel } ->
                     let
                         res =
-                            Comp.CustomFieldInput.update lm fm
+                            Comp.CustomFieldInput.update lm inputModel
 
                         model_ =
-                            { model | fieldModels = Dict.insert field.name res.model model.fieldModels }
+                            { model
+                                | visibleFields =
+                                    Dict.insert field.name (VisibleField field res.model) model.visibleFields
+                            }
 
                         cmd_ =
                             Cmd.map (CustomFieldInputMsg field) res.cmd
@@ -245,7 +258,7 @@ update msg model =
                                     FieldValueRemove field
 
                                 Comp.CustomFieldInput.NoResult ->
-                                    NoResult
+                                    NoFieldChange
                     in
                     if res.result == Comp.CustomFieldInput.RemoveField then
                         update (RemoveField field) model_
@@ -254,7 +267,7 @@ update msg model =
                         UpdateResult model_ cmd_ Sub.none result
 
                 Nothing ->
-                    UpdateResult model Cmd.none Sub.none NoResult
+                    UpdateResult model Cmd.none Sub.none NoFieldChange
 
         SetValues values ->
             let
@@ -265,33 +278,24 @@ update msg model =
                     let
                         ( fim, fic ) =
                             Comp.CustomFieldInput.initWith fv
+
+                        f =
+                            field fv
                     in
-                    ( Dict.insert fv.name fim dict
-                    , Cmd.map (CustomFieldInputMsg (field fv)) fic :: cmds
+                    ( Dict.insert fv.name (VisibleField f fim) dict
+                    , Cmd.map (CustomFieldInputMsg f) fic :: cmds
                     )
 
                 ( modelDict, cmdList ) =
                     List.foldl merge ( Dict.empty, [] ) values
 
-                avail =
-                    List.filter
-                        (\e -> not <| Dict.member e.name modelDict)
-                        (model.availableFields ++ model.visibleFields)
-
                 model_ =
                     { model
-                        | fieldModels = modelDict
-                        , availableFields = avail
-                        , fieldSelect = mkFieldSelect avail
-                        , visibleFields =
-                            model.visibleFields
-                                ++ model.availableFields
-                                |> List.filter (\e -> Dict.member e.name modelDict)
-                                |> Util.List.distinct
-                                |> List.sortBy .name
+                        | fieldSelect = mkFieldSelect (currentOptions model.allFields modelDict)
+                        , visibleFields = modelDict
                     }
             in
-            UpdateResult model_ (Cmd.batch cmdList) Sub.none NoResult
+            UpdateResult model_ (Cmd.batch cmdList) Sub.none NoFieldChange
 
 
 
@@ -308,7 +312,7 @@ view : ViewSettings -> Model -> Html Msg
 view viewSettings model =
     div [ class viewSettings.classes ]
         (viewMenuBar viewSettings model
-            :: List.map (viewCustomField model) model.visibleFields
+            :: List.map (viewCustomField model) (visibleFields model)
         )
 
 
@@ -339,13 +343,13 @@ viewMenuBar viewSettings model =
 viewCustomField : Model -> CustomField -> Html Msg
 viewCustomField model field =
     let
-        fieldModel =
-            Dict.get field.name model.fieldModels
+        visibleField =
+            Dict.get field.name model.visibleFields
     in
-    case fieldModel of
-        Just fm ->
+    case visibleField of
+        Just vf ->
             Html.map (CustomFieldInputMsg field)
-                (Comp.CustomFieldInput.view "field" Nothing fm)
+                (Comp.CustomFieldInput.view "field" Nothing vf.inputModel)
 
         Nothing ->
             span [] []

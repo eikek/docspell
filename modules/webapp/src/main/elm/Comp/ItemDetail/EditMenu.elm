@@ -18,11 +18,12 @@ import Api.Model.ItemProposals exposing (ItemProposals)
 import Api.Model.ReferenceList exposing (ReferenceList)
 import Api.Model.Tag exposing (Tag)
 import Api.Model.TagList exposing (TagList)
-import Comp.CustomFieldMultiInput exposing (FieldResult(..))
+import Comp.CustomFieldMultiInput
 import Comp.DatePicker
 import Comp.DetailEdit
 import Comp.Dropdown exposing (isDropdownChangeMsg)
 import Comp.ItemDetail.FormChange exposing (FormChange(..))
+import Data.CustomFieldChange exposing (CustomFieldChange(..))
 import Data.Direction exposing (Direction)
 import Data.Fields
 import Data.Flags exposing (Flags)
@@ -568,7 +569,7 @@ update flags msg model =
 
                 change =
                     case res.result of
-                        NoResult ->
+                        NoFieldChange ->
                             NoFormChange
 
                         FieldValueRemove cf ->

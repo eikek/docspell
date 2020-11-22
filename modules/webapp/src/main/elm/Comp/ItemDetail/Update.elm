@@ -14,7 +14,7 @@ import Api.Model.ReferenceList exposing (ReferenceList)
 import Api.Model.Tag exposing (Tag)
 import Browser.Navigation as Nav
 import Comp.AttachmentMeta
-import Comp.CustomFieldMultiInput exposing (FieldResult(..))
+import Comp.CustomFieldMultiInput
 import Comp.DatePicker
 import Comp.DetailEdit
 import Comp.Dropdown exposing (isDropdownChangeMsg)
@@ -41,6 +41,7 @@ import Comp.OrgForm
 import Comp.PersonForm
 import Comp.SentMails
 import Comp.YesNoDimmer
+import Data.CustomFieldChange exposing (CustomFieldChange(..))
 import Data.Direction
 import Data.Fields exposing (Field)
 import Data.Flags exposing (Flags)
@@ -1301,7 +1302,7 @@ update key flags inav settings msg model =
 
                 action =
                     case result.result of
-                        NoResult ->
+                        NoFieldChange ->
                             Cmd.none
 
                         FieldValueRemove field ->
