@@ -139,7 +139,7 @@ object QItem {
     val sources      = RAttachmentSource.findByItemWithMeta(id)
     val archives     = RAttachmentArchive.findByItemWithMeta(id)
     val tags         = RTag.findByItem(id)
-    val customfields = findCustomFieldValues(id)
+    val customfields = findCustomFieldValuesForItem(id)
 
     for {
       data <- q
@@ -153,7 +153,9 @@ object QItem {
     )
   }
 
-  def findCustomFieldValues(itemId: Ident): ConnectionIO[Vector[ItemFieldValue]] = {
+  def findCustomFieldValuesForItem(
+      itemId: Ident
+  ): ConnectionIO[Vector[ItemFieldValue]] = {
     val cfId    = RCustomField.Columns.id.prefix("cf")
     val cfName  = RCustomField.Columns.name.prefix("cf")
     val cfLabel = RCustomField.Columns.label.prefix("cf")
@@ -191,6 +193,8 @@ object QItem {
       notes: Option[String]
   )
 
+  case class CustomValue(field: Ident, value: String)
+
   case class Query(
       account: AccountId,
       name: Option[String],
@@ -211,6 +215,7 @@ object QItem {
       dueDateTo: Option[Timestamp],
       allNames: Option[String],
       itemIds: Option[Set[Ident]],
+      customValues: Seq[CustomValue],
       orderAsc: Option[RItem.Columns.type => Column]
   )
 
@@ -236,6 +241,7 @@ object QItem {
         None,
         None,
         None,
+        Seq.empty,
         None
       )
   }
@@ -261,6 +267,35 @@ object QItem {
       Batch(0, c)
   }
 
+  private def findCustomFieldValuesForColl(
+      coll: Ident,
+      cv: Seq[CustomValue]
+  ): Seq[(String, Fragment)] = {
+    val cfId    = RCustomField.Columns.id.prefix("cf")
+    val cfName  = RCustomField.Columns.name.prefix("cf")
+    val cfColl  = RCustomField.Columns.cid.prefix("cf")
+    val cvValue = RCustomFieldValue.Columns.value.prefix("cvf")
+    val cvField = RCustomFieldValue.Columns.field.prefix("cvf")
+    val cvItem  = RCustomFieldValue.Columns.itemId.prefix("cvf")
+
+    val cfFrom =
+      RCustomFieldValue.table ++ fr"cvf INNER JOIN" ++ RCustomField.table ++ fr"cf ON" ++ cvField
+        .is(cfId)
+
+    def singleSelect(v: CustomValue) =
+      selectSimple(
+        Seq(cvItem),
+        cfFrom,
+        and(
+          cfColl.is(coll),
+          or(cfName.is(v.field), cfId.is(v.field)),
+          cvValue.is(v.value)
+        )
+      )
+    if (cv.isEmpty) Seq.empty
+    else Seq("customvalues" -> cv.map(singleSelect).reduce(_ ++ fr"INTERSECT" ++ _))
+  }
+
   private def findItemsBase(
       q: Query,
       distinct: Boolean,
@@ -279,6 +314,7 @@ object QItem {
     val orgCols    = List(OC.oid, OC.name)
     val equipCols  = List(EC.eid, EC.name)
     val folderCols = List(FC.id, FC.name)
+    val cvItem     = RCustomFieldValue.Columns.itemId.prefix("cv")
 
     val finalCols = commas(
       Seq(
@@ -325,6 +361,9 @@ object QItem {
     val withAttach = fr"SELECT COUNT(" ++ AC.id.f ++ fr") as num, " ++ AC.itemId.f ++
       fr"from" ++ RAttachment.table ++ fr"GROUP BY (" ++ AC.itemId.f ++ fr")"
 
+    val withCustomValues =
+      findCustomFieldValuesForColl(q.account.collective, q.customValues)
+
     val selectKW = if (distinct) fr"SELECT DISTINCT" else fr"SELECT"
     withCTE(
       (Seq(
@@ -334,7 +373,7 @@ object QItem {
         "equips"  -> withEquips,
         "attachs" -> withAttach,
         "folders" -> withFolder
-      ) ++ ctes): _*
+      ) ++ withCustomValues ++ ctes): _*
     ) ++
       selectKW ++ finalCols ++ fr" FROM items i" ++
       fr"LEFT JOIN attachs a ON" ++ IC.id.prefix("i").is(AC.itemId.prefix("a")) ++
@@ -344,7 +383,10 @@ object QItem {
       fr"LEFT JOIN equips e1 ON" ++ IC.concEquipment
         .prefix("i")
         .is(EC.eid.prefix("e1")) ++
-      fr"LEFT JOIN folders f1 ON" ++ IC.folder.prefix("i").is(FC.id.prefix("f1"))
+      fr"LEFT JOIN folders f1 ON" ++ IC.folder.prefix("i").is(FC.id.prefix("f1")) ++
+      (if (q.customValues.isEmpty) Fragment.empty
+       else
+         fr"INNER JOIN customvalues cv ON" ++ cvItem.is(IC.id.prefix("i")))
   }
 
   def findItems(

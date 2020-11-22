@@ -143,8 +143,12 @@ trait Conversions {
       m.itemSubset
         .map(_.ids.flatMap(i => Ident.fromString(i).toOption).toSet)
         .filter(_.nonEmpty),
+      m.customValues.map(mkCustomValue),
       None
     )
+
+  def mkCustomValue(v: CustomFieldValue): OItemSearch.CustomValue =
+    OItemSearch.CustomValue(v.field, v.value)
 
   def mkItemList(v: Vector[OItemSearch.ListItem]): ItemLightList = {
     val groups = v.groupBy(item => item.date.toUtcDate.toString.substring(0, 7))

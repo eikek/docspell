@@ -4952,6 +4952,7 @@ components:
         - inbox
         - offset
         - limit
+        - customValues
       properties:
         tagsInclude:
           type: array
@@ -5031,6 +5032,10 @@ components:
           format: date-time
         itemSubset:
           $ref: "#/components/schemas/IdList"
+        customValues:
+          type: array
+          items:
+            $ref: "#/components/schemas/CustomFieldValue"
     ItemLight:
       description: |
         An item with only a few important properties.
