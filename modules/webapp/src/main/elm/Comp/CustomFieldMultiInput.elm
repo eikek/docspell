@@ -6,6 +6,7 @@ module Comp.CustomFieldMultiInput exposing
     , init
     , initCmd
     , initWith
+    , setValues
     , update
     , view
     )
@@ -13,6 +14,7 @@ module Comp.CustomFieldMultiInput exposing
 import Api
 import Api.Model.CustomField exposing (CustomField)
 import Api.Model.CustomFieldList exposing (CustomFieldList)
+import Api.Model.ItemFieldValue exposing (ItemFieldValue)
 import Comp.CustomFieldInput
 import Comp.FixedDropdown
 import Data.Flags exposing (Flags)
@@ -21,6 +23,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Http
+import Util.List
 import Util.Maybe
 
 
@@ -39,6 +42,7 @@ type Msg
     | CreateNewField
     | CustomFieldResp (Result Http.Error CustomFieldList)
     | FieldSelectMsg (Comp.FixedDropdown.Msg CustomField)
+    | SetValues (List ItemFieldValue)
 
 
 type FieldResult
@@ -75,6 +79,11 @@ initCmd flags =
     Api.getCustomFields flags "" CustomFieldResp
 
 
+setValues : List ItemFieldValue -> Msg
+setValues values =
+    SetValues values
+
+
 mkFieldSelect : List CustomField -> FieldSelect
 mkFieldSelect fields =
     { selected = Nothing
@@ -107,10 +116,15 @@ update msg model =
 
         CustomFieldResp (Ok list) ->
             let
+                avail =
+                    List.filter
+                        (\e -> not <| Dict.member e.name model.fieldModels)
+                        list.items
+
                 model_ =
                     { model
-                        | availableFields = list.items
-                        , fieldSelect = mkFieldSelect list.items
+                        | availableFields = avail
+                        , fieldSelect = mkFieldSelect avail
                     }
             in
             UpdateResult model_ Cmd.none Sub.none NoResult
@@ -144,7 +158,7 @@ update msg model =
         ApplyField f ->
             let
                 notSelected e =
-                    e /= f
+                    e /= f && (not <| Dict.member e.name model.fieldModels)
 
                 ( fm, fc ) =
                     Comp.CustomFieldInput.init f
@@ -153,7 +167,9 @@ update msg model =
                     List.filter notSelected model.availableFields
 
                 visible =
-                    f :: model.visibleFields
+                    f
+                        :: model.visibleFields
+                        |> List.sortBy .name
 
                 fSelect =
                     mkFieldSelect avail
@@ -232,6 +248,43 @@ update msg model =
 
                 Nothing ->
                     UpdateResult model Cmd.none Sub.none NoResult
+
+        SetValues values ->
+            let
+                field value =
+                    CustomField value.id value.name value.label value.ftype 0 0
+
+                merge fv ( dict, cmds ) =
+                    let
+                        ( fim, fic ) =
+                            Comp.CustomFieldInput.initWith fv
+                    in
+                    ( Dict.insert fv.name fim dict
+                    , Cmd.map (CustomFieldInputMsg (field fv)) fic :: cmds
+                    )
+
+                ( modelDict, cmdList ) =
+                    List.foldl merge ( Dict.empty, [] ) values
+
+                avail =
+                    List.filter
+                        (\e -> not <| Dict.member e.name modelDict)
+                        (model.availableFields ++ model.visibleFields)
+
+                model_ =
+                    { model
+                        | fieldModels = modelDict
+                        , availableFields = avail
+                        , fieldSelect = mkFieldSelect avail
+                        , visibleFields =
+                            model.visibleFields
+                                ++ model.availableFields
+                                |> List.filter (\e -> Dict.member e.name modelDict)
+                                |> Util.List.distinct
+                                |> List.sortBy .name
+                    }
+            in
+            UpdateResult model_ (Cmd.batch cmdList) Sub.none NoResult
 
 
 view : String -> Model -> Html Msg

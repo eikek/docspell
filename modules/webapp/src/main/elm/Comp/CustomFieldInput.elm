@@ -4,11 +4,13 @@ module Comp.CustomFieldInput exposing
     , Msg
     , UpdateResult
     , init
+    , initWith
     , update
     , view
     )
 
 import Api.Model.CustomField exposing (CustomField)
+import Api.Model.ItemFieldValue exposing (ItemFieldValue)
 import Comp.DatePicker
 import Data.CustomFieldType exposing (CustomFieldType)
 import Date exposing (Date)
@@ -101,6 +103,54 @@ init field =
 
                 Data.CustomFieldType.Date ->
                     DateField Nothing dm
+      }
+    , if fieldType field == Data.CustomFieldType.Date then
+        Cmd.map DateMsg dc
+
+      else
+        Cmd.none
+    )
+
+
+initWith : ItemFieldValue -> ( Model, Cmd Msg )
+initWith value =
+    let
+        field =
+            CustomField value.id value.name value.label value.ftype 0 0
+
+        ( dm, dc ) =
+            Comp.DatePicker.init
+    in
+    ( { field = field
+      , fieldModel =
+            case fieldType field of
+                Data.CustomFieldType.Text ->
+                    TextField (Just value.value)
+
+                Data.CustomFieldType.Numeric ->
+                    let
+                        ( fm, _ ) =
+                            updateFloatModel value.value identity
+                    in
+                    NumberField fm
+
+                Data.CustomFieldType.Money ->
+                    let
+                        ( fm, _ ) =
+                            updateFloatModel value.value identity
+                    in
+                    MoneyField fm
+
+                Data.CustomFieldType.Boolean ->
+                    BoolField (value.value == "true")
+
+                Data.CustomFieldType.Date ->
+                    case Date.fromIsoString value.value of
+                        Ok d ->
+                            DateField (Just d) dm
+
+                        Err _ ->
+                            DateField Nothing dm
       }
     , if fieldType field == Data.CustomFieldType.Date then
         Cmd.map DateMsg dc

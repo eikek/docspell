@@ -199,6 +199,14 @@ update key flags inav settings msg model =
                         )
                         res7.model
 
+                res9 =
+                    update key
+                        flags
+                        inav
+                        settings
+                        (CustomFieldMsg (Comp.CustomFieldMultiInput.setValues item.customfields))
+                        res8.model
+
                 proposalCmd =
                     if item.state == "created" then
                         Api.getItemProposals flags item.id GetProposalResp
@@ -207,7 +215,7 @@ update key flags inav settings msg model =
                         Cmd.none
 
                 lastModel =
-                    res8.model
+                    res9.model
             in
             { model =
                 { lastModel
