@@ -20,12 +20,14 @@ import Api.Model.Tag exposing (Tag)
 import Api.Model.TagList exposing (TagList)
 import Comp.CalEventInput
 import Comp.Dropdown exposing (isDropdownChangeMsg)
+import Comp.FixedDropdown
 import Comp.IntField
 import Comp.StringListInput
 import Comp.YesNoDimmer
 import Data.CalEvent exposing (CalEvent)
 import Data.Direction exposing (Direction(..))
 import Data.Flags exposing (Flags)
+import Data.Language exposing (Language)
 import Data.UiSettings exposing (UiSettings)
 import Data.Validated exposing (Validated(..))
 import Html exposing (..)
@@ -64,6 +66,8 @@ type alias Model =
     , existingTags : List String
     , fileFilter : Maybe String
     , subjectFilter : Maybe String
+    , languageModel : Comp.FixedDropdown.Model Language
+    , language : Maybe Language
     }
 
 
@@ -96,6 +100,8 @@ type Msg
     | TagDropdownMsg (Comp.Dropdown.Msg Tag)
     | SetFileFilter String
     | SetSubjectFilter String
+    | LanguageMsg (Comp.FixedDropdown.Msg Language)
+    | RemoveLanguage
 
 
 initWith : Flags -> ScanMailboxSettings -> ( Model, Cmd Msg )
@@ -138,6 +144,9 @@ initWith flags s =
                 |> Maybe.withDefault []
         , fileFilter = s.fileFilter
         , subjectFilter = s.subjectFilter
+        , languageModel =
+            Comp.FixedDropdown.init (List.map mkLanguageItem Data.Language.all)
+        , language = Maybe.andThen Data.Language.fromString s.language
       }
     , Cmd.batch
         [ Api.getImapSettings flags "" ConnResp
@@ -188,6 +197,9 @@ init flags =
       , existingTags = []
       , fileFilter = Nothing
       , subjectFilter = Nothing
+      , languageModel =
+            Comp.FixedDropdown.init (List.map mkLanguageItem Data.Language.all)
+      , language = Nothing
       }
     , Cmd.batch
         [ Api.getImapSettings flags "" ConnResp
@@ -195,6 +207,11 @@ init flags =
         , Api.getTags flags "" GetTagResp
         ]
     )
+
+
+mkLanguageItem : Language -> Comp.FixedDropdown.Item Language
+mkLanguageItem lang =
+    Comp.FixedDropdown.Item lang (Data.Language.toName lang)
 
 
 
@@ -242,6 +259,7 @@ makeSettings model =
                             List.map .id els
                                 |> StringList
                                 |> Just
+                , language = Maybe.map Data.Language.toIso3 model.language
             }
     in
     Data.Validated.map3 make
@@ -597,6 +615,25 @@ update flags msg model =
             , Cmd.none
             )
 
+        LanguageMsg lm ->
+            let
+                ( dm, sel ) =
+                    Comp.FixedDropdown.update lm model.languageModel
+            in
+            ( { model
+                | languageModel = dm
+                , language = Util.Maybe.or [ sel, model.language ]
+              }
+            , NoAction
+            , Cmd.none
+            )
+
+        RemoveLanguage ->
+            ( { model | language = Nothing }
+            , NoAction
+            , Cmd.none
+            )
+
 
 
 --- View
@@ -833,6 +870,29 @@ disappear then.
             , Html.map TagDropdownMsg (Comp.Dropdown.view settings model.tagModel)
             , div [ class "small-info" ]
                 [ text "Choose tags that should be applied to items."
+                ]
+            ]
+        , div [ class "field" ]
+            [ label []
+                [ text "Language"
+                ]
+            , div [ class "ui action input" ]
+                [ Html.map LanguageMsg
+                    (Comp.FixedDropdown.viewStyled "fluid"
+                        (Maybe.map mkLanguageItem model.language)
+                        model.languageModel
+                    )
+                , a
+                    [ class "ui icon button"
+                    , href "#"
+                    , onClick RemoveLanguage
+                    ]
+                    [ i [ class "delete icon" ] []
+                    ]
+                ]
+            , div [ class "small-info" ]
+                [ text "Used for text extraction and text analysis. The "
+                , text "collective's default language is used, if not specified here."
                 ]
             ]
         , div [ class "ui dividing header" ]
