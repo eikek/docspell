@@ -247,6 +247,7 @@ update key flags inav settings msg model =
                     , res6.cmd
                     , res7.cmd
                     , res8.cmd
+                    , res9.cmd
                     , getOptions flags
                     , proposalCmd
                     , Api.getSentMails flags item.id SentMailsResp
@@ -262,6 +263,7 @@ update key flags inav settings msg model =
                     , res6.sub
                     , res7.sub
                     , res8.sub
+                    , res9.sub
                     ]
             , linkTarget = Comp.LinkTarget.LinkNone
             }

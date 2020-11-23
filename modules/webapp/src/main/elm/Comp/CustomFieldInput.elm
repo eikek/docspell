@@ -260,7 +260,7 @@ update msg model =
             in
             UpdateResult model_ Cmd.none (Value value)
 
-        ( DateMsg lm, DateField _ picker ) ->
+        ( DateMsg lm, DateField old picker ) ->
             let
                 ( picker_, event ) =
                     Comp.DatePicker.updateDefault lm picker
@@ -271,10 +271,10 @@ update msg model =
                             ( Just date, Value (Date.toIsoString date) )
 
                         DatePicker.None ->
-                            ( Nothing, NoResult )
+                            ( old, NoResult )
 
                         DatePicker.FailedInput _ ->
-                            ( Nothing, NoResult )
+                            ( old, NoResult )
 
                 model_ =
                     { model | fieldModel = DateField newDate picker_ }
