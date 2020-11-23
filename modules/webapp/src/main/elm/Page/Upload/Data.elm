@@ -9,11 +9,14 @@ module Page.Upload.Data exposing
     , isIdle
     , isLoading
     , isSuccessAll
+    , mkLanguageItem
     , uploadAllTracker
     )
 
 import Api.Model.BasicResult exposing (BasicResult)
 import Comp.Dropzone
+import Comp.FixedDropdown
+import Data.Language exposing (Language)
 import Dict exposing (Dict)
 import File exposing (File)
 import Http
@@ -30,6 +33,8 @@ type alias Model =
     , loading : Dict String Int
     , dropzone : Comp.Dropzone.Model
     , skipDuplicates : Bool
+    , languageModel : Comp.FixedDropdown.Model Language
+    , language : Maybe Language
     }
 
 
@@ -49,6 +54,11 @@ dropzoneSettings =
     }
 
 
+mkLanguageItem : Language -> Comp.FixedDropdown.Item Language
+mkLanguageItem lang =
+    Comp.FixedDropdown.Item lang (Data.Language.toName lang)
+
+
 emptyModel : Model
 emptyModel =
     { incoming = True
@@ -59,6 +69,10 @@ emptyModel =
     , loading = Dict.empty
     , dropzone = Comp.Dropzone.init dropzoneSettings
     , skipDuplicates = True
+    , languageModel =
+        Comp.FixedDropdown.init
+            (List.map mkLanguageItem Data.Language.all)
+    , language = Nothing
     }
 
 
@@ -71,6 +85,7 @@ type Msg
     | Clear
     | DropzoneMsg Comp.Dropzone.Msg
     | ToggleSkipDuplicates
+    | LanguageMsg (Comp.FixedDropdown.Msg Language)
 
 
 isLoading : Model -> File -> Bool

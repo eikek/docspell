@@ -326,13 +326,17 @@ trait Conversions {
               validFileTypes,
               m.skipDuplicates.getOrElse(false),
               m.fileFilter.getOrElse(Glob.all),
-              m.tags.map(_.items).getOrElse(Nil)
+              m.tags.map(_.items).getOrElse(Nil),
+              m.language
             )
           )
         )
       )
       .getOrElse(
-        (true, UploadMeta(None, sourceName, None, validFileTypes, false, Glob.all, Nil))
+        (
+          true,
+          UploadMeta(None, sourceName, None, validFileTypes, false, Glob.all, Nil, None)
+        )
           .pure[F]
       )
 

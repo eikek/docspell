@@ -67,7 +67,8 @@ object OUpload {
       validFileTypes: Seq[MimeType],
       skipDuplicates: Boolean,
       fileFilter: Glob,
-      tags: List[String]
+      tags: List[String],
+      language: Option[Language]
   )
 
   case class UploadData[F[_]](
@@ -125,11 +126,19 @@ object OUpload {
           _     <- checkExistingItem(itemId, account.collective)
           files <- right(data.files.traverse(saveFile).map(_.flatten))
           _     <- checkFileList(files)
-          lang  <- right(store.transact(RCollective.findLanguage(account.collective)))
+          lang <- data.meta.language match {
+            case Some(lang) => right(lang.pure[F])
+            case None =>
+              right(
+                store
+                  .transact(RCollective.findLanguage(account.collective))
+                  .map(_.getOrElse(Language.German))
+              )
+          }
           meta = ProcessItemArgs.ProcessMeta(
             account.collective,
             itemId,
-            lang.getOrElse(Language.German),
+            lang,
             data.meta.direction,
             data.meta.sourceAbbrev,
             data.meta.folderId,

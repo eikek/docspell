@@ -35,7 +35,9 @@ case class ScanMailboxArgs(
     // set a list of tags to apply to new item
     tags: Option[List[String]],
     // a glob filter for the mail subject
-    subjectFilter: Option[Glob]
+    subjectFilter: Option[Glob],
+    // the language for extraction and analysis
+    language: Option[Language]
 )
 
 object ScanMailboxArgs {

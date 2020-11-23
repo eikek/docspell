@@ -1,6 +1,7 @@
 module Page.Upload.View exposing (view)
 
 import Comp.Dropzone
+import Comp.FixedDropdown
 import Comp.Progress
 import Dict
 import File exposing (File)
@@ -217,6 +218,18 @@ renderForm model =
                         ]
                         []
                     , label [] [ text "Skip files already present in docspell" ]
+                    ]
+                ]
+            , div [ class "inline field" ]
+                [ label [] [ text "Language:" ]
+                , Html.map LanguageMsg
+                    (Comp.FixedDropdown.view
+                        (Maybe.map mkLanguageItem model.language)
+                        model.languageModel
+                    )
+                , div [ class "small-info" ]
+                    [ text "Used for text extraction and analysis. The collective's "
+                    , text "default language is used if not specified here."
                     ]
                 ]
             ]
