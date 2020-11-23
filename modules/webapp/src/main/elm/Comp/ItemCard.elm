@@ -393,6 +393,20 @@ mainTagsAndFields settings item =
 
         showField fv =
             Util.CustomField.renderValue "ui basic label" fv
+
+        renderFields =
+            if hideFields then
+                []
+
+            else
+                List.map showField item.customfields
+
+        renderTags =
+            if hideTags then
+                []
+
+            else
+                List.map showTag item.tags
     in
     div
         [ classList
@@ -400,7 +414,7 @@ mainTagsAndFields settings item =
             , ( "invisible hidden", hideTags && hideFields )
             ]
         ]
-        (List.map showField item.customfields ++ List.map showTag item.tags)
+        (renderFields ++ renderTags)
 
 
 previewImage : UiSettings -> Attribute Msg -> Model -> ItemLight -> Html Msg
