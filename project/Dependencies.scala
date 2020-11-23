@@ -24,7 +24,7 @@ object Dependencies {
   val LevigoJbig2Version      = "2.0"
   val Log4sVersion            = "1.9.0"
   val LogbackVersion          = "1.2.3"
-  val MariaDbVersion          = "2.7.0"
+  val MariaDbVersion          = "2.7.1"
   val MiniTestVersion         = "2.9.0"
   val OrganizeImportsVersion  = "0.4.4"
   val PdfboxVersion           = "2.0.21"
