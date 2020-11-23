@@ -197,9 +197,15 @@ upload() {
     if [ "$dryrun" = "y" ]; then
         info "- Not uploading (dry-run) $file to $url with opts $OPTS"
     else
+        META1=""
+        META2=""
+        if [ "$distinct" = "y" ]; then
+            META1="-F"
+            META2="meta={\"multiple\": false, \"skipDuplicates\": true}"
+        fi
         trace "- Uploading $file to $url with options $OPTS"
         tf1=$($MKTEMP_CMD) tf2=$($MKTEMP_CMD) rc=0
-        $CURL_CMD --fail -# -o "$tf1" --stderr "$tf2" $OPTS -XPOST -F file=@"$file" "$url"
+        $CURL_CMD --fail -# -o "$tf1" --stderr "$tf2" $OPTS -XPOST $META1 "$META2" -F file=@"$file" "$url"
         if [ $? -ne 0 ]; then
             info "Upload failed. Exit code: $rc"
             cat "$tf1"
