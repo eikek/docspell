@@ -109,7 +109,7 @@
     box-shadow: 0 0 0 1px #d4d4d5,0 2px 0 0 #2185d0,0 2px 10px 0 rgba(34,36,38,.15);
 }
 .default-layout .image.ds-card-image {
-    overflow: auto;
+    overflow: hidden;
 }
 .default-layout .image.ds-card-image.small {
     max-height: 120px;
