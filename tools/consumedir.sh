@@ -354,13 +354,13 @@ checkSetup() {
 checkSetup
 
 if [ "$once" = "y" ]; then
-    info "Uploading all files in '$watchdir'."
+    info "Uploading all files (except hidden) in '$watchdir'."
     MD="-maxdepth 1"
     if [ "$recursive" = "y" ]; then
         MD=""
     fi
     for dir in "${watchdir[@]}"; do
-        find "$dir" $MD -type f -print0 | while IFS= read -d '' -r file; do
+        find "$dir" $MD -type f -not -name ".*" -print0 | while IFS= read -d '' -r file; do
             process "$file" "$dir"
         done
     done
@@ -371,9 +371,13 @@ else
     fi
     $INOTIFY_CMD $REC -m --format '%w%f' -e close_write -e moved_to "${watchdir[@]}" |
         while read pathfile; do
-            dir=$(findDir "$pathfile")
-            trace "The file '$pathfile' appeared below '$dir'"
-            sleep 1
-            process "$(realpath "$pathfile")" "$dir"
+            if [[ "$(basename "$pathfile")" != .* ]]; then
+                dir=$(findDir "$pathfile")
+                trace "The file '$pathfile' appeared below '$dir'"
+                sleep 1
+                process "$(realpath "$pathfile")" "$dir"
+            else
+                trace "Skip hidden file $(realpath "$pathfile")"
+            fi
         done
 fi
