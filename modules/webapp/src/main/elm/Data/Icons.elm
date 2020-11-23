@@ -9,6 +9,7 @@ module Data.Icons exposing
     , customFieldIcon
     , customFieldType
     , customFieldTypeIcon
+    , customFieldTypeIconString
     , date
     , dateIcon
     , direction
@@ -43,7 +44,7 @@ customFieldType : CustomFieldType -> String
 customFieldType ftype =
     case ftype of
         Data.CustomFieldType.Text ->
-            "pen icon"
+            "stream icon"
 
         Data.CustomFieldType.Numeric ->
             "hashtag icon"
@@ -52,7 +53,7 @@ customFieldType ftype =
             "calendar icon"
 
         Data.CustomFieldType.Boolean ->
-            "question icon"
+            "marker icon"
 
         Data.CustomFieldType.Money ->
             "money bill icon"
@@ -62,6 +63,13 @@ customFieldTypeIcon : String -> CustomFieldType -> Html msg
 customFieldTypeIcon classes ftype =
     i [ class (customFieldType ftype ++ " " ++ classes) ]
         []
+
+
+customFieldTypeIconString : String -> String -> Html msg
+customFieldTypeIconString classes ftype =
+    Data.CustomFieldType.fromString ftype
+        |> Maybe.map (customFieldTypeIcon classes)
+        |> Maybe.withDefault (i [ class "question circle outline icon" ] [])
 
 
 customField : String

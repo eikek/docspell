@@ -32,6 +32,7 @@ import Html.Events exposing (onCheck, onClick, onInput)
 import Markdown
 import Page exposing (Page(..))
 import Set
+import Util.CustomField
 import Util.File exposing (makeFileId)
 import Util.Folder
 import Util.List
@@ -628,30 +629,8 @@ renderTags settings model =
 renderCustomValues : UiSettings -> Model -> List (Html Msg)
 renderCustomValues settings model =
     let
-        cfIcon cv =
-            Data.CustomFieldType.fromString cv.ftype
-                |> Maybe.map (Icons.customFieldTypeIcon "")
-                |> Maybe.withDefault (i [ class "question circle outline icon" ] [])
-
-        renderBool cv =
-            if cv.value == "true" then
-                i [ class "check icon" ] []
-
-            else
-                i [ class "minus icon" ] []
-
         fieldView cv =
-            div [ class "ui secondary basic label" ]
-                [ cfIcon cv
-                , Maybe.withDefault cv.name cv.label |> text
-                , div [ class "detail" ]
-                    [ if Data.CustomFieldType.fromString cv.ftype == Just Data.CustomFieldType.Boolean then
-                        renderBool cv
-
-                      else
-                        text cv.value
-                    ]
-                ]
+            Util.CustomField.renderValue "ui secondary basic label" cv
 
         labelThenName cv =
             Maybe.withDefault cv.name cv.label
