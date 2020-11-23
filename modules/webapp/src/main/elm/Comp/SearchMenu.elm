@@ -19,10 +19,12 @@ import Api.Model.IdName exposing (IdName)
 import Api.Model.ItemSearch exposing (ItemSearch)
 import Api.Model.ReferenceList exposing (ReferenceList)
 import Api.Model.TagCloud exposing (TagCloud)
+import Comp.CustomFieldMultiInput
 import Comp.DatePicker
 import Comp.Dropdown exposing (isDropdownChangeMsg)
 import Comp.FolderSelect
 import Comp.TagSelect
+import Data.CustomFieldChange exposing (CustomFieldValueCollect)
 import Data.Direction exposing (Direction)
 import Data.Fields
 import Data.Flags exposing (Flags)
@@ -67,6 +69,8 @@ type alias Model =
     , fulltextModel : Maybe String
     , datePickerInitialized : Bool
     , showNameHelp : Bool
+    , customFieldModel : Comp.CustomFieldMultiInput.Model
+    , customValues : CustomFieldValueCollect
     }
 
 
@@ -128,6 +132,8 @@ init =
     , fulltextModel = Nothing
     , datePickerInitialized = False
     , showNameHelp = False
+    , customFieldModel = Comp.CustomFieldMultiInput.initWith []
+    , customValues = Data.CustomFieldChange.emptyCollect
     }
 
 
@@ -188,6 +194,7 @@ getItemSearch model =
         , fullText = model.fulltextModel
         , tagCategoriesInclude = model.tagSelection.includeCats |> List.map .name
         , tagCategoriesExclude = model.tagSelection.excludeCats |> List.map .name
+        , customValues = Data.CustomFieldChange.toFieldValues model.customValues
     }
 
 
@@ -222,6 +229,10 @@ resetModel model =
         , nameModel = Nothing
         , allNameModel = Nothing
         , fulltextModel = Nothing
+        , customFieldModel =
+            Comp.CustomFieldMultiInput.reset
+                model.customFieldModel
+        , customValues = Data.CustomFieldChange.emptyCollect
     }
 
 
@@ -260,6 +271,7 @@ type Msg
     | SetConcEquip IdName
     | SetFolder IdName
     | SetTag String
+    | CustomFieldMsg Comp.CustomFieldMultiInput.Msg
 
 
 type alias NextState =
@@ -331,6 +343,7 @@ updateDrop ddm flags settings msg model =
                     , Api.getEquipments flags "" GetEquipResp
                     , Api.getPersonsLight flags GetPersonResp
                     , Api.getFolders flags "" False GetFolderResp
+                    , Cmd.map CustomFieldMsg (Comp.CustomFieldMultiInput.initCmd flags)
                     , cdp
                     ]
             , stateChange = False
@@ -694,6 +707,22 @@ updateDrop ddm flags settings msg model =
             , dragDrop = ddd
             }
 
+        CustomFieldMsg lm ->
+            let
+                res =
+                    Comp.CustomFieldMultiInput.update lm model.customFieldModel
+            in
+            { model =
+                { model
+                    | customFieldModel = res.model
+                    , customValues = Data.CustomFieldChange.collectValues res.result model.customValues
+                }
+            , cmd = Cmd.map CustomFieldMsg res.cmd
+            , stateChange =
+                Data.CustomFieldChange.isValueChange res.result
+            , dragDrop = DD.DragDropData ddm Nothing
+            }
+
 
 
 -- View
@@ -812,6 +841,22 @@ viewDrop ddd flags settings model =
                     [ label [] [ text "Equipment" ]
                     , Html.map ConcEquipmentMsg (Comp.Dropdown.view settings model.concEquipmentModel)
                     ]
+            ]
+        , div
+            [ classList
+                [ ( segmentClass, True )
+                , ( "hidden invisible"
+                  , fieldHidden Data.Fields.CustomFields
+                        || Comp.CustomFieldMultiInput.isEmpty model.customFieldModel
+                  )
+                ]
+            ]
+            [ formHeader (Icons.customFieldIcon "") "Custom Fields"
+            , Html.map CustomFieldMsg
+                (Comp.CustomFieldMultiInput.view
+                    (Comp.CustomFieldMultiInput.ViewSettings False "field" (\_ -> Nothing))
+                    model.customFieldModel
+                )
             ]
         , div [ class segmentClass ]
             [ formHeader (Icons.searchIcon "") "Text Search"

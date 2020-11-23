@@ -18,10 +18,12 @@ import Api.Model.ItemProposals exposing (ItemProposals)
 import Api.Model.ReferenceList exposing (ReferenceList)
 import Api.Model.Tag exposing (Tag)
 import Api.Model.TagList exposing (TagList)
+import Comp.CustomFieldMultiInput
 import Comp.DatePicker
 import Comp.DetailEdit
 import Comp.Dropdown exposing (isDropdownChangeMsg)
 import Comp.ItemDetail.FormChange exposing (FormChange(..))
+import Data.CustomFieldChange exposing (CustomFieldChange(..))
 import Data.Direction exposing (Direction)
 import Data.Fields
 import Data.Flags exposing (Flags)
@@ -77,6 +79,7 @@ type alias Model =
     , concEquipModel : Comp.Dropdown.Model IdName
     , modalEdit : Maybe Comp.DetailEdit.Model
     , tagEditMode : TagEditMode
+    , customFieldModel : Comp.CustomFieldMultiInput.Model
     }
 
 
@@ -102,6 +105,7 @@ type Msg
     | GetPersonResp (Result Http.Error ReferenceList)
     | GetEquipResp (Result Http.Error EquipmentList)
     | GetFolderResp (Result Http.Error FolderList)
+    | CustomFieldMsg Comp.CustomFieldMultiInput.Msg
 
 
 init : Model
@@ -155,6 +159,7 @@ init =
     , dueDatePicker = Comp.DatePicker.emptyModel
     , modalEdit = Nothing
     , tagEditMode = AddTags
+    , customFieldModel = Comp.CustomFieldMultiInput.initWith []
     }
 
 
@@ -170,6 +175,7 @@ loadModel flags =
         , Api.getPersonsLight flags GetPersonResp
         , Api.getEquipments flags "" GetEquipResp
         , Api.getFolders flags "" False GetFolderResp
+        , Cmd.map CustomFieldMsg (Comp.CustomFieldMultiInput.initCmd flags)
         , Cmd.map ItemDatePickerMsg dpc
         , Cmd.map DueDatePickerMsg dpc
         ]
@@ -547,6 +553,33 @@ update flags msg model =
             in
             UpdateResult newModel cmd sub NoFormChange
 
+        CustomFieldMsg lm ->
+            let
+                res =
+                    Comp.CustomFieldMultiInput.update lm model.customFieldModel
+
+                model_ =
+                    { model | customFieldModel = res.model }
+
+                cmd_ =
+                    Cmd.map CustomFieldMsg res.cmd
+
+                change =
+                    case res.result of
+                        NoFieldChange ->
+                            NoFormChange
+
+                        FieldValueRemove cf ->
+                            RemoveCustomValue cf
+
+                        FieldValueChange cf value ->
+                            CustomValueChange cf value
+
+                        FieldCreateNew ->
+                            NoFormChange
+            in
+            UpdateResult model_ cmd_ Sub.none change
+
 
 nameThrottleSub : Model -> Sub Msg
 nameThrottleSub model =
@@ -562,6 +595,7 @@ nameThrottleSub model =
 type alias ViewConfig =
     { menuClass : String
     , nameState : SaveNameState
+    , customFieldState : String -> SaveNameState
     }
 
 
@@ -569,6 +603,7 @@ defaultViewConfig : ViewConfig
 defaultViewConfig =
     { menuClass = "ui vertical segment"
     , nameState = SaveSuccess
+    , customFieldState = \_ -> SaveSuccess
     }
 
 
@@ -614,6 +649,23 @@ renderEditForm cfg settings model =
 
                 ReplaceTags ->
                     "Tags chosen here *replace* those on selected items."
+
+        customFieldIcon field =
+            case cfg.customFieldState field.id of
+                SaveSuccess ->
+                    Nothing
+
+                SaveFailed ->
+                    Just "red exclamation triangle icon"
+
+                Saving ->
+                    Just "refresh loading icon"
+
+        customFieldSettings =
+            Comp.CustomFieldMultiInput.ViewSettings
+                False
+                "field"
+                customFieldIcon
     in
     div [ class cfg.menuClass ]
         [ div [ class "ui form warning" ]
@@ -687,13 +739,18 @@ item visible. This message will disappear then.
                       """
                         ]
                     ]
-            , optional [ Data.Fields.Direction ] <|
-                div [ class "field" ]
-                    [ label []
-                        [ Icons.directionIcon "grey"
-                        , text "Direction"
-                        ]
-                    , Html.map DirDropdownMsg (Comp.Dropdown.view settings model.directionModel)
+            , optional [ Data.Fields.CustomFields ] <|
+                h4 [ class "ui dividing header" ]
+                    [ Icons.customFieldIcon ""
+                    , text "Custom Fields"
+                    ]
+            , optional [ Data.Fields.CustomFields ] <|
+                Html.map CustomFieldMsg
+                    (Comp.CustomFieldMultiInput.view customFieldSettings model.customFieldModel)
+            , optional [ Data.Fields.Date, Data.Fields.DueDate ] <|
+                h4 [ class "ui dividing header" ]
+                    [ Icons.itemDatesIcon ""
+                    , text "Item Dates"
                     ]
             , optional [ Data.Fields.Date ] <|
                 div [ class "field" ]
@@ -701,7 +758,7 @@ item visible. This message will disappear then.
                         [ Icons.dateIcon "grey"
                         , text "Date"
                         ]
-                    , div [ class "ui action input" ]
+                    , div [ class "ui left icon action input" ]
                         [ Html.map ItemDatePickerMsg
                             (Comp.DatePicker.viewTime
                                 model.itemDate
@@ -711,6 +768,7 @@ item visible. This message will disappear then.
                         , a [ class "ui icon button", href "", onClick RemoveDate ]
                             [ i [ class "trash alternate outline icon" ] []
                             ]
+                        , Icons.dateIcon ""
                         ]
                     ]
             , optional [ Data.Fields.DueDate ] <|
@@ -719,7 +777,7 @@ item visible. This message will disappear then.
                         [ Icons.dueDateIcon "grey"
                         , text "Due Date"
                         ]
-                    , div [ class "ui action input" ]
+                    , div [ class "ui left icon action input" ]
                         [ Html.map DueDatePickerMsg
                             (Comp.DatePicker.viewTime
                                 model.dueDate
@@ -728,6 +786,7 @@ item visible. This message will disappear then.
                             )
                         , a [ class "ui icon button", href "", onClick RemoveDueDate ]
                             [ i [ class "trash alternate outline icon" ] [] ]
+                        , Icons.dueDateIcon ""
                         ]
                     ]
             , optional [ Data.Fields.CorrOrg, Data.Fields.CorrPerson ] <|
@@ -771,6 +830,14 @@ item visible. This message will disappear then.
                         , text "Equipment"
                         ]
                     , Html.map ConcEquipMsg (Comp.Dropdown.view settings model.concEquipModel)
+                    ]
+            , optional [ Data.Fields.Direction ] <|
+                div [ class "field" ]
+                    [ label []
+                        [ Icons.directionIcon "grey"
+                        , text "Direction"
+                        ]
+                    , Html.map DirDropdownMsg (Comp.Dropdown.view settings model.directionModel)
                     ]
             ]
         ]

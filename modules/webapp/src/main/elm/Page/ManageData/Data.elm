@@ -5,6 +5,7 @@ module Page.ManageData.Data exposing
     , init
     )
 
+import Comp.CustomFieldManage
 import Comp.EquipmentManage
 import Comp.FolderManage
 import Comp.OrgManage
@@ -20,6 +21,7 @@ type alias Model =
     , orgManageModel : Comp.OrgManage.Model
     , personManageModel : Comp.PersonManage.Model
     , folderManageModel : Comp.FolderManage.Model
+    , fieldManageModel : Comp.CustomFieldManage.Model
     }
 
 
@@ -31,6 +33,7 @@ init _ =
       , orgManageModel = Comp.OrgManage.emptyModel
       , personManageModel = Comp.PersonManage.emptyModel
       , folderManageModel = Comp.FolderManage.empty
+      , fieldManageModel = Comp.CustomFieldManage.empty
       }
     , Cmd.none
     )
@@ -42,6 +45,7 @@ type Tab
     | OrgTab
     | PersonTab
     | FolderTab
+    | CustomFieldTab
 
 
 type Msg
@@ -51,3 +55,4 @@ type Msg
     | OrgManageMsg Comp.OrgManage.Msg
     | PersonManageMsg Comp.PersonManage.Msg
     | FolderMsg Comp.FolderManage.Msg
+    | CustomFieldMsg Comp.CustomFieldManage.Msg

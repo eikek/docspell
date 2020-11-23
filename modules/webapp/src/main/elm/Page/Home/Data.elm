@@ -63,6 +63,7 @@ type alias SelectViewModel =
     , deleteAllConfirm : Comp.YesNoDimmer.Model
     , editModel : Comp.ItemDetail.EditMenu.Model
     , saveNameState : SaveNameState
+    , saveCustomFieldState : Set String
     }
 
 
@@ -73,6 +74,7 @@ initSelectViewModel =
     , deleteAllConfirm = Comp.YesNoDimmer.initActive
     , editModel = Comp.ItemDetail.EditMenu.init
     , saveNameState = SaveSuccess
+    , saveCustomFieldState = Set.empty
     }
 
 

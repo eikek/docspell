@@ -13,6 +13,7 @@ module Comp.ItemDetail.Model exposing
     )
 
 import Api.Model.BasicResult exposing (BasicResult)
+import Api.Model.CustomField exposing (CustomField)
 import Api.Model.EquipmentList exposing (EquipmentList)
 import Api.Model.FolderItem exposing (FolderItem)
 import Api.Model.FolderList exposing (FolderList)
@@ -24,6 +25,7 @@ import Api.Model.SentMails exposing (SentMails)
 import Api.Model.Tag exposing (Tag)
 import Api.Model.TagList exposing (TagList)
 import Comp.AttachmentMeta
+import Comp.CustomFieldMultiInput
 import Comp.DatePicker
 import Comp.DetailEdit
 import Comp.Dropdown
@@ -93,6 +95,9 @@ type alias Model =
     , modalEdit : Maybe Comp.DetailEdit.Model
     , attachRename : Maybe AttachmentRename
     , keyInputModel : Comp.KeyInput.Model
+    , customFieldsModel : Comp.CustomFieldMultiInput.Model
+    , customFieldSavingIcon : Dict String String
+    , customFieldThrottle : Throttle Msg
     }
 
 
@@ -194,6 +199,9 @@ emptyModel =
     , modalEdit = Nothing
     , attachRename = Nothing
     , keyInputModel = Comp.KeyInput.init
+    , customFieldsModel = Comp.CustomFieldMultiInput.initWith []
+    , customFieldSavingIcon = Dict.empty
+    , customFieldThrottle = Throttle.create 1
     }
 
 
@@ -279,6 +287,9 @@ type Msg
     | ToggleAttachMenu
     | UiSettingsUpdated
     | SetLinkTarget LinkTarget
+    | CustomFieldMsg Comp.CustomFieldMultiInput.Msg
+    | CustomFieldSaveResp CustomField String (Result Http.Error BasicResult)
+    | CustomFieldRemoveResp String (Result Http.Error BasicResult)
 
 
 type SaveNameState

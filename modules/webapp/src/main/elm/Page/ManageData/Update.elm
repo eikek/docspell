@@ -1,5 +1,6 @@
 module Page.ManageData.Update exposing (update)
 
+import Comp.CustomFieldManage
 import Comp.EquipmentManage
 import Comp.FolderManage
 import Comp.OrgManage
@@ -37,6 +38,13 @@ update flags msg model =
                     in
                     ( { m | folderManageModel = sm }, Cmd.map FolderMsg sc )
 
+                CustomFieldTab ->
+                    let
+                        ( cm, cc ) =
+                            Comp.CustomFieldManage.init flags
+                    in
+                    ( { m | fieldManageModel = cm }, Cmd.map CustomFieldMsg cc )
+
         TagManageMsg m ->
             let
                 ( m2, c2 ) =
@@ -72,4 +80,13 @@ update flags msg model =
             in
             ( { model | folderManageModel = m2 }
             , Cmd.map FolderMsg c2
+            )
+
+        CustomFieldMsg lm ->
+            let
+                ( m2, c2 ) =
+                    Comp.CustomFieldManage.update flags lm model.fieldManageModel
+            in
+            ( { model | fieldManageModel = m2 }
+            , Cmd.map CustomFieldMsg c2
             )

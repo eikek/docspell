@@ -25,6 +25,7 @@ import Html.Events exposing (onClick)
 import Markdown
 import Page exposing (Page(..))
 import Set exposing (Set)
+import Util.CustomField
 import Util.ItemDragDrop as DD
 import Util.List
 import Util.Maybe
@@ -360,26 +361,60 @@ mainContent cardAction cardColor isConfirmed settings _ item =
             [ Util.Time.formatDate item.date |> text
             ]
         , div [ class "meta description" ]
-            [ div
-                [ classList
-                    [ ( "ui right floated tiny labels", True )
-                    , ( "invisible hidden", item.tags == [] || fieldHidden Data.Fields.Tag )
-                    ]
-                ]
-                (List.map
-                    (\tag ->
-                        div
-                            [ classList
-                                [ ( "ui basic label", True )
-                                , ( Data.UiSettings.tagColorString tag settings, True )
-                                ]
-                            ]
-                            [ text tag.name ]
-                    )
-                    item.tags
-                )
+            [ mainTagsAndFields settings item
             ]
         ]
+
+
+mainTagsAndFields : UiSettings -> ItemLight -> Html Msg
+mainTagsAndFields settings item =
+    let
+        fieldHidden f =
+            Data.UiSettings.fieldHidden settings f
+
+        hideTags =
+            item.tags == [] || fieldHidden Data.Fields.Tag
+
+        hideFields =
+            item.customfields == [] || fieldHidden Data.Fields.CustomFields
+
+        showTag tag =
+            div
+                [ classList
+                    [ ( "ui basic label", True )
+                    , ( Data.UiSettings.tagColorString tag settings, True )
+                    ]
+                ]
+                [ i [ class "tag icon" ] []
+                , div [ class "detail" ]
+                    [ text tag.name
+                    ]
+                ]
+
+        showField fv =
+            Util.CustomField.renderValue "ui basic label" fv
+
+        renderFields =
+            if hideFields then
+                []
+
+            else
+                List.map showField item.customfields
+
+        renderTags =
+            if hideTags then
+                []
+
+            else
+                List.map showTag item.tags
+    in
+    div
+        [ classList
+            [ ( "ui right floated tiny labels", True )
+            , ( "invisible hidden", hideTags && hideFields )
+            ]
+        ]
+        (renderFields ++ renderTags)
 
 
 previewImage : UiSettings -> Attribute Msg -> Model -> ItemLight -> Html Msg

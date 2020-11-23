@@ -323,6 +323,18 @@ object RItem {
   def existsById(itemId: Ident): ConnectionIO[Boolean] =
     selectCount(id, table, id.is(itemId)).query[Int].unique.map(_ > 0)
 
+  def existsByIdAndCollective(itemId: Ident, coll: Ident): ConnectionIO[Boolean] =
+    selectCount(id, table, and(id.is(itemId), cid.is(coll))).query[Int].unique.map(_ > 0)
+
+  def existsByIdsAndCollective(
+      itemIds: NonEmptyList[Ident],
+      coll: Ident
+  ): ConnectionIO[Boolean] =
+    selectCount(id, table, and(id.isIn(itemIds), cid.is(coll)))
+      .query[Int]
+      .unique
+      .map(_ == itemIds.size)
+
   def findByIdAndCollective(itemId: Ident, coll: Ident): ConnectionIO[Option[RItem]] =
     selectSimple(all, table, and(id.is(itemId), cid.is(coll))).query[RItem].option
 

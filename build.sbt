@@ -183,6 +183,8 @@ val openapiScalaSettings = Seq(
           )
       case "glob" =>
         field => field.copy(typeDef = TypeDef("Glob", Imports("docspell.common.Glob")))
+      case "customfieldtype" =>
+        field => field.copy(typeDef = TypeDef("CustomFieldType", Imports("docspell.common.CustomFieldType")))
     }))
 )
 

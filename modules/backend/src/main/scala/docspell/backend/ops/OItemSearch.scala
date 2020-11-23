@@ -53,6 +53,9 @@ trait OItemSearch[F[_]] {
 
 object OItemSearch {
 
+  type CustomValue = QItem.CustomValue
+  val CustomValue = QItem.CustomValue
+
   type Query = QItem.Query
   val Query = QItem.Query
 
@@ -64,6 +67,9 @@ object OItemSearch {
 
   type ListItemWithTags = QItem.ListItemWithTags
   val ListItemWithTags = QItem.ListItemWithTags
+
+  type ItemFieldValue = QItem.ItemFieldValue
+  val ItemFieldValue = QItem.ItemFieldValue
 
   type ItemData = QItem.ItemData
   val ItemData = QItem.ItemData

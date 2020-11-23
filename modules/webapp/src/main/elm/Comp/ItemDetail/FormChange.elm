@@ -5,9 +5,12 @@ module Comp.ItemDetail.FormChange exposing
 
 import Api
 import Api.Model.BasicResult exposing (BasicResult)
+import Api.Model.CustomField exposing (CustomField)
+import Api.Model.CustomFieldValue exposing (CustomFieldValue)
 import Api.Model.IdName exposing (IdName)
 import Api.Model.ItemsAndDate exposing (ItemsAndDate)
 import Api.Model.ItemsAndDirection exposing (ItemsAndDirection)
+import Api.Model.ItemsAndFieldValue exposing (ItemsAndFieldValue)
 import Api.Model.ItemsAndName exposing (ItemsAndName)
 import Api.Model.ItemsAndRef exposing (ItemsAndRef)
 import Api.Model.ItemsAndRefs exposing (ItemsAndRefs)
@@ -33,6 +36,8 @@ type FormChange
     | DueDateChange (Maybe Int)
     | NameChange String
     | ConfirmChange Bool
+    | CustomValueChange CustomField String
+    | RemoveCustomValue CustomField
 
 
 multiUpdate :
@@ -47,6 +52,20 @@ multiUpdate flags ids change receive =
             Set.toList ids
     in
     case change of
+        CustomValueChange field value ->
+            let
+                data =
+                    ItemsAndFieldValue items (CustomFieldValue field.id value)
+            in
+            Api.putCustomValueMultiple flags data receive
+
+        RemoveCustomValue field ->
+            let
+                data =
+                    ItemsAndName items field.id
+            in
+            Api.deleteCustomValueMultiple flags data receive
+
         ReplaceTagChange tags ->
             let
                 data =

@@ -6,6 +6,7 @@ import cats.implicits._
 
 import docspell.backend.BackendApp
 import docspell.backend.auth.AuthToken
+import docspell.backend.ops.OCustomFields.{RemoveValue, SetValue}
 import docspell.backend.ops.OFulltext
 import docspell.backend.ops.OItemSearch.Batch
 import docspell.common.syntax.all._
@@ -356,6 +357,24 @@ object ItemRoutes {
           _    <- logger.fdebug(s"Re-process item ${id.id}")
           res  <- backend.item.reprocess(id, ids, user.account, true)
           resp <- Ok(Conversions.basicResult(res, "Re-process task submitted."))
+        } yield resp
+
+      case req @ PUT -> Root / Ident(id) / "customfield" =>
+        for {
+          data <- req.as[CustomFieldValue]
+          res <- backend.customFields.setValue(
+            id,
+            SetValue(data.field, data.value, user.account.collective)
+          )
+          resp <- Ok(Conversions.basicResult(res))
+        } yield resp
+
+      case DELETE -> Root / Ident(id) / "customfield" / Ident(fieldId) =>
+        for {
+          res <- backend.customFields.deleteValue(
+            RemoveValue(fieldId, NonEmptyList.of(id), user.account.collective)
+          )
+          resp <- Ok(Conversions.basicResult(res, "Custom field value removed."))
         } yield resp
 
       case DELETE -> Root / Ident(id) =>

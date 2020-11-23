@@ -85,7 +85,8 @@ object RestServer {
       "usertask/scanmailbox"    -> ScanMailboxRoutes(restApp.backend, token),
       "calevent/check"          -> CalEventCheckRoutes(),
       "fts"                     -> FullTextIndexRoutes.secured(cfg, restApp.backend, token),
-      "folder"                  -> FolderRoutes(restApp.backend, token)
+      "folder"                  -> FolderRoutes(restApp.backend, token),
+      "customfield"             -> CustomFieldRoutes(restApp.backend, token)
     )
 
   def openRoutes[F[_]: Effect](cfg: Config, restApp: RestApp[F]): HttpRoutes[F] =

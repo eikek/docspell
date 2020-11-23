@@ -4,6 +4,7 @@ import Api
 import Api.Model.Attachment exposing (Attachment)
 import Api.Model.IdName exposing (IdName)
 import Comp.AttachmentMeta
+import Comp.CustomFieldMultiInput
 import Comp.DatePicker
 import Comp.DetailEdit
 import Comp.Dropdown
@@ -16,6 +17,7 @@ import Comp.LinkTarget
 import Comp.MarkdownInput
 import Comp.SentMails
 import Comp.YesNoDimmer
+import Data.CustomFieldType
 import Data.Direction
 import Data.Fields
 import Data.Icons as Icons
@@ -30,6 +32,7 @@ import Html.Events exposing (onCheck, onClick, onInput)
 import Markdown
 import Page exposing (Page(..))
 import Set
+import Util.CustomField
 import Util.File exposing (makeFileId)
 import Util.Folder
 import Util.List
@@ -181,11 +184,7 @@ renderDetailMenu settings inav model =
 
 actionInputDatePicker : DatePicker.Settings
 actionInputDatePicker =
-    let
-        ds =
-            Comp.DatePicker.defaultSettings
-    in
-    { ds | containerClassList = [ ( "ui action input", True ) ] }
+    Comp.DatePicker.defaultSettings
 
 
 renderIdInfo : Model -> List (Html msg)
@@ -598,33 +597,49 @@ renderItemInfo settings model =
                     ]
                 ]
             ]
-            :: renderTags settings model
+            :: renderTagsAndFields settings model
         )
+
+
+renderTagsAndFields : UiSettings -> Model -> List (Html Msg)
+renderTagsAndFields settings model =
+    [ div [ class "ui fluid right aligned container" ]
+        (renderTags settings model ++ renderCustomValues settings model)
+    ]
 
 
 renderTags : UiSettings -> Model -> List (Html Msg)
 renderTags settings model =
-    if Data.UiSettings.fieldHidden settings Data.Fields.Tag then
+    let
+        tagView t =
+            Comp.LinkTarget.makeTagLink
+                (IdName t.id t.name)
+                [ ( "ui tag label", True )
+                , ( Data.UiSettings.tagColorString t settings, True )
+                ]
+                SetLinkTarget
+    in
+    if Data.UiSettings.fieldHidden settings Data.Fields.Tag || model.item.tags == [] then
         []
 
     else
-        case model.item.tags of
-            [] ->
-                []
+        List.map tagView model.item.tags
 
-            _ ->
-                [ div [ class "ui right aligned fluid container" ] <|
-                    List.map
-                        (\t ->
-                            Comp.LinkTarget.makeTagLink
-                                (IdName t.id t.name)
-                                [ ( "ui tag label", True )
-                                , ( Data.UiSettings.tagColorString t settings, True )
-                                ]
-                                SetLinkTarget
-                        )
-                        model.item.tags
-                ]
+
+renderCustomValues : UiSettings -> Model -> List (Html Msg)
+renderCustomValues settings model =
+    let
+        fieldView cv =
+            Util.CustomField.renderValue "ui secondary basic label" cv
+
+        labelThenName cv =
+            Maybe.withDefault cv.name cv.label
+    in
+    if Data.UiSettings.fieldHidden settings Data.Fields.CustomFields || model.item.customfields == [] then
+        []
+
+    else
+        List.map fieldView (List.sortBy labelThenName model.item.customfields)
 
 
 renderEditMenu : UiSettings -> Model -> List (Html Msg)
@@ -727,19 +742,20 @@ renderEditForm settings model =
 
             else
                 span [ class "invisible hidden" ] []
+
+        showCustomFields =
+            fieldVisible Data.Fields.CustomFields
+                && Comp.CustomFieldMultiInput.nonEmpty model.customFieldsModel
+
+        customFieldSettings =
+            Comp.CustomFieldMultiInput.ViewSettings
+                True
+                "field"
+                (\f -> Dict.get f.id model.customFieldSavingIcon)
     in
     div [ class "ui attached segment" ]
         [ div [ class "ui form warning" ]
-            [ optional [ Data.Fields.Tag ] <|
-                div [ class "field" ]
-                    [ label []
-                        [ Icons.tagsIcon "grey"
-                        , text "Tags"
-                        , addIconLink "Add new tag" StartTagModal
-                        ]
-                    , Html.map TagDropdownMsg (Comp.Dropdown.view settings model.tagModel)
-                    ]
-            , div [ class " field" ]
+            [ div [ class " field" ]
                 [ label [] [ text "Name" ]
                 , div [ class "ui icon input" ]
                     [ input [ type_ "text", value model.nameModel, onInput SetName ] []
@@ -753,6 +769,15 @@ renderEditForm settings model =
                         []
                     ]
                 ]
+            , optional [ Data.Fields.Tag ] <|
+                div [ class "field" ]
+                    [ label []
+                        [ Icons.tagsIcon "grey"
+                        , text "Tags"
+                        , addIconLink "Add new tag" StartTagModal
+                        ]
+                    , Html.map TagDropdownMsg (Comp.Dropdown.view settings model.tagModel)
+                    ]
             , optional [ Data.Fields.Folder ] <|
                 div [ class "field" ]
                     [ label []
@@ -773,21 +798,32 @@ item visible. This message will disappear then.
                       """
                         ]
                     ]
-            , optional [ Data.Fields.Direction ] <|
-                div [ class "field" ]
-                    [ label []
-                        [ Icons.directionIcon "grey"
-                        , text "Direction"
-                        ]
-                    , Html.map DirDropdownMsg (Comp.Dropdown.view settings model.directionModel)
+            , if showCustomFields then
+                h4 [ class "ui dividing header" ]
+                    [ Icons.customFieldIcon ""
+                    , text "Custom Fields"
+                    ]
+
+              else
+                span [ class "hidden invisible" ] []
+            , if showCustomFields then
+                Html.map CustomFieldMsg
+                    (Comp.CustomFieldMultiInput.view customFieldSettings model.customFieldsModel)
+
+              else
+                span [ class "hidden invisible" ] []
+            , optional [ Data.Fields.DueDate, Data.Fields.Date ] <|
+                h4 [ class "ui dividing header" ]
+                    [ Icons.itemDatesIcon ""
+                    , text "Item Dates"
                     ]
             , optional [ Data.Fields.Date ] <|
                 div [ class "field" ]
                     [ label []
                         [ Icons.dateIcon "grey"
-                        , text "Date"
+                        , text "Item Date"
                         ]
-                    , div [ class "ui action input" ]
+                    , div [ class "ui left icon action input" ]
                         [ Html.map ItemDatePickerMsg
                             (Comp.DatePicker.viewTime
                                 model.itemDate
@@ -797,6 +833,7 @@ item visible. This message will disappear then.
                         , a [ class "ui icon button", href "", onClick RemoveDate ]
                             [ i [ class "trash alternate outline icon" ] []
                             ]
+                        , Icons.dateIcon ""
                         ]
                     , renderItemDateSuggestions model
                     ]
@@ -806,7 +843,7 @@ item visible. This message will disappear then.
                         [ Icons.dueDateIcon "grey"
                         , text "Due Date"
                         ]
-                    , div [ class "ui action input" ]
+                    , div [ class "ui left icon action input" ]
                         [ Html.map DueDatePickerMsg
                             (Comp.DatePicker.viewTime
                                 model.dueDate
@@ -815,6 +852,7 @@ item visible. This message will disappear then.
                             )
                         , a [ class "ui icon button", href "", onClick RemoveDueDate ]
                             [ i [ class "trash alternate outline icon" ] [] ]
+                        , Icons.dueDateIcon ""
                         ]
                     , renderDueDateSuggestions model
                     ]
@@ -877,6 +915,14 @@ item visible. This message will disappear then.
                         ]
                     , Html.map ConcEquipMsg (Comp.Dropdown.view settings model.concEquipModel)
                     , renderConcEquipSuggestions model
+                    ]
+            , optional [ Data.Fields.Direction ] <|
+                div [ class "field" ]
+                    [ label []
+                        [ Icons.directionIcon "grey"
+                        , text "Direction"
+                        ]
+                    , Html.map DirDropdownMsg (Comp.Dropdown.view settings model.directionModel)
                     ]
             ]
         ]

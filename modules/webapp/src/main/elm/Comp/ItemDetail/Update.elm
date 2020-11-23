@@ -2,9 +2,12 @@ module Comp.ItemDetail.Update exposing (update)
 
 import Api
 import Api.Model.BasicResult exposing (BasicResult)
+import Api.Model.CustomField exposing (CustomField)
+import Api.Model.CustomFieldValue exposing (CustomFieldValue)
 import Api.Model.DirectionValue exposing (DirectionValue)
 import Api.Model.IdName exposing (IdName)
 import Api.Model.ItemDetail exposing (ItemDetail)
+import Api.Model.ItemFieldValue exposing (ItemFieldValue)
 import Api.Model.MoveAttachment exposing (MoveAttachment)
 import Api.Model.OptionalDate exposing (OptionalDate)
 import Api.Model.OptionalId exposing (OptionalId)
@@ -13,6 +16,7 @@ import Api.Model.ReferenceList exposing (ReferenceList)
 import Api.Model.Tag exposing (Tag)
 import Browser.Navigation as Nav
 import Comp.AttachmentMeta
+import Comp.CustomFieldMultiInput
 import Comp.DatePicker
 import Comp.DetailEdit
 import Comp.Dropdown exposing (isDropdownChangeMsg)
@@ -39,6 +43,7 @@ import Comp.OrgForm
 import Comp.PersonForm
 import Comp.SentMails
 import Comp.YesNoDimmer
+import Data.CustomFieldChange exposing (CustomFieldChange(..))
 import Data.Direction
 import Data.Fields exposing (Field)
 import Data.Flags exposing (Flags)
@@ -72,14 +77,24 @@ update key flags inav settings msg model =
 
                 ( im, ic ) =
                     Comp.ItemMail.init flags
+
+                ( cm, cc ) =
+                    Comp.CustomFieldMultiInput.init flags
             in
             resultModelCmd
-                ( { model | itemDatePicker = dp, dueDatePicker = dp, itemMail = im, visibleAttach = 0 }
+                ( { model
+                    | itemDatePicker = dp
+                    , dueDatePicker = dp
+                    , itemMail = im
+                    , visibleAttach = 0
+                    , customFieldsModel = cm
+                  }
                 , Cmd.batch
                     [ getOptions flags
                     , Cmd.map ItemDatePickerMsg dpc
                     , Cmd.map DueDatePickerMsg dpc
                     , Cmd.map ItemMailMsg ic
+                    , Cmd.map CustomFieldMsg cc
                     , Api.getSentMails flags model.item.id SentMailsResp
                     ]
                 )
@@ -187,6 +202,14 @@ update key flags inav settings msg model =
                         )
                         res7.model
 
+                res9 =
+                    update key
+                        flags
+                        inav
+                        settings
+                        (CustomFieldMsg (Comp.CustomFieldMultiInput.setValues item.customfields))
+                        res8.model
+
                 proposalCmd =
                     if item.state == "created" then
                         Api.getItemProposals flags item.id GetProposalResp
@@ -195,7 +218,7 @@ update key flags inav settings msg model =
                         Cmd.none
 
                 lastModel =
-                    res8.model
+                    res9.model
             in
             { model =
                 { lastModel
@@ -224,9 +247,11 @@ update key flags inav settings msg model =
                     , res6.cmd
                     , res7.cmd
                     , res8.cmd
+                    , res9.cmd
                     , getOptions flags
                     , proposalCmd
                     , Api.getSentMails flags item.id SentMailsResp
+                    , Cmd.map CustomFieldMsg (Comp.CustomFieldMultiInput.initCmd flags)
                     ]
             , sub =
                 Sub.batch
@@ -238,6 +263,7 @@ update key flags inav settings msg model =
                     , res6.sub
                     , res7.sub
                     , res8.sub
+                    , res9.sub
                     ]
             , linkTarget = Comp.LinkTarget.LinkNone
             }
@@ -1210,10 +1236,16 @@ update key flags inav settings msg model =
 
         UpdateThrottle ->
             let
-                ( newThrottle, cmd ) =
+                ( newSaveName, cmd1 ) =
                     Throttle.update model.nameSaveThrottle
+
+                ( newCustomField, cmd2 ) =
+                    Throttle.update model.customFieldThrottle
             in
-            withSub ( { model | nameSaveThrottle = newThrottle }, cmd )
+            withSub
+                ( { model | nameSaveThrottle = newSaveName, customFieldThrottle = newCustomField }
+                , Cmd.batch [ cmd1, cmd2 ]
+                )
 
         KeyInputMsg lm ->
             let
@@ -1269,6 +1301,99 @@ update key flags inav settings msg model =
             , sub = Sub.none
             , linkTarget = lt
             }
+
+        CustomFieldMsg lm ->
+            let
+                result =
+                    Comp.CustomFieldMultiInput.update lm model.customFieldsModel
+
+                cmd_ =
+                    Cmd.map CustomFieldMsg result.cmd
+
+                loadingIcon =
+                    "refresh loading icon"
+
+                ( action_, icons ) =
+                    case result.result of
+                        NoFieldChange ->
+                            ( Cmd.none, model.customFieldSavingIcon )
+
+                        FieldValueRemove field ->
+                            ( Api.deleteCustomValue flags
+                                model.item.id
+                                field.id
+                                (CustomFieldRemoveResp field.id)
+                            , Dict.insert field.id loadingIcon model.customFieldSavingIcon
+                            )
+
+                        FieldValueChange field value ->
+                            ( Api.putCustomValue flags
+                                model.item.id
+                                (CustomFieldValue field.id value)
+                                (CustomFieldSaveResp field value)
+                            , Dict.insert field.id loadingIcon model.customFieldSavingIcon
+                            )
+
+                        FieldCreateNew ->
+                            ( Cmd.none, model.customFieldSavingIcon )
+
+                modalEdit =
+                    if result.result == FieldCreateNew then
+                        Just (Comp.DetailEdit.initCustomField model.item.id)
+
+                    else
+                        Nothing
+
+                ( throttle, action ) =
+                    if action_ == Cmd.none then
+                        ( model.customFieldThrottle, action_ )
+
+                    else
+                        Throttle.try action_ model.customFieldThrottle
+
+                model_ =
+                    { model
+                        | customFieldsModel = result.model
+                        , customFieldThrottle = throttle
+                        , modalEdit = modalEdit
+                        , customFieldSavingIcon = icons
+                    }
+            in
+            withSub ( model_, Cmd.batch [ cmd_, action ] )
+
+        CustomFieldSaveResp cf fv (Ok res) ->
+            let
+                model_ =
+                    { model | customFieldSavingIcon = Dict.remove cf.id model.customFieldSavingIcon }
+            in
+            if res.success then
+                resultModelCmd
+                    ( { model_ | item = setCustomField model.item cf fv }
+                    , Cmd.none
+                    )
+
+            else
+                resultModel model_
+
+        CustomFieldSaveResp cf _ (Err _) ->
+            resultModel { model | customFieldSavingIcon = Dict.remove cf.id model.customFieldSavingIcon }
+
+        CustomFieldRemoveResp fieldId (Ok res) ->
+            let
+                model_ =
+                    { model | customFieldSavingIcon = Dict.remove fieldId model.customFieldSavingIcon }
+            in
+            if res.success then
+                resultModelCmd
+                    ( model_
+                    , Api.itemDetail flags model.item.id GetItemResp
+                    )
+
+            else
+                resultModel model_
+
+        CustomFieldRemoveResp fieldId (Err _) ->
+            resultModel { model | customFieldSavingIcon = Dict.remove fieldId model.customFieldSavingIcon }
 
 
 
@@ -1409,9 +1534,14 @@ withSub ( m, c ) =
     { model = m
     , cmd = c
     , sub =
-        Throttle.ifNeeded
-            (Time.every 400 (\_ -> UpdateThrottle))
-            m.nameSaveThrottle
+        Sub.batch
+            [ Throttle.ifNeeded
+                (Time.every 200 (\_ -> UpdateThrottle))
+                m.nameSaveThrottle
+            , Throttle.ifNeeded
+                (Time.every 200 (\_ -> UpdateThrottle))
+                m.customFieldThrottle
+            ]
     , linkTarget = Comp.LinkTarget.LinkNone
     }
 
@@ -1449,6 +1579,9 @@ resetField flags item tagger field =
         Data.Fields.PreviewImage ->
             Cmd.none
 
+        Data.Fields.CustomFields ->
+            Cmd.none
+
 
 resetHiddenFields :
     UiSettings
@@ -1464,3 +1597,33 @@ resetHiddenFields settings flags item tagger =
 setItemName : ItemDetail -> String -> ItemDetail
 setItemName item name =
     { item | name = name }
+
+
+{-| Sets the field value of the given id into the item detail.
+-}
+setCustomField : ItemDetail -> CustomField -> String -> ItemDetail
+setCustomField item cf fv =
+    let
+        change ifv =
+            if ifv.id == cf.id then
+                ( { ifv | value = fv }, True )
+
+            else
+                ( ifv, False )
+
+        ( fields, isChanged ) =
+            List.map change item.customfields
+                |> List.foldl
+                    (\( e, isChange ) ->
+                        \( list, flag ) -> ( e :: list, isChange || flag )
+                    )
+                    ( [], False )
+    in
+    if isChanged then
+        { item | customfields = fields }
+
+    else
+        { item
+            | customfields =
+                ItemFieldValue cf.id cf.name cf.label cf.ftype fv :: item.customfields
+        }

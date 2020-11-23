@@ -178,7 +178,16 @@ viewLeftMenu flags settings model =
                             Comp.ItemDetail.EditMenu.defaultViewConfig
 
                         cfg =
-                            { cfg_ | nameState = svm.saveNameState }
+                            { cfg_
+                                | nameState = svm.saveNameState
+                                , customFieldState =
+                                    \fId ->
+                                        if Set.member fId svm.saveCustomFieldState then
+                                            Comp.ItemDetail.EditMenu.Saving
+
+                                        else
+                                            Comp.ItemDetail.EditMenu.SaveSuccess
+                            }
                     in
                     [ div [ class "ui dividing header" ]
                         [ text "Multi-Edit"

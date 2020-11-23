@@ -7,6 +7,7 @@ import cats.implicits._
 import fs2.Stream
 
 import docspell.backend.ops.OCollective.{InsightData, PassChangeResult}
+import docspell.backend.ops.OCustomFields.SetValueResult
 import docspell.backend.ops.OJob.JobCancelResult
 import docspell.backend.ops.OUpload.{UploadData, UploadMeta, UploadResult}
 import docspell.backend.ops._
@@ -95,8 +96,12 @@ trait Conversions {
       data.attachments.map((mkAttachment(data) _).tupled).toList,
       data.sources.map((mkAttachmentSource _).tupled).toList,
       data.archives.map((mkAttachmentArchive _).tupled).toList,
-      data.tags.map(mkTag).toList
+      data.tags.map(mkTag).toList,
+      data.customFields.map(mkItemFieldValue).toList
     )
+
+  def mkItemFieldValue(v: OItemSearch.ItemFieldValue): ItemFieldValue =
+    ItemFieldValue(v.fieldId, v.fieldName, v.fieldLabel, v.fieldType, v.value)
 
   def mkAttachment(
       item: OItemSearch.ItemData
@@ -138,8 +143,12 @@ trait Conversions {
       m.itemSubset
         .map(_.ids.flatMap(i => Ident.fromString(i).toOption).toSet)
         .filter(_.nonEmpty),
+      m.customValues.map(mkCustomValue),
       None
     )
+
+  def mkCustomValue(v: CustomFieldValue): OItemSearch.CustomValue =
+    OItemSearch.CustomValue(v.field, v.value)
 
   def mkItemList(v: Vector[OItemSearch.ListItem]): ItemLightList = {
     val groups = v.groupBy(item => item.date.toUtcDate.toString.substring(0, 7))
@@ -204,10 +213,11 @@ trait Conversions {
       i.concEquip.map(mkIdName),
       i.folder.map(mkIdName),
       i.fileCount,
-      Nil,
-      Nil,
+      Nil, //attachments
+      Nil, //tags
+      Nil, //customfields
       i.notes,
-      Nil
+      Nil // highlight
     )
 
   def mkItemLight(i: OFulltext.FtsItem): ItemLight = {
@@ -218,7 +228,11 @@ trait Conversions {
 
   def mkItemLightWithTags(i: OItemSearch.ListItemWithTags): ItemLight =
     mkItemLight(i.item)
-      .copy(tags = i.tags.map(mkTag), attachments = i.attachments.map(mkAttachmentLight))
+      .copy(
+        tags = i.tags.map(mkTag),
+        attachments = i.attachments.map(mkAttachmentLight),
+        customfields = i.customfields.map(mkItemFieldValue)
+      )
 
   private def mkAttachmentLight(qa: QItem.AttachmentLight): AttachmentLight =
     AttachmentLight(qa.id, qa.position, qa.name, qa.pageCount)
@@ -588,6 +602,18 @@ trait Conversions {
     IdName(ref.id, ref.name)
 
   // basic result
+
+  def basicResult(r: SetValueResult): BasicResult =
+    r match {
+      case SetValueResult.FieldNotFound =>
+        BasicResult(false, "The given field is unknown")
+      case SetValueResult.ItemNotFound =>
+        BasicResult(false, "The given item is unknown")
+      case SetValueResult.ValueInvalid(msg) =>
+        BasicResult(false, s"The value is invalid: $msg")
+      case SetValueResult.Success =>
+        BasicResult(true, "Custom field value set successfully.")
+    }
 
   def basicResult(cr: JobCancelResult): BasicResult =
     cr match {

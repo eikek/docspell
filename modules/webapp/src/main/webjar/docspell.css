@@ -109,7 +109,7 @@
     box-shadow: 0 0 0 1px #d4d4d5,0 2px 0 0 #2185d0,0 2px 10px 0 rgba(34,36,38,.15);
 }
 .default-layout .image.ds-card-image {
-    overflow: auto;
+    overflow: hidden;
 }
 .default-layout .image.ds-card-image.small {
     max-height: 120px;
@@ -233,6 +233,17 @@ textarea.markdown-editor {
 .default-layout .search-menu {
     box-shadow: 2px 1px 3px rgba(216, 223, 229, 1);
     background-color: aliceblue;
+}
+
+.default-layout .ui.action.input .elm-datepicker--container {
+    width: 100%;
+}
+.default-layout .ui.action.input .elm-datepicker--container input.elm-datepicker--input {
+    width: 100%;
+    padding-left: 2.67142857em;
+    padding-right: 1em;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
 }
 
 .ui.dimmer.keep-small {

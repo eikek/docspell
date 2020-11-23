@@ -5,6 +5,11 @@ module Data.Icons exposing
     , concernedIcon
     , correspondent
     , correspondentIcon
+    , customField
+    , customFieldIcon
+    , customFieldType
+    , customFieldTypeIcon
+    , customFieldTypeIconString
     , date
     , dateIcon
     , direction
@@ -17,6 +22,7 @@ module Data.Icons exposing
     , equipmentIcon
     , folder
     , folderIcon
+    , itemDatesIcon
     , organization
     , organizationIcon
     , person
@@ -29,8 +35,51 @@ module Data.Icons exposing
     , tagsIcon
     )
 
+import Data.CustomFieldType exposing (CustomFieldType)
 import Html exposing (Html, i)
 import Html.Attributes exposing (class)
+
+
+customFieldType : CustomFieldType -> String
+customFieldType ftype =
+    case ftype of
+        Data.CustomFieldType.Text ->
+            "stream icon"
+
+        Data.CustomFieldType.Numeric ->
+            "hashtag icon"
+
+        Data.CustomFieldType.Date ->
+            "calendar icon"
+
+        Data.CustomFieldType.Boolean ->
+            "marker icon"
+
+        Data.CustomFieldType.Money ->
+            "money bill icon"
+
+
+customFieldTypeIcon : String -> CustomFieldType -> Html msg
+customFieldTypeIcon classes ftype =
+    i [ class (customFieldType ftype ++ " " ++ classes) ]
+        []
+
+
+customFieldTypeIconString : String -> String -> Html msg
+customFieldTypeIconString classes ftype =
+    Data.CustomFieldType.fromString ftype
+        |> Maybe.map (customFieldTypeIcon classes)
+        |> Maybe.withDefault (i [ class "question circle outline icon" ] [])
+
+
+customField : String
+customField =
+    "highlighter icon"
+
+
+customFieldIcon : String -> Html msg
+customFieldIcon classes =
+    i [ class (customField ++ " " ++ classes) ] []
 
 
 search : String
@@ -71,6 +120,20 @@ correspondent =
 correspondentIcon : String -> Html msg
 correspondentIcon classes =
     i [ class (correspondent ++ " " ++ classes) ] []
+
+
+itemDates : String
+itemDates =
+    "calendar alternate outline icon"
+
+
+itemDatesIcon : String -> Html msg
+itemDatesIcon classes =
+    i
+        [ class classes
+        , class itemDates
+        ]
+        []
 
 
 date : String

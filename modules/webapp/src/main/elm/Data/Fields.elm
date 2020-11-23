@@ -20,6 +20,7 @@ type Field
     | DueDate
     | Direction
     | PreviewImage
+    | CustomFields
 
 
 all : List Field
@@ -35,6 +36,7 @@ all =
         , DueDate
         , Direction
         , PreviewImage
+        , CustomFields
         ]
 
 
@@ -76,6 +78,9 @@ fromString str =
         "preview" ->
             Just PreviewImage
 
+        "customfields" ->
+            Just CustomFields
+
         _ ->
             Nothing
 
@@ -113,6 +118,9 @@ toString field =
         PreviewImage ->
             "preview"
 
+        CustomFields ->
+            "customfields"
+
 
 label : Field -> String
 label field =
@@ -146,6 +154,9 @@ label field =
 
         PreviewImage ->
             "Preview Image"
+
+        CustomFields ->
+            "Custom Fields"
 
 
 fromList : List String -> List Field

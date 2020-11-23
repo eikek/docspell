@@ -1,5 +1,6 @@
 module Page.ManageData.View exposing (view)
 
+import Comp.CustomFieldManage
 import Comp.EquipmentManage
 import Comp.FolderManage
 import Comp.OrgManage
@@ -65,6 +66,18 @@ view flags settings model =
                         [ Icons.folderIcon ""
                         , text "Folder"
                         ]
+                    , div
+                        [ classActive (model.currentTab == Just CustomFieldTab) "link icon item"
+                        , classList
+                            [ ( "invisible hidden"
+                              , Data.UiSettings.fieldHidden settings Data.Fields.CustomFields
+                              )
+                            ]
+                        , onClick (SetTab CustomFieldTab)
+                        ]
+                        [ Icons.customFieldIcon ""
+                        , text "Custom Fields"
+                        ]
                     ]
                 ]
             ]
@@ -86,11 +99,26 @@ view flags settings model =
                     Just FolderTab ->
                         viewFolder flags settings model
 
+                    Just CustomFieldTab ->
+                        viewCustomFields flags settings model
+
                     Nothing ->
                         []
                 )
             ]
         ]
+
+
+viewCustomFields : Flags -> UiSettings -> Model -> List (Html Msg)
+viewCustomFields flags _ model =
+    [ h2 [ class "ui header" ]
+        [ Icons.customFieldIcon ""
+        , div [ class "content" ]
+            [ text "Custom Fields"
+            ]
+        ]
+    , Html.map CustomFieldMsg (Comp.CustomFieldManage.view flags model.fieldManageModel)
+    ]
 
 
 viewFolder : Flags -> UiSettings -> Model -> List (Html Msg)

@@ -1299,6 +1299,10 @@ paths:
 
         The `fulltext` field can be used to restrict the results by
         using full-text search in the documents contents.
+
+        The customfields used in the search query are allowed to be
+        specified by either field id or field name. The values may
+        contain the wildcard `*` at beginning or end.
       security:
         - authTokenHeader: []
       requestBody:
@@ -1914,6 +1918,51 @@ paths:
                 type: string
                 format: binary
 
+  /sec/item/{id}/customfield:
+    put:
+      tags: [ Item ]
+      summary: Set the value of a custom field.
+      description: |
+        Sets the value for a custom field to this item. If a value
+        already exists, it is overwritten. A value must comply to the
+        type of the associated field. It must not be the empty string.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CustomFieldValue"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+  /sec/item/{itemId}/customfield/{id}:
+    delete:
+      tags: [ Item ]
+      summary: Removes the value for a custom field
+      description: |
+        Removes the value for the given custom field. The `id` may be
+        the id of a custom field or its name.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+        - $ref: "#/components/parameters/itemId"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
+
   /sec/item/{itemId}/reprocess:
     post:
       tags: [ Item ]
@@ -2331,6 +2380,54 @@ paths:
             schema:
               $ref: "#/components/schemas/IdList"
 
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
+  /sec/items/customfield:
+    put:
+      tags: [ Item (Multi Edit) ]
+      summary: Set the value of a custom field for multiple items
+      description: |
+        Sets the value for a custom field to multiple given items. If
+        a value already exists, it is overwritten. The value must
+        comply to the associated field type. It must not be the empty
+        string.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ItemsAndFieldValue"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
+  /sec/items/customfieldremove:
+    post:
+      tags: [ Item (Multi Edit) ]
+      summary: Removes the value for a custom field on multiple items
+      description: |
+        Removes the value for the given custom field from multiple
+        items. The field may be specified by its id or name.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/itemId"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ItemsAndName"
       responses:
         200:
           description: Ok
@@ -3202,8 +3299,117 @@ paths:
               schema:
                 $ref: "#/components/schemas/BasicResult"
 
+  /sec/customfield:
+    get:
+      tags: [ Custom Fields ]
+      summary: Get all defined custom fields.
+      description: |
+        Get all custom fields defined for the current collective.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/q"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CustomFieldList"
+    post:
+      tags: [ Custom Fields ]
+      summary: Create a new custom field
+      description: |
+        Creates a new custom field.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewCustomField"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
+  /sec/customfield/{id}:
+    parameters:
+      - $ref: "#/components/parameters/id"
+    get:
+      tags: [ Custom Fields ]
+      summary: Get details about a custom field.
+      description: |
+        Returns the details about a custom field.
+      security:
+        - authTokenHeader: []
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CustomField"
+    put:
+      tags: [ Custom Fields ]
+      summary: Change a custom field
+      description: |
+        Change properties of a custom field.
+
+        Changing the label has no further impliciations, since it is
+        only used for displaying. The name and type on the other hand
+        have consequences: name must be unique and the type determines
+        how the value is stored internally.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewCustomField"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+    delete:
+      tags: [ Custom Fields ]
+      summary: Deletes a custom field.
+      description: |
+        Deletes the custom field and all its relations.
+      security:
+        - authTokenHeader: []
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
+
 components:
   schemas:
+    ItemsAndFieldValue:
+      description: |
+        Holds a list of item ids and a custom field value.
+      required:
+        - items
+        - field
+      properties:
+        items:
+          type: array
+          items:
+            type: string
+            format: ident
+        field:
+          $ref: "#/components/schemas/CustomFieldValue"
+
     ItemsAndRefs:
       description: |
         Holds a list of item ids and a list of ids of some other
@@ -3281,6 +3487,115 @@ components:
           type: integer
           format: date-time
 
+
+    CustomFieldList:
+      description: |
+        A list of known custom fields.
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/CustomField"
+
+    ItemFieldValue:
+      description: |
+        Information about a custom field on an item.
+      required:
+        - id
+        - name
+        - ftype
+        - value
+      properties:
+        id:
+          type: string
+          format: ident
+        name:
+          type: string
+          format: ident
+        label:
+          type: string
+        ftype:
+          type: string
+          format: customfieldtype
+          enum:
+            - text
+            - numeric
+            - date
+            - bool
+            - money
+        value:
+          type: string
+
+    CustomFieldValue:
+      description: |
+        Data structure to update the value of a custom field.
+      required:
+        - field
+        - value
+      properties:
+        field:
+          type: string
+          format: ident
+        value:
+          type: string
+
+    NewCustomField:
+      description: |
+        Data for creating a custom field.
+      required:
+        - name
+        - ftype
+      properties:
+        name:
+          type: string
+          format: ident
+        label:
+          type: string
+        ftype:
+          type: string
+          format: customfieldtype
+          enum:
+            - text
+            - numeric
+            - date
+            - bool
+            - money
+
+    CustomField:
+      description: |
+        A custom field definition.
+      required:
+        - id
+        - name
+        - ftype
+        - usages
+        - created
+      properties:
+        id:
+          type: string
+          format: ident
+        name:
+          type: string
+          format: ident
+        label:
+          type: string
+        ftype:
+          type: string
+          format: customfieldtype
+          enum:
+            - text
+            - numeric
+            - date
+            - bool
+            - money
+        usages:
+          type: integer
+          format: int32
+        created:
+          type: integer
+          format: date-time
 
     JobPriority:
       description: |
@@ -3974,6 +4289,7 @@ components:
         - sources
         - archives
         - tags
+        - customfields
       properties:
         id:
           type: string
@@ -4033,6 +4349,10 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/Tag"
+        customfields:
+          type: array
+          items:
+            $ref: "#/components/schemas/ItemFieldValue"
     Attachment:
       description: |
         Information about an attachment to an item.
@@ -4372,6 +4692,7 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/SourceAndTags"
+
     Source:
       description: |
         Data about a Source. A source defines the endpoint where
@@ -4638,6 +4959,7 @@ components:
         - inbox
         - offset
         - limit
+        - customValues
       properties:
         tagsInclude:
           type: array
@@ -4717,6 +5039,10 @@ components:
           format: date-time
         itemSubset:
           $ref: "#/components/schemas/IdList"
+        customValues:
+          type: array
+          items:
+            $ref: "#/components/schemas/CustomFieldValue"
     ItemLight:
       description: |
         An item with only a few important properties.
@@ -4771,6 +5097,10 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/Tag"
+        customfields:
+          type: array
+          items:
+            $ref: "#/components/schemas/ItemFieldValue"
         notes:
           description: |
             Some prefix of the item notes.

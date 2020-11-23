@@ -8,6 +8,7 @@ import cats.implicits._
 
 import docspell.backend.BackendApp
 import docspell.backend.auth.AuthToken
+import docspell.backend.ops.OCustomFields.{RemoveValue, SetValue}
 import docspell.common.{Ident, ItemState}
 import docspell.restapi.model._
 import docspell.restserver.conv.Conversions
@@ -180,6 +181,29 @@ object ItemMultiRoutes {
           )
           resp <- Ok(res)
         } yield resp
+
+      case req @ PUT -> Root / "customfield" =>
+        for {
+          json  <- req.as[ItemsAndFieldValue]
+          items <- readIds[F](json.items)
+          res <- backend.customFields.setValueMultiple(
+            items,
+            SetValue(json.field.field, json.field.value, user.account.collective)
+          )
+          resp <- Ok(Conversions.basicResult(res))
+        } yield resp
+
+      case req @ POST -> Root / "customfieldremove" =>
+        for {
+          json  <- req.as[ItemsAndName]
+          items <- readIds[F](json.items)
+          field <- readId[F](json.name)
+          res <- backend.customFields.deleteValue(
+            RemoveValue(field, items, user.account.collective)
+          )
+          resp <- Ok(Conversions.basicResult(res, "Custom fields removed."))
+        } yield resp
+
     }
   }
 
