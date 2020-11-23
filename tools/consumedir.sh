@@ -248,7 +248,7 @@ checkFile() {
     url=$url/$(checksum "$file")
     trace "- Check file via $OPTS: $url"
     tf1=$($MKTEMP_CMD) tf2=$($MKTEMP_CMD)
-    $CURL_CMD --fail -o "$tf1" --stderr "$tf2" $OPTS -XGET -s "$url"
+    $CURL_CMD --fail -v -o "$tf1" --stderr "$tf2" $OPTS -XGET -s "$url"
     if [ $? -ne 0 ]; then
         info "Checking file failed!"
         cat "$tf1" >&2
