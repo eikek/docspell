@@ -289,7 +289,7 @@ object QItem {
         and(
           cfColl.is(coll),
           or(cfName.is(v.field), cfId.is(v.field)),
-          cvValue.is(v.value)
+          cvValue.lowerLike(QueryWildcard(v.value.toLowerCase))
         )
       )
     if (cv.isEmpty) Seq.empty

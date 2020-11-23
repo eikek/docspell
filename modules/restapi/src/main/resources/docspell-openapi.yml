@@ -1299,6 +1299,10 @@ paths:
 
         The `fulltext` field can be used to restrict the results by
         using full-text search in the documents contents.
+
+        The customfields used in the search query are allowed to be
+        specified by either field id or field name. The values may
+        contain the wildcard `*` at beginning or end.
       security:
         - authTokenHeader: []
       requestBody:
@@ -1920,7 +1924,8 @@ paths:
       summary: Set the value of a custom field.
       description: |
         Sets the value for a custom field to this item. If a value
-        already exists, it is overwritten.
+        already exists, it is overwritten. A value must comply to the
+        type of the associated field. It must not be the empty string.
       security:
         - authTokenHeader: []
       parameters:
@@ -2389,7 +2394,9 @@ paths:
       summary: Set the value of a custom field for multiple items
       description: |
         Sets the value for a custom field to multiple given items. If
-        a value already exists, it is overwritten.
+        a value already exists, it is overwritten. The value must
+        comply to the associated field type. It must not be the empty
+        string.
       security:
         - authTokenHeader: []
       requestBody:
