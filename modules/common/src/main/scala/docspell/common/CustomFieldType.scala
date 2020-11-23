@@ -28,7 +28,10 @@ object CustomFieldType {
       value
 
     def parseValue(value: String): Either[String, String] =
-      Right(value)
+      Option(value)
+        .map(_.trim)
+        .filter(_.nonEmpty)
+        .toRight("Empty values are not allowed.")
   }
 
   case object Numeric extends CustomFieldType {
@@ -62,7 +65,11 @@ object CustomFieldType {
       value.toString
 
     def parseValue(value: String): Either[String, Boolean] =
-      Right(value.equalsIgnoreCase("true"))
+      Option(value)
+        .map(_.trim)
+        .filter(_.nonEmpty)
+        .toRight("Empty values not allowed")
+        .map(_.equalsIgnoreCase("true"))
 
   }
 
