@@ -175,7 +175,6 @@ type alias UpdateResult =
     { model : Model
     , cmd : Cmd Msg
     , result : FieldResult
-    , subs : Sub Msg
     }
 
 
@@ -219,7 +218,7 @@ update msg model =
                 model_ =
                     { model | fieldModel = TextField (Just str) }
             in
-            UpdateResult model_ Cmd.none (Value str) Sub.none
+            UpdateResult model_ Cmd.none (Value str)
 
         ( NumberMsg str, NumberField _ ) ->
             let
@@ -229,7 +228,7 @@ update msg model =
                 model_ =
                     { model | fieldModel = NumberField fm }
             in
-            UpdateResult model_ Cmd.none res Sub.none
+            UpdateResult model_ Cmd.none res
 
         ( MoneyMsg str, MoneyField _ ) ->
             let
@@ -242,7 +241,7 @@ update msg model =
                 model_ =
                     { model | fieldModel = MoneyField fm }
             in
-            UpdateResult model_ Cmd.none res Sub.none
+            UpdateResult model_ Cmd.none res
 
         ( ToggleBool, BoolField b ) ->
             let
@@ -259,7 +258,7 @@ update msg model =
                     else
                         "false"
             in
-            UpdateResult model_ Cmd.none (Value value) Sub.none
+            UpdateResult model_ Cmd.none (Value value)
 
         ( DateMsg lm, DateField _ picker ) ->
             let
@@ -280,14 +279,14 @@ update msg model =
                 model_ =
                     { model | fieldModel = DateField newDate picker_ }
             in
-            UpdateResult model_ Cmd.none value Sub.none
+            UpdateResult model_ Cmd.none value
 
         ( Remove, _ ) ->
-            UpdateResult model Cmd.none RemoveField Sub.none
+            UpdateResult model Cmd.none RemoveField
 
         -- no other possibilities, not well encoded here
         _ ->
-            UpdateResult model Cmd.none NoResult Sub.none
+            UpdateResult model Cmd.none NoResult
 
 
 mkLabel : Model -> String
@@ -396,7 +395,8 @@ makeInput icon model =
 
         DateField v dp ->
             div [ class "ui action left icon input" ]
-                [ Html.map DateMsg (Comp.DatePicker.view v Comp.DatePicker.defaultSettings dp)
+                [ Html.map DateMsg
+                    (Comp.DatePicker.view v Comp.DatePicker.defaultSettings dp)
                 , removeButton ""
                 , i [ class (iconOr <| Icons.customFieldType Data.CustomFieldType.Date) ] []
                 ]

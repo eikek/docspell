@@ -564,9 +564,6 @@ update flags msg model =
                 cmd_ =
                     Cmd.map CustomFieldMsg res.cmd
 
-                sub_ =
-                    Sub.map CustomFieldMsg res.subs
-
                 change =
                     case res.result of
                         NoFieldChange ->
@@ -581,7 +578,7 @@ update flags msg model =
                         FieldCreateNew ->
                             NoFormChange
             in
-            UpdateResult model_ cmd_ sub_ change
+            UpdateResult model_ cmd_ Sub.none change
 
 
 nameThrottleSub : Model -> Sub Msg

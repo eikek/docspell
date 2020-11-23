@@ -183,11 +183,7 @@ renderDetailMenu settings inav model =
 
 actionInputDatePicker : DatePicker.Settings
 actionInputDatePicker =
-    let
-        ds =
-            Comp.DatePicker.defaultSettings
-    in
-    { ds | containerClassList = [ ( "ui action input", True ) ] }
+    Comp.DatePicker.defaultSettings
 
 
 renderIdInfo : Model -> List (Html msg)

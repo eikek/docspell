@@ -138,7 +138,6 @@ mkFieldSelect fields =
 type alias UpdateResult =
     { model : Model
     , cmd : Cmd Msg
-    , subs : Sub Msg
     , result : CustomFieldChange
     }
 
@@ -152,7 +151,7 @@ update : Msg -> Model -> UpdateResult
 update msg model =
     case msg of
         CreateNewField ->
-            UpdateResult model Cmd.none Sub.none FieldCreateNew
+            UpdateResult model Cmd.none FieldCreateNew
 
         CustomFieldResp (Ok list) ->
             let
@@ -162,10 +161,10 @@ update msg model =
                         , fieldSelect = mkFieldSelect (currentOptions list.items model.visibleFields)
                     }
             in
-            UpdateResult model_ Cmd.none Sub.none NoFieldChange
+            UpdateResult model_ Cmd.none NoFieldChange
 
         CustomFieldResp (Err _) ->
-            UpdateResult model Cmd.none Sub.none NoFieldChange
+            UpdateResult model Cmd.none NoFieldChange
 
         FieldSelectMsg lm ->
             let
@@ -188,7 +187,7 @@ update msg model =
                     update (ApplyField field) model
 
                 Nothing ->
-                    UpdateResult model_ Cmd.none Sub.none NoFieldChange
+                    UpdateResult model_ Cmd.none NoFieldChange
 
         ApplyField f ->
             let
@@ -218,7 +217,7 @@ update msg model =
                 cmd_ =
                     Cmd.map (CustomFieldInputMsg f) fc
             in
-            UpdateResult model_ cmd_ Sub.none NoFieldChange
+            UpdateResult model_ cmd_ NoFieldChange
 
         RemoveField f ->
             let
@@ -231,7 +230,7 @@ update msg model =
                         , fieldSelect = mkFieldSelect (currentOptions model.allFields visible)
                     }
             in
-            UpdateResult model_ Cmd.none Sub.none (FieldValueRemove f)
+            UpdateResult model_ Cmd.none (FieldValueRemove f)
 
         CustomFieldInputMsg f lm ->
             let
@@ -268,10 +267,10 @@ update msg model =
                         update (RemoveField field) model_
 
                     else
-                        UpdateResult model_ cmd_ Sub.none result
+                        UpdateResult model_ cmd_ result
 
                 Nothing ->
-                    UpdateResult model Cmd.none Sub.none NoFieldChange
+                    UpdateResult model Cmd.none NoFieldChange
 
         SetValues values ->
             let
@@ -299,7 +298,7 @@ update msg model =
                         , visibleFields = modelDict
                     }
             in
-            UpdateResult model_ (Cmd.batch cmdList) Sub.none NoFieldChange
+            UpdateResult model_ (Cmd.batch cmdList) NoFieldChange
 
 
 

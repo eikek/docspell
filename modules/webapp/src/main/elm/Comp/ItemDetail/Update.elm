@@ -2,10 +2,12 @@ module Comp.ItemDetail.Update exposing (update)
 
 import Api
 import Api.Model.BasicResult exposing (BasicResult)
+import Api.Model.CustomField exposing (CustomField)
 import Api.Model.CustomFieldValue exposing (CustomFieldValue)
 import Api.Model.DirectionValue exposing (DirectionValue)
 import Api.Model.IdName exposing (IdName)
 import Api.Model.ItemDetail exposing (ItemDetail)
+import Api.Model.ItemFieldValue exposing (ItemFieldValue)
 import Api.Model.MoveAttachment exposing (MoveAttachment)
 import Api.Model.OptionalDate exposing (OptionalDate)
 import Api.Model.OptionalId exposing (OptionalId)
@@ -1232,10 +1234,16 @@ update key flags inav settings msg model =
 
         UpdateThrottle ->
             let
-                ( newThrottle, cmd ) =
+                ( newSaveName, cmd1 ) =
                     Throttle.update model.nameSaveThrottle
+
+                ( newCustomField, cmd2 ) =
+                    Throttle.update model.customFieldThrottle
             in
-            withSub ( { model | nameSaveThrottle = newThrottle }, cmd )
+            withSub
+                ( { model | nameSaveThrottle = newSaveName, customFieldThrottle = newCustomField }
+                , Cmd.batch [ cmd1, cmd2 ]
+                )
 
         KeyInputMsg lm ->
             let
@@ -1303,7 +1311,7 @@ update key flags inav settings msg model =
                 loadingIcon =
                     "refresh loading icon"
 
-                ( action, icons ) =
+                ( action_, icons ) =
                     case result.result of
                         NoFieldChange ->
                             ( Cmd.none, model.customFieldSavingIcon )
@@ -1312,7 +1320,7 @@ update key flags inav settings msg model =
                             ( Api.deleteCustomValue flags
                                 model.item.id
                                 field.id
-                                (CustomFieldSaveResp field.id)
+                                (CustomFieldRemoveResp field.id)
                             , Dict.insert field.id loadingIcon model.customFieldSavingIcon
                             )
 
@@ -1320,15 +1328,12 @@ update key flags inav settings msg model =
                             ( Api.putCustomValue flags
                                 model.item.id
                                 (CustomFieldValue field.id value)
-                                (CustomFieldSaveResp field.id)
+                                (CustomFieldSaveResp field value)
                             , Dict.insert field.id loadingIcon model.customFieldSavingIcon
                             )
 
                         FieldCreateNew ->
                             ( Cmd.none, model.customFieldSavingIcon )
-
-                sub_ =
-                    Sub.map CustomFieldMsg result.subs
 
                 modalEdit =
                     if result.result == FieldCreateNew then
@@ -1337,20 +1342,41 @@ update key flags inav settings msg model =
                     else
                         Nothing
 
+                ( throttle, action ) =
+                    if action_ == Cmd.none then
+                        ( model.customFieldThrottle, action_ )
+
+                    else
+                        Throttle.try action_ model.customFieldThrottle
+
                 model_ =
                     { model
                         | customFieldsModel = result.model
+                        , customFieldThrottle = throttle
                         , modalEdit = modalEdit
                         , customFieldSavingIcon = icons
                     }
             in
-            { model = model_
-            , cmd = Cmd.batch [ cmd_, action ]
-            , sub = sub_
-            , linkTarget = Comp.LinkTarget.LinkNone
-            }
+            withSub ( model_, Cmd.batch [ cmd_, action ] )
 
-        CustomFieldSaveResp fieldId (Ok res) ->
+        CustomFieldSaveResp cf fv (Ok res) ->
+            let
+                model_ =
+                    { model | customFieldSavingIcon = Dict.remove cf.id model.customFieldSavingIcon }
+            in
+            if res.success then
+                resultModelCmd
+                    ( { model_ | item = setCustomField model.item cf fv }
+                    , Cmd.none
+                    )
+
+            else
+                resultModel model_
+
+        CustomFieldSaveResp cf _ (Err _) ->
+            resultModel { model | customFieldSavingIcon = Dict.remove cf.id model.customFieldSavingIcon }
+
+        CustomFieldRemoveResp fieldId (Ok res) ->
             let
                 model_ =
                     { model | customFieldSavingIcon = Dict.remove fieldId model.customFieldSavingIcon }
@@ -1364,7 +1390,7 @@ update key flags inav settings msg model =
             else
                 resultModel model_
 
-        CustomFieldSaveResp fieldId (Err _) ->
+        CustomFieldRemoveResp fieldId (Err _) ->
             resultModel { model | customFieldSavingIcon = Dict.remove fieldId model.customFieldSavingIcon }
 
 
@@ -1506,9 +1532,14 @@ withSub ( m, c ) =
     { model = m
     , cmd = c
     , sub =
-        Throttle.ifNeeded
-            (Time.every 400 (\_ -> UpdateThrottle))
-            m.nameSaveThrottle
+        Sub.batch
+            [ Throttle.ifNeeded
+                (Time.every 200 (\_ -> UpdateThrottle))
+                m.nameSaveThrottle
+            , Throttle.ifNeeded
+                (Time.every 200 (\_ -> UpdateThrottle))
+                m.customFieldThrottle
+            ]
     , linkTarget = Comp.LinkTarget.LinkNone
     }
 
@@ -1564,3 +1595,33 @@ resetHiddenFields settings flags item tagger =
 setItemName : ItemDetail -> String -> ItemDetail
 setItemName item name =
     { item | name = name }
+
+
+{-| Sets the field value of the given id into the item detail.
+-}
+setCustomField : ItemDetail -> CustomField -> String -> ItemDetail
+setCustomField item cf fv =
+    let
+        change ifv =
+            if ifv.id == cf.id then
+                ( { ifv | value = fv }, True )
+
+            else
+                ( ifv, False )
+
+        ( fields, isChanged ) =
+            List.map change item.customfields
+                |> List.foldl
+                    (\( e, isChange ) ->
+                        \( list, flag ) -> ( e :: list, isChange || flag )
+                    )
+                    ( [], False )
+    in
+    if isChanged then
+        { item | customfields = fields }
+
+    else
+        { item
+            | customfields =
+                ItemFieldValue cf.id cf.name cf.label cf.ftype fv :: item.customfields
+        }

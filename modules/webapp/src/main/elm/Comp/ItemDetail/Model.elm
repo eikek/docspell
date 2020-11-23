@@ -13,6 +13,7 @@ module Comp.ItemDetail.Model exposing
     )
 
 import Api.Model.BasicResult exposing (BasicResult)
+import Api.Model.CustomField exposing (CustomField)
 import Api.Model.EquipmentList exposing (EquipmentList)
 import Api.Model.FolderItem exposing (FolderItem)
 import Api.Model.FolderList exposing (FolderList)
@@ -96,6 +97,7 @@ type alias Model =
     , keyInputModel : Comp.KeyInput.Model
     , customFieldsModel : Comp.CustomFieldMultiInput.Model
     , customFieldSavingIcon : Dict String String
+    , customFieldThrottle : Throttle Msg
     }
 
 
@@ -199,6 +201,7 @@ emptyModel =
     , keyInputModel = Comp.KeyInput.init
     , customFieldsModel = Comp.CustomFieldMultiInput.initWith []
     , customFieldSavingIcon = Dict.empty
+    , customFieldThrottle = Throttle.create 1
     }
 
 
@@ -285,7 +288,8 @@ type Msg
     | UiSettingsUpdated
     | SetLinkTarget LinkTarget
     | CustomFieldMsg Comp.CustomFieldMultiInput.Msg
-    | CustomFieldSaveResp String (Result Http.Error BasicResult)
+    | CustomFieldSaveResp CustomField String (Result Http.Error BasicResult)
+    | CustomFieldRemoveResp String (Result Http.Error BasicResult)
 
 
 type SaveNameState
