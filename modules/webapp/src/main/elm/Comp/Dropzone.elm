@@ -17,7 +17,6 @@ import File.Select
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
-import Json.Decode as D
 import Util.Html exposing (onDragEnter, onDragLeave, onDragOver, onDropFiles)
 
 
@@ -119,9 +118,7 @@ view model =
         ]
         [ div [ class "ui icon header" ]
             [ i [ class "mouse pointer icon" ] []
-            , div [ class "content" ]
-                [ text "Drop files here"
-                ]
+            , text "Drop files here"
             ]
         , div [ class "ui horizontal divider" ]
             [ text "Or"
