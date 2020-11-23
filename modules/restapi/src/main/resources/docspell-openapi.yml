@@ -3826,6 +3826,12 @@ components:
             A glob to filter attachments to import by subject.
           type: string
           format: glob
+        language:
+          description: |
+            The language used for text extraction and analysis when
+            processing mails.
+          type: string
+          format: language
 
     ImapSettingsList:
       description: |
@@ -4601,6 +4607,9 @@ components:
         The `tags` input allows to provide tags that should be applied
         to the item being created. This only works if the tags already
         exist. It is possible to specify their ids or names.
+
+        The `language` of the document may be specified, otherwise the
+        one from settings is used.
       required:
         - multiple
       properties:
@@ -4621,6 +4630,9 @@ components:
         fileFilter:
           type: string
           format: glob
+        language:
+          type: string
+          format: language
 
     Collective:
       description: |
