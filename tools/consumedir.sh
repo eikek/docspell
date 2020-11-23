@@ -324,6 +324,35 @@ findDir() {
     done
 }
 
+checkSetup() {
+    for dir in "${watchdir[@]}"; do
+        find "$dir" -mindepth 1 -maxdepth 1 -type d -print0 | while IFS= read -d '' -r collective; do
+            for url in $urls; do
+                if [ "$integration" = "y" ]; then
+                    url="$url/$(basename $collective)"
+                    OPTS="$CURL_OPTS -i -s -o /dev/null -w %{http_code}"
+                    if [ $iuser ]; then
+                        OPTS="$OPTS --user $iuser"
+                    fi
+                    if [ $iheader ]; then
+                        OPTS="$OPTS -H $iheader"
+                    fi
+                    trace "Checking integration endpoint: $CURL_CMD $OPTS "$url""
+                    status=$($CURL_CMD $OPTS "$url")
+                    if [ "$status" != "200" ]; then
+                        echo "[ERROR] $status response integration endpoint: $CURL_CMD $OPTS $url"
+                        exit 1
+                    fi
+                fi
+            done
+        done
+    done
+}
+
+
+# quit here if something is not correctly configured
+checkSetup
+
 if [ "$once" = "y" ]; then
     info "Uploading all files in '$watchdir'."
     MD="-maxdepth 1"
