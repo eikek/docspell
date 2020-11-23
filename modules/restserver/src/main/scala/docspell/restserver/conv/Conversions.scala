@@ -213,10 +213,11 @@ trait Conversions {
       i.concEquip.map(mkIdName),
       i.folder.map(mkIdName),
       i.fileCount,
-      Nil,
-      Nil,
+      Nil, //attachments
+      Nil, //tags
+      Nil, //customfields
       i.notes,
-      Nil
+      Nil // highlight
     )
 
   def mkItemLight(i: OFulltext.FtsItem): ItemLight = {
@@ -227,7 +228,11 @@ trait Conversions {
 
   def mkItemLightWithTags(i: OItemSearch.ListItemWithTags): ItemLight =
     mkItemLight(i.item)
-      .copy(tags = i.tags.map(mkTag), attachments = i.attachments.map(mkAttachmentLight))
+      .copy(
+        tags = i.tags.map(mkTag),
+        attachments = i.attachments.map(mkAttachmentLight),
+        customfields = i.customfields.map(mkItemFieldValue)
+      )
 
   private def mkAttachmentLight(qa: QItem.AttachmentLight): AttachmentLight =
     AttachmentLight(qa.id, qa.position, qa.name, qa.pageCount)

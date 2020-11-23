@@ -524,7 +524,8 @@ object QItem {
   case class ListItemWithTags(
       item: ListItem,
       tags: List[RTag],
-      attachments: List[AttachmentLight]
+      attachments: List[AttachmentLight],
+      customfields: List[ItemFieldValue]
   )
 
   /** Same as `findItems` but resolves the tags for each item. Note that
@@ -560,10 +561,12 @@ object QItem {
       tags         <- Stream.eval(tagItems.traverse(ti => findTag(resolvedTags, ti)))
       attachs      <- Stream.eval(findAttachmentLight(item.id))
       ftags = tags.flatten.filter(t => t.collective == collective)
+      cfields <- Stream.eval(findCustomFieldValuesForItem(item.id))
     } yield ListItemWithTags(
       item,
       ftags.toList.sortBy(_.name),
-      attachs.sortBy(_.position)
+      attachs.sortBy(_.position),
+      cfields.toList
     )
   }
 

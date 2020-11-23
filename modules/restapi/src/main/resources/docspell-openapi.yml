@@ -5090,6 +5090,10 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/Tag"
+        customfields:
+          type: array
+          items:
+            $ref: "#/components/schemas/ItemFieldValue"
         notes:
           description: |
             Some prefix of the item notes.
