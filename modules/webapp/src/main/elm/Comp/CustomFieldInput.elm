@@ -6,6 +6,7 @@ module Comp.CustomFieldInput exposing
     , init
     , initWith
     , update
+    , updateSearch
     , view
     )
 
@@ -137,7 +138,7 @@ initWith value =
                 Data.CustomFieldType.Numeric ->
                     let
                         ( fm, _ ) =
-                            updateFloatModel value.value string2Float identity
+                            updateFloatModel False value.value string2Float identity
                     in
                     NumberField fm
 
@@ -145,6 +146,7 @@ initWith value =
                     let
                         ( fm, _ ) =
                             updateFloatModel
+                                False
                                 value.value
                                 Data.Money.fromString
                                 Data.Money.normalizeInput
@@ -170,6 +172,10 @@ initWith value =
     )
 
 
+
+--- Update
+
+
 type FieldResult
     = NoResult
     | RemoveField
@@ -183,40 +189,18 @@ type alias UpdateResult =
     }
 
 
-updateFloatModel :
-    String
-    -> (String -> Result String Float)
-    -> (String -> String)
-    -> ( FloatModel, FieldResult )
-updateFloatModel msg parse normalize =
-    case parse msg of
-        Ok n ->
-            ( { input = normalize msg
-              , result = Ok n
-              }
-            , Value (normalize msg)
-            )
-
-        Err err ->
-            ( { input = msg
-              , result = Err err
-              }
-            , NoResult
-            )
-
-
-string2Float : String -> Result String Float
-string2Float str =
-    case String.toFloat str of
-        Just n ->
-            Ok n
-
-        Nothing ->
-            Err ("Not a number: " ++ str)
-
-
 update : Msg -> Model -> UpdateResult
-update msg model =
+update =
+    update1 False
+
+
+updateSearch : Msg -> Model -> UpdateResult
+updateSearch =
+    update1 True
+
+
+update1 : Bool -> Msg -> Model -> UpdateResult
+update1 forSearch msg model =
     case ( msg, model.fieldModel ) of
         ( SetText str, TextField _ ) ->
             let
@@ -231,7 +215,7 @@ update msg model =
         ( NumberMsg str, NumberField _ ) ->
             let
                 ( fm, res ) =
-                    updateFloatModel str string2Float identity
+                    updateFloatModel forSearch str string2Float identity
 
                 model_ =
                     { model | fieldModel = NumberField fm }
@@ -242,6 +226,7 @@ update msg model =
             let
                 ( fm, res ) =
                     updateFloatModel
+                        forSearch
                         str
                         Data.Money.fromString
                         Data.Money.normalizeInput
@@ -295,6 +280,45 @@ update msg model =
         -- no other possibilities, not well encoded here
         _ ->
             UpdateResult model Cmd.none NoResult
+
+
+updateFloatModel :
+    Bool
+    -> String
+    -> (String -> Result String Float)
+    -> (String -> String)
+    -> ( FloatModel, FieldResult )
+updateFloatModel forSearch msg parse normalize =
+    let
+        hasWildCards =
+            String.startsWith "*" msg || String.endsWith "*" msg
+    in
+    if forSearch && hasWildCards then
+        ( { input = normalize msg
+          , result = Ok 0
+          }
+        , Value (normalize msg)
+        )
+
+    else
+        case parse msg of
+            Ok n ->
+                ( { input = normalize msg
+                  , result = Ok n
+                  }
+                , Value (normalize msg)
+                )
+
+            Err err ->
+                ( { input = msg
+                  , result = Err err
+                  }
+                , NoResult
+                )
+
+
+
+--- View
 
 
 mkLabel : Model -> String
@@ -408,3 +432,17 @@ makeInput icon model =
                 , removeButton ""
                 , i [ class (iconOr <| Icons.customFieldType Data.CustomFieldType.Date) ] []
                 ]
+
+
+
+--- Helper
+
+
+string2Float : String -> Result String Float
+string2Float str =
+    case String.toFloat str of
+        Just n ->
+            Ok n
+
+        Nothing ->
+            Err ("Not a number: " ++ str)
