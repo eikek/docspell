@@ -3,13 +3,15 @@ module Page.Upload.Update exposing (update)
 import Api
 import Api.Model.ItemUploadMeta
 import Comp.Dropzone
+import Comp.FixedDropdown
 import Data.Flags exposing (Flags)
+import Data.Language
 import Dict
 import Http
 import Page.Upload.Data exposing (..)
-import Ports
 import Set exposing (Set)
 import Util.File exposing (makeFileId)
+import Util.Maybe
 
 
 update : Maybe String -> Flags -> Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
@@ -39,6 +41,7 @@ update sourceId flags msg model =
 
                             else
                                 Just "outgoing"
+                        , language = Maybe.map Data.Language.toIso3 model.language
                     }
 
                 fileids =
@@ -150,6 +153,19 @@ update sourceId flags msg model =
                     List.append model.files files
             in
             ( { model | files = nextFiles, dropzone = m2 }, Cmd.map DropzoneMsg c2, Sub.none )
+
+        LanguageMsg lm ->
+            let
+                ( dm, sel ) =
+                    Comp.FixedDropdown.update lm model.languageModel
+            in
+            ( { model
+                | languageModel = dm
+                , language = Util.Maybe.or [ sel, model.language ]
+              }
+            , Cmd.none
+            , Sub.none
+            )
 
 
 setCompleted : Model -> String -> Set String
