@@ -20,6 +20,7 @@ import DatePicker exposing (DatePicker)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onCheck, onClick, onInput)
+import Util.Maybe
 
 
 type alias Model =
@@ -60,17 +61,6 @@ fieldType field =
 errorMsg : Model -> Maybe String
 errorMsg model =
     let
-        floatModel =
-            case model.fieldModel of
-                NumberField fm ->
-                    Just fm
-
-                MoneyField fm ->
-                    Just fm
-
-                _ ->
-                    Nothing
-
         getMsg res =
             case res of
                 Ok _ ->
@@ -79,7 +69,22 @@ errorMsg model =
                 Err m ->
                     Just m
     in
-    Maybe.andThen getMsg (Maybe.map .result floatModel)
+    case model.fieldModel of
+        NumberField fm ->
+            getMsg fm.result
+
+        MoneyField fm ->
+            getMsg fm.result
+
+        TextField mt ->
+            if mt == Nothing then
+                Just "Please fill in some value"
+
+            else
+                Nothing
+
+        _ ->
+            Nothing
 
 
 init : CustomField -> ( Model, Cmd Msg )
@@ -215,10 +220,13 @@ update msg model =
     case ( msg, model.fieldModel ) of
         ( SetText str, TextField _ ) ->
             let
+                newValue =
+                    Util.Maybe.fromString str
+
                 model_ =
-                    { model | fieldModel = TextField (Just str) }
+                    { model | fieldModel = TextField newValue }
             in
-            UpdateResult model_ Cmd.none (Value str)
+            UpdateResult model_ Cmd.none (Maybe.map Value newValue |> Maybe.withDefault NoResult)
 
         ( NumberMsg str, NumberField _ ) ->
             let
