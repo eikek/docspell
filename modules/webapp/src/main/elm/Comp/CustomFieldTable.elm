@@ -49,7 +49,7 @@ view _ items =
                 [ tr []
                     [ th [ class "collapsing" ] []
                     , th [] [ text "Name/Label" ]
-                    , th [] [ text "Type" ]
+                    , th [] [ text "Format" ]
                     , th [] [ text "#Usage" ]
                     , th [] [ text "Created" ]
                     ]

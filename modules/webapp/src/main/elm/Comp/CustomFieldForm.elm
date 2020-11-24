@@ -212,7 +212,8 @@ view viewSettings model =
 
            else
             div []
-                [ text "Modify this custom field. Note that changing the type may result in data loss!"
+                [ text "Modify this custom field. Note that changing the format may "
+                , text "result in invisible values in the ui, if they don't comply to the new format!"
                 ]
          , div
             [ classList
@@ -241,6 +242,18 @@ view viewSettings model =
                 , text "identifier, not contain spaces or weird characters."
                 ]
             ]
+         , div [ class "required field" ]
+            [ label [] [ text "Field Format" ]
+            , Html.map FTypeMsg
+                (Comp.FixedDropdown.view
+                    (Maybe.map mkItem model.ftype)
+                    model.ftypeModel
+                )
+            , div [ class "small-info" ]
+                [ text "A field must have a format. Values are validated "
+                , text "according to this format."
+                ]
+            ]
          , div [ class "field" ]
             [ label [] [ text "Label" ]
             , input
@@ -254,18 +267,6 @@ view viewSettings model =
             , div [ class "small-info" ]
                 [ text "The user defined label for this field. This is used to represent "
                 , text "this field in the ui. If not present, the name is used."
-                ]
-            ]
-         , div [ class "required field" ]
-            [ label [] [ text "Field Type" ]
-            , Html.map FTypeMsg
-                (Comp.FixedDropdown.view
-                    (Maybe.map mkItem model.ftype)
-                    model.ftypeModel
-                )
-            , div [ class "small-info" ]
-                [ text "A field must have a type. This defines how to input values and "
-                , text "the server validates it according to this type."
                 ]
             ]
          ]
