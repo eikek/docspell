@@ -745,7 +745,6 @@ renderEditForm settings model =
 
         showCustomFields =
             fieldVisible Data.Fields.CustomFields
-                && Comp.CustomFieldMultiInput.nonEmpty model.customFieldsModel
 
         customFieldSettings =
             Comp.CustomFieldMultiInput.ViewSettings
