@@ -120,6 +120,11 @@ they can be specified with the upload request or a [source
 url](@/docs/webapp/uploading.md#anonymous-upload) to have them
 automatically set when files arrive.
 
+## Custom Metadata
+
+Docspell allows to create your own fields. Please see [this
+page](@/docs/webapp/customfields.md) for more information.
+
 
 # Document Language
 

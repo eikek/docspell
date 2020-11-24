@@ -19,7 +19,8 @@ description = "A list of features and limitations."
   into searchable PDF/A pdfs.
 - Non-destructive: all your uploaded files are never modified and can
   always be downloaded untouched
-- Organize files using tags, folders and other
+- Organize files using tags, folders, [Custom
+  Fields](@/docs/webapp/customfields.md) and other
   [metadata](@/docs/webapp/metadata.md)
 - Text is analysed to find and attach meta data automatically
 - *Keywords* metadata from pdf files is extracted and matched against
