@@ -710,7 +710,7 @@ updateDrop ddm flags settings msg model =
         CustomFieldMsg lm ->
             let
                 res =
-                    Comp.CustomFieldMultiInput.update lm model.customFieldModel
+                    Comp.CustomFieldMultiInput.updateSearch lm model.customFieldModel
             in
             { model =
                 { model

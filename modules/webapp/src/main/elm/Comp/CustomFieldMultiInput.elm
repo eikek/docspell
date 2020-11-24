@@ -11,6 +11,7 @@ module Comp.CustomFieldMultiInput exposing
     , reset
     , setValues
     , update
+    , updateSearch
     , view
     )
 
@@ -148,7 +149,17 @@ mkItem f =
 
 
 update : Msg -> Model -> UpdateResult
-update msg model =
+update =
+    update1 False
+
+
+updateSearch : Msg -> Model -> UpdateResult
+updateSearch =
+    update1 True
+
+
+update1 : Bool -> Msg -> Model -> UpdateResult
+update1 forSearch msg model =
     case msg of
         CreateNewField ->
             UpdateResult model Cmd.none FieldCreateNew
@@ -241,7 +252,11 @@ update msg model =
                 Just { field, inputModel } ->
                     let
                         res =
-                            Comp.CustomFieldInput.update lm inputModel
+                            if forSearch then
+                                Comp.CustomFieldInput.updateSearch lm inputModel
+
+                            else
+                                Comp.CustomFieldInput.update lm inputModel
 
                         model_ =
                             { model
