@@ -95,7 +95,9 @@ object OCustomFields {
       private[this] val logger = Logger.log4s[ConnectionIO](getLogger)
 
       def findAll(coll: Ident, nameQuery: Option[String]): F[Vector[CustomFieldData]] =
-        store.transact(QCustomField.findAllLike(coll, nameQuery.filter(_.nonEmpty)))
+        store.transact(
+          QCustomField.findAllLike(coll, nameQuery.map(WildcardString.apply).map(_.both))
+        )
 
       def findById(coll: Ident, field: Ident): F[Option[CustomFieldData]] =
         store.transact(QCustomField.findById(field, coll))
