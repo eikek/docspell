@@ -197,9 +197,15 @@ upload() {
     if [ "$dryrun" = "y" ]; then
         info "- Not uploading (dry-run) $file to $url with opts $OPTS"
     else
+        META1=""
+        META2=""
+        if [ "$distinct" = "y" ]; then
+            META1="-F"
+            META2="meta={\"multiple\": false, \"skipDuplicates\": true}"
+        fi
         trace "- Uploading $file to $url with options $OPTS"
         tf1=$($MKTEMP_CMD) tf2=$($MKTEMP_CMD) rc=0
-        $CURL_CMD --fail -# -o "$tf1" --stderr "$tf2" $OPTS -XPOST -F file=@"$file" "$url"
+        $CURL_CMD --fail -# -o "$tf1" --stderr "$tf2" $OPTS -XPOST $META1 "$META2" -F file=@"$file" "$url"
         if [ $? -ne 0 ]; then
             info "Upload failed. Exit code: $rc"
             cat "$tf1"
@@ -248,7 +254,7 @@ checkFile() {
     url=$url/$(checksum "$file")
     trace "- Check file via $OPTS: $url"
     tf1=$($MKTEMP_CMD) tf2=$($MKTEMP_CMD)
-    $CURL_CMD --fail -o "$tf1" --stderr "$tf2" $OPTS -XGET -s "$url"
+    $CURL_CMD --fail -v -o "$tf1" --stderr "$tf2" $OPTS -XGET -s "$url"
     if [ $? -ne 0 ]; then
         info "Checking file failed!"
         cat "$tf1" >&2
@@ -324,14 +330,43 @@ findDir() {
     done
 }
 
+checkSetup() {
+    for dir in "${watchdir[@]}"; do
+        find "$dir" -mindepth 1 -maxdepth 1 -type d -print0 | while IFS= read -d '' -r collective; do
+            for url in $urls; do
+                if [ "$integration" = "y" ]; then
+                    url="$url/$(basename $collective)"
+                    OPTS="$CURL_OPTS -i -s -o /dev/null -w %{http_code}"
+                    if [ $iuser ]; then
+                        OPTS="$OPTS --user $iuser"
+                    fi
+                    if [ $iheader ]; then
+                        OPTS="$OPTS -H $iheader"
+                    fi
+                    trace "Checking integration endpoint: $CURL_CMD $OPTS "$url""
+                    status=$($CURL_CMD $OPTS "$url")
+                    if [ "$status" != "200" ]; then
+                        echo "[ERROR] $status response integration endpoint: $CURL_CMD $OPTS $url"
+                        exit 1
+                    fi
+                fi
+            done
+        done
+    done
+}
+
+
+# quit here if something is not correctly configured
+checkSetup
+
 if [ "$once" = "y" ]; then
-    info "Uploading all files in '$watchdir'."
+    info "Uploading all files (except hidden) in '$watchdir'."
     MD="-maxdepth 1"
     if [ "$recursive" = "y" ]; then
         MD=""
     fi
     for dir in "${watchdir[@]}"; do
-        find "$dir" $MD -type f -print0 | while IFS= read -d '' -r file; do
+        find "$dir" $MD -type f -not -name ".*" -print0 | while IFS= read -d '' -r file; do
             process "$file" "$dir"
         done
     done
@@ -342,9 +377,13 @@ else
     fi
     $INOTIFY_CMD $REC -m --format '%w%f' -e close_write -e moved_to "${watchdir[@]}" |
         while read pathfile; do
-            dir=$(findDir "$pathfile")
-            trace "The file '$pathfile' appeared below '$dir'"
-            sleep 1
-            process "$(realpath "$pathfile")" "$dir"
+            if [[ "$(basename "$pathfile")" != .* ]]; then
+                dir=$(findDir "$pathfile")
+                trace "The file '$pathfile' appeared below '$dir'"
+                sleep 1
+                process "$(realpath "$pathfile")" "$dir"
+            else
+                trace "Skip hidden file $(realpath "$pathfile")"
+            fi
         done
 fi
