@@ -346,8 +346,8 @@ checkSetup() {
                     trace "Checking integration endpoint: $CURL_CMD $OPTS "$url""
                     status=$($CURL_CMD $OPTS "$url")
                     if [ "$status" != "200" ]; then
-                        echo "[ERROR] $status response integration endpoint: $CURL_CMD $OPTS $url"
-                        exit 1
+                        echo "[WARN] Collective '$(basename $collective)' failed the setup check."
+                        echo "[WARN] $status response, command: $CURL_CMD $OPTS $url"
                     fi
                 fi
             done
@@ -356,7 +356,7 @@ checkSetup() {
 }
 
 
-# quit here if something is not correctly configured
+# warn if something seems not correctly configured
 checkSetup
 
 if [ "$once" = "y" ]; then
