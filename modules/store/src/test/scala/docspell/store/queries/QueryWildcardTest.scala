@@ -18,4 +18,9 @@ object QueryWildcardTest extends SimpleTestSuite {
     assertEquals("%name%", QueryWildcard("*name*"))
     assertEquals("%some other name%", QueryWildcard("*some other name*"))
   }
+
+  test("do not use multiple wildcards") {
+    assertEquals("%", QueryWildcard("**"))
+    assertEquals("%*%", QueryWildcard("***"))
+  }
 }

@@ -11,7 +11,9 @@ object QueryWildcard {
       if (n.endsWith("*")) s"${n.dropRight(1)}%"
       else n
 
-    prefix(suffix(value))
+    val res = prefix(suffix(value))
+    if (res == "%%") "%"
+    else res
   }
 
 }

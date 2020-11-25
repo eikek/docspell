@@ -42,7 +42,7 @@ object QCustomField {
 
     val nameCond = nameQuery.map(QueryWildcard.apply) match {
       case Some(q) =>
-        or(fName.lowerLike(q), fLabel.lowerLike(q))
+        or(fName.lowerLike(q), and(fLabel.isNotNull, fLabel.lowerLike(q)))
       case None =>
         Fragment.empty
     }

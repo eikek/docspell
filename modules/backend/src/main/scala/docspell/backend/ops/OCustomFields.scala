@@ -96,7 +96,10 @@ object OCustomFields {
 
       def findAll(coll: Ident, nameQuery: Option[String]): F[Vector[CustomFieldData]] =
         store.transact(
-          QCustomField.findAllLike(coll, nameQuery.map(WildcardString.apply).map(_.both))
+          QCustomField.findAllLike(
+            coll,
+            nameQuery.map(WildcardString.apply).flatMap(_.both)
+          )
         )
 
       def findById(coll: Ident, field: Ident): F[Option[CustomFieldData]] =

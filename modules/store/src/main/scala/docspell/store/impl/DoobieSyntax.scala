@@ -13,7 +13,7 @@ trait DoobieSyntax {
     groupBy(NonEmptyList.of(c0, cs: _*))
 
   def groupBy(cs: NonEmptyList[Column]): Fragment =
-    fr" GROUP BY (" ++ commas(cs.toList.map(_.f)) ++ fr")"
+    fr" GROUP BY " ++ commas(cs.toList.map(_.f))
 
   def coalesce(f0: Fragment, fs: Fragment*): Fragment =
     sql" coalesce(" ++ commas(f0 :: fs.toList) ++ sql") "
