@@ -43,6 +43,7 @@ type alias Model =
     , newInviteModel : Page.NewInvite.Data.Model
     , itemDetailModel : Page.ItemDetail.Data.Model
     , navMenuOpen : Bool
+    , userMenuOpen : Bool
     , subs : Sub Msg
     , uiSettings : UiSettings
     }
@@ -89,6 +90,7 @@ init key url flags_ settings =
       , newInviteModel = Page.NewInvite.Data.emptyModel
       , itemDetailModel = Page.ItemDetail.Data.emptyModel
       , navMenuOpen = False
+      , userMenuOpen = False
       , subs = Sub.none
       , uiSettings = settings
       }
@@ -142,6 +144,7 @@ type Msg
     | LogoutResp (Result Http.Error ())
     | SessionCheckResp (Result Http.Error AuthResult)
     | ToggleNavMenu
+    | ToggleUserMenu
     | GetUiSettings UiSettings
 
 

@@ -65,7 +65,7 @@ view flags settings model =
                         viewUsers settings model
 
                     Just InsightsTab ->
-                        viewInsights model
+                        viewInsights flags model
 
                     Just SettingsTab ->
                         viewSettings flags settings model
@@ -77,12 +77,35 @@ view flags settings model =
         ]
 
 
-viewInsights : Model -> List (Html Msg)
-viewInsights model =
+viewInsights : Flags -> Model -> List (Html Msg)
+viewInsights flags model =
+    let
+        ( coll, user ) =
+            Maybe.map (\a -> ( a.collective, a.user )) flags.account
+                |> Maybe.withDefault ( "", "" )
+    in
     [ h1 [ class "ui header" ]
         [ i [ class "chart bar outline icon" ] []
         , div [ class "content" ]
             [ text "Insights"
+            ]
+        ]
+    , h2 [ class "ui sub header" ]
+        [ div [ class "ui horizontal list" ]
+            [ div
+                [ class "item"
+                , title "Collective"
+                ]
+                [ i [ class "users circle icon" ] []
+                , text coll
+                ]
+            , div
+                [ class "item"
+                , title "User"
+                ]
+                [ i [ class "user outline icon" ] []
+                , text user
+                ]
             ]
         ]
     , div [ class "ui basic blue segment" ]

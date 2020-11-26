@@ -1,6 +1,7 @@
 module App.View exposing (view)
 
 import App.Data exposing (..)
+import Data.Flags
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
@@ -16,7 +17,6 @@ import Page.Queue.View
 import Page.Register.View
 import Page.Upload.View
 import Page.UserSettings.View
-import Util.Maybe
 
 
 view : Model -> Html Msg
@@ -197,10 +197,51 @@ loginInfo : Model -> Html Msg
 loginInfo model =
     div [ class "right menu" ]
         (case model.flags.account of
-            Just _ ->
-                [ div
+            Just acc ->
+                [ a
+                    [ class "ui dropdown icon link item"
+                    , href "#"
+                    , onClick ToggleUserMenu
+                    , title ("Logged in as " ++ Data.Flags.accountString acc)
+                    ]
+                    [ i [ class "user alternate icon" ] []
+                    , div
+                        [ classList
+                            [ ( "left menu", True )
+                            , ( "transition visible", model.userMenuOpen )
+                            , ( "transition hidden", not model.userMenuOpen )
+                            ]
+                        ]
+                        [ div [ class "header" ]
+                            [ i [ class "user outline icon" ] []
+                            , Data.Flags.accountString acc |> text
+                            ]
+                        , div [ class "ui divider" ] []
+                        , menuEntry model
+                            CollectiveSettingPage
+                            [ i [ class "users circle icon" ] []
+                            , text "Collective Profile"
+                            ]
+                        , menuEntry model
+                            UserSettingPage
+                            [ i [ class "user circle icon" ] []
+                            , text "User Profile"
+                            ]
+                        , div [ class "divider" ] []
+                        , a
+                            [ class "icon item"
+                            , href ""
+                            , onClick Logout
+                            ]
+                            [ i [ class "sign out icon" ] []
+                            , text "Logout"
+                            ]
+                        ]
+                    ]
+                , a
                     [ class "ui dropdown icon link item"
                     , onClick ToggleNavMenu
+                    , href "#"
                     ]
                     [ i [ class "ui bars icon" ] []
                     , div
@@ -218,17 +259,6 @@ loginInfo model =
                                 ]
                                 []
                             , text "Items"
-                            ]
-                        , div [ class "divider" ] []
-                        , menuEntry model
-                            CollectiveSettingPage
-                            [ i [ class "users circle icon" ] []
-                            , text "Collective Profile"
-                            ]
-                        , menuEntry model
-                            UserSettingPage
-                            [ i [ class "user circle icon" ] []
-                            , text "User Profile"
                             ]
                         , div [ class "divider" ] []
                         , menuEntry model
@@ -276,15 +306,6 @@ loginInfo model =
                             , span [ class "ui right floated" ]
                                 [ i [ class "external link icon" ] []
                                 ]
-                            ]
-                        , div [ class "divider" ] []
-                        , a
-                            [ class "icon item"
-                            , href ""
-                            , onClick Logout
-                            ]
-                            [ i [ class "sign-out icon" ] []
-                            , text "Logout"
                             ]
                         ]
                     ]

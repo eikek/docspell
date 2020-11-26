@@ -1,6 +1,7 @@
 module Data.Flags exposing
     ( Config
     , Flags
+    , accountString
     , getToken
     , withAccount
     , withoutAccount
@@ -42,3 +43,12 @@ withAccount flags acc =
 withoutAccount : Flags -> Flags
 withoutAccount flags =
     { flags | account = Nothing }
+
+
+accountString : AuthResult -> String
+accountString auth =
+    if auth.collective == auth.user then
+        auth.collective
+
+    else
+        auth.collective ++ "/" ++ auth.user
