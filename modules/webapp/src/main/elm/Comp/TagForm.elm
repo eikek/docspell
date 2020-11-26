@@ -9,24 +9,38 @@ module Comp.TagForm exposing
     )
 
 import Api.Model.Tag exposing (Tag)
+import Comp.Dropdown
 import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)
+import Util.Maybe
 
 
 type alias Model =
     { tag : Tag
     , name : String
-    , category : Maybe String
+    , allCategories : List String
+    , catDropdown : Comp.Dropdown.Model String
     }
 
 
-emptyModel : Model
-emptyModel =
+emptyModel : List String -> Model
+emptyModel categories =
     { tag = Api.Model.Tag.empty
     , name = ""
-    , category = Nothing
+    , allCategories = categories
+    , catDropdown =
+        let
+            cm =
+                Comp.Dropdown.makeSingleList
+                    { makeOption = \s -> Comp.Dropdown.mkOption s s
+                    , placeholder = "Select or define category..."
+                    , options = categories
+                    , selected = Nothing
+                    }
+        in
+        { cm | searchable = \_ -> True }
     }
 
 
@@ -37,26 +51,66 @@ isValid model =
 
 getTag : Model -> Tag
 getTag model =
-    Tag model.tag.id model.name model.category 0
+    let
+        cat =
+            Comp.Dropdown.getSelected model.catDropdown
+                |> List.head
+                |> Maybe.withDefault model.catDropdown.filterString
+    in
+    Tag model.tag.id model.name (Util.Maybe.fromString cat) 0
 
 
 type Msg
     = SetName String
     | SetCategory String
+    | SetCategoryOptions (List String)
     | SetTag Tag
+    | CatMsg (Comp.Dropdown.Msg String)
 
 
 update : Flags -> Msg -> Model -> ( Model, Cmd Msg )
 update _ msg model =
     case msg of
         SetTag t ->
-            ( { model | tag = t, name = t.name, category = t.category }, Cmd.none )
+            let
+                ( dm_, cmd_ ) =
+                    Comp.Dropdown.update
+                        (Comp.Dropdown.SetSelection
+                            (List.filterMap identity [ t.category ])
+                        )
+                        model.catDropdown
+            in
+            ( { model | tag = t, name = t.name, catDropdown = dm_ }
+            , Cmd.map CatMsg cmd_
+            )
 
         SetName n ->
             ( { model | name = n }, Cmd.none )
 
         SetCategory n ->
-            ( { model | category = Just n }, Cmd.none )
+            let
+                ( dm_, cmd_ ) =
+                    Comp.Dropdown.update (Comp.Dropdown.SetSelection [ n ]) model.catDropdown
+            in
+            ( { model | catDropdown = dm_ }, Cmd.map CatMsg cmd_ )
+
+        SetCategoryOptions list ->
+            let
+                ( dm_, cmd_ ) =
+                    Comp.Dropdown.update
+                        (Comp.Dropdown.SetOptions list)
+                        model.catDropdown
+            in
+            ( { model | catDropdown = dm_ }
+            , Cmd.map CatMsg cmd_
+            )
+
+        CatMsg lm ->
+            let
+                ( dm_, cmd_ ) =
+                    Comp.Dropdown.update lm model.catDropdown
+            in
+            ( { model | catDropdown = dm_ }, Cmd.map CatMsg cmd_ )
 
 
 view : Model -> Html Msg
@@ -78,13 +132,8 @@ view model =
                 []
             ]
         , div [ class "field" ]
-            [ label [] [ text "Category" ]
-            , input
-                [ type_ "text"
-                , onInput SetCategory
-                , placeholder "Category (optional)"
-                , value (Maybe.withDefault "" model.category)
-                ]
-                []
+            [ label []
+                [ text "Category" ]
+            , Html.map CatMsg (Comp.Dropdown.viewSingle model.catDropdown)
             ]
         ]

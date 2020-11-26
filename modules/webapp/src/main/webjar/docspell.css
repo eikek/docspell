@@ -252,7 +252,12 @@ textarea.markdown-editor {
 .ui.modal.keep-small {
     width: 95%;
 }
-
+.ui.modal.keep-small .scrolling.content {
+    min-height: 23rem;
+}
+.ui.modal.keep-small .scrolling.content .menu.transition.visible {
+    max-height: 11rem;
+}
 
 label span.muted {
     font-size: smaller;

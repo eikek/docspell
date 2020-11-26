@@ -13,6 +13,7 @@ module Comp.Dropdown exposing
     , setMkOption
     , update
     , view
+    , viewSingle
     )
 
 {-| This needs to be rewritten from scratch!
@@ -252,7 +253,15 @@ filterOptions str list =
 
 applyFilter : String -> Model a -> Model a
 applyFilter str model =
-    { model | filterString = str, available = filterOptions str model.available }
+    let
+        selected =
+            if str /= "" && not model.multiple then
+                []
+
+            else
+                model.selected
+    in
+    { model | filterString = str, available = filterOptions str model.available, selected = selected }
 
 
 makeNextActive : (Int -> Int) -> Model a -> Model a

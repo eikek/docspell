@@ -65,6 +65,7 @@ import Util.Http
 import Util.List
 import Util.Maybe
 import Util.String
+import Util.Tag
 
 
 update : Nav.Key -> Flags -> ItemNav -> UiSettings -> Msg -> Model -> UpdateResult
@@ -588,7 +589,7 @@ update key flags inav settings msg model =
                 tagList =
                     Comp.Dropdown.SetOptions tags.items
             in
-            update key flags inav settings (TagDropdownMsg tagList) model
+            update key flags inav settings (TagDropdownMsg tagList) { model | allTags = tags.items }
 
         GetTagsResp (Err _) ->
             resultModel model
@@ -1039,9 +1040,13 @@ update key flags inav settings msg model =
                     resultModel model
 
         StartTagModal ->
+            let
+                cats =
+                    Util.Tag.getCategories model.allTags
+            in
             resultModel
                 { model
-                    | modalEdit = Just (Comp.DetailEdit.initTagByName model.item.id "")
+                    | modalEdit = Just (Comp.DetailEdit.initTagByName model.item.id "" cats)
                 }
 
         StartCorrOrgModal ->
