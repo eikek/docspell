@@ -17,6 +17,7 @@ import Api.Model.FolderItem exposing (FolderItem)
 import Api.Model.FolderList exposing (FolderList)
 import Api.Model.IdName exposing (IdName)
 import Api.Model.ItemSearch exposing (ItemSearch)
+import Api.Model.PersonList exposing (PersonList)
 import Api.Model.ReferenceList exposing (ReferenceList)
 import Api.Model.TagCloud exposing (TagCloud)
 import Comp.CustomFieldMultiInput
@@ -256,7 +257,7 @@ type Msg
     | GetTagsResp (Result Http.Error TagCloud)
     | GetOrgResp (Result Http.Error ReferenceList)
     | GetEquipResp (Result Http.Error EquipmentList)
-    | GetPersonResp (Result Http.Error ReferenceList)
+    | GetPersonResp (Result Http.Error PersonList)
     | SetName String
     | SetAllName String
     | SetFulltext String
@@ -341,7 +342,7 @@ updateDrop ddm flags settings msg model =
                     [ Api.getTagCloud flags GetTagsResp
                     , Api.getOrgLight flags GetOrgResp
                     , Api.getEquipments flags "" GetEquipResp
-                    , Api.getPersonsLight flags GetPersonResp
+                    , Api.getPersons flags "" GetPersonResp
                     , Api.getFolders flags "" False GetFolderResp
                     , Cmd.map CustomFieldMsg (Comp.CustomFieldMultiInput.initCmd flags)
                     , cdp
@@ -441,14 +442,28 @@ updateDrop ddm flags settings msg model =
 
         GetPersonResp (Ok ps) ->
             let
-                opts =
-                    Comp.Dropdown.SetOptions ps.items
+                ( conc, corr ) =
+                    List.partition .concerning ps.items
+
+                concRefs =
+                    List.map (\e -> IdName e.id e.name) conc
+
+                corrRefs =
+                    List.map (\e -> IdName e.id e.name) corr
 
                 next1 =
-                    updateDrop ddm flags settings (CorrPersonMsg opts) model
+                    updateDrop ddm
+                        flags
+                        settings
+                        (CorrPersonMsg (Comp.Dropdown.SetOptions corrRefs))
+                        model
 
                 next2 =
-                    updateDrop next1.dragDrop.model flags settings (ConcPersonMsg opts) next1.model
+                    updateDrop next1.dragDrop.model
+                        flags
+                        settings
+                        (ConcPersonMsg (Comp.Dropdown.SetOptions concRefs))
+                        next1.model
             in
             next2
 

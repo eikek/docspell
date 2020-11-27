@@ -606,14 +606,30 @@ update key flags inav settings msg model =
 
         GetPersonResp (Ok ps) ->
             let
-                opts =
-                    Comp.Dropdown.SetOptions ps.items
+                ( conc, corr ) =
+                    List.partition .concerning ps.items
+
+                concRefs =
+                    List.map (\e -> IdName e.id e.name) conc
+
+                corrRefs =
+                    List.map (\e -> IdName e.id e.name) corr
 
                 res1 =
-                    update key flags inav settings (CorrPersonMsg opts) model
+                    update key
+                        flags
+                        inav
+                        settings
+                        (CorrPersonMsg (Comp.Dropdown.SetOptions corrRefs))
+                        model
 
                 res2 =
-                    update key flags inav settings (ConcPersonMsg opts) res1.model
+                    update key
+                        flags
+                        inav
+                        settings
+                        (ConcPersonMsg (Comp.Dropdown.SetOptions concRefs))
+                        res1.model
             in
             { model = res2.model
             , cmd = Cmd.batch [ res1.cmd, res2.cmd ]
@@ -1410,7 +1426,7 @@ getOptions flags =
     Cmd.batch
         [ Api.getTags flags "" GetTagsResp
         , Api.getOrgLight flags GetOrgResp
-        , Api.getPersonsLight flags GetPersonResp
+        , Api.getPersons flags "" GetPersonResp
         , Api.getEquipments flags "" GetEquipResp
         , Api.getFolders flags "" False GetFolderResp
         ]
