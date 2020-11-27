@@ -159,9 +159,9 @@ object RUserImap {
     val uLogin = RUser.Columns.login.prefix("u")
     val from   = table ++ fr"m INNER JOIN" ++ RUser.table ++ fr"u ON" ++ mUid.is(uId)
     val cond = Seq(uColl.is(accId.collective), uLogin.is(accId.user)) ++ (nameQ match {
-      case Some(str) if exact  => Seq(mName.is(str))
-      case Some(str) if !exact => Seq(mName.lowerLike(s"%${str.toLowerCase}%"))
-      case None                => Seq.empty
+      case Some(str) if exact => Seq(mName.is(str))
+      case Some(str)          => Seq(mName.lowerLike(s"%${str.toLowerCase}%"))
+      case None               => Seq.empty
     })
 
     (selectSimple(all.map(_.prefix("m")), from, and(cond)) ++ orderBy(mName.f))

@@ -83,7 +83,7 @@ private[extern] object ExternConv {
           case false =>
             successPdf(File.readAll(out, blocker, chunkSize)).pure[F]
         }
-      case true if result.rc != 0 =>
+      case true =>
         logger.warn(s"Command not successful (rc=${result.rc}), but file exists.") *>
           successPdf(File.readAll(out, blocker, chunkSize)).pure[F]
 

@@ -11,13 +11,13 @@ val elmCompileMode = settingKey[ElmCompileMode]("How to compile elm sources")
 
 val scalafixSettings = Seq(
   semanticdbEnabled := true,                        // enable SemanticDB
-  semanticdbVersion := scalafixSemanticdb.revision, //"4.3.10", // use Scalafix compatible version
+  semanticdbVersion := "4.4.0",//scalafixSemanticdb.revision
   ThisBuild / scalafixDependencies ++= Dependencies.organizeImports
 )
 
 val sharedSettings = Seq(
   organization := "com.github.eikek",
-  scalaVersion := "2.13.3",
+  scalaVersion := "2.13.4",
   scalacOptions ++= Seq(
     "-deprecation",
     "-encoding",
@@ -671,7 +671,8 @@ def packageTools(logger: Logger, dir: File, version: String): Seq[File] = {
       wx / "icons" / "logo-96.png"     -> "icons/logo-96.png",
       wx / "manifest.json"             -> "manifest.json"
     ),
-    webext
+    webext,
+    None
   )
 
   val excludes = Seq(wx, target)
@@ -688,7 +689,8 @@ def packageTools(logger: Logger, dir: File, version: String): Seq[File] = {
       wx / "native/app_manifest.json" -> s"docspell-tools-${version}/firefox/native/app_manifest.json",
       wx / "native/native.py"         -> s"docspell-tools-${version}/firefox/native/native.py"
     ) ++ files,
-    archive
+    archive,
+    None
   )
 
   Seq(archive)

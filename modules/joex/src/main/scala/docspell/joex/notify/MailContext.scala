@@ -53,7 +53,7 @@ object MailContext {
         case 1          => "**tomorrow**"
         case -1         => s"**yesterday**"
         case n if n > 0 => s"in $n days"
-        case n if n < 0 => s"${n * -1} days ago"
+        case n          => s"${n * -1} days ago"
       }
       ItemData(
         i.id,

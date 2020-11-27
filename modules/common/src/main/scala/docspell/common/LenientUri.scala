@@ -211,6 +211,8 @@ object LenientUri {
                 Right(LenientUri(nl, None, path, query, frag))
             }
         }
+      case _ =>
+        sys.error("Unreachable code")
     }
   }
 
