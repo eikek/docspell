@@ -6,7 +6,6 @@ import Api.Model.ItemLightList exposing (ItemLightList)
 import Api.Model.ItemSearch
 import Browser.Navigation as Nav
 import Comp.FixedDropdown
-import Comp.ItemCard
 import Comp.ItemCardList
 import Comp.ItemDetail.EditMenu exposing (SaveNameState(..))
 import Comp.ItemDetail.FormChange exposing (FormChange(..))
@@ -28,7 +27,6 @@ import Time
 import Util.Html exposing (KeyCode(..))
 import Util.ItemDragDrop as DD
 import Util.Maybe
-import Util.String
 import Util.Update
 
 
@@ -36,9 +34,18 @@ update : Maybe String -> Nav.Key -> Flags -> UiSettings -> Msg -> Model -> ( Mod
 update mId key flags settings msg model =
     case msg of
         Init ->
+            let
+                searchParam =
+                    { flags = flags
+                    , searchType = model.lastSearchType
+                    , pageSize = settings.itemSearchPageSize
+                    , offset = 0
+                    , scroll = True
+                    }
+            in
             Util.Update.andThen2
                 [ update mId key flags settings (SearchMenuMsg Comp.SearchMenu.Init)
-                , doSearch flags settings True
+                , doSearch searchParam
                 ]
                 model
 
@@ -47,7 +54,6 @@ update mId key flags settings msg model =
                 nm =
                     { model
                         | searchOffset = 0
-                        , searchType = defaultSearchType flags
                         , contentOnlySearch = Nothing
                     }
             in
@@ -64,7 +70,7 @@ update mId key flags settings msg model =
                         model.searchMenuModel
 
                 dropCmd =
-                    DD.makeUpdateCmd flags (\_ -> DoSearch) nextState.dragDrop.dropped
+                    DD.makeUpdateCmd flags (\_ -> DoSearch model.lastSearchType) nextState.dragDrop.dropped
 
                 newModel =
                     { model
@@ -74,7 +80,7 @@ update mId key flags settings msg model =
 
                 ( m2, c2, s2 ) =
                     if nextState.stateChange && not model.searchInProgress then
-                        doSearch flags settings False newModel
+                        doSearch (SearchParam flags BasicSearch settings.itemSearchPageSize 0 False) newModel
 
                     else
                         withSub ( newModel, Cmd.none )
@@ -181,16 +187,24 @@ update mId key flags settings msg model =
                 , Cmd.none
                 )
 
-        DoSearch ->
+        DoSearch stype ->
             let
                 nm =
                     { model | searchOffset = 0 }
+
+                param =
+                    { flags = flags
+                    , searchType = stype
+                    , pageSize = settings.itemSearchPageSize
+                    , offset = 0
+                    , scroll = False
+                    }
             in
             if model.searchInProgress then
                 withSub ( model, Cmd.none )
 
             else
-                doSearch flags settings False nm
+                doSearch param nm
 
         ToggleSearchMenu ->
             let
@@ -247,7 +261,7 @@ update mId key flags settings msg model =
         SetBasicSearch str ->
             let
                 smMsg =
-                    case model.searchTypeForm of
+                    case model.searchTypeDropdownValue of
                         BasicSearch ->
                             SearchMenuMsg (Comp.SearchMenu.SetAllName str)
 
@@ -268,12 +282,12 @@ update mId key flags settings msg model =
                     Comp.FixedDropdown.update lm model.searchTypeDropdown
 
                 mvChange =
-                    Util.Maybe.filter (\a -> a /= model.searchTypeForm) mv
+                    Util.Maybe.filter (\a -> a /= model.searchTypeDropdownValue) mv
 
                 m0 =
                     { model
                         | searchTypeDropdown = sm
-                        , searchTypeForm = Maybe.withDefault model.searchTypeForm mv
+                        , searchTypeDropdownValue = Maybe.withDefault model.searchTypeDropdownValue mv
                     }
 
                 next =
@@ -300,10 +314,10 @@ update mId key flags settings msg model =
                 Nothing ->
                     withSub ( m0, Cmd.none )
 
-        KeyUpMsg (Just Enter) ->
-            update mId key flags settings DoSearch model
+        KeyUpSearchbarMsg (Just Enter) ->
+            update mId key flags settings (DoSearch model.searchTypeDropdownValue) model
 
-        KeyUpMsg _ ->
+        KeyUpSearchbarMsg _ ->
             withSub ( model, Cmd.none )
 
         ScrollResult _ ->
@@ -390,8 +404,16 @@ update mId key flags settings msg model =
                 let
                     nm =
                         { model | viewMode = SearchView }
+
+                    param =
+                        { flags = flags
+                        , searchType = model.lastSearchType
+                        , pageSize = settings.itemSearchPageSize
+                        , offset = 0
+                        , scroll = False
+                        }
                 in
-                doSearch flags settings False nm
+                doSearch param nm
 
             else
                 noSub ( model, Cmd.none )
@@ -540,7 +562,7 @@ update mId key flags settings msg model =
                 model_ =
                     { model | viewMode = viewMode }
             in
-            update mId key flags settings DoSearch model_
+            update mId key flags settings (DoSearch model.lastSearchType) model_
 
 
 
@@ -648,33 +670,24 @@ loadEditModel flags =
     Cmd.map EditMenuMsg (Comp.ItemDetail.EditMenu.loadModel flags)
 
 
-doSearch : Flags -> UiSettings -> Bool -> Model -> ( Model, Cmd Msg, Sub Msg )
-doSearch flags settings scroll model =
+doSearch : SearchParam -> Model -> ( Model, Cmd Msg, Sub Msg )
+doSearch param model =
     let
-        stype =
-            if
-                not (menuCollapsed model)
-                    || Util.String.isNothingOrBlank model.contentOnlySearch
-            then
-                BasicSearch
-
-            else
-                model.searchTypeForm
-
-        model_ =
-            { model | searchType = stype }
+        param_ =
+            { param | offset = 0 }
 
         searchCmd =
-            doSearchCmd flags settings 0 scroll model_
+            doSearchCmd param_ model
 
         ( newThrottle, cmd ) =
             Throttle.try searchCmd model.throttle
     in
     withSub
-        ( { model_
+        ( { model
             | searchInProgress = cmd /= Cmd.none
             , searchOffset = 0
             , throttle = newThrottle
+            , lastSearchType = param.searchType
           }
         , cmd
         )
@@ -708,8 +721,16 @@ linkTargetMsg linkTarget =
 doSearchMore : Flags -> UiSettings -> Model -> ( Model, Cmd Msg )
 doSearchMore flags settings model =
     let
+        param =
+            { flags = flags
+            , searchType = model.lastSearchType
+            , pageSize = settings.itemSearchPageSize
+            , offset = model.searchOffset
+            , scroll = False
+            }
+
         cmd =
-            doSearchCmd flags settings model.searchOffset False model
+            doSearchCmd param model
     in
     ( { model | moreInProgress = True }
     , cmd

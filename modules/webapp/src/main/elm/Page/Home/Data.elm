@@ -1,6 +1,7 @@
 module Page.Home.Data exposing
     ( Model
     , Msg(..)
+    , SearchParam
     , SearchType(..)
     , SelectActionMode(..)
     , SelectViewModel
@@ -49,8 +50,8 @@ type alias Model =
     , moreInProgress : Bool
     , throttle : Throttle Msg
     , searchTypeDropdown : Comp.FixedDropdown.Model SearchType
-    , searchType : SearchType
-    , searchTypeForm : SearchType
+    , searchTypeDropdownValue : SearchType
+    , lastSearchType : SearchType
     , contentOnlySearch : Maybe String
     , dragDropData : DD.DragDropData
     , scrollToCard : Maybe String
@@ -104,8 +105,8 @@ init flags viewMode =
     , searchTypeDropdown =
         Comp.FixedDropdown.initMap searchTypeString
             searchTypeOptions
-    , searchType = BasicSearch
-    , searchTypeForm = defaultSearchType flags
+    , searchTypeDropdownValue = defaultSearchType flags
+    , lastSearchType = BasicSearch
     , contentOnlySearch = Nothing
     , dragDropData =
         DD.DragDropData DD.init Nothing
@@ -156,14 +157,14 @@ type Msg
     | ItemCardListMsg Comp.ItemCardList.Msg
     | ItemSearchResp Bool (Result Http.Error ItemLightList)
     | ItemSearchAddResp (Result Http.Error ItemLightList)
-    | DoSearch
+    | DoSearch SearchType
     | ToggleSearchMenu
     | ToggleSelectView
     | LoadMore
     | UpdateThrottle
     | SetBasicSearch String
     | SearchTypeMsg (Comp.FixedDropdown.Msg SearchType)
-    | KeyUpMsg (Maybe KeyCode)
+    | KeyUpSearchbarMsg (Maybe KeyCode)
     | SetContentOnly String
     | ScrollResult (Result Dom.Error ())
     | ClearItemDetailId
@@ -191,6 +192,15 @@ type SelectActionMode
     | EditSelected
 
 
+type alias SearchParam =
+    { flags : Flags
+    , searchType : SearchType
+    , pageSize : Int
+    , offset : Int
+    , scroll : Bool
+    }
+
+
 searchTypeString : SearchType -> String
 searchTypeString st =
     case st of
@@ -215,51 +225,51 @@ itemNav id model =
     }
 
 
-doSearchCmd : Flags -> UiSettings -> Int -> Bool -> Model -> Cmd Msg
-doSearchCmd flags settings offset scroll model =
-    case model.searchType of
+doSearchCmd : SearchParam -> Model -> Cmd Msg
+doSearchCmd param model =
+    case param.searchType of
         BasicSearch ->
-            doSearchDefaultCmd flags settings offset scroll model
+            doSearchDefaultCmd param model
 
         ContentOnlySearch ->
-            doSearchIndexCmd flags settings offset scroll model
+            doSearchIndexCmd param model
 
 
-doSearchDefaultCmd : Flags -> UiSettings -> Int -> Bool -> Model -> Cmd Msg
-doSearchDefaultCmd flags settings offset scroll model =
+doSearchDefaultCmd : SearchParam -> Model -> Cmd Msg
+doSearchDefaultCmd param model =
     let
         smask =
             Comp.SearchMenu.getItemSearch model.searchMenuModel
 
         mask =
             { smask
-                | limit = settings.itemSearchPageSize
-                , offset = offset
+                | limit = param.pageSize
+                , offset = param.offset
             }
     in
-    if offset == 0 then
-        Api.itemSearch flags mask (ItemSearchResp scroll)
+    if param.offset == 0 then
+        Api.itemSearch param.flags mask (ItemSearchResp param.scroll)
 
     else
-        Api.itemSearch flags mask ItemSearchAddResp
+        Api.itemSearch param.flags mask ItemSearchAddResp
 
 
-doSearchIndexCmd : Flags -> UiSettings -> Int -> Bool -> Model -> Cmd Msg
-doSearchIndexCmd flags settings offset scroll model =
+doSearchIndexCmd : SearchParam -> Model -> Cmd Msg
+doSearchIndexCmd param model =
     case model.contentOnlySearch of
         Just q ->
             let
                 mask =
                     { query = q
-                    , limit = settings.itemSearchPageSize
-                    , offset = offset
+                    , limit = param.pageSize
+                    , offset = param.offset
                     }
             in
-            if offset == 0 then
-                Api.itemIndexSearch flags mask (ItemSearchResp scroll)
+            if param.offset == 0 then
+                Api.itemIndexSearch param.flags mask (ItemSearchResp param.scroll)
 
             else
-                Api.itemIndexSearch flags mask ItemSearchAddResp
+                Api.itemIndexSearch param.flags mask ItemSearchAddResp
 
         Nothing ->
             -- If there is no fulltext query, render simply the most
@@ -269,9 +279,9 @@ doSearchIndexCmd flags settings offset scroll model =
                     Api.Model.ItemSearch.empty
 
                 mask =
-                    { emptyMask | limit = settings.itemSearchPageSize }
+                    { emptyMask | limit = param.pageSize }
             in
-            Api.itemSearch flags mask (ItemSearchResp scroll)
+            Api.itemSearch param.flags mask (ItemSearchResp param.scroll)
 
 
 resultsBelowLimit : UiSettings -> Model -> Bool
