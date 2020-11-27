@@ -20,6 +20,7 @@ import Api.Model.FolderList exposing (FolderList)
 import Api.Model.IdName exposing (IdName)
 import Api.Model.ItemDetail exposing (ItemDetail)
 import Api.Model.ItemProposals exposing (ItemProposals)
+import Api.Model.PersonList exposing (PersonList)
 import Api.Model.ReferenceList exposing (ReferenceList)
 import Api.Model.SentMails exposing (SentMails)
 import Api.Model.Tag exposing (Tag)
@@ -221,7 +222,7 @@ type Msg
     | ConcEquipMsg (Comp.Dropdown.Msg IdName)
     | GetTagsResp (Result Http.Error TagList)
     | GetOrgResp (Result Http.Error ReferenceList)
-    | GetPersonResp (Result Http.Error ReferenceList)
+    | GetPersonResp (Result Http.Error PersonList)
     | GetEquipResp (Result Http.Error EquipmentList)
     | SetName String
     | SetNotes String

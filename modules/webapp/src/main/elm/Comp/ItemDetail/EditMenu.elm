@@ -15,6 +15,7 @@ import Api.Model.FolderItem exposing (FolderItem)
 import Api.Model.FolderList exposing (FolderList)
 import Api.Model.IdName exposing (IdName)
 import Api.Model.ItemProposals exposing (ItemProposals)
+import Api.Model.PersonList exposing (PersonList)
 import Api.Model.ReferenceList exposing (ReferenceList)
 import Api.Model.Tag exposing (Tag)
 import Api.Model.TagList exposing (TagList)
@@ -102,7 +103,7 @@ type Msg
     | ConcEquipMsg (Comp.Dropdown.Msg IdName)
     | GetTagsResp (Result Http.Error TagList)
     | GetOrgResp (Result Http.Error ReferenceList)
-    | GetPersonResp (Result Http.Error ReferenceList)
+    | GetPersonResp (Result Http.Error PersonList)
     | GetEquipResp (Result Http.Error EquipmentList)
     | GetFolderResp (Result Http.Error FolderList)
     | CustomFieldMsg Comp.CustomFieldMultiInput.Msg
@@ -172,7 +173,7 @@ loadModel flags =
     Cmd.batch
         [ Api.getTags flags "" GetTagsResp
         , Api.getOrgLight flags GetOrgResp
-        , Api.getPersonsLight flags GetPersonResp
+        , Api.getPersons flags "" GetPersonResp
         , Api.getEquipments flags "" GetEquipResp
         , Api.getFolders flags "" False GetFolderResp
         , Cmd.map CustomFieldMsg (Comp.CustomFieldMultiInput.initCmd flags)
@@ -422,14 +423,20 @@ update flags msg model =
 
         GetPersonResp (Ok ps) ->
             let
-                opts =
-                    Comp.Dropdown.SetOptions ps.items
+                ( conc, corr ) =
+                    List.partition .concerning ps.items
+
+                concRefs =
+                    List.map (\e -> IdName e.id e.name) conc
+
+                corrRefs =
+                    List.map (\e -> IdName e.id e.name) corr
 
                 res1 =
-                    update flags (CorrPersonMsg opts) model
+                    update flags (CorrPersonMsg (Comp.Dropdown.SetOptions corrRefs)) model
 
                 res2 =
-                    update flags (ConcPersonMsg opts) res1.model
+                    update flags (ConcPersonMsg (Comp.Dropdown.SetOptions concRefs)) res1.model
             in
             res2
 
