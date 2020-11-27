@@ -165,11 +165,11 @@ initTag itemId tm =
     init itemId (TM tm)
 
 
-initTagByName : String -> String -> Model
-initTagByName itemId name =
+initTagByName : String -> String -> List String -> Model
+initTagByName itemId name categories =
     let
         tm =
-            Comp.TagForm.emptyModel
+            Comp.TagForm.emptyModel categories
 
         tm_ =
             { tm | name = name }

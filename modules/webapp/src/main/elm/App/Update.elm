@@ -174,7 +174,29 @@ updateWithSub msg model =
                 ( model, Page.goto check, Sub.none )
 
         ToggleNavMenu ->
-            ( { model | navMenuOpen = not model.navMenuOpen }
+            ( { model
+                | navMenuOpen = not model.navMenuOpen
+                , userMenuOpen =
+                    if not model.navMenuOpen then
+                        False
+
+                    else
+                        model.userMenuOpen
+              }
+            , Cmd.none
+            , Sub.none
+            )
+
+        ToggleUserMenu ->
+            ( { model
+                | userMenuOpen = not model.userMenuOpen
+                , navMenuOpen =
+                    if not model.userMenuOpen then
+                        False
+
+                    else
+                        model.navMenuOpen
+              }
             , Cmd.none
             , Sub.none
             )

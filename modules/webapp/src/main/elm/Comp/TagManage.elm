@@ -20,6 +20,8 @@ import Html.Events exposing (onClick, onInput, onSubmit)
 import Http
 import Util.Http
 import Util.Maybe
+import Util.Tag
+import Util.Update
 
 
 type alias Model =
@@ -41,7 +43,7 @@ type ViewMode
 emptyModel : Model
 emptyModel =
     { tagTableModel = Comp.TagTable.emptyModel
-    , tagFormModel = Comp.TagForm.emptyModel
+    , tagFormModel = Comp.TagForm.emptyModel []
     , viewMode = Table
     , formError = Nothing
     , loading = False
@@ -110,8 +112,15 @@ update flags msg model =
             let
                 m2 =
                     { model | viewMode = Table, loading = False }
+
+                cats =
+                    Util.Tag.getCategories tags.items
             in
-            update flags (TableMsg (Comp.TagTable.SetTags tags.items)) m2
+            Util.Update.andThen1
+                [ update flags (TableMsg (Comp.TagTable.SetTags tags.items))
+                , update flags (FormMsg (Comp.TagForm.SetCategoryOptions cats))
+                ]
+                m2
 
         TagResp (Err _) ->
             ( { model | loading = False }, Cmd.none )

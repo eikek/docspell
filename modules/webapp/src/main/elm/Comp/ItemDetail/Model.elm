@@ -98,6 +98,7 @@ type alias Model =
     , customFieldsModel : Comp.CustomFieldMultiInput.Model
     , customFieldSavingIcon : Dict String String
     , customFieldThrottle : Throttle Msg
+    , allTags : List Tag
     }
 
 
@@ -202,6 +203,7 @@ emptyModel =
     , customFieldsModel = Comp.CustomFieldMultiInput.initWith []
     , customFieldSavingIcon = Dict.empty
     , customFieldThrottle = Throttle.create 1
+    , allTags = []
     }
 
 
