@@ -182,7 +182,6 @@ type Msg
 
 type SearchType
     = BasicSearch
-    | ContentSearch
     | ContentOnlySearch
 
 
@@ -197,9 +196,6 @@ searchTypeString st =
     case st of
         BasicSearch ->
             "Names"
-
-        ContentSearch ->
-            "Contents"
 
         ContentOnlySearch ->
             "Contents Only"
@@ -223,9 +219,6 @@ doSearchCmd : Flags -> UiSettings -> Int -> Bool -> Model -> Cmd Msg
 doSearchCmd flags settings offset scroll model =
     case model.searchType of
         BasicSearch ->
-            doSearchDefaultCmd flags settings offset scroll model
-
-        ContentSearch ->
             doSearchDefaultCmd flags settings offset scroll model
 
         ContentOnlySearch ->

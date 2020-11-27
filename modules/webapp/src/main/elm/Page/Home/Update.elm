@@ -251,9 +251,6 @@ update mId key flags settings msg model =
                         BasicSearch ->
                             SearchMenuMsg (Comp.SearchMenu.SetAllName str)
 
-                        ContentSearch ->
-                            SearchMenuMsg (Comp.SearchMenu.SetFulltext str)
-
                         ContentOnlySearch ->
                             SetContentOnly str
             in

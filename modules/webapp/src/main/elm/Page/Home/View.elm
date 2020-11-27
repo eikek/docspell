@@ -289,9 +289,6 @@ viewSearchBar flags model =
                 BasicSearch ->
                     model.searchMenuModel.allNameModel
 
-                ContentSearch ->
-                    model.searchMenuModel.fulltextModel
-
                 ContentOnlySearch ->
                     model.contentOnlySearch
 
@@ -387,9 +384,6 @@ hasMoreSearch model =
             case model.searchType of
                 BasicSearch ->
                     { is | allNames = Nothing }
-
-                ContentSearch ->
-                    { is | fullText = Nothing }
 
                 ContentOnlySearch ->
                     Api.Model.ItemSearch.empty
