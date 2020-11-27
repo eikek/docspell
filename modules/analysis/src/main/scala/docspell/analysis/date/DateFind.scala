@@ -76,7 +76,7 @@ object DateFind {
 
     def readMonth: Reader[Int] =
       Reader.readFirst(w =>
-        Some(months.indexWhere(_.contains(w.value))).filter(_ > 0).map(_ + 1)
+        Some(months.indexWhere(_.contains(w.value))).filter(_ >= 0).map(_ + 1)
       )
 
     def readDay: Reader[Int] =
