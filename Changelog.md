@@ -1,5 +1,62 @@
 # Changelog
 
+## v0.16.0
+
+*Nov 28, 2020*
+
+This release brings the "custom metadata fields" feature. It allows
+you to define custom fields and associate values to your items.
+Additionally there are some ui and other fixes and improvements.
+
+- Feature: Custom Fields – define custom metadata fields an set values
+  for them on your items. For example, this can be used to track
+  invoice numbers, pagination stamps etc. Fields can be defined per
+  collective and carry a format (or type). (#41)
+- Feature: The language has been added to the metadata of an upload
+  request and therefore overrides the collective's default language.
+  This means you can now set the document language with each document.
+  (#350)
+- Feature: Show the currently logged in user and the collective in the
+  web app. (#329)
+- Feature: Tag categories are presented as a dropdown, where you can
+  choose an existing one or type a new one. (#331)
+- Feature: The dropdown fields for a person have been changed in that
+  the options are now restricted to the corresponding scope: the
+  correspondent person only shows persons *not* marked as concerning
+  and vice-versa. (#332)
+- Feature: Add CC and BCC recipients to item mail (#481)
+- The `consumedir.sh` scripts was improved:
+  - log a warning for all subfolders that currently wouldn't work due
+    to configuration problems
+  - ignore hidden files on linux (starting with a dot `.`)
+  - include the parameter `skipDuplicates` into the upload request
+    when the `-m` option is present
+- Fixes a bug that prevented detecting dates in january (#480, thanks
+  @vanto!)
+- Fixes updating search view after changes like deleting item in
+  multi-edit mode or updating tags via drag-and-drop.
+
+The list of issues is
+[here](https://github.com/eikek/docspell/milestone/3?closed=1).
+
+### REST Api Changes
+
+- `ItemSearch` is extended to allow searching for custom field values
+- `/sec/item/{id}/customfield` route to set values for custom fields
+- `/sec/item/{id}/customfield/{fieldId}` route to delete values for
+  custom fields on an item
+- `/sec/items/customfield`, `/sec/items/customfieldremove` routes to
+  set/remove custom field values for multiple items
+- `/sec/customfield` routes to manage custom fields
+- A lanugage field has been added to `ItemUploadMeta` and
+  `ScanMailboxSettings`
+- Added `cc` and `bcc` fields to `SimpleMail`
+
+### Configuration Changes
+
+None.
+
+
 ## v0.15.0
 
 *Nov 15, 2020*
