@@ -83,7 +83,7 @@ view flags settings model =
                         ]
                     , a
                         [ class "borderless item"
-                        , onClick DoSearch
+                        , onClick (DoSearch BasicSearch)
                         , title "Run search query"
                         , href ""
                         , disabled model.searchInProgress
@@ -281,16 +281,13 @@ viewSearchBar flags model =
     let
         searchTypeItem =
             Comp.FixedDropdown.Item
-                model.searchTypeForm
-                (searchTypeString model.searchTypeForm)
+                model.searchTypeDropdownValue
+                (searchTypeString model.searchTypeDropdownValue)
 
         searchInput =
-            case model.searchTypeForm of
+            case model.searchTypeDropdownValue of
                 BasicSearch ->
                     model.searchMenuModel.allNameModel
-
-                ContentSearch ->
-                    model.searchMenuModel.fulltextModel
 
                 ContentOnlySearch ->
                     model.contentOnlySearch
@@ -329,9 +326,9 @@ viewSearchBar flags model =
                             , ( "loading spinner icon", model.searchInProgress )
                             ]
                         , href "#"
-                        , onClick DoSearch
+                        , onClick (DoSearch model.searchTypeDropdownValue)
                         ]
-                        (if hasMoreSearch model && model.searchTypeForm == BasicSearch then
+                        (if hasMoreSearch model && model.searchTypeDropdownValue == BasicSearch then
                             [ i [ class "icons search-corner-icons" ]
                                 [ i [ class "tiny blue circle icon" ] []
                                 ]
@@ -344,7 +341,7 @@ viewSearchBar flags model =
                         [ type_ "text"
                         , placeholder "Quick Search …"
                         , onInput SetBasicSearch
-                        , Util.Html.onKeyUpCode KeyUpMsg
+                        , Util.Html.onKeyUpCode KeyUpSearchbarMsg
                         , Maybe.map value searchInput
                             |> Maybe.withDefault (value "")
                         ]
@@ -384,12 +381,9 @@ hasMoreSearch model =
             Comp.SearchMenu.getItemSearch model.searchMenuModel
 
         is_ =
-            case model.searchType of
+            case model.lastSearchType of
                 BasicSearch ->
                     { is | allNames = Nothing }
-
-                ContentSearch ->
-                    { is | fullText = Nothing }
 
                 ContentOnlySearch ->
                     Api.Model.ItemSearch.empty

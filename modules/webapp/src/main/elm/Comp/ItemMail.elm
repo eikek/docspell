@@ -28,6 +28,10 @@ type alias Model =
     , subject : String
     , recipients : List String
     , recipientsModel : Comp.EmailInput.Model
+    , ccRecipients : List String
+    , ccRecipientsModel : Comp.EmailInput.Model
+    , bccRecipients : List String
+    , bccRecipientsModel : Comp.EmailInput.Model
     , body : String
     , attachAll : Bool
     , formError : Maybe String
@@ -37,6 +41,8 @@ type alias Model =
 type Msg
     = SetSubject String
     | RecipientMsg Comp.EmailInput.Msg
+    | CCRecipientMsg Comp.EmailInput.Msg
+    | BCCRecipientMsg Comp.EmailInput.Msg
     | SetBody String
     | ConnMsg (Comp.Dropdown.Msg String)
     | ConnResp (Result Http.Error EmailSettingsList)
@@ -67,6 +73,10 @@ emptyModel =
     , subject = ""
     , recipients = []
     , recipientsModel = Comp.EmailInput.init
+    , ccRecipients = []
+    , ccRecipientsModel = Comp.EmailInput.init
+    , bccRecipients = []
+    , bccRecipientsModel = Comp.EmailInput.init
     , body = ""
     , attachAll = True
     , formError = Nothing
@@ -83,6 +93,8 @@ clear model =
     { model
         | subject = ""
         , recipients = []
+        , ccRecipients = []
+        , bccRecipients = []
         , body = ""
     }
 
@@ -100,6 +112,26 @@ update flags msg model =
             in
             ( { model | recipients = rec, recipientsModel = em }
             , Cmd.map RecipientMsg ec
+            , FormNone
+            )
+
+        CCRecipientMsg m ->
+            let
+                ( em, ec, rec ) =
+                    Comp.EmailInput.update flags model.ccRecipients m model.ccRecipientsModel
+            in
+            ( { model | ccRecipients = rec, ccRecipientsModel = em }
+            , Cmd.map CCRecipientMsg ec
+            , FormNone
+            )
+
+        BCCRecipientMsg m ->
+            let
+                ( em, ec, rec ) =
+                    Comp.EmailInput.update flags model.bccRecipients m model.bccRecipientsModel
+            in
+            ( { model | bccRecipients = rec, bccRecipientsModel = em }
+            , Cmd.map BCCRecipientMsg ec
             , FormNone
             )
 
@@ -153,8 +185,18 @@ update flags msg model =
             case ( model.formError, Comp.Dropdown.getSelected model.connectionModel ) of
                 ( Nothing, conn :: [] ) ->
                     let
+                        emptyMail =
+                            Api.Model.SimpleMail.empty
+
                         sm =
-                            SimpleMail model.recipients model.subject model.body model.attachAll []
+                            { emptyMail
+                                | recipients = model.recipients
+                                , cc = model.ccRecipients
+                                , bcc = model.bccRecipients
+                                , subject = model.subject
+                                , body = model.body
+                                , addAllAttachments = model.attachAll
+                            }
                     in
                     ( model, Cmd.none, FormSend { conn = conn, mail = sm } )
 
@@ -194,6 +236,18 @@ view settings model =
                 [ text "Recipient(s)"
                 ]
             , Html.map RecipientMsg (Comp.EmailInput.view model.recipients model.recipientsModel)
+            ]
+        , div [ class "field" ]
+            [ label []
+                [ text "CC(s)"
+                ]
+            , Html.map CCRecipientMsg (Comp.EmailInput.view model.ccRecipients model.ccRecipientsModel)
+            ]
+        , div [ class "field" ]
+            [ label []
+                [ text "BCC(s)"
+                ]
+            , Html.map BCCRecipientMsg (Comp.EmailInput.view model.bccRecipients model.bccRecipientsModel)
             ]
         , div [ class "field" ]
             [ label [] [ text "Subject" ]

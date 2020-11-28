@@ -68,6 +68,8 @@ object OMail {
       item: Ident,
       subject: String,
       recipients: List[MailAddress],
+      cc: List[MailAddress],
+      bcc: List[MailAddress],
       body: String,
       attach: AttachSelection
   )
@@ -230,6 +232,8 @@ object OMail {
             val fields: Seq[Trans[F]] = Seq(
               From(sett.mailFrom),
               Tos(m.recipients),
+              Ccs(m.cc),
+              Bccs(m.bcc),
               XMailer.emil,
               Subject(m.subject),
               TextBody[F](m.body)
