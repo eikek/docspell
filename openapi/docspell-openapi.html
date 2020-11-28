@@ -1070,18 +1070,27 @@
   "description" : "A list of contacts.\n"
 };
             defs["CustomField"] = {
-  "required" : [ "created", "ftype", "id", "name" ],
+  "required" : [ "created", "ftype", "id", "name", "usages" ],
   "properties" : {
     "id" : {
       "type" : "string",
       "format" : "ident"
     },
     "name" : {
+      "type" : "string",
+      "format" : "ident"
+    },
+    "label" : {
       "type" : "string"
     },
     "ftype" : {
       "type" : "string",
-      "format" : "customfieldtype"
+      "format" : "customfieldtype",
+      "enum" : [ "text", "numeric", "date", "bool", "money" ]
+    },
+    "usages" : {
+      "type" : "integer",
+      "format" : "int32"
     },
     "created" : {
       "type" : "integer",
@@ -1093,9 +1102,27 @@
             defs["CustomFieldList"] = {
   "required" : [ "items" ],
   "properties" : {
-    "items" : { }
+    "items" : {
+      "type" : "array",
+      "items" : {
+        "$ref" : "#/components/schemas/CustomField"
+      }
+    }
   },
   "description" : "A list of known custom fields.\n"
+};
+            defs["CustomFieldValue"] = {
+  "required" : [ "field", "value" ],
+  "properties" : {
+    "field" : {
+      "type" : "string",
+      "format" : "ident"
+    },
+    "value" : {
+      "type" : "string"
+    }
+  },
+  "description" : "Data structure to update the value of a custom field.\n"
 };
             defs["DirectionValue"] = {
   "required" : [ "direction" ],
@@ -1407,7 +1434,7 @@
   "description" : "The result when requesting new invitation keys.\n"
 };
             defs["ItemDetail"] = {
-  "required" : [ "archives", "attachments", "created", "direction", "id", "name", "source", "sources", "state", "tags", "updated" ],
+  "required" : [ "archives", "attachments", "created", "customfields", "direction", "id", "name", "source", "sources", "state", "tags", "updated" ],
   "properties" : {
     "id" : {
       "type" : "string",
@@ -1488,9 +1515,40 @@
       "items" : {
         "$ref" : "#/components/schemas/Tag"
       }
+    },
+    "customfields" : {
+      "type" : "array",
+      "items" : {
+        "$ref" : "#/components/schemas/ItemFieldValue"
+      }
     }
   },
   "description" : "Detailed information about an item.\n"
+};
+            defs["ItemFieldValue"] = {
+  "required" : [ "ftype", "id", "name", "value" ],
+  "properties" : {
+    "id" : {
+      "type" : "string",
+      "format" : "ident"
+    },
+    "name" : {
+      "type" : "string",
+      "format" : "ident"
+    },
+    "label" : {
+      "type" : "string"
+    },
+    "ftype" : {
+      "type" : "string",
+      "format" : "customfieldtype",
+      "enum" : [ "text", "numeric", "date", "bool", "money" ]
+    },
+    "value" : {
+      "type" : "string"
+    }
+  },
+  "description" : "Information about a custom field on an item.\n"
 };
             defs["ItemFtsSearch"] = {
   "required" : [ "limit", "offset", "query" ],
@@ -1592,6 +1650,12 @@
         "$ref" : "#/components/schemas/Tag"
       }
     },
+    "customfields" : {
+      "type" : "array",
+      "items" : {
+        "$ref" : "#/components/schemas/ItemFieldValue"
+      }
+    },
     "notes" : {
       "type" : "string",
       "description" : "Some prefix of the item notes.\n"
@@ -1678,7 +1742,7 @@
   "description" : "Metadata that has been suggested to an item.\n"
 };
             defs["ItemSearch"] = {
-  "required" : [ "inbox", "limit", "offset", "tagCategoriesExclude", "tagCategoriesInclude", "tagsExclude", "tagsInclude" ],
+  "required" : [ "customValues", "inbox", "limit", "offset", "tagCategoriesExclude", "tagCategoriesInclude", "tagsExclude", "tagsInclude" ],
   "properties" : {
     "tagsInclude" : {
       "type" : "array",
@@ -1773,6 +1837,12 @@
     },
     "itemSubset" : {
       "$ref" : "#/components/schemas/IdList"
+    },
+    "customValues" : {
+      "type" : "array",
+      "items" : {
+        "$ref" : "#/components/schemas/CustomFieldValue"
+      }
     }
   },
   "description" : "A structure for a search form.\n"
@@ -1802,9 +1872,13 @@
     "fileFilter" : {
       "type" : "string",
       "format" : "glob"
+    },
+    "language" : {
+      "type" : "string",
+      "format" : "language"
     }
   },
-  "description" : "Meta information for an item upload. The user can specify some\nstructured information with a binary file.\n\nAdditional metadata is not required. However, if there is some\nspecified, you have to specifiy whether the corresponding\nfiles should become one single item or if an item is created\nfor each file.\n\nA direction can be given, `Incoming` is used if not specified.\n\nA folderId can be given, the item is placed into this folder\nafter creation.\n\nThe `fileFilter` is an optional glob for filtering files to\nimport. Only applicable if archive files are uploaded. It\napplies to all of them. For example, to only import pdf files\nwhen uploading e-mails, use `*.pdf`. If the pattern doesn't\ncontain a slash `/`, then it is applied to all file names.\nOtherwise it is applied to the complete path in the archive\n(useful for zip files). Note that the archive file itself is\nalways saved completely, too.\n\nThe `tags` input allows to provide tags that should be applied\nto the item being created. This only works if the tags already\nexist. It is possible to specify their ids or names.\n"
+  "description" : "Meta information for an item upload. The user can specify some\nstructured information with a binary file.\n\nAdditional metadata is not required. However, if there is some\nspecified, you have to specifiy whether the corresponding\nfiles should become one single item or if an item is created\nfor each file.\n\nA direction can be given, `Incoming` is used if not specified.\n\nA folderId can be given, the item is placed into this folder\nafter creation.\n\nThe `fileFilter` is an optional glob for filtering files to\nimport. Only applicable if archive files are uploaded. It\napplies to all of them. For example, to only import pdf files\nwhen uploading e-mails, use `*.pdf`. If the pattern doesn't\ncontain a slash `/`, then it is applied to all file names.\nOtherwise it is applied to the complete path in the archive\n(useful for zip files). Note that the archive file itself is\nalways saved completely, too.\n\nThe `tags` input allows to provide tags that should be applied\nto the item being created. This only works if the tags already\nexist. It is possible to specify their ids or names.\n\nThe `language` of the document may be specified, otherwise the\none from settings is used.\n"
 };
             defs["ItemsAndDate"] = {
   "required" : [ "items" ],
@@ -1839,6 +1913,22 @@
     }
   },
   "description" : "Holds a list of item ids and a direction value.\n"
+};
+            defs["ItemsAndFieldValue"] = {
+  "required" : [ "field", "items" ],
+  "properties" : {
+    "items" : {
+      "type" : "array",
+      "items" : {
+        "type" : "string",
+        "format" : "ident"
+      }
+    },
+    "field" : {
+      "$ref" : "#/components/schemas/CustomFieldValue"
+    }
+  },
+  "description" : "Holds a list of item ids and a custom field value.\n"
 };
             defs["ItemsAndName"] = {
   "required" : [ "items", "name" ],
@@ -2035,6 +2125,24 @@
     }
   },
   "description" : "Data to move an attachment to another position.\n"
+};
+            defs["NewCustomField"] = {
+  "required" : [ "ftype", "name" ],
+  "properties" : {
+    "name" : {
+      "type" : "string",
+      "format" : "ident"
+    },
+    "label" : {
+      "type" : "string"
+    },
+    "ftype" : {
+      "type" : "string",
+      "format" : "customfieldtype",
+      "enum" : [ "text", "numeric", "date", "bool", "money" ]
+    }
+  },
+  "description" : "Data for creating a custom field.\n"
 };
             defs["NewFolder"] = {
   "required" : [ "name" ],
@@ -2329,6 +2437,11 @@
       "type" : "string",
       "description" : "A glob to filter attachments to import by subject.\n",
       "format" : "glob"
+    },
+    "language" : {
+      "type" : "string",
+      "description" : "The language used for text extraction and analysis when\nprocessing mails.\n",
+      "format" : "language"
     }
   },
   "description" : "Settings for the scan mailbox task.\n"
@@ -2392,9 +2505,21 @@
   "description" : "A list of sent mails.\n"
 };
             defs["SimpleMail"] = {
-  "required" : [ "addAllAttachments", "attachmentIds", "body", "recipients", "subject" ],
+  "required" : [ "addAllAttachments", "attachmentIds", "bcc", "body", "cc", "recipients", "subject" ],
   "properties" : {
     "recipients" : {
+      "type" : "array",
+      "items" : {
+        "type" : "string"
+      }
+    },
+    "cc" : {
+      "type" : "array",
+      "items" : {
+        "type" : "string"
+      }
+    },
+    "bcc" : {
       "type" : "array",
       "items" : {
         "type" : "string"
@@ -2464,10 +2589,10 @@
   "required" : [ "source", "tags" ],
   "properties" : {
     "source" : {
-      "$ref" : "#/components/schema/Source"
+      "$ref" : "#/components/schemas/Source"
     },
     "tags" : {
-      "$ref" : "#/components/schema/TagList"
+      "$ref" : "#/components/schemas/TagList"
     }
   },
   "description" : "A source and optional tags.\n"
@@ -2488,7 +2613,7 @@
   "required" : [ "source", "tags" ],
   "properties" : {
     "source" : {
-      "$ref" : "#/components/schema/Source"
+      "$ref" : "#/components/schemas/Source"
     },
     "tags" : {
       "type" : "array",
@@ -2771,8 +2896,20 @@
                       <a href="#api-Collective-secUserPut">secUserPut</a>
                     </li>
                   <li class="nav-header" data-group="CustomFields"><a href="#api-CustomFields">API Methods - CustomFields</a></li>
-                    <li data-group="CustomFields" data-name="secCustomfieldsGet" class="">
-                      <a href="#api-CustomFields-secCustomfieldsGet">secCustomfieldsGet</a>
+                    <li data-group="CustomFields" data-name="secCustomfieldGet" class="">
+                      <a href="#api-CustomFields-secCustomfieldGet">secCustomfieldGet</a>
+                    </li>
+                    <li data-group="CustomFields" data-name="secCustomfieldIdDelete" class="">
+                      <a href="#api-CustomFields-secCustomfieldIdDelete">secCustomfieldIdDelete</a>
+                    </li>
+                    <li data-group="CustomFields" data-name="secCustomfieldIdGet" class="">
+                      <a href="#api-CustomFields-secCustomfieldIdGet">secCustomfieldIdGet</a>
+                    </li>
+                    <li data-group="CustomFields" data-name="secCustomfieldIdPut" class="">
+                      <a href="#api-CustomFields-secCustomfieldIdPut">secCustomfieldIdPut</a>
+                    </li>
+                    <li data-group="CustomFields" data-name="secCustomfieldPost" class="">
+                      <a href="#api-CustomFields-secCustomfieldPost">secCustomfieldPost</a>
                     </li>
                   <li class="nav-header" data-group="EMail"><a href="#api-EMail">API Methods - EMail</a></li>
                     <li data-group="EMail" data-name="secEmailSendNameIdPost" class="">
@@ -2907,6 +3044,9 @@
                     <li data-group="Item" data-name="secItemIdCorrPersonPut" class="">
                       <a href="#api-Item-secItemIdCorrPersonPut">secItemIdCorrPersonPut</a>
                     </li>
+                    <li data-group="Item" data-name="secItemIdCustomfieldPut" class="">
+                      <a href="#api-Item-secItemIdCustomfieldPut">secItemIdCustomfieldPut</a>
+                    </li>
                     <li data-group="Item" data-name="secItemIdDatePut" class="">
                       <a href="#api-Item-secItemIdDatePut">secItemIdDatePut</a>
                     </li>
@@ -2952,6 +3092,9 @@
                     <li data-group="Item" data-name="secItemItemIdAttachmentMovebeforePost" class="">
                       <a href="#api-Item-secItemItemIdAttachmentMovebeforePost">secItemItemIdAttachmentMovebeforePost</a>
                     </li>
+                    <li data-group="Item" data-name="secItemItemIdCustomfieldIdDelete" class="">
+                      <a href="#api-Item-secItemItemIdCustomfieldIdDelete">secItemItemIdCustomfieldIdDelete</a>
+                    </li>
                     <li data-group="Item" data-name="secItemItemIdReprocessPost" class="">
                       <a href="#api-Item-secItemItemIdReprocessPost">secItemItemIdReprocessPost</a>
                     </li>
@@ -2979,6 +3122,12 @@
                     </li>
                     <li data-group="ItemMultiEdit" data-name="secItemsCorrPersonPut" class="">
                       <a href="#api-ItemMultiEdit-secItemsCorrPersonPut">secItemsCorrPersonPut</a>
+                    </li>
+                    <li data-group="ItemMultiEdit" data-name="secItemsCustomfieldPut" class="">
+                      <a href="#api-ItemMultiEdit-secItemsCustomfieldPut">secItemsCustomfieldPut</a>
+                    </li>
+                    <li data-group="ItemMultiEdit" data-name="secItemsCustomfieldremovePost" class="">
+                      <a href="#api-ItemMultiEdit-secItemsCustomfieldremovePost">secItemsCustomfieldremovePost</a>
                     </li>
                     <li data-group="ItemMultiEdit" data-name="secItemsDatePut" class="">
                       <a href="#api-ItemMultiEdit-secItemsDatePut">secItemsDatePut</a>
@@ -3161,7 +3310,7 @@
         <div id="header">
           <div id="api-_">
             <h2 id="welcome-to-apidoc">API and SDK Documentation</h2>
-              <div class="app-desc">Version: 0.16.0-SNAPSHOT</div>
+              <div class="app-desc">Version: 0.16.0</div>
             <hr>
             <div>This is the remote API to Docspell, a personal document organizer.</div>
           </div>
@@ -13344,10 +13493,10 @@ except ApiException as e:
                   </section>
                 <section id="api-CustomFields">
                   <h1>CustomFields</h1>
-                    <div id="api-CustomFields-secCustomfieldsGet">
-                      <article id="api-CustomFields-secCustomfieldsGet-0" data-group="User" data-name="secCustomfieldsGet" data-version="0">
+                    <div id="api-CustomFields-secCustomfieldGet">
+                      <article id="api-CustomFields-secCustomfieldGet-0" data-group="User" data-name="secCustomfieldGet" data-version="0">
                         <div class="pull-left">
-                          <h1>secCustomfieldsGet</h1>
+                          <h1>secCustomfieldGet</h1>
                           <p>Get all defined custom fields.</p>
                         </div>
                         <div class="pull-right"></div>
@@ -13357,32 +13506,32 @@ except ApiException as e:
 </p>
                         <p></p>
                         <br />
-                        <pre class="prettyprint language-html prettyprinted" data-type="get"><code><span class="pln">/sec/customfields</span></code></pre>
+                        <pre class="prettyprint language-html prettyprinted" data-type="get"><code><span class="pln">/sec/customfield</span></code></pre>
                         <p>
                           <h3>Usage and SDK Samples</h3>
                         </p>
                         <ul class="nav nav-tabs nav-tabs-examples">
-                          <li class="active"><a href="#examples-CustomFields-secCustomfieldsGet-0-curl">Curl</a></li>
-                          <li class=""><a href="#examples-CustomFields-secCustomfieldsGet-0-java">Java</a></li>
-                          <li class=""><a href="#examples-CustomFields-secCustomfieldsGet-0-android">Android</a></li>
-                          <!--<li class=""><a href="#examples-CustomFields-secCustomfieldsGet-0-groovy">Groovy</a></li>-->
-                          <li class=""><a href="#examples-CustomFields-secCustomfieldsGet-0-objc">Obj-C</a></li>
-                          <li class=""><a href="#examples-CustomFields-secCustomfieldsGet-0-javascript">JavaScript</a></li>
-                          <!--<li class=""><a href="#examples-CustomFields-secCustomfieldsGet-0-angular">Angular</a></li>-->
-                          <li class=""><a href="#examples-CustomFields-secCustomfieldsGet-0-csharp">C#</a></li>
-                          <li class=""><a href="#examples-CustomFields-secCustomfieldsGet-0-php">PHP</a></li>
-                          <li class=""><a href="#examples-CustomFields-secCustomfieldsGet-0-perl">Perl</a></li>
-                          <li class=""><a href="#examples-CustomFields-secCustomfieldsGet-0-python">Python</a></li>
+                          <li class="active"><a href="#examples-CustomFields-secCustomfieldGet-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-CustomFields-secCustomfieldGet-0-java">Java</a></li>
+                          <li class=""><a href="#examples-CustomFields-secCustomfieldGet-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-CustomFields-secCustomfieldGet-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-CustomFields-secCustomfieldGet-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-CustomFields-secCustomfieldGet-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-CustomFields-secCustomfieldGet-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-CustomFields-secCustomfieldGet-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-CustomFields-secCustomfieldGet-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-CustomFields-secCustomfieldGet-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-CustomFields-secCustomfieldGet-0-python">Python</a></li>
                         </ul>
 
                         <div class="tab-content">
-                          <div class="tab-pane active" id="examples-CustomFields-secCustomfieldsGet-0-curl">
+                          <div class="tab-pane active" id="examples-CustomFields-secCustomfieldGet-0-curl">
                            <pre class="prettyprint"><code class="language-bsh">curl -X GET\
 -H "X-Docspell-Auth: [[apiKey]]"\
 -H "Accept: application/json"\
-"/api/v1/sec/customfields"</code></pre>
+"/api/v1/sec/customfield?q="</code></pre>
                           </div>
-                          <div class="tab-pane" id="examples-CustomFields-secCustomfieldsGet-0-java">
+                          <div class="tab-pane" id="examples-CustomFields-secCustomfieldGet-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
 import io.swagger.client.auth.*;
 import io.swagger.client.model.*;
@@ -13403,50 +13552,53 @@ public class CustomFieldsApiExample {
         //authTokenHeader.setApiKeyPrefix("Token");
 
         CustomFieldsApi apiInstance = new CustomFieldsApi();
+        String q = q_example; // String | A query string.
         try {
-            CustomFieldList result = apiInstance.secCustomfieldsGet();
+            CustomFieldList result = apiInstance.secCustomfieldGet(q);
             System.out.println(result);
         } catch (ApiException e) {
-            System.err.println("Exception when calling CustomFieldsApi#secCustomfieldsGet");
+            System.err.println("Exception when calling CustomFieldsApi#secCustomfieldGet");
             e.printStackTrace();
         }
     }
 }</code></pre>
                           </div>
 
-                          <div class="tab-pane" id="examples-CustomFields-secCustomfieldsGet-0-android">
+                          <div class="tab-pane" id="examples-CustomFields-secCustomfieldGet-0-android">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.CustomFieldsApi;
 
 public class CustomFieldsApiExample {
 
     public static void main(String[] args) {
         CustomFieldsApi apiInstance = new CustomFieldsApi();
+        String q = q_example; // String | A query string.
         try {
-            CustomFieldList result = apiInstance.secCustomfieldsGet();
+            CustomFieldList result = apiInstance.secCustomfieldGet(q);
             System.out.println(result);
         } catch (ApiException e) {
-            System.err.println("Exception when calling CustomFieldsApi#secCustomfieldsGet");
+            System.err.println("Exception when calling CustomFieldsApi#secCustomfieldGet");
             e.printStackTrace();
         }
     }
 }</code></pre>
                           </div>
   <!--
-  <div class="tab-pane" id="examples-CustomFields-secCustomfieldsGet-0-groovy">
+  <div class="tab-pane" id="examples-CustomFields-secCustomfieldGet-0-groovy">
   <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
   </div> -->
-                            <div class="tab-pane" id="examples-CustomFields-secCustomfieldsGet-0-objc">
+                            <div class="tab-pane" id="examples-CustomFields-secCustomfieldGet-0-objc">
                               <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
 // Configure API key authorization: (authentication scheme: authTokenHeader)
 [apiConfig setApiKey:@"YOUR_API_KEY" forApiKeyIdentifier:@"X-Docspell-Auth"];
 // Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
 //[apiConfig setApiKeyPrefix:@"Bearer" forApiKeyIdentifier:@"X-Docspell-Auth"];
+String *q = q_example; // A query string. (optional)
 
 CustomFieldsApi *apiInstance = [[CustomFieldsApi alloc] init];
 
 // Get all defined custom fields.
-[apiInstance secCustomfieldsGetWithCompletionHandler: 
-              ^(CustomFieldList output, NSError* error) {
+[apiInstance secCustomfieldGetWith:q
+              completionHandler: ^(CustomFieldList output, NSError* error) {
                             if (output) {
                                 NSLog(@"%@", output);
                             }
@@ -13457,7 +13609,7 @@ CustomFieldsApi *apiInstance = [[CustomFieldsApi alloc] init];
 </code></pre>
                             </div>
 
-                            <div class="tab-pane" id="examples-CustomFields-secCustomfieldsGet-0-javascript">
+                            <div class="tab-pane" id="examples-CustomFields-secCustomfieldGet-0-javascript">
                               <pre class="prettyprint"><code class="language-js">var Docspell = require('docspell');
 var defaultClient = Docspell.ApiClient.instance;
 
@@ -13468,6 +13620,9 @@ authTokenHeader.apiKey = "YOUR API KEY"
 //authTokenHeader.apiKeyPrefix['X-Docspell-Auth'] = "Token"
 
 var api = new Docspell.CustomFieldsApi()
+var opts = { 
+  'q': q_example // {{String}} A query string.
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -13475,14 +13630,14 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.secCustomfieldsGet(callback);
+api.secCustomfieldGet(opts, callback);
 </code></pre>
                             </div>
 
-                            <!--<div class="tab-pane" id="examples-CustomFields-secCustomfieldsGet-0-angular">
+                            <!--<div class="tab-pane" id="examples-CustomFields-secCustomfieldGet-0-angular">
               <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
             </div>-->
-                            <div class="tab-pane" id="examples-CustomFields-secCustomfieldsGet-0-csharp">
+                            <div class="tab-pane" id="examples-CustomFields-secCustomfieldGet-0-csharp">
                               <pre class="prettyprint"><code class="language-cs">using System;
 using System.Diagnostics;
 using IO.Swagger.Api;
@@ -13491,7 +13646,7 @@ using IO.Swagger.Model;
 
 namespace Example
 {
-    public class secCustomfieldsGetExample
+    public class secCustomfieldGetExample
     {
         public void main()
         {
@@ -13502,16 +13657,17 @@ namespace Example
             // Configuration.Default.ApiKeyPrefix.Add("X-Docspell-Auth", "Bearer");
 
             var apiInstance = new CustomFieldsApi();
+            var q = q_example;  // String | A query string. (optional) 
 
             try
             {
                 // Get all defined custom fields.
-                CustomFieldList result = apiInstance.secCustomfieldsGet();
+                CustomFieldList result = apiInstance.secCustomfieldGet(q);
                 Debug.WriteLine(result);
             }
             catch (Exception e)
             {
-                Debug.Print("Exception when calling CustomFieldsApi.secCustomfieldsGet: " + e.Message );
+                Debug.Print("Exception when calling CustomFieldsApi.secCustomfieldGet: " + e.Message );
             }
         }
     }
@@ -13519,7 +13675,7 @@ namespace Example
 </code></pre>
                             </div>
 
-                            <div class="tab-pane" id="examples-CustomFields-secCustomfieldsGet-0-php">
+                            <div class="tab-pane" id="examples-CustomFields-secCustomfieldGet-0-php">
                               <pre class="prettyprint"><code class="language-php"><&#63;php
 require_once(__DIR__ . '/vendor/autoload.php');
 
@@ -13529,17 +13685,18 @@ Swagger\Client\Configuration::getDefaultConfiguration()->setApiKey('X-Docspell-A
 // Swagger\Client\Configuration::getDefaultConfiguration()->setApiKeyPrefix('X-Docspell-Auth', 'Bearer');
 
 $api_instance = new Swagger\Client\ApiCustomFieldsApi();
+$q = q_example; // String | A query string.
 
 try {
-    $result = $api_instance->secCustomfieldsGet();
+    $result = $api_instance->secCustomfieldGet($q);
     print_r($result);
 } catch (Exception $e) {
-    echo 'Exception when calling CustomFieldsApi->secCustomfieldsGet: ', $e->getMessage(), PHP_EOL;
+    echo 'Exception when calling CustomFieldsApi->secCustomfieldGet: ', $e->getMessage(), PHP_EOL;
 }
 ?></code></pre>
                             </div>
 
-                            <div class="tab-pane" id="examples-CustomFields-secCustomfieldsGet-0-perl">
+                            <div class="tab-pane" id="examples-CustomFields-secCustomfieldGet-0-perl">
                               <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
 use WWW::SwaggerClient::Configuration;
 use WWW::SwaggerClient::CustomFieldsApi;
@@ -13550,17 +13707,18 @@ $WWW::SwaggerClient::Configuration::api_key->{'X-Docspell-Auth'} = 'YOUR_API_KEY
 #$WWW::SwaggerClient::Configuration::api_key_prefix->{'X-Docspell-Auth'} = "Bearer";
 
 my $api_instance = WWW::SwaggerClient::CustomFieldsApi->new();
+my $q = q_example; # String | A query string.
 
 eval { 
-    my $result = $api_instance->secCustomfieldsGet();
+    my $result = $api_instance->secCustomfieldGet(q => $q);
     print Dumper($result);
 };
 if ($@) {
-    warn "Exception when calling CustomFieldsApi->secCustomfieldsGet: $@\n";
+    warn "Exception when calling CustomFieldsApi->secCustomfieldGet: $@\n";
 }</code></pre>
                             </div>
 
-                            <div class="tab-pane" id="examples-CustomFields-secCustomfieldsGet-0-python">
+                            <div class="tab-pane" id="examples-CustomFields-secCustomfieldGet-0-python">
                               <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
 import time
 import swagger_client
@@ -13574,13 +13732,14 @@ swagger_client.configuration.api_key['X-Docspell-Auth'] = 'YOUR_API_KEY'
 
 # create an instance of the API class
 api_instance = swagger_client.CustomFieldsApi()
+q = q_example # String | A query string. (optional)
 
 try: 
     # Get all defined custom fields.
-    api_response = api_instance.sec_customfields_get()
+    api_response = api_instance.sec_customfield_get(q=q)
     pprint(api_response)
 except ApiException as e:
-    print("Exception when calling CustomFieldsApi->secCustomfieldsGet: %s\n" % e)</code></pre>
+    print("Exception when calling CustomFieldsApi->secCustomfieldGet: %s\n" % e)</code></pre>
                             </div>
                           </div>
 
@@ -13590,20 +13749,46 @@ except ApiException as e:
 
 
 
+                            <div class="methodsubtabletitle">Query parameters</div>
+                            <table id="methodsubtable">
+                              <tr>
+                                <th width="150px">Name</th>
+                                <th>Description</th>
+                              </tr>
+                                <tr><td style="width:150px;">q</td>
+                                <td>
+                                
+                                
+                                    <div id="d2e199_secCustomfieldGet_q">
+                                        <div class="json-schema-view">
+                                            <div class="primitive">
+                                                <span class="type">
+                                                    String
+                                                </span>
+                                
+                                                    <div class="inner description">
+                                                        A query string.
+                                                    </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                </tr>
+                            </table>
 
                           <h2>Responses</h2>
                             <h3> Status: 200 - Ok </h3>
 
                             <ul class="nav nav-tabs nav-tabs-examples" >
                                 <li class="active">
-                                  <a data-toggle="tab" href="#responses-secCustomfieldsGet-200-schema">Schema</a>
+                                  <a data-toggle="tab" href="#responses-secCustomfieldGet-200-schema">Schema</a>
                                 </li>
 
                             </ul>
 
                             <div class="tab-content" style='margin-bottom: 10px;'>
-                                <div class="tab-pane active" id="responses-secCustomfieldsGet-200-schema">
-                                  <div id='responses-secCustomfieldsGet-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                <div class="tab-pane active" id="responses-secCustomfieldGet-200-schema">
+                                  <div id='responses-secCustomfieldGet-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
                                     <script>
                                       $(document).ready(function() {
                                         var schemaWrapper = {
@@ -13629,14 +13814,1435 @@ except ApiException as e:
 
                                         //console.log(JSON.stringify(schema));
                                         var view = new JSONSchemaView(schema, 3);
-                                        $('#responses-secCustomfieldsGet-200-schema-data').val(stringify(schema));
-                                        var result = $('#responses-secCustomfieldsGet-200-schema-200');
+                                        $('#responses-secCustomfieldGet-200-schema-data').val(stringify(schema));
+                                        var result = $('#responses-secCustomfieldGet-200-schema-200');
                                         result.empty();
                                         result.append(view.render());
                                       });
                                     </script>
                                   </div>
-                                  <input id='responses-secCustomfieldsGet-200-schema-data' type='hidden' value=''></input>
+                                  <input id='responses-secCustomfieldGet-200-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
+                    <div id="api-CustomFields-secCustomfieldIdDelete">
+                      <article id="api-CustomFields-secCustomfieldIdDelete-0" data-group="User" data-name="secCustomfieldIdDelete" data-version="0">
+                        <div class="pull-left">
+                          <h1>secCustomfieldIdDelete</h1>
+                          <p>Deletes a custom field.</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked">Deletes the custom field and all its relations.
+</p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="delete"><code><span class="pln">/sec/customfield/{id}</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-CustomFields-secCustomfieldIdDelete-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-CustomFields-secCustomfieldIdDelete-0-java">Java</a></li>
+                          <li class=""><a href="#examples-CustomFields-secCustomfieldIdDelete-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-CustomFields-secCustomfieldIdDelete-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-CustomFields-secCustomfieldIdDelete-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-CustomFields-secCustomfieldIdDelete-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-CustomFields-secCustomfieldIdDelete-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-CustomFields-secCustomfieldIdDelete-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-CustomFields-secCustomfieldIdDelete-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-CustomFields-secCustomfieldIdDelete-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-CustomFields-secCustomfieldIdDelete-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-CustomFields-secCustomfieldIdDelete-0-curl">
+                           <pre class="prettyprint"><code class="language-bsh">curl -X DELETE\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v1/sec/customfield/{id}"</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-CustomFields-secCustomfieldIdDelete-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.CustomFieldsApi;
+
+import java.io.File;
+import java.util.*;
+
+public class CustomFieldsApiExample {
+
+    public static void main(String[] args) {
+        ApiClient defaultClient = Configuration.getDefaultApiClient();
+
+        // Configure API key authorization: authTokenHeader
+        ApiKeyAuth authTokenHeader = (ApiKeyAuth) defaultClient.getAuthentication("authTokenHeader");
+        authTokenHeader.setApiKey("YOUR API KEY");
+        // Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+        //authTokenHeader.setApiKeyPrefix("Token");
+
+        CustomFieldsApi apiInstance = new CustomFieldsApi();
+        String id = id_example; // String | An identifier
+        try {
+            BasicResult result = apiInstance.secCustomfieldIdDelete(id);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling CustomFieldsApi#secCustomfieldIdDelete");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-CustomFields-secCustomfieldIdDelete-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.CustomFieldsApi;
+
+public class CustomFieldsApiExample {
+
+    public static void main(String[] args) {
+        CustomFieldsApi apiInstance = new CustomFieldsApi();
+        String id = id_example; // String | An identifier
+        try {
+            BasicResult result = apiInstance.secCustomfieldIdDelete(id);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling CustomFieldsApi#secCustomfieldIdDelete");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-CustomFields-secCustomfieldIdDelete-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-CustomFields-secCustomfieldIdDelete-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
+// Configure API key authorization: (authentication scheme: authTokenHeader)
+[apiConfig setApiKey:@"YOUR_API_KEY" forApiKeyIdentifier:@"X-Docspell-Auth"];
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+//[apiConfig setApiKeyPrefix:@"Bearer" forApiKeyIdentifier:@"X-Docspell-Auth"];
+String *id = id_example; // An identifier
+
+CustomFieldsApi *apiInstance = [[CustomFieldsApi alloc] init];
+
+// Deletes a custom field.
+[apiInstance secCustomfieldIdDeleteWith:id
+              completionHandler: ^(BasicResult output, NSError* error) {
+                            if (output) {
+                                NSLog(@"%@", output);
+                            }
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-CustomFields-secCustomfieldIdDelete-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var Docspell = require('docspell');
+var defaultClient = Docspell.ApiClient.instance;
+
+// Configure API key authorization: authTokenHeader
+var authTokenHeader = defaultClient.authentications['authTokenHeader'];
+authTokenHeader.apiKey = "YOUR API KEY"
+// Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+//authTokenHeader.apiKeyPrefix['X-Docspell-Auth'] = "Token"
+
+var api = new Docspell.CustomFieldsApi()
+var id = id_example; // {{String}} An identifier
+
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+};
+api.secCustomfieldIdDelete(id, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-CustomFields-secCustomfieldIdDelete-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-CustomFields-secCustomfieldIdDelete-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class secCustomfieldIdDeleteExample
+    {
+        public void main()
+        {
+
+            // Configure API key authorization: authTokenHeader
+            Configuration.Default.ApiKey.Add("X-Docspell-Auth", "YOUR_API_KEY");
+            // Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+            // Configuration.Default.ApiKeyPrefix.Add("X-Docspell-Auth", "Bearer");
+
+            var apiInstance = new CustomFieldsApi();
+            var id = id_example;  // String | An identifier
+
+            try
+            {
+                // Deletes a custom field.
+                BasicResult result = apiInstance.secCustomfieldIdDelete(id);
+                Debug.WriteLine(result);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling CustomFieldsApi.secCustomfieldIdDelete: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-CustomFields-secCustomfieldIdDelete-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+// Configure API key authorization: authTokenHeader
+Swagger\Client\Configuration::getDefaultConfiguration()->setApiKey('X-Docspell-Auth', 'YOUR_API_KEY');
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+// Swagger\Client\Configuration::getDefaultConfiguration()->setApiKeyPrefix('X-Docspell-Auth', 'Bearer');
+
+$api_instance = new Swagger\Client\ApiCustomFieldsApi();
+$id = id_example; // String | An identifier
+
+try {
+    $result = $api_instance->secCustomfieldIdDelete($id);
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling CustomFieldsApi->secCustomfieldIdDelete: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-CustomFields-secCustomfieldIdDelete-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::CustomFieldsApi;
+
+# Configure API key authorization: authTokenHeader
+$WWW::SwaggerClient::Configuration::api_key->{'X-Docspell-Auth'} = 'YOUR_API_KEY';
+# uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+#$WWW::SwaggerClient::Configuration::api_key_prefix->{'X-Docspell-Auth'} = "Bearer";
+
+my $api_instance = WWW::SwaggerClient::CustomFieldsApi->new();
+my $id = id_example; # String | An identifier
+
+eval { 
+    my $result = $api_instance->secCustomfieldIdDelete(id => $id);
+    print Dumper($result);
+};
+if ($@) {
+    warn "Exception when calling CustomFieldsApi->secCustomfieldIdDelete: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-CustomFields-secCustomfieldIdDelete-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# Configure API key authorization: authTokenHeader
+swagger_client.configuration.api_key['X-Docspell-Auth'] = 'YOUR_API_KEY'
+# Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+# swagger_client.configuration.api_key_prefix['X-Docspell-Auth'] = 'Bearer'
+
+# create an instance of the API class
+api_instance = swagger_client.CustomFieldsApi()
+id = id_example # String | An identifier
+
+try: 
+    # Deletes a custom field.
+    api_response = api_instance.sec_customfield_id_delete(id)
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling CustomFieldsApi->secCustomfieldIdDelete: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+                            <div class="methodsubtabletitle">Path parameters</div>
+                            <table id="methodsubtable">
+                                <tr>
+                                  <th width="150px">Name</th>
+                                  <th>Description</th>
+                                </tr>
+                                  <tr><td style="width:150px;">id*</td>
+                                  <td>
+                                  
+                                  
+                                      <div id="d2e199_secCustomfieldIdDelete_id">
+                                          <div class="json-schema-view">
+                                              <div class="primitive">
+                                                  <span class="type">
+                                                      String
+                                                  </span>
+                                  
+                                                      <div class="inner description">
+                                                          An identifier
+                                                      </div>
+                                              </div>
+                                                  <div class="inner required">
+                                                      Required
+                                                  </div>
+                                          </div>
+                                      </div>
+                                  </td>
+                                  </tr>
+                            </table>
+
+
+
+
+
+                          <h2>Responses</h2>
+                            <h3> Status: 200 - Ok </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-secCustomfieldIdDelete-200-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-secCustomfieldIdDelete-200-schema">
+                                  <div id='responses-secCustomfieldIdDelete-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "Ok",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/BasicResult"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-secCustomfieldIdDelete-200-schema-data').val(stringify(schema));
+                                        var result = $('#responses-secCustomfieldIdDelete-200-schema-200');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-secCustomfieldIdDelete-200-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
+                    <div id="api-CustomFields-secCustomfieldIdGet">
+                      <article id="api-CustomFields-secCustomfieldIdGet-0" data-group="User" data-name="secCustomfieldIdGet" data-version="0">
+                        <div class="pull-left">
+                          <h1>secCustomfieldIdGet</h1>
+                          <p>Get details about a custom field.</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked">Returns the details about a custom field.
+</p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="get"><code><span class="pln">/sec/customfield/{id}</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-CustomFields-secCustomfieldIdGet-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-CustomFields-secCustomfieldIdGet-0-java">Java</a></li>
+                          <li class=""><a href="#examples-CustomFields-secCustomfieldIdGet-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-CustomFields-secCustomfieldIdGet-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-CustomFields-secCustomfieldIdGet-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-CustomFields-secCustomfieldIdGet-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-CustomFields-secCustomfieldIdGet-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-CustomFields-secCustomfieldIdGet-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-CustomFields-secCustomfieldIdGet-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-CustomFields-secCustomfieldIdGet-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-CustomFields-secCustomfieldIdGet-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-CustomFields-secCustomfieldIdGet-0-curl">
+                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v1/sec/customfield/{id}"</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-CustomFields-secCustomfieldIdGet-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.CustomFieldsApi;
+
+import java.io.File;
+import java.util.*;
+
+public class CustomFieldsApiExample {
+
+    public static void main(String[] args) {
+        ApiClient defaultClient = Configuration.getDefaultApiClient();
+
+        // Configure API key authorization: authTokenHeader
+        ApiKeyAuth authTokenHeader = (ApiKeyAuth) defaultClient.getAuthentication("authTokenHeader");
+        authTokenHeader.setApiKey("YOUR API KEY");
+        // Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+        //authTokenHeader.setApiKeyPrefix("Token");
+
+        CustomFieldsApi apiInstance = new CustomFieldsApi();
+        String id = id_example; // String | An identifier
+        try {
+            CustomField result = apiInstance.secCustomfieldIdGet(id);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling CustomFieldsApi#secCustomfieldIdGet");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-CustomFields-secCustomfieldIdGet-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.CustomFieldsApi;
+
+public class CustomFieldsApiExample {
+
+    public static void main(String[] args) {
+        CustomFieldsApi apiInstance = new CustomFieldsApi();
+        String id = id_example; // String | An identifier
+        try {
+            CustomField result = apiInstance.secCustomfieldIdGet(id);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling CustomFieldsApi#secCustomfieldIdGet");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-CustomFields-secCustomfieldIdGet-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-CustomFields-secCustomfieldIdGet-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
+// Configure API key authorization: (authentication scheme: authTokenHeader)
+[apiConfig setApiKey:@"YOUR_API_KEY" forApiKeyIdentifier:@"X-Docspell-Auth"];
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+//[apiConfig setApiKeyPrefix:@"Bearer" forApiKeyIdentifier:@"X-Docspell-Auth"];
+String *id = id_example; // An identifier
+
+CustomFieldsApi *apiInstance = [[CustomFieldsApi alloc] init];
+
+// Get details about a custom field.
+[apiInstance secCustomfieldIdGetWith:id
+              completionHandler: ^(CustomField output, NSError* error) {
+                            if (output) {
+                                NSLog(@"%@", output);
+                            }
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-CustomFields-secCustomfieldIdGet-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var Docspell = require('docspell');
+var defaultClient = Docspell.ApiClient.instance;
+
+// Configure API key authorization: authTokenHeader
+var authTokenHeader = defaultClient.authentications['authTokenHeader'];
+authTokenHeader.apiKey = "YOUR API KEY"
+// Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+//authTokenHeader.apiKeyPrefix['X-Docspell-Auth'] = "Token"
+
+var api = new Docspell.CustomFieldsApi()
+var id = id_example; // {{String}} An identifier
+
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+};
+api.secCustomfieldIdGet(id, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-CustomFields-secCustomfieldIdGet-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-CustomFields-secCustomfieldIdGet-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class secCustomfieldIdGetExample
+    {
+        public void main()
+        {
+
+            // Configure API key authorization: authTokenHeader
+            Configuration.Default.ApiKey.Add("X-Docspell-Auth", "YOUR_API_KEY");
+            // Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+            // Configuration.Default.ApiKeyPrefix.Add("X-Docspell-Auth", "Bearer");
+
+            var apiInstance = new CustomFieldsApi();
+            var id = id_example;  // String | An identifier
+
+            try
+            {
+                // Get details about a custom field.
+                CustomField result = apiInstance.secCustomfieldIdGet(id);
+                Debug.WriteLine(result);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling CustomFieldsApi.secCustomfieldIdGet: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-CustomFields-secCustomfieldIdGet-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+// Configure API key authorization: authTokenHeader
+Swagger\Client\Configuration::getDefaultConfiguration()->setApiKey('X-Docspell-Auth', 'YOUR_API_KEY');
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+// Swagger\Client\Configuration::getDefaultConfiguration()->setApiKeyPrefix('X-Docspell-Auth', 'Bearer');
+
+$api_instance = new Swagger\Client\ApiCustomFieldsApi();
+$id = id_example; // String | An identifier
+
+try {
+    $result = $api_instance->secCustomfieldIdGet($id);
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling CustomFieldsApi->secCustomfieldIdGet: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-CustomFields-secCustomfieldIdGet-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::CustomFieldsApi;
+
+# Configure API key authorization: authTokenHeader
+$WWW::SwaggerClient::Configuration::api_key->{'X-Docspell-Auth'} = 'YOUR_API_KEY';
+# uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+#$WWW::SwaggerClient::Configuration::api_key_prefix->{'X-Docspell-Auth'} = "Bearer";
+
+my $api_instance = WWW::SwaggerClient::CustomFieldsApi->new();
+my $id = id_example; # String | An identifier
+
+eval { 
+    my $result = $api_instance->secCustomfieldIdGet(id => $id);
+    print Dumper($result);
+};
+if ($@) {
+    warn "Exception when calling CustomFieldsApi->secCustomfieldIdGet: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-CustomFields-secCustomfieldIdGet-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# Configure API key authorization: authTokenHeader
+swagger_client.configuration.api_key['X-Docspell-Auth'] = 'YOUR_API_KEY'
+# Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+# swagger_client.configuration.api_key_prefix['X-Docspell-Auth'] = 'Bearer'
+
+# create an instance of the API class
+api_instance = swagger_client.CustomFieldsApi()
+id = id_example # String | An identifier
+
+try: 
+    # Get details about a custom field.
+    api_response = api_instance.sec_customfield_id_get(id)
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling CustomFieldsApi->secCustomfieldIdGet: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+                            <div class="methodsubtabletitle">Path parameters</div>
+                            <table id="methodsubtable">
+                                <tr>
+                                  <th width="150px">Name</th>
+                                  <th>Description</th>
+                                </tr>
+                                  <tr><td style="width:150px;">id*</td>
+                                  <td>
+                                  
+                                  
+                                      <div id="d2e199_secCustomfieldIdGet_id">
+                                          <div class="json-schema-view">
+                                              <div class="primitive">
+                                                  <span class="type">
+                                                      String
+                                                  </span>
+                                  
+                                                      <div class="inner description">
+                                                          An identifier
+                                                      </div>
+                                              </div>
+                                                  <div class="inner required">
+                                                      Required
+                                                  </div>
+                                          </div>
+                                      </div>
+                                  </td>
+                                  </tr>
+                            </table>
+
+
+
+
+
+                          <h2>Responses</h2>
+                            <h3> Status: 200 - Ok </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-secCustomfieldIdGet-200-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-secCustomfieldIdGet-200-schema">
+                                  <div id='responses-secCustomfieldIdGet-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "Ok",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/CustomField"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-secCustomfieldIdGet-200-schema-data').val(stringify(schema));
+                                        var result = $('#responses-secCustomfieldIdGet-200-schema-200');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-secCustomfieldIdGet-200-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
+                    <div id="api-CustomFields-secCustomfieldIdPut">
+                      <article id="api-CustomFields-secCustomfieldIdPut-0" data-group="User" data-name="secCustomfieldIdPut" data-version="0">
+                        <div class="pull-left">
+                          <h1>secCustomfieldIdPut</h1>
+                          <p>Change a custom field</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked">Change properties of a custom field.
+
+Changing the label has no further impliciations, since it is
+only used for displaying. The name and type on the other hand
+have consequences: name must be unique and the type determines
+how the value is stored internally.
+</p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="put"><code><span class="pln">/sec/customfield/{id}</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-CustomFields-secCustomfieldIdPut-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-CustomFields-secCustomfieldIdPut-0-java">Java</a></li>
+                          <li class=""><a href="#examples-CustomFields-secCustomfieldIdPut-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-CustomFields-secCustomfieldIdPut-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-CustomFields-secCustomfieldIdPut-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-CustomFields-secCustomfieldIdPut-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-CustomFields-secCustomfieldIdPut-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-CustomFields-secCustomfieldIdPut-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-CustomFields-secCustomfieldIdPut-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-CustomFields-secCustomfieldIdPut-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-CustomFields-secCustomfieldIdPut-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-CustomFields-secCustomfieldIdPut-0-curl">
+                           <pre class="prettyprint"><code class="language-bsh">curl -X PUT\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v1/sec/customfield/{id}"</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-CustomFields-secCustomfieldIdPut-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.CustomFieldsApi;
+
+import java.io.File;
+import java.util.*;
+
+public class CustomFieldsApiExample {
+
+    public static void main(String[] args) {
+        ApiClient defaultClient = Configuration.getDefaultApiClient();
+
+        // Configure API key authorization: authTokenHeader
+        ApiKeyAuth authTokenHeader = (ApiKeyAuth) defaultClient.getAuthentication("authTokenHeader");
+        authTokenHeader.setApiKey("YOUR API KEY");
+        // Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+        //authTokenHeader.setApiKeyPrefix("Token");
+
+        CustomFieldsApi apiInstance = new CustomFieldsApi();
+        String id = id_example; // String | An identifier
+        NewCustomField body = ; // NewCustomField | 
+        try {
+            BasicResult result = apiInstance.secCustomfieldIdPut(id, body);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling CustomFieldsApi#secCustomfieldIdPut");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-CustomFields-secCustomfieldIdPut-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.CustomFieldsApi;
+
+public class CustomFieldsApiExample {
+
+    public static void main(String[] args) {
+        CustomFieldsApi apiInstance = new CustomFieldsApi();
+        String id = id_example; // String | An identifier
+        NewCustomField body = ; // NewCustomField | 
+        try {
+            BasicResult result = apiInstance.secCustomfieldIdPut(id, body);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling CustomFieldsApi#secCustomfieldIdPut");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-CustomFields-secCustomfieldIdPut-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-CustomFields-secCustomfieldIdPut-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
+// Configure API key authorization: (authentication scheme: authTokenHeader)
+[apiConfig setApiKey:@"YOUR_API_KEY" forApiKeyIdentifier:@"X-Docspell-Auth"];
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+//[apiConfig setApiKeyPrefix:@"Bearer" forApiKeyIdentifier:@"X-Docspell-Auth"];
+String *id = id_example; // An identifier
+NewCustomField *body = ; //  (optional)
+
+CustomFieldsApi *apiInstance = [[CustomFieldsApi alloc] init];
+
+// Change a custom field
+[apiInstance secCustomfieldIdPutWith:id
+    body:body
+              completionHandler: ^(BasicResult output, NSError* error) {
+                            if (output) {
+                                NSLog(@"%@", output);
+                            }
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-CustomFields-secCustomfieldIdPut-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var Docspell = require('docspell');
+var defaultClient = Docspell.ApiClient.instance;
+
+// Configure API key authorization: authTokenHeader
+var authTokenHeader = defaultClient.authentications['authTokenHeader'];
+authTokenHeader.apiKey = "YOUR API KEY"
+// Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+//authTokenHeader.apiKeyPrefix['X-Docspell-Auth'] = "Token"
+
+var api = new Docspell.CustomFieldsApi()
+var id = id_example; // {{String}} An identifier
+var opts = { 
+  'body':  // {{NewCustomField}} 
+};
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+};
+api.secCustomfieldIdPut(id, opts, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-CustomFields-secCustomfieldIdPut-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-CustomFields-secCustomfieldIdPut-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class secCustomfieldIdPutExample
+    {
+        public void main()
+        {
+
+            // Configure API key authorization: authTokenHeader
+            Configuration.Default.ApiKey.Add("X-Docspell-Auth", "YOUR_API_KEY");
+            // Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+            // Configuration.Default.ApiKeyPrefix.Add("X-Docspell-Auth", "Bearer");
+
+            var apiInstance = new CustomFieldsApi();
+            var id = id_example;  // String | An identifier
+            var body = new NewCustomField(); // NewCustomField |  (optional) 
+
+            try
+            {
+                // Change a custom field
+                BasicResult result = apiInstance.secCustomfieldIdPut(id, body);
+                Debug.WriteLine(result);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling CustomFieldsApi.secCustomfieldIdPut: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-CustomFields-secCustomfieldIdPut-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+// Configure API key authorization: authTokenHeader
+Swagger\Client\Configuration::getDefaultConfiguration()->setApiKey('X-Docspell-Auth', 'YOUR_API_KEY');
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+// Swagger\Client\Configuration::getDefaultConfiguration()->setApiKeyPrefix('X-Docspell-Auth', 'Bearer');
+
+$api_instance = new Swagger\Client\ApiCustomFieldsApi();
+$id = id_example; // String | An identifier
+$body = ; // NewCustomField | 
+
+try {
+    $result = $api_instance->secCustomfieldIdPut($id, $body);
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling CustomFieldsApi->secCustomfieldIdPut: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-CustomFields-secCustomfieldIdPut-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::CustomFieldsApi;
+
+# Configure API key authorization: authTokenHeader
+$WWW::SwaggerClient::Configuration::api_key->{'X-Docspell-Auth'} = 'YOUR_API_KEY';
+# uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+#$WWW::SwaggerClient::Configuration::api_key_prefix->{'X-Docspell-Auth'} = "Bearer";
+
+my $api_instance = WWW::SwaggerClient::CustomFieldsApi->new();
+my $id = id_example; # String | An identifier
+my $body = WWW::SwaggerClient::Object::NewCustomField->new(); # NewCustomField | 
+
+eval { 
+    my $result = $api_instance->secCustomfieldIdPut(id => $id, body => $body);
+    print Dumper($result);
+};
+if ($@) {
+    warn "Exception when calling CustomFieldsApi->secCustomfieldIdPut: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-CustomFields-secCustomfieldIdPut-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# Configure API key authorization: authTokenHeader
+swagger_client.configuration.api_key['X-Docspell-Auth'] = 'YOUR_API_KEY'
+# Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+# swagger_client.configuration.api_key_prefix['X-Docspell-Auth'] = 'Bearer'
+
+# create an instance of the API class
+api_instance = swagger_client.CustomFieldsApi()
+id = id_example # String | An identifier
+body =  # NewCustomField |  (optional)
+
+try: 
+    # Change a custom field
+    api_response = api_instance.sec_customfield_id_put(id, body=body)
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling CustomFieldsApi->secCustomfieldIdPut: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+                            <div class="methodsubtabletitle">Path parameters</div>
+                            <table id="methodsubtable">
+                                <tr>
+                                  <th width="150px">Name</th>
+                                  <th>Description</th>
+                                </tr>
+                                  <tr><td style="width:150px;">id*</td>
+                                  <td>
+                                  
+                                  
+                                      <div id="d2e199_secCustomfieldIdPut_id">
+                                          <div class="json-schema-view">
+                                              <div class="primitive">
+                                                  <span class="type">
+                                                      String
+                                                  </span>
+                                  
+                                                      <div class="inner description">
+                                                          An identifier
+                                                      </div>
+                                              </div>
+                                                  <div class="inner required">
+                                                      Required
+                                                  </div>
+                                          </div>
+                                      </div>
+                                  </td>
+                                  </tr>
+                            </table>
+
+
+                            <div class="methodsubtabletitle">Body parameters</div>
+                            <table id="methodsubtable">
+                              <tr>
+                                <th width="150px">Name</th>
+                                <th>Description</th>
+                              </tr>
+                                <tr><td style="width:150px;">body </td>
+                                <td>
+                                
+                                
+                                <script>
+                                $(document).ready(function() {
+                                  var schemaWrapper = {
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/NewCustomField"
+      }
+    }
+  }
+};
+                                  var schema = schemaWrapper.content["application/json"].schema;
+                                  if (schema.$ref != null) {
+                                    schema = defsParser.$refs.get(schema.$ref);
+                                  } else {
+                                    schemaWrapper.components = {};
+                                    schemaWrapper.components.schemas = Object.assign({}, defs);
+                                    $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                      console.log(err);
+                                    });
+                                  }
+                                
+                                  var view = new JSONSchemaView(schema,2,{isBodyParam: true});
+                                  var result = $('#d2e199_secCustomfieldIdPut_body');
+                                  result.empty();
+                                  result.append(view.render());
+                                });
+                                </script>
+                                <div id="d2e199_secCustomfieldIdPut_body"></div>
+                                </td>
+                                </tr>
+                            </table>
+
+
+
+                          <h2>Responses</h2>
+                            <h3> Status: 200 - Ok </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-secCustomfieldIdPut-200-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-secCustomfieldIdPut-200-schema">
+                                  <div id='responses-secCustomfieldIdPut-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "Ok",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/BasicResult"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-secCustomfieldIdPut-200-schema-data').val(stringify(schema));
+                                        var result = $('#responses-secCustomfieldIdPut-200-schema-200');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-secCustomfieldIdPut-200-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
+                    <div id="api-CustomFields-secCustomfieldPost">
+                      <article id="api-CustomFields-secCustomfieldPost-0" data-group="User" data-name="secCustomfieldPost" data-version="0">
+                        <div class="pull-left">
+                          <h1>secCustomfieldPost</h1>
+                          <p>Create a new custom field</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked">Creates a new custom field.
+</p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="post"><code><span class="pln">/sec/customfield</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-CustomFields-secCustomfieldPost-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-CustomFields-secCustomfieldPost-0-java">Java</a></li>
+                          <li class=""><a href="#examples-CustomFields-secCustomfieldPost-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-CustomFields-secCustomfieldPost-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-CustomFields-secCustomfieldPost-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-CustomFields-secCustomfieldPost-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-CustomFields-secCustomfieldPost-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-CustomFields-secCustomfieldPost-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-CustomFields-secCustomfieldPost-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-CustomFields-secCustomfieldPost-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-CustomFields-secCustomfieldPost-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-CustomFields-secCustomfieldPost-0-curl">
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v1/sec/customfield"</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-CustomFields-secCustomfieldPost-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.CustomFieldsApi;
+
+import java.io.File;
+import java.util.*;
+
+public class CustomFieldsApiExample {
+
+    public static void main(String[] args) {
+        ApiClient defaultClient = Configuration.getDefaultApiClient();
+
+        // Configure API key authorization: authTokenHeader
+        ApiKeyAuth authTokenHeader = (ApiKeyAuth) defaultClient.getAuthentication("authTokenHeader");
+        authTokenHeader.setApiKey("YOUR API KEY");
+        // Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+        //authTokenHeader.setApiKeyPrefix("Token");
+
+        CustomFieldsApi apiInstance = new CustomFieldsApi();
+        NewCustomField body = ; // NewCustomField | 
+        try {
+            BasicResult result = apiInstance.secCustomfieldPost(body);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling CustomFieldsApi#secCustomfieldPost");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-CustomFields-secCustomfieldPost-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.CustomFieldsApi;
+
+public class CustomFieldsApiExample {
+
+    public static void main(String[] args) {
+        CustomFieldsApi apiInstance = new CustomFieldsApi();
+        NewCustomField body = ; // NewCustomField | 
+        try {
+            BasicResult result = apiInstance.secCustomfieldPost(body);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling CustomFieldsApi#secCustomfieldPost");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-CustomFields-secCustomfieldPost-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-CustomFields-secCustomfieldPost-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
+// Configure API key authorization: (authentication scheme: authTokenHeader)
+[apiConfig setApiKey:@"YOUR_API_KEY" forApiKeyIdentifier:@"X-Docspell-Auth"];
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+//[apiConfig setApiKeyPrefix:@"Bearer" forApiKeyIdentifier:@"X-Docspell-Auth"];
+NewCustomField *body = ; //  (optional)
+
+CustomFieldsApi *apiInstance = [[CustomFieldsApi alloc] init];
+
+// Create a new custom field
+[apiInstance secCustomfieldPostWith:body
+              completionHandler: ^(BasicResult output, NSError* error) {
+                            if (output) {
+                                NSLog(@"%@", output);
+                            }
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-CustomFields-secCustomfieldPost-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var Docspell = require('docspell');
+var defaultClient = Docspell.ApiClient.instance;
+
+// Configure API key authorization: authTokenHeader
+var authTokenHeader = defaultClient.authentications['authTokenHeader'];
+authTokenHeader.apiKey = "YOUR API KEY"
+// Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+//authTokenHeader.apiKeyPrefix['X-Docspell-Auth'] = "Token"
+
+var api = new Docspell.CustomFieldsApi()
+var opts = { 
+  'body':  // {{NewCustomField}} 
+};
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+};
+api.secCustomfieldPost(opts, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-CustomFields-secCustomfieldPost-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-CustomFields-secCustomfieldPost-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class secCustomfieldPostExample
+    {
+        public void main()
+        {
+
+            // Configure API key authorization: authTokenHeader
+            Configuration.Default.ApiKey.Add("X-Docspell-Auth", "YOUR_API_KEY");
+            // Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+            // Configuration.Default.ApiKeyPrefix.Add("X-Docspell-Auth", "Bearer");
+
+            var apiInstance = new CustomFieldsApi();
+            var body = new NewCustomField(); // NewCustomField |  (optional) 
+
+            try
+            {
+                // Create a new custom field
+                BasicResult result = apiInstance.secCustomfieldPost(body);
+                Debug.WriteLine(result);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling CustomFieldsApi.secCustomfieldPost: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-CustomFields-secCustomfieldPost-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+// Configure API key authorization: authTokenHeader
+Swagger\Client\Configuration::getDefaultConfiguration()->setApiKey('X-Docspell-Auth', 'YOUR_API_KEY');
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+// Swagger\Client\Configuration::getDefaultConfiguration()->setApiKeyPrefix('X-Docspell-Auth', 'Bearer');
+
+$api_instance = new Swagger\Client\ApiCustomFieldsApi();
+$body = ; // NewCustomField | 
+
+try {
+    $result = $api_instance->secCustomfieldPost($body);
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling CustomFieldsApi->secCustomfieldPost: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-CustomFields-secCustomfieldPost-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::CustomFieldsApi;
+
+# Configure API key authorization: authTokenHeader
+$WWW::SwaggerClient::Configuration::api_key->{'X-Docspell-Auth'} = 'YOUR_API_KEY';
+# uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+#$WWW::SwaggerClient::Configuration::api_key_prefix->{'X-Docspell-Auth'} = "Bearer";
+
+my $api_instance = WWW::SwaggerClient::CustomFieldsApi->new();
+my $body = WWW::SwaggerClient::Object::NewCustomField->new(); # NewCustomField | 
+
+eval { 
+    my $result = $api_instance->secCustomfieldPost(body => $body);
+    print Dumper($result);
+};
+if ($@) {
+    warn "Exception when calling CustomFieldsApi->secCustomfieldPost: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-CustomFields-secCustomfieldPost-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# Configure API key authorization: authTokenHeader
+swagger_client.configuration.api_key['X-Docspell-Auth'] = 'YOUR_API_KEY'
+# Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+# swagger_client.configuration.api_key_prefix['X-Docspell-Auth'] = 'Bearer'
+
+# create an instance of the API class
+api_instance = swagger_client.CustomFieldsApi()
+body =  # NewCustomField |  (optional)
+
+try: 
+    # Create a new custom field
+    api_response = api_instance.sec_customfield_post(body=body)
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling CustomFieldsApi->secCustomfieldPost: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+
+
+                            <div class="methodsubtabletitle">Body parameters</div>
+                            <table id="methodsubtable">
+                              <tr>
+                                <th width="150px">Name</th>
+                                <th>Description</th>
+                              </tr>
+                                <tr><td style="width:150px;">body </td>
+                                <td>
+                                
+                                
+                                <script>
+                                $(document).ready(function() {
+                                  var schemaWrapper = {
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/NewCustomField"
+      }
+    }
+  }
+};
+                                  var schema = schemaWrapper.content["application/json"].schema;
+                                  if (schema.$ref != null) {
+                                    schema = defsParser.$refs.get(schema.$ref);
+                                  } else {
+                                    schemaWrapper.components = {};
+                                    schemaWrapper.components.schemas = Object.assign({}, defs);
+                                    $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                      console.log(err);
+                                    });
+                                  }
+                                
+                                  var view = new JSONSchemaView(schema,2,{isBodyParam: true});
+                                  var result = $('#d2e199_secCustomfieldPost_body');
+                                  result.empty();
+                                  result.append(view.render());
+                                });
+                                </script>
+                                <div id="d2e199_secCustomfieldPost_body"></div>
+                                </td>
+                                </tr>
+                            </table>
+
+
+
+                          <h2>Responses</h2>
+                            <h3> Status: 200 - Ok </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-secCustomfieldPost-200-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-secCustomfieldPost-200-schema">
+                                  <div id='responses-secCustomfieldPost-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "Ok",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/BasicResult"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-secCustomfieldPost-200-schema-data').val(stringify(schema));
+                                        var result = $('#responses-secCustomfieldPost-200-schema-200');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-secCustomfieldPost-200-schema-data' type='hidden' value=''></input>
                                 </div>
                             </div>
 
@@ -28526,6 +30132,398 @@ except ApiException as e:
                         </article>
                       </div>
                       <hr>
+                    <div id="api-Item-secItemIdCustomfieldPut">
+                      <article id="api-Item-secItemIdCustomfieldPut-0" data-group="User" data-name="secItemIdCustomfieldPut" data-version="0">
+                        <div class="pull-left">
+                          <h1>secItemIdCustomfieldPut</h1>
+                          <p>Set the value of a custom field.</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked">Sets the value for a custom field to this item. If a value
+already exists, it is overwritten. A value must comply to the
+type of the associated field. It must not be the empty string.
+</p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="put"><code><span class="pln">/sec/item/{id}/customfield</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-Item-secItemIdCustomfieldPut-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-Item-secItemIdCustomfieldPut-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Item-secItemIdCustomfieldPut-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-Item-secItemIdCustomfieldPut-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-Item-secItemIdCustomfieldPut-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-Item-secItemIdCustomfieldPut-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-Item-secItemIdCustomfieldPut-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-Item-secItemIdCustomfieldPut-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-Item-secItemIdCustomfieldPut-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-Item-secItemIdCustomfieldPut-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-Item-secItemIdCustomfieldPut-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-Item-secItemIdCustomfieldPut-0-curl">
+                           <pre class="prettyprint"><code class="language-bsh">curl -X PUT\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v1/sec/item/{id}/customfield"</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-Item-secItemIdCustomfieldPut-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.ItemApi;
+
+import java.io.File;
+import java.util.*;
+
+public class ItemApiExample {
+
+    public static void main(String[] args) {
+        ApiClient defaultClient = Configuration.getDefaultApiClient();
+
+        // Configure API key authorization: authTokenHeader
+        ApiKeyAuth authTokenHeader = (ApiKeyAuth) defaultClient.getAuthentication("authTokenHeader");
+        authTokenHeader.setApiKey("YOUR API KEY");
+        // Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+        //authTokenHeader.setApiKeyPrefix("Token");
+
+        ItemApi apiInstance = new ItemApi();
+        String id = id_example; // String | An identifier
+        CustomFieldValue body = ; // CustomFieldValue | 
+        try {
+            BasicResult result = apiInstance.secItemIdCustomfieldPut(id, body);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling ItemApi#secItemIdCustomfieldPut");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Item-secItemIdCustomfieldPut-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.ItemApi;
+
+public class ItemApiExample {
+
+    public static void main(String[] args) {
+        ItemApi apiInstance = new ItemApi();
+        String id = id_example; // String | An identifier
+        CustomFieldValue body = ; // CustomFieldValue | 
+        try {
+            BasicResult result = apiInstance.secItemIdCustomfieldPut(id, body);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling ItemApi#secItemIdCustomfieldPut");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-Item-secItemIdCustomfieldPut-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-Item-secItemIdCustomfieldPut-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
+// Configure API key authorization: (authentication scheme: authTokenHeader)
+[apiConfig setApiKey:@"YOUR_API_KEY" forApiKeyIdentifier:@"X-Docspell-Auth"];
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+//[apiConfig setApiKeyPrefix:@"Bearer" forApiKeyIdentifier:@"X-Docspell-Auth"];
+String *id = id_example; // An identifier
+CustomFieldValue *body = ; //  (optional)
+
+ItemApi *apiInstance = [[ItemApi alloc] init];
+
+// Set the value of a custom field.
+[apiInstance secItemIdCustomfieldPutWith:id
+    body:body
+              completionHandler: ^(BasicResult output, NSError* error) {
+                            if (output) {
+                                NSLog(@"%@", output);
+                            }
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Item-secItemIdCustomfieldPut-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var Docspell = require('docspell');
+var defaultClient = Docspell.ApiClient.instance;
+
+// Configure API key authorization: authTokenHeader
+var authTokenHeader = defaultClient.authentications['authTokenHeader'];
+authTokenHeader.apiKey = "YOUR API KEY"
+// Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+//authTokenHeader.apiKeyPrefix['X-Docspell-Auth'] = "Token"
+
+var api = new Docspell.ItemApi()
+var id = id_example; // {{String}} An identifier
+var opts = { 
+  'body':  // {{CustomFieldValue}} 
+};
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+};
+api.secItemIdCustomfieldPut(id, opts, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-Item-secItemIdCustomfieldPut-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-Item-secItemIdCustomfieldPut-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class secItemIdCustomfieldPutExample
+    {
+        public void main()
+        {
+
+            // Configure API key authorization: authTokenHeader
+            Configuration.Default.ApiKey.Add("X-Docspell-Auth", "YOUR_API_KEY");
+            // Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+            // Configuration.Default.ApiKeyPrefix.Add("X-Docspell-Auth", "Bearer");
+
+            var apiInstance = new ItemApi();
+            var id = id_example;  // String | An identifier
+            var body = new CustomFieldValue(); // CustomFieldValue |  (optional) 
+
+            try
+            {
+                // Set the value of a custom field.
+                BasicResult result = apiInstance.secItemIdCustomfieldPut(id, body);
+                Debug.WriteLine(result);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling ItemApi.secItemIdCustomfieldPut: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Item-secItemIdCustomfieldPut-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+// Configure API key authorization: authTokenHeader
+Swagger\Client\Configuration::getDefaultConfiguration()->setApiKey('X-Docspell-Auth', 'YOUR_API_KEY');
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+// Swagger\Client\Configuration::getDefaultConfiguration()->setApiKeyPrefix('X-Docspell-Auth', 'Bearer');
+
+$api_instance = new Swagger\Client\ApiItemApi();
+$id = id_example; // String | An identifier
+$body = ; // CustomFieldValue | 
+
+try {
+    $result = $api_instance->secItemIdCustomfieldPut($id, $body);
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling ItemApi->secItemIdCustomfieldPut: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Item-secItemIdCustomfieldPut-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::ItemApi;
+
+# Configure API key authorization: authTokenHeader
+$WWW::SwaggerClient::Configuration::api_key->{'X-Docspell-Auth'} = 'YOUR_API_KEY';
+# uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+#$WWW::SwaggerClient::Configuration::api_key_prefix->{'X-Docspell-Auth'} = "Bearer";
+
+my $api_instance = WWW::SwaggerClient::ItemApi->new();
+my $id = id_example; # String | An identifier
+my $body = WWW::SwaggerClient::Object::CustomFieldValue->new(); # CustomFieldValue | 
+
+eval { 
+    my $result = $api_instance->secItemIdCustomfieldPut(id => $id, body => $body);
+    print Dumper($result);
+};
+if ($@) {
+    warn "Exception when calling ItemApi->secItemIdCustomfieldPut: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Item-secItemIdCustomfieldPut-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# Configure API key authorization: authTokenHeader
+swagger_client.configuration.api_key['X-Docspell-Auth'] = 'YOUR_API_KEY'
+# Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+# swagger_client.configuration.api_key_prefix['X-Docspell-Auth'] = 'Bearer'
+
+# create an instance of the API class
+api_instance = swagger_client.ItemApi()
+id = id_example # String | An identifier
+body =  # CustomFieldValue |  (optional)
+
+try: 
+    # Set the value of a custom field.
+    api_response = api_instance.sec_item_id_customfield_put(id, body=body)
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling ItemApi->secItemIdCustomfieldPut: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+                            <div class="methodsubtabletitle">Path parameters</div>
+                            <table id="methodsubtable">
+                                <tr>
+                                  <th width="150px">Name</th>
+                                  <th>Description</th>
+                                </tr>
+                                  <tr><td style="width:150px;">id*</td>
+                                  <td>
+                                  
+                                  
+                                      <div id="d2e199_secItemIdCustomfieldPut_id">
+                                          <div class="json-schema-view">
+                                              <div class="primitive">
+                                                  <span class="type">
+                                                      String
+                                                  </span>
+                                  
+                                                      <div class="inner description">
+                                                          An identifier
+                                                      </div>
+                                              </div>
+                                                  <div class="inner required">
+                                                      Required
+                                                  </div>
+                                          </div>
+                                      </div>
+                                  </td>
+                                  </tr>
+                            </table>
+
+
+                            <div class="methodsubtabletitle">Body parameters</div>
+                            <table id="methodsubtable">
+                              <tr>
+                                <th width="150px">Name</th>
+                                <th>Description</th>
+                              </tr>
+                                <tr><td style="width:150px;">body </td>
+                                <td>
+                                
+                                
+                                <script>
+                                $(document).ready(function() {
+                                  var schemaWrapper = {
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/CustomFieldValue"
+      }
+    }
+  }
+};
+                                  var schema = schemaWrapper.content["application/json"].schema;
+                                  if (schema.$ref != null) {
+                                    schema = defsParser.$refs.get(schema.$ref);
+                                  } else {
+                                    schemaWrapper.components = {};
+                                    schemaWrapper.components.schemas = Object.assign({}, defs);
+                                    $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                      console.log(err);
+                                    });
+                                  }
+                                
+                                  var view = new JSONSchemaView(schema,2,{isBodyParam: true});
+                                  var result = $('#d2e199_secItemIdCustomfieldPut_body');
+                                  result.empty();
+                                  result.append(view.render());
+                                });
+                                </script>
+                                <div id="d2e199_secItemIdCustomfieldPut_body"></div>
+                                </td>
+                                </tr>
+                            </table>
+
+
+
+                          <h2>Responses</h2>
+                            <h3> Status: 200 - Ok </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-secItemIdCustomfieldPut-200-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-secItemIdCustomfieldPut-200-schema">
+                                  <div id='responses-secItemIdCustomfieldPut-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "Ok",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/BasicResult"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-secItemIdCustomfieldPut-200-schema-data').val(stringify(schema));
+                                        var result = $('#responses-secItemIdCustomfieldPut-200-schema-200');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-secItemIdCustomfieldPut-200-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
                     <div id="api-Item-secItemIdDatePut">
                       <article id="api-Item-secItemIdDatePut-0" data-group="User" data-name="secItemIdDatePut" data-version="0">
                         <div class="pull-left">
@@ -34184,6 +36182,375 @@ except ApiException as e:
                         </article>
                       </div>
                       <hr>
+                    <div id="api-Item-secItemItemIdCustomfieldIdDelete">
+                      <article id="api-Item-secItemItemIdCustomfieldIdDelete-0" data-group="User" data-name="secItemItemIdCustomfieldIdDelete" data-version="0">
+                        <div class="pull-left">
+                          <h1>secItemItemIdCustomfieldIdDelete</h1>
+                          <p>Removes the value for a custom field</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked">Removes the value for the given custom field. The &#x60;id&#x60; may be
+the id of a custom field or its name.
+</p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="delete"><code><span class="pln">/sec/item/{itemId}/customfield/{id}</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-Item-secItemItemIdCustomfieldIdDelete-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-Item-secItemItemIdCustomfieldIdDelete-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Item-secItemItemIdCustomfieldIdDelete-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-Item-secItemItemIdCustomfieldIdDelete-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-Item-secItemItemIdCustomfieldIdDelete-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-Item-secItemItemIdCustomfieldIdDelete-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-Item-secItemItemIdCustomfieldIdDelete-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-Item-secItemItemIdCustomfieldIdDelete-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-Item-secItemItemIdCustomfieldIdDelete-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-Item-secItemItemIdCustomfieldIdDelete-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-Item-secItemItemIdCustomfieldIdDelete-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-Item-secItemItemIdCustomfieldIdDelete-0-curl">
+                           <pre class="prettyprint"><code class="language-bsh">curl -X DELETE\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v1/sec/item/{itemId}/customfield/{id}"</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-Item-secItemItemIdCustomfieldIdDelete-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.ItemApi;
+
+import java.io.File;
+import java.util.*;
+
+public class ItemApiExample {
+
+    public static void main(String[] args) {
+        ApiClient defaultClient = Configuration.getDefaultApiClient();
+
+        // Configure API key authorization: authTokenHeader
+        ApiKeyAuth authTokenHeader = (ApiKeyAuth) defaultClient.getAuthentication("authTokenHeader");
+        authTokenHeader.setApiKey("YOUR API KEY");
+        // Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+        //authTokenHeader.setApiKeyPrefix("Token");
+
+        ItemApi apiInstance = new ItemApi();
+        String id = id_example; // String | An identifier
+        String itemId = itemId_example; // String | An identifier for an item
+        try {
+            BasicResult result = apiInstance.secItemItemIdCustomfieldIdDelete(id, itemId);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling ItemApi#secItemItemIdCustomfieldIdDelete");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Item-secItemItemIdCustomfieldIdDelete-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.ItemApi;
+
+public class ItemApiExample {
+
+    public static void main(String[] args) {
+        ItemApi apiInstance = new ItemApi();
+        String id = id_example; // String | An identifier
+        String itemId = itemId_example; // String | An identifier for an item
+        try {
+            BasicResult result = apiInstance.secItemItemIdCustomfieldIdDelete(id, itemId);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling ItemApi#secItemItemIdCustomfieldIdDelete");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-Item-secItemItemIdCustomfieldIdDelete-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-Item-secItemItemIdCustomfieldIdDelete-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
+// Configure API key authorization: (authentication scheme: authTokenHeader)
+[apiConfig setApiKey:@"YOUR_API_KEY" forApiKeyIdentifier:@"X-Docspell-Auth"];
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+//[apiConfig setApiKeyPrefix:@"Bearer" forApiKeyIdentifier:@"X-Docspell-Auth"];
+String *id = id_example; // An identifier
+String *itemId = itemId_example; // An identifier for an item
+
+ItemApi *apiInstance = [[ItemApi alloc] init];
+
+// Removes the value for a custom field
+[apiInstance secItemItemIdCustomfieldIdDeleteWith:id
+    itemId:itemId
+              completionHandler: ^(BasicResult output, NSError* error) {
+                            if (output) {
+                                NSLog(@"%@", output);
+                            }
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Item-secItemItemIdCustomfieldIdDelete-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var Docspell = require('docspell');
+var defaultClient = Docspell.ApiClient.instance;
+
+// Configure API key authorization: authTokenHeader
+var authTokenHeader = defaultClient.authentications['authTokenHeader'];
+authTokenHeader.apiKey = "YOUR API KEY"
+// Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+//authTokenHeader.apiKeyPrefix['X-Docspell-Auth'] = "Token"
+
+var api = new Docspell.ItemApi()
+var id = id_example; // {{String}} An identifier
+var itemId = itemId_example; // {{String}} An identifier for an item
+
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+};
+api.secItemItemIdCustomfieldIdDelete(id, itemId, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-Item-secItemItemIdCustomfieldIdDelete-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-Item-secItemItemIdCustomfieldIdDelete-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class secItemItemIdCustomfieldIdDeleteExample
+    {
+        public void main()
+        {
+
+            // Configure API key authorization: authTokenHeader
+            Configuration.Default.ApiKey.Add("X-Docspell-Auth", "YOUR_API_KEY");
+            // Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+            // Configuration.Default.ApiKeyPrefix.Add("X-Docspell-Auth", "Bearer");
+
+            var apiInstance = new ItemApi();
+            var id = id_example;  // String | An identifier
+            var itemId = itemId_example;  // String | An identifier for an item
+
+            try
+            {
+                // Removes the value for a custom field
+                BasicResult result = apiInstance.secItemItemIdCustomfieldIdDelete(id, itemId);
+                Debug.WriteLine(result);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling ItemApi.secItemItemIdCustomfieldIdDelete: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Item-secItemItemIdCustomfieldIdDelete-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+// Configure API key authorization: authTokenHeader
+Swagger\Client\Configuration::getDefaultConfiguration()->setApiKey('X-Docspell-Auth', 'YOUR_API_KEY');
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+// Swagger\Client\Configuration::getDefaultConfiguration()->setApiKeyPrefix('X-Docspell-Auth', 'Bearer');
+
+$api_instance = new Swagger\Client\ApiItemApi();
+$id = id_example; // String | An identifier
+$itemId = itemId_example; // String | An identifier for an item
+
+try {
+    $result = $api_instance->secItemItemIdCustomfieldIdDelete($id, $itemId);
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling ItemApi->secItemItemIdCustomfieldIdDelete: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Item-secItemItemIdCustomfieldIdDelete-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::ItemApi;
+
+# Configure API key authorization: authTokenHeader
+$WWW::SwaggerClient::Configuration::api_key->{'X-Docspell-Auth'} = 'YOUR_API_KEY';
+# uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+#$WWW::SwaggerClient::Configuration::api_key_prefix->{'X-Docspell-Auth'} = "Bearer";
+
+my $api_instance = WWW::SwaggerClient::ItemApi->new();
+my $id = id_example; # String | An identifier
+my $itemId = itemId_example; # String | An identifier for an item
+
+eval { 
+    my $result = $api_instance->secItemItemIdCustomfieldIdDelete(id => $id, itemId => $itemId);
+    print Dumper($result);
+};
+if ($@) {
+    warn "Exception when calling ItemApi->secItemItemIdCustomfieldIdDelete: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Item-secItemItemIdCustomfieldIdDelete-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# Configure API key authorization: authTokenHeader
+swagger_client.configuration.api_key['X-Docspell-Auth'] = 'YOUR_API_KEY'
+# Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+# swagger_client.configuration.api_key_prefix['X-Docspell-Auth'] = 'Bearer'
+
+# create an instance of the API class
+api_instance = swagger_client.ItemApi()
+id = id_example # String | An identifier
+itemId = itemId_example # String | An identifier for an item
+
+try: 
+    # Removes the value for a custom field
+    api_response = api_instance.sec_item_item_id_customfield_id_delete(id, itemId)
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling ItemApi->secItemItemIdCustomfieldIdDelete: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+                            <div class="methodsubtabletitle">Path parameters</div>
+                            <table id="methodsubtable">
+                                <tr>
+                                  <th width="150px">Name</th>
+                                  <th>Description</th>
+                                </tr>
+                                  <tr><td style="width:150px;">id*</td>
+                                  <td>
+                                  
+                                  
+                                      <div id="d2e199_secItemItemIdCustomfieldIdDelete_id">
+                                          <div class="json-schema-view">
+                                              <div class="primitive">
+                                                  <span class="type">
+                                                      String
+                                                  </span>
+                                  
+                                                      <div class="inner description">
+                                                          An identifier
+                                                      </div>
+                                              </div>
+                                                  <div class="inner required">
+                                                      Required
+                                                  </div>
+                                          </div>
+                                      </div>
+                                  </td>
+                                  </tr>
+                                  <tr><td style="width:150px;">itemId*</td>
+                                  <td>
+                                  
+                                  
+                                      <div id="d2e199_secItemItemIdCustomfieldIdDelete_itemId">
+                                          <div class="json-schema-view">
+                                              <div class="primitive">
+                                                  <span class="type">
+                                                      String
+                                                  </span>
+                                  
+                                                      <div class="inner description">
+                                                          An identifier for an item
+                                                      </div>
+                                              </div>
+                                                  <div class="inner required">
+                                                      Required
+                                                  </div>
+                                          </div>
+                                      </div>
+                                  </td>
+                                  </tr>
+                            </table>
+
+
+
+
+
+                          <h2>Responses</h2>
+                            <h3> Status: 200 - Ok </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-secItemItemIdCustomfieldIdDelete-200-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-secItemItemIdCustomfieldIdDelete-200-schema">
+                                  <div id='responses-secItemItemIdCustomfieldIdDelete-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "Ok",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/BasicResult"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-secItemItemIdCustomfieldIdDelete-200-schema-data').val(stringify(schema));
+                                        var result = $('#responses-secItemItemIdCustomfieldIdDelete-200-schema-200');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-secItemItemIdCustomfieldIdDelete-200-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
                     <div id="api-Item-secItemItemIdReprocessPost">
                       <article id="api-Item-secItemItemIdReprocessPost-0" data-group="User" data-name="secItemItemIdReprocessPost" data-version="0">
                         <div class="pull-left">
@@ -34955,6 +37322,10 @@ attachments of an item.
 
 The &#x60;fulltext&#x60; field can be used to restrict the results by
 using full-text search in the documents contents.
+
+The customfields used in the search query are allowed to be
+specified by either field id or field name. The values may
+contain the wildcard &#x60;*&#x60; at beginning or end.
 </p>
                         <p></p>
                         <br />
@@ -37421,6 +39792,752 @@ except ApiException as e:
                                     </script>
                                   </div>
                                   <input id='responses-secItemsCorrPersonPut-200-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
+                    <div id="api-ItemMultiEdit-secItemsCustomfieldPut">
+                      <article id="api-ItemMultiEdit-secItemsCustomfieldPut-0" data-group="User" data-name="secItemsCustomfieldPut" data-version="0">
+                        <div class="pull-left">
+                          <h1>secItemsCustomfieldPut</h1>
+                          <p>Set the value of a custom field for multiple items</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked">Sets the value for a custom field to multiple given items. If
+a value already exists, it is overwritten. The value must
+comply to the associated field type. It must not be the empty
+string.
+</p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="put"><code><span class="pln">/sec/items/customfield</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-ItemMultiEdit-secItemsCustomfieldPut-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-ItemMultiEdit-secItemsCustomfieldPut-0-java">Java</a></li>
+                          <li class=""><a href="#examples-ItemMultiEdit-secItemsCustomfieldPut-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-ItemMultiEdit-secItemsCustomfieldPut-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-ItemMultiEdit-secItemsCustomfieldPut-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-ItemMultiEdit-secItemsCustomfieldPut-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-ItemMultiEdit-secItemsCustomfieldPut-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-ItemMultiEdit-secItemsCustomfieldPut-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-ItemMultiEdit-secItemsCustomfieldPut-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-ItemMultiEdit-secItemsCustomfieldPut-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-ItemMultiEdit-secItemsCustomfieldPut-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-ItemMultiEdit-secItemsCustomfieldPut-0-curl">
+                           <pre class="prettyprint"><code class="language-bsh">curl -X PUT\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v1/sec/items/customfield"</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-ItemMultiEdit-secItemsCustomfieldPut-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.ItemMultiEditApi;
+
+import java.io.File;
+import java.util.*;
+
+public class ItemMultiEditApiExample {
+
+    public static void main(String[] args) {
+        ApiClient defaultClient = Configuration.getDefaultApiClient();
+
+        // Configure API key authorization: authTokenHeader
+        ApiKeyAuth authTokenHeader = (ApiKeyAuth) defaultClient.getAuthentication("authTokenHeader");
+        authTokenHeader.setApiKey("YOUR API KEY");
+        // Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+        //authTokenHeader.setApiKeyPrefix("Token");
+
+        ItemMultiEditApi apiInstance = new ItemMultiEditApi();
+        ItemsAndFieldValue body = ; // ItemsAndFieldValue | 
+        try {
+            BasicResult result = apiInstance.secItemsCustomfieldPut(body);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling ItemMultiEditApi#secItemsCustomfieldPut");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-ItemMultiEdit-secItemsCustomfieldPut-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.ItemMultiEditApi;
+
+public class ItemMultiEditApiExample {
+
+    public static void main(String[] args) {
+        ItemMultiEditApi apiInstance = new ItemMultiEditApi();
+        ItemsAndFieldValue body = ; // ItemsAndFieldValue | 
+        try {
+            BasicResult result = apiInstance.secItemsCustomfieldPut(body);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling ItemMultiEditApi#secItemsCustomfieldPut");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-ItemMultiEdit-secItemsCustomfieldPut-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-ItemMultiEdit-secItemsCustomfieldPut-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
+// Configure API key authorization: (authentication scheme: authTokenHeader)
+[apiConfig setApiKey:@"YOUR_API_KEY" forApiKeyIdentifier:@"X-Docspell-Auth"];
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+//[apiConfig setApiKeyPrefix:@"Bearer" forApiKeyIdentifier:@"X-Docspell-Auth"];
+ItemsAndFieldValue *body = ; //  (optional)
+
+ItemMultiEditApi *apiInstance = [[ItemMultiEditApi alloc] init];
+
+// Set the value of a custom field for multiple items
+[apiInstance secItemsCustomfieldPutWith:body
+              completionHandler: ^(BasicResult output, NSError* error) {
+                            if (output) {
+                                NSLog(@"%@", output);
+                            }
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-ItemMultiEdit-secItemsCustomfieldPut-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var Docspell = require('docspell');
+var defaultClient = Docspell.ApiClient.instance;
+
+// Configure API key authorization: authTokenHeader
+var authTokenHeader = defaultClient.authentications['authTokenHeader'];
+authTokenHeader.apiKey = "YOUR API KEY"
+// Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+//authTokenHeader.apiKeyPrefix['X-Docspell-Auth'] = "Token"
+
+var api = new Docspell.ItemMultiEditApi()
+var opts = { 
+  'body':  // {{ItemsAndFieldValue}} 
+};
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+};
+api.secItemsCustomfieldPut(opts, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-ItemMultiEdit-secItemsCustomfieldPut-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-ItemMultiEdit-secItemsCustomfieldPut-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class secItemsCustomfieldPutExample
+    {
+        public void main()
+        {
+
+            // Configure API key authorization: authTokenHeader
+            Configuration.Default.ApiKey.Add("X-Docspell-Auth", "YOUR_API_KEY");
+            // Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+            // Configuration.Default.ApiKeyPrefix.Add("X-Docspell-Auth", "Bearer");
+
+            var apiInstance = new ItemMultiEditApi();
+            var body = new ItemsAndFieldValue(); // ItemsAndFieldValue |  (optional) 
+
+            try
+            {
+                // Set the value of a custom field for multiple items
+                BasicResult result = apiInstance.secItemsCustomfieldPut(body);
+                Debug.WriteLine(result);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling ItemMultiEditApi.secItemsCustomfieldPut: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-ItemMultiEdit-secItemsCustomfieldPut-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+// Configure API key authorization: authTokenHeader
+Swagger\Client\Configuration::getDefaultConfiguration()->setApiKey('X-Docspell-Auth', 'YOUR_API_KEY');
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+// Swagger\Client\Configuration::getDefaultConfiguration()->setApiKeyPrefix('X-Docspell-Auth', 'Bearer');
+
+$api_instance = new Swagger\Client\ApiItemMultiEditApi();
+$body = ; // ItemsAndFieldValue | 
+
+try {
+    $result = $api_instance->secItemsCustomfieldPut($body);
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling ItemMultiEditApi->secItemsCustomfieldPut: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-ItemMultiEdit-secItemsCustomfieldPut-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::ItemMultiEditApi;
+
+# Configure API key authorization: authTokenHeader
+$WWW::SwaggerClient::Configuration::api_key->{'X-Docspell-Auth'} = 'YOUR_API_KEY';
+# uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+#$WWW::SwaggerClient::Configuration::api_key_prefix->{'X-Docspell-Auth'} = "Bearer";
+
+my $api_instance = WWW::SwaggerClient::ItemMultiEditApi->new();
+my $body = WWW::SwaggerClient::Object::ItemsAndFieldValue->new(); # ItemsAndFieldValue | 
+
+eval { 
+    my $result = $api_instance->secItemsCustomfieldPut(body => $body);
+    print Dumper($result);
+};
+if ($@) {
+    warn "Exception when calling ItemMultiEditApi->secItemsCustomfieldPut: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-ItemMultiEdit-secItemsCustomfieldPut-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# Configure API key authorization: authTokenHeader
+swagger_client.configuration.api_key['X-Docspell-Auth'] = 'YOUR_API_KEY'
+# Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+# swagger_client.configuration.api_key_prefix['X-Docspell-Auth'] = 'Bearer'
+
+# create an instance of the API class
+api_instance = swagger_client.ItemMultiEditApi()
+body =  # ItemsAndFieldValue |  (optional)
+
+try: 
+    # Set the value of a custom field for multiple items
+    api_response = api_instance.sec_items_customfield_put(body=body)
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling ItemMultiEditApi->secItemsCustomfieldPut: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+
+
+                            <div class="methodsubtabletitle">Body parameters</div>
+                            <table id="methodsubtable">
+                              <tr>
+                                <th width="150px">Name</th>
+                                <th>Description</th>
+                              </tr>
+                                <tr><td style="width:150px;">body </td>
+                                <td>
+                                
+                                
+                                <script>
+                                $(document).ready(function() {
+                                  var schemaWrapper = {
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/ItemsAndFieldValue"
+      }
+    }
+  }
+};
+                                  var schema = schemaWrapper.content["application/json"].schema;
+                                  if (schema.$ref != null) {
+                                    schema = defsParser.$refs.get(schema.$ref);
+                                  } else {
+                                    schemaWrapper.components = {};
+                                    schemaWrapper.components.schemas = Object.assign({}, defs);
+                                    $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                      console.log(err);
+                                    });
+                                  }
+                                
+                                  var view = new JSONSchemaView(schema,2,{isBodyParam: true});
+                                  var result = $('#d2e199_secItemsCustomfieldPut_body');
+                                  result.empty();
+                                  result.append(view.render());
+                                });
+                                </script>
+                                <div id="d2e199_secItemsCustomfieldPut_body"></div>
+                                </td>
+                                </tr>
+                            </table>
+
+
+
+                          <h2>Responses</h2>
+                            <h3> Status: 200 - Ok </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-secItemsCustomfieldPut-200-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-secItemsCustomfieldPut-200-schema">
+                                  <div id='responses-secItemsCustomfieldPut-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "Ok",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/BasicResult"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-secItemsCustomfieldPut-200-schema-data').val(stringify(schema));
+                                        var result = $('#responses-secItemsCustomfieldPut-200-schema-200');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-secItemsCustomfieldPut-200-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
+                    <div id="api-ItemMultiEdit-secItemsCustomfieldremovePost">
+                      <article id="api-ItemMultiEdit-secItemsCustomfieldremovePost-0" data-group="User" data-name="secItemsCustomfieldremovePost" data-version="0">
+                        <div class="pull-left">
+                          <h1>secItemsCustomfieldremovePost</h1>
+                          <p>Removes the value for a custom field on multiple items</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked">Removes the value for the given custom field from multiple
+items. The field may be specified by its id or name.
+</p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="post"><code><span class="pln">/sec/items/customfieldremove</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-ItemMultiEdit-secItemsCustomfieldremovePost-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-ItemMultiEdit-secItemsCustomfieldremovePost-0-java">Java</a></li>
+                          <li class=""><a href="#examples-ItemMultiEdit-secItemsCustomfieldremovePost-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-ItemMultiEdit-secItemsCustomfieldremovePost-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-ItemMultiEdit-secItemsCustomfieldremovePost-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-ItemMultiEdit-secItemsCustomfieldremovePost-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-ItemMultiEdit-secItemsCustomfieldremovePost-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-ItemMultiEdit-secItemsCustomfieldremovePost-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-ItemMultiEdit-secItemsCustomfieldremovePost-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-ItemMultiEdit-secItemsCustomfieldremovePost-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-ItemMultiEdit-secItemsCustomfieldremovePost-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-ItemMultiEdit-secItemsCustomfieldremovePost-0-curl">
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v1/sec/items/customfieldremove"</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-ItemMultiEdit-secItemsCustomfieldremovePost-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.ItemMultiEditApi;
+
+import java.io.File;
+import java.util.*;
+
+public class ItemMultiEditApiExample {
+
+    public static void main(String[] args) {
+        ApiClient defaultClient = Configuration.getDefaultApiClient();
+
+        // Configure API key authorization: authTokenHeader
+        ApiKeyAuth authTokenHeader = (ApiKeyAuth) defaultClient.getAuthentication("authTokenHeader");
+        authTokenHeader.setApiKey("YOUR API KEY");
+        // Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+        //authTokenHeader.setApiKeyPrefix("Token");
+
+        ItemMultiEditApi apiInstance = new ItemMultiEditApi();
+        String itemId = itemId_example; // String | An identifier for an item
+        ItemsAndName body = ; // ItemsAndName | 
+        try {
+            BasicResult result = apiInstance.secItemsCustomfieldremovePost(itemId, body);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling ItemMultiEditApi#secItemsCustomfieldremovePost");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-ItemMultiEdit-secItemsCustomfieldremovePost-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.ItemMultiEditApi;
+
+public class ItemMultiEditApiExample {
+
+    public static void main(String[] args) {
+        ItemMultiEditApi apiInstance = new ItemMultiEditApi();
+        String itemId = itemId_example; // String | An identifier for an item
+        ItemsAndName body = ; // ItemsAndName | 
+        try {
+            BasicResult result = apiInstance.secItemsCustomfieldremovePost(itemId, body);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling ItemMultiEditApi#secItemsCustomfieldremovePost");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-ItemMultiEdit-secItemsCustomfieldremovePost-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-ItemMultiEdit-secItemsCustomfieldremovePost-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
+// Configure API key authorization: (authentication scheme: authTokenHeader)
+[apiConfig setApiKey:@"YOUR_API_KEY" forApiKeyIdentifier:@"X-Docspell-Auth"];
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+//[apiConfig setApiKeyPrefix:@"Bearer" forApiKeyIdentifier:@"X-Docspell-Auth"];
+String *itemId = itemId_example; // An identifier for an item
+ItemsAndName *body = ; //  (optional)
+
+ItemMultiEditApi *apiInstance = [[ItemMultiEditApi alloc] init];
+
+// Removes the value for a custom field on multiple items
+[apiInstance secItemsCustomfieldremovePostWith:itemId
+    body:body
+              completionHandler: ^(BasicResult output, NSError* error) {
+                            if (output) {
+                                NSLog(@"%@", output);
+                            }
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-ItemMultiEdit-secItemsCustomfieldremovePost-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var Docspell = require('docspell');
+var defaultClient = Docspell.ApiClient.instance;
+
+// Configure API key authorization: authTokenHeader
+var authTokenHeader = defaultClient.authentications['authTokenHeader'];
+authTokenHeader.apiKey = "YOUR API KEY"
+// Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+//authTokenHeader.apiKeyPrefix['X-Docspell-Auth'] = "Token"
+
+var api = new Docspell.ItemMultiEditApi()
+var itemId = itemId_example; // {{String}} An identifier for an item
+var opts = { 
+  'body':  // {{ItemsAndName}} 
+};
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+};
+api.secItemsCustomfieldremovePost(itemId, opts, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-ItemMultiEdit-secItemsCustomfieldremovePost-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-ItemMultiEdit-secItemsCustomfieldremovePost-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class secItemsCustomfieldremovePostExample
+    {
+        public void main()
+        {
+
+            // Configure API key authorization: authTokenHeader
+            Configuration.Default.ApiKey.Add("X-Docspell-Auth", "YOUR_API_KEY");
+            // Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+            // Configuration.Default.ApiKeyPrefix.Add("X-Docspell-Auth", "Bearer");
+
+            var apiInstance = new ItemMultiEditApi();
+            var itemId = itemId_example;  // String | An identifier for an item
+            var body = new ItemsAndName(); // ItemsAndName |  (optional) 
+
+            try
+            {
+                // Removes the value for a custom field on multiple items
+                BasicResult result = apiInstance.secItemsCustomfieldremovePost(itemId, body);
+                Debug.WriteLine(result);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling ItemMultiEditApi.secItemsCustomfieldremovePost: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-ItemMultiEdit-secItemsCustomfieldremovePost-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+// Configure API key authorization: authTokenHeader
+Swagger\Client\Configuration::getDefaultConfiguration()->setApiKey('X-Docspell-Auth', 'YOUR_API_KEY');
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+// Swagger\Client\Configuration::getDefaultConfiguration()->setApiKeyPrefix('X-Docspell-Auth', 'Bearer');
+
+$api_instance = new Swagger\Client\ApiItemMultiEditApi();
+$itemId = itemId_example; // String | An identifier for an item
+$body = ; // ItemsAndName | 
+
+try {
+    $result = $api_instance->secItemsCustomfieldremovePost($itemId, $body);
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling ItemMultiEditApi->secItemsCustomfieldremovePost: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-ItemMultiEdit-secItemsCustomfieldremovePost-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::ItemMultiEditApi;
+
+# Configure API key authorization: authTokenHeader
+$WWW::SwaggerClient::Configuration::api_key->{'X-Docspell-Auth'} = 'YOUR_API_KEY';
+# uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+#$WWW::SwaggerClient::Configuration::api_key_prefix->{'X-Docspell-Auth'} = "Bearer";
+
+my $api_instance = WWW::SwaggerClient::ItemMultiEditApi->new();
+my $itemId = itemId_example; # String | An identifier for an item
+my $body = WWW::SwaggerClient::Object::ItemsAndName->new(); # ItemsAndName | 
+
+eval { 
+    my $result = $api_instance->secItemsCustomfieldremovePost(itemId => $itemId, body => $body);
+    print Dumper($result);
+};
+if ($@) {
+    warn "Exception when calling ItemMultiEditApi->secItemsCustomfieldremovePost: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-ItemMultiEdit-secItemsCustomfieldremovePost-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# Configure API key authorization: authTokenHeader
+swagger_client.configuration.api_key['X-Docspell-Auth'] = 'YOUR_API_KEY'
+# Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+# swagger_client.configuration.api_key_prefix['X-Docspell-Auth'] = 'Bearer'
+
+# create an instance of the API class
+api_instance = swagger_client.ItemMultiEditApi()
+itemId = itemId_example # String | An identifier for an item
+body =  # ItemsAndName |  (optional)
+
+try: 
+    # Removes the value for a custom field on multiple items
+    api_response = api_instance.sec_items_customfieldremove_post(itemId, body=body)
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling ItemMultiEditApi->secItemsCustomfieldremovePost: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+                            <div class="methodsubtabletitle">Path parameters</div>
+                            <table id="methodsubtable">
+                                <tr>
+                                  <th width="150px">Name</th>
+                                  <th>Description</th>
+                                </tr>
+                                  <tr><td style="width:150px;">itemId*</td>
+                                  <td>
+                                  
+                                  
+                                      <div id="d2e199_secItemsCustomfieldremovePost_itemId">
+                                          <div class="json-schema-view">
+                                              <div class="primitive">
+                                                  <span class="type">
+                                                      String
+                                                  </span>
+                                  
+                                                      <div class="inner description">
+                                                          An identifier for an item
+                                                      </div>
+                                              </div>
+                                                  <div class="inner required">
+                                                      Required
+                                                  </div>
+                                          </div>
+                                      </div>
+                                  </td>
+                                  </tr>
+                            </table>
+
+
+                            <div class="methodsubtabletitle">Body parameters</div>
+                            <table id="methodsubtable">
+                              <tr>
+                                <th width="150px">Name</th>
+                                <th>Description</th>
+                              </tr>
+                                <tr><td style="width:150px;">body </td>
+                                <td>
+                                
+                                
+                                <script>
+                                $(document).ready(function() {
+                                  var schemaWrapper = {
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/ItemsAndName"
+      }
+    }
+  }
+};
+                                  var schema = schemaWrapper.content["application/json"].schema;
+                                  if (schema.$ref != null) {
+                                    schema = defsParser.$refs.get(schema.$ref);
+                                  } else {
+                                    schemaWrapper.components = {};
+                                    schemaWrapper.components.schemas = Object.assign({}, defs);
+                                    $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                      console.log(err);
+                                    });
+                                  }
+                                
+                                  var view = new JSONSchemaView(schema,2,{isBodyParam: true});
+                                  var result = $('#d2e199_secItemsCustomfieldremovePost_body');
+                                  result.empty();
+                                  result.append(view.render());
+                                });
+                                </script>
+                                <div id="d2e199_secItemsCustomfieldremovePost_body"></div>
+                                </td>
+                                </tr>
+                            </table>
+
+
+
+                          <h2>Responses</h2>
+                            <h3> Status: 200 - Ok </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-secItemsCustomfieldremovePost-200-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-secItemsCustomfieldremovePost-200-schema">
+                                  <div id='responses-secItemsCustomfieldremovePost-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "Ok",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/BasicResult"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-secItemsCustomfieldremovePost-200-schema-data').val(stringify(schema));
+                                        var result = $('#responses-secItemsCustomfieldremovePost-200-schema-200');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-secItemsCustomfieldremovePost-200-schema-data' type='hidden' value=''></input>
                                 </div>
                             </div>
 

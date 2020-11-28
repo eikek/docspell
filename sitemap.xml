@@ -79,6 +79,9 @@
         <loc>https://docspell.org/docs/dev/adr/0015-convert-pdf-files/</loc>
     </url>
     <url>
+        <loc>https://docspell.org/docs/dev/adr/0016-custom-fields/</loc>
+    </url>
+    <url>
         <loc>https://docspell.org/docs/dev/building/</loc>
     </url>
     <url>
@@ -152,6 +155,9 @@
     </url>
     <url>
         <loc>https://docspell.org/docs/webapp/curate/</loc>
+    </url>
+    <url>
+        <loc>https://docspell.org/docs/webapp/customfields/</loc>
     </url>
     <url>
         <loc>https://docspell.org/docs/webapp/emailsettings/</loc>
