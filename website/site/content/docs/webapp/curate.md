@@ -10,10 +10,10 @@ amend with existing data.
 # Select New items
 
 After files have been uploaded and the job executor created the
-corresponding items, they will show up on the main page. All items,
-the job executor has created are initially marked as *New*. The option
-*only New* in the left search menu can be used to select only new
-items:
+corresponding items, they will show up on the main page. All items the
+job executor has just created are initially marked as *New*. The
+option *only New* in the left search menu can be used to select only
+new items:
 
 {{ figure(file="docspell-curate-1.jpg") }}
 
