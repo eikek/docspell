@@ -4012,12 +4012,22 @@ components:
         is ignored, if `addAllAttachments` is set to `true`.
       required:
         - recipients
+        - cc
+        - bcc
         - subject
         - body
         - addAllAttachments
         - attachmentIds
       properties:
         recipients:
+          type: array
+          items:
+            type: string
+        cc:
+          type: array
+          items:
+            type: string
+        bcc:
           type: array
           items:
             type: string
