@@ -198,7 +198,7 @@ loginInfo model =
     div [ class "right menu" ]
         (case model.flags.account of
             Just acc ->
-                [ a
+                [ div
                     [ class "ui dropdown icon link item"
                     , href "#"
                     , onClick ToggleUserMenu
@@ -238,7 +238,7 @@ loginInfo model =
                             ]
                         ]
                     ]
-                , a
+                , div
                     [ class "ui dropdown icon link item"
                     , onClick ToggleNavMenu
                     , href "#"
@@ -296,10 +296,10 @@ loginInfo model =
                             ]
                         , div [ class "divider" ] []
                         , a
-                            [ class "icon item"
-                            , href "https://docspell.org/doc"
+                            [ class "item"
+                            , href "https://docspell.org/docs"
                             , target "_new"
-                            , title "Opens https://docspell.org/doc"
+                            , title "Opens https://docspell.org/docs"
                             ]
                             [ i [ class "help icon" ] []
                             , text "Help"
