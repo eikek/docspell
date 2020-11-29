@@ -5,8 +5,13 @@
 # (the original files).
 #
 # The item's metadata are stored next to the files to provide more
-# information about the item. It is not meant to be imported back into
-# docspell.
+# information about the item: tags, dates, custom fields etc. This
+# contains most of your user supplied data.
+#
+# This script is intended for having your data outside and independent
+# of docspell. Another good idea for a backup strategy is to take
+# database dumps *and* storing the releases of docspell next to this
+# dump.
 #
 # Usage:
 #
@@ -19,8 +24,29 @@
 #
 #    export-files.sh http://localhost:7880 /tmp/ds-download
 #
+# The script then asks for username and password and starts
+# downloading. Files are downloaded into the following structure
+# (below the given target directory):
 #
-# The script then asks for username and password and starts downloading.
+# - yyyy-mm (item date)
+#   - A3…XY (item id)
+#     - somefile.pdf (attachments with name)
+#     - metadata.json (json file with items metadata)
+#
+# By default, files are not overwritten, it stops if existing files
+# are encountered. Configuration can be specified using environment
+# variables:
+#
+# - OVERWRITE_FILE= if `y` then overwriting existing files is ok.
+# - SKIP_FILE= if `y` then existing files are skipped (supersedes
+#   OVERWRITE_FILE).
+# - DROP_ITEM= if `y` the item folder is removed before attempting to
+#   download it. If this is set to `y` then the above options don't
+#   make sense, since they operate on the files inside the item folder
+#
+# Docspell sends with each file its sha256 checksum via the ETag
+# header. This is used to do a integrity check after downloading.
+
 
 if [ -z "$1" ]; then
     echo "The base-url to docspell is required."
@@ -41,10 +67,13 @@ fi
 set -o errexit -o pipefail -o noclobber -o nounset
 
 LOGIN_URL="$BASE_URL/api/v1/open/auth/login"
-SEARCH_URL="$BASE_URL/api/v1/sec/item/search"
+SEARCH_URL="$BASE_URL/api/v1/sec/item/searchWithTags"
 INSIGHT_URL="$BASE_URL/api/v1/sec/collective/insights"
 DETAIL_URL="$BASE_URL/api/v1/sec/item"
 ATTACH_URL="$BASE_URL/api/v1/sec/attachment"
+
+OVERWRITE_FILE=${OVERWRITE_FILE:-n}
+DROP_ITEM=${DROP_ITEM:-n}
 
 errout() {
     >&2 echo "$@"
@@ -133,6 +162,31 @@ fetchItem() {
     mcurl -XGET "$DETAIL_URL/$1"
 }
 
+downloadAttachment() {
+    attachId="$1"
+    errout " - Download '$attachName' ($attachId)"
+
+    if [ -f "$attachOut" ] && [ "$SKIP_FILE" == "y" ]; then
+        errout " - Skipping file '$attachOut' since it already exists"
+    else
+        if [ -f "$attachOut" ] && [ "$OVERWRITE_FILE" == "y" ]; then
+            errout " - Removing attachment file as requested: $attachOut"
+            rm -f "$attachOut"
+        fi
+
+        checksum1=$(curl --fail -s -I -H "X-Docspell-Auth: $auth_token" "$ATTACH_URL/$attachId/original" | \
+                        grep 'ETag' | cut -d' ' -f2 | jq -r)
+        curl --fail -s -o "$attachOut" -H "X-Docspell-Auth: $auth_token" "$ATTACH_URL/$attachId/original"
+        checksum2=$(sha256sum "$attachOut" | cut -d' ' -f1 | xargs)
+        if [ "$checksum1" == "$checksum2" ]; then
+            errout " - Checksum ok."
+        else
+            errout " - WARNING: Checksum mismatch! Server: $checksum1 Downloaded: $checksum2"
+            return 3
+        fi
+    fi
+}
+
 downloadItem() {
     checkLogin
     itemData=$(fetchItem "$1")
@@ -142,14 +196,26 @@ downloadItem() {
     itemId=$(echo $itemData | jq -r '.id')
     out="$TARGET/$(date -d @$created +%Y-%m)/$itemId"
 
+    if [ -d "$out" ] && [ "$DROP_ITEM" == "y" ]; then
+        errout "Removing item folder as requested: $out"
+        rm -rf "$out"
+    fi
+
     mkdir -p "$out"
-    echo $itemData | jq > "$out/metadata.json"
+    if [ -f "$out/metadata.json" ] && [ "$SKIP_FILE" == "y" ]; then
+        errout " - Skipping file 'metadata.json' since it already exists"
+    else
+        if [ -f "$out/metadata.json" ] && [ "$OVERWRITE_FILE" == "y" ]; then
+            errout " - Removing metadata.json as requested"
+            rm -f "$out/metadata.json"
+        fi
+        echo $itemData | jq > "$out/metadata.json"
+    fi
 
     while read attachId attachName; do
-        errout " - download $attachName ($attachId)"
         attachOut="$out/$attachName"
         checkLogin
-        curl --fail -# -o "$attachOut" -H "X-Docspell-Auth: $auth_token" "$ATTACH_URL/$attachId"
+        downloadAttachment "$attachId"
     done < <(echo $itemData | jq -r '.sources[] | [.id,.name] | join(" ")')
 
 }
