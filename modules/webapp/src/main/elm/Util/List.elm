@@ -6,6 +6,7 @@ module Util.List exposing
     , findNext
     , findPrev
     , get
+    , sliding
     )
 
 
@@ -88,3 +89,17 @@ dropRight n list =
     List.reverse list
         |> List.drop n
         |> List.reverse
+
+
+sliding : (a -> a -> b) -> List a -> List b
+sliding f list =
+    let
+        windows =
+            case list of
+                _ :: xs ->
+                    List.map2 Tuple.pair list xs
+
+                _ ->
+                    []
+    in
+    List.map (\( e1, e2 ) -> f e1 e2) windows

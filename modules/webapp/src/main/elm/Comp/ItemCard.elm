@@ -11,13 +11,13 @@ module Comp.ItemCard exposing
 import Api
 import Api.Model.AttachmentLight exposing (AttachmentLight)
 import Api.Model.HighlightEntry exposing (HighlightEntry)
-import Api.Model.IdName exposing (IdName)
 import Api.Model.ItemLight exposing (ItemLight)
 import Comp.LinkTarget exposing (LinkTarget(..))
 import Data.Direction
 import Data.Fields
 import Data.Icons as Icons
 import Data.ItemSelection exposing (ItemSelection)
+import Data.ItemTemplate as IT
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -30,7 +30,6 @@ import Util.ItemDragDrop as DD
 import Util.List
 import Util.Maybe
 import Util.String
-import Util.Time
 
 
 type alias Model =
@@ -220,8 +219,7 @@ metaDataContent settings item =
             Data.UiSettings.fieldHidden settings f
 
         dueDate =
-            Maybe.map Util.Time.formatDateShort item.dueDate
-                |> Maybe.withDefault ""
+            IT.render IT.dueDateShort item
     in
     div [ class "content" ]
         [ div [ class "ui horizontal link list" ]
@@ -268,7 +266,7 @@ metaDataContent settings item =
                     [ class "item"
                     , title "Source"
                     ]
-                    [ text item.source
+                    [ IT.render IT.source item |> text
                     ]
                 , div
                     [ classList
@@ -321,6 +319,12 @@ mainContent cardAction cardColor isConfirmed settings _ item =
 
         fieldHidden f =
             Data.UiSettings.fieldHidden settings f
+
+        titlePattern =
+            settings.cardTitleTemplate.template
+
+        subtitlePattern =
+            settings.cardSubtitleTemplate.template
     in
     a
         [ class "content"
@@ -329,18 +333,16 @@ mainContent cardAction cardColor isConfirmed settings _ item =
         ]
         [ if fieldHidden Data.Fields.Direction then
             div [ class "header" ]
-                [ Util.String.underscoreToSpace item.name |> text
+                [ IT.render titlePattern item |> text
                 ]
 
           else
             div
                 [ class "header"
-                , Data.Direction.labelFromMaybe item.direction
-                    |> title
+                , IT.render IT.direction item |> title
                 ]
                 [ dirIcon
-                , Util.String.underscoreToSpace item.name
-                    |> text
+                , IT.render titlePattern item |> text
                 ]
         , div
             [ classList
@@ -358,7 +360,7 @@ mainContent cardAction cardColor isConfirmed settings _ item =
                 , ( "invisible hidden", fieldHidden Data.Fields.Date )
                 ]
             ]
-            [ Util.Time.formatDate item.date |> text
+            [ IT.render subtitlePattern item |> text
             ]
         , div [ class "meta description" ]
             [ mainTagsAndFields settings item

@@ -16,12 +16,15 @@ import Data.BasicSize exposing (BasicSize)
 import Data.Color exposing (Color)
 import Data.Fields exposing (Field)
 import Data.Flags exposing (Flags)
-import Data.UiSettings exposing (Pos(..), UiSettings)
+import Data.ItemTemplate as IT exposing (ItemTemplate)
+import Data.UiSettings exposing (ItemPattern, Pos(..), UiSettings)
 import Dict exposing (Dict)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onCheck)
+import Html.Events exposing (onCheck, onClick, onInput)
 import Http
+import Markdown
+import Util.Maybe
 import Util.Tag
 
 
@@ -45,6 +48,44 @@ type alias Model =
     , searchMenuVisible : Bool
     , editMenuVisible : Bool
     , cardPreviewSize : BasicSize
+    , cardTitlePattern : PatternModel
+    , cardSubtitlePattern : PatternModel
+    , showPatternHelp : Bool
+    }
+
+
+type alias PatternModel =
+    { pattern : Maybe String
+    , current : ItemTemplate
+    , result : Result String ItemTemplate
+    }
+
+
+initPatternModel : ItemPattern -> PatternModel
+initPatternModel ip =
+    { pattern = Just ip.pattern
+    , current = ip.template
+    , result = Ok ip.template
+    }
+
+
+updatePatternModel : PatternModel -> String -> PatternModel
+updatePatternModel pm str =
+    let
+        result =
+            case IT.readTemplate str of
+                Just t ->
+                    Ok t
+
+                Nothing ->
+                    Err "Template invalid, check for unclosed variables."
+
+        p =
+            Util.Maybe.fromString str
+    in
+    { pattern = p
+    , current = Result.withDefault pm.current result
+    , result = result
     }
 
 
@@ -97,6 +138,9 @@ init flags settings =
       , searchMenuVisible = settings.searchMenuVisible
       , editMenuVisible = settings.editMenuVisible
       , cardPreviewSize = settings.cardPreviewSize
+      , cardTitlePattern = initPatternModel settings.cardTitleTemplate
+      , cardSubtitlePattern = initPatternModel settings.cardSubtitleTemplate
+      , showPatternHelp = False
       }
     , Api.getTags flags "" GetTagsResp
     )
@@ -117,6 +161,9 @@ type Msg
     | ToggleSearchMenuVisible
     | ToggleEditMenuVisible
     | CardPreviewSizeMsg Comp.BasicSizeField.Msg
+    | SetCardTitlePattern String
+    | SetCardSubtitlePattern String
+    | TogglePatternHelpMsg
 
 
 
@@ -319,6 +366,55 @@ update sett msg model =
             , newSettings
             )
 
+        SetCardTitlePattern str ->
+            let
+                pm =
+                    model.cardTitlePattern
+
+                pm_ =
+                    updatePatternModel pm str
+
+                newSettings =
+                    if pm_.pattern /= Just sett.cardTitleTemplate.pattern then
+                        Just
+                            { sett
+                                | cardTitleTemplate =
+                                    ItemPattern
+                                        (Maybe.withDefault "" pm_.pattern)
+                                        pm_.current
+                            }
+
+                    else
+                        Nothing
+            in
+            ( { model | cardTitlePattern = pm_ }, newSettings )
+
+        SetCardSubtitlePattern str ->
+            let
+                pm =
+                    model.cardSubtitlePattern
+
+                pm_ =
+                    updatePatternModel pm str
+
+                newSettings =
+                    if pm_.pattern /= Just sett.cardSubtitleTemplate.pattern then
+                        Just
+                            { sett
+                                | cardSubtitleTemplate =
+                                    ItemPattern
+                                        (Maybe.withDefault "" pm_.pattern)
+                                        pm_.current
+                            }
+
+                    else
+                        Nothing
+            in
+            ( { model | cardSubtitlePattern = pm_ }, newSettings )
+
+        TogglePatternHelpMsg ->
+            ( { model | showPatternHelp = not model.showPatternHelp }, Nothing )
+
 
 
 --- View
@@ -369,6 +465,51 @@ view flags _ model =
                 "Size of item preview"
                 model.cardPreviewSize
             )
+        , div [ class "field" ]
+            [ label []
+                [ text "Card Title Pattern"
+                , a
+                    [ class "right-float"
+                    , title "Toggle pattern help text"
+                    , href "#"
+                    , onClick TogglePatternHelpMsg
+                    ]
+                    [ i [ class "help link icon" ] []
+                    ]
+                ]
+            , input
+                [ type_ "text"
+                , Maybe.withDefault "" model.cardTitlePattern.pattern |> value
+                , onInput SetCardTitlePattern
+                ]
+                []
+            ]
+        , div [ class "field" ]
+            [ label []
+                [ text "Card Subtitle Pattern"
+                , a
+                    [ class "right-float"
+                    , title "Toggle pattern help text"
+                    , href "#"
+                    , onClick TogglePatternHelpMsg
+                    ]
+                    [ i [ class "help link icon" ] []
+                    ]
+                ]
+            , input
+                [ type_ "text"
+                , Maybe.withDefault "" model.cardSubtitlePattern.pattern |> value
+                , onInput SetCardSubtitlePattern
+                ]
+                []
+            ]
+        , Markdown.toHtml
+            [ classList
+                [ ( "ui message", True )
+                , ( "hidden", not model.showPatternHelp )
+                ]
+            ]
+            IT.helpMessage
         , div [ class "ui dividing header" ]
             [ text "Search Menu" ]
         , div [ class "field" ]

@@ -1,5 +1,6 @@
 module Data.UiSettings exposing
-    ( Pos(..)
+    ( ItemPattern
+    , Pos(..)
     , StoredUiSettings
     , UiSettings
     , cardPreviewSize
@@ -21,6 +22,7 @@ import Api.Model.Tag exposing (Tag)
 import Data.BasicSize exposing (BasicSize)
 import Data.Color exposing (Color)
 import Data.Fields exposing (Field)
+import Data.ItemTemplate exposing (ItemTemplate)
 import Dict exposing (Dict)
 import Html exposing (Attribute)
 import Html.Attributes as HA
@@ -48,6 +50,8 @@ type alias StoredUiSettings =
     , searchMenuVisible : Bool
     , editMenuVisible : Bool
     , cardPreviewSize : Maybe String
+    , cardTitleTemplate : Maybe String
+    , cardSubtitleTemplate : Maybe String
     }
 
 
@@ -72,7 +76,21 @@ type alias UiSettings =
     , searchMenuVisible : Bool
     , editMenuVisible : Bool
     , cardPreviewSize : BasicSize
+    , cardTitleTemplate : ItemPattern
+    , cardSubtitleTemplate : ItemPattern
     }
+
+
+type alias ItemPattern =
+    { pattern : String
+    , template : ItemTemplate
+    }
+
+
+readPattern : String -> Maybe ItemPattern
+readPattern str =
+    Data.ItemTemplate.readTemplate str
+        |> Maybe.map (ItemPattern str)
 
 
 type Pos
@@ -118,6 +136,14 @@ defaults =
     , searchMenuVisible = False
     , editMenuVisible = False
     , cardPreviewSize = Data.BasicSize.Medium
+    , cardTitleTemplate =
+        { template = Data.ItemTemplate.name
+        , pattern = "{{name}}"
+        }
+    , cardSubtitleTemplate =
+        { template = Data.ItemTemplate.dateLong
+        , pattern = "{{dateLong}}"
+        }
     }
 
 
@@ -157,6 +183,12 @@ merge given fallback =
         given.cardPreviewSize
             |> Maybe.andThen Data.BasicSize.fromString
             |> Maybe.withDefault fallback.cardPreviewSize
+    , cardTitleTemplate =
+        Maybe.andThen readPattern given.cardTitleTemplate
+            |> Maybe.withDefault fallback.cardTitleTemplate
+    , cardSubtitleTemplate =
+        Maybe.andThen readPattern given.cardSubtitleTemplate
+            |> Maybe.withDefault fallback.cardSubtitleTemplate
     }
 
 
@@ -187,6 +219,8 @@ toStoredUiSettings settings =
         settings.cardPreviewSize
             |> Data.BasicSize.asString
             |> Just
+    , cardTitleTemplate = settings.cardTitleTemplate.pattern |> Just
+    , cardSubtitleTemplate = settings.cardSubtitleTemplate.pattern |> Just
     }
 
 
