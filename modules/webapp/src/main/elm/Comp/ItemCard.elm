@@ -321,10 +321,10 @@ mainContent cardAction cardColor isConfirmed settings _ item =
             Data.UiSettings.fieldHidden settings f
 
         titlePattern =
-            IT.name
+            settings.cardTitleTemplate.template
 
         subtitlePattern =
-            IT.dateLong
+            settings.cardSubtitleTemplate.template
     in
     a
         [ class "content"
