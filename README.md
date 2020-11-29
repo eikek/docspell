@@ -13,39 +13,20 @@ convert your papers into files. Docspell can then assist in
 organizing the resulting mess :wink:.
 
 You can associate tags, set correspondends, what a document is
-concerned with, a name, a date and some more. If your documents are
-associated with this meta data, you should be able to quickly find
+concerned with, a name, a date and more. If your documents are
+associated with such meta data, you should be able to quickly find
 them later using the search feature. But adding this manually to each
-document is a tedious task. What if most of it could be done
-automatically?
+document is a tedious task. Docspell can help you by suggesting
+correspondents, guessing tags or finding dates using machine learning
+tools. This makes adding metadata to your documents a lot easier.
 
-It is provided as a REST server and a web application and is intended
-to be self-hosted.
-
-
-## How it works
-
-Documents have two main properties: a correspondent (sender or
-receiver that is not you) and something the document is about. Usually
-it is about a person or some thing – maybe your car, or contracts
-concerning some familiy member, etc.
-
-1. You maintain a kind of address book. It should list all possible
-   correspondents and the concerning people/things. This grows
-   incrementally with each *new unknown* document.
-2. When docspell analyzes a document, it tries to find matches within
-   your address book. It can detect the correspondent and a concerning
-   person or thing. It will then associate this data to your
-   documents.
-3. You can inspect what docspell has done and correct it. If docspell
-   has found multiple suggestions, they will be shown for you to
-   select one. If it is not correctly associated, very often the
-   correct one is just one click away.
-
-The set of meta data, that docspell uses to draw suggestions from,
-must be maintained manually. But usually, this data doesn't grow as
-fast as the documents. After a while there is a quite complete address
-book and only once in a while it has to be revisited.
+Docspell also runs OCR (if needed) on your documents, can provide
+fulltext search and has great e-mail integration. Everything is
+accessible via a REST/HTTP api. A mobile friendly SPA web application
+is provided as the user interface and a [small Android
+app](https://github.com/docspell/android-client) for uploading files.
+The [feature overview](https://docspell.org/#feature-selection) has a
+more complete list.
 
 
 ## Impressions
@@ -93,14 +74,21 @@ The [project page](https://docspell.org) has lots of information on
 how to [use and setup](https://docspell.org/docs) docspell.
 
 
-## Contributions
+## Contributions/Support
 
-Feedback and other contributions are very welcome! There is now a
-[gitter room](https://gitter.im/eikek/docspell) for quick questions.
-You can [open an issue](https://github.com/eikek/docspell/issues/new)
-for questions, problems and other feedback; or make a mail to
-`info [at] docspell.org`.
+Feedback and other contributions are very welcome! There is a [gitter
+room](https://gitter.im/eikek/docspell) for chatting and questions.
+You can also [open an
+issue](https://github.com/eikek/docspell/issues/new) for questions,
+problems and other feedback; or make a mail to `info [at]
+docspell.org`. I'll try to answer in time.
 
+If you find this project any useful and want to support it via other
+means, giving a :star: is always encouraging and appreciated. You can
+also donate by throwing money at me via
+[liberapay](https://liberapay.com/eikek/).
+
+Thank you.
 
 ## License
 
