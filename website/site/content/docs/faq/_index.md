@@ -82,14 +82,11 @@ documentation, too.
 
 In order to move to a different tool, it is necessary to get the data
 out of Docspell in a machine readable/automatic way. Currently, there
-is no *easy way* for this. However, it is possible to get to all data
-with some scripting effort. Everything can be queried using a
-[HTTP/REST api](@/docs/api/_index.md) and so you can write a
-script/program that, for example, queries all items and downloads the
-files (something like this might be provided soon, for now there are
-starting points in the `/tools` folder). It is planned to provide a
-more convenient way to export the data into the file system. But there
-is no ETA for this.
+is no *easy way* for this. However, everything can be queried using a
+[HTTP/REST api](@/docs/api/_index.md) and so it is possible to get to
+all data with some scripting effort. There exists a script in the
+`tools/` folder that at least can go and download all files that have
+been uploaded to docspell.
 
 My recommendation is to run periodic database backups and also store
 the binaries/docker images. This lets you re-create the current state
