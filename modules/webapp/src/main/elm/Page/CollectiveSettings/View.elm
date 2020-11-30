@@ -5,6 +5,7 @@ import Comp.CollectiveSettingsForm
 import Comp.SourceManage
 import Comp.UserManage
 import Data.Flags exposing (Flags)
+import Data.Icons as Icons
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -35,7 +36,7 @@ view flags settings model =
                         [ classActive (model.currentTab == Just SourceTab) "link icon item"
                         , onClick (SetTab SourceTab)
                         ]
-                        [ i [ class "upload icon" ] []
+                        [ Icons.sourceIcon ""
                         , text "Sources"
                         ]
                     , div
@@ -183,7 +184,7 @@ makeTagStats nc =
 viewSources : Flags -> UiSettings -> Model -> List (Html Msg)
 viewSources flags settings model =
     [ h2 [ class "ui header" ]
-        [ i [ class "ui upload icon" ] []
+        [ Icons.sourceIcon ""
         , div [ class "content" ]
             [ text "Sources"
             ]

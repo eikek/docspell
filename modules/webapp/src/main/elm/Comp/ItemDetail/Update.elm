@@ -1603,6 +1603,9 @@ resetField flags item tagger field =
         Data.Fields.CustomFields ->
             Cmd.none
 
+        Data.Fields.SourceName ->
+            Cmd.none
+
 
 resetHiddenFields :
     UiSettings
