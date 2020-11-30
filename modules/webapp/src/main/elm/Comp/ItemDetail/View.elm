@@ -10,7 +10,14 @@ import Comp.DetailEdit
 import Comp.Dropdown
 import Comp.Dropzone
 import Comp.ItemDetail.AttachmentTabMenu
-import Comp.ItemDetail.Model exposing (Model, Msg(..), NotesField(..), SaveNameState(..))
+import Comp.ItemDetail.Model
+    exposing
+        ( Model
+        , Msg(..)
+        , NotesField(..)
+        , SaveNameState(..)
+        , personMatchesOrg
+        )
 import Comp.ItemMail
 import Comp.KeyInput
 import Comp.LinkTarget
@@ -882,6 +889,15 @@ item visible. This message will disappear then.
                         ]
                     , Html.map CorrPersonMsg (Comp.Dropdown.view settings model.corrPersonModel)
                     , renderCorrPersonSuggestions model
+                    , div
+                        [ classList
+                            [ ( "ui warning message", True )
+                            , ( "invisible hidden", personMatchesOrg model )
+                            ]
+                        ]
+                        [ i [ class "info icon" ] []
+                        , text "The selected person doesn't belong to the selected organization."
+                        ]
                     ]
             , optional [ Data.Fields.ConcPerson, Data.Fields.ConcEquip ] <|
                 h4 [ class "ui dividing header" ]
