@@ -47,10 +47,11 @@ update _ msg model =
 
 view : Model -> Html Msg
 view model =
-    table [ class "ui selectable table" ]
+    table [ class "ui very basic aligned table" ]
         [ thead []
             [ tr []
-                [ th [] [ text "Name" ]
+                [ th [ class "collapsing" ] []
+                , th [] [ text "Name" ]
                 ]
             ]
         , tbody []
@@ -62,9 +63,18 @@ renderEquipmentLine : Model -> Equipment -> Html Msg
 renderEquipmentLine model equip =
     tr
         [ classList [ ( "active", model.selected == Just equip ) ]
-        , onClick (Select equip)
         ]
-        [ td []
+        [ td [ class "collapsing" ]
+            [ a
+                [ href "#"
+                , class "ui basic small blue label"
+                , onClick (Select equip)
+                ]
+                [ i [ class "edit icon" ] []
+                , text "Edit"
+                ]
+            ]
+        , td []
             [ text equip.name
             ]
         ]

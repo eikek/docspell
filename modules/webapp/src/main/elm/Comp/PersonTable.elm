@@ -49,11 +49,12 @@ update _ msg model =
 
 view : Model -> Html Msg
 view model =
-    table [ class "ui selectable table" ]
+    table [ class "ui very basic aligned table" ]
         [ thead []
             [ tr []
-                [ th [ class "collapsing" ] [ text "Name" ]
-                , th [ class "collapsing" ] [ text "Concerning" ]
+                [ th [ class "collapsing" ] []
+                , th [ class "collapsing" ] [ text "Name" ]
+                , th [ class "collapsing center aligned" ] [ text "Concerning" ]
                 , th [] [ text "Address" ]
                 , th [] [ text "Contact" ]
                 ]
@@ -67,12 +68,21 @@ renderPersonLine : Model -> Person -> Html Msg
 renderPersonLine model person =
     tr
         [ classList [ ( "active", model.selected == Just person ) ]
-        , onClick (Select person)
         ]
         [ td [ class "collapsing" ]
-            [ text person.name
+            [ a
+                [ href "#"
+                , class "ui basic small blue label"
+                , onClick (Select person)
+                ]
+                [ i [ class "edit icon" ] []
+                , text "Edit"
+                ]
             ]
         , td [ class "collapsing" ]
+            [ text person.name
+            ]
+        , td [ class "center aligned" ]
             [ if person.concerning then
                 i [ class "check square outline icon" ] []
 

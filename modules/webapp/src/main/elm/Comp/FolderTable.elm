@@ -43,15 +43,15 @@ update msg model =
 view : Model -> List FolderItem -> Html Msg
 view _ items =
     div []
-        [ table [ class "ui very basic center aligned table" ]
+        [ table [ class "ui very basic aligned table" ]
             [ thead []
                 [ tr []
                     [ th [ class "collapsing" ] []
                     , th [] [ text "Name" ]
                     , th [] [ text "Owner" ]
-                    , th [] [ text "Owner or Member" ]
-                    , th [] [ text "#Member" ]
-                    , th [] [ text "Created" ]
+                    , th [ class "collapsing" ] [ text "Owner or Member" ]
+                    , th [ class "collapsing" ] [ text "#Member" ]
+                    , th [ class "collapsing" ] [ text "Created" ]
                     ]
                 ]
             , tbody []
@@ -79,14 +79,14 @@ viewItem item =
         , td []
             [ text item.owner.name
             ]
-        , td []
+        , td [ class "center aligned" ]
             [ Util.Html.checkbox item.isMember
             ]
-        , td []
+        , td [ class "center aligned" ]
             [ String.fromInt item.memberCount
                 |> text
             ]
-        , td []
+        , td [ class "center aligned" ]
             [ Util.Time.formatDateShort item.created
                 |> text
             ]
