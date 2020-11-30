@@ -28,8 +28,10 @@ trait OOrganization[F[_]] {
 
   def findAllPersonRefs(account: AccountId, nameQuery: Option[String]): F[Vector[IdRef]]
 
+  /** Add a new person with their contacts. The additional organization is ignored. */
   def addPerson(s: PersonAndContacts): F[AddResult]
 
+  /** Update a person with their contacts. The additional organization is ignored. */
   def updatePerson(s: PersonAndContacts): F[AddResult]
 
   def deleteOrg(orgId: Ident, collective: Ident): F[AddResult]
@@ -41,7 +43,11 @@ object OOrganization {
 
   case class OrgAndContacts(org: ROrganization, contacts: Seq[RContact])
 
-  case class PersonAndContacts(person: RPerson, contacts: Seq[RContact])
+  case class PersonAndContacts(
+      person: RPerson,
+      org: Option[ROrganization],
+      contacts: Seq[RContact]
+  )
 
   def apply[F[_]: Effect](store: Store[F]): Resource[F, OOrganization[F]] =
     Resource.pure[F, OOrganization[F]](new OOrganization[F] {
@@ -79,14 +85,14 @@ object OOrganization {
       ): F[Vector[PersonAndContacts]] =
         store
           .transact(QOrganization.findPersonAndContact(account.collective, query, _.name))
-          .map({ case (person, cont) => PersonAndContacts(person, cont) })
+          .map({ case (person, org, cont) => PersonAndContacts(person, org, cont) })
           .compile
           .toVector
 
       def findPerson(account: AccountId, persId: Ident): F[Option[PersonAndContacts]] =
         store
           .transact(QOrganization.getPersonAndContact(account.collective, persId))
-          .map(_.map({ case (org, cont) => PersonAndContacts(org, cont) }))
+          .map(_.map({ case (pers, org, cont) => PersonAndContacts(pers, org, cont) }))
 
       def findAllPersonRefs(
           account: AccountId,

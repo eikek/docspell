@@ -21,7 +21,8 @@ case class RPerson(
     notes: Option[String],
     concerning: Boolean,
     created: Timestamp,
-    updated: Timestamp
+    updated: Timestamp,
+    oid: Option[Ident]
 ) {}
 
 object RPerson {
@@ -42,6 +43,7 @@ object RPerson {
     val concerning = Column("concerning")
     val created    = Column("created")
     val updated    = Column("updated")
+    val oid        = Column("oid")
     val all = List(
       pid,
       cid,
@@ -53,7 +55,8 @@ object RPerson {
       notes,
       concerning,
       created,
-      updated
+      updated,
+      oid
     )
   }
 
@@ -63,7 +66,7 @@ object RPerson {
     val sql = insertRow(
       table,
       all,
-      fr"${v.pid},${v.cid},${v.name},${v.street},${v.zip},${v.city},${v.country},${v.notes},${v.concerning},${v.created},${v.updated}"
+      fr"${v.pid},${v.cid},${v.name},${v.street},${v.zip},${v.city},${v.country},${v.notes},${v.concerning},${v.created},${v.updated},${v.oid}"
     )
     sql.update.run
   }
@@ -82,6 +85,7 @@ object RPerson {
           country.setTo(v.country),
           concerning.setTo(v.concerning),
           notes.setTo(v.notes),
+          oid.setTo(v.oid),
           updated.setTo(now)
         )
       )

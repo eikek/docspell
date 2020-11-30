@@ -4833,6 +4833,8 @@ components:
           format: ident
         name:
           type: string
+        organization:
+          $ref: "#/components/schemas/IdName"
         address:
           $ref: "#/components/schemas/Address"
         contacts:

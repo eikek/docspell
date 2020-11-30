@@ -414,15 +414,16 @@ trait Conversions {
   }
 
   def mkPerson(v: OOrganization.PersonAndContacts): Person = {
-    val ro = v.person
+    val rp = v.person
     Person(
-      ro.pid,
-      ro.name,
-      Address(ro.street, ro.zip, ro.city, ro.country),
+      rp.pid,
+      rp.name,
+      v.org.map(o => IdName(o.oid, o.name)),
+      Address(rp.street, rp.zip, rp.city, rp.country),
       v.contacts.map(mkContact).toList,
-      ro.notes,
-      ro.concerning,
-      ro.created
+      rp.notes,
+      rp.concerning,
+      rp.created
     )
   }
 
@@ -433,7 +434,7 @@ trait Conversions {
       now  <- Timestamp.current[F]
       pid  <- Ident.randomId[F]
       cont <- contacts(pid)
-      org = RPerson(
+      pers = RPerson(
         pid,
         cid,
         v.name,
@@ -444,9 +445,10 @@ trait Conversions {
         v.notes,
         v.concerning,
         now,
-        now
+        now,
+        v.organization.map(_.id)
       )
-    } yield OOrganization.PersonAndContacts(org, cont)
+    } yield OOrganization.PersonAndContacts(pers, None, cont)
   }
 
   def changePerson[F[_]: Sync](
@@ -458,7 +460,7 @@ trait Conversions {
     for {
       now  <- Timestamp.current[F]
       cont <- contacts(v.id)
-      org = RPerson(
+      pers = RPerson(
         v.id,
         cid,
         v.name,
@@ -469,9 +471,10 @@ trait Conversions {
         v.notes,
         v.concerning,
         v.created,
-        now
+        now,
+        v.organization.map(_.id)
       )
-    } yield OOrganization.PersonAndContacts(org, cont)
+    } yield OOrganization.PersonAndContacts(pers, None, cont)
   }
 
   // contact

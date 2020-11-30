@@ -41,7 +41,7 @@ object QOrganization {
         Seq.empty
     })
 
-    (selectSimple(cols, from, and(q)) ++ orderBy(order(OC).f))
+    (selectSimple(cols, from, and(q)) ++ orderBy(order(OC).prefix("o").f))
       .query[(ROrganization, Option[RContact])]
       .stream
       .groupAdjacentBy(_._1)
@@ -82,17 +82,21 @@ object QOrganization {
       coll: Ident,
       query: Option[String],
       order: PC.type => Column
-  ): Stream[ConnectionIO, (RPerson, Vector[RContact])] = {
+  ): Stream[ConnectionIO, (RPerson, Option[ROrganization], Vector[RContact])] = {
     val pColl  = PC.cid.prefix("p")
     val pName  = RPerson.Columns.name.prefix("p")
     val pNotes = RPerson.Columns.notes.prefix("p")
     val pId    = RPerson.Columns.pid.prefix("p")
     val cPers  = RContact.Columns.personId.prefix("c")
     val cVal   = RContact.Columns.value.prefix("c")
+    val oId    = ROrganization.Columns.oid.prefix("o")
+    val pOid   = RPerson.Columns.oid.prefix("p")
 
-    val cols = RPerson.Columns.all.map(_.prefix("p")) ++ RContact.Columns.all
-      .map(_.prefix("c"))
+    val cols = RPerson.Columns.all.map(_.prefix("p")) ++
+      ROrganization.Columns.all.map(_.prefix("o")) ++
+      RContact.Columns.all.map(_.prefix("c"))
     val from = RPerson.table ++ fr"p LEFT JOIN" ++
+      ROrganization.table ++ fr"o ON" ++ pOid.is(oId) ++ fr"LEFT JOIN" ++
       RContact.table ++ fr"c ON" ++ cPers.is(pId)
 
     val q = Seq(pColl.is(coll)) ++ (query match {
@@ -103,38 +107,44 @@ object QOrganization {
         Seq.empty
     })
 
-    (selectSimple(cols, from, and(q)) ++ orderBy(order(PC).f))
-      .query[(RPerson, Option[RContact])]
+    (selectSimple(cols, from, and(q)) ++ orderBy(order(PC).prefix("p").f))
+      .query[(RPerson, Option[ROrganization], Option[RContact])]
       .stream
       .groupAdjacentBy(_._1)
-      .map({ case (ro, chunk) =>
-        val cs = chunk.toVector.flatMap(_._2)
-        (ro, cs)
+      .map({ case (rp, chunk) =>
+        val cs = chunk.toVector.flatMap(_._3)
+        val ro = chunk.map(_._2).head.flatten
+        (rp, ro, cs)
       })
   }
 
   def getPersonAndContact(
       coll: Ident,
       persId: Ident
-  ): ConnectionIO[Option[(RPerson, Vector[RContact])]] = {
+  ): ConnectionIO[Option[(RPerson, Option[ROrganization], Vector[RContact])]] = {
     val pColl = PC.cid.prefix("p")
     val pId   = RPerson.Columns.pid.prefix("p")
     val cPers = RContact.Columns.personId.prefix("c")
+    val oId   = ROrganization.Columns.oid.prefix("o")
+    val pOid  = RPerson.Columns.oid.prefix("p")
 
-    val cols = RPerson.Columns.all.map(_.prefix("p")) ++ RContact.Columns.all
-      .map(_.prefix("c"))
+    val cols = RPerson.Columns.all.map(_.prefix("p")) ++
+      ROrganization.Columns.all.map(_.prefix("o")) ++
+      RContact.Columns.all.map(_.prefix("c"))
     val from = RPerson.table ++ fr"p LEFT JOIN" ++
+      ROrganization.table ++ fr"o ON" ++ pOid.is(oId) ++ fr"LEFT JOIN" ++
       RContact.table ++ fr"c ON" ++ cPers.is(pId)
 
     val q = and(pColl.is(coll), pId.is(persId))
 
     selectSimple(cols, from, q)
-      .query[(RPerson, Option[RContact])]
+      .query[(RPerson, Option[ROrganization], Option[RContact])]
       .stream
       .groupAdjacentBy(_._1)
-      .map({ case (ro, chunk) =>
-        val cs = chunk.toVector.flatMap(_._2)
-        (ro, cs)
+      .map({ case (rp, chunk) =>
+        val cs = chunk.toVector.flatMap(_._3)
+        val ro = chunk.map(_._2).head.flatten
+        (rp, ro, cs)
       })
       .compile
       .last
