@@ -53,8 +53,9 @@ view model =
         [ thead []
             [ tr []
                 [ th [ class "collapsing" ] []
-                , th [ class "collapsing" ] [ text "Name" ]
                 , th [ class "collapsing center aligned" ] [ text "Concerning" ]
+                , th [] [ text "Name" ]
+                , th [] [ text "Organization" ]
                 , th [] [ text "Address" ]
                 , th [] [ text "Contact" ]
                 ]
@@ -79,15 +80,20 @@ renderPersonLine model person =
                 , text "Edit"
                 ]
             ]
-        , td [ class "collapsing" ]
-            [ text person.name
-            ]
         , td [ class "center aligned" ]
             [ if person.concerning then
                 i [ class "check square outline icon" ] []
 
               else
                 i [ class "minus square outline icon" ] []
+            ]
+        , td []
+            [ text person.name
+            ]
+        , td []
+            [ Maybe.map .name person.organization
+                |> Maybe.withDefault "-"
+                |> text
             ]
         , td []
             [ Util.Address.toString person.address |> text

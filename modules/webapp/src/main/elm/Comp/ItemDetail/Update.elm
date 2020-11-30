@@ -1113,26 +1113,30 @@ update key flags inav settings msg model =
                     resultModel model
 
         StartCorrPersonModal ->
-            resultModel
-                { model
-                    | modalEdit =
-                        Just
-                            (Comp.DetailEdit.initCorrPerson
-                                model.item.id
-                                Comp.PersonForm.emptyModel
-                            )
-                }
+            let
+                ( pm, pc ) =
+                    Comp.DetailEdit.initCorrPerson
+                        flags
+                        model.item.id
+                        Comp.PersonForm.emptyModel
+            in
+            resultModelCmd
+                ( { model | modalEdit = Just pm }
+                , Cmd.map ModalEditMsg pc
+                )
 
         StartConcPersonModal ->
-            resultModel
-                { model
-                    | modalEdit =
-                        Just
-                            (Comp.DetailEdit.initConcPerson
-                                model.item.id
-                                Comp.PersonForm.emptyModel
-                            )
-                }
+            let
+                ( p, c ) =
+                    Comp.DetailEdit.initConcPerson
+                        flags
+                        model.item.id
+                        Comp.PersonForm.emptyModel
+            in
+            resultModelCmd
+                ( { model | modalEdit = Just p }
+                , Cmd.map ModalEditMsg c
+                )
 
         StartEditPersonModal pm ->
             let

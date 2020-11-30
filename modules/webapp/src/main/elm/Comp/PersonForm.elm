@@ -9,9 +9,11 @@ module Comp.PersonForm exposing
     , view1
     )
 
+import Api.Model.IdName exposing (IdName)
 import Api.Model.Person exposing (Person)
 import Comp.AddressForm
 import Comp.ContactField
+import Comp.Dropdown
 import Data.Flags exposing (Flags)
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
@@ -20,23 +22,25 @@ import Html.Events exposing (onCheck, onInput)
 
 
 type alias Model =
-    { org : Person
+    { person : Person
     , name : String
     , addressModel : Comp.AddressForm.Model
     , contactModel : Comp.ContactField.Model
     , notes : Maybe String
     , concerning : Bool
+    , orgModel : Comp.Dropdown.Model IdName
     }
 
 
 emptyModel : Model
 emptyModel =
-    { org = Api.Model.Person.empty
+    { person = Api.Model.Person.empty
     , name = ""
     , addressModel = Comp.AddressForm.emptyModel
     , contactModel = Comp.ContactField.emptyModel
     , notes = Nothing
     , concerning = False
+    , orgModel = Comp.Dropdown.orgDropdown
     }
 
 
@@ -48,15 +52,20 @@ isValid model =
 getPerson : Model -> Person
 getPerson model =
     let
-        o =
-            model.org
+        person =
+            model.person
+
+        org =
+            Comp.Dropdown.getSelected model.orgModel
+                |> List.head
     in
-    { o
+    { person
         | name = model.name
         , address = Comp.AddressForm.getAddress model.addressModel
         , contacts = Comp.ContactField.getContacts model.contactModel
         , notes = model.notes
         , concerning = model.concerning
+        , organization = org
     }
 
 
@@ -67,6 +76,8 @@ type Msg
     | ContactMsg Comp.ContactField.Msg
     | SetNotes String
     | SetConcerning Bool
+    | SetOrgs (List IdName)
+    | OrgDropdownMsg (Comp.Dropdown.Msg IdName)
 
 
 update : Flags -> Msg -> Model -> ( Model, Cmd Msg )
@@ -79,15 +90,31 @@ update flags msg model =
 
                 ( m2, c2 ) =
                     update flags (ContactMsg (Comp.ContactField.SetItems t.contacts)) m1
+
+                ( m3, c3 ) =
+                    update flags
+                        (OrgDropdownMsg
+                            (Comp.Dropdown.SetSelection
+                                (List.filterMap identity [ t.organization ])
+                            )
+                        )
+                        m2
             in
-            ( { m2
-                | org = t
+            ( { m3
+                | person = t
                 , name = t.name
                 , notes = t.notes
                 , concerning = t.concerning
               }
-            , Cmd.batch [ c1, c2 ]
+            , Cmd.batch [ c1, c2, c3 ]
             )
+
+        SetOrgs orgs ->
+            let
+                opts =
+                    Comp.Dropdown.SetOptions orgs
+            in
+            update flags (OrgDropdownMsg opts) model
 
         AddressMsg am ->
             let
@@ -120,6 +147,15 @@ update flags msg model =
 
         SetConcerning _ ->
             ( { model | concerning = not model.concerning }, Cmd.none )
+
+        OrgDropdownMsg lm ->
+            let
+                ( dm_, cmd_ ) =
+                    Comp.Dropdown.update lm model.orgModel
+            in
+            ( { model | orgModel = dm_ }
+            , Cmd.map OrgDropdownMsg cmd_
+            )
 
 
 view : UiSettings -> Model -> Html Msg
@@ -155,6 +191,10 @@ view1 settings compact model =
                     []
                 , label [] [ text "Use for concerning person suggestion only" ]
                 ]
+            ]
+        , div [ class "field" ]
+            [ label [] [ text "Organization" ]
+            , Html.map OrgDropdownMsg (Comp.Dropdown.view settings model.orgModel)
             ]
         , h3 [ class "ui dividing header" ]
             [ text "Address"

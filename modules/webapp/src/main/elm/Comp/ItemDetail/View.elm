@@ -17,7 +17,6 @@ import Comp.LinkTarget
 import Comp.MarkdownInput
 import Comp.SentMails
 import Comp.YesNoDimmer
-import Data.CustomFieldType
 import Data.Direction
 import Data.Fields
 import Data.Icons as Icons

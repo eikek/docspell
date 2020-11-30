@@ -10,6 +10,7 @@ module Comp.Dropdown exposing
     , makeSingleList
     , mkOption
     , notSelected
+    , orgDropdown
     , setMkOption
     , update
     , view
@@ -19,6 +20,7 @@ module Comp.Dropdown exposing
 {-| This needs to be rewritten from scratch!
 -}
 
+import Api.Model.IdName exposing (IdName)
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -26,6 +28,17 @@ import Html.Events exposing (onClick, onInput)
 import Simple.Fuzzy
 import Util.Html exposing (onKeyUp)
 import Util.List
+
+
+orgDropdown : Model IdName
+orgDropdown =
+    makeModel
+        { multiple = False
+        , searchable = \n -> n > 0
+        , makeOption = \e -> { value = e.id, text = e.name, additional = "" }
+        , labelColor = \_ -> \_ -> ""
+        , placeholder = "Choose an organization"
+        }
 
 
 type alias Option =
