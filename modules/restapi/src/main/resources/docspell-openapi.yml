@@ -5065,6 +5065,8 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/CustomFieldValue"
+        source:
+          type: string
     ItemLight:
       description: |
         An item with only a few important properties.
