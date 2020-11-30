@@ -29,6 +29,8 @@ module Data.Icons exposing
     , personIcon
     , search
     , searchIcon
+    , source
+    , sourceIcon
     , tag
     , tagIcon
     , tags
@@ -38,6 +40,16 @@ module Data.Icons exposing
 import Data.CustomFieldType exposing (CustomFieldType)
 import Html exposing (Html, i)
 import Html.Attributes exposing (class)
+
+
+source : String
+source =
+    "upload icon"
+
+
+sourceIcon : String -> Html msg
+sourceIcon classes =
+    i [ class (source ++ " " ++ classes) ] []
 
 
 customFieldType : CustomFieldType -> String

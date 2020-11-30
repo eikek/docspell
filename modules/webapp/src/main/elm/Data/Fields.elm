@@ -21,6 +21,7 @@ type Field
     | Direction
     | PreviewImage
     | CustomFields
+    | SourceName
 
 
 all : List Field
@@ -37,6 +38,7 @@ all =
         , Direction
         , PreviewImage
         , CustomFields
+        , SourceName
         ]
 
 
@@ -81,6 +83,9 @@ fromString str =
         "customfields" ->
             Just CustomFields
 
+        "sourcename" ->
+            Just SourceName
+
         _ ->
             Nothing
 
@@ -121,6 +126,9 @@ toString field =
         CustomFields ->
             "customfields"
 
+        SourceName ->
+            "sourcename"
+
 
 label : Field -> String
 label field =
@@ -157,6 +165,9 @@ label field =
 
         CustomFields ->
             "Custom Fields"
+
+        SourceName ->
+            "Item Source"
 
 
 fromList : List String -> List Field

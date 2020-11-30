@@ -144,6 +144,7 @@ trait Conversions {
         .map(_.ids.flatMap(i => Ident.fromString(i).toOption).toSet)
         .filter(_.nonEmpty),
       m.customValues.map(mkCustomValue),
+      m.source,
       None
     )
 

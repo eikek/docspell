@@ -72,6 +72,7 @@ type alias Model =
     , showNameHelp : Bool
     , customFieldModel : Comp.CustomFieldMultiInput.Model
     , customValues : CustomFieldValueCollect
+    , sourceModel : Maybe String
     }
 
 
@@ -135,6 +136,7 @@ init =
     , showNameHelp = False
     , customFieldModel = Comp.CustomFieldMultiInput.initWith []
     , customValues = Data.CustomFieldChange.emptyCollect
+    , sourceModel = Nothing
     }
 
 
@@ -196,6 +198,7 @@ getItemSearch model =
         , tagCategoriesInclude = model.tagSelection.includeCats |> List.map .name
         , tagCategoriesExclude = model.tagSelection.excludeCats |> List.map .name
         , customValues = Data.CustomFieldChange.toFieldValues model.customValues
+        , source = model.sourceModel
     }
 
 
@@ -234,6 +237,7 @@ resetModel model =
             Comp.CustomFieldMultiInput.reset
                 model.customFieldModel
         , customValues = Data.CustomFieldChange.emptyCollect
+        , sourceModel = Nothing
     }
 
 
@@ -273,6 +277,7 @@ type Msg
     | SetFolder IdName
     | SetTag String
     | CustomFieldMsg Comp.CustomFieldMultiInput.Msg
+    | SetSource String
 
 
 type alias NextState =
@@ -738,6 +743,17 @@ updateDrop ddm flags settings msg model =
             , dragDrop = DD.DragDropData ddm Nothing
             }
 
+        SetSource str ->
+            let
+                next =
+                    Util.Maybe.fromString str
+            in
+            { model = { model | sourceModel = next }
+            , cmd = Cmd.none
+            , stateChange = False
+            , dragDrop = DD.DragDropData ddm Nothing
+            }
+
 
 
 -- View
@@ -991,6 +1007,24 @@ viewDrop ddd flags settings model =
                             )
                         ]
                     ]
+            ]
+        , div
+            [ classList
+                [ ( segmentClass, not (fieldHidden Data.Fields.SourceName) )
+                , ( "invisible hidden", fieldHidden Data.Fields.SourceName )
+                ]
+            ]
+            [ formHeader (Icons.sourceIcon "") "Source"
+            , div [ class "field" ]
+                [ input
+                    [ type_ "text"
+                    , onInput SetSource
+                    , Util.Html.onKeyUpCode KeyUpMsg
+                    , model.sourceModel |> Maybe.withDefault "" |> value
+                    , placeholder "Search in item source…"
+                    ]
+                    []
+                ]
             ]
         , div
             [ classList

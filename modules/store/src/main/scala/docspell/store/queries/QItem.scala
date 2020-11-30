@@ -216,6 +216,7 @@ object QItem {
       allNames: Option[String],
       itemIds: Option[Set[Ident]],
       customValues: Seq[CustomValue],
+      source: Option[String],
       orderAsc: Option[RItem.Columns.type => Column]
   )
 
@@ -242,6 +243,7 @@ object QItem {
         None,
         None,
         Seq.empty,
+        None,
         None
       )
   }
@@ -413,9 +415,10 @@ object QItem {
     val tagSelectsExcl =
       TagItemName.itemsWithTagOrCategory(q.tagsExclude, q.tagCategoryExcl)
 
-    val iFolder  = IC.folder.prefix("i")
-    val name     = q.name.map(_.toLowerCase).map(QueryWildcard.apply)
-    val allNames = q.allNames.map(_.toLowerCase).map(QueryWildcard.apply)
+    val iFolder    = IC.folder.prefix("i")
+    val name       = q.name.map(_.toLowerCase).map(QueryWildcard.apply)
+    val allNames   = q.allNames.map(_.toLowerCase).map(QueryWildcard.apply)
+    val sourceName = q.source.map(_.toLowerCase).map(QueryWildcard.apply)
     val cond = and(
       IC.cid.prefix("i").is(q.account.collective),
       IC.state.prefix("i").isOneOf(q.states),
@@ -458,6 +461,7 @@ object QItem {
         .getOrElse(Fragment.empty),
       q.dueDateFrom.map(d => IC.dueDate.prefix("i").isGt(d)).getOrElse(Fragment.empty),
       q.dueDateTo.map(d => IC.dueDate.prefix("i").isLt(d)).getOrElse(Fragment.empty),
+      sourceName.map(s => IC.source.prefix("i").lowerLike(s)).getOrElse(Fragment.empty),
       q.itemIds
         .map(ids =>
           NonEmptyList
