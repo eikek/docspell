@@ -13,20 +13,21 @@ convert your papers into files. Docspell can then assist in
 organizing the resulting mess :wink:.
 
 You can associate tags, set correspondends, what a document is
-concerned with, a name, a date and more. If your documents are
+concerned with, a name, a date and much more. If your documents are
 associated with such meta data, you should be able to quickly find
 them later using the search feature. But adding this manually to each
 document is a tedious task. Docspell can help you by suggesting
 correspondents, guessing tags or finding dates using machine learning
-tools. This makes adding metadata to your documents a lot easier.
+techniques. This makes adding metadata to your documents a lot easier.
 
 Docspell also runs OCR (if needed) on your documents, can provide
 fulltext search and has great e-mail integration. Everything is
 accessible via a REST/HTTP api. A mobile friendly SPA web application
-is provided as the user interface and a [small Android
-app](https://github.com/docspell/android-client) for uploading files.
-The [feature overview](https://docspell.org/#feature-selection) has a
-more complete list.
+is provided as the user interface and an [Android
+app](https://github.com/docspell/android-client) for conveniently
+uploading files from your phone/tablet. The [feature
+overview](https://docspell.org/#feature-selection) has a more complete
+list.
 
 
 ## Impressions
@@ -36,7 +37,9 @@ page](https://docspell.org/#demos). Here are some screenshots:
 
 ![screenshot-1](website/site/content/docs/webapp/docspell-curate-1.jpg)
 ![screenshot-2](website/site/content/docs/webapp/docspell-curate-2.jpg)
-
+![screenshot-3](website/site/content/docs/webapp/custom-fields-03.png)
+![screenshot-4](website/site/content/docs/webapp/multiedit-04.png)
+![screenshot-5](website/site/content/docs/webapp/mail-item-1.jpg)
 
 ## Try it
 
@@ -84,11 +87,11 @@ problems and other feedback; or make a mail to `info [at]
 docspell.org`. I'll try to answer in time.
 
 If you find this project any useful and want to support it via other
-means, giving a :star: is always encouraging and appreciated. You can
-also donate by throwing money at me via
+means, giving a :star: is always encouraging and much appreciated. You
+can also support activity by donating via
 [liberapay](https://liberapay.com/eikek/).
 
-Thank you.
+Thank you so much!
 
 ## License
 
