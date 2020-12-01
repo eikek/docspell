@@ -1,6 +1,8 @@
 package docspell.store.records
 
 import cats.Eq
+import cats.data.NonEmptyList
+import cats.effect._
 import fs2.Stream
 
 import docspell.common.{IdRef, _}
@@ -167,4 +169,14 @@ object RPerson {
 
   def delete(personId: Ident, coll: Ident): ConnectionIO[Int] =
     deleteFrom(table, and(pid.is(personId), cid.is(coll))).update.run
+
+  def findOrganization(ids: Set[Ident]): ConnectionIO[Vector[PersonRef]] = {
+    val cols = Seq(pid, name, oid)
+    NonEmptyList.fromList(ids.toList) match {
+      case Some(nel) =>
+        selectSimple(cols, table, pid.isIn(nel)).query[PersonRef].to[Vector]
+      case None =>
+        Sync[ConnectionIO].pure(Vector.empty)
+    }
+  }
 }
