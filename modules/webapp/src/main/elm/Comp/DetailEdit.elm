@@ -30,6 +30,7 @@ import Api.Model.Equipment exposing (Equipment)
 import Api.Model.NewCustomField exposing (NewCustomField)
 import Api.Model.Organization exposing (Organization)
 import Api.Model.Person exposing (Person)
+import Api.Model.ReferenceList exposing (ReferenceList)
 import Api.Model.Tag exposing (Tag)
 import Comp.CustomFieldForm
 import Comp.EquipmentForm
@@ -134,7 +135,10 @@ editPerson flags persId pm =
       , loading = True
       , result = Nothing
       }
-    , Api.getPersonFull persId flags GetPersonResp
+    , Cmd.batch
+        [ Api.getPersonFull persId flags GetPersonResp
+        , Api.getOrgLight flags GetOrgsResp
+        ]
     )
 
 
@@ -150,14 +154,18 @@ editEquip flags equipId em =
     )
 
 
-initCorrPerson : String -> Comp.PersonForm.Model -> Model
-initCorrPerson itemId pm =
-    init itemId (PMR pm)
+initCorrPerson : Flags -> String -> Comp.PersonForm.Model -> ( Model, Cmd Msg )
+initCorrPerson flags itemId pm =
+    ( init itemId (PMR pm)
+    , Api.getOrgLight flags GetOrgsResp
+    )
 
 
-initConcPerson : String -> Comp.PersonForm.Model -> Model
-initConcPerson itemId pm =
-    init itemId (PMC pm)
+initConcPerson : Flags -> String -> Comp.PersonForm.Model -> ( Model, Cmd Msg )
+initConcPerson flags itemId pm =
+    ( init itemId (PMC pm)
+    , Api.getOrgLight flags GetOrgsResp
+    )
 
 
 initTag : String -> Comp.TagForm.Model -> Model
@@ -198,6 +206,7 @@ type Msg
     | GetOrgResp (Result Http.Error Organization)
     | GetPersonResp (Result Http.Error Person)
     | GetEquipResp (Result Http.Error Equipment)
+    | GetOrgsResp (Result Http.Error ReferenceList)
 
 
 type Value
@@ -299,6 +308,43 @@ update flags msg model =
                     )
 
         GetPersonResp (Err err) ->
+            ( { model | loading = False, result = Just (BasicResult False (Util.Http.errorToString err)) }
+            , Cmd.none
+            , Nothing
+            )
+
+        GetOrgsResp (Ok list) ->
+            case model.form of
+                PMC pm ->
+                    let
+                        ( p_, c_ ) =
+                            Comp.PersonForm.update flags (Comp.PersonForm.SetOrgs list.items) pm
+                    in
+                    ( { model
+                        | loading = False
+                        , form = PMC p_
+                      }
+                    , Cmd.map PersonMsg c_
+                    , Nothing
+                    )
+
+                PMR pm ->
+                    let
+                        ( p_, c_ ) =
+                            Comp.PersonForm.update flags (Comp.PersonForm.SetOrgs list.items) pm
+                    in
+                    ( { model
+                        | loading = False
+                        , form = PMR p_
+                      }
+                    , Cmd.map PersonMsg c_
+                    , Nothing
+                    )
+
+                _ ->
+                    ( { model | loading = False }, Cmd.none, Nothing )
+
+        GetOrgsResp (Err err) ->
             ( { model | loading = False, result = Just (BasicResult False (Util.Http.errorToString err)) }
             , Cmd.none
             , Nothing

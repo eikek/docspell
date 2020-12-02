@@ -7,6 +7,7 @@ module Comp.ItemDetail.Model exposing
     , UpdateResult
     , emptyModel
     , isEditNotes
+    , personMatchesOrg
     , resultModel
     , resultModelCmd
     , resultModelCmdSub
@@ -20,6 +21,7 @@ import Api.Model.FolderList exposing (FolderList)
 import Api.Model.IdName exposing (IdName)
 import Api.Model.ItemDetail exposing (ItemDetail)
 import Api.Model.ItemProposals exposing (ItemProposals)
+import Api.Model.Person exposing (Person)
 import Api.Model.PersonList exposing (PersonList)
 import Api.Model.ReferenceList exposing (ReferenceList)
 import Api.Model.SentMails exposing (SentMails)
@@ -100,6 +102,7 @@ type alias Model =
     , customFieldSavingIcon : Dict String String
     , customFieldThrottle : Throttle Msg
     , allTags : List Tag
+    , allPersons : Dict String Person
     }
 
 
@@ -205,6 +208,7 @@ emptyModel =
     , customFieldSavingIcon = Dict.empty
     , customFieldThrottle = Throttle.create 1
     , allTags = []
+    , allPersons = Dict.empty
     }
 
 
@@ -322,3 +326,19 @@ resultModelCmd ( model, cmd ) =
 resultModelCmdSub : ( Model, Cmd Msg, Sub Msg ) -> UpdateResult
 resultModelCmdSub ( model, cmd, sub ) =
     UpdateResult model cmd sub Comp.LinkTarget.LinkNone
+
+
+personMatchesOrg : Model -> Bool
+personMatchesOrg model =
+    let
+        org =
+            Comp.Dropdown.getSelected model.corrOrgModel
+                |> List.head
+
+        persOrg =
+            Comp.Dropdown.getSelected model.corrPersonModel
+                |> List.head
+                |> Maybe.andThen (\idref -> Dict.get idref.id model.allPersons)
+                |> Maybe.andThen .organization
+    in
+    org == Nothing || org == persOrg

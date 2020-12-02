@@ -8,11 +8,9 @@ module Comp.CustomFieldTable exposing
     )
 
 import Api.Model.CustomField exposing (CustomField)
-import Api.Model.CustomFieldList exposing (CustomFieldList)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Util.Html
 import Util.Time
 
 
@@ -44,7 +42,7 @@ update msg model =
 view : Model -> List CustomField -> Html Msg
 view _ items =
     div []
-        [ table [ class "ui very basic center aligned table" ]
+        [ table [ class "ui very basic aligned table" ]
             [ thead []
                 [ tr []
                     [ th [ class "collapsing" ] []

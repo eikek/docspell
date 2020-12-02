@@ -252,6 +252,7 @@ update key flags inav settings msg model =
                     , getOptions flags
                     , proposalCmd
                     , Api.getSentMails flags item.id SentMailsResp
+                    , Api.getPersons flags "" GetPersonResp
                     , Cmd.map CustomFieldMsg (Comp.CustomFieldMultiInput.initCmd flags)
                     ]
             , sub =
@@ -347,11 +348,13 @@ update key flags inav settings msg model =
                 ( m2, c2 ) =
                     Comp.Dropdown.update m model.corrOrgModel
 
-                newModel =
-                    { model | corrOrgModel = m2 }
-
                 idref =
                     Comp.Dropdown.getSelected m2 |> List.head
+
+                newModel =
+                    { model
+                        | corrOrgModel = m2
+                    }
 
                 save =
                     if isDropdownChangeMsg m then
@@ -609,11 +612,46 @@ update key flags inav settings msg model =
                 ( conc, corr ) =
                     List.partition .concerning ps.items
 
+                personDict =
+                    List.map (\p -> ( p.id, p )) ps.items
+                        |> Dict.fromList
+
+                corrOrg =
+                    Comp.Dropdown.getSelected model.corrOrgModel
+                        |> List.head
+
+                personFilter =
+                    case corrOrg of
+                        Just n ->
+                            \p -> p.organization == Just n
+
+                        Nothing ->
+                            \_ -> True
+
                 concRefs =
                     List.map (\e -> IdName e.id e.name) conc
 
                 corrRefs =
-                    List.map (\e -> IdName e.id e.name) corr
+                    List.filter personFilter corr
+                        |> List.map (\e -> IdName e.id e.name)
+
+                mkPersonOption idref =
+                    let
+                        org =
+                            Dict.get idref.id personDict
+                                |> Maybe.andThen .organization
+                                |> Maybe.map .name
+                                |> Maybe.map (Util.String.ellipsis 15)
+                                |> Maybe.withDefault ""
+                    in
+                    Comp.Dropdown.Option idref.id idref.name org
+
+                model_ =
+                    { model
+                        | corrPersonModel = Comp.Dropdown.setMkOption mkPersonOption model.corrPersonModel
+                        , concPersonModel = Comp.Dropdown.setMkOption mkPersonOption model.concPersonModel
+                        , allPersons = personDict
+                    }
 
                 res1 =
                     update key
@@ -621,7 +659,7 @@ update key flags inav settings msg model =
                         inav
                         settings
                         (CorrPersonMsg (Comp.Dropdown.SetOptions corrRefs))
-                        model
+                        model_
 
                 res2 =
                     update key
@@ -1113,26 +1151,30 @@ update key flags inav settings msg model =
                     resultModel model
 
         StartCorrPersonModal ->
-            resultModel
-                { model
-                    | modalEdit =
-                        Just
-                            (Comp.DetailEdit.initCorrPerson
-                                model.item.id
-                                Comp.PersonForm.emptyModel
-                            )
-                }
+            let
+                ( pm, pc ) =
+                    Comp.DetailEdit.initCorrPerson
+                        flags
+                        model.item.id
+                        Comp.PersonForm.emptyModel
+            in
+            resultModelCmd
+                ( { model | modalEdit = Just pm }
+                , Cmd.map ModalEditMsg pc
+                )
 
         StartConcPersonModal ->
-            resultModel
-                { model
-                    | modalEdit =
-                        Just
-                            (Comp.DetailEdit.initConcPerson
-                                model.item.id
-                                Comp.PersonForm.emptyModel
-                            )
-                }
+            let
+                ( p, c ) =
+                    Comp.DetailEdit.initConcPerson
+                        flags
+                        model.item.id
+                        Comp.PersonForm.emptyModel
+            in
+            resultModelCmd
+                ( { model | modalEdit = Just p }
+                , Cmd.map ModalEditMsg c
+                )
 
         StartEditPersonModal pm ->
             let

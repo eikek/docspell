@@ -47,10 +47,11 @@ update _ msg model =
 
 view : Model -> Html Msg
 view model =
-    table [ class "ui selectable table" ]
+    table [ class "ui very basic aligned table" ]
         [ thead []
             [ tr []
-                [ th [] [ text "Name" ]
+                [ th [ class "collapsing" ] []
+                , th [ class "eight wide" ] [ text "Name" ]
                 , th [] [ text "Category" ]
                 ]
             ]
@@ -63,9 +64,18 @@ renderTagLine : Model -> Tag -> Html Msg
 renderTagLine model tag =
     tr
         [ classList [ ( "active", model.selected == Just tag ) ]
-        , onClick (Select tag)
         ]
-        [ td []
+        [ td [ class "collapsing" ]
+            [ a
+                [ href "#"
+                , class "ui basic small blue label"
+                , onClick (Select tag)
+                ]
+                [ i [ class "edit icon" ] []
+                , text "Edit"
+                ]
+            ]
+        , td []
             [ text tag.name
             ]
         , td []

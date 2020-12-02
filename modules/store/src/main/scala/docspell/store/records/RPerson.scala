@@ -1,6 +1,8 @@
 package docspell.store.records
 
 import cats.Eq
+import cats.data.NonEmptyList
+import cats.effect._
 import fs2.Stream
 
 import docspell.common.{IdRef, _}
@@ -21,7 +23,8 @@ case class RPerson(
     notes: Option[String],
     concerning: Boolean,
     created: Timestamp,
-    updated: Timestamp
+    updated: Timestamp,
+    oid: Option[Ident]
 ) {}
 
 object RPerson {
@@ -42,6 +45,7 @@ object RPerson {
     val concerning = Column("concerning")
     val created    = Column("created")
     val updated    = Column("updated")
+    val oid        = Column("oid")
     val all = List(
       pid,
       cid,
@@ -53,7 +57,8 @@ object RPerson {
       notes,
       concerning,
       created,
-      updated
+      updated,
+      oid
     )
   }
 
@@ -63,7 +68,7 @@ object RPerson {
     val sql = insertRow(
       table,
       all,
-      fr"${v.pid},${v.cid},${v.name},${v.street},${v.zip},${v.city},${v.country},${v.notes},${v.concerning},${v.created},${v.updated}"
+      fr"${v.pid},${v.cid},${v.name},${v.street},${v.zip},${v.city},${v.country},${v.notes},${v.concerning},${v.created},${v.updated},${v.oid}"
     )
     sql.update.run
   }
@@ -82,6 +87,7 @@ object RPerson {
           country.setTo(v.country),
           concerning.setTo(v.concerning),
           notes.setTo(v.notes),
+          oid.setTo(v.oid),
           updated.setTo(now)
         )
       )
@@ -163,4 +169,14 @@ object RPerson {
 
   def delete(personId: Ident, coll: Ident): ConnectionIO[Int] =
     deleteFrom(table, and(pid.is(personId), cid.is(coll))).update.run
+
+  def findOrganization(ids: Set[Ident]): ConnectionIO[Vector[PersonRef]] = {
+    val cols = Seq(pid, name, oid)
+    NonEmptyList.fromList(ids.toList) match {
+      case Some(nel) =>
+        selectSimple(cols, table, pid.isIn(nel)).query[PersonRef].to[Vector]
+      case None =>
+        Sync[ConnectionIO].pure(Vector.empty)
+    }
+  }
 }

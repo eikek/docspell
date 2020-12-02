@@ -93,13 +93,7 @@ init =
             , selected = Nothing
             }
     , orgModel =
-        Comp.Dropdown.makeModel
-            { multiple = False
-            , searchable = \n -> n > 0
-            , makeOption = \e -> { value = e.id, text = e.name, additional = "" }
-            , labelColor = \_ -> \_ -> ""
-            , placeholder = "Choose an organization"
-            }
+        Comp.Dropdown.orgDropdown
     , corrPersonModel =
         Comp.Dropdown.makeSingle
             { makeOption = \e -> { value = e.id, text = e.name, additional = "" }

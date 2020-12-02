@@ -10,6 +10,7 @@ import Api
 import Api.Model.BasicResult exposing (BasicResult)
 import Api.Model.Person
 import Api.Model.PersonList exposing (PersonList)
+import Api.Model.ReferenceList exposing (ReferenceList)
 import Comp.PersonForm
 import Comp.PersonTable
 import Comp.YesNoDimmer
@@ -28,7 +29,7 @@ type alias Model =
     , formModel : Comp.PersonForm.Model
     , viewMode : ViewMode
     , formError : Maybe String
-    , loading : Bool
+    , loading : Int
     , deleteConfirm : Comp.YesNoDimmer.Model
     , query : String
     }
@@ -45,7 +46,7 @@ emptyModel =
     , formModel = Comp.PersonForm.emptyModel
     , viewMode = Table
     , formError = Nothing
-    , loading = False
+    , loading = 0
     , deleteConfirm = Comp.YesNoDimmer.emptyModel
     , query = ""
     }
@@ -63,6 +64,7 @@ type Msg
     | YesNoMsg Comp.YesNoDimmer.Msg
     | RequestDelete
     | SetQuery String
+    | GetOrgResp (Result Http.Error ReferenceList)
 
 
 update : Flags -> Msg -> Model -> ( Model, Cmd Msg )
@@ -105,17 +107,35 @@ update flags msg model =
             ( { model | formModel = m2 }, Cmd.map FormMsg c2 )
 
         LoadPersons ->
-            ( { model | loading = True }, Api.getPersons flags model.query PersonResp )
+            ( { model | loading = model.loading + 2 }
+            , Cmd.batch
+                [ Api.getPersons flags model.query PersonResp
+                , Api.getOrgLight flags GetOrgResp
+                ]
+            )
 
-        PersonResp (Ok orgs) ->
+        PersonResp (Ok persons) ->
             let
                 m2 =
-                    { model | viewMode = Table, loading = False }
+                    { model
+                        | viewMode = Table
+                        , loading = Basics.max 0 (model.loading - 1)
+                    }
             in
-            update flags (TableMsg (Comp.PersonTable.SetPersons orgs.items)) m2
+            update flags (TableMsg (Comp.PersonTable.SetPersons persons.items)) m2
 
         PersonResp (Err _) ->
-            ( { model | loading = False }, Cmd.none )
+            ( { model | loading = Basics.max 0 (model.loading - 1) }, Cmd.none )
+
+        GetOrgResp (Ok list) ->
+            let
+                m2 =
+                    { model | loading = Basics.max 0 (model.loading - 1) }
+            in
+            update flags (FormMsg (Comp.PersonForm.SetOrgs list.items)) m2
+
+        GetOrgResp (Err _) ->
+            ( { model | loading = Basics.max 0 (model.loading - 1) }, Cmd.none )
 
         SetViewMode m ->
             let
@@ -148,7 +168,9 @@ update flags msg model =
                     Comp.PersonForm.isValid model.formModel
             in
             if valid then
-                ( { model | loading = True }, Api.postPerson flags person SubmitResp )
+                ( { model | loading = model.loading + 1 }
+                , Api.postPerson flags person SubmitResp
+                )
 
             else
                 ( { model | formError = Just "Please correct the errors in the form." }, Cmd.none )
@@ -162,13 +184,23 @@ update flags msg model =
                     ( m3, c3 ) =
                         update flags LoadPersons m2
                 in
-                ( { m3 | loading = False }, Cmd.batch [ c2, c3 ] )
+                ( { m3 | loading = Basics.max 0 (model.loading - 1) }, Cmd.batch [ c2, c3 ] )
 
             else
-                ( { model | formError = Just res.message, loading = False }, Cmd.none )
+                ( { model
+                    | formError = Just res.message
+                    , loading = Basics.max 0 (model.loading - 1)
+                  }
+                , Cmd.none
+                )
 
         SubmitResp (Err err) ->
-            ( { model | formError = Just (Util.Http.errorToString err), loading = False }, Cmd.none )
+            ( { model
+                | formError = Just (Util.Http.errorToString err)
+                , loading = Basics.max 0 (model.loading - 1)
+              }
+            , Cmd.none
+            )
 
         RequestDelete ->
             update flags (YesNoMsg Comp.YesNoDimmer.activate) model
@@ -196,6 +228,11 @@ update flags msg model =
                     { model | query = str }
             in
             ( m, Api.getPersons flags str PersonResp )
+
+
+isLoading : Model -> Bool
+isLoading model =
+    model.loading /= 0
 
 
 view : UiSettings -> Model -> Html Msg
@@ -241,7 +278,7 @@ viewTable model =
         , div
             [ classList
                 [ ( "ui dimmer", True )
-                , ( "active", model.loading )
+                , ( "active", isLoading model )
                 ]
             ]
             [ div [ class "ui loader" ] []
@@ -253,9 +290,9 @@ viewForm : UiSettings -> Model -> Html Msg
 viewForm settings model =
     let
         newPerson =
-            model.formModel.org.id == ""
+            model.formModel.person.id == ""
     in
-    Html.form [ class "ui segment", onSubmit Submit ]
+    div [ class "ui segment" ]
         [ Html.map YesNoMsg (Comp.YesNoDimmer.view model.deleteConfirm)
         , if newPerson then
             h3 [ class "ui dividing header" ]
@@ -264,10 +301,10 @@ viewForm settings model =
 
           else
             h3 [ class "ui dividing header" ]
-                [ text ("Edit person: " ++ model.formModel.org.name)
+                [ text ("Edit person: " ++ model.formModel.person.name)
                 , div [ class "sub header" ]
                     [ text "Id: "
-                    , text model.formModel.org.id
+                    , text model.formModel.person.id
                     ]
                 ]
         , Html.map FormMsg (Comp.PersonForm.view settings model.formModel)
@@ -280,14 +317,25 @@ viewForm settings model =
             [ Maybe.withDefault "" model.formError |> text
             ]
         , div [ class "ui horizontal divider" ] []
-        , button [ class "ui primary button", type_ "submit" ]
+        , button
+            [ class "ui primary button"
+            , onClick Submit
+            ]
             [ text "Submit"
             ]
-        , a [ class "ui secondary button", onClick (SetViewMode Table), href "" ]
+        , a
+            [ class "ui secondary button"
+            , onClick (SetViewMode Table)
+            , href ""
+            ]
             [ text "Cancel"
             ]
         , if not newPerson then
-            a [ class "ui right floated red button", href "", onClick RequestDelete ]
+            a
+                [ class "ui right floated red button"
+                , href ""
+                , onClick RequestDelete
+                ]
                 [ text "Delete" ]
 
           else
@@ -295,7 +343,7 @@ viewForm settings model =
         , div
             [ classList
                 [ ( "ui dimmer", True )
-                , ( "active", model.loading )
+                , ( "active", isLoading model )
                 ]
             ]
             [ div [ class "ui loader" ] []

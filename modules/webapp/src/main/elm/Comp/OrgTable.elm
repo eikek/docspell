@@ -16,14 +16,14 @@ import Util.Contact
 
 
 type alias Model =
-    { equips : List Organization
+    { orgs : List Organization
     , selected : Maybe Organization
     }
 
 
 emptyModel : Model
 emptyModel =
-    { equips = []
+    { orgs = []
     , selected = Nothing
     }
 
@@ -38,7 +38,7 @@ update : Flags -> Msg -> Model -> ( Model, Cmd Msg )
 update _ msg model =
     case msg of
         SetOrgs list ->
-            ( { model | equips = list, selected = Nothing }, Cmd.none )
+            ( { model | orgs = list, selected = Nothing }, Cmd.none )
 
         Select equip ->
             ( { model | selected = Just equip }, Cmd.none )
@@ -49,16 +49,17 @@ update _ msg model =
 
 view : Model -> Html Msg
 view model =
-    table [ class "ui selectable table" ]
+    table [ class "ui very basic aligned table" ]
         [ thead []
             [ tr []
-                [ th [ class "collapsing" ] [ text "Name" ]
+                [ th [ class "collapsing" ] []
+                , th [ class "collapsing" ] [ text "Name" ]
                 , th [] [ text "Address" ]
                 , th [] [ text "Contact" ]
                 ]
             ]
         , tbody []
-            (List.map (renderOrgLine model) model.equips)
+            (List.map (renderOrgLine model) model.orgs)
         ]
 
 
@@ -66,9 +67,18 @@ renderOrgLine : Model -> Organization -> Html Msg
 renderOrgLine model org =
     tr
         [ classList [ ( "active", model.selected == Just org ) ]
-        , onClick (Select org)
         ]
         [ td [ class "collapsing" ]
+            [ a
+                [ href "#"
+                , class "ui basic small blue label"
+                , onClick (Select org)
+                ]
+                [ i [ class "edit icon" ] []
+                , text "Edit"
+                ]
+            ]
+        , td [ class "collapsing" ]
             [ text org.name
             ]
         , td []
