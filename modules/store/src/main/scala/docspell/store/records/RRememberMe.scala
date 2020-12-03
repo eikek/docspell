@@ -10,7 +10,7 @@ import docspell.store.impl._
 import doobie._
 import doobie.implicits._
 
-case class RRememberMe(id: Ident, accountId: AccountId, created: Timestamp) {}
+case class RRememberMe(id: Ident, accountId: AccountId, created: Timestamp, uses: Int) {}
 
 object RRememberMe {
 
@@ -19,9 +19,10 @@ object RRememberMe {
   object Columns {
     val id       = Column("id")
     val cid      = Column("cid")
-    val username = Column("username")
+    val username = Column("login")
     val created  = Column("created")
-    val all      = List(id, cid, username, created)
+    val uses     = Column("uses")
+    val all      = List(id, cid, username, created, uses)
   }
   import Columns._
 
@@ -29,13 +30,13 @@ object RRememberMe {
     for {
       c <- Timestamp.current[F]
       i <- Ident.randomId[F]
-    } yield RRememberMe(i, account, c)
+    } yield RRememberMe(i, account, c, 0)
 
   def insert(v: RRememberMe): ConnectionIO[Int] =
     insertRow(
       table,
       all,
-      fr"${v.id},${v.accountId.collective},${v.accountId.user},${v.created}"
+      fr"${v.id},${v.accountId.collective},${v.accountId.user},${v.created},${v.uses}"
     ).update.run
 
   def insertNew(acc: AccountId): ConnectionIO[RRememberMe] =
@@ -47,13 +48,19 @@ object RRememberMe {
   def delete(rid: Ident): ConnectionIO[Int] =
     deleteFrom(table, id.is(rid)).update.run
 
-  def useRememberMe(rid: Ident, minCreated: Timestamp): ConnectionIO[Option[RRememberMe]] = {
+  def incrementUse(rid: Ident): ConnectionIO[Int] =
+    updateRow(table, id.is(rid), uses.increment(1)).update.run
+
+  def useRememberMe(
+      rid: Ident,
+      minCreated: Timestamp
+  ): ConnectionIO[Option[RRememberMe]] = {
     val get = selectSimple(all, table, and(id.is(rid), created.isGt(minCreated)))
       .query[RRememberMe]
       .option
     for {
       inv <- get
-      _   <- delete(rid)
+      _   <- incrementUse(rid)
     } yield inv
   }
 

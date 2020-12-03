@@ -30,6 +30,7 @@ case class AuthToken(nowMillis: Long, account: AccountId, salt: String, sig: Str
 
   def validate(key: ByteVector, validity: Duration): Boolean =
     sigValid(key) && notExpired(validity)
+
 }
 
 object AuthToken {
@@ -55,5 +56,11 @@ object AuthToken {
       sig    = TokenUtil.sign(cd, key)
     } yield cd.copy(sig = sig)
 
-
+  def update[F[_]: Sync](token: AuthToken, key: ByteVector): F[AuthToken] =
+    for {
+      now  <- Timestamp.current[F]
+      salt <- Common.genSaltString[F]
+      data = AuthToken(now.toMillis, token.account, salt, "")
+      sig  = TokenUtil.sign(data, key)
+    } yield data.copy(sig = sig)
 }

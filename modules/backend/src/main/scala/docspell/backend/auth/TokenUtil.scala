@@ -1,10 +1,11 @@
 package docspell.backend.auth
 
-import scodec.bits._
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 
 import cats.implicits._
+
+import scodec.bits._
 
 private[auth] object TokenUtil {
   private val utf8 = java.nio.charset.StandardCharsets.UTF_8
@@ -27,7 +28,7 @@ private[auth] object TokenUtil {
     ByteVector.view(s.getBytes(utf8)).toBase64
 
   def b64dec(s: String): Option[String] =
-    ByteVector.fromValidBase64(s).decodeUtf8.toOption
+    ByteVector.fromBase64(s).flatMap(_.decodeUtf8.toOption)
 
   def asInt(s: String): Option[Long] =
     Either.catchNonFatal(s.toLong).toOption

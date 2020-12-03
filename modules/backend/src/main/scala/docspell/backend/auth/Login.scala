@@ -1,16 +1,16 @@
 package docspell.backend.auth
 
+import cats.data.OptionT
 import cats.effect._
 import cats.implicits._
-import cats.data.OptionT
 
 import docspell.backend.auth.Login._
 import docspell.common._
 import docspell.store.Store
 import docspell.store.queries.QLogin
-import docspell.store.records.RUser
+import docspell.store.records._
 
-import org.log4s._
+import org.log4s.getLogger
 import org.mindrot.jbcrypt.BCrypt
 import scodec.bits.ByteVector
 
@@ -20,11 +20,13 @@ trait Login[F[_]] {
 
   def loginUserPass(config: Config)(up: UserPass): F[Result]
 
-  def loginRememberMe(config: Config)(token: Ident): F[Result]
+  def loginRememberMe(config: Config)(token: String): F[Result]
 
   def loginSessionOrRememberMe(
       config: Config
-  )(sessionKey: String, rememberId: Option[Ident]): F[Result]
+  )(sessionKey: String, rememberId: Option[String]): F[Result]
+
+  def removeRememberToken(token: String): F[Int]
 }
 
 object Login {
@@ -50,7 +52,8 @@ object Login {
     def toEither: Either[String, AuthToken]
   }
   object Result {
-    case class Ok(session: AuthToken) extends Result {
+    case class Ok(session: AuthToken, rememberToken: Option[RememberToken])
+        extends Result {
       val toEither = Right(session)
     }
     case object InvalidAuth extends Result {
@@ -60,20 +63,25 @@ object Login {
       val toEither = Left("Authentication failed.")
     }
 
-    def ok(session: AuthToken): Result = Ok(session)
-    def invalidAuth: Result            = InvalidAuth
-    def invalidTime: Result            = InvalidTime
+    def ok(session: AuthToken, remember: Option[RememberToken]): Result =
+      Ok(session, remember)
+    def invalidAuth: Result = InvalidAuth
+    def invalidTime: Result = InvalidTime
   }
 
   def apply[F[_]: Effect](store: Store[F]): Resource[F, Login[F]] =
     Resource.pure[F, Login[F]](new Login[F] {
 
+      private val logF = Logger.log4s(logger)
+
       def loginSession(config: Config)(sessionKey: String): F[Result] =
         AuthToken.fromString(sessionKey) match {
           case Right(at) =>
-            if (at.sigInvalid(config.serverSecret)) Result.invalidAuth.pure[F]
-            else if (at.isExpired(config.sessionValid)) Result.invalidTime.pure[F]
-            else Result.ok(at).pure[F]
+            if (at.sigInvalid(config.serverSecret))
+              logF.warn("Cookie signature invalid!") *> Result.invalidAuth.pure[F]
+            else if (at.isExpired(config.sessionValid))
+              logF.debug("Auth Cookie expired") *> Result.invalidTime.pure[F]
+            else Result.ok(at, None).pure[F]
           case Left(_) =>
             Result.invalidAuth.pure[F]
         }
@@ -82,8 +90,15 @@ object Login {
         AccountId.parse(up.user) match {
           case Right(acc) =>
             val okResult =
-              store.transact(RUser.updateLogin(acc)) *>
-                AuthToken.user(acc, config.serverSecret).map(Result.ok)
+              for {
+                _     <- store.transact(RUser.updateLogin(acc))
+                token <- AuthToken.user(acc, config.serverSecret)
+                rem <- OptionT
+                  .whenF(up.rememberMe && config.rememberMe.enabled)(
+                    insertRememberToken(store, acc, config)
+                  )
+                  .value
+              } yield Result.ok(token, rem)
             for {
               data <- store.transact(QLogin.findUser(acc))
               _    <- Sync[F].delay(logger.trace(s"Account lookup: $data"))
@@ -92,43 +107,87 @@ object Login {
                 else Result.invalidAuth.pure[F]
             } yield res
           case Left(_) =>
-            Result.invalidAuth.pure[F]
+            logF.info(s"User authentication failed for: ${up.hidePass}") *>
+              Result.invalidAuth.pure[F]
         }
 
-      def loginRememberMe(config: Config)(token: Ident): F[Result] = {
+      def loginRememberMe(config: Config)(token: String): F[Result] = {
         def okResult(acc: AccountId) =
-          store.transact(RUser.updateLogin(acc)) *>
-            AuthToken.user(acc, config.serverSecret).map(Result.ok)
+          for {
+            _     <- store.transact(RUser.updateLogin(acc))
+            token <- AuthToken.user(acc, config.serverSecret)
+          } yield Result.ok(token, None)
 
-        if (config.rememberMe.disabled) Result.invalidAuth.pure[F]
-        else
+        def doLogin(rid: Ident) =
           (for {
             now <- OptionT.liftF(Timestamp.current[F])
             minTime = now - config.rememberMe.valid
-            data <- OptionT(store.transact(QLogin.findByRememberMe(token, minTime).value))
+            data <- OptionT(store.transact(QLogin.findByRememberMe(rid, minTime).value))
             _ <- OptionT.liftF(
-              Sync[F].delay(logger.info(s"Account lookup via remember me: $data"))
+              logF.warn(s"Account lookup via remember me: $data")
             )
             res <- OptionT.liftF(
               if (checkNoPassword(data)) okResult(data.account)
               else Result.invalidAuth.pure[F]
             )
-          } yield res).getOrElse(Result.invalidAuth)
+          } yield res).getOrElseF(
+            logF.info("RememberMe not found in database.") *> Result.invalidAuth.pure[F]
+          )
+
+        if (config.rememberMe.disabled)
+          logF.info(
+            "Remember me auth tried, but disabled in config."
+          ) *> Result.invalidAuth.pure[F]
+        else
+          RememberToken.fromString(token) match {
+            case Right(rt) =>
+              if (rt.sigInvalid(config.serverSecret))
+                logF.warn(
+                  s"RememberMe cookie signature invalid ($rt)!"
+                ) *> Result.invalidAuth
+                  .pure[F]
+              else if (rt.isExpired(config.rememberMe.valid))
+                logF.info(s"RememberMe cookie expired ($rt).") *> Result.invalidTime
+                  .pure[F]
+              else doLogin(rt.rememberId)
+            case Left(err) =>
+              logF.info(s"RememberMe cookie was invalid: $err") *> Result.invalidAuth
+                .pure[F]
+          }
       }
 
       def loginSessionOrRememberMe(
           config: Config
-      )(sessionKey: String, rememberId: Option[Ident]): F[Result] =
+      )(sessionKey: String, rememberToken: Option[String]): F[Result] =
         loginSession(config)(sessionKey).flatMap {
-          case success @ Result.Ok(_) => (success: Result).pure[F]
+          case success @ Result.Ok(_, _) => (success: Result).pure[F]
           case fail =>
-            rememberId match {
-              case Some(rid) =>
-                loginRememberMe(config)(rid)
+            rememberToken match {
+              case Some(token) =>
+                loginRememberMe(config)(token)
               case None =>
                 fail.pure[F]
             }
         }
+
+      def removeRememberToken(token: String): F[Int] =
+        RememberToken.fromString(token) match {
+          case Right(rt) =>
+            store.transact(RRememberMe.delete(rt.rememberId))
+          case Left(_) =>
+            0.pure[F]
+        }
+
+      private def insertRememberToken(
+          store: Store[F],
+          acc: AccountId,
+          config: Config
+      ): F[RememberToken] =
+        for {
+          rme   <- RRememberMe.generate[F](acc)
+          _     <- store.transact(RRememberMe.insert(rme))
+          token <- RememberToken.user(rme.id, config.serverSecret)
+        } yield token
 
       private def check(given: String)(data: QLogin.Data): Boolean = {
         val passOk = BCrypt.checkpw(given, data.password.pass)

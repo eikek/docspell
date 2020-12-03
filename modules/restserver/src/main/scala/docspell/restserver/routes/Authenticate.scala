@@ -15,11 +15,19 @@ import org.http4s.server._
 object Authenticate {
 
   def authenticateRequest[F[_]: Effect](
-      auth: String => F[Login.Result]
+      auth: (String, Option[String]) => F[Login.Result]
   )(req: Request[F]): F[Login.Result] =
     CookieData.authenticator(req) match {
-      case Right(str) => auth(str)
-      case Left(_)    => Login.Result.invalidAuth.pure[F]
+      case Right(str) =>
+        val rememberMe = RememberCookieData.fromCookie(req)
+        auth(str, rememberMe)
+      case Left(_) =>
+        RememberCookieData.fromCookie(req) match {
+          case Some(rc) =>
+            auth("", rc.some)
+          case None =>
+            Login.Result.invalidAuth.pure[F]
+        }
     }
 
   def of[F[_]: Effect](S: Login[F], cfg: Login.Config)(
@@ -28,7 +36,7 @@ object Authenticate {
     val dsl: Http4sDsl[F] = new Http4sDsl[F] {}
     import dsl._
 
-    val authUser = getUser[F](S.loginSession(cfg))
+    val authUser = getUser[F](S.loginSessionOrRememberMe(cfg))
 
     val onFailure: AuthedRoutes[String, F] =
       Kleisli(req => OptionT.liftF(Forbidden(req.context)))
@@ -45,7 +53,7 @@ object Authenticate {
     val dsl: Http4sDsl[F] = new Http4sDsl[F] {}
     import dsl._
 
-    val authUser = getUser[F](S.loginSession(cfg))
+    val authUser = getUser[F](S.loginSessionOrRememberMe(cfg))
 
     val onFailure: AuthedRoutes[String, F] =
       Kleisli(req => OptionT.liftF(Forbidden(req.context)))
@@ -57,7 +65,7 @@ object Authenticate {
   }
 
   private def getUser[F[_]: Effect](
-      auth: String => F[Login.Result]
+      auth: (String, Option[String]) => F[Login.Result]
   ): Kleisli[F, Request[F], Either[String, AuthToken]] =
     Kleisli(r => authenticateRequest(auth)(r).map(_.toEither))
 }
