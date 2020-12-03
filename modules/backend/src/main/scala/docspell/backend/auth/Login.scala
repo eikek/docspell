@@ -2,6 +2,7 @@ package docspell.backend.auth
 
 import cats.effect._
 import cats.implicits._
+import cats.data.OptionT
 
 import docspell.backend.auth.Login._
 import docspell.common._
@@ -19,14 +20,27 @@ trait Login[F[_]] {
 
   def loginUserPass(config: Config)(up: UserPass): F[Result]
 
+  def loginRememberMe(config: Config)(token: Ident): F[Result]
+
+  def loginSessionOrRememberMe(
+      config: Config
+  )(sessionKey: String, rememberId: Option[Ident]): F[Result]
 }
 
 object Login {
   private[this] val logger = getLogger
 
-  case class Config(serverSecret: ByteVector, sessionValid: Duration)
+  case class Config(
+      serverSecret: ByteVector,
+      sessionValid: Duration,
+      rememberMe: RememberMe
+  )
 
-  case class UserPass(user: String, pass: String) {
+  case class RememberMe(enabled: Boolean, valid: Duration) {
+    val disabled = !enabled
+  }
+
+  case class UserPass(user: String, pass: String, rememberMe: Boolean) {
     def hidePass: UserPass =
       if (pass.isEmpty) copy(pass = "<none>")
       else copy(pass = "***")
@@ -81,12 +95,51 @@ object Login {
             Result.invalidAuth.pure[F]
         }
 
+      def loginRememberMe(config: Config)(token: Ident): F[Result] = {
+        def okResult(acc: AccountId) =
+          store.transact(RUser.updateLogin(acc)) *>
+            AuthToken.user(acc, config.serverSecret).map(Result.ok)
+
+        if (config.rememberMe.disabled) Result.invalidAuth.pure[F]
+        else
+          (for {
+            now <- OptionT.liftF(Timestamp.current[F])
+            minTime = now - config.rememberMe.valid
+            data <- OptionT(store.transact(QLogin.findByRememberMe(token, minTime).value))
+            _ <- OptionT.liftF(
+              Sync[F].delay(logger.info(s"Account lookup via remember me: $data"))
+            )
+            res <- OptionT.liftF(
+              if (checkNoPassword(data)) okResult(data.account)
+              else Result.invalidAuth.pure[F]
+            )
+          } yield res).getOrElse(Result.invalidAuth)
+      }
+
+      def loginSessionOrRememberMe(
+          config: Config
+      )(sessionKey: String, rememberId: Option[Ident]): F[Result] =
+        loginSession(config)(sessionKey).flatMap {
+          case success @ Result.Ok(_) => (success: Result).pure[F]
+          case fail =>
+            rememberId match {
+              case Some(rid) =>
+                loginRememberMe(config)(rid)
+              case None =>
+                fail.pure[F]
+            }
+        }
+
       private def check(given: String)(data: QLogin.Data): Boolean = {
+        val passOk = BCrypt.checkpw(given, data.password.pass)
+        checkNoPassword(data) && passOk
+      }
+
+      private def checkNoPassword(data: QLogin.Data): Boolean = {
         val collOk = data.collectiveState == CollectiveState.Active ||
           data.collectiveState == CollectiveState.ReadOnly
         val userOk = data.userState == UserState.Active
-        val passOk = BCrypt.checkpw(given, data.password.pass)
-        collOk && userOk && passOk
+        collOk && userOk
       }
     })
 }

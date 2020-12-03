@@ -23,8 +23,10 @@ object LoginRoutes {
 
     HttpRoutes.of[F] { case req @ POST -> Root / "login" =>
       for {
-        up   <- req.as[UserPass]
-        res  <- S.loginUserPass(cfg.auth)(Login.UserPass(up.account, up.password))
+        up <- req.as[UserPass]
+        res <- S.loginUserPass(cfg.auth)(
+          Login.UserPass(up.account, up.password, up.rememberMe.getOrElse(false))
+        )
         resp <- makeResponse(dsl, cfg, req, res, up.account)
       } yield resp
     }

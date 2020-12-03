@@ -1,10 +1,12 @@
 package docspell.store.queries
 
+import cats.data.OptionT
+
 import docspell.common._
 import docspell.store.impl.Implicits._
 import docspell.store.records.RCollective.{Columns => CC}
 import docspell.store.records.RUser.{Columns => UC}
-import docspell.store.records.{RCollective, RUser}
+import docspell.store.records.{RCollective, RRememberMe, RUser}
 
 import doobie._
 import doobie.implicits._
@@ -37,4 +39,13 @@ object QLogin {
     logger.trace(s"SQL : $sql")
     sql.query[Data].option
   }
+
+  def findByRememberMe(
+      rememberId: Ident,
+      minCreated: Timestamp
+  ): OptionT[ConnectionIO, Data] =
+    for {
+      rem <- OptionT(RRememberMe.useRememberMe(rememberId, minCreated))
+      acc <- OptionT(findUser(rem.accountId))
+    } yield acc
 }

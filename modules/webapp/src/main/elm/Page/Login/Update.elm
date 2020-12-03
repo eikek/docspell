@@ -19,8 +19,18 @@ update referrer flags msg model =
         SetPassword str ->
             ( { model | password = str }, Cmd.none, Nothing )
 
+        ToggleRememberMe ->
+            ( { model | rememberMe = not model.rememberMe }, Cmd.none, Nothing )
+
         Authenticate ->
-            ( model, Api.login flags (UserPass model.username model.password) AuthResp, Nothing )
+            let
+                userPass =
+                    { account = model.username
+                    , password = model.password
+                    , rememberMe = Just model.rememberMe
+                    }
+            in
+            ( model, Api.login flags userPass AuthResp, Nothing )
 
         AuthResp (Ok lr) ->
             let
