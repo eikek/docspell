@@ -8,7 +8,8 @@ import com.github.eikek.calev.CalEvent
 case class HouseKeepingConfig(
     schedule: CalEvent,
     cleanupInvites: CleanupInvites,
-    cleanupJobs: CleanupJobs
+    cleanupJobs: CleanupJobs,
+    cleanupRememberMe: CleanupRememberMe
 )
 
 object HouseKeepingConfig {
@@ -16,5 +17,7 @@ object HouseKeepingConfig {
   case class CleanupInvites(enabled: Boolean, olderThan: Duration)
 
   case class CleanupJobs(enabled: Boolean, olderThan: Duration, deleteBatch: Int)
+
+  case class CleanupRememberMe(enabled: Boolean, olderThan: Duration)
 
 }
