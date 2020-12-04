@@ -211,36 +211,58 @@ specified via a JSON structure in a part with name <code>meta</code>:</p>
 </span><span style="color:#fabd2f;">,</span><span style="color:#fdf4c1aa;"> skipDuplicates</span><span style="color:#fe8019;">: </span><span style="color:#fdf4c1;">Maybe Bool
 </span><span style="color:#fabd2f;">,</span><span style="color:#fdf4c1aa;"> tags</span><span style="color:#fe8019;">: </span><span style="color:#fdf4c1;">Maybe StringList
 </span><span style="color:#fabd2f;">,</span><span style="color:#fdf4c1aa;"> fileFilter</span><span style="color:#fe8019;">: </span><span style="color:#fdf4c1;">Maybe String
+</span><span style="color:#fabd2f;">,</span><span style="color:#fdf4c1aa;"> language</span><span style="color:#fe8019;">: </span><span style="color:#fdf4c1;">Maybe String
 </span><span style="color:#fabd2f;">}
 </span></code></pre>
-<p>The <code>multiple</code> property is by default <code>true</code>. It means that each file
-in the upload request corresponds to a single item. An upload with 5
-files will result in 5 items created. If it is <code>false</code>, then docspell
-will create just one item, that will then contain all files.</p>
+<ul>
+<li>
+<p>The <code>multiple</code> property is by default <code>true</code>. It means that each
+file in the upload request corresponds to a single item. An upload
+with 5 files will result in 5 items created. If it is <code>false</code>, then
+docspell will create just one item, that will then contain all
+files.</p>
+</li>
+<li>
 <p>Furthermore, the direction of the document (one of <code>incoming</code> or
 <code>outgoing</code>) can be given. It is optional, it can be left out or
 <code>null</code>.</p>
-<p>A <code>folder</code> id can be specified. Each item created by this request will
-be placed into this folder. Errors are logged (for example, the folder
-may have been deleted before the task is executed) and the item is
-then not put into any folder.</p>
-<p>The <code>skipDuplicates</code> is optional and set to <code>false</code> if not specified.
-It configures the processing task. If set to <code>true</code>, the processing
-task will skip all input files that are already present in docspell.</p>
+</li>
+<li>
+<p>A <code>folder</code> id can be specified. Each item created by this request
+will be placed into this folder. Errors are logged (for example, the
+folder may have been deleted before the task is executed) and the
+item is then not put into any folder.</p>
+</li>
+<li>
+<p>The <code>skipDuplicates</code> is optional and set to <code>false</code> if not
+specified. It configures the processing task. If set to <code>true</code>, the
+processing task will skip all input files that are already present
+in docspell.</p>
+</li>
+<li>
 <p>The <code>tags</code> field can be used to provide tags that should be applied
-automatically. The <code>StringList</code> is a json object containing one field
-<code>items</code> that is a list of strings:</p>
+automatically. The <code>StringList</code> is a json object containing one
+field <code>items</code> that is a list of strings:</p>
 <pre style="background-color:#282828;">
 <code><span style="color:#fabd2f;">{</span><span style="color:#fdf4c1aa;"> items</span><span style="color:#fe8019;">: </span><span style="color:#fa5c4b;">(</span><span style="color:#fdf4c1;">List String</span><span style="color:#fa5c4b;">)
 </span><span style="color:#fabd2f;">}
 </span></code></pre>
 <p>Tags can be defined using their ids or names.</p>
+</li>
+<li>
 <p>Then a <code>fileFilter</code> field can be used to filter files from uploaded
 archives. Say you upload a zip file and want only to include certain
 files, you could give a file filter like <code>*.pdf</code> to only select pdf
 files or <code>*.html|*.pdf</code> for selecting html and pdf files. This only
 applies to archive files, like zip or e-mails (where this is applied
 to the attachments).</p>
+</li>
+<li>
+<p>The <code>language</code> is used for processing the document(s) contained in
+the request. If not specified the collective's default language is
+used.</p>
+</li>
+</ul>
 <h1 id="endpoints">Endpoints<a class="zola-anchor" href="#endpoints" aria-label="Anchor link for: endpoints">🔗</a></h1>
 <p>Docspell needs to the collective that owns the files. There are the
 following ways for this.</p>
