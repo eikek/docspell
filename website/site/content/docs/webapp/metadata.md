@@ -129,8 +129,9 @@ page](@/docs/webapp/customfields.md) for more information.
 # Document Language
 
 An important setting is the language of your documents. This helps OCR
-and text analysis. You can select between English and German
-currently.
+and text analysis. You can select between English, German and French
+currently. The language can also specified with each [upload
+request](@/docs/api/upload.md).
 
 Go to the *Collective Settings* page and click *Document
 Language*. This will set the lanugage for all your documents. It is
