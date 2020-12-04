@@ -7,7 +7,6 @@ import Api
 import App.Data exposing (..)
 import Browser exposing (UrlRequest(..))
 import Browser.Navigation as Nav
-import Comp.LinkTarget
 import Data.Flags
 import Page exposing (Page(..))
 import Page.CollectiveSettings.Data
@@ -112,7 +111,16 @@ updateWithSub msg model =
 
                         command =
                             if lr.success then
-                                Api.refreshSession newFlags SessionCheckResp
+                                Cmd.batch
+                                    [ Api.refreshSession newFlags SessionCheckResp
+                                    , Ports.setAccount lr
+                                    , case model.flags.account of
+                                        Just _ ->
+                                            Cmd.none
+
+                                        Nothing ->
+                                            Page.goto model.page
+                                    ]
 
                             else
                                 Cmd.batch

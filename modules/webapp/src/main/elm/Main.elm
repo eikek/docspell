@@ -51,21 +51,13 @@ init flags url key =
 
             else
                 ( im, Page.goto page, Sub.none )
-
-        sessionCheck =
-            case m.flags.account of
-                Just _ ->
-                    Api.loginSession flags SessionCheckResp
-
-                Nothing ->
-                    Cmd.none
     in
     ( { m | subs = s }
     , Cmd.batch
         [ cmd
         , ic
         , Api.versionInfo flags VersionResp
-        , sessionCheck
+        , Api.loginSession flags SessionCheckResp
         , Ports.getUiSettings flags
         ]
     )

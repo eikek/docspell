@@ -124,11 +124,13 @@ object Login {
             minTime = now - config.rememberMe.valid
             data <- OptionT(store.transact(QLogin.findByRememberMe(rid, minTime).value))
             _ <- OptionT.liftF(
-              logF.warn(s"Account lookup via remember me: $data")
+              logF.info(s"Account lookup via remember me: $data")
             )
             res <- OptionT.liftF(
-              if (checkNoPassword(data)) okResult(data.account)
-              else Result.invalidAuth.pure[F]
+              if (checkNoPassword(data))
+                logF.info("RememberMe auth successful") *> okResult(data.account)
+              else
+                logF.warn("RememberMe auth not successfull") *> Result.invalidAuth.pure[F]
             )
           } yield res).getOrElseF(
             logF.info("RememberMe not found in database.") *> Result.invalidAuth.pure[F]
