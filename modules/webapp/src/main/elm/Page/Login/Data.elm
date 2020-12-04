@@ -12,6 +12,7 @@ import Page exposing (Page(..))
 type alias Model =
     { username : String
     , password : String
+    , rememberMe : Bool
     , result : Maybe AuthResult
     }
 
@@ -20,6 +21,7 @@ emptyModel : Model
 emptyModel =
     { username = ""
     , password = ""
+    , rememberMe = False
     , result = Nothing
     }
 
@@ -27,5 +29,6 @@ emptyModel =
 type Msg
     = SetUsername String
     | SetPassword String
+    | ToggleRememberMe
     | Authenticate
     | AuthResp (Result Http.Error AuthResult)

@@ -23,25 +23,33 @@ object LoginRoutes {
 
     HttpRoutes.of[F] { case req @ POST -> Root / "login" =>
       for {
-        up   <- req.as[UserPass]
-        res  <- S.loginUserPass(cfg.auth)(Login.UserPass(up.account, up.password))
+        up <- req.as[UserPass]
+        res <- S.loginUserPass(cfg.auth)(
+          Login.UserPass(up.account, up.password, up.rememberMe.getOrElse(false))
+        )
         resp <- makeResponse(dsl, cfg, req, res, up.account)
       } yield resp
     }
   }
 
-  def session[F[_]: Effect](S: Login[F], cfg: Config): HttpRoutes[F] = {
+  def session[F[_]: Effect](S: Login[F], cfg: Config, token: AuthToken): HttpRoutes[F] = {
     val dsl: Http4sDsl[F] = new Http4sDsl[F] {}
     import dsl._
 
     HttpRoutes.of[F] {
       case req @ POST -> Root / "session" =>
-        Authenticate
-          .authenticateRequest(S.loginSession(cfg.auth))(req)
+        AuthToken
+          .update(token, cfg.auth.serverSecret)
+          .map(newToken => Login.Result.ok(newToken, None))
           .flatMap(res => makeResponse(dsl, cfg, req, res, ""))
 
       case req @ POST -> Root / "logout" =>
-        Ok().map(_.addCookie(CookieData.deleteCookie(getBaseUrl(cfg, req))))
+        for {
+          _   <- RememberCookieData.fromCookie(req).traverse(S.removeRememberToken)
+          res <- Ok()
+        } yield res
+          .removeCookie(CookieData.deleteCookie(getBaseUrl(cfg, req)))
+          .removeCookie(RememberCookieData.delete(getBaseUrl(cfg, req)))
     }
   }
 
@@ -57,9 +65,10 @@ object LoginRoutes {
   ): F[Response[F]] = {
     import dsl._
     res match {
-      case Login.Result.Ok(token) =>
+      case Login.Result.Ok(token, remember) =>
+        val cd  = CookieData(token)
+        val rem = remember.map(RememberCookieData.apply)
         for {
-          cd <- AuthToken.user(token.account, cfg.auth.serverSecret).map(CookieData.apply)
           resp <- Ok(
             AuthResult(
               token.account.collective.id,
@@ -69,7 +78,13 @@ object LoginRoutes {
               Some(cd.asString),
               cfg.auth.sessionValid.millis
             )
-          ).map(_.addCookie(cd.asCookie(getBaseUrl(cfg, req))))
+          ).map(cd.addCookie(getBaseUrl(cfg, req)))
+            .map(resp =>
+              rem
+                .map(_.addCookie(cfg.auth.rememberMe, getBaseUrl(cfg, req))(resp))
+                .getOrElse(resp)
+            )
+
         } yield resp
       case _ =>
         Ok(AuthResult("", account, false, "Login failed.", None, 0L))

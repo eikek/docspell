@@ -23,6 +23,10 @@ case class CookieData(auth: AuthToken) {
       secure = sec
     )
   }
+
+  def addCookie[F[_]](baseUrl: LenientUri)(resp: Response[F]): Response[F] =
+    resp.addCookie(asCookie(baseUrl))
+
 }
 object CookieData {
   val cookieName = "docspell_auth"

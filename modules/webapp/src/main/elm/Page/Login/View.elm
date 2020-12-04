@@ -3,7 +3,7 @@ module Page.Login.View exposing (view)
 import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onInput, onSubmit)
+import Html.Events exposing (onCheck, onInput, onSubmit)
 import Page exposing (Page(..))
 import Page.Login.Data exposing (..)
 
@@ -57,6 +57,19 @@ view flags model =
                                         ]
                                         []
                                     , i [ class "lock icon" ] []
+                                    ]
+                                ]
+                            , div [ class "field" ]
+                                [ div [ class "ui checkbox" ]
+                                    [ input
+                                        [ type_ "checkbox"
+                                        , onCheck (\_ -> ToggleRememberMe)
+                                        , checked model.rememberMe
+                                        ]
+                                        []
+                                    , label []
+                                        [ text "Remember Me"
+                                        ]
                                     ]
                                 ]
                             , button

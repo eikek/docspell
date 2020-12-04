@@ -5255,6 +5255,8 @@ components:
           type: string
         password:
           type: string
+        rememberMe:
+          type: boolean
     AuthResult:
       description: |
         The response to a authentication request.
