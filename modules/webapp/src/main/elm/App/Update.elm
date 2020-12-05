@@ -125,7 +125,12 @@ updateWithSub msg model =
                             else
                                 Cmd.batch
                                     [ Ports.removeAccount ()
-                                    , Page.goto (Page.loginPage model.page)
+                                    , case model.page of
+                                        LoginPage _ ->
+                                            Cmd.none
+
+                                        _ ->
+                                            Page.goto (Page.loginPage model.page)
                                     ]
                     in
                     ( { model | flags = newFlags }, command, Sub.none )
@@ -134,7 +139,12 @@ updateWithSub msg model =
                     ( model
                     , Cmd.batch
                         [ Ports.removeAccount ()
-                        , Page.goto (Page.loginPage model.page)
+                        , case model.page of
+                            LoginPage _ ->
+                                Cmd.none
+
+                            _ ->
+                                Page.goto (Page.loginPage model.page)
                         ]
                     , Sub.none
                     )

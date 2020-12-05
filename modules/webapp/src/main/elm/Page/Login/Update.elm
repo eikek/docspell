@@ -2,7 +2,6 @@ module Page.Login.Update exposing (update)
 
 import Api
 import Api.Model.AuthResult exposing (AuthResult)
-import Api.Model.UserPass exposing (UserPass)
 import Data.Flags exposing (Flags)
 import Page exposing (Page(..))
 import Page.Login.Data exposing (..)
@@ -38,10 +37,16 @@ update referrer flags msg model =
                     Maybe.withDefault HomePage referrer |> Page.goto
             in
             if lr.success then
-                ( { model | result = Just lr, password = "" }, Cmd.batch [ setAccount lr, gotoRef ], Just lr )
+                ( { model | result = Just lr, password = "" }
+                , Cmd.batch [ setAccount lr, gotoRef ]
+                , Just lr
+                )
 
             else
-                ( { model | result = Just lr, password = "" }, Ports.removeAccount (), Just lr )
+                ( { model | result = Just lr, password = "" }
+                , Ports.removeAccount ()
+                , Just lr
+                )
 
         AuthResp (Err err) ->
             let
