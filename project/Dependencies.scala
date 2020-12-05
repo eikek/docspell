@@ -21,6 +21,7 @@ object Dependencies {
   val Icu4jVersion            = "68.1"
   val JsoupVersion            = "1.13.1"
   val KindProjectorVersion    = "0.10.3"
+  val KittensVersion          = "2.2.0"
   val LevigoJbig2Version      = "2.0"
   val Log4sVersion            = "1.9.0"
   val LogbackVersion          = "1.2.3"
@@ -40,6 +41,11 @@ object Dependencies {
   val TwelveMonkeysVersion    = "3.6.1"
   val JQueryVersion           = "3.5.1"
   val ViewerJSVersion         = "0.5.8"
+
+
+  val kittens = Seq(
+    "org.typelevel" %% "kittens" % KittensVersion
+  )
 
   val calevCore = Seq(
     "com.github.eikek" %% "calev-core" % CalevVersion

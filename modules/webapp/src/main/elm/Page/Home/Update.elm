@@ -52,10 +52,7 @@ update mId key flags settings msg model =
         ResetSearch ->
             let
                 nm =
-                    { model
-                        | searchOffset = 0
-                        , contentOnlySearch = Nothing
-                    }
+                    { model | searchOffset = 0 }
             in
             update mId key flags settings (SearchMenuMsg Comp.SearchMenu.ResetForm) nm
 
@@ -76,6 +73,12 @@ update mId key flags settings msg model =
                     { model
                         | searchMenuModel = nextState.model
                         , dragDropData = nextState.dragDrop
+                        , searchTypeDropdownValue =
+                            if Comp.SearchMenu.isFulltextSearch nextState.model then
+                                ContentOnlySearch
+
+                            else
+                                BasicSearch
                     }
 
                 ( m2, c2, s2 ) =
@@ -261,20 +264,9 @@ update mId key flags settings msg model =
         SetBasicSearch str ->
             let
                 smMsg =
-                    case model.searchTypeDropdownValue of
-                        BasicSearch ->
-                            SearchMenuMsg (Comp.SearchMenu.SetAllName str)
-
-                        ContentOnlySearch ->
-                            SetContentOnly str
+                    SearchMenuMsg (Comp.SearchMenu.SetTextSearch str)
             in
             update mId key flags settings smMsg model
-
-        SetContentOnly str ->
-            withSub
-                ( { model | contentOnlySearch = Util.Maybe.fromString str }
-                , Cmd.none
-                )
 
         SearchTypeMsg lm ->
             let
@@ -293,23 +285,17 @@ update mId key flags settings msg model =
                 next =
                     case mvChange of
                         Just BasicSearch ->
-                            Just
-                                ( { m0 | contentOnlySearch = Nothing }
-                                , Maybe.withDefault "" model.contentOnlySearch
-                                )
+                            Just Comp.SearchMenu.SetNamesSearch
 
                         Just ContentOnlySearch ->
-                            Just
-                                ( { m0 | contentOnlySearch = model.searchMenuModel.allNameModel }
-                                , ""
-                                )
+                            Just Comp.SearchMenu.SetFulltextSearch
 
                         _ ->
                             Nothing
             in
             case next of
-                Just ( m_, nstr ) ->
-                    update mId key flags settings (SearchMenuMsg (Comp.SearchMenu.SetAllName nstr)) m_
+                Just lm_ ->
+                    update mId key flags settings (SearchMenuMsg lm_) m0
 
                 Nothing ->
                     withSub ( m0, Cmd.none )

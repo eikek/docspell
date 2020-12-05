@@ -285,12 +285,8 @@ viewSearchBar flags model =
                 (searchTypeString model.searchTypeDropdownValue)
 
         searchInput =
-            case model.searchTypeDropdownValue of
-                BasicSearch ->
-                    model.searchMenuModel.allNameModel
-
-                ContentOnlySearch ->
-                    model.contentOnlySearch
+            Comp.SearchMenu.textSearchString
+                model.searchMenuModel.textSearchModel
 
         searchTypeClass =
             if flags.config.fullTextSearchEnabled then
@@ -328,7 +324,7 @@ viewSearchBar flags model =
                         , href "#"
                         , onClick (DoSearch model.searchTypeDropdownValue)
                         ]
-                        (if hasMoreSearch model && model.searchTypeDropdownValue == BasicSearch then
+                        (if hasMoreSearch model then
                             [ i [ class "icons search-corner-icons" ]
                                 [ i [ class "tiny blue circle icon" ] []
                                 ]
@@ -339,7 +335,14 @@ viewSearchBar flags model =
                         )
                     , input
                         [ type_ "text"
-                        , placeholder "Quick Search …"
+                        , placeholder
+                            (case model.searchTypeDropdownValue of
+                                ContentOnlySearch ->
+                                    "Content search…"
+
+                                BasicSearch ->
+                                    "Search in names…"
+                            )
                         , onInput SetBasicSearch
                         , Util.Html.onKeyUpCode KeyUpSearchbarMsg
                         , Maybe.map value searchInput
@@ -381,12 +384,7 @@ hasMoreSearch model =
             Comp.SearchMenu.getItemSearch model.searchMenuModel
 
         is_ =
-            case model.lastSearchType of
-                BasicSearch ->
-                    { is | allNames = Nothing }
-
-                ContentOnlySearch ->
-                    Api.Model.ItemSearch.empty
+            { is | allNames = Nothing, fullText = Nothing }
     in
     is_ /= Api.Model.ItemSearch.empty
 

@@ -5033,7 +5033,8 @@ components:
         fullText:
           type: string
           description: |
-            A query searching the contents of documents.
+            A query searching the contents of documents. If only this
+            field is set, then a fulltext-only search is done.
         corrOrg:
           type: string
           format: ident

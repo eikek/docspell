@@ -2,8 +2,12 @@ module Comp.SearchMenu exposing
     ( Model
     , Msg(..)
     , NextState
+    , TextSearchModel
     , getItemSearch
     , init
+    , isFulltextSearch
+    , isNamesSearch
+    , textSearchString
     , update
     , updateDrop
     , view
@@ -66,18 +70,21 @@ type alias Model =
     , untilDueDateModel : DatePicker
     , untilDueDate : Maybe Int
     , nameModel : Maybe String
-    , allNameModel : Maybe String
-    , fulltextModel : Maybe String
+    , textSearchModel : TextSearchModel
     , datePickerInitialized : Bool
-    , showNameHelp : Bool
     , customFieldModel : Comp.CustomFieldMultiInput.Model
     , customValues : CustomFieldValueCollect
     , sourceModel : Maybe String
     }
 
 
-init : Model
-init =
+type TextSearchModel
+    = Fulltext (Maybe String)
+    | Names (Maybe String)
+
+
+init : Flags -> Model
+init flags =
     { tagSelectModel = Comp.TagSelect.init Comp.TagSelect.emptySelection []
     , tagSelection = Comp.TagSelect.emptySelection
     , directionModel =
@@ -124,14 +131,85 @@ init =
     , untilDueDateModel = Comp.DatePicker.emptyModel
     , untilDueDate = Nothing
     , nameModel = Nothing
-    , allNameModel = Nothing
-    , fulltextModel = Nothing
+    , textSearchModel =
+        if flags.config.fullTextSearchEnabled then
+            Fulltext Nothing
+
+        else
+            Names Nothing
     , datePickerInitialized = False
-    , showNameHelp = False
     , customFieldModel = Comp.CustomFieldMultiInput.initWith []
     , customValues = Data.CustomFieldChange.emptyCollect
     , sourceModel = Nothing
     }
+
+
+updateTextSearch : String -> TextSearchModel -> TextSearchModel
+updateTextSearch str model =
+    let
+        next =
+            Util.Maybe.fromString str
+    in
+    case model of
+        Fulltext _ ->
+            Fulltext next
+
+        Names _ ->
+            Names next
+
+
+swapTextSearch : TextSearchModel -> TextSearchModel
+swapTextSearch model =
+    case model of
+        Fulltext s ->
+            Names s
+
+        Names s ->
+            Fulltext s
+
+
+textSearchValue : TextSearchModel -> { nameSearch : Maybe String, fullText : Maybe String }
+textSearchValue model =
+    case model of
+        Fulltext s ->
+            { nameSearch = Nothing
+            , fullText = s
+            }
+
+        Names s ->
+            { nameSearch = s
+            , fullText = Nothing
+            }
+
+
+textSearchString : TextSearchModel -> Maybe String
+textSearchString model =
+    case model of
+        Fulltext s ->
+            s
+
+        Names s ->
+            s
+
+
+isFulltextSearch : Model -> Bool
+isFulltextSearch model =
+    case model.textSearchModel of
+        Fulltext _ ->
+            True
+
+        Names _ ->
+            False
+
+
+isNamesSearch : Model -> Bool
+isNamesSearch model =
+    case model.textSearchModel of
+        Fulltext _ ->
+            False
+
+        Names _ ->
+            True
 
 
 getDirection : Model -> Maybe Direction
@@ -164,6 +242,9 @@ getItemSearch model =
 
             else
                 "*" ++ s ++ "*"
+
+        textSearch =
+            textSearchValue model.textSearchModel
     in
     { e
         | tagsInclude = model.tagSelection.includeTags |> List.map .tag |> List.map .id
@@ -186,9 +267,9 @@ getItemSearch model =
             model.nameModel
                 |> Maybe.map amendWildcards
         , allNames =
-            model.allNameModel
+            textSearch.nameSearch
                 |> Maybe.map amendWildcards
-        , fullText = model.fulltextModel
+        , fullText = textSearch.fullText
         , tagCategoriesInclude = model.tagSelection.includeCats |> List.map .name
         , tagCategoriesExclude = model.tagSelection.excludeCats |> List.map .name
         , customValues = Data.CustomFieldChange.toFieldValues model.customValues
@@ -225,8 +306,13 @@ resetModel model =
         , fromDueDate = Nothing
         , untilDueDate = Nothing
         , nameModel = Nothing
-        , allNameModel = Nothing
-        , fulltextModel = Nothing
+        , textSearchModel =
+            case model.textSearchModel of
+                Fulltext _ ->
+                    Fulltext Nothing
+
+                Names _ ->
+                    Names Nothing
         , customFieldModel =
             Comp.CustomFieldMultiInput.reset
                 model.customFieldModel
@@ -257,11 +343,12 @@ type Msg
     | GetEquipResp (Result Http.Error EquipmentList)
     | GetPersonResp (Result Http.Error PersonList)
     | SetName String
-    | SetAllName String
-    | SetFulltext String
+    | SetTextSearch String
+    | SwapTextSearch
+    | SetFulltextSearch
+    | SetNamesSearch
     | ResetForm
     | KeyUpMsg (Maybe KeyCode)
-    | ToggleNameHelp
     | FolderSelectMsg Comp.FolderSelect.Msg
     | GetFolderResp (Result Http.Error FolderList)
     | SetCorrOrg IdName
@@ -641,27 +728,59 @@ updateDrop ddm flags settings msg model =
             , dragDrop = DD.DragDropData ddm Nothing
             }
 
-        SetAllName str ->
-            let
-                next =
-                    Util.Maybe.fromString str
-            in
-            { model = { model | allNameModel = next }
+        SetTextSearch str ->
+            { model = { model | textSearchModel = updateTextSearch str model.textSearchModel }
             , cmd = Cmd.none
             , stateChange = False
             , dragDrop = DD.DragDropData ddm Nothing
             }
 
-        SetFulltext str ->
-            let
-                next =
-                    Util.Maybe.fromString str
-            in
-            { model = { model | fulltextModel = next }
-            , cmd = Cmd.none
-            , stateChange = False
-            , dragDrop = DD.DragDropData ddm Nothing
-            }
+        SwapTextSearch ->
+            if flags.config.fullTextSearchEnabled then
+                { model = { model | textSearchModel = swapTextSearch model.textSearchModel }
+                , cmd = Cmd.none
+                , stateChange = False
+                , dragDrop = DD.DragDropData ddm Nothing
+                }
+
+            else
+                { model = model
+                , cmd = Cmd.none
+                , stateChange = False
+                , dragDrop = DD.DragDropData ddm Nothing
+                }
+
+        SetFulltextSearch ->
+            case model.textSearchModel of
+                Fulltext _ ->
+                    { model = model
+                    , cmd = Cmd.none
+                    , stateChange = False
+                    , dragDrop = DD.DragDropData ddm Nothing
+                    }
+
+                Names s ->
+                    { model = { model | textSearchModel = Fulltext s }
+                    , cmd = Cmd.none
+                    , stateChange = False
+                    , dragDrop = DD.DragDropData ddm Nothing
+                    }
+
+        SetNamesSearch ->
+            case model.textSearchModel of
+                Fulltext s ->
+                    { model = { model | textSearchModel = Names s }
+                    , cmd = Cmd.none
+                    , stateChange = False
+                    , dragDrop = DD.DragDropData ddm Nothing
+                    }
+
+                Names _ ->
+                    { model = model
+                    , cmd = Cmd.none
+                    , stateChange = False
+                    , dragDrop = DD.DragDropData ddm Nothing
+                    }
 
         KeyUpMsg (Just Enter) ->
             { model = model
@@ -672,13 +791,6 @@ updateDrop ddm flags settings msg model =
 
         KeyUpMsg _ ->
             { model = model
-            , cmd = Cmd.none
-            , stateChange = False
-            , dragDrop = DD.DragDropData ddm Nothing
-            }
-
-        ToggleNameHelp ->
-            { model = { model | showNameHelp = not model.showNameHelp }
             , cmd = Cmd.none
             , stateChange = False
             , dragDrop = DD.DragDropData ddm Nothing
@@ -804,6 +916,54 @@ viewDrop ddd flags settings model =
                     ]
                 ]
             ]
+        , div [ class segmentClass ]
+            [ div
+                [ class "field"
+                ]
+                [ label []
+                    [ text
+                        (case model.textSearchModel of
+                            Fulltext _ ->
+                                "Fulltext Search"
+
+                            Names _ ->
+                                "Search in names"
+                        )
+                    , a
+                        [ classList
+                            [ ( "right-float", True )
+                            , ( "invisible hidden", not flags.config.fullTextSearchEnabled )
+                            ]
+                        , href "#"
+                        , onClick SwapTextSearch
+                        , title "Switch between text search modes"
+                        ]
+                        [ i [ class "small grey exchange alternate icon" ] []
+                        ]
+                    ]
+                , input
+                    [ type_ "text"
+                    , onInput SetTextSearch
+                    , Util.Html.onKeyUpCode KeyUpMsg
+                    , textSearchString model.textSearchModel |> Maybe.withDefault "" |> value
+                    , case model.textSearchModel of
+                        Fulltext _ ->
+                            placeholder "Content search…"
+
+                        Names _ ->
+                            placeholder "Search in various names…"
+                    ]
+                    []
+                , span [ class "small-info" ]
+                    [ case model.textSearchModel of
+                        Fulltext _ ->
+                            text "Fulltext search in document contents and notes."
+
+                        Names _ ->
+                            text "Looks in correspondents, concerned entities, item name and notes."
+                    ]
+                ]
+            ]
         , div
             [ classList
                 [ ( segmentClass, True )
@@ -882,68 +1042,6 @@ viewDrop ddd flags settings model =
                     (Comp.CustomFieldMultiInput.ViewSettings False "field" (\_ -> Nothing))
                     model.customFieldModel
                 )
-            ]
-        , div [ class segmentClass ]
-            [ formHeader (Icons.searchIcon "") "Text Search"
-            , div
-                [ classList
-                    [ ( "field", True )
-                    , ( "invisible hidden", not flags.config.fullTextSearchEnabled )
-                    ]
-                ]
-                [ label [] [ text "Fulltext Search" ]
-                , input
-                    [ type_ "text"
-                    , onInput SetFulltext
-                    , Util.Html.onKeyUpCode KeyUpMsg
-                    , model.fulltextModel |> Maybe.withDefault "" |> value
-                    , placeholder "Fulltext search in results…"
-                    ]
-                    []
-                , span [ class "small-info" ]
-                    [ text "Fulltext search in document contents and notes."
-                    ]
-                ]
-            , div [ class "field" ]
-                [ label []
-                    [ text "Names"
-                    , a
-                        [ class "right-float"
-                        , href "#"
-                        , onClick ToggleNameHelp
-                        ]
-                        [ i [ class "small grey help link icon" ] []
-                        ]
-                    ]
-                , input
-                    [ type_ "text"
-                    , onInput SetAllName
-                    , Util.Html.onKeyUpCode KeyUpMsg
-                    , model.allNameModel |> Maybe.withDefault "" |> value
-                    , placeholder "Search in various names…"
-                    ]
-                    []
-                , span
-                    [ classList
-                        [ ( "small-info", True )
-                        ]
-                    ]
-                    [ text "Looks in correspondents, concerned entities, item name and notes."
-                    ]
-                , p
-                    [ classList
-                        [ ( "small-info", True )
-                        , ( "invisible hidden", not model.showNameHelp )
-                        ]
-                    ]
-                    [ text "Use wildcards "
-                    , code [] [ text "*" ]
-                    , text " at beginning or end. They are added automatically on both sides "
-                    , text "if not present in the search term and the term is not quoted. Press "
-                    , em [] [ text "Enter" ]
-                    , text " to start searching."
-                    ]
-                ]
             ]
         , div
             [ classList

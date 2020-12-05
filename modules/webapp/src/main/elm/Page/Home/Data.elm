@@ -6,7 +6,6 @@ module Page.Home.Data exposing
     , SelectActionMode(..)
     , SelectViewModel
     , ViewMode(..)
-    , defaultSearchType
     , doSearchCmd
     , init
     , initSelectViewModel
@@ -20,7 +19,6 @@ module Page.Home.Data exposing
 import Api
 import Api.Model.BasicResult exposing (BasicResult)
 import Api.Model.ItemLightList exposing (ItemLightList)
-import Api.Model.ItemSearch
 import Browser.Dom as Dom
 import Comp.FixedDropdown
 import Comp.ItemCardList
@@ -52,7 +50,6 @@ type alias Model =
     , searchTypeDropdown : Comp.FixedDropdown.Model SearchType
     , searchTypeDropdownValue : SearchType
     , lastSearchType : SearchType
-    , contentOnlySearch : Maybe String
     , dragDropData : DD.DragDropData
     , scrollToCard : Maybe String
     }
@@ -88,6 +85,9 @@ type ViewMode
 init : Flags -> ViewMode -> Model
 init flags viewMode =
     let
+        searchMenuModel =
+            Comp.SearchMenu.init flags
+
         searchTypeOptions =
             if flags.config.fullTextSearchEnabled then
                 [ BasicSearch, ContentOnlySearch ]
@@ -95,7 +95,7 @@ init flags viewMode =
             else
                 [ BasicSearch ]
     in
-    { searchMenuModel = Comp.SearchMenu.init
+    { searchMenuModel = searchMenuModel
     , itemListModel = Comp.ItemCardList.init
     , searchInProgress = False
     , searchOffset = 0
@@ -105,23 +105,18 @@ init flags viewMode =
     , searchTypeDropdown =
         Comp.FixedDropdown.initMap searchTypeString
             searchTypeOptions
-    , searchTypeDropdownValue = defaultSearchType flags
+    , searchTypeDropdownValue =
+        if Comp.SearchMenu.isFulltextSearch searchMenuModel then
+            ContentOnlySearch
+
+        else
+            BasicSearch
     , lastSearchType = BasicSearch
-    , contentOnlySearch = Nothing
     , dragDropData =
         DD.DragDropData DD.init Nothing
     , scrollToCard = Nothing
     , viewMode = viewMode
     }
-
-
-defaultSearchType : Flags -> SearchType
-defaultSearchType flags =
-    if flags.config.fullTextSearchEnabled then
-        ContentOnlySearch
-
-    else
-        BasicSearch
 
 
 menuCollapsed : Model -> Bool
@@ -165,7 +160,6 @@ type Msg
     | SetBasicSearch String
     | SearchTypeMsg (Comp.FixedDropdown.Msg SearchType)
     | KeyUpSearchbarMsg (Maybe KeyCode)
-    | SetContentOnly String
     | ScrollResult (Result Dom.Error ())
     | ClearItemDetailId
     | SelectAllItems
@@ -227,12 +221,7 @@ itemNav id model =
 
 doSearchCmd : SearchParam -> Model -> Cmd Msg
 doSearchCmd param model =
-    case param.searchType of
-        BasicSearch ->
-            doSearchDefaultCmd param model
-
-        ContentOnlySearch ->
-            doSearchIndexCmd param model
+    doSearchDefaultCmd param model
 
 
 doSearchDefaultCmd : SearchParam -> Model -> Cmd Msg
@@ -252,36 +241,6 @@ doSearchDefaultCmd param model =
 
     else
         Api.itemSearch param.flags mask ItemSearchAddResp
-
-
-doSearchIndexCmd : SearchParam -> Model -> Cmd Msg
-doSearchIndexCmd param model =
-    case model.contentOnlySearch of
-        Just q ->
-            let
-                mask =
-                    { query = q
-                    , limit = param.pageSize
-                    , offset = param.offset
-                    }
-            in
-            if param.offset == 0 then
-                Api.itemIndexSearch param.flags mask (ItemSearchResp param.scroll)
-
-            else
-                Api.itemIndexSearch param.flags mask ItemSearchAddResp
-
-        Nothing ->
-            -- If there is no fulltext query, render simply the most
-            -- current ones
-            let
-                emptyMask =
-                    Api.Model.ItemSearch.empty
-
-                mask =
-                    { emptyMask | limit = param.pageSize }
-            in
-            Api.itemSearch param.flags mask (ItemSearchResp param.scroll)
 
 
 resultsBelowLimit : UiSettings -> Model -> Bool

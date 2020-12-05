@@ -335,10 +335,13 @@ personMatchesOrg model =
             Comp.Dropdown.getSelected model.corrOrgModel
                 |> List.head
 
-        persOrg =
+        pers =
             Comp.Dropdown.getSelected model.corrPersonModel
                 |> List.head
+
+        persOrg =
+            pers
                 |> Maybe.andThen (\idref -> Dict.get idref.id model.allPersons)
                 |> Maybe.andThen .organization
     in
-    org == Nothing || org == persOrg
+    org == Nothing || pers == Nothing || org == persOrg
