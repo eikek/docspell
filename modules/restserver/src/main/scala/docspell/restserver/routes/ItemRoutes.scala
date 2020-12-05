@@ -3,6 +3,7 @@ package docspell.restserver.routes
 import cats.data.NonEmptyList
 import cats.effect._
 import cats.implicits._
+import cats.Monoid
 
 import docspell.backend.BackendApp
 import docspell.backend.auth.AuthToken
@@ -10,7 +11,7 @@ import docspell.backend.ops.OCustomFields.{RemoveValue, SetValue}
 import docspell.backend.ops.OFulltext
 import docspell.backend.ops.OItemSearch.Batch
 import docspell.common.syntax.all._
-import docspell.common.{Ident, ItemState}
+import docspell.common._
 import docspell.restapi.model._
 import docspell.restserver.Config
 import docspell.restserver.conv.Conversions
@@ -51,8 +52,19 @@ object ItemRoutes {
           _    <- logger.ftrace(s"Got search mask: $mask")
           query = Conversions.mkQuery(mask, user.account)
           _ <- logger.ftrace(s"Running query: $query")
-          resp <- mask.fullText match {
-            case Some(fq) if cfg.fullTextSearch.enabled =>
+          resp <- mask match {
+            case SearchFulltextOnly(ftq) if cfg.fullTextSearch.enabled =>
+              val ftsIn = OFulltext.FtsInput(ftq.query)
+              for {
+                items <- backend.fulltext.findIndexOnly(cfg.maxNoteLength)(
+                  ftsIn,
+                  user.account,
+                  Batch(mask.offset, mask.limit).restrictLimitTo(cfg.maxItemPageSize)
+                )
+                ok <- Ok(Conversions.mkItemListWithTagsFtsPlain(items))
+              } yield ok
+
+            case SearchWithFulltext(fq) if cfg.fullTextSearch.enabled =>
               for {
                 items <- backend.fulltext.findItems(cfg.maxNoteLength)(
                   query,
@@ -61,6 +73,7 @@ object ItemRoutes {
                 )
                 ok <- Ok(Conversions.mkItemListFts(items))
               } yield ok
+
             case _ =>
               for {
                 items <- backend.itemSearch.findItems(cfg.maxNoteLength)(
@@ -78,8 +91,19 @@ object ItemRoutes {
           _    <- logger.ftrace(s"Got search mask: $mask")
           query = Conversions.mkQuery(mask, user.account)
           _ <- logger.ftrace(s"Running query: $query")
-          resp <- mask.fullText match {
-            case Some(fq) if cfg.fullTextSearch.enabled =>
+          resp <- mask match {
+            case SearchFulltextOnly(ftq) if cfg.fullTextSearch.enabled =>
+              val ftsIn = OFulltext.FtsInput(ftq.query)
+              for {
+                items <- backend.fulltext.findIndexOnly(cfg.maxNoteLength)(
+                  ftsIn,
+                  user.account,
+                  Batch(mask.offset, mask.limit).restrictLimitTo(cfg.maxItemPageSize)
+                )
+                ok <- Ok(Conversions.mkItemListWithTagsFtsPlain(items))
+              } yield ok
+
+            case SearchWithFulltext(fq) if cfg.fullTextSearch.enabled =>
               for {
                 items <- backend.fulltext.findItemsWithTags(cfg.maxNoteLength)(
                   query,
@@ -389,5 +413,41 @@ object ItemRoutes {
   implicit final class OptionString(opt: Option[String]) {
     def notEmpty: Option[String] =
       opt.map(_.trim).filter(_.nonEmpty)
+  }
+
+  object SearchFulltextOnly {
+    implicit private val identMonoid: Monoid[Ident] =
+      Monoid.instance(Ident.unsafe(""), _ / _)
+
+    implicit private val timestampMonoid: Monoid[Timestamp] =
+      Monoid.instance(Timestamp.Epoch, (a, _) => a)
+
+    implicit private val directionMonoid: Monoid[Direction] =
+      Monoid.instance(Direction.Incoming, (a, _) => a)
+
+    implicit private val idListMonoid: Monoid[IdList] =
+      Monoid.instance(IdList(Nil), (a, b) => IdList(a.ids ++ b.ids))
+
+    implicit private val boolMonoid: Monoid[Boolean] =
+      Monoid.instance(false, _ || _)
+
+    private val itemSearchMonoid: Monoid[ItemSearch] =
+      cats.derived.semiauto.monoid
+
+    def unapply(m: ItemSearch): Option[ItemFtsSearch] =
+      m.fullText match {
+        case Some(fq) =>
+          val me = m.copy(fullText = None, offset = 0, limit = 0)
+          if (itemSearchMonoid.empty == me)
+            Some(ItemFtsSearch(m.offset, m.limit, fq))
+          else None
+        case _ =>
+          None
+      }
+  }
+
+  object SearchWithFulltext {
+    def unapply(m: ItemSearch): Option[String] =
+      m.fullText
   }
 }

@@ -184,7 +184,10 @@ val openapiScalaSettings = Seq(
       case "glob" =>
         field => field.copy(typeDef = TypeDef("Glob", Imports("docspell.common.Glob")))
       case "customfieldtype" =>
-        field => field.copy(typeDef = TypeDef("CustomFieldType", Imports("docspell.common.CustomFieldType")))
+        field =>
+          field.copy(typeDef =
+            TypeDef("CustomFieldType", Imports("docspell.common.CustomFieldType"))
+          )
     }))
 )
 
@@ -465,6 +468,7 @@ val restserver = project
         Dependencies.circe ++
         Dependencies.pureconfig ++
         Dependencies.yamusca ++
+        Dependencies.kittens ++
         Dependencies.webjars ++
         Dependencies.loggingApi ++
         Dependencies.logging.map(_ % Runtime),
@@ -681,7 +685,7 @@ def packageTools(logger: Logger, dir: File, version: String): Seq[File] = {
     (dir ** "*")
       .filter(f => !excludes.exists(p => f.absolutePath.startsWith(p.absolutePath)))
       .pair(sbt.io.Path.relativeTo(dir))
-      .map({case (f, name) => (f, s"docspell-tools-${version}/$name") })
+      .map({ case (f, name) => (f, s"docspell-tools-${version}/$name") })
 
   IO.zip(
     Seq(
