@@ -224,7 +224,7 @@ concerning =
 
 fileCount : ItemTemplate
 fileCount =
-    ItemTemplate (.fileCount >> String.fromInt)
+    ItemTemplate (.attachments >> List.length >> String.fromInt)
 
 
 

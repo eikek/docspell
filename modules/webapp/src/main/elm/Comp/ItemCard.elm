@@ -473,12 +473,12 @@ previewMenu settings model item mainAttach =
                 [ i [ class "eye icon" ] []
                 ]
     in
-    if pageCount == 0 || (item.fileCount == 1 && pageCount == 1) then
+    if pageCount == 0 || (List.length item.attachments == 1 && pageCount == 1) then
         div [ class "card-attachment-nav" ]
             [ gotoFileBtn
             ]
 
-    else if item.fileCount == 1 then
+    else if List.length item.attachments == 1 then
         div [ class "card-attachment-nav" ]
             [ div [ class "ui small top attached basic icon buttons" ]
                 [ gotoFileBtn
@@ -510,7 +510,7 @@ previewMenu settings model item mainAttach =
                     |> String.fromInt
                     |> text
                 , text "/"
-                , text (String.fromInt item.fileCount)
+                , text (List.length item.attachments |> String.fromInt)
                 , text ", "
                 , text (String.fromInt pageCount)
                 , text "p."

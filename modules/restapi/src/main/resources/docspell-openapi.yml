@@ -5079,7 +5079,6 @@ components:
         - state
         - date
         - source
-        - fileCount
         - tags
       properties:
         id:
@@ -5113,9 +5112,6 @@ components:
           $ref: "#/components/schemas/IdName"
         folder:
           $ref: "#/components/schemas/IdName"
-        fileCount:
-          type: integer
-          format: int32
         attachments:
           type: array
           items:
