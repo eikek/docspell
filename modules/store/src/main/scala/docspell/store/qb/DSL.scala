@@ -1,0 +1,79 @@
+package docspell.store.qb
+
+import docspell.store.impl.DoobieMeta
+import docspell.store.qb.impl.DoobieQuery
+
+import doobie.{Fragment, Put}
+
+trait DSL extends DoobieMeta {
+
+  def run(projection: Seq[SelectExpr], from: FromExpr, where: Condition): Fragment =
+    DoobieQuery(Select(projection, from, where))
+
+  def select(dbf: DBFunction): Seq[SelectExpr] =
+    Seq(SelectExpr.SelectFun(dbf))
+
+  def select(c: Column[_], cs: Column[_]*): Seq[SelectExpr] =
+    select(c :: cs.toList)
+
+  def select(seq: Seq[Column[_]], seqs: Seq[Column[_]]*): Seq[SelectExpr] =
+    (seq ++ seqs.flatten).map(SelectExpr.SelectColumn.apply)
+
+  def from(table: TableDef): FromExpr =
+    FromExpr.From(table)
+
+  def count(c: Column[_]): DBFunction =
+    DBFunction.Count(c, "cn")
+
+  def and(c: Condition, cs: Condition*): Condition =
+    Condition.And(c, cs.toVector)
+
+  def or(c: Condition, cs: Condition*): Condition =
+    Condition.Or(c, cs.toVector)
+
+  def where(c: Condition, cs: Condition*): Condition =
+    and(c, cs: _*)
+
+  implicit final class ColumnOps[A](col: Column[A]) {
+
+    def setTo(value: A)(implicit P: Put[A]): Setter[A] =
+      Setter.SetValue(col, value)
+
+    def setTo(value: Option[A])(implicit P: Put[A]): Setter[Option[A]] =
+      Setter.SetOptValue(col, value)
+
+    def increment(amount: Int): Setter[A] =
+      Setter.Increment(col, amount)
+
+    def asc: OrderBy =
+      OrderBy(SelectExpr.SelectColumn(col), OrderBy.OrderType.Asc)
+
+    def desc: OrderBy =
+      OrderBy(SelectExpr.SelectColumn(col), OrderBy.OrderType.Desc)
+
+    def ===(value: A)(implicit P: Put[A]): Condition =
+      Condition.CompareVal(col, Operator.Eq, value)
+
+    def like(value: A)(implicit P: Put[A]): Condition =
+      Condition.CompareVal(col, Operator.LowerLike, value)
+
+    def <=(value: A)(implicit P: Put[A]): Condition =
+      Condition.CompareVal(col, Operator.Lte, value)
+
+    def >=(value: A)(implicit P: Put[A]): Condition =
+      Condition.CompareVal(col, Operator.Gte, value)
+
+    def >(value: A)(implicit P: Put[A]): Condition =
+      Condition.CompareVal(col, Operator.Gt, value)
+
+    def <(value: A)(implicit P: Put[A]): Condition =
+      Condition.CompareVal(col, Operator.Lt, value)
+
+    def ===(other: Column[A]): Condition =
+      Condition.CompareCol(col, Operator.Eq, other)
+
+  }
+
+}
+
+object DSL extends DSL
