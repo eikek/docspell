@@ -144,6 +144,7 @@ object RegexNerFile {
       def max(col: Column, table: Fragment, cidCol: Column): Fragment =
         selectSimple(col.max ++ fr"as t", table, cidCol.is(collective))
 
+      val equip = REquipment.as("e")
       val sql =
         List(
           max(
@@ -152,7 +153,11 @@ object RegexNerFile {
             ROrganization.Columns.cid
           ),
           max(RPerson.Columns.updated, RPerson.table, RPerson.Columns.cid),
-          max(REquipment.Columns.updated, REquipment.table, REquipment.Columns.cid)
+          max(
+            equip.updated.oldColumn,
+            Fragment.const(equip.tableName),
+            equip.cid.oldColumn
+          )
         )
           .reduce(_ ++ fr"UNION ALL" ++ _)
 

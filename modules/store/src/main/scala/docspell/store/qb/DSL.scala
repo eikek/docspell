@@ -72,8 +72,16 @@ trait DSL extends DoobieMeta {
     def ===(value: A)(implicit P: Put[A]): Condition =
       Condition.CompareVal(col, Operator.Eq, value)
 
+    //TODO find some better way around the cast
+    def ====(value: String): Condition =
+      Condition.CompareVal(col.asInstanceOf[Column[String]], Operator.Eq, value)
+
     def like(value: A)(implicit P: Put[A]): Condition =
       Condition.CompareVal(col, Operator.LowerLike, value)
+
+    //TODO find some better way around the cast
+    def likes(value: String): Condition =
+      Condition.CompareVal(col.asInstanceOf[Column[String]], Operator.LowerLike, value)
 
     def <=(value: A)(implicit P: Put[A]): Condition =
       Condition.CompareVal(col, Operator.Lte, value)
@@ -86,6 +94,9 @@ trait DSL extends DoobieMeta {
 
     def <(value: A)(implicit P: Put[A]): Condition =
       Condition.CompareVal(col, Operator.Lt, value)
+
+    def in(subsel: Select): Condition =
+      Condition.InSubSelect(col, subsel)
 
     def ===(other: Column[A]): Condition =
       Condition.CompareCol(col, Operator.Eq, other)

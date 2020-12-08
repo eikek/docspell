@@ -45,19 +45,20 @@ object QMails {
   }
 
   private def partialFind: (Seq[Column], Fragment) = {
-    val iId    = RItem.Columns.id.prefix("i")
-    val tItem  = RSentMailItem.Columns.itemId.prefix("t")
-    val tMail  = RSentMailItem.Columns.sentMailId.prefix("t")
-    val mId    = RSentMail.Columns.id.prefix("m")
-    val mUser  = RSentMail.Columns.uid.prefix("m")
-    val uId    = RUser.Columns.uid.prefix("u")
-    val uLogin = RUser.Columns.login.prefix("u")
+    val user  = RUser.as("u")
+    val iId   = RItem.Columns.id.prefix("i")
+    val tItem = RSentMailItem.Columns.itemId.prefix("t")
+    val tMail = RSentMailItem.Columns.sentMailId.prefix("t")
+    val mId   = RSentMail.Columns.id.prefix("m")
+    val mUser = RSentMail.Columns.uid.prefix("m")
 
-    val cols = RSentMail.Columns.all.map(_.prefix("m")) :+ uLogin
+    val cols = RSentMail.Columns.all.map(_.prefix("m")) :+ user.login.column
     val from = RSentMail.table ++ fr"m INNER JOIN" ++
       RSentMailItem.table ++ fr"t ON" ++ tMail.is(mId) ++
       fr"INNER JOIN" ++ RItem.table ++ fr"i ON" ++ tItem.is(iId) ++
-      fr"INNER JOIN" ++ RUser.table ++ fr"u ON" ++ uId.is(mUser)
+      fr"INNER JOIN" ++ Fragment.const(user.tableName) ++ fr"u ON" ++ user.uid.column.is(
+        mUser
+      )
 
     (cols, from)
   }

@@ -5,8 +5,8 @@ import cats.effect._
 import cats.implicits._
 
 import docspell.common._
-import docspell.store.impl.Column
-import docspell.store.impl.Implicits._
+import docspell.store.qb.DSL._
+import docspell.store.qb._
 
 import doobie._
 import doobie.implicits._
@@ -92,19 +92,19 @@ object RUserImap {
       now
     )
 
-  val table = fr"userimap"
+  final case class Table(alias: Option[String]) extends TableDef {
+    val tableName = "userimap"
 
-  object Columns {
-    val id            = Column("id")
-    val uid           = Column("uid")
-    val name          = Column("name")
-    val imapHost      = Column("imap_host")
-    val imapPort      = Column("imap_port")
-    val imapUser      = Column("imap_user")
-    val imapPass      = Column("imap_password")
-    val imapSsl       = Column("imap_ssl")
-    val imapCertCheck = Column("imap_certcheck")
-    val created       = Column("created")
+    val id            = Column[Ident]("id", this)
+    val uid           = Column[Ident]("uid", this)
+    val name          = Column[Ident]("name", this)
+    val imapHost      = Column[String]("imap_host", this)
+    val imapPort      = Column[Int]("imap_port", this)
+    val imapUser      = Column[String]("imap_user", this)
+    val imapPass      = Column[Password]("imap_password", this)
+    val imapSsl       = Column[SSLType]("imap_ssl", this)
+    val imapCertCheck = Column[Boolean]("imap_certcheck", this)
+    val created       = Column[Timestamp]("created", this)
 
     val all = List(
       id,
@@ -120,52 +120,64 @@ object RUserImap {
     )
   }
 
-  import Columns._
+  def as(alias: String): Table =
+    Table(Some(alias))
 
-  def insert(v: RUserImap): ConnectionIO[Int] =
-    insertRow(
-      table,
-      all,
-      sql"${v.id},${v.uid},${v.name},${v.imapHost},${v.imapPort},${v.imapUser},${v.imapPassword},${v.imapSsl},${v.imapCertCheck},${v.created}"
-    ).update.run
-
-  def update(eId: Ident, v: RUserImap): ConnectionIO[Int] =
-    updateRow(
-      table,
-      id.is(eId),
-      commas(
-        name.setTo(v.name),
-        imapHost.setTo(v.imapHost),
-        imapPort.setTo(v.imapPort),
-        imapUser.setTo(v.imapUser),
-        imapPass.setTo(v.imapPassword),
-        imapSsl.setTo(v.imapSsl),
-        imapCertCheck.setTo(v.imapCertCheck)
+  def insert(v: RUserImap): ConnectionIO[Int] = {
+    val t = Table(None)
+    DML
+      .insert(
+        t,
+        t.all,
+        sql"${v.id},${v.uid},${v.name},${v.imapHost},${v.imapPort},${v.imapUser},${v.imapPassword},${v.imapSsl},${v.imapCertCheck},${v.created}"
       )
-    ).update.run
+      .update
+      .run
+  }
 
-  def findByUser(userId: Ident): ConnectionIO[Vector[RUserImap]] =
-    selectSimple(all, table, uid.is(userId)).query[RUserImap].to[Vector]
+  def update(eId: Ident, v: RUserImap): ConnectionIO[Int] = {
+    val t = Table(None)
+    DML.update(
+      t,
+      t.id === eId,
+      DML.set(
+        t.name.setTo(v.name),
+        t.imapHost.setTo(v.imapHost),
+        t.imapPort.setTo(v.imapPort),
+        t.imapUser.setTo(v.imapUser),
+        t.imapPass.setTo(v.imapPassword),
+        t.imapSsl.setTo(v.imapSsl),
+        t.imapCertCheck.setTo(v.imapCertCheck)
+      )
+    )
+  }
+
+  def findByUser(userId: Ident): ConnectionIO[Vector[RUserImap]] = {
+    val t = Table(None)
+    run(select(t.all), from(t), t.uid === userId).query[RUserImap].to[Vector]
+  }
 
   private def findByAccount0(
       accId: AccountId,
       nameQ: Option[String],
       exact: Boolean
   ): Query0[RUserImap] = {
-    val mUid   = uid.prefix("m")
-    val mName  = name.prefix("m")
-    val uId    = RUser.Columns.uid.prefix("u")
-    val uColl  = RUser.Columns.cid.prefix("u")
-    val uLogin = RUser.Columns.login.prefix("u")
-    val from   = table ++ fr"m INNER JOIN" ++ RUser.table ++ fr"u ON" ++ mUid.is(uId)
-    val cond = Seq(uColl.is(accId.collective), uLogin.is(accId.user)) ++ (nameQ match {
-      case Some(str) if exact => Seq(mName.is(str))
-      case Some(str)          => Seq(mName.lowerLike(s"%${str.toLowerCase}%"))
-      case None               => Seq.empty
-    })
+    val m = RUserImap.as("m")
+    val u = RUser.as("u")
 
-    (selectSimple(all.map(_.prefix("m")), from, and(cond)) ++ orderBy(mName.f))
-      .query[RUserImap]
+    val nameFilter =
+      nameQ.map { str =>
+        if (exact) m.name ==== str
+        else m.name.likes(s"%${str.toLowerCase}%")
+      }
+
+    val sql = Select(
+      select(m.all),
+      from(m).innerJoin(u, m.uid === u.uid),
+      u.cid === accId.collective && u.login === accId.user &&? nameFilter
+    ).orderBy(m.name).run
+
+    sql.query[RUserImap]
   }
 
   def findByAccount(
@@ -178,26 +190,28 @@ object RUserImap {
     findByAccount0(accId, Some(name.id), true).option
 
   def delete(accId: AccountId, connName: Ident): ConnectionIO[Int] = {
-    val uId    = RUser.Columns.uid
-    val uColl  = RUser.Columns.cid
-    val uLogin = RUser.Columns.login
-    val cond   = Seq(uColl.is(accId.collective), uLogin.is(accId.user))
+    val t = Table(None)
+    val u = RUser.as("u")
+    val subsel =
+      Select(select(u.uid), from(u), u.cid === accId.collective && u.login === accId.user)
 
-    deleteFrom(
-      table,
-      fr"uid in (" ++ selectSimple(Seq(uId), RUser.table, and(cond)) ++ fr") AND" ++ name
-        .is(
-          connName
-        )
-    ).update.run
+    DML
+      .delete(
+        t,
+        t.uid.in(subsel) && t.name === connName
+      )
+      .update
+      .run
   }
 
   def exists(accId: AccountId, name: Ident): ConnectionIO[Boolean] =
     getByName(accId, name).map(_.isDefined)
 
-  def exists(userId: Ident, connName: Ident): ConnectionIO[Boolean] =
-    selectCount(id, table, and(uid.is(userId), name.is(connName)))
+  def exists(userId: Ident, connName: Ident): ConnectionIO[Boolean] = {
+    val t = Table(None)
+    run(select(count(t.id)), from(t), t.uid === userId && t.name === connName)
       .query[Int]
       .unique
       .map(_ > 0)
+  }
 }

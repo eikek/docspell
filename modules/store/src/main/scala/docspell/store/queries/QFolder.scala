@@ -136,15 +136,16 @@ object QFolder {
   }
 
   def findById(id: Ident, account: AccountId): ConnectionIO[Option[FolderDetail]] = {
+    val user      = RUser.as("u")
     val mUserId   = RFolderMember.Columns.user.prefix("m")
     val mFolderId = RFolderMember.Columns.folder.prefix("m")
-    val uId       = RUser.Columns.uid.prefix("u")
-    val uLogin    = RUser.Columns.login.prefix("u")
+    val uId       = user.uid.column
+    val uLogin    = user.login.column
     val sColl     = RFolder.Columns.collective.prefix("s")
     val sId       = RFolder.Columns.id.prefix("s")
 
     val from = RFolderMember.table ++ fr"m INNER JOIN" ++
-      RUser.table ++ fr"u ON" ++ mUserId.is(uId) ++ fr"INNER JOIN" ++
+      Fragment.const(user.tableName) ++ fr"u ON" ++ mUserId.is(uId) ++ fr"INNER JOIN" ++
       RFolder.table ++ fr"s ON" ++ mFolderId.is(sId)
 
     val memberQ = selectSimple(
@@ -187,8 +188,9 @@ object QFolder {
 // inner join user_ u on u.uid = s.owner
 // where s.cid = 'eike';
 
-    val uId     = RUser.Columns.uid.prefix("u")
-    val uLogin  = RUser.Columns.login.prefix("u")
+    val user    = RUser.as("u")
+    val uId     = user.uid.column
+    val uLogin  = user.login.column
     val sId     = RFolder.Columns.id.prefix("s")
     val sOwner  = RFolder.Columns.owner.prefix("s")
     val sName   = RFolder.Columns.name.prefix("s")
@@ -199,11 +201,11 @@ object QFolder {
     //CTE
     val cte: Fragment = {
       val from1 = RFolderMember.table ++ fr"m INNER JOIN" ++
-        RUser.table ++ fr"u ON" ++ uId.is(mUser) ++ fr"INNER JOIN" ++
+        Fragment.const(user.tableName) ++ fr"u ON" ++ uId.is(mUser) ++ fr"INNER JOIN" ++
         RFolder.table ++ fr"s ON" ++ sId.is(mFolder)
 
       val from2 = RFolder.table ++ fr"s INNER JOIN" ++
-        RUser.table ++ fr"u ON" ++ uId.is(sOwner)
+        Fragment.const(user.tableName) ++ fr"u ON" ++ uId.is(sOwner)
 
       withCTE(
         "memberlogin" ->
@@ -232,7 +234,7 @@ object QFolder {
     )
 
     val from = RFolder.table ++ fr"s INNER JOIN" ++
-      RUser.table ++ fr"u ON" ++ uId.is(sOwner)
+      Fragment.const(user.tableName) ++ fr"u ON" ++ uId.is(sOwner)
 
     val where =
       sColl.is(account.collective) :: idQ.toList
@@ -247,17 +249,20 @@ object QFolder {
 
   /** Select all folder_id where the given account is member or owner. */
   def findMemberFolderIds(account: AccountId): Fragment = {
+    val user    = RUser.as("u")
     val fId     = RFolder.Columns.id.prefix("f")
     val fOwner  = RFolder.Columns.owner.prefix("f")
     val fColl   = RFolder.Columns.collective.prefix("f")
-    val uId     = RUser.Columns.uid.prefix("u")
-    val uLogin  = RUser.Columns.login.prefix("u")
+    val uId     = user.uid.column
+    val uLogin  = user.login.column
     val mFolder = RFolderMember.Columns.folder.prefix("m")
     val mUser   = RFolderMember.Columns.user.prefix("m")
 
     selectSimple(
       Seq(fId),
-      RFolder.table ++ fr"f INNER JOIN" ++ RUser.table ++ fr"u ON" ++ fOwner.is(uId),
+      RFolder.table ++ fr"f INNER JOIN" ++ Fragment.const(
+        user.tableName
+      ) ++ fr"u ON" ++ fOwner.is(uId),
       and(fColl.is(account.collective), uLogin.is(account.user))
     ) ++
       fr"UNION ALL" ++
@@ -266,7 +271,7 @@ object QFolder {
         RFolderMember.table ++ fr"m INNER JOIN" ++ RFolder.table ++ fr"f ON" ++ fId.is(
           mFolder
         ) ++
-          fr"INNER JOIN" ++ RUser.table ++ fr"u ON" ++ uId.is(mUser),
+          fr"INNER JOIN" ++ Fragment.const(user.tableName) ++ fr"u ON" ++ uId.is(mUser),
         and(fColl.is(account.collective), uLogin.is(account.user))
       )
   }

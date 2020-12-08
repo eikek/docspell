@@ -168,12 +168,16 @@ object RUserEmail {
       nameQ: Option[String],
       exact: Boolean
   ): Query0[RUserEmail] = {
+    val user   = RUser.as("u")
     val mUid   = uid.prefix("m")
     val mName  = name.prefix("m")
-    val uId    = RUser.Columns.uid.prefix("u")
-    val uColl  = RUser.Columns.cid.prefix("u")
-    val uLogin = RUser.Columns.login.prefix("u")
-    val from   = table ++ fr"m INNER JOIN" ++ RUser.table ++ fr"u ON" ++ mUid.is(uId)
+    val uId    = user.uid.column
+    val uColl  = user.cid.column
+    val uLogin = user.login.column
+    val from =
+      table ++ fr"m INNER JOIN" ++ Fragment.const(user.tableName) ++ fr"u ON" ++ mUid.is(
+        uId
+      )
     val cond = Seq(uColl.is(accId.collective), uLogin.is(accId.user)) ++ (nameQ match {
       case Some(str) if exact => Seq(mName.is(str))
       case Some(str)          => Seq(mName.lowerLike(s"%${str.toLowerCase}%"))
@@ -194,14 +198,19 @@ object RUserEmail {
     findByAccount0(accId, Some(name.id), true).option
 
   def delete(accId: AccountId, connName: Ident): ConnectionIO[Int] = {
-    val uId    = RUser.Columns.uid
-    val uColl  = RUser.Columns.cid
-    val uLogin = RUser.Columns.login
+    val user   = RUser.as("u")
+    val uId    = user.uid.column
+    val uColl  = user.cid.column
+    val uLogin = user.login.column
     val cond   = Seq(uColl.is(accId.collective), uLogin.is(accId.user))
 
     deleteFrom(
       table,
-      fr"uid in (" ++ selectSimple(Seq(uId), RUser.table, and(cond)) ++ fr") AND" ++ name
+      fr"uid in (" ++ selectSimple(
+        Seq(uId),
+        Fragment.const(user.tableName),
+        and(cond)
+      ) ++ fr") AND" ++ name
         .is(
           connName
         )

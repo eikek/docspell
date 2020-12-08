@@ -33,6 +33,10 @@ object ConditionBuilder {
         }
         c1Frag ++ operator(op) ++ c2Frag
 
+      case Condition.InSubSelect(col, subsel) =>
+        val sub = DoobieQuery(subsel)
+        SelectExprBuilder.column(col) ++ sql" IN (" ++ sub ++ sql")"
+
       case Condition.And(c, cs) =>
         val inner = cs.prepended(c).map(build).reduce(_ ++ and ++ _)
         if (cs.isEmpty) inner

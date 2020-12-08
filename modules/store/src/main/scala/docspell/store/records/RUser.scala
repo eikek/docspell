@@ -1,8 +1,8 @@
 package docspell.store.records
 
 import docspell.common._
-import docspell.store.impl.Implicits._
-import docspell.store.impl._
+import docspell.store.qb.DSL._
+import docspell.store.qb._
 
 import doobie._
 import doobie.implicits._
@@ -20,86 +20,99 @@ case class RUser(
 ) {}
 
 object RUser {
+  final case class Table(alias: Option[String]) extends TableDef {
+    val tableName = "user_"
 
-  val table = fr"user_"
-
-  object Columns {
-    val uid        = Column("uid")
-    val cid        = Column("cid")
-    val login      = Column("login")
-    val password   = Column("password")
-    val state      = Column("state")
-    val email      = Column("email")
-    val loginCount = Column("logincount")
-    val lastLogin  = Column("lastlogin")
-    val created    = Column("created")
+    val uid        = Column[Ident]("uid", this)
+    val login      = Column[Ident]("login", this)
+    val cid        = Column[Ident]("cid", this)
+    val password   = Column[Password]("password", this)
+    val state      = Column[UserState]("state", this)
+    val email      = Column[String]("email", this)
+    val loginCount = Column[Int]("logincount", this)
+    val lastLogin  = Column[Timestamp]("lastlogin", this)
+    val created    = Column[Timestamp]("created", this)
 
     val all =
       List(uid, login, cid, password, state, email, loginCount, lastLogin, created)
   }
 
-  import Columns._
+  def as(alias: String): Table =
+    Table(Some(alias))
 
   def insert(v: RUser): ConnectionIO[Int] = {
-    val sql = insertRow(
-      table,
-      Columns.all,
+    val t = Table(None)
+    val sql = DML.insert(
+      t,
+      t.all,
       fr"${v.uid},${v.login},${v.cid},${v.password},${v.state},${v.email},${v.loginCount},${v.lastLogin},${v.created}"
     )
     sql.update.run
   }
 
   def update(v: RUser): ConnectionIO[Int] = {
-    val sql = updateRow(
-      table,
-      and(login.is(v.login), cid.is(v.cid)),
-      commas(
-        state.setTo(v.state),
-        email.setTo(v.email),
-        loginCount.setTo(v.loginCount),
-        lastLogin.setTo(v.lastLogin)
+    val t = Table(None)
+    DML.update(
+      t,
+      t.login === v.login && t.cid === v.cid,
+      DML.set(
+        t.state.setTo(v.state),
+        t.email.setTo(v.email),
+        t.loginCount.setTo(v.loginCount),
+        t.lastLogin.setTo(v.lastLogin)
       )
     )
-    sql.update.run
   }
 
-  def exists(loginName: Ident): ConnectionIO[Boolean] =
-    selectCount(uid, table, login.is(loginName)).query[Int].unique.map(_ > 0)
+  def exists(loginName: Ident): ConnectionIO[Boolean] = {
+    val t = Table(None)
+    run(select(count(t.uid)), from(t), t.login === loginName).query[Int].unique.map(_ > 0)
+  }
 
   def findByAccount(aid: AccountId): ConnectionIO[Option[RUser]] = {
-    val sql = selectSimple(all, table, and(cid.is(aid.collective), login.is(aid.user)))
+    val t = Table(None)
+    val sql =
+      run(select(t.all), from(t), t.cid === aid.collective && t.login === aid.user)
     sql.query[RUser].option
   }
 
   def findById(userId: Ident): ConnectionIO[Option[RUser]] = {
-    val sql = selectSimple(all, table, uid.is(userId))
+    val t   = Table(None)
+    val sql = run(select(t.all), from(t), t.uid === userId)
     sql.query[RUser].option
   }
 
-  def findAll(coll: Ident, order: Columns.type => Column): ConnectionIO[Vector[RUser]] = {
-    val sql = selectSimple(all, table, cid.is(coll)) ++ orderBy(order(Columns).f)
+  def findAll(coll: Ident, order: Table => Column[_]): ConnectionIO[Vector[RUser]] = {
+    val t   = Table(None)
+    val sql = Select(select(t.all), from(t), t.cid === coll).orderBy(order(t)).run
     sql.query[RUser].to[Vector]
   }
 
-  def updateLogin(accountId: AccountId): ConnectionIO[Int] =
-    currentTime.flatMap(t =>
-      updateRow(
-        table,
-        and(cid.is(accountId.collective), login.is(accountId.user)),
-        commas(
-          loginCount.f ++ fr"=" ++ loginCount.f ++ fr"+ 1",
-          lastLogin.setTo(t)
+  def updateLogin(accountId: AccountId): ConnectionIO[Int] = {
+    val t = Table(None)
+    def stmt(now: Timestamp) =
+      DML.update(
+        t,
+        t.cid === accountId.collective && t.login === accountId.user,
+        DML.set(
+          t.loginCount.increment(1),
+          t.lastLogin.setTo(now)
         )
-      ).update.run
+      )
+    Timestamp.current[ConnectionIO].flatMap(stmt)
+  }
+
+  def updatePassword(accountId: AccountId, hashedPass: Password): ConnectionIO[Int] = {
+    val t = Table(None)
+    DML.update(
+      t,
+      t.cid === accountId.collective && t.login === accountId.user,
+      DML.set(t.password.setTo(hashedPass))
     )
+  }
 
-  def updatePassword(accountId: AccountId, hashedPass: Password): ConnectionIO[Int] =
-    updateRow(
-      table,
-      and(cid.is(accountId.collective), login.is(accountId.user)),
-      password.setTo(hashedPass)
-    ).update.run
-
-  def delete(user: Ident, coll: Ident): ConnectionIO[Int] =
-    deleteFrom(table, and(cid.is(coll), login.is(user))).update.run
+  def delete(user: Ident, coll: Ident): ConnectionIO[Int] = {
+    val t = Table(None)
+    DML.delete(t, t.cid === coll && t.login === user).update.run
+  }
 }
