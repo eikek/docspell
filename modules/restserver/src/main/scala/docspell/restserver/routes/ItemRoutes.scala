@@ -1,17 +1,17 @@
 package docspell.restserver.routes
 
+import cats.Monoid
 import cats.data.NonEmptyList
 import cats.effect._
 import cats.implicits._
-import cats.Monoid
 
 import docspell.backend.BackendApp
 import docspell.backend.auth.AuthToken
 import docspell.backend.ops.OCustomFields.{RemoveValue, SetValue}
 import docspell.backend.ops.OFulltext
 import docspell.backend.ops.OItemSearch.Batch
-import docspell.common.syntax.all._
 import docspell.common._
+import docspell.common.syntax.all._
 import docspell.restapi.model._
 import docspell.restserver.Config
 import docspell.restserver.conv.Conversions

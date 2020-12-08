@@ -5,8 +5,8 @@ import cats.implicits._
 import fs2.Stream
 
 import docspell.common._
-import docspell.store.impl.Implicits._
-import docspell.store.impl._
+import docspell.store.impl.DoobieMeta._
+import docspell.store.qb._
 
 import doobie._
 import doobie.implicits._
@@ -22,7 +22,7 @@ object SourceData {
 
   def findAll(
       coll: Ident,
-      order: RSource.Columns.type => Column
+      order: RSource.Table => Column[_]
   ): Stream[ConnectionIO, SourceData] =
     findAllWithTags(RSource.findAllSql(coll, order).query[RSource].stream)
 

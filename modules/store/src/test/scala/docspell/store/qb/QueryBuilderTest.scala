@@ -1,6 +1,7 @@
 package docspell.store.qb
 
 import minitest._
+import docspell.store.qb._
 import docspell.store.qb.model._
 import docspell.store.qb.DSL._
 
@@ -28,10 +29,37 @@ object QueryBuilderTest extends SimpleTestSuite {
         )
       )
 
-    // val order =
-    //   orderBy(c.name.asc)
-
-    val q = Select(proj, tables, cond)
-    println(q)
+    val q = Select(proj, tables, cond).orderBy(c.name.desc)
+    q match {
+      case Select.Ordered(Select.SimpleSelect(proj, from, where, group), sb, vempty) =>
+        assert(vempty.isEmpty)
+        assertEquals(sb, OrderBy(SelectExpr.SelectColumn(c.name), OrderBy.OrderType.Desc))
+        assertEquals(11, proj.size)
+        from match {
+          case FromExpr.From(_) =>
+            fail("Unexpected from value")
+          case FromExpr.Joined(f, joins) =>
+            assertEquals(f, FromExpr.From(c))
+            assertEquals(2, joins.size)
+            joins.head match {
+              case Join.InnerJoin(tbl, cond) =>
+                assertEquals(tbl, owner)
+                assertEquals(cond, c.ownerId === owner.id)
+              case _ =>
+                fail("Unexpected join result")
+            }
+            joins.tail.head match {
+              case Join.LeftJoin(tbl, cond) =>
+                assertEquals(tbl, lecturer)
+                assertEquals(cond, c.lecturerId === lecturer.id)
+              case _ =>
+                fail("Unexpected join result")
+            }
+        }
+        assertEquals(group, None)
+        assert(where.isDefined)
+      case _ =>
+        fail("Unexpected case")
+    }
   }
 }

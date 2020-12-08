@@ -28,7 +28,4 @@ object CourseRecord {
   def as(alias: String): Table =
     Table(Some(alias))
 
-  def update: UpdateTable =
-    UpdateTable(Table(None), None, Seq.empty)
-
 }
