@@ -26,10 +26,28 @@ trait DSL extends DoobieMeta {
     DBFunction.Count(c, "cn")
 
   def and(c: Condition, cs: Condition*): Condition =
-    Condition.And(c, cs.toVector)
+    c match {
+      case Condition.And(head, tail) =>
+        Condition.And(head, tail ++ (c +: cs.toVector))
+      case _ =>
+        Condition.And(c, cs.toVector)
+    }
 
   def or(c: Condition, cs: Condition*): Condition =
-    Condition.Or(c, cs.toVector)
+    c match {
+      case Condition.Or(head, tail) =>
+        Condition.Or(head, tail ++ (c +: cs.toVector))
+      case _ =>
+        Condition.Or(c, cs.toVector)
+    }
+
+  def not(c: Condition): Condition =
+    c match {
+      case Condition.Not(el) =>
+        el
+      case _ =>
+        Condition.Not(c)
+    }
 
   def where(c: Condition, cs: Condition*): Condition =
     and(c, cs: _*)
@@ -71,7 +89,27 @@ trait DSL extends DoobieMeta {
 
     def ===(other: Column[A]): Condition =
       Condition.CompareCol(col, Operator.Eq, other)
+  }
 
+  implicit final class ConditionOps(c: Condition) {
+
+    def &&(other: Condition): Condition =
+      and(c, other)
+
+    def &&?(other: Option[Condition]): Condition =
+      other.map(ce => &&(ce)).getOrElse(c)
+
+    def ||(other: Condition): Condition =
+      or(c, other)
+
+    def ||?(other: Option[Condition]): Condition =
+      other.map(ce => ||(ce)).getOrElse(c)
+
+    def negate: Condition =
+      not(c)
+
+    def unary_! : Condition =
+      not(c)
   }
 
 }

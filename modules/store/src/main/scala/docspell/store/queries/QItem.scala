@@ -87,13 +87,14 @@ object QItem {
   }
 
   def findItem(id: Ident): ConnectionIO[Option[ItemData]] = {
-    val IC  = RItem.Columns.all.map(_.prefix("i"))
-    val OC  = ROrganization.Columns.all.map(_.prefix("o"))
-    val P0C = RPerson.Columns.all.map(_.prefix("p0"))
-    val P1C = RPerson.Columns.all.map(_.prefix("p1"))
-    val EC  = REquipment.Columns.all.map(_.prefix("e"))
-    val ICC = List(RItem.Columns.id, RItem.Columns.name).map(_.prefix("ref"))
-    val FC  = List(RFolder.Columns.id, RFolder.Columns.name).map(_.prefix("f"))
+    val equip = REquipment.as("e")
+    val IC    = RItem.Columns.all.map(_.prefix("i"))
+    val OC    = ROrganization.Columns.all.map(_.prefix("o"))
+    val P0C   = RPerson.Columns.all.map(_.prefix("p0"))
+    val P1C   = RPerson.Columns.all.map(_.prefix("p1"))
+    val EC    = equip.all.map(_.oldColumn).map(_.prefix("e"))
+    val ICC   = List(RItem.Columns.id, RItem.Columns.name).map(_.prefix("ref"))
+    val FC    = List(RFolder.Columns.id, RFolder.Columns.name).map(_.prefix("f"))
 
     val cq =
       selectSimple(
@@ -110,9 +111,11 @@ object QItem {
         fr"LEFT JOIN" ++ RPerson.table ++ fr"p1 ON" ++ RItem.Columns.concPerson
           .prefix("i")
           .is(RPerson.Columns.pid.prefix("p1")) ++
-        fr"LEFT JOIN" ++ REquipment.table ++ fr"e ON" ++ RItem.Columns.concEquipment
+        fr"LEFT JOIN" ++ Fragment.const(
+          equip.tableName
+        ) ++ fr"e ON" ++ RItem.Columns.concEquipment
           .prefix("i")
-          .is(REquipment.Columns.eid.prefix("e")) ++
+          .is(equip.eid.oldColumn.prefix("e")) ++
         fr"LEFT JOIN" ++ RItem.table ++ fr"ref ON" ++ RItem.Columns.inReplyTo
           .prefix("i")
           .is(RItem.Columns.id.prefix("ref")) ++
@@ -305,16 +308,16 @@ object QItem {
       moreCols: Seq[Fragment],
       ctes: (String, Fragment)*
   ): Fragment = {
+    val equip      = REquipment.as("e1")
     val IC         = RItem.Columns
     val AC         = RAttachment.Columns
     val PC         = RPerson.Columns
     val OC         = ROrganization.Columns
-    val EC         = REquipment.Columns
     val FC         = RFolder.Columns
     val itemCols   = IC.all
     val personCols = List(PC.pid, PC.name)
     val orgCols    = List(OC.oid, OC.name)
-    val equipCols  = List(EC.eid, EC.name)
+    val equipCols  = List(equip.eid.oldColumn, equip.name.oldColumn)
     val folderCols = List(FC.id, FC.name)
     val cvItem     = RCustomFieldValue.Columns.itemId.prefix("cv")
 
@@ -335,8 +338,8 @@ object QItem {
         PC.name.prefix("p0").f,
         PC.pid.prefix("p1").f,
         PC.name.prefix("p1").f,
-        EC.eid.prefix("e1").f,
-        EC.name.prefix("e1").f,
+        equip.eid.oldColumn.prefix("e1").f,
+        equip.name.oldColumn.prefix("e1").f,
         FC.id.prefix("f1").f,
         FC.name.prefix("f1").f,
         // sql uses 1 for first character
@@ -357,7 +360,11 @@ object QItem {
     val withOrgs =
       selectSimple(orgCols, ROrganization.table, OC.cid.is(q.account.collective))
     val withEquips =
-      selectSimple(equipCols, REquipment.table, EC.cid.is(q.account.collective))
+      selectSimple(
+        equipCols,
+        Fragment.const(equip.tableName),
+        equip.cid.oldColumn.is(q.account.collective)
+      )
     val withFolder =
       selectSimple(folderCols, RFolder.table, FC.collective.is(q.account.collective))
     val withAttach = fr"SELECT COUNT(" ++ AC.id.f ++ fr") as num, " ++ AC.itemId.f ++
@@ -384,7 +391,7 @@ object QItem {
       fr"LEFT JOIN persons p1 ON" ++ IC.concPerson.prefix("i").is(PC.pid.prefix("p1")) ++
       fr"LEFT JOIN equips e1 ON" ++ IC.concEquipment
         .prefix("i")
-        .is(EC.eid.prefix("e1")) ++
+        .is(equip.eid.oldColumn.prefix("e1")) ++
       fr"LEFT JOIN folders f1 ON" ++ IC.folder.prefix("i").is(FC.id.prefix("f1")) ++
       (if (q.customValues.isEmpty) Fragment.empty
        else
@@ -396,10 +403,10 @@ object QItem {
       maxNoteLen: Int,
       batch: Batch
   ): Stream[ConnectionIO, ListItem] = {
-    val IC = RItem.Columns
-    val PC = RPerson.Columns
-    val OC = ROrganization.Columns
-    val EC = REquipment.Columns
+    val equip = REquipment.as("e1")
+    val IC    = RItem.Columns
+    val PC    = RPerson.Columns
+    val OC    = ROrganization.Columns
 
     // inclusive tags are AND-ed
     val tagSelectsIncl = q.tagsInclude
@@ -432,7 +439,7 @@ object QItem {
             OC.name.prefix("o0").lowerLike(n),
             PC.name.prefix("p0").lowerLike(n),
             PC.name.prefix("p1").lowerLike(n),
-            EC.name.prefix("e1").lowerLike(n),
+            equip.name.oldColumn.prefix("e1").lowerLike(n),
             IC.name.prefix("i").lowerLike(n),
             IC.notes.prefix("i").lowerLike(n)
           )
@@ -441,7 +448,7 @@ object QItem {
       RPerson.Columns.pid.prefix("p0").isOrDiscard(q.corrPerson),
       ROrganization.Columns.oid.prefix("o0").isOrDiscard(q.corrOrg),
       RPerson.Columns.pid.prefix("p1").isOrDiscard(q.concPerson),
-      REquipment.Columns.eid.prefix("e1").isOrDiscard(q.concEquip),
+      equip.eid.oldColumn.prefix("e1").isOrDiscard(q.concEquip),
       RFolder.Columns.id.prefix("f1").isOrDiscard(q.folder),
       if (q.tagsInclude.isEmpty && q.tagCategoryIncl.isEmpty) Fragment.empty
       else
