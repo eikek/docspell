@@ -57,7 +57,11 @@ init flags url key =
         [ cmd
         , ic
         , Api.versionInfo flags VersionResp
-        , Api.loginSession flags SessionCheckResp
+        , if Page.isSecured page then
+            Api.loginSession flags SessionCheckResp
+
+          else
+            Cmd.none
         , Ports.getUiSettings flags
         ]
     )
