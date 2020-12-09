@@ -412,9 +412,9 @@ object QItem {
     val tagSelectsIncl = q.tagsInclude
       .map(tid =>
         selectSimple(
-          List(RTagItem.Columns.itemId),
-          RTagItem.table,
-          RTagItem.Columns.tagId.is(tid)
+          List(RTagItem.t.itemId.column),
+          Fragment.const(RTagItem.t.tableName),
+          RTagItem.t.tagId.column.is(tid)
         )
       ) ++ q.tagCategoryIncl.map(cat => TagItemName.itemsInCategory(NonEmptyList.of(cat)))
 
@@ -755,33 +755,35 @@ object QItem {
       tagCategory: String,
       pageSep: String
   ): ConnectionIO[TextAndTag] = {
-    val aId    = RAttachment.Columns.id.prefix("a")
-    val aItem  = RAttachment.Columns.itemId.prefix("a")
-    val mId    = RAttachmentMeta.Columns.id.prefix("m")
-    val mText  = RAttachmentMeta.Columns.content.prefix("m")
-    val tiItem = RTagItem.Columns.itemId.prefix("ti")
-    val tiTag  = RTagItem.Columns.tagId.prefix("ti")
-    val tId    = RTag.Columns.tid.prefix("t")
-    val tName  = RTag.Columns.name.prefix("t")
-    val tCat   = RTag.Columns.category.prefix("t")
-    val iId    = RItem.Columns.id.prefix("i")
-    val iColl  = RItem.Columns.cid.prefix("i")
+    val aId     = RAttachment.Columns.id.prefix("a")
+    val aItem   = RAttachment.Columns.itemId.prefix("a")
+    val mId     = RAttachmentMeta.Columns.id.prefix("m")
+    val mText   = RAttachmentMeta.Columns.content.prefix("m")
+    val tagItem = RTagItem.as("ti") //Columns.itemId.prefix("ti")
+    //val tiTag  = RTagItem.Columns.tagId.prefix("ti")
+    val tag = RTag.as("t")
+//    val tId   = RTag.Columns.tid.prefix("t")
+//    val tName = RTag.Columns.name.prefix("t")
+//    val tCat  = RTag.Columns.category.prefix("t")
+    val iId   = RItem.Columns.id.prefix("i")
+    val iColl = RItem.Columns.cid.prefix("i")
 
     val cte = withCTE(
       "tags" -> selectSimple(
-        Seq(tiItem, tId, tName),
-        RTagItem.table ++ fr"ti INNER JOIN" ++
-          RTag.table ++ fr"t ON" ++ tId.is(tiTag),
-        and(tiItem.is(itemId), tCat.is(tagCategory))
+        Seq(tagItem.itemId.column, tag.tid.column, tag.name.column),
+        Fragment.const(RTagItem.t.tableName) ++ fr"ti INNER JOIN" ++
+          Fragment.const(tag.tableName) ++ fr"t ON" ++ tag.tid.column
+            .is(tagItem.tagId.column),
+        and(tagItem.itemId.column.is(itemId), tag.category.column.is(tagCategory))
       )
     )
 
-    val cols = Seq(mText, tId, tName)
+    val cols = Seq(mText, tag.tid.column, tag.name.column)
 
     val from = RItem.table ++ fr"i INNER JOIN" ++
       RAttachment.table ++ fr"a ON" ++ aItem.is(iId) ++ fr"INNER JOIN" ++
       RAttachmentMeta.table ++ fr"m ON" ++ aId.is(mId) ++ fr"LEFT JOIN" ++
-      fr"tags t ON" ++ RTagItem.Columns.itemId.prefix("t").is(iId)
+      fr"tags t ON" ++ RTagItem.t.itemId.oldColumn.prefix("t").is(iId)
 
     val where =
       and(

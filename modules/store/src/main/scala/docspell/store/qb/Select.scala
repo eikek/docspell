@@ -38,7 +38,10 @@ object Select {
       from: FromExpr,
       where: Option[Condition],
       groupBy: Option[GroupBy]
-  ) extends Select
+  ) extends Select {
+    def group(gb: GroupBy): SimpleSelect =
+      copy(groupBy = Some(gb))
+  }
 
   case class Union(q: Select, qs: Vector[Select]) extends Select
 

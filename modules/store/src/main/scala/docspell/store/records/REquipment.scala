@@ -38,8 +38,6 @@ object REquipment {
         t.all,
         fr"${v.eid},${v.cid},${v.name},${v.created},${v.updated}"
       )
-      .update
-      .run
   }
 
   def update(v: REquipment): ConnectionIO[Int] = {
@@ -95,6 +93,6 @@ object REquipment {
 
   def delete(id: Ident, coll: Ident): ConnectionIO[Int] = {
     val t = Table(None)
-    DML.delete(t, t.eid === id && t.cid === coll).update.run
+    DML.delete(t, t.eid === id && t.cid === coll)
   }
 }

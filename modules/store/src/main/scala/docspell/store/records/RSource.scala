@@ -60,14 +60,12 @@ object RSource {
 
   val table = Table(None)
 
-  def insert(v: RSource): ConnectionIO[Int] = {
-    val sql = DML.insert(
+  def insert(v: RSource): ConnectionIO[Int] =
+    DML.insert(
       table,
       table.all,
       fr"${v.sid},${v.cid},${v.abbrev},${v.description},${v.counter},${v.enabled},${v.priority},${v.created},${v.folderId},${v.fileFilter}"
     )
-    sql.update.run
-  }
 
   def updateNoCounter(v: RSource): ConnectionIO[Int] =
     DML.update(
@@ -85,12 +83,11 @@ object RSource {
     )
 
   def incrementCounter(source: String, coll: Ident): ConnectionIO[Int] =
-    DML
-      .update(
-        table,
-        where(table.abbrev === source, table.cid === coll),
-        DML.set(table.counter.increment(1))
-      )
+    DML.update(
+      table,
+      where(table.abbrev === source, table.cid === coll),
+      DML.set(table.counter.increment(1))
+    )
 
   def existsById(id: Ident): ConnectionIO[Boolean] = {
     val sql = run(select(count(table.sid)), from(table), where(table.sid === id))
@@ -130,7 +127,7 @@ object RSource {
   }
 
   def delete(sourceId: Ident, coll: Ident): ConnectionIO[Int] =
-    DML.delete(table, where(table.sid === sourceId, table.cid === coll)).update.run
+    DML.delete(table, where(table.sid === sourceId, table.cid === coll))
 
   def removeFolder(folderId: Ident): ConnectionIO[Int] = {
     val empty: Option[Ident] = None

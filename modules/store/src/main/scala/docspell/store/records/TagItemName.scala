@@ -3,10 +3,9 @@ package docspell.store.records
 import cats.data.NonEmptyList
 
 import docspell.common._
-import docspell.store.impl.Implicits._
+import docspell.store.qb.DSL._
 
 import doobie._
-import doobie.implicits._
 
 /** A helper class combining information from `RTag` and `RTagItem`.
   * This is not a "record", there is no corresponding table.
@@ -24,37 +23,27 @@ object TagItemName {
 
   def itemsInCategory(cats: NonEmptyList[String]): Fragment = {
     val catsLower = cats.map(_.toLowerCase)
-    val tiItem    = RTagItem.Columns.itemId.prefix("ti")
-    val tiTag     = RTagItem.Columns.tagId.prefix("ti")
-    val tCat      = RTag.Columns.category.prefix("t")
-    val tId       = RTag.Columns.tid.prefix("t")
-
-    val from = RTag.table ++ fr"t INNER JOIN" ++
-      RTagItem.table ++ fr"ti ON" ++ tiTag.is(tId)
-
+    val ti        = RTagItem.as("ti")
+    val t         = RTag.as("t")
+    val join      = from(t).innerJoin(ti, t.tid === ti.tagId)
     if (cats.tail.isEmpty)
-      selectSimple(List(tiItem), from, tCat.lowerIs(catsLower.head))
+      run(select(ti.itemId), join, t.category.likes(catsLower.head))
     else
-      selectSimple(List(tiItem), from, tCat.isLowerIn(catsLower))
+      run(select(ti.itemId), join, t.category.inLower(cats))
   }
 
   def itemsWithTagOrCategory(tags: List[Ident], cats: List[String]): Fragment = {
     val catsLower = cats.map(_.toLowerCase)
-    val tiItem    = RTagItem.Columns.itemId.prefix("ti")
-    val tiTag     = RTagItem.Columns.tagId.prefix("ti")
-    val tCat      = RTag.Columns.category.prefix("t")
-    val tId       = RTag.Columns.tid.prefix("t")
-
-    val from = RTag.table ++ fr"t INNER JOIN" ++
-      RTagItem.table ++ fr"ti ON" ++ tiTag.is(tId)
-
+    val ti        = RTagItem.as("ti")
+    val t         = RTag.as("t")
+    val join      = from(t).innerJoin(ti, t.tid === ti.tagId)
     (NonEmptyList.fromList(tags), NonEmptyList.fromList(catsLower)) match {
       case (Some(tagNel), Some(catNel)) =>
-        selectSimple(List(tiItem), from, or(tId.isIn(tagNel), tCat.isLowerIn(catNel)))
+        run(select(ti.itemId), join, t.tid.in(tagNel) || t.category.inLower(catNel))
       case (Some(tagNel), None) =>
-        selectSimple(List(tiItem), from, tId.isIn(tagNel))
+        run(select(ti.itemId), join, t.tid.in(tagNel))
       case (None, Some(catNel)) =>
-        selectSimple(List(tiItem), from, tCat.isLowerIn(catNel))
+        run(select(ti.itemId), join, t.category.inLower(catNel))
       case (None, None) =>
         Fragment.empty
     }

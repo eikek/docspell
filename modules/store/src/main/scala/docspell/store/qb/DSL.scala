@@ -1,5 +1,7 @@
 package docspell.store.qb
 
+import cats.data.NonEmptyList
+
 import docspell.store.impl.DoobieMeta
 import docspell.store.qb.impl.DoobieQuery
 
@@ -50,7 +52,8 @@ trait DSL extends DoobieMeta {
     }
 
   def where(c: Condition, cs: Condition*): Condition =
-    and(c, cs: _*)
+    if (cs.isEmpty) c
+    else and(c, cs: _*)
 
   implicit final class ColumnOps[A](col: Column[A]) {
 
@@ -97,6 +100,12 @@ trait DSL extends DoobieMeta {
 
     def in(subsel: Select): Condition =
       Condition.InSubSelect(col, subsel)
+
+    def in(values: NonEmptyList[A])(implicit P: Put[A]): Condition =
+      Condition.InValues(col, values, false)
+
+    def inLower(values: NonEmptyList[A])(implicit P: Put[A]): Condition =
+      Condition.InValues(col, values, true)
 
     def ===(other: Column[A]): Condition =
       Condition.CompareCol(col, Operator.Eq, other)

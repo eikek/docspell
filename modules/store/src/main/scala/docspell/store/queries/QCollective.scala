@@ -6,6 +6,7 @@ import fs2.Stream
 import docspell.common.ContactKind
 import docspell.common.{Direction, Ident}
 import docspell.store.impl.Implicits._
+import docspell.store.qb.{GroupBy, Select}
 import docspell.store.records._
 
 import doobie._
@@ -77,25 +78,39 @@ object QCollective {
   }
 
   def tagCloud(coll: Ident): ConnectionIO[List[TagCount]] = {
-    val TC = RTag.Columns
-    val RC = RTagItem.Columns
+    import docspell.store.qb.DSL._
 
-    val q3 = fr"SELECT" ++ commas(
-      TC.all.map(_.prefix("t").f) ++ Seq(fr"count(" ++ RC.itemId.prefix("r").f ++ fr")")
-    ) ++
-      fr"FROM" ++ RTagItem.table ++ fr"r" ++
-      fr"INNER JOIN" ++ RTag.table ++ fr"t ON" ++ RC.tagId
-        .prefix("r")
-        .is(TC.tid.prefix("t")) ++
-      fr"WHERE" ++ TC.cid.prefix("t").is(coll) ++
-      fr"GROUP BY" ++ commas(
-        TC.name.prefix("t").f,
-        TC.tid.prefix("t").f,
-        TC.category.prefix("t").f
-      )
+    val ti = RTagItem.as("ti")
+    val t  = RTag.as("t")
+    val sql =
+      Select(
+        select(t.all) ++ select(count(ti.itemId)),
+        from(ti).innerJoin(t, ti.tagId === t.tid),
+        t.cid === coll
+      ).group(GroupBy(t.name, t.tid, t.category))
 
-    q3.query[TagCount].to[List]
+    sql.run.query[TagCount].to[List]
   }
+//  def tagCloud2(coll: Ident): ConnectionIO[List[TagCount]] = {
+//    val tagItem = RTagItem.as("r")
+//    val TC      = RTag.Columns
+//
+//    val q3 = fr"SELECT" ++ commas(
+//      TC.all.map(_.prefix("t").f) ++ Seq(fr"count(" ++ tagItem.itemId.column.f ++ fr")")
+//    ) ++
+//      fr"FROM" ++ Fragment.const(tagItem.tableName) ++ fr"r" ++
+//      fr"INNER JOIN" ++ RTag.table ++ fr"t ON" ++ tagItem.tagId.column
+//        .prefix("r")
+//        .is(TC.tid.prefix("t")) ++
+//      fr"WHERE" ++ TC.cid.prefix("t").is(coll) ++
+//      fr"GROUP BY" ++ commas(
+//        TC.name.prefix("t").f,
+//        TC.tid.prefix("t").f,
+//        TC.category.prefix("t").f
+//      )
+//
+//    q3.query[TagCount].to[List]
+//  }
 
   def getContacts(
       coll: Ident,

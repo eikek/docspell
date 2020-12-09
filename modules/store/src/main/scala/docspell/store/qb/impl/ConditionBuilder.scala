@@ -8,6 +8,7 @@ import _root_.doobie.{Query => _, _}
 object ConditionBuilder {
   val or         = fr"OR"
   val and        = fr"AND"
+  val comma      = fr","
   val parenOpen  = Fragment.const0("(")
   val parenClose = Fragment.const0(")")
 
@@ -36,6 +37,12 @@ object ConditionBuilder {
       case Condition.InSubSelect(col, subsel) =>
         val sub = DoobieQuery(subsel)
         SelectExprBuilder.column(col) ++ sql" IN (" ++ sub ++ sql")"
+
+      case c @ Condition.InValues(col, values, toLower) =>
+        val cfrag = if (toLower) lower(col) else SelectExprBuilder.column(col)
+        cfrag ++ sql" IN (" ++ values.toList
+          .map(a => buildValue(a)(c.P))
+          .reduce(_ ++ comma ++ _) ++ sql")"
 
       case Condition.And(c, cs) =>
         val inner = cs.prepended(c).map(build).reduce(_ ++ and ++ _)

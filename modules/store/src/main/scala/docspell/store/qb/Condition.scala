@@ -1,5 +1,7 @@
 package docspell.store.qb
 
+import cats.data.NonEmptyList
+
 import doobie._
 
 sealed trait Condition {}
@@ -14,6 +16,9 @@ object Condition {
       extends Condition
 
   case class InSubSelect[A](col: Column[A], subSelect: Select) extends Condition
+  case class InValues[A](col: Column[A], values: NonEmptyList[A], lower: Boolean)(implicit
+      val P: Put[A]
+  ) extends Condition
 
   case class And(c: Condition, cs: Vector[Condition]) extends Condition
   case class Or(c: Condition, cs: Vector[Condition])  extends Condition

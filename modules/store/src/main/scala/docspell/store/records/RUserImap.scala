@@ -131,8 +131,6 @@ object RUserImap {
         t.all,
         sql"${v.id},${v.uid},${v.name},${v.imapHost},${v.imapPort},${v.imapUser},${v.imapPassword},${v.imapSsl},${v.imapCertCheck},${v.created}"
       )
-      .update
-      .run
   }
 
   def update(eId: Ident, v: RUserImap): ConnectionIO[Int] = {
@@ -195,13 +193,10 @@ object RUserImap {
     val subsel =
       Select(select(u.uid), from(u), u.cid === accId.collective && u.login === accId.user)
 
-    DML
-      .delete(
-        t,
-        t.uid.in(subsel) && t.name === connName
-      )
-      .update
-      .run
+    DML.delete(
+      t,
+      t.uid.in(subsel) && t.name === connName
+    )
   }
 
   def exists(accId: AccountId, name: Ident): ConnectionIO[Boolean] =

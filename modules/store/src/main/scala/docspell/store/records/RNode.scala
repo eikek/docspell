@@ -4,8 +4,8 @@ import cats.effect.Sync
 import cats.implicits._
 
 import docspell.common._
-import docspell.store.impl.Column
-import docspell.store.impl.Implicits._
+import docspell.store.qb.DSL._
+import docspell.store.qb._
 
 import doobie._
 import doobie.implicits._
@@ -23,35 +23,42 @@ object RNode {
   def apply[F[_]: Sync](id: Ident, nodeType: NodeType, uri: LenientUri): F[RNode] =
     Timestamp.current[F].map(now => RNode(id, nodeType, uri, now, now))
 
-  val table = fr"node"
+  final case class Table(alias: Option[String]) extends TableDef {
+    val tableName = "node"
 
-  object Columns {
-    val id       = Column("id")
-    val nodeType = Column("type")
-    val url      = Column("url")
-    val updated  = Column("updated")
-    val created  = Column("created")
+    val id       = Column[Ident]("id", this)
+    val nodeType = Column[NodeType]("type", this)
+    val url      = Column[LenientUri]("url", this)
+    val updated  = Column[Timestamp]("updated", this)
+    val created  = Column[Timestamp]("created", this)
     val all      = List(id, nodeType, url, updated, created)
   }
-  import Columns._
 
-  def insert(v: RNode): ConnectionIO[Int] =
-    insertRow(
-      table,
-      all,
+  def as(alias: String): Table =
+    Table(Some(alias))
+
+  def insert(v: RNode): ConnectionIO[Int] = {
+    val t = Table(None)
+    DML.insert(
+      t,
+      t.all,
       fr"${v.id},${v.nodeType},${v.url},${v.updated},${v.created}"
-    ).update.run
+    )
+  }
 
-  def update(v: RNode): ConnectionIO[Int] =
-    updateRow(
-      table,
-      id.is(v.id),
-      commas(
-        nodeType.setTo(v.nodeType),
-        url.setTo(v.url),
-        updated.setTo(v.updated)
+  def update(v: RNode): ConnectionIO[Int] = {
+    val t = Table(None)
+    DML
+      .update(
+        t,
+        t.id === v.id,
+        DML.set(
+          t.nodeType.setTo(v.nodeType),
+          t.url.setTo(v.url),
+          t.updated.setTo(v.updated)
+        )
       )
-    ).update.run
+  }
 
   def set(v: RNode): ConnectionIO[Int] =
     for {
@@ -59,12 +66,18 @@ object RNode {
       k <- if (n == 0) insert(v) else 0.pure[ConnectionIO]
     } yield n + k
 
-  def delete(appId: Ident): ConnectionIO[Int] =
-    (fr"DELETE FROM" ++ table ++ where(id.is(appId))).update.run
+  def delete(appId: Ident): ConnectionIO[Int] = {
+    val t = Table(None)
+    DML.delete(t, t.id === appId)
+  }
 
-  def findAll(nt: NodeType): ConnectionIO[Vector[RNode]] =
-    selectSimple(all, table, nodeType.is(nt)).query[RNode].to[Vector]
+  def findAll(nt: NodeType): ConnectionIO[Vector[RNode]] = {
+    val t = Table(None)
+    run(select(t.all), from(t), t.nodeType === nt).query[RNode].to[Vector]
+  }
 
-  def findById(nodeId: Ident): ConnectionIO[Option[RNode]] =
-    selectSimple(all, table, id.is(nodeId)).query[RNode].option
+  def findById(nodeId: Ident): ConnectionIO[Option[RNode]] = {
+    val t = Table(None)
+    run(select(t.all), from(t), t.id === nodeId).query[RNode].option
+  }
 }

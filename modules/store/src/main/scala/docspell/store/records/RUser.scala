@@ -42,12 +42,11 @@ object RUser {
 
   def insert(v: RUser): ConnectionIO[Int] = {
     val t = Table(None)
-    val sql = DML.insert(
+    DML.insert(
       t,
       t.all,
       fr"${v.uid},${v.login},${v.cid},${v.password},${v.state},${v.email},${v.loginCount},${v.lastLogin},${v.created}"
     )
-    sql.update.run
   }
 
   def update(v: RUser): ConnectionIO[Int] = {
@@ -113,6 +112,6 @@ object RUser {
 
   def delete(user: Ident, coll: Ident): ConnectionIO[Int] = {
     val t = Table(None)
-    DML.delete(t, t.cid === coll && t.login === user).update.run
+    DML.delete(t, t.cid === coll && t.login === user)
   }
 }
