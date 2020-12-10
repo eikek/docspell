@@ -4,8 +4,8 @@ import cats.effect._
 import cats.implicits._
 
 import docspell.common._
-import docspell.store.impl.Column
-import docspell.store.impl.Implicits._
+import docspell.store.qb.DSL._
+import docspell.store.qb._
 
 import doobie._
 import doobie.implicits._
@@ -29,13 +29,13 @@ object RSentMailItem {
       now <- created.map(_.pure[F]).getOrElse(Timestamp.current[F])
     } yield RSentMailItem(id, itemId, sentmailId, now)
 
-  val table = fr"sentmailitem"
+  final case class Table(alias: Option[String]) extends TableDef {
+    val tableName = "sentmailitem"
 
-  object Columns {
-    val id         = Column("id")
-    val itemId     = Column("item_id")
-    val sentMailId = Column("sentmail_id")
-    val created    = Column("created")
+    val id         = Column[Ident]("id", this)
+    val itemId     = Column[Ident]("item_id", this)
+    val sentMailId = Column[Ident]("sentmail_id", this)
+    val created    = Column[Timestamp]("created", this)
 
     val all = List(
       id,
@@ -45,21 +45,23 @@ object RSentMailItem {
     )
   }
 
-  import Columns._
+  private val T = Table(None)
+  def as(alias: String): Table =
+    Table(Some(alias))
 
   def insert(v: RSentMailItem): ConnectionIO[Int] =
-    insertRow(
-      table,
-      all,
+    DML.insert(
+      T,
+      T.all,
       sql"${v.id},${v.itemId},${v.sentMailId},${v.created}"
-    ).update.run
+    )
 
   def deleteMail(mailId: Ident): ConnectionIO[Int] =
-    deleteFrom(table, sentMailId.is(mailId)).update.run
+    DML.delete(T, T.sentMailId === mailId)
 
   def findSentMailIdsByItem(item: Ident): ConnectionIO[Set[Ident]] =
-    selectSimple(Seq(sentMailId), table, itemId.is(item)).query[Ident].to[Set]
+    run(select(Seq(T.sentMailId)), from(T), T.itemId === item).query[Ident].to[Set]
 
   def deleteAllByItem(item: Ident): ConnectionIO[Int] =
-    deleteFrom(table, itemId.is(item)).update.run
+    DML.delete(T, T.itemId === item)
 }

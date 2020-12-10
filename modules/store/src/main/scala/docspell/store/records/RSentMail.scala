@@ -7,8 +7,8 @@ import cats.implicits._
 import fs2.Stream
 
 import docspell.common._
-import docspell.store.impl.Column
-import docspell.store.impl.Implicits._
+import docspell.store.qb.DSL._
+import docspell.store.qb._
 
 import doobie._
 import doobie.implicits._
@@ -78,18 +78,19 @@ object RSentMail {
       si <- OptionT.liftF(RSentMailItem[ConnectionIO](itemId, sm.id, Some(sm.created)))
     } yield (sm, si)
 
-  val table = fr"sentmail"
+  final case class Table(alias: Option[String]) extends TableDef {
 
-  object Columns {
-    val id         = Column("id")
-    val uid        = Column("uid")
-    val messageId  = Column("message_id")
-    val sender     = Column("sender")
-    val connName   = Column("conn_name")
-    val subject    = Column("subject")
-    val recipients = Column("recipients")
-    val body       = Column("body")
-    val created    = Column("created")
+    val tableName = "sentmail"
+
+    val id         = Column[Ident]("id", this)
+    val uid        = Column[Ident]("uid", this)
+    val messageId  = Column[String]("message_id", this)
+    val sender     = Column[MailAddress]("sender", this)
+    val connName   = Column[Ident]("conn_name", this)
+    val subject    = Column[String]("subject", this)
+    val recipients = Column[List[MailAddress]]("recipients", this)
+    val body       = Column[String]("body", this)
+    val created    = Column[Timestamp]("created", this)
 
     val all = List(
       id,
@@ -104,27 +105,29 @@ object RSentMail {
     )
   }
 
-  import Columns._
+  private val T = Table(None)
+  def as(alias: String): Table =
+    Table(Some(alias))
 
   def insert(v: RSentMail): ConnectionIO[Int] =
-    insertRow(
-      table,
-      all,
+    DML.insert(
+      T,
+      T.all,
       sql"${v.id},${v.uid},${v.messageId},${v.sender},${v.connName},${v.subject},${v.recipients},${v.body},${v.created}"
-    ).update.run
+    )
 
   def findByUser(userId: Ident): Stream[ConnectionIO, RSentMail] =
-    selectSimple(all, table, uid.is(userId)).query[RSentMail].stream
+    run(select(T.all), from(T), T.uid === userId).query[RSentMail].stream
 
   def delete(mailId: Ident): ConnectionIO[Int] =
-    deleteFrom(table, id.is(mailId)).update.run
+    DML.delete(T, T.id === mailId)
 
   def deleteByItem(item: Ident): ConnectionIO[Int] =
     for {
       list <- RSentMailItem.findSentMailIdsByItem(item)
       n1   <- RSentMailItem.deleteAllByItem(item)
       n0 <- NonEmptyList.fromList(list.toList) match {
-        case Some(nel) => deleteFrom(table, id.isIn(nel)).update.run
+        case Some(nel) => DML.delete(T, T.id.in(nel))
         case None      => 0.pure[ConnectionIO]
       }
     } yield n0 + n1

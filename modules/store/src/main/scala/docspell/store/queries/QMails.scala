@@ -21,7 +21,8 @@ object QMails {
 
   def findMail(coll: Ident, mailId: Ident): ConnectionIO[Option[(RSentMail, Ident)]] = {
     val iColl = RItem.Columns.cid.prefix("i")
-    val mId   = RSentMail.Columns.id.prefix("m")
+    val smail = RSentMail.as("m")
+    val mId   = smail.id.column
 
     val (cols, from) = partialFind
 
@@ -31,9 +32,11 @@ object QMails {
   }
 
   def findMails(coll: Ident, itemId: Ident): ConnectionIO[Vector[(RSentMail, Ident)]] = {
-    val iColl    = RItem.Columns.cid.prefix("i")
-    val tItem    = RSentMailItem.Columns.itemId.prefix("t")
-    val mCreated = RSentMail.Columns.created.prefix("m")
+    val smailitem = RSentMailItem.as("t")
+    val smail     = RSentMail.as("m")
+    val iColl     = RItem.Columns.cid.prefix("i")
+    val tItem     = smailitem.itemId.column
+    val mCreated  = smail.created.column
 
     val (cols, from) = partialFind
 
@@ -45,16 +48,18 @@ object QMails {
   }
 
   private def partialFind: (Seq[Column], Fragment) = {
-    val user  = RUser.as("u")
-    val iId   = RItem.Columns.id.prefix("i")
-    val tItem = RSentMailItem.Columns.itemId.prefix("t")
-    val tMail = RSentMailItem.Columns.sentMailId.prefix("t")
-    val mId   = RSentMail.Columns.id.prefix("m")
-    val mUser = RSentMail.Columns.uid.prefix("m")
+    val user      = RUser.as("u")
+    val smailitem = RSentMailItem.as("t")
+    val smail     = RSentMail.as("m")
+    val iId       = RItem.Columns.id.prefix("i")
+    val tItem     = smailitem.itemId.column
+    val tMail     = smailitem.sentMailId.column
+    val mId       = smail.id.column
+    val mUser     = smail.uid.column
 
-    val cols = RSentMail.Columns.all.map(_.prefix("m")) :+ user.login.column
-    val from = RSentMail.table ++ fr"m INNER JOIN" ++
-      RSentMailItem.table ++ fr"t ON" ++ tMail.is(mId) ++
+    val cols = smail.all.map(_.column) :+ user.login.column
+    val from = Fragment.const(smail.tableName) ++ fr"m INNER JOIN" ++
+      Fragment.const(smailitem.tableName) ++ fr"t ON" ++ tMail.is(mId) ++
       fr"INNER JOIN" ++ RItem.table ++ fr"i ON" ++ tItem.is(iId) ++
       fr"INNER JOIN" ++ Fragment.const(user.tableName) ++ fr"u ON" ++ user.uid.column.is(
         mUser
