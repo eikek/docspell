@@ -178,18 +178,8 @@ updateWithSub msg model =
                 page =
                     Page.fromUrl url
                         |> Maybe.withDefault (defaultPage model.flags)
-
-                check =
-                    checkPage model.flags page
-
-                ( m, c, s ) =
-                    initPage model page
             in
-            if check == page then
-                ( { m | page = page }, c, s )
-
-            else
-                ( model, Page.goto check, Sub.none )
+            ( model, Page.goto page, Sub.none )
 
         ToggleNavMenu ->
             ( { model

@@ -1,7 +1,6 @@
 module App.Data exposing
     ( Model
     , Msg(..)
-    , checkPage
     , defaultPage
     , init
     )
@@ -148,29 +147,6 @@ type Msg
     | GetUiSettings UiSettings
 
 
-isSignedIn : Flags -> Bool
-isSignedIn flags =
-    flags.account
-        |> Maybe.map .success
-        |> Maybe.withDefault False
-
-
-checkPage : Flags -> Page -> Page
-checkPage flags page =
-    if Page.isSecured page && isSignedIn flags then
-        page
-
-    else if Page.isOpen page then
-        page
-
-    else
-        Page.loginPage page
-
-
 defaultPage : Flags -> Page
 defaultPage flags =
-    if isSignedIn flags then
-        HomePage
-
-    else
-        LoginPage Nothing
+    HomePage

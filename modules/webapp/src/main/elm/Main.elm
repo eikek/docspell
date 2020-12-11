@@ -42,22 +42,15 @@ init flags url key =
         ( im, ic ) =
             App.Data.init key url flags Data.UiSettings.defaults
 
-        page =
-            checkPage flags im.page
-
         ( m, cmd, s ) =
-            if im.page == page then
-                App.Update.initPage im page
-
-            else
-                ( im, Page.goto page, Sub.none )
+            App.Update.initPage im im.page
     in
     ( { m | subs = s }
     , Cmd.batch
         [ cmd
         , ic
         , Api.versionInfo flags VersionResp
-        , if Page.isSecured page then
+        , if Page.isSecured im.page then
             Api.loginSession flags SessionCheckResp
 
           else
