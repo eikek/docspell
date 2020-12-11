@@ -20,6 +20,8 @@ object Condition {
       val P: Put[A]
   ) extends Condition
 
+  case class IsNull(col: Column[_]) extends Condition
+
   case class And(c: Condition, cs: Vector[Condition]) extends Condition
   case class Or(c: Condition, cs: Vector[Condition])  extends Condition
   case class Not(c: Condition)                        extends Condition

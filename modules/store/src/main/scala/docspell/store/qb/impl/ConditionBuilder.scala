@@ -44,6 +44,9 @@ object ConditionBuilder {
           .map(a => buildValue(a)(c.P))
           .reduce(_ ++ comma ++ _) ++ sql")"
 
+      case Condition.IsNull(col) =>
+        SelectExprBuilder.column(col) ++ fr" is null"
+
       case Condition.And(c, cs) =>
         val inner = cs.prepended(c).map(build).reduce(_ ++ and ++ _)
         if (cs.isEmpty) inner
@@ -54,6 +57,9 @@ object ConditionBuilder {
         if (cs.isEmpty) inner
         else parenOpen ++ inner ++ parenClose
 
+      case Condition.Not(Condition.IsNull(col)) =>
+        SelectExprBuilder.column(col) ++ fr" is not null"
+
       case Condition.Not(c) =>
         fr"NOT" ++ build(c)
     }
@@ -62,6 +68,8 @@ object ConditionBuilder {
     op match {
       case Operator.Eq =>
         fr" ="
+      case Operator.Neq =>
+        fr" <>"
       case Operator.Gt =>
         fr" >"
       case Operator.Lt =>
