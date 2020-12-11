@@ -36,7 +36,7 @@ object Dependencies {
   val StanfordNlpVersion      = "4.2.0"
   val TikaVersion             = "1.25"
   val YamuscaVersion          = "0.7.0"
-  val SwaggerUIVersion        = "3.37.2"
+  val SwaggerUIVersion        = "3.38.0"
   val FomanticUIVersion       = "2.8.7-3"
   val TwelveMonkeysVersion    = "3.6.1"
   val JQueryVersion           = "3.5.1"
