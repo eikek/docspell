@@ -23,4 +23,9 @@ object DBFunction {
     def as(a: String) =
       copy(alias = a)
   }
+
+  case class Max(column: Column[_], alias: String) extends DBFunction {
+    def as(a: String) =
+      copy(alias = a)
+  }
 }

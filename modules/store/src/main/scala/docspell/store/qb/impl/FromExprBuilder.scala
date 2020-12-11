@@ -15,6 +15,9 @@ object FromExprBuilder {
       case FromExpr.Joined(from, joins) =>
         build(from) ++
           joins.map(buildJoin).foldLeft(Fragment.empty)(_ ++ _)
+
+      case FromExpr.SubSelect(sel, name) =>
+        sql" FROM (" ++ DoobieQuery(sel) ++ fr") AS" ++ Fragment.const(name)
     }
 
   def buildTable(table: TableDef): Fragment =

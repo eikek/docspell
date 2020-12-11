@@ -1,8 +1,8 @@
 package docspell.store.records
 
 import docspell.common._
-import docspell.store.impl.Implicits._
-import docspell.store.impl._
+import docspell.store.qb.DSL._
+import docspell.store.qb._
 
 import doobie._
 import doobie.implicits._
@@ -18,64 +18,62 @@ case class RContact(
 
 object RContact {
 
-  val table = fr"contact"
+  final case class Table(alias: Option[String]) extends TableDef {
+    val tableName = "contact"
 
-  object Columns {
-    val contactId = Column("contactid")
-    val value     = Column("value")
-    val kind      = Column("kind")
-    val personId  = Column("pid")
-    val orgId     = Column("oid")
-    val created   = Column("created")
+    val contactId = Column[Ident]("contactid", this)
+    val value     = Column[String]("value", this)
+    val kind      = Column[ContactKind]("kind", this)
+    val personId  = Column[Ident]("pid", this)
+    val orgId     = Column[Ident]("oid", this)
+    val created   = Column[Timestamp]("created", this)
     val all       = List(contactId, value, kind, personId, orgId, created)
   }
 
-  import Columns._
+  private val T = Table(None)
+  def as(alias: String): Table =
+    Table(Some(alias))
 
-  def insert(v: RContact): ConnectionIO[Int] = {
-    val sql = insertRow(
-      table,
-      all,
+  def insert(v: RContact): ConnectionIO[Int] =
+    DML.insert(
+      T,
+      T.all,
       fr"${v.contactId},${v.value},${v.kind},${v.personId},${v.orgId},${v.created}"
     )
-    sql.update.run
-  }
 
-  def update(v: RContact): ConnectionIO[Int] = {
-    val sql = updateRow(
-      table,
-      contactId.is(v.contactId),
-      commas(
-        value.setTo(v.value),
-        kind.setTo(v.kind),
-        personId.setTo(v.personId),
-        orgId.setTo(v.orgId)
+  def update(v: RContact): ConnectionIO[Int] =
+    DML.update(
+      T,
+      T.contactId === v.contactId,
+      DML.set(
+        T.value.setTo(v.value),
+        T.kind.setTo(v.kind),
+        T.personId.setTo(v.personId),
+        T.orgId.setTo(v.orgId)
       )
     )
-    sql.update.run
-  }
 
   def delete(v: RContact): ConnectionIO[Int] =
-    deleteFrom(table, contactId.is(v.contactId)).update.run
+    DML.delete(T, T.contactId === v.contactId)
 
   def deleteOrg(oid: Ident): ConnectionIO[Int] =
-    deleteFrom(table, orgId.is(oid)).update.run
+    DML.delete(T, T.orgId === oid)
 
   def deletePerson(pid: Ident): ConnectionIO[Int] =
-    deleteFrom(table, personId.is(pid)).update.run
+    DML.delete(T, T.personId === pid)
 
   def findById(id: Ident): ConnectionIO[Option[RContact]] = {
-    val sql = selectSimple(all, table, contactId.is(id))
+    val sql = run(select(T.all), from(T), T.contactId === id)
     sql.query[RContact].option
   }
 
   def findAllPerson(pid: Ident): ConnectionIO[Vector[RContact]] = {
-    val sql = selectSimple(all, table, personId.is(pid))
+    val sql = run(select(T.all), from(T), T.personId === pid)
     sql.query[RContact].to[Vector]
   }
 
   def findAllOrg(oid: Ident): ConnectionIO[Vector[RContact]] = {
-    val sql = selectSimple(all, table, orgId.is(oid))
+    val sql = run(select(T.all), from(T), T.orgId === oid)
     sql.query[RContact].to[Vector]
   }
 }

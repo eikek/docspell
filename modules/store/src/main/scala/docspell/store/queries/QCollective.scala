@@ -91,61 +91,28 @@ object QCollective {
 
     sql.run.query[TagCount].to[List]
   }
-//  def tagCloud2(coll: Ident): ConnectionIO[List[TagCount]] = {
-//    val tagItem = RTagItem.as("r")
-//    val TC      = RTag.Columns
-//
-//    val q3 = fr"SELECT" ++ commas(
-//      TC.all.map(_.prefix("t").f) ++ Seq(fr"count(" ++ tagItem.itemId.column.f ++ fr")")
-//    ) ++
-//      fr"FROM" ++ Fragment.const(tagItem.tableName) ++ fr"r" ++
-//      fr"INNER JOIN" ++ RTag.table ++ fr"t ON" ++ tagItem.tagId.column
-//        .prefix("r")
-//        .is(TC.tid.prefix("t")) ++
-//      fr"WHERE" ++ TC.cid.prefix("t").is(coll) ++
-//      fr"GROUP BY" ++ commas(
-//        TC.name.prefix("t").f,
-//        TC.tid.prefix("t").f,
-//        TC.category.prefix("t").f
-//      )
-//
-//    q3.query[TagCount].to[List]
-//  }
 
   def getContacts(
       coll: Ident,
       query: Option[String],
       kind: Option[ContactKind]
   ): Stream[ConnectionIO, RContact] = {
-    val RO = ROrganization
-    val RP = RPerson
-    val RC = RContact
+    import docspell.store.qb.DSL._
+    import docspell.store.qb._
 
-    val orgCond  = selectSimple(Seq(RO.Columns.oid), RO.table, RO.Columns.cid.is(coll))
-    val persCond = selectSimple(Seq(RP.Columns.pid), RP.table, RP.Columns.cid.is(coll))
-    val queryCond = query match {
-      case Some(q) =>
-        Seq(RC.Columns.value.lowerLike(s"%${q.toLowerCase}%"))
-      case None =>
-        Seq.empty
-    }
-    val kindCond = kind match {
-      case Some(k) =>
-        Seq(RC.Columns.kind.is(k))
-      case None =>
-        Seq.empty
-    }
+    val ro = ROrganization.as("o")
+    val rp = RPerson.as("p")
+    val rc = RContact.as("c")
 
-    val q = selectSimple(
-      RC.Columns.all,
-      RC.table,
-      and(
-        Seq(
-          or(RC.Columns.orgId.isIn(orgCond), RC.Columns.personId.isIn(persCond))
-        ) ++ queryCond ++ kindCond
-      )
-    ) ++ orderBy(RC.Columns.value.f)
+    val orgCond     = Select(select(ro.oid), from(ro), ro.cid === coll)
+    val persCond    = Select(select(rp.pid), from(rp), rp.cid === coll)
+    val valueFilter = query.map(s => rc.value.like(s"%${s.toLowerCase}%"))
+    val kindFilter  = kind.map(k => rc.kind === k)
 
-    q.query[RContact].stream
+    Select(
+      select(rc.all),
+      from(rc),
+      (rc.orgId.in(orgCond) || rc.personId.in(persCond)) &&? valueFilter &&? kindFilter
+    ).orderBy(rc.value).run.query[RContact].stream
   }
 }

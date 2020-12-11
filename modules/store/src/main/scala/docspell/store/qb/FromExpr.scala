@@ -2,9 +2,9 @@ package docspell.store.qb
 
 sealed trait FromExpr {
 
-  def innerJoin(other: TableDef, on: Condition): FromExpr
-
-  def leftJoin(other: TableDef, on: Condition): FromExpr
+//  def innerJoin(other: TableDef, on: Condition): FromExpr
+//
+//  def leftJoin(other: TableDef, on: Condition): FromExpr
 }
 
 object FromExpr {
@@ -23,6 +23,10 @@ object FromExpr {
 
     def leftJoin(other: TableDef, on: Condition): Joined =
       Joined(from, joins :+ Join.LeftJoin(other, on))
+  }
 
+  case class SubSelect(sel: Select, name: String) extends FromExpr {
+    def as(name: String): SubSelect =
+      copy(name = name)
   }
 }

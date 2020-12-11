@@ -9,8 +9,18 @@ import doobie.{Fragment, Put}
 
 trait DSL extends DoobieMeta {
 
+  def run(projection: Seq[SelectExpr], from: FromExpr): Fragment =
+    DoobieQuery(Select(projection, from, None))
+
   def run(projection: Seq[SelectExpr], from: FromExpr, where: Condition): Fragment =
     DoobieQuery(Select(projection, from, where))
+
+  def runDistinct(
+      projection: Seq[SelectExpr],
+      from: FromExpr,
+      where: Condition
+  ): Fragment =
+    DoobieQuery.distinct(Select(projection, from, where))
 
   def select(dbf: DBFunction): Seq[SelectExpr] =
     Seq(SelectExpr.SelectFun(dbf))
@@ -21,11 +31,20 @@ trait DSL extends DoobieMeta {
   def select(seq: Seq[Column[_]], seqs: Seq[Column[_]]*): Seq[SelectExpr] =
     (seq ++ seqs.flatten).map(SelectExpr.SelectColumn.apply)
 
-  def from(table: TableDef): FromExpr =
+  def union(s1: Select, sn: Select*): Select =
+    Select.Union(s1, sn.toVector)
+
+  def from(table: TableDef): FromExpr.From =
     FromExpr.From(table)
+
+  def fromSubSelect(sel: Select): FromExpr.SubSelect =
+    FromExpr.SubSelect(sel, "x")
 
   def count(c: Column[_]): DBFunction =
     DBFunction.Count(c, "cn")
+
+  def max(c: Column[_]): DBFunction =
+    DBFunction.Max(c, "mn")
 
   def and(c: Condition, cs: Condition*): Condition =
     c match {

@@ -27,6 +27,7 @@ object REquipment {
     val all     = List(eid, cid, name, created, updated)
   }
 
+  val T = Table(None)
   def as(alias: String): Table =
     Table(Some(alias))
 

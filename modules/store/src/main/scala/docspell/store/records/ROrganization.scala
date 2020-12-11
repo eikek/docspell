@@ -4,8 +4,8 @@ import cats.Eq
 import fs2.Stream
 
 import docspell.common.{IdRef, _}
-import docspell.store.impl.Implicits._
-import docspell.store.impl._
+import docspell.store.qb.DSL._
+import docspell.store.qb._
 
 import doobie._
 import doobie.implicits._
@@ -27,73 +27,73 @@ object ROrganization {
   implicit val orgEq: Eq[ROrganization] =
     Eq.by[ROrganization, Ident](_.oid)
 
-  val table = fr"organization"
+  final case class Table(alias: Option[String]) extends TableDef {
+    val tableName = "organization"
 
-  object Columns {
-    val oid     = Column("oid")
-    val cid     = Column("cid")
-    val name    = Column("name")
-    val street  = Column("street")
-    val zip     = Column("zip")
-    val city    = Column("city")
-    val country = Column("country")
-    val notes   = Column("notes")
-    val created = Column("created")
-    val updated = Column("updated")
+    val oid     = Column[Ident]("oid", this)
+    val cid     = Column[Ident]("cid", this)
+    val name    = Column[String]("name", this)
+    val street  = Column[String]("street", this)
+    val zip     = Column[String]("zip", this)
+    val city    = Column[String]("city", this)
+    val country = Column[String]("country", this)
+    val notes   = Column[String]("notes", this)
+    val created = Column[Timestamp]("created", this)
+    val updated = Column[Timestamp]("updated", this)
     val all     = List(oid, cid, name, street, zip, city, country, notes, created, updated)
   }
 
-  import Columns._
+  val T = Table(None)
+  def as(alias: String): Table =
+    Table(Some(alias))
 
-  def insert(v: ROrganization): ConnectionIO[Int] = {
-    val sql = insertRow(
-      table,
-      all,
+  def insert(v: ROrganization): ConnectionIO[Int] =
+    DML.insert(
+      T,
+      T.all,
       fr"${v.oid},${v.cid},${v.name},${v.street},${v.zip},${v.city},${v.country},${v.notes},${v.created},${v.updated}"
     )
-    sql.update.run
-  }
 
   def update(v: ROrganization): ConnectionIO[Int] = {
     def sql(now: Timestamp) =
-      updateRow(
-        table,
-        and(oid.is(v.oid), cid.is(v.cid)),
-        commas(
-          cid.setTo(v.cid),
-          name.setTo(v.name),
-          street.setTo(v.street),
-          zip.setTo(v.zip),
-          city.setTo(v.city),
-          country.setTo(v.country),
-          notes.setTo(v.notes),
-          updated.setTo(now)
+      DML.update(
+        T,
+        T.oid === v.oid && T.cid === v.cid,
+        DML.set(
+          T.cid.setTo(v.cid),
+          T.name.setTo(v.name),
+          T.street.setTo(v.street),
+          T.zip.setTo(v.zip),
+          T.city.setTo(v.city),
+          T.country.setTo(v.country),
+          T.notes.setTo(v.notes),
+          T.updated.setTo(now)
         )
       )
     for {
       now <- Timestamp.current[ConnectionIO]
-      n   <- sql(now).update.run
+      n   <- sql(now)
     } yield n
   }
 
   def existsByName(coll: Ident, oname: String): ConnectionIO[Boolean] =
-    selectCount(oid, table, and(cid.is(coll), name.is(oname)))
+    run(select(count(T.oid)), from(T), T.cid === coll && T.name === oname)
       .query[Int]
       .unique
       .map(_ > 0)
 
   def findById(id: Ident): ConnectionIO[Option[ROrganization]] = {
-    val sql = selectSimple(all, table, cid.is(id))
+    val sql = run(select(T.all), from(T), T.cid === id)
     sql.query[ROrganization].option
   }
 
   def find(coll: Ident, orgName: String): ConnectionIO[Option[ROrganization]] = {
-    val sql = selectSimple(all, table, and(cid.is(coll), name.is(orgName)))
+    val sql = run(select(T.all), from(T), T.cid === coll && T.name === orgName)
     sql.query[ROrganization].option
   }
 
   def findLike(coll: Ident, orgName: String): ConnectionIO[Vector[IdRef]] =
-    selectSimple(List(oid, name), table, and(cid.is(coll), name.lowerLike(orgName)))
+    run(select(T.oid, T.name), from(T), T.cid === coll && T.name.like(orgName))
       .query[IdRef]
       .to[Vector]
 
@@ -102,42 +102,38 @@ object ROrganization {
       contactKind: ContactKind,
       value: String
   ): ConnectionIO[Vector[IdRef]] = {
-    val CC = RContact.Columns
-    val q = fr"SELECT DISTINCT" ++ commas(oid.prefix("o").f, name.prefix("o").f) ++
-      fr"FROM" ++ table ++ fr"o" ++
-      fr"INNER JOIN" ++ RContact.table ++ fr"c ON" ++ CC.orgId
-        .prefix("c")
-        .is(oid.prefix("o")) ++
-      fr"WHERE" ++ and(
-        cid.prefix("o").is(coll),
-        CC.kind.prefix("c").is(contactKind),
-        CC.value.prefix("c").lowerLike(value)
+    val c = RContact.as("c")
+    val o = ROrganization.as("o")
+    runDistinct(
+      select(o.oid, o.name),
+      from(o).innerJoin(c, c.orgId === o.oid),
+      where(
+        o.cid === coll,
+        c.kind === contactKind,
+        c.value.like(value)
       )
-
-    q.query[IdRef].to[Vector]
+    ).query[IdRef].to[Vector]
   }
 
   def findAll(
       coll: Ident,
-      order: Columns.type => Column
+      order: Table => Column[_]
   ): Stream[ConnectionIO, ROrganization] = {
-    val sql = selectSimple(all, table, cid.is(coll)) ++ orderBy(order(Columns).f)
-    sql.query[ROrganization].stream
+    val sql = Select(select(T.all), from(T), T.cid === coll).orderBy(order(T))
+    sql.run.query[ROrganization].stream
   }
 
   def findAllRef(
       coll: Ident,
       nameQ: Option[String],
-      order: Columns.type => Column
+      order: Table => Column[_]
   ): ConnectionIO[Vector[IdRef]] = {
-    val q = Seq(cid.is(coll)) ++ (nameQ match {
-      case Some(str) => Seq(name.lowerLike(s"%${str.toLowerCase}%"))
-      case None      => Seq.empty
-    })
-    val sql = selectSimple(List(oid, name), table, and(q)) ++ orderBy(order(Columns).f)
-    sql.query[IdRef].to[Vector]
+    val nameFilter = nameQ.map(s => T.name.like(s"%${s.toLowerCase}%"))
+    val sql = Select(select(T.oid, T.name), from(T), T.cid === coll &&? nameFilter)
+      .orderBy(order(T))
+    sql.run.query[IdRef].to[Vector]
   }
 
   def delete(id: Ident, coll: Ident): ConnectionIO[Int] =
-    deleteFrom(table, and(oid.is(id), cid.is(coll))).update.run
+    DML.delete(T, T.oid === id && T.cid === coll)
 }

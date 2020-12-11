@@ -13,16 +13,19 @@ object SelectExprBuilder {
         column(col)
 
       case SelectExpr.SelectFun(DBFunction.CountAll(alias)) =>
-        fr"COUNT(*) AS" ++ Fragment.const(alias)
+        sql"COUNT(*) AS" ++ Fragment.const(alias)
 
       case SelectExpr.SelectFun(DBFunction.Count(col, alias)) =>
-        fr"COUNT(" ++ column(col) ++ fr") AS" ++ Fragment.const(alias)
+        sql"COUNT(" ++ column(col) ++ fr") AS" ++ Fragment.const(alias)
+
+      case SelectExpr.SelectFun(DBFunction.Max(col, alias)) =>
+        sql"MAX(" ++ column(col) ++ fr") AS" ++ Fragment.const(alias)
     }
 
   def column(col: Column[_]): Fragment = {
-    val prefix =
-      Fragment.const0(col.table.alias.getOrElse(col.table.tableName))
-    prefix ++ Fragment.const0(".") ++ Fragment.const0(col.name)
+    val prefix = col.table.alias.getOrElse(col.table.tableName)
+    if (prefix.isEmpty) columnNoPrefix(col)
+    else Fragment.const0(prefix) ++ Fragment.const0(".") ++ Fragment.const0(col.name)
   }
 
   def columnNoPrefix(col: Column[_]): Fragment =
