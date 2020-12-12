@@ -21,7 +21,12 @@ object DBFunction {
 
   case class Power(expr: SelectExpr, base: Int) extends DBFunction
 
-  case class Plus(expr: SelectExpr, exprs: Vector[SelectExpr]) extends DBFunction
+  case class Calc(op: Operator, left: SelectExpr, right: SelectExpr) extends DBFunction
 
-  case class Mult(expr: SelectExpr, exprs: Vector[SelectExpr]) extends DBFunction
+  sealed trait Operator
+  object Operator {
+    case object Plus  extends Operator
+    case object Minus extends Operator
+    case object Mult  extends Operator
+  }
 }

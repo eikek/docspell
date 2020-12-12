@@ -4,7 +4,13 @@ import cats.data.NonEmptyList
 
 import doobie._
 
-sealed trait Condition {}
+sealed trait Condition {
+  def s: SelectExpr.SelectCondition =
+    SelectExpr.SelectCondition(this, None)
+
+  def as(alias: String): SelectExpr.SelectCondition =
+    SelectExpr.SelectCondition(this, Some(alias))
+}
 
 object Condition {
 

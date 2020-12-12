@@ -3,30 +3,39 @@ package docspell.store.qb
 import cats.data.NonEmptyList
 
 import docspell.store.impl.DoobieMeta
-import docspell.store.qb.impl.DoobieQuery
+import docspell.store.qb.impl.SelectBuilder
 
 import doobie.{Fragment, Put}
 
 trait DSL extends DoobieMeta {
 
   def run(projection: Seq[SelectExpr], from: FromExpr): Fragment =
-    DoobieQuery(Select(projection, from, None))
+    SelectBuilder(Select(projection, from))
 
   def run(projection: Seq[SelectExpr], from: FromExpr, where: Condition): Fragment =
-    DoobieQuery(Select(projection, from, where))
+    SelectBuilder(Select(projection, from, where))
 
   def runDistinct(
       projection: Seq[SelectExpr],
       from: FromExpr,
       where: Condition
   ): Fragment =
-    DoobieQuery.distinct(Select(projection, from, where))
+    SelectBuilder(Select(projection, from, where).distinct)
+
+  def withCte(cte: (TableDef, Select), more: (TableDef, Select)*): DSL.WithCteDsl =
+    DSL.WithCteDsl(CteBind(cte), more.map(CteBind.apply).toVector)
+
+  def select(cond: Condition): Seq[SelectExpr] =
+    Seq(SelectExpr.SelectCondition(cond, None))
 
   def select(dbf: DBFunction): Seq[SelectExpr] =
     Seq(SelectExpr.SelectFun(dbf, None))
 
+  def select(e: SelectExpr, es: SelectExpr*): Seq[SelectExpr] =
+    es.prepended(e)
+
   def select(c: Column[_], cs: Column[_]*): Seq[SelectExpr] =
-    select(c :: cs.toList)
+    cs.prepended(c).map(col => SelectExpr.SelectColumn(col, None))
 
   def select(seq: Seq[Column[_]], seqs: Seq[Column[_]]*): Seq[SelectExpr] =
     (seq ++ seqs.flatten).map(c => SelectExpr.SelectColumn(c, None))
@@ -43,6 +52,9 @@ trait DSL extends DoobieMeta {
   def count(c: Column[_]): DBFunction =
     DBFunction.Count(c)
 
+  def countAll: DBFunction =
+    DBFunction.CountAll
+
   def max(c: Column[_]): DBFunction =
     DBFunction.Max(c)
 
@@ -58,11 +70,11 @@ trait DSL extends DoobieMeta {
   def lit[A](value: A)(implicit P: Put[A]): SelectExpr.SelectLit[A] =
     SelectExpr.SelectLit(value, None)
 
-  def plus(expr: SelectExpr, more: SelectExpr*): DBFunction =
-    DBFunction.Plus(expr, more.toVector)
+  def plus(left: SelectExpr, right: SelectExpr): DBFunction =
+    DBFunction.Calc(DBFunction.Operator.Plus, left, right)
 
-  def mult(expr: SelectExpr, more: SelectExpr*): DBFunction =
-    DBFunction.Mult(expr, more.toVector)
+  def mult(left: SelectExpr, right: SelectExpr): DBFunction =
+    DBFunction.Calc(DBFunction.Operator.Mult, left, right)
 
   def and(c: Condition, cs: Condition*): Condition =
     c match {
@@ -205,8 +217,22 @@ trait DSL extends DoobieMeta {
 
     def <>[A](value: A)(implicit P: Put[A]): Condition =
       Condition.CompareFVal(dbf, Operator.Neq, value)
+
+    def -[A](value: A)(implicit P: Put[A]): DBFunction =
+      DBFunction.Calc(
+        DBFunction.Operator.Minus,
+        SelectExpr.SelectFun(dbf, None),
+        SelectExpr.SelectLit(value, None)
+      )
+  }
+}
+
+object DSL extends DSL {
+
+  final case class WithCteDsl(cte: CteBind, ctes: Vector[CteBind]) {
+
+    def select(s: Select): Select.WithCte =
+      Select.WithCte(cte, ctes, s)
   }
 
 }
-
-object DSL extends DSL

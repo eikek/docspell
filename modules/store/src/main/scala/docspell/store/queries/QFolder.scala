@@ -4,7 +4,8 @@ import cats.data.OptionT
 import cats.implicits._
 
 import docspell.common._
-import docspell.store.impl.Implicits._
+import docspell.store.qb.DSL._
+import docspell.store.qb._
 import docspell.store.records._
 
 import doobie._
@@ -136,22 +137,16 @@ object QFolder {
   }
 
   def findById(id: Ident, account: AccountId): ConnectionIO[Option[FolderDetail]] = {
-    val user      = RUser.as("u")
-    val mUserId   = RFolderMember.Columns.user.prefix("m")
-    val mFolderId = RFolderMember.Columns.folder.prefix("m")
-    val uId       = user.uid.column
-    val uLogin    = user.login.column
-    val sColl     = RFolder.Columns.collective.prefix("s")
-    val sId       = RFolder.Columns.id.prefix("s")
+    val user   = RUser.as("u")
+    val member = RFolderMember.as("m")
+    val folder = RFolder.as("s")
 
-    val from = RFolderMember.table ++ fr"m INNER JOIN" ++
-      Fragment.const(user.tableName) ++ fr"u ON" ++ mUserId.is(uId) ++ fr"INNER JOIN" ++
-      RFolder.table ++ fr"s ON" ++ mFolderId.is(sId)
-
-    val memberQ = selectSimple(
-      Seq(uId, uLogin),
-      from,
-      and(mFolderId.is(id), sColl.is(account.collective))
+    val memberQ = run(
+      select(user.uid, user.login),
+      from(member)
+        .innerJoin(user, member.user === user.uid)
+        .innerJoin(folder, member.folder === folder.id),
+      member.folder === id && folder.collective === account.collective
     ).query[IdRef].to[Vector]
 
     (for {
@@ -188,92 +183,85 @@ object QFolder {
 // inner join user_ u on u.uid = s.owner
 // where s.cid = 'eike';
 
-    val user    = RUser.as("u")
-    val uId     = user.uid.column
-    val uLogin  = user.login.column
-    val sId     = RFolder.Columns.id.prefix("s")
-    val sOwner  = RFolder.Columns.owner.prefix("s")
-    val sName   = RFolder.Columns.name.prefix("s")
-    val sColl   = RFolder.Columns.collective.prefix("s")
-    val mUser   = RFolderMember.Columns.user.prefix("m")
-    val mFolder = RFolderMember.Columns.folder.prefix("m")
+    val user           = RUser.as("u")
+    val member         = RFolderMember.as("m")
+    val folder         = RFolder.as("s")
+    val memlogin       = TableDef("memberlogin")
+    val memloginFolder = member.folder.inTable(memlogin)
+    val memloginLogn   = user.login.inTable(memlogin)
 
-    //CTE
-    val cte: Fragment = {
-      val from1 = RFolderMember.table ++ fr"m INNER JOIN" ++
-        Fragment.const(user.tableName) ++ fr"u ON" ++ uId.is(mUser) ++ fr"INNER JOIN" ++
-        RFolder.table ++ fr"s ON" ++ sId.is(mFolder)
-
-      val from2 = RFolder.table ++ fr"s INNER JOIN" ++
-        Fragment.const(user.tableName) ++ fr"u ON" ++ uId.is(sOwner)
-
-      withCTE(
-        "memberlogin" ->
-          (selectSimple(Seq(mFolder, uLogin), from1, sColl.is(account.collective)) ++
-            fr"UNION ALL" ++
-            selectSimple(Seq(sId, uLogin), from2, sColl.is(account.collective)))
+    val sql =
+      withCte(
+        memlogin -> union(
+          Select(
+            select(member.folder, user.login),
+            from(member)
+              .innerJoin(user, user.uid === member.user)
+              .innerJoin(folder, folder.id === member.folder),
+            folder.collective === account.collective
+          ),
+          Select(
+            select(folder.id, user.login),
+            from(folder)
+              .innerJoin(user, user.uid === folder.owner),
+            folder.collective === account.collective
+          )
+        )
       )
-    }
+        .select(
+          Select(
+            select(
+              folder.id.s,
+              folder.name.s,
+              folder.owner.s,
+              user.login.s,
+              folder.created.s,
+              Select(
+                select(countAll > 0),
+                from(memlogin),
+                memloginFolder === folder.id && memloginLogn === account.user
+              ).as("member"),
+              Select(
+                select(countAll - 1),
+                from(memlogin),
+                memloginFolder === folder.id
+              ).as("member_count")
+            ),
+            from(folder)
+              .innerJoin(user, user.uid === folder.owner),
+            where(
+              folder.collective === account.collective &&?
+                idQ.map(id => folder.id === id) &&?
+                nameQ.map(q => folder.name.like(s"%${q.toLowerCase}%")) &&?
+                ownerLogin.map(login => user.login === login)
+            )
+          ).orderBy(folder.name.asc)
+        )
 
-    val isMember =
-      fr"SELECT COUNT(*) > 0 FROM memberlogin WHERE" ++ mFolder.prefix("").is(sId) ++
-        fr"AND" ++ uLogin.prefix("").is(account.user)
-
-    val memberCount =
-      fr"SELECT COUNT(*) - 1 FROM memberlogin WHERE" ++ mFolder.prefix("").is(sId)
-
-    //Query
-    val cols = Seq(
-      sId.f,
-      sName.f,
-      sOwner.f,
-      uLogin.f,
-      RFolder.Columns.created.prefix("s").f,
-      fr"(" ++ isMember ++ fr") as mem",
-      fr"(" ++ memberCount ++ fr") as cnt"
-    )
-
-    val from = RFolder.table ++ fr"s INNER JOIN" ++
-      Fragment.const(user.tableName) ++ fr"u ON" ++ uId.is(sOwner)
-
-    val where =
-      sColl.is(account.collective) :: idQ.toList
-        .map(id => sId.is(id)) ::: nameQ.toList.map(q =>
-        sName.lowerLike(s"%${q.toLowerCase}%")
-      ) ::: ownerLogin.toList.map(login => uLogin.is(login))
-
-    (cte ++ selectSimple(commas(cols), from, and(where) ++ orderBy(sName.asc)))
+    sql.run
       .query[FolderItem]
       .to[Vector]
   }
 
   /** Select all folder_id where the given account is member or owner. */
   def findMemberFolderIds(account: AccountId): Fragment = {
-    val user    = RUser.as("u")
-    val fId     = RFolder.Columns.id.prefix("f")
-    val fOwner  = RFolder.Columns.owner.prefix("f")
-    val fColl   = RFolder.Columns.collective.prefix("f")
-    val uId     = user.uid.column
-    val uLogin  = user.login.column
-    val mFolder = RFolderMember.Columns.folder.prefix("m")
-    val mUser   = RFolderMember.Columns.user.prefix("m")
-
-    selectSimple(
-      Seq(fId),
-      RFolder.table ++ fr"f INNER JOIN" ++ Fragment.const(
-        user.tableName
-      ) ++ fr"u ON" ++ fOwner.is(uId),
-      and(fColl.is(account.collective), uLogin.is(account.user))
-    ) ++
-      fr"UNION ALL" ++
-      selectSimple(
-        Seq(mFolder),
-        RFolderMember.table ++ fr"m INNER JOIN" ++ RFolder.table ++ fr"f ON" ++ fId.is(
-          mFolder
-        ) ++
-          fr"INNER JOIN" ++ Fragment.const(user.tableName) ++ fr"u ON" ++ uId.is(mUser),
-        and(fColl.is(account.collective), uLogin.is(account.user))
+    val user = RUser.as("u")
+    val f    = RFolder.as("f")
+    val m    = RFolderMember.as("m")
+    union(
+      Select(
+        select(f.id),
+        from(f).innerJoin(user, f.owner === user.uid),
+        f.collective === account.collective && user.login === account.user
+      ),
+      Select(
+        select(m.folder),
+        from(m)
+          .innerJoin(f, f.id === m.folder)
+          .innerJoin(user, user.uid === m.user),
+        f.collective === account.collective && user.login === account.user
       )
+    ).run
   }
 
   def getMemberFolders(account: AccountId): ConnectionIO[Set[Ident]] =

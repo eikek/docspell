@@ -91,6 +91,7 @@ object QItem {
     val org   = ROrganization.as("o")
     val pers0 = RPerson.as("p0")
     val pers1 = RPerson.as("p1")
+    val f     = RFolder.as("f")
 
     val IC  = RItem.Columns.all.map(_.prefix("i"))
     val OC  = org.all.map(_.column)
@@ -98,7 +99,7 @@ object QItem {
     val P1C = pers1.all.map(_.column)
     val EC  = equip.all.map(_.oldColumn).map(_.prefix("e"))
     val ICC = List(RItem.Columns.id, RItem.Columns.name).map(_.prefix("ref"))
-    val FC  = List(RFolder.Columns.id, RFolder.Columns.name).map(_.prefix("f"))
+    val FC  = List(f.id.column, f.name.column)
 
     val cq =
       selectSimple(
@@ -129,9 +130,11 @@ object QItem {
         fr"LEFT JOIN" ++ RItem.table ++ fr"ref ON" ++ RItem.Columns.inReplyTo
           .prefix("i")
           .is(RItem.Columns.id.prefix("ref")) ++
-        fr"LEFT JOIN" ++ RFolder.table ++ fr"f ON" ++ RItem.Columns.folder
+        fr"LEFT JOIN" ++ Fragment.const(
+          RFolder.T.tableName
+        ) ++ fr"f ON" ++ RItem.Columns.folder
           .prefix("i")
-          .is(RFolder.Columns.id.prefix("f")) ++
+          .is(f.id.column) ++
         fr"WHERE" ++ RItem.Columns.id.prefix("i").is(id)
 
     val q = cq
@@ -322,13 +325,13 @@ object QItem {
     val org   = ROrganization.as("o0")
     val pers0 = RPerson.as("p0")
     val pers1 = RPerson.as("p1")
+    val f     = RFolder.as("f1")
 
     val IC         = RItem.Columns
     val AC         = RAttachment.Columns
-    val FC         = RFolder.Columns
     val itemCols   = IC.all
     val equipCols  = List(equip.eid.oldColumn, equip.name.oldColumn)
-    val folderCols = List(FC.id, FC.name)
+    val folderCols = List(f.id.oldColumn, f.name.oldColumn)
     val cvItem     = RCustomFieldValue.Columns.itemId.prefix("cv")
 
     val finalCols = commas(
@@ -350,8 +353,8 @@ object QItem {
         pers1.name.column.f,
         equip.eid.oldColumn.prefix("e1").f,
         equip.name.oldColumn.prefix("e1").f,
-        FC.id.prefix("f1").f,
-        FC.name.prefix("f1").f,
+        f.id.column.f,
+        f.name.column.f,
         // sql uses 1 for first character
         IC.notes.prefix("i").substring(1, noteMaxLen),
         // last column is only for sorting
@@ -384,7 +387,11 @@ object QItem {
         equip.cid.oldColumn.is(q.account.collective)
       )
     val withFolder =
-      selectSimple(folderCols, RFolder.table, FC.collective.is(q.account.collective))
+      selectSimple(
+        folderCols,
+        Fragment.const(f.tableName),
+        f.collective.oldColumn.is(q.account.collective)
+      )
     val withAttach = fr"SELECT COUNT(" ++ AC.id.f ++ fr") as num, " ++ AC.itemId.f ++
       fr"from" ++ RAttachment.table ++ fr"GROUP BY (" ++ AC.itemId.f ++ fr")"
 
@@ -410,7 +417,7 @@ object QItem {
       fr"LEFT JOIN equips e1 ON" ++ IC.concEquipment
         .prefix("i")
         .is(equip.eid.oldColumn.prefix("e1")) ++
-      fr"LEFT JOIN folders f1 ON" ++ IC.folder.prefix("i").is(FC.id.prefix("f1")) ++
+      fr"LEFT JOIN folders f1 ON" ++ IC.folder.prefix("i").is(f.id.column) ++
       (if (q.customValues.isEmpty) Fragment.empty
        else
          fr"INNER JOIN customvalues cv ON" ++ cvItem.is(IC.id.prefix("i")))
@@ -425,6 +432,7 @@ object QItem {
     val org   = ROrganization.as("o0")
     val pers0 = RPerson.as("p0")
     val pers1 = RPerson.as("p1")
+    val f     = RFolder.as("f1")
     val IC    = RItem.Columns
 
     // inclusive tags are AND-ed
@@ -468,7 +476,7 @@ object QItem {
       org.oid.column.isOrDiscard(q.corrOrg),
       pers1.pid.column.isOrDiscard(q.concPerson),
       equip.eid.oldColumn.prefix("e1").isOrDiscard(q.concEquip),
-      RFolder.Columns.id.prefix("f1").isOrDiscard(q.folder),
+      f.id.column.isOrDiscard(q.folder),
       if (q.tagsInclude.isEmpty && q.tagCategoryIncl.isEmpty) Fragment.empty
       else
         IC.id.prefix("i") ++ sql" IN (" ++ tagSelectsIncl

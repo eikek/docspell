@@ -4,8 +4,8 @@ import cats.effect._
 import cats.implicits._
 
 import docspell.common._
-import docspell.store.impl.Column
-import docspell.store.impl.Implicits._
+import docspell.store.qb.DSL._
+import docspell.store.qb._
 
 import doobie._
 import doobie.implicits._
@@ -25,37 +25,36 @@ object RFolderMember {
       now <- Timestamp.current[F]
     } yield RFolderMember(nId, folder, user, now)
 
-  val table = fr"folder_member"
+  final case class Table(alias: Option[String]) extends TableDef {
+    val tableName = "folder_member"
 
-  object Columns {
-
-    val id      = Column("id")
-    val folder  = Column("folder_id")
-    val user    = Column("user_id")
-    val created = Column("created")
+    val id      = Column[Ident]("id", this)
+    val folder  = Column[Ident]("folder_id", this)
+    val user    = Column[Ident]("user_id", this)
+    val created = Column[Timestamp]("created", this)
 
     val all = List(id, folder, user, created)
   }
 
-  import Columns._
+  val T = Table(None)
+  def as(alias: String): Table =
+    Table(Some(alias))
 
-  def insert(value: RFolderMember): ConnectionIO[Int] = {
-    val sql = insertRow(
-      table,
-      all,
+  def insert(value: RFolderMember): ConnectionIO[Int] =
+    DML.insert(
+      T,
+      T.all,
       fr"${value.id},${value.folderId},${value.userId},${value.created}"
     )
-    sql.update.run
-  }
 
   def findByUserId(userId: Ident, folderId: Ident): ConnectionIO[Option[RFolderMember]] =
-    selectSimple(all, table, and(folder.is(folderId), user.is(userId)))
+    run(select(T.all), from(T), T.folder === folderId && T.user === userId)
       .query[RFolderMember]
       .option
 
   def delete(userId: Ident, folderId: Ident): ConnectionIO[Int] =
-    deleteFrom(table, and(folder.is(folderId), user.is(userId))).update.run
+    DML.delete(T, T.folder === folderId && T.user === userId)
 
   def deleteAll(folderId: Ident): ConnectionIO[Int] =
-    deleteFrom(table, folder.is(folderId)).update.run
+    DML.delete(T, T.folder === folderId)
 }

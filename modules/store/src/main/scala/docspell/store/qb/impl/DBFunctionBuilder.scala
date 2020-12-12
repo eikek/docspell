@@ -29,12 +29,20 @@ object DBFunctionBuilder extends CommonBuilder {
       case DBFunction.Power(expr, base) =>
         sql"POWER($base, " ++ SelectExprBuilder.build(expr) ++ sql")"
 
-      case DBFunction.Plus(expr, more) =>
-        val v = more.prepended(expr).map(SelectExprBuilder.build)
-        v.reduce(_ ++ fr" +" ++ _)
+      case DBFunction.Calc(op, left, right) =>
+        SelectExprBuilder.build(left) ++
+          buildOperator(op) ++
+          SelectExprBuilder.build(right)
 
-      case DBFunction.Mult(expr, more) =>
-        val v = more.prepended(expr).map(SelectExprBuilder.build)
-        v.reduce(_ ++ fr" *" ++ _)
+    }
+
+  def buildOperator(op: DBFunction.Operator): Fragment =
+    op match {
+      case DBFunction.Operator.Minus =>
+        fr" -"
+      case DBFunction.Operator.Plus =>
+        fr" +"
+      case DBFunction.Operator.Mult =>
+        fr" *"
     }
 }

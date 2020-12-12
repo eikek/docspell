@@ -4,8 +4,8 @@ import cats.effect._
 import cats.implicits._
 
 import docspell.common._
-import docspell.store.impl.Column
-import docspell.store.impl.Implicits._
+import docspell.store.qb.DSL._
+import docspell.store.qb._
 
 import doobie._
 import doobie.implicits._
@@ -26,61 +26,58 @@ object RFolder {
       now <- Timestamp.current[F]
     } yield RFolder(nId, name, account.collective, account.user, now)
 
-  val table = fr"folder"
+  final case class Table(alias: Option[String]) extends TableDef {
+    val tableName = "folder"
 
-  object Columns {
-
-    val id         = Column("id")
-    val name       = Column("name")
-    val collective = Column("cid")
-    val owner      = Column("owner")
-    val created    = Column("created")
+    val id         = Column[Ident]("id", this)
+    val name       = Column[String]("name", this)
+    val collective = Column[Ident]("cid", this)
+    val owner      = Column[Ident]("owner", this)
+    val created    = Column[Timestamp]("created", this)
 
     val all = List(id, name, collective, owner, created)
   }
 
-  import Columns._
+  val T = Table(None)
+  def as(alias: String): Table =
+    Table(Some(alias))
 
-  def insert(value: RFolder): ConnectionIO[Int] = {
-    val sql = insertRow(
-      table,
-      all,
+  def insert(value: RFolder): ConnectionIO[Int] =
+    DML.insert(
+      T,
+      T.all,
       fr"${value.id},${value.name},${value.collectiveId},${value.owner},${value.created}"
     )
-    sql.update.run
-  }
 
   def update(v: RFolder): ConnectionIO[Int] =
-    updateRow(
-      table,
-      and(id.is(v.id), collective.is(v.collectiveId), owner.is(v.owner)),
-      name.setTo(v.name)
-    ).update.run
+    DML.update(
+      T,
+      T.id === v.id && T.collective === v.collectiveId && T.owner === v.owner,
+      DML.set(T.name.setTo(v.name))
+    )
 
   def existsByName(coll: Ident, folderName: String): ConnectionIO[Boolean] =
-    selectCount(id, table, and(collective.is(coll), name.is(folderName)))
+    run(select(count(T.id)), from(T), T.collective === coll && T.name === folderName)
       .query[Int]
       .unique
       .map(_ > 0)
 
   def findById(folderId: Ident): ConnectionIO[Option[RFolder]] = {
-    val sql = selectSimple(all, table, id.is(folderId))
+    val sql = run(select(T.all), from(T), T.id === folderId)
     sql.query[RFolder].option
   }
 
   def findAll(
       coll: Ident,
       nameQ: Option[String],
-      order: Columns.type => Column
+      order: Table => Column[_]
   ): ConnectionIO[Vector[RFolder]] = {
-    val q = Seq(collective.is(coll)) ++ (nameQ match {
-      case Some(str) => Seq(name.lowerLike(s"%${str.toLowerCase}%"))
-      case None      => Seq.empty
-    })
-    val sql = selectSimple(all, table, and(q)) ++ orderBy(order(Columns).f)
-    sql.query[RFolder].to[Vector]
+    val nameFilter = nameQ.map(n => T.name.like(s"%${n.toLowerCase}%"))
+    val sql = Select(select(T.all), from(T), T.collective === coll &&? nameFilter)
+      .orderBy(order(T))
+    sql.run.query[RFolder].to[Vector]
   }
 
   def delete(folderId: Ident): ConnectionIO[Int] =
-    deleteFrom(table, id.is(folderId)).update.run
+    DML.delete(T, T.id === folderId)
 }

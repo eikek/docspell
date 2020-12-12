@@ -48,7 +48,7 @@ object DML {
       cond: Option[Condition],
       setter: Seq[Setter[_]]
   ): Fragment = {
-    val condFrag = cond.map(DoobieQuery.cond).getOrElse(Fragment.empty)
+    val condFrag = cond.map(SelectBuilder.cond).getOrElse(Fragment.empty)
     fr"UPDATE" ++ FromExprBuilder.buildTable(table) ++ fr"SET" ++
       setter
         .map(s => buildSetter(s))

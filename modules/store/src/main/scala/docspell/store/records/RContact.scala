@@ -27,7 +27,7 @@ object RContact {
     val personId  = Column[Ident]("pid", this)
     val orgId     = Column[Ident]("oid", this)
     val created   = Column[Timestamp]("created", this)
-    val all       = List(contactId, value, kind, personId, orgId, created)
+    val all       = List[Column[_]](contactId, value, kind, personId, orgId, created)
   }
 
   private val T = Table(None)

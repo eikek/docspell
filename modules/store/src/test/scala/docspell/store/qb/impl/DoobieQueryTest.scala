@@ -22,7 +22,7 @@ object DoobieQueryTest extends SimpleTestSuite {
     )
 
     val q    = Select(proj, table, cond)
-    val frag = DoobieQuery(q)
+    val frag = SelectBuilder(q)
     assertEquals(
       frag.toString,
       """Fragment("SELECT c.id, c.name, c.owner_id, c.lecturer_id, c.lessons FROM course c INNER JOIN person o ON c.owner_id = o.id LEFT JOIN person l ON c.lecturer_id = l.id WHERE (LOWER(c.name) LIKE ? AND o.name = ? )")"""

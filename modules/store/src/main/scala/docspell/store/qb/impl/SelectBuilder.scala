@@ -5,7 +5,7 @@ import docspell.store.qb._
 import _root_.doobie.implicits._
 import _root_.doobie.{Query => _, _}
 
-object DoobieQuery {
+object SelectBuilder {
   val comma     = fr","
   val asc       = fr" ASC"
   val desc      = fr" DESC"
@@ -13,29 +13,30 @@ object DoobieQuery {
   val union     = fr"UNION ALL"
 
   def apply(q: Select): Fragment =
-    build(false)(q)
+    build(q)
 
-  def distinct(q: Select): Fragment =
-    build(true)(q)
-
-  def build(distinct: Boolean)(q: Select): Fragment =
+  def build(q: Select): Fragment =
     q match {
       case sq: Select.SimpleSelect =>
-        val sel = if (distinct) fr"SELECT DISTINCT" else fr"SELECT"
+        val sel = if (sq.distinctFlag) fr"SELECT DISTINCT" else fr"SELECT"
         sel ++ buildSimple(sq)
 
       case Select.Union(q, qs) =>
-        qs.prepended(q).map(build(false)).reduce(_ ++ union ++ _)
+        qs.prepended(q).map(build).reduce(_ ++ union ++ _)
 
       case Select.Intersect(q, qs) =>
-        qs.prepended(q).map(build(false)).reduce(_ ++ intersect ++ _)
+        qs.prepended(q).map(build).reduce(_ ++ intersect ++ _)
 
       case Select.Ordered(q, ob, obs) =>
         val order = obs.prepended(ob).map(orderBy).reduce(_ ++ comma ++ _)
-        build(distinct)(q) ++ fr"ORDER BY" ++ order
+        build(q) ++ fr" ORDER BY" ++ order
 
       case Select.Limit(q, n) =>
-        build(distinct)(q) ++ fr" LIMIT $n"
+        build(q) ++ fr" LIMIT $n"
+
+      case Select.WithCte(cte, moreCte, query) =>
+        val ctes = moreCte.prepended(cte)
+        fr"WITH" ++ ctes.map(buildCte).reduce(_ ++ comma ++ _) ++ fr" " ++ build(query)
     }
 
   def buildSimple(sq: Select.SimpleSelect): Fragment = {
@@ -71,4 +72,7 @@ object DoobieQuery {
     val f1 = gb.having.map(cond).getOrElse(Fragment.empty)
     fr"GROUP BY" ++ f0 ++ f1
   }
+
+  def buildCte(bind: CteBind): Fragment =
+    Fragment.const(bind.name.tableName) ++ sql"AS (" ++ build(bind.select) ++ sql")"
 }

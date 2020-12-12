@@ -1,15 +1,15 @@
 package docspell.store.qb
 
-import docspell.store.qb.impl.DoobieQuery
+import docspell.store.qb.impl.SelectBuilder
 
 import doobie._
 
 sealed trait Select {
-  def distinct: Fragment =
-    DoobieQuery.distinct(this)
-
   def run: Fragment =
-    DoobieQuery(this)
+    SelectBuilder(this)
+
+  def as(alias: String): SelectExpr.SelectQuery =
+    SelectExpr.SelectQuery(this, Some(alias))
 
   def orderBy(ob: OrderBy, obs: OrderBy*): Select.Ordered =
     Select.Ordered(this, ob, obs.toVector)
@@ -20,27 +20,29 @@ sealed trait Select {
   def limit(n: Int): Select =
     this match {
       case Select.Limit(q, _) => Select.Limit(q, n)
-      case _ =>
-        Select.Limit(this, n)
+      case _                  => Select.Limit(this, n)
     }
 }
 
 object Select {
+  def apply(projection: Seq[SelectExpr], from: FromExpr) =
+    SimpleSelect(false, projection, from, None, None)
 
   def apply(
       projection: Seq[SelectExpr],
       from: FromExpr,
       where: Condition
-  ) = SimpleSelect(projection, from, Some(where), None)
+  ) = SimpleSelect(false, projection, from, Some(where), None)
 
   def apply(
       projection: Seq[SelectExpr],
       from: FromExpr,
-      where: Option[Condition] = None,
-      groupBy: Option[GroupBy] = None
-  ) = SimpleSelect(projection, from, where, groupBy)
+      where: Condition,
+      groupBy: GroupBy
+  ) = SimpleSelect(false, projection, from, Some(where), Some(groupBy))
 
   case class SimpleSelect(
+      distinctFlag: Boolean,
       projection: Seq[SelectExpr],
       from: FromExpr,
       where: Option[Condition],
@@ -48,6 +50,9 @@ object Select {
   ) extends Select {
     def group(gb: GroupBy): SimpleSelect =
       copy(groupBy = Some(gb))
+
+    def distinct: SimpleSelect =
+      copy(distinctFlag = true)
   }
 
   case class Union(q: Select, qs: Vector[Select]) extends Select
@@ -58,4 +63,6 @@ object Select {
       extends Select
 
   case class Limit(q: Select, limit: Int) extends Select
+
+  case class WithCte(cte: CteBind, ctes: Vector[CteBind], query: Select) extends Select
 }

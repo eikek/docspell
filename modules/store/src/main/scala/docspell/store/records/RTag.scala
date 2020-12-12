@@ -27,7 +27,7 @@ object RTag {
     val name     = Column[String]("name", this)
     val category = Column[String]("category", this)
     val created  = Column[Timestamp]("created", this)
-    val all      = List(tid, cid, name, category, created)
+    val all      = List[Column[_]](tid, cid, name, category, created)
   }
   val T = Table(None)
   def as(alias: String): Table =
