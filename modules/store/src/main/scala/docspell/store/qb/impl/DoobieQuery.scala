@@ -34,6 +34,8 @@ object DoobieQuery {
         val order = obs.prepended(ob).map(orderBy).reduce(_ ++ comma ++ _)
         build(distinct)(q) ++ fr"ORDER BY" ++ order
 
+      case Select.Limit(q, n) =>
+        build(distinct)(q) ++ fr" LIMIT $n"
     }
 
   def buildSimple(sq: Select.SimpleSelect): Fragment = {

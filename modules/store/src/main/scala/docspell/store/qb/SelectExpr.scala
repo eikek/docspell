@@ -1,11 +1,27 @@
 package docspell.store.qb
 
-sealed trait SelectExpr
+import doobie.Put
+
+sealed trait SelectExpr { self =>
+  def as(alias: String): SelectExpr
+}
 
 object SelectExpr {
 
-  case class SelectColumn(column: Column[_]) extends SelectExpr
+  case class SelectColumn(column: Column[_], alias: Option[String]) extends SelectExpr {
+    def as(a: String): SelectColumn =
+      copy(alias = Some(a))
+  }
 
-  case class SelectFun(fun: DBFunction) extends SelectExpr
+  case class SelectFun(fun: DBFunction, alias: Option[String]) extends SelectExpr {
+    def as(a: String): SelectFun =
+      copy(alias = Some(a))
+  }
+
+  case class SelectLit[A](value: A, alias: Option[String])(implicit val P: Put[A])
+      extends SelectExpr {
+    def as(a: String): SelectLit[A] =
+      copy(alias = Some(a))
+  }
 
 }

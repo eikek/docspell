@@ -12,6 +12,10 @@ object Condition {
       val P: Put[A]
   ) extends Condition
 
+  case class CompareFVal[A](dbf: DBFunction, op: Operator, value: A)(implicit
+      val P: Put[A]
+  ) extends Condition
+
   case class CompareCol[A](col1: Column[A], op: Operator, col2: Column[A])
       extends Condition
 

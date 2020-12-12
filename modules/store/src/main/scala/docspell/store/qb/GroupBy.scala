@@ -6,8 +6,8 @@ object GroupBy {
 
   def apply(c: Column[_], cs: Column[_]*): GroupBy =
     GroupBy(
-      SelectExpr.SelectColumn(c),
-      cs.toVector.map(SelectExpr.SelectColumn.apply),
+      SelectExpr.SelectColumn(c, None),
+      cs.toVector.map(c => SelectExpr.SelectColumn(c, None)),
       None
     )
 }

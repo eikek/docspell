@@ -11,11 +11,18 @@ sealed trait Select {
   def run: Fragment =
     DoobieQuery(this)
 
-  def orderBy(ob: OrderBy, obs: OrderBy*): Select =
+  def orderBy(ob: OrderBy, obs: OrderBy*): Select.Ordered =
     Select.Ordered(this, ob, obs.toVector)
 
-  def orderBy(c: Column[_]): Select =
-    orderBy(OrderBy(SelectExpr.SelectColumn(c), OrderBy.OrderType.Asc))
+  def orderBy(c: Column[_]): Select.Ordered =
+    orderBy(OrderBy(SelectExpr.SelectColumn(c, None), OrderBy.OrderType.Asc))
+
+  def limit(n: Int): Select =
+    this match {
+      case Select.Limit(q, _) => Select.Limit(q, n)
+      case _ =>
+        Select.Limit(this, n)
+    }
 }
 
 object Select {
@@ -49,4 +56,6 @@ object Select {
 
   case class Ordered(q: Select, orderBy: OrderBy, orderBys: Vector[OrderBy])
       extends Select
+
+  case class Limit(q: Select, limit: Int) extends Select
 }

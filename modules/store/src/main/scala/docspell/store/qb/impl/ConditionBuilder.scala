@@ -25,6 +25,17 @@ object ConditionBuilder {
         }
         colFrag ++ opFrag ++ valFrag
 
+      case c @ Condition.CompareFVal(dbf, op, value) =>
+        val opFrag  = operator(op)
+        val valFrag = buildValue(value)(c.P)
+        val dbfFrag = op match {
+          case Operator.LowerLike =>
+            lower(dbf)
+          case _ =>
+            DBFunctionBuilder.build(dbf)
+        }
+        dbfFrag ++ opFrag ++ valFrag
+
       case Condition.CompareCol(c1, op, c2) =>
         val (c1Frag, c2Frag) = op match {
           case Operator.LowerLike =>
@@ -36,13 +47,13 @@ object ConditionBuilder {
 
       case Condition.InSubSelect(col, subsel) =>
         val sub = DoobieQuery(subsel)
-        SelectExprBuilder.column(col) ++ sql" IN (" ++ sub ++ sql")"
+        SelectExprBuilder.column(col) ++ sql" IN (" ++ sub ++ parenClose
 
       case c @ Condition.InValues(col, values, toLower) =>
         val cfrag = if (toLower) lower(col) else SelectExprBuilder.column(col)
         cfrag ++ sql" IN (" ++ values.toList
           .map(a => buildValue(a)(c.P))
-          .reduce(_ ++ comma ++ _) ++ sql")"
+          .reduce(_ ++ comma ++ _) ++ parenClose
 
       case Condition.IsNull(col) =>
         SelectExprBuilder.column(col) ++ fr" is null"
@@ -89,5 +100,8 @@ object ConditionBuilder {
     fr"$v"
 
   def lower(col: Column[_]): Fragment =
-    Fragment.const0("LOWER(") ++ SelectExprBuilder.column(col) ++ sql")"
+    Fragment.const0("LOWER(") ++ SelectExprBuilder.column(col) ++ parenClose
+
+  def lower(dbf: DBFunction): Fragment =
+    Fragment.const0("LOWER(") ++ DBFunctionBuilder.build(dbf) ++ parenClose
 }

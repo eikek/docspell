@@ -1,5 +1,6 @@
 package docspell.store.queries
 
+import cats.data.NonEmptyList
 import cats.effect.Effect
 import cats.implicits._
 import fs2.Stream
@@ -7,7 +8,8 @@ import fs2.Stream
 import docspell.common._
 import docspell.common.syntax.all._
 import docspell.store.Store
-import docspell.store.impl.Implicits._
+import docspell.store.qb.DSL._
+import docspell.store.qb._
 import docspell.store.records.{RJob, RJobGroupUse, RJobLog}
 
 import doobie._
@@ -89,37 +91,36 @@ object QJob {
       now: Timestamp,
       initialPause: Duration
   ): ConnectionIO[Option[Ident]] = {
-    val JC                = RJob.Columns
-    val waiting: JobState = JobState.Waiting
-    val stuck: JobState   = JobState.Stuck
-    val jgroup            = JC.group.prefix("a")
-    val jstate            = JC.state.prefix("a")
-    val ugroup            = RJobGroupUse.Columns.group.prefix("b")
-    val uworker           = RJobGroupUse.Columns.worker.prefix("b")
+    val JC = RJob.as("a")
+    val G  = RJobGroupUse.as("b")
 
-    val stuckTrigger = coalesce(JC.startedmillis.prefix("a").f, sql"${now.toMillis}") ++
-      fr"+" ++ power2(JC.retries.prefix("a")) ++ fr"* ${initialPause.millis}"
-
+    val stuckTrigger = stuckTriggerValue(JC, initialPause, now)
     val stateCond =
-      or(jstate.is(waiting), and(jstate.is(stuck), stuckTrigger ++ fr"< ${now.toMillis}"))
+      JC.state === JobState.waiting || (JC.state === JobState.stuck && stuckTrigger < now.toMillis)
 
-    val sql1 = fr"SELECT" ++ jgroup.f ++ fr"as g FROM" ++ RJob.table ++ fr"a" ++
-      fr"INNER JOIN" ++ RJobGroupUse.table ++ fr"b ON" ++ jgroup.isGt(ugroup) ++
-      fr"WHERE" ++ and(uworker.is(worker), stateCond) ++
-      fr"LIMIT 1" //LIMIT is not sql standard, but supported by h2,mariadb and postgres
-    val sql2 = fr"SELECT min(" ++ jgroup.f ++ fr") as g FROM" ++ RJob.table ++ fr"a" ++
-      fr"WHERE" ++ stateCond
+    val sql1 =
+      Select(
+        List(max(JC.group).as("g")),
+        from(JC).innerJoin(G, JC.group === G.group),
+        G.worker === worker && stateCond
+      )
 
-    val union =
-      sql"SELECT g FROM ((" ++ sql1 ++ sql") UNION ALL (" ++ sql2 ++ sql")) as t0 WHERE g is not null"
+    val sql2 =
+      Select(List(min(JC.group).as("g")), from(JC), stateCond)
 
-    union
-      .query[Ident]
-      .to[List]
-      .map(
-        _.headOption
-      ) // either one or two results, but may be empty if RJob table is empty
+    val gcol = Column[String]("g", TableDef(""))
+    val groups =
+      Select(select(gcol), fromSubSelect(union(sql1, sql2)).as("t0"), gcol.isNull.negate)
+
+    // either 0, one or two results, but may be empty if RJob table is empty
+    groups.run.query[Ident].to[List].map(_.headOption)
   }
+
+  private def stuckTriggerValue(t: RJob.Table, initialPause: Duration, now: Timestamp) =
+    plus(
+      coalesce(t.startedmillis.s, lit(now.toMillis)).s,
+      mult(power(2, t.retries.s).s, lit(initialPause.millis)).s
+    )
 
   def selectNextJob(
       group: Ident,
@@ -127,32 +128,23 @@ object QJob {
       initialPause: Duration,
       now: Timestamp
   ): ConnectionIO[Option[RJob]] = {
-    val JC = RJob.Columns
+    val JC = RJob.T
     val psort =
       if (prio == Priority.High) JC.priority.desc
       else JC.priority.asc
-    val waiting: JobState = JobState.Waiting
-    val stuck: JobState   = JobState.Stuck
+    val waiting = JobState.waiting
+    val stuck   = JobState.stuck
 
-    val stuckTrigger =
-      coalesce(JC.startedmillis.f, sql"${now.toMillis}") ++ fr"+" ++ power2(
-        JC.retries
-      ) ++ fr"* ${initialPause.millis}"
-    val sql = selectSimple(
-      JC.all,
-      RJob.table,
-      and(
-        JC.group.is(group),
-        or(
-          JC.state.is(waiting),
-          and(JC.state.is(stuck), stuckTrigger ++ fr"< ${now.toMillis}")
-        )
-      )
-    ) ++
-      orderBy(JC.state.asc, psort, JC.submitted.asc) ++
-      fr"LIMIT 1"
+    val stuckTrigger = stuckTriggerValue(JC, initialPause, now)
+    val sql =
+      Select(
+        select(JC.all),
+        from(JC),
+        JC.group === group && (JC.state === waiting ||
+          (JC.state === stuck && stuckTrigger < now.toMillis))
+      ).orderBy(JC.state.asc, psort, JC.submitted.asc).limit(1)
 
-    sql.query[RJob].option
+    sql.run.query[RJob].option
   }
 
   def setCancelled[F[_]: Effect](id: Ident, store: Store[F]): F[Unit] =
@@ -212,39 +204,34 @@ object QJob {
       collective: Ident,
       max: Long
   ): Stream[ConnectionIO, (RJob, Vector[RJobLog])] = {
-    val JC                     = RJob.Columns
-    val waiting: Set[JobState] = Set(JobState.Waiting, JobState.Stuck, JobState.Scheduled)
-    val running: Set[JobState] = Set(JobState.Running)
-    val done                   = JobState.all.diff(waiting).diff(running)
+    val JC      = RJob.T
+    val waiting = NonEmptyList.of(JobState.Waiting, JobState.Stuck, JobState.Scheduled)
+    val running = NonEmptyList.of(JobState.Running)
+    //val done                   = JobState.all.filterNot(js => ).diff(waiting).diff(running)
 
     def selectJobs(now: Timestamp): Stream[ConnectionIO, RJob] = {
       val refDate = now.minusHours(24)
+      val runningJobs = Select(
+        select(JC.all),
+        from(JC),
+        JC.group === collective && JC.state.in(running)
+      ).orderBy(JC.submitted.desc).run.query[RJob].stream
 
-      val runningJobs = (selectSimple(
-        JC.all,
-        RJob.table,
-        and(JC.group.is(collective), JC.state.isOneOf(running.toSeq))
-      ) ++ orderBy(JC.submitted.desc)).query[RJob].stream
+      val waitingJobs = Select(
+        select(JC.all),
+        from(JC),
+        JC.group === collective && JC.state.in(waiting) && JC.submitted > refDate
+      ).orderBy(JC.submitted.desc).run.query[RJob].stream.take(max)
 
-      val waitingJobs = (selectSimple(
-        JC.all,
-        RJob.table,
+      val doneJobs = Select(
+        select(JC.all),
+        from(JC),
         and(
-          JC.group.is(collective),
-          JC.state.isOneOf(waiting.toSeq),
-          JC.submitted.isGt(refDate)
+          JC.group === collective,
+          JC.state.in(JobState.done),
+          JC.submitted > refDate
         )
-      ) ++ orderBy(JC.submitted.desc)).query[RJob].stream.take(max)
-
-      val doneJobs = (selectSimple(
-        JC.all,
-        RJob.table,
-        and(
-          JC.group.is(collective),
-          JC.state.isOneOf(done.toSeq),
-          JC.submitted.isGt(refDate)
-        )
-      ) ++ orderBy(JC.submitted.desc)).query[RJob].stream.take(max)
+      ).orderBy(JC.submitted.desc).run.query[RJob].stream.take(max)
 
       runningJobs ++ waitingJobs ++ doneJobs
     }

@@ -23,13 +23,13 @@ trait DSL extends DoobieMeta {
     DoobieQuery.distinct(Select(projection, from, where))
 
   def select(dbf: DBFunction): Seq[SelectExpr] =
-    Seq(SelectExpr.SelectFun(dbf))
+    Seq(SelectExpr.SelectFun(dbf, None))
 
   def select(c: Column[_], cs: Column[_]*): Seq[SelectExpr] =
     select(c :: cs.toList)
 
   def select(seq: Seq[Column[_]], seqs: Seq[Column[_]]*): Seq[SelectExpr] =
-    (seq ++ seqs.flatten).map(SelectExpr.SelectColumn.apply)
+    (seq ++ seqs.flatten).map(c => SelectExpr.SelectColumn(c, None))
 
   def union(s1: Select, sn: Select*): Select =
     Select.Union(s1, sn.toVector)
@@ -41,10 +41,28 @@ trait DSL extends DoobieMeta {
     FromExpr.SubSelect(sel, "x")
 
   def count(c: Column[_]): DBFunction =
-    DBFunction.Count(c, "cn")
+    DBFunction.Count(c)
 
   def max(c: Column[_]): DBFunction =
-    DBFunction.Max(c, "mn")
+    DBFunction.Max(c)
+
+  def min(c: Column[_]): DBFunction =
+    DBFunction.Min(c)
+
+  def coalesce(expr: SelectExpr, more: SelectExpr*): DBFunction.Coalesce =
+    DBFunction.Coalesce(expr, more.toVector)
+
+  def power(base: Int, expr: SelectExpr): DBFunction =
+    DBFunction.Power(expr, base)
+
+  def lit[A](value: A)(implicit P: Put[A]): SelectExpr.SelectLit[A] =
+    SelectExpr.SelectLit(value, None)
+
+  def plus(expr: SelectExpr, more: SelectExpr*): DBFunction =
+    DBFunction.Plus(expr, more.toVector)
+
+  def mult(expr: SelectExpr, more: SelectExpr*): DBFunction =
+    DBFunction.Mult(expr, more.toVector)
 
   def and(c: Condition, cs: Condition*): Condition =
     c match {
@@ -75,6 +93,8 @@ trait DSL extends DoobieMeta {
     else and(c, cs: _*)
 
   implicit final class ColumnOps[A](col: Column[A]) {
+    def s: SelectExpr     = SelectExpr.SelectColumn(col, None)
+    def as(alias: String) = SelectExpr.SelectColumn(col, Some(alias))
 
     def setTo(value: A)(implicit P: Put[A]): Setter[A] =
       Setter.SetValue(col, value)
@@ -86,10 +106,10 @@ trait DSL extends DoobieMeta {
       Setter.Increment(col, amount)
 
     def asc: OrderBy =
-      OrderBy(SelectExpr.SelectColumn(col), OrderBy.OrderType.Asc)
+      OrderBy(SelectExpr.SelectColumn(col, None), OrderBy.OrderType.Asc)
 
     def desc: OrderBy =
-      OrderBy(SelectExpr.SelectColumn(col), OrderBy.OrderType.Desc)
+      OrderBy(SelectExpr.SelectColumn(col, None), OrderBy.OrderType.Desc)
 
     def ===(value: A)(implicit P: Put[A]): Condition =
       Condition.CompareVal(col, Operator.Eq, value)
@@ -153,6 +173,38 @@ trait DSL extends DoobieMeta {
 
     def unary_! : Condition =
       not(c)
+  }
+
+  implicit final class DBFunctionOps(dbf: DBFunction) {
+    def s: SelectExpr     = SelectExpr.SelectFun(dbf, None)
+    def as(alias: String) = SelectExpr.SelectFun(dbf, Some(alias))
+
+    def ===[A](value: A)(implicit P: Put[A]): Condition =
+      Condition.CompareFVal(dbf, Operator.Eq, value)
+
+    def ====(value: String): Condition =
+      Condition.CompareFVal(dbf, Operator.Eq, value)
+
+    def like[A](value: A)(implicit P: Put[A]): Condition =
+      Condition.CompareFVal(dbf, Operator.LowerLike, value)
+
+    def likes(value: String): Condition =
+      Condition.CompareFVal(dbf, Operator.LowerLike, value)
+
+    def <=[A](value: A)(implicit P: Put[A]): Condition =
+      Condition.CompareFVal(dbf, Operator.Lte, value)
+
+    def >=[A](value: A)(implicit P: Put[A]): Condition =
+      Condition.CompareFVal(dbf, Operator.Gte, value)
+
+    def >[A](value: A)(implicit P: Put[A]): Condition =
+      Condition.CompareFVal(dbf, Operator.Gt, value)
+
+    def <[A](value: A)(implicit P: Put[A]): Condition =
+      Condition.CompareFVal(dbf, Operator.Lt, value)
+
+    def <>[A](value: A)(implicit P: Put[A]): Condition =
+      Condition.CompareFVal(dbf, Operator.Neq, value)
   }
 
 }

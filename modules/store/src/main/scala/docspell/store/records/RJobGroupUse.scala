@@ -3,8 +3,8 @@ package docspell.store.records
 import cats.implicits._
 
 import docspell.common._
-import docspell.store.impl.Column
-import docspell.store.impl.Implicits._
+import docspell.store.qb.DSL._
+import docspell.store.qb._
 
 import doobie._
 import doobie.implicits._
@@ -12,25 +12,27 @@ import doobie.implicits._
 case class RJobGroupUse(groupId: Ident, workerId: Ident) {}
 
 object RJobGroupUse {
+  final case class Table(alias: Option[String]) extends TableDef {
+    val tableName = "jobgroupuse"
 
-  val table = fr"jobgroupuse"
-
-  object Columns {
-    val group  = Column("groupid")
-    val worker = Column("workerid")
+    val group  = Column[Ident]("groupid", this)
+    val worker = Column[Ident]("workerid", this)
     val all    = List(group, worker)
   }
-  import Columns._
+
+  val T = Table(None)
+  def as(alias: String): Table =
+    Table(Some(alias))
 
   def insert(v: RJobGroupUse): ConnectionIO[Int] =
-    insertRow(table, all, fr"${v.groupId},${v.workerId}").update.run
+    DML.insert(T, T.all, fr"${v.groupId},${v.workerId}")
 
   def updateGroup(v: RJobGroupUse): ConnectionIO[Int] =
-    updateRow(table, worker.is(v.workerId), group.setTo(v.groupId)).update.run
+    DML.update(T, T.worker === v.workerId, DML.set(T.group.setTo(v.groupId)))
 
   def setGroup(v: RJobGroupUse): ConnectionIO[Int] =
     updateGroup(v).flatMap(n => if (n > 0) n.pure[ConnectionIO] else insert(v))
 
   def findGroup(workerId: Ident): ConnectionIO[Option[Ident]] =
-    selectSimple(List(group), table, worker.is(workerId)).query[Ident].option
+    run(select(T.group), from(T), T.worker === workerId).query[Ident].option
 }

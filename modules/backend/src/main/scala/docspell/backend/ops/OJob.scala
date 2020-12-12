@@ -39,7 +39,7 @@ object OJob {
     def queued: Vector[JobDetail] =
       jobs.filter(r => JobState.queued.contains(r.job.state))
     def done: Vector[JobDetail] =
-      jobs.filter(r => JobState.done.contains(r.job.state))
+      jobs.filter(r => JobState.done.toList.contains(r.job.state))
     def running: Vector[JobDetail] =
       jobs.filter(_.job.state == JobState.Running)
   }

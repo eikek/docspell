@@ -1,31 +1,27 @@
 package docspell.store.qb
 
-sealed trait DBFunction {
-  def alias: String
-
-  def as(alias: String): DBFunction
-}
+sealed trait DBFunction {}
 
 object DBFunction {
 
-  def countAllAs(alias: String) =
-    CountAll(alias)
+  val countAll: DBFunction = CountAll
 
-  def countAs[A](column: Column[A], alias: String): DBFunction =
-    Count(column, alias)
+  def countAs[A](column: Column[A]): DBFunction =
+    Count(column)
 
-  case class CountAll(alias: String) extends DBFunction {
-    def as(a: String) =
-      copy(alias = a)
-  }
+  case object CountAll extends DBFunction
 
-  case class Count(column: Column[_], alias: String) extends DBFunction {
-    def as(a: String) =
-      copy(alias = a)
-  }
+  case class Count(column: Column[_]) extends DBFunction
 
-  case class Max(column: Column[_], alias: String) extends DBFunction {
-    def as(a: String) =
-      copy(alias = a)
-  }
+  case class Max(column: Column[_]) extends DBFunction
+
+  case class Min(column: Column[_]) extends DBFunction
+
+  case class Coalesce(expr: SelectExpr, exprs: Vector[SelectExpr]) extends DBFunction
+
+  case class Power(expr: SelectExpr, base: Int) extends DBFunction
+
+  case class Plus(expr: SelectExpr, exprs: Vector[SelectExpr]) extends DBFunction
+
+  case class Mult(expr: SelectExpr, exprs: Vector[SelectExpr]) extends DBFunction
 }

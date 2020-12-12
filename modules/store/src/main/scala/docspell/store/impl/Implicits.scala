@@ -6,15 +6,10 @@ object Implicits extends DoobieMeta with DoobieSyntax {
     def oldColumn: Column =
       Column(col.name)
 
-    def column: Column = {
-      val c = col.alias match {
-        case Some(a) => oldColumn.as(a)
+    def column: Column =
+      col.table.alias match {
+        case Some(p) => oldColumn.prefix(p)
         case None    => oldColumn
       }
-      col.table.alias match {
-        case Some(p) => c.prefix(p)
-        case None    => c
-      }
-    }
   }
 }
