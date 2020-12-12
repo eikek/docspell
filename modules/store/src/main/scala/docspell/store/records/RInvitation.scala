@@ -4,8 +4,8 @@ import cats.effect.Sync
 import cats.implicits._
 
 import docspell.common._
-import docspell.store.impl.Implicits._
-import docspell.store.impl._
+import docspell.store.qb.DSL._
+import docspell.store.qb._
 
 import doobie._
 import doobie.implicits._
@@ -13,15 +13,17 @@ import doobie.implicits._
 case class RInvitation(id: Ident, created: Timestamp) {}
 
 object RInvitation {
+  final case class Table(alias: Option[String]) extends TableDef {
+    val tableName = "invitation"
 
-  val table = fr"invitation"
-
-  object Columns {
-    val id      = Column("id")
-    val created = Column("created")
+    val id      = Column[Ident]("id", this)
+    val created = Column[Timestamp]("created", this)
     val all     = List(id, created)
   }
-  import Columns._
+
+  val T = Table(None)
+  def as(alias: String): Table =
+    Table(Some(alias))
 
   def generate[F[_]: Sync]: F[RInvitation] =
     for {
@@ -30,19 +32,19 @@ object RInvitation {
     } yield RInvitation(i, c)
 
   def insert(v: RInvitation): ConnectionIO[Int] =
-    insertRow(table, all, fr"${v.id},${v.created}").update.run
+    DML.insert(T, T.all, fr"${v.id},${v.created}")
 
   def insertNew: ConnectionIO[RInvitation] =
     generate[ConnectionIO].flatMap(v => insert(v).map(_ => v))
 
   def findById(invite: Ident): ConnectionIO[Option[RInvitation]] =
-    selectSimple(all, table, id.is(invite)).query[RInvitation].option
+    run(select(T.all), from(T), T.id === invite).query[RInvitation].option
 
   def delete(invite: Ident): ConnectionIO[Int] =
-    deleteFrom(table, id.is(invite)).update.run
+    DML.delete(T, T.id === invite)
 
   def useInvite(invite: Ident, minCreated: Timestamp): ConnectionIO[Boolean] = {
-    val get = selectCount(id, table, and(id.is(invite), created.isGt(minCreated)))
+    val get = run(select(count(T.id)), from(T), T.id === invite && T.created > minCreated)
       .query[Int]
       .unique
     for {
@@ -52,5 +54,5 @@ object RInvitation {
   }
 
   def deleteOlderThan(ts: Timestamp): ConnectionIO[Int] =
-    deleteFrom(table, created.isLt(ts)).update.run
+    DML.delete(T, T.created < ts)
 }
