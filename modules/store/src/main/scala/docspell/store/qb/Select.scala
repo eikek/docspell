@@ -64,6 +64,11 @@ object Select {
 
     def distinct: SimpleSelect =
       copy(distinctFlag = true)
+
+    def where(c: Option[Condition]): SimpleSelect =
+      copy(where = c)
+    def where(c: Condition): SimpleSelect =
+      copy(where = Some(c))
   }
 
   case class Union(q: Select, qs: Vector[Select]) extends Select

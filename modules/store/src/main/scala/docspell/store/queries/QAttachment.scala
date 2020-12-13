@@ -8,14 +8,19 @@ import fs2.Stream
 import docspell.common._
 import docspell.common.syntax.all._
 import docspell.store.Store
-import docspell.store.impl.Implicits._
+import docspell.store.qb.DSL._
+import docspell.store.qb._
 import docspell.store.records._
 
 import doobie._
-import doobie.implicits._
 
 object QAttachment {
   private[this] val logger = org.log4s.getLogger
+
+  private val a    = RAttachment.as("a")
+  private val item = RItem.as("i")
+  private val am   = RAttachmentMeta.as("am")
+  private val c    = RCollective.as("c")
 
   def deletePreview[F[_]: Sync](store: Store[F])(attachId: Ident): F[Int] = {
     val findPreview =
@@ -113,20 +118,13 @@ object QAttachment {
     } yield ns.sum
 
   def getMetaProposals(itemId: Ident, coll: Ident): ConnectionIO[MetaProposalList] = {
-    val AC = RAttachment.Columns
-    val MC = RAttachmentMeta.Columns
-    val IC = RItem.Columns
-
-    val q = fr"SELECT" ++ MC.proposals
-      .prefix("m")
-      .f ++ fr"FROM" ++ RAttachmentMeta.table ++ fr"m" ++
-      fr"INNER JOIN" ++ RAttachment.table ++ fr"a ON" ++ AC.id
-        .prefix("a")
-        .is(MC.id.prefix("m")) ++
-      fr"INNER JOIN" ++ RItem.table ++ fr"i ON" ++ AC.itemId
-        .prefix("a")
-        .is(IC.id.prefix("i")) ++
-      fr"WHERE" ++ and(AC.itemId.prefix("a").is(itemId), IC.cid.prefix("i").is(coll))
+    val q = Select(
+      am.proposals.s,
+      from(am)
+        .innerJoin(a, a.id === am.id)
+        .innerJoin(item, a.itemId === item.id),
+      a.itemId === itemId && item.cid === coll
+    ).build
 
     for {
       ml <- q.query[MetaProposalList].to[Vector]
@@ -137,24 +135,13 @@ object QAttachment {
       attachId: Ident,
       collective: Ident
   ): ConnectionIO[Option[RAttachmentMeta]] = {
-    val AC = RAttachment.Columns
-    val MC = RAttachmentMeta.Columns
-    val IC = RItem.Columns
-
-    val q =
-      fr"SELECT" ++ commas(
-        MC.all.map(_.prefix("m").f)
-      ) ++ fr"FROM" ++ RItem.table ++ fr"i" ++
-        fr"INNER JOIN" ++ RAttachment.table ++ fr"a ON" ++ IC.id
-          .prefix("i")
-          .is(AC.itemId.prefix("a")) ++
-        fr"INNER JOIN" ++ RAttachmentMeta.table ++ fr"m ON" ++ AC.id
-          .prefix("a")
-          .is(MC.id.prefix("m")) ++
-        fr"WHERE" ++ and(
-          AC.id.prefix("a").is(attachId),
-          IC.cid.prefix("i").is(collective)
-        )
+    val q = Select(
+      select(am.all),
+      from(item)
+        .innerJoin(a, a.itemId === item.id)
+        .innerJoin(am, am.id === a.id),
+      a.id === attachId && item.cid === collective
+    ).build
 
     q.query[RAttachmentMeta].option
   }
@@ -171,31 +158,16 @@ object QAttachment {
   def allAttachmentMetaAndName(
       coll: Option[Ident],
       chunkSize: Int
-  ): Stream[ConnectionIO, ContentAndName] = {
-    val aId      = RAttachment.Columns.id.prefix("a")
-    val aItem    = RAttachment.Columns.itemId.prefix("a")
-    val aName    = RAttachment.Columns.name.prefix("a")
-    val mId      = RAttachmentMeta.Columns.id.prefix("m")
-    val mContent = RAttachmentMeta.Columns.content.prefix("m")
-    val iId      = RItem.Columns.id.prefix("i")
-    val iColl    = RItem.Columns.cid.prefix("i")
-    val iFolder  = RItem.Columns.folder.prefix("i")
-    val c        = RCollective.as("c")
-    val cId      = c.id.column
-    val cLang    = c.language.column
-
-    val cols = Seq(aId, aItem, iColl, iFolder, cLang, aName, mContent)
-    val from = RAttachment.table ++ fr"a INNER JOIN" ++
-      RAttachmentMeta.table ++ fr"m ON" ++ aId.is(mId) ++
-      fr"INNER JOIN" ++ RItem.table ++ fr"i ON" ++ iId.is(aItem) ++
-      fr"INNER JOIN" ++ Fragment.const(RCollective.T.tableName) ++ fr"c ON" ++ cId.is(
-        iColl
-      )
-
-    val where = coll.map(cid => iColl.is(cid)).getOrElse(Fragment.empty)
-
-    selectSimple(cols, from, where)
+  ): Stream[ConnectionIO, ContentAndName] =
+    Select(
+      select(a.id, a.itemId, item.cid, item.folder, c.language, a.name, am.content),
+      from(a)
+        .innerJoin(am, am.id === a.id)
+        .innerJoin(item, item.id === a.itemId)
+        .innerJoin(c, c.id === item.cid)
+    ).where(coll.map(cid => item.cid === cid))
+      .build
       .query[ContentAndName]
       .streamWithChunkSize(chunkSize)
-  }
+
 }

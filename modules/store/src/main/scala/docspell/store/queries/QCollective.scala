@@ -5,14 +5,20 @@ import fs2.Stream
 
 import docspell.common.ContactKind
 import docspell.common.{Direction, Ident}
-import docspell.store.impl.Implicits._
-import docspell.store.qb.{GroupBy, Select}
+import docspell.store.qb.DSL._
+import docspell.store.qb._
 import docspell.store.records._
 
 import doobie._
 import doobie.implicits._
 
 object QCollective {
+  private val ti = RTagItem.as("ti")
+  private val t  = RTag.as("t")
+  private val ro = ROrganization.as("o")
+  private val rp = RPerson.as("p")
+  private val rc = RContact.as("c")
+  private val i  = RItem.as("i")
 
   case class Names(org: Vector[String], pers: Vector[String], equip: Vector[String])
   object Names {
@@ -37,17 +43,16 @@ object QCollective {
   )
 
   def getInsights(coll: Ident): ConnectionIO[InsightData] = {
-    val IC = RItem.Columns
-    val q0 = selectCount(
-      IC.id,
-      RItem.table,
-      and(IC.cid.is(coll), IC.incoming.is(Direction.incoming))
-    ).query[Int].unique
-    val q1 = selectCount(
-      IC.id,
-      RItem.table,
-      and(IC.cid.is(coll), IC.incoming.is(Direction.outgoing))
-    ).query[Int].unique
+    val q0 = Select(
+      count(i.id).s,
+      from(i),
+      i.cid === coll && i.incoming === Direction.incoming
+    ).build.query[Int].unique
+    val q1 = Select(
+      count(i.id).s,
+      from(i),
+      i.cid === coll && i.incoming === Direction.outgoing
+    ).build.query[Int].unique
 
     val fileSize = sql"""
       select sum(length) from (
@@ -78,10 +83,6 @@ object QCollective {
   }
 
   def tagCloud(coll: Ident): ConnectionIO[List[TagCount]] = {
-    import docspell.store.qb.DSL._
-
-    val ti = RTagItem.as("ti")
-    val t  = RTag.as("t")
     val sql =
       Select(
         select(t.all).append(count(ti.itemId).s),
@@ -97,13 +98,6 @@ object QCollective {
       query: Option[String],
       kind: Option[ContactKind]
   ): Stream[ConnectionIO, RContact] = {
-    import docspell.store.qb.DSL._
-    import docspell.store.qb._
-
-    val ro = ROrganization.as("o")
-    val rp = RPerson.as("p")
-    val rc = RContact.as("c")
-
     val orgCond     = Select(select(ro.oid), from(ro), ro.cid === coll)
     val persCond    = Select(select(rp.pid), from(rp), rp.cid === coll)
     val valueFilter = query.map(s => rc.value.like(s"%${s.toLowerCase}%"))

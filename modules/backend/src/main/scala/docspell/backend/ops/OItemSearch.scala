@@ -59,8 +59,8 @@ object OItemSearch {
   type Query = QItem.Query
   val Query = QItem.Query
 
-  type Batch = QItem.Batch
-  val Batch = QItem.Batch
+  type Batch = docspell.store.queries.Batch
+  val Batch = docspell.store.queries.Batch
 
   type ListItem = QItem.ListItem
   val ListItem = QItem.ListItem

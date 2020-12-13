@@ -13,15 +13,15 @@ import doobie._
 import doobie.implicits._
 
 object QOrganization {
+  private val p   = RPerson.as("p")
+  private val c   = RContact.as("c")
+  private val org = ROrganization.as("o")
 
   def findOrgAndContact(
       coll: Ident,
       query: Option[String],
       order: ROrganization.Table => Column[_]
   ): Stream[ConnectionIO, (ROrganization, Vector[RContact])] = {
-    val org = ROrganization.as("o")
-    val c   = RContact.as("c")
-
     val valFilter = query.map { q =>
       val v = s"%$q%"
       c.value.like(v) || org.name.like(v) || org.notes.like(v)
@@ -46,9 +46,6 @@ object QOrganization {
       coll: Ident,
       orgId: Ident
   ): ConnectionIO[Option[(ROrganization, Vector[RContact])]] = {
-    val org = ROrganization.as("o")
-    val c   = RContact.as("c")
-
     val sql = run(
       select(org.all, c.all),
       from(org).leftJoin(c, c.orgId === org.oid),
@@ -72,19 +69,16 @@ object QOrganization {
       query: Option[String],
       order: RPerson.Table => Column[_]
   ): Stream[ConnectionIO, (RPerson, Option[ROrganization], Vector[RContact])] = {
-    val pers = RPerson.as("p")
-    val org  = ROrganization.as("o")
-    val c    = RContact.as("c")
     val valFilter = query
       .map(s => s"%$s%")
-      .map(v => c.value.like(v) || pers.name.like(v) || pers.notes.like(v))
+      .map(v => c.value.like(v) || p.name.like(v) || p.notes.like(v))
     val sql = Select(
-      select(pers.all, org.all, c.all),
-      from(pers)
-        .leftJoin(org, org.oid === pers.oid)
-        .leftJoin(c, c.personId === pers.pid),
-      pers.cid === coll &&? valFilter
-    ).orderBy(order(pers))
+      select(p.all, org.all, c.all),
+      from(p)
+        .leftJoin(org, org.oid === p.oid)
+        .leftJoin(c, c.personId === p.pid),
+      p.cid === coll &&? valFilter
+    ).orderBy(order(p))
 
     sql.build
       .query[(RPerson, Option[ROrganization], Option[RContact])]
@@ -101,16 +95,13 @@ object QOrganization {
       coll: Ident,
       persId: Ident
   ): ConnectionIO[Option[(RPerson, Option[ROrganization], Vector[RContact])]] = {
-    val pers = RPerson.as("p")
-    val org  = ROrganization.as("o")
-    val c    = RContact.as("c")
     val sql =
       run(
-        select(pers.all, org.all, c.all),
-        from(pers)
-          .leftJoin(org, pers.oid === org.oid)
-          .leftJoin(c, c.personId === pers.pid),
-        pers.cid === coll && pers.pid === persId
+        select(p.all, org.all, c.all),
+        from(p)
+          .leftJoin(org, p.oid === org.oid)
+          .leftJoin(c, c.personId === p.pid),
+        p.cid === coll && p.pid === persId
       )
 
     sql
@@ -131,9 +122,7 @@ object QOrganization {
       value: String,
       ck: Option[ContactKind],
       concerning: Option[Boolean]
-  ): Stream[ConnectionIO, RPerson] = {
-    val p = RPerson.as("p")
-    val c = RContact.as("c")
+  ): Stream[ConnectionIO, RPerson] =
     runDistinct(
       select(p.all),
       from(p).innerJoin(c, c.personId === p.pid),
@@ -141,7 +130,6 @@ object QOrganization {
         concerning.map(c => p.concerning === c) &&?
         ck.map(k => c.kind === k)
     ).query[RPerson].stream
-  }
 
   def addOrg[F[_]](
       org: ROrganization,
