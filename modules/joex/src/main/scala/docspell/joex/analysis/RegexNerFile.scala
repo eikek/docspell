@@ -141,7 +141,7 @@ object RegexNerFile {
 
     def latestUpdate(collective: Ident): ConnectionIO[Option[Timestamp]] = {
       def max_(col: Column[_], cidCol: Column[Ident]): Select =
-        Select(List(max(col).as("t")), from(col.table), cidCol === collective)
+        Select(max(col).as("t"), from(col.table), cidCol === collective)
 
       val sql = union(
         max_(ROrganization.T.updated, ROrganization.T.cid),

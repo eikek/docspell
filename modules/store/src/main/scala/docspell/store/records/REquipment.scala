@@ -1,5 +1,7 @@
 package docspell.store.records
 
+import cats.data.NonEmptyList
+
 import docspell.common._
 import docspell.store.qb.DSL._
 import docspell.store.qb._
@@ -24,7 +26,7 @@ object REquipment {
     val name    = Column[String]("name", this)
     val created = Column[Timestamp]("created", this)
     val updated = Column[Timestamp]("updated", this)
-    val all     = List(eid, cid, name, created, updated)
+    val all     = NonEmptyList.of[Column[_]](eid, cid, name, created, updated)
   }
 
   val T = Table(None)
@@ -81,13 +83,13 @@ object REquipment {
       .map(str => s"%${str.toLowerCase}%")
       .map(v => t.name.like(v))
 
-    val sql = Select(select(t.all), from(t), q).orderBy(order(t)).run
+    val sql = Select(select(t.all), from(t), q).orderBy(order(t)).build
     sql.query[REquipment].to[Vector]
   }
 
   def findLike(coll: Ident, equipName: String): ConnectionIO[Vector[IdRef]] = {
     val t = Table(None)
-    run(select(List(t.eid, t.name)), from(t), t.cid === coll && t.name.like(equipName))
+    run(select(t.eid, t.name), from(t), t.cid === coll && t.name.like(equipName))
       .query[IdRef]
       .to[Vector]
   }

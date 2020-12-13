@@ -1,5 +1,6 @@
 package docspell.store.qb.model
 
+import cats.data.NonEmptyList
 import docspell.store.qb._
 import docspell.common._
 
@@ -15,7 +16,7 @@ object PersonRecord {
     val name    = Column[String]("name", this)
     val created = Column[Timestamp]("created", this)
 
-    val all = List(id, name, created)
+    val all = NonEmptyList.of[Column[_]](id, name, created)
   }
 
   def as(alias: String): Table =

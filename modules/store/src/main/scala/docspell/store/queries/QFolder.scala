@@ -183,68 +183,62 @@ object QFolder {
 // inner join user_ u on u.uid = s.owner
 // where s.cid = 'eike';
 
-    val user           = RUser.as("u")
-    val member         = RFolderMember.as("m")
-    val folder         = RFolder.as("s")
-    val memlogin       = TableDef("memberlogin")
-    val memloginFolder = member.folder.inTable(memlogin)
-    val memloginLogn   = user.login.inTable(memlogin)
+    val user     = RUser.as("u")
+    val member   = RFolderMember.as("m")
+    val folder   = RFolder.as("s")
+    val memlogin = TableDef("memberlogin")
+    val mlFolder = Column[Ident]("folder", memlogin)
+    val mlLogin  = Column[Ident]("login", memlogin)
 
-    val sql =
-      withCte(
-        memlogin -> union(
-          Select(
-            select(member.folder, user.login),
-            from(member)
-              .innerJoin(user, user.uid === member.user)
-              .innerJoin(folder, folder.id === member.folder),
-            folder.collective === account.collective
-          ),
-          Select(
-            select(folder.id, user.login),
-            from(folder)
-              .innerJoin(user, user.uid === folder.owner),
-            folder.collective === account.collective
-          )
+    withCte(
+      memlogin -> union(
+        Select(
+          select(member.folder.as(mlFolder), user.login.as(mlLogin)),
+          from(member)
+            .innerJoin(user, user.uid === member.user)
+            .innerJoin(folder, folder.id === member.folder),
+          folder.collective === account.collective
+        ),
+        Select(
+          select(folder.id.as(mlFolder), user.login.as(mlLogin)),
+          from(folder)
+            .innerJoin(user, user.uid === folder.owner),
+          folder.collective === account.collective
         )
       )
-        .select(
+    )(
+      Select(
+        select(
+          folder.id.s,
+          folder.name.s,
+          folder.owner.s,
+          user.login.s,
+          folder.created.s,
           Select(
-            select(
-              folder.id.s,
-              folder.name.s,
-              folder.owner.s,
-              user.login.s,
-              folder.created.s,
-              Select(
-                select(countAll > 0),
-                from(memlogin),
-                memloginFolder === folder.id && memloginLogn === account.user
-              ).as("member"),
-              Select(
-                select(countAll - 1),
-                from(memlogin),
-                memloginFolder === folder.id
-              ).as("member_count")
-            ),
-            from(folder)
-              .innerJoin(user, user.uid === folder.owner),
-            where(
-              folder.collective === account.collective &&?
-                idQ.map(id => folder.id === id) &&?
-                nameQ.map(q => folder.name.like(s"%${q.toLowerCase}%")) &&?
-                ownerLogin.map(login => user.login === login)
-            )
-          ).orderBy(folder.name.asc)
+            select(countAll > 0),
+            from(memlogin),
+            mlFolder === folder.id && mlLogin === account.user
+          ).as("member"),
+          Select(
+            select(countAll - 1),
+            from(memlogin),
+            mlFolder === folder.id
+          ).as("member_count")
+        ),
+        from(folder)
+          .innerJoin(user, user.uid === folder.owner),
+        where(
+          folder.collective === account.collective &&?
+            idQ.map(id => folder.id === id) &&?
+            nameQ.map(q => folder.name.like(s"%${q.toLowerCase}%")) &&?
+            ownerLogin.map(login => user.login === login)
         )
-
-    sql.run
-      .query[FolderItem]
-      .to[Vector]
+      ).orderBy(folder.name.asc)
+    ).build.query[FolderItem].to[Vector]
   }
 
   /** Select all folder_id where the given account is member or owner. */
-  def findMemberFolderIds(account: AccountId): Fragment = {
+  def findMemberFolderIds(account: AccountId): Select = {
     val user = RUser.as("u")
     val f    = RFolder.as("f")
     val m    = RFolderMember.as("m")
@@ -261,11 +255,11 @@ object QFolder {
           .innerJoin(user, user.uid === m.user),
         f.collective === account.collective && user.login === account.user
       )
-    ).run
+    )
   }
 
   def getMemberFolders(account: AccountId): ConnectionIO[Set[Ident]] =
-    findMemberFolderIds(account).query[Ident].to[Set]
+    findMemberFolderIds(account).build.query[Ident].to[Set]
 
   private def findUserId(account: AccountId): ConnectionIO[Option[Ident]] =
     RUser.findByAccount(account).map(_.map(_.uid))

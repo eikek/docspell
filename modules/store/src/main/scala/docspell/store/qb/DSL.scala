@@ -1,6 +1,6 @@
 package docspell.store.qb
 
-import cats.data.NonEmptyList
+import cats.data.{NonEmptyList => Nel}
 
 import docspell.store.impl.DoobieMeta
 import docspell.store.qb.impl.SelectBuilder
@@ -9,14 +9,14 @@ import doobie.{Fragment, Put}
 
 trait DSL extends DoobieMeta {
 
-  def run(projection: Seq[SelectExpr], from: FromExpr): Fragment =
+  def run(projection: Nel[SelectExpr], from: FromExpr): Fragment =
     SelectBuilder(Select(projection, from))
 
-  def run(projection: Seq[SelectExpr], from: FromExpr, where: Condition): Fragment =
+  def run(projection: Nel[SelectExpr], from: FromExpr, where: Condition): Fragment =
     SelectBuilder(Select(projection, from, where))
 
   def runDistinct(
-      projection: Seq[SelectExpr],
+      projection: Nel[SelectExpr],
       from: FromExpr,
       where: Condition
   ): Fragment =
@@ -25,23 +25,29 @@ trait DSL extends DoobieMeta {
   def withCte(cte: (TableDef, Select), more: (TableDef, Select)*): DSL.WithCteDsl =
     DSL.WithCteDsl(CteBind(cte), more.map(CteBind.apply).toVector)
 
-  def select(cond: Condition): Seq[SelectExpr] =
-    Seq(SelectExpr.SelectCondition(cond, None))
+  def select(cond: Condition): Nel[SelectExpr] =
+    Nel.of(SelectExpr.SelectCondition(cond, None))
 
-  def select(dbf: DBFunction): Seq[SelectExpr] =
-    Seq(SelectExpr.SelectFun(dbf, None))
+  def select(dbf: DBFunction): Nel[SelectExpr] =
+    Nel.of(SelectExpr.SelectFun(dbf, None))
 
-  def select(e: SelectExpr, es: SelectExpr*): Seq[SelectExpr] =
-    es.prepended(e)
+  def select(e: SelectExpr, es: SelectExpr*): Nel[SelectExpr] =
+    Nel(e, es.toList)
 
-  def select(c: Column[_], cs: Column[_]*): Seq[SelectExpr] =
-    cs.prepended(c).map(col => SelectExpr.SelectColumn(col, None))
+  def select(c: Column[_], cs: Column[_]*): Nel[SelectExpr] =
+    Nel(c, cs.toList).map(col => SelectExpr.SelectColumn(col, None))
 
-  def select(seq: Seq[Column[_]], seqs: Seq[Column[_]]*): Seq[SelectExpr] =
-    (seq ++ seqs.flatten).map(c => SelectExpr.SelectColumn(c, None))
+  def select(seq: Nel[Column[_]], seqs: Nel[Column[_]]*): Nel[SelectExpr] =
+    seqs.foldLeft(seq)(_ concatNel _).map(c => SelectExpr.SelectColumn(c, None))
 
   def union(s1: Select, sn: Select*): Select =
     Select.Union(s1, sn.toVector)
+
+  def intersect(s1: Select, sn: Select*): Select =
+    Select.Intersect(s1, sn.toVector)
+
+  def intersect(nel: Nel[Select]): Select =
+    Select.Intersect(nel.head, nel.tail.toVector)
 
   def from(table: TableDef): FromExpr.From =
     FromExpr.From(table)
@@ -105,8 +111,12 @@ trait DSL extends DoobieMeta {
     else and(c, cs: _*)
 
   implicit final class ColumnOps[A](col: Column[A]) {
-    def s: SelectExpr     = SelectExpr.SelectColumn(col, None)
-    def as(alias: String) = SelectExpr.SelectColumn(col, Some(alias))
+    def s: SelectExpr =
+      SelectExpr.SelectColumn(col, None)
+    def as(alias: String): SelectExpr =
+      SelectExpr.SelectColumn(col, Some(alias))
+    def as(otherCol: Column[A]): SelectExpr =
+      SelectExpr.SelectColumn(col, Some(otherCol.name))
 
     def setTo(value: A)(implicit P: Put[A]): Setter[A] =
       Setter.SetValue(col, value)
@@ -153,20 +163,28 @@ trait DSL extends DoobieMeta {
     def in(subsel: Select): Condition =
       Condition.InSubSelect(col, subsel)
 
-    def in(values: NonEmptyList[A])(implicit P: Put[A]): Condition =
+    def in(values: Nel[A])(implicit P: Put[A]): Condition =
       Condition.InValues(col, values, false)
 
-    def inLower(values: NonEmptyList[A])(implicit P: Put[A]): Condition =
+    def inLower(values: Nel[A])(implicit P: Put[A]): Condition =
       Condition.InValues(col, values, true)
 
     def isNull: Condition =
       Condition.IsNull(col)
+
+    def isNotNull: Condition =
+      Condition.IsNull(col).negate
 
     def ===(other: Column[A]): Condition =
       Condition.CompareCol(col, Operator.Eq, other)
   }
 
   implicit final class ConditionOps(c: Condition) {
+    def s: SelectExpr =
+      SelectExpr.SelectCondition(c, None)
+
+    def as(alias: String): SelectExpr =
+      SelectExpr.SelectCondition(c, Some(alias))
 
     def &&(other: Condition): Condition =
       and(c, other)
@@ -188,8 +206,10 @@ trait DSL extends DoobieMeta {
   }
 
   implicit final class DBFunctionOps(dbf: DBFunction) {
-    def s: SelectExpr     = SelectExpr.SelectFun(dbf, None)
-    def as(alias: String) = SelectExpr.SelectFun(dbf, Some(alias))
+    def s: SelectExpr =
+      SelectExpr.SelectFun(dbf, None)
+    def as(alias: String): SelectExpr =
+      SelectExpr.SelectFun(dbf, Some(alias))
 
     def ===[A](value: A)(implicit P: Put[A]): Condition =
       Condition.CompareFVal(dbf, Operator.Eq, value)
@@ -233,6 +253,9 @@ object DSL extends DSL {
 
     def select(s: Select): Select.WithCte =
       Select.WithCte(cte, ctes, s)
+
+    def apply(s: Select): Select.WithCte =
+      select(s)
   }
 
 }

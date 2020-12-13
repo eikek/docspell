@@ -1,5 +1,6 @@
 package docspell.store.records
 
+import cats.data.NonEmptyList
 import cats.effect.Sync
 import cats.implicits._
 
@@ -21,7 +22,7 @@ object RRememberMe {
     val username = Column[Ident]("login", this)
     val created  = Column[Timestamp]("created", this)
     val uses     = Column[Int]("uses", this)
-    val all      = List(id, cid, username, created, uses)
+    val all      = NonEmptyList.of[Column[_]](id, cid, username, created, uses)
   }
 
   private val T = Table(None)

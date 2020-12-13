@@ -5,7 +5,7 @@ import docspell.store.qb._
 import docspell.store.qb.model._
 import docspell.store.qb.DSL._
 
-object DoobieQueryTest extends SimpleTestSuite {
+object SelectBuilderTest extends SimpleTestSuite {
 
   test("basic fragment") {
     val c        = CourseRecord.as("c")
@@ -25,7 +25,7 @@ object DoobieQueryTest extends SimpleTestSuite {
     val frag = SelectBuilder(q)
     assertEquals(
       frag.toString,
-      """Fragment("SELECT c.id, c.name, c.owner_id, c.lecturer_id, c.lessons FROM course c INNER JOIN person o ON c.owner_id = o.id LEFT JOIN person l ON c.lecturer_id = l.id WHERE (LOWER(c.name) LIKE ? AND o.name = ? )")"""
+      """Fragment("SELECT c.id, c.name, c.owner_id, c.lecturer_id, c.lessons FROM course c INNER JOIN person o ON c.owner_id = o.id LEFT JOIN person l ON c.lecturer_id = l.id WHERE (LOWER(c.name) LIKE ?  AND o.name = ? )")"""
     )
   }
 

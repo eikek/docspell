@@ -1,5 +1,6 @@
 package docspell.store.records
 
+import cats.data.NonEmptyList
 import cats.effect._
 import cats.implicits._
 
@@ -39,7 +40,7 @@ object RFtsMigration {
     val description = Column[String]("description", this)
     val created     = Column[Timestamp]("created", this)
 
-    val all = List(id, version, ftsEngine, description, created)
+    val all = NonEmptyList.of[Column[_]](id, version, ftsEngine, description, created)
   }
 
   val T = Table(None)

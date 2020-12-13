@@ -32,7 +32,7 @@ object QOrganization {
       org.cid === coll &&? valFilter
     ).orderBy(order(org))
 
-    sql.run
+    sql.build
       .query[(ROrganization, Option[RContact])]
       .stream
       .groupAdjacentBy(_._1)
@@ -86,7 +86,7 @@ object QOrganization {
       pers.cid === coll &&? valFilter
     ).orderBy(order(pers))
 
-    sql.run
+    sql.build
       .query[(RPerson, Option[ROrganization], Option[RContact])]
       .stream
       .groupAdjacentBy(_._1)

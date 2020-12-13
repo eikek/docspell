@@ -1,5 +1,6 @@
 package docspell.store.qb.model
 
+import cats.data.NonEmptyList
 import docspell.store.qb._
 
 case class CourseRecord(
@@ -22,7 +23,7 @@ object CourseRecord {
     val lecturerId = Column[Long]("lecturer_id", this)
     val lessons    = Column[Int]("lessons", this)
 
-    val all = List(id, name, ownerId, lecturerId, lessons)
+    val all = NonEmptyList.of[Column[_]](id, name, ownerId, lecturerId, lessons)
   }
 
   def as(alias: String): Table =

@@ -90,7 +90,7 @@ object RJob {
     val started       = Column[Timestamp]("started", this)
     val startedmillis = Column[Long]("startedmillis", this)
     val finished      = Column[Timestamp]("finished", this)
-    val all = List(
+    val all = NonEmptyList.of[Column[_]](
       id,
       task,
       group,
@@ -263,7 +263,7 @@ object RJob {
   def selectGroupInState(states: NonEmptyList[JobState]): ConnectionIO[Vector[Ident]] = {
     val sql =
       Select(select(T.group), from(T), T.state.in(states)).orderBy(T.group)
-    sql.run.query[Ident].to[Vector]
+    sql.build.query[Ident].to[Vector]
   }
 
   def delete(jobId: Ident): ConnectionIO[Int] =

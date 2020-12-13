@@ -84,12 +84,12 @@ object QCollective {
     val t  = RTag.as("t")
     val sql =
       Select(
-        select(t.all) ++ select(count(ti.itemId)),
+        select(t.all).append(count(ti.itemId).s),
         from(ti).innerJoin(t, ti.tagId === t.tid),
         t.cid === coll
       ).group(GroupBy(t.name, t.tid, t.category))
 
-    sql.run.query[TagCount].to[List]
+    sql.build.query[TagCount].to[List]
   }
 
   def getContacts(
@@ -113,6 +113,6 @@ object QCollective {
       select(rc.all),
       from(rc),
       (rc.orgId.in(orgCond) || rc.personId.in(persCond)) &&? valueFilter &&? kindFilter
-    ).orderBy(rc.value).run.query[RContact].stream
+    ).orderBy(rc.value).build.query[RContact].stream
   }
 }

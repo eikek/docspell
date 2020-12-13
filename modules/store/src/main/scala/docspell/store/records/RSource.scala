@@ -1,5 +1,7 @@
 package docspell.store.records
 
+import cats.data.NonEmptyList
+
 import docspell.common._
 import docspell.store.qb.DSL._
 import docspell.store.qb._
@@ -41,7 +43,7 @@ object RSource {
     val fileFilter  = Column[Glob]("file_filter", this)
 
     val all =
-      List(
+      NonEmptyList.of[Column[_]](
         sid,
         cid,
         abbrev,
@@ -123,7 +125,7 @@ object RSource {
       order: Table => Column[_]
   ): Fragment = {
     val t = RSource.as("s")
-    Select(select(t.all), from(t), t.cid === coll).orderBy(order(t)).run
+    Select(select(t.all), from(t), t.cid === coll).orderBy(order(t)).build
   }
 
   def delete(sourceId: Ident, coll: Ident): ConnectionIO[Int] =

@@ -1,5 +1,6 @@
 package docspell.store.records
 
+import cats.data.NonEmptyList
 import cats.effect.Sync
 import cats.implicits._
 
@@ -31,7 +32,7 @@ object RNode {
     val url      = Column[LenientUri]("url", this)
     val updated  = Column[Timestamp]("updated", this)
     val created  = Column[Timestamp]("created", this)
-    val all      = List(id, nodeType, url, updated, created)
+    val all      = NonEmptyList.of[Column[_]](id, nodeType, url, updated, created)
   }
 
   def as(alias: String): Table =

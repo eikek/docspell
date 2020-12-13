@@ -1,7 +1,6 @@
 package docspell.store.qb
 
 import minitest._
-import docspell.store.qb._
 import docspell.store.qb.model._
 import docspell.store.qb.DSL._
 
@@ -31,9 +30,16 @@ object QueryBuilderTest extends SimpleTestSuite {
 
     val q = Select(proj, tables, cond).orderBy(c.name.desc)
     q match {
-      case Select.Ordered(Select.SimpleSelect(proj, from, where, group), sb, vempty) =>
+      case Select.Ordered(
+            Select.SimpleSelect(false, proj, from, where, group),
+            sb,
+            vempty
+          ) =>
         assert(vempty.isEmpty)
-        assertEquals(sb, OrderBy(SelectExpr.SelectColumn(c.name), OrderBy.OrderType.Desc))
+        assertEquals(
+          sb,
+          OrderBy(SelectExpr.SelectColumn(c.name, None), OrderBy.OrderType.Desc)
+        )
         assertEquals(11, proj.size)
         from match {
           case FromExpr.From(_) =>
@@ -55,6 +61,8 @@ object QueryBuilderTest extends SimpleTestSuite {
               case _ =>
                 fail("Unexpected join result")
             }
+          case _ =>
+            fail("Unexpected result")
         }
         assertEquals(group, None)
         assert(where.isDefined)

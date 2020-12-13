@@ -1,5 +1,6 @@
 package docspell.store.records
 
+import cats.data.NonEmptyList
 import cats.effect._
 import cats.implicits._
 
@@ -37,7 +38,7 @@ object RSentMailItem {
     val sentMailId = Column[Ident]("sentmail_id", this)
     val created    = Column[Timestamp]("created", this)
 
-    val all = List(
+    val all = NonEmptyList.of[Column[_]](
       id,
       itemId,
       sentMailId,
@@ -60,7 +61,7 @@ object RSentMailItem {
     DML.delete(T, T.sentMailId === mailId)
 
   def findSentMailIdsByItem(item: Ident): ConnectionIO[Set[Ident]] =
-    run(select(Seq(T.sentMailId)), from(T), T.itemId === item).query[Ident].to[Set]
+    run(select(T.sentMailId.s), from(T), T.itemId === item).query[Ident].to[Set]
 
   def deleteAllByItem(item: Ident): ConnectionIO[Int] =
     DML.delete(T, T.itemId === item)

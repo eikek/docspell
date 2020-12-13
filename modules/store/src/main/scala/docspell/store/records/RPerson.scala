@@ -46,7 +46,7 @@ object RPerson {
     val created    = Column[Timestamp]("created", this)
     val updated    = Column[Timestamp]("updated", this)
     val oid        = Column[Ident]("oid", this)
-    val all = List(
+    val all = NonEmptyList.of[Column[_]](
       pid,
       cid,
       name,
@@ -150,7 +150,7 @@ object RPerson {
       order: Table => Column[_]
   ): Stream[ConnectionIO, RPerson] = {
     val sql = Select(select(T.all), from(T), T.cid === coll).orderBy(order(T))
-    sql.run.query[RPerson].stream
+    sql.build.query[RPerson].stream
   }
 
   def findAllRef(
@@ -163,7 +163,7 @@ object RPerson {
 
     val sql = Select(select(T.pid, T.name), from(T), T.cid === coll &&? nameFilter)
       .orderBy(order(T))
-    sql.run.query[IdRef].to[Vector]
+    sql.build.query[IdRef].to[Vector]
   }
 
   def delete(personId: Ident, coll: Ident): ConnectionIO[Int] =

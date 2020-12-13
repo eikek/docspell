@@ -12,6 +12,7 @@ import docspell.common.{IdRef, _}
 import docspell.store.Store
 import docspell.store.impl.Implicits._
 import docspell.store.impl._
+import docspell.store.qb.Select
 import docspell.store.records._
 
 import bitpeace.FileMeta
@@ -94,10 +95,10 @@ object QItem {
     val f     = RFolder.as("f")
 
     val IC  = RItem.Columns.all.map(_.prefix("i"))
-    val OC  = org.all.map(_.column)
-    val P0C = pers0.all.map(_.column)
-    val P1C = pers1.all.map(_.column)
-    val EC  = equip.all.map(_.oldColumn).map(_.prefix("e"))
+    val OC  = org.all.map(_.column).toList
+    val P0C = pers0.all.map(_.column).toList
+    val P1C = pers1.all.map(_.column).toList
+    val EC  = equip.all.map(_.oldColumn).map(_.prefix("e")).toList
     val ICC = List(RItem.Columns.id, RItem.Columns.name).map(_.prefix("ref"))
     val FC  = List(f.id.column, f.name.column)
 
@@ -172,23 +173,17 @@ object QItem {
   def findCustomFieldValuesForItem(
       itemId: Ident
   ): ConnectionIO[Vector[ItemFieldValue]] = {
-    val cfId    = RCustomField.Columns.id.prefix("cf")
-    val cfName  = RCustomField.Columns.name.prefix("cf")
-    val cfLabel = RCustomField.Columns.label.prefix("cf")
-    val cfType  = RCustomField.Columns.ftype.prefix("cf")
-    val cvItem  = RCustomFieldValue.Columns.itemId.prefix("cvf")
-    val cvValue = RCustomFieldValue.Columns.value.prefix("cvf")
-    val cvField = RCustomFieldValue.Columns.field.prefix("cvf")
+    import docspell.store.qb.DSL._
 
-    val cfFrom =
-      RCustomFieldValue.table ++ fr"cvf INNER JOIN" ++ RCustomField.table ++ fr"cf ON" ++ cvField
-        .is(cfId)
+    val cf = RCustomField.as("cf")
+    val cv = RCustomFieldValue.as("cvf")
 
-    selectSimple(
-      Seq(cfId, cfName, cfLabel, cfType, cvValue),
-      cfFrom,
-      cvItem.is(itemId)
-    ).query[ItemFieldValue].to[Vector]
+    Select(
+      select(cf.id, cf.name, cf.label, cf.ftype, cv.value),
+      from(cv)
+        .innerJoin(cf, cf.id === cv.field),
+      cv.itemId === itemId
+    ).build.query[ItemFieldValue].to[Vector]
   }
 
   case class ListItem(
@@ -287,31 +282,30 @@ object QItem {
 
   private def findCustomFieldValuesForColl(
       coll: Ident,
-      cv: Seq[CustomValue]
+      values: Seq[CustomValue]
   ): Seq[(String, Fragment)] = {
-    val cfId    = RCustomField.Columns.id.prefix("cf")
-    val cfName  = RCustomField.Columns.name.prefix("cf")
-    val cfColl  = RCustomField.Columns.cid.prefix("cf")
-    val cvValue = RCustomFieldValue.Columns.value.prefix("cvf")
-    val cvField = RCustomFieldValue.Columns.field.prefix("cvf")
-    val cvItem  = RCustomFieldValue.Columns.itemId.prefix("cvf")
+    import docspell.store.qb.DSL._
 
-    val cfFrom =
-      RCustomFieldValue.table ++ fr"cvf INNER JOIN" ++ RCustomField.table ++ fr"cf ON" ++ cvField
-        .is(cfId)
+    val cf = RCustomField.as("cf")
+    val cv = RCustomFieldValue.as("cv")
 
     def singleSelect(v: CustomValue) =
-      selectSimple(
-        Seq(cvItem),
-        cfFrom,
-        and(
-          cfColl.is(coll),
-          or(cfName.is(v.field), cfId.is(v.field)),
-          cvValue.lowerLike(QueryWildcard(v.value.toLowerCase))
+      Select(
+        cv.itemId.s,
+        from(cv).innerJoin(cf, cv.field === cf.id),
+        where(
+          cf.cid === coll &&
+            (cf.name === v.field || cf.id === v.field) &&
+            cv.value.like(QueryWildcard(v.value.toLowerCase))
         )
       )
-    if (cv.isEmpty) Seq.empty
-    else Seq("customvalues" -> cv.map(singleSelect).reduce(_ ++ fr"INTERSECT" ++ _))
+
+    NonEmptyList.fromList(values.toList) match {
+      case Some(nel) =>
+        Seq("customvalues" -> intersect(nel.map(singleSelect)).build)
+      case None =>
+        Seq.empty
+    }
   }
 
   private def findItemsBase(
@@ -326,13 +320,14 @@ object QItem {
     val pers0 = RPerson.as("p0")
     val pers1 = RPerson.as("p1")
     val f     = RFolder.as("f1")
+    val cv    = RCustomFieldValue.as("cv")
 
     val IC         = RItem.Columns
     val AC         = RAttachment.Columns
     val itemCols   = IC.all
     val equipCols  = List(equip.eid.oldColumn, equip.name.oldColumn)
     val folderCols = List(f.id.oldColumn, f.name.oldColumn)
-    val cvItem     = RCustomFieldValue.Columns.itemId.prefix("cv")
+    val cvItem     = cv.itemId.column
 
     val finalCols = commas(
       Seq(
@@ -504,7 +499,7 @@ object QItem {
             .getOrElse(IC.id.prefix("i").is(""))
         )
         .getOrElse(Fragment.empty),
-      or(iFolder.isNull, iFolder.isIn(QFolder.findMemberFolderIds(q.account)))
+      or(iFolder.isNull, iFolder.isIn(QFolder.findMemberFolderIds(q.account).build))
     )
 
     val order = q.orderAsc match {

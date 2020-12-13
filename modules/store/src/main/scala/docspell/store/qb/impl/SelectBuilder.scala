@@ -40,7 +40,7 @@ object SelectBuilder {
     }
 
   def buildSimple(sq: Select.SimpleSelect): Fragment = {
-    val f0 = sq.projection.map(selectExpr).reduce(_ ++ comma ++ _)
+    val f0 = sq.projection.map(selectExpr).reduceLeft(_ ++ comma ++ _)
     val f1 = fromExpr(sq.from)
     val f2 = sq.where.map(cond).getOrElse(Fragment.empty)
     val f3 = sq.groupBy.map(groupBy).getOrElse(Fragment.empty)

@@ -1,5 +1,6 @@
 package docspell.store.records
 
+import cats.data.NonEmptyList
 import cats.implicits._
 
 import docspell.common._
@@ -17,7 +18,7 @@ object RJobGroupUse {
 
     val group  = Column[Ident]("groupid", this)
     val worker = Column[Ident]("workerid", this)
-    val all    = List(group, worker)
+    val all    = NonEmptyList.of[Column[_]](group, worker)
   }
 
   val T = Table(None)

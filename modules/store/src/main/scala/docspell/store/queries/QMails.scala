@@ -65,7 +65,7 @@ object QMails {
         mUser
       )
 
-    (cols, from)
+    (cols.toList, from)
   }
 
 }

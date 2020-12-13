@@ -1,5 +1,6 @@
 package docspell.store.records
 
+import cats.data.NonEmptyList
 import cats.effect._
 import cats.implicits._
 
@@ -33,7 +34,7 @@ object RFolderMember {
     val user    = Column[Ident]("user_id", this)
     val created = Column[Timestamp]("created", this)
 
-    val all = List(id, folder, user, created)
+    val all = NonEmptyList.of[Column[_]](id, folder, user, created)
   }
 
   val T = Table(None)

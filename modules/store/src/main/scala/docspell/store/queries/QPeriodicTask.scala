@@ -49,7 +49,7 @@ object QPeriodicTask {
       case None     => RT.enabled === true
     }
     val sql =
-      Select(select(RT.all), from(RT), where).orderBy(RT.nextrun.asc).run
+      Select(select(RT.all), from(RT), where).orderBy(RT.nextrun.asc).build
 
     sql.query[RPeriodicTask].streamWithChunkSize(2).take(1).compile.last
   }

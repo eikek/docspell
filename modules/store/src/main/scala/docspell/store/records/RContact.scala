@@ -1,5 +1,7 @@
 package docspell.store.records
 
+import cats.data.NonEmptyList
+
 import docspell.common._
 import docspell.store.qb.DSL._
 import docspell.store.qb._
@@ -27,7 +29,7 @@ object RContact {
     val personId  = Column[Ident]("pid", this)
     val orgId     = Column[Ident]("oid", this)
     val created   = Column[Timestamp]("created", this)
-    val all       = List[Column[_]](contactId, value, kind, personId, orgId, created)
+    val all       = NonEmptyList.of[Column[_]](contactId, value, kind, personId, orgId, created)
   }
 
   private val T = Table(None)

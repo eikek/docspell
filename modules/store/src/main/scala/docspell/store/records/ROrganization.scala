@@ -1,6 +1,7 @@
 package docspell.store.records
 
 import cats.Eq
+import cats.data.NonEmptyList
 import fs2.Stream
 
 import docspell.common.{IdRef, _}
@@ -40,7 +41,19 @@ object ROrganization {
     val notes   = Column[String]("notes", this)
     val created = Column[Timestamp]("created", this)
     val updated = Column[Timestamp]("updated", this)
-    val all     = List(oid, cid, name, street, zip, city, country, notes, created, updated)
+    val all =
+      NonEmptyList.of[Column[_]](
+        oid,
+        cid,
+        name,
+        street,
+        zip,
+        city,
+        country,
+        notes,
+        created,
+        updated
+      )
   }
 
   val T = Table(None)
@@ -120,7 +133,7 @@ object ROrganization {
       order: Table => Column[_]
   ): Stream[ConnectionIO, ROrganization] = {
     val sql = Select(select(T.all), from(T), T.cid === coll).orderBy(order(T))
-    sql.run.query[ROrganization].stream
+    sql.build.query[ROrganization].stream
   }
 
   def findAllRef(
@@ -131,7 +144,7 @@ object ROrganization {
     val nameFilter = nameQ.map(s => T.name.like(s"%${s.toLowerCase}%"))
     val sql = Select(select(T.oid, T.name), from(T), T.cid === coll &&? nameFilter)
       .orderBy(order(T))
-    sql.run.query[IdRef].to[Vector]
+    sql.build.query[IdRef].to[Vector]
   }
 
   def delete(id: Ident, coll: Ident): ConnectionIO[Int] =

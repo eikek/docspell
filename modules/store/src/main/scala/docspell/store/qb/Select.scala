@@ -1,11 +1,13 @@
 package docspell.store.qb
 
+import cats.data.{NonEmptyList => Nel}
+
 import docspell.store.qb.impl.SelectBuilder
 
 import doobie._
 
 sealed trait Select {
-  def run: Fragment =
+  def build: Fragment =
     SelectBuilder(this)
 
   def as(alias: String): SelectExpr.SelectQuery =
@@ -25,17 +27,26 @@ sealed trait Select {
 }
 
 object Select {
-  def apply(projection: Seq[SelectExpr], from: FromExpr) =
+  def apply(projection: Nel[SelectExpr], from: FromExpr) =
     SimpleSelect(false, projection, from, None, None)
 
+  def apply(projection: SelectExpr, from: FromExpr) =
+    SimpleSelect(false, Nel.of(projection), from, None, None)
+
   def apply(
-      projection: Seq[SelectExpr],
+      projection: Nel[SelectExpr],
       from: FromExpr,
       where: Condition
   ) = SimpleSelect(false, projection, from, Some(where), None)
 
   def apply(
-      projection: Seq[SelectExpr],
+      projection: SelectExpr,
+      from: FromExpr,
+      where: Condition
+  ) = SimpleSelect(false, Nel.of(projection), from, Some(where), None)
+
+  def apply(
+      projection: Nel[SelectExpr],
       from: FromExpr,
       where: Condition,
       groupBy: GroupBy
@@ -43,7 +54,7 @@ object Select {
 
   case class SimpleSelect(
       distinctFlag: Boolean,
-      projection: Seq[SelectExpr],
+      projection: Nel[SelectExpr],
       from: FromExpr,
       where: Option[Condition],
       groupBy: Option[GroupBy]

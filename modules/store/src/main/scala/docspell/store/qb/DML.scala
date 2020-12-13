@@ -1,5 +1,7 @@
 package docspell.store.qb
 
+import cats.data.{NonEmptyList => Nel}
+
 import docspell.store.qb.impl._
 
 import doobie._
@@ -15,44 +17,44 @@ object DML {
     fr"DELETE FROM" ++ FromExprBuilder.buildTable(table) ++ fr"WHERE" ++ ConditionBuilder
       .build(cond)
 
-  def insert(table: TableDef, cols: Seq[Column[_]], values: Fragment): ConnectionIO[Int] =
+  def insert(table: TableDef, cols: Nel[Column[_]], values: Fragment): ConnectionIO[Int] =
     insertFragment(table, cols, List(values)).update.run
 
   def insertMany(
       table: TableDef,
-      cols: Seq[Column[_]],
+      cols: Nel[Column[_]],
       values: Seq[Fragment]
   ): ConnectionIO[Int] =
     insertFragment(table, cols, values).update.run
 
   def insertFragment(
       table: TableDef,
-      cols: Seq[Column[_]],
+      cols: Nel[Column[_]],
       values: Seq[Fragment]
   ): Fragment =
     fr"INSERT INTO" ++ FromExprBuilder.buildTable(table) ++ sql"(" ++
       cols
         .map(SelectExprBuilder.columnNoPrefix)
-        .reduce(_ ++ comma ++ _) ++ fr") VALUES" ++
+        .reduceLeft(_ ++ comma ++ _) ++ fr") VALUES" ++
       values.map(f => sql"(" ++ f ++ sql")").reduce(_ ++ comma ++ _)
 
   def update(
       table: TableDef,
       cond: Condition,
-      setter: Seq[Setter[_]]
+      setter: Nel[Setter[_]]
   ): ConnectionIO[Int] =
     updateFragment(table, Some(cond), setter).update.run
 
   def updateFragment(
       table: TableDef,
       cond: Option[Condition],
-      setter: Seq[Setter[_]]
+      setter: Nel[Setter[_]]
   ): Fragment = {
     val condFrag = cond.map(SelectBuilder.cond).getOrElse(Fragment.empty)
     fr"UPDATE" ++ FromExprBuilder.buildTable(table) ++ fr"SET" ++
       setter
         .map(s => buildSetter(s))
-        .reduce(_ ++ comma ++ _) ++
+        .reduceLeft(_ ++ comma ++ _) ++
       condFrag
   }
 
@@ -74,6 +76,6 @@ object DML {
         colFrag ++ fr" =" ++ colFrag ++ fr" + $amount"
     }
 
-  def set(s: Setter[_], more: Setter[_]*): Seq[Setter[_]] =
-    more :+ s
+  def set(s: Setter[_], more: Setter[_]*): Nel[Setter[_]] =
+    Nel(s, more.toList)
 }

@@ -7,6 +7,7 @@ import cats.implicits._
 import docspell.common._
 import docspell.store.impl.Implicits._
 import docspell.store.impl._
+import docspell.store.qb.{Select, TableDef}
 
 import doobie._
 import doobie.implicits._
@@ -62,6 +63,51 @@ object RItem {
       None,
       None
     )
+
+  final case class Table(alias: Option[String]) extends TableDef {
+    import docspell.store.qb.Column
+    val tableName = "item"
+
+    val id            = Column[Ident]("itemid", this)
+    val cid           = Column[Ident]("cid", this)
+    val name          = Column[String]("name", this)
+    val itemDate      = Column[Timestamp]("itemdate", this)
+    val source        = Column[String]("source", this)
+    val incoming      = Column[Direction]("incoming", this)
+    val state         = Column[ItemState]("state", this)
+    val corrOrg       = Column[Ident]("corrorg", this)
+    val corrPerson    = Column[Ident]("corrperson", this)
+    val concPerson    = Column[Ident]("concperson", this)
+    val concEquipment = Column[Ident]("concequipment", this)
+    val inReplyTo     = Column[Ident]("inreplyto", this)
+    val dueDate       = Column[Timestamp]("duedate", this)
+    val created       = Column[Timestamp]("created", this)
+    val updated       = Column[Timestamp]("updated", this)
+    val notes         = Column[String]("notes", this)
+    val folder        = Column[Ident]("folder_id", this)
+    val all = NonEmptyList.of[Column[_]](
+      id,
+      cid,
+      name,
+      itemDate,
+      source,
+      incoming,
+      state,
+      corrOrg,
+      corrPerson,
+      concPerson,
+      concEquipment,
+      inReplyTo,
+      dueDate,
+      created,
+      updated,
+      notes,
+      folder
+    )
+  }
+  val T = Table(None)
+  def as(alias: String): Table =
+    Table(Some(alias))
 
   val table = fr"item"
 
@@ -349,9 +395,12 @@ object RItem {
     updateRow(table, folder.is(folderId), folder.setTo(empty)).update.run
   }
 
-  def filterItemsFragment(items: NonEmptyList[Ident], coll: Ident): Fragment =
-    selectSimple(Seq(id), table, and(cid.is(coll), id.isIn(items)))
+  def filterItemsFragment(items: NonEmptyList[Ident], coll: Ident): Select = {
+    import docspell.store.qb.DSL._
+
+    Select(select(T.id), from(T), T.cid === coll && T.id.in(items))
+  }
 
   def filterItems(items: NonEmptyList[Ident], coll: Ident): ConnectionIO[Vector[Ident]] =
-    filterItemsFragment(items, coll).query[Ident].to[Vector]
+    filterItemsFragment(items, coll).build.query[Ident].to[Vector]
 }

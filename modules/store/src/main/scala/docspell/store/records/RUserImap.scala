@@ -1,6 +1,6 @@
 package docspell.store.records
 
-import cats.data.OptionT
+import cats.data.{NonEmptyList, OptionT}
 import cats.effect._
 import cats.implicits._
 
@@ -106,7 +106,7 @@ object RUserImap {
     val imapCertCheck = Column[Boolean]("imap_certcheck", this)
     val created       = Column[Timestamp]("created", this)
 
-    val all = List(
+    val all = NonEmptyList.of[Column[_]](
       id,
       uid,
       name,
@@ -173,7 +173,7 @@ object RUserImap {
       select(m.all),
       from(m).innerJoin(u, m.uid === u.uid),
       u.cid === accId.collective && u.login === accId.user &&? nameFilter
-    ).orderBy(m.name).run
+    ).orderBy(m.name).build
 
     sql.query[RUserImap]
   }

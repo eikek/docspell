@@ -1,5 +1,7 @@
 package docspell.store.records
 
+import cats.data.NonEmptyList
+
 import docspell.common._
 import docspell.store.qb.DSL._
 import docspell.store.qb._
@@ -24,7 +26,7 @@ object RJobLog {
     val level   = Column[LogLevel]("level", this)
     val created = Column[Timestamp]("created", this)
     val message = Column[String]("message", this)
-    val all     = List(id, jobId, level, created, message)
+    val all     = NonEmptyList.of[Column[_]](id, jobId, level, created, message)
 
     // separate column only for sorting, so not included in `all` and
     // the case class
@@ -45,7 +47,7 @@ object RJobLog {
   def findLogs(id: Ident): ConnectionIO[Vector[RJobLog]] =
     Select(select(T.all), from(T), T.jobId === id)
       .orderBy(T.created.asc, T.counter.asc)
-      .run
+      .build
       .query[RJobLog]
       .to[Vector]
 

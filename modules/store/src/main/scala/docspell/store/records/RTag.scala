@@ -27,7 +27,7 @@ object RTag {
     val name     = Column[String]("name", this)
     val category = Column[String]("category", this)
     val created  = Column[Timestamp]("created", this)
-    val all      = List[Column[_]](tid, cid, name, category, created)
+    val all      = NonEmptyList.of[Column[_]](tid, cid, name, category, created)
   }
   val T = Table(None)
   def as(alias: String): Table =
@@ -75,7 +75,7 @@ object RTag {
     val nameFilter = nameQ.map(s => T.name.like(s"%${s.toLowerCase}%"))
     val sql =
       Select(select(T.all), from(T), T.cid === coll &&? nameFilter).orderBy(order(T))
-    sql.run.query[RTag].to[Vector]
+    sql.build.query[RTag].to[Vector]
   }
 
   def findAllById(ids: List[Ident]): ConnectionIO[Vector[RTag]] =
@@ -97,7 +97,7 @@ object RTag {
         from(t).innerJoin(ti, ti.tagId === t.tid),
         ti.itemId === itemId
       ).orderBy(t.name.asc)
-    sql.run.query[RTag].to[Vector]
+    sql.build.query[RTag].to[Vector]
   }
 
   def findBySource(source: Ident): ConnectionIO[Vector[RTag]] = {
@@ -109,7 +109,7 @@ object RTag {
         from(t).innerJoin(s, s.tagId === t.tid),
         s.sourceId === source
       ).orderBy(t.name.asc)
-    sql.run.query[RTag].to[Vector]
+    sql.build.query[RTag].to[Vector]
   }
 
   def findAllByNameOrId(

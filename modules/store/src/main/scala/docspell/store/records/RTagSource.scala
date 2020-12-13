@@ -1,5 +1,6 @@
 package docspell.store.records
 
+import cats.data.NonEmptyList
 import cats.effect.Sync
 import cats.implicits._
 
@@ -19,7 +20,7 @@ object RTagSource {
     val id       = Column[Ident]("id", this)
     val sourceId = Column[Ident]("source_id", this)
     val tagId    = Column[Ident]("tag_id", this)
-    val all      = List(id, sourceId, tagId)
+    val all      = NonEmptyList.of[Column[_]](id, sourceId, tagId)
   }
 
   private val t = Table(None)

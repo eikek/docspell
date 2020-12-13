@@ -1,5 +1,6 @@
 package docspell.store.records
 
+import cats.data.NonEmptyList
 import cats.effect.Sync
 import cats.implicits._
 
@@ -18,7 +19,7 @@ object RInvitation {
 
     val id      = Column[Ident]("id", this)
     val created = Column[Timestamp]("created", this)
-    val all     = List(id, created)
+    val all     = NonEmptyList.of[Column[_]](id, created)
   }
 
   val T = Table(None)

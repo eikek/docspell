@@ -1,11 +1,6 @@
 package docspell.store.qb
 
-sealed trait FromExpr {
-
-//  def innerJoin(other: TableDef, on: Condition): FromExpr
-//
-//  def leftJoin(other: TableDef, on: Condition): FromExpr
-}
+sealed trait FromExpr
 
 object FromExpr {
 

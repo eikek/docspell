@@ -19,7 +19,7 @@ object RTagItem {
     val tagItemId = Column[Ident]("tagitemid", this)
     val itemId    = Column[Ident]("itemid", this)
     val tagId     = Column[Ident]("tid", this)
-    val all       = List(tagItemId, itemId, tagId)
+    val all       = NonEmptyList.of[Column[_]](tagItemId, itemId, tagId)
   }
   val t = Table(None)
   def as(alias: String): Table =
@@ -31,16 +31,8 @@ object RTagItem {
   def deleteItemTags(item: Ident): ConnectionIO[Int] =
     DML.delete(t, t.itemId === item)
 
-  def deleteItemTags(items: NonEmptyList[Ident], cid: Ident): ConnectionIO[Int] = {
-    print(cid)
-    DML.delete(t, t.itemId.in(items))
-    //TODO match those of the collective
-    //val itemsFiltered =
-    //  RItem.filterItemsFragment(items, cid)
-    //val sql = fr"DELETE FROM" ++ Fragment.const(t.tableName) ++ fr"WHERE" ++
-    //  t.itemId.isIn(itemsFiltered)
-    //sql.update.run
-  }
+  def deleteItemTags(items: NonEmptyList[Ident], cid: Ident): ConnectionIO[Int] =
+    DML.delete(t, t.itemId.in(RItem.filterItemsFragment(items, cid)))
 
   def deleteTag(tid: Ident): ConnectionIO[Int] =
     DML.delete(t, t.tagId === tid)

@@ -1,5 +1,6 @@
 package docspell.store.records
 
+import cats.data.NonEmptyList
 import cats.effect._
 import cats.implicits._
 
@@ -123,7 +124,7 @@ object RPeriodicTask {
     val timer     = Column[CalEvent]("timer", this)
     val nextrun   = Column[Timestamp]("nextrun", this)
     val created   = Column[Timestamp]("created", this)
-    val all = List(
+    val all = NonEmptyList.of[Column[_]](
       id,
       enabled,
       task,

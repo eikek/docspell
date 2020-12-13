@@ -100,20 +100,20 @@ object QJob {
 
     val sql1 =
       Select(
-        List(max(JC.group).as("g")),
+        max(JC.group).as("g"),
         from(JC).innerJoin(G, JC.group === G.group),
         G.worker === worker && stateCond
       )
 
     val sql2 =
-      Select(List(min(JC.group).as("g")), from(JC), stateCond)
+      Select(min(JC.group).as("g"), from(JC), stateCond)
 
     val gcol = Column[String]("g", TableDef(""))
     val groups =
       Select(select(gcol), fromSubSelect(union(sql1, sql2)).as("t0"), gcol.isNull.negate)
 
     // either 0, one or two results, but may be empty if RJob table is empty
-    groups.run.query[Ident].to[List].map(_.headOption)
+    groups.build.query[Ident].to[List].map(_.headOption)
   }
 
   private def stuckTriggerValue(t: RJob.Table, initialPause: Duration, now: Timestamp) =
@@ -144,7 +144,7 @@ object QJob {
           (JC.state === stuck && stuckTrigger < now.toMillis))
       ).orderBy(JC.state.asc, psort, JC.submitted.asc).limit(1)
 
-    sql.run.query[RJob].option
+    sql.build.query[RJob].option
   }
 
   def setCancelled[F[_]: Effect](id: Ident, store: Store[F]): F[Unit] =
@@ -215,13 +215,13 @@ object QJob {
         select(JC.all),
         from(JC),
         JC.group === collective && JC.state.in(running)
-      ).orderBy(JC.submitted.desc).run.query[RJob].stream
+      ).orderBy(JC.submitted.desc).build.query[RJob].stream
 
       val waitingJobs = Select(
         select(JC.all),
         from(JC),
         JC.group === collective && JC.state.in(waiting) && JC.submitted > refDate
-      ).orderBy(JC.submitted.desc).run.query[RJob].stream.take(max)
+      ).orderBy(JC.submitted.desc).build.query[RJob].stream.take(max)
 
       val doneJobs = Select(
         select(JC.all),
@@ -231,7 +231,7 @@ object QJob {
           JC.state.in(JobState.done),
           JC.submitted > refDate
         )
-      ).orderBy(JC.submitted.desc).run.query[RJob].stream.take(max)
+      ).orderBy(JC.submitted.desc).build.query[RJob].stream.take(max)
 
       runningJobs ++ waitingJobs ++ doneJobs
     }

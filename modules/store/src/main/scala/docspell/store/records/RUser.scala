@@ -1,5 +1,7 @@
 package docspell.store.records
 
+import cats.data.NonEmptyList
+
 import docspell.common._
 import docspell.store.qb.DSL._
 import docspell.store.qb._
@@ -34,7 +36,17 @@ object RUser {
     val created    = Column[Timestamp]("created", this)
 
     val all =
-      List(uid, login, cid, password, state, email, loginCount, lastLogin, created)
+      NonEmptyList.of[Column[_]](
+        uid,
+        login,
+        cid,
+        password,
+        state,
+        email,
+        loginCount,
+        lastLogin,
+        created
+      )
   }
 
   def as(alias: String): Table =
@@ -83,7 +95,7 @@ object RUser {
 
   def findAll(coll: Ident, order: Table => Column[_]): ConnectionIO[Vector[RUser]] = {
     val t   = Table(None)
-    val sql = Select(select(t.all), from(t), t.cid === coll).orderBy(order(t)).run
+    val sql = Select(select(t.all), from(t), t.cid === coll).orderBy(order(t)).build
     sql.query[RUser].to[Vector]
   }
 

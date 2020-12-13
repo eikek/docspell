@@ -1,5 +1,6 @@
 package docspell.store.records
 
+import cats.data.NonEmptyList
 import cats.effect._
 import cats.implicits._
 
@@ -35,7 +36,7 @@ object RFolder {
     val owner      = Column[Ident]("owner", this)
     val created    = Column[Timestamp]("created", this)
 
-    val all = List(id, name, collective, owner, created)
+    val all = NonEmptyList.of[Column[_]](id, name, collective, owner, created)
   }
 
   val T = Table(None)
@@ -75,7 +76,7 @@ object RFolder {
     val nameFilter = nameQ.map(n => T.name.like(s"%${n.toLowerCase}%"))
     val sql = Select(select(T.all), from(T), T.collective === coll &&? nameFilter)
       .orderBy(order(T))
-    sql.run.query[RFolder].to[Vector]
+    sql.build.query[RFolder].to[Vector]
   }
 
   def delete(folderId: Ident): ConnectionIO[Int] =

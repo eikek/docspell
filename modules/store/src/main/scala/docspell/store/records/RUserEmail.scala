@@ -1,6 +1,6 @@
 package docspell.store.records
 
-import cats.data.OptionT
+import cats.data.{NonEmptyList, OptionT}
 import cats.effect._
 import cats.implicits._
 
@@ -118,7 +118,7 @@ object RUserEmail {
     val mailReplyTo   = Column[MailAddress]("mail_replyto", this)
     val created       = Column[Timestamp]("created", this)
 
-    val all = List(
+    val all = NonEmptyList.of[Column[_]](
       id,
       uid,
       name,
@@ -188,7 +188,7 @@ object RUserEmail {
       user.cid === accId.collective && user.login === accId.user &&? nameFilter
     ).orderBy(email.name)
 
-    sql.run.query[RUserEmail]
+    sql.build.query[RUserEmail]
   }
 
   def findByAccount(

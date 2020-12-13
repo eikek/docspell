@@ -92,7 +92,7 @@ object RSentMail {
     val body       = Column[String]("body", this)
     val created    = Column[Timestamp]("created", this)
 
-    val all = List(
+    val all = NonEmptyList.of[Column[_]](
       id,
       uid,
       messageId,
