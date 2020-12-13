@@ -59,8 +59,8 @@ trait DSL extends DoobieMeta {
   def from(table: TableDef): FromExpr.From =
     FromExpr.From(table)
 
-  def fromSubSelect(sel: Select): FromExpr.SubSelect =
-    FromExpr.SubSelect(sel, "x")
+  def from(sel: Select, alias: String): FromExpr.From =
+    FromExpr.From(sel, alias)
 
   def count(c: Column[_]): DBFunction =
     DBFunction.Count(c)

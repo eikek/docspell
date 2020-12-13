@@ -150,7 +150,7 @@ object RegexNerFile {
       )
       val t = Column[Timestamp]("t", TableDef(""))
 
-      run(select(max(t)), fromSubSelect(sql).as("x"))
+      run(select(max(t)), from(sql, "x"))
         .query[Option[Timestamp]]
         .option
         .map(_.flatten)

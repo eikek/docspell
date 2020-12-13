@@ -9,15 +9,12 @@ object FromExprBuilder {
 
   def build(expr: FromExpr): Fragment =
     expr match {
-      case FromExpr.From(table) =>
-        fr" FROM" ++ buildTable(table)
+      case FromExpr.From(relation) =>
+        fr" FROM" ++ buildRelation(relation)
 
       case FromExpr.Joined(from, joins) =>
         build(from) ++
           joins.map(buildJoin).foldLeft(Fragment.empty)(_ ++ _)
-
-      case FromExpr.SubSelect(sel, name) =>
-        sql" FROM (" ++ SelectBuilder(sel) ++ fr") AS" ++ Fragment.const(name)
     }
 
   def buildTable(table: TableDef): Fragment =
@@ -25,15 +22,24 @@ object FromExprBuilder {
       .map(a => Fragment.const0(a))
       .getOrElse(Fragment.empty)
 
-  def buildJoin(join: Join): Fragment =
-    join match {
-      case Join.InnerJoin(table, cond) =>
-        val c = fr" ON" ++ ConditionBuilder.build(cond)
-        fr" INNER JOIN" ++ buildTable(table) ++ c
+  def buildRelation(rel: FromExpr.Relation): Fragment =
+    rel match {
+      case FromExpr.Relation.Table(table) =>
+        buildTable(table)
 
-      case Join.LeftJoin(table, cond) =>
+      case FromExpr.Relation.SubSelect(sel, alias) =>
+        sql" (" ++ SelectBuilder(sel) ++ fr") AS" ++ Fragment.const(alias)
+    }
+
+  def buildJoin(join: FromExpr.Join): Fragment =
+    join match {
+      case FromExpr.Join.InnerJoin(table, cond) =>
         val c = fr" ON" ++ ConditionBuilder.build(cond)
-        fr" LEFT JOIN" ++ buildTable(table) ++ c
+        fr" INNER JOIN" ++ buildRelation(table) ++ c
+
+      case FromExpr.Join.LeftJoin(table, cond) =>
+        val c = fr" ON" ++ ConditionBuilder.build(cond)
+        fr" LEFT JOIN" ++ buildRelation(table) ++ c
     }
 
 }

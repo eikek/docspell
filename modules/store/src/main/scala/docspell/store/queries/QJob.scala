@@ -110,7 +110,7 @@ object QJob {
 
     val gcol = Column[String]("g", TableDef(""))
     val groups =
-      Select(select(gcol), fromSubSelect(union(sql1, sql2)).as("t0"), gcol.isNull.negate)
+      Select(select(gcol), from(union(sql1, sql2), "t0"), gcol.isNull.negate)
 
     // either 0, one or two results, but may be empty if RJob table is empty
     groups.build.query[Ident].to[List].map(_.headOption)

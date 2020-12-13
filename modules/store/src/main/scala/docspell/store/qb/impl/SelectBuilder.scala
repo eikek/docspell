@@ -21,6 +21,9 @@ object SelectBuilder {
         val sel = if (sq.distinctFlag) fr"SELECT DISTINCT" else fr"SELECT"
         sel ++ buildSimple(sq)
 
+      case Select.RawSelect(f) =>
+        f
+
       case Select.Union(q, qs) =>
         qs.prepended(q).map(build).reduce(_ ++ union ++ _)
 

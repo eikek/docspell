@@ -86,6 +86,11 @@ object Select {
       copy(projection = projection.append(e))
   }
 
+  case class RawSelect(fragment: Fragment) extends Select {
+    def appendSelect(e: SelectExpr): RawSelect =
+      sys.error("RawSelect doesn't support appending select expressions")
+  }
+
   case class Union(q: Select, qs: Vector[Select]) extends Select {
     def appendSelect(e: SelectExpr): Union =
       copy(q = q.appendSelect(e))
