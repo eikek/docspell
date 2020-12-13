@@ -105,7 +105,7 @@ object ItemHandler {
 
   private def deleteByFileIds[F[_]: Sync: ContextShift]: Task[F, Args, Unit] =
     Task { ctx =>
-      val states = ItemState.invalidStates.toList.toSet
+      val states = ItemState.invalidStates
       for {
         items <- ctx.store.transact(
           QItem.findByFileIds(ctx.args.files.map(_.fileMetaId), states)

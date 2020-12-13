@@ -1,9 +1,9 @@
 package docspell.store.qb.impl
 
 import docspell.store.qb._
-
 import _root_.doobie.implicits._
 import _root_.doobie.{Query => _, _}
+import cats.data.NonEmptyList
 
 object SelectBuilder {
   val comma     = fr","
@@ -74,5 +74,19 @@ object SelectBuilder {
   }
 
   def buildCte(bind: CteBind): Fragment =
-    Fragment.const(bind.name.tableName) ++ sql"AS (" ++ build(bind.select) ++ sql")"
+    bind match {
+      case CteBind(name, cols, select) =>
+        val colDef =
+          NonEmptyList
+            .fromFoldable(cols)
+            .map(nel =>
+              nel
+                .map(col => CommonBuilder.columnNoPrefix(col))
+                .reduceLeft(_ ++ comma ++ _)
+            )
+            .map(f => sql"(" ++ f ++ sql")")
+            .getOrElse(Fragment.empty)
+
+        Fragment.const0(name.tableName) ++ colDef ++ sql" AS (" ++ build(select) ++ sql")"
+    }
 }

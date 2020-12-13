@@ -6,7 +6,6 @@ import cats.effect.Sync
 import cats.effect.concurrent.Ref
 import cats.implicits._
 import fs2.Stream
-
 import docspell.common.syntax.all._
 import docspell.common.{IdRef, _}
 import docspell.store.Store
@@ -14,7 +13,6 @@ import docspell.store.impl.Implicits._
 import docspell.store.impl._
 import docspell.store.qb.Select
 import docspell.store.records._
-
 import bitpeace.FileMeta
 import doobie._
 import doobie.implicits._
@@ -583,19 +581,18 @@ object QItem {
   }
 
   private def findAttachmentLight(item: Ident): ConnectionIO[List[AttachmentLight]] = {
-    val aId    = RAttachment.Columns.id.prefix("a")
-    val aItem  = RAttachment.Columns.itemId.prefix("a")
-    val aPos   = RAttachment.Columns.position.prefix("a")
-    val aName  = RAttachment.Columns.name.prefix("a")
-    val mId    = RAttachmentMeta.Columns.id.prefix("m")
-    val mPages = RAttachmentMeta.Columns.pages.prefix("m")
+    import docspell.store.qb._
+    import docspell.store.qb.DSL._
 
-    val cols = Seq(aId, aPos, aName, mPages)
-    val join = RAttachment.table ++
-      fr"a LEFT OUTER JOIN" ++ RAttachmentMeta.table ++ fr"m ON" ++ aId.is(mId)
-    val cond = aItem.is(item)
+    val a = RAttachment.as("a")
+    val m = RAttachmentMeta.as("m")
 
-    selectSimple(cols, join, cond).query[AttachmentLight].to[List]
+    Select(
+      select(a.id, a.position, a.name, m.pages),
+      from(a)
+        .leftJoin(m, m.id === a.id),
+      a.itemId === item
+    ).build.query[AttachmentLight].to[List]
   }
 
   def delete[F[_]: Sync](store: Store[F])(itemId: Ident, collective: Ident): F[Int] =
@@ -609,108 +606,73 @@ object QItem {
 
   private def findByFileIdsQuery(
       fileMetaIds: NonEmptyList[Ident],
-      limit: Option[Int],
-      states: Set[ItemState]
-  ): Fragment = {
-    val IC            = RItem.Columns.all.map(_.prefix("i"))
-    val aItem         = RAttachment.Columns.itemId.prefix("a")
-    val aId           = RAttachment.Columns.id.prefix("a")
-    val aFileId       = RAttachment.Columns.fileId.prefix("a")
-    val iId           = RItem.Columns.id.prefix("i")
-    val iState        = RItem.Columns.state.prefix("i")
-    val sId           = RAttachmentSource.Columns.id.prefix("s")
-    val sFileId       = RAttachmentSource.Columns.fileId.prefix("s")
-    val rId           = RAttachmentArchive.Columns.id.prefix("r")
-    val rFileId       = RAttachmentArchive.Columns.fileId.prefix("r")
-    val m1            = RFileMeta.as("m1")
-    val m2            = RFileMeta.as("m2")
-    val m3            = RFileMeta.as("m3")
-    val m1Id          = m1.id.column
-    val m2Id          = m2.id.column
-    val m3Id          = m3.id.column
-    val filemetaTable = Fragment.const(RFileMeta.T.tableName)
+      states: Option[NonEmptyList[ItemState]]
+  ): Select.SimpleSelect = {
+    import docspell.store.qb._
+    import docspell.store.qb.DSL._
 
-    val from =
-      RItem.table ++ fr"i INNER JOIN" ++ RAttachment.table ++ fr"a ON" ++ aItem.is(iId) ++
-        fr"INNER JOIN" ++ RAttachmentSource.table ++ fr"s ON" ++ aId.is(sId) ++
-        fr"INNER JOIN" ++ filemetaTable ++ fr"m1 ON" ++ m1Id.is(aFileId) ++
-        fr"INNER JOIN" ++ filemetaTable ++ fr"m2 ON" ++ m2Id.is(sFileId) ++
-        fr"LEFT OUTER JOIN" ++ RAttachmentArchive.table ++ fr"r ON" ++ aId.is(rId) ++
-        fr"LEFT OUTER JOIN" ++ filemetaTable ++ fr"m3 ON" ++ m3Id.is(rFileId)
+    val i = RItem.as("i")
+    val a = RAttachment.as("a")
+    val s = RAttachmentSource.as("s")
+    val r = RAttachmentArchive.as("r")
 
-    val fileCond =
-      or(m1Id.isIn(fileMetaIds), m2Id.isIn(fileMetaIds), m3Id.isIn(fileMetaIds))
-    val cond = NonEmptyList.fromList(states.toList) match {
-      case Some(nel) =>
-        and(fileCond, iState.isIn(nel))
-      case None =>
-        fileCond
-    }
-    val q = selectSimple(IC, from, cond)
-
-    limit match {
-      case Some(n) => q ++ fr"LIMIT $n"
-      case None    => q
-    }
+    Select(
+      select(i.all),
+      from(i)
+        .innerJoin(a, a.itemId === i.id)
+        .innerJoin(s, s.id === a.id)
+        .leftJoin(r, r.id === a.id),
+      (a.fileId.in(fileMetaIds) ||
+        s.fileId.in(fileMetaIds) ||
+        r.fileId.in(fileMetaIds)) &&? states.map(nel => i.state.in(nel))
+    )
   }
 
   def findOneByFileIds(fileMetaIds: Seq[Ident]): ConnectionIO[Option[RItem]] =
     NonEmptyList.fromList(fileMetaIds.toList) match {
       case Some(nel) =>
-        findByFileIdsQuery(nel, Some(1), Set.empty).query[RItem].option
+        findByFileIdsQuery(nel, None).limit(1).build.query[RItem].option
       case None =>
         (None: Option[RItem]).pure[ConnectionIO]
     }
 
   def findByFileIds(
       fileMetaIds: Seq[Ident],
-      states: Set[ItemState]
+      states: NonEmptyList[ItemState]
   ): ConnectionIO[Vector[RItem]] =
     NonEmptyList.fromList(fileMetaIds.toList) match {
       case Some(nel) =>
-        findByFileIdsQuery(nel, None, states).query[RItem].to[Vector]
+        findByFileIdsQuery(nel, states.some).build.query[RItem].to[Vector]
       case None =>
         Vector.empty[RItem].pure[ConnectionIO]
     }
 
   def findByChecksum(checksum: String, collective: Ident): ConnectionIO[Vector[RItem]] = {
-    val IC            = RItem.Columns.all.map(_.prefix("i"))
-    val aItem         = RAttachment.Columns.itemId.prefix("a")
-    val aId           = RAttachment.Columns.id.prefix("a")
-    val aFileId       = RAttachment.Columns.fileId.prefix("a")
-    val iId           = RItem.Columns.id.prefix("i")
-    val iColl         = RItem.Columns.cid.prefix("i")
-    val sId           = RAttachmentSource.Columns.id.prefix("s")
-    val sFileId       = RAttachmentSource.Columns.fileId.prefix("s")
-    val rId           = RAttachmentArchive.Columns.id.prefix("r")
-    val rFileId       = RAttachmentArchive.Columns.fileId.prefix("r")
-    val m1            = RFileMeta.as("m1")
-    val m2            = RFileMeta.as("m2")
-    val m3            = RFileMeta.as("m3")
-    val m1Id          = m1.id.column
-    val m2Id          = m2.id.column
-    val m3Id          = m3.id.column
-    val m1Checksum    = m1.checksum.column
-    val m2Checksum    = m2.checksum.column
-    val m3Checksum    = m3.checksum.column
-    val filemetaTable = Fragment.const(RFileMeta.T.tableName)
-    val from =
-      RItem.table ++ fr"i INNER JOIN" ++ RAttachment.table ++ fr"a ON" ++ aItem.is(iId) ++
-        fr"INNER JOIN" ++ RAttachmentSource.table ++ fr"s ON" ++ aId.is(sId) ++
-        fr"INNER JOIN" ++ filemetaTable ++ fr"m1 ON" ++ m1Id.is(aFileId) ++
-        fr"INNER JOIN" ++ filemetaTable ++ fr"m2 ON" ++ m2Id.is(sFileId) ++
-        fr"LEFT OUTER JOIN" ++ RAttachmentArchive.table ++ fr"r ON" ++ aId.is(rId) ++
-        fr"LEFT OUTER JOIN" ++ filemetaTable ++ fr"m3 ON" ++ m3Id.is(rFileId)
+    import docspell.store.qb._
+    import docspell.store.qb.DSL._
 
-    selectSimple(
-      IC,
-      from,
-      and(
-        or(m1Checksum.is(checksum), m2Checksum.is(checksum), m3Checksum.is(checksum)),
-        iColl.is(collective)
+    val m1 = RFileMeta.as("m1")
+    val m2 = RFileMeta.as("m2")
+    val m3 = RFileMeta.as("m3")
+    val i  = RItem.as("i")
+    val a  = RAttachment.as("a")
+    val s  = RAttachmentSource.as("s")
+    val r  = RAttachmentArchive.as("r")
+
+    Select(
+      select(i.all),
+      from(i)
+        .innerJoin(a, a.itemId === i.id)
+        .innerJoin(s, s.id === a.id)
+        .innerJoin(m1, m1.id === a.fileId)
+        .innerJoin(m2, m2.id === s.fileId)
+        .leftJoin(r, r.id === a.id)
+        .leftJoin(m3, m3.id === r.fileId),
+      where(
+        i.cid === collective &&
+          (m1.checksum === checksum || m2.checksum === checksum || m3.checksum === checksum)
       )
-    ).query[RItem]
-      .to[Vector]
+    ).build.query[RItem].to[Vector]
   }
 
   final case class NameAndNotes(
@@ -724,15 +686,16 @@ object QItem {
       coll: Option[Ident],
       chunkSize: Int
   ): Stream[ConnectionIO, NameAndNotes] = {
-    val iId     = RItem.Columns.id
-    val iColl   = RItem.Columns.cid
-    val iName   = RItem.Columns.name
-    val iFolder = RItem.Columns.folder
-    val iNotes  = RItem.Columns.notes
+    import docspell.store.qb._
+    import docspell.store.qb.DSL._
 
-    val cols  = Seq(iId, iColl, iFolder, iName, iNotes)
-    val where = coll.map(cid => iColl.is(cid)).getOrElse(Fragment.empty)
-    selectSimple(cols, RItem.table, where)
+    val i = RItem.as("i")
+
+    Select(
+      select(i.id, i.cid, i.folder, i.name, i.notes),
+      from(i)
+    ).where(coll.map(cid => i.cid === cid))
+      .build
       .query[NameAndNotes]
       .streamWithChunkSize(chunkSize)
   }
@@ -741,15 +704,13 @@ object QItem {
       collective: Ident,
       chunkSize: Int
   ): Stream[ConnectionIO, Ident] = {
-    val cols   = Seq(RItem.Columns.id)
-    val iColl  = RItem.Columns.cid
-    val iState = RItem.Columns.state
-    (selectSimple(
-      cols,
-      RItem.table,
-      and(iColl.is(collective), iState.is(ItemState.confirmed))
-    ) ++
-      orderBy(RItem.Columns.created.desc))
+    import docspell.store.qb._
+    import docspell.store.qb.DSL._
+
+    val i = RItem.as("i")
+    Select(i.id.s, from(i), i.cid === collective && i.state === ItemState.confirmed)
+      .orderBy(i.created.desc)
+      .build
       .query[Ident]
       .streamWithChunkSize(chunkSize)
   }
@@ -763,45 +724,39 @@ object QItem {
       tagCategory: String,
       pageSep: String
   ): ConnectionIO[TextAndTag] = {
-    val aId     = RAttachment.Columns.id.prefix("a")
-    val aItem   = RAttachment.Columns.itemId.prefix("a")
-    val mId     = RAttachmentMeta.Columns.id.prefix("m")
-    val mText   = RAttachmentMeta.Columns.content.prefix("m")
-    val tagItem = RTagItem.as("ti") //Columns.itemId.prefix("ti")
-    //val tiTag  = RTagItem.Columns.tagId.prefix("ti")
+    import docspell.store.qb._
+    import docspell.store.qb.DSL._
+
     val tag = RTag.as("t")
-//    val tId   = RTag.Columns.tid.prefix("t")
-//    val tName = RTag.Columns.name.prefix("t")
-//    val tCat  = RTag.Columns.category.prefix("t")
-    val iId   = RItem.Columns.id.prefix("i")
-    val iColl = RItem.Columns.cid.prefix("i")
+    val a   = RAttachment.as("a")
+    val am  = RAttachmentMeta.as("m")
+    val ti  = RTagItem.as("ti")
+    val i   = RItem.as("i")
 
-    val cte = withCTE(
-      "tags" -> selectSimple(
-        Seq(tagItem.itemId.column, tag.tid.column, tag.name.column),
-        Fragment.const(RTagItem.t.tableName) ++ fr"ti INNER JOIN" ++
-          Fragment.const(tag.tableName) ++ fr"t ON" ++ tag.tid.column
-            .is(tagItem.tagId.column),
-        and(tagItem.itemId.column.is(itemId), tag.category.column.is(tagCategory))
-      )
-    )
+    val tags     = TableDef("tags").as("tt")
+    val tagsItem = Column[Ident]("itemid", tags)
+    val tagsTid  = Column[Ident]("tid", tags)
+    val tagsName = Column[String]("tname", tags)
 
-    val cols = Seq(mText, tag.tid.column, tag.name.column)
+    val q =
+      withCte(
+        tags -> Select(
+          select(ti.itemId.as(tagsItem), tag.tid.as(tagsTid), tag.name.as(tagsName)),
+          from(ti)
+            .innerJoin(tag, tag.tid === ti.tagId),
+          ti.itemId === itemId && tag.category === tagCategory
+        )
+      )(
+        Select(
+          select(am.content, tagsTid, tagsName),
+          from(i)
+            .innerJoin(a, a.itemId === i.id)
+            .innerJoin(am, a.id === am.id)
+            .leftJoin(tags, tagsItem === i.id),
+          i.id === itemId && i.cid === collective && am.content.isNotNull && am.content <> ""
+        )
+      ).build
 
-    val from = RItem.table ++ fr"i INNER JOIN" ++
-      RAttachment.table ++ fr"a ON" ++ aItem.is(iId) ++ fr"INNER JOIN" ++
-      RAttachmentMeta.table ++ fr"m ON" ++ aId.is(mId) ++ fr"LEFT JOIN" ++
-      fr"tags t ON" ++ RTagItem.t.itemId.oldColumn.prefix("t").is(iId)
-
-    val where =
-      and(
-        iId.is(itemId),
-        iColl.is(collective),
-        mText.isNotNull,
-        mText.isNot("")
-      )
-
-    val q = cte ++ selectDistinct(cols, from, where)
     for {
       _ <- logger.ftrace[ConnectionIO](
         s"query: $q  (${itemId.id}, ${collective.id}, ${tagCategory})"

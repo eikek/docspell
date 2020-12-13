@@ -25,6 +25,13 @@ trait DSL extends DoobieMeta {
   def withCte(cte: (TableDef, Select), more: (TableDef, Select)*): DSL.WithCteDsl =
     DSL.WithCteDsl(CteBind(cte), more.map(CteBind.apply).toVector)
 
+  def withCte(
+      name: TableDef,
+      col: Column[_],
+      cols: Column[_]*
+  ): Select => DSL.WithCteDsl =
+    sel => DSL.WithCteDsl(CteBind(name, col, cols: _*)(sel), Vector.empty)
+
   def select(cond: Condition): Nel[SelectExpr] =
     Nel.of(SelectExpr.SelectCondition(cond, None))
 

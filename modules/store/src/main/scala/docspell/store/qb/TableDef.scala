@@ -8,7 +8,7 @@ trait TableDef {
 
 object TableDef {
 
-  def apply(table: String, aliasName: Option[String] = None): TableDef =
+  def apply(table: String, aliasName: Option[String] = None): BasicTable =
     BasicTable(table, aliasName)
 
   final case class BasicTable(tableName: String, alias: Option[String]) extends TableDef {

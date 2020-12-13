@@ -24,10 +24,10 @@ object DBFunctionBuilder extends CommonBuilder {
 
       case DBFunction.Coalesce(expr, exprs) =>
         val v = exprs.prepended(expr).map(SelectExprBuilder.build)
-        sql"COALESCE(" ++ v.reduce(_ ++ comma ++ _) ++ sql")"
+        sql"COALESCE(" ++ v.reduce(_ ++ comma ++ _) ++ fr")"
 
       case DBFunction.Power(expr, base) =>
-        sql"POWER($base, " ++ SelectExprBuilder.build(expr) ++ sql")"
+        sql"POWER($base, " ++ SelectExprBuilder.build(expr) ++ fr")"
 
       case DBFunction.Calc(op, left, right) =>
         SelectExprBuilder.build(left) ++

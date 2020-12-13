@@ -21,9 +21,21 @@ sealed trait Select {
 
   def limit(n: Int): Select =
     this match {
-      case Select.Limit(q, _) => Select.Limit(q, n)
-      case _                  => Select.Limit(this, n)
+      case Select.Limit(q, _) =>
+        Select.Limit(q, n)
+      case _ =>
+        Select.Limit(this, n)
     }
+
+  def appendCte(next: CteBind): Select =
+    this match {
+      case Select.WithCte(cte, ctes, query) =>
+        Select.WithCte(cte, ctes :+ next, query)
+      case _ =>
+        Select.WithCte(next, Vector.empty, this)
+    }
+
+  def appendSelect(e: SelectExpr): Select
 }
 
 object Select {
@@ -69,16 +81,34 @@ object Select {
       copy(where = c)
     def where(c: Condition): SimpleSelect =
       copy(where = Some(c))
+
+    def appendSelect(e: SelectExpr): SimpleSelect =
+      copy(projection = projection.append(e))
   }
 
-  case class Union(q: Select, qs: Vector[Select]) extends Select
+  case class Union(q: Select, qs: Vector[Select]) extends Select {
+    def appendSelect(e: SelectExpr): Union =
+      copy(q = q.appendSelect(e))
+  }
 
-  case class Intersect(q: Select, qs: Vector[Select]) extends Select
+  case class Intersect(q: Select, qs: Vector[Select]) extends Select {
+    def appendSelect(e: SelectExpr): Intersect =
+      copy(q = q.appendSelect(e))
+  }
 
   case class Ordered(q: Select, orderBy: OrderBy, orderBys: Vector[OrderBy])
-      extends Select
+      extends Select {
+    def appendSelect(e: SelectExpr): Ordered =
+      copy(q = q.appendSelect(e))
+  }
 
-  case class Limit(q: Select, limit: Int) extends Select
+  case class Limit(q: Select, limit: Int) extends Select {
+    def appendSelect(e: SelectExpr): Limit =
+      copy(q = q.appendSelect(e))
+  }
 
-  case class WithCte(cte: CteBind, ctes: Vector[CteBind], query: Select) extends Select
+  case class WithCte(cte: CteBind, ctes: Vector[CteBind], query: Select) extends Select {
+    def appendSelect(e: SelectExpr): WithCte =
+      copy(query = query.appendSelect(e))
+  }
 }

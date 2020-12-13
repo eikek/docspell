@@ -18,3 +18,4 @@ trait CommonBuilder {
   def appendAs(alias: Option[String]): Fragment =
     alias.map(a => fr" AS" ++ Fragment.const(a)).getOrElse(Fragment.empty)
 }
+object CommonBuilder extends CommonBuilder
