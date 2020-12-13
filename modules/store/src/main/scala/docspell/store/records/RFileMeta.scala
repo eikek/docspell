@@ -1,11 +1,13 @@
 package docspell.store.records
 
+import java.time.Instant
+
 import cats.data.NonEmptyList
 import cats.implicits._
 
 import docspell.common._
-import docspell.store.impl.Implicits._
-import docspell.store.impl._
+import docspell.store.qb.DSL._
+import docspell.store.qb._
 import docspell.store.syntax.MimeTypes._
 
 import bitpeace.FileMeta
@@ -14,26 +16,30 @@ import doobie._
 import doobie.implicits._
 
 object RFileMeta {
+  final case class Table(alias: Option[String]) extends TableDef {
+    val tableName = "filemeta"
 
-  val table = fr"filemeta"
+    val id        = Column[Ident]("id", this)
+    val timestamp = Column[Instant]("timestamp", this)
+    val mimetype  = Column[Mimetype]("mimetype", this)
+    val length    = Column[Long]("length", this)
+    val checksum  = Column[String]("checksum", this)
+    val chunks    = Column[Int]("chunks", this)
+    val chunksize = Column[Int]("chunksize", this)
 
-  object Columns {
-    val id        = Column("id")
-    val timestamp = Column("timestamp")
-    val mimetype  = Column("mimetype")
-    val length    = Column("length")
-    val checksum  = Column("checksum")
-    val chunks    = Column("chunks")
-    val chunksize = Column("chunksize")
-
-    val all = List(id, timestamp, mimetype, length, checksum, chunks, chunksize)
+    val all = NonEmptyList
+      .of[Column[_]](id, timestamp, mimetype, length, checksum, chunks, chunksize)
 
   }
+
+  val T = Table(None)
+  def as(alias: String): Table =
+    Table(Some(alias))
 
   def findById(fid: Ident): ConnectionIO[Option[FileMeta]] = {
     import bitpeace.sql._
 
-    selectSimple(Columns.all, table, Columns.id.is(fid)).query[FileMeta].option
+    run(select(T.all), from(T), T.id === fid).query[FileMeta].option
   }
 
   def findByIds(ids: List[Ident]): ConnectionIO[Vector[FileMeta]] = {
@@ -41,7 +47,7 @@ object RFileMeta {
 
     NonEmptyList.fromList(ids) match {
       case Some(nel) =>
-        selectSimple(Columns.all, table, Columns.id.isIn(nel)).query[FileMeta].to[Vector]
+        run(select(T.all), from(T), T.id.in(nel)).query[FileMeta].to[Vector]
       case None =>
         Vector.empty[FileMeta].pure[ConnectionIO]
     }
@@ -50,7 +56,7 @@ object RFileMeta {
   def findMime(fid: Ident): ConnectionIO[Option[MimeType]] = {
     import bitpeace.sql._
 
-    selectSimple(Seq(Columns.mimetype), table, Columns.id.is(fid))
+    run(select(T.mimetype), from(T), T.id === fid)
       .query[Mimetype]
       .option
       .map(_.map(_.toLocal))

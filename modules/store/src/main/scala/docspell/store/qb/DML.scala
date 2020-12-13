@@ -74,6 +74,10 @@ object DML {
       case Setter.Increment(column, amount) =>
         val colFrag = SelectExprBuilder.columnNoPrefix(column)
         colFrag ++ fr" =" ++ colFrag ++ fr" + $amount"
+
+      case Setter.Decrement(column, amount) =>
+        val colFrag = SelectExprBuilder.columnNoPrefix(column)
+        colFrag ++ fr" =" ++ colFrag ++ fr" - $amount"
     }
 
   def set(s: Setter[_], more: Setter[_]*): Nel[Setter[_]] =

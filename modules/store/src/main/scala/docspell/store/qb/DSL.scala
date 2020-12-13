@@ -127,6 +127,9 @@ trait DSL extends DoobieMeta {
     def increment(amount: Int): Setter[A] =
       Setter.Increment(col, amount)
 
+    def decrement(amount: Int): Setter[A] =
+      Setter.Decrement(col, amount)
+
     def asc: OrderBy =
       OrderBy(SelectExpr.SelectColumn(col, None), OrderBy.OrderType.Asc)
 
@@ -177,6 +180,9 @@ trait DSL extends DoobieMeta {
 
     def ===(other: Column[A]): Condition =
       Condition.CompareCol(col, Operator.Eq, other)
+
+    def <>(other: Column[A]): Condition =
+      Condition.CompareCol(col, Operator.Neq, other)
   }
 
   implicit final class ConditionOps(c: Condition) {

@@ -5,9 +5,8 @@ import cats.effect.Sync
 import cats.implicits._
 
 import docspell.common._
-import docspell.store.impl.Implicits._
-import docspell.store.impl._
-import docspell.store.qb.{Select, TableDef}
+import docspell.store.qb.DSL._
+import docspell.store.qb._
 
 import doobie._
 import doobie.implicits._
@@ -110,8 +109,9 @@ object RItem {
     Table(Some(alias))
 
   val table = fr"item"
-
   object Columns {
+    import docspell.store.impl._
+
     val id            = Column("itemid")
     val cid           = Column("cid")
     val name          = Column("name")
@@ -149,19 +149,21 @@ object RItem {
       folder
     )
   }
-  import Columns._
+
+  private val currentTime =
+    Timestamp.current[ConnectionIO]
 
   def insert(v: RItem): ConnectionIO[Int] =
-    insertRow(
-      table,
-      all,
+    DML.insert(
+      T,
+      T.all,
       fr"${v.id},${v.cid},${v.name},${v.itemDate},${v.source},${v.direction},${v.state}," ++
         fr"${v.corrOrg},${v.corrPerson},${v.concPerson},${v.concEquipment},${v.inReplyTo},${v.dueDate}," ++
         fr"${v.created},${v.updated},${v.notes},${v.folderId}"
-    ).update.run
+    )
 
   def getCollective(itemId: Ident): ConnectionIO[Option[Ident]] =
-    selectSimple(List(cid), table, id.is(itemId)).query[Ident].option
+    Select(T.cid.s, from(T), T.id === itemId).build.query[Ident].option
 
   def updateState(
       itemId: Ident,
@@ -170,11 +172,11 @@ object RItem {
   ): ConnectionIO[Int] =
     for {
       t <- currentTime
-      n <- updateRow(
-        table,
-        and(id.is(itemId), state.isIn(existing)),
-        commas(state.setTo(itemState), updated.setTo(t))
-      ).update.run
+      n <- DML.update(
+        T,
+        T.id === itemId && T.state.in(existing),
+        DML.set(T.state.setTo(itemState), T.updated.setTo(t))
+      )
     } yield n
 
   def updateStateForCollective(
@@ -184,11 +186,11 @@ object RItem {
   ): ConnectionIO[Int] =
     for {
       t <- currentTime
-      n <- updateRow(
-        table,
-        and(id.isIn(itemIds), cid.is(coll)),
-        commas(state.setTo(itemState), updated.setTo(t))
-      ).update.run
+      n <- DML.update(
+        T,
+        T.id.in(itemIds) && T.cid === coll,
+        DML.set(T.state.setTo(itemState), T.updated.setTo(t))
+      )
     } yield n
 
   def updateDirection(
@@ -198,11 +200,11 @@ object RItem {
   ): ConnectionIO[Int] =
     for {
       t <- currentTime
-      n <- updateRow(
-        table,
-        and(id.isIn(itemIds), cid.is(coll)),
-        commas(incoming.setTo(dir), updated.setTo(t))
-      ).update.run
+      n <- DML.update(
+        T,
+        T.id.in(itemIds) && T.cid === coll,
+        DML.set(T.incoming.setTo(dir), T.updated.setTo(t))
+      )
     } yield n
 
   def updateCorrOrg(
@@ -212,21 +214,21 @@ object RItem {
   ): ConnectionIO[Int] =
     for {
       t <- currentTime
-      n <- updateRow(
-        table,
-        and(id.isIn(itemIds), cid.is(coll)),
-        commas(corrOrg.setTo(org), updated.setTo(t))
-      ).update.run
+      n <- DML.update(
+        T,
+        T.id.in(itemIds) && T.cid === coll,
+        DML.set(T.corrOrg.setTo(org), T.updated.setTo(t))
+      )
     } yield n
 
   def removeCorrOrg(coll: Ident, currentOrg: Ident): ConnectionIO[Int] =
     for {
       t <- currentTime
-      n <- updateRow(
-        table,
-        and(cid.is(coll), corrOrg.is(Some(currentOrg))),
-        commas(corrOrg.setTo(None: Option[Ident]), updated.setTo(t))
-      ).update.run
+      n <- DML.update(
+        T,
+        T.cid === coll && T.corrOrg === currentOrg,
+        DML.set(T.corrOrg.setTo(None: Option[Ident]), T.updated.setTo(t))
+      )
     } yield n
 
   def updateCorrPerson(
@@ -236,21 +238,21 @@ object RItem {
   ): ConnectionIO[Int] =
     for {
       t <- currentTime
-      n <- updateRow(
-        table,
-        and(id.isIn(itemIds), cid.is(coll)),
-        commas(corrPerson.setTo(person), updated.setTo(t))
-      ).update.run
+      n <- DML.update(
+        T,
+        T.id.in(itemIds) && T.cid === coll,
+        DML.set(T.corrPerson.setTo(person), T.updated.setTo(t))
+      )
     } yield n
 
   def removeCorrPerson(coll: Ident, currentPerson: Ident): ConnectionIO[Int] =
     for {
       t <- currentTime
-      n <- updateRow(
-        table,
-        and(cid.is(coll), corrPerson.is(Some(currentPerson))),
-        commas(corrPerson.setTo(None: Option[Ident]), updated.setTo(t))
-      ).update.run
+      n <- DML.update(
+        T,
+        T.cid === coll && T.corrPerson === currentPerson,
+        DML.set(T.corrPerson.setTo(None: Option[Ident]), T.updated.setTo(t))
+      )
     } yield n
 
   def updateConcPerson(
@@ -260,21 +262,21 @@ object RItem {
   ): ConnectionIO[Int] =
     for {
       t <- currentTime
-      n <- updateRow(
-        table,
-        and(id.isIn(itemIds), cid.is(coll)),
-        commas(concPerson.setTo(person), updated.setTo(t))
-      ).update.run
+      n <- DML.update(
+        T,
+        T.id.in(itemIds) && T.cid === coll,
+        DML.set(T.concPerson.setTo(person), T.updated.setTo(t))
+      )
     } yield n
 
   def removeConcPerson(coll: Ident, currentPerson: Ident): ConnectionIO[Int] =
     for {
       t <- currentTime
-      n <- updateRow(
-        table,
-        and(cid.is(coll), concPerson.is(Some(currentPerson))),
-        commas(concPerson.setTo(None: Option[Ident]), updated.setTo(t))
-      ).update.run
+      n <- DML.update(
+        T,
+        T.cid === coll && T.concPerson === currentPerson,
+        DML.set(T.concPerson.setTo(None: Option[Ident]), T.updated.setTo(t))
+      )
     } yield n
 
   def updateConcEquip(
@@ -284,21 +286,21 @@ object RItem {
   ): ConnectionIO[Int] =
     for {
       t <- currentTime
-      n <- updateRow(
-        table,
-        and(id.isIn(itemIds), cid.is(coll)),
-        commas(concEquipment.setTo(equip), updated.setTo(t))
-      ).update.run
+      n <- DML.update(
+        T,
+        T.id.in(itemIds) && T.cid === coll,
+        DML.set(T.concEquipment.setTo(equip), T.updated.setTo(t))
+      )
     } yield n
 
   def removeConcEquip(coll: Ident, currentEquip: Ident): ConnectionIO[Int] =
     for {
       t <- currentTime
-      n <- updateRow(
-        table,
-        and(cid.is(coll), concEquipment.is(Some(currentEquip))),
-        commas(concEquipment.setTo(None: Option[Ident]), updated.setTo(t))
-      ).update.run
+      n <- DML.update(
+        T,
+        T.cid === coll && T.concEquipment === currentEquip,
+        DML.set(T.concEquipment.setTo(None: Option[Ident]), T.updated.setTo(t))
+      )
     } yield n
 
   def updateFolder(
@@ -308,31 +310,31 @@ object RItem {
   ): ConnectionIO[Int] =
     for {
       t <- currentTime
-      n <- updateRow(
-        table,
-        and(cid.is(coll), id.is(itemId)),
-        commas(folder.setTo(folderId), updated.setTo(t))
-      ).update.run
+      n <- DML.update(
+        T,
+        T.cid === coll && T.id === itemId,
+        DML.set(T.folder.setTo(folderId), T.updated.setTo(t))
+      )
     } yield n
 
   def updateNotes(itemId: Ident, coll: Ident, text: Option[String]): ConnectionIO[Int] =
     for {
       t <- currentTime
-      n <- updateRow(
-        table,
-        and(id.is(itemId), cid.is(coll)),
-        commas(notes.setTo(text), updated.setTo(t))
-      ).update.run
+      n <- DML.update(
+        T,
+        T.id === itemId && T.cid === coll,
+        DML.set(T.notes.setTo(text), T.updated.setTo(t))
+      )
     } yield n
 
   def updateName(itemId: Ident, coll: Ident, itemName: String): ConnectionIO[Int] =
     for {
       t <- currentTime
-      n <- updateRow(
-        table,
-        and(id.is(itemId), cid.is(coll)),
-        commas(name.setTo(itemName), updated.setTo(t))
-      ).update.run
+      n <- DML.update(
+        T,
+        T.id === itemId && T.cid === coll,
+        DML.set(T.name.setTo(itemName), T.updated.setTo(t))
+      )
     } yield n
 
   def updateDate(
@@ -342,11 +344,11 @@ object RItem {
   ): ConnectionIO[Int] =
     for {
       t <- currentTime
-      n <- updateRow(
-        table,
-        and(id.isIn(itemIds), cid.is(coll)),
-        commas(itemDate.setTo(date), updated.setTo(t))
-      ).update.run
+      n <- DML.update(
+        T,
+        T.id.in(itemIds) && T.cid === coll,
+        DML.set(T.itemDate.setTo(date), T.updated.setTo(t))
+      )
     } yield n
 
   def updateDueDate(
@@ -356,50 +358,50 @@ object RItem {
   ): ConnectionIO[Int] =
     for {
       t <- currentTime
-      n <- updateRow(
-        table,
-        and(id.isIn(itemIds), cid.is(coll)),
-        commas(dueDate.setTo(date), updated.setTo(t))
-      ).update.run
+      n <- DML.update(
+        T,
+        T.id.in(itemIds) && T.cid === coll,
+        DML.set(T.dueDate.setTo(date), T.updated.setTo(t))
+      )
     } yield n
 
   def deleteByIdAndCollective(itemId: Ident, coll: Ident): ConnectionIO[Int] =
-    deleteFrom(table, and(id.is(itemId), cid.is(coll))).update.run
+    DML.delete(T, T.id === itemId && T.cid === coll)
 
   def existsById(itemId: Ident): ConnectionIO[Boolean] =
-    selectCount(id, table, id.is(itemId)).query[Int].unique.map(_ > 0)
+    Select(count(T.id).s, from(T), T.id === itemId).build.query[Int].unique.map(_ > 0)
 
   def existsByIdAndCollective(itemId: Ident, coll: Ident): ConnectionIO[Boolean] =
-    selectCount(id, table, and(id.is(itemId), cid.is(coll))).query[Int].unique.map(_ > 0)
+    Select(count(T.id).s, from(T), T.id === itemId && T.cid === coll).build
+      .query[Int]
+      .unique
+      .map(_ > 0)
 
   def existsByIdsAndCollective(
       itemIds: NonEmptyList[Ident],
       coll: Ident
   ): ConnectionIO[Boolean] =
-    selectCount(id, table, and(id.isIn(itemIds), cid.is(coll)))
+    Select(count(T.id).s, from(T), T.id.in(itemIds) && T.cid === coll).build
       .query[Int]
       .unique
       .map(_ == itemIds.size)
 
   def findByIdAndCollective(itemId: Ident, coll: Ident): ConnectionIO[Option[RItem]] =
-    selectSimple(all, table, and(id.is(itemId), cid.is(coll))).query[RItem].option
+    run(select(T.all), from(T), T.id === itemId && T.cid === coll).query[RItem].option
 
   def findById(itemId: Ident): ConnectionIO[Option[RItem]] =
-    selectSimple(all, table, id.is(itemId)).query[RItem].option
+    run(select(T.all), from(T), T.id === itemId).query[RItem].option
 
   def checkByIdAndCollective(itemId: Ident, coll: Ident): ConnectionIO[Option[Ident]] =
-    selectSimple(Seq(id), table, and(id.is(itemId), cid.is(coll))).query[Ident].option
+    Select(T.id.s, from(T), T.id === itemId && T.cid === coll).build.query[Ident].option
 
   def removeFolder(folderId: Ident): ConnectionIO[Int] = {
     val empty: Option[Ident] = None
-    updateRow(table, folder.is(folderId), folder.setTo(empty)).update.run
+    DML.update(T, T.folder === folderId, DML.set(T.folder.setTo(empty)))
   }
 
-  def filterItemsFragment(items: NonEmptyList[Ident], coll: Ident): Select = {
-    import docspell.store.qb.DSL._
-
+  def filterItemsFragment(items: NonEmptyList[Ident], coll: Ident): Select =
     Select(select(T.id), from(T), T.cid === coll && T.id.in(items))
-  }
 
   def filterItems(items: NonEmptyList[Ident], coll: Ident): ConnectionIO[Vector[Ident]] =
     filterItemsFragment(items, coll).build.query[Ident].to[Vector]

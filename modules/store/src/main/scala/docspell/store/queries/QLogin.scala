@@ -3,8 +3,8 @@ package docspell.store.queries
 import cats.data.OptionT
 
 import docspell.common._
-import docspell.store.impl.Implicits._
-import docspell.store.records.RCollective.{Columns => CC}
+import docspell.store.qb.DSL._
+import docspell.store.qb._
 import docspell.store.records.{RCollective, RRememberMe, RUser}
 
 import doobie._
@@ -22,20 +22,14 @@ object QLogin {
   )
 
   def findUser(acc: AccountId): ConnectionIO[Option[Data]] = {
-    val user   = RUser.as("u")
-    val ucid   = user.cid.column
-    val login  = user.login.column
-    val pass   = user.password.column
-    val ustate = user.state.column
-    val cstate = CC.state.prefix("c")
-    val ccid   = CC.id.prefix("c")
-
-    val sql = selectSimple(
-      List(ucid, login, pass, cstate, ustate),
-      Fragment.const(user.tableName) ++ fr"u, " ++ RCollective.table ++ fr"c",
-      and(ucid.is(ccid), login.is(acc.user), ucid.is(acc.collective))
-    )
-
+    val user = RUser.as("u")
+    val coll = RCollective.as("c")
+    val sql =
+      Select(
+        select(user.cid, user.login, user.password, coll.state, user.state),
+        from(user).innerJoin(coll, user.cid === coll.id),
+        user.login === acc.user && user.cid === acc.collective
+      ).build
     logger.trace(s"SQL : $sql")
     sql.query[Data].option
   }

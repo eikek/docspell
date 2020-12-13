@@ -633,27 +633,31 @@ object QItem {
       limit: Option[Int],
       states: Set[ItemState]
   ): Fragment = {
-    val IC      = RItem.Columns.all.map(_.prefix("i"))
-    val aItem   = RAttachment.Columns.itemId.prefix("a")
-    val aId     = RAttachment.Columns.id.prefix("a")
-    val aFileId = RAttachment.Columns.fileId.prefix("a")
-    val iId     = RItem.Columns.id.prefix("i")
-    val iState  = RItem.Columns.state.prefix("i")
-    val sId     = RAttachmentSource.Columns.id.prefix("s")
-    val sFileId = RAttachmentSource.Columns.fileId.prefix("s")
-    val rId     = RAttachmentArchive.Columns.id.prefix("r")
-    val rFileId = RAttachmentArchive.Columns.fileId.prefix("r")
-    val m1Id    = RFileMeta.Columns.id.prefix("m1")
-    val m2Id    = RFileMeta.Columns.id.prefix("m2")
-    val m3Id    = RFileMeta.Columns.id.prefix("m3")
+    val IC            = RItem.Columns.all.map(_.prefix("i"))
+    val aItem         = RAttachment.Columns.itemId.prefix("a")
+    val aId           = RAttachment.Columns.id.prefix("a")
+    val aFileId       = RAttachment.Columns.fileId.prefix("a")
+    val iId           = RItem.Columns.id.prefix("i")
+    val iState        = RItem.Columns.state.prefix("i")
+    val sId           = RAttachmentSource.Columns.id.prefix("s")
+    val sFileId       = RAttachmentSource.Columns.fileId.prefix("s")
+    val rId           = RAttachmentArchive.Columns.id.prefix("r")
+    val rFileId       = RAttachmentArchive.Columns.fileId.prefix("r")
+    val m1            = RFileMeta.as("m1")
+    val m2            = RFileMeta.as("m2")
+    val m3            = RFileMeta.as("m3")
+    val m1Id          = m1.id.column
+    val m2Id          = m2.id.column
+    val m3Id          = m3.id.column
+    val filemetaTable = Fragment.const(RFileMeta.T.tableName)
 
     val from =
       RItem.table ++ fr"i INNER JOIN" ++ RAttachment.table ++ fr"a ON" ++ aItem.is(iId) ++
         fr"INNER JOIN" ++ RAttachmentSource.table ++ fr"s ON" ++ aId.is(sId) ++
-        fr"INNER JOIN" ++ RFileMeta.table ++ fr"m1 ON" ++ m1Id.is(aFileId) ++
-        fr"INNER JOIN" ++ RFileMeta.table ++ fr"m2 ON" ++ m2Id.is(sFileId) ++
+        fr"INNER JOIN" ++ filemetaTable ++ fr"m1 ON" ++ m1Id.is(aFileId) ++
+        fr"INNER JOIN" ++ filemetaTable ++ fr"m2 ON" ++ m2Id.is(sFileId) ++
         fr"LEFT OUTER JOIN" ++ RAttachmentArchive.table ++ fr"r ON" ++ aId.is(rId) ++
-        fr"LEFT OUTER JOIN" ++ RFileMeta.table ++ fr"m3 ON" ++ m3Id.is(rFileId)
+        fr"LEFT OUTER JOIN" ++ filemetaTable ++ fr"m3 ON" ++ m3Id.is(rFileId)
 
     val fileCond =
       or(m1Id.isIn(fileMetaIds), m2Id.isIn(fileMetaIds), m3Id.isIn(fileMetaIds))
@@ -691,30 +695,33 @@ object QItem {
     }
 
   def findByChecksum(checksum: String, collective: Ident): ConnectionIO[Vector[RItem]] = {
-    val IC         = RItem.Columns.all.map(_.prefix("i"))
-    val aItem      = RAttachment.Columns.itemId.prefix("a")
-    val aId        = RAttachment.Columns.id.prefix("a")
-    val aFileId    = RAttachment.Columns.fileId.prefix("a")
-    val iId        = RItem.Columns.id.prefix("i")
-    val iColl      = RItem.Columns.cid.prefix("i")
-    val sId        = RAttachmentSource.Columns.id.prefix("s")
-    val sFileId    = RAttachmentSource.Columns.fileId.prefix("s")
-    val rId        = RAttachmentArchive.Columns.id.prefix("r")
-    val rFileId    = RAttachmentArchive.Columns.fileId.prefix("r")
-    val m1Id       = RFileMeta.Columns.id.prefix("m1")
-    val m2Id       = RFileMeta.Columns.id.prefix("m2")
-    val m3Id       = RFileMeta.Columns.id.prefix("m3")
-    val m1Checksum = RFileMeta.Columns.checksum.prefix("m1")
-    val m2Checksum = RFileMeta.Columns.checksum.prefix("m2")
-    val m3Checksum = RFileMeta.Columns.checksum.prefix("m3")
-
+    val IC            = RItem.Columns.all.map(_.prefix("i"))
+    val aItem         = RAttachment.Columns.itemId.prefix("a")
+    val aId           = RAttachment.Columns.id.prefix("a")
+    val aFileId       = RAttachment.Columns.fileId.prefix("a")
+    val iId           = RItem.Columns.id.prefix("i")
+    val iColl         = RItem.Columns.cid.prefix("i")
+    val sId           = RAttachmentSource.Columns.id.prefix("s")
+    val sFileId       = RAttachmentSource.Columns.fileId.prefix("s")
+    val rId           = RAttachmentArchive.Columns.id.prefix("r")
+    val rFileId       = RAttachmentArchive.Columns.fileId.prefix("r")
+    val m1            = RFileMeta.as("m1")
+    val m2            = RFileMeta.as("m2")
+    val m3            = RFileMeta.as("m3")
+    val m1Id          = m1.id.column
+    val m2Id          = m2.id.column
+    val m3Id          = m3.id.column
+    val m1Checksum    = m1.checksum.column
+    val m2Checksum    = m2.checksum.column
+    val m3Checksum    = m3.checksum.column
+    val filemetaTable = Fragment.const(RFileMeta.T.tableName)
     val from =
       RItem.table ++ fr"i INNER JOIN" ++ RAttachment.table ++ fr"a ON" ++ aItem.is(iId) ++
         fr"INNER JOIN" ++ RAttachmentSource.table ++ fr"s ON" ++ aId.is(sId) ++
-        fr"INNER JOIN" ++ RFileMeta.table ++ fr"m1 ON" ++ m1Id.is(aFileId) ++
-        fr"INNER JOIN" ++ RFileMeta.table ++ fr"m2 ON" ++ m2Id.is(sFileId) ++
+        fr"INNER JOIN" ++ filemetaTable ++ fr"m1 ON" ++ m1Id.is(aFileId) ++
+        fr"INNER JOIN" ++ filemetaTable ++ fr"m2 ON" ++ m2Id.is(sFileId) ++
         fr"LEFT OUTER JOIN" ++ RAttachmentArchive.table ++ fr"r ON" ++ aId.is(rId) ++
-        fr"LEFT OUTER JOIN" ++ RFileMeta.table ++ fr"m3 ON" ++ m3Id.is(rFileId)
+        fr"LEFT OUTER JOIN" ++ filemetaTable ++ fr"m3 ON" ++ m3Id.is(rFileId)
 
     selectSimple(
       IC,

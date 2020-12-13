@@ -1,10 +1,11 @@
 package docspell.store.records
 
+import cats.data.NonEmptyList
 import fs2.Stream
 
 import docspell.common._
-import docspell.store.impl.Column
-import docspell.store.impl.Implicits._
+import docspell.store.qb.DSL._
+import docspell.store.qb._
 
 import doobie._
 import doobie.implicits._
@@ -18,58 +19,54 @@ case class RCollective(
 )
 
 object RCollective {
+  final case class Table(alias: Option[String]) extends TableDef {
+    val tableName = "collective"
 
-  val table = fr"collective"
+    val id          = Column[Ident]("cid", this)
+    val state       = Column[CollectiveState]("state", this)
+    val language    = Column[Language]("doclang", this)
+    val integration = Column[Boolean]("integration_enabled", this)
+    val created     = Column[Timestamp]("created", this)
 
-  object Columns {
-
-    val id          = Column("cid")
-    val state       = Column("state")
-    val language    = Column("doclang")
-    val integration = Column("integration_enabled")
-    val created     = Column("created")
-
-    val all = List(id, state, language, integration, created)
+    val all = NonEmptyList.of[Column[_]](id, state, language, integration, created)
   }
 
-  import Columns._
+  val T = Table(None)
+  def as(alias: String): Table =
+    Table(Some(alias))
 
-  def insert(value: RCollective): ConnectionIO[Int] = {
-    val sql = insertRow(
-      table,
-      Columns.all,
+  def insert(value: RCollective): ConnectionIO[Int] =
+    DML.insert(
+      T,
+      T.all,
       fr"${value.id},${value.state},${value.language},${value.integrationEnabled},${value.created}"
     )
-    sql.update.run
-  }
 
-  def update(value: RCollective): ConnectionIO[Int] = {
-    val sql = updateRow(
-      table,
-      id.is(value.id),
-      commas(
-        state.setTo(value.state)
+  def update(value: RCollective): ConnectionIO[Int] =
+    DML.update(
+      T,
+      T.id === value.id,
+      DML.set(
+        T.state.setTo(value.state)
       )
     )
-    sql.update.run
-  }
 
   def findLanguage(cid: Ident): ConnectionIO[Option[Language]] =
-    selectSimple(List(language), table, id.is(cid)).query[Option[Language]].unique
+    Select(T.language.s, from(T), T.id === cid).build.query[Option[Language]].unique
 
   def updateLanguage(cid: Ident, lang: Language): ConnectionIO[Int] =
-    updateRow(table, id.is(cid), language.setTo(lang)).update.run
+    DML.update(T, T.id === cid, DML.set(T.language.setTo(lang)))
 
   def updateSettings(cid: Ident, settings: Settings): ConnectionIO[Int] =
     for {
-      n1 <- updateRow(
-        table,
-        id.is(cid),
-        commas(
-          language.setTo(settings.language),
-          integration.setTo(settings.integrationEnabled)
+      n1 <- DML.update(
+        T,
+        T.id === cid,
+        DML.set(
+          T.language.setTo(settings.language),
+          T.integration.setTo(settings.integrationEnabled)
         )
-      ).update.run
+      )
       cls <-
         Timestamp
           .current[ConnectionIO]
@@ -83,66 +80,64 @@ object RCollective {
     } yield n1 + n2
 
   def getSettings(coll: Ident): ConnectionIO[Option[Settings]] = {
-    val cId   = id.prefix("c")
-    val CS    = RClassifierSetting.Columns
-    val csCid = CS.cid.prefix("cs")
+    val c  = RCollective.as("c")
+    val cs = RClassifierSetting.as("cs")
 
-    val cols = Seq(
-      language.prefix("c"),
-      integration.prefix("c"),
-      CS.enabled.prefix("cs"),
-      CS.schedule.prefix("cs"),
-      CS.itemCount.prefix("cs"),
-      CS.category.prefix("cs")
-    )
-    val from = table ++ fr"c LEFT JOIN" ++
-      RClassifierSetting.table ++ fr"cs ON" ++ csCid.is(cId)
-
-    selectSimple(cols, from, cId.is(coll))
-      .query[Settings]
-      .option
+    Select(
+      select(
+        c.language.s,
+        c.integration.s,
+        cs.enabled.s,
+        cs.schedule.s,
+        cs.itemCount.s,
+        cs.category.s
+      ),
+      from(c).leftJoin(cs, cs.cid === c.id),
+      c.id === coll
+    ).build.query[Settings].option
   }
 
   def findById(cid: Ident): ConnectionIO[Option[RCollective]] = {
-    val sql = selectSimple(all, table, id.is(cid))
+    val sql = run(select(T.all), from(T), T.id === cid)
     sql.query[RCollective].option
   }
 
   def findByItem(itemId: Ident): ConnectionIO[Option[RCollective]] = {
-    val iColl = RItem.Columns.cid.prefix("i")
-    val iId   = RItem.Columns.id.prefix("i")
-    val cId   = id.prefix("c")
-    val from  = RItem.table ++ fr"i INNER JOIN" ++ table ++ fr"c ON" ++ iColl.is(cId)
-    selectSimple(all.map(_.prefix("c")), from, iId.is(itemId)).query[RCollective].option
+    val i = RItem.as("i")
+    val c = RCollective.as("c")
+    Select(
+      select(c.all),
+      from(i).innerJoin(c, i.cid === c.id),
+      i.id === itemId
+    ).build.query[RCollective].option
   }
 
   def existsById(cid: Ident): ConnectionIO[Boolean] = {
-    val sql = selectCount(id, table, id.is(cid))
+    val sql = Select(count(T.id).s, from(T), T.id === cid).build
     sql.query[Int].unique.map(_ > 0)
   }
 
-  def findAll(order: Columns.type => Column): ConnectionIO[Vector[RCollective]] = {
-    val sql = selectSimple(all, table, Fragment.empty) ++ orderBy(order(Columns).f)
-    sql.query[RCollective].to[Vector]
+  def findAll(order: Table => Column[_]): ConnectionIO[Vector[RCollective]] = {
+    val sql = Select(select(T.all), from(T)).orderBy(order(T))
+    sql.build.query[RCollective].to[Vector]
   }
 
-  def streamAll(order: Columns.type => Column): Stream[ConnectionIO, RCollective] = {
-    val sql = selectSimple(all, table, Fragment.empty) ++ orderBy(order(Columns).f)
-    sql.query[RCollective].stream
+  def streamAll(order: Table => Column[_]): Stream[ConnectionIO, RCollective] = {
+    val sql = Select(select(T.all), from(T)).orderBy(order(T))
+    sql.build.query[RCollective].stream
   }
 
   def findByAttachment(attachId: Ident): ConnectionIO[Option[RCollective]] = {
-    val iColl = RItem.Columns.cid.prefix("i")
-    val iId   = RItem.Columns.id.prefix("i")
-    val aItem = RAttachment.Columns.itemId.prefix("a")
-    val aId   = RAttachment.Columns.id.prefix("a")
-    val cId   = Columns.id.prefix("c")
-
-    val from = table ++ fr"c INNER JOIN" ++
-      RItem.table ++ fr"i ON" ++ cId.is(iColl) ++ fr"INNER JOIN" ++
-      RAttachment.table ++ fr"a ON" ++ aItem.is(iId)
-
-    selectSimple(all.map(_.prefix("c")), from, aId.is(attachId)).query[RCollective].option
+    val i = RItem.as("i")
+    val a = RAttachment.as("a")
+    val c = RCollective.as("c")
+    Select(
+      select(c.all),
+      from(c)
+        .innerJoin(i, c.id === i.cid)
+        .innerJoin(a, a.itemId === i.id),
+      a.id === attachId
+    ).build.query[RCollective].option
   }
 
   case class Settings(

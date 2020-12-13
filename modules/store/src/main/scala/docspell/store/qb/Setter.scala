@@ -13,5 +13,6 @@ object Setter {
       extends Setter[A]
 
   case class Increment[A](column: Column[A], amount: Int) extends Setter[A]
+  case class Decrement[A](column: Column[A], amount: Int) extends Setter[A]
 
 }

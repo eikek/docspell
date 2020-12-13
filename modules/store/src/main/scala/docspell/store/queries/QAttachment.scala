@@ -180,14 +180,17 @@ object QAttachment {
     val iId      = RItem.Columns.id.prefix("i")
     val iColl    = RItem.Columns.cid.prefix("i")
     val iFolder  = RItem.Columns.folder.prefix("i")
-    val cId      = RCollective.Columns.id.prefix("c")
-    val cLang    = RCollective.Columns.language.prefix("c")
+    val c        = RCollective.as("c")
+    val cId      = c.id.column
+    val cLang    = c.language.column
 
     val cols = Seq(aId, aItem, iColl, iFolder, cLang, aName, mContent)
     val from = RAttachment.table ++ fr"a INNER JOIN" ++
       RAttachmentMeta.table ++ fr"m ON" ++ aId.is(mId) ++
       fr"INNER JOIN" ++ RItem.table ++ fr"i ON" ++ iId.is(aItem) ++
-      fr"INNER JOIN" ++ RCollective.table ++ fr"c ON" ++ cId.is(iColl)
+      fr"INNER JOIN" ++ Fragment.const(RCollective.T.tableName) ++ fr"c ON" ++ cId.is(
+        iColl
+      )
 
     val where = coll.map(cid => iColl.is(cid)).getOrElse(Fragment.empty)
 
