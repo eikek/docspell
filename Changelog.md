@@ -1,5 +1,55 @@
 # Changelog
 
+## v0.17.0
+
+*Dec 14, 2020*
+
+This release comes with some smaller features:
+
+- Feature: Remember-Me – another cookie is used to provide a
+  remember-me functionality. The cookie is checked against some value
+  in the database, so an admin can always make all remember-me cookies
+  invalid. (#435)
+- Feature: Link persons to organizations. In the address book, a
+  person can now be associated to an organzition. The dropdowns show a
+  little hint for which organization a person belongs to. Also
+  suggestions for persons are restricted to those of the organization
+  if that has been associated before. (#375)
+- Feature: Allow to filter on source names. The search form can now
+  search by a source name. The new field can be hidden via ui settings
+  (it must be activated for exising users). (#390)
+- Feature: Customize the title and subtitle of the item card in the
+  overview. You can now define patterns for the title and subtitle of
+  a card. (#429)
+- Feature: Export your data. A bash script has been added that goes
+  through your items and downloads them all to disk (including their
+  metadata!). This can be used to periodically backup the data in
+  docspell.
+- Improvement: The webui has been improved in that the search bar and
+  search form are unified regarding the text search. The two fields in
+  the form, allowing to search in names and fulltext, have been
+  combined into a single field just as the search bar. (#497)
+
+This is the last release for 2020. I had hoped to put more into this,
+but this time of the year is always a busy one ;-). I want to thank
+you for your support and interest in this project and I wish you all a
+joyful Christmas time!
+
+### REST Api Changes
+
+- The `Person` structure now takes a reference to the organization.
+- `ItemSearch` is extended with the `source` field.
+- `UserPass` is extended to include a `rememberMe` flag
+
+### Configuration Changes
+
+- Restserver:
+  - a `remember-me` section was added to the `auth` section
+- Joex:
+  - a `cleanup-remember-me` section was added to the house-keeping
+    tasks.
+
+
 ## v0.16.0
 
 *Nov 28, 2020*
