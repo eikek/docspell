@@ -10,7 +10,6 @@ import fs2.Stream
 import docspell.common.syntax.all._
 import docspell.common.{IdRef, _}
 import docspell.store.Store
-import docspell.store.impl.DoobieMeta._
 import docspell.store.qb._
 import docspell.store.records._
 
@@ -21,6 +20,7 @@ import org.log4s._
 
 object QItem {
   private[this] val logger = getLogger
+  import docspell.store.qb.DSL._
 
   def moveAttachmentBefore(
       itemId: Ident,
@@ -87,57 +87,30 @@ object QItem {
   }
 
   def findItem(id: Ident): ConnectionIO[Option[ItemData]] = {
-    import docspell.store.impl.Implicits._
-
     val equip = REquipment.as("e")
     val org   = ROrganization.as("o")
     val pers0 = RPerson.as("p0")
     val pers1 = RPerson.as("p1")
     val f     = RFolder.as("f")
-
-    val IC  = RItem.Columns.all.map(_.prefix("i"))
-    val OC  = org.all.map(_.column).toList
-    val P0C = pers0.all.map(_.column).toList
-    val P1C = pers1.all.map(_.column).toList
-    val EC  = equip.all.map(_.oldColumn).map(_.prefix("e")).toList
-    val ICC = List(RItem.Columns.id, RItem.Columns.name).map(_.prefix("ref"))
-    val FC  = List(f.id.column, f.name.column)
+    val i     = RItem.as("i")
+    val ref   = RItem.as("ref")
 
     val cq =
-      selectSimple(
-        IC ++ OC ++ P0C ++ P1C ++ EC ++ ICC ++ FC,
-        RItem.table ++ fr"i",
-        Fragment.empty
-      ) ++
-        fr"LEFT JOIN" ++ Fragment.const(
-          org.tableName
-        ) ++ fr"o ON" ++ RItem.Columns.corrOrg
-          .prefix("i")
-          .is(org.oid.column) ++
-        fr"LEFT JOIN" ++ Fragment.const(
-          pers0.tableName
-        ) ++ fr"p0 ON" ++ RItem.Columns.corrPerson
-          .prefix("i")
-          .is(pers0.pid.column) ++
-        fr"LEFT JOIN" ++ Fragment.const(
-          pers1.tableName
-        ) ++ fr"p1 ON" ++ RItem.Columns.concPerson
-          .prefix("i")
-          .is(pers1.pid.column) ++
-        fr"LEFT JOIN" ++ Fragment.const(
-          equip.tableName
-        ) ++ fr"e ON" ++ RItem.Columns.concEquipment
-          .prefix("i")
-          .is(equip.eid.oldColumn.prefix("e")) ++
-        fr"LEFT JOIN" ++ RItem.table ++ fr"ref ON" ++ RItem.Columns.inReplyTo
-          .prefix("i")
-          .is(RItem.Columns.id.prefix("ref")) ++
-        fr"LEFT JOIN" ++ Fragment.const(
-          RFolder.T.tableName
-        ) ++ fr"f ON" ++ RItem.Columns.folder
-          .prefix("i")
-          .is(f.id.column) ++
-        fr"WHERE" ++ RItem.Columns.id.prefix("i").is(id)
+      Select(
+        select(i.all, org.all, pers0.all, pers1.all, equip.all)
+          .append(ref.id.s)
+          .append(ref.name.s)
+          .append(f.id.s)
+          .append(f.name.s),
+        from(i)
+          .leftJoin(org, org.oid === i.corrOrg)
+          .leftJoin(pers0, pers0.pid === i.corrPerson)
+          .leftJoin(pers1, pers1.pid === i.concPerson)
+          .leftJoin(equip, equip.eid === i.concEquipment)
+          .leftJoin(ref, ref.id === i.inReplyTo)
+          .leftJoin(f, f.id === i.folder),
+        i.id === id
+      ).build
 
     val q = cq
       .query[
@@ -152,7 +125,7 @@ object QItem {
         )
       ]
       .option
-    logger.trace(s"Find item query: $cq")
+    logger.info(s"Find item query: $cq")
     val attachs      = RAttachment.findByItemWithMeta(id)
     val sources      = RAttachmentSource.findByItemWithMeta(id)
     val archives     = RAttachmentArchive.findByItemWithMeta(id)
@@ -174,8 +147,6 @@ object QItem {
   def findCustomFieldValuesForItem(
       itemId: Ident
   ): ConnectionIO[Vector[ItemFieldValue]] = {
-    import docspell.store.qb.DSL._
-
     val cf = RCustomField.as("cf")
     val cv = RCustomFieldValue.as("cvf")
 
@@ -264,8 +235,6 @@ object QItem {
       coll: Ident,
       values: Seq[CustomValue]
   ): Option[Select] = {
-    import docspell.store.qb.DSL._
-
     val cf = RCustomField.as("cf")
     val cv = RCustomFieldValue.as("cv")
 
@@ -286,8 +255,6 @@ object QItem {
   }
 
   private def findItemsBase(q: Query, noteMaxLen: Int): Select = {
-    import docspell.store.qb.DSL._
-
     object Attachs extends TableDef {
       val tableName = "attachs"
       val aliasName = "cta"
@@ -371,8 +338,6 @@ object QItem {
       maxNoteLen: Int,
       batch: Batch
   ): Stream[ConnectionIO, ListItem] = {
-    import docspell.store.qb.DSL._
-
     val equip = REquipment.as("e1")
     val org   = ROrganization.as("o0")
     val pers0 = RPerson.as("p0")
@@ -426,9 +391,7 @@ object QItem {
       q: Query,
       maxNoteLen: Int,
       items: Set[SelectedItem]
-  ): Stream[ConnectionIO, ListItem] = {
-    import docspell.store.qb.DSL._
-
+  ): Stream[ConnectionIO, ListItem] =
     if (items.isEmpty) Stream.empty
     else {
       val i = RItem.as("i")
@@ -469,7 +432,6 @@ object QItem {
       logger.info(s"fts query: $from")
       from.query[ListItem].stream
     }
-  }
 
   case class AttachmentLight(
       id: Ident,
@@ -527,8 +489,6 @@ object QItem {
   }
 
   private def findAttachmentLight(item: Ident): ConnectionIO[List[AttachmentLight]] = {
-    import docspell.store.qb.DSL._
-
     val a = RAttachment.as("a")
     val m = RAttachmentMeta.as("m")
 
@@ -553,8 +513,6 @@ object QItem {
       fileMetaIds: Nel[Ident],
       states: Option[Nel[ItemState]]
   ): Select.SimpleSelect = {
-    import docspell.store.qb.DSL._
-
     val i = RItem.as("i")
     val a = RAttachment.as("a")
     val s = RAttachmentSource.as("s")
@@ -592,8 +550,6 @@ object QItem {
     }
 
   def findByChecksum(checksum: String, collective: Ident): ConnectionIO[Vector[RItem]] = {
-    import docspell.store.qb.DSL._
-
     val m1 = RFileMeta.as("m1")
     val m2 = RFileMeta.as("m2")
     val m3 = RFileMeta.as("m3")
@@ -629,9 +585,6 @@ object QItem {
       coll: Option[Ident],
       chunkSize: Int
   ): Stream[ConnectionIO, NameAndNotes] = {
-    import docspell.store.qb._
-    import docspell.store.qb.DSL._
-
     val i = RItem.as("i")
 
     Select(
@@ -647,8 +600,6 @@ object QItem {
       collective: Ident,
       chunkSize: Int
   ): Stream[ConnectionIO, Ident] = {
-    import docspell.store.qb.DSL._
-
     val i = RItem.as("i")
     Select(i.id.s, from(i), i.cid === collective && i.state === ItemState.confirmed)
       .orderBy(i.created.desc)
@@ -666,8 +617,6 @@ object QItem {
       tagCategory: String,
       pageSep: String
   ): ConnectionIO[TextAndTag] = {
-    import docspell.store.qb.DSL._
-
     val tag = RTag.as("t")
     val a   = RAttachment.as("a")
     val am  = RAttachmentMeta.as("m")
