@@ -455,8 +455,13 @@ Please refer to their documentation for more on this.</p>
 </span><span style="color:#fdf4c1;">    server-secret = </span><span style="color:#b8bb26;">&quot;hex:caffee&quot;
     </span><span style="font-style:italic;color:#928374;"># How long an authentication token is valid. The web application
     # will get a new one periodically.
-</span><span style="color:#fdf4c1;">    session-valid = </span><span style="color:#b8bb26;">&quot;5 minutes&quot;
-  </span><span style="color:#fdf4c1;">}
+</span><span style="color:#fdf4c1;">    session-valid = </span><span style="color:#b8bb26;">&quot;5 minutes&quot;</span><span style="color:#fdf4c1;">
+    remember-me {
+      enabled = true
+      </span><span style="font-style:italic;color:#928374;"># How long the remember me cookie/token is valid.
+</span><span style="color:#fdf4c1;">      valid = </span><span style="color:#b8bb26;">&quot;30 days&quot;
+    </span><span style="color:#fdf4c1;">}
+  }
   </span><span style="font-style:italic;color:#928374;"># This endpoint allows to upload files to any collective. The
   # intention is that local software integrates with docspell more
   # easily. Therefore the endpoint is not protected by the usual
@@ -702,6 +707,15 @@ Please refer to their documentation for more on this.</p>
       </span><span style="font-style:italic;color:#928374;"># Whether this task is enabled.
 </span><span style="color:#fdf4c1;">      enabled = true
       </span><span style="font-style:italic;color:#928374;"># The minimum age of invites to be deleted.
+</span><span style="color:#fdf4c1;">      older-than = </span><span style="color:#b8bb26;">&quot;30 days&quot;
+    </span><span style="color:#fdf4c1;">}
+    </span><span style="font-style:italic;color:#928374;"># This task removes expired remember-me tokens. The timespan
+    # should be greater than the `valid` time in the restserver
+    # config.
+</span><span style="color:#fdf4c1;">    cleanup-remember-me = {
+      </span><span style="font-style:italic;color:#928374;"># Whether the job is enabled.
+</span><span style="color:#fdf4c1;">      enabled = true
+      </span><span style="font-style:italic;color:#928374;"># The minimum age of tokens to be deleted.
 </span><span style="color:#fdf4c1;">      older-than = </span><span style="color:#b8bb26;">&quot;30 days&quot;
     </span><span style="color:#fdf4c1;">}
     </span><span style="font-style:italic;color:#928374;"># Jobs store their log output in the database. Normally this data
@@ -1094,7 +1108,7 @@ statements with level &quot;DEBUG&quot; will be printed, too.</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell, 0.16.0
+                Docspell, 0.17.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>

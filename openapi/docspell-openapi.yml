@@ -2,7 +2,7 @@ openapi: 3.0.0
 
 info:
   title: Docspell
-  version: 0.16.0
+  version: 0.17.0
   description: |
     This is the remote API to Docspell, a personal document organizer.
 
@@ -4833,6 +4833,8 @@ components:
           format: ident
         name:
           type: string
+        organization:
+          $ref: "#/components/schemas/IdName"
         address:
           $ref: "#/components/schemas/Address"
         contacts:
@@ -5031,7 +5033,8 @@ components:
         fullText:
           type: string
           description: |
-            A query searching the contents of documents.
+            A query searching the contents of documents. If only this
+            field is set, then a fulltext-only search is done.
         corrOrg:
           type: string
           format: ident
@@ -5065,6 +5068,8 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/CustomFieldValue"
+        source:
+          type: string
     ItemLight:
       description: |
         An item with only a few important properties.
@@ -5251,6 +5256,8 @@ components:
           type: string
         password:
           type: string
+        rememberMe:
+          type: boolean
     AuthResult:
       description: |
         The response to a authentication request.

@@ -1797,7 +1797,7 @@
     },
     "fullText" : {
       "type" : "string",
-      "description" : "A query searching the contents of documents.\n"
+      "description" : "A query searching the contents of documents. If only this\nfield is set, then a fulltext-only search is done.\n"
     },
     "corrOrg" : {
       "type" : "string",
@@ -1843,6 +1843,9 @@
       "items" : {
         "$ref" : "#/components/schemas/CustomFieldValue"
       }
+    },
+    "source" : {
+      "type" : "string"
     }
   },
   "description" : "A structure for a search form.\n"
@@ -2308,6 +2311,9 @@
     "name" : {
       "type" : "string"
     },
+    "organization" : {
+      "$ref" : "#/components/schemas/IdName"
+    },
     "address" : {
       "$ref" : "#/components/schemas/Address"
     },
@@ -2757,6 +2763,9 @@
     },
     "password" : {
       "type" : "string"
+    },
+    "rememberMe" : {
+      "type" : "boolean"
     }
   },
   "description" : "Account name and password.\n"
@@ -3310,7 +3319,7 @@
         <div id="header">
           <div id="api-_">
             <h2 id="welcome-to-apidoc">API and SDK Documentation</h2>
-              <div class="app-desc">Version: 0.16.0</div>
+              <div class="app-desc">Version: 0.17.0</div>
             <hr>
             <div>This is the remote API to Docspell, a personal document organizer.</div>
           </div>
