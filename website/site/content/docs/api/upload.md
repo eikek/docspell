@@ -51,44 +51,45 @@ specified via a JSON structure in a part with name `meta`:
 , skipDuplicates: Maybe Bool
 , tags: Maybe StringList
 , fileFilter: Maybe String
+, language: Maybe String
 }
 ```
 
-The `multiple` property is by default `true`. It means that each file
-in the upload request corresponds to a single item. An upload with 5
-files will result in 5 items created. If it is `false`, then docspell
-will create just one item, that will then contain all files.
+- The `multiple` property is by default `true`. It means that each
+  file in the upload request corresponds to a single item. An upload
+  with 5 files will result in 5 items created. If it is `false`, then
+  docspell will create just one item, that will then contain all
+  files.
+- Furthermore, the direction of the document (one of `incoming` or
+  `outgoing`) can be given. It is optional, it can be left out or
+  `null`.
+- A `folder` id can be specified. Each item created by this request
+  will be placed into this folder. Errors are logged (for example, the
+  folder may have been deleted before the task is executed) and the
+  item is then not put into any folder.
+- The `skipDuplicates` is optional and set to `false` if not
+  specified. It configures the processing task. If set to `true`, the
+  processing task will skip all input files that are already present
+  in docspell.
+- The `tags` field can be used to provide tags that should be applied
+  automatically. The `StringList` is a json object containing one
+  field `items` that is a list of strings:
 
-Furthermore, the direction of the document (one of `incoming` or
-`outgoing`) can be given. It is optional, it can be left out or
-`null`.
+  ``` elm
+  { items: (List String)
+  }
+  ```
 
-A `folder` id can be specified. Each item created by this request will
-be placed into this folder. Errors are logged (for example, the folder
-may have been deleted before the task is executed) and the item is
-then not put into any folder.
-
-The `skipDuplicates` is optional and set to `false` if not specified.
-It configures the processing task. If set to `true`, the processing
-task will skip all input files that are already present in docspell.
-
-The `tags` field can be used to provide tags that should be applied
-automatically. The `StringList` is a json object containing one field
-`items` that is a list of strings:
-
-``` elm
-{ items: (List String)
-}
-```
-
-Tags can be defined using their ids or names.
-
-Then a `fileFilter` field can be used to filter files from uploaded
-archives. Say you upload a zip file and want only to include certain
-files, you could give a file filter like `*.pdf` to only select pdf
-files or `*.html|*.pdf` for selecting html and pdf files. This only
-applies to archive files, like zip or e-mails (where this is applied
-to the attachments).
+  Tags can be defined using their ids or names.
+- Then a `fileFilter` field can be used to filter files from uploaded
+  archives. Say you upload a zip file and want only to include certain
+  files, you could give a file filter like `*.pdf` to only select pdf
+  files or `*.html|*.pdf` for selecting html and pdf files. This only
+  applies to archive files, like zip or e-mails (where this is applied
+  to the attachments).
+- The `language` is used for processing the document(s) contained in
+  the request. If not specified the collective's default language is
+  used.
 
 
 # Endpoints
