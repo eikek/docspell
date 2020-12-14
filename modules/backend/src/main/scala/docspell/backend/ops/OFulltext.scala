@@ -3,12 +3,11 @@ package docspell.backend.ops
 import cats.effect._
 import cats.implicits._
 import fs2.Stream
-
 import docspell.backend.JobFactory
 import docspell.backend.ops.OItemSearch._
 import docspell.common._
 import docspell.ftsclient._
-import docspell.store.queries.{QFolder, QItem}
+import docspell.store.queries.{QFolder, QItem, SelectedItem}
 import docspell.store.queue.JobQueue
 import docspell.store.records.RJob
 import docspell.store.{Store, qb}
@@ -112,15 +111,15 @@ object OFulltext {
           ftsItems = ftsR.results.groupBy(_.itemId)
           select =
             ftsItems.values
-              .map(_.sortBy(-_.score).head)
-              .map(r => QItem.SelectedItem(r.itemId, r.score))
+              .map(_.minBy(-_.score))
+              .map(r => SelectedItem(r.itemId, r.score))
               .toSet
           itemsWithTags <-
             store
               .transact(
                 QItem.findItemsWithTags(
                   account.collective,
-                  QItem.findSelectedItems(QItem.Query.empty(account), maxNoteLen, select)
+                  QItem.findSelectedItems(Query.empty(account), maxNoteLen, select)
                 )
               )
               .take(batch.limit.toLong)
@@ -227,10 +226,9 @@ object OFulltext {
       ): PartialFunction[A, (A, FtsData)] = {
         case a if ftrItems.contains(ItemId[A].itemId(a)) =>
           val ftsDataItems = ftrItems
-            .get(ItemId[A].itemId(a))
-            .getOrElse(Nil)
+            .getOrElse(ItemId[A].itemId(a), Nil)
             .map(im =>
-              FtsDataItem(im.score, im.data, ftr.highlight.get(im.id).getOrElse(Nil))
+              FtsDataItem(im.score, im.data, ftr.highlight.getOrElse(im.id, Nil))
             )
           (a, FtsData(ftr.maxScore, ftr.count, ftr.qtime, ftsDataItems))
       }

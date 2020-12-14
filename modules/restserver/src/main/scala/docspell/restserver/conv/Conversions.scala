@@ -16,7 +16,7 @@ import docspell.common.syntax.all._
 import docspell.ftsclient.FtsResult
 import docspell.restapi.model._
 import docspell.restserver.conv.Conversions._
-import docspell.store.queries.QItem
+import docspell.store.queries.{AttachmentLight => QAttachmentLight}
 import docspell.store.records._
 import docspell.store.{AddResult, UpdateResult}
 
@@ -234,7 +234,7 @@ trait Conversions {
         customfields = i.customfields.map(mkItemFieldValue)
       )
 
-  private def mkAttachmentLight(qa: QItem.AttachmentLight): AttachmentLight =
+  private def mkAttachmentLight(qa: QAttachmentLight): AttachmentLight =
     AttachmentLight(qa.id, qa.position, qa.name, qa.pageCount)
 
   def mkItemLightWithTags(i: OFulltext.FtsItemWithTags): ItemLight = {

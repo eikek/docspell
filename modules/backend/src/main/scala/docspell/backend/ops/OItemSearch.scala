@@ -9,7 +9,7 @@ import docspell.backend.ops.OItemSearch._
 import docspell.common._
 import docspell.store.queries.{QAttachment, QItem}
 import docspell.store.records._
-import docspell.store.{Store, qb}
+import docspell.store._
 
 import bitpeace.{FileMeta, RangeDef}
 import doobie.implicits._
@@ -53,26 +53,26 @@ trait OItemSearch[F[_]] {
 
 object OItemSearch {
 
-  type CustomValue = QItem.CustomValue
-  val CustomValue = QItem.CustomValue
+  type CustomValue = queries.CustomValue
+  val CustomValue = queries.CustomValue
 
-  type Query = QItem.Query
-  val Query = QItem.Query
+  type Query = queries.Query
+  val Query = queries.Query
 
   type Batch = qb.Batch
   val Batch = docspell.store.qb.Batch
 
-  type ListItem = QItem.ListItem
-  val ListItem = QItem.ListItem
+  type ListItem = queries.ListItem
+  val ListItem = queries.ListItem
 
-  type ListItemWithTags = QItem.ListItemWithTags
-  val ListItemWithTags = QItem.ListItemWithTags
+  type ListItemWithTags = queries.ListItemWithTags
+  val ListItemWithTags = queries.ListItemWithTags
 
-  type ItemFieldValue = QItem.ItemFieldValue
-  val ItemFieldValue = QItem.ItemFieldValue
+  type ItemFieldValue = queries.ItemFieldValue
+  val ItemFieldValue = queries.ItemFieldValue
 
-  type ItemData = QItem.ItemData
-  val ItemData = QItem.ItemData
+  type ItemData = queries.ItemData
+  val ItemData = queries.ItemData
 
   trait BinaryData[F[_]] {
     def data: Stream[F, Byte]

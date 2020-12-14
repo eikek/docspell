@@ -1,6 +1,5 @@
 package docspell.store.queries
 
-import cats.data.OptionT
 import cats.data.{NonEmptyList => Nel}
 import cats.effect.Sync
 import cats.effect.concurrent.Ref
@@ -14,87 +13,28 @@ import docspell.store.qb.DSL._
 import docspell.store.qb._
 import docspell.store.records._
 
-import bitpeace.FileMeta
-import doobie._
+import doobie.{Query => _, _}
 import doobie.implicits._
 import org.log4s._
 
 object QItem {
   private[this] val logger = getLogger
 
-  def moveAttachmentBefore(
-      itemId: Ident,
-      source: Ident,
-      target: Ident
-  ): ConnectionIO[Int] = {
-
-    // rs < rt
-    def moveBack(rs: RAttachment, rt: RAttachment): ConnectionIO[Int] =
-      for {
-        n <- RAttachment.decPositions(itemId, rs.position, rt.position)
-        k <- RAttachment.updatePosition(rs.id, rt.position)
-      } yield n + k
-
-    // rs > rt
-    def moveForward(rs: RAttachment, rt: RAttachment): ConnectionIO[Int] =
-      for {
-        n <- RAttachment.incPositions(itemId, rt.position, rs.position)
-        k <- RAttachment.updatePosition(rs.id, rt.position)
-      } yield n + k
-
-    (for {
-      _ <- OptionT.liftF(
-        if (source == target)
-          Sync[ConnectionIO].raiseError(new Exception("Attachments are the same!"))
-        else ().pure[ConnectionIO]
-      )
-      rs <- OptionT(RAttachment.findById(source)).filter(_.itemId == itemId)
-      rt <- OptionT(RAttachment.findById(target)).filter(_.itemId == itemId)
-      n <- OptionT.liftF(
-        if (rs.position == rt.position || rs.position + 1 == rt.position)
-          0.pure[ConnectionIO]
-        else if (rs.position < rt.position) moveBack(rs, rt)
-        else moveForward(rs, rt)
-      )
-    } yield n).getOrElse(0)
-
-  }
-
-  case class ItemFieldValue(
-      fieldId: Ident,
-      fieldName: Ident,
-      fieldLabel: Option[String],
-      fieldType: CustomFieldType,
-      value: String
-  )
-  case class ItemData(
-      item: RItem,
-      corrOrg: Option[ROrganization],
-      corrPerson: Option[RPerson],
-      concPerson: Option[RPerson],
-      concEquip: Option[REquipment],
-      inReplyTo: Option[IdRef],
-      folder: Option[IdRef],
-      tags: Vector[RTag],
-      attachments: Vector[(RAttachment, FileMeta)],
-      sources: Vector[(RAttachmentSource, FileMeta)],
-      archives: Vector[(RAttachmentArchive, FileMeta)],
-      customFields: Vector[ItemFieldValue]
-  ) {
-
-    def filterCollective(coll: Ident): Option[ItemData] =
-      if (item.cid == coll) Some(this) else None
-  }
+  private val equip = REquipment.as("e")
+  private val org   = ROrganization.as("o")
+  private val pers0 = RPerson.as("pers0")
+  private val pers1 = RPerson.as("pers1")
+  private val f     = RFolder.as("f")
+  private val i     = RItem.as("i")
+  private val cf    = RCustomField.as("cf")
+  private val cv    = RCustomFieldValue.as("cvf")
+  private val a     = RAttachment.as("a")
+  private val m     = RAttachmentMeta.as("m")
+  private val tag   = RTag.as("t")
+  private val ti    = RTagItem.as("ti")
 
   def findItem(id: Ident): ConnectionIO[Option[ItemData]] = {
-    val equip = REquipment.as("e")
-    val org   = ROrganization.as("o")
-    val pers0 = RPerson.as("p0")
-    val pers1 = RPerson.as("p1")
-    val f     = RFolder.as("f")
-    val i     = RItem.as("i")
-    val ref   = RItem.as("ref")
-
+    val ref = RItem.as("ref")
     val cq =
       Select(
         select(i.all, org.all, pers0.all, pers1.all, equip.all)
@@ -146,90 +86,13 @@ object QItem {
 
   def findCustomFieldValuesForItem(
       itemId: Ident
-  ): ConnectionIO[Vector[ItemFieldValue]] = {
-    val cf = RCustomField.as("cf")
-    val cv = RCustomFieldValue.as("cvf")
-
+  ): ConnectionIO[Vector[ItemFieldValue]] =
     Select(
       select(cf.id, cf.name, cf.label, cf.ftype, cv.value),
       from(cv)
         .innerJoin(cf, cf.id === cv.field),
       cv.itemId === itemId
     ).build.query[ItemFieldValue].to[Vector]
-  }
-
-  case class ListItem(
-      id: Ident,
-      name: String,
-      state: ItemState,
-      date: Timestamp,
-      dueDate: Option[Timestamp],
-      source: String,
-      direction: Direction,
-      created: Timestamp,
-      fileCount: Int,
-      corrOrg: Option[IdRef],
-      corrPerson: Option[IdRef],
-      concPerson: Option[IdRef],
-      concEquip: Option[IdRef],
-      folder: Option[IdRef],
-      notes: Option[String]
-  )
-
-  case class CustomValue(field: Ident, value: String)
-
-  case class Query(
-      account: AccountId,
-      name: Option[String],
-      states: Seq[ItemState],
-      direction: Option[Direction],
-      corrPerson: Option[Ident],
-      corrOrg: Option[Ident],
-      concPerson: Option[Ident],
-      concEquip: Option[Ident],
-      folder: Option[Ident],
-      tagsInclude: List[Ident],
-      tagsExclude: List[Ident],
-      tagCategoryIncl: List[String],
-      tagCategoryExcl: List[String],
-      dateFrom: Option[Timestamp],
-      dateTo: Option[Timestamp],
-      dueDateFrom: Option[Timestamp],
-      dueDateTo: Option[Timestamp],
-      allNames: Option[String],
-      itemIds: Option[Set[Ident]],
-      customValues: Seq[CustomValue],
-      source: Option[String],
-      orderAsc: Option[RItem.Table => docspell.store.qb.Column[_]]
-  )
-
-  object Query {
-    def empty(account: AccountId): Query =
-      Query(
-        account,
-        None,
-        Seq.empty,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        Nil,
-        Nil,
-        Nil,
-        Nil,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        Seq.empty,
-        None,
-        None
-      )
-  }
 
   private def findCustomFieldValuesForColl(
       coll: Ident,
@@ -262,13 +125,6 @@ object QItem {
       val num       = Column[Int]("num", this)
       val itemId    = Column[Ident]("item_id", this)
     }
-    val equip = REquipment.as("e1")
-    val org   = ROrganization.as("o0")
-    val p0    = RPerson.as("p0")
-    val p1    = RPerson.as("p1")
-    val f     = RFolder.as("f1")
-    val i     = RItem.as("i")
-    val a     = RAttachment.as("a")
 
     val coll = q.account.collective
 
@@ -285,10 +141,10 @@ object QItem {
         coalesce(Attachs.num.s, lit(0)).s,
         org.oid.s,
         org.name.s,
-        p0.pid.s,
-        p0.name.s,
-        p1.pid.s,
-        p1.name.s,
+        pers0.pid.s,
+        pers0.name.s,
+        pers1.pid.s,
+        pers1.name.s,
         equip.eid.s,
         equip.name.s,
         f.id.s,
@@ -311,9 +167,9 @@ object QItem {
           Attachs.aliasName, //alias, todo improve dsl
           Attachs.itemId === i.id
         )
-        .leftJoin(p0, p0.pid === i.corrPerson && p0.cid === coll)
+        .leftJoin(pers0, pers0.pid === i.corrPerson && pers0.cid === coll)
         .leftJoin(org, org.oid === i.corrOrg && org.cid === coll)
-        .leftJoin(p1, p1.pid === i.concPerson && p1.cid === coll)
+        .leftJoin(pers1, pers1.pid === i.concPerson && pers1.cid === coll)
         .leftJoin(equip, equip.eid === i.concEquipment && equip.cid === coll),
       where(
         i.cid === coll &&? Nel.fromList(q.states.toList).map(nel => i.state.in(nel)) &&
@@ -338,13 +194,6 @@ object QItem {
       maxNoteLen: Int,
       batch: Batch
   ): Stream[ConnectionIO, ListItem] = {
-    val equip = REquipment.as("e1")
-    val org   = ROrganization.as("o0")
-    val pers0 = RPerson.as("p0")
-    val pers1 = RPerson.as("p1")
-    val f     = RFolder.as("f1")
-    val i     = RItem.as("i")
-
     val cond: Condition => Condition =
       c =>
         c &&?
@@ -386,7 +235,6 @@ object QItem {
     sql.query[ListItem].stream
   }
 
-  case class SelectedItem(itemId: Ident, weight: Double)
   def findSelectedItems(
       q: Query,
       maxNoteLen: Int,
@@ -426,19 +274,6 @@ object QItem {
       logger.trace(s"fts query: $from")
       from.query[ListItem].stream
     }
-
-  case class AttachmentLight(
-      id: Ident,
-      position: Int,
-      name: Option[String],
-      pageCount: Option[Int]
-  )
-  case class ListItemWithTags(
-      item: ListItem,
-      tags: List[RTag],
-      attachments: List[AttachmentLight],
-      customfields: List[ItemFieldValue]
-  )
 
   /** Same as `findItems` but resolves the tags for each item. Note that
     * this is implemented by running an additional query per item.
@@ -482,17 +317,13 @@ object QItem {
     )
   }
 
-  private def findAttachmentLight(item: Ident): ConnectionIO[List[AttachmentLight]] = {
-    val a = RAttachment.as("a")
-    val m = RAttachmentMeta.as("m")
-
+  private def findAttachmentLight(item: Ident): ConnectionIO[List[AttachmentLight]] =
     Select(
       select(a.id, a.position, a.name, m.pages),
       from(a)
         .leftJoin(m, m.id === a.id),
       a.itemId === item
     ).build.query[AttachmentLight].to[List]
-  }
 
   def delete[F[_]: Sync](store: Store[F])(itemId: Ident, collective: Ident): F[Int] =
     for {
@@ -602,21 +433,12 @@ object QItem {
       .streamWithChunkSize(chunkSize)
   }
 
-  case class TagName(id: Ident, name: String)
-  case class TextAndTag(itemId: Ident, text: String, tag: Option[TagName])
-
   def resolveTextAndTag(
       collective: Ident,
       itemId: Ident,
       tagCategory: String,
       pageSep: String
   ): ConnectionIO[TextAndTag] = {
-    val tag = RTag.as("t")
-    val a   = RAttachment.as("a")
-    val am  = RAttachmentMeta.as("m")
-    val ti  = RTagItem.as("ti")
-    val i   = RItem.as("i")
-
     val tags     = TableDef("tags").as("tt")
     val tagsItem = Column[Ident]("itemid", tags)
     val tagsTid  = Column[Ident]("tid", tags)
@@ -632,12 +454,12 @@ object QItem {
         )
       )(
         Select(
-          select(am.content, tagsTid, tagsName),
+          select(m.content, tagsTid, tagsName),
           from(i)
             .innerJoin(a, a.itemId === i.id)
-            .innerJoin(am, a.id === am.id)
+            .innerJoin(m, a.id === m.id)
             .leftJoin(tags, tagsItem === i.id),
-          i.id === itemId && i.cid === collective && am.content.isNotNull && am.content <> ""
+          i.id === itemId && i.cid === collective && m.content.isNotNull && m.content <> ""
         )
       ).build
 
@@ -645,7 +467,7 @@ object QItem {
       _ <- logger.ftrace[ConnectionIO](
         s"query: $q  (${itemId.id}, ${collective.id}, ${tagCategory})"
       )
-      texts <- q.query[(String, Option[TagName])].to[List]
+      texts <- q.query[(String, Option[TextAndTag.TagName])].to[List]
       _ <- logger.ftrace[ConnectionIO](
         s"Got ${texts.size} text and tag entries for item ${itemId.id}"
       )
@@ -653,5 +475,4 @@ object QItem {
       txt = texts.map(_._1).mkString(pageSep)
     } yield TextAndTag(itemId, txt, tag)
   }
-
 }
