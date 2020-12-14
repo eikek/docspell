@@ -7,9 +7,9 @@ import fs2.Stream
 
 import docspell.backend.ops.OItemSearch._
 import docspell.common._
+import docspell.store._
 import docspell.store.queries.{QAttachment, QItem}
 import docspell.store.records._
-import docspell.store._
 
 import bitpeace.{FileMeta, RangeDef}
 import doobie.implicits._

@@ -1,5 +1,7 @@
 package docspell.store.qb.impl
 
+import cats.data.NonEmptyList
+
 import docspell.store.qb._
 
 import _root_.doobie.implicits._
@@ -12,8 +14,55 @@ object ConditionBuilder {
   val parenOpen  = Fragment.const0("(")
   val parenClose = Fragment.const0(")")
 
-  def build(expr: Condition): Fragment =
-    expr match {
+  final def reduce(c: Condition): Condition =
+    c match {
+      case Condition.And(inner) =>
+        NonEmptyList.fromList(flatten(inner.toList, Condition.And.Inner)) match {
+          case Some(rinner) =>
+            if (rinner.tail.isEmpty) reduce(rinner.head)
+            else Condition.And(rinner.reverse.map(reduce))
+          case None =>
+            Condition.unit
+        }
+
+      case Condition.Or(inner) =>
+        NonEmptyList.fromList(flatten(inner.toList, Condition.Or.Inner)) match {
+          case Some(rinner) =>
+            if (rinner.tail.isEmpty) reduce(rinner.head)
+            else Condition.Or(rinner.reverse.map(reduce))
+          case None =>
+            Condition.unit
+        }
+
+      case Condition.Not(Condition.UnitCondition) =>
+        Condition.unit
+
+      case Condition.Not(Condition.Not(inner)) =>
+        reduce(inner)
+
+      case _ =>
+        c
+    }
+
+  private def flatten(
+      els: List[Condition],
+      nodePattern: Condition.InnerCondition,
+      result: List[Condition] = Nil
+  ): List[Condition] =
+    els match {
+      case Nil =>
+        result
+      case nodePattern(more) :: tail =>
+        val spliced = flatten(more.toList, nodePattern, result)
+        flatten(tail, nodePattern, spliced)
+      case Condition.UnitCondition :: tail =>
+        flatten(tail, nodePattern, result)
+      case h :: tail =>
+        flatten(tail, nodePattern, h :: result)
+    }
+
+  final def build(expr: Condition): Fragment =
+    reduce(expr) match {
       case c @ Condition.CompareVal(col, op, value) =>
         val opFrag  = operator(op)
         val valFrag = buildValue(value)(c.P)
@@ -58,14 +107,14 @@ object ConditionBuilder {
       case Condition.IsNull(col) =>
         SelectExprBuilder.column(col) ++ fr" is null"
 
-      case Condition.And(c, cs) =>
-        val inner = cs.prepended(c).map(build).reduce(_ ++ and ++ _)
-        if (cs.isEmpty) inner
+      case Condition.And(ands) =>
+        val inner = ands.map(build).reduceLeft(_ ++ and ++ _)
+        if (ands.tail.isEmpty) inner
         else parenOpen ++ inner ++ parenClose
 
-      case Condition.Or(c, cs) =>
-        val inner = cs.prepended(c).map(build).reduce(_ ++ or ++ _)
-        if (cs.isEmpty) inner
+      case Condition.Or(ors) =>
+        val inner = ors.map(build).reduceLeft(_ ++ or ++ _)
+        if (ors.tail.isEmpty) inner
         else parenOpen ++ inner ++ parenClose
 
       case Condition.Not(Condition.IsNull(col)) =>
@@ -73,6 +122,9 @@ object ConditionBuilder {
 
       case Condition.Not(c) =>
         fr"NOT" ++ build(c)
+
+      case Condition.UnitCondition =>
+        Fragment.empty
     }
 
   def operator(op: Operator): Fragment =

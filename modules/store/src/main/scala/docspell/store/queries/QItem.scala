@@ -13,8 +13,8 @@ import docspell.store.qb.DSL._
 import docspell.store.qb._
 import docspell.store.records._
 
-import doobie.{Query => _, _}
 import doobie.implicits._
+import doobie.{Query => _, _}
 import org.log4s._
 
 object QItem {

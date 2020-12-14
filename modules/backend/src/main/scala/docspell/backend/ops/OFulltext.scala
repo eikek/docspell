@@ -3,6 +3,7 @@ package docspell.backend.ops
 import cats.effect._
 import cats.implicits._
 import fs2.Stream
+
 import docspell.backend.JobFactory
 import docspell.backend.ops.OItemSearch._
 import docspell.common._

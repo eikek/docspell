@@ -65,7 +65,7 @@ object QueryBuilderTest extends SimpleTestSuite {
             fail("Unexpected result")
         }
         assertEquals(group, None)
-        assert(where.isDefined)
+        assert(where != Condition.unit)
       case _ =>
         fail("Unexpected case")
     }

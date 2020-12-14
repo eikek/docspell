@@ -46,35 +46,35 @@ sealed trait Select {
 
 object Select {
   def apply(projection: Nel[SelectExpr], from: FromExpr) =
-    SimpleSelect(false, projection, from, None, None)
+    SimpleSelect(false, projection, from, Condition.unit, None)
 
   def apply(projection: SelectExpr, from: FromExpr) =
-    SimpleSelect(false, Nel.of(projection), from, None, None)
+    SimpleSelect(false, Nel.of(projection), from, Condition.unit, None)
 
   def apply(
       projection: Nel[SelectExpr],
       from: FromExpr,
       where: Condition
-  ) = SimpleSelect(false, projection, from, Some(where), None)
+  ) = SimpleSelect(false, projection, from, where, None)
 
   def apply(
       projection: SelectExpr,
       from: FromExpr,
       where: Condition
-  ) = SimpleSelect(false, Nel.of(projection), from, Some(where), None)
+  ) = SimpleSelect(false, Nel.of(projection), from, where, None)
 
   def apply(
       projection: Nel[SelectExpr],
       from: FromExpr,
       where: Condition,
       groupBy: GroupBy
-  ) = SimpleSelect(false, projection, from, Some(where), Some(groupBy))
+  ) = SimpleSelect(false, projection, from, where, Some(groupBy))
 
   case class SimpleSelect(
       distinctFlag: Boolean,
       projection: Nel[SelectExpr],
       from: FromExpr,
-      where: Option[Condition],
+      where: Condition,
       groupBy: Option[GroupBy]
   ) extends Select {
     def group(gb: GroupBy): SimpleSelect =
@@ -84,9 +84,10 @@ object Select {
       copy(distinctFlag = true)
 
     def where(c: Option[Condition]): SimpleSelect =
-      copy(where = c)
+      where(c.getOrElse(Condition.unit))
+
     def where(c: Condition): SimpleSelect =
-      copy(where = Some(c))
+      copy(where = c)
 
     def appendSelect(e: SelectExpr): SimpleSelect =
       copy(projection = projection.append(e))
@@ -95,7 +96,7 @@ object Select {
       copy(from = f(from))
 
     def changeWhere(f: Condition => Condition): SimpleSelect =
-      copy(where = where.map(f))
+      copy(where = f(where))
 
     def orderBy(ob: OrderBy, obs: OrderBy*): Select =
       Ordered(this, ob, obs.toVector)

@@ -97,15 +97,15 @@ trait DSL extends DoobieMeta {
       case a: Condition.And =>
         cs.foldLeft(a)(_.append(_))
       case _ =>
-        Condition.And(c, cs.toVector)
+        Condition.And(c, cs: _*)
     }
 
   def or(c: Condition, cs: Condition*): Condition =
     c match {
-      case Condition.Or(head, tail) =>
-        Condition.Or(head, tail ++ (c +: cs.toVector))
+      case o: Condition.Or =>
+        cs.foldLeft(o)(_.append(_))
       case _ =>
-        Condition.Or(c, cs.toVector)
+        Condition.Or(c, cs: _*)
     }
 
   def not(c: Condition): Condition =

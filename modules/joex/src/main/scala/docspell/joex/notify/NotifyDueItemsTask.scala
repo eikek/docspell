@@ -3,12 +3,14 @@ package docspell.joex.notify
 import cats.data.OptionT
 import cats.effect._
 import cats.implicits._
+
 import docspell.backend.ops.OItemSearch.{Batch, ListItem, Query}
 import docspell.common._
 import docspell.joex.mail.EmilHeader
 import docspell.joex.scheduler.{Context, Task}
 import docspell.store.queries.QItem
 import docspell.store.records._
+
 import emil._
 import emil.builder._
 import emil.javamail.syntax._

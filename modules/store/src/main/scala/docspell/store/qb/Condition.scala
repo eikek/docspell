@@ -7,6 +7,9 @@ import doobie._
 sealed trait Condition
 
 object Condition {
+  case object UnitCondition extends Condition
+
+  val unit: Condition = UnitCondition
 
   case class CompareVal[A](column: Column[A], op: Operator, value: A)(implicit
       val P: Put[A]
@@ -26,36 +29,58 @@ object Condition {
 
   case class IsNull(col: Column[_]) extends Condition
 
-  case class And(c: Condition, cs: Vector[Condition]) extends Condition {
+  case class And(inner: NonEmptyList[Condition]) extends Condition {
     def append(other: Condition): And =
       other match {
-        case And(oc, ocs) =>
-          And(c, cs ++ (oc +: ocs))
+        case And(otherInner) =>
+          And(inner.concatNel(otherInner))
         case _ =>
-          And(c, cs :+ other)
+          And(inner.append(other))
       }
   }
   object And {
     def apply(c: Condition, cs: Condition*): And =
-      And(c, cs.toVector)
+      And(NonEmptyList(c, cs.toList))
 
+    object Inner extends InnerCondition {
+      def unapply(node: Condition): Option[NonEmptyList[Condition]] =
+        node match {
+          case n: And =>
+            Option(n.inner)
+          case _ =>
+            None
+        }
+    }
   }
 
-  case class Or(c: Condition, cs: Vector[Condition]) extends Condition {
+  case class Or(inner: NonEmptyList[Condition]) extends Condition {
     def append(other: Condition): Or =
       other match {
-        case Or(oc, ocs) =>
-          Or(c, cs ++ (oc +: ocs))
+        case Or(otherInner) =>
+          Or(inner.concatNel(otherInner))
         case _ =>
-          Or(c, cs :+ other)
+          Or(inner.append(other))
       }
   }
   object Or {
     def apply(c: Condition, cs: Condition*): Or =
-      Or(c, cs.toVector)
+      Or(NonEmptyList(c, cs.toList))
+
+    object Inner extends InnerCondition {
+      def unapply(node: Condition): Option[NonEmptyList[Condition]] =
+        node match {
+          case n: Or =>
+            Option(n.inner)
+          case _ =>
+            None
+        }
+    }
   }
 
   case class Not(c: Condition) extends Condition
   object Not {}
 
+  trait InnerCondition {
+    def unapply(node: Condition): Option[NonEmptyList[Condition]]
+  }
 }

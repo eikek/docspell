@@ -1,8 +1,9 @@
 package docspell.store.queries
 
-import bitpeace.FileMeta
 import docspell.common._
 import docspell.store.records._
+
+import bitpeace.FileMeta
 
 case class ItemData(
     item: RItem,

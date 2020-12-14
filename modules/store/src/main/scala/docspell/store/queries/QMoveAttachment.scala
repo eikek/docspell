@@ -1,14 +1,14 @@
 package docspell.store.queries
 
-import cats.effect._
 import cats.data.OptionT
+import cats.effect._
 import cats.implicits._
 
 import docspell.common._
 import docspell.store.records._
 
-import doobie.{Query => _, _}
 import doobie.implicits._
+import doobie.{Query => _, _}
 
 object QMoveAttachment {
   def moveAttachmentBefore(

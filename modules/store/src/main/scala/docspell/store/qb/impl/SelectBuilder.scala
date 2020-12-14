@@ -47,7 +47,7 @@ object SelectBuilder {
   def buildSimple(sq: Select.SimpleSelect): Fragment = {
     val f0 = sq.projection.map(selectExpr).reduceLeft(_ ++ comma ++ _)
     val f1 = fromExpr(sq.from)
-    val f2 = sq.where.map(cond).getOrElse(Fragment.empty)
+    val f2 = cond(sq.where)
     val f3 = sq.groupBy.map(groupBy).getOrElse(Fragment.empty)
     f0 ++ f1 ++ f2 ++ f3
   }
@@ -70,7 +70,12 @@ object SelectBuilder {
     FromExprBuilder.build(fr)
 
   def cond(c: Condition): Fragment =
-    fr" WHERE" ++ ConditionBuilder.build(c)
+    c match {
+      case Condition.UnitCondition =>
+        Fragment.empty
+      case _ =>
+        fr" WHERE" ++ ConditionBuilder.build(c)
+    }
 
   def groupBy(gb: GroupBy): Fragment = {
     val f0 = gb.names.prepended(gb.name).map(selectExpr).reduce(_ ++ comma ++ _)
