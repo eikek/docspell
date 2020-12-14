@@ -1,18 +1,19 @@
 package docspell.store.queries
 
-import cats.data.NonEmptyList
 import cats.data.OptionT
+import cats.data.{NonEmptyList => Nel}
 import cats.effect.Sync
 import cats.effect.concurrent.Ref
 import cats.implicits._
 import fs2.Stream
+
 import docspell.common.syntax.all._
 import docspell.common.{IdRef, _}
 import docspell.store.Store
-import docspell.store.impl.Implicits._
-import docspell.store.impl._
-import docspell.store.qb.Select
+import docspell.store.impl.DoobieMeta._
+import docspell.store.qb._
 import docspell.store.records._
+
 import bitpeace.FileMeta
 import doobie._
 import doobie.implicits._
@@ -86,6 +87,8 @@ object QItem {
   }
 
   def findItem(id: Ident): ConnectionIO[Option[ItemData]] = {
+    import docspell.store.impl.Implicits._
+
     val equip = REquipment.as("e")
     val org   = ROrganization.as("o")
     val pers0 = RPerson.as("p0")
@@ -226,7 +229,7 @@ object QItem {
       itemIds: Option[Set[Ident]],
       customValues: Seq[CustomValue],
       source: Option[String],
-      orderAsc: Option[RItem.Columns.type => Column]
+      orderAsc: Option[RItem.Table => docspell.store.qb.Column[_]]
   )
 
   object Query {
@@ -260,7 +263,7 @@ object QItem {
   private def findCustomFieldValuesForColl(
       coll: Ident,
       values: Seq[CustomValue]
-  ): Seq[(String, Fragment)] = {
+  ): Option[Select] = {
     import docspell.store.qb.DSL._
 
     val cf = RCustomField.as("cf")
@@ -277,122 +280,90 @@ object QItem {
         )
       )
 
-    NonEmptyList.fromList(values.toList) match {
-      case Some(nel) =>
-        Seq("customvalues" -> intersect(nel.map(singleSelect)).build)
-      case None =>
-        Seq.empty
-    }
+    Nel
+      .fromList(values.toList)
+      .map(nel => intersect(nel.map(singleSelect)))
   }
 
-  private def findItemsBase(
-      q: Query,
-      distinct: Boolean,
-      noteMaxLen: Int,
-      moreCols: Seq[Fragment],
-      ctes: (String, Fragment)*
-  ): Fragment = {
+  private def findItemsBase(q: Query, noteMaxLen: Int): Select = {
+    import docspell.store.qb.DSL._
+
+    object Attachs extends TableDef {
+      val tableName = "attachs"
+      val aliasName = "cta"
+      val alias     = Some(aliasName)
+      val num       = Column[Int]("num", this)
+      val itemId    = Column[Ident]("item_id", this)
+    }
     val equip = REquipment.as("e1")
     val org   = ROrganization.as("o0")
-    val pers0 = RPerson.as("p0")
-    val pers1 = RPerson.as("p1")
+    val p0    = RPerson.as("p0")
+    val p1    = RPerson.as("p1")
     val f     = RFolder.as("f1")
-    val cv    = RCustomFieldValue.as("cv")
+    val i     = RItem.as("i")
+    val a     = RAttachment.as("a")
 
-    val IC         = RItem.Columns
-    val AC         = RAttachment.Columns
-    val itemCols   = IC.all
-    val equipCols  = List(equip.eid.oldColumn, equip.name.oldColumn)
-    val folderCols = List(f.id.oldColumn, f.name.oldColumn)
-    val cvItem     = cv.itemId.column
+    val coll = q.account.collective
 
-    val finalCols = commas(
-      Seq(
-        IC.id.prefix("i").f,
-        IC.name.prefix("i").f,
-        IC.state.prefix("i").f,
-        coalesce(IC.itemDate.prefix("i").f, IC.created.prefix("i").f),
-        IC.dueDate.prefix("i").f,
-        IC.source.prefix("i").f,
-        IC.incoming.prefix("i").f,
-        IC.created.prefix("i").f,
-        fr"COALESCE(a.num, 0)",
-        org.oid.column.f,
-        org.name.column.f,
-        pers0.pid.column.f,
-        pers0.name.column.f,
-        pers1.pid.column.f,
-        pers1.name.column.f,
-        equip.eid.oldColumn.prefix("e1").f,
-        equip.name.oldColumn.prefix("e1").f,
-        f.id.column.f,
-        f.name.column.f,
-        // sql uses 1 for first character
-        IC.notes.prefix("i").substring(1, noteMaxLen),
-        // last column is only for sorting
-        q.orderAsc match {
-          case Some(co) =>
-            coalesce(co(IC).prefix("i").f, IC.created.prefix("i").f)
-          case None =>
-            IC.created.prefix("i").f
-        }
-      ) ++ moreCols
+    val baseSelect = Select(
+      select(
+        i.id.s,
+        i.name.s,
+        i.state.s,
+        coalesce(i.itemDate.s, i.created.s).s,
+        i.dueDate.s,
+        i.source.s,
+        i.incoming.s,
+        i.created.s,
+        coalesce(Attachs.num.s, lit(0)).s,
+        org.oid.s,
+        org.name.s,
+        p0.pid.s,
+        p0.name.s,
+        p1.pid.s,
+        p1.name.s,
+        equip.eid.s,
+        equip.name.s,
+        f.id.s,
+        f.name.s,
+        substring(i.notes.s, 1, noteMaxLen).s,
+        q.orderAsc
+          .map(of => coalesce(of(i).s, i.created.s).s)
+          .getOrElse(i.created.s)
+      ),
+      from(i)
+        .leftJoin(f, f.id === i.folder && f.collective === coll)
+        .leftJoin(
+          Select(
+            select(countAll.as(Attachs.num), a.itemId.as(Attachs.itemId)),
+            from(a)
+              .innerJoin(i, i.id === a.itemId),
+            i.cid === q.account.collective,
+            GroupBy(a.itemId)
+          ),
+          Attachs.aliasName, //alias, todo improve dsl
+          Attachs.itemId === i.id
+        )
+        .leftJoin(p0, p0.pid === i.corrPerson && p0.cid === coll)
+        .leftJoin(org, org.oid === i.corrOrg && org.cid === coll)
+        .leftJoin(p1, p1.pid === i.concPerson && p1.cid === coll)
+        .leftJoin(equip, equip.eid === i.concEquipment && equip.cid === coll),
+      where(
+        i.cid === coll &&? Nel.fromList(q.states.toList).map(nel => i.state.in(nel)) &&
+          or(i.folder.isNull, i.folder.in(QFolder.findMemberFolderIds(q.account)))
+      )
+    ).distinct.orderBy(
+      q.orderAsc
+        .map(of => OrderBy.asc(coalesce(of(i).s, i.created.s).s))
+        .getOrElse(OrderBy.desc(coalesce(i.itemDate.s, i.created.s).s))
     )
 
-    val withItem = selectSimple(itemCols, RItem.table, IC.cid.is(q.account.collective))
-    val withPerson =
-      selectSimple(
-        List(RPerson.T.pid.column, RPerson.T.name.column),
-        Fragment.const(RPerson.T.tableName),
-        RPerson.T.cid.column.is(q.account.collective)
-      )
-    val withOrgs =
-      selectSimple(
-        List(ROrganization.T.oid.column, ROrganization.T.name.column),
-        Fragment.const(ROrganization.T.tableName),
-        ROrganization.T.cid.column.is(q.account.collective)
-      )
-    val withEquips =
-      selectSimple(
-        equipCols,
-        Fragment.const(equip.tableName),
-        equip.cid.oldColumn.is(q.account.collective)
-      )
-    val withFolder =
-      selectSimple(
-        folderCols,
-        Fragment.const(f.tableName),
-        f.collective.oldColumn.is(q.account.collective)
-      )
-    val withAttach = fr"SELECT COUNT(" ++ AC.id.f ++ fr") as num, " ++ AC.itemId.f ++
-      fr"from" ++ RAttachment.table ++ fr"GROUP BY (" ++ AC.itemId.f ++ fr")"
-
-    val withCustomValues =
-      findCustomFieldValuesForColl(q.account.collective, q.customValues)
-
-    val selectKW = if (distinct) fr"SELECT DISTINCT" else fr"SELECT"
-    withCTE(
-      (Seq(
-        "items"   -> withItem,
-        "persons" -> withPerson,
-        "orgs"    -> withOrgs,
-        "equips"  -> withEquips,
-        "attachs" -> withAttach,
-        "folders" -> withFolder
-      ) ++ withCustomValues ++ ctes): _*
-    ) ++
-      selectKW ++ finalCols ++ fr" FROM items i" ++
-      fr"LEFT JOIN attachs a ON" ++ IC.id.prefix("i").is(AC.itemId.prefix("a")) ++
-      fr"LEFT JOIN persons p0 ON" ++ IC.corrPerson.prefix("i").is(pers0.pid.column) ++
-      fr"LEFT JOIN orgs o0 ON" ++ IC.corrOrg.prefix("i").is(org.oid.column) ++
-      fr"LEFT JOIN persons p1 ON" ++ IC.concPerson.prefix("i").is(pers1.pid.column) ++
-      fr"LEFT JOIN equips e1 ON" ++ IC.concEquipment
-        .prefix("i")
-        .is(equip.eid.oldColumn.prefix("e1")) ++
-      fr"LEFT JOIN folders f1 ON" ++ IC.folder.prefix("i").is(f.id.column) ++
-      (if (q.customValues.isEmpty) Fragment.empty
-       else
-         fr"INNER JOIN customvalues cv ON" ++ cvItem.is(IC.id.prefix("i")))
+    findCustomFieldValuesForColl(coll, q.customValues) match {
+      case Some(itemIds) =>
+        baseSelect.changeWhere(c => c && i.id.in(itemIds))
+      case None =>
+        baseSelect
+    }
   }
 
   def findItems(
@@ -400,102 +371,54 @@ object QItem {
       maxNoteLen: Int,
       batch: Batch
   ): Stream[ConnectionIO, ListItem] = {
+    import docspell.store.qb.DSL._
+
     val equip = REquipment.as("e1")
     val org   = ROrganization.as("o0")
     val pers0 = RPerson.as("p0")
     val pers1 = RPerson.as("p1")
     val f     = RFolder.as("f1")
-    val IC    = RItem.Columns
+    val i     = RItem.as("i")
 
-    // inclusive tags are AND-ed
-    val tagSelectsIncl = q.tagsInclude
-      .map(tid =>
-        selectSimple(
-          List(RTagItem.t.itemId.column),
-          Fragment.const(RTagItem.t.tableName),
-          RTagItem.t.tagId.column.is(tid)
-        )
-      ) ++ q.tagCategoryIncl.map(cat => TagItemName.itemsInCategory(NonEmptyList.of(cat)))
+    val cond: Condition => Condition =
+      c =>
+        c &&?
+          q.direction.map(d => i.incoming === d) &&?
+          q.name.map(n => i.name.like(QueryWildcard.lower(n))) &&?
+          q.allNames
+            .map(QueryWildcard.lower)
+            .map(n =>
+              org.name.like(n) ||
+                pers0.name.like(n) ||
+                pers1.name.like(n) ||
+                equip.name.like(n) ||
+                i.name.like(n) ||
+                i.notes.like(n)
+            ) &&?
+          q.corrPerson.map(p => pers0.pid === p) &&?
+          q.corrOrg.map(o => org.oid === o) &&?
+          q.concPerson.map(p => pers1.pid === p) &&?
+          q.concEquip.map(e => equip.eid === e) &&?
+          q.folder.map(fid => f.id === fid) &&?
+          q.dateFrom.map(d => coalesce(i.itemDate.s, i.created.s) >= d) &&?
+          q.dateTo.map(d => coalesce(i.itemDate.s, i.created.s) <= d) &&?
+          q.dueDateFrom.map(d => i.dueDate > d) &&?
+          q.dueDateTo.map(d => i.dueDate < d) &&?
+          q.source.map(n => i.source.like(QueryWildcard.lower(n))) &&?
+          q.itemIds.flatMap(s => Nel.fromList(s.toList)).map(nel => i.id.in(nel)) &&?
+          TagItemName
+            .itemsWithAllTagAndCategory(q.tagsInclude, q.tagCategoryIncl)
+            .map(subsel => i.id.in(subsel)) &&?
+          TagItemName
+            .itemsWithEitherTagOrCategory(q.tagsExclude, q.tagCategoryExcl)
+            .map(subsel => i.id.notIn(subsel))
 
-    // exclusive tags are OR-ed
-    val tagSelectsExcl =
-      TagItemName.itemsWithTagOrCategory(q.tagsExclude, q.tagCategoryExcl)
-
-    val iFolder    = IC.folder.prefix("i")
-    val name       = q.name.map(_.toLowerCase).map(QueryWildcard.apply)
-    val allNames   = q.allNames.map(_.toLowerCase).map(QueryWildcard.apply)
-    val sourceName = q.source.map(_.toLowerCase).map(QueryWildcard.apply)
-    val cond = and(
-      IC.cid.prefix("i").is(q.account.collective),
-      IC.state.prefix("i").isOneOf(q.states),
-      IC.incoming.prefix("i").isOrDiscard(q.direction),
-      name
-        .map(n => IC.name.prefix("i").lowerLike(n))
-        .getOrElse(Fragment.empty),
-      allNames
-        .map(n =>
-          or(
-            org.name.column.lowerLike(n),
-            pers0.name.column.lowerLike(n),
-            pers1.name.column.lowerLike(n),
-            equip.name.oldColumn.prefix("e1").lowerLike(n),
-            IC.name.prefix("i").lowerLike(n),
-            IC.notes.prefix("i").lowerLike(n)
-          )
-        )
-        .getOrElse(Fragment.empty),
-      pers0.pid.column.isOrDiscard(q.corrPerson),
-      org.oid.column.isOrDiscard(q.corrOrg),
-      pers1.pid.column.isOrDiscard(q.concPerson),
-      equip.eid.oldColumn.prefix("e1").isOrDiscard(q.concEquip),
-      f.id.column.isOrDiscard(q.folder),
-      if (q.tagsInclude.isEmpty && q.tagCategoryIncl.isEmpty) Fragment.empty
-      else
-        IC.id.prefix("i") ++ sql" IN (" ++ tagSelectsIncl
-          .reduce(_ ++ fr"INTERSECT" ++ _) ++ sql")",
-      if (q.tagsExclude.isEmpty && q.tagCategoryExcl.isEmpty) Fragment.empty
-      else IC.id.prefix("i").f ++ sql" NOT IN (" ++ tagSelectsExcl ++ sql")",
-      q.dateFrom
-        .map(d =>
-          coalesce(IC.itemDate.prefix("i").f, IC.created.prefix("i").f) ++ fr">= $d"
-        )
-        .getOrElse(Fragment.empty),
-      q.dateTo
-        .map(d =>
-          coalesce(IC.itemDate.prefix("i").f, IC.created.prefix("i").f) ++ fr"<= $d"
-        )
-        .getOrElse(Fragment.empty),
-      q.dueDateFrom.map(d => IC.dueDate.prefix("i").isGt(d)).getOrElse(Fragment.empty),
-      q.dueDateTo.map(d => IC.dueDate.prefix("i").isLt(d)).getOrElse(Fragment.empty),
-      sourceName.map(s => IC.source.prefix("i").lowerLike(s)).getOrElse(Fragment.empty),
-      q.itemIds
-        .map(ids =>
-          NonEmptyList
-            .fromList(ids.toList)
-            .map(nel => IC.id.prefix("i").isIn(nel))
-            .getOrElse(IC.id.prefix("i").is(""))
-        )
-        .getOrElse(Fragment.empty),
-      or(iFolder.isNull, iFolder.isIn(QFolder.findMemberFolderIds(q.account).build))
-    )
-
-    val order = q.orderAsc match {
-      case Some(co) =>
-        orderBy(coalesce(co(IC).prefix("i").f, IC.created.prefix("i").f) ++ fr"ASC")
-      case None =>
-        orderBy(
-          coalesce(IC.itemDate.prefix("i").f, IC.created.prefix("i").f) ++ fr"DESC"
-        )
-    }
-    val limitOffset =
-      if (batch == Batch.all) Fragment.empty
-      else fr"LIMIT ${batch.limit} OFFSET ${batch.offset}"
-
-    val query = findItemsBase(q, true, maxNoteLen, Seq.empty)
-    val frag =
-      query ++ fr"WHERE" ++ cond ++ order ++ limitOffset
-    logger.trace(s"List $batch items: $frag")
-    frag.query[ListItem].stream
+    val sql = findItemsBase(q, maxNoteLen)
+      .changeWhere(cond)
+      .limit(batch)
+      .build
+    logger.info(s"List $batch items: $sql")
+    sql.query[ListItem].stream
   }
 
   case class SelectedItem(itemId: Ident, weight: Double)
@@ -503,27 +426,50 @@ object QItem {
       q: Query,
       maxNoteLen: Int,
       items: Set[SelectedItem]
-  ): Stream[ConnectionIO, ListItem] =
+  ): Stream[ConnectionIO, ListItem] = {
+    import docspell.store.qb.DSL._
+
     if (items.isEmpty) Stream.empty
     else {
-      val IC = RItem.Columns
-      val values = items
-        .map(it => fr"(${it.itemId}, ${it.weight})")
-        .reduce((r, e) => r ++ fr"," ++ e)
+      val i = RItem.as("i")
 
-      val from = findItemsBase(
-        q,
-        true,
-        maxNoteLen,
-        Seq(fr"tids.weight"),
-        ("tids(item_id, weight)", fr"(VALUES" ++ values ++ fr")")
-      ) ++
-        fr"INNER JOIN tids ON" ++ IC.id.prefix("i").f ++ fr" = tids.item_id" ++
-        fr"ORDER BY tids.weight DESC"
+      object Tids extends TableDef {
+        val tableName             = "tids"
+        val alias: Option[String] = Some("tw")
+        val itemId                = Column[Ident]("item_id", this)
+        val weight                = Column[Double]("weight", this)
+        val all                   = Vector[Column[_]](itemId, weight)
+      }
 
-      logger.trace(s"fts query: $from")
+      val cte =
+        CteBind(
+          Tids,
+          Tids.all,
+          Select.RawSelect(
+            fr"VALUES" ++
+              items
+                .map(it => fr"(${it.itemId}, ${it.weight})")
+                .reduce((r, e) => r ++ fr"," ++ e)
+          )
+        )
+
+      val from = findItemsBase(q, maxNoteLen)
+        .appendCte(cte)
+        .appendSelect(Tids.weight.s)
+        .changeFrom(_.innerJoin(Tids, Tids.itemId === i.id))
+        .orderBy(Tids.weight.desc)
+        .build
+
+//        Seq(fr"tids.weight"),
+//        ("tids(item_id, weight)", fr"(VALUES" ++ values ++ fr")")
+//      ) ++
+//        fr"INNER JOIN tids ON" ++ IC.id.prefix("i").f ++ fr" = tids.item_id" ++
+//        fr"ORDER BY tids.weight DESC"
+
+      logger.info(s"fts query: $from")
       from.query[ListItem].stream
     }
+  }
 
   case class AttachmentLight(
       id: Ident,
@@ -581,7 +527,6 @@ object QItem {
   }
 
   private def findAttachmentLight(item: Ident): ConnectionIO[List[AttachmentLight]] = {
-    import docspell.store.qb._
     import docspell.store.qb.DSL._
 
     val a = RAttachment.as("a")
@@ -605,10 +550,9 @@ object QItem {
     } yield tn + rn + n + mn + cf
 
   private def findByFileIdsQuery(
-      fileMetaIds: NonEmptyList[Ident],
-      states: Option[NonEmptyList[ItemState]]
+      fileMetaIds: Nel[Ident],
+      states: Option[Nel[ItemState]]
   ): Select.SimpleSelect = {
-    import docspell.store.qb._
     import docspell.store.qb.DSL._
 
     val i = RItem.as("i")
@@ -629,7 +573,7 @@ object QItem {
   }
 
   def findOneByFileIds(fileMetaIds: Seq[Ident]): ConnectionIO[Option[RItem]] =
-    NonEmptyList.fromList(fileMetaIds.toList) match {
+    Nel.fromList(fileMetaIds.toList) match {
       case Some(nel) =>
         findByFileIdsQuery(nel, None).limit(1).build.query[RItem].option
       case None =>
@@ -638,9 +582,9 @@ object QItem {
 
   def findByFileIds(
       fileMetaIds: Seq[Ident],
-      states: NonEmptyList[ItemState]
+      states: Nel[ItemState]
   ): ConnectionIO[Vector[RItem]] =
-    NonEmptyList.fromList(fileMetaIds.toList) match {
+    Nel.fromList(fileMetaIds.toList) match {
       case Some(nel) =>
         findByFileIdsQuery(nel, states.some).build.query[RItem].to[Vector]
       case None =>
@@ -648,7 +592,6 @@ object QItem {
     }
 
   def findByChecksum(checksum: String, collective: Ident): ConnectionIO[Vector[RItem]] = {
-    import docspell.store.qb._
     import docspell.store.qb.DSL._
 
     val m1 = RFileMeta.as("m1")
@@ -704,7 +647,6 @@ object QItem {
       collective: Ident,
       chunkSize: Int
   ): Stream[ConnectionIO, Ident] = {
-    import docspell.store.qb._
     import docspell.store.qb.DSL._
 
     val i = RItem.as("i")
@@ -724,7 +666,6 @@ object QItem {
       tagCategory: String,
       pageSep: String
   ): ConnectionIO[TextAndTag] = {
-    import docspell.store.qb._
     import docspell.store.qb.DSL._
 
     val tag = RTag.as("t")

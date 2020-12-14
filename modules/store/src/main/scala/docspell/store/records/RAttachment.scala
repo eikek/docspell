@@ -6,7 +6,6 @@ import fs2.Stream
 
 import docspell.common._
 import docspell.store.qb.DSL._
-import docspell.store.qb.TableDef
 import docspell.store.qb._
 
 import bitpeace.FileMeta
@@ -115,16 +114,6 @@ object RAttachment {
   def findMeta(attachId: Ident): ConnectionIO[Option[FileMeta]] = {
     import bitpeace.sql._
 
-//    val cols      = RFileMeta.Columns.all.map(_.prefix("m"))
-//    val aId       = id.prefix("a")
-//    val aFileMeta = fileId.prefix("a")
-//    val mId       = RFileMeta.Columns.id.prefix("m")
-//
-//    val from =
-//      table ++ fr"a INNER JOIN" ++ RFileMeta.table ++ fr"m ON" ++ aFileMeta.is(mId)
-//    val cond = aId.is(attachId)
-//
-//    selectSimple(cols, from, cond).query[FileMeta].option
     val m = RFileMeta.as("m")
     val a = RAttachment.as("a")
     Select(
@@ -167,14 +156,6 @@ object RAttachment {
       attachId: Ident,
       collective: Ident
   ): ConnectionIO[Boolean] = {
-//    val aId   = id.prefix("a")
-//    val aItem = itemId.prefix("a")
-//    val iId   = RItem.Columns.id.prefix("i")
-//    val iColl = RItem.Columns.cid.prefix("i")
-//    val from =
-//      table ++ fr"a INNER JOIN" ++ RItem.table ++ fr"i ON" ++ aItem.is(iId)
-//    val cond = and(iColl.is(collective), aId.is(attachId))
-//    selectCount(id, from, cond).query[Int].unique.map(_ > 0)
     val a = RAttachment.as("a")
     val i = RItem.as("i")
     Select(
@@ -189,12 +170,6 @@ object RAttachment {
       id: Ident,
       coll: Ident
   ): ConnectionIO[Vector[RAttachment]] = {
-//    val q = selectSimple(all.map(_.prefix("a")), table ++ fr"a", Fragment.empty) ++
-//      fr"INNER JOIN" ++ RItem.table ++ fr"i ON" ++ RItem.Columns.id
-//        .prefix("i")
-//        .is(itemId.prefix("a")) ++
-//      fr"WHERE" ++ and(itemId.prefix("a").is(id), RItem.Columns.cid.prefix("i").is(coll))
-//    q.query[RAttachment].to[Vector]
     val a = RAttachment.as("a")
     val i = RItem.as("i")
     Select(
@@ -210,29 +185,6 @@ object RAttachment {
       coll: Ident,
       fileIds: NonEmptyList[Ident]
   ): ConnectionIO[Vector[RAttachment]] = {
-
-//    val iId   = RItem.Columns.id.prefix("i")
-//    val iColl = RItem.Columns.cid.prefix("i")
-//    val aItem = Columns.itemId.prefix("a")
-//    val aId   = Columns.id.prefix("a")
-//    val aFile = Columns.fileId.prefix("a")
-//    val sId   = RAttachmentSource.Columns.id.prefix("s")
-//    val sFile = RAttachmentSource.Columns.fileId.prefix("s")
-//    val rId   = RAttachmentArchive.Columns.id.prefix("r")
-//    val rFile = RAttachmentArchive.Columns.fileId.prefix("r")
-//
-//    val from = table ++ fr"a INNER JOIN" ++
-//      RItem.table ++ fr"i ON" ++ iId.is(aItem) ++ fr"LEFT JOIN" ++
-//      RAttachmentSource.table ++ fr"s ON" ++ sId.is(aId) ++ fr"LEFT JOIN" ++
-//      RAttachmentArchive.table ++ fr"r ON" ++ rId.is(aId)
-//
-//    val cond = and(
-//      iId.is(id),
-//      iColl.is(coll),
-//      or(aFile.isIn(fileIds), sFile.isIn(fileIds), rFile.isIn(fileIds))
-//    )
-//
-//    selectSimple(all.map(_.prefix("a")), from, cond).query[RAttachment].to[Vector]
     val i = RItem.as("i")
     val a = RAttachment.as("a")
     val s = RAttachmentSource.as("s")
@@ -255,19 +207,6 @@ object RAttachment {
   ): ConnectionIO[Vector[(RAttachment, FileMeta)]] = {
     import bitpeace.sql._
 
-//    val cols      = all.map(_.prefix("a")) ++ RFileMeta.Columns.all.map(_.prefix("m"))
-//    val afileMeta = fileId.prefix("a")
-//    val aItem     = itemId.prefix("a")
-//    val mId       = RFileMeta.Columns.id.prefix("m")
-//    val iId       = RItem.Columns.id.prefix("i")
-//    val iColl     = RItem.Columns.cid.prefix("i")
-//
-//    val from =
-//      table ++ fr"a INNER JOIN" ++ RFileMeta.table ++ fr"m ON" ++ afileMeta.is(mId) ++
-//        fr"INNER JOIN" ++ RItem.table ++ fr"i ON" ++ aItem.is(iId)
-//    val cond = Seq(aItem.is(id), iColl.is(coll))
-//
-//    selectSimple(cols, from, and(cond)).query[(RAttachment, FileMeta)].to[Vector]
     val a = RAttachment.as("a")
     val m = RFileMeta.as("m")
     val i = RItem.as("i")
@@ -283,9 +222,6 @@ object RAttachment {
   def findByItemWithMeta(id: Ident): ConnectionIO[Vector[(RAttachment, FileMeta)]] = {
     import bitpeace.sql._
 
-//    val q =
-//      fr"SELECT a.*,m.* FROM" ++ table ++ fr"a, filzemeta m
-//      WHERE a.filemetaid = m.id AND a.itemid = $id ORDER BY a.position ASC"
     val a = RAttachment.as("a")
     val m = RFileMeta.as("m")
     Select(
@@ -313,24 +249,6 @@ object RAttachment {
       coll: Option[Ident],
       chunkSize: Int
   ): Stream[ConnectionIO, RAttachment] = {
-//    val aItem = Columns.itemId.prefix("a")
-//    val iId   = RItem.Columns.id.prefix("i")
-//    val iColl = RItem.Columns.cid.prefix("i")
-//
-//    val cols = all.map(_.prefix("a"))
-//
-//    coll match {
-//      case Some(cid) =>
-//        val join = table ++ fr"a INNER JOIN" ++ RItem.table ++ fr"i ON" ++ iId.is(aItem)
-//        val cond = iColl.is(cid)
-//        selectSimple(cols, join, cond)
-//          .query[RAttachment]
-//          .streamWithChunkSize(chunkSize)
-//      case None =>
-//        selectSimple(cols, table, Fragment.empty)
-//          .query[RAttachment]
-//          .streamWithChunkSize(chunkSize)
-//    }
     val a = RAttachment.as("a")
     val i = RItem.as("i")
 
@@ -350,19 +268,6 @@ object RAttachment {
   }
 
   def findAllWithoutPageCount(chunkSize: Int): Stream[ConnectionIO, RAttachment] = {
-//    val aId      = Columns.id.prefix("a")
-//    val aCreated = Columns.created.prefix("a")
-//    val mId      = RAttachmentMeta.Columns.id.prefix("m")
-//    val mPages   = RAttachmentMeta.Columns.pages.prefix("m")
-//
-//    val cols = all.map(_.prefix("a"))
-//    val join = table ++ fr"a LEFT OUTER JOIN" ++
-//      RAttachmentMeta.table ++ fr"m ON" ++ aId.is(mId)
-//    val cond = mPages.isNull
-//
-//    (selectSimple(cols, join, cond) ++ orderBy(aCreated.desc))
-//      .query[RAttachment]
-//      .streamWithChunkSize(chunkSize)
     val a = RAttachment.as("a")
     val m = RAttachmentMeta.as("m")
     Select(
@@ -377,33 +282,6 @@ object RAttachment {
       coll: Option[Ident],
       chunkSize: Int
   ): Stream[ConnectionIO, RAttachment] = {
-//    val aId      = Columns.id.prefix("a")
-//    val aItem    = Columns.itemId.prefix("a")
-//    val aCreated = Columns.created.prefix("a")
-//    val pId      = RAttachmentPreview.Columns.id.prefix("p")
-//    val iId      = RItem.Columns.id.prefix("i")
-//    val iColl    = RItem.Columns.cid.prefix("i")
-//
-//    val cols = all.map(_.prefix("a"))
-//    val baseJoin =
-//      table ++ fr"a LEFT OUTER JOIN" ++
-//        RAttachmentPreview.table ++ fr"p ON" ++ pId.is(aId)
-//
-//    val baseCond =
-//      Seq(pId.isNull)
-//
-//    coll match {
-//      case Some(cid) =>
-//        val join = baseJoin ++ fr"INNER JOIN" ++ RItem.table ++ fr"i ON" ++ iId.is(aItem)
-//        val cond = and(baseCond ++ Seq(iColl.is(cid)))
-//        (selectSimple(cols, join, cond) ++ orderBy(aCreated.desc))
-//          .query[RAttachment]
-//          .streamWithChunkSize(chunkSize)
-//      case None =>
-//        (selectSimple(cols, baseJoin, and(baseCond)) ++ orderBy(aCreated.desc))
-//          .query[RAttachment]
-//          .streamWithChunkSize(chunkSize)
-//    }
     val a = RAttachment.as("a")
     val p = RAttachmentPreview.as("p")
     val i = RItem.as("i")
@@ -420,32 +298,11 @@ object RAttachment {
       coll: Option[Ident],
       chunkSize: Int
   ): Stream[ConnectionIO, RAttachment] = {
-//    val aId     = Columns.id.prefix("a")
-//    val aItem   = Columns.itemId.prefix("a")
-//    val aFile   = Columns.fileId.prefix("a")
-//    val sId     = RAttachmentSource.Columns.id.prefix("s")
-//    val sFile   = RAttachmentSource.Columns.fileId.prefix("s")
-//    val iId     = RItem.Columns.id.prefix("i")
-//    val iColl   = RItem.Columns.cid.prefix("i")
-//    val mId     = RFileMeta.Columns.id.prefix("m")
-//    val mType   = RFileMeta.Columns.mimetype.prefix("m")
     val pdfType = "application/pdf%"
-//
-//    val from = table ++ fr"a INNER JOIN" ++
-//      RAttachmentSource.table ++ fr"s ON" ++ sId.is(aId) ++ fr"INNER JOIN" ++
-//      RItem.table ++ fr"i ON" ++ iId.is(aItem) ++ fr"INNER JOIN" ++
-//      RFileMeta.table ++ fr"m ON" ++ aFile.is(mId)
-//    val where = coll match {
-//      case Some(cid) => and(iColl.is(cid), aFile.is(sFile), mType.lowerLike(pdfType))
-//      case None      => and(aFile.is(sFile), mType.lowerLike(pdfType))
-//    }
-//    selectSimple(all.map(_.prefix("a")), from, where)
-//      .query[RAttachment]
-//      .streamWithChunkSize(chunkSize)
-    val a = RAttachment.as("a")
-    val s = RAttachmentSource.as("s")
-    val i = RItem.as("i")
-    val m = RFileMeta.as("m")
+    val a       = RAttachment.as("a")
+    val s       = RAttachmentSource.as("s")
+    val i       = RItem.as("i")
+    val m       = RFileMeta.as("m")
 
     Select(
       select(a.all),

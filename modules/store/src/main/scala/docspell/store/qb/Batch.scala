@@ -1,4 +1,4 @@
-package docspell.store.queries
+package docspell.store.qb
 
 case class Batch(offset: Int, limit: Int) {
   def restrictLimitTo(n: Int): Batch =

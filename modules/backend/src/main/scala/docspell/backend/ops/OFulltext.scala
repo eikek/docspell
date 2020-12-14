@@ -8,30 +8,30 @@ import docspell.backend.JobFactory
 import docspell.backend.ops.OItemSearch._
 import docspell.common._
 import docspell.ftsclient._
-import docspell.store.Store
 import docspell.store.queries.{QFolder, QItem}
 import docspell.store.queue.JobQueue
 import docspell.store.records.RJob
+import docspell.store.{Store, qb}
 
 trait OFulltext[F[_]] {
 
   def findItems(maxNoteLen: Int)(
       q: Query,
       fts: OFulltext.FtsInput,
-      batch: Batch
+      batch: qb.Batch
   ): F[Vector[OFulltext.FtsItem]]
 
   /** Same as `findItems` but does more queries per item to find all tags. */
   def findItemsWithTags(maxNoteLen: Int)(
       q: Query,
       fts: OFulltext.FtsInput,
-      batch: Batch
+      batch: qb.Batch
   ): F[Vector[OFulltext.FtsItemWithTags]]
 
   def findIndexOnly(maxNoteLen: Int)(
       fts: OFulltext.FtsInput,
       account: AccountId,
-      batch: Batch
+      batch: qb.Batch
   ): F[Vector[OFulltext.FtsItemWithTags]]
 
   /** Clears the full-text index completely and launches a task that
@@ -95,7 +95,7 @@ object OFulltext {
       def findIndexOnly(maxNoteLen: Int)(
           ftsQ: OFulltext.FtsInput,
           account: AccountId,
-          batch: Batch
+          batch: qb.Batch
       ): F[Vector[OFulltext.FtsItemWithTags]] = {
         val fq = FtsQuery(
           ftsQ.query,
@@ -135,7 +135,7 @@ object OFulltext {
 
       def findItems(
           maxNoteLen: Int
-      )(q: Query, ftsQ: FtsInput, batch: Batch): F[Vector[FtsItem]] =
+      )(q: Query, ftsQ: FtsInput, batch: qb.Batch): F[Vector[FtsItem]] =
         findItemsFts(
           q,
           ftsQ,
@@ -152,7 +152,7 @@ object OFulltext {
       def findItemsWithTags(maxNoteLen: Int)(
           q: Query,
           ftsQ: FtsInput,
-          batch: Batch
+          batch: qb.Batch
       ): F[Vector[FtsItemWithTags]] =
         findItemsFts(
           q,
@@ -172,8 +172,8 @@ object OFulltext {
       private def findItemsFts[A: ItemId, B](
           q: Query,
           ftsQ: FtsInput,
-          batch: Batch,
-          search: (Query, Batch) => F[Vector[A]],
+          batch: qb.Batch,
+          search: (Query, qb.Batch) => F[Vector[A]],
           convert: (
               FtsResult,
               Map[Ident, List[FtsResult.ItemMatch]]
@@ -186,8 +186,8 @@ object OFulltext {
       private def findItemsFts0[A: ItemId, B](
           q: Query,
           ftsQ: FtsInput,
-          batch: Batch,
-          search: (Query, Batch) => F[Vector[A]],
+          batch: qb.Batch,
+          search: (Query, qb.Batch) => F[Vector[A]],
           convert: (
               FtsResult,
               Map[Ident, List[FtsResult.ItemMatch]]

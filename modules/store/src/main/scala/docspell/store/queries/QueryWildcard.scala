@@ -2,6 +2,9 @@ package docspell.store.queries
 
 object QueryWildcard {
 
+  def lower(s: String): String =
+    apply(s.toLowerCase)
+
   def apply(value: String): String = {
     def prefix(n: String) =
       if (n.startsWith("*")) s"%${n.substring(1)}"

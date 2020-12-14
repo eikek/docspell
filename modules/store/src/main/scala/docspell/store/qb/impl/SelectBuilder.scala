@@ -1,16 +1,18 @@
 package docspell.store.qb.impl
 
+import cats.data.NonEmptyList
+
 import docspell.store.qb._
+
 import _root_.doobie.implicits._
 import _root_.doobie.{Query => _, _}
-import cats.data.NonEmptyList
 
 object SelectBuilder {
   val comma     = fr","
   val asc       = fr" ASC"
   val desc      = fr" DESC"
-  val intersect = fr"INTERSECT"
-  val union     = fr"UNION ALL"
+  val intersect = fr" INTERSECT"
+  val union     = fr" UNION ALL"
 
   def apply(q: Select): Fragment =
     build(q)
@@ -34,8 +36,8 @@ object SelectBuilder {
         val order = obs.prepended(ob).map(orderBy).reduce(_ ++ comma ++ _)
         build(q) ++ fr" ORDER BY" ++ order
 
-      case Select.Limit(q, n) =>
-        build(q) ++ fr" LIMIT $n"
+      case Select.Limit(q, batch) =>
+        build(q) ++ buildBatch(batch)
 
       case Select.WithCte(cte, moreCte, query) =>
         val ctes = moreCte.prepended(cte)
@@ -92,4 +94,16 @@ object SelectBuilder {
 
         Fragment.const0(name.tableName) ++ colDef ++ sql" AS (" ++ build(select) ++ sql")"
     }
+
+  def buildBatch(b: Batch): Fragment = {
+    val limitFrag =
+      if (b.limit != Int.MaxValue) fr" LIMIT ${b.limit}"
+      else Fragment.empty
+
+    val offsetFrag =
+      if (b.offset != 0) fr" OFFSET ${b.offset}"
+      else Fragment.empty
+
+    limitFrag ++ offsetFrag
+  }
 }

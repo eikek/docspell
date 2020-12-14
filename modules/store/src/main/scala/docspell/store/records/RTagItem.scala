@@ -21,29 +21,29 @@ object RTagItem {
     val tagId     = Column[Ident]("tid", this)
     val all       = NonEmptyList.of[Column[_]](tagItemId, itemId, tagId)
   }
-  val t = Table(None)
+  val T = Table(None)
   def as(alias: String): Table =
     Table(Some(alias))
 
   def insert(v: RTagItem): ConnectionIO[Int] =
-    DML.insert(t, t.all, fr"${v.tagItemId},${v.itemId},${v.tagId}")
+    DML.insert(T, T.all, fr"${v.tagItemId},${v.itemId},${v.tagId}")
 
   def deleteItemTags(item: Ident): ConnectionIO[Int] =
-    DML.delete(t, t.itemId === item)
+    DML.delete(T, T.itemId === item)
 
   def deleteItemTags(items: NonEmptyList[Ident], cid: Ident): ConnectionIO[Int] =
-    DML.delete(t, t.itemId.in(RItem.filterItemsFragment(items, cid)))
+    DML.delete(T, T.itemId.in(RItem.filterItemsFragment(items, cid)))
 
   def deleteTag(tid: Ident): ConnectionIO[Int] =
-    DML.delete(t, t.tagId === tid)
+    DML.delete(T, T.tagId === tid)
 
   def findByItem(item: Ident): ConnectionIO[Vector[RTagItem]] =
-    run(select(t.all), from(t), t.itemId === item).query[RTagItem].to[Vector]
+    run(select(T.all), from(T), T.itemId === item).query[RTagItem].to[Vector]
 
   def findAllIn(item: Ident, tags: Seq[Ident]): ConnectionIO[Vector[RTagItem]] =
     NonEmptyList.fromList(tags.toList) match {
       case Some(nel) =>
-        run(select(t.all), from(t), t.itemId === item && t.tagId.in(nel))
+        run(select(T.all), from(T), T.itemId === item && T.tagId.in(nel))
           .query[RTagItem]
           .to[Vector]
       case None =>
@@ -55,7 +55,7 @@ object RTagItem {
       case None =>
         0.pure[ConnectionIO]
       case Some(nel) =>
-        DML.delete(t, t.itemId === item && t.tagId.in(nel))
+        DML.delete(T, T.itemId === item && T.tagId.in(nel))
     }
 
   def setAllTags(item: Ident, tags: Seq[Ident]): ConnectionIO[Int] =
@@ -67,8 +67,8 @@ object RTagItem {
         )
         n <- DML
           .insertMany(
-            t,
-            t.all,
+            T,
+            T.all,
             entities.map(v => fr"${v.tagItemId},${v.itemId},${v.tagId}")
           )
       } yield n

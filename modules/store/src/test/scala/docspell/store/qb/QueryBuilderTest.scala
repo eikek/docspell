@@ -48,14 +48,14 @@ object QueryBuilderTest extends SimpleTestSuite {
             assertEquals(f, FromExpr.From(c))
             assertEquals(2, joins.size)
             joins.head match {
-              case Join.InnerJoin(tbl, cond) =>
+              case FromExpr.Join.InnerJoin(FromExpr.Relation.Table(tbl), cond) =>
                 assertEquals(tbl, owner)
                 assertEquals(cond, c.ownerId === owner.id)
               case _ =>
                 fail("Unexpected join result")
             }
             joins.tail.head match {
-              case Join.LeftJoin(tbl, cond) =>
+              case FromExpr.Join.LeftJoin(FromExpr.Relation.Table(tbl), cond) =>
                 assertEquals(tbl, lecturer)
                 assertEquals(cond, c.lecturerId === lecturer.id)
               case _ =>

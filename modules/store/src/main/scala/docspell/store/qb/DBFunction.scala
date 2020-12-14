@@ -23,6 +23,8 @@ object DBFunction {
 
   case class Calc(op: Operator, left: SelectExpr, right: SelectExpr) extends DBFunction
 
+  case class Substring(expr: SelectExpr, start: Int, length: Int) extends DBFunction
+
   sealed trait Operator
   object Operator {
     case object Plus  extends Operator

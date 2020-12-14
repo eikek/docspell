@@ -80,6 +80,9 @@ trait DSL extends DoobieMeta {
   def power(base: Int, expr: SelectExpr): DBFunction =
     DBFunction.Power(expr, base)
 
+  def substring(expr: SelectExpr, start: Int, length: Int): DBFunction =
+    DBFunction.Substring(expr, start, length)
+
   def lit[A](value: A)(implicit P: Put[A]): SelectExpr.SelectLit[A] =
     SelectExpr.SelectLit(value, None)
 
@@ -91,8 +94,8 @@ trait DSL extends DoobieMeta {
 
   def and(c: Condition, cs: Condition*): Condition =
     c match {
-      case Condition.And(head, tail) =>
-        Condition.And(head, tail ++ (c +: cs.toVector))
+      case a: Condition.And =>
+        cs.foldLeft(a)(_.append(_))
       case _ =>
         Condition.And(c, cs.toVector)
     }
@@ -173,11 +176,20 @@ trait DSL extends DoobieMeta {
     def in(subsel: Select): Condition =
       Condition.InSubSelect(col, subsel)
 
+    def notIn(subsel: Select): Condition =
+      in(subsel).negate
+
     def in(values: Nel[A])(implicit P: Put[A]): Condition =
       Condition.InValues(col, values, false)
 
+    def notIn(values: Nel[A])(implicit P: Put[A]): Condition =
+      in(values).negate
+
     def inLower(values: Nel[A])(implicit P: Put[A]): Condition =
       Condition.InValues(col, values, true)
+
+    def notInLower(values: Nel[A])(implicit P: Put[A]): Condition =
+      Condition.InValues(col, values, true).negate
 
     def isNull: Condition =
       Condition.IsNull(col)
@@ -223,6 +235,9 @@ trait DSL extends DoobieMeta {
       SelectExpr.SelectFun(dbf, None)
     def as(alias: String): SelectExpr =
       SelectExpr.SelectFun(dbf, Some(alias))
+
+    def as(otherCol: Column[_]): SelectExpr =
+      SelectExpr.SelectFun(dbf, Some(otherCol.name))
 
     def ===[A](value: A)(implicit P: Put[A]): Condition =
       Condition.CompareFVal(dbf, Operator.Eq, value)

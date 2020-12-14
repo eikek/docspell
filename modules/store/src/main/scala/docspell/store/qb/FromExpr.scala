@@ -1,6 +1,21 @@
 package docspell.store.qb
 
-sealed trait FromExpr
+import docspell.store.qb.FromExpr.{Joined, Relation}
+
+sealed trait FromExpr {
+  def innerJoin(other: Relation, on: Condition): Joined
+
+  def innerJoin(other: TableDef, on: Condition): Joined =
+    innerJoin(Relation.Table(other), on)
+
+  def leftJoin(other: Relation, on: Condition): Joined
+
+  def leftJoin(other: TableDef, on: Condition): Joined =
+    leftJoin(Relation.Table(other), on)
+
+  def leftJoin(sel: Select, alias: String, on: Condition): Joined =
+    leftJoin(Relation.SubSelect(sel, alias), on)
+}
 
 object FromExpr {
 
@@ -8,14 +23,8 @@ object FromExpr {
     def innerJoin(other: Relation, on: Condition): Joined =
       Joined(this, Vector(Join.InnerJoin(other, on)))
 
-    def innerJoin(other: TableDef, on: Condition): Joined =
-      innerJoin(Relation.Table(other), on)
-
     def leftJoin(other: Relation, on: Condition): Joined =
       Joined(this, Vector(Join.LeftJoin(other, on)))
-
-    def leftJoin(other: TableDef, on: Condition): Joined =
-      leftJoin(Relation.Table(other), on)
   }
 
   object From {
@@ -30,14 +39,9 @@ object FromExpr {
     def innerJoin(other: Relation, on: Condition): Joined =
       Joined(from, joins :+ Join.InnerJoin(other, on))
 
-    def innerJoin(other: TableDef, on: Condition): Joined =
-      innerJoin(Relation.Table(other), on)
-
     def leftJoin(other: Relation, on: Condition): Joined =
       Joined(from, joins :+ Join.LeftJoin(other, on))
 
-    def leftJoin(other: TableDef, on: Condition): Joined =
-      leftJoin(Relation.Table(other), on)
   }
 
   sealed trait Relation

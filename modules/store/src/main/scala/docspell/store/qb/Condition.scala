@@ -26,8 +26,36 @@ object Condition {
 
   case class IsNull(col: Column[_]) extends Condition
 
-  case class And(c: Condition, cs: Vector[Condition]) extends Condition
-  case class Or(c: Condition, cs: Vector[Condition])  extends Condition
-  case class Not(c: Condition)                        extends Condition
+  case class And(c: Condition, cs: Vector[Condition]) extends Condition {
+    def append(other: Condition): And =
+      other match {
+        case And(oc, ocs) =>
+          And(c, cs ++ (oc +: ocs))
+        case _ =>
+          And(c, cs :+ other)
+      }
+  }
+  object And {
+    def apply(c: Condition, cs: Condition*): And =
+      And(c, cs.toVector)
+
+  }
+
+  case class Or(c: Condition, cs: Vector[Condition]) extends Condition {
+    def append(other: Condition): Or =
+      other match {
+        case Or(oc, ocs) =>
+          Or(c, cs ++ (oc +: ocs))
+        case _ =>
+          Or(c, cs :+ other)
+      }
+  }
+  object Or {
+    def apply(c: Condition, cs: Condition*): Or =
+      Or(c, cs.toVector)
+  }
+
+  case class Not(c: Condition) extends Condition
+  object Not {}
 
 }

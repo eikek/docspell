@@ -7,9 +7,9 @@ import fs2.Stream
 
 import docspell.backend.ops.OItemSearch._
 import docspell.common._
-import docspell.store.Store
 import docspell.store.queries.{QAttachment, QItem}
 import docspell.store.records._
+import docspell.store.{Store, qb}
 
 import bitpeace.{FileMeta, RangeDef}
 import doobie.implicits._
@@ -59,8 +59,8 @@ object OItemSearch {
   type Query = QItem.Query
   val Query = QItem.Query
 
-  type Batch = docspell.store.queries.Batch
-  val Batch = docspell.store.queries.Batch
+  type Batch = qb.Batch
+  val Batch = docspell.store.qb.Batch
 
   type ListItem = QItem.ListItem
   val ListItem = QItem.ListItem

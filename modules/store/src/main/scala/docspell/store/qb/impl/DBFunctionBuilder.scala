@@ -29,6 +29,9 @@ object DBFunctionBuilder extends CommonBuilder {
       case DBFunction.Power(expr, base) =>
         sql"POWER($base, " ++ SelectExprBuilder.build(expr) ++ fr")"
 
+      case DBFunction.Substring(expr, start, len) =>
+        sql"SUBSTRING(" ++ SelectExprBuilder.build(expr) ++ fr" FROM $start FOR $len)"
+
       case DBFunction.Calc(op, left, right) =>
         SelectExprBuilder.build(left) ++
           buildOperator(op) ++
