@@ -70,19 +70,6 @@ object RAttachmentSource {
       from(s).innerJoin(a, a.id === s.id),
       a.id === attachId && a.fileId <> s.fileId
     ).build.query[Int].unique.map(_ > 0)
-
-//    val sId   = Columns.id.prefix("s")
-//    val sFile = Columns.fileId.prefix("s")
-//    val aId   = RAttachment.Columns.id.prefix("a")
-//    val aFile = RAttachment.Columns.fileId.prefix("a")
-//
-//    val from = table ++ fr"s INNER JOIN" ++
-//      RAttachment.table ++ fr"a ON" ++ aId.is(sId)
-//
-//    selectCount(aId, from, and(aId.is(attachId), aFile.isNot(sFile)))
-//      .query[Int]
-//      .unique
-//      .map(_ > 0)
   }
 
   def delete(attachId: Ident): ConnectionIO[Int] =
@@ -92,19 +79,6 @@ object RAttachmentSource {
       attachId: Ident,
       collective: Ident
   ): ConnectionIO[Option[RAttachmentSource]] = {
-//    val bId   = RAttachment.Columns.id.prefix("b")
-//    val aId   = Columns.id.prefix("a")
-//    val bItem = RAttachment.Columns.itemId.prefix("b")
-//    val iId   = RItem.Columns.id.prefix("i")
-//    val iColl = RItem.Columns.cid.prefix("i")
-//
-//    val from = table ++ fr"a INNER JOIN" ++
-//      RAttachment.table ++ fr"b ON" ++ aId.is(bId) ++
-//      fr"INNER JOIN" ++ RItem.table ++ fr"i ON" ++ bItem.is(iId)
-//
-//    val where = and(aId.is(attachId), bId.is(attachId), iColl.is(collective))
-//
-//    selectSimple(all.map(_.prefix("a")), from, where).query[RAttachmentSource].option
     val b = RAttachment.as("b")
     val a = RAttachmentSource.as("a")
     val i = RItem.as("i")
@@ -119,15 +93,6 @@ object RAttachmentSource {
   }
 
   def findByItem(itemId: Ident): ConnectionIO[Vector[RAttachmentSource]] = {
-//    val sId   = Columns.id.prefix("s")
-//    val aId   = RAttachment.Columns.id.prefix("a")
-//    val aItem = RAttachment.Columns.itemId.prefix("a")
-//
-//    val from = table ++ fr"s INNER JOIN" ++ RAttachment.table ++ fr"a ON" ++ sId.is(aId)
-//    selectSimple(all.map(_.prefix("s")), from, aItem.is(itemId))
-//      .query[RAttachmentSource]
-//      .to[Vector]
-
     val s = RAttachmentSource.as("s")
     val a = RAttachment.as("a")
     Select(select(s.all), from(s).innerJoin(a, a.id === s.id), a.itemId === itemId).build
@@ -140,22 +105,6 @@ object RAttachmentSource {
   ): ConnectionIO[Vector[(RAttachmentSource, FileMeta)]] = {
     import bitpeace.sql._
 
-//    val aId       = Columns.id.prefix("a")
-//    val afileMeta = fileId.prefix("a")
-//    val bPos      = RAttachment.Columns.position.prefix("b")
-//    val bId       = RAttachment.Columns.id.prefix("b")
-//    val bItem     = RAttachment.Columns.itemId.prefix("b")
-//    val mId       = RFileMeta.Columns.id.prefix("m")
-//
-//    val cols = all.map(_.prefix("a")) ++ RFileMeta.Columns.all.map(_.prefix("m"))
-//    val from = table ++ fr"a INNER JOIN" ++
-//      RFileMeta.table ++ fr"m ON" ++ afileMeta.is(mId) ++ fr"INNER JOIN" ++
-//      RAttachment.table ++ fr"b ON" ++ aId.is(bId)
-//    val where = bItem.is(id)
-//
-//    (selectSimple(cols, from, where) ++ orderBy(bPos.asc))
-//      .query[(RAttachmentSource, FileMeta)]
-//      .to[Vector]
     val a = RAttachmentSource.as("a")
     val b = RAttachment.as("b")
     val m = RFileMeta.as("m")

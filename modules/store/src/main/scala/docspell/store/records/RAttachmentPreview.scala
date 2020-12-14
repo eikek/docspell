@@ -60,19 +60,6 @@ object RAttachmentPreview {
       attachId: Ident,
       collective: Ident
   ): ConnectionIO[Option[RAttachmentPreview]] = {
-//    val bId   = RAttachment.Columns.id.prefix("b")
-//    val aId   = Columns.id.prefix("a")
-//    val bItem = RAttachment.Columns.itemId.prefix("b")
-//    val iId   = RItem.Columns.id.prefix("i")
-//    val iColl = RItem.Columns.cid.prefix("i")
-//
-//    val from = table ++ fr"a INNER JOIN" ++
-//      RAttachment.table ++ fr"b ON" ++ aId.is(bId) ++
-//      fr"INNER JOIN" ++ RItem.table ++ fr"i ON" ++ bItem.is(iId)
-//
-//    val where = and(aId.is(attachId), bId.is(attachId), iColl.is(collective))
-//
-//    selectSimple(all.map(_.prefix("a")), from, where).query[RAttachmentPreview].option
     val b = RAttachment.as("b")
     val a = RAttachmentPreview.as("a")
     val i = RItem.as("i")
@@ -87,14 +74,6 @@ object RAttachmentPreview {
   }
 
   def findByItem(itemId: Ident): ConnectionIO[Vector[RAttachmentPreview]] = {
-//    val sId   = Columns.id.prefix("s")
-//    val aId   = RAttachment.Columns.id.prefix("a")
-//    val aItem = RAttachment.Columns.itemId.prefix("a")
-//
-//    val from = table ++ fr"s INNER JOIN" ++ RAttachment.table ++ fr"a ON" ++ sId.is(aId)
-//    selectSimple(all.map(_.prefix("s")), from, aItem.is(itemId))
-//      .query[RAttachmentPreview]
-//      .to[Vector]
     val s = RAttachmentPreview.as("s")
     val a = RAttachment.as("a")
     Select(
@@ -109,25 +88,6 @@ object RAttachmentPreview {
       itemId: Ident,
       coll: Ident
   ): ConnectionIO[Option[RAttachmentPreview]] = {
-//    val sId   = Columns.id.prefix("s")
-//    val aId   = RAttachment.Columns.id.prefix("a")
-//    val aItem = RAttachment.Columns.itemId.prefix("a")
-//    val aPos  = RAttachment.Columns.position.prefix("a")
-//    val iId   = RItem.Columns.id.prefix("i")
-//    val iColl = RItem.Columns.cid.prefix("i")
-//
-//    val from =
-//      table ++ fr"s INNER JOIN" ++ RAttachment.table ++ fr"a ON" ++ sId.is(aId) ++
-//        fr"INNER JOIN" ++ RItem.table ++ fr"i ON" ++ iId.is(aItem)
-//
-//    selectSimple(
-//      all.map(_.prefix("s")) ++ List(aPos),
-//      from,
-//      and(aItem.is(itemId), iColl.is(coll))
-//    )
-//      .query[(RAttachmentPreview, Int)]
-//      .to[Vector]
-//      .map(_.sortBy(_._2).headOption.map(_._1))
     val s = RAttachmentPreview.as("s")
     val a = RAttachment.as("a")
     val i = RItem.as("i")
@@ -149,22 +109,6 @@ object RAttachmentPreview {
   ): ConnectionIO[Vector[(RAttachmentPreview, FileMeta)]] = {
     import bitpeace.sql._
 
-//    val aId       = Columns.id.prefix("a")
-//    val afileMeta = fileId.prefix("a")
-//    val bPos      = RAttachment.Columns.position.prefix("b")
-//    val bId       = RAttachment.Columns.id.prefix("b")
-//    val bItem     = RAttachment.Columns.itemId.prefix("b")
-//    val mId       = RFileMeta.Columns.id.prefix("m")
-//
-//    val cols = all.map(_.prefix("a")) ++ RFileMeta.Columns.all.map(_.prefix("m"))
-//    val from = table ++ fr"a INNER JOIN" ++
-//      RFileMeta.table ++ fr"m ON" ++ afileMeta.is(mId) ++ fr"INNER JOIN" ++
-//      RAttachment.table ++ fr"b ON" ++ aId.is(bId)
-//    val where = bItem.is(id)
-//
-//    (selectSimple(cols, from, where) ++ orderBy(bPos.asc))
-//      .query[(RAttachmentPreview, FileMeta)]
-//      .to[Vector]
     val a = RAttachmentPreview.as("a")
     val b = RAttachment.as("b")
     val m = RFileMeta.as("m")
@@ -177,5 +121,4 @@ object RAttachmentPreview {
       b.itemId === id
     ).orderBy(b.position.asc).build.query[(RAttachmentPreview, FileMeta)].to[Vector]
   }
-
 }

@@ -74,19 +74,6 @@ object RAttachmentArchive {
       attachId: Ident,
       collective: Ident
   ): ConnectionIO[Option[RAttachmentArchive]] = {
-//    val bId   = RAttachment.Columns.id.prefix("b")
-//    val aId   = Columns.id.prefix("a")
-//    val bItem = RAttachment.Columns.itemId.prefix("b")
-//    val iId   = RItem.Columns.id.prefix("i")
-//    val iColl = RItem.Columns.cid.prefix("i")
-//
-//    val from = table ++ fr"a INNER JOIN" ++
-//      RAttachment.table ++ fr"b ON" ++ aId.is(bId) ++
-//      fr"INNER JOIN" ++ RItem.table ++ fr"i ON" ++ bItem.is(iId)
-//
-//    val where = and(aId.is(attachId), bId.is(attachId), iColl.is(collective))
-//
-//    selectSimple(all.map(_.prefix("a")), from, where).query[RAttachmentArchive].option
     val b = RAttachment.as("b")
     val a = RAttachmentArchive.as("a")
     val i = RItem.as("i")
@@ -104,20 +91,6 @@ object RAttachmentArchive {
       messageIds: NonEmptyList[String],
       collective: Ident
   ): ConnectionIO[Vector[RAttachmentArchive]] = {
-//    val bId    = RAttachment.Columns.id.prefix("b")
-//    val bItem  = RAttachment.Columns.itemId.prefix("b")
-//    val aMsgId = Columns.messageId.prefix("a")
-//    val aId    = Columns.id.prefix("a")
-//    val iId    = RItem.Columns.id.prefix("i")
-//    val iColl  = RItem.Columns.cid.prefix("i")
-//
-//    val from = table ++ fr"a INNER JOIN" ++
-//      RAttachment.table ++ fr"b ON" ++ aId.is(bId) ++
-//      fr"INNER JOIN" ++ RItem.table ++ fr"i ON" ++ bItem.is(iId)
-//
-//    val where = and(aMsgId.isIn(messageIds), iColl.is(collective))
-//
-//    selectSimple(all.map(_.prefix("a")), from, where).query[RAttachmentArchive].to[Vector]
     val b = RAttachment.as("b")
     val a = RAttachmentArchive.as("a")
     val i = RItem.as("i")
@@ -135,24 +108,6 @@ object RAttachmentArchive {
   ): ConnectionIO[Vector[(RAttachmentArchive, FileMeta)]] = {
     import bitpeace.sql._
 
-//    val aId       = Columns.id.prefix("a")
-//    val afileMeta = fileId.prefix("a")
-//    val bPos      = RAttachment.Columns.position.prefix("b")
-//    val bId       = RAttachment.Columns.id.prefix("b")
-//    val bItem     = RAttachment.Columns.itemId.prefix("b")
-//    val mId       = RFileMeta.as("m").id.column
-//
-//    val cols = all.map(_.prefix("a")) ++ RFileMeta.as("m").all.map(_.column).toList
-//    val from = table ++ fr"a INNER JOIN" ++
-//      Fragment.const(RFileMeta.T.tableName) ++ fr"m ON" ++ afileMeta.is(
-//        mId
-//      ) ++ fr"INNER JOIN" ++
-//      RAttachment.table ++ fr"b ON" ++ aId.is(bId)
-//    val where = bItem.is(id)
-//
-//    (selectSimple(cols, from, where) ++ orderBy(bPos.asc))
-//      .query[(RAttachmentArchive, FileMeta)]
-//      .to[Vector]
     val a = RAttachmentArchive.as("a")
     val b = RAttachment.as("b")
     val m = RFileMeta.as("m")
@@ -170,14 +125,10 @@ object RAttachmentArchive {
     * no archive for the given attachment.
     */
   def countEntries(attachId: Ident): ConnectionIO[Int] =
-//    val qFileId = selectSimple(Seq(fileId), table, id.is(attachId))
-//    val q       = selectCount(id, table, fileId.isSubquery(qFileId))
-//    q.query[Int].unique
     Select(
       count(T.id).s,
       from(T),
       T.fileId.in(Select(T.fileId.s, from(T), T.id === attachId))
     ).build.query[Int].unique
-  //TODO this looks strange, can be simplified
 
 }
