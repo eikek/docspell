@@ -108,48 +108,6 @@ object RItem {
   def as(alias: String): Table =
     Table(Some(alias))
 
-  val table = fr"item"
-  object Columns {
-    import docspell.store.impl._
-
-    val id            = Column("itemid")
-    val cid           = Column("cid")
-    val name          = Column("name")
-    val itemDate      = Column("itemdate")
-    val source        = Column("source")
-    val incoming      = Column("incoming")
-    val state         = Column("state")
-    val corrOrg       = Column("corrorg")
-    val corrPerson    = Column("corrperson")
-    val concPerson    = Column("concperson")
-    val concEquipment = Column("concequipment")
-    val inReplyTo     = Column("inreplyto")
-    val dueDate       = Column("duedate")
-    val created       = Column("created")
-    val updated       = Column("updated")
-    val notes         = Column("notes")
-    val folder        = Column("folder_id")
-    val all = List(
-      id,
-      cid,
-      name,
-      itemDate,
-      source,
-      incoming,
-      state,
-      corrOrg,
-      corrPerson,
-      concPerson,
-      concEquipment,
-      inReplyTo,
-      dueDate,
-      created,
-      updated,
-      notes,
-      folder
-    )
-  }
-
   private val currentTime =
     Timestamp.current[ConnectionIO]
 

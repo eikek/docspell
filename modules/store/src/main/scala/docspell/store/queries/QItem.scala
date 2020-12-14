@@ -10,6 +10,7 @@ import fs2.Stream
 import docspell.common.syntax.all._
 import docspell.common.{IdRef, _}
 import docspell.store.Store
+import docspell.store.qb.DSL._
 import docspell.store.qb._
 import docspell.store.records._
 
@@ -20,7 +21,6 @@ import org.log4s._
 
 object QItem {
   private[this] val logger = getLogger
-  import docspell.store.qb.DSL._
 
   def moveAttachmentBefore(
       itemId: Ident,
@@ -125,7 +125,7 @@ object QItem {
         )
       ]
       .option
-    logger.info(s"Find item query: $cq")
+    logger.trace(s"Find item query: $cq")
     val attachs      = RAttachment.findByItemWithMeta(id)
     val sources      = RAttachmentSource.findByItemWithMeta(id)
     val archives     = RAttachmentArchive.findByItemWithMeta(id)
@@ -382,7 +382,7 @@ object QItem {
       .changeWhere(cond)
       .limit(batch)
       .build
-    logger.info(s"List $batch items: $sql")
+    logger.trace(s"List $batch items: $sql")
     sql.query[ListItem].stream
   }
 
@@ -423,13 +423,7 @@ object QItem {
         .orderBy(Tids.weight.desc)
         .build
 
-//        Seq(fr"tids.weight"),
-//        ("tids(item_id, weight)", fr"(VALUES" ++ values ++ fr")")
-//      ) ++
-//        fr"INNER JOIN tids ON" ++ IC.id.prefix("i").f ++ fr" = tids.item_id" ++
-//        fr"ORDER BY tids.weight DESC"
-
-      logger.info(s"fts query: $from")
+      logger.trace(s"fts query: $from")
       from.query[ListItem].stream
     }
 

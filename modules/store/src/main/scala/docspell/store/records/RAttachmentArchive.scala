@@ -38,19 +38,6 @@ object RAttachmentArchive {
   def as(alias: String): Table =
     Table(Some(alias))
 
-  val table = fr"attachment_archive"
-  object Columns {
-    import docspell.store.impl._
-
-    val id        = Column("id")
-    val fileId    = Column("file_id")
-    val name      = Column("filename")
-    val messageId = Column("message_id")
-    val created   = Column("created")
-
-    val all = List(id, fileId, name, messageId, created)
-  }
-
   def of(ra: RAttachment, mId: Option[String]): RAttachmentArchive =
     RAttachmentArchive(ra.id, ra.fileId, ra.name, mId, ra.created)
 

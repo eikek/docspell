@@ -38,20 +38,6 @@ object RAttachment {
   def as(alias: String): Table =
     Table(Some(alias))
 
-  val table = fr"attachment"
-
-  object Columns {
-    import docspell.store.impl._
-
-    val id       = Column("attachid")
-    val itemId   = Column("itemid")
-    val fileId   = Column("filemetaid")
-    val position = Column("position")
-    val created  = Column("created")
-    val name     = Column("name")
-    val all      = List(id, itemId, fileId, position, created, name)
-  }
-
   def insert(v: RAttachment): ConnectionIO[Int] =
     DML.insert(
       T,

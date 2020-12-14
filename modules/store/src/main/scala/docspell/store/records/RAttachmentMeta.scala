@@ -45,18 +45,6 @@ object RAttachmentMeta {
   def as(alias: String): Table =
     Table(Some(alias))
 
-  val table = fr"attachmentmeta"
-  object Columns {
-    import docspell.store.impl._
-
-    val id        = Column("attachid")
-    val content   = Column("content")
-    val nerlabels = Column("nerlabels")
-    val proposals = Column("itemproposals")
-    val pages     = Column("page_count")
-    val all       = List(id, content, nerlabels, proposals, pages)
-  }
-
   def insert(v: RAttachmentMeta): ConnectionIO[Int] =
     DML.insert(
       T,

@@ -36,17 +36,6 @@ object RAttachmentPreview {
   def as(alias: String): Table =
     Table(Some(alias))
 
-  val table = fr"attachment_preview"
-  object Columns {
-    import docspell.store.impl._
-    val id      = Column("id")
-    val fileId  = Column("file_id")
-    val name    = Column("filename")
-    val created = Column("created")
-
-    val all = List(id, fileId, name, created)
-  }
-
   def insert(v: RAttachmentPreview): ConnectionIO[Int] =
     DML.insert(T, T.all, fr"${v.id},${v.fileId},${v.name},${v.created}")
 
