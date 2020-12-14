@@ -54,6 +54,10 @@ let
     auth = {
       server-secret = "hex:caffee";
       session-valid = "5 minutes";
+      remember-me = {
+        enabled = true;
+        valid = "30 days";
+      };
     };
     backend = {
       mail-debug = false;
@@ -195,6 +199,24 @@ in {
                 How long an authentication token is valid. The web application
                 will get a new one periodically.
               '';
+            };
+            remember-me = mkOption {
+              type = types.submodule({
+                options = {
+                  enabled = mkOption {
+                    type = types.bool;
+                    default = defaults.auth.remember-me.enabled;
+                    description = "Whether to enable remember me.";
+                  };
+                  valid = mkOption {
+                    type = types.str;
+                    default = defaults.auth.remember-me.valid;
+                    description = "The time a remember-me token is valid.";
+                  };
+                };
+              });
+              default = defaults.auth.remember-me;
+              description = "Settings for Remember-Me";
             };
           };
         });

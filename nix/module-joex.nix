@@ -54,6 +54,10 @@ let
         older-than = "30 days";
         delete-batch = 100;
       };
+      cleanup-remember-me = {
+        enabled = true;
+        older-than = "30 days";
+      };
     };
     extraction = {
       pdf = {
@@ -516,6 +520,24 @@ in {
                 is only interesting for some period of time. The processing logs
                 of old files can be removed eventually.
               '';
+            };
+            cleanup-remember-me = mkOption {
+              type = types.submodule({
+                options = {
+                  enabled = mkOption {
+                    type = types.bool;
+                    default = defaults.house-keeping.cleanup-remember-me.enabled;
+                    description = "Whether this task is enabled.";
+                  };
+                  older-than = mkOption {
+                    type = types.str;
+                    default = defaults.house-keeping.cleanup-remember-me.older-than;
+                    description = "The miminum age of remember me tokens to delete.";
+                  };
+                };
+              });
+              default = defaults.house-keeping.cleanup-remember-me;
+              description = "Settings for cleaning up remember me tokens.";
             };
           };
         });
