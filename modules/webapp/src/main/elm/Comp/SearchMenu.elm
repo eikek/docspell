@@ -23,6 +23,7 @@ import Api.Model.IdName exposing (IdName)
 import Api.Model.ItemSearch exposing (ItemSearch)
 import Api.Model.PersonList exposing (PersonList)
 import Api.Model.ReferenceList exposing (ReferenceList)
+import Api.Model.SearchStats exposing (SearchStats)
 import Api.Model.TagCloud exposing (TagCloud)
 import Comp.CustomFieldMultiInput
 import Comp.DatePicker
@@ -338,7 +339,6 @@ type Msg
     | FromDueDateMsg Comp.DatePicker.Msg
     | UntilDueDateMsg Comp.DatePicker.Msg
     | ToggleInbox
-    | GetTagsResp (Result Http.Error TagCloud)
     | GetOrgResp (Result Http.Error ReferenceList)
     | GetEquipResp (Result Http.Error EquipmentList)
     | GetPersonResp (Result Http.Error PersonList)
@@ -359,6 +359,7 @@ type Msg
     | SetTag String
     | CustomFieldMsg Comp.CustomFieldMultiInput.Msg
     | SetSource String
+    | GetStatsResp (Result Http.Error SearchStats)
 
 
 type alias NextState =
@@ -425,7 +426,7 @@ updateDrop ddm flags settings msg model =
             { model = mdp
             , cmd =
                 Cmd.batch
-                    [ Api.getTagCloud flags GetTagsResp
+                    [ Api.itemSearchStats flags (getItemSearch model) GetStatsResp
                     , Api.getOrgLight flags GetOrgResp
                     , Api.getEquipments flags "" GetEquipResp
                     , Api.getPersons flags "" GetPersonResp
@@ -475,12 +476,12 @@ updateDrop ddm flags settings msg model =
         SetTag id ->
             resetAndSet (TagSelectMsg (Comp.TagSelect.toggleTag id))
 
-        GetTagsResp (Ok tags) ->
+        GetStatsResp (Ok stats) ->
             let
                 selectModel =
-                    List.sortBy .count tags.items
+                    List.sortBy .count stats.tagCloud.items
                         |> List.reverse
-                        |> Comp.TagSelect.init model.tagSelection
+                        |> Comp.TagSelect.modify model.tagSelection model.tagSelectModel
 
                 model_ =
                     { model | tagSelectModel = selectModel }
@@ -491,7 +492,7 @@ updateDrop ddm flags settings msg model =
             , dragDrop = DD.DragDropData ddm Nothing
             }
 
-        GetTagsResp (Err _) ->
+        GetStatsResp (Err _) ->
             { model = model
             , cmd = Cmd.none
             , stateChange = False

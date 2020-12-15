@@ -67,6 +67,7 @@ module Api exposing
     , itemDetail
     , itemIndexSearch
     , itemSearch
+    , itemSearchStats
     , login
     , loginSession
     , logout
@@ -184,6 +185,7 @@ import Api.Model.ReferenceList exposing (ReferenceList)
 import Api.Model.Registration exposing (Registration)
 import Api.Model.ScanMailboxSettings exposing (ScanMailboxSettings)
 import Api.Model.ScanMailboxSettingsList exposing (ScanMailboxSettingsList)
+import Api.Model.SearchStats exposing (SearchStats)
 import Api.Model.SentMails exposing (SentMails)
 import Api.Model.SimpleMail exposing (SimpleMail)
 import Api.Model.SourceAndTags exposing (SourceAndTags)
@@ -1699,6 +1701,16 @@ itemSearch flags search receive =
         , account = getAccount flags
         , body = Http.jsonBody (Api.Model.ItemSearch.encode search)
         , expect = Http.expectJson receive Api.Model.ItemLightList.decoder
+        }
+
+
+itemSearchStats : Flags -> ItemSearch -> (Result Http.Error SearchStats -> msg) -> Cmd msg
+itemSearchStats flags search receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/item/searchStats"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.ItemSearch.encode search)
+        , expect = Http.expectJson receive Api.Model.SearchStats.decoder
         }
 
 

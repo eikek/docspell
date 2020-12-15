@@ -550,6 +550,13 @@ update mId key flags settings msg model =
             in
             update mId key flags settings (DoSearch model.lastSearchType) model_
 
+        SearchStatsResp result ->
+            let
+                lm =
+                    SearchMenuMsg (Comp.SearchMenu.GetStatsResp result)
+            in
+            update mId key flags settings lm model
+
 
 
 --- Helpers
