@@ -1375,6 +1375,27 @@ paths:
               schema:
                 $ref: "#/components/schemas/ItemLightList"
 
+  /sec/item/searchStats:
+    post:
+      tags: [ Item ]
+      summary: Get basic statistics about the data of a search.
+      description: |
+        Takes a search query and returns a summary about the results.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ItemSearch"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SearchStats"
+
   /sec/item/{id}:
     get:
       tags: [ Item ]
@@ -4146,6 +4167,23 @@ components:
         key:
           type: string
           format: ident
+    SearchStats:
+      description: |
+        A summary of search results.
+      required:
+        - count
+        - tagCloud
+        - fieldStats
+      properties:
+        count:
+          type: integer
+          format: int32
+        tagCloud:
+          $ref: "#/components/schemas/TagCloud"
+        fieldStats:
+          type: array
+          items:
+            $ref: "#/components/schemas/FieldStats"
     ItemInsights:
       description: |
         Information about the items in docspell.
@@ -4166,6 +4204,51 @@ components:
           format: int64
         tagCloud:
           $ref: "#/components/schemas/TagCloud"
+    FieldStats:
+      description: |
+        Basic statistics about a custom field.
+      required:
+        - id
+        - name
+        - ftype
+        - count
+        - avg
+        - sum
+        - max
+        - min
+      properties:
+        id:
+          type: string
+          format: ident
+        name:
+          type: string
+          format: ident
+        label:
+          type: string
+        ftype:
+          type: string
+          format: customfieldtype
+          enum:
+            - text
+            - numeric
+            - date
+            - bool
+            - money
+        count:
+          type: integer
+          format: int32
+        sum:
+          type: number
+          format: double
+        avg:
+          type: number
+          format: double
+        max:
+          type: number
+          format: double
+        min:
+          type: number
+          format: double
     TagCloud:
       description: |
         A tag "cloud"

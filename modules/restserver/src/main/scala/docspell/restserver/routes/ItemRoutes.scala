@@ -143,6 +143,14 @@ object ItemRoutes {
           }
         } yield resp
 
+      case req @ POST -> Root / "searchStats" =>
+        for {
+          mask <- req.as[ItemSearch]
+          query = Conversions.mkQuery(mask, user.account)
+          stats <- backend.itemSearch.findItemsSummary(query)
+          resp  <- Ok(Conversions.mkSearchStats(stats))
+        } yield resp
+
       case GET -> Root / Ident(id) =>
         for {
           item <- backend.itemSearch.findItem(id, user.account.collective)

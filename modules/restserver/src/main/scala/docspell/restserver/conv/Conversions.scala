@@ -27,6 +27,22 @@ import org.log4s.Logger
 
 trait Conversions {
 
+  def mkSearchStats(sum: OItemSearch.SearchSummary): SearchStats =
+    SearchStats(sum.count, mkTagCloud(sum.tags), sum.fields.map(mkFieldStats))
+
+  def mkFieldStats(fs: docspell.store.queries.FieldStats): FieldStats =
+    FieldStats(
+      fs.field.id,
+      fs.field.name,
+      fs.field.label,
+      fs.field.ftype,
+      fs.count,
+      fs.sum.doubleValue,
+      fs.avg.doubleValue,
+      fs.max.doubleValue,
+      fs.min.doubleValue
+    )
+
   // insights
   def mkItemInsights(d: InsightData): ItemInsights =
     ItemInsights(
