@@ -66,8 +66,8 @@ trait OCollective[F[_]] {
 
 object OCollective {
 
-  type TagCount = QCollective.TagCount
-  val TagCount = QCollective.TagCount
+  type TagCount = docspell.store.queries.TagCount
+  val TagCount = docspell.store.queries.TagCount
 
   type InsightData = QCollective.InsightData
   val insightData = QCollective.InsightData

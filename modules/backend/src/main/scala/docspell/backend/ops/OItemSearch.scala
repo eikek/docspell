@@ -24,6 +24,8 @@ trait OItemSearch[F[_]] {
       maxNoteLen: Int
   )(q: Query, batch: Batch): F[Vector[ListItemWithTags]]
 
+  def findItemsSummary(q: Query): F[SearchSummary]
+
   def findAttachment(id: Ident, collective: Ident): F[Option[AttachmentData[F]]]
 
   def findAttachmentSource(
@@ -52,6 +54,9 @@ trait OItemSearch[F[_]] {
 }
 
 object OItemSearch {
+
+  type SearchSummary = queries.SearchSummary
+  val SearchSummary = queries.SearchSummary
 
   type CustomValue = queries.CustomValue
   val CustomValue = queries.CustomValue
@@ -138,6 +143,12 @@ object OItemSearch {
           .compile
           .toVector
       }
+
+      def findItemsSummary(q: Query): F[SearchSummary] =
+        for {
+          tags  <- store.transact(QItem.searchTagSummary(q))
+          count <- store.transact(QItem.searchCountSummary(q))
+        } yield SearchSummary(count, tags)
 
       def findAttachment(id: Ident, collective: Ident): F[Option[AttachmentData[F]]] =
         store

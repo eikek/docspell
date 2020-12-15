@@ -234,6 +234,30 @@ object QItem {
     sql.query[ListItem].stream
   }
 
+  def searchTagSummary(q: Query): ConnectionIO[List[TagCount]] = {
+    val tagFrom =
+      from(ti)
+        .innerJoin(tag, tag.tid === ti.tagId)
+        .innerJoin(i, i.id === ti.itemId)
+
+    findItemsBase(q, 0)
+      .withSelect(select(tag.all).append(count(i.id).as("num")))
+      .changeFrom(_.prepend(tagFrom))
+      .changeWhere(c => c && queryCondition(q))
+      .groupBy(tag.tid)
+      .build
+      .query[TagCount]
+      .to[List]
+  }
+
+  def searchCountSummary(q: Query): ConnectionIO[Int] =
+    findItemsBase(q, 0)
+      .withSelect(Nel.of(count(i.id).as("num")))
+      .changeWhere(c => c && queryCondition(q))
+      .build
+      .query[Int]
+      .unique
+
   def findSelectedItems(
       q: Query,
       maxNoteLen: Int,

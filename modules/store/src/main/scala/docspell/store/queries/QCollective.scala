@@ -33,8 +33,6 @@ object QCollective {
     } yield Names(orgs.map(_.name), pers.map(_.name), equp.map(_.name)))
       .getOrElse(Names.empty)
 
-  case class TagCount(tag: RTag, count: Int)
-
   case class InsightData(
       incoming: Int,
       outgoing: Int,
