@@ -170,17 +170,17 @@ object Select {
 
   }
 
-  case class WithCte(cte: CteBind, ctes: Vector[CteBind], query: Select) extends Select {
+  case class WithCte(cte: CteBind, ctes: Vector[CteBind], q: Select) extends Select {
     def appendSelect(e: SelectExpr): WithCte =
-      copy(query = query.appendSelect(e))
+      copy(q = q.appendSelect(e))
 
     def changeFrom(f: FromExpr => FromExpr): WithCte =
-      copy(query = query.changeFrom(f))
+      copy(q = q.changeFrom(f))
 
     def changeWhere(f: Condition => Condition): WithCte =
-      copy(query = query.changeWhere(f))
+      copy(q = q.changeWhere(f))
 
     def orderBy(ob: OrderBy, obs: OrderBy*): WithCte =
-      copy(query = query.orderBy(ob, obs: _*))
+      copy(q = q.orderBy(ob, obs: _*))
   }
 }

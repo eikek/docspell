@@ -164,7 +164,7 @@ object QItem {
             i.cid === q.account.collective,
             GroupBy(a.itemId)
           ),
-          Attachs.aliasName, //alias, todo improve dsl
+          Attachs.aliasName,
           Attachs.itemId === i.id
         )
         .leftJoin(pers0, pers0.pid === i.corrPerson && pers0.cid === coll)
@@ -189,46 +189,45 @@ object QItem {
     }
   }
 
+  def queryCondition(q: Query): Condition =
+    Condition.unit &&?
+      q.direction.map(d => i.incoming === d) &&?
+      q.name.map(n => i.name.like(QueryWildcard.lower(n))) &&?
+      q.allNames
+        .map(QueryWildcard.lower)
+        .map(n =>
+          org.name.like(n) ||
+            pers0.name.like(n) ||
+            pers1.name.like(n) ||
+            equip.name.like(n) ||
+            i.name.like(n) ||
+            i.notes.like(n)
+        ) &&?
+      q.corrPerson.map(p => pers0.pid === p) &&?
+      q.corrOrg.map(o => org.oid === o) &&?
+      q.concPerson.map(p => pers1.pid === p) &&?
+      q.concEquip.map(e => equip.eid === e) &&?
+      q.folder.map(fid => f.id === fid) &&?
+      q.dateFrom.map(d => coalesce(i.itemDate.s, i.created.s) >= d) &&?
+      q.dateTo.map(d => coalesce(i.itemDate.s, i.created.s) <= d) &&?
+      q.dueDateFrom.map(d => i.dueDate > d) &&?
+      q.dueDateTo.map(d => i.dueDate < d) &&?
+      q.source.map(n => i.source.like(QueryWildcard.lower(n))) &&?
+      q.itemIds.flatMap(s => Nel.fromList(s.toList)).map(nel => i.id.in(nel)) &&?
+      TagItemName
+        .itemsWithAllTagAndCategory(q.tagsInclude, q.tagCategoryIncl)
+        .map(subsel => i.id.in(subsel)) &&?
+      TagItemName
+        .itemsWithEitherTagOrCategory(q.tagsExclude, q.tagCategoryExcl)
+        .map(subsel => i.id.notIn(subsel))
+
   def findItems(
       q: Query,
       maxNoteLen: Int,
       batch: Batch
   ): Stream[ConnectionIO, ListItem] = {
-    val cond: Condition => Condition =
-      c =>
-        c &&?
-          q.direction.map(d => i.incoming === d) &&?
-          q.name.map(n => i.name.like(QueryWildcard.lower(n))) &&?
-          q.allNames
-            .map(QueryWildcard.lower)
-            .map(n =>
-              org.name.like(n) ||
-                pers0.name.like(n) ||
-                pers1.name.like(n) ||
-                equip.name.like(n) ||
-                i.name.like(n) ||
-                i.notes.like(n)
-            ) &&?
-          q.corrPerson.map(p => pers0.pid === p) &&?
-          q.corrOrg.map(o => org.oid === o) &&?
-          q.concPerson.map(p => pers1.pid === p) &&?
-          q.concEquip.map(e => equip.eid === e) &&?
-          q.folder.map(fid => f.id === fid) &&?
-          q.dateFrom.map(d => coalesce(i.itemDate.s, i.created.s) >= d) &&?
-          q.dateTo.map(d => coalesce(i.itemDate.s, i.created.s) <= d) &&?
-          q.dueDateFrom.map(d => i.dueDate > d) &&?
-          q.dueDateTo.map(d => i.dueDate < d) &&?
-          q.source.map(n => i.source.like(QueryWildcard.lower(n))) &&?
-          q.itemIds.flatMap(s => Nel.fromList(s.toList)).map(nel => i.id.in(nel)) &&?
-          TagItemName
-            .itemsWithAllTagAndCategory(q.tagsInclude, q.tagCategoryIncl)
-            .map(subsel => i.id.in(subsel)) &&?
-          TagItemName
-            .itemsWithEitherTagOrCategory(q.tagsExclude, q.tagCategoryExcl)
-            .map(subsel => i.id.notIn(subsel))
-
     val sql = findItemsBase(q, maxNoteLen)
-      .changeWhere(cond)
+      .changeWhere(c => c && queryCondition(q))
       .limit(batch)
       .build
     logger.trace(s"List $batch items: $sql")
