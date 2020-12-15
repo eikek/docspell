@@ -15,6 +15,16 @@ sealed trait FromExpr {
 
   def leftJoin(sel: Select, alias: String, on: Condition): Joined =
     leftJoin(Relation.SubSelect(sel, alias), on)
+
+  /** Prepends the given from expression to existing joins. It will
+    * replace the current [[FromExpr.From]] value.
+    *
+    * If this is a [[FromExpr.From]], it is replaced by the given
+    * expression. If this is a [[FromExpr.Joined]] then the given
+    * expression replaces the current `From` and the joins are
+    * prepended to the existing joins.
+    */
+  def prepend(fe: FromExpr): FromExpr
 }
 
 object FromExpr {
@@ -25,6 +35,9 @@ object FromExpr {
 
     def leftJoin(other: Relation, on: Condition): Joined =
       Joined(this, Vector(Join.LeftJoin(other, on)))
+
+    def prepend(fe: FromExpr): FromExpr =
+      fe
   }
 
   object From {
@@ -42,6 +55,13 @@ object FromExpr {
     def leftJoin(other: Relation, on: Condition): Joined =
       Joined(from, joins :+ Join.LeftJoin(other, on))
 
+    def prepend(fe: FromExpr): FromExpr =
+      fe match {
+        case f: From =>
+          Joined(f, joins)
+        case Joined(f, js) =>
+          Joined(f, js ++ joins)
+      }
   }
 
   sealed trait Relation

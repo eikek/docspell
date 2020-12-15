@@ -6,17 +6,31 @@ import docspell.store.qb.impl.SelectBuilder
 
 import doobie._
 
+/** A sql select statement that allows to change certain parts of the query.
+  */
 sealed trait Select {
+
+  /** Builds the sql select statement into a doobie fragment.
+    */
   def build: Fragment =
     SelectBuilder(this)
 
+  /** When using this as a sub-select, an alias is required.
+    */
   def as(alias: String): SelectExpr.SelectQuery =
     SelectExpr.SelectQuery(this, Some(alias))
 
+  /** Adds one or more order-by definitions */
   def orderBy(ob: OrderBy, obs: OrderBy*): Select
 
+  /** Uses the given column for ordering asc */
   def orderBy(c: Column[_]): Select =
     orderBy(OrderBy(SelectExpr.SelectColumn(c, None), OrderBy.OrderType.Asc))
+
+  def groupBy(gb: GroupBy): Select
+
+  def groupBy(c: Column[_]): Select =
+    groupBy(GroupBy(c))
 
   def limit(batch: Batch): Select =
     this match {
@@ -39,9 +53,16 @@ sealed trait Select {
 
   def appendSelect(e: SelectExpr): Select
 
+  def withSelect(e: Nel[SelectExpr]): Select
+
   def changeFrom(f: FromExpr => FromExpr): Select
 
   def changeWhere(f: Condition => Condition): Select
+
+  def where(c: Option[Condition]): Select =
+    where(c.getOrElse(Condition.unit))
+
+  def where(c: Condition): Select
 }
 
 object Select {
@@ -77,20 +98,20 @@ object Select {
       where: Condition,
       groupBy: Option[GroupBy]
   ) extends Select {
-    def group(gb: GroupBy): SimpleSelect =
+    def groupBy(gb: GroupBy): SimpleSelect =
       copy(groupBy = Some(gb))
 
     def distinct: SimpleSelect =
       copy(distinctFlag = true)
-
-    def where(c: Option[Condition]): SimpleSelect =
-      where(c.getOrElse(Condition.unit))
 
     def where(c: Condition): SimpleSelect =
       copy(where = c)
 
     def appendSelect(e: SelectExpr): SimpleSelect =
       copy(projection = projection.append(e))
+
+    def withSelect(es: Nel[SelectExpr]): SimpleSelect =
+      copy(projection = es)
 
     def changeFrom(f: FromExpr => FromExpr): SimpleSelect =
       copy(from = f(from))
@@ -103,8 +124,11 @@ object Select {
   }
 
   case class RawSelect(fragment: Fragment) extends Select {
+    def groupBy(gb: GroupBy): Select =
+      sys.error("RawSelect doesn't support adding group by clause")
+
     def appendSelect(e: SelectExpr): RawSelect =
-      sys.error("RawSelect doesn't support appending select expressions")
+      sys.error("RawSelect doesn't support appending to select list")
 
     def changeFrom(f: FromExpr => FromExpr): Select =
       sys.error("RawSelect doesn't support changing from expression")
@@ -114,9 +138,18 @@ object Select {
 
     def orderBy(ob: OrderBy, obs: OrderBy*): Ordered =
       sys.error("RawSelect doesn't support adding orderBy clause")
+
+    def where(c: Condition): Select =
+      sys.error("RawSelect doesn't support adding where clause")
+
+    def withSelect(es: Nel[SelectExpr]): Select =
+      sys.error("RawSelect doesn't support changing select list")
   }
 
   case class Union(q: Select, qs: Vector[Select]) extends Select {
+    def groupBy(gb: GroupBy): Union =
+      copy(q = q.groupBy(gb))
+
     def appendSelect(e: SelectExpr): Union =
       copy(q = q.appendSelect(e))
 
@@ -128,9 +161,18 @@ object Select {
 
     def orderBy(ob: OrderBy, obs: OrderBy*): Ordered =
       Ordered(this, ob, obs.toVector)
+
+    def where(c: Condition): Union =
+      copy(q = q.where(c))
+
+    def withSelect(es: Nel[SelectExpr]): Union =
+      copy(q = q.withSelect(es))
   }
 
   case class Intersect(q: Select, qs: Vector[Select]) extends Select {
+    def groupBy(gb: GroupBy): Intersect =
+      copy(q = q.groupBy(gb))
+
     def appendSelect(e: SelectExpr): Intersect =
       copy(q = q.appendSelect(e))
 
@@ -142,10 +184,19 @@ object Select {
 
     def orderBy(ob: OrderBy, obs: OrderBy*): Ordered =
       Ordered(this, ob, obs.toVector)
+
+    def where(c: Condition): Intersect =
+      copy(q = q.where(c))
+
+    def withSelect(es: Nel[SelectExpr]): Intersect =
+      copy(q = q.withSelect(es))
   }
 
   case class Ordered(q: Select, orderBy: OrderBy, orderBys: Vector[OrderBy])
       extends Select {
+    def groupBy(gb: GroupBy): Ordered =
+      copy(q = q.groupBy(gb))
+
     def appendSelect(e: SelectExpr): Ordered =
       copy(q = q.appendSelect(e))
     def changeFrom(f: FromExpr => FromExpr): Ordered =
@@ -155,9 +206,18 @@ object Select {
 
     def orderBy(ob: OrderBy, obs: OrderBy*): Ordered =
       Ordered(q, ob, obs.toVector)
+
+    def where(c: Condition): Ordered =
+      copy(q = q.where(c))
+
+    def withSelect(es: Nel[SelectExpr]): Ordered =
+      copy(q = q.withSelect(es))
   }
 
   case class Limit(q: Select, batch: Batch) extends Select {
+    def groupBy(gb: GroupBy): Limit =
+      copy(q = q.groupBy(gb))
+
     def appendSelect(e: SelectExpr): Limit =
       copy(q = q.appendSelect(e))
     def changeFrom(f: FromExpr => FromExpr): Limit =
@@ -168,9 +228,17 @@ object Select {
     def orderBy(ob: OrderBy, obs: OrderBy*): Limit =
       copy(q = q.orderBy(ob, obs: _*))
 
+    def where(c: Condition): Limit =
+      copy(q = q.where(c))
+
+    def withSelect(es: Nel[SelectExpr]): Limit =
+      copy(q = q.withSelect(es))
   }
 
   case class WithCte(cte: CteBind, ctes: Vector[CteBind], q: Select) extends Select {
+    def groupBy(gb: GroupBy): WithCte =
+      copy(q = q.groupBy(gb))
+
     def appendSelect(e: SelectExpr): WithCte =
       copy(q = q.appendSelect(e))
 
@@ -182,5 +250,11 @@ object Select {
 
     def orderBy(ob: OrderBy, obs: OrderBy*): WithCte =
       copy(q = q.orderBy(ob, obs: _*))
+
+    def where(c: Condition): WithCte =
+      copy(q = q.where(c))
+
+    def withSelect(es: Nel[SelectExpr]): WithCte =
+      copy(q = q.withSelect(es))
   }
 }
