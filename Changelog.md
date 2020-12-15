@@ -1,5 +1,16 @@
 # Changelog
 
+## v0.17.1
+
+*Dec 15, 2020*
+
+An unfortunate bug has made it into the previous release that makes
+the webapp near unusable. Therefore this release, containing only the
+fix for #508.
+
+Sorry for the inconvenience!
+
+
 ## v0.17.0
 
 *Dec 14, 2020*
