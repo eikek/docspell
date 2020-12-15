@@ -2,6 +2,7 @@ package docspell.common
 
 import java.time.LocalDate
 
+import cats.data.NonEmptyList
 import cats.implicits._
 
 import io.circe._
@@ -92,7 +93,8 @@ object CustomFieldType {
   def bool: CustomFieldType    = Bool
   def money: CustomFieldType   = Money
 
-  val all: List[CustomFieldType] = List(Text, Numeric, Date, Bool, Money)
+  val all: NonEmptyList[CustomFieldType] =
+    NonEmptyList.of(Text, Numeric, Date, Bool, Money)
 
   def fromString(str: String): Either[String, CustomFieldType] =
     str.toLowerCase match {

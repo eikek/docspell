@@ -145,10 +145,7 @@ object OItemSearch {
       }
 
       def findItemsSummary(q: Query): F[SearchSummary] =
-        for {
-          tags  <- store.transact(QItem.searchTagSummary(q))
-          count <- store.transact(QItem.searchCountSummary(q))
-        } yield SearchSummary(count, tags)
+        store.transact(QItem.searchStats(q))
 
       def findAttachment(id: Ident, collective: Ident): F[Option[AttachmentData[F]]] =
         store

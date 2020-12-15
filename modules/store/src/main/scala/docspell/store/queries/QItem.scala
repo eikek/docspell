@@ -15,7 +15,7 @@ import docspell.store.records._
 
 import doobie.implicits._
 import doobie.{Query => _, _}
-import org.log4s._
+import org.log4s.getLogger
 
 object QItem {
   private[this] val logger = getLogger
@@ -234,13 +234,20 @@ object QItem {
     sql.query[ListItem].stream
   }
 
+  def searchStats(q: Query): ConnectionIO[SearchSummary] =
+    for {
+      count  <- searchCountSummary(q)
+      tags   <- searchTagSummary(q)
+      fields <- searchFieldSummary(q)
+    } yield SearchSummary(count, tags, fields)
+
   def searchTagSummary(q: Query): ConnectionIO[List[TagCount]] = {
     val tagFrom =
       from(ti)
         .innerJoin(tag, tag.tid === ti.tagId)
         .innerJoin(i, i.id === ti.itemId)
 
-    findItemsBase(q, 0)
+    findItemsBase(q, 0).unwrap
       .withSelect(select(tag.all).append(count(i.id).as("num")))
       .changeFrom(_.prepend(tagFrom))
       .changeWhere(c => c && queryCondition(q))
@@ -251,12 +258,69 @@ object QItem {
   }
 
   def searchCountSummary(q: Query): ConnectionIO[Int] =
-    findItemsBase(q, 0)
+    findItemsBase(q, 0).unwrap
       .withSelect(Nel.of(count(i.id).as("num")))
       .changeWhere(c => c && queryCondition(q))
       .build
       .query[Int]
       .unique
+
+  def searchFieldSummary(q: Query): ConnectionIO[List[FieldStats]] = {
+    val fieldJoin =
+      from(cv)
+        .innerJoin(cf, cf.id === cv.field)
+        .innerJoin(i, i.id === cv.itemId)
+
+    val base =
+      findItemsBase(q, 0).unwrap
+        .changeFrom(_.prepend(fieldJoin))
+        .changeWhere(c => c && queryCondition(q))
+        .groupBy(GroupBy(cf.all))
+
+    val basicFields = Nel.of(
+      count(i.id).as("fc"),
+      lit(0).as("favg"),
+      lit(0).as("fsum"),
+      lit(0).as("fmax"),
+      lit(0).as("fmin")
+    )
+    val valueNum = cast(cv.value.s, "decimal").s
+    val numericFields = Nel.of(
+      count(i.id).as("fc"),
+      avg(valueNum).as("favg"),
+      sum(valueNum).as("fsum"),
+      max(valueNum).as("fmax"),
+      min(valueNum).as("fmin")
+    )
+
+    val numTypes = Nel.of(CustomFieldType.money, CustomFieldType.numeric)
+    val query =
+      union(
+        base
+          .withSelect(select(cf.all).concatNel(basicFields))
+          .changeWhere(c => c && cf.ftype.notIn(numTypes)),
+        base
+          .withSelect(select(cf.all).concatNel(numericFields))
+          .changeWhere(c => c && cf.ftype.in(numTypes))
+      ).build.query[FieldStats].to[List]
+
+    val fallback = base
+      .withSelect(select(cf.all).concatNel(basicFields))
+      .build
+      .query[FieldStats]
+      .to[List]
+
+    query.attemptSql.flatMap {
+      case Right(res) => res.pure[ConnectionIO]
+      case Left(ex) =>
+        Logger
+          .log4s[ConnectionIO](logger)
+          .error(ex)(
+            s"Calculating custom field summary failed. You may have invalid custom field values according to their type."
+          ) *>
+          fallback
+    }
+  }
 
   def findSelectedItems(
       q: Query,
