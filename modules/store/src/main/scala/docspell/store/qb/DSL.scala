@@ -68,11 +68,26 @@ trait DSL extends DoobieMeta {
   def countAll: DBFunction =
     DBFunction.CountAll
 
+  def max(e: SelectExpr): DBFunction =
+    DBFunction.Max(e)
+
   def max(c: Column[_]): DBFunction =
-    DBFunction.Max(c)
+    max(c.s)
+
+  def min(expr: SelectExpr): DBFunction =
+    DBFunction.Min(expr)
 
   def min(c: Column[_]): DBFunction =
-    DBFunction.Min(c)
+    min(c.s)
+
+  def avg(expr: SelectExpr): DBFunction =
+    DBFunction.Avg(expr)
+
+  def sum(expr: SelectExpr): DBFunction =
+    DBFunction.Sum(expr)
+
+  def cast(expr: SelectExpr, targetType: String): DBFunction =
+    DBFunction.Cast(expr, targetType)
 
   def coalesce(expr: SelectExpr, more: SelectExpr*): DBFunction.Coalesce =
     DBFunction.Coalesce(expr, more.toVector)

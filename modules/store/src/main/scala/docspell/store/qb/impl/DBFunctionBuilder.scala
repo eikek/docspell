@@ -16,11 +16,11 @@ object DBFunctionBuilder extends CommonBuilder {
       case DBFunction.Count(col) =>
         sql"COUNT(" ++ column(col) ++ fr")"
 
-      case DBFunction.Max(col) =>
-        sql"MAX(" ++ column(col) ++ fr")"
+      case DBFunction.Max(expr) =>
+        sql"MAX(" ++ SelectExprBuilder.build(expr) ++ fr")"
 
-      case DBFunction.Min(col) =>
-        sql"MIN(" ++ column(col) ++ fr")"
+      case DBFunction.Min(expr) =>
+        sql"MIN(" ++ SelectExprBuilder.build(expr) ++ fr")"
 
       case DBFunction.Coalesce(expr, exprs) =>
         val v = exprs.prepended(expr).map(SelectExprBuilder.build)
@@ -37,6 +37,16 @@ object DBFunctionBuilder extends CommonBuilder {
           buildOperator(op) ++
           SelectExprBuilder.build(right)
 
+      case DBFunction.Cast(f, newType) =>
+        sql"CAST(" ++ SelectExprBuilder.build(f) ++
+          fr" AS" ++ Fragment.const(newType) ++
+          sql")"
+
+      case DBFunction.Avg(expr) =>
+        sql"AVG(" ++ SelectExprBuilder.build(expr) ++ fr")"
+
+      case DBFunction.Sum(expr) =>
+        sql"SUM(" ++ SelectExprBuilder.build(expr) ++ fr")"
     }
 
   def buildOperator(op: DBFunction.Operator): Fragment =

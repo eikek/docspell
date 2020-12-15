@@ -29,8 +29,8 @@ sealed trait Select {
 
   def groupBy(gb: GroupBy): Select
 
-  def groupBy(c: Column[_]): Select =
-    groupBy(GroupBy(c))
+  def groupBy(c: Column[_], cs: Column[_]*): Select =
+    groupBy(GroupBy(c, cs: _*))
 
   def limit(batch: Batch): Select =
     this match {
@@ -63,6 +63,8 @@ sealed trait Select {
     where(c.getOrElse(Condition.unit))
 
   def where(c: Condition): Select
+
+  def unwrap: Select.SimpleSelect
 }
 
 object Select {
@@ -98,11 +100,17 @@ object Select {
       where: Condition,
       groupBy: Option[GroupBy]
   ) extends Select {
+    def unwrap: Select.SimpleSelect =
+      this
+
     def groupBy(gb: GroupBy): SimpleSelect =
       copy(groupBy = Some(gb))
 
     def distinct: SimpleSelect =
       copy(distinctFlag = true)
+
+    def noDistinct: SimpleSelect =
+      copy(distinctFlag = false)
 
     def where(c: Condition): SimpleSelect =
       copy(where = c)
@@ -119,11 +127,14 @@ object Select {
     def changeWhere(f: Condition => Condition): SimpleSelect =
       copy(where = f(where))
 
-    def orderBy(ob: OrderBy, obs: OrderBy*): Select =
+    def orderBy(ob: OrderBy, obs: OrderBy*): Ordered =
       Ordered(this, ob, obs.toVector)
   }
 
   case class RawSelect(fragment: Fragment) extends Select {
+    def unwrap: Select.SimpleSelect =
+      sys.error("Cannot unwrap RawSelect")
+
     def groupBy(gb: GroupBy): Select =
       sys.error("RawSelect doesn't support adding group by clause")
 
@@ -147,6 +158,9 @@ object Select {
   }
 
   case class Union(q: Select, qs: Vector[Select]) extends Select {
+    def unwrap: Select.SimpleSelect =
+      q.unwrap
+
     def groupBy(gb: GroupBy): Union =
       copy(q = q.groupBy(gb))
 
@@ -170,6 +184,9 @@ object Select {
   }
 
   case class Intersect(q: Select, qs: Vector[Select]) extends Select {
+    def unwrap: Select.SimpleSelect =
+      q.unwrap
+
     def groupBy(gb: GroupBy): Intersect =
       copy(q = q.groupBy(gb))
 
@@ -194,6 +211,9 @@ object Select {
 
   case class Ordered(q: Select, orderBy: OrderBy, orderBys: Vector[OrderBy])
       extends Select {
+    def unwrap: Select.SimpleSelect =
+      q.unwrap
+
     def groupBy(gb: GroupBy): Ordered =
       copy(q = q.groupBy(gb))
 
@@ -215,6 +235,9 @@ object Select {
   }
 
   case class Limit(q: Select, batch: Batch) extends Select {
+    def unwrap: Select.SimpleSelect =
+      q.unwrap
+
     def groupBy(gb: GroupBy): Limit =
       copy(q = q.groupBy(gb))
 
@@ -236,6 +259,9 @@ object Select {
   }
 
   case class WithCte(cte: CteBind, ctes: Vector[CteBind], q: Select) extends Select {
+    def unwrap: Select.SimpleSelect =
+      q.unwrap
+
     def groupBy(gb: GroupBy): WithCte =
       copy(q = q.groupBy(gb))
 

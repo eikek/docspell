@@ -86,7 +86,7 @@ object QCollective {
         select(t.all).append(count(ti.itemId).s),
         from(ti).innerJoin(t, ti.tagId === t.tid),
         t.cid === coll
-      ).group(GroupBy(t.name, t.tid, t.category))
+      ).groupBy(t.name, t.tid, t.category)
 
     sql.build.query[TagCount].to[List]
   }
