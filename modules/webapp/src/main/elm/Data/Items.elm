@@ -45,7 +45,7 @@ concat l0 l1 =
                     suff =
                         List.drop 1 l1.groups
                 in
-                ItemLightList (prev ++ [ ng ] ++ suff)
+                ItemLightList (prev ++ (ng :: suff))
 
             else
                 ItemLightList (l0.groups ++ l1.groups)

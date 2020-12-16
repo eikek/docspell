@@ -53,6 +53,7 @@ type alias Model =
     , lastSearchType : SearchType
     , dragDropData : DD.DragDropData
     , scrollToCard : Maybe String
+    , searchStats : SearchStats
     }
 
 
@@ -117,6 +118,7 @@ init flags viewMode =
         DD.DragDropData DD.init Nothing
     , scrollToCard = Nothing
     , viewMode = viewMode
+    , searchStats = Api.Model.SearchStats.empty
     }
 
 

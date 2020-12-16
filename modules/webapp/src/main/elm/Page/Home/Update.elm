@@ -554,8 +554,11 @@ update mId key flags settings msg model =
             let
                 lm =
                     SearchMenuMsg (Comp.SearchMenu.GetStatsResp result)
+
+                stats =
+                    Result.withDefault model.searchStats result
             in
-            update mId key flags settings lm model
+            update mId key flags settings lm { model | searchStats = stats }
 
 
 

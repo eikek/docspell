@@ -7,7 +7,9 @@ import Comp.ItemDetail.EditMenu
 import Comp.SearchMenu
 import Comp.YesNoDimmer
 import Data.Flags exposing (Flags)
+import Data.Icons as Icons
 import Data.ItemSelection
+import Data.Money
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -110,20 +112,25 @@ view flags settings model =
                 , ( "item-card-list", True )
                 ]
             ]
-            [ viewBar flags model
-            , case model.viewMode of
-                SelectView svm ->
-                    Html.map DeleteSelectedConfirmMsg
-                        (Comp.YesNoDimmer.view2 (selectAction == DeleteSelected)
-                            deleteAllDimmer
-                            svm.deleteAllConfirm
-                        )
+            (List.concat
+                [ viewBar flags model
+                , case model.viewMode of
+                    SelectView svm ->
+                        [ Html.map DeleteSelectedConfirmMsg
+                            (Comp.YesNoDimmer.view2 (selectAction == DeleteSelected)
+                                deleteAllDimmer
+                                svm.deleteAllConfirm
+                            )
+                        ]
 
-                _ ->
-                    span [ class "invisible" ] []
-            , Html.map ItemCardListMsg
-                (Comp.ItemCardList.view itemViewCfg settings model.itemListModel)
-            ]
+                    _ ->
+                        []
+                , viewStats flags model
+                , [ Html.map ItemCardListMsg
+                        (Comp.ItemCardList.view itemViewCfg settings model.itemListModel)
+                  ]
+                ]
+            )
         , div
             [ classList
                 [ ( "sixteen wide column", True )
@@ -152,6 +159,66 @@ view flags settings model =
                       else
                         text "That's all"
                     ]
+                ]
+            ]
+        ]
+
+
+viewStats : Flags -> Model -> List (Html Msg)
+viewStats _ model =
+    let
+        stats =
+            model.searchStats
+
+        isNumField f =
+            f.sum > 0
+
+        statValues f =
+            tr [ class "center aligned" ]
+                [ td [ class "left aligned" ]
+                    [ div [ class "ui basic label" ]
+                        [ Icons.customFieldTypeIconString "" f.ftype
+                        , text (Maybe.withDefault f.name f.label)
+                        ]
+                    ]
+                , td []
+                    [ f.count |> String.fromInt |> text
+                    ]
+                , td []
+                    [ f.sum |> Data.Money.format |> text
+                    ]
+                , td []
+                    [ f.avg |> Data.Money.format |> text
+                    ]
+                , td []
+                    [ f.min |> Data.Money.format |> text
+                    ]
+                , td []
+                    [ f.max |> Data.Money.format |> text
+                    ]
+                ]
+
+        fields =
+            List.filter isNumField stats.fieldStats
+    in
+    if List.isEmpty fields then
+        []
+
+    else
+        [ div [ class "ui container" ]
+            [ table [ class "ui very basic tiny six column table" ]
+                [ thead []
+                    [ tr [ class "center aligned" ]
+                        [ th [] []
+                        , th [] [ text "Count" ]
+                        , th [] [ text "Sum" ]
+                        , th [] [ text "Avg" ]
+                        , th [] [ text "Min" ]
+                        , th [] [ text "Max" ]
+                        ]
+                    ]
+                , tbody []
+                    (List.map statValues fields)
                 ]
             ]
         ]
@@ -206,17 +273,17 @@ viewLeftMenu flags settings model =
             searchMenu
 
 
-viewBar : Flags -> Model -> Html Msg
+viewBar : Flags -> Model -> List (Html Msg)
 viewBar flags model =
     case model.viewMode of
         SimpleView ->
-            viewSearchBar flags model
+            [ viewSearchBar flags model ]
 
         SearchView ->
-            div [ class "hidden invisible" ] []
+            []
 
         SelectView svm ->
-            viewActionBar flags svm model
+            [ viewActionBar flags svm model ]
 
 
 viewActionBar : Flags -> SelectViewModel -> Model -> Html Msg
