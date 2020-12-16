@@ -19,6 +19,7 @@ import Api.Model.Equipment exposing (Equipment)
 import Api.Model.EquipmentList exposing (EquipmentList)
 import Api.Model.FolderItem exposing (FolderItem)
 import Api.Model.FolderList exposing (FolderList)
+import Api.Model.FolderStats exposing (FolderStats)
 import Api.Model.IdName exposing (IdName)
 import Api.Model.ItemSearch exposing (ItemSearch)
 import Api.Model.PersonList exposing (PersonList)
@@ -60,7 +61,7 @@ type alias Model =
     , concPersonModel : Comp.Dropdown.Model IdName
     , concEquipmentModel : Comp.Dropdown.Model Equipment
     , folderList : Comp.FolderSelect.Model
-    , selectedFolder : Maybe FolderItem
+    , selectedFolder : Maybe FolderStats
     , inboxCheckbox : Bool
     , fromDateModel : DatePicker
     , fromDate : Maybe Int
@@ -350,7 +351,6 @@ type Msg
     | ResetForm
     | KeyUpMsg (Maybe KeyCode)
     | FolderSelectMsg Comp.FolderSelect.Msg
-    | GetFolderResp (Result Http.Error FolderList)
     | SetCorrOrg IdName
     | SetCorrPerson IdName
     | SetConcPerson IdName
@@ -430,7 +430,6 @@ updateDrop ddm flags settings msg model =
                     , Api.getOrgLight flags GetOrgResp
                     , Api.getEquipments flags "" GetEquipResp
                     , Api.getPersons flags "" GetPersonResp
-                    , Api.getFolders flags "" False GetFolderResp
                     , Cmd.map CustomFieldMsg (Comp.CustomFieldMultiInput.initCmd flags)
                     , cdp
                     ]
@@ -484,7 +483,13 @@ updateDrop ddm flags settings msg model =
                         |> Comp.TagSelect.modify model.tagSelection model.tagSelectModel
 
                 model_ =
-                    { model | tagSelectModel = selectModel }
+                    { model
+                        | tagSelectModel = selectModel
+                        , folderList =
+                            Comp.FolderSelect.modify model.selectedFolder
+                                model.folderList
+                                stats.folderStats
+                    }
             in
             { model = model_
             , cmd = Cmd.none
@@ -791,28 +796,6 @@ updateDrop ddm flags settings msg model =
             }
 
         KeyUpMsg _ ->
-            { model = model
-            , cmd = Cmd.none
-            , stateChange = False
-            , dragDrop = DD.DragDropData ddm Nothing
-            }
-
-        GetFolderResp (Ok fs) ->
-            let
-                model_ =
-                    { model
-                        | folderList =
-                            Util.Folder.onlyVisible flags fs.items
-                                |> Comp.FolderSelect.init model.selectedFolder
-                    }
-            in
-            { model = model_
-            , cmd = Cmd.none
-            , stateChange = False
-            , dragDrop = DD.DragDropData ddm Nothing
-            }
-
-        GetFolderResp (Err _) ->
             { model = model
             , cmd = Cmd.none
             , stateChange = False
