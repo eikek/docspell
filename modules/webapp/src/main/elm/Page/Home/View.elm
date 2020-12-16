@@ -201,27 +201,37 @@ viewStats _ model =
         fields =
             List.filter isNumField stats.fieldStats
     in
-    if List.isEmpty fields then
-        []
-
-    else
-        [ div [ class "ui container" ]
-            [ table [ class "ui very basic tiny six column table" ]
-                [ thead []
-                    [ tr [ class "center aligned" ]
-                        [ th [] []
-                        , th [] [ text "Count" ]
-                        , th [] [ text "Sum" ]
-                        , th [] [ text "Avg" ]
-                        , th [] [ text "Min" ]
-                        , th [] [ text "Max" ]
+    [ div [ class "ui container" ]
+        [ div [ class "ui middle aligned grid" ]
+            [ div [ class "three wide center aligned column" ]
+                [ div [ class "ui small statistic" ]
+                    [ div [ class "value" ]
+                        [ String.fromInt stats.count |> text
+                        ]
+                    , div [ class "label" ]
+                        [ text "Results"
                         ]
                     ]
-                , tbody []
-                    (List.map statValues fields)
+                ]
+            , div [ class "thirteen wide column" ]
+                [ table [ class "ui very basic tiny six column table" ]
+                    [ thead []
+                        [ tr [ class "center aligned" ]
+                            [ th [] []
+                            , th [] [ text "Count" ]
+                            , th [] [ text "Sum" ]
+                            , th [] [ text "Avg" ]
+                            , th [] [ text "Min" ]
+                            , th [] [ text "Max" ]
+                            ]
+                        ]
+                    , tbody []
+                        (List.map statValues fields)
+                    ]
                 ]
             ]
         ]
+    ]
 
 
 viewLeftMenu : Flags -> UiSettings -> Model -> List (Html Msg)

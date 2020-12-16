@@ -7,11 +7,14 @@ import fs2.Stream
 import docspell.backend.JobFactory
 import docspell.backend.ops.OItemSearch._
 import docspell.common._
+import docspell.common.syntax.all._
 import docspell.ftsclient._
 import docspell.store.queries.{QFolder, QItem, SelectedItem}
 import docspell.store.queue.JobQueue
 import docspell.store.records.RJob
 import docspell.store.{Store, qb}
+
+import org.log4s.getLogger
 
 trait OFulltext[F[_]] {
 
@@ -34,6 +37,9 @@ trait OFulltext[F[_]] {
       batch: qb.Batch
   ): F[Vector[OFulltext.FtsItemWithTags]]
 
+  def findIndexOnlySummary(account: AccountId, fts: OFulltext.FtsInput): F[SearchSummary]
+  def findItemsSummary(q: Query, fts: OFulltext.FtsInput): F[SearchSummary]
+
   /** Clears the full-text index completely and launches a task that
     * indexes all data.
     */
@@ -46,6 +52,7 @@ trait OFulltext[F[_]] {
 }
 
 object OFulltext {
+  private[this] val logger = getLogger
 
   case class FtsInput(
       query: String,
@@ -77,12 +84,14 @@ object OFulltext {
     Resource.pure[F, OFulltext[F]](new OFulltext[F] {
       def reindexAll: F[Unit] =
         for {
+          _   <- logger.finfo(s"Re-index all.")
           job <- JobFactory.reIndexAll[F]
           _   <- queue.insertIfNew(job) *> joex.notifyAllNodes
         } yield ()
 
       def reindexCollective(account: AccountId): F[Unit] =
         for {
+          _ <- logger.fdebug(s"Re-index collective: $account")
           exist <- store.transact(
             RJob.findNonFinalByTracker(DocspellSystem.migrationTaskTracker)
           )
@@ -107,6 +116,7 @@ object OFulltext {
           FtsQuery.HighlightSetting(ftsQ.highlightPre, ftsQ.highlightPost)
         )
         for {
+          _       <- logger.ftrace(s"Find index only: ${ftsQ.query}/${batch}")
           folders <- store.transact(QFolder.getMemberFolders(account))
           ftsR    <- fts.search(fq.withFolders(folders))
           ftsItems = ftsR.results.groupBy(_.itemId)
@@ -130,6 +140,32 @@ object OFulltext {
             itemsWithTags
               .collect(convertFtsData(ftsR, ftsItems))
               .map({ case (li, fd) => FtsItemWithTags(li, fd) })
+        } yield res
+      }
+
+      def findIndexOnlySummary(
+          account: AccountId,
+          ftsQ: OFulltext.FtsInput
+      ): F[SearchSummary] = {
+        val fq = FtsQuery(
+          ftsQ.query,
+          account.collective,
+          Set.empty,
+          Set.empty,
+          500,
+          0,
+          FtsQuery.HighlightSetting.default
+        )
+
+        for {
+          folder <- store.transact(QFolder.getMemberFolders(account))
+          itemIds <- fts
+            .searchAll(fq.withFolders(folder))
+            .flatMap(r => Stream.emits(r.results.map(_.itemId)))
+            .compile
+            .to(Set)
+          q = Query.empty(account).copy(itemIds = itemIds.some)
+          res <- store.transact(QItem.searchStats(q))
         } yield res
       }
 
@@ -166,6 +202,27 @@ object OFulltext {
           .map({ case (li, fd) => FtsItemWithTags(li, fd) })
           .compile
           .toVector
+
+      def findItemsSummary(q: Query, ftsQ: OFulltext.FtsInput): F[SearchSummary] =
+        for {
+          search <- itemSearch.findItems(0)(q, Batch.all)
+          fq = FtsQuery(
+            ftsQ.query,
+            q.account.collective,
+            search.map(_.id).toSet,
+            Set.empty,
+            500,
+            0,
+            FtsQuery.HighlightSetting.default
+          )
+          items <- fts
+            .searchAll(fq)
+            .flatMap(r => Stream.emits(r.results.map(_.itemId)))
+            .compile
+            .to(Set)
+          qnext = q.copy(itemIds = items.some)
+          res <- store.transact(QItem.searchStats(qnext))
+        } yield res
 
       // Helper
 

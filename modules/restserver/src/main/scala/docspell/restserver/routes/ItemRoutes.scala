@@ -147,8 +147,19 @@ object ItemRoutes {
         for {
           mask <- req.as[ItemSearch]
           query = Conversions.mkQuery(mask, user.account)
-          stats <- backend.itemSearch.findItemsSummary(query)
-          resp  <- Ok(Conversions.mkSearchStats(stats))
+          stats <- mask match {
+            case SearchFulltextOnly(ftq) if cfg.fullTextSearch.enabled =>
+              logger.finfo(s"Make index only summary: $ftq") *>
+                backend.fulltext.findIndexOnlySummary(
+                  user.account,
+                  OFulltext.FtsInput(ftq.query)
+                )
+            case SearchWithFulltext(fq) if cfg.fullTextSearch.enabled =>
+              backend.fulltext.findItemsSummary(query, OFulltext.FtsInput(fq))
+            case _ =>
+              backend.itemSearch.findItemsSummary(query)
+          }
+          resp <- Ok(Conversions.mkSearchStats(stats))
         } yield resp
 
       case GET -> Root / Ident(id) =>
