@@ -4174,6 +4174,7 @@ components:
         - count
         - tagCloud
         - fieldStats
+        - folderStats
       properties:
         count:
           type: integer
@@ -4184,6 +4185,10 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/FieldStats"
+        folderStats:
+          type: array
+          items:
+            $ref: "#/components/schemas/FolderStats"
     ItemInsights:
       description: |
         Information about the items in docspell.
@@ -4204,6 +4209,25 @@ components:
           format: int64
         tagCloud:
           $ref: "#/components/schemas/TagCloud"
+    FolderStats:
+      description: |
+        Count of folder usage.
+      required:
+        - id
+        - name
+        - owner
+        - count
+      properties:
+        id:
+          type: string
+          format: ident
+        name:
+          type: string
+        owner:
+          $ref: "#/components/schemas/IdName"
+        count:
+          type: integer
+          format: int32
     FieldStats:
       description: |
         Basic statistics about a custom field.

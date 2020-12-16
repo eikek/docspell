@@ -236,10 +236,11 @@ object QItem {
 
   def searchStats(q: Query): ConnectionIO[SearchSummary] =
     for {
-      count  <- searchCountSummary(q)
-      tags   <- searchTagSummary(q)
-      fields <- searchFieldSummary(q)
-    } yield SearchSummary(count, tags, fields)
+      count   <- searchCountSummary(q)
+      tags    <- searchTagSummary(q)
+      fields  <- searchFieldSummary(q)
+      folders <- searchFolderSummary(q)
+    } yield SearchSummary(count, tags, fields, folders)
 
   def searchTagSummary(q: Query): ConnectionIO[List[TagCount]] = {
     val tagFrom =
@@ -264,6 +265,18 @@ object QItem {
       .build
       .query[Int]
       .unique
+
+  def searchFolderSummary(q: Query): ConnectionIO[List[FolderCount]] = {
+    val fu = RUser.as("fu")
+    findItemsBase(q, 0).unwrap
+      .withSelect(select(f.id, f.name, f.owner, fu.login).append(count(i.id).as("num")))
+      .changeFrom(_.innerJoin(fu, fu.uid === f.owner))
+      .changeWhere(c => c && queryCondition(q))
+      .groupBy(f.id, f.name, f.owner, fu.login)
+      .build
+      .query[FolderCount]
+      .to[List]
+  }
 
   def searchFieldSummary(q: Query): ConnectionIO[List[FieldStats]] = {
     val fieldJoin =

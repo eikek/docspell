@@ -28,7 +28,15 @@ import org.log4s.Logger
 trait Conversions {
 
   def mkSearchStats(sum: OItemSearch.SearchSummary): SearchStats =
-    SearchStats(sum.count, mkTagCloud(sum.tags), sum.fields.map(mkFieldStats))
+    SearchStats(
+      sum.count,
+      mkTagCloud(sum.tags),
+      sum.fields.map(mkFieldStats),
+      sum.folders.map(mkFolderStats)
+    )
+
+  def mkFolderStats(fs: docspell.store.queries.FolderCount): FolderStats =
+    FolderStats(fs.id, fs.name, mkIdName(fs.owner), fs.count)
 
   def mkFieldStats(fs: docspell.store.queries.FieldStats): FieldStats =
     FieldStats(
