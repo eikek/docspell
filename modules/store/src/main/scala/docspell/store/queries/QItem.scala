@@ -213,7 +213,9 @@ object QItem {
       q.dueDateFrom.map(d => i.dueDate > d) &&?
       q.dueDateTo.map(d => i.dueDate < d) &&?
       q.source.map(n => i.source.like(QueryWildcard.lower(n))) &&?
-      q.itemIds.flatMap(s => Nel.fromList(s.toList)).map(nel => i.id.in(nel)) &&?
+      q.itemIds.map(s =>
+        Nel.fromList(s.toList).map(nel => i.id.in(nel)).getOrElse(i.id.isNull)
+      ) &&?
       TagItemName
         .itemsWithAllTagAndCategory(q.tagsInclude, q.tagCategoryIncl)
         .map(subsel => i.id.in(subsel)) &&?
