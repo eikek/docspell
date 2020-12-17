@@ -18,7 +18,7 @@ object Dependencies {
   val Fs2Version              = "2.4.6"
   val H2Version               = "1.4.200"
   val Http4sVersion           = "0.21.14"
-  val Icu4jVersion            = "68.1"
+  val Icu4jVersion            = "68.2"
   val JsoupVersion            = "1.13.1"
   val KindProjectorVersion    = "0.10.3"
   val KittensVersion          = "2.2.1"
