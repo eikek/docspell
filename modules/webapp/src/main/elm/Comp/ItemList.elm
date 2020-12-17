@@ -108,7 +108,7 @@ view model =
                     [ class "item"
                     , title "Expand all"
                     , onClick ExpandAll
-                    , href ""
+                    , href "#"
                     ]
                     [ i [ class "double angle down icon" ] []
                     ]
@@ -116,7 +116,7 @@ view model =
                     [ class "item"
                     , title "Collapse all"
                     , onClick CollapseAll
-                    , href ""
+                    , href "#"
                     ]
                     [ i [ class "double angle up icon" ] []
                     ]
@@ -166,7 +166,7 @@ viewGroup model group =
                 , a
                     [ class "header"
                     , onClick (ToggleGroupState group)
-                    , href ""
+                    , href "#"
                     ]
                     [ text group.name
                     ]

@@ -253,11 +253,11 @@ viewForm settings model =
         , button [ class "ui primary button", type_ "submit" ]
             [ text "Submit"
             ]
-        , a [ class "ui secondary button", onClick (SetViewMode Table), href "" ]
+        , a [ class "ui secondary button", onClick (SetViewMode Table), href "#" ]
             [ text "Cancel"
             ]
         , if not newUser then
-            a [ class "ui right floated red button", href "", onClick RequestDelete ]
+            a [ class "ui right floated red button", href "#", onClick RequestDelete ]
                 [ text "Delete" ]
 
           else

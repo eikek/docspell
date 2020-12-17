@@ -155,7 +155,7 @@ renderDetailMenu settings inav model =
                 ]
             , title "Edit Metadata"
             , onClick ToggleMenu
-            , href ""
+            , href "#"
             ]
             [ i [ class "edit icon" ] []
             ]
@@ -835,7 +835,7 @@ item visible. This message will disappear then.
                                 actionInputDatePicker
                                 model.itemDatePicker
                             )
-                        , a [ class "ui icon button", href "", onClick RemoveDate ]
+                        , a [ class "ui icon button", href "#", onClick RemoveDate ]
                             [ i [ class "trash alternate outline icon" ] []
                             ]
                         , Icons.dateIcon ""
@@ -855,7 +855,7 @@ item visible. This message will disappear then.
                                 actionInputDatePicker
                                 model.dueDatePicker
                             )
-                        , a [ class "ui icon button", href "", onClick RemoveDueDate ]
+                        , a [ class "ui icon button", href "#", onClick RemoveDueDate ]
                             [ i [ class "trash alternate outline icon" ] [] ]
                         , Icons.dueDateIcon ""
                         ]
@@ -957,7 +957,7 @@ renderSuggestions model mkName idnames tagger =
             , div [ class "menu" ] <|
                 (idnames
                     |> List.take 5
-                    |> List.map (\p -> a [ class "item", href "", onClick (tagger p) ] [ text (mkName p) ])
+                    |> List.map (\p -> a [ class "item", href "#", onClick (tagger p) ] [ text (mkName p) ])
                 )
             ]
         ]

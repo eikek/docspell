@@ -772,7 +772,7 @@ item visible. This message will disappear then.
                                 actionInputDatePicker
                                 model.itemDatePicker
                             )
-                        , a [ class "ui icon button", href "", onClick RemoveDate ]
+                        , a [ class "ui icon button", href "#", onClick RemoveDate ]
                             [ i [ class "trash alternate outline icon" ] []
                             ]
                         , Icons.dateIcon ""
@@ -791,7 +791,7 @@ item visible. This message will disappear then.
                                 actionInputDatePicker
                                 model.dueDatePicker
                             )
-                        , a [ class "ui icon button", href "", onClick RemoveDueDate ]
+                        , a [ class "ui icon button", href "#", onClick RemoveDueDate ]
                             [ i [ class "trash alternate outline icon" ] [] ]
                         , Icons.dueDateIcon ""
                         ]

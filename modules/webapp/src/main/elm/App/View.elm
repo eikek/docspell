@@ -230,7 +230,7 @@ loginInfo model =
                         , div [ class "divider" ] []
                         , a
                             [ class "icon item"
-                            , href ""
+                            , href "#"
                             , onClick Logout
                             ]
                             [ i [ class "sign out icon" ] []

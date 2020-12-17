@@ -87,7 +87,7 @@ view flags settings model =
                         [ class "borderless item"
                         , onClick (DoSearch BasicSearch)
                         , title "Run search query"
-                        , href ""
+                        , href "#"
                         , disabled model.searchInProgress
                         ]
                         [ i

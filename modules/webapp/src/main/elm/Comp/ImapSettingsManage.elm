@@ -268,12 +268,12 @@ viewForm settings model =
         , a
             [ class "ui secondary button"
             , onClick (SetViewMode Table)
-            , href ""
+            , href "#"
             ]
             [ text "Cancel"
             ]
         , if model.formModel.settings.name /= "" then
-            a [ class "ui right floated red button", href "", onClick RequestDelete ]
+            a [ class "ui right floated red button", href "#", onClick RequestDelete ]
                 [ text "Delete" ]
 
           else

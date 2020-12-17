@@ -129,7 +129,7 @@ view model =
                 , ( "disabled", not model.state.active )
                 ]
             , onClick PickFiles
-            , href ""
+            , href "#"
             ]
             [ i [ class "folder open icon" ] []
             , text "Select ..."
