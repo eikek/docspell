@@ -1,5 +1,7 @@
 package docspell.common
 
+import cats.data.NonEmptyList
+
 import io.circe.{Decoder, Encoder}
 
 sealed trait JobState { self: Product =>
@@ -11,8 +13,6 @@ object JobState {
 
   /** Waiting for being executed. */
   case object Waiting extends JobState {}
-
-  def waiting: JobState = Waiting
 
   /** A scheduler has picked up this job and will pass it to the next
     * free slot.
@@ -34,10 +34,20 @@ object JobState {
   /** Finished with success */
   case object Success extends JobState {}
 
-  val all: Set[JobState] =
-    Set(Waiting, Scheduled, Running, Stuck, Failed, Cancelled, Success)
-  val queued: Set[JobState]     = Set(Waiting, Scheduled, Stuck)
-  val done: Set[JobState]       = Set(Failed, Cancelled, Success)
+  val waiting: JobState   = Waiting
+  val stuck: JobState     = Stuck
+  val scheduled: JobState = Scheduled
+  val running: JobState   = Running
+  val failed: JobState    = Failed
+  val cancelled: JobState = Cancelled
+  val success: JobState   = Success
+
+  val all: NonEmptyList[JobState] =
+    NonEmptyList.of(Waiting, Scheduled, Running, Stuck, Failed, Cancelled, Success)
+  val queued: Set[JobState]        = Set(Waiting, Scheduled, Stuck)
+  val done: NonEmptyList[JobState] = NonEmptyList.of(Failed, Cancelled, Success)
+  val notDone: NonEmptyList[JobState] = //all - done
+    NonEmptyList.of(Waiting, Scheduled, Running, Stuck)
   val inProgress: Set[JobState] = Set(Scheduled, Running, Stuck)
 
   def parse(str: String): Either[String, JobState] =

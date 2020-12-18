@@ -4,7 +4,7 @@ import cats.data.OptionT
 import cats.effect._
 import cats.implicits._
 
-import docspell.backend.ops.OItemSearch.Batch
+import docspell.backend.ops.OItemSearch.{Batch, ListItem, Query}
 import docspell.common._
 import docspell.joex.mail.EmilHeader
 import docspell.joex.scheduler.{Context, Task}
@@ -66,11 +66,11 @@ object NotifyDueItemsTask {
       mail  <- OptionT.liftF(makeMail(sendCfg, cfg, ctx.args, items))
     } yield mail
 
-  def findItems[F[_]: Sync](ctx: Context[F, Args]): F[Vector[QItem.ListItem]] =
+  def findItems[F[_]: Sync](ctx: Context[F, Args]): F[Vector[ListItem]] =
     for {
       now <- Timestamp.current[F]
       q =
-        QItem.Query
+        Query
           .empty(ctx.args.account)
           .copy(
             states = ItemState.validStates.toList,
@@ -91,7 +91,7 @@ object NotifyDueItemsTask {
       sendCfg: MailSendConfig,
       cfg: RUserEmail,
       args: Args,
-      items: Vector[QItem.ListItem]
+      items: Vector[ListItem]
   ): F[Mail[F]] =
     Timestamp.current[F].map { now =>
       val templateCtx =

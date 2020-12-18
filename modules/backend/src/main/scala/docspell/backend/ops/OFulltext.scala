@@ -7,32 +7,38 @@ import fs2.Stream
 import docspell.backend.JobFactory
 import docspell.backend.ops.OItemSearch._
 import docspell.common._
+import docspell.common.syntax.all._
 import docspell.ftsclient._
-import docspell.store.Store
-import docspell.store.queries.{QFolder, QItem}
+import docspell.store.queries.{QFolder, QItem, SelectedItem}
 import docspell.store.queue.JobQueue
 import docspell.store.records.RJob
+import docspell.store.{Store, qb}
+
+import org.log4s.getLogger
 
 trait OFulltext[F[_]] {
 
   def findItems(maxNoteLen: Int)(
       q: Query,
       fts: OFulltext.FtsInput,
-      batch: Batch
+      batch: qb.Batch
   ): F[Vector[OFulltext.FtsItem]]
 
   /** Same as `findItems` but does more queries per item to find all tags. */
   def findItemsWithTags(maxNoteLen: Int)(
       q: Query,
       fts: OFulltext.FtsInput,
-      batch: Batch
+      batch: qb.Batch
   ): F[Vector[OFulltext.FtsItemWithTags]]
 
   def findIndexOnly(maxNoteLen: Int)(
       fts: OFulltext.FtsInput,
       account: AccountId,
-      batch: Batch
+      batch: qb.Batch
   ): F[Vector[OFulltext.FtsItemWithTags]]
+
+  def findIndexOnlySummary(account: AccountId, fts: OFulltext.FtsInput): F[SearchSummary]
+  def findItemsSummary(q: Query, fts: OFulltext.FtsInput): F[SearchSummary]
 
   /** Clears the full-text index completely and launches a task that
     * indexes all data.
@@ -46,6 +52,7 @@ trait OFulltext[F[_]] {
 }
 
 object OFulltext {
+  private[this] val logger = getLogger
 
   case class FtsInput(
       query: String,
@@ -77,12 +84,14 @@ object OFulltext {
     Resource.pure[F, OFulltext[F]](new OFulltext[F] {
       def reindexAll: F[Unit] =
         for {
+          _   <- logger.finfo(s"Re-index all.")
           job <- JobFactory.reIndexAll[F]
           _   <- queue.insertIfNew(job) *> joex.notifyAllNodes
         } yield ()
 
       def reindexCollective(account: AccountId): F[Unit] =
         for {
+          _ <- logger.fdebug(s"Re-index collective: $account")
           exist <- store.transact(
             RJob.findNonFinalByTracker(DocspellSystem.migrationTaskTracker)
           )
@@ -95,7 +104,7 @@ object OFulltext {
       def findIndexOnly(maxNoteLen: Int)(
           ftsQ: OFulltext.FtsInput,
           account: AccountId,
-          batch: Batch
+          batch: qb.Batch
       ): F[Vector[OFulltext.FtsItemWithTags]] = {
         val fq = FtsQuery(
           ftsQ.query,
@@ -107,20 +116,21 @@ object OFulltext {
           FtsQuery.HighlightSetting(ftsQ.highlightPre, ftsQ.highlightPost)
         )
         for {
+          _       <- logger.ftrace(s"Find index only: ${ftsQ.query}/${batch}")
           folders <- store.transact(QFolder.getMemberFolders(account))
           ftsR    <- fts.search(fq.withFolders(folders))
           ftsItems = ftsR.results.groupBy(_.itemId)
           select =
             ftsItems.values
-              .map(_.sortBy(-_.score).head)
-              .map(r => QItem.SelectedItem(r.itemId, r.score))
+              .map(_.minBy(-_.score))
+              .map(r => SelectedItem(r.itemId, r.score))
               .toSet
           itemsWithTags <-
             store
               .transact(
                 QItem.findItemsWithTags(
                   account.collective,
-                  QItem.findSelectedItems(QItem.Query.empty(account), maxNoteLen, select)
+                  QItem.findSelectedItems(Query.empty(account), maxNoteLen, select)
                 )
               )
               .take(batch.limit.toLong)
@@ -133,9 +143,35 @@ object OFulltext {
         } yield res
       }
 
+      def findIndexOnlySummary(
+          account: AccountId,
+          ftsQ: OFulltext.FtsInput
+      ): F[SearchSummary] = {
+        val fq = FtsQuery(
+          ftsQ.query,
+          account.collective,
+          Set.empty,
+          Set.empty,
+          500,
+          0,
+          FtsQuery.HighlightSetting.default
+        )
+
+        for {
+          folder <- store.transact(QFolder.getMemberFolders(account))
+          itemIds <- fts
+            .searchAll(fq.withFolders(folder))
+            .flatMap(r => Stream.emits(r.results.map(_.itemId)))
+            .compile
+            .to(Set)
+          q = Query.empty(account).copy(itemIds = itemIds.some)
+          res <- store.transact(QItem.searchStats(q))
+        } yield res
+      }
+
       def findItems(
           maxNoteLen: Int
-      )(q: Query, ftsQ: FtsInput, batch: Batch): F[Vector[FtsItem]] =
+      )(q: Query, ftsQ: FtsInput, batch: qb.Batch): F[Vector[FtsItem]] =
         findItemsFts(
           q,
           ftsQ,
@@ -152,7 +188,7 @@ object OFulltext {
       def findItemsWithTags(maxNoteLen: Int)(
           q: Query,
           ftsQ: FtsInput,
-          batch: Batch
+          batch: qb.Batch
       ): F[Vector[FtsItemWithTags]] =
         findItemsFts(
           q,
@@ -167,13 +203,34 @@ object OFulltext {
           .compile
           .toVector
 
+      def findItemsSummary(q: Query, ftsQ: OFulltext.FtsInput): F[SearchSummary] =
+        for {
+          search <- itemSearch.findItems(0)(q, Batch.all)
+          fq = FtsQuery(
+            ftsQ.query,
+            q.account.collective,
+            search.map(_.id).toSet,
+            Set.empty,
+            500,
+            0,
+            FtsQuery.HighlightSetting.default
+          )
+          items <- fts
+            .searchAll(fq)
+            .flatMap(r => Stream.emits(r.results.map(_.itemId)))
+            .compile
+            .to(Set)
+          qnext = q.copy(itemIds = items.some)
+          res <- store.transact(QItem.searchStats(qnext))
+        } yield res
+
       // Helper
 
       private def findItemsFts[A: ItemId, B](
           q: Query,
           ftsQ: FtsInput,
-          batch: Batch,
-          search: (Query, Batch) => F[Vector[A]],
+          batch: qb.Batch,
+          search: (Query, qb.Batch) => F[Vector[A]],
           convert: (
               FtsResult,
               Map[Ident, List[FtsResult.ItemMatch]]
@@ -186,8 +243,8 @@ object OFulltext {
       private def findItemsFts0[A: ItemId, B](
           q: Query,
           ftsQ: FtsInput,
-          batch: Batch,
-          search: (Query, Batch) => F[Vector[A]],
+          batch: qb.Batch,
+          search: (Query, qb.Batch) => F[Vector[A]],
           convert: (
               FtsResult,
               Map[Ident, List[FtsResult.ItemMatch]]
@@ -227,10 +284,9 @@ object OFulltext {
       ): PartialFunction[A, (A, FtsData)] = {
         case a if ftrItems.contains(ItemId[A].itemId(a)) =>
           val ftsDataItems = ftrItems
-            .get(ItemId[A].itemId(a))
-            .getOrElse(Nil)
+            .getOrElse(ItemId[A].itemId(a), Nil)
             .map(im =>
-              FtsDataItem(im.score, im.data, ftr.highlight.get(im.id).getOrElse(Nil))
+              FtsDataItem(im.score, im.data, ftr.highlight.getOrElse(im.id, Nil))
             )
           (a, FtsData(ftr.maxScore, ftr.count, ftr.qtime, ftsDataItems))
       }

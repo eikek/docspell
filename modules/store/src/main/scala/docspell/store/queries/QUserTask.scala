@@ -3,33 +3,34 @@ package docspell.store.queries
 import fs2._
 
 import docspell.common._
-import docspell.store.impl.Implicits._
+import docspell.store.qb.DSL._
+import docspell.store.qb._
 import docspell.store.records._
 import docspell.store.usertask.UserTask
 
 import doobie._
 
 object QUserTask {
-  private val cols = RPeriodicTask.Columns
+  private val RT = RPeriodicTask.T
 
   def findAll(account: AccountId): Stream[ConnectionIO, UserTask[String]] =
-    selectSimple(
-      RPeriodicTask.Columns.all,
-      RPeriodicTask.table,
-      and(cols.group.is(account.collective), cols.submitter.is(account.user))
+    run(
+      select(RT.all),
+      from(RT),
+      RT.group === account.collective && RT.submitter === account.user
     ).query[RPeriodicTask].stream.map(makeUserTask)
 
   def findByName(
       account: AccountId,
       name: Ident
   ): Stream[ConnectionIO, UserTask[String]] =
-    selectSimple(
-      RPeriodicTask.Columns.all,
-      RPeriodicTask.table,
-      and(
-        cols.group.is(account.collective),
-        cols.submitter.is(account.user),
-        cols.task.is(name)
+    run(
+      select(RT.all),
+      from(RT),
+      where(
+        RT.group === account.collective,
+        RT.submitter === account.user,
+        RT.task === name
       )
     ).query[RPeriodicTask].stream.map(makeUserTask)
 
@@ -37,13 +38,13 @@ object QUserTask {
       account: AccountId,
       id: Ident
   ): ConnectionIO[Option[UserTask[String]]] =
-    selectSimple(
-      RPeriodicTask.Columns.all,
-      RPeriodicTask.table,
-      and(
-        cols.group.is(account.collective),
-        cols.submitter.is(account.user),
-        cols.id.is(id)
+    run(
+      select(RT.all),
+      from(RT),
+      where(
+        RT.group === account.collective,
+        RT.submitter === account.user,
+        RT.id === id
       )
     ).query[RPeriodicTask].option.map(_.map(makeUserTask))
 
@@ -63,24 +64,25 @@ object QUserTask {
     RPeriodicTask.exists(id)
 
   def delete(account: AccountId, id: Ident): ConnectionIO[Int] =
-    deleteFrom(
-      RPeriodicTask.table,
-      and(
-        cols.group.is(account.collective),
-        cols.submitter.is(account.user),
-        cols.id.is(id)
+    DML
+      .delete(
+        RT,
+        where(
+          RT.group === account.collective,
+          RT.submitter === account.user,
+          RT.id === id
+        )
       )
-    ).update.run
 
   def deleteAll(account: AccountId, name: Ident): ConnectionIO[Int] =
-    deleteFrom(
-      RPeriodicTask.table,
-      and(
-        cols.group.is(account.collective),
-        cols.submitter.is(account.user),
-        cols.task.is(name)
+    DML.delete(
+      RT,
+      where(
+        RT.group === account.collective,
+        RT.submitter === account.user,
+        RT.task === name
       )
-    ).update.run
+    )
 
   def makeUserTask(r: RPeriodicTask): UserTask[String] =
     UserTask(r.id, r.task, r.enabled, r.timer, r.args)

@@ -25,10 +25,10 @@ view mid model =
                     ]
                 , Html.map DropzoneMsg (Comp.Dropzone.view model.dropzone)
                 , div [ class "ui bottom attached segment" ]
-                    [ a [ class "ui primary button", href "", onClick SubmitUpload ]
+                    [ a [ class "ui primary button", href "#", onClick SubmitUpload ]
                         [ text "Submit"
                         ]
-                    , a [ class "ui secondary button", href "", onClick Clear ]
+                    , a [ class "ui secondary button", href "#", onClick Clear ]
                         [ text "Reset"
                         ]
                     ]
@@ -91,7 +91,7 @@ renderSuccessMsg public _ =
                         ]
                 , p []
                     [ text "Click "
-                    , a [ class "ui link", href "", onClick Clear ]
+                    , a [ class "ui link", href "#", onClick Clear ]
                         [ text "Reset"
                         ]
                     , text " to upload more files."

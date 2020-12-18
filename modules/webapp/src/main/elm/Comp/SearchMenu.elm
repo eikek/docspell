@@ -17,13 +17,12 @@ module Comp.SearchMenu exposing
 import Api
 import Api.Model.Equipment exposing (Equipment)
 import Api.Model.EquipmentList exposing (EquipmentList)
-import Api.Model.FolderItem exposing (FolderItem)
-import Api.Model.FolderList exposing (FolderList)
+import Api.Model.FolderStats exposing (FolderStats)
 import Api.Model.IdName exposing (IdName)
 import Api.Model.ItemSearch exposing (ItemSearch)
 import Api.Model.PersonList exposing (PersonList)
 import Api.Model.ReferenceList exposing (ReferenceList)
-import Api.Model.TagCloud exposing (TagCloud)
+import Api.Model.SearchStats exposing (SearchStats)
 import Comp.CustomFieldMultiInput
 import Comp.DatePicker
 import Comp.Dropdown exposing (isDropdownChangeMsg)
@@ -40,7 +39,6 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onCheck, onClick, onInput)
 import Http
-import Util.Folder
 import Util.Html exposing (KeyCode(..))
 import Util.ItemDragDrop as DD
 import Util.Maybe
@@ -59,7 +57,7 @@ type alias Model =
     , concPersonModel : Comp.Dropdown.Model IdName
     , concEquipmentModel : Comp.Dropdown.Model Equipment
     , folderList : Comp.FolderSelect.Model
-    , selectedFolder : Maybe FolderItem
+    , selectedFolder : Maybe FolderStats
     , inboxCheckbox : Bool
     , fromDateModel : DatePicker
     , fromDate : Maybe Int
@@ -338,7 +336,6 @@ type Msg
     | FromDueDateMsg Comp.DatePicker.Msg
     | UntilDueDateMsg Comp.DatePicker.Msg
     | ToggleInbox
-    | GetTagsResp (Result Http.Error TagCloud)
     | GetOrgResp (Result Http.Error ReferenceList)
     | GetEquipResp (Result Http.Error EquipmentList)
     | GetPersonResp (Result Http.Error PersonList)
@@ -350,7 +347,6 @@ type Msg
     | ResetForm
     | KeyUpMsg (Maybe KeyCode)
     | FolderSelectMsg Comp.FolderSelect.Msg
-    | GetFolderResp (Result Http.Error FolderList)
     | SetCorrOrg IdName
     | SetCorrPerson IdName
     | SetConcPerson IdName
@@ -359,6 +355,7 @@ type Msg
     | SetTag String
     | CustomFieldMsg Comp.CustomFieldMultiInput.Msg
     | SetSource String
+    | GetStatsResp (Result Http.Error SearchStats)
 
 
 type alias NextState =
@@ -425,11 +422,10 @@ updateDrop ddm flags settings msg model =
             { model = mdp
             , cmd =
                 Cmd.batch
-                    [ Api.getTagCloud flags GetTagsResp
+                    [ Api.itemSearchStats flags (getItemSearch model) GetStatsResp
                     , Api.getOrgLight flags GetOrgResp
                     , Api.getEquipments flags "" GetEquipResp
                     , Api.getPersons flags "" GetPersonResp
-                    , Api.getFolders flags "" False GetFolderResp
                     , Cmd.map CustomFieldMsg (Comp.CustomFieldMultiInput.initCmd flags)
                     , cdp
                     ]
@@ -475,15 +471,21 @@ updateDrop ddm flags settings msg model =
         SetTag id ->
             resetAndSet (TagSelectMsg (Comp.TagSelect.toggleTag id))
 
-        GetTagsResp (Ok tags) ->
+        GetStatsResp (Ok stats) ->
             let
                 selectModel =
-                    List.sortBy .count tags.items
+                    List.sortBy .count stats.tagCloud.items
                         |> List.reverse
-                        |> Comp.TagSelect.init model.tagSelection
+                        |> Comp.TagSelect.modify model.tagSelection model.tagSelectModel
 
                 model_ =
-                    { model | tagSelectModel = selectModel }
+                    { model
+                        | tagSelectModel = selectModel
+                        , folderList =
+                            Comp.FolderSelect.modify model.selectedFolder
+                                model.folderList
+                                stats.folderStats
+                    }
             in
             { model = model_
             , cmd = Cmd.none
@@ -491,7 +493,7 @@ updateDrop ddm flags settings msg model =
             , dragDrop = DD.DragDropData ddm Nothing
             }
 
-        GetTagsResp (Err _) ->
+        GetStatsResp (Err _) ->
             { model = model
             , cmd = Cmd.none
             , stateChange = False
@@ -790,28 +792,6 @@ updateDrop ddm flags settings msg model =
             }
 
         KeyUpMsg _ ->
-            { model = model
-            , cmd = Cmd.none
-            , stateChange = False
-            , dragDrop = DD.DragDropData ddm Nothing
-            }
-
-        GetFolderResp (Ok fs) ->
-            let
-                model_ =
-                    { model
-                        | folderList =
-                            Util.Folder.onlyVisible flags fs.items
-                                |> Comp.FolderSelect.init model.selectedFolder
-                    }
-            in
-            { model = model_
-            , cmd = Cmd.none
-            , stateChange = False
-            , dragDrop = DD.DragDropData ddm Nothing
-            }
-
-        GetFolderResp (Err _) ->
             { model = model
             , cmd = Cmd.none
             , stateChange = False

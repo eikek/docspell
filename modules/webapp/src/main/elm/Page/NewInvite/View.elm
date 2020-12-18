@@ -51,7 +51,7 @@ view flags model =
                             ]
                             [ text "Submit"
                             ]
-                        , a [ class "ui right floated button", href "", onClick Reset ]
+                        , a [ class "ui right floated button", href "#", onClick Reset ]
                             [ text "Reset"
                             ]
                         , resultMessage model

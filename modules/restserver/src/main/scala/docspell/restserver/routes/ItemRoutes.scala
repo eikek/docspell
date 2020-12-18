@@ -1,17 +1,17 @@
 package docspell.restserver.routes
 
+import cats.Monoid
 import cats.data.NonEmptyList
 import cats.effect._
 import cats.implicits._
-import cats.Monoid
 
 import docspell.backend.BackendApp
 import docspell.backend.auth.AuthToken
 import docspell.backend.ops.OCustomFields.{RemoveValue, SetValue}
 import docspell.backend.ops.OFulltext
 import docspell.backend.ops.OItemSearch.Batch
-import docspell.common.syntax.all._
 import docspell.common._
+import docspell.common.syntax.all._
 import docspell.restapi.model._
 import docspell.restserver.Config
 import docspell.restserver.conv.Conversions
@@ -141,6 +141,25 @@ object ItemRoutes {
             case _ =>
               BadRequest(BasicResult(false, "Query string too short"))
           }
+        } yield resp
+
+      case req @ POST -> Root / "searchStats" =>
+        for {
+          mask <- req.as[ItemSearch]
+          query = Conversions.mkQuery(mask, user.account)
+          stats <- mask match {
+            case SearchFulltextOnly(ftq) if cfg.fullTextSearch.enabled =>
+              logger.finfo(s"Make index only summary: $ftq") *>
+                backend.fulltext.findIndexOnlySummary(
+                  user.account,
+                  OFulltext.FtsInput(ftq.query)
+                )
+            case SearchWithFulltext(fq) if cfg.fullTextSearch.enabled =>
+              backend.fulltext.findItemsSummary(query, OFulltext.FtsInput(fq))
+            case _ =>
+              backend.itemSearch.findItemsSummary(query)
+          }
+          resp <- Ok(Conversions.mkSearchStats(stats))
         } yield resp
 
       case GET -> Root / Ident(id) =>

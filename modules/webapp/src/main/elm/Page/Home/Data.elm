@@ -19,6 +19,7 @@ module Page.Home.Data exposing
 import Api
 import Api.Model.BasicResult exposing (BasicResult)
 import Api.Model.ItemLightList exposing (ItemLightList)
+import Api.Model.SearchStats exposing (SearchStats)
 import Browser.Dom as Dom
 import Comp.FixedDropdown
 import Comp.ItemCardList
@@ -52,6 +53,7 @@ type alias Model =
     , lastSearchType : SearchType
     , dragDropData : DD.DragDropData
     , scrollToCard : Maybe String
+    , searchStats : SearchStats
     }
 
 
@@ -116,6 +118,7 @@ init flags viewMode =
         DD.DragDropData DD.init Nothing
     , scrollToCard = Nothing
     , viewMode = viewMode
+    , searchStats = Api.Model.SearchStats.empty
     }
 
 
@@ -173,6 +176,7 @@ type Msg
     | DeleteAllResp (Result Http.Error BasicResult)
     | UiSettingsUpdated
     | SetLinkTarget LinkTarget
+    | SearchStatsResp (Result Http.Error SearchStats)
 
 
 type SearchType
@@ -237,7 +241,10 @@ doSearchDefaultCmd param model =
             }
     in
     if param.offset == 0 then
-        Api.itemSearch param.flags mask (ItemSearchResp param.scroll)
+        Cmd.batch
+            [ Api.itemSearch param.flags mask (ItemSearchResp param.scroll)
+            , Api.itemSearchStats param.flags mask SearchStatsResp
+            ]
 
     else
         Api.itemSearch param.flags mask ItemSearchAddResp

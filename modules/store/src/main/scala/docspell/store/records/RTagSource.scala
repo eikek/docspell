@@ -1,11 +1,12 @@
 package docspell.store.records
 
+import cats.data.NonEmptyList
 import cats.effect.Sync
 import cats.implicits._
 
 import docspell.common._
-import docspell.store.impl.Implicits._
-import docspell.store.impl._
+import docspell.store.qb.DSL._
+import docspell.store.qb._
 
 import doobie._
 import doobie.implicits._
@@ -13,31 +14,33 @@ import doobie.implicits._
 case class RTagSource(id: Ident, sourceId: Ident, tagId: Ident) {}
 
 object RTagSource {
+  final case class Table(alias: Option[String]) extends TableDef {
+    val tableName = "tagsource"
 
-  val table = fr"tagsource"
-
-  object Columns {
-    val id       = Column("id")
-    val sourceId = Column("source_id")
-    val tagId    = Column("tag_id")
-    val all      = List(id, sourceId, tagId)
+    val id       = Column[Ident]("id", this)
+    val sourceId = Column[Ident]("source_id", this)
+    val tagId    = Column[Ident]("tag_id", this)
+    val all      = NonEmptyList.of[Column[_]](id, sourceId, tagId)
   }
-  import Columns._
+
+  private val t = Table(None)
+  def as(alias: String): Table =
+    Table(Some(alias))
 
   def createNew[F[_]: Sync](source: Ident, tag: Ident): F[RTagSource] =
     Ident.randomId[F].map(id => RTagSource(id, source, tag))
 
   def insert(v: RTagSource): ConnectionIO[Int] =
-    insertRow(table, all, fr"${v.id},${v.sourceId},${v.tagId}").update.run
+    DML.insert(t, t.all, fr"${v.id},${v.sourceId},${v.tagId}")
 
   def deleteSourceTags(source: Ident): ConnectionIO[Int] =
-    deleteFrom(table, sourceId.is(source)).update.run
+    DML.delete(t, t.sourceId === source)
 
   def deleteTag(tid: Ident): ConnectionIO[Int] =
-    deleteFrom(table, tagId.is(tid)).update.run
+    DML.delete(t, t.tagId === tid)
 
   def findBySource(source: Ident): ConnectionIO[Vector[RTagSource]] =
-    selectSimple(all, table, sourceId.is(source)).query[RTagSource].to[Vector]
+    run(select(t.all), from(t), t.sourceId === source).query[RTagSource].to[Vector]
 
   def setAllTags(source: Ident, tags: Seq[Ident]): ConnectionIO[Int] =
     if (tags.isEmpty) 0.pure[ConnectionIO]
@@ -46,11 +49,12 @@ object RTagSource {
         entities <- tags.toList.traverse(tagId =>
           Ident.randomId[ConnectionIO].map(id => RTagSource(id, source, tagId))
         )
-        n <- insertRows(
-          table,
-          all,
-          entities.map(v => fr"${v.id},${v.sourceId},${v.tagId}")
-        ).update.run
+        n <- DML
+          .insertMany(
+            t,
+            t.all,
+            entities.map(v => fr"${v.id},${v.sourceId},${v.tagId}")
+          )
       } yield n
 
 }

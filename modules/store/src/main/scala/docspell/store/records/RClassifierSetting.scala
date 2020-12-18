@@ -1,10 +1,11 @@
 package docspell.store.records
 
+import cats.data.NonEmptyList
 import cats.implicits._
 
 import docspell.common._
-import docspell.store.impl.Implicits._
-import docspell.store.impl._
+import docspell.store.qb.DSL._
+import docspell.store.qb._
 
 import com.github.eikek.calev._
 import doobie._
@@ -21,71 +22,69 @@ case class RClassifierSetting(
 ) {}
 
 object RClassifierSetting {
+  final case class Table(alias: Option[String]) extends TableDef {
+    val tableName = "classifier_setting"
 
-  val table = fr"classifier_setting"
-
-  object Columns {
-    val cid       = Column("cid")
-    val enabled   = Column("enabled")
-    val schedule  = Column("schedule")
-    val category  = Column("category")
-    val itemCount = Column("item_count")
-    val fileId    = Column("file_id")
-    val created   = Column("created")
-    val all       = List(cid, enabled, schedule, category, itemCount, fileId, created)
-  }
-  import Columns._
-
-  def insert(v: RClassifierSetting): ConnectionIO[Int] = {
-    val sql =
-      insertRow(
-        table,
-        all,
-        fr"${v.cid},${v.enabled},${v.schedule},${v.category},${v.itemCount},${v.fileId},${v.created}"
-      )
-    sql.update.run
+    val cid       = Column[Ident]("cid", this)
+    val enabled   = Column[Boolean]("enabled", this)
+    val schedule  = Column[CalEvent]("schedule", this)
+    val category  = Column[String]("category", this)
+    val itemCount = Column[Int]("item_count", this)
+    val fileId    = Column[Ident]("file_id", this)
+    val created   = Column[Timestamp]("created", this)
+    val all = NonEmptyList
+      .of[Column[_]](cid, enabled, schedule, category, itemCount, fileId, created)
   }
 
-  def updateAll(v: RClassifierSetting): ConnectionIO[Int] = {
-    val sql = updateRow(
-      table,
-      cid.is(v.cid),
-      commas(
-        enabled.setTo(v.enabled),
-        schedule.setTo(v.schedule),
-        category.setTo(v.category),
-        itemCount.setTo(v.itemCount),
-        fileId.setTo(v.fileId)
+  val T = Table(None)
+  def as(alias: String): Table =
+    Table(Some(alias))
+
+  def insert(v: RClassifierSetting): ConnectionIO[Int] =
+    DML.insert(
+      T,
+      T.all,
+      fr"${v.cid},${v.enabled},${v.schedule},${v.category},${v.itemCount},${v.fileId},${v.created}"
+    )
+
+  def updateAll(v: RClassifierSetting): ConnectionIO[Int] =
+    DML.update(
+      T,
+      T.cid === v.cid,
+      DML.set(
+        T.enabled.setTo(v.enabled),
+        T.schedule.setTo(v.schedule),
+        T.category.setTo(v.category),
+        T.itemCount.setTo(v.itemCount),
+        T.fileId.setTo(v.fileId)
       )
     )
-    sql.update.run
-  }
 
   def updateFile(coll: Ident, fid: Ident): ConnectionIO[Int] =
-    updateRow(table, cid.is(coll), fileId.setTo(fid)).update.run
+    DML.update(T, T.cid === coll, DML.set(T.fileId.setTo(fid)))
 
   def updateSettings(v: RClassifierSetting): ConnectionIO[Int] =
     for {
-      n1 <- updateRow(
-        table,
-        cid.is(v.cid),
-        commas(
-          enabled.setTo(v.enabled),
-          schedule.setTo(v.schedule),
-          itemCount.setTo(v.itemCount),
-          category.setTo(v.category)
+      n1 <- DML.update(
+        T,
+        T.cid === v.cid,
+        DML.set(
+          T.enabled.setTo(v.enabled),
+          T.schedule.setTo(v.schedule),
+          T.itemCount.setTo(v.itemCount),
+          T.category.setTo(v.category)
         )
-      ).update.run
+      )
       n2 <- if (n1 <= 0) insert(v) else 0.pure[ConnectionIO]
     } yield n1 + n2
 
   def findById(id: Ident): ConnectionIO[Option[RClassifierSetting]] = {
-    val sql = selectSimple(all, table, cid.is(id))
+    val sql = run(select(T.all), from(T), T.cid === id)
     sql.query[RClassifierSetting].option
   }
 
   def delete(coll: Ident): ConnectionIO[Int] =
-    deleteFrom(table, cid.is(coll)).update.run
+    DML.delete(T, T.cid === coll)
 
   case class Classifier(
       enabled: Boolean,

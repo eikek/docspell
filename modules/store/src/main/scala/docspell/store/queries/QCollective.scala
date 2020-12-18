@@ -5,13 +5,20 @@ import fs2.Stream
 
 import docspell.common.ContactKind
 import docspell.common.{Direction, Ident}
-import docspell.store.impl.Implicits._
+import docspell.store.qb.DSL._
+import docspell.store.qb._
 import docspell.store.records._
 
 import doobie._
 import doobie.implicits._
 
 object QCollective {
+  private val ti = RTagItem.as("ti")
+  private val t  = RTag.as("t")
+  private val ro = ROrganization.as("o")
+  private val rp = RPerson.as("p")
+  private val rc = RContact.as("c")
+  private val i  = RItem.as("i")
 
   case class Names(org: Vector[String], pers: Vector[String], equip: Vector[String])
   object Names {
@@ -26,8 +33,6 @@ object QCollective {
     } yield Names(orgs.map(_.name), pers.map(_.name), equp.map(_.name)))
       .getOrElse(Names.empty)
 
-  case class TagCount(tag: RTag, count: Int)
-
   case class InsightData(
       incoming: Int,
       outgoing: Int,
@@ -36,17 +41,16 @@ object QCollective {
   )
 
   def getInsights(coll: Ident): ConnectionIO[InsightData] = {
-    val IC = RItem.Columns
-    val q0 = selectCount(
-      IC.id,
-      RItem.table,
-      and(IC.cid.is(coll), IC.incoming.is(Direction.incoming))
-    ).query[Int].unique
-    val q1 = selectCount(
-      IC.id,
-      RItem.table,
-      and(IC.cid.is(coll), IC.incoming.is(Direction.outgoing))
-    ).query[Int].unique
+    val q0 = Select(
+      count(i.id).s,
+      from(i),
+      i.cid === coll && i.incoming === Direction.incoming
+    ).build.query[Int].unique
+    val q1 = Select(
+      count(i.id).s,
+      from(i),
+      i.cid === coll && i.incoming === Direction.outgoing
+    ).build.query[Int].unique
 
     val fileSize = sql"""
       select sum(length) from (
@@ -77,24 +81,14 @@ object QCollective {
   }
 
   def tagCloud(coll: Ident): ConnectionIO[List[TagCount]] = {
-    val TC = RTag.Columns
-    val RC = RTagItem.Columns
+    val sql =
+      Select(
+        select(t.all).append(count(ti.itemId).s),
+        from(ti).innerJoin(t, ti.tagId === t.tid),
+        t.cid === coll
+      ).groupBy(t.name, t.tid, t.category)
 
-    val q3 = fr"SELECT" ++ commas(
-      TC.all.map(_.prefix("t").f) ++ Seq(fr"count(" ++ RC.itemId.prefix("r").f ++ fr")")
-    ) ++
-      fr"FROM" ++ RTagItem.table ++ fr"r" ++
-      fr"INNER JOIN" ++ RTag.table ++ fr"t ON" ++ RC.tagId
-        .prefix("r")
-        .is(TC.tid.prefix("t")) ++
-      fr"WHERE" ++ TC.cid.prefix("t").is(coll) ++
-      fr"GROUP BY" ++ commas(
-        TC.name.prefix("t").f,
-        TC.tid.prefix("t").f,
-        TC.category.prefix("t").f
-      )
-
-    q3.query[TagCount].to[List]
+    sql.build.query[TagCount].to[List]
   }
 
   def getContacts(
@@ -102,35 +96,15 @@ object QCollective {
       query: Option[String],
       kind: Option[ContactKind]
   ): Stream[ConnectionIO, RContact] = {
-    val RO = ROrganization
-    val RP = RPerson
-    val RC = RContact
+    val orgCond     = Select(select(ro.oid), from(ro), ro.cid === coll)
+    val persCond    = Select(select(rp.pid), from(rp), rp.cid === coll)
+    val valueFilter = query.map(s => rc.value.like(s"%${s.toLowerCase}%"))
+    val kindFilter  = kind.map(k => rc.kind === k)
 
-    val orgCond  = selectSimple(Seq(RO.Columns.oid), RO.table, RO.Columns.cid.is(coll))
-    val persCond = selectSimple(Seq(RP.Columns.pid), RP.table, RP.Columns.cid.is(coll))
-    val queryCond = query match {
-      case Some(q) =>
-        Seq(RC.Columns.value.lowerLike(s"%${q.toLowerCase}%"))
-      case None =>
-        Seq.empty
-    }
-    val kindCond = kind match {
-      case Some(k) =>
-        Seq(RC.Columns.kind.is(k))
-      case None =>
-        Seq.empty
-    }
-
-    val q = selectSimple(
-      RC.Columns.all,
-      RC.table,
-      and(
-        Seq(
-          or(RC.Columns.orgId.isIn(orgCond), RC.Columns.personId.isIn(persCond))
-        ) ++ queryCond ++ kindCond
-      )
-    ) ++ orderBy(RC.Columns.value.f)
-
-    q.query[RContact].stream
+    Select(
+      select(rc.all),
+      from(rc),
+      (rc.orgId.in(orgCond) || rc.personId.in(persCond)) &&? valueFilter &&? kindFilter
+    ).orderBy(rc.value).build.query[RContact].stream
   }
 }

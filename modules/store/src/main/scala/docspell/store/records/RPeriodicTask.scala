@@ -1,11 +1,12 @@
 package docspell.store.records
 
+import cats.data.NonEmptyList
 import cats.effect._
 import cats.implicits._
 
 import docspell.common._
-import docspell.store.impl.Column
-import docspell.store.impl.Implicits._
+import docspell.store.qb.DSL._
+import docspell.store.qb._
 
 import com.github.eikek.calev.CalEvent
 import doobie._
@@ -107,23 +108,23 @@ object RPeriodicTask {
   )(implicit E: Encoder[A]): F[RPeriodicTask] =
     create[F](enabled, task, group, E(args).noSpaces, subject, submitter, priority, timer)
 
-  val table = fr"periodic_task"
+  final case class Table(alias: Option[String]) extends TableDef {
+    val tableName = "periodic_task"
 
-  object Columns {
-    val id        = Column("id")
-    val enabled   = Column("enabled")
-    val task      = Column("task")
-    val group     = Column("group_")
-    val args      = Column("args")
-    val subject   = Column("subject")
-    val submitter = Column("submitter")
-    val priority  = Column("priority")
-    val worker    = Column("worker")
-    val marked    = Column("marked")
-    val timer     = Column("timer")
-    val nextrun   = Column("nextrun")
-    val created   = Column("created")
-    val all = List(
+    val id        = Column[Ident]("id", this)
+    val enabled   = Column[Boolean]("enabled", this)
+    val task      = Column[Ident]("task", this)
+    val group     = Column[Ident]("group_", this)
+    val args      = Column[String]("args", this)
+    val subject   = Column[String]("subject", this)
+    val submitter = Column[Ident]("submitter", this)
+    val priority  = Column[Priority]("priority", this)
+    val worker    = Column[Ident]("worker", this)
+    val marked    = Column[Timestamp]("marked", this)
+    val timer     = Column[CalEvent]("timer", this)
+    val nextrun   = Column[Timestamp]("nextrun", this)
+    val created   = Column[Timestamp]("created", this)
+    val all = NonEmptyList.of[Column[_]](
       id,
       enabled,
       task,
@@ -140,39 +141,37 @@ object RPeriodicTask {
     )
   }
 
-  import Columns._
+  val T = Table(None)
+  def as(alias: String): Table =
+    Table(Some(alias))
 
-  def insert(v: RPeriodicTask): ConnectionIO[Int] = {
-    val sql = insertRow(
-      table,
-      all,
+  def insert(v: RPeriodicTask): ConnectionIO[Int] =
+    DML.insert(
+      T,
+      T.all,
       fr"${v.id},${v.enabled},${v.task},${v.group},${v.args}," ++
         fr"${v.subject},${v.submitter},${v.priority},${v.worker}," ++
         fr"${v.marked},${v.timer},${v.nextrun},${v.created}"
     )
-    sql.update.run
-  }
 
-  def update(v: RPeriodicTask): ConnectionIO[Int] = {
-    val sql = updateRow(
-      table,
-      id.is(v.id),
-      commas(
-        enabled.setTo(v.enabled),
-        group.setTo(v.group),
-        args.setTo(v.args),
-        subject.setTo(v.subject),
-        submitter.setTo(v.submitter),
-        priority.setTo(v.priority),
-        worker.setTo(v.worker),
-        marked.setTo(v.marked),
-        timer.setTo(v.timer),
-        nextrun.setTo(v.nextrun)
+  def update(v: RPeriodicTask): ConnectionIO[Int] =
+    DML.update(
+      T,
+      T.id === v.id,
+      DML.set(
+        T.enabled.setTo(v.enabled),
+        T.group.setTo(v.group),
+        T.args.setTo(v.args),
+        T.subject.setTo(v.subject),
+        T.submitter.setTo(v.submitter),
+        T.priority.setTo(v.priority),
+        T.worker.setTo(v.worker),
+        T.marked.setTo(v.marked),
+        T.timer.setTo(v.timer),
+        T.nextrun.setTo(v.nextrun)
       )
     )
-    sql.update.run
-  }
 
   def exists(pid: Ident): ConnectionIO[Boolean] =
-    selectCount(id, table, id.is(pid)).query[Int].unique.map(_ > 0)
+    run(select(count(T.id)), from(T), T.id === pid).query[Int].unique.map(_ > 0)
 }

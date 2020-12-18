@@ -1,11 +1,12 @@
 package docspell.store.records
 
+import cats.data.NonEmptyList
 import cats.effect.Sync
 import cats.implicits._
 
 import docspell.common._
-import docspell.store.impl.Implicits._
-import docspell.store.impl._
+import docspell.store.qb.DSL._
+import docspell.store.qb._
 
 import doobie._
 import doobie.implicits._
@@ -13,18 +14,20 @@ import doobie.implicits._
 case class RRememberMe(id: Ident, accountId: AccountId, created: Timestamp, uses: Int) {}
 
 object RRememberMe {
+  final case class Table(alias: Option[String]) extends TableDef {
+    val tableName = "rememberme"
 
-  val table = fr"rememberme"
-
-  object Columns {
-    val id       = Column("id")
-    val cid      = Column("cid")
-    val username = Column("login")
-    val created  = Column("created")
-    val uses     = Column("uses")
-    val all      = List(id, cid, username, created, uses)
+    val id       = Column[Ident]("id", this)
+    val cid      = Column[Ident]("cid", this)
+    val username = Column[Ident]("login", this)
+    val created  = Column[Timestamp]("created", this)
+    val uses     = Column[Int]("uses", this)
+    val all      = NonEmptyList.of[Column[_]](id, cid, username, created, uses)
   }
-  import Columns._
+
+  private val T = Table(None)
+  def as(alias: String): Table =
+    Table(Some(alias))
 
   def generate[F[_]: Sync](account: AccountId): F[RRememberMe] =
     for {
@@ -33,29 +36,29 @@ object RRememberMe {
     } yield RRememberMe(i, account, c, 0)
 
   def insert(v: RRememberMe): ConnectionIO[Int] =
-    insertRow(
-      table,
-      all,
+    DML.insert(
+      T,
+      T.all,
       fr"${v.id},${v.accountId.collective},${v.accountId.user},${v.created},${v.uses}"
-    ).update.run
+    )
 
   def insertNew(acc: AccountId): ConnectionIO[RRememberMe] =
     generate[ConnectionIO](acc).flatMap(v => insert(v).map(_ => v))
 
   def findById(rid: Ident): ConnectionIO[Option[RRememberMe]] =
-    selectSimple(all, table, id.is(rid)).query[RRememberMe].option
+    run(select(T.all), from(T), T.id === rid).query[RRememberMe].option
 
   def delete(rid: Ident): ConnectionIO[Int] =
-    deleteFrom(table, id.is(rid)).update.run
+    DML.delete(T, T.id === rid)
 
   def incrementUse(rid: Ident): ConnectionIO[Int] =
-    updateRow(table, id.is(rid), uses.increment(1)).update.run
+    DML.update(T, T.id === rid, DML.set(T.uses.increment(1)))
 
   def useRememberMe(
       rid: Ident,
       minCreated: Timestamp
   ): ConnectionIO[Option[RRememberMe]] = {
-    val get = selectSimple(all, table, and(id.is(rid), created.isGt(minCreated)))
+    val get = run(select(T.all), from(T), T.id === rid && T.created > minCreated)
       .query[RRememberMe]
       .option
     for {
@@ -65,5 +68,5 @@ object RRememberMe {
   }
 
   def deleteOlderThan(ts: Timestamp): ConnectionIO[Int] =
-    deleteFrom(table, created.isLt(ts)).update.run
+    DML.delete(T, T.created < ts)
 }

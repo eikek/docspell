@@ -1,8 +1,10 @@
 package docspell.store.records
 
+import cats.data.NonEmptyList
+
 import docspell.common._
-import docspell.store.impl.Implicits._
-import docspell.store.impl._
+import docspell.store.qb.DSL._
+import docspell.store.qb._
 
 import doobie._
 import doobie.implicits._
@@ -16,70 +18,84 @@ case class REquipment(
 ) {}
 
 object REquipment {
+  final case class Table(alias: Option[String]) extends TableDef {
+    val tableName = "equipment"
 
-  val table = fr"equipment"
-
-  object Columns {
-    val eid     = Column("eid")
-    val cid     = Column("cid")
-    val name    = Column("name")
-    val created = Column("created")
-    val updated = Column("updated")
-    val all     = List(eid, cid, name, created, updated)
+    val eid     = Column[Ident]("eid", this)
+    val cid     = Column[Ident]("cid", this)
+    val name    = Column[String]("name", this)
+    val created = Column[Timestamp]("created", this)
+    val updated = Column[Timestamp]("updated", this)
+    val all     = NonEmptyList.of[Column[_]](eid, cid, name, created, updated)
   }
-  import Columns._
+
+  val T = Table(None)
+  def as(alias: String): Table =
+    Table(Some(alias))
 
   def insert(v: REquipment): ConnectionIO[Int] = {
-    val sql =
-      insertRow(table, all, fr"${v.eid},${v.cid},${v.name},${v.created},${v.updated}")
-    sql.update.run
+    val t = Table(None)
+    DML
+      .insert(
+        t,
+        t.all,
+        fr"${v.eid},${v.cid},${v.name},${v.created},${v.updated}"
+      )
   }
 
   def update(v: REquipment): ConnectionIO[Int] = {
-    def sql(now: Timestamp) =
-      updateRow(
-        table,
-        and(eid.is(v.eid), cid.is(v.cid)),
-        commas(
-          cid.setTo(v.cid),
-          name.setTo(v.name),
-          updated.setTo(now)
-        )
-      )
+    val t = Table(None)
     for {
       now <- Timestamp.current[ConnectionIO]
-      n   <- sql(now).update.run
+      n <- DML
+        .update(
+          t,
+          where(t.eid === v.eid, t.cid === v.cid),
+          DML.set(
+            t.cid.setTo(v.cid),
+            t.name.setTo(v.name),
+            t.updated.setTo(now)
+          )
+        )
     } yield n
   }
 
   def existsByName(coll: Ident, ename: String): ConnectionIO[Boolean] = {
-    val sql = selectCount(eid, table, and(cid.is(coll), name.is(ename)))
+    val t   = Table(None)
+    val sql = run(select(count(t.eid)), from(t), where(t.cid === coll, t.name === ename))
     sql.query[Int].unique.map(_ > 0)
   }
 
   def findById(id: Ident): ConnectionIO[Option[REquipment]] = {
-    val sql = selectSimple(all, table, eid.is(id))
+    val t   = Table(None)
+    val sql = run(select(t.all), from(t), t.eid === id)
     sql.query[REquipment].option
   }
 
   def findAll(
       coll: Ident,
       nameQ: Option[String],
-      order: Columns.type => Column
+      order: Table => Column[_]
   ): ConnectionIO[Vector[REquipment]] = {
-    val q = Seq(cid.is(coll)) ++ (nameQ match {
-      case Some(str) => Seq(name.lowerLike(s"%${str.toLowerCase}%"))
-      case None      => Seq.empty
-    })
-    val sql = selectSimple(all, table, and(q)) ++ orderBy(order(Columns).f)
+    val t = Table(None)
+
+    val q = t.cid === coll &&? nameQ
+      .map(str => s"%${str.toLowerCase}%")
+      .map(v => t.name.like(v))
+
+    val sql = Select(select(t.all), from(t), q).orderBy(order(t)).build
     sql.query[REquipment].to[Vector]
   }
 
-  def findLike(coll: Ident, equipName: String): ConnectionIO[Vector[IdRef]] =
-    selectSimple(List(eid, name), table, and(cid.is(coll), name.lowerLike(equipName)))
+  def findLike(coll: Ident, equipName: String): ConnectionIO[Vector[IdRef]] = {
+    val t = Table(None)
+    run(select(t.eid, t.name), from(t), t.cid === coll && t.name.like(equipName))
       .query[IdRef]
       .to[Vector]
+  }
 
-  def delete(id: Ident, coll: Ident): ConnectionIO[Int] =
-    deleteFrom(table, and(eid.is(id), cid.is(coll))).update.run
+  def delete(id: Ident, coll: Ident): ConnectionIO[Int] = {
+    val t = Table(None)
+    DML.delete(t, t.eid === id && t.cid === coll)
+  }
 }

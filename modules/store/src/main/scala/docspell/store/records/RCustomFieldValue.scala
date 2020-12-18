@@ -3,8 +3,8 @@ package docspell.store.records
 import cats.data.NonEmptyList
 
 import docspell.common._
-import docspell.store.impl.Column
-import docspell.store.impl.Implicits._
+import docspell.store.qb.DSL._
+import docspell.store.qb._
 
 import doobie._
 import doobie.implicits._
@@ -17,51 +17,51 @@ case class RCustomFieldValue(
 )
 
 object RCustomFieldValue {
+  final case class Table(alias: Option[String]) extends TableDef {
+    val tableName = "custom_field_value"
 
-  val table = fr"custom_field_value"
+    val id     = Column[Ident]("id", this)
+    val itemId = Column[Ident]("item_id", this)
+    val field  = Column[Ident]("field", this)
+    val value  = Column[String]("field_value", this)
 
-  object Columns {
-
-    val id     = Column("id")
-    val itemId = Column("item_id")
-    val field  = Column("field")
-    val value  = Column("field_value")
-
-    val all = List(id, itemId, field, value)
+    val all = NonEmptyList.of[Column[_]](id, itemId, field, value)
   }
 
-  def insert(value: RCustomFieldValue): ConnectionIO[Int] = {
-    val sql = insertRow(
-      table,
-      Columns.all,
+  val T = Table(None)
+  def as(alias: String): Table =
+    Table(Some(alias))
+
+  def insert(value: RCustomFieldValue): ConnectionIO[Int] =
+    DML.insert(
+      T,
+      T.all,
       fr"${value.id},${value.itemId},${value.field},${value.value}"
     )
-    sql.update.run
-  }
 
   def updateValue(
       fieldId: Ident,
       item: Ident,
       value: String
   ): ConnectionIO[Int] =
-    updateRow(
-      table,
-      and(Columns.itemId.is(item), Columns.field.is(fieldId)),
-      Columns.value.setTo(value)
-    ).update.run
+    DML.update(
+      T,
+      T.itemId === item && T.field === fieldId,
+      DML.set(T.value.setTo(value))
+    )
 
   def countField(fieldId: Ident): ConnectionIO[Int] =
-    selectCount(Columns.id, table, Columns.field.is(fieldId)).query[Int].unique
+    Select(count(T.id).s, from(T), T.field === fieldId).build.query[Int].unique
 
   def deleteByField(fieldId: Ident): ConnectionIO[Int] =
-    deleteFrom(table, Columns.field.is(fieldId)).update.run
+    DML.delete(T, T.field === fieldId)
 
   def deleteByItem(item: Ident): ConnectionIO[Int] =
-    deleteFrom(table, Columns.itemId.is(item)).update.run
+    DML.delete(T, T.itemId === item)
 
   def deleteValue(fieldId: Ident, items: NonEmptyList[Ident]): ConnectionIO[Int] =
-    deleteFrom(
-      table,
-      and(Columns.field.is(fieldId), Columns.itemId.isIn(items))
-    ).update.run
+    DML.delete(
+      T,
+      T.field === fieldId && T.itemId.in(items)
+    )
 }

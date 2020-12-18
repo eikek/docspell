@@ -7,7 +7,7 @@ import fs2.Stream
 
 import docspell.backend.ops.OItemSearch._
 import docspell.common._
-import docspell.store.Store
+import docspell.store._
 import docspell.store.queries.{QAttachment, QItem}
 import docspell.store.records._
 
@@ -23,6 +23,8 @@ trait OItemSearch[F[_]] {
   def findItemsWithTags(
       maxNoteLen: Int
   )(q: Query, batch: Batch): F[Vector[ListItemWithTags]]
+
+  def findItemsSummary(q: Query): F[SearchSummary]
 
   def findAttachment(id: Ident, collective: Ident): F[Option[AttachmentData[F]]]
 
@@ -53,26 +55,29 @@ trait OItemSearch[F[_]] {
 
 object OItemSearch {
 
-  type CustomValue = QItem.CustomValue
-  val CustomValue = QItem.CustomValue
+  type SearchSummary = queries.SearchSummary
+  val SearchSummary = queries.SearchSummary
 
-  type Query = QItem.Query
-  val Query = QItem.Query
+  type CustomValue = queries.CustomValue
+  val CustomValue = queries.CustomValue
 
-  type Batch = QItem.Batch
-  val Batch = QItem.Batch
+  type Query = queries.Query
+  val Query = queries.Query
 
-  type ListItem = QItem.ListItem
-  val ListItem = QItem.ListItem
+  type Batch = qb.Batch
+  val Batch = docspell.store.qb.Batch
 
-  type ListItemWithTags = QItem.ListItemWithTags
-  val ListItemWithTags = QItem.ListItemWithTags
+  type ListItem = queries.ListItem
+  val ListItem = queries.ListItem
 
-  type ItemFieldValue = QItem.ItemFieldValue
-  val ItemFieldValue = QItem.ItemFieldValue
+  type ListItemWithTags = queries.ListItemWithTags
+  val ListItemWithTags = queries.ListItemWithTags
 
-  type ItemData = QItem.ItemData
-  val ItemData = QItem.ItemData
+  type ItemFieldValue = queries.ItemFieldValue
+  val ItemFieldValue = queries.ItemFieldValue
+
+  type ItemData = queries.ItemData
+  val ItemData = queries.ItemData
 
   trait BinaryData[F[_]] {
     def data: Stream[F, Byte]
@@ -138,6 +143,9 @@ object OItemSearch {
           .compile
           .toVector
       }
+
+      def findItemsSummary(q: Query): F[SearchSummary] =
+        store.transact(QItem.searchStats(q))
 
       def findAttachment(id: Ident, collective: Ident): F[Option[AttachmentData[F]]] =
         store

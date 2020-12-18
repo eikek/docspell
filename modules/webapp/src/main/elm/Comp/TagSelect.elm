@@ -5,6 +5,7 @@ module Comp.TagSelect exposing
     , Selection
     , emptySelection
     , init
+    , modify
     , reset
     , toggleTag
     , update
@@ -75,6 +76,45 @@ init sel tags =
     , expandedTags = False
     , expandedCats = False
     }
+
+
+modify : Selection -> Model -> List TagCount -> Model
+modify sel model tags =
+    let
+        newModel =
+            init sel tags
+    in
+    if List.isEmpty model.all then
+        newModel
+
+    else
+        let
+            tagId t =
+                t.tag.id
+
+            catId c =
+                c.name
+
+            tagDict =
+                List.map (\e -> ( tagId e, e )) tags
+                    |> Dict.fromList
+
+            catDict =
+                List.map (\e -> ( catId e, e )) newModel.categories
+                    |> Dict.fromList
+
+            replaceTag e =
+                Dict.get e.tag.id tagDict |> Maybe.withDefault { e | count = 0 }
+
+            replaceCat c =
+                Dict.get c.name catDict |> Maybe.withDefault { c | count = 0 }
+        in
+        { model
+            | all = List.map replaceTag model.all
+            , filteredTags = List.map replaceTag model.filteredTags
+            , categories = List.map replaceCat model.categories
+            , filteredCats = List.map replaceCat model.filteredCats
+        }
 
 
 reset : Model -> Model

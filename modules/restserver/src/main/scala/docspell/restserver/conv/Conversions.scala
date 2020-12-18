@@ -16,7 +16,7 @@ import docspell.common.syntax.all._
 import docspell.ftsclient.FtsResult
 import docspell.restapi.model._
 import docspell.restserver.conv.Conversions._
-import docspell.store.queries.QItem
+import docspell.store.queries.{AttachmentLight => QAttachmentLight}
 import docspell.store.records._
 import docspell.store.{AddResult, UpdateResult}
 
@@ -26,6 +26,30 @@ import org.http4s.multipart.Multipart
 import org.log4s.Logger
 
 trait Conversions {
+
+  def mkSearchStats(sum: OItemSearch.SearchSummary): SearchStats =
+    SearchStats(
+      sum.count,
+      mkTagCloud(sum.tags),
+      sum.fields.map(mkFieldStats),
+      sum.folders.map(mkFolderStats)
+    )
+
+  def mkFolderStats(fs: docspell.store.queries.FolderCount): FolderStats =
+    FolderStats(fs.id, fs.name, mkIdName(fs.owner), fs.count)
+
+  def mkFieldStats(fs: docspell.store.queries.FieldStats): FieldStats =
+    FieldStats(
+      fs.field.id,
+      fs.field.name,
+      fs.field.label,
+      fs.field.ftype,
+      fs.count,
+      fs.sum.doubleValue,
+      fs.avg.doubleValue,
+      fs.max.doubleValue,
+      fs.min.doubleValue
+    )
 
   // insights
   def mkItemInsights(d: InsightData): ItemInsights =
@@ -213,7 +237,6 @@ trait Conversions {
       i.concPerson.map(mkIdName),
       i.concEquip.map(mkIdName),
       i.folder.map(mkIdName),
-      i.fileCount,
       Nil, //attachments
       Nil, //tags
       Nil, //customfields
@@ -235,7 +258,7 @@ trait Conversions {
         customfields = i.customfields.map(mkItemFieldValue)
       )
 
-  private def mkAttachmentLight(qa: QItem.AttachmentLight): AttachmentLight =
+  private def mkAttachmentLight(qa: QAttachmentLight): AttachmentLight =
     AttachmentLight(qa.id, qa.position, qa.name, qa.pageCount)
 
   def mkItemLightWithTags(i: OFulltext.FtsItemWithTags): ItemLight = {

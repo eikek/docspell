@@ -326,14 +326,14 @@ viewForm settings model =
         , a
             [ class "ui secondary button"
             , onClick (SetViewMode Table)
-            , href ""
+            , href "#"
             ]
             [ text "Cancel"
             ]
         , if not newPerson then
             a
                 [ class "ui right floated red button"
-                , href ""
+                , href "#"
                 , onClick RequestDelete
                 ]
                 [ text "Delete" ]

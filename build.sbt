@@ -445,7 +445,8 @@ val joex = project
     buildInfoPackage := "docspell.joex",
     reStart / javaOptions ++= Seq(
       s"-Dconfig.file=${(LocalRootProject / baseDirectory).value / "local" / "dev.conf"}"
-    )
+    ),
+    Revolver.enableDebugging(port = 5051, suspend = false)
   )
   .dependsOn(store, backend, extract, convert, analysis, joexapi, restapi, ftssolr)
 
@@ -492,7 +493,8 @@ val restserver = project
     ),
     reStart / javaOptions ++= Seq(
       s"-Dconfig.file=${(LocalRootProject / baseDirectory).value / "local" / "dev.conf"}"
-    )
+    ),
+    Revolver.enableDebugging(port = 5050, suspend = false)
   )
   .dependsOn(restapi, joexapi, backend, webapp, ftssolr)
 

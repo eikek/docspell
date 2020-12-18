@@ -4,8 +4,8 @@ import cats.data.NonEmptyList
 import cats.implicits._
 
 import docspell.common._
-import docspell.store.impl.Implicits._
-import docspell.store.impl._
+import docspell.store.qb.DSL._
+import docspell.store.qb._
 
 import doobie._
 import doobie.implicits._
@@ -13,41 +13,37 @@ import doobie.implicits._
 case class RTagItem(tagItemId: Ident, itemId: Ident, tagId: Ident) {}
 
 object RTagItem {
+  final case class Table(alias: Option[String]) extends TableDef {
+    val tableName = "tagitem"
 
-  val table = fr"tagitem"
-
-  object Columns {
-    val tagItemId = Column("tagitemid")
-    val itemId    = Column("itemid")
-    val tagId     = Column("tid")
-    val all       = List(tagItemId, itemId, tagId)
+    val tagItemId = Column[Ident]("tagitemid", this)
+    val itemId    = Column[Ident]("itemid", this)
+    val tagId     = Column[Ident]("tid", this)
+    val all       = NonEmptyList.of[Column[_]](tagItemId, itemId, tagId)
   }
-  import Columns._
+  val T = Table(None)
+  def as(alias: String): Table =
+    Table(Some(alias))
 
   def insert(v: RTagItem): ConnectionIO[Int] =
-    insertRow(table, all, fr"${v.tagItemId},${v.itemId},${v.tagId}").update.run
+    DML.insert(T, T.all, fr"${v.tagItemId},${v.itemId},${v.tagId}")
 
   def deleteItemTags(item: Ident): ConnectionIO[Int] =
-    deleteFrom(table, itemId.is(item)).update.run
+    DML.delete(T, T.itemId === item)
 
-  def deleteItemTags(items: NonEmptyList[Ident], cid: Ident): ConnectionIO[Int] = {
-    val itemsFiltered =
-      RItem.filterItemsFragment(items, cid)
-    val sql = fr"DELETE FROM" ++ table ++ fr"WHERE" ++ itemId.isIn(itemsFiltered)
-
-    sql.update.run
-  }
+  def deleteItemTags(items: NonEmptyList[Ident], cid: Ident): ConnectionIO[Int] =
+    DML.delete(T, T.itemId.in(RItem.filterItemsFragment(items, cid)))
 
   def deleteTag(tid: Ident): ConnectionIO[Int] =
-    deleteFrom(table, tagId.is(tid)).update.run
+    DML.delete(T, T.tagId === tid)
 
   def findByItem(item: Ident): ConnectionIO[Vector[RTagItem]] =
-    selectSimple(all, table, itemId.is(item)).query[RTagItem].to[Vector]
+    run(select(T.all), from(T), T.itemId === item).query[RTagItem].to[Vector]
 
   def findAllIn(item: Ident, tags: Seq[Ident]): ConnectionIO[Vector[RTagItem]] =
     NonEmptyList.fromList(tags.toList) match {
       case Some(nel) =>
-        selectSimple(all, table, and(itemId.is(item), tagId.isIn(nel)))
+        run(select(T.all), from(T), T.itemId === item && T.tagId.in(nel))
           .query[RTagItem]
           .to[Vector]
       case None =>
@@ -59,7 +55,7 @@ object RTagItem {
       case None =>
         0.pure[ConnectionIO]
       case Some(nel) =>
-        deleteFrom(table, and(itemId.is(item), tagId.isIn(nel))).update.run
+        DML.delete(T, T.itemId === item && T.tagId.in(nel))
     }
 
   def setAllTags(item: Ident, tags: Seq[Ident]): ConnectionIO[Int] =
@@ -69,11 +65,12 @@ object RTagItem {
         entities <- tags.toList.traverse(tagId =>
           Ident.randomId[ConnectionIO].map(id => RTagItem(id, item, tagId))
         )
-        n <- insertRows(
-          table,
-          all,
-          entities.map(v => fr"${v.tagItemId},${v.itemId},${v.tagId}")
-        ).update.run
+        n <- DML
+          .insertMany(
+            T,
+            T.all,
+            entities.map(v => fr"${v.tagItemId},${v.itemId},${v.tagId}")
+          )
       } yield n
 
   def appendTags(item: Ident, tags: List[Ident]): ConnectionIO[Int] =

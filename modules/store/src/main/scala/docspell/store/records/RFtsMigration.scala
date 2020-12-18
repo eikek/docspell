@@ -1,11 +1,12 @@
 package docspell.store.records
 
+import cats.data.NonEmptyList
 import cats.effect._
 import cats.implicits._
 
 import docspell.common._
-import docspell.store.impl.Implicits._
-import docspell.store.impl._
+import docspell.store.qb.DSL._
+import docspell.store.qb._
 
 import doobie._
 import doobie.implicits._
@@ -30,32 +31,38 @@ object RFtsMigration {
       now   <- Timestamp.current[F]
     } yield RFtsMigration(newId, version, ftsEngine, description, now)
 
-  val table = fr"fts_migration"
+  final case class Table(alias: Option[String]) extends TableDef {
+    val tableName = "fts_migration"
 
-  object Columns {
-    val id          = Column("id")
-    val version     = Column("version")
-    val ftsEngine   = Column("fts_engine")
-    val description = Column("description")
-    val created     = Column("created")
+    val id          = Column[Ident]("id", this)
+    val version     = Column[Int]("version", this)
+    val ftsEngine   = Column[Ident]("fts_engine", this)
+    val description = Column[String]("description", this)
+    val created     = Column[Timestamp]("created", this)
 
-    val all = List(id, version, ftsEngine, description, created)
+    val all = NonEmptyList.of[Column[_]](id, version, ftsEngine, description, created)
   }
-  import Columns._
+
+  val T = Table(None)
+  def as(alias: String): Table =
+    Table(Some(alias))
 
   def insert(v: RFtsMigration): ConnectionIO[Int] =
-    insertRow(
-      table,
-      all,
-      fr"${v.id},${v.version},${v.ftsEngine},${v.description},${v.created}"
-    ).updateWithLogHandler(LogHandler.nop).run
+    DML
+      .insertFragment(
+        T,
+        T.all,
+        Seq(fr"${v.id},${v.version},${v.ftsEngine},${v.description},${v.created}")
+      )
+      .updateWithLogHandler(LogHandler.nop)
+      .run
 
   def exists(vers: Int, engine: Ident): ConnectionIO[Boolean] =
-    selectCount(id, table, and(version.is(vers), ftsEngine.is(engine)))
+    run(select(count(T.id)), from(T), T.version === vers && T.ftsEngine === engine)
       .query[Int]
       .unique
       .map(_ > 0)
 
   def deleteById(rId: Ident): ConnectionIO[Int] =
-    deleteFrom(table, id.is(rId)).update.run
+    DML.delete(T, T.id === rId)
 }

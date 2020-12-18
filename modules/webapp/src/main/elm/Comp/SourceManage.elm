@@ -389,11 +389,11 @@ viewForm flags settings model =
         , button [ class "ui primary button", type_ "submit" ]
             [ text "Submit"
             ]
-        , a [ class "ui secondary button", onClick SetTableView, href "" ]
+        , a [ class "ui secondary button", onClick SetTableView, href "#" ]
             [ text "Cancel"
             ]
         , if not newSource then
-            a [ class "ui right floated red button", href "", onClick RequestDelete ]
+            a [ class "ui right floated red button", href "#", onClick RequestDelete ]
                 [ text "Delete" ]
 
           else

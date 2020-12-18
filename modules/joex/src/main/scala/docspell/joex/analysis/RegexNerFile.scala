@@ -136,27 +136,21 @@ object RegexNerFile {
 
   object Sql {
     import doobie._
-    import doobie.implicits._
-    import docspell.store.impl.Implicits._
-    import docspell.store.impl.Column
+    import docspell.store.qb.DSL._
+    import docspell.store.qb._
 
     def latestUpdate(collective: Ident): ConnectionIO[Option[Timestamp]] = {
-      def max(col: Column, table: Fragment, cidCol: Column): Fragment =
-        selectSimple(col.max ++ fr"as t", table, cidCol.is(collective))
+      def max_(col: Column[_], cidCol: Column[Ident]): Select =
+        Select(max(col).as("t"), from(col.table), cidCol === collective)
 
-      val sql =
-        List(
-          max(
-            ROrganization.Columns.updated,
-            ROrganization.table,
-            ROrganization.Columns.cid
-          ),
-          max(RPerson.Columns.updated, RPerson.table, RPerson.Columns.cid),
-          max(REquipment.Columns.updated, REquipment.table, REquipment.Columns.cid)
-        )
-          .reduce(_ ++ fr"UNION ALL" ++ _)
+      val sql = union(
+        max_(ROrganization.T.updated, ROrganization.T.cid),
+        max_(RPerson.T.updated, RPerson.T.cid),
+        max_(REquipment.T.updated, REquipment.T.cid)
+      )
+      val t = Column[Timestamp]("t", TableDef(""))
 
-      selectSimple(fr"MAX(t)", fr"(" ++ sql ++ fr") as x", Fragment.empty)
+      run(select(max(t)), from(sql, "x"))
         .query[Option[Timestamp]]
         .option
         .map(_.flatten)

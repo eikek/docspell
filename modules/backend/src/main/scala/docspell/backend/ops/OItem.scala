@@ -9,7 +9,7 @@ import docspell.backend.JobFactory
 import docspell.common._
 import docspell.ftsclient.FtsClient
 import docspell.store.UpdateResult
-import docspell.store.queries.{QAttachment, QItem}
+import docspell.store.queries.{QAttachment, QItem, QMoveAttachment}
 import docspell.store.queue.JobQueue
 import docspell.store.records._
 import docspell.store.{AddResult, Store}
@@ -206,7 +206,7 @@ object OItem {
             target: Ident
         ): F[AddResult] =
           store
-            .transact(QItem.moveAttachmentBefore(itemId, source, target))
+            .transact(QMoveAttachment.moveAttachmentBefore(itemId, source, target))
             .attempt
             .map(AddResult.fromUpdate)
 

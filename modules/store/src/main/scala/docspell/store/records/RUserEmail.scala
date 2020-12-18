@@ -1,12 +1,12 @@
 package docspell.store.records
 
-import cats.data.OptionT
+import cats.data.{NonEmptyList, OptionT}
 import cats.effect._
 import cats.implicits._
 
 import docspell.common._
-import docspell.store.impl.Column
-import docspell.store.impl.Implicits._
+import docspell.store.qb.DSL._
+import docspell.store.qb._
 
 import doobie._
 import doobie.implicits._
@@ -101,24 +101,24 @@ object RUserEmail {
       mailReplyTo,
       now
     )
+  final case class Table(alias: Option[String]) extends TableDef {
 
-  val table = fr"useremail"
+    val tableName = "useremail"
 
-  object Columns {
-    val id            = Column("id")
-    val uid           = Column("uid")
-    val name          = Column("name")
-    val smtpHost      = Column("smtp_host")
-    val smtpPort      = Column("smtp_port")
-    val smtpUser      = Column("smtp_user")
-    val smtpPass      = Column("smtp_password")
-    val smtpSsl       = Column("smtp_ssl")
-    val smtpCertCheck = Column("smtp_certcheck")
-    val mailFrom      = Column("mail_from")
-    val mailReplyTo   = Column("mail_replyto")
-    val created       = Column("created")
+    val id            = Column[Ident]("id", this)
+    val uid           = Column[Ident]("uid", this)
+    val name          = Column[Ident]("name", this)
+    val smtpHost      = Column[String]("smtp_host", this)
+    val smtpPort      = Column[Int]("smtp_port", this)
+    val smtpUser      = Column[String]("smtp_user", this)
+    val smtpPass      = Column[Password]("smtp_password", this)
+    val smtpSsl       = Column[SSLType]("smtp_ssl", this)
+    val smtpCertCheck = Column[Boolean]("smtp_certcheck", this)
+    val mailFrom      = Column[MailAddress]("mail_from", this)
+    val mailReplyTo   = Column[MailAddress]("mail_replyto", this)
+    val created       = Column[Timestamp]("created", this)
 
-    val all = List(
+    val all = NonEmptyList.of[Column[_]](
       id,
       uid,
       name,
@@ -134,54 +134,61 @@ object RUserEmail {
     )
   }
 
-  import Columns._
+  def as(alias: String): Table =
+    Table(Some(alias))
 
-  def insert(v: RUserEmail): ConnectionIO[Int] =
-    insertRow(
-      table,
-      all,
+  def insert(v: RUserEmail): ConnectionIO[Int] = {
+    val t = Table(None)
+    DML.insert(
+      t,
+      t.all,
       sql"${v.id},${v.uid},${v.name},${v.smtpHost},${v.smtpPort},${v.smtpUser},${v.smtpPassword},${v.smtpSsl},${v.smtpCertCheck},${v.mailFrom},${v.mailReplyTo},${v.created}"
-    ).update.run
+    )
+  }
 
-  def update(eId: Ident, v: RUserEmail): ConnectionIO[Int] =
-    updateRow(
-      table,
-      id.is(eId),
-      commas(
-        name.setTo(v.name),
-        smtpHost.setTo(v.smtpHost),
-        smtpPort.setTo(v.smtpPort),
-        smtpUser.setTo(v.smtpUser),
-        smtpPass.setTo(v.smtpPassword),
-        smtpSsl.setTo(v.smtpSsl),
-        smtpCertCheck.setTo(v.smtpCertCheck),
-        mailFrom.setTo(v.mailFrom),
-        mailReplyTo.setTo(v.mailReplyTo)
+  def update(eId: Ident, v: RUserEmail): ConnectionIO[Int] = {
+    val t = Table(None)
+    DML.update(
+      t,
+      t.id === eId,
+      DML.set(
+        t.name.setTo(v.name),
+        t.smtpHost.setTo(v.smtpHost),
+        t.smtpPort.setTo(v.smtpPort),
+        t.smtpUser.setTo(v.smtpUser),
+        t.smtpPass.setTo(v.smtpPassword),
+        t.smtpSsl.setTo(v.smtpSsl),
+        t.smtpCertCheck.setTo(v.smtpCertCheck),
+        t.mailFrom.setTo(v.mailFrom),
+        t.mailReplyTo.setTo(v.mailReplyTo)
       )
-    ).update.run
+    )
+  }
 
-  def findByUser(userId: Ident): ConnectionIO[Vector[RUserEmail]] =
-    selectSimple(all, table, uid.is(userId)).query[RUserEmail].to[Vector]
+  def findByUser(userId: Ident): ConnectionIO[Vector[RUserEmail]] = {
+    val t = Table(None)
+    run(select(t.all), from(t), t.uid === userId).query[RUserEmail].to[Vector]
+  }
 
   private def findByAccount0(
       accId: AccountId,
       nameQ: Option[String],
       exact: Boolean
   ): Query0[RUserEmail] = {
-    val mUid   = uid.prefix("m")
-    val mName  = name.prefix("m")
-    val uId    = RUser.Columns.uid.prefix("u")
-    val uColl  = RUser.Columns.cid.prefix("u")
-    val uLogin = RUser.Columns.login.prefix("u")
-    val from   = table ++ fr"m INNER JOIN" ++ RUser.table ++ fr"u ON" ++ mUid.is(uId)
-    val cond = Seq(uColl.is(accId.collective), uLogin.is(accId.user)) ++ (nameQ match {
-      case Some(str) if exact => Seq(mName.is(str))
-      case Some(str)          => Seq(mName.lowerLike(s"%${str.toLowerCase}%"))
-      case None               => Seq.empty
-    })
+    val user  = RUser.as("u")
+    val email = as("m")
 
-    (selectSimple(all.map(_.prefix("m")), from, and(cond)) ++ orderBy(mName.f))
-      .query[RUserEmail]
+    val nameFilter = nameQ.map(s =>
+      if (exact) email.name ==== s else email.name.likes(s"%${s.toLowerCase}%")
+    )
+
+    val sql = Select(
+      select(email.all),
+      from(email).innerJoin(user, email.uid === user.uid),
+      user.cid === accId.collective && user.login === accId.user &&? nameFilter
+    ).orderBy(email.name)
+
+    sql.build.query[RUserEmail]
   }
 
   def findByAccount(
@@ -194,26 +201,26 @@ object RUserEmail {
     findByAccount0(accId, Some(name.id), true).option
 
   def delete(accId: AccountId, connName: Ident): ConnectionIO[Int] = {
-    val uId    = RUser.Columns.uid
-    val uColl  = RUser.Columns.cid
-    val uLogin = RUser.Columns.login
-    val cond   = Seq(uColl.is(accId.collective), uLogin.is(accId.user))
+    val user = RUser.as("u")
 
-    deleteFrom(
-      table,
-      fr"uid in (" ++ selectSimple(Seq(uId), RUser.table, and(cond)) ++ fr") AND" ++ name
-        .is(
-          connName
-        )
-    ).update.run
+    val subsel = Select(
+      select(user.uid),
+      from(user),
+      user.cid === accId.collective && user.login === accId.user
+    )
+
+    val t = Table(None)
+    DML.delete(t, t.uid.in(subsel) && t.name === connName)
   }
 
   def exists(accId: AccountId, name: Ident): ConnectionIO[Boolean] =
     getByName(accId, name).map(_.isDefined)
 
-  def exists(userId: Ident, connName: Ident): ConnectionIO[Boolean] =
-    selectCount(id, table, and(uid.is(userId), name.is(connName)))
+  def exists(userId: Ident, connName: Ident): ConnectionIO[Boolean] = {
+    val t = Table(None)
+    run(select(count(t.id)), from(t), t.uid === userId && t.name === connName)
       .query[Int]
       .unique
       .map(_ > 0)
+  }
 }

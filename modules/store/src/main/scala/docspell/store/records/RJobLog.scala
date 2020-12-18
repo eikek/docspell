@@ -1,8 +1,10 @@
 package docspell.store.records
 
+import cats.data.NonEmptyList
+
 import docspell.common._
-import docspell.store.impl.Column
-import docspell.store.impl.Implicits._
+import docspell.store.qb.DSL._
+import docspell.store.qb._
 
 import doobie._
 import doobie.implicits._
@@ -16,35 +18,39 @@ case class RJobLog(
 ) {}
 
 object RJobLog {
+  final case class Table(alias: Option[String]) extends TableDef {
+    val tableName = "joblog"
 
-  val table = fr"joblog"
-
-  object Columns {
-    val id      = Column("id")
-    val jobId   = Column("jid")
-    val level   = Column("level")
-    val created = Column("created")
-    val message = Column("message")
-    val all     = List(id, jobId, level, created, message)
+    val id      = Column[Ident]("id", this)
+    val jobId   = Column[Ident]("jid", this)
+    val level   = Column[LogLevel]("level", this)
+    val created = Column[Timestamp]("created", this)
+    val message = Column[String]("message", this)
+    val all     = NonEmptyList.of[Column[_]](id, jobId, level, created, message)
 
     // separate column only for sorting, so not included in `all` and
     // the case class
-    val counter = Column("counter")
+    val counter = Column[Long]("counter", this)
   }
-  import Columns._
+
+  val T = Table(None)
+  def as(alias: String): Table =
+    Table(Some(alias))
 
   def insert(v: RJobLog): ConnectionIO[Int] =
-    insertRow(
-      table,
-      all,
+    DML.insert(
+      T,
+      T.all,
       fr"${v.id},${v.jobId},${v.level},${v.created},${v.message}"
-    ).update.run
+    )
 
   def findLogs(id: Ident): ConnectionIO[Vector[RJobLog]] =
-    (selectSimple(all, table, jobId.is(id)) ++ orderBy(created.asc, counter.asc))
+    Select(select(T.all), from(T), T.jobId === id)
+      .orderBy(T.created.asc, T.counter.asc)
+      .build
       .query[RJobLog]
       .to[Vector]
 
   def deleteAll(job: Ident): ConnectionIO[Int] =
-    deleteFrom(table, jobId.is(job)).update.run
+    DML.delete(T, T.jobId === job)
 }

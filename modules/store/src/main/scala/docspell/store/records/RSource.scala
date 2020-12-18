@@ -1,8 +1,10 @@
 package docspell.store.records
 
+import cats.data.NonEmptyList
+
 import docspell.common._
-import docspell.store.impl.Implicits._
-import docspell.store.impl._
+import docspell.store.qb.DSL._
+import docspell.store.qb._
 
 import doobie._
 import doobie.implicits._
@@ -26,23 +28,22 @@ case class RSource(
 
 object RSource {
 
-  val table = fr"source"
+  final case class Table(alias: Option[String]) extends TableDef {
+    val tableName = "source"
 
-  object Columns {
-
-    val sid         = Column("sid")
-    val cid         = Column("cid")
-    val abbrev      = Column("abbrev")
-    val description = Column("description")
-    val counter     = Column("counter")
-    val enabled     = Column("enabled")
-    val priority    = Column("priority")
-    val created     = Column("created")
-    val folder      = Column("folder_id")
-    val fileFilter  = Column("file_filter")
+    val sid         = Column[Ident]("sid", this)
+    val cid         = Column[Ident]("cid", this)
+    val abbrev      = Column[String]("abbrev", this)
+    val description = Column[String]("description", this)
+    val counter     = Column[Int]("counter", this)
+    val enabled     = Column[Boolean]("enabled", this)
+    val priority    = Column[Priority]("priority", this)
+    val created     = Column[Timestamp]("created", this)
+    val folder      = Column[Ident]("folder_id", this)
+    val fileFilter  = Column[Glob]("file_filter", this)
 
     val all =
-      List(
+      NonEmptyList.of[Column[_]](
         sid,
         cid,
         abbrev,
@@ -56,48 +57,51 @@ object RSource {
       )
   }
 
-  import Columns._
+  def as(alias: String): Table =
+    Table(Some(alias))
 
-  def insert(v: RSource): ConnectionIO[Int] = {
-    val sql = insertRow(
+  val table = Table(None)
+
+  def insert(v: RSource): ConnectionIO[Int] =
+    DML.insert(
       table,
-      all,
+      table.all,
       fr"${v.sid},${v.cid},${v.abbrev},${v.description},${v.counter},${v.enabled},${v.priority},${v.created},${v.folderId},${v.fileFilter}"
     )
-    sql.update.run
-  }
 
-  def updateNoCounter(v: RSource): ConnectionIO[Int] = {
-    val sql = updateRow(
+  def updateNoCounter(v: RSource): ConnectionIO[Int] =
+    DML.update(
       table,
-      and(sid.is(v.sid), cid.is(v.cid)),
-      commas(
-        cid.setTo(v.cid),
-        abbrev.setTo(v.abbrev),
-        description.setTo(v.description),
-        enabled.setTo(v.enabled),
-        priority.setTo(v.priority),
-        folder.setTo(v.folderId),
-        fileFilter.setTo(v.fileFilter)
+      where(table.sid === v.sid, table.cid === v.cid),
+      DML.set(
+        table.cid.setTo(v.cid),
+        table.abbrev.setTo(v.abbrev),
+        table.description.setTo(v.description),
+        table.enabled.setTo(v.enabled),
+        table.priority.setTo(v.priority),
+        table.folder.setTo(v.folderId),
+        table.fileFilter.setTo(v.fileFilter)
       )
     )
-    sql.update.run
-  }
 
   def incrementCounter(source: String, coll: Ident): ConnectionIO[Int] =
-    updateRow(
+    DML.update(
       table,
-      and(abbrev.is(source), cid.is(coll)),
-      counter.f ++ fr"=" ++ counter.f ++ fr"+ 1"
-    ).update.run
+      where(table.abbrev === source, table.cid === coll),
+      DML.set(table.counter.increment(1))
+    )
 
   def existsById(id: Ident): ConnectionIO[Boolean] = {
-    val sql = selectCount(sid, table, sid.is(id))
+    val sql = run(select(count(table.sid)), from(table), where(table.sid === id))
     sql.query[Int].unique.map(_ > 0)
   }
 
   def existsByAbbrev(coll: Ident, abb: String): ConnectionIO[Boolean] = {
-    val sql = selectCount(sid, table, and(cid.is(coll), abbrev.is(abb)))
+    val sql = run(
+      select(count(table.sid)),
+      from(table),
+      where(table.cid === coll, table.abbrev === abb)
+    )
     sql.query[Int].unique.map(_ > 0)
   }
 
@@ -105,25 +109,34 @@ object RSource {
     findEnabledSql(id).query[RSource].option
 
   private[records] def findEnabledSql(id: Ident): Fragment =
-    selectSimple(all, table, and(sid.is(id), enabled.is(true)))
+    run(select(table.all), from(table), where(table.sid === id, table.enabled === true))
 
   def findCollective(sourceId: Ident): ConnectionIO[Option[Ident]] =
-    selectSimple(List(cid), table, sid.is(sourceId)).query[Ident].option
+    run(select(table.cid), from(table), table.sid === sourceId).query[Ident].option
 
   def findAll(
       coll: Ident,
-      order: Columns.type => Column
+      order: Table => Column[_]
   ): ConnectionIO[Vector[RSource]] =
     findAllSql(coll, order).query[RSource].to[Vector]
 
-  private[records] def findAllSql(coll: Ident, order: Columns.type => Column): Fragment =
-    selectSimple(all, table, cid.is(coll)) ++ orderBy(order(Columns).f)
+  private[records] def findAllSql(
+      coll: Ident,
+      order: Table => Column[_]
+  ): Fragment = {
+    val t = RSource.as("s")
+    Select(select(t.all), from(t), t.cid === coll).orderBy(order(t)).build
+  }
 
   def delete(sourceId: Ident, coll: Ident): ConnectionIO[Int] =
-    deleteFrom(table, and(sid.is(sourceId), cid.is(coll))).update.run
+    DML.delete(table, where(table.sid === sourceId, table.cid === coll))
 
   def removeFolder(folderId: Ident): ConnectionIO[Int] = {
     val empty: Option[Ident] = None
-    updateRow(table, folder.is(folderId), folder.setTo(empty)).update.run
+    DML.update(
+      table,
+      where(table.folder === folderId),
+      DML.set(table.folder.setTo(empty))
+    )
   }
 }

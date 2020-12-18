@@ -3,6 +3,7 @@ module Comp.FolderSelect exposing
     , Msg
     , deselect
     , init
+    , modify
     , setSelected
     , update
     , updateDrop
@@ -10,7 +11,8 @@ module Comp.FolderSelect exposing
     , viewDrop
     )
 
-import Api.Model.FolderItem exposing (FolderItem)
+import Api.Model.FolderStats exposing (FolderStats)
+import Dict
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
@@ -20,18 +22,38 @@ import Util.List
 
 
 type alias Model =
-    { all : List FolderItem
+    { all : List FolderStats
     , selected : Maybe String
     , expanded : Bool
     }
 
 
-init : Maybe FolderItem -> List FolderItem -> Model
+init : Maybe FolderStats -> List FolderStats -> Model
 init selected all =
     { all = List.sortBy .name all
     , selected = Maybe.map .id selected
     , expanded = False
     }
+
+
+modify : Maybe FolderStats -> Model -> List FolderStats -> Model
+modify selected model all =
+    if List.isEmpty model.all then
+        init selected all
+
+    else
+        let
+            folderDict =
+                List.map (\f -> ( f.id, f )) all
+                    |> Dict.fromList
+
+            replaced el =
+                Dict.get el.id folderDict |> Maybe.withDefault { el | count = 0 }
+        in
+        { model
+            | all = List.map replaced model.all
+            , selected = Maybe.map .id selected
+        }
 
 
 setSelected : String -> Model -> Maybe Msg
@@ -43,12 +65,7 @@ setSelected id model =
 
 deselect : Model -> Maybe Msg
 deselect model =
-    case model.selected of
-        Just id ->
-            setSelected id model
-
-        Nothing ->
-            Nothing
+    Maybe.andThen (\id -> setSelected id model) model.selected
 
 
 
@@ -56,12 +73,12 @@ deselect model =
 
 
 type Msg
-    = Toggle FolderItem
+    = Toggle FolderStats
     | ToggleExpand
     | FolderDDMsg DD.Msg
 
 
-update : Msg -> Model -> ( Model, Maybe FolderItem )
+update : Msg -> Model -> ( Model, Maybe FolderStats )
 update msg model =
     let
         ( m, f, _ ) =
@@ -74,7 +91,7 @@ updateDrop :
     DD.Model
     -> Msg
     -> Model
-    -> ( Model, Maybe FolderItem, DD.DragDropData )
+    -> ( Model, Maybe FolderStats, DD.DragDropData )
 updateDrop dropModel msg model =
     case msg of
         Toggle item ->
@@ -105,7 +122,7 @@ updateDrop dropModel msg model =
             ( model, selectedFolder model, ddd )
 
 
-selectedFolder : Model -> Maybe FolderItem
+selectedFolder : Model -> Maybe FolderStats
 selectedFolder model =
     let
         isSelected f =
@@ -177,7 +194,7 @@ collapseToggle max model =
         ToggleExpand
 
 
-viewItem : DD.Model -> Model -> FolderItem -> Html Msg
+viewItem : DD.Model -> Model -> FolderStats -> Html Msg
 viewItem dropModel model item =
     let
         selected =
@@ -206,8 +223,11 @@ viewItem dropModel model item =
         )
         [ i [ class icon ] []
         , div [ class "content" ]
-            [ div [ class "header" ]
+            [ div [ class "description" ]
                 [ text item.name
+                , div [ class "ui right floated circular label" ]
+                    [ text (String.fromInt item.count)
+                    ]
                 ]
             ]
         ]

@@ -2,7 +2,7 @@ package docspell.joex.notify
 
 import docspell.common._
 import docspell.joex.notify.YamuscaConverter._
-import docspell.store.queries.QItem
+import docspell.store.queries.ListItem
 
 import yamusca.implicits._
 import yamusca.imports._
@@ -19,7 +19,7 @@ case class MailContext(
 object MailContext {
 
   def from(
-      items: Vector[QItem.ListItem],
+      items: Vector[ListItem],
       max: Int,
       account: AccountId,
       itemBaseUri: Option[LenientUri],
@@ -46,7 +46,7 @@ object MailContext {
 
   object ItemData {
 
-    def apply(now: Timestamp)(i: QItem.ListItem): ItemData = {
+    def apply(now: Timestamp)(i: ListItem): ItemData = {
       val dueIn = i.dueDate.map(dt => Timestamp.daysBetween(now, dt))
       val dueInLabel = dueIn.map {
         case 0          => "**today**"

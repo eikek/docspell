@@ -121,7 +121,7 @@ object CreateItem {
 
   private def findExisting[F[_]: Sync]: Task[F, ProcessItemArgs, Option[ItemData]] =
     Task { ctx =>
-      val states      = ItemState.invalidStates.toList.toSet
+      val states      = ItemState.invalidStates
       val fileMetaIds = ctx.args.files.map(_.fileMetaId).toSet
       for {
         cand <- ctx.store.transact(QItem.findByFileIds(fileMetaIds.toSeq, states))

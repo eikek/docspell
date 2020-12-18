@@ -135,7 +135,7 @@ view1 settings compact model =
                         , value model.value
                         ]
                         []
-                    , a [ class "ui button", onClick AddContact, href "" ]
+                    , a [ class "ui button", onClick AddContact, href "#" ]
                         [ text "Add"
                         ]
                     ]

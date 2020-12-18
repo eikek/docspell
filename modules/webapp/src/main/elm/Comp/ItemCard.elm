@@ -148,10 +148,13 @@ view cfg settings model item =
         cardAction =
             case cfg.selection of
                 Data.ItemSelection.Inactive ->
-                    Page.href (ItemDetailPage item.id)
+                    [ Page.href (ItemDetailPage item.id)
+                    ]
 
                 Data.ItemSelection.Active ids ->
-                    onClick (ToggleSelectItem ids item.id)
+                    [ onClick (ToggleSelectItem ids item.id)
+                    , href "#"
+                    ]
 
         selectedDimmer =
             div
@@ -162,8 +165,7 @@ view cfg settings model item =
                 ]
                 [ div [ class "content" ]
                     [ a
-                        [ cardAction
-                        ]
+                        cardAction
                         [ i [ class "huge icons purple" ]
                             [ i [ class "big circle outline icon" ] []
                             , i [ class "check icon" ] []
@@ -311,7 +313,7 @@ notesContent settings item =
         ]
 
 
-mainContent : Attribute Msg -> String -> Bool -> UiSettings -> ViewConfig -> ItemLight -> Html Msg
+mainContent : List (Attribute Msg) -> String -> Bool -> UiSettings -> ViewConfig -> ItemLight -> Html Msg
 mainContent cardAction cardColor isConfirmed settings _ item =
     let
         dirIcon =
@@ -327,10 +329,7 @@ mainContent cardAction cardColor isConfirmed settings _ item =
             settings.cardSubtitleTemplate.template
     in
     a
-        [ class "content"
-        , href "#"
-        , cardAction
-        ]
+        (class "content" :: cardAction)
         [ if fieldHidden Data.Fields.Direction then
             div [ class "header" ]
                 [ IT.render titlePattern item |> text
@@ -419,7 +418,7 @@ mainTagsAndFields settings item =
         (renderFields ++ renderTags)
 
 
-previewImage : UiSettings -> Attribute Msg -> Model -> ItemLight -> Html Msg
+previewImage : UiSettings -> List (Attribute Msg) -> Model -> ItemLight -> Html Msg
 previewImage settings cardAction model item =
     let
         mainAttach =
@@ -431,10 +430,11 @@ previewImage settings cardAction model item =
                 |> Maybe.withDefault (Api.itemBasePreviewURL item.id)
     in
     a
-        [ class "image ds-card-image"
-        , Data.UiSettings.cardPreviewSize settings
-        , cardAction
-        ]
+        ([ class "image ds-card-image"
+         , Data.UiSettings.cardPreviewSize settings
+         ]
+            ++ cardAction
+        )
         [ img
             [ class "preview-image"
             , src previewUrl
@@ -473,12 +473,12 @@ previewMenu settings model item mainAttach =
                 [ i [ class "eye icon" ] []
                 ]
     in
-    if pageCount == 0 || (item.fileCount == 1 && pageCount == 1) then
+    if pageCount == 0 || (List.length item.attachments == 1 && pageCount == 1) then
         div [ class "card-attachment-nav" ]
             [ gotoFileBtn
             ]
 
-    else if item.fileCount == 1 then
+    else if List.length item.attachments == 1 then
         div [ class "card-attachment-nav" ]
             [ div [ class "ui small top attached basic icon buttons" ]
                 [ gotoFileBtn
@@ -510,7 +510,7 @@ previewMenu settings model item mainAttach =
                     |> String.fromInt
                     |> text
                 , text "/"
-                , text (String.fromInt item.fileCount)
+                , text (List.length item.attachments |> String.fromInt)
                 , text ", "
                 , text (String.fromInt pageCount)
                 , text "p."

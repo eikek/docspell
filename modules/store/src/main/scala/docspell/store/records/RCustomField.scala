@@ -1,10 +1,11 @@
 package docspell.store.records
 
+import cats.data.NonEmptyList
 import cats.implicits._
 
 import docspell.common._
-import docspell.store.impl.Column
-import docspell.store.impl.Implicits._
+import docspell.store.qb.DSL._
+import docspell.store.qb._
 
 import doobie._
 import doobie.implicits._
@@ -19,58 +20,63 @@ case class RCustomField(
 )
 
 object RCustomField {
+  final case class Table(alias: Option[String]) extends TableDef {
+    val tableName = "custom_field"
 
-  val table = fr"custom_field"
+    val id      = Column[Ident]("id", this)
+    val name    = Column[Ident]("name", this)
+    val label   = Column[String]("label", this)
+    val cid     = Column[Ident]("cid", this)
+    val ftype   = Column[CustomFieldType]("ftype", this)
+    val created = Column[Timestamp]("created", this)
 
-  object Columns {
-
-    val id      = Column("id")
-    val name    = Column("name")
-    val label   = Column("label")
-    val cid     = Column("cid")
-    val ftype   = Column("ftype")
-    val created = Column("created")
-
-    val all = List(id, name, label, cid, ftype, created)
+    val all = NonEmptyList.of[Column[_]](id, name, label, cid, ftype, created)
   }
-  import Columns._
 
-  def insert(value: RCustomField): ConnectionIO[Int] = {
-    val sql = insertRow(
-      table,
-      Columns.all,
+  val T = Table(None)
+  def as(alias: String): Table =
+    Table(Some(alias))
+
+  def insert(value: RCustomField): ConnectionIO[Int] =
+    DML.insert(
+      T,
+      T.all,
       fr"${value.id},${value.name},${value.label},${value.cid},${value.ftype},${value.created}"
     )
-    sql.update.run
-  }
 
   def exists(fname: Ident, coll: Ident): ConnectionIO[Boolean] =
-    selectCount(id, table, and(name.is(fname), cid.is(coll))).query[Int].unique.map(_ > 0)
+    run(select(count(T.id)), from(T), T.name === fname && T.cid === coll)
+      .query[Int]
+      .unique
+      .map(_ > 0)
 
   def findById(fid: Ident, coll: Ident): ConnectionIO[Option[RCustomField]] =
-    selectSimple(all, table, and(id.is(fid), cid.is(coll))).query[RCustomField].option
+    run(select(T.all), from(T), T.id === fid && T.cid === coll).query[RCustomField].option
 
   def findByIdOrName(idOrName: Ident, coll: Ident): ConnectionIO[Option[RCustomField]] =
-    selectSimple(all, table, and(cid.is(coll), or(id.is(idOrName), name.is(idOrName))))
-      .query[RCustomField]
-      .option
+    Select(
+      select(T.all),
+      from(T),
+      T.cid === coll && (T.id === idOrName || T.name === idOrName)
+    ).build.query[RCustomField].option
 
   def deleteById(fid: Ident, coll: Ident): ConnectionIO[Int] =
-    deleteFrom(table, and(id.is(fid), cid.is(coll))).update.run
+    DML.delete(T, T.id === fid && T.cid === coll)
 
   def findAll(coll: Ident): ConnectionIO[Vector[RCustomField]] =
-    selectSimple(all, table, cid.is(coll)).query[RCustomField].to[Vector]
+    run(select(T.all), from(T), T.cid === coll).query[RCustomField].to[Vector]
 
   def update(value: RCustomField): ConnectionIO[Int] =
-    updateRow(
-      table,
-      and(id.is(value.id), cid.is(value.cid)),
-      commas(
-        name.setTo(value.name),
-        label.setTo(value.label),
-        ftype.setTo(value.ftype)
+    DML
+      .update(
+        T,
+        T.id === value.id && T.cid === value.cid,
+        DML.set(
+          T.name.setTo(value.name),
+          T.label.setTo(value.label),
+          T.ftype.setTo(value.ftype)
+        )
       )
-    ).update.run
 
   def setValue(f: RCustomField, item: Ident, fval: String): ConnectionIO[Int] =
     for {

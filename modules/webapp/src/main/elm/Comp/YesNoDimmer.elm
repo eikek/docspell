@@ -120,11 +120,11 @@ view2 active settings model =
             ]
         , div [ class "content" ]
             [ div [ class "ui buttons" ]
-                [ a [ class "ui primary button", onClick ConfirmDelete, href "" ]
+                [ a [ class "ui primary button", onClick ConfirmDelete, href "#" ]
                     [ text settings.confirmButton
                     ]
                 , div [ class "or" ] []
-                , a [ class "ui secondary button", onClick Disable, href "" ]
+                , a [ class "ui secondary button", onClick Disable, href "#" ]
                     [ text settings.cancelButton
                     ]
                 ]
