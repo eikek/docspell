@@ -21,3 +21,7 @@ To get started, here are some quick links:
 - via the [nix package manager](@/docs/install/installing.md#nix) and/or as a [NixOS
   module](@/docs/install/installing.md#nixos). If you use nix/nixos, you
   know what to do. The linked page contains some examples.
+- [Unraid](https://www.unraid.net/): While not official, there are
+  user provided [notes and unraid
+  templates](https://github.com/vakilando/unraid-docker-templates)
+  which can get you started. Thanks for providing these!
