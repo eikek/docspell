@@ -122,11 +122,13 @@ object RTag {
     (idList, nameList) match {
       case (Some(ids), _) =>
         val cond =
-          T.cid === coll && (T.tid.in(ids) ||? nameList.map(names => T.name.in(names)))
+          T.cid === coll && (T.tid.in(ids) ||? nameList.map(names =>
+            T.name.inLower(names)
+          ))
         run(select(T.all), from(T), cond).query[RTag].to[Vector]
       case (_, Some(names)) =>
         val cond =
-          T.cid === coll && (T.name.in(names) ||? idList.map(ids => T.tid.in(ids)))
+          T.cid === coll && (T.name.inLower(names) ||? idList.map(ids => T.tid.in(ids)))
         run(select(T.all), from(T), cond).query[RTag].to[Vector]
       case (None, None) =>
         Vector.empty.pure[ConnectionIO]
