@@ -26,7 +26,7 @@ object Dependencies {
   val Log4sVersion            = "1.9.0"
   val LogbackVersion          = "1.2.3"
   val MariaDbVersion          = "2.7.1"
-  val MiniTestVersion         = "2.9.1"
+  val MiniTestVersion         = "2.9.2"
   val OrganizeImportsVersion  = "0.4.4"
   val PdfboxVersion           = "2.0.22"
   val PoiVersion              = "4.1.2"
