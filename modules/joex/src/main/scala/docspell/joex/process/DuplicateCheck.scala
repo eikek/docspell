@@ -63,10 +63,12 @@ object DuplicateCheck {
 
   private def checkDuplicate[F[_]](
       ctx: Context[F, Args]
-  )(fm: FileMeta): ConnectionIO[FileMetaDupes] =
+  )(fm: FileMeta): ConnectionIO[FileMetaDupes] = {
+    val excludes = ctx.args.files.map(_.fileMetaId).toSet
     QItem
-      .findByChecksum(fm.checksum, ctx.args.meta.collective)
+      .findByChecksum(fm.checksum, ctx.args.meta.collective, excludes)
       .map(v => FileMetaDupes(fm, v.nonEmpty))
+  }
 
   case class FileMetaDupes(fm: FileMeta, exists: Boolean)
 }

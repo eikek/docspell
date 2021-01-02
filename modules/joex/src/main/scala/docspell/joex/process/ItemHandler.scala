@@ -35,18 +35,20 @@ object ItemHandler {
       analyser: TextAnalyser[F],
       regexNer: RegexNerFile[F]
   ): Task[F, Args, Unit] =
-    DuplicateCheck[F]
-      .flatMap(args =>
-        if (args.files.isEmpty) logNoFiles
-        else {
-          val create: Task[F, Args, ItemData] =
-            CreateItem[F].contramap(_ => args.pure[F])
-          create
-            .flatMap(itemStateTask(ItemState.Processing))
-            .flatMap(safeProcess[F](cfg, itemOps, fts, analyser, regexNer))
-            .map(_ => ())
-        }
-      )
+    logBeginning.flatMap(_ =>
+      DuplicateCheck[F]
+        .flatMap(args =>
+          if (args.files.isEmpty) logNoFiles
+          else {
+            val create: Task[F, Args, ItemData] =
+              CreateItem[F].contramap(_ => args.pure[F])
+            create
+              .flatMap(itemStateTask(ItemState.Processing))
+              .flatMap(safeProcess[F](cfg, itemOps, fts, analyser, regexNer))
+              .map(_ => ())
+          }
+        )
+    )
 
   def itemStateTask[F[_]: Sync, A](
       state: ItemState
@@ -131,11 +133,16 @@ object ItemHandler {
     )
 
   private def logWarn[F[_]](msg: => String): Task[F, Args, Unit] =
-    Task(_.logger.warn(msg))
+    Task.log(_.warn(msg))
 
   private def logNoFiles[F[_]]: Task[F, Args, Unit] =
     logWarn(
       "No files to process! Either no files were given or duplicate check removed all."
     )
 
+  private def logBeginning[F[_]]: Task[F, Args, Unit] =
+    Task { ctx =>
+      val files = ctx.args.files.flatMap(_.name).mkString(", ")
+      ctx.logger.info(s"============ Start processing $files ============")
+    }
 }
