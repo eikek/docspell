@@ -51,6 +51,7 @@ type alias Model =
     , cardTitlePattern : PatternModel
     , cardSubtitlePattern : PatternModel
     , showPatternHelp : Bool
+    , searchStatsVisible : Bool
     }
 
 
@@ -141,6 +142,7 @@ init flags settings =
       , cardTitlePattern = initPatternModel settings.cardTitleTemplate
       , cardSubtitlePattern = initPatternModel settings.cardSubtitleTemplate
       , showPatternHelp = False
+      , searchStatsVisible = settings.searchStatsVisible
       }
     , Api.getTags flags "" GetTagsResp
     )
@@ -164,6 +166,7 @@ type Msg
     | SetCardTitlePattern String
     | SetCardSubtitlePattern String
     | TogglePatternHelpMsg
+    | ToggleSearchStatsVisible
 
 
 
@@ -415,6 +418,15 @@ update sett msg model =
         TogglePatternHelpMsg ->
             ( { model | showPatternHelp = not model.showPatternHelp }, Nothing )
 
+        ToggleSearchStatsVisible ->
+            let
+                flag =
+                    not model.searchStatsVisible
+            in
+            ( { model | searchStatsVisible = flag }
+            , Just { sett | searchStatsVisible = flag }
+            )
+
 
 
 --- View
@@ -447,6 +459,19 @@ view flags _ model =
                 "field"
                 model.searchPageSizeModel
             )
+        , div [ class "field" ]
+            [ div [ class "ui checkbox" ]
+                [ input
+                    [ type_ "checkbox"
+                    , onCheck (\_ -> ToggleSearchStatsVisible)
+                    , checked model.searchStatsVisible
+                    ]
+                    []
+                , label []
+                    [ text "Show basic search statistics by default"
+                    ]
+                ]
+            ]
         , div [ class "ui dividing header" ]
             [ text "Item Cards"
             ]

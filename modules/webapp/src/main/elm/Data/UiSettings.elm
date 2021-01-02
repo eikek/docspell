@@ -52,6 +52,7 @@ type alias StoredUiSettings =
     , cardPreviewSize : Maybe String
     , cardTitleTemplate : Maybe String
     , cardSubtitleTemplate : Maybe String
+    , searchStatsVisible : Bool
     }
 
 
@@ -78,6 +79,7 @@ type alias UiSettings =
     , cardPreviewSize : BasicSize
     , cardTitleTemplate : ItemPattern
     , cardSubtitleTemplate : ItemPattern
+    , searchStatsVisible : Bool
     }
 
 
@@ -144,6 +146,7 @@ defaults =
         { template = Data.ItemTemplate.dateLong
         , pattern = "{{dateLong}}"
         }
+    , searchStatsVisible = True
     }
 
 
@@ -189,6 +192,7 @@ merge given fallback =
     , cardSubtitleTemplate =
         Maybe.andThen readPattern given.cardSubtitleTemplate
             |> Maybe.withDefault fallback.cardSubtitleTemplate
+    , searchStatsVisible = given.searchStatsVisible
     }
 
 
@@ -221,6 +225,7 @@ toStoredUiSettings settings =
             |> Just
     , cardTitleTemplate = settings.cardTitleTemplate.pattern |> Just
     , cardSubtitleTemplate = settings.cardSubtitleTemplate.pattern |> Just
+    , searchStatsVisible = settings.searchStatsVisible
     }
 
 

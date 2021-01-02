@@ -5,11 +5,10 @@ import Comp.FixedDropdown
 import Comp.ItemCardList
 import Comp.ItemDetail.EditMenu
 import Comp.SearchMenu
+import Comp.SearchStatsView
 import Comp.YesNoDimmer
 import Data.Flags exposing (Flags)
-import Data.Icons as Icons
 import Data.ItemSelection
-import Data.Money
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -125,7 +124,7 @@ view flags settings model =
 
                     _ ->
                         []
-                , viewStats flags model
+                , viewStats flags settings model
                 , [ Html.map ItemCardListMsg
                         (Comp.ItemCardList.view itemViewCfg settings model.itemListModel)
                   ]
@@ -164,74 +163,13 @@ view flags settings model =
         ]
 
 
-viewStats : Flags -> Model -> List (Html Msg)
-viewStats _ model =
-    let
-        stats =
-            model.searchStats
+viewStats : Flags -> UiSettings -> Model -> List (Html Msg)
+viewStats _ settings model =
+    if settings.searchStatsVisible then
+        Comp.SearchStatsView.view model.searchStats
 
-        isNumField f =
-            f.sum > 0
-
-        statValues f =
-            tr [ class "center aligned" ]
-                [ td [ class "left aligned" ]
-                    [ div [ class "ui basic label" ]
-                        [ Icons.customFieldTypeIconString "" f.ftype
-                        , text (Maybe.withDefault f.name f.label)
-                        ]
-                    ]
-                , td []
-                    [ f.count |> String.fromInt |> text
-                    ]
-                , td []
-                    [ f.sum |> Data.Money.format |> text
-                    ]
-                , td []
-                    [ f.avg |> Data.Money.format |> text
-                    ]
-                , td []
-                    [ f.min |> Data.Money.format |> text
-                    ]
-                , td []
-                    [ f.max |> Data.Money.format |> text
-                    ]
-                ]
-
-        fields =
-            List.filter isNumField stats.fieldStats
-    in
-    [ div [ class "ui container" ]
-        [ div [ class "ui middle aligned grid" ]
-            [ div [ class "three wide center aligned column" ]
-                [ div [ class "ui small statistic" ]
-                    [ div [ class "value" ]
-                        [ String.fromInt stats.count |> text
-                        ]
-                    , div [ class "label" ]
-                        [ text "Results"
-                        ]
-                    ]
-                ]
-            , div [ class "thirteen wide column" ]
-                [ table [ class "ui very basic tiny six column table" ]
-                    [ thead []
-                        [ tr [ class "center aligned" ]
-                            [ th [] []
-                            , th [] [ text "Count" ]
-                            , th [] [ text "Sum" ]
-                            , th [] [ text "Avg" ]
-                            , th [] [ text "Min" ]
-                            , th [] [ text "Max" ]
-                            ]
-                        ]
-                    , tbody []
-                        (List.map statValues fields)
-                    ]
-                ]
-            ]
-        ]
-    ]
+    else
+        []
 
 
 viewLeftMenu : Flags -> UiSettings -> Model -> List (Html Msg)
