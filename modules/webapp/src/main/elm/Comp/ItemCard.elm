@@ -400,7 +400,8 @@ mainTagsAndFields settings item =
                 []
 
             else
-                List.map showField item.customfields
+                List.sortBy Util.CustomField.nameOrLabel item.customfields
+                    |> List.map showField
 
         renderTags =
             if hideTags then
