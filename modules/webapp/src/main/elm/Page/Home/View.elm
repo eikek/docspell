@@ -202,7 +202,7 @@ viewStats _ model =
             List.filter isNumField stats.fieldStats
     in
     [ div [ class "ui container" ]
-        [ div [ class "ui middle aligned grid" ]
+        [ div [ class "ui middle aligned stackable grid" ]
             [ div [ class "three wide center aligned column" ]
                 [ div [ class "ui small statistic" ]
                     [ div [ class "value" ]
