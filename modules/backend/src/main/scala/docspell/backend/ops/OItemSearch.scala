@@ -258,12 +258,12 @@ object OItemSearch {
         store.transact(QAttachment.getAttachmentMeta(id, collective))
 
       def findByFileCollective(checksum: String, collective: Ident): F[Vector[RItem]] =
-        store.transact(QItem.findByChecksum(checksum, collective))
+        store.transact(QItem.findByChecksum(checksum, collective, Set.empty))
 
       def findByFileSource(checksum: String, sourceId: Ident): F[Vector[RItem]] =
         store.transact((for {
           coll  <- OptionT(RSource.findCollective(sourceId))
-          items <- OptionT.liftF(QItem.findByChecksum(checksum, coll))
+          items <- OptionT.liftF(QItem.findByChecksum(checksum, coll, Set.empty))
         } yield items).getOrElse(Vector.empty))
 
     })

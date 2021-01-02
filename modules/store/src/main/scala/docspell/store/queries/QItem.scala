@@ -454,7 +454,7 @@ object QItem {
       (a.fileId.in(fileMetaIds) ||
         s.fileId.in(fileMetaIds) ||
         r.fileId.in(fileMetaIds)) &&? states.map(nel => i.state.in(nel))
-    )
+    ).distinct
   }
 
   def findOneByFileIds(fileMetaIds: Seq[Ident]): ConnectionIO[Option[RItem]] =
@@ -476,7 +476,11 @@ object QItem {
         Vector.empty[RItem].pure[ConnectionIO]
     }
 
-  def findByChecksum(checksum: String, collective: Ident): ConnectionIO[Vector[RItem]] = {
+  def findByChecksum(
+      checksum: String,
+      collective: Ident,
+      excludeFileMeta: Set[Ident]
+  ): ConnectionIO[Vector[RItem]] = {
     val m1 = RFileMeta.as("m1")
     val m2 = RFileMeta.as("m2")
     val m3 = RFileMeta.as("m3")
@@ -496,9 +500,12 @@ object QItem {
         .leftJoin(m3, m3.id === r.fileId),
       where(
         i.cid === collective &&
-          (m1.checksum === checksum || m2.checksum === checksum || m3.checksum === checksum)
+          (m1.checksum === checksum || m2.checksum === checksum || m3.checksum === checksum) &&?
+          Nel
+            .fromList(excludeFileMeta.toList)
+            .map(excl => m1.id.notIn(excl) && m2.id.notIn(excl) && m3.id.notIn(excl))
       )
-    ).build.query[RItem].to[Vector]
+    ).distinct.build.query[RItem].to[Vector]
   }
 
   final case class NameAndNotes(
