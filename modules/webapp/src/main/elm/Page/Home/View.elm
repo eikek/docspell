@@ -124,7 +124,7 @@ view flags settings model =
 
                     _ ->
                         []
-                , viewStats flags model
+                , viewStats flags settings model
                 , [ Html.map ItemCardListMsg
                         (Comp.ItemCardList.view itemViewCfg settings model.itemListModel)
                   ]
@@ -163,9 +163,13 @@ view flags settings model =
         ]
 
 
-viewStats : Flags -> Model -> List (Html Msg)
-viewStats _ model =
-    Comp.SearchStatsView.view model.searchStats
+viewStats : Flags -> UiSettings -> Model -> List (Html Msg)
+viewStats _ settings model =
+    if settings.searchStatsVisible then
+        Comp.SearchStatsView.view model.searchStats
+
+    else
+        []
 
 
 viewLeftMenu : Flags -> UiSettings -> Model -> List (Html Msg)
