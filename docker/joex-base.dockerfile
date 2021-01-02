@@ -14,6 +14,7 @@ RUN apk add --no-cache openjdk11-jre \
     ghostscript \
     tesseract-ocr \
     tesseract-ocr-data-deu \
+    tesseract-ocr-data-fra \
     unpaper \
     wkhtmltopdf \
     libreoffice \
