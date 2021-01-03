@@ -89,7 +89,8 @@ docspell.org`. I'll try to answer in time.
 If you find this project any useful and want to support it via other
 means, giving a :star: is always encouraging and much appreciated. You
 can also support activity by donating via
-[liberapay](https://liberapay.com/eikek/).
+[liberapay](https://liberapay.com/eikek/) or
+[paypal](https://paypal.me/eikek0).
 
 Thank you so much!
 
