@@ -332,12 +332,24 @@ update flags msg model =
                 names =
                     List.map .name list.items
 
+                defaultConn =
+                    case names of
+                        h :: [] ->
+                            Just h
+
+                        _ ->
+                            Nothing
+
                 cm =
                     Comp.Dropdown.makeSingleList
                         { makeOption = \a -> { value = a, text = a, additional = "" }
                         , placeholder = "Select Connection..."
                         , options = names
-                        , selected = List.head names
+                        , selected =
+                            Util.Maybe.or
+                                [ List.head (Comp.Dropdown.getSelected model.connectionModel)
+                                , defaultConn
+                                ]
                         }
             in
             ( { model
