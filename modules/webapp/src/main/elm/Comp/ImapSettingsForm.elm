@@ -32,6 +32,7 @@ type alias Model =
     , password : Maybe String
     , sslType : Comp.Dropdown.Model SSLType
     , ignoreCertificates : Bool
+    , useOAuthToken : Bool
     }
 
 
@@ -58,6 +59,7 @@ emptyModel =
             , selected = Just Data.SSLType.None
             }
     , ignoreCertificates = False
+    , useOAuthToken = False
     }
 
 
@@ -87,6 +89,7 @@ init ems =
                     |> Just
             }
     , ignoreCertificates = ems.ignoreCertificates
+    , useOAuthToken = ems.useOAuth
     }
 
 
@@ -104,6 +107,7 @@ getSettings model =
                 |> Maybe.withDefault Data.SSLType.None
                 |> Data.SSLType.toString
       , ignoreCertificates = model.ignoreCertificates
+      , useOAuth = model.useOAuthToken
       }
     )
 
@@ -116,6 +120,7 @@ type Msg
     | PassMsg Comp.PasswordInput.Msg
     | SSLTypeMsg (Comp.Dropdown.Msg SSLType)
     | ToggleCheckCert
+    | ToggleUseOAuth
 
 
 isValid : Model -> Bool
@@ -159,14 +164,17 @@ update msg model =
         ToggleCheckCert ->
             ( { model | ignoreCertificates = not model.ignoreCertificates }, Cmd.none )
 
+        ToggleUseOAuth ->
+            ( { model | useOAuthToken = not model.useOAuthToken }, Cmd.none )
+
 
 view : UiSettings -> Model -> Html Msg
 view settings model =
     div
         [ classList
             [ ( "ui form", True )
-            , ( "error", not (isValid model) )
-            , ( "success", isValid model )
+            , ( "info error", not (isValid model) )
+            , ( "info success", isValid model )
             ]
         ]
         [ div [ class "required field" ]
@@ -225,6 +233,17 @@ view settings model =
                         ]
                         []
                     , label [] [ text "Ignore certificate check" ]
+                    ]
+                ]
+            , div [ class "inline field" ]
+                [ div [ class "ui checkbox" ]
+                    [ input
+                        [ type_ "checkbox"
+                        , checked model.useOAuthToken
+                        , onCheck (\_ -> ToggleUseOAuth)
+                        ]
+                        []
+                    , label [] [ text "Enable OAuth2 authentication using the password as access token" ]
                     ]
                 ]
             ]

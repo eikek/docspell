@@ -3873,6 +3873,7 @@ components:
         - from
         - sslType
         - ignoreCertificates
+        - useOAuth
       properties:
         name:
           type: string
@@ -3891,6 +3892,11 @@ components:
           type: string
         ignoreCertificates:
           type: boolean
+        useOAuth:
+          type: boolean
+          description: |
+            Use the password as an OAuth2 access token with the
+            authentication scheme XOAUTH2.
     CalEventCheckResult:
       description: |
         The result of checking a calendar event string.

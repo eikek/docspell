@@ -22,6 +22,7 @@ case class RUserImap(
     imapPassword: Option[Password],
     imapSsl: SSLType,
     imapCertCheck: Boolean,
+    imapOAuth2: Boolean,
     created: Timestamp
 ) {
 
@@ -32,6 +33,7 @@ case class RUserImap(
       imapUser.getOrElse(""),
       imapPassword.map(_.pass).getOrElse(""),
       imapSsl,
+      imapOAuth2,
       !imapCertCheck
     )
   }
@@ -47,7 +49,8 @@ object RUserImap {
       imapUser: Option[String],
       imapPassword: Option[Password],
       imapSsl: SSLType,
-      imapCertCheck: Boolean
+      imapCertCheck: Boolean,
+      imapOAuth2: Boolean
   ): F[RUserImap] =
     for {
       now <- Timestamp.current[F]
@@ -62,6 +65,7 @@ object RUserImap {
       imapPassword,
       imapSsl,
       imapCertCheck,
+      imapOAuth2,
       now
     )
 
@@ -73,7 +77,8 @@ object RUserImap {
       imapUser: Option[String],
       imapPassword: Option[Password],
       imapSsl: SSLType,
-      imapCertCheck: Boolean
+      imapCertCheck: Boolean,
+      imapOAuth2: Boolean
   ): OptionT[ConnectionIO, RUserImap] =
     for {
       now  <- OptionT.liftF(Timestamp.current[ConnectionIO])
@@ -89,6 +94,7 @@ object RUserImap {
       imapPassword,
       imapSsl,
       imapCertCheck,
+      imapOAuth2,
       now
     )
 
@@ -104,6 +110,7 @@ object RUserImap {
     val imapPass      = Column[Password]("imap_password", this)
     val imapSsl       = Column[SSLType]("imap_ssl", this)
     val imapCertCheck = Column[Boolean]("imap_certcheck", this)
+    val imapOAuth2    = Column[Boolean]("imap_oauth2", this)
     val created       = Column[Timestamp]("created", this)
 
     val all = NonEmptyList.of[Column[_]](
@@ -116,6 +123,7 @@ object RUserImap {
       imapPass,
       imapSsl,
       imapCertCheck,
+      imapOAuth2,
       created
     )
   }
@@ -129,7 +137,7 @@ object RUserImap {
       .insert(
         t,
         t.all,
-        sql"${v.id},${v.uid},${v.name},${v.imapHost},${v.imapPort},${v.imapUser},${v.imapPassword},${v.imapSsl},${v.imapCertCheck},${v.created}"
+        sql"${v.id},${v.uid},${v.name},${v.imapHost},${v.imapPort},${v.imapUser},${v.imapPassword},${v.imapSsl},${v.imapCertCheck},${v.imapOAuth2},${v.created}"
       )
   }
 
@@ -145,7 +153,8 @@ object RUserImap {
         t.imapUser.setTo(v.imapUser),
         t.imapPass.setTo(v.imapPassword),
         t.imapSsl.setTo(v.imapSsl),
-        t.imapCertCheck.setTo(v.imapCertCheck)
+        t.imapCertCheck.setTo(v.imapCertCheck),
+        t.imapOAuth2.setTo(v.imapOAuth2)
       )
     )
   }
