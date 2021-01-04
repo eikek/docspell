@@ -73,6 +73,22 @@ H2
 url = "jdbc:h2:///path/to/a/file.db;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;AUTO_SERVER=TRUE"
 ```
 
+## Admin Endpoint
+
+The admin endpoint defines some [routes](@/docs/api/intro.md#admin)
+for adminstration tasks. This is disabled by default and can be
+enabled by providing a secret:
+
+``` bash
+...
+  admin-endpoint {
+    secret = "123"
+  }
+```
+
+This secret must be provided to all requests to a `/api/v1/admin/`
+endpoint.
+
 
 ## Full-Text Search: SOLR
 
@@ -105,27 +121,21 @@ documentation](https://lucene.apache.org/solr/guide/8_4/installing-solr.html).
 That will provide you with the connection url (the last part is the
 core name).
 
-While the `full-text-search.solr` options are the same for joex and
-the restserver, there are some settings that differ. The restserver
-has this additional setting, that may be of interest:
+The `full-text-search.solr` options are the same for joex and the
+restserver.
+
+There is an [admin route](@/docs/api/intro.md#admin) that allows to
+re-create the entire index (for all collectives). This is possible via
+a call:
 
 ``` bash
-full-text-search {
-  recreate-key = "test123"
-}
+$ curl -XPOST -H "Docspell-Admin-Secret: test123" http://localhost:7880/api/v1/admin/fts/reIndexAll
 ```
 
-This key is required if you want docspell to drop and re-create the
-entire index. This is possible via a REST call:
-
-``` bash
-$ curl -XPOST http://localhost:7880/api/v1/open/fts/reIndexAll/test123
-```
-
-Here the `test123` is the key defined with `recreate-key`. If it is
-empty (the default), this REST call is disabled. Otherwise, the POST
-request will submit a system task that is executed by a joex instance
-eventually.
+Here the `test123` is the key defined with `admin-endpoint.secret`. If
+it is empty (the default), this call is disabled (all admin routes).
+Otherwise, the POST request will submit a system task that is executed
+by a joex instance eventually.
 
 Using this endpoint, the index will be re-created. This is sometimes
 necessary, for example if you upgrade SOLR or delete the core to

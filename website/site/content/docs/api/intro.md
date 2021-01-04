@@ -16,11 +16,14 @@ workflow.
 The "raw" `openapi.yml` specification file can be found
 [here](/openapi/docspell-openapi.yml).
 
-The routes can be divided into protected and unprotected routes. The
-unprotected, or open routes are at `/open/*` while the protected
-routes are at `/sec/*`. Open routes don't require authenticated access
-and can be used by any user. The protected routes require an
-authenticated user.
+The routes can be divided into protected, unprotected routes and admin
+routes. The unprotected, or open routes are at `/open/*` while the
+protected routes are at `/sec/*` and admin routes are at `/admin/*`.
+Open routes don't require authenticated access and can be used by any
+user. The protected routes require an authenticated user. The admin
+routes require a special http header with a value from the config
+file. They are disabled by default, you need to specify a secret in
+order to enable admin routes.
 
 ## Authentication
 
@@ -37,6 +40,26 @@ This token can be added to requests in two ways: as a cookie header or
 a "normal" http header. If a cookie header is used, the cookie name
 must be `docspell_auth` and a custom header must be named
 `X-Docspell-Auth`.
+
+
+## Admin
+
+There are some endpoints available for adminstration tasks, for
+example re-creating the complete fulltext index or resetting a
+password. These endpoints are not available to normal users, but to
+admins only. Docspell has no special admin users, it simply uses a
+secret defined in the configuration file. The person who installs
+docspell is the admin and knows this secret (and may share it) and
+requests must provide it as a http header `Docspell-Admin-Secret`.
+
+Example: re-create the fulltext index (over all collectives):
+
+``` bash
+$ curl -XPOST -H "Docspell-Admin-Secret: test123" http://localhost:7880/api/v1/admin/fts/reIndexAll
+```
+
+To enable these endpoints, you must provide a secret in the
+[configuration](@/docs/configure/_index.md#admin-endpoint).
 
 ## Live Api
 

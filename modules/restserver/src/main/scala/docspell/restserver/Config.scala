@@ -59,7 +59,7 @@ object Config {
     }
   }
 
-  case class FullTextSearch(enabled: Boolean, recreateKey: Ident, solr: SolrConfig)
+  case class FullTextSearch(enabled: Boolean, solr: SolrConfig)
 
   object FullTextSearch {}
 
