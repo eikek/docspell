@@ -151,9 +151,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BasicResult"
-  /open/fts/reIndexAll/{id}:
+  /admin/fts/reIndexAll:
     post:
-      tags: [Full-Text Index]
+      tags: [Full-Text Index, Admin]
       summary: Re-creates the full-text index.
       description: |
         Clears the full-text index and inserts all data from the
@@ -162,10 +162,10 @@ paths:
         by a job executor. Note that this affects all data of all
         collectives.
 
-        The `id` is required and refers to the key given in the config
-        file to ensure that only admins can call this route.
-      parameters:
-        - $ref: "#/components/parameters/id"
+        This is an admin route, so you need to provide the secret from
+        the config file as header `Docspell-Admin-Secret`.
+      security:
+        - adminHeader: []
       responses:
         200:
           description: Ok
@@ -1184,6 +1184,31 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BasicResult"
+
+  /admin/user/resetPassword:
+    post:
+      tags: [ Collective, Admin ]
+      summary: Reset a user password.
+      description: |
+        Resets a user password to some random string which is returned
+        as the result. This is an admin route, so you need to specify
+        the secret from the config file via a http header
+        `Docspell-Admin-Secret`.
+      security:
+        - adminHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ResetPassword"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResetPasswordResult"
+
   /sec/source:
     get:
       tags: [ Source ]
@@ -3416,6 +3441,32 @@ paths:
 
 components:
   schemas:
+    ResetPassword:
+      description: |
+        The account to reset the password.
+      required:
+        - account
+      properties:
+        account:
+          type: string
+          format: accountid
+
+    ResetPasswordResult:
+      description: |
+        Contains the newly generated password or an error.
+      required:
+        - success
+        - newPassword
+        - message
+      properties:
+        success:
+          type: boolean
+        newPassword:
+          type: string
+          format: password
+        message:
+          type: string
+
     ItemsAndFieldValue:
       description: |
         Holds a list of item ids and a custom field value.
@@ -5421,6 +5472,10 @@ components:
       type: apiKey
       in: header
       name: X-Docspell-Auth
+    adminHeader:
+      type: apiKey
+      in: header
+      name: Docspell-Admin-Secret
   parameters:
     id:
       name: id

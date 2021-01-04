@@ -103,7 +103,8 @@ object RestServer {
 
   def adminRoutes[F[_]: Effect](cfg: Config, restApp: RestApp[F]): HttpRoutes[F] =
     Router(
-      "fts" -> FullTextIndexRoutes.admin(cfg, restApp.backend)
+      "fts"  -> FullTextIndexRoutes.admin(cfg, restApp.backend),
+      "user" -> UserRoutes.admin(restApp.backend)
     )
 
   def redirectTo[F[_]: Effect](path: String): HttpRoutes[F] = {

@@ -130,6 +130,8 @@ val openapiScalaSettings = Seq(
     .addMapping(CustomMapping.forFormatType({
       case "ident" =>
         field => field.copy(typeDef = TypeDef("Ident", Imports("docspell.common.Ident")))
+      case "accountid" =>
+        field => field.copy(typeDef = TypeDef("AccountId", Imports("docspell.common.AccountId")))
       case "collectivestate" =>
         field =>
           field.copy(typeDef =

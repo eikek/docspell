@@ -44,6 +44,8 @@ trait OCollective[F[_]] {
       newPass: Password
   ): F[PassChangeResult]
 
+  def resetPassword(accountId: AccountId): F[PassResetResult]
+
   def getContacts(
       collective: Ident,
       query: Option[String],
@@ -76,6 +78,15 @@ object OCollective {
   val Settings = RCollective.Settings
   type Classifier = RClassifierSetting.Classifier
   val Classifier = RClassifierSetting.Classifier
+
+  sealed trait PassResetResult
+  object PassResetResult {
+    case class Success(newPw: Password) extends PassResetResult
+    case object NotFound                extends PassResetResult
+
+    def success(np: Password): PassResetResult = Success(np)
+    def notFound: PassResetResult              = NotFound
+  }
 
   sealed trait PassChangeResult
   object PassChangeResult {
@@ -183,6 +194,17 @@ object OCollective {
 
       def tagCloud(collective: Ident): F[List[TagCount]] =
         store.transact(QCollective.tagCloud(collective))
+
+      def resetPassword(accountId: AccountId): F[PassResetResult] =
+        for {
+          newPass <- Password.generate[F]
+          n <- store.transact(
+            RUser.updatePassword(accountId, PasswordCrypt.crypt(newPass))
+          )
+          res =
+            if (n <= 0) PassResetResult.notFound
+            else PassResetResult.success(newPass)
+        } yield res
 
       def changePassword(
           accountId: AccountId,
