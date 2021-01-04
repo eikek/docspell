@@ -102,14 +102,37 @@ enabled if you know why.*
 Authenticating with GMail may be not so simple. GMail implements an
 authentication scheme called *XOAUTH2* (at least for Imap). It will
 not work with your normal password. This is to avoid giving an
-application full access to your gmail account.
+application full access to your gmail account and also to add your
+password to the store of different apps.
 
-The e-mail integration in docspell relies on the
-[JavaMail](https://javaee.github.io/javamail) library which has
+
+## via App specific passwords
+
+GMail allows to define [application specific
+passwords](https://myaccount.google.com/apppasswords) (you must, as of
+now, enable 2FA to make it available). These are separate unique
+passwords solely defined for one specific application. You can
+enable/disable this password any time at your google account page.
+
+This makes it possible to use "standard" authentication schemes with
+you gmail account via imap. That is, *do not* enable the `Enable
+OAuth2 authentication …` in your imap settings.
+
+
+## via OAuth2
+
+If you don't want to use application specific passwords, you can use
+OAuth2 directly. The e-mail integration in docspell relies on the
+[JavaMail](https://eclipse-ee4j.github.io/mail) library which has
 support for XOAUTH2. It also has documentation on what you need to do
-on your gmail account: <https://javaee.github.io/javamail/OAuth2>.
+on your gmail account: <https://eclipse-ee4j.github.io/mail/OAuth2>.
 
-First you need to go to the [Google Developers
+To enable the auth scheme in docspell, you must enable the `Enable
+OAuth2 authentication …` in your imap settings. In this mode, the imap
+password is the OAuth2 access token.
+
+The following describes what you need to do at gmail to activate this
+for docspell. First you need to go to the [Google Developers
 Console](https://console.developers.google.com) and create an "App" to
 get a Client-Id and a Client-Secret. This "App" will be your instance
 of docspell. You tell google that this app may send and read your

@@ -166,7 +166,8 @@ object MailSettingsRoutes {
       ru.imapUser,
       ru.imapPassword,
       ru.imapSsl.name,
-      !ru.imapCertCheck
+      !ru.imapCertCheck,
+      ru.imapOAuth2
     )
 
   def makeSmtpSettings(ems: EmailSettings): Either[String, OMail.SmtpSettings] = {
@@ -203,6 +204,7 @@ object MailSettingsRoutes {
       ims.imapUser,
       ims.imapPassword,
       sslt,
-      !ims.ignoreCertificates
+      !ims.ignoreCertificates,
+      ims.useOAuth
     )
 }

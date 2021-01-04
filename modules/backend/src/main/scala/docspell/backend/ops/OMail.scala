@@ -123,7 +123,8 @@ object OMail {
       imapUser: Option[String],
       imapPassword: Option[Password],
       imapSsl: SSLType,
-      imapCertCheck: Boolean
+      imapCertCheck: Boolean,
+      imapOAuth2: Boolean
   ) {
 
     def toRecord(accId: AccountId) =
@@ -135,7 +136,8 @@ object OMail {
         imapUser,
         imapPassword,
         imapSsl,
-        imapCertCheck
+        imapCertCheck,
+        imapOAuth2
       )
   }
 
