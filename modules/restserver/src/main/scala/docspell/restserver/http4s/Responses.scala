@@ -1,6 +1,8 @@
 package docspell.restserver.http4s
 
 import cats.data.NonEmptyList
+import cats.data.OptionT
+import cats.effect.Sync
 import fs2.text.utf8Encode
 import fs2.{Pure, Stream}
 
@@ -35,5 +37,8 @@ object Responses {
         NonEmptyList.of(CacheDirective.`no-cache`(), CacheDirective.`private`())
       )
     )
+
+  def notFoundRoute[F[_]: Sync]: HttpRoutes[F] =
+    HttpRoutes(_ => OptionT.pure(Response.notFound[F]))
 
 }

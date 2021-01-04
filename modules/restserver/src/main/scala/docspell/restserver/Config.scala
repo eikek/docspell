@@ -18,12 +18,15 @@ case class Config(
     integrationEndpoint: Config.IntegrationEndpoint,
     maxItemPageSize: Int,
     maxNoteLength: Int,
-    fullTextSearch: Config.FullTextSearch
+    fullTextSearch: Config.FullTextSearch,
+    adminEndpoint: Config.AdminEndpoint
 )
 
 object Config {
 
   case class Bind(address: String, port: Int)
+
+  case class AdminEndpoint(secret: String)
 
   case class IntegrationEndpoint(
       enabled: Boolean,
