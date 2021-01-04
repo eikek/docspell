@@ -41,6 +41,8 @@ a "normal" http header. If a cookie header is used, the cookie name
 must be `docspell_auth` and a custom header must be named
 `X-Docspell-Auth`.
 
+The admin route (see below) `/admin/user/resetPassword` can be used to
+reset a password of a user.
 
 ## Admin
 
