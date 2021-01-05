@@ -446,7 +446,9 @@ val joex = project
     addCompilerPlugin(Dependencies.betterMonadicFor),
     buildInfoPackage := "docspell.joex",
     reStart / javaOptions ++= Seq(
-      s"-Dconfig.file=${(LocalRootProject / baseDirectory).value / "local" / "dev.conf"}"
+      s"-Dconfig.file=${(LocalRootProject / baseDirectory).value / "local" / "dev.conf"}",
+      "-Xmx1596M",
+      "-XX:+UseG1GC"
     ),
     Revolver.enableDebugging(port = 5051, suspend = false)
   )
@@ -494,7 +496,9 @@ val restserver = project
       (Compile / resourceDirectory).value.getParentFile / "templates"
     ),
     reStart / javaOptions ++= Seq(
-      s"-Dconfig.file=${(LocalRootProject / baseDirectory).value / "local" / "dev.conf"}"
+      s"-Dconfig.file=${(LocalRootProject / baseDirectory).value / "local" / "dev.conf"}",
+      "-Xmx150M",
+      "-XX:+UseG1GC"
     ),
     Revolver.enableDebugging(port = 5050, suspend = false)
   )
