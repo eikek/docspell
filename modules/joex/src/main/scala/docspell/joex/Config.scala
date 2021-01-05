@@ -60,6 +60,7 @@ object Config {
   case class TextAnalysis(
       maxLength: Int,
       workingDir: Path,
+      clearStanfordNlpInterval: Duration,
       regexNer: RegexNer,
       classification: Classification
   ) {
@@ -67,6 +68,7 @@ object Config {
     def textAnalysisConfig: TextAnalysisConfig =
       TextAnalysisConfig(
         maxLength,
+        clearStanfordNlpInterval,
         TextClassifierConfig(
           workingDir,
           NonEmptyList

@@ -1,12 +1,10 @@
 package docspell.analysis.nlp
 
-import scala.jdk.CollectionConverters._
-
 import cats.Applicative
-import cats.implicits._
 
+import scala.jdk.CollectionConverters._
+import cats.effect._
 import docspell.common._
-
 import edu.stanford.nlp.pipeline.{CoreDocument, StanfordCoreNLP}
 
 object StanfordNerClassifier {
@@ -22,13 +20,13 @@ object StanfordNerClassifier {
     * a new classifier must be created. It will then replace the
     * previous one.
     */
-  def nerAnnotate[F[_]: Applicative](
+  def nerAnnotate[F[_]: BracketThrow](
       cacheKey: String,
       cache: PipelineCache[F]
   )(settings: StanfordNerSettings, text: String): F[Vector[NerLabel]] =
     cache
       .obtain(cacheKey, settings)
-      .map(crf => runClassifier(crf, text))
+      .use(crf => Applicative[F].pure(runClassifier(crf, text)))
 
   def runClassifier(nerClassifier: StanfordCoreNLP, text: String): Vector[NerLabel] = {
     val doc = new CoreDocument(text)
