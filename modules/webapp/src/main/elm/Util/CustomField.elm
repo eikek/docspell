@@ -7,7 +7,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 
 
-nameOrLabel : ItemFieldValue -> String
+nameOrLabel : { r | name : String, label : Maybe String } -> String
 nameOrLabel fv =
     Maybe.withDefault fv.name fv.label
 

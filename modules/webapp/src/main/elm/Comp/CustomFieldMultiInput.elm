@@ -28,6 +28,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Http
+import Util.CustomField
 import Util.Maybe
 
 
@@ -63,9 +64,8 @@ visibleFields model =
 
 currentOptions : List CustomField -> Dict String VisibleField -> List CustomField
 currentOptions all visible =
-    List.filter
-        (\e -> not <| Dict.member e.name visible)
-        all
+    List.sortBy Util.CustomField.nameOrLabel all
+        |> List.filter (\e -> not <| Dict.member e.name visible)
 
 
 type Msg
