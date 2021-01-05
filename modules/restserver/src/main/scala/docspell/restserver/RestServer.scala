@@ -35,6 +35,9 @@ object RestServer {
         "/api/v1/sec/" -> Authenticate(restApp.backend.login, cfg.auth) { token =>
           securedRoutes(cfg, pools, restApp, token)
         },
+        "/api/v1/admin" -> AdminRoutes(cfg.adminEndpoint) {
+          adminRoutes(cfg, restApp)
+        },
         "/api/doc"    -> templates.doc,
         "/app/assets" -> WebjarRoutes.appRoutes[F](pools.blocker),
         "/app"        -> templates.app,
@@ -95,8 +98,13 @@ object RestServer {
       "signup"      -> RegisterRoutes(restApp.backend, cfg),
       "upload"      -> UploadRoutes.open(restApp.backend, cfg),
       "checkfile"   -> CheckFileRoutes.open(restApp.backend),
-      "integration" -> IntegrationEndpointRoutes.open(restApp.backend, cfg),
-      "fts"         -> FullTextIndexRoutes.open(cfg, restApp.backend)
+      "integration" -> IntegrationEndpointRoutes.open(restApp.backend, cfg)
+    )
+
+  def adminRoutes[F[_]: Effect](cfg: Config, restApp: RestApp[F]): HttpRoutes[F] =
+    Router(
+      "fts"  -> FullTextIndexRoutes.admin(cfg, restApp.backend),
+      "user" -> UserRoutes.admin(restApp.backend)
     )
 
   def redirectTo[F[_]: Effect](path: String): HttpRoutes[F] = {

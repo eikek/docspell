@@ -40,6 +40,9 @@ let
         header-value = "some-secret";
       };
     };
+    admin-endpoint = {
+      secret = "";
+    };
     full-text-search = {
       enabled = false;
       solr = {
@@ -49,7 +52,6 @@ let
         def-type = "lucene";
         q-op = "OR";
       };
-      recreate-key = "";
     };
     auth = {
       server-secret = "hex:caffee";
@@ -343,6 +345,20 @@ in {
         '';
       };
 
+      admin-endpoint = mkOption {
+        type = types.submodule({
+          options = {
+            secret = mkOption {
+              type = types.str;
+              default = defaults.admin-endpoint.secret;
+              description = "The secret used to call admin endpoints.";
+            };
+          };
+        });
+        default = defaults.admin-endpoint;
+        description = "An endpoint for administration tasks.";
+      };
+
       full-text-search = mkOption {
         type = types.submodule({
           options = {
@@ -393,18 +409,6 @@ in {
               });
               default = defaults.full-text-search.solr;
               description = "Configuration for the SOLR backend.";
-            };
-            recreate-key = mkOption {
-              type = types.str;
-              default = defaults.full-text-search.recreate-key;
-              description = ''
-                When re-creating the complete index via a REST call, this key
-                is required. If left empty (the default), recreating the index
-                is disabled.
-
-                Example curl command:
-                curl -XPOST http://localhost:7880/api/v1/open/fts/reIndexAll/test123
-              '';
             };
           };
         });

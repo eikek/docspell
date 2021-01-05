@@ -174,9 +174,9 @@ downloadAttachment() {
             rm -f "$attachOut"
         fi
 
-        checksum1=$(curl --fail -s -I -H "X-Docspell-Auth: $auth_token" "$ATTACH_URL/$attachId/original" | \
-                        grep 'ETag' | cut -d' ' -f2 | jq -r)
-        curl --fail -s -o "$attachOut" -H "X-Docspell-Auth: $auth_token" "$ATTACH_URL/$attachId/original"
+        checksum1=$(curl -s -I -H "X-Docspell-Auth: $auth_token" "$ATTACH_URL/$attachId/original" | \
+                        grep -i 'etag' | cut -d' ' -f2 | jq -r)
+        curl -s -o "$attachOut" -H "X-Docspell-Auth: $auth_token" "$ATTACH_URL/$attachId/original"
         checksum2=$(sha256sum "$attachOut" | cut -d' ' -f1 | xargs)
         if [ "$checksum1" == "$checksum2" ]; then
             errout " - Checksum ok."

@@ -5,10 +5,10 @@ import cats.implicits._
 
 import docspell.backend.BackendApp
 import docspell.backend.auth.AuthToken
-import docspell.common.Ident
+import docspell.backend.ops.OCollective
+import docspell.common._
 import docspell.restapi.model._
 import docspell.restserver.conv.Conversions._
-import docspell.restserver.http4s.ResponseGenerator
 
 import org.http4s.HttpRoutes
 import org.http4s.circe.CirceEntityDecoder._
@@ -18,7 +18,7 @@ import org.http4s.dsl.Http4sDsl
 object UserRoutes {
 
   def apply[F[_]: Effect](backend: BackendApp[F], user: AuthToken): HttpRoutes[F] = {
-    val dsl = new Http4sDsl[F] with ResponseGenerator[F] {}
+    val dsl = new Http4sDsl[F] {}
     import dsl._
 
     HttpRoutes.of {
@@ -63,4 +63,25 @@ object UserRoutes {
     }
   }
 
+  def admin[F[_]: Effect](backend: BackendApp[F]): HttpRoutes[F] = {
+    val dsl = new Http4sDsl[F] {}
+    import dsl._
+
+    HttpRoutes.of { case req @ POST -> Root / "resetPassword" =>
+      for {
+        input  <- req.as[ResetPassword]
+        result <- backend.collective.resetPassword(input.account)
+        resp <- Ok(result match {
+          case OCollective.PassResetResult.Success(np) =>
+            ResetPasswordResult(true, np, "Password updated")
+          case OCollective.PassResetResult.NotFound =>
+            ResetPasswordResult(
+              false,
+              Password(""),
+              "Password update failed. User not found."
+            )
+        })
+      } yield resp
+    }
+  }
 }
