@@ -28,9 +28,7 @@ COPY . /src/docspell/
 
 #RUN SBT_OPTS="-Xms1024M -Xmx8G -Xss2M -XX:MaxMetaspaceSize=8G" && \
 WORKDIR /src/docspell
-RUN sbt -mem 4096 make
-RUN sbt -mem 4096 make-zip
-RUN sbt -mem 4096 make-tools
+RUN sbt -mem 4096 make make-zip make-tools
 #RUN SBT_OPTS= && \
 
 RUN mkdir -p /opt
