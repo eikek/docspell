@@ -31,9 +31,11 @@ object TextAnalyser {
       labels ++ dates.map(dl => dl.label.copy(label = dl.date.toString))
   }
 
-  def create[F[_]: Sync](cfg: TextAnalysisConfig): Resource[F, TextAnalyser[F]] =
+  def create[F[_]: Concurrent: Timer](
+      cfg: TextAnalysisConfig
+  ): Resource[F, TextAnalyser[F]] =
     Resource
-      .liftF(PipelineCache[F]())
+      .liftF(PipelineCache[F](cfg.clearStanfordPipelineInterval))
       .map(cache =>
         new TextAnalyser[F] {
           def annotate(

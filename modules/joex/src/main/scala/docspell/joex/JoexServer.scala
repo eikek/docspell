@@ -35,7 +35,7 @@ object JoexServer {
           .create[F](cfg, signal, pools.connectEC, pools.httpClientEC, pools.blocker)
 
       httpApp = Router(
-        "/api/info" -> InfoRoutes(),
+        "/api/info" -> InfoRoutes(cfg),
         "/api/v1"   -> JoexRoutes(joexApp)
       ).orNotFound
 

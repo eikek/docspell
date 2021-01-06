@@ -118,6 +118,7 @@ let
         ];
       };
       working-dir = "/tmp/docspell-analysis";
+      clear-stanford-nlp-interval = "15 minutes";
     };
     processing = {
       max-due-date-years = 10;
@@ -769,6 +770,14 @@ in {
               description = ''
                 A working directory for the analyser to store temporary/working
                 files.
+              '';
+            };
+            clear-stanford-nlp-interval = mkOption {
+              type = types.str;
+              default = defaults.text-analysis.clear-stanford-nlp-interval;
+              description = ''
+                Idle time after which the NLP caches are cleared to free
+                memory. If <= 0 clearing the cache is disabled.
               '';
             };
 
