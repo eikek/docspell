@@ -136,12 +136,12 @@ object PipelineCache {
     private[this] val log = Logger.log4s[F](logger)
 
     def withCache: Resource[F, Unit] =
-      Resource.make(counter.update(_ + 1))(_ =>
+      Resource.make(counter.update(_ + 1) *> cancelClear)(_ =>
         counter.updateAndGet(_ - 1).flatMap(n => scheduleClearPipeline(n))
       )
 
     def scheduleClearPipeline(cnt: Long): F[Unit] =
-      if (cnt > 0) cancelClear
+      if (cnt > 0) ().pure[F]
       else cancelClear *> clearAllLater.flatMap(fiber => cleaningFiber.set(fiber.some))
 
     private def cancelClear: F[Unit] =
