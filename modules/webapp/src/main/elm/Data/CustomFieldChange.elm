@@ -3,12 +3,14 @@ module Data.CustomFieldChange exposing
     , CustomFieldValueCollect
     , collectValues
     , emptyCollect
+    , fromItemValues
     , isValueChange
     , toFieldValues
     )
 
 import Api.Model.CustomField exposing (CustomField)
 import Api.Model.CustomFieldValue exposing (CustomFieldValue)
+import Api.Model.ItemFieldValue exposing (ItemFieldValue)
 import Dict exposing (Dict)
 
 
@@ -75,3 +77,10 @@ isValueChange change =
 
         FieldCreateNew ->
             False
+
+
+fromItemValues : List { v | id : String, value : String } -> CustomFieldValueCollect
+fromItemValues values =
+    List.map (\e -> ( e.id, e.value )) values
+        |> Dict.fromList
+        |> CustomFieldValueCollect

@@ -19,6 +19,7 @@ import Api.Model.Equipment exposing (Equipment)
 import Api.Model.EquipmentList exposing (EquipmentList)
 import Api.Model.FolderStats exposing (FolderStats)
 import Api.Model.IdName exposing (IdName)
+import Api.Model.ItemFieldValue exposing (ItemFieldValue)
 import Api.Model.ItemSearch exposing (ItemSearch)
 import Api.Model.PersonList exposing (PersonList)
 import Api.Model.ReferenceList exposing (ReferenceList)
@@ -353,6 +354,7 @@ type Msg
     | SetConcEquip IdName
     | SetFolder IdName
     | SetTag String
+    | SetCustomField ItemFieldValue
     | CustomFieldMsg Comp.CustomFieldMultiInput.Msg
     | SetSource String
     | GetStatsResp (Result Http.Error SearchStats)
@@ -828,6 +830,22 @@ updateDrop ddm flags settings msg model =
                 Data.CustomFieldChange.isValueChange res.result
             , dragDrop = DD.DragDropData ddm Nothing
             }
+
+        SetCustomField cv ->
+            let
+                lm =
+                    Comp.CustomFieldMultiInput.setValues [ cv ]
+
+                values =
+                    Data.CustomFieldChange.fromItemValues [ cv ]
+
+                next =
+                    updateDrop ddm flags settings (CustomFieldMsg lm) model
+
+                m =
+                    next.model
+            in
+            { next | model = { m | customValues = values } }
 
         SetSource str ->
             let

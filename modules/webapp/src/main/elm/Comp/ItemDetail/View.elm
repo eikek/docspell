@@ -636,7 +636,10 @@ renderCustomValues : UiSettings -> Model -> List (Html Msg)
 renderCustomValues settings model =
     let
         fieldView cv =
-            Util.CustomField.renderValue "ui secondary basic label" cv
+            Comp.LinkTarget.makeCustomFieldLink
+                cv
+                [ ( "ui secondary basic label", True ) ]
+                SetLinkTarget
 
         labelThenName cv =
             Maybe.withDefault cv.name cv.label

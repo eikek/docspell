@@ -2,14 +2,17 @@ module Comp.LinkTarget exposing
     ( LinkTarget(..)
     , makeConcLink
     , makeCorrLink
+    , makeCustomFieldLink
     , makeFolderLink
     , makeTagLink
     )
 
 import Api.Model.IdName exposing (IdName)
+import Api.Model.ItemFieldValue exposing (ItemFieldValue)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
+import Util.CustomField
 
 
 type LinkTarget
@@ -19,6 +22,7 @@ type LinkTarget
     | LinkConcEquip IdName
     | LinkFolder IdName
     | LinkTag IdName
+    | LinkCustomField ItemFieldValue
     | LinkNone
 
 
@@ -72,6 +76,18 @@ makeTagLink :
     -> Html msg
 makeTagLink tagId classes tagger =
     makeLink classes (LinkTag >> tagger) tagId
+
+
+makeCustomFieldLink :
+    ItemFieldValue
+    -> List ( String, Bool )
+    -> (LinkTarget -> msg)
+    -> Html msg
+makeCustomFieldLink cv classes tagger =
+    Util.CustomField.renderValue1
+        classes
+        (tagger (LinkCustomField cv) |> Just)
+        cv
 
 
 

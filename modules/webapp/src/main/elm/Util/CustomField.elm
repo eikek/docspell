@@ -1,10 +1,11 @@
-module Util.CustomField exposing (nameOrLabel, renderValue)
+module Util.CustomField exposing (nameOrLabel, renderValue, renderValue1)
 
 import Api.Model.ItemFieldValue exposing (ItemFieldValue)
 import Data.CustomFieldType
 import Data.Icons as Icons
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Html.Events exposing (onClick)
 
 
 nameOrLabel : { r | name : String, label : Maybe String } -> String
@@ -14,6 +15,11 @@ nameOrLabel fv =
 
 renderValue : String -> ItemFieldValue -> Html msg
 renderValue classes cv =
+    renderValue1 [ ( classes, True ) ] Nothing cv
+
+
+renderValue1 : List ( String, Bool ) -> Maybe msg -> ItemFieldValue -> Html msg
+renderValue1 classes tagger cv =
     let
         renderBool =
             if cv.value == "true" then
@@ -21,8 +27,21 @@ renderValue classes cv =
 
             else
                 i [ class "minus icon" ] []
+
+        el : List (Html msg) -> Html msg
+        el =
+            case tagger of
+                Just t ->
+                    a
+                        [ classList classes
+                        , onClick t
+                        , href "#"
+                        ]
+
+                Nothing ->
+                    div [ classList classes ]
     in
-    div [ class classes ]
+    el
         [ Icons.customFieldTypeIconString "" cv.ftype
         , nameOrLabel cv |> text
         , div [ class "detail" ]
