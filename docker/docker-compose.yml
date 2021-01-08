@@ -15,7 +15,6 @@ services:
 
   joex:
     image: eikek0/docspell:joex-LATEST
-    container_name: docspell-joex
     restart: unless-stopped
     env_file: ./.env
     ports:
