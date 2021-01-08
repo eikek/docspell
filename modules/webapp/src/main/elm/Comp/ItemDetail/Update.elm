@@ -88,6 +88,7 @@ update key flags inav settings msg model =
                     , dueDatePicker = dp
                     , itemMail = im
                     , visibleAttach = 0
+                    , attachMenuOpen = False
                     , customFieldsModel = cm
                   }
                 , Cmd.batch
@@ -274,6 +275,7 @@ update key flags inav settings msg model =
             resultModel
                 { model
                     | visibleAttach = pos
+                    , attachMenuOpen = False
                     , sentMailsOpen = False
                     , attachRename = Nothing
                 }

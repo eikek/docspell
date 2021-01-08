@@ -225,8 +225,16 @@ textarea.markdown-editor {
     background: rgba(240,248,255,0.4);
 }
 
-.default-layout .ui.dropdown .menu .item.current-drop-target, .header.current-drop-target, .item.current-drop-target {
+.default-layout .ui.dropdown .menu .current-drop-target, .header.current-drop-target, .current-drop-target {
     background: rgba(0,0,0,0.2) !important;
+}
+.default-layout .ui.cards.small > .ui.card {
+    max-width: 180px;
+}
+.default-layout .ui.cards.small > .ui.card .image  {
+    max-width: 100px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .default-layout .search-menu {

@@ -84,8 +84,7 @@ view inav settings model =
 
                       else
                         []
-                    , [ renderAttachmentsTabMenu model
-                      ]
+                    , renderAttachmentsTabMenu model
                     , renderAttachmentsTabBody settings model
                     , renderIdInfo model
                     , if settings.itemDetailNotesPosition == Data.UiSettings.Bottom then
@@ -319,7 +318,7 @@ attachmentVisible model pos =
            )
 
 
-renderAttachmentsTabMenu : Model -> Html Msg
+renderAttachmentsTabMenu : Model -> List (Html Msg)
 renderAttachmentsTabMenu model =
     Comp.ItemDetail.AttachmentTabMenu.view model
 
