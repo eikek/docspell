@@ -28,9 +28,6 @@ view model =
         RegisterPage ->
             registerLayout model
 
-        NewInvitePage ->
-            newInviteLayout model
-
         _ ->
             defaultLayout model
 
@@ -47,14 +44,6 @@ loginLayout : Model -> Html Msg
 loginLayout model =
     div [ class "login-layout" ]
         [ viewLogin model
-        , footer model
-        ]
-
-
-newInviteLayout : Model -> Html Msg
-newInviteLayout model =
-    div [ class "newinvite-layout" ]
-        [ viewNewInvite model
         , footer model
         ]
 

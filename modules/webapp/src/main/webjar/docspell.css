@@ -340,15 +340,15 @@ label span.muted {
     border: 0;
 }
 
-.login-layout, .register-layout, .newinvite-layout {
+.login-layout, .register-layout {
     background: #708090;
     height: 100vh;
 }
-.login-layout > .ui.footer, .register-layout > .ui.footer, .newinvite-layout > .ui.footer {
+.login-layout > .ui.footer, .register-layout > .ui.footer {
     background: #708090;
 }
 
-.login-layout .login-view, .register-layout .register-view, .newinvite-view {
+.login-layout .login-view, .register-layout .register-view {
     background: #fff;
     position: relative;
     top: 2vh;
