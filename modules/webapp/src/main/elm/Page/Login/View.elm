@@ -83,7 +83,7 @@ view flags model =
                         , div [ class "ui very basic right aligned segment" ]
                             [ text "No account? "
                             , a [ class "ui icon link", Page.href RegisterPage ]
-                                [ i [ class "edit icon" ] []
+                                [ i [ class "user circle outline icon" ] []
                                 , text "Sign up!"
                                 ]
                             ]
