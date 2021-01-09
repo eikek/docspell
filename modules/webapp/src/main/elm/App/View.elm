@@ -275,7 +275,7 @@ loginInfo model =
                         , menuEntry model
                             QueuePage
                             [ i [ class "tachometer alternate icon" ] []
-                            , text "Procesing Queue"
+                            , text "Processing Queue"
                             ]
                         , div
                             [ classList
