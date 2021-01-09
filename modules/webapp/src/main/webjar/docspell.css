@@ -191,6 +191,7 @@ textarea.markdown-editor {
     overflow: auto;
     padding: 0.5em;
     font-family: monospace,monospace;
+    max-height: 75vh;
 }
 
 .default-layout .job-log>.debug {
