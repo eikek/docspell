@@ -182,7 +182,7 @@ object ScanMailboxTask {
       ctx.args.subjectFilter match {
         case Some(sf) =>
           def check(mh: MailHeader): F[Option[MailHeader]] =
-            if (sf.matches(mh.subject))
+            if (sf.matches(caseSensitive = false)(mh.subject))
               ctx.logger.debug(
                 s"Including mail '${mh.subject}', it matches the filter."
               ) *> Option(mh).pure[F]

@@ -51,11 +51,11 @@ object ReadMail {
       (Stream
         .eval(bodyEntry)
         .flatMap(e => Stream.emits(e.toSeq))
-        .filter(a => glob.matches(a.name)) ++
+        .filter(a => glob.matches(caseSensitive = false)(a.name)) ++
         Stream
           .eval(TnefExtract.replace(mail))
           .flatMap(m => Stream.emits(m.attachments.all))
-          .filter(a => a.filename.exists(glob.matches))
+          .filter(a => a.filename.exists(glob.matches(caseSensitive = false)))
           .map(a =>
             Binary(a.filename.getOrElse("noname"), a.mimeType.toLocal, a.content)
           ))

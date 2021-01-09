@@ -8,7 +8,7 @@ import io.circe.{Decoder, Encoder}
 trait Glob {
 
   /** Matches the input string against this glob. */
-  def matches(in: String): Boolean
+  def matches(caseSensitive: Boolean)(in: String): Boolean
 
   /** If this glob consists of multiple segments, it is the same as
     * `matches`. If it is only a single segment, it is matched against
@@ -25,42 +25,6 @@ trait Glob {
 }
 
 object Glob {
-  private val separator = '/'
-  private val anyChar   = '|'
-
-  val all = new Glob {
-    def matches(in: String)             = true
-    def matchFilenameOrPath(in: String) = true
-    val asString                        = "*"
-  }
-
-  def pattern(pattern: Pattern): Glob =
-    PatternGlob(pattern)
-
-  /** A simple glob supporting `*` and `?`. */
-  final private case class PatternGlob(pattern: Pattern) extends Glob {
-    def matches(in: String): Boolean =
-      pattern.parts
-        .zipWith(Glob.split(in, Glob.separator))(_.matches(_))
-        .forall(identity)
-
-    def matchFilenameOrPath(in: String): Boolean =
-      if (pattern.parts.tail.isEmpty) matches(split(in, separator).last)
-      else matches(in)
-
-    def asString: String =
-      pattern.asString
-  }
-
-  final private case class AnyGlob(globs: NonEmptyList[Glob]) extends Glob {
-    def matches(in: String) =
-      globs.exists(_.matches(in))
-    def matchFilenameOrPath(in: String) =
-      globs.exists(_.matchFilenameOrPath(in))
-    def asString =
-      globs.toList.map(_.asString).mkString(anyChar.toString)
-  }
-
   def apply(in: String): Glob = {
     def single(str: String) =
       PatternGlob(Pattern(split(str, separator).map(makeSegment)))
@@ -75,6 +39,42 @@ object Glob {
       }
   }
 
+  private val separator = '/'
+  private val anyChar   = '|'
+
+  val all = new Glob {
+    def matches(caseSensitive: Boolean)(in: String) = true
+    def matchFilenameOrPath(in: String)             = true
+    val asString                                    = "*"
+  }
+
+  def pattern(pattern: Pattern): Glob =
+    PatternGlob(pattern)
+
+  /** A simple glob supporting `*` and `?`. */
+  final private case class PatternGlob(pattern: Pattern) extends Glob {
+    def matches(caseSensitive: Boolean)(in: String): Boolean =
+      pattern.parts
+        .zipWith(Glob.split(in, Glob.separator))(_.matches(caseSensitive)(_))
+        .forall(identity)
+
+    def matchFilenameOrPath(in: String): Boolean =
+      if (pattern.parts.tail.isEmpty) matches(true)(split(in, separator).last)
+      else matches(true)(in)
+
+    def asString: String =
+      pattern.asString
+  }
+
+  final private case class AnyGlob(globs: NonEmptyList[Glob]) extends Glob {
+    def matches(caseSensitive: Boolean)(in: String) =
+      globs.exists(_.matches(caseSensitive)(in))
+    def matchFilenameOrPath(in: String) =
+      globs.exists(_.matchFilenameOrPath(in))
+    def asString =
+      globs.toList.map(_.asString).mkString(anyChar.toString)
+  }
+
   case class Pattern(parts: NonEmptyList[Segment]) {
     def asString =
       parts.map(_.asString).toList.mkString(separator.toString)
@@ -86,12 +86,12 @@ object Glob {
   }
 
   case class Segment(tokens: NonEmptyList[Token]) {
-    def matches(in: String): Boolean =
-      consume(in).exists(_.isEmpty)
+    def matches(caseSensitive: Boolean)(in: String): Boolean =
+      consume(in, caseSensitive).exists(_.isEmpty)
 
-    def consume(in: String): Option[String] =
+    def consume(in: String, caseSensitive: Boolean): Option[String] =
       tokens.foldLeft(in.some) { (rem, token) =>
-        rem.flatMap(token.consume)
+        rem.flatMap(token.consume(caseSensitive))
       }
 
     def asString: String =
@@ -103,33 +103,46 @@ object Glob {
   }
 
   sealed trait Token {
-    def consume(str: String): Option[String]
+    def consume(caseSensitive: Boolean)(str: String): Option[String]
 
     def asString: String
   }
   object Token {
     case class Literal(asString: String) extends Token {
-      def consume(str: String): Option[String] =
-        if (str.startsWith(asString)) str.drop(asString.length).some
+      def consume(caseSensitive: Boolean)(str: String): Option[String] =
+        if (str.startsWith(asString, caseSensitive)) str.drop(asString.length).some
         else None
     }
     case class Until(value: String) extends Token {
-      def consume(str: String): Option[String] =
+      def consume(caseSensitive: Boolean)(str: String): Option[String] =
         if (value.isEmpty) Some("")
         else
-          str.indexOf(value) match {
-            case -1 => None
-            case n  => str.substring(n + value.length).some
-          }
+          str
+            .findFirst(value, caseSensitive)
+            .map(n => str.substring(n + value.length))
       val asString =
         s"*$value"
     }
     case object Single extends Token {
-      def consume(str: String): Option[String] =
-        if (str.isEmpty()) None
+      def consume(caseSensitive: Boolean)(str: String): Option[String] =
+        if (str.isEmpty) None
         else Some(str.drop(1))
 
       val asString = "?"
+    }
+
+    implicit final class StringHelper(val str: String) extends AnyVal {
+      def findFirst(sub: String, caseSensitive: Boolean): Option[Int] = {
+        val vstr = if (caseSensitive) str else str.toLowerCase
+        val vsub = if (caseSensitive) sub else sub.toLowerCase
+        Option(vstr.indexOf(vsub)).filter(_ >= 0)
+      }
+
+      def startsWith(prefix: String, caseSensitive: Boolean): Boolean = {
+        val vstr    = if (caseSensitive) str else str.toLowerCase
+        val vprefix = if (caseSensitive) prefix else prefix.toLowerCase
+        vstr.startsWith(vprefix)
+      }
     }
   }
 
@@ -139,6 +152,7 @@ object Glob {
       .getOrElse(NonEmptyList.of(str))
 
   private def makeSegment(str: String): Segment = {
+    @annotation.tailrec
     def loop(rem: String, res: List[Token]): List[Token] =
       if (rem.isEmpty) res
       else

@@ -243,7 +243,9 @@ object ExtractArchive {
       )
 
     def filterNames(filter: Glob): Extracted =
-      copy(files = files.filter(ra => filter.matches(ra.name.getOrElse(""))))
+      copy(files =
+        files.filter(ra => filter.matches(caseSensitive = false)(ra.name.getOrElse("")))
+      )
 
     def setMeta(m: MetaProposal): Extracted =
       setMeta(MetaProposalList.of(m))
