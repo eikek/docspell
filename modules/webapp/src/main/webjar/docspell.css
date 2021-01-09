@@ -53,17 +53,16 @@
 }
 .default-layout {
     background: #fff;
-    height: 100%;
 }
 
 .default-layout .main-content {
-    padding-top: 44px;
-    padding-bottom: 2em;
+    margin-top: 45px;
 }
 
 .default-layout .top-menu {
     background:  aliceblue;
     box-shadow: 1px 1px 0px 0px black;
+    height: 44px;
 }
 
 .default-layout .top-menu a.header.item img {
@@ -192,6 +191,7 @@ textarea.markdown-editor {
     overflow: auto;
     padding: 0.5em;
     font-family: monospace,monospace;
+    max-height: 75vh;
 }
 
 .default-layout .job-log>.debug {
@@ -226,13 +226,39 @@ textarea.markdown-editor {
     background: rgba(240,248,255,0.4);
 }
 
-.default-layout .ui.dropdown .menu .item.current-drop-target, .header.current-drop-target, .item.current-drop-target {
+.default-layout .ui.dropdown .menu .current-drop-target, .header.current-drop-target, .current-drop-target {
     background: rgba(0,0,0,0.2) !important;
+}
+.default-layout .ui.cards.small > .ui.card {
+    max-width: 180px;
+}
+.default-layout .ui.cards.small > .ui.card .image  {
+    max-width: 100px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .default-layout .search-menu {
     box-shadow: 2px 1px 3px rgba(216, 223, 229, 1);
     background-color: aliceblue;
+}
+
+@media (min-width: 768px) {
+    .default-layout .search-menu {
+        overflow-y: auto;
+        height: calc(100vh - 45px);
+        scrollbar-width: none;
+    }
+    .default-layout .search-menu::-webkit-scrollbar {
+        width: 0 !important;
+    }
+    .default-layout .item-card-list {
+        overflow-y: scroll;
+        height: calc(100vh - 45px);
+    }
+    body,html {
+        height: inherit;
+    }
 }
 
 .default-layout .ui.action.input .elm-datepicker--container {
@@ -323,15 +349,15 @@ label span.muted {
     border: 0;
 }
 
-.login-layout, .register-layout, .newinvite-layout {
+.login-layout, .register-layout {
     background: #708090;
-    height: 100%;
+    height: 100vh;
 }
-.login-layout > .ui.footer, .register-layout > .ui.footer, .newinvite-layout > .ui.footer {
+.login-layout > .ui.footer, .register-layout > .ui.footer {
     background: #708090;
 }
 
-.login-layout .login-view, .register-layout .register-view, .newinvite-view {
+.login-layout .login-view, .register-layout .register-view {
     background: #fff;
     position: relative;
     top: 2vh;

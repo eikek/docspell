@@ -648,7 +648,7 @@ scrollToCard : Maybe String -> Model -> ( Model, Cmd Msg, Sub Msg )
 scrollToCard mId model =
     let
         scroll id =
-            Scroll.scroll id 0.5 0.5 0.5 0.5
+            Scroll.scrollElementY "item-card-list" id 0.5 0.5
     in
     case mId of
         Just id ->
@@ -712,6 +712,9 @@ linkTargetMsg linkTarget =
 
         Comp.LinkTarget.LinkTag id ->
             Just <| SearchMenuMsg (Comp.SearchMenu.SetTag id.id)
+
+        Comp.LinkTarget.LinkCustomField id ->
+            Just <| SearchMenuMsg (Comp.SearchMenu.SetCustomField id)
 
 
 doSearchMore : Flags -> UiSettings -> Model -> ( Model, Cmd Msg )

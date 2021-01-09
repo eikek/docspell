@@ -14,14 +14,7 @@ view flags model =
             [ div [ class "row" ]
                 [ div [ class "sixteen wide mobile fourteen wide tablet eight wide computer column" ]
                     [ h1 [ class "ui cener aligned icon header" ]
-                        [ img
-                            [ class "ui image"
-                            , src (flags.config.docspellAssetPath ++ "/img/logo-96.png")
-                            ]
-                            []
-                        , div [ class "content" ]
-                            [ text "Create new invitations"
-                            ]
+                        [ text "Create new invitations"
                         ]
                     , inviteMessage flags
                     , Html.form

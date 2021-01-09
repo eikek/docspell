@@ -39,7 +39,13 @@ defaultSettings =
         ds =
             DatePicker.defaultSettings
     in
-    { ds | changeYear = DatePicker.from 2010 }
+    { ds
+        | changeYear = DatePicker.from 2010
+        , parser =
+            \str ->
+                ds.parser str
+                    |> Result.mapError (\_ -> str)
+    }
 
 
 update : Settings -> Msg -> DatePicker -> ( DatePicker, DateEvent )

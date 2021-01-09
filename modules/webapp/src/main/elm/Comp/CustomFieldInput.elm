@@ -266,6 +266,13 @@ update1 forSearch msg model =
                         DatePicker.None ->
                             ( old, NoResult )
 
+                        DatePicker.FailedInput (DatePicker.Invalid str) ->
+                            if forSearch && hasWildCards str then
+                                ( Nothing, Value str )
+
+                            else
+                                ( old, NoResult )
+
                         DatePicker.FailedInput _ ->
                             ( old, NoResult )
 
@@ -289,11 +296,7 @@ updateFloatModel :
     -> (String -> String)
     -> ( FloatModel, FieldResult )
 updateFloatModel forSearch msg parse normalize =
-    let
-        hasWildCards =
-            String.startsWith "*" msg || String.endsWith "*" msg
-    in
-    if forSearch && hasWildCards then
+    if forSearch && hasWildCards msg then
         ( { input = normalize msg
           , result = Ok 0
           }
@@ -315,6 +318,11 @@ updateFloatModel forSearch msg parse normalize =
                   }
                 , NoResult
                 )
+
+
+hasWildCards : String -> Bool
+hasWildCards msg =
+    String.startsWith "*" msg || String.endsWith "*" msg
 
 
 

@@ -110,6 +110,7 @@ view flags settings model =
                 , ( "sixteen wide column", menuCollapsed model )
                 , ( "item-card-list", True )
                 ]
+            , id "item-card-list"
             ]
             (List.concat
                 [ viewBar flags model

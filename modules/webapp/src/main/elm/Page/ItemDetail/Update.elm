@@ -28,7 +28,7 @@ update key flags inav settings msg model =
                         model.detail
 
                 task =
-                    Scroll.scroll "main-content" 0 0 0 0
+                    Scroll.scroll "default-layout" 0 0 0 0
             in
             { model = { model | detail = result.model }
             , cmd =
