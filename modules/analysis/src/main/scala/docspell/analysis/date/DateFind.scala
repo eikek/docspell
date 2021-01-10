@@ -28,7 +28,7 @@ object DateFind {
                   text.substring(q.head.begin, q(2).end),
                   NerTag.Date,
                   q.head.begin,
-                  q(1).end
+                  q(2).end
                 )
               )
             )

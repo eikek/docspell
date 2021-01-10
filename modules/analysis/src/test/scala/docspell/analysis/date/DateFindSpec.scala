@@ -11,19 +11,19 @@ object DateFindSpec extends SimpleTestSuite {
     val expect = Vector(
       NerDateLabel(
         LocalDate.parse("2016-11-07"),
-        NerLabel("November 7, 2016", NerTag.Date, 50, 60)
+        NerLabel("November 7, 2016", NerTag.Date, 50, 66)
       ),
       NerDateLabel(
         LocalDate.parse("2016-11-07"),
-        NerLabel("November 7, 2016", NerTag.Date, 119, 129)
+        NerLabel("November 7, 2016", NerTag.Date, 119, 135)
       ),
       NerDateLabel(
         LocalDate.parse("2019-09-03"),
-        NerLabel("September 3, 2019", NerTag.Date, 249, 260)
+        NerLabel("September 3, 2019", NerTag.Date, 249, 266)
       ),
       NerDateLabel(
         LocalDate.parse("2016-12-12"),
-        NerLabel("December 12, 2016", NerTag.Date, 1076, 1087)
+        NerLabel("December 12, 2016", NerTag.Date, 1076, 1093)
       )
     )
 
@@ -50,11 +50,11 @@ object DateFindSpec extends SimpleTestSuite {
       Vector(
         NerDateLabel(
           LocalDate.of(2020, 11, 5),
-          NerLabel("11/05/2020", NerTag.Date, 3, 8)
+          NerLabel("11/05/2020", NerTag.Date, 3, 13)
         ),
         NerDateLabel(
           LocalDate.of(2020, 5, 11),
-          NerLabel("11/05/2020", NerTag.Date, 3, 8)
+          NerLabel("11/05/2020", NerTag.Date, 3, 13)
         )
       )
     )
@@ -63,7 +63,7 @@ object DateFindSpec extends SimpleTestSuite {
       Vector(
         NerDateLabel(
           LocalDate.of(2020, 5, 21),
-          NerLabel("21/05/2020", NerTag.Date, 3, 8)
+          NerLabel("21/05/2020", NerTag.Date, 3, 13)
         )
       )
     )
