@@ -40,9 +40,9 @@ val sharedSettings = Seq(
     packageTools(logger, dir, v)
   },
   scalacOptions in (Compile, console) :=
-    (scalacOptions.value.filter(o => !o.contains("Xlint")) ++ Seq("-Xlint:_,-unused")),
+    (scalacOptions.value.filter(o => !o.contains("-Xlint") && !o.contains("-W"))),
   scalacOptions in (Test, console) :=
-    (scalacOptions.value.filter(o => !o.contains("Xlint")) ++ Seq("-Xlint:_,-unused"))
+    (scalacOptions.value.filter(o => !o.contains("-Xlint") && !o.contains("-W")))
 ) ++ scalafixSettings
 
 val testSettings = Seq(
