@@ -12,6 +12,8 @@ list of items, sorted by their due date.
 You need first define smtp settings, please see [this
 page](@/docs/webapp/emailsettings.md#smtp-settings).
 
+## Settings
+
 Notifying works simply by searching for due items periodically. It
 will be submitted to the job queue and is picked up by an available
 [job executor](@/docs/joex/_index.md) eventually. This can be setup in
@@ -72,3 +74,9 @@ periodically.
 
 You can see the task executing at the [processing
 page](@/docs/webapp/processing.md).
+
+
+## Configuration
+
+The part `docspell.joex.send-mail.list-id` can be used to add a
+`List-Id` mail header to every notification mail.

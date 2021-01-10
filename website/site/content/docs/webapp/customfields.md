@@ -113,8 +113,8 @@ Then you can set values that are matched against your items.
 </div>
 
 Values are also validated in the search form. Only valid values are
-sent to the server for searching. For most fields you can use a
-wildcard at beginning and/or end to do a substring match:
+sent to the server for searching. There is one exception: you can use
+a wildcard at beginning and/or end to do a substring match:
 
 {{ figure(file="custom-fields-07.png") }}
 
@@ -126,3 +126,5 @@ this is text-based matching.
     {{ figure(file="custom-fields-08.png") }}
     </div>
 </div>
+
+Using a single `*` allows to find items that have any value set.

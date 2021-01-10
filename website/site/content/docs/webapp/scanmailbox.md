@@ -51,6 +51,13 @@ deleted and not moved to your trash folder*. If both options are off,
 nothing happens with that mail, it simply stays (and could be re-read
 on the next run).
 
+Be careful when mails are neither moved nor deleted after processing.
+They could be selected anew in the next run, meaning that the job can
+not progress, because it filters out the same mails all the time. You
+can however, simply schedule the task in an interval >= the `Received
+Since Hours` setting.
+
+
 ## Filtering
 
 The following properties allow to filter mails that are imported.
@@ -110,6 +117,20 @@ be written in a shorter way using a repetition value. It is written
 like this: `1/7` which is the same as a list with `1` and all
 multiples of `7` added to it. In other words, it matches `1`, `1+7`,
 `1+7+7`, `1+7+7+7` and so on.
+
+# Configuraion
+
+The admin can tweak some properties in the config file at
+`docspell.joex.user-tasks.scan-mailbox`:
+
+- `max-folders`: Maximum number of folders to scan. This sets a hard
+  limit on the folder selection of the user settings.
+- `mail-chunk-size`: the batch size to use when fetching mails; after
+  this many mails have been processed, the connection is
+  re-established to get the next `mail-chunk-size` mails.
+- `max-mails`: the maximum amount of mails to process in one job run.
+  If the mailbox contains more than this amount of mails, it must be
+  waited for the next scheduled executon.
 
 
 # Reading Mails twice / Duplicates

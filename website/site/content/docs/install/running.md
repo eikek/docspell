@@ -64,3 +64,12 @@ $ ./docspell-restserver*/bin/docspell-restserver -h
 ```
 
 gives an overview of supported options.
+
+It is recommended to run joex with 1.5G heap space or more and with
+the G1GC enabled. If you use java8, you need to add an option to use
+G1GC, for java11 this is not necessary (but doesn't hurt either). This
+could look like this:
+
+```
+./docspell-joex-{{version()}}/bin/docspell-joex -J-Xmx1596M -J-XX:+UseG1GC -- /path/to/joex.conf
+```

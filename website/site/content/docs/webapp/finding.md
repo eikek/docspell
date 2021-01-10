@@ -67,6 +67,20 @@ Clicking the checkbox "Only new" shows items that have not been
 "Confirmed". All items that have been created by docspell and not
 looked at are marked as "new" automatically.
 
+## Fulltext and Name Search
+
+You can choose tags or correspondents in the search menu and further
+restrict the results using full text search with the *content* field.
+
+If this is the only filled field, then a normal fulltext search is
+done. It is exactly the same as filling out the *Contents Only* search
+bar. However, if some other fields are also set, then first a search
+using all other fields is done and these results are then further
+constraint by a fulltext search.
+
+You can switch to "Name Search" using the little icon on the right.
+This will then only search in item names and notes.
+
 ## Tags & Tag Categories
 
 Click on a tag to show only items with this tag, the tag is marked
@@ -121,25 +135,12 @@ Pick a correspondent to show only these items.
 
 Pick a concerned entity to show only these items.
 
-## Names
+## Custom Fields
 
-Searches in names of certain properties. The `Names` field is the same
-as the search in the search bar ([see above](#names)).
+You can choose one or more custom field to search for. You can use
+wildcards (`*`) at the beginning and/or end of a search term, too. To
+find items that have any value, use a single `*`.
 
-## Content
-
-You can choose tags or correspondents in the search menu and further
-restrict the results using full text search with the *content* field.
-
-{% infobubble(mode="warning", title="Please note") %}
-This field is intended to be used in conjunction with other fields in
-the search menu. It *may be really slow* if used alone, since first
-the database query is executed and its results are further constrained
-by fulltext search.
-
-Use the search-bar with option *Contents Only* to do quick fulltext
-searches.
-{% end %}
 
 ## Date
 

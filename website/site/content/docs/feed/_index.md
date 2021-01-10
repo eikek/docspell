@@ -32,7 +32,7 @@ This requires to login at the webapp. Since this is complicated from
 other applications, you can create custom hard-to-guess endpoints to
 use with the following options.
 
-# Watch Directories
+# Scanners / Watch Directories
 
 If you have a (document) scanner (or think about getting one), it can
 usually be configured to place scanned documents as image or PDF files
@@ -44,6 +44,12 @@ you can organize the files as you want in there (rename, move etc).
 
 The scanner should support 300dpi for better results. Docspell
 converts the files into PDF adding a text layer of image-only files.
+
+Check out
+[scanadf2docspell](https://github.com/eresturo/scanadf2docspell) if
+your scanner is connected to your computer. This can create nice pdf
+files from scanners with ADF, applying corrections and sending them to
+docspell.
 
 {{ buttonright(classes="is-primary ", href="/docs/tools/consumedir", text="More") }}
 

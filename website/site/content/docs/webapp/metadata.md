@@ -18,6 +18,7 @@ known meta data. The *Meta Data* page allows to manage this meta data:
 - Persons
 - Equipments
 - Folders
+- Custom Fields
 
 ## Tags
 
