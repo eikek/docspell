@@ -17,51 +17,53 @@ object DateFind {
       .splitToken(text, " \t.,\n\r/".toSet)
       .sliding(3)
       .filter(_.length == 3)
-      .map(q =>
-        SimpleDate
-          .fromParts(q.toList, lang)
-          .map(sd =>
-            NerDateLabel(
-              sd.toLocalDate,
-              NerLabel(
-                text.substring(q.head.begin, q(2).end),
-                NerTag.Date,
-                q.head.begin,
-                q(1).end
+      .flatMap(q =>
+        Stream.emits(
+          SimpleDate
+            .fromParts(q.toList, lang)
+            .map(sd =>
+              NerDateLabel(
+                sd.toLocalDate,
+                NerLabel(
+                  text.substring(q.head.begin, q(2).end),
+                  NerTag.Date,
+                  q.head.begin,
+                  q(1).end
+                )
               )
             )
-          )
+        )
       )
-      .collect({ case Some(d) => d })
 
-  private case class SimpleDate(year: Int, month: Int, day: Int) {
+  case class SimpleDate(year: Int, month: Int, day: Int) {
     def toLocalDate: LocalDate =
       LocalDate.of(if (year < 100) 2000 + year else year, month, day)
   }
 
-  private object SimpleDate {
+  object SimpleDate {
     val p0 = (readYear >> readMonth >> readDay).map { case ((y, m), d) =>
-      SimpleDate(y, m, d)
+      List(SimpleDate(y, m, d))
     }
     val p1 = (readDay >> readMonth >> readYear).map { case ((d, m), y) =>
-      SimpleDate(y, m, d)
+      List(SimpleDate(y, m, d))
     }
     val p2 = (readMonth >> readDay >> readYear).map { case ((m, d), y) =>
-      SimpleDate(y, m, d)
+      List(SimpleDate(y, m, d))
     }
 
     // ymd ✔, ydm, dmy ✔, dym, myd, mdy ✔
-    def fromParts(parts: List[Word], lang: Language): Option[SimpleDate] = {
+    def fromParts(parts: List[Word], lang: Language): List[SimpleDate] = {
       val p = lang match {
-        case Language.English => p2.or(p0).or(p1)
-        case Language.German  => p1.or(p0).or(p2)
-        case Language.French  => p1.or(p0).or(p2)
+        case Language.English =>
+          p2.alt(p1).map(t => t._1 ++ t._2).or(p2).or(p0).or(p1)
+        case Language.German => p1.or(p0).or(p2)
+        case Language.French => p1.or(p0).or(p2)
       }
       p.read(parts) match {
-        case Result.Success(sd, _) =>
-          Either.catchNonFatal(sd.toLocalDate).map(_ => sd).toOption
+        case Result.Success(sds, _) =>
+          sds.flatMap(sd => Either.catchNonFatal(sd.toLocalDate).toOption.map(_ => sd))
         case Result.Failure =>
-          None
+          Nil
       }
     }
 
@@ -89,6 +91,15 @@ object DateFind {
       def map[B](f: A => B): Reader[B] =
         Reader(read.andThen(_.map(f)))
 
+      def flatMap[B](f: A => Reader[B]): Reader[B] =
+        Reader(read.andThen {
+          case Result.Success(a, rest) => f(a).read(rest)
+          case Result.Failure          => Result.Failure
+        })
+
+      def alt(other: Reader[A]): Reader[(A, A)] =
+        Reader(words => Result.combine(read(words), other.read(words)))
+
       def or(other: Reader[A]): Reader[A] =
         Reader(words =>
           read(words) match {
@@ -113,21 +124,31 @@ object DateFind {
     sealed trait Result[+A] {
       def toOption: Option[A]
       def map[B](f: A => B): Result[B]
+      def flatMap[B](f: A => Result[B]): Result[B]
       def next[B](r: Reader[B]): Result[(A, B)]
     }
 
     object Result {
       final case class Success[A](value: A, rest: List[Word]) extends Result[A] {
-        val toOption                     = Some(value)
-        def map[B](f: A => B): Result[B] = Success(f(value), rest)
+        val toOption                                 = Some(value)
+        def flatMap[B](f: A => Result[B]): Result[B] = f(value)
+        def map[B](f: A => B): Result[B]             = Success(f(value), rest)
         def next[B](r: Reader[B]): Result[(A, B)] =
           r.read(rest).map(b => (value, b))
       }
       final case object Failure extends Result[Nothing] {
-        val toOption                                    = None
-        def map[B](f: Nothing => B): Result[B]          = this
-        def next[B](r: Reader[B]): Result[(Nothing, B)] = this
+        val toOption                                       = None
+        def flatMap[B](f: Nothing => Result[B]): Result[B] = this
+        def map[B](f: Nothing => B): Result[B]             = this
+        def next[B](r: Reader[B]): Result[(Nothing, B)]    = this
       }
+      def combine[A](r0: Result[A], r1: Result[A]): Result[(A, A)] =
+        (r0, r1) match {
+          case (Success(a0, _), Success(a1, r1)) =>
+            Success((a0, a1), r1)
+          case _ =>
+            Failure
+        }
     }
 
     private val months = List(

@@ -43,4 +43,30 @@ object DateFindSpec extends SimpleTestSuite {
       Vector.empty
     )
   }
+
+  test("different date formats") {
+    assertEquals(
+      DateFind.findDates("on 11/05/2020", Language.English).toVector,
+      Vector(
+        NerDateLabel(
+          LocalDate.of(2020, 11, 5),
+          NerLabel("11/05/2020", NerTag.Date, 3, 8)
+        ),
+        NerDateLabel(
+          LocalDate.of(2020, 5, 11),
+          NerLabel("11/05/2020", NerTag.Date, 3, 8)
+        )
+      )
+    )
+    assertEquals(
+      DateFind.findDates("on 21/05/2020", Language.English).toVector,
+      Vector(
+        NerDateLabel(
+          LocalDate.of(2020, 5, 21),
+          NerLabel("21/05/2020", NerTag.Date, 3, 8)
+        )
+      )
+    )
+  }
+
 }
