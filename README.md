@@ -84,7 +84,8 @@ room](https://gitter.im/eikek/docspell) for chatting and questions.
 You can also [open an
 issue](https://github.com/eikek/docspell/issues/new) for questions,
 problems and other feedback; or make a mail to `info [at]
-docspell.org`. I'll try to answer in time.
+docspell.org`. I'll try to answer in time. You may want to check
+[Contributing.md](Contributing.md) for some starting points, too.
 
 If you find this project any useful and want to support it via other
 means, giving a :star: is always encouraging and much appreciated. You

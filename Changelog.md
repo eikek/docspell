@@ -1,5 +1,112 @@
 # Changelog
 
+## v0.18.0
+
+*Soon*
+
+- Feature: Results summary and updated tag count (#496, #333)
+  - A search summary can be displayed that shows the overall result
+    count and to each custom field with a numeric type (number or
+    money) small statistics like sum, average and max/min values. This
+    is useful when you track your expenses on invoices or receipts.
+  - This additional ui element can be enabled/disabled in your ui
+    settings.
+  - The result summary is now also used to update the tag counts in
+    the search menu according to the current results.
+- Feature: password reset (#376,
+  [docs](https://docspell.org/docs/tools/reset-password/))
+  - Adds a new route for admins to reset the password of a user
+  - Admin users are those with access to the config file, the endpoint
+    requires to supply a secret from the config file.
+  - A bash script is provided for more convenient access.
+  - *Note this also moves the re-create index endpoint behind the same
+    secret!* See below.
+- Feature: custom fields clickable (#514)
+  - The item detail view allows to click on tags to quickly find all
+    tagged items. This now works for custom fields, too.
+- Feature: scroll independently (#541)
+  - The search menu can scroll now independent from the main area
+    containing the item cards.
+- Improvement: improve attachment selection (#396)
+  - When selecting an attachment, it shows its preview to the name
+    instead of the name only
+- Improvement: wildcard search for custom date fields (#550)
+  - Searching for custom field values allows to use a wildcard `*` at
+    beginning or end. This is also enabled for date-fields.
+- Improvement: joex memory (#509)
+  - Joex currently requires a lot of memory to hold the NLP models.
+    After idling for some time, which can be configured and defaults
+    to 15 min, the NLP model cache is cleared. This reduces memory
+    load and makes it possible for the JVM to give it back to the OS.
+  - This is supposed to relieve memory consumption when idling only.
+    However, whether it is reclaimed by the OS depends on the JVM and
+    its settings. To observe it early, use the G1GC garbage collector.
+    This is enabled by default for JDK11. So it is recommended to use
+    JDK11 (which is used in the docker images).
+- Improvement: allow scaling joex with docker-compose, thanks @bjeanes
+  (#552)
+  - This allows to easily start multiple joex containers via
+    `docker-compose`
+- Improvement: allow to connect with gmail via app specific passwords
+  (#520)
+  - Imap settings have been extended to be able to specify if a OAuth2
+    should be used or not.
+  - Before, OAuth2 was the default when the server has advertised it.
+    *This has been changed now, which means you need to adapt your
+    IMAP settings if you currently use OAuth2*
+- Fix: provide multiple possible date suggestions for English
+  documents (#561)
+- Fix: add missing language files to joex docker image (#525)
+- Fix: fix a bug that occurs when processing is restarted (i.e. after
+  a crash) (#530)
+- Fix: fix a bug in the ui where the mail connection field was not
+  correctly updated (#524)
+- Fix: fix bug when importing mails with an applied filter (#551)
+
+### Breaking Changes
+
+- Rest Server config:
+  - If you specify the `fulltext-search.recreate-key`, you need to
+    change your config. Delete it and use the secret now for the new
+    setting `admin-endpoint.secret`.
+- routes
+  - The route to drop and recreate the fulltext search index has been
+    moved. It is now at `/admin/fts/reIndexAll`. The secret must now
+    provided as http header and not in the url.
+- collective settings:
+  - The imap settings have a new flag which indicates whether OAuth2
+    auth mechanism should be prefered. This is `false` by default. If
+    you have used it with OAuth2 (like with gmail) you need either set
+    this flag to `true` manually or use an [application specific
+    password](https://docspell.org/docs/webapp/emailsettings/#via-app-specific-passwords).
+
+### REST Api Changes
+
+- Rest Server:
+  - Move endpoint `/open/fts/reIndexAll/{id}` to
+    `/admin/fts/reIndexAll`. The secret must now be specified via an
+    http header `Docspell-Admin-Secret`.
+  - Add `/admin/user/resetPassword` which requires a http header
+    `Docspell-Admin-Secret` with a value from the config file.
+  - Add `/sec/item/searchStats` to return a search result summary
+  - Changes `ImapSettings` to include a `useOAuth` flag
+  - Remove `fileCount` from the `TagCloud` structure
+  - The return value for `/sec/item/searchStats` now contains all
+    tags, before tags with `count == 0` were excluded
+  
+### Configuration Changes
+
+- Rest Server:
+  - adds `admin-endpoint.secret` (without any value) that is the
+    secret for the new "admin endpoint"
+  - Removes `full-text-search.recreate-key`, the route that was using
+    this key is now moved in the admin endpoint and therefore shares
+    this secret now.
+- Joex:
+  - adds `clear-stanford-nlp-interval = "15 minutes"` which is the
+    joex idle time to clear the nlp cache
+
+
 ## v0.17.1
 
 *Dec 15, 2020*
