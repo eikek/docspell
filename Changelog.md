@@ -105,6 +105,8 @@
 - Joex:
   - adds `clear-stanford-nlp-interval = "15 minutes"` which is the
     joex idle time to clear the nlp cache
+  - The default `pool-size` is set to 1. You can increase it on
+    stronger machines.
 
 
 ## v0.17.1
