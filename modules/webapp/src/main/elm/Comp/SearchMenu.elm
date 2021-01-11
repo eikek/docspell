@@ -358,6 +358,7 @@ type Msg
     | SetCustomField ItemFieldValue
     | CustomFieldMsg Comp.CustomFieldMultiInput.Msg
     | SetSource String
+    | ResetToSource String
     | GetStatsResp (Result Http.Error SearchStats)
     | GetAllTagsResp (Result Http.Error SearchStats)
 
@@ -876,6 +877,9 @@ updateDrop ddm flags settings msg model =
             , stateChange = False
             , dragDrop = DD.DragDropData ddm Nothing
             }
+
+        ResetToSource str ->
+            resetAndSet (SetSource str)
 
 
 

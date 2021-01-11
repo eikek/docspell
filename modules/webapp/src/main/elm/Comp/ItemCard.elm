@@ -263,13 +263,11 @@ metaDataContent settings item =
                 ]
             ]
         , div [ class "right floated meta" ]
-            [ div [ class "ui horizontal list" ]
-                [ div
-                    [ class "item"
-                    , title "Source"
-                    ]
-                    [ IT.render IT.source item |> text
-                    ]
+            [ div [ class "ui horizontal link list" ]
+                [ Comp.LinkTarget.makeSourceLink
+                    [ ( "item", True ) ]
+                    SetLinkTarget
+                    (IT.render IT.source item)
                 , div
                     [ classList
                         [ ( "item", True )

@@ -4,6 +4,7 @@ module Comp.LinkTarget exposing
     , makeCorrLink
     , makeCustomFieldLink
     , makeFolderLink
+    , makeSourceLink
     , makeTagLink
     )
 
@@ -23,6 +24,7 @@ type LinkTarget
     | LinkFolder IdName
     | LinkTag IdName
     | LinkCustomField ItemFieldValue
+    | LinkSource String
     | LinkNone
 
 
@@ -88,6 +90,15 @@ makeCustomFieldLink cv classes tagger =
         classes
         (tagger (LinkCustomField cv) |> Just)
         cv
+
+
+makeSourceLink :
+    List ( String, Bool )
+    -> (LinkTarget -> msg)
+    -> String
+    -> Html msg
+makeSourceLink classes tagger str =
+    makeLink classes (.name >> LinkSource >> tagger) (IdName "" str)
 
 
 

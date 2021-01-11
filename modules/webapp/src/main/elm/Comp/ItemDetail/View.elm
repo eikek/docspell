@@ -38,7 +38,6 @@ import Html.Events exposing (onCheck, onClick, onInput)
 import Markdown
 import Page exposing (Page(..))
 import Set
-import Util.CustomField
 import Util.File exposing (makeFileId)
 import Util.Folder
 import Util.List
@@ -560,7 +559,8 @@ renderItemInfo settings model =
                 [ class "item"
                 , title "Source"
                 ]
-                [ text model.item.source
+                [ Icons.sourceIcon ""
+                , Comp.LinkTarget.makeSourceLink [] SetLinkTarget model.item.source
                 ]
             , True
             )

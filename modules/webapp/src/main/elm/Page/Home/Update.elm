@@ -716,6 +716,9 @@ linkTargetMsg linkTarget =
         Comp.LinkTarget.LinkCustomField id ->
             Just <| SearchMenuMsg (Comp.SearchMenu.SetCustomField id)
 
+        Comp.LinkTarget.LinkSource str ->
+            Just <| SearchMenuMsg (Comp.SearchMenu.ResetToSource str)
+
 
 doSearchMore : Flags -> UiSettings -> Model -> ( Model, Cmd Msg )
 doSearchMore flags settings model =
