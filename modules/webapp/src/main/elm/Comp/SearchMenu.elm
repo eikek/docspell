@@ -24,6 +24,7 @@ import Api.Model.ItemSearch exposing (ItemSearch)
 import Api.Model.PersonList exposing (PersonList)
 import Api.Model.ReferenceList exposing (ReferenceList)
 import Api.Model.SearchStats exposing (SearchStats)
+import Api.Model.TagList exposing (TagList)
 import Comp.CustomFieldMultiInput
 import Comp.DatePicker
 import Comp.Dropdown exposing (isDropdownChangeMsg)
@@ -84,7 +85,7 @@ type TextSearchModel
 
 init : Flags -> Model
 init flags =
-    { tagSelectModel = Comp.TagSelect.init Comp.TagSelect.emptySelection []
+    { tagSelectModel = Comp.TagSelect.init [] []
     , tagSelection = Comp.TagSelect.emptySelection
     , directionModel =
         Comp.Dropdown.makeSingleList
@@ -358,6 +359,7 @@ type Msg
     | CustomFieldMsg Comp.CustomFieldMultiInput.Msg
     | SetSource String
     | GetStatsResp (Result Http.Error SearchStats)
+    | GetAllTagsResp (Result Http.Error SearchStats)
 
 
 type alias NextState =
@@ -424,7 +426,7 @@ updateDrop ddm flags settings msg model =
             { model = mdp
             , cmd =
                 Cmd.batch
-                    [ Api.itemSearchStats flags (getItemSearch model) GetStatsResp
+                    [ Api.itemSearchStats flags Api.Model.ItemSearch.empty GetAllTagsResp
                     , Api.getOrgLight flags GetOrgResp
                     , Api.getEquipments flags "" GetEquipResp
                     , Api.getPersons flags "" GetPersonResp
@@ -437,7 +439,7 @@ updateDrop ddm flags settings msg model =
 
         ResetForm ->
             { model = resetModel model
-            , cmd = Cmd.none
+            , cmd = Api.itemSearchStats flags Api.Model.ItemSearch.empty GetAllTagsResp
             , stateChange = True
             , dragDrop = DD.DragDropData ddm Nothing
             }
@@ -473,12 +475,29 @@ updateDrop ddm flags settings msg model =
         SetTag id ->
             resetAndSet (TagSelectMsg (Comp.TagSelect.toggleTag id))
 
+        GetAllTagsResp (Ok stats) ->
+            let
+                tagSel =
+                    Comp.TagSelect.modifyAll stats.tagCloud.items model.tagSelectModel
+            in
+            { model = { model | tagSelectModel = tagSel }
+            , cmd = Cmd.none
+            , stateChange = False
+            , dragDrop = DD.DragDropData ddm Nothing
+            }
+
+        GetAllTagsResp (Err _) ->
+            { model = model
+            , cmd = Cmd.none
+            , stateChange = False
+            , dragDrop = DD.DragDropData ddm Nothing
+            }
+
         GetStatsResp (Ok stats) ->
             let
                 selectModel =
                     List.sortBy .count stats.tagCloud.items
-                        |> List.reverse
-                        |> Comp.TagSelect.modify model.tagSelection model.tagSelectModel
+                        |> Comp.TagSelect.modifyCount model.tagSelectModel
 
                 model_ =
                     { model
@@ -567,7 +586,7 @@ updateDrop ddm flags settings msg model =
         TagSelectMsg m ->
             let
                 ( m_, sel, ddd ) =
-                    Comp.TagSelect.updateDrop ddm m model.tagSelectModel
+                    Comp.TagSelect.updateDrop ddm model.tagSelection m model.tagSelectModel
             in
             { model =
                 { model
@@ -968,14 +987,26 @@ viewDrop ddd flags settings model =
                 , ( "invisible hidden", fieldHidden Data.Fields.Tag && fieldHidden Data.Fields.Folder )
                 ]
             ]
-            [ optional [ Data.Fields.Tag ] <|
-                Html.map TagSelectMsg (Comp.TagSelect.viewTagsDrop ddd.model settings model.tagSelectModel)
-            , optional [ Data.Fields.Tag ] <|
-                Html.map TagSelectMsg (Comp.TagSelect.viewCats settings model.tagSelectModel)
-            , optional [ Data.Fields.Folder ] <|
-                Html.map FolderSelectMsg
-                    (Comp.FolderSelect.viewDrop ddd.model settings.searchMenuFolderCount model.folderList)
-            ]
+            ((if fieldVisible Data.Fields.Tag then
+                List.map (Html.map TagSelectMsg)
+                    (Comp.TagSelect.viewAll
+                        ddd.model
+                        settings
+                        model.tagSelection
+                        model.tagSelectModel
+                    )
+
+              else
+                []
+             )
+                ++ [ optional [ Data.Fields.Folder ] <|
+                        Html.map FolderSelectMsg
+                            (Comp.FolderSelect.viewDrop ddd.model
+                                settings.searchMenuFolderCount
+                                model.folderList
+                            )
+                   ]
+            )
         , div
             [ classList
                 [ ( segmentClass, True )
