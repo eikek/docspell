@@ -10,7 +10,7 @@
 <meta name="title" property="og:title" content="Docspell – Simple Document Organizer">
 <meta name="og:image" content="/img/poster.png">
 <meta name="og:title" content="Docspell – Simple Document Organizer">
-<meta name="og:site_name" content="Directory Cleaner - Docspell">
+<meta name="og:site_name" content="Regenerate Preview Images - Docspell">
 <meta name="og:url" content="">
 <meta name="og:type" content="website">
 <meta name="og:description" content="Simple Document Organizer">
@@ -22,7 +22,7 @@
 <link rel="shortcut icon" href="/favicon-mc.ico" type="image/x-icon">
 <link rel="icon" href="/favicon-mc.ico" type="image/x-icon">
 
-        <title>Directory Cleaner – Docspell Documentation</title>
+        <title>Regenerate Preview Images – Docspell Documentation</title>
         <link rel="stylesheet" href="/styles.css">
         <script type="application/javascript" src="/search_index.en.js"></script>
 <script type="application/javascript" src="/elasticlunr.min.js"></script>
@@ -63,7 +63,7 @@
                 <div class="columns is-vcentered">
                     <div class="column is-8">
                         <h1 class="title">
-                            Directory Cleaner
+                            Regenerate Preview Images
                         </h1>
                         <h2 class="subtitle">
                             Docspell Documentation
@@ -94,7 +94,7 @@
                 </li>
                 
                 <li>
-                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;consumedir-cleaner&#x2F;">Directory Cleaner</a>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;regenerate-previews&#x2F;">Regenerate Preview Images</a>
                 </li>
             </ul>
         </nav>
@@ -141,34 +141,9 @@
                             
                             <li>
                                 <a href="https://docspell.org/docs/tools/consumedir-cleaner/"
-                                   class="is-active">
+                                   >
                                     Directory Cleaner
                                 </a>
-                                
-                                <ul class="menu-list">
-                                    
-                                    <li>
-                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;consumedir-cleaner&#x2F;#introduction">
-                                            Introduction
-                                        </a>
-                                        <ul>
-                                            
-                                            <li>
-                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;consumedir-cleaner&#x2F;#how-it-works">
-                                                    How it works
-                                                </a>
-                                            </li>
-                                            
-                                            <li>
-                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;consumedir-cleaner&#x2F;#usage-parameters-settings">
-                                                    Usage (parameters &#x2F; settings)
-                                                </a>
-                                            </li>
-                                            
-                                        </ul>
-                                    </li>
-                                    
-                                </ul>
                                 
                             </li>
                             
@@ -229,9 +204,40 @@
                             
                             <li>
                                 <a href="https://docspell.org/docs/tools/regenerate-previews/"
-                                   >
+                                   class="is-active">
                                     Regenerate Preview Images
                                 </a>
+                                
+                                <ul class="menu-list">
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;regenerate-previews&#x2F;#regenerate-previews-sh">
+                                            regenerate-previews.sh
+                                        </a>
+                                        <ul>
+                                            
+                                        </ul>
+                                    </li>
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;regenerate-previews&#x2F;#requirements">
+                                            Requirements
+                                        </a>
+                                        <ul>
+                                            
+                                        </ul>
+                                    </li>
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;regenerate-previews&#x2F;#usage">
+                                            Usage
+                                        </a>
+                                        <ul>
+                                            
+                                        </ul>
+                                    </li>
+                                    
+                                </ul>
                                 
                             </li>
                             
@@ -242,61 +248,33 @@
                 <div class="column is-9">
                     <div class="container">
                         <div class="content doc">
-                            <h1 id="introduction">Introduction<a class="zola-anchor" href="#introduction" aria-label="Anchor link for: introduction">🔗</a></h1>
-<p>This script is made for cleaning up the consumption directory used for
-the consumedir service (as it is provided as docker container)which
-are copied or moved there.</p>
-<p><a href="https://github.com/eikek/docspell/tree/master/tools/consumedir-cleaner">https://github.com/eikek/docspell/tree/master/tools/consumedir-cleaner</a></p>
-<h2 id="how-it-works">How it works<a class="zola-anchor" href="#how-it-works" aria-label="Anchor link for: how-it-works">🔗</a></h2>
-<ul>
-<li>Checks for every file (in the collective's folder of the given user
-name) if it already exists in the collective (using Docspell's API).</li>
-<li>If so, by default those files are moved to an archive folder just
-besides the collective's consumption folders named _archive. The
-archive's files are organized into monthly subfolders by the date
-they've been added to Docspell
-<ul>
-<li>If set, those files can also be deleted instead of being moved to
-the archive. There is no undo function provided for this, so be
-careful.</li>
-</ul>
-</li>
-<li>If a file is found which does not exist in the collective, by
-default nothing happens, so that file would be found in every run
-and just ignored
-<ul>
-<li>If set, those files can also be uploaded to Docspell. Depending on
-the setting for files already existing these files would either be
-deleted or moved to the archive in the next run.</li>
-</ul>
-</li>
-</ul>
-<h2 id="usage-parameters-settings">Usage (parameters / settings)<a class="zola-anchor" href="#usage-parameters-settings" aria-label="Anchor link for: usage-parameters-settings">🔗</a></h2>
-<p>Copy the script to your machine and run it with the following
-parameters:</p>
-<ol>
-<li>URL of Docspell, including http(s)</li>
-<li>Username for Docspell, possibly including Collective (if other name
-as user)</li>
-<li>Password for Docspell</li>
-<li>Path to the directory which files shall be checked against
-existence in Docspell</li>
-</ol>
-<p>Additionally, environment variables can be used to alter the behavior:</p>
-<ul>
-<li><code>DS_CC_REMOVE</code>
-<ul>
-<li><code>true</code> – delete files which already exist in the collective</li>
-<li><code>false</code> (default) - move them to the archive (see above)</li>
-</ul>
-</li>
-<li><code>DS_CC_UPLOAD_MISSING</code>
-<ul>
-<li><code>true</code> - uploads files which do not exist in the collective</li>
-<li><code>false</code> (default) - ignore them and do nothing</li>
-</ul>
-</li>
-</ul>
+                            <h1 id="regenerate-previews-sh">regenerate-previews.sh<a class="zola-anchor" href="#regenerate-previews-sh" aria-label="Anchor link for: regenerate-previews-sh">🔗</a></h1>
+<p>This is a simple bash script to trigger the endpoint that submits task
+for generating preview images of your files. This is usually not
+needed, but should you change the <code>preview.dpi</code> setting in joex'
+config file, you need to regenerate the images to have any effect.</p>
+<h1 id="requirements">Requirements<a class="zola-anchor" href="#requirements" aria-label="Anchor link for: requirements">🔗</a></h1>
+<p>It is a bash script that additionally needs
+<a href="https://curl.haxx.se/">curl</a> and
+<a href="https://stedolan.github.io/jq/">jq</a>.</p>
+<h1 id="usage">Usage<a class="zola-anchor" href="#usage" aria-label="Anchor link for: usage">🔗</a></h1>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">./regenerate-previews.sh [docspell-base-url]
+</span></code></pre>
+<p>For example, if docspell is at <code>http://localhost:7880</code>:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">./convert-all-pdfs.sh http://localhost:7880
+</span></code></pre>
+<p>The script asks for your account name and password. It then logs in
+and triggers the said endpoint. After this you should see a few tasks
+running.</p>
+<p>There will be one task per file to convert. All these tasks are
+submitted with a low priority. So files uploaded through the webapp or
+a <a href="https://docspell.org/docs/webapp/uploading/#anonymous-upload">source</a> with a high
+priority, will be preferred as <a href="https://docspell.org/docs/joex/intro/#scheduler-config">configured in the job
+executor</a>. This is to not
+disturb normal processing when many conversion tasks are being
+executed.</p>
 
                         </div>
                     </div>

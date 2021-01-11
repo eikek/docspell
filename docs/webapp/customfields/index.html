@@ -355,8 +355,8 @@ Then you can set values that are matched against your items.</p>
     </div>
 </div>
 <p>Values are also validated in the search form. Only valid values are
-sent to the server for searching. For most fields you can use a
-wildcard at beginning and/or end to do a substring match:</p>
+sent to the server for searching. There is one exception: you can use
+a wildcard at beginning and/or end to do a substring match:</p>
 <figure class="image">
     <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;custom-fields-07.png">
 </figure>
@@ -369,6 +369,7 @@ this is text-based matching.</p>
 </figure>
     </div>
 </div>
+<p>Using a single <code>*</code> allows to find items that have any value set.</p>
 
                         </div>
                     </div>
@@ -380,7 +381,7 @@ this is text-based matching.</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell, 0.17.1
+                Docspell, 0.18.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>

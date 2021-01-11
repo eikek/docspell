@@ -201,6 +201,24 @@
                                 
                                 <ul class="menu-list">
                                     
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;notifydueitems&#x2F;#settings">
+                                            Settings
+                                        </a>
+                                        <ul>
+                                            
+                                        </ul>
+                                    </li>
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;notifydueitems&#x2F;#configuration">
+                                            Configuration
+                                        </a>
+                                        <ul>
+                                            
+                                        </ul>
+                                    </li>
+                                    
                                 </ul>
                                 
                             </li>
@@ -235,6 +253,7 @@ docspell about due items. You will then receive an e-mail containing a
 list of items, sorted by their due date.</p>
 <p>You need first define smtp settings, please see <a href="https://docspell.org/docs/webapp/emailsettings/#smtp-settings">this
 page</a>.</p>
+<h2 id="settings">Settings<a class="zola-anchor" href="#settings" aria-label="Anchor link for: settings">🔗</a></h2>
 <p>Notifying works simply by searching for due items periodically. It
 will be submitted to the job queue and is picked up by an available
 <a href="https://docspell.org/docs/joex/">job executor</a> eventually. This can be setup in
@@ -286,6 +305,9 @@ a free job executor).</p>
 periodically.</p>
 <p>You can see the task executing at the <a href="https://docspell.org/docs/webapp/processing/">processing
 page</a>.</p>
+<h2 id="configuration">Configuration<a class="zola-anchor" href="#configuration" aria-label="Anchor link for: configuration">🔗</a></h2>
+<p>The part <code>docspell.joex.send-mail.list-id</code> can be used to add a
+<code>List-Id</code> mail header to every notification mail.</p>
 
                         </div>
                     </div>
@@ -297,7 +319,7 @@ page</a>.</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell, 0.17.1
+                Docspell, 0.18.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>

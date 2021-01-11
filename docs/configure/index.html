@@ -113,6 +113,12 @@
                                     </li>
                                     
                                     <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;configure&#x2F;#admin-endpoint">
+                                            Admin Endpoint
+                                        </a>
+                                    </li>
+                                    
+                                    <li>
                                         <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;configure&#x2F;#full-text-search-solr">
                                             Full-Text Search: SOLR
                                         </a>
@@ -246,7 +252,19 @@ include these options:</p>
 <p>H2</p>
 <pre style="background-color:#282828;">
 <code><span style="color:#fdf4c1aa;">url = &quot;jdbc:h2:///path/to/a/file.db;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;AUTO_SERVER=TRUE&quot;
-</span></code></pre><h2 id="full-text-search-solr">Full-Text Search: SOLR<a class="zola-anchor" href="#full-text-search-solr" aria-label="Anchor link for: full-text-search-solr">🔗</a></h2>
+</span></code></pre><h2 id="admin-endpoint">Admin Endpoint<a class="zola-anchor" href="#admin-endpoint" aria-label="Anchor link for: admin-endpoint">🔗</a></h2>
+<p>The admin endpoint defines some <a href="https://docspell.org/docs/api/intro/#admin">routes</a>
+for adminstration tasks. This is disabled by default and can be
+enabled by providing a secret:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1;">...
+  admin-endpoint {
+    secret = </span><span style="color:#b8bb26;">&quot;123&quot;
+  </span><span style="color:#fdf4c1;">}
+</span></code></pre>
+<p>This secret must be provided to all requests to a <code>/api/v1/admin/</code>
+endpoint.</p>
+<h2 id="full-text-search-solr">Full-Text Search: SOLR<a class="zola-anchor" href="#full-text-search-solr" aria-label="Anchor link for: full-text-search-solr">🔗</a></h2>
 <p><a href="https://lucene.apache.org/solr">Apache SOLR</a> is used to provide the
 full-text search. Both docspell components must provide the same
 connection setup. This is defined in the <code>full-text-search.solr</code>
@@ -271,23 +289,18 @@ as described in the <a href="https://lucene.apache.org/solr/guide/8_4/installing
 documentation</a>.
 That will provide you with the connection url (the last part is the
 core name).</p>
-<p>While the <code>full-text-search.solr</code> options are the same for joex and
-the restserver, there are some settings that differ. The restserver
-has this additional setting, that may be of interest:</p>
+<p>The <code>full-text-search.solr</code> options are the same for joex and the
+restserver.</p>
+<p>There is an <a href="https://docspell.org/docs/api/intro/#admin">admin route</a> that allows to
+re-create the entire index (for all collectives). This is possible via
+a call:</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1;">full-text-search {
-  recreate-key = </span><span style="color:#b8bb26;">&quot;test123&quot;
-</span><span style="color:#fdf4c1;">}
+<code><span style="color:#fdf4c1;">$ curl -XPOST -H </span><span style="color:#b8bb26;">&quot;Docspell-Admin-Secret: test123&quot;</span><span style="color:#fdf4c1;"> http://localhost:7880/api/v1/admin/fts/reIndexAll
 </span></code></pre>
-<p>This key is required if you want docspell to drop and re-create the
-entire index. This is possible via a REST call:</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1;">$ curl -XPOST http://localhost:7880/api/v1/open/fts/reIndexAll/test123
-</span></code></pre>
-<p>Here the <code>test123</code> is the key defined with <code>recreate-key</code>. If it is
-empty (the default), this REST call is disabled. Otherwise, the POST
-request will submit a system task that is executed by a joex instance
-eventually.</p>
+<p>Here the <code>test123</code> is the key defined with <code>admin-endpoint.secret</code>. If
+it is empty (the default), this call is disabled (all admin routes).
+Otherwise, the POST request will submit a system task that is executed
+by a joex instance eventually.</p>
 <p>Using this endpoint, the index will be re-created. This is sometimes
 necessary, for example if you upgrade SOLR or delete the core to
 provide a new one (see
@@ -506,6 +519,20 @@ Please refer to their documentation for more on this.</p>
       header-value = </span><span style="color:#b8bb26;">&quot;some-secret&quot;
     </span><span style="color:#fdf4c1;">}
   }
+  </span><span style="font-style:italic;color:#928374;"># This is a special endpoint that allows some basic administration.
+  #
+  # It is intended to be used by admins only, that is users who
+  # installed the app and have access to the system. Normal users
+  # should not have access and therefore a secret must be provided in
+  # order to access it.
+  #
+  # This is used for some endpoints, for example:
+  # - re-create complete fulltext index:
+  #   curl -XPOST -H&#39;Docspell-Admin-Secret: xyz&#39; http://localhost:7880/api/v1/admin/fts/reIndexAll
+</span><span style="color:#fdf4c1;">  admin-endpoint {
+    </span><span style="font-style:italic;color:#928374;"># The secret. If empty, the endpoint is disabled.
+</span><span style="color:#fdf4c1;">    secret = </span><span style="color:#b8bb26;">&quot;&quot;
+  </span><span style="color:#fdf4c1;">}
   </span><span style="font-style:italic;color:#928374;"># Configuration of the full-text search engine.
 </span><span style="color:#fdf4c1;">  full-text-search {
     </span><span style="font-style:italic;color:#928374;"># The full-text search feature can be disabled. It requires an
@@ -514,13 +541,6 @@ Please refer to their documentation for more on this.</p>
     #
     # Currently the SOLR search platform is supported.
 </span><span style="color:#fdf4c1;">    enabled = false
-    </span><span style="font-style:italic;color:#928374;"># When re-creating the complete index via a REST call, this key
-    # is required. If left empty (the default), recreating the index
-    # is disabled.
-    #
-    # Example curl command:
-    # curl -XPOST http://localhost:7880/api/v1/open/fts/reIndexAll/test123
-</span><span style="color:#fdf4c1;">    recreate-key = </span><span style="color:#b8bb26;">&quot;&quot;
     </span><span style="font-style:italic;color:#928374;"># Configuration for the SOLR backend.
 </span><span style="color:#fdf4c1;">    solr = {
       </span><span style="font-style:italic;color:#928374;"># The URL to solr
@@ -643,7 +663,7 @@ Please refer to their documentation for more on this.</p>
     # name, which must be unique, too.
 </span><span style="color:#fdf4c1;">    name = ${docspell.joex.app</span><span style="color:#fe8019;">-</span><span style="color:#fdf4c1;">id}
     </span><span style="font-style:italic;color:#928374;"># Number of processing allowed in parallel.
-</span><span style="color:#fdf4c1;">    pool-size = 2
+</span><span style="color:#fdf4c1;">    pool-size = 1
     </span><span style="font-style:italic;color:#928374;"># A counting scheme determines the ratio of how high- and low-prio
     # jobs are run. For example: 4,1 means run 4 high prio jobs, then
     # 1 low prio and then start over.
@@ -761,7 +781,8 @@ Please refer to their documentation for more on this.</p>
     # in your PATH or the absolute path can be specified below.
 </span><span style="color:#fdf4c1;">    ocr {
       </span><span style="font-style:italic;color:#928374;"># Images greater than this size are skipped. Note that every
-      # image is loaded completely into memory for doing OCR.
+      # image is loaded completely into memory for doing OCR. This is
+      # the pixel count, `height * width` of the image.
 </span><span style="color:#fdf4c1;">      max-image-size = 14000000
       </span><span style="font-style:italic;color:#928374;"># Defines what pages to process. If a PDF with 600 pages is
       # submitted, it is probably not necessary to scan through all of
@@ -826,7 +847,13 @@ Please refer to their documentation for more on this.</p>
 </span><span style="color:#fdf4c1;">    max-length = 10000
     </span><span style="font-style:italic;color:#928374;"># A working directory for the analyser to store temporary/working
     # files.
-</span><span style="color:#fdf4c1;">    working-dir = ${java.io.tmpdir}</span><span style="color:#b8bb26;">&quot;/docspell-analysis&quot;</span><span style="color:#fdf4c1;">
+</span><span style="color:#fdf4c1;">    working-dir = ${java.io.tmpdir}</span><span style="color:#b8bb26;">&quot;/docspell-analysis&quot;
+    </span><span style="font-style:italic;color:#928374;"># The StanfordCoreNLP library caches language models which
+    # requires quite some amount of memory. Setting this interval to a
+    # positive duration, the cache is cleared after this amount of
+    # idle time. Set it to 0 to disable it if you have enough memory,
+    # processing will be faster.
+</span><span style="color:#fdf4c1;">    clear-stanford-nlp-interval = </span><span style="color:#b8bb26;">&quot;15 minutes&quot;</span><span style="color:#fdf4c1;">
     regex-ner {
       </span><span style="font-style:italic;color:#928374;"># Whether to enable custom NER annotation. This uses the address
       # book of a collective as input for NER tagging (to automatically
@@ -1108,7 +1135,7 @@ statements with level &quot;DEBUG&quot; will be printed, too.</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell, 0.17.1
+                Docspell, 0.18.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>

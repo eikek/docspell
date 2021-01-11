@@ -199,6 +199,12 @@
                                             </li>
                                             
                                             <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;finding&#x2F;#fulltext-and-name-search">
+                                                    Fulltext and Name Search
+                                                </a>
+                                            </li>
+                                            
+                                            <li>
                                                 <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;finding&#x2F;#tags-tag-categories">
                                                     Tags &amp; Tag Categories
                                                 </a>
@@ -223,14 +229,8 @@
                                             </li>
                                             
                                             <li>
-                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;finding&#x2F;#names-1">
-                                                    Names
-                                                </a>
-                                            </li>
-                                            
-                                            <li>
-                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;finding&#x2F;#content">
-                                                    Content
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;finding&#x2F;#custom-fields">
+                                                    Custom Fields
                                                 </a>
                                             </li>
                                             
@@ -392,6 +392,16 @@ bar. It shows some options to constrain the item list:</p>
 <p>Clicking the checkbox &quot;Only new&quot; shows items that have not been
 &quot;Confirmed&quot;. All items that have been created by docspell and not
 looked at are marked as &quot;new&quot; automatically.</p>
+<h2 id="fulltext-and-name-search">Fulltext and Name Search<a class="zola-anchor" href="#fulltext-and-name-search" aria-label="Anchor link for: fulltext-and-name-search">🔗</a></h2>
+<p>You can choose tags or correspondents in the search menu and further
+restrict the results using full text search with the <em>content</em> field.</p>
+<p>If this is the only filled field, then a normal fulltext search is
+done. It is exactly the same as filling out the <em>Contents Only</em> search
+bar. However, if some other fields are also set, then first a search
+using all other fields is done and these results are then further
+constraint by a fulltext search.</p>
+<p>You can switch to &quot;Name Search&quot; using the little icon on the right.
+This will then only search in item names and notes.</p>
 <h2 id="tags-tag-categories">Tags &amp; Tag Categories<a class="zola-anchor" href="#tags-tag-categories" aria-label="Anchor link for: tags-tag-categories">🔗</a></h2>
 <p>Click on a tag to show only items with this tag, the tag is marked
 with a check (✔) icon. Click again, to show only items that are not
@@ -431,27 +441,10 @@ Simply drag an item card and drop it on a folder. If dropped on the
 <p>Pick a correspondent to show only these items.</p>
 <h2 id="concerned">Concerned<a class="zola-anchor" href="#concerned" aria-label="Anchor link for: concerned">🔗</a></h2>
 <p>Pick a concerned entity to show only these items.</p>
-<h2 id="names-1">Names<a class="zola-anchor" href="#names-1" aria-label="Anchor link for: names-1">🔗</a></h2>
-<p>Searches in names of certain properties. The <code>Names</code> field is the same
-as the search in the search bar (<a href="https://docspell.org/docs/webapp/finding/#names">see above</a>).</p>
-<h2 id="content">Content<a class="zola-anchor" href="#content" aria-label="Anchor link for: content">🔗</a></h2>
-<p>You can choose tags or correspondents in the search menu and further
-restrict the results using full text search with the <em>content</em> field.</p>
-<div class="notification is-warning is-light" style="z-index: -1">
-    <div class="content ">
-        <p class="title is-5">
-            Please note
-        </p>
-        <div>
-            <p>This field is intended to be used in conjunction with other fields in
-the search menu. It <em>may be really slow</em> if used alone, since first
-the database query is executed and its results are further constrained
-by fulltext search.</p>
-<p>Use the search-bar with option <em>Contents Only</em> to do quick fulltext
-searches.</p>
-        </div>
-    </div>
-</div>
+<h2 id="custom-fields">Custom Fields<a class="zola-anchor" href="#custom-fields" aria-label="Anchor link for: custom-fields">🔗</a></h2>
+<p>You can choose one or more custom field to search for. You can use
+wildcards (<code>*</code>) at the beginning and/or end of a search term, too. To
+find items that have any value, use a single <code>*</code>.</p>
 <h2 id="date">Date<a class="zola-anchor" href="#date" aria-label="Anchor link for: date">🔗</a></h2>
 <p>Specify a date range to show only items whose date property is within
 this range. If you want to see items of a specific day, choose the
@@ -513,7 +506,7 @@ with the highlighted occurrence of the match.</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell, 0.17.1
+                Docspell, 0.18.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>

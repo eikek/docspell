@@ -216,6 +216,18 @@
                                         </a>
                                         <ul>
                                             
+                                            <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;emailsettings&#x2F;#via-app-specific-passwords">
+                                                    via App specific passwords
+                                                </a>
+                                            </li>
+                                            
+                                            <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;emailsettings&#x2F;#via-oauth2">
+                                                    via OAuth2
+                                                </a>
+                                            </li>
+                                            
                                         </ul>
                                     </li>
                                     
@@ -343,12 +355,26 @@ enabled if you know why.</em></p>
 <p>Authenticating with GMail may be not so simple. GMail implements an
 authentication scheme called <em>XOAUTH2</em> (at least for Imap). It will
 not work with your normal password. This is to avoid giving an
-application full access to your gmail account.</p>
-<p>The e-mail integration in docspell relies on the
-<a href="https://javaee.github.io/javamail">JavaMail</a> library which has
+application full access to your gmail account and also to add your
+password to the store of different apps.</p>
+<h2 id="via-app-specific-passwords">via App specific passwords<a class="zola-anchor" href="#via-app-specific-passwords" aria-label="Anchor link for: via-app-specific-passwords">🔗</a></h2>
+<p>GMail allows to define <a href="https://myaccount.google.com/apppasswords">application specific
+passwords</a> (you must, as of
+now, enable 2FA to make it available). These are separate unique
+passwords solely defined for one specific application. You can
+enable/disable this password any time at your google account page.</p>
+<p>This makes it possible to use &quot;standard&quot; authentication schemes with
+you gmail account via imap. That is, <em>do not</em> enable the <code>Enable OAuth2 authentication …</code> in your imap settings.</p>
+<h2 id="via-oauth2">via OAuth2<a class="zola-anchor" href="#via-oauth2" aria-label="Anchor link for: via-oauth2">🔗</a></h2>
+<p>If you don't want to use application specific passwords, you can use
+OAuth2 directly. The e-mail integration in docspell relies on the
+<a href="https://eclipse-ee4j.github.io/mail">JavaMail</a> library which has
 support for XOAUTH2. It also has documentation on what you need to do
-on your gmail account: <a href="https://javaee.github.io/javamail/OAuth2">https://javaee.github.io/javamail/OAuth2</a>.</p>
-<p>First you need to go to the <a href="https://console.developers.google.com">Google Developers
+on your gmail account: <a href="https://eclipse-ee4j.github.io/mail/OAuth2">https://eclipse-ee4j.github.io/mail/OAuth2</a>.</p>
+<p>To enable the auth scheme in docspell, you must enable the <code>Enable OAuth2 authentication …</code> in your imap settings. In this mode, the imap
+password is the OAuth2 access token.</p>
+<p>The following describes what you need to do at gmail to activate this
+for docspell. First you need to go to the <a href="https://console.developers.google.com">Google Developers
 Console</a> and create an &quot;App&quot; to
 get a Client-Id and a Client-Secret. This &quot;App&quot; will be your instance
 of docspell. You tell google that this app may send and read your
@@ -470,7 +496,7 @@ echo </span><span style="color:#b8bb26;">&quot;New Settings:&quot;
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell, 0.17.1
+                Docspell, 0.18.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>

@@ -238,6 +238,15 @@
                                     </li>
                                     
                                     <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;scanmailbox&#x2F;#configuraion">
+                                            Configuraion
+                                        </a>
+                                        <ul>
+                                            
+                                        </ul>
+                                    </li>
+                                    
+                                    <li>
                                         <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;scanmailbox&#x2F;#reading-mails-twice-duplicates">
                                             Reading Mails twice &#x2F; Duplicates
                                         </a>
@@ -312,6 +321,10 @@ also choose to delete the mail, but <em>note that it will really be
 deleted and not moved to your trash folder</em>. If both options are off,
 nothing happens with that mail, it simply stays (and could be re-read
 on the next run).</p>
+<p>Be careful when mails are neither moved nor deleted after processing.
+They could be selected anew in the next run, meaning that the job can
+not progress, because it filters out the same mails all the time. You
+can however, simply schedule the task in an interval &gt;= the <code>Received Since Hours</code> setting.</p>
 <h2 id="filtering">Filtering<a class="zola-anchor" href="#filtering" aria-label="Anchor link for: filtering">🔗</a></h2>
 <p>The following properties allow to filter mails that are imported.</p>
 <p>Then the field <em>Received Since Hours</em> defines how many hours to go
@@ -361,6 +374,19 @@ be written in a shorter way using a repetition value. It is written
 like this: <code>1/7</code> which is the same as a list with <code>1</code> and all
 multiples of <code>7</code> added to it. In other words, it matches <code>1</code>, <code>1+7</code>,
 <code>1+7+7</code>, <code>1+7+7+7</code> and so on.</p>
+<h1 id="configuraion">Configuraion<a class="zola-anchor" href="#configuraion" aria-label="Anchor link for: configuraion">🔗</a></h1>
+<p>The admin can tweak some properties in the config file at
+<code>docspell.joex.user-tasks.scan-mailbox</code>:</p>
+<ul>
+<li><code>max-folders</code>: Maximum number of folders to scan. This sets a hard
+limit on the folder selection of the user settings.</li>
+<li><code>mail-chunk-size</code>: the batch size to use when fetching mails; after
+this many mails have been processed, the connection is
+re-established to get the next <code>mail-chunk-size</code> mails.</li>
+<li><code>max-mails</code>: the maximum amount of mails to process in one job run.
+If the mailbox contains more than this amount of mails, it must be
+waited for the next scheduled executon.</li>
+</ul>
 <h1 id="reading-mails-twice-duplicates">Reading Mails twice / Duplicates<a class="zola-anchor" href="#reading-mails-twice-duplicates" aria-label="Anchor link for: reading-mails-twice-duplicates">🔗</a></h1>
 <p>Since users can move around mails in their mailboxes, it can happen
 that docspell unintentionally reads a mail multiple times. If docspell
@@ -400,7 +426,7 @@ task run only, it is meant to reduce resource allocation of one task.</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell, 0.17.1
+                Docspell, 0.18.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>

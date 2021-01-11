@@ -2,7 +2,7 @@ openapi: 3.0.0
 
 info:
   title: Docspell
-  version: 0.17.1
+  version: 0.18.0
   description: |
     This is the remote API to Docspell, a personal document organizer.
 
@@ -151,9 +151,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BasicResult"
-  /open/fts/reIndexAll/{id}:
+  /admin/fts/reIndexAll:
     post:
-      tags: [Full-Text Index]
+      tags: [Full-Text Index, Admin]
       summary: Re-creates the full-text index.
       description: |
         Clears the full-text index and inserts all data from the
@@ -162,10 +162,10 @@ paths:
         by a job executor. Note that this affects all data of all
         collectives.
 
-        The `id` is required and refers to the key given in the config
-        file to ensure that only admins can call this route.
-      parameters:
-        - $ref: "#/components/parameters/id"
+        This is an admin route, so you need to provide the secret from
+        the config file as header `Docspell-Admin-Secret`.
+      security:
+        - adminHeader: []
       responses:
         200:
           description: Ok
@@ -1184,6 +1184,31 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BasicResult"
+
+  /admin/user/resetPassword:
+    post:
+      tags: [ Collective, Admin ]
+      summary: Reset a user password.
+      description: |
+        Resets a user password to some random string which is returned
+        as the result. This is an admin route, so you need to specify
+        the secret from the config file via a http header
+        `Docspell-Admin-Secret`.
+      security:
+        - adminHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ResetPassword"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResetPasswordResult"
+
   /sec/source:
     get:
       tags: [ Source ]
@@ -1374,6 +1399,27 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ItemLightList"
+
+  /sec/item/searchStats:
+    post:
+      tags: [ Item ]
+      summary: Get basic statistics about the data of a search.
+      description: |
+        Takes a search query and returns a summary about the results.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ItemSearch"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SearchStats"
 
   /sec/item/{id}:
     get:
@@ -3395,6 +3441,32 @@ paths:
 
 components:
   schemas:
+    ResetPassword:
+      description: |
+        The account to reset the password.
+      required:
+        - account
+      properties:
+        account:
+          type: string
+          format: accountid
+
+    ResetPasswordResult:
+      description: |
+        Contains the newly generated password or an error.
+      required:
+        - success
+        - newPassword
+        - message
+      properties:
+        success:
+          type: boolean
+        newPassword:
+          type: string
+          format: password
+        message:
+          type: string
+
     ItemsAndFieldValue:
       description: |
         Holds a list of item ids and a custom field value.
@@ -3852,6 +3924,7 @@ components:
         - from
         - sslType
         - ignoreCertificates
+        - useOAuth
       properties:
         name:
           type: string
@@ -3870,6 +3943,11 @@ components:
           type: string
         ignoreCertificates:
           type: boolean
+        useOAuth:
+          type: boolean
+          description: |
+            Use the password as an OAuth2 access token with the
+            authentication scheme XOAUTH2.
     CalEventCheckResult:
       description: |
         The result of checking a calendar event string.
@@ -4146,6 +4224,28 @@ components:
         key:
           type: string
           format: ident
+    SearchStats:
+      description: |
+        A summary of search results.
+      required:
+        - count
+        - tagCloud
+        - fieldStats
+        - folderStats
+      properties:
+        count:
+          type: integer
+          format: int32
+        tagCloud:
+          $ref: "#/components/schemas/TagCloud"
+        fieldStats:
+          type: array
+          items:
+            $ref: "#/components/schemas/FieldStats"
+        folderStats:
+          type: array
+          items:
+            $ref: "#/components/schemas/FolderStats"
     ItemInsights:
       description: |
         Information about the items in docspell.
@@ -4166,6 +4266,70 @@ components:
           format: int64
         tagCloud:
           $ref: "#/components/schemas/TagCloud"
+    FolderStats:
+      description: |
+        Count of folder usage.
+      required:
+        - id
+        - name
+        - owner
+        - count
+      properties:
+        id:
+          type: string
+          format: ident
+        name:
+          type: string
+        owner:
+          $ref: "#/components/schemas/IdName"
+        count:
+          type: integer
+          format: int32
+    FieldStats:
+      description: |
+        Basic statistics about a custom field.
+      required:
+        - id
+        - name
+        - ftype
+        - count
+        - avg
+        - sum
+        - max
+        - min
+      properties:
+        id:
+          type: string
+          format: ident
+        name:
+          type: string
+          format: ident
+        label:
+          type: string
+        ftype:
+          type: string
+          format: customfieldtype
+          enum:
+            - text
+            - numeric
+            - date
+            - bool
+            - money
+        count:
+          type: integer
+          format: int32
+        sum:
+          type: number
+          format: double
+        avg:
+          type: number
+          format: double
+        max:
+          type: number
+          format: double
+        min:
+          type: number
+          format: double
     TagCloud:
       description: |
         A tag "cloud"
@@ -5079,7 +5243,6 @@ components:
         - state
         - date
         - source
-        - fileCount
         - tags
       properties:
         id:
@@ -5113,9 +5276,6 @@ components:
           $ref: "#/components/schemas/IdName"
         folder:
           $ref: "#/components/schemas/IdName"
-        fileCount:
-          type: integer
-          format: int32
         attachments:
           type: array
           items:
@@ -5312,6 +5472,10 @@ components:
       type: apiKey
       in: header
       name: X-Docspell-Auth
+    adminHeader:
+      type: apiKey
+      in: header
+      name: Docspell-Admin-Secret
   parameters:
     id:
       name: id

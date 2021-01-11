@@ -130,6 +130,15 @@
                                     </li>
                                     
                                     <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;api&#x2F;intro&#x2F;#admin">
+                                            Admin
+                                        </a>
+                                        <ul>
+                                            
+                                        </ul>
+                                    </li>
+                                    
+                                    <li>
                                         <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;api&#x2F;intro&#x2F;#live-api">
                                             Live Api
                                         </a>
@@ -191,11 +200,14 @@ workflow.</p>
 <p><a href="/openapi/docspell-openapi.html">Docspell REST Api Doc</a></p>
 <p>The &quot;raw&quot; <code>openapi.yml</code> specification file can be found
 <a href="/openapi/docspell-openapi.yml">here</a>.</p>
-<p>The routes can be divided into protected and unprotected routes. The
-unprotected, or open routes are at <code>/open/*</code> while the protected
-routes are at <code>/sec/*</code>. Open routes don't require authenticated access
-and can be used by any user. The protected routes require an
-authenticated user.</p>
+<p>The routes can be divided into protected, unprotected routes and admin
+routes. The unprotected, or open routes are at <code>/open/*</code> while the
+protected routes are at <code>/sec/*</code> and admin routes are at <code>/admin/*</code>.
+Open routes don't require authenticated access and can be used by any
+user. The protected routes require an authenticated user. The admin
+routes require a special http header with a value from the config
+file. They are disabled by default, you need to specify a secret in
+order to enable admin routes.</p>
 <h2 id="authentication">Authentication<a class="zola-anchor" href="#authentication" aria-label="Anchor link for: authentication">🔗</a></h2>
 <p>The unprotected route <code>/open/auth/login</code> can be used to login with
 account name and password. The response contains a token that can be
@@ -208,6 +220,22 @@ response as above, giving a new token.</p>
 a &quot;normal&quot; http header. If a cookie header is used, the cookie name
 must be <code>docspell_auth</code> and a custom header must be named
 <code>X-Docspell-Auth</code>.</p>
+<p>The admin route (see below) <code>/admin/user/resetPassword</code> can be used to
+reset a password of a user.</p>
+<h2 id="admin">Admin<a class="zola-anchor" href="#admin" aria-label="Anchor link for: admin">🔗</a></h2>
+<p>There are some endpoints available for adminstration tasks, for
+example re-creating the complete fulltext index or resetting a
+password. These endpoints are not available to normal users, but to
+admins only. Docspell has no special admin users, it simply uses a
+secret defined in the configuration file. The person who installs
+docspell is the admin and knows this secret (and may share it) and
+requests must provide it as a http header <code>Docspell-Admin-Secret</code>.</p>
+<p>Example: re-create the fulltext index (over all collectives):</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1;">$ curl -XPOST -H </span><span style="color:#b8bb26;">&quot;Docspell-Admin-Secret: test123&quot;</span><span style="color:#fdf4c1;"> http://localhost:7880/api/v1/admin/fts/reIndexAll
+</span></code></pre>
+<p>To enable these endpoints, you must provide a secret in the
+<a href="https://docspell.org/docs/configure/#admin-endpoint">configuration</a>.</p>
 <h2 id="live-api">Live Api<a class="zola-anchor" href="#live-api" aria-label="Anchor link for: live-api">🔗</a></h2>
 <p>Besides the statically generated documentation at this site, the rest
 server provides a swagger generated api documenation, that allows
@@ -258,7 +286,7 @@ url:</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell, 0.17.1
+                Docspell, 0.18.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>

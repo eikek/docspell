@@ -110,8 +110,8 @@
                             </li>
                             
                             <li>
-                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;feed&#x2F;#watch-directories">
-                                    Watch Directories
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;feed&#x2F;#scanners-watch-directories">
+                                    Scanners &#x2F; Watch Directories
                                 </a>
                                 <ul>
                                     
@@ -188,7 +188,7 @@ login and go to the upload page to submit files.</p>
 <p>This requires to login at the webapp. Since this is complicated from
 other applications, you can create custom hard-to-guess endpoints to
 use with the following options.</p>
-<h1 id="watch-directories">Watch Directories<a class="zola-anchor" href="#watch-directories" aria-label="Anchor link for: watch-directories">🔗</a></h1>
+<h1 id="scanners-watch-directories">Scanners / Watch Directories<a class="zola-anchor" href="#scanners-watch-directories" aria-label="Anchor link for: scanners-watch-directories">🔗</a></h1>
 <p>If you have a (document) scanner (or think about getting one), it can
 usually be configured to place scanned documents as image or PDF files
 on your NAS. On your NAS, run the provided <code>consumedir.sh</code> script as a
@@ -198,6 +198,11 @@ watch directories recursively and can skip files already uploaded, so
 you can organize the files as you want in there (rename, move etc).</p>
 <p>The scanner should support 300dpi for better results. Docspell
 converts the files into PDF adding a text layer of image-only files.</p>
+<p>Check out
+<a href="https://github.com/eresturo/scanadf2docspell">scanadf2docspell</a> if
+your scanner is connected to your computer. This can create nice pdf
+files from scanners with ADF, applying corrections and sending them to
+docspell.</p>
 <div class="is-clearfix">
     <a class="button is-pulled-right is-primary " href="&#x2F;docs&#x2F;tools&#x2F;consumedir">
         More
@@ -306,7 +311,7 @@ disk and uploads it to Docspell.</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell, 0.17.1
+                Docspell, 0.18.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>

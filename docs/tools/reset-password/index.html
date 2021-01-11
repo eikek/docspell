@@ -10,7 +10,7 @@
 <meta name="title" property="og:title" content="Docspell – Simple Document Organizer">
 <meta name="og:image" content="/img/poster.png">
 <meta name="og:title" content="Docspell – Simple Document Organizer">
-<meta name="og:site_name" content="Directory Cleaner - Docspell">
+<meta name="og:site_name" content="Reset Password - Docspell">
 <meta name="og:url" content="">
 <meta name="og:type" content="website">
 <meta name="og:description" content="Simple Document Organizer">
@@ -22,7 +22,7 @@
 <link rel="shortcut icon" href="/favicon-mc.ico" type="image/x-icon">
 <link rel="icon" href="/favicon-mc.ico" type="image/x-icon">
 
-        <title>Directory Cleaner – Docspell Documentation</title>
+        <title>Reset Password – Docspell Documentation</title>
         <link rel="stylesheet" href="/styles.css">
         <script type="application/javascript" src="/search_index.en.js"></script>
 <script type="application/javascript" src="/elasticlunr.min.js"></script>
@@ -63,7 +63,7 @@
                 <div class="columns is-vcentered">
                     <div class="column is-8">
                         <h1 class="title">
-                            Directory Cleaner
+                            Reset Password
                         </h1>
                         <h2 class="subtitle">
                             Docspell Documentation
@@ -94,7 +94,7 @@
                 </li>
                 
                 <li>
-                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;consumedir-cleaner&#x2F;">Directory Cleaner</a>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;reset-password&#x2F;">Reset Password</a>
                 </li>
             </ul>
         </nav>
@@ -141,34 +141,9 @@
                             
                             <li>
                                 <a href="https://docspell.org/docs/tools/consumedir-cleaner/"
-                                   class="is-active">
+                                   >
                                     Directory Cleaner
                                 </a>
-                                
-                                <ul class="menu-list">
-                                    
-                                    <li>
-                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;consumedir-cleaner&#x2F;#introduction">
-                                            Introduction
-                                        </a>
-                                        <ul>
-                                            
-                                            <li>
-                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;consumedir-cleaner&#x2F;#how-it-works">
-                                                    How it works
-                                                </a>
-                                            </li>
-                                            
-                                            <li>
-                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;consumedir-cleaner&#x2F;#usage-parameters-settings">
-                                                    Usage (parameters &#x2F; settings)
-                                                </a>
-                                            </li>
-                                            
-                                        </ul>
-                                    </li>
-                                    
-                                </ul>
                                 
                             </li>
                             
@@ -220,9 +195,31 @@
                             
                             <li>
                                 <a href="https://docspell.org/docs/tools/reset-password/"
-                                   >
+                                   class="is-active">
                                     Reset Password
                                 </a>
+                                
+                                <ul class="menu-list">
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;reset-password&#x2F;#usage">
+                                            Usage
+                                        </a>
+                                        <ul>
+                                            
+                                        </ul>
+                                    </li>
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;reset-password&#x2F;#example">
+                                            Example
+                                        </a>
+                                        <ul>
+                                            
+                                        </ul>
+                                    </li>
+                                    
+                                </ul>
                                 
                             </li>
                             
@@ -242,62 +239,29 @@
                 <div class="column is-9">
                     <div class="container">
                         <div class="content doc">
-                            <h1 id="introduction">Introduction<a class="zola-anchor" href="#introduction" aria-label="Anchor link for: introduction">🔗</a></h1>
-<p>This script is made for cleaning up the consumption directory used for
-the consumedir service (as it is provided as docker container)which
-are copied or moved there.</p>
-<p><a href="https://github.com/eikek/docspell/tree/master/tools/consumedir-cleaner">https://github.com/eikek/docspell/tree/master/tools/consumedir-cleaner</a></p>
-<h2 id="how-it-works">How it works<a class="zola-anchor" href="#how-it-works" aria-label="Anchor link for: how-it-works">🔗</a></h2>
-<ul>
-<li>Checks for every file (in the collective's folder of the given user
-name) if it already exists in the collective (using Docspell's API).</li>
-<li>If so, by default those files are moved to an archive folder just
-besides the collective's consumption folders named _archive. The
-archive's files are organized into monthly subfolders by the date
-they've been added to Docspell
-<ul>
-<li>If set, those files can also be deleted instead of being moved to
-the archive. There is no undo function provided for this, so be
-careful.</li>
-</ul>
-</li>
-<li>If a file is found which does not exist in the collective, by
-default nothing happens, so that file would be found in every run
-and just ignored
-<ul>
-<li>If set, those files can also be uploaded to Docspell. Depending on
-the setting for files already existing these files would either be
-deleted or moved to the archive in the next run.</li>
-</ul>
-</li>
-</ul>
-<h2 id="usage-parameters-settings">Usage (parameters / settings)<a class="zola-anchor" href="#usage-parameters-settings" aria-label="Anchor link for: usage-parameters-settings">🔗</a></h2>
-<p>Copy the script to your machine and run it with the following
-parameters:</p>
-<ol>
-<li>URL of Docspell, including http(s)</li>
-<li>Username for Docspell, possibly including Collective (if other name
-as user)</li>
-<li>Password for Docspell</li>
-<li>Path to the directory which files shall be checked against
-existence in Docspell</li>
-</ol>
-<p>Additionally, environment variables can be used to alter the behavior:</p>
-<ul>
-<li><code>DS_CC_REMOVE</code>
-<ul>
-<li><code>true</code> – delete files which already exist in the collective</li>
-<li><code>false</code> (default) - move them to the archive (see above)</li>
-</ul>
-</li>
-<li><code>DS_CC_UPLOAD_MISSING</code>
-<ul>
-<li><code>true</code> - uploads files which do not exist in the collective</li>
-<li><code>false</code> (default) - ignore them and do nothing</li>
-</ul>
-</li>
-</ul>
-
+                            <p>This script can be used to reset a user password. This can be done by
+admins, who know the <code>admin-endpoint.secret</code> value in the
+<a href="https://docspell.org/docs/configure/#admin-endpoint">configuration</a> file.</p>
+<p>The script is in <code>/tools/reset-password/reset-password.sh</code> and it is
+only a wrapper around the admin endpoint <code>/admin/user/resetPassword</code>.</p>
+<h2 id="usage">Usage<a class="zola-anchor" href="#usage" aria-label="Anchor link for: usage">🔗</a></h2>
+<p>It's very simple:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1;">reset-password.sh </span><span style="color:#fe8019;">&lt;</span><span style="color:#fdf4c1;">base-url</span><span style="color:#fe8019;">&gt; &lt;</span><span style="color:#fdf4c1;">admin-secret</span><span style="color:#fe8019;">&gt; &lt;</span><span style="color:#fdf4c1;">account</span><span style="color:#fe8019;">&gt;
+</span></code></pre>
+<p>Three arguments are required to specify the docspell base url, the
+admin secret and the account you want to reset the password.</p>
+<p>After the password has been reset, the user can login using it and
+change it again in the webapp.</p>
+<h2 id="example">Example<a class="zola-anchor" href="#example" aria-label="Anchor link for: example">🔗</a></h2>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">❯ ./tools/reset-password/reset-password.sh http:</span><span style="font-style:italic;color:#928374;">//localhost:7880 123 eike
+</span><span style="color:#fdf4c1aa;">{
+  </span><span style="color:#b8bb26;">&quot;success&quot;</span><span style="color:#fdf4c1aa;">: </span><span style="color:#d3869b;">true</span><span style="color:#fdf4c1aa;">,
+  </span><span style="color:#b8bb26;">&quot;newPassword&quot;</span><span style="color:#fdf4c1aa;">: </span><span style="color:#b8bb26;">&quot;HjtpG9BFo9y&quot;</span><span style="color:#fdf4c1aa;">,
+  </span><span style="color:#b8bb26;">&quot;message&quot;</span><span style="color:#fdf4c1aa;">: </span><span style="color:#b8bb26;">&quot;Password updated&quot;
+</span><span style="color:#fdf4c1aa;">}
+</span></code></pre>
                         </div>
                     </div>
                 </div>

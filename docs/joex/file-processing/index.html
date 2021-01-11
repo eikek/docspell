@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Eike Kettner">
+<meta name="description" content="Simple Document Organizer">
+<meta name="image" property="og:image" content="/img/poster.png">
+<meta name="title" property="og:title" content="Docspell – Simple Document Organizer">
+<meta name="og:image" content="/img/poster.png">
+<meta name="og:title" content="Docspell – Simple Document Organizer">
+<meta name="og:site_name" content="File Processing - Docspell">
+<meta name="og:url" content="">
+<meta name="og:type" content="website">
+<meta name="og:description" content="Simple Document Organizer">
+<meta name="twitter:title" content="Docspell">
+<meta name="twitter:image" content="/img/poster.png">
+<meta name="twitter:description" content="Simple Document Organizer">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="shortcut icon" href="/favicon-mc.ico" type="image/x-icon">
+<link rel="icon" href="/favicon-mc.ico" type="image/x-icon">
+
+        <title>File Processing – Docspell Documentation</title>
+        <link rel="stylesheet" href="/styles.css">
+        <script type="application/javascript" src="/search_index.en.js"></script>
+<script type="application/javascript" src="/elasticlunr.min.js"></script>
+<script type="application/javascript" src="/js/bundle.js"></script>
+<script type="application/javascript" src="/js/searchhelper.js"></script>
+
+    </head>
+    <body>
+        <section class="hero is-info is-small">
+            <div class="hero-head">
+                <nav class="navbar">
+    <div class="navbar-brand">
+        <a class="navbar-item" href="/">
+            <span class="icon">
+                <img src="/icons/logo-only-36.svg">
+            </span>
+            <span>
+                Docspell
+            </span>
+        </a>
+    </div>
+    <div class="navbar-start">
+        <a target="_blank"
+           href="https://github.com/eikek/docspell"
+           class="navbar-item">
+            <span class="icon">
+                <img src="/icons/github-40.svg">
+            </span>
+            <span>
+                Github
+            </span>
+        </a>
+    </div>
+</nav>
+
+            </div>
+            <div class="hero-body">
+                <div class="columns is-vcentered">
+                    <div class="column is-8">
+                        <h1 class="title">
+                            File Processing
+                        </h1>
+                        <h2 class="subtitle">
+                            Docspell Documentation
+                        </h2>
+                    </div>
+                    <div class="column">
+                        <id id="search"></id>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <nav class="breadcrumb has-succeeds-separator" aria-label="breadcrumbs">
+            <ul>
+                
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;"></a>
+                </li>
+                
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;">Overview</a>
+                </li>
+                
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;joex&#x2F;">Joex</a>
+                </li>
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;joex&#x2F;file-processing&#x2F;">File Processing</a>
+                </li>
+            </ul>
+        </nav>
+
+        <section class="section pt-2">
+            <div class="columns is-desktop">
+                <div class="column is-3">
+                    <div class="menu">
+                        <ul class="menu-list">
+                            
+                            
+
+                            <p class="menu-label">
+                                Joex
+                            </p>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/joex/intro/"
+                                   >
+                                    Joex
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/joex/file-processing/"
+                                   class="is-active">
+                                    File Processing
+                                </a>
+                                
+                                <ul class="menu-list">
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;joex&#x2F;file-processing&#x2F;#stages">
+                                            Stages
+                                        </a>
+                                        <ul>
+                                            
+                                            <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;joex&#x2F;file-processing&#x2F;#external-commands">
+                                                    External Commands
+                                                </a>
+                                            </li>
+                                            
+                                            <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;joex&#x2F;file-processing&#x2F;#duplicate-check">
+                                                    Duplicate Check
+                                                </a>
+                                            </li>
+                                            
+                                            <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;joex&#x2F;file-processing&#x2F;#extract-archives">
+                                                    Extract Archives
+                                                </a>
+                                            </li>
+                                            
+                                            <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;joex&#x2F;file-processing&#x2F;#conversion-to-pdf">
+                                                    Conversion to PDF
+                                                </a>
+                                            </li>
+                                            
+                                            <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;joex&#x2F;file-processing&#x2F;#text-extraction">
+                                                    Text Extraction
+                                                </a>
+                                            </li>
+                                            
+                                        </ul>
+                                    </li>
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;joex&#x2F;file-processing&#x2F;#generating-previews">
+                                            Generating Previews
+                                        </a>
+                                        <ul>
+                                            
+                                        </ul>
+                                    </li>
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;joex&#x2F;file-processing&#x2F;#text-analysis">
+                                            Text Analysis
+                                        </a>
+                                        <ul>
+                                            
+                                            <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;joex&#x2F;file-processing&#x2F;#classification">
+                                                    Classification
+                                                </a>
+                                            </li>
+                                            
+                                            <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;joex&#x2F;file-processing&#x2F;#natural-language-processing">
+                                                    Natural Language Processing
+                                                </a>
+                                            </li>
+                                            
+                                        </ul>
+                                    </li>
+                                    
+                                </ul>
+                                
+                            </li>
+                            
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="column is-9">
+                    <div class="container">
+                        <div class="content doc">
+                            <p>When uploading a file, it is only saved to the database together with
+the given meta information. The file is not visible in the ui yet.
+Then joex takes the next such file (or files in case you uploaded
+many) and starts processing it. When processing finished, it the item
+and its files will show up in the ui.</p>
+<p>If an error occurs during processing, the item will be created
+anyways, so you can see it. Depending on the error, some information
+may not be available.</p>
+<p>Processing files may require some resources, like memory and cpu. Many
+things can be configured in the config file to adapt it to the machine
+it is running on.</p>
+<p>Important is the setting <code>docspell.joex.scheduler.pool-size</code> which
+defines how many tasks can run in parallel on the machine running
+joex. For machines that are not very strong, choosing a <code>1</code> is
+recommended.</p>
+<h1 id="stages">Stages<a class="zola-anchor" href="#stages" aria-label="Anchor link for: stages">🔗</a></h1>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">DuplicateCheck -&gt;
+Extract Archives -&gt;
+Conversion to PDF -&gt;
+Text Extraction -&gt;
+Generate Previews -&gt;
+Text Analysis
+</span></code></pre>
+<p>These steps are executed sequentially. There are many config options
+available for each step.</p>
+<h2 id="external-commands">External Commands<a class="zola-anchor" href="#external-commands" aria-label="Anchor link for: external-commands">🔗</a></h2>
+<p>External programs are all configured the same way. You can change the
+command (add, remove options etc) in the config file. As an example,
+here is the <code>wkhtmltopdf</code> command that is used to convert html files
+to pdf:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1;">docspell</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">joex</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">convert {
+</span><span style="color:#fa5c4b;">  wkhtmlpdf </span><span style="color:#fdf4c1aa;">{
+    </span><span style="color:#fdf4c1;">command </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> {
+      </span><span style="color:#fdf4c1;">program </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;wkhtmltopdf&quot;
+      </span><span style="color:#fdf4c1;">args </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> [
+        </span><span style="color:#b8bb26;">&quot;-s&quot;</span><span style="color:#fe8019;">,
+        </span><span style="color:#b8bb26;">&quot;A4&quot;</span><span style="color:#fe8019;">,
+        </span><span style="color:#b8bb26;">&quot;--encoding&quot;</span><span style="color:#fe8019;">,
+        </span><span style="color:#b8bb26;">&quot;{{encoding}}&quot;</span><span style="color:#fe8019;">,
+        </span><span style="color:#b8bb26;">&quot;--load-error-handling&quot;</span><span style="color:#fe8019;">, </span><span style="color:#b8bb26;">&quot;ignore&quot;</span><span style="color:#fe8019;">,
+        </span><span style="color:#b8bb26;">&quot;--load-media-error-handling&quot;</span><span style="color:#fe8019;">, </span><span style="color:#b8bb26;">&quot;ignore&quot;</span><span style="color:#fe8019;">,
+        </span><span style="color:#b8bb26;">&quot;-&quot;</span><span style="color:#fe8019;">,
+        </span><span style="color:#b8bb26;">&quot;{{outfile}}&quot;</span><span style="color:#fdf4c1aa;">
+      ]
+      </span><span style="color:#fdf4c1;">timeout </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;2 minutes&quot;</span><span style="color:#fdf4c1aa;">
+    }
+    </span><span style="color:#fdf4c1;">working-dir </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> ${java</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">io</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">tmpdir}</span><span style="color:#b8bb26;">&quot;/docspell-convert&quot;</span><span style="color:#fdf4c1aa;">
+  }
+}
+</span></code></pre>
+<p>Strings in <code>{{…}}</code> are replaced by docspell with the appropriate
+values at runtime. However, based on your use case you can just set
+constant values or add other options. This might be necessary when
+there are different version installed where changes in the command
+line are required. As you see for <code>wkhtmltopdf</code> the page size is fixed
+to DIN A4. Other commands are configured like this as well.</p>
+<p>For the default values, please see the <a href="https://docspell.org/docs/configure/#joex">configuration
+page</a>.</p>
+<h2 id="duplicate-check">Duplicate Check<a class="zola-anchor" href="#duplicate-check" aria-label="Anchor link for: duplicate-check">🔗</a></h2>
+<p>If specified, the uploaded file is checked via a sha256 hash, if it
+has been uploaded before. If so, it is removed from the set of
+uploaded files. You can define this with the upload metadata.</p>
+<p>If this results in an empty set, the processing ends.</p>
+<h2 id="extract-archives">Extract Archives<a class="zola-anchor" href="#extract-archives" aria-label="Anchor link for: extract-archives">🔗</a></h2>
+<p>If a file is a <code>zip</code> or <code>eml</code> (e-mail) file, it is extracted and its
+entries are added to the file set. The original (archive) file is kept
+in the database, but removed from further processing.</p>
+<h2 id="conversion-to-pdf">Conversion to PDF<a class="zola-anchor" href="#conversion-to-pdf" aria-label="Anchor link for: conversion-to-pdf">🔗</a></h2>
+<p>All files are converted to a PDF file. How this is done depends on the
+file type. External programs are required, which must be installed on
+the machine running joex. The config file allows to specify the exact
+commands used.</p>
+<p>See the section <code>docspell.joex.convert</code> in the config file.</p>
+<p>The following config options apply to the conversion as a whole:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1;">docspell</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">joex</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">convert {
+  </span><span style="color:#fdf4c1;">converted-filename-part </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;converted&quot;
+  </span><span style="color:#fdf4c1;">max-image-size </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> ${docspell</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">joex</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">extraction</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">ocr</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">max</span><span style="color:#fe8019;">-</span><span style="color:#fdf4c1aa;">image</span><span style="color:#fe8019;">-</span><span style="color:#fdf4c1aa;">size}
+}
+</span></code></pre>
+<p>The first setting defines a suffix that is appended to the original
+file name to name the converted file. You can set an empty string to
+keep the same filename as the original. The extension is always
+changed to <code>.pdf</code>, of course.</p>
+<p>The second option defines a limit for reading images. Some images may
+be small as a file but uncompressed very large. To avoid allocating
+too much memory, there is a limit. It defaults to 14mp.</p>
+<h3 id="html">Html<a class="zola-anchor" href="#html" aria-label="Anchor link for: html">🔗</a></h3>
+<p>Html files are converted with the external tool
+<a href="https://wkhtmltopdf.org/">wkhtmltopdf</a>. It produces quite nice
+results by using the webkit rendering engine. So the resulting PDF
+looks just like in a browser.</p>
+<h3 id="images">Images<a class="zola-anchor" href="#images" aria-label="Anchor link for: images">🔗</a></h3>
+<p>Images are converted using
+<a href="https://github.com/tesseract-ocr">tesseract</a>.</p>
+<p>This might be interesting, if you want to try a different language
+that is not available in docspell's settings yet. Tesseract also adds
+the extracted text as a separate layer to the PDF.</p>
+<p>For images, tesseract is configured to create a text and a pdf file.</p>
+<h3 id="text">Text<a class="zola-anchor" href="#text" aria-label="Anchor link for: text">🔗</a></h3>
+<p>Plaintext files are treated as markdown. You can modify the results by
+providing some custom css.</p>
+<p>The resulting HTML files are then converted to PDF via <code>wkhtmltopdf</code>
+as described above.</p>
+<h3 id="office">Office<a class="zola-anchor" href="#office" aria-label="Anchor link for: office">🔗</a></h3>
+<p>To convert office files, <a href="https://www.libreoffice.org/">Libreoffice</a>
+is required and used via the command line tool
+<a href="https://github.com/unoconv/unoconv">unoconv</a>.</p>
+<p>To improve performance, it is recommended to start a libreoffice
+listener by running <code>unoconv -l</code> in a separate process.</p>
+<h3 id="pdf">PDF<a class="zola-anchor" href="#pdf" aria-label="Anchor link for: pdf">🔗</a></h3>
+<p>PDFs can be converted into PDFs, which may sound silly at first. But
+PDFs come in many different flavors and may not contain a separate
+text layer, making it impossible to &quot;copy &amp; paste&quot; text in them. So
+you can optionally use the tool
+<a href="https://github.com/jbarlow83/OCRmyPDF">ocrmypdf</a> to create a PDF/A
+type PDF file containing a text layer with the extracted text.</p>
+<p>It is recommended to install ocrympdf, but it also is optional. If it
+is enabled but fails, the error is not fatal and the processing will
+continue using the original pdf for extracting text. You can also
+disable it to remove the errors from the processing logs.</p>
+<p>The <code>--skip-text</code> option is necessary to not fail on &quot;text&quot; pdfs
+(where ocr is not necessary). In this case, the pdf will be converted
+to PDF/A.</p>
+<h2 id="text-extraction">Text Extraction<a class="zola-anchor" href="#text-extraction" aria-label="Anchor link for: text-extraction">🔗</a></h2>
+<p>Text extraction also depends on the file type. Some tools from the
+convert section are used here, too.</p>
+<p>Text is tried to extract from the original file. If that can't be done
+or results in an error, the converted file is tried next.</p>
+<h3 id="html-1">Html<a class="zola-anchor" href="#html-1" aria-label="Anchor link for: html-1">🔗</a></h3>
+<p>Html files are not used directly, but the converted PDF file is used
+to extract the text. This makes sure that the text is extracted you
+actually see. The conversion is done anyways and the resulting PDF
+already has a text layer.</p>
+<h3 id="images-1">Images<a class="zola-anchor" href="#images-1" aria-label="Anchor link for: images-1">🔗</a></h3>
+<p>For images, <a href="https://github.com/tesseract-ocr">tesseract</a> is used
+again. In most cases this step is not executed, because the text has
+already been extracted in the conversion step. But if the conversion
+would have failed for some reason, tesseract is called here (with
+different options).</p>
+<h3 id="text-1">Text<a class="zola-anchor" href="#text-1" aria-label="Anchor link for: text-1">🔗</a></h3>
+<p>This is obviously trivial :)</p>
+<h3 id="office-1">Office<a class="zola-anchor" href="#office-1" aria-label="Anchor link for: office-1">🔗</a></h3>
+<p>MS Office files are processed using a library without any external
+tool. It uses <a href="https://poi.apache.org/">apache poi</a> which is well
+known for these tasks.</p>
+<p>A rich text file (<code>.rtf</code>) is procssed by Java &quot;natively&quot; (using their
+standard library).</p>
+<p>OpenDocument files are proecessed using the ODS/ODT/ODF parser from
+tika.</p>
+<h3 id="pdf-1">PDF<a class="zola-anchor" href="#pdf-1" aria-label="Anchor link for: pdf-1">🔗</a></h3>
+<p>PDF files are first checked for a text layer. If this returns some
+text that is greater than the configured minimum length, it is used.
+Otherwise, OCR is started for the whole pdf file page by page.</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1;">docspell</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">joex {
+</span><span style="color:#fa5c4b;">  extraction </span><span style="color:#fdf4c1aa;">{
+</span><span style="color:#fa5c4b;">    pdf </span><span style="color:#fdf4c1aa;">{
+      </span><span style="color:#fdf4c1;">min-text-len </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">500</span><span style="color:#fdf4c1aa;">
+    }
+  }
+}
+</span></code></pre>
+<p>After OCR both texts are compared and the longer is used. Since PDFs
+can contain text and images, it might be safer to always do OCR, but
+this is something to choose by the user.</p>
+<p>PDF ocr is comprised of multiple steps. At first only the first
+<code>page-range</code> pages are extracted to avoid too long running tasks
+(someone submit an ebook for example). But you can disable this limit
+by setting a <code>-1</code>. After all, text that is not extracted, won't be
+indexed either and is therefore not searchable. It depends on your
+machine/setup.</p>
+<p>Another limit is <code>max-image-size</code> which defines the size of an image
+in pixel (<code>width * height</code>) where processing is skipped.</p>
+<p>Then <a href="http://pages.cs.wisc.edu/%7Eghost/">ghostscript</a> is used to
+extract single pages into image files and
+<a href="https://github.com/Flameeyes/unpaper">unpaper</a> is used to optimize
+the images for ocr. Unpaper is optional, if it is not found, it is
+skipped, which may be a compromise on slow machines.</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1;">docspell</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">joex {
+</span><span style="color:#fa5c4b;">  extraction </span><span style="color:#fdf4c1aa;">{
+</span><span style="color:#fa5c4b;">    ocr </span><span style="color:#fdf4c1aa;">{
+      </span><span style="color:#fdf4c1;">max-image-size </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">14000000
+      </span><span style="color:#fdf4c1;">page-range </span><span style="color:#fdf4c1aa;">{
+        </span><span style="color:#fdf4c1;">begin </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">10</span><span style="color:#fdf4c1aa;">
+      }
+</span><span style="color:#fa5c4b;">      ghostscript </span><span style="color:#fdf4c1aa;">{
+</span><span style="color:#fa5c4b;">        command </span><span style="color:#fdf4c1aa;">{
+          </span><span style="color:#fdf4c1;">program </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;gs&quot;
+          </span><span style="color:#fdf4c1;">args </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> [ </span><span style="color:#b8bb26;">&quot;-dNOPAUSE&quot;
+                 </span><span style="color:#fe8019;">, </span><span style="color:#b8bb26;">&quot;-dBATCH&quot;
+                 </span><span style="color:#fe8019;">, </span><span style="color:#b8bb26;">&quot;-dSAFER&quot;
+                 </span><span style="color:#fe8019;">, </span><span style="color:#b8bb26;">&quot;-sDEVICE=tiffscaled8&quot;
+                 </span><span style="color:#fe8019;">, </span><span style="color:#b8bb26;">&quot;-sOutputFile={{outfile}}&quot;
+                 </span><span style="color:#fe8019;">, </span><span style="color:#b8bb26;">&quot;{{infile}}&quot;</span><span style="color:#fdf4c1aa;">
+                 ]
+          </span><span style="color:#fdf4c1;">timeout </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;5 minutes&quot;</span><span style="color:#fdf4c1aa;">
+        }
+        </span><span style="color:#fdf4c1;">working-dir </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> ${java</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">io</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">tmpdir}</span><span style="color:#b8bb26;">&quot;/docspell-extraction&quot;</span><span style="color:#fdf4c1aa;">
+      }
+</span><span style="color:#fa5c4b;">      unpaper </span><span style="color:#fdf4c1aa;">{
+</span><span style="color:#fa5c4b;">        command </span><span style="color:#fdf4c1aa;">{
+          </span><span style="color:#fdf4c1;">program </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;unpaper&quot;
+          </span><span style="color:#fdf4c1;">args </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> [ </span><span style="color:#b8bb26;">&quot;{{infile}}&quot;</span><span style="color:#fe8019;">, </span><span style="color:#b8bb26;">&quot;{{outfile}}&quot;</span><span style="color:#fdf4c1aa;"> ]
+          </span><span style="color:#fdf4c1;">timeout </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;5 minutes&quot;</span><span style="color:#fdf4c1aa;">
+        }
+      }
+</span><span style="color:#fa5c4b;">      tesseract </span><span style="color:#fdf4c1aa;">{
+</span><span style="color:#fa5c4b;">        command </span><span style="color:#fdf4c1aa;">{
+          </span><span style="color:#fdf4c1;">program </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;tesseract&quot;
+          </span><span style="color:#fdf4c1;">args </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> [</span><span style="color:#b8bb26;">&quot;{{file}}&quot;
+                 </span><span style="color:#fe8019;">, </span><span style="color:#b8bb26;">&quot;stdout&quot;
+                 </span><span style="color:#fe8019;">, </span><span style="color:#b8bb26;">&quot;-l&quot;
+                 </span><span style="color:#fe8019;">, </span><span style="color:#b8bb26;">&quot;{{lang}}&quot;</span><span style="color:#fdf4c1aa;">
+                 ]
+          </span><span style="color:#fdf4c1;">timeout </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;5 minutes&quot;</span><span style="color:#fdf4c1aa;">
+        }
+      }
+    }
+  }
+}
+</span></code></pre><h1 id="generating-previews">Generating Previews<a class="zola-anchor" href="#generating-previews" aria-label="Anchor link for: generating-previews">🔗</a></h1>
+<p>Previews are generated from the converted PDF of every file. The first
+page of each file is converted into an image file. The config file
+allows to specify a dpi which is used to render the pdf page. The
+default is set to 32dpi, which results roughly in a 200x300px image.
+For comparison, a standard A4 is usually rendered at 96dpi, which
+results in a 790x1100px image.</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1;">docspell</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">joex {
+</span><span style="color:#fa5c4b;">  extraction </span><span style="color:#fdf4c1aa;">{
+</span><span style="color:#fa5c4b;">    preview </span><span style="color:#fdf4c1aa;">{
+      </span><span style="color:#fdf4c1;">dpi </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">32</span><span style="color:#fdf4c1aa;">
+    }
+  }
+}
+</span></code></pre><div class="notification is-warning is-light" style="z-index: -1">
+    <div class="content ">
+        <p class="title is-5">
+            Please note
+        </p>
+        <div>
+            <p>When this is changed, you must re-generate all preview images. Check
+the api for this, there is an endpoint to regenerate all preview
+images for a collective. There is also a bash script provided in the
+<code>tools/</code> directory that can be used to call this endpoint.</p>
+        </div>
+    </div>
+</div>
+<h1 id="text-analysis">Text Analysis<a class="zola-anchor" href="#text-analysis" aria-label="Anchor link for: text-analysis">🔗</a></h1>
+<p>This uses the extracted text to find what could be attached to the new
+item. There are multiple things provided.</p>
+<h2 id="classification">Classification<a class="zola-anchor" href="#classification" aria-label="Anchor link for: classification">🔗</a></h2>
+<p>If you enabled classification in the config file, a model is trained
+periodically from your files. This is now used to guess a tag for the
+item.</p>
+<h2 id="natural-language-processing">Natural Language Processing<a class="zola-anchor" href="#natural-language-processing" aria-label="Anchor link for: natural-language-processing">🔗</a></h2>
+<p>NLP is used to find out which terms in the text may be a company or
+person that is later used to find metadata to attach to. It also uses
+your address book to match terms in the text.</p>
+<p>This requires to load language model files in memory, which is quite a
+lot. Also, the number of languages is much more restricted than for
+tesseract. Currently English, German and French are supported.</p>
+<p>Another feature that is planned, but not yet provided is to propose
+new companies/people you don't have yet in your address book.</p>
+<p>The config file allows some settings. You can specify a limit for
+texts. Large texts result in higher memory consumption. By default,
+the first 10'000 characters are taken into account.</p>
+<p>The setting <code>clear-stanford-nlp-interval</code> allows to define an idle
+time after which the model files are cleared from memory. This allows
+to be reclaimed by the OS. The timer starts after the last file has
+been processed. If you can afford it, it is recommended to disable it
+by setting it to <code>0</code>.</p>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="footer">
+    <div class="container">
+        <div class="content has-text-centered">
+            <span>
+                Docspell, 0.18.0
+            </span>
+            <span class="ml-1 mr-1">•</span>
+            <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>
+            <span class="ml-1 mr-1">•</span>
+            <a href="https://github.com/eikek/docspell" target="_blank">
+                Source Code
+            </a>
+            <span class="ml-1 mr-1">•</span>
+            <span>
+                <a href="https://gitter.im/eikek/docspell">Chat on Gitter</a>
+            </span>
+        </div>
+    </div>
+    
+</footer>
+
+    </body>
+    <script>
+ var initSearch = function() {
+     var elmSearch = Elm.Search.init({
+         node: document.getElementById("search"),
+         flags: {}
+     });
+     initElmSearch(elmSearch);
+ }
+ if (document.readyState === "complete" ||
+     (document.readyState !== "loading" && !document.documentElement.doScroll)
+ ) {
+     initSearch();
+ } else {
+     document.addEventListener("DOMContentLoaded", initSearch);
+ }
+</script>
+
+    <!-- Fathom - simple website analytics - https://github.com/usefathom/fathom -->
+<script>
+ (function(f, a, t, h, o, m){
+     a[h]=a[h]||function(){
+         (a[h].q=a[h].q||[]).push(arguments)
+     };
+     o=f.createElement('script'),
+     m=f.getElementsByTagName('script')[0];
+     o.async=1; o.src=t; o.id='fathom-script';
+     m.parentNode.insertBefore(o,m)
+ })(document, window, '//webstats.daheim.site/tracker.js', 'fathom');
+ fathom('set', 'siteId', 'OGJDF');
+ fathom('trackPageview');
+</script>
+<!-- / Fathom -->
+
+</html>

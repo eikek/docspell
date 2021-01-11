@@ -124,6 +124,12 @@
         <loc>https://docspell.org/docs/joex/</loc>
     </url>
     <url>
+        <loc>https://docspell.org/docs/joex/file-processing/</loc>
+    </url>
+    <url>
+        <loc>https://docspell.org/docs/joex/intro/</loc>
+    </url>
+    <url>
         <loc>https://docspell.org/docs/tools/</loc>
     </url>
     <url>
@@ -149,6 +155,12 @@
     </url>
     <url>
         <loc>https://docspell.org/docs/tools/paperless-import/</loc>
+    </url>
+    <url>
+        <loc>https://docspell.org/docs/tools/regenerate-previews/</loc>
+    </url>
+    <url>
+        <loc>https://docspell.org/docs/tools/reset-password/</loc>
     </url>
     <url>
         <loc>https://docspell.org/docs/tools/smtpgateway/</loc>

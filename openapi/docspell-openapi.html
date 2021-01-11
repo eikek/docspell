@@ -1212,6 +1212,48 @@
   },
   "description" : "A list of equipments.\n"
 };
+            defs["FieldStats"] = {
+  "required" : [ "avg", "count", "ftype", "id", "max", "min", "name", "sum" ],
+  "properties" : {
+    "id" : {
+      "type" : "string",
+      "format" : "ident"
+    },
+    "name" : {
+      "type" : "string",
+      "format" : "ident"
+    },
+    "label" : {
+      "type" : "string"
+    },
+    "ftype" : {
+      "type" : "string",
+      "format" : "customfieldtype",
+      "enum" : [ "text", "numeric", "date", "bool", "money" ]
+    },
+    "count" : {
+      "type" : "integer",
+      "format" : "int32"
+    },
+    "sum" : {
+      "type" : "number",
+      "format" : "double"
+    },
+    "avg" : {
+      "type" : "number",
+      "format" : "double"
+    },
+    "max" : {
+      "type" : "number",
+      "format" : "double"
+    },
+    "min" : {
+      "type" : "number",
+      "format" : "double"
+    }
+  },
+  "description" : "Basic statistics about a custom field.\n"
+};
             defs["FolderDetail"] = {
   "required" : [ "created", "id", "isMember", "memberCount", "members", "name", "owner" ],
   "properties" : {
@@ -1294,6 +1336,26 @@
   },
   "description" : "Information to add or remove a folder member.\n"
 };
+            defs["FolderStats"] = {
+  "required" : [ "count", "id", "name", "owner" ],
+  "properties" : {
+    "id" : {
+      "type" : "string",
+      "format" : "ident"
+    },
+    "name" : {
+      "type" : "string"
+    },
+    "owner" : {
+      "$ref" : "#/components/schemas/IdName"
+    },
+    "count" : {
+      "type" : "integer",
+      "format" : "int32"
+    }
+  },
+  "description" : "Count of folder usage.\n"
+};
             defs["GenInvite"] = {
   "required" : [ "password" ],
   "properties" : {
@@ -1362,7 +1424,7 @@
   "description" : "Some basic result of an operation with an ID as payload. If\nsuccess if `false` the id is not usable.\n"
 };
             defs["ImapSettings"] = {
-  "required" : [ "from", "ignoreCertificates", "imapHost", "name", "sslType" ],
+  "required" : [ "from", "ignoreCertificates", "imapHost", "name", "sslType", "useOAuth" ],
   "properties" : {
     "name" : {
       "type" : "string",
@@ -1387,6 +1449,10 @@
     },
     "ignoreCertificates" : {
       "type" : "boolean"
+    },
+    "useOAuth" : {
+      "type" : "boolean",
+      "description" : "Use the password as an OAuth2 access token with the\nauthentication scheme XOAUTH2.\n"
     }
   },
   "description" : "IMAP settings for sending mail.\n"
@@ -1591,7 +1657,7 @@
   "description" : "Information about the items in docspell.\n"
 };
             defs["ItemLight"] = {
-  "required" : [ "date", "fileCount", "id", "name", "source", "state", "tags" ],
+  "required" : [ "date", "id", "name", "source", "state", "tags" ],
   "properties" : {
     "id" : {
       "type" : "string",
@@ -1633,10 +1699,6 @@
     },
     "folder" : {
       "$ref" : "#/components/schemas/IdName"
-    },
-    "fileCount" : {
-      "type" : "integer",
-      "format" : "int32"
     },
     "attachments" : {
       "type" : "array",
@@ -2384,6 +2446,32 @@
   },
   "description" : "Data for registering a new account.\n"
 };
+            defs["ResetPassword"] = {
+  "required" : [ "account" ],
+  "properties" : {
+    "account" : {
+      "type" : "string",
+      "format" : "accountid"
+    }
+  },
+  "description" : "The account to reset the password.\n"
+};
+            defs["ResetPasswordResult"] = {
+  "required" : [ "message", "newPassword", "success" ],
+  "properties" : {
+    "success" : {
+      "type" : "boolean"
+    },
+    "newPassword" : {
+      "type" : "string",
+      "format" : "password"
+    },
+    "message" : {
+      "type" : "string"
+    }
+  },
+  "description" : "Contains the newly generated password or an error.\n"
+};
             defs["ScanMailboxSettings"] = {
   "required" : [ "deleteMail", "enabled", "folders", "id", "imapConnection", "schedule" ],
   "properties" : {
@@ -2463,6 +2551,31 @@
     }
   },
   "description" : "A list of scan-mailbox tasks.\n"
+};
+            defs["SearchStats"] = {
+  "required" : [ "count", "fieldStats", "folderStats", "tagCloud" ],
+  "properties" : {
+    "count" : {
+      "type" : "integer",
+      "format" : "int32"
+    },
+    "tagCloud" : {
+      "$ref" : "#/components/schemas/TagCloud"
+    },
+    "fieldStats" : {
+      "type" : "array",
+      "items" : {
+        "$ref" : "#/components/schemas/FieldStats"
+      }
+    },
+    "folderStats" : {
+      "type" : "array",
+      "items" : {
+        "$ref" : "#/components/schemas/FolderStats"
+      }
+    }
+  },
+  "description" : "A summary of search results.\n"
 };
             defs["SentMail"] = {
   "required" : [ "body", "connection", "created", "id", "recipients", "sender", "subject" ],
@@ -2808,6 +2921,13 @@
             -->
             <li class="nav-fixed nav-header active" data-group="_"><a href="#api-_">API Summary</a></li>
 
+                  <li class="nav-header" data-group="Admin"><a href="#api-Admin">API Methods - Admin</a></li>
+                    <li data-group="Admin" data-name="adminFtsReIndexAllPost" class="">
+                      <a href="#api-Admin-adminFtsReIndexAllPost">adminFtsReIndexAllPost</a>
+                    </li>
+                    <li data-group="Admin" data-name="adminUserResetPasswordPost" class="">
+                      <a href="#api-Admin-adminUserResetPasswordPost">adminUserResetPasswordPost</a>
+                    </li>
                   <li class="nav-header" data-group="Attachment"><a href="#api-Attachment">API Methods - Attachment</a></li>
                     <li data-group="Attachment" data-name="secAttachmentIdArchiveGet" class="">
                       <a href="#api-Attachment-secAttachmentIdArchiveGet">secAttachmentIdArchiveGet</a>
@@ -2865,6 +2985,9 @@
                       <a href="#api-Authentication-secAuthSessionPost">secAuthSessionPost</a>
                     </li>
                   <li class="nav-header" data-group="Collective"><a href="#api-Collective">API Methods - Collective</a></li>
+                    <li data-group="Collective" data-name="adminUserResetPasswordPost" class="">
+                      <a href="#api-Collective-adminUserResetPasswordPost">adminUserResetPasswordPost</a>
+                    </li>
                     <li data-group="Collective" data-name="secCollectiveClassifierStartoncePost" class="">
                       <a href="#api-Collective-secCollectiveClassifierStartoncePost">secCollectiveClassifierStartoncePost</a>
                     </li>
@@ -3002,8 +3125,8 @@
                       <a href="#api-Folder-secFolderPost">secFolderPost</a>
                     </li>
                   <li class="nav-header" data-group="FullTextIndex"><a href="#api-FullTextIndex">API Methods - FullTextIndex</a></li>
-                    <li data-group="FullTextIndex" data-name="openFtsReIndexAllIdPost" class="">
-                      <a href="#api-FullTextIndex-openFtsReIndexAllIdPost">openFtsReIndexAllIdPost</a>
+                    <li data-group="FullTextIndex" data-name="adminFtsReIndexAllPost" class="">
+                      <a href="#api-FullTextIndex-adminFtsReIndexAllPost">adminFtsReIndexAllPost</a>
                     </li>
                     <li data-group="FullTextIndex" data-name="secFtsReIndexPost" class="">
                       <a href="#api-FullTextIndex-secFtsReIndexPost">secFtsReIndexPost</a>
@@ -3112,6 +3235,9 @@
                     </li>
                     <li data-group="Item" data-name="secItemSearchPost" class="">
                       <a href="#api-Item-secItemSearchPost">secItemSearchPost</a>
+                    </li>
+                    <li data-group="Item" data-name="secItemSearchStatsPost" class="">
+                      <a href="#api-Item-secItemSearchStatsPost">secItemSearchStatsPost</a>
                     </li>
                     <li data-group="Item" data-name="secItemSearchWithTagsPost" class="">
                       <a href="#api-Item-secItemSearchWithTagsPost">secItemSearchWithTagsPost</a>
@@ -3319,12 +3445,676 @@
         <div id="header">
           <div id="api-_">
             <h2 id="welcome-to-apidoc">API and SDK Documentation</h2>
-              <div class="app-desc">Version: 0.17.1</div>
+              <div class="app-desc">Version: 0.18.0</div>
             <hr>
             <div>This is the remote API to Docspell, a personal document organizer.</div>
           </div>
         </div>
         <div id="sections">
+                <section id="api-Admin">
+                  <h1>Admin</h1>
+                    <div id="api-Admin-adminFtsReIndexAllPost">
+                      <article id="api-Admin-adminFtsReIndexAllPost-0" data-group="User" data-name="adminFtsReIndexAllPost" data-version="0">
+                        <div class="pull-left">
+                          <h1>adminFtsReIndexAllPost</h1>
+                          <p>Re-creates the full-text index.</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked">Clears the full-text index and inserts all data from the
+database. This migh take a while to complete. The response
+returns immediately. A task is submitted that will be executed
+by a job executor. Note that this affects all data of all
+collectives.
+
+This is an admin route, so you need to provide the secret from
+the config file as header &#x60;Docspell-Admin-Secret&#x60;.
+</p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="post"><code><span class="pln">/admin/fts/reIndexAll</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-Admin-adminFtsReIndexAllPost-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-Admin-adminFtsReIndexAllPost-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Admin-adminFtsReIndexAllPost-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-Admin-adminFtsReIndexAllPost-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-Admin-adminFtsReIndexAllPost-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-Admin-adminFtsReIndexAllPost-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-Admin-adminFtsReIndexAllPost-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-Admin-adminFtsReIndexAllPost-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-Admin-adminFtsReIndexAllPost-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-Admin-adminFtsReIndexAllPost-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-Admin-adminFtsReIndexAllPost-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-Admin-adminFtsReIndexAllPost-0-curl">
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "Docspell-Admin-Secret: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v1/admin/fts/reIndexAll"</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-Admin-adminFtsReIndexAllPost-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.AdminApi;
+
+import java.io.File;
+import java.util.*;
+
+public class AdminApiExample {
+
+    public static void main(String[] args) {
+        ApiClient defaultClient = Configuration.getDefaultApiClient();
+
+        // Configure API key authorization: adminHeader
+        ApiKeyAuth adminHeader = (ApiKeyAuth) defaultClient.getAuthentication("adminHeader");
+        adminHeader.setApiKey("YOUR API KEY");
+        // Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+        //adminHeader.setApiKeyPrefix("Token");
+
+        AdminApi apiInstance = new AdminApi();
+        try {
+            BasicResult result = apiInstance.adminFtsReIndexAllPost();
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling AdminApi#adminFtsReIndexAllPost");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Admin-adminFtsReIndexAllPost-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.AdminApi;
+
+public class AdminApiExample {
+
+    public static void main(String[] args) {
+        AdminApi apiInstance = new AdminApi();
+        try {
+            BasicResult result = apiInstance.adminFtsReIndexAllPost();
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling AdminApi#adminFtsReIndexAllPost");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-Admin-adminFtsReIndexAllPost-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-Admin-adminFtsReIndexAllPost-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
+// Configure API key authorization: (authentication scheme: adminHeader)
+[apiConfig setApiKey:@"YOUR_API_KEY" forApiKeyIdentifier:@"Docspell-Admin-Secret"];
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+//[apiConfig setApiKeyPrefix:@"Bearer" forApiKeyIdentifier:@"Docspell-Admin-Secret"];
+
+AdminApi *apiInstance = [[AdminApi alloc] init];
+
+// Re-creates the full-text index.
+[apiInstance adminFtsReIndexAllPostWithCompletionHandler: 
+              ^(BasicResult output, NSError* error) {
+                            if (output) {
+                                NSLog(@"%@", output);
+                            }
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Admin-adminFtsReIndexAllPost-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var Docspell = require('docspell');
+var defaultClient = Docspell.ApiClient.instance;
+
+// Configure API key authorization: adminHeader
+var adminHeader = defaultClient.authentications['adminHeader'];
+adminHeader.apiKey = "YOUR API KEY"
+// Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+//adminHeader.apiKeyPrefix['Docspell-Admin-Secret'] = "Token"
+
+var api = new Docspell.AdminApi()
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+};
+api.adminFtsReIndexAllPost(callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-Admin-adminFtsReIndexAllPost-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-Admin-adminFtsReIndexAllPost-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class adminFtsReIndexAllPostExample
+    {
+        public void main()
+        {
+
+            // Configure API key authorization: adminHeader
+            Configuration.Default.ApiKey.Add("Docspell-Admin-Secret", "YOUR_API_KEY");
+            // Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+            // Configuration.Default.ApiKeyPrefix.Add("Docspell-Admin-Secret", "Bearer");
+
+            var apiInstance = new AdminApi();
+
+            try
+            {
+                // Re-creates the full-text index.
+                BasicResult result = apiInstance.adminFtsReIndexAllPost();
+                Debug.WriteLine(result);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling AdminApi.adminFtsReIndexAllPost: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Admin-adminFtsReIndexAllPost-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+// Configure API key authorization: adminHeader
+Swagger\Client\Configuration::getDefaultConfiguration()->setApiKey('Docspell-Admin-Secret', 'YOUR_API_KEY');
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+// Swagger\Client\Configuration::getDefaultConfiguration()->setApiKeyPrefix('Docspell-Admin-Secret', 'Bearer');
+
+$api_instance = new Swagger\Client\ApiAdminApi();
+
+try {
+    $result = $api_instance->adminFtsReIndexAllPost();
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling AdminApi->adminFtsReIndexAllPost: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Admin-adminFtsReIndexAllPost-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::AdminApi;
+
+# Configure API key authorization: adminHeader
+$WWW::SwaggerClient::Configuration::api_key->{'Docspell-Admin-Secret'} = 'YOUR_API_KEY';
+# uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+#$WWW::SwaggerClient::Configuration::api_key_prefix->{'Docspell-Admin-Secret'} = "Bearer";
+
+my $api_instance = WWW::SwaggerClient::AdminApi->new();
+
+eval { 
+    my $result = $api_instance->adminFtsReIndexAllPost();
+    print Dumper($result);
+};
+if ($@) {
+    warn "Exception when calling AdminApi->adminFtsReIndexAllPost: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Admin-adminFtsReIndexAllPost-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# Configure API key authorization: adminHeader
+swagger_client.configuration.api_key['Docspell-Admin-Secret'] = 'YOUR_API_KEY'
+# Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+# swagger_client.configuration.api_key_prefix['Docspell-Admin-Secret'] = 'Bearer'
+
+# create an instance of the API class
+api_instance = swagger_client.AdminApi()
+
+try: 
+    # Re-creates the full-text index.
+    api_response = api_instance.admin_fts_re_index_all_post()
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling AdminApi->adminFtsReIndexAllPost: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+
+
+
+
+
+                          <h2>Responses</h2>
+                            <h3> Status: 200 - Ok </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-adminFtsReIndexAllPost-200-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-adminFtsReIndexAllPost-200-schema">
+                                  <div id='responses-adminFtsReIndexAllPost-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "Ok",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/BasicResult"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-adminFtsReIndexAllPost-200-schema-data').val(stringify(schema));
+                                        var result = $('#responses-adminFtsReIndexAllPost-200-schema-200');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-adminFtsReIndexAllPost-200-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
+                    <div id="api-Admin-adminUserResetPasswordPost">
+                      <article id="api-Admin-adminUserResetPasswordPost-0" data-group="User" data-name="adminUserResetPasswordPost" data-version="0">
+                        <div class="pull-left">
+                          <h1>adminUserResetPasswordPost</h1>
+                          <p>Reset a user password.</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked">Resets a user password to some random string which is returned
+as the result. This is an admin route, so you need to specify
+the secret from the config file via a http header
+&#x60;Docspell-Admin-Secret&#x60;.
+</p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="post"><code><span class="pln">/admin/user/resetPassword</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-Admin-adminUserResetPasswordPost-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-Admin-adminUserResetPasswordPost-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Admin-adminUserResetPasswordPost-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-Admin-adminUserResetPasswordPost-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-Admin-adminUserResetPasswordPost-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-Admin-adminUserResetPasswordPost-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-Admin-adminUserResetPasswordPost-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-Admin-adminUserResetPasswordPost-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-Admin-adminUserResetPasswordPost-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-Admin-adminUserResetPasswordPost-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-Admin-adminUserResetPasswordPost-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-Admin-adminUserResetPasswordPost-0-curl">
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "Docspell-Admin-Secret: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v1/admin/user/resetPassword"</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-Admin-adminUserResetPasswordPost-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.AdminApi;
+
+import java.io.File;
+import java.util.*;
+
+public class AdminApiExample {
+
+    public static void main(String[] args) {
+        ApiClient defaultClient = Configuration.getDefaultApiClient();
+
+        // Configure API key authorization: adminHeader
+        ApiKeyAuth adminHeader = (ApiKeyAuth) defaultClient.getAuthentication("adminHeader");
+        adminHeader.setApiKey("YOUR API KEY");
+        // Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+        //adminHeader.setApiKeyPrefix("Token");
+
+        AdminApi apiInstance = new AdminApi();
+        ResetPassword body = ; // ResetPassword | 
+        try {
+            ResetPasswordResult result = apiInstance.adminUserResetPasswordPost(body);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling AdminApi#adminUserResetPasswordPost");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Admin-adminUserResetPasswordPost-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.AdminApi;
+
+public class AdminApiExample {
+
+    public static void main(String[] args) {
+        AdminApi apiInstance = new AdminApi();
+        ResetPassword body = ; // ResetPassword | 
+        try {
+            ResetPasswordResult result = apiInstance.adminUserResetPasswordPost(body);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling AdminApi#adminUserResetPasswordPost");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-Admin-adminUserResetPasswordPost-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-Admin-adminUserResetPasswordPost-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
+// Configure API key authorization: (authentication scheme: adminHeader)
+[apiConfig setApiKey:@"YOUR_API_KEY" forApiKeyIdentifier:@"Docspell-Admin-Secret"];
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+//[apiConfig setApiKeyPrefix:@"Bearer" forApiKeyIdentifier:@"Docspell-Admin-Secret"];
+ResetPassword *body = ; //  (optional)
+
+AdminApi *apiInstance = [[AdminApi alloc] init];
+
+// Reset a user password.
+[apiInstance adminUserResetPasswordPostWith:body
+              completionHandler: ^(ResetPasswordResult output, NSError* error) {
+                            if (output) {
+                                NSLog(@"%@", output);
+                            }
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Admin-adminUserResetPasswordPost-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var Docspell = require('docspell');
+var defaultClient = Docspell.ApiClient.instance;
+
+// Configure API key authorization: adminHeader
+var adminHeader = defaultClient.authentications['adminHeader'];
+adminHeader.apiKey = "YOUR API KEY"
+// Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+//adminHeader.apiKeyPrefix['Docspell-Admin-Secret'] = "Token"
+
+var api = new Docspell.AdminApi()
+var opts = { 
+  'body':  // {{ResetPassword}} 
+};
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+};
+api.adminUserResetPasswordPost(opts, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-Admin-adminUserResetPasswordPost-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-Admin-adminUserResetPasswordPost-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class adminUserResetPasswordPostExample
+    {
+        public void main()
+        {
+
+            // Configure API key authorization: adminHeader
+            Configuration.Default.ApiKey.Add("Docspell-Admin-Secret", "YOUR_API_KEY");
+            // Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+            // Configuration.Default.ApiKeyPrefix.Add("Docspell-Admin-Secret", "Bearer");
+
+            var apiInstance = new AdminApi();
+            var body = new ResetPassword(); // ResetPassword |  (optional) 
+
+            try
+            {
+                // Reset a user password.
+                ResetPasswordResult result = apiInstance.adminUserResetPasswordPost(body);
+                Debug.WriteLine(result);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling AdminApi.adminUserResetPasswordPost: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Admin-adminUserResetPasswordPost-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+// Configure API key authorization: adminHeader
+Swagger\Client\Configuration::getDefaultConfiguration()->setApiKey('Docspell-Admin-Secret', 'YOUR_API_KEY');
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+// Swagger\Client\Configuration::getDefaultConfiguration()->setApiKeyPrefix('Docspell-Admin-Secret', 'Bearer');
+
+$api_instance = new Swagger\Client\ApiAdminApi();
+$body = ; // ResetPassword | 
+
+try {
+    $result = $api_instance->adminUserResetPasswordPost($body);
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling AdminApi->adminUserResetPasswordPost: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Admin-adminUserResetPasswordPost-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::AdminApi;
+
+# Configure API key authorization: adminHeader
+$WWW::SwaggerClient::Configuration::api_key->{'Docspell-Admin-Secret'} = 'YOUR_API_KEY';
+# uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+#$WWW::SwaggerClient::Configuration::api_key_prefix->{'Docspell-Admin-Secret'} = "Bearer";
+
+my $api_instance = WWW::SwaggerClient::AdminApi->new();
+my $body = WWW::SwaggerClient::Object::ResetPassword->new(); # ResetPassword | 
+
+eval { 
+    my $result = $api_instance->adminUserResetPasswordPost(body => $body);
+    print Dumper($result);
+};
+if ($@) {
+    warn "Exception when calling AdminApi->adminUserResetPasswordPost: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Admin-adminUserResetPasswordPost-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# Configure API key authorization: adminHeader
+swagger_client.configuration.api_key['Docspell-Admin-Secret'] = 'YOUR_API_KEY'
+# Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+# swagger_client.configuration.api_key_prefix['Docspell-Admin-Secret'] = 'Bearer'
+
+# create an instance of the API class
+api_instance = swagger_client.AdminApi()
+body =  # ResetPassword |  (optional)
+
+try: 
+    # Reset a user password.
+    api_response = api_instance.admin_user_reset_password_post(body=body)
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling AdminApi->adminUserResetPasswordPost: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+
+
+                            <div class="methodsubtabletitle">Body parameters</div>
+                            <table id="methodsubtable">
+                              <tr>
+                                <th width="150px">Name</th>
+                                <th>Description</th>
+                              </tr>
+                                <tr><td style="width:150px;">body </td>
+                                <td>
+                                
+                                
+                                <script>
+                                $(document).ready(function() {
+                                  var schemaWrapper = {
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/ResetPassword"
+      }
+    }
+  }
+};
+                                  var schema = schemaWrapper.content["application/json"].schema;
+                                  if (schema.$ref != null) {
+                                    schema = defsParser.$refs.get(schema.$ref);
+                                  } else {
+                                    schemaWrapper.components = {};
+                                    schemaWrapper.components.schemas = Object.assign({}, defs);
+                                    $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                      console.log(err);
+                                    });
+                                  }
+                                
+                                  var view = new JSONSchemaView(schema,2,{isBodyParam: true});
+                                  var result = $('#d2e199_adminUserResetPasswordPost_body');
+                                  result.empty();
+                                  result.append(view.render());
+                                });
+                                </script>
+                                <div id="d2e199_adminUserResetPasswordPost_body"></div>
+                                </td>
+                                </tr>
+                            </table>
+
+
+
+                          <h2>Responses</h2>
+                            <h3> Status: 200 - Ok </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-adminUserResetPasswordPost-200-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-adminUserResetPasswordPost-200-schema">
+                                  <div id='responses-adminUserResetPasswordPost-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "Ok",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/ResetPasswordResult"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-adminUserResetPasswordPost-200-schema-data').val(stringify(schema));
+                                        var result = $('#responses-adminUserResetPasswordPost-200-schema-200');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-adminUserResetPasswordPost-200-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
+                  </section>
                 <section id="api-Attachment">
                   <h1>Attachment</h1>
                     <div id="api-Attachment-secAttachmentIdArchiveGet">
@@ -9273,6 +10063,361 @@ except ApiException as e:
                   </section>
                 <section id="api-Collective">
                   <h1>Collective</h1>
+                    <div id="api-Collective-adminUserResetPasswordPost">
+                      <article id="api-Collective-adminUserResetPasswordPost-0" data-group="User" data-name="adminUserResetPasswordPost" data-version="0">
+                        <div class="pull-left">
+                          <h1>adminUserResetPasswordPost</h1>
+                          <p>Reset a user password.</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked">Resets a user password to some random string which is returned
+as the result. This is an admin route, so you need to specify
+the secret from the config file via a http header
+&#x60;Docspell-Admin-Secret&#x60;.
+</p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="post"><code><span class="pln">/admin/user/resetPassword</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-Collective-adminUserResetPasswordPost-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-Collective-adminUserResetPasswordPost-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Collective-adminUserResetPasswordPost-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-Collective-adminUserResetPasswordPost-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-Collective-adminUserResetPasswordPost-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-Collective-adminUserResetPasswordPost-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-Collective-adminUserResetPasswordPost-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-Collective-adminUserResetPasswordPost-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-Collective-adminUserResetPasswordPost-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-Collective-adminUserResetPasswordPost-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-Collective-adminUserResetPasswordPost-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-Collective-adminUserResetPasswordPost-0-curl">
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "Docspell-Admin-Secret: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v1/admin/user/resetPassword"</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-Collective-adminUserResetPasswordPost-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.CollectiveApi;
+
+import java.io.File;
+import java.util.*;
+
+public class CollectiveApiExample {
+
+    public static void main(String[] args) {
+        ApiClient defaultClient = Configuration.getDefaultApiClient();
+
+        // Configure API key authorization: adminHeader
+        ApiKeyAuth adminHeader = (ApiKeyAuth) defaultClient.getAuthentication("adminHeader");
+        adminHeader.setApiKey("YOUR API KEY");
+        // Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+        //adminHeader.setApiKeyPrefix("Token");
+
+        CollectiveApi apiInstance = new CollectiveApi();
+        ResetPassword body = ; // ResetPassword | 
+        try {
+            ResetPasswordResult result = apiInstance.adminUserResetPasswordPost(body);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling CollectiveApi#adminUserResetPasswordPost");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Collective-adminUserResetPasswordPost-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.CollectiveApi;
+
+public class CollectiveApiExample {
+
+    public static void main(String[] args) {
+        CollectiveApi apiInstance = new CollectiveApi();
+        ResetPassword body = ; // ResetPassword | 
+        try {
+            ResetPasswordResult result = apiInstance.adminUserResetPasswordPost(body);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling CollectiveApi#adminUserResetPasswordPost");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-Collective-adminUserResetPasswordPost-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-Collective-adminUserResetPasswordPost-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
+// Configure API key authorization: (authentication scheme: adminHeader)
+[apiConfig setApiKey:@"YOUR_API_KEY" forApiKeyIdentifier:@"Docspell-Admin-Secret"];
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+//[apiConfig setApiKeyPrefix:@"Bearer" forApiKeyIdentifier:@"Docspell-Admin-Secret"];
+ResetPassword *body = ; //  (optional)
+
+CollectiveApi *apiInstance = [[CollectiveApi alloc] init];
+
+// Reset a user password.
+[apiInstance adminUserResetPasswordPostWith:body
+              completionHandler: ^(ResetPasswordResult output, NSError* error) {
+                            if (output) {
+                                NSLog(@"%@", output);
+                            }
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Collective-adminUserResetPasswordPost-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var Docspell = require('docspell');
+var defaultClient = Docspell.ApiClient.instance;
+
+// Configure API key authorization: adminHeader
+var adminHeader = defaultClient.authentications['adminHeader'];
+adminHeader.apiKey = "YOUR API KEY"
+// Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+//adminHeader.apiKeyPrefix['Docspell-Admin-Secret'] = "Token"
+
+var api = new Docspell.CollectiveApi()
+var opts = { 
+  'body':  // {{ResetPassword}} 
+};
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+};
+api.adminUserResetPasswordPost(opts, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-Collective-adminUserResetPasswordPost-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-Collective-adminUserResetPasswordPost-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class adminUserResetPasswordPostExample
+    {
+        public void main()
+        {
+
+            // Configure API key authorization: adminHeader
+            Configuration.Default.ApiKey.Add("Docspell-Admin-Secret", "YOUR_API_KEY");
+            // Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+            // Configuration.Default.ApiKeyPrefix.Add("Docspell-Admin-Secret", "Bearer");
+
+            var apiInstance = new CollectiveApi();
+            var body = new ResetPassword(); // ResetPassword |  (optional) 
+
+            try
+            {
+                // Reset a user password.
+                ResetPasswordResult result = apiInstance.adminUserResetPasswordPost(body);
+                Debug.WriteLine(result);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling CollectiveApi.adminUserResetPasswordPost: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Collective-adminUserResetPasswordPost-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+// Configure API key authorization: adminHeader
+Swagger\Client\Configuration::getDefaultConfiguration()->setApiKey('Docspell-Admin-Secret', 'YOUR_API_KEY');
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+// Swagger\Client\Configuration::getDefaultConfiguration()->setApiKeyPrefix('Docspell-Admin-Secret', 'Bearer');
+
+$api_instance = new Swagger\Client\ApiCollectiveApi();
+$body = ; // ResetPassword | 
+
+try {
+    $result = $api_instance->adminUserResetPasswordPost($body);
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling CollectiveApi->adminUserResetPasswordPost: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Collective-adminUserResetPasswordPost-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::CollectiveApi;
+
+# Configure API key authorization: adminHeader
+$WWW::SwaggerClient::Configuration::api_key->{'Docspell-Admin-Secret'} = 'YOUR_API_KEY';
+# uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+#$WWW::SwaggerClient::Configuration::api_key_prefix->{'Docspell-Admin-Secret'} = "Bearer";
+
+my $api_instance = WWW::SwaggerClient::CollectiveApi->new();
+my $body = WWW::SwaggerClient::Object::ResetPassword->new(); # ResetPassword | 
+
+eval { 
+    my $result = $api_instance->adminUserResetPasswordPost(body => $body);
+    print Dumper($result);
+};
+if ($@) {
+    warn "Exception when calling CollectiveApi->adminUserResetPasswordPost: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Collective-adminUserResetPasswordPost-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# Configure API key authorization: adminHeader
+swagger_client.configuration.api_key['Docspell-Admin-Secret'] = 'YOUR_API_KEY'
+# Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+# swagger_client.configuration.api_key_prefix['Docspell-Admin-Secret'] = 'Bearer'
+
+# create an instance of the API class
+api_instance = swagger_client.CollectiveApi()
+body =  # ResetPassword |  (optional)
+
+try: 
+    # Reset a user password.
+    api_response = api_instance.admin_user_reset_password_post(body=body)
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling CollectiveApi->adminUserResetPasswordPost: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+
+
+                            <div class="methodsubtabletitle">Body parameters</div>
+                            <table id="methodsubtable">
+                              <tr>
+                                <th width="150px">Name</th>
+                                <th>Description</th>
+                              </tr>
+                                <tr><td style="width:150px;">body </td>
+                                <td>
+                                
+                                
+                                <script>
+                                $(document).ready(function() {
+                                  var schemaWrapper = {
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/ResetPassword"
+      }
+    }
+  }
+};
+                                  var schema = schemaWrapper.content["application/json"].schema;
+                                  if (schema.$ref != null) {
+                                    schema = defsParser.$refs.get(schema.$ref);
+                                  } else {
+                                    schemaWrapper.components = {};
+                                    schemaWrapper.components.schemas = Object.assign({}, defs);
+                                    $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                      console.log(err);
+                                    });
+                                  }
+                                
+                                  var view = new JSONSchemaView(schema,2,{isBodyParam: true});
+                                  var result = $('#d2e199_adminUserResetPasswordPost_body');
+                                  result.empty();
+                                  result.append(view.render());
+                                });
+                                </script>
+                                <div id="d2e199_adminUserResetPasswordPost_body"></div>
+                                </td>
+                                </tr>
+                            </table>
+
+
+
+                          <h2>Responses</h2>
+                            <h3> Status: 200 - Ok </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-adminUserResetPasswordPost-200-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-adminUserResetPasswordPost-200-schema">
+                                  <div id='responses-adminUserResetPasswordPost-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "Ok",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/ResetPasswordResult"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-adminUserResetPasswordPost-200-schema-data').val(stringify(schema));
+                                        var result = $('#responses-adminUserResetPasswordPost-200-schema-200');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-adminUserResetPasswordPost-200-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
                     <div id="api-Collective-secCollectiveClassifierStartoncePost">
                       <article id="api-Collective-secCollectiveClassifierStartoncePost-0" data-group="User" data-name="secCollectiveClassifierStartoncePost" data-version="0">
                         <div class="pull-left">
@@ -24459,10 +25604,10 @@ except ApiException as e:
                   </section>
                 <section id="api-FullTextIndex">
                   <h1>FullTextIndex</h1>
-                    <div id="api-FullTextIndex-openFtsReIndexAllIdPost">
-                      <article id="api-FullTextIndex-openFtsReIndexAllIdPost-0" data-group="User" data-name="openFtsReIndexAllIdPost" data-version="0">
+                    <div id="api-FullTextIndex-adminFtsReIndexAllPost">
+                      <article id="api-FullTextIndex-adminFtsReIndexAllPost-0" data-group="User" data-name="adminFtsReIndexAllPost" data-version="0">
                         <div class="pull-left">
-                          <h1>openFtsReIndexAllIdPost</h1>
+                          <h1>adminFtsReIndexAllPost</h1>
                           <p>Re-creates the full-text index.</p>
                         </div>
                         <div class="pull-right"></div>
@@ -24474,36 +25619,37 @@ returns immediately. A task is submitted that will be executed
 by a job executor. Note that this affects all data of all
 collectives.
 
-The &#x60;id&#x60; is required and refers to the key given in the config
-file to ensure that only admins can call this route.
+This is an admin route, so you need to provide the secret from
+the config file as header &#x60;Docspell-Admin-Secret&#x60;.
 </p>
                         <p></p>
                         <br />
-                        <pre class="prettyprint language-html prettyprinted" data-type="post"><code><span class="pln">/open/fts/reIndexAll/{id}</span></code></pre>
+                        <pre class="prettyprint language-html prettyprinted" data-type="post"><code><span class="pln">/admin/fts/reIndexAll</span></code></pre>
                         <p>
                           <h3>Usage and SDK Samples</h3>
                         </p>
                         <ul class="nav nav-tabs nav-tabs-examples">
-                          <li class="active"><a href="#examples-FullTextIndex-openFtsReIndexAllIdPost-0-curl">Curl</a></li>
-                          <li class=""><a href="#examples-FullTextIndex-openFtsReIndexAllIdPost-0-java">Java</a></li>
-                          <li class=""><a href="#examples-FullTextIndex-openFtsReIndexAllIdPost-0-android">Android</a></li>
-                          <!--<li class=""><a href="#examples-FullTextIndex-openFtsReIndexAllIdPost-0-groovy">Groovy</a></li>-->
-                          <li class=""><a href="#examples-FullTextIndex-openFtsReIndexAllIdPost-0-objc">Obj-C</a></li>
-                          <li class=""><a href="#examples-FullTextIndex-openFtsReIndexAllIdPost-0-javascript">JavaScript</a></li>
-                          <!--<li class=""><a href="#examples-FullTextIndex-openFtsReIndexAllIdPost-0-angular">Angular</a></li>-->
-                          <li class=""><a href="#examples-FullTextIndex-openFtsReIndexAllIdPost-0-csharp">C#</a></li>
-                          <li class=""><a href="#examples-FullTextIndex-openFtsReIndexAllIdPost-0-php">PHP</a></li>
-                          <li class=""><a href="#examples-FullTextIndex-openFtsReIndexAllIdPost-0-perl">Perl</a></li>
-                          <li class=""><a href="#examples-FullTextIndex-openFtsReIndexAllIdPost-0-python">Python</a></li>
+                          <li class="active"><a href="#examples-FullTextIndex-adminFtsReIndexAllPost-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-FullTextIndex-adminFtsReIndexAllPost-0-java">Java</a></li>
+                          <li class=""><a href="#examples-FullTextIndex-adminFtsReIndexAllPost-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-FullTextIndex-adminFtsReIndexAllPost-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-FullTextIndex-adminFtsReIndexAllPost-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-FullTextIndex-adminFtsReIndexAllPost-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-FullTextIndex-adminFtsReIndexAllPost-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-FullTextIndex-adminFtsReIndexAllPost-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-FullTextIndex-adminFtsReIndexAllPost-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-FullTextIndex-adminFtsReIndexAllPost-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-FullTextIndex-adminFtsReIndexAllPost-0-python">Python</a></li>
                         </ul>
 
                         <div class="tab-content">
-                          <div class="tab-pane active" id="examples-FullTextIndex-openFtsReIndexAllIdPost-0-curl">
+                          <div class="tab-pane active" id="examples-FullTextIndex-adminFtsReIndexAllPost-0-curl">
                            <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "Docspell-Admin-Secret: [[apiKey]]"\
 -H "Accept: application/json"\
-"/api/v1/open/fts/reIndexAll/{id}"</code></pre>
+"/api/v1/admin/fts/reIndexAll"</code></pre>
                           </div>
-                          <div class="tab-pane" id="examples-FullTextIndex-openFtsReIndexAllIdPost-0-java">
+                          <div class="tab-pane" id="examples-FullTextIndex-adminFtsReIndexAllPost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
 import io.swagger.client.auth.*;
 import io.swagger.client.model.*;
@@ -24515,50 +25661,59 @@ import java.util.*;
 public class FullTextIndexApiExample {
 
     public static void main(String[] args) {
-        
+        ApiClient defaultClient = Configuration.getDefaultApiClient();
+
+        // Configure API key authorization: adminHeader
+        ApiKeyAuth adminHeader = (ApiKeyAuth) defaultClient.getAuthentication("adminHeader");
+        adminHeader.setApiKey("YOUR API KEY");
+        // Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+        //adminHeader.setApiKeyPrefix("Token");
+
         FullTextIndexApi apiInstance = new FullTextIndexApi();
-        String id = id_example; // String | An identifier
         try {
-            BasicResult result = apiInstance.openFtsReIndexAllIdPost(id);
+            BasicResult result = apiInstance.adminFtsReIndexAllPost();
             System.out.println(result);
         } catch (ApiException e) {
-            System.err.println("Exception when calling FullTextIndexApi#openFtsReIndexAllIdPost");
+            System.err.println("Exception when calling FullTextIndexApi#adminFtsReIndexAllPost");
             e.printStackTrace();
         }
     }
 }</code></pre>
                           </div>
 
-                          <div class="tab-pane" id="examples-FullTextIndex-openFtsReIndexAllIdPost-0-android">
+                          <div class="tab-pane" id="examples-FullTextIndex-adminFtsReIndexAllPost-0-android">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.FullTextIndexApi;
 
 public class FullTextIndexApiExample {
 
     public static void main(String[] args) {
         FullTextIndexApi apiInstance = new FullTextIndexApi();
-        String id = id_example; // String | An identifier
         try {
-            BasicResult result = apiInstance.openFtsReIndexAllIdPost(id);
+            BasicResult result = apiInstance.adminFtsReIndexAllPost();
             System.out.println(result);
         } catch (ApiException e) {
-            System.err.println("Exception when calling FullTextIndexApi#openFtsReIndexAllIdPost");
+            System.err.println("Exception when calling FullTextIndexApi#adminFtsReIndexAllPost");
             e.printStackTrace();
         }
     }
 }</code></pre>
                           </div>
   <!--
-  <div class="tab-pane" id="examples-FullTextIndex-openFtsReIndexAllIdPost-0-groovy">
+  <div class="tab-pane" id="examples-FullTextIndex-adminFtsReIndexAllPost-0-groovy">
   <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
   </div> -->
-                            <div class="tab-pane" id="examples-FullTextIndex-openFtsReIndexAllIdPost-0-objc">
-                              <pre class="prettyprint"><code class="language-cpp">String *id = id_example; // An identifier
+                            <div class="tab-pane" id="examples-FullTextIndex-adminFtsReIndexAllPost-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
+// Configure API key authorization: (authentication scheme: adminHeader)
+[apiConfig setApiKey:@"YOUR_API_KEY" forApiKeyIdentifier:@"Docspell-Admin-Secret"];
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+//[apiConfig setApiKeyPrefix:@"Bearer" forApiKeyIdentifier:@"Docspell-Admin-Secret"];
 
 FullTextIndexApi *apiInstance = [[FullTextIndexApi alloc] init];
 
 // Re-creates the full-text index.
-[apiInstance openFtsReIndexAllIdPostWith:id
-              completionHandler: ^(BasicResult output, NSError* error) {
+[apiInstance adminFtsReIndexAllPostWithCompletionHandler: 
+              ^(BasicResult output, NSError* error) {
                             if (output) {
                                 NSLog(@"%@", output);
                             }
@@ -24569,12 +25724,17 @@ FullTextIndexApi *apiInstance = [[FullTextIndexApi alloc] init];
 </code></pre>
                             </div>
 
-                            <div class="tab-pane" id="examples-FullTextIndex-openFtsReIndexAllIdPost-0-javascript">
+                            <div class="tab-pane" id="examples-FullTextIndex-adminFtsReIndexAllPost-0-javascript">
                               <pre class="prettyprint"><code class="language-js">var Docspell = require('docspell');
+var defaultClient = Docspell.ApiClient.instance;
+
+// Configure API key authorization: adminHeader
+var adminHeader = defaultClient.authentications['adminHeader'];
+adminHeader.apiKey = "YOUR API KEY"
+// Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+//adminHeader.apiKeyPrefix['Docspell-Admin-Secret'] = "Token"
 
 var api = new Docspell.FullTextIndexApi()
-var id = id_example; // {{String}} An identifier
-
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -24582,14 +25742,14 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.openFtsReIndexAllIdPost(id, callback);
+api.adminFtsReIndexAllPost(callback);
 </code></pre>
                             </div>
 
-                            <!--<div class="tab-pane" id="examples-FullTextIndex-openFtsReIndexAllIdPost-0-angular">
+                            <!--<div class="tab-pane" id="examples-FullTextIndex-adminFtsReIndexAllPost-0-angular">
               <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
             </div>-->
-                            <div class="tab-pane" id="examples-FullTextIndex-openFtsReIndexAllIdPost-0-csharp">
+                            <div class="tab-pane" id="examples-FullTextIndex-adminFtsReIndexAllPost-0-csharp">
                               <pre class="prettyprint"><code class="language-cs">using System;
 using System.Diagnostics;
 using IO.Swagger.Api;
@@ -24598,23 +25758,27 @@ using IO.Swagger.Model;
 
 namespace Example
 {
-    public class openFtsReIndexAllIdPostExample
+    public class adminFtsReIndexAllPostExample
     {
         public void main()
         {
 
+            // Configure API key authorization: adminHeader
+            Configuration.Default.ApiKey.Add("Docspell-Admin-Secret", "YOUR_API_KEY");
+            // Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+            // Configuration.Default.ApiKeyPrefix.Add("Docspell-Admin-Secret", "Bearer");
+
             var apiInstance = new FullTextIndexApi();
-            var id = id_example;  // String | An identifier
 
             try
             {
                 // Re-creates the full-text index.
-                BasicResult result = apiInstance.openFtsReIndexAllIdPost(id);
+                BasicResult result = apiInstance.adminFtsReIndexAllPost();
                 Debug.WriteLine(result);
             }
             catch (Exception e)
             {
-                Debug.Print("Exception when calling FullTextIndexApi.openFtsReIndexAllIdPost: " + e.Message );
+                Debug.Print("Exception when calling FullTextIndexApi.adminFtsReIndexAllPost: " + e.Message );
             }
         }
     }
@@ -24622,90 +25786,73 @@ namespace Example
 </code></pre>
                             </div>
 
-                            <div class="tab-pane" id="examples-FullTextIndex-openFtsReIndexAllIdPost-0-php">
+                            <div class="tab-pane" id="examples-FullTextIndex-adminFtsReIndexAllPost-0-php">
                               <pre class="prettyprint"><code class="language-php"><&#63;php
 require_once(__DIR__ . '/vendor/autoload.php');
 
+// Configure API key authorization: adminHeader
+Swagger\Client\Configuration::getDefaultConfiguration()->setApiKey('Docspell-Admin-Secret', 'YOUR_API_KEY');
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+// Swagger\Client\Configuration::getDefaultConfiguration()->setApiKeyPrefix('Docspell-Admin-Secret', 'Bearer');
+
 $api_instance = new Swagger\Client\ApiFullTextIndexApi();
-$id = id_example; // String | An identifier
 
 try {
-    $result = $api_instance->openFtsReIndexAllIdPost($id);
+    $result = $api_instance->adminFtsReIndexAllPost();
     print_r($result);
 } catch (Exception $e) {
-    echo 'Exception when calling FullTextIndexApi->openFtsReIndexAllIdPost: ', $e->getMessage(), PHP_EOL;
+    echo 'Exception when calling FullTextIndexApi->adminFtsReIndexAllPost: ', $e->getMessage(), PHP_EOL;
 }
 ?></code></pre>
                             </div>
 
-                            <div class="tab-pane" id="examples-FullTextIndex-openFtsReIndexAllIdPost-0-perl">
+                            <div class="tab-pane" id="examples-FullTextIndex-adminFtsReIndexAllPost-0-perl">
                               <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
 use WWW::SwaggerClient::Configuration;
 use WWW::SwaggerClient::FullTextIndexApi;
 
+# Configure API key authorization: adminHeader
+$WWW::SwaggerClient::Configuration::api_key->{'Docspell-Admin-Secret'} = 'YOUR_API_KEY';
+# uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+#$WWW::SwaggerClient::Configuration::api_key_prefix->{'Docspell-Admin-Secret'} = "Bearer";
+
 my $api_instance = WWW::SwaggerClient::FullTextIndexApi->new();
-my $id = id_example; # String | An identifier
 
 eval { 
-    my $result = $api_instance->openFtsReIndexAllIdPost(id => $id);
+    my $result = $api_instance->adminFtsReIndexAllPost();
     print Dumper($result);
 };
 if ($@) {
-    warn "Exception when calling FullTextIndexApi->openFtsReIndexAllIdPost: $@\n";
+    warn "Exception when calling FullTextIndexApi->adminFtsReIndexAllPost: $@\n";
 }</code></pre>
                             </div>
 
-                            <div class="tab-pane" id="examples-FullTextIndex-openFtsReIndexAllIdPost-0-python">
+                            <div class="tab-pane" id="examples-FullTextIndex-adminFtsReIndexAllPost-0-python">
                               <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
 import time
 import swagger_client
 from swagger_client.rest import ApiException
 from pprint import pprint
 
+# Configure API key authorization: adminHeader
+swagger_client.configuration.api_key['Docspell-Admin-Secret'] = 'YOUR_API_KEY'
+# Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+# swagger_client.configuration.api_key_prefix['Docspell-Admin-Secret'] = 'Bearer'
+
 # create an instance of the API class
 api_instance = swagger_client.FullTextIndexApi()
-id = id_example # String | An identifier
 
 try: 
     # Re-creates the full-text index.
-    api_response = api_instance.open_fts_re_index_all_id_post(id)
+    api_response = api_instance.admin_fts_re_index_all_post()
     pprint(api_response)
 except ApiException as e:
-    print("Exception when calling FullTextIndexApi->openFtsReIndexAllIdPost: %s\n" % e)</code></pre>
+    print("Exception when calling FullTextIndexApi->adminFtsReIndexAllPost: %s\n" % e)</code></pre>
                             </div>
                           </div>
 
                           <h2>Parameters</h2>
 
-                            <div class="methodsubtabletitle">Path parameters</div>
-                            <table id="methodsubtable">
-                                <tr>
-                                  <th width="150px">Name</th>
-                                  <th>Description</th>
-                                </tr>
-                                  <tr><td style="width:150px;">id*</td>
-                                  <td>
-                                  
-                                  
-                                      <div id="d2e199_openFtsReIndexAllIdPost_id">
-                                          <div class="json-schema-view">
-                                              <div class="primitive">
-                                                  <span class="type">
-                                                      String
-                                                  </span>
-                                  
-                                                      <div class="inner description">
-                                                          An identifier
-                                                      </div>
-                                              </div>
-                                                  <div class="inner required">
-                                                      Required
-                                                  </div>
-                                          </div>
-                                      </div>
-                                  </td>
-                                  </tr>
-                            </table>
 
 
 
@@ -24716,14 +25863,14 @@ except ApiException as e:
 
                             <ul class="nav nav-tabs nav-tabs-examples" >
                                 <li class="active">
-                                  <a data-toggle="tab" href="#responses-openFtsReIndexAllIdPost-200-schema">Schema</a>
+                                  <a data-toggle="tab" href="#responses-adminFtsReIndexAllPost-200-schema">Schema</a>
                                 </li>
 
                             </ul>
 
                             <div class="tab-content" style='margin-bottom: 10px;'>
-                                <div class="tab-pane active" id="responses-openFtsReIndexAllIdPost-200-schema">
-                                  <div id='responses-openFtsReIndexAllIdPost-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                <div class="tab-pane active" id="responses-adminFtsReIndexAllPost-200-schema">
+                                  <div id='responses-adminFtsReIndexAllPost-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
                                     <script>
                                       $(document).ready(function() {
                                         var schemaWrapper = {
@@ -24749,14 +25896,14 @@ except ApiException as e:
 
                                         //console.log(JSON.stringify(schema));
                                         var view = new JSONSchemaView(schema, 3);
-                                        $('#responses-openFtsReIndexAllIdPost-200-schema-data').val(stringify(schema));
-                                        var result = $('#responses-openFtsReIndexAllIdPost-200-schema-200');
+                                        $('#responses-adminFtsReIndexAllPost-200-schema-data').val(stringify(schema));
+                                        var result = $('#responses-adminFtsReIndexAllPost-200-schema-200');
                                         result.empty();
                                         result.append(view.render());
                                       });
                                     </script>
                                   </div>
-                                  <input id='responses-openFtsReIndexAllIdPost-200-schema-data' type='hidden' value=''></input>
+                                  <input id='responses-adminFtsReIndexAllPost-200-schema-data' type='hidden' value=''></input>
                                 </div>
                             </div>
 
@@ -37671,6 +38818,358 @@ except ApiException as e:
                                     </script>
                                   </div>
                                   <input id='responses-secItemSearchPost-200-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
+                    <div id="api-Item-secItemSearchStatsPost">
+                      <article id="api-Item-secItemSearchStatsPost-0" data-group="User" data-name="secItemSearchStatsPost" data-version="0">
+                        <div class="pull-left">
+                          <h1>secItemSearchStatsPost</h1>
+                          <p>Get basic statistics about the data of a search.</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked">Takes a search query and returns a summary about the results.
+</p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="post"><code><span class="pln">/sec/item/searchStats</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-Item-secItemSearchStatsPost-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-Item-secItemSearchStatsPost-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Item-secItemSearchStatsPost-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-Item-secItemSearchStatsPost-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-Item-secItemSearchStatsPost-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-Item-secItemSearchStatsPost-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-Item-secItemSearchStatsPost-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-Item-secItemSearchStatsPost-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-Item-secItemSearchStatsPost-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-Item-secItemSearchStatsPost-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-Item-secItemSearchStatsPost-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-Item-secItemSearchStatsPost-0-curl">
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v1/sec/item/searchStats"</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-Item-secItemSearchStatsPost-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.ItemApi;
+
+import java.io.File;
+import java.util.*;
+
+public class ItemApiExample {
+
+    public static void main(String[] args) {
+        ApiClient defaultClient = Configuration.getDefaultApiClient();
+
+        // Configure API key authorization: authTokenHeader
+        ApiKeyAuth authTokenHeader = (ApiKeyAuth) defaultClient.getAuthentication("authTokenHeader");
+        authTokenHeader.setApiKey("YOUR API KEY");
+        // Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+        //authTokenHeader.setApiKeyPrefix("Token");
+
+        ItemApi apiInstance = new ItemApi();
+        ItemSearch body = ; // ItemSearch | 
+        try {
+            SearchStats result = apiInstance.secItemSearchStatsPost(body);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling ItemApi#secItemSearchStatsPost");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Item-secItemSearchStatsPost-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.ItemApi;
+
+public class ItemApiExample {
+
+    public static void main(String[] args) {
+        ItemApi apiInstance = new ItemApi();
+        ItemSearch body = ; // ItemSearch | 
+        try {
+            SearchStats result = apiInstance.secItemSearchStatsPost(body);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling ItemApi#secItemSearchStatsPost");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-Item-secItemSearchStatsPost-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-Item-secItemSearchStatsPost-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
+// Configure API key authorization: (authentication scheme: authTokenHeader)
+[apiConfig setApiKey:@"YOUR_API_KEY" forApiKeyIdentifier:@"X-Docspell-Auth"];
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+//[apiConfig setApiKeyPrefix:@"Bearer" forApiKeyIdentifier:@"X-Docspell-Auth"];
+ItemSearch *body = ; //  (optional)
+
+ItemApi *apiInstance = [[ItemApi alloc] init];
+
+// Get basic statistics about the data of a search.
+[apiInstance secItemSearchStatsPostWith:body
+              completionHandler: ^(SearchStats output, NSError* error) {
+                            if (output) {
+                                NSLog(@"%@", output);
+                            }
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Item-secItemSearchStatsPost-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var Docspell = require('docspell');
+var defaultClient = Docspell.ApiClient.instance;
+
+// Configure API key authorization: authTokenHeader
+var authTokenHeader = defaultClient.authentications['authTokenHeader'];
+authTokenHeader.apiKey = "YOUR API KEY"
+// Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+//authTokenHeader.apiKeyPrefix['X-Docspell-Auth'] = "Token"
+
+var api = new Docspell.ItemApi()
+var opts = { 
+  'body':  // {{ItemSearch}} 
+};
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+};
+api.secItemSearchStatsPost(opts, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-Item-secItemSearchStatsPost-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-Item-secItemSearchStatsPost-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class secItemSearchStatsPostExample
+    {
+        public void main()
+        {
+
+            // Configure API key authorization: authTokenHeader
+            Configuration.Default.ApiKey.Add("X-Docspell-Auth", "YOUR_API_KEY");
+            // Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+            // Configuration.Default.ApiKeyPrefix.Add("X-Docspell-Auth", "Bearer");
+
+            var apiInstance = new ItemApi();
+            var body = new ItemSearch(); // ItemSearch |  (optional) 
+
+            try
+            {
+                // Get basic statistics about the data of a search.
+                SearchStats result = apiInstance.secItemSearchStatsPost(body);
+                Debug.WriteLine(result);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling ItemApi.secItemSearchStatsPost: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Item-secItemSearchStatsPost-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+// Configure API key authorization: authTokenHeader
+Swagger\Client\Configuration::getDefaultConfiguration()->setApiKey('X-Docspell-Auth', 'YOUR_API_KEY');
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+// Swagger\Client\Configuration::getDefaultConfiguration()->setApiKeyPrefix('X-Docspell-Auth', 'Bearer');
+
+$api_instance = new Swagger\Client\ApiItemApi();
+$body = ; // ItemSearch | 
+
+try {
+    $result = $api_instance->secItemSearchStatsPost($body);
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling ItemApi->secItemSearchStatsPost: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Item-secItemSearchStatsPost-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::ItemApi;
+
+# Configure API key authorization: authTokenHeader
+$WWW::SwaggerClient::Configuration::api_key->{'X-Docspell-Auth'} = 'YOUR_API_KEY';
+# uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+#$WWW::SwaggerClient::Configuration::api_key_prefix->{'X-Docspell-Auth'} = "Bearer";
+
+my $api_instance = WWW::SwaggerClient::ItemApi->new();
+my $body = WWW::SwaggerClient::Object::ItemSearch->new(); # ItemSearch | 
+
+eval { 
+    my $result = $api_instance->secItemSearchStatsPost(body => $body);
+    print Dumper($result);
+};
+if ($@) {
+    warn "Exception when calling ItemApi->secItemSearchStatsPost: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Item-secItemSearchStatsPost-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# Configure API key authorization: authTokenHeader
+swagger_client.configuration.api_key['X-Docspell-Auth'] = 'YOUR_API_KEY'
+# Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+# swagger_client.configuration.api_key_prefix['X-Docspell-Auth'] = 'Bearer'
+
+# create an instance of the API class
+api_instance = swagger_client.ItemApi()
+body =  # ItemSearch |  (optional)
+
+try: 
+    # Get basic statistics about the data of a search.
+    api_response = api_instance.sec_item_search_stats_post(body=body)
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling ItemApi->secItemSearchStatsPost: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+
+
+                            <div class="methodsubtabletitle">Body parameters</div>
+                            <table id="methodsubtable">
+                              <tr>
+                                <th width="150px">Name</th>
+                                <th>Description</th>
+                              </tr>
+                                <tr><td style="width:150px;">body </td>
+                                <td>
+                                
+                                
+                                <script>
+                                $(document).ready(function() {
+                                  var schemaWrapper = {
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/ItemSearch"
+      }
+    }
+  }
+};
+                                  var schema = schemaWrapper.content["application/json"].schema;
+                                  if (schema.$ref != null) {
+                                    schema = defsParser.$refs.get(schema.$ref);
+                                  } else {
+                                    schemaWrapper.components = {};
+                                    schemaWrapper.components.schemas = Object.assign({}, defs);
+                                    $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                      console.log(err);
+                                    });
+                                  }
+                                
+                                  var view = new JSONSchemaView(schema,2,{isBodyParam: true});
+                                  var result = $('#d2e199_secItemSearchStatsPost_body');
+                                  result.empty();
+                                  result.append(view.render());
+                                });
+                                </script>
+                                <div id="d2e199_secItemSearchStatsPost_body"></div>
+                                </td>
+                                </tr>
+                            </table>
+
+
+
+                          <h2>Responses</h2>
+                            <h3> Status: 200 - Ok </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-secItemSearchStatsPost-200-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-secItemSearchStatsPost-200-schema">
+                                  <div id='responses-secItemSearchStatsPost-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "Ok",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/SearchStats"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-secItemSearchStatsPost-200-schema-data').val(stringify(schema));
+                                        var result = $('#responses-secItemSearchStatsPost-200-schema-200');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-secItemSearchStatsPost-200-schema-data' type='hidden' value=''></input>
                                 </div>
                             </div>
 
