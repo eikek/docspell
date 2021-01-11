@@ -5,16 +5,16 @@ module Comp.TagSelect exposing
     , Selection
     , emptySelection
     , init
-    , modify
+    , modifyAll
+    , modifyCount
     , reset
     , toggleTag
     , update
     , updateDrop
-    , viewCats
-    , viewTags
-    , viewTagsDrop
+    , viewAll
     )
 
+import Api.Model.Tag exposing (Tag)
 import Api.Model.TagCount exposing (TagCount)
 import Data.Icons as I
 import Data.UiSettings exposing (UiSettings)
@@ -22,21 +22,23 @@ import Dict exposing (Dict)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
+import Set
 import Simple.Fuzzy
+import String as S
 import Util.ExpandCollapse
 import Util.ItemDragDrop as DD
-import Util.String as S
+import Util.Maybe
 
 
 type alias Model =
-    { all : List TagCount
-    , filteredTags : List TagCount
-    , categories : List Category
-    , filteredCats : List Category
-    , selectedTags : Dict String Bool
-    , selectedCats : Dict String Bool
+    { availableTags : Dict String TagCount
+    , availableCats : Dict String Category
+    , tagCounts : List TagCount
+    , categoryCounts : List Category
+    , filterTerm : Maybe String
     , expandedTags : Bool
     , expandedCats : Bool
+    , showEmpty : Bool
     }
 
 
@@ -46,82 +48,52 @@ type alias Category =
     }
 
 
-init : Selection -> List TagCount -> Model
-init sel tags =
-    let
-        tagId t =
-            t.tag.id
-
-        constDict mkId flag list =
-            List.map (\e -> ( mkId e, flag )) list
-                |> Dict.fromList
-
-        selTag =
-            constDict tagId True sel.includeTags
-                |> Dict.union (constDict tagId False sel.excludeTags)
-
-        selCat =
-            constDict .name True sel.includeCats
-                |> Dict.union (constDict .name False sel.excludeCats)
-
-        cats =
-            sumCategories tags
-    in
-    { all = tags
-    , filteredTags = tags
-    , categories = cats
-    , filteredCats = cats
-    , selectedTags = selTag
-    , selectedCats = selCat
+init : List TagCount -> List TagCount -> Model
+init allTags tags =
+    { availableTags =
+        List.map (\e -> ( e.tag.id, e )) allTags
+            |> Dict.fromList
+    , availableCats = sumCategories allTags
+    , tagCounts = tags
+    , categoryCounts =
+        sumCategories tags
+            |> Dict.toList
+            |> List.map Tuple.second
+    , filterTerm = Nothing
     , expandedTags = False
     , expandedCats = False
+    , showEmpty = True
     }
 
 
-modify : Selection -> Model -> List TagCount -> Model
-modify sel model tags =
-    let
-        newModel =
-            init sel tags
-    in
-    if List.isEmpty model.all then
-        newModel
+modifyAll : List TagCount -> Model -> Model
+modifyAll allTags model =
+    { model
+        | availableTags =
+            List.map (\e -> ( e.tag.id, e )) allTags
+                |> Dict.fromList
+        , availableCats = sumCategories allTags
+    }
 
-    else
-        let
-            tagId t =
-                t.tag.id
 
-            catId c =
-                c.name
-
-            tagDict =
-                List.map (\e -> ( tagId e, e )) tags
-                    |> Dict.fromList
-
-            catDict =
-                List.map (\e -> ( catId e, e )) newModel.categories
-                    |> Dict.fromList
-
-            replaceTag e =
-                Dict.get e.tag.id tagDict |> Maybe.withDefault { e | count = 0 }
-
-            replaceCat c =
-                Dict.get c.name catDict |> Maybe.withDefault { c | count = 0 }
-        in
-        { model
-            | all = List.map replaceTag model.all
-            , filteredTags = List.map replaceTag model.filteredTags
-            , categories = List.map replaceCat model.categories
-            , filteredCats = List.map replaceCat model.filteredCats
-        }
+modifyCount : Model -> List TagCount -> Model
+modifyCount model tags =
+    { model
+        | tagCounts = tags
+        , categoryCounts =
+            sumCategories tags
+                |> Dict.toList
+                |> List.map Tuple.second
+    }
 
 
 reset : Model -> Model
 reset model =
     { model
-        | selectedTags = Dict.empty
-        , selectedCats = Dict.empty
+        | filterTerm = Nothing
+        , expandedTags = False
+        , expandedCats = False
+        , showEmpty = True
     }
 
 
@@ -130,7 +102,7 @@ toggleTag id =
     ToggleTag id
 
 
-sumCategories : List TagCount -> List Category
+sumCategories : List TagCount -> Dict String Category
 sumCategories tags =
     let
         filterCat tc =
@@ -150,21 +122,7 @@ sumCategories tags =
         cats =
             List.foldl sumCounts Dict.empty withCats
     in
-    Dict.toList cats
-        |> List.map (\( n, c ) -> Category n c)
-
-
-
---- Update
-
-
-type Msg
-    = ToggleTag String
-    | ToggleCat String
-    | ToggleExpandTags
-    | ToggleExpandCats
-    | TagDDMsg DD.Msg
-    | Search String
+    Dict.map (\name -> \count -> Category name count) cats
 
 
 type alias Selection =
@@ -180,47 +138,185 @@ emptySelection =
     Selection [] [] [] []
 
 
-update : Msg -> Model -> ( Model, Selection )
-update msg model =
+type alias WorkModel =
+    { filteredCats : List Category
+    , filteredTags : List TagCount
+    , selectedTags : Dict String Bool
+    , selectedCats : Dict String Bool
+    }
+
+
+{-| Orders the list of tag counts by their overall counts and not by
+their direct counts.
+-}
+orderTagCountStable : Model -> List TagCount -> List TagCount
+orderTagCountStable model tagCounts =
+    let
+        order tc =
+            Dict.get tc.tag.id model.availableTags
+                |> Maybe.map (\e -> ( e.count * -1, S.toLower e.tag.name ))
+                |> Maybe.withDefault ( 0, S.toLower tc.tag.name )
+    in
+    List.sortBy order tagCounts
+
+
+orderCatCountStable : Model -> List Category -> List Category
+orderCatCountStable model catCounts =
+    let
+        order cat =
+            Dict.get cat.name model.availableCats
+                |> Maybe.map (\e -> ( e.count * -1, S.toLower e.name ))
+                |> Maybe.withDefault ( 0, S.toLower cat.name )
+    in
+    List.sortBy order catCounts
+
+
+removeEmptyTagCounts : Selection -> List TagCount -> List TagCount
+removeEmptyTagCounts sel tagCounts =
+    let
+        selected =
+            List.concat
+                [ List.map (.tag >> .id) sel.includeTags
+                , List.map (.tag >> .id) sel.excludeTags
+                ]
+                |> Set.fromList
+
+        isSelected tc =
+            Set.member tc.tag.id selected
+    in
+    List.filter (\tc -> isSelected tc || tc.count > 0) tagCounts
+
+
+removeEmptyCatCounts : Selection -> List Category -> List Category
+removeEmptyCatCounts sel catCounts =
+    let
+        selected =
+            List.concat
+                [ List.map .name sel.includeCats
+                , List.map .name sel.excludeCats
+                ]
+                |> Set.fromList
+
+        isSelected cat =
+            Set.member cat.name selected
+    in
+    List.filter (\tc -> isSelected tc || tc.count > 0) catCounts
+
+
+makeWorkModel : Selection -> Model -> WorkModel
+makeWorkModel sel model =
+    let
+        tagCounts =
+            orderTagCountStable model
+                (if model.showEmpty then
+                    model.tagCounts
+
+                 else
+                    removeEmptyTagCounts sel model.tagCounts
+                )
+
+        catCounts =
+            orderCatCountStable model
+                (if model.showEmpty then
+                    model.categoryCounts
+
+                 else
+                    removeEmptyCatCounts sel model.categoryCounts
+                )
+
+        ( tags, cats ) =
+            case model.filterTerm of
+                Just filter ->
+                    ( List.filter (\t -> Simple.Fuzzy.match filter t.tag.name) tagCounts
+                    , List.filter (\c -> Simple.Fuzzy.match filter c.name) catCounts
+                    )
+
+                Nothing ->
+                    ( tagCounts, catCounts )
+
+        tagId t =
+            t.tag.id
+
+        constDict mkId flag list =
+            List.map (\e -> ( mkId e, flag )) list
+                |> Dict.fromList
+
+        selTag =
+            constDict tagId True sel.includeTags
+                |> Dict.union (constDict tagId False sel.excludeTags)
+
+        selCat =
+            constDict .name True sel.includeCats
+                |> Dict.union (constDict .name False sel.excludeCats)
+    in
+    { filteredCats = cats
+    , filteredTags = tags
+    , selectedTags = selTag
+    , selectedCats = selCat
+    }
+
+
+type Msg
+    = ToggleTag String
+    | ToggleCat String
+    | ToggleExpandTags
+    | ToggleExpandCats
+    | ToggleShowEmpty
+    | TagDDMsg DD.Msg
+    | Search String
+
+
+update : Selection -> Msg -> Model -> ( Model, Selection )
+update sel msg model =
     let
         ( m, s, _ ) =
-            updateDrop DD.init msg model
+            updateDrop DD.init sel msg model
     in
     ( m, s )
 
 
-updateDrop : DD.Model -> Msg -> Model -> ( Model, Selection, DD.DragDropData )
-updateDrop ddm msg model =
+updateDrop : DD.Model -> Selection -> Msg -> Model -> ( Model, Selection, DD.DragDropData )
+updateDrop ddm sel msg model =
+    let
+        wm =
+            makeWorkModel sel model
+    in
     case msg of
+        ToggleShowEmpty ->
+            ( { model | showEmpty = not model.showEmpty }
+            , sel
+            , DD.DragDropData ddm Nothing
+            )
+
         ToggleTag id ->
             let
                 next =
-                    updateSelection id model.selectedTags
+                    updateSelection id wm.selectedTags
 
-                model_ =
-                    { model | selectedTags = next }
+                wm_ =
+                    { wm | selectedTags = next }
             in
-            ( model_, getSelection model_, DD.DragDropData ddm Nothing )
+            ( model, getSelection wm_, DD.DragDropData ddm Nothing )
 
         ToggleCat name ->
             let
                 next =
-                    updateSelection name model.selectedCats
+                    updateSelection name wm.selectedCats
 
-                model_ =
-                    { model | selectedCats = next }
+                wm_ =
+                    { wm | selectedCats = next }
             in
-            ( model_, getSelection model_, DD.DragDropData ddm Nothing )
+            ( model, getSelection wm_, DD.DragDropData ddm Nothing )
 
         ToggleExpandTags ->
             ( { model | expandedTags = not model.expandedTags }
-            , getSelection model
+            , sel
             , DD.DragDropData ddm Nothing
             )
 
         ToggleExpandCats ->
             ( { model | expandedCats = not model.expandedCats }
-            , getSelection model
+            , sel
             , DD.DragDropData ddm Nothing
             )
 
@@ -229,31 +325,11 @@ updateDrop ddm msg model =
                 ddd =
                     DD.update lm ddm
             in
-            ( model, getSelection model, ddd )
+            ( model, sel, ddd )
 
         Search str ->
-            let
-                forTags t =
-                    Simple.Fuzzy.match str t.tag.name
-
-                forCats c =
-                    Simple.Fuzzy.match str c.name
-            in
-            ( { model
-                | filteredTags =
-                    if S.isBlank str then
-                        model.all
-
-                    else
-                        List.filter forTags model.all
-                , filteredCats =
-                    if S.isBlank str then
-                        model.categories
-
-                    else
-                        List.filter forCats model.categories
-              }
-            , getSelection model
+            ( { model | filterTerm = Util.Maybe.fromString str }
+            , sel
             , DD.DragDropData ddm Nothing
             )
 
@@ -275,14 +351,14 @@ updateSelection id selected =
             Dict.remove id selected
 
 
-getSelection : Model -> Selection
+getSelection : WorkModel -> Selection
 getSelection model =
     let
         ( inclTags, exclTags ) =
-            getSelection1 (\t -> t.tag.id) model.selectedTags model.all
+            getSelection1 (\t -> t.tag.id) model.selectedTags model.filteredTags
 
         ( inclCats, exclCats ) =
-            getSelection1 (\c -> c.name) model.selectedCats model.categories
+            getSelection1 (\c -> c.name) model.selectedCats model.filteredCats
     in
     Selection inclTags exclTags inclCats exclCats
 
@@ -311,7 +387,7 @@ type SelState
     | Deselect
 
 
-tagState : Model -> String -> SelState
+tagState : WorkModel -> String -> SelState
 tagState model id =
     case Dict.get id model.selectedTags of
         Just True ->
@@ -324,7 +400,7 @@ tagState model id =
             Deselect
 
 
-catState : Model -> String -> SelState
+catState : WorkModel -> String -> SelState
 catState model name =
     case Dict.get name model.selectedCats of
         Just True ->
@@ -337,38 +413,60 @@ catState model name =
             Deselect
 
 
-viewTags : UiSettings -> Model -> Html Msg
-viewTags =
-    viewTagsDrop DD.init
+viewAll : DD.Model -> UiSettings -> Selection -> Model -> List (Html Msg)
+viewAll ddm settings sel model =
+    let
+        wm =
+            makeWorkModel sel model
+    in
+    viewTagsDrop ddm wm settings model ++ [ viewCats settings wm model ]
 
 
-viewTagsDrop : DD.Model -> UiSettings -> Model -> Html Msg
-viewTagsDrop ddm settings model =
-    div [ class "ui list" ]
+viewTagsDrop : DD.Model -> WorkModel -> UiSettings -> Model -> List (Html Msg)
+viewTagsDrop ddm wm settings model =
+    [ div [ class "ui tiny fluid secondary menu" ]
+        [ a
+            [ class "borderless item"
+            , href "#"
+            , onClick ToggleShowEmpty
+            ]
+            [ if model.showEmpty then
+                text " Hide empty"
+
+              else
+                text " Show empty"
+            ]
+        , div [ class "right menu" ]
+            [ div [ class "right fitted item width-80" ]
+                [ div [ class "ui small transparent icon input" ]
+                    [ input
+                        [ type_ "text"
+                        , placeholder "Filter …"
+                        , onInput Search
+                        ]
+                        []
+                    , i [ class "search icon" ] []
+                    ]
+                ]
+            ]
+        ]
+    , div [ class "ui list" ]
         [ div [ class "item" ]
             [ I.tagIcon ""
             , div [ class "content" ]
                 [ div [ class "header" ]
                     [ text "Tags"
-                    , div [ class "ui small transparent icon right floated input width-70" ]
-                        [ input
-                            [ type_ "text"
-                            , placeholder "Filter …"
-                            , onInput Search
-                            ]
-                            []
-                        , i [ class "search icon" ] []
-                        ]
                     ]
                 , div [ class "ui relaxed list" ]
-                    (renderTagItems ddm settings model)
+                    (renderTagItems ddm settings model wm)
                 ]
             ]
         ]
+    ]
 
 
-viewCats : UiSettings -> Model -> Html Msg
-viewCats settings model =
+viewCats : UiSettings -> WorkModel -> Model -> Html Msg
+viewCats settings wm model =
     div [ class "ui list" ]
         [ div [ class "item" ]
             [ I.tagsIcon ""
@@ -377,75 +475,75 @@ viewCats settings model =
                     [ text "Categories"
                     ]
                 , div [ class "ui relaxed list" ]
-                    (renderCatItems settings model)
+                    (renderCatItems settings model wm)
                 ]
             ]
         ]
 
 
-renderTagItems : DD.Model -> UiSettings -> Model -> List (Html Msg)
-renderTagItems ddm settings model =
+renderTagItems : DD.Model -> UiSettings -> Model -> WorkModel -> List (Html Msg)
+renderTagItems ddm settings model wm =
     let
         tags =
-            model.filteredTags
+            wm.filteredTags
 
         max =
             settings.searchMenuTagCount
 
-        exp =
+        expLink =
             Util.ExpandCollapse.expandToggle
                 max
                 (List.length tags)
                 ToggleExpandTags
 
-        cps =
+        cpsLink =
             Util.ExpandCollapse.collapseToggle
                 max
                 (List.length tags)
                 ToggleExpandTags
     in
     if max <= 0 then
-        List.map (viewTagItem ddm settings model) tags
+        List.map (viewTagItem ddm settings wm) tags
 
     else if model.expandedTags then
-        List.map (viewTagItem ddm settings model) tags ++ cps
+        List.map (viewTagItem ddm settings wm) tags ++ cpsLink
 
     else
-        List.map (viewTagItem ddm settings model) (List.take max tags) ++ exp
+        List.map (viewTagItem ddm settings wm) (List.take max tags) ++ expLink
 
 
-renderCatItems : UiSettings -> Model -> List (Html Msg)
-renderCatItems settings model =
+renderCatItems : UiSettings -> Model -> WorkModel -> List (Html Msg)
+renderCatItems settings model wm =
     let
         cats =
-            model.filteredCats
+            wm.filteredCats
 
         max =
             settings.searchMenuTagCatCount
 
-        exp =
+        expLink =
             Util.ExpandCollapse.expandToggle
                 max
                 (List.length cats)
                 ToggleExpandCats
 
-        cps =
+        cpsLink =
             Util.ExpandCollapse.collapseToggle
                 max
                 (List.length cats)
                 ToggleExpandCats
     in
     if max <= 0 then
-        List.map (viewCategoryItem settings model) cats
+        List.map (viewCategoryItem settings wm) cats
 
     else if model.expandedCats then
-        List.map (viewCategoryItem settings model) cats ++ cps
+        List.map (viewCategoryItem settings wm) cats ++ cpsLink
 
     else
-        List.map (viewCategoryItem settings model) (List.take max cats) ++ exp
+        List.map (viewCategoryItem settings wm) (List.take max cats) ++ expLink
 
 
-viewCategoryItem : UiSettings -> Model -> Category -> Html Msg
+viewCategoryItem : UiSettings -> WorkModel -> Category -> Html Msg
 viewCategoryItem settings model cat =
     let
         state =
@@ -479,7 +577,7 @@ viewCategoryItem settings model cat =
         ]
 
 
-viewTagItem : DD.Model -> UiSettings -> Model -> TagCount -> Html Msg
+viewTagItem : DD.Model -> UiSettings -> WorkModel -> TagCount -> Html Msg
 viewTagItem ddm settings model tag =
     let
         state =
