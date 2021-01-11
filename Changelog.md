@@ -2,7 +2,7 @@
 
 ## v0.18.0
 
-*Jan 11, 2021 *
+*Jan 11, 2021*
 
 - Feature: Results summary and updated tag count (#496, #333)
   - A search summary can be displayed that shows the overall result

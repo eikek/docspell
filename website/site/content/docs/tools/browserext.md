@@ -38,7 +38,7 @@ cp ~/docspell-checkout/tools/webextension/native/app_manifest.json  ~/.mozilla/n
 ```
 
 See
-[here](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Native_manifests#Manifest_location)
+[here](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Native_manifests#manifest_location)
 for details.
 
 And you might want to modify this json file, so the path to the
