@@ -135,6 +135,19 @@ object RTag {
     }
   }
 
+  def findOthers(coll: Ident, excludeTags: List[Ident]): ConnectionIO[List[RTag]] = {
+    val excl =
+      NonEmptyList
+        .fromList(excludeTags)
+        .map(nel => T.tid.notIn(nel))
+
+    Select(
+      select(T.all),
+      from(T),
+      T.cid === coll &&? excl
+    ).orderBy(T.name.asc).build.query[RTag].to[List]
+  }
+
   def delete(tagId: Ident, coll: Ident): ConnectionIO[Int] =
     DML.delete(T, T.tid === tagId && T.cid === coll)
 }

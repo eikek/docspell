@@ -250,14 +250,22 @@ object QItem {
         .innerJoin(tag, tag.tid === ti.tagId)
         .innerJoin(i, i.id === ti.itemId)
 
-    findItemsBase(q, 0).unwrap
-      .withSelect(select(tag.all).append(count(i.id).as("num")))
-      .changeFrom(_.prepend(tagFrom))
-      .changeWhere(c => c && queryCondition(q))
-      .groupBy(tag.tid)
-      .build
-      .query[TagCount]
-      .to[List]
+    val tagCloud =
+      findItemsBase(q, 0).unwrap
+        .withSelect(select(tag.all).append(count(i.id).as("num")))
+        .changeFrom(_.prepend(tagFrom))
+        .changeWhere(c => c && queryCondition(q))
+        .groupBy(tag.tid)
+        .build
+        .query[TagCount]
+        .to[List]
+
+    // the previous query starts from tags, so items with tag-count=0
+    // are not included they are fetched separately
+    for {
+      existing <- tagCloud
+      other    <- RTag.findOthers(q.account.collective, existing.map(_.tag.tagId))
+    } yield existing ++ other.map(TagCount(_, 0))
   }
 
   def searchCountSummary(q: Query): ConnectionIO[Int] =
