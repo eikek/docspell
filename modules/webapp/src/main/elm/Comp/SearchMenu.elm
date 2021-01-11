@@ -859,7 +859,7 @@ updateDrop ddm flags settings msg model =
                     Data.CustomFieldChange.fromItemValues [ cv ]
 
                 next =
-                    updateDrop ddm flags settings (CustomFieldMsg lm) model
+                    resetAndSet (CustomFieldMsg lm)
 
                 m =
                     next.model
