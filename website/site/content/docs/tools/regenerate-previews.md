@@ -1,24 +1,15 @@
 +++
-title = "Convert All PDFs"
-description = "Convert all PDF files using OcrMyPdf."
-weight = 60
+title = "Regenerate Preview Images"
+description = "Re-generates all preview images."
+weight = 80
 +++
 
-# convert-all-pdf.sh
+# regenerate-previews.sh
 
-With version 0.9.0 there was support added for another external tool,
-[OCRMyPdf](https://github.com/jbarlow83/OCRmyPDF), that can convert
-PDF files such that they contain the OCR-ed text layer. This tool is
-optional and can be disabled.
-
-In order to convert all previously processed files with this tool,
-there is an
-[endpoint](/openapi/docspell-openapi.html#api-Item-secItemConvertallpdfsPost)
-that submits a task to convert all PDF files not already converted for
-your collective.
-
-There is no UI part to trigger this route, so you need to use curl or
-the script `convert-all-pdfs.sh` in the `tools/` directory.
+This is a simple bash script to trigger the endpoint that submits task
+for generating preview images of your files. This is usually not
+needed, but should you change the `preview.dpi` setting in joex'
+config file, you need to regenerate the images to have any effect.
 
 # Requirements
 
@@ -29,7 +20,7 @@ It is a bash script that additionally needs
 # Usage
 
 ```
-./convert-all-pdfs.sh [docspell-base-url]
+./regenerate-previews.sh [docspell-base-url]
 ```
 
 For example, if docspell is at `http://localhost:7880`:
