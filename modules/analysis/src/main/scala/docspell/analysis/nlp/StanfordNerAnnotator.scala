@@ -8,8 +8,10 @@ import cats.effect._
 import docspell.common._
 
 import edu.stanford.nlp.pipeline.{CoreDocument, StanfordCoreNLP}
+import org.log4s.getLogger
 
 object StanfordNerAnnotator {
+  private[this] val logger = getLogger
 
   /** Runs named entity recognition on the given `text`.
     *
@@ -24,7 +26,7 @@ object StanfordNerAnnotator {
     */
   def nerAnnotate[F[_]: BracketThrow](
       cacheKey: String,
-      cache: PipelineCache[F]
+      cache: PipelineCache[F, StanfordCoreNLP]
   )(settings: StanfordNerSettings, text: String): F[Vector[NerLabel]] =
     cache
       .obtain(cacheKey, settings)
@@ -36,4 +38,14 @@ object StanfordNerAnnotator {
     doc.tokens().asScala.collect(Function.unlift(LabelConverter.toNerLabel)).toVector
   }
 
+  def makePipeline(settings: StanfordNerSettings): StanfordCoreNLP = {
+    logger.info(s"Creating ${settings.lang.name} Stanford NLP NER classifier...")
+    new StanfordCoreNLP(Properties.forSettings(settings))
+  }
+
+  def clearPipelineCaches[F[_]: Sync]: F[Unit] =
+    Sync[F].delay {
+      // turns out that everything is cached in a static map
+      StanfordCoreNLP.clearAnnotatorPool()
+    }
 }

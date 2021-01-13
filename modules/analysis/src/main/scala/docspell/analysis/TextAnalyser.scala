@@ -33,7 +33,12 @@ object TextAnalyser {
       blocker: Blocker
   ): Resource[F, TextAnalyser[F]] =
     Resource
-      .liftF(PipelineCache[F](cfg.clearStanfordPipelineInterval))
+      .liftF(
+        PipelineCache(cfg.clearStanfordPipelineInterval)(
+          StanfordNerAnnotator.makePipeline,
+          StanfordNerAnnotator.clearPipelineCaches[F]
+        )
+      )
       .map(cache =>
         new TextAnalyser[F] {
           def annotate(
