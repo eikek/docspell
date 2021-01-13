@@ -1,6 +1,6 @@
 package docspell.analysis
 
-import docspell.analysis.nlp.TextClassifierConfig
+import docspell.analysis.classifier.TextClassifierConfig
 import docspell.common._
 
 case class TextAnalysisConfig(

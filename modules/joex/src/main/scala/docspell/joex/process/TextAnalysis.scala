@@ -5,9 +5,8 @@ import cats.effect._
 import cats.implicits._
 
 import docspell.analysis.TextAnalyser
-import docspell.analysis.nlp.ClassifierModel
+import docspell.analysis.classifier.{ClassifierModel, TextClassifier}
 import docspell.analysis.nlp.StanfordNerSettings
-import docspell.analysis.nlp.TextClassifier
 import docspell.common._
 import docspell.joex.Config
 import docspell.joex.analysis.RegexNerFile

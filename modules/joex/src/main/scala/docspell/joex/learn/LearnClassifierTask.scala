@@ -7,8 +7,8 @@ import cats.implicits._
 import fs2.{Pipe, Stream}
 
 import docspell.analysis.TextAnalyser
-import docspell.analysis.nlp.ClassifierModel
-import docspell.analysis.nlp.TextClassifier.Data
+import docspell.analysis.classifier.ClassifierModel
+import docspell.analysis.classifier.TextClassifier.Data
 import docspell.backend.ops.OCollective
 import docspell.common._
 import docspell.joex.Config

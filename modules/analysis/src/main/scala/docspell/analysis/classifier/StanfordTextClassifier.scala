@@ -1,4 +1,4 @@
-package docspell.analysis.nlp
+package docspell.analysis.classifier
 
 import java.nio.file.Path
 
@@ -7,7 +7,9 @@ import cats.effect.concurrent.Ref
 import cats.implicits._
 import fs2.Stream
 
-import docspell.analysis.nlp.TextClassifier._
+import docspell.analysis.classifier
+import docspell.analysis.classifier.TextClassifier._
+import docspell.analysis.nlp.Properties
 import docspell.common._
 
 import edu.stanford.nlp.classify.ColumnDataClassifier
@@ -43,7 +45,7 @@ final class StanfordTextClassifier[F[_]: Sync: ContextShift](
       case Some(text) =>
         Sync[F].delay {
           val cls = ColumnDataClassifier.getClassifier(
-            model.model.normalize().toAbsolutePath().toString()
+            model.model.normalize().toAbsolutePath.toString
           )
           val cat = cls.classOf(cls.makeDatumFromLine("\t\t" + normalisedText(text)))
           Option(cat)
@@ -65,7 +67,7 @@ final class StanfordTextClassifier[F[_]: Sync: ContextShift](
         val cdc = new ColumnDataClassifier(Properties.fromMap(amendProps(in, props)))
         cdc.trainClassifier(in.train.toString())
         val score = cdc.testClassifier(in.test.toString())
-        TrainResult(score.first(), ClassifierModel(in.modelFile))
+        TrainResult(score.first(), classifier.ClassifierModel(in.modelFile))
       }
       _ <- logger.debug(s"Trained with result $res")
     } yield res

@@ -3,13 +3,10 @@ package docspell.analysis
 import cats.effect._
 import cats.implicits._
 
+import docspell.analysis.classifier.{StanfordTextClassifier, TextClassifier}
 import docspell.analysis.contact.Contact
 import docspell.analysis.date.DateFind
-import docspell.analysis.nlp.PipelineCache
-import docspell.analysis.nlp.StanfordNerClassifier
-import docspell.analysis.nlp.StanfordNerSettings
-import docspell.analysis.nlp.StanfordTextClassifier
-import docspell.analysis.nlp.TextClassifier
+import docspell.analysis.nlp.{PipelineCache, StanfordNerAnnotator, StanfordNerSettings}
 import docspell.common._
 
 trait TextAnalyser[F[_]] {
@@ -67,7 +64,7 @@ object TextAnalyser {
 
           private def stanfordNer(key: Ident, settings: StanfordNerSettings, text: String)
               : F[Vector[NerLabel]] =
-            StanfordNerClassifier.nerAnnotate[F](key.id, cache)(settings, text)
+            StanfordNerAnnotator.nerAnnotate[F](key.id, cache)(settings, text)
 
           private def contactNer(text: String): F[Vector[NerLabel]] =
             Sync[F].delay {

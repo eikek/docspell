@@ -9,7 +9,7 @@ import docspell.common._
 
 import edu.stanford.nlp.pipeline.{CoreDocument, StanfordCoreNLP}
 
-object StanfordNerClassifier {
+object StanfordNerAnnotator {
 
   /** Runs named entity recognition on the given `text`.
     *
@@ -28,9 +28,9 @@ object StanfordNerClassifier {
   )(settings: StanfordNerSettings, text: String): F[Vector[NerLabel]] =
     cache
       .obtain(cacheKey, settings)
-      .use(crf => Applicative[F].pure(runClassifier(crf, text)))
+      .use(crf => Applicative[F].pure(nerAnnotate(crf, text)))
 
-  def runClassifier(nerClassifier: StanfordCoreNLP, text: String): Vector[NerLabel] = {
+  def nerAnnotate(nerClassifier: StanfordCoreNLP, text: String): Vector[NerLabel] = {
     val doc = new CoreDocument(text)
     nerClassifier.annotate(doc)
     doc.tokens().asScala.collect(Function.unlift(LabelConverter.toNerLabel)).toVector

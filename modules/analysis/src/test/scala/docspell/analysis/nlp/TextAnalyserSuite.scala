@@ -13,7 +13,7 @@ object TextAnalyserSuite extends SimpleTestSuite {
 
   test("find english ner labels") {
     val labels =
-      StanfordNerClassifier.runClassifier(englishClassifier, TestFiles.letterENText)
+      StanfordNerAnnotator.nerAnnotate(englishClassifier, TestFiles.letterENText)
     val expect = Vector(
       NerLabel("Derek", NerTag.Person, 0, 5),
       NerLabel("Jeter", NerTag.Person, 6, 11),
@@ -49,7 +49,7 @@ object TextAnalyserSuite extends SimpleTestSuite {
 
   test("find german ner labels") {
     val labels =
-      StanfordNerClassifier.runClassifier(germanClassifier, TestFiles.letterDEText)
+      StanfordNerAnnotator.nerAnnotate(germanClassifier, TestFiles.letterDEText)
     val expect = Vector(
       NerLabel("Max", NerTag.Person, 0, 3),
       NerLabel("Mustermann", NerTag.Person, 4, 14),

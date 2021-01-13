@@ -4,8 +4,7 @@ import java.nio.file.Path
 
 import cats.data.NonEmptyList
 
-import docspell.analysis.TextAnalysisConfig
-import docspell.analysis.nlp.TextClassifierConfig
+import docspell.analysis.{TextAnalysisConfig, classifier}
 import docspell.backend.Config.Files
 import docspell.common._
 import docspell.convert.ConvertConfig
@@ -69,7 +68,7 @@ object Config {
       TextAnalysisConfig(
         maxLength,
         clearStanfordNlpInterval,
-        TextClassifierConfig(
+        classifier.TextClassifierConfig(
           workingDir,
           NonEmptyList
             .fromList(classification.classifiers)
