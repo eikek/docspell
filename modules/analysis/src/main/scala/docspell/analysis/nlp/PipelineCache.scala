@@ -1,12 +1,16 @@
 package docspell.analysis.nlp
 
 import scala.concurrent.duration.{Duration => _, _}
+
 import cats.Applicative
 import cats.data.Kleisli
 import cats.effect._
 import cats.effect.concurrent.Ref
 import cats.implicits._
+
 import docspell.common._
+
+import edu.stanford.nlp.pipeline.StanfordCoreNLP
 import org.log4s.getLogger
 
 /** Creating the StanfordCoreNLP pipeline is quite expensive as it
@@ -44,6 +48,22 @@ object PipelineCache {
       data       <- Ref.of(Map.empty[String, Entry[A]])
       cacheClear <- CacheClearing.create(data, clearInterval, release)
     } yield new Impl[F, A](data, creator, cacheClear)
+
+  def full[F[_]: Concurrent: Timer](
+      clearInterval: Duration
+  ): F[PipelineCache[F, StanfordCoreNLP]] =
+    apply(clearInterval)(
+      StanfordNerAnnotator.makePipeline,
+      StanfordNerAnnotator.clearPipelineCaches
+    )
+
+  def basic[F[_]: Concurrent: Timer](
+      clearInterval: Duration
+  ): F[PipelineCache[F, BasicCRFAnnotator.Annotator]] =
+    apply(clearInterval)(
+      settings => BasicCRFAnnotator.Cache.getAnnotator(settings.lang),
+      Sync[F].delay(BasicCRFAnnotator.Cache.clearCache())
+    )
 
   final private class Impl[F[_]: Sync, A](
       data: Ref[F, Map[String, Entry[A]]],

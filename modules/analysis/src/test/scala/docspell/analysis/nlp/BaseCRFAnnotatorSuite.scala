@@ -5,9 +5,12 @@ import docspell.files.TestFiles
 import docspell.common._
 
 object BaseCRFAnnotatorSuite extends SimpleTestSuite {
+
+  def annotate(language: Language): String => Vector[NerLabel] =
+    BasicCRFAnnotator.nerAnnotate(BasicCRFAnnotator.Cache.getAnnotator(language))
+
   test("find english ner labels") {
-    val labels =
-      BasicCRFAnnotator.nerAnnotate(Language.English)(TestFiles.letterENText)
+    val labels = annotate(Language.English)(TestFiles.letterENText)
     val expect = Vector(
       NerLabel("Derek", NerTag.Person, 0, 5),
       NerLabel("Jeter", NerTag.Person, 6, 11),
@@ -39,11 +42,11 @@ object BaseCRFAnnotatorSuite extends SimpleTestSuite {
       NerLabel("Jeter", NerTag.Person, 1123, 1128)
     )
     assertEquals(labels, expect)
+    BasicCRFAnnotator.Cache.clearCache()
   }
 
   test("find german ner labels") {
-    val labels =
-      BasicCRFAnnotator.nerAnnotate(Language.German)(TestFiles.letterDEText)
+    val labels = annotate(Language.German)(TestFiles.letterDEText)
     val expect = Vector(
       NerLabel("Max", NerTag.Person, 0, 3),
       NerLabel("Mustermann", NerTag.Person, 4, 14),
@@ -59,5 +62,6 @@ object BaseCRFAnnotatorSuite extends SimpleTestSuite {
       NerLabel("Mustermann", NerTag.Person, 509, 519)
     )
     assertEquals(labels, expect)
+    BasicCRFAnnotator.Cache.clearCache()
   }
 }
