@@ -4,7 +4,8 @@ import java.nio.file.Path
 
 import cats.data.NonEmptyList
 
-import docspell.analysis.{TextAnalysisConfig, classifier}
+import docspell.analysis.TextAnalysisConfig
+import docspell.analysis.classifier.TextClassifierConfig
 import docspell.backend.Config.Files
 import docspell.common._
 import docspell.convert.ConvertConfig
@@ -59,7 +60,7 @@ object Config {
   case class TextAnalysis(
       maxLength: Int,
       workingDir: Path,
-      clearStanfordNlpInterval: Duration,
+      nlpConfig: TextAnalysisConfig.NlpConfig,
       regexNer: RegexNer,
       classification: Classification
   ) {
@@ -67,8 +68,8 @@ object Config {
     def textAnalysisConfig: TextAnalysisConfig =
       TextAnalysisConfig(
         maxLength,
-        clearStanfordNlpInterval,
-        classifier.TextClassifierConfig(
+        nlpConfig,
+        TextClassifierConfig(
           workingDir,
           NonEmptyList
             .fromList(classification.classifiers)

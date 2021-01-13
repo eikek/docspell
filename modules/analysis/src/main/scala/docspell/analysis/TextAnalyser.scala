@@ -1,13 +1,16 @@
 package docspell.analysis
 
+import cats.Applicative
 import cats.effect._
 import cats.implicits._
 
 import docspell.analysis.classifier.{StanfordTextClassifier, TextClassifier}
 import docspell.analysis.contact.Contact
 import docspell.analysis.date.DateFind
-import docspell.analysis.nlp.{PipelineCache, StanfordNerAnnotator, StanfordNerSettings}
+import docspell.analysis.nlp._
 import docspell.common._
+
+import edu.stanford.nlp.pipeline.StanfordCoreNLP
 
 trait TextAnalyser[F[_]] {
 
@@ -33,8 +36,8 @@ object TextAnalyser {
       blocker: Blocker
   ): Resource[F, TextAnalyser[F]] =
     Resource
-      .liftF(PipelineCache.full(cfg.clearStanfordPipelineInterval))
-      .map(cache =>
+      .liftF(Nlp(cfg.nlpConfig))
+      .map(stanfordNer =>
         new TextAnalyser[F] {
           def annotate(
               logger: Logger[F],
@@ -44,7 +47,7 @@ object TextAnalyser {
           ): F[TextAnalyser.Result] =
             for {
               input <- textLimit(logger, text)
-              tags0 <- stanfordNer(cacheKey, settings, input)
+              tags0 <- stanfordNer(Nlp.Input(cacheKey, settings, input))
               tags1 <- contactNer(input)
               dates <- dateNer(settings.lang, input)
               list  = tags0 ++ tags1
@@ -62,10 +65,6 @@ object TextAnalyser {
                   s" Analysing only first ${cfg.maxLength} characters."
               ) *> text.take(cfg.maxLength).pure[F]
 
-          private def stanfordNer(key: Ident, settings: StanfordNerSettings, text: String)
-              : F[Vector[NerLabel]] =
-            StanfordNerAnnotator.nerAnnotate[F](key.id, cache)(settings, text)
-
           private def contactNer(text: String): F[Vector[NerLabel]] =
             Sync[F].delay {
               Contact.annotate(text)
@@ -78,4 +77,31 @@ object TextAnalyser {
         }
       )
 
+  private object Nlp {
+
+    def apply[F[_]: Concurrent: Timer: BracketThrow](
+        cfg: TextAnalysisConfig.NlpConfig
+    ): F[Input => F[Vector[NerLabel]]] =
+      cfg.mode match {
+        case NlpMode.Full =>
+          PipelineCache.full(cfg.clearInterval).map(cache => full(cache))
+        case NlpMode.Basic =>
+          PipelineCache.basic(cfg.clearInterval).map(cache => basic(cache))
+        case NlpMode.Disabled =>
+          Applicative[F].pure(_ => Vector.empty[NerLabel].pure[F])
+      }
+
+    final case class Input(key: Ident, settings: StanfordNerSettings, text: String)
+
+    def full[F[_]: BracketThrow](
+        cache: PipelineCache[F, StanfordCoreNLP]
+    )(input: Input): F[Vector[NerLabel]] =
+      StanfordNerAnnotator.nerAnnotate(input.key.id, cache)(input.settings, input.text)
+
+    def basic[F[_]: BracketThrow](
+        cache: PipelineCache[F, BasicCRFAnnotator.Annotator]
+    )(input: Input): F[Vector[NerLabel]] =
+      BasicCRFAnnotator.nerAnnotate(input.key.id, cache)(input.settings, input.text)
+
+  }
 }

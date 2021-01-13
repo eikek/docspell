@@ -44,6 +44,9 @@ object Implicits {
   implicit val priorityReader: ConfigReader[Priority] =
     ConfigReader[String].emap(reason(Priority.fromString))
 
+  implicit val nlpModeReader: ConfigReader[NlpMode] =
+    ConfigReader[String].emap(reason(NlpMode.fromString))
+
   def reason[A: ClassTag](
       f: String => Either[String, A]
   ): String => Either[FailureReason, A] =
