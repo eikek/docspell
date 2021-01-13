@@ -21,7 +21,7 @@ trait TextAnalyser[F[_]] {
       text: String
   ): F[TextAnalyser.Result]
 
-  def classifier(blocker: Blocker)(implicit CS: ContextShift[F]): TextClassifier[F]
+  def classifier: TextClassifier[F]
 }
 object TextAnalyser {
 
@@ -31,8 +31,9 @@ object TextAnalyser {
       labels ++ dates.map(dl => dl.label.copy(label = dl.date.toString))
   }
 
-  def create[F[_]: Concurrent: Timer](
-      cfg: TextAnalysisConfig
+  def create[F[_]: Concurrent: Timer: ContextShift](
+      cfg: TextAnalysisConfig,
+      blocker: Blocker
   ): Resource[F, TextAnalyser[F]] =
     Resource
       .liftF(PipelineCache[F](cfg.clearStanfordPipelineInterval))
@@ -53,9 +54,7 @@ object TextAnalyser {
               spans = NerLabelSpan.build(list)
             } yield Result(spans ++ list, dates)
 
-          def classifier(blocker: Blocker)(implicit
-              CS: ContextShift[F]
-          ): TextClassifier[F] =
+          def classifier: TextClassifier[F] =
             new StanfordTextClassifier[F](cfg.classifier, blocker)
 
           private def textLimit(logger: Logger[F], text: String): F[String] =

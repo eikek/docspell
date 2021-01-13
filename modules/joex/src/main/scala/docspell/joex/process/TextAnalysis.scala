@@ -44,7 +44,7 @@ object TextAnalysis {
         e <- s
         _ <- ctx.logger.info(s"Text-Analysis finished in ${e.formatExact}")
         v = t.toVector
-        tag <- predictTag(ctx, cfg, item.metas, analyser.classifier(ctx.blocker)).value
+        tag <- predictTag(ctx, cfg, item.metas, analyser.classifier).value
       } yield item
         .copy(metas = v.map(_._1), dateLabels = v.map(_._2))
         .appendTags(tag.toSeq)

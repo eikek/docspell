@@ -41,8 +41,7 @@ object LearnClassifierTask {
           sett.category.getOrElse("")
         )
         _ <- OptionT.liftF(
-          analyser
-            .classifier(blocker)
+          analyser.classifier
             .trainClassifier[Unit](ctx.logger, data)(Kleisli(handleModel(ctx, blocker)))
         )
       } yield ())
