@@ -5,7 +5,7 @@ import docspell.files.TestFiles
 import docspell.common._
 import edu.stanford.nlp.pipeline.StanfordCoreNLP
 
-object TextAnalyserSuite extends SimpleTestSuite {
+object StanfordNerAnnotatorSuite extends SimpleTestSuite {
   lazy val germanClassifier =
     new StanfordCoreNLP(Properties.nerGerman(None, false))
   lazy val englishClassifier =
@@ -45,6 +45,7 @@ object TextAnalyserSuite extends SimpleTestSuite {
       NerLabel("Jeter", NerTag.Person, 1123, 1128)
     )
     assertEquals(labels, expect)
+    StanfordCoreNLP.clearAnnotatorPool()
   }
 
   test("find german ner labels") {
@@ -65,5 +66,6 @@ object TextAnalyserSuite extends SimpleTestSuite {
       NerLabel("Mustermann", NerTag.Person, 509, 519)
     )
     assertEquals(labels, expect)
+    StanfordCoreNLP.clearAnnotatorPool()
   }
 }
