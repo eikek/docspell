@@ -9,7 +9,7 @@ servers:
     description: Current host
 
 paths:
-  /api/info:
+  /api/info/version:
     get:
       tags: [ Api Info ]
       summary: Get basic information about this software.
