@@ -160,7 +160,15 @@ object QAttachment {
       chunkSize: Int
   ): Stream[ConnectionIO, ContentAndName] =
     Select(
-      select(a.id, a.itemId, item.cid, item.folder, c.language, a.name, am.content),
+      select(
+        a.id.s,
+        a.itemId.s,
+        item.cid.s,
+        item.folder.s,
+        coalesce(am.language.s, c.language.s).s,
+        a.name.s,
+        am.content.s
+      ),
       from(a)
         .innerJoin(am, am.id === a.id)
         .innerJoin(item, item.id === a.itemId)

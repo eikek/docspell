@@ -78,7 +78,7 @@ object TextExtraction {
         pair._2
       )
 
-    val rm = item.findOrCreate(ra.id)
+    val rm = item.findOrCreate(ra.id, lang)
     rm.content match {
       case Some(_) =>
         ctx.logger.info("TextExtraction skipped, since text is already available.") *>
@@ -102,6 +102,7 @@ object TextExtraction {
       res  <- extractTextFallback(ctx, cfg, ra, lang)(fids)
       meta = item.changeMeta(
         ra.id,
+        lang,
         rm =>
           rm.setContentIfEmpty(
             res.map(_.appendPdfMetaToText.text.trim).filter(_.nonEmpty)

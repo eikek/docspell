@@ -32,8 +32,12 @@ case class ItemData(
   def findDates(rm: RAttachmentMeta): Vector[NerDateLabel] =
     dateLabels.find(m => m.rm.id == rm.id).map(_.dates).getOrElse(Vector.empty)
 
-  def mapMeta(attachId: Ident, f: RAttachmentMeta => RAttachmentMeta): ItemData = {
-    val item = changeMeta(attachId, f)
+  def mapMeta(
+      attachId: Ident,
+      lang: Language,
+      f: RAttachmentMeta => RAttachmentMeta
+  ): ItemData = {
+    val item = changeMeta(attachId, lang, f)
     val next = metas.map(a => if (a.id == attachId) item else a)
     copy(metas = next)
   }
@@ -43,13 +47,14 @@ case class ItemData(
 
   def changeMeta(
       attachId: Ident,
+      lang: Language,
       f: RAttachmentMeta => RAttachmentMeta
   ): RAttachmentMeta =
-    f(findOrCreate(attachId))
+    f(findOrCreate(attachId, lang))
 
-  def findOrCreate(attachId: Ident): RAttachmentMeta =
+  def findOrCreate(attachId: Ident, lang: Language): RAttachmentMeta =
     metas.find(_.id == attachId).getOrElse {
-      RAttachmentMeta.empty(attachId)
+      RAttachmentMeta.empty(attachId, lang)
     }
 
 }

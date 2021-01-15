@@ -15,7 +15,8 @@ case class RAttachmentMeta(
     content: Option[String],
     nerlabels: List[NerLabel],
     proposals: MetaProposalList,
-    pages: Option[Int]
+    pages: Option[Int],
+    language: Option[Language]
 ) {
 
   def setContentIfEmpty(txt: Option[String]): RAttachmentMeta =
@@ -27,8 +28,8 @@ case class RAttachmentMeta(
 }
 
 object RAttachmentMeta {
-  def empty(attachId: Ident) =
-    RAttachmentMeta(attachId, None, Nil, MetaProposalList.empty, None)
+  def empty(attachId: Ident, lang: Language) =
+    RAttachmentMeta(attachId, None, Nil, MetaProposalList.empty, None, Some(lang))
 
   final case class Table(alias: Option[String]) extends TableDef {
     val tableName = "attachmentmeta"
@@ -38,7 +39,9 @@ object RAttachmentMeta {
     val nerlabels = Column[List[NerLabel]]("nerlabels", this)
     val proposals = Column[MetaProposalList]("itemproposals", this)
     val pages     = Column[Int]("page_count", this)
-    val all       = NonEmptyList.of[Column[_]](id, content, nerlabels, proposals, pages)
+    val language  = Column[Language]("language", this)
+    val all =
+      NonEmptyList.of[Column[_]](id, content, nerlabels, proposals, pages, language)
   }
 
   val T = Table(None)
@@ -49,7 +52,7 @@ object RAttachmentMeta {
     DML.insert(
       T,
       T.all,
-      fr"${v.id},${v.content},${v.nerlabels},${v.proposals},${v.pages}"
+      fr"${v.id},${v.content},${v.nerlabels},${v.proposals},${v.pages},${v.language}"
     )
 
   def exists(attachId: Ident): ConnectionIO[Boolean] =

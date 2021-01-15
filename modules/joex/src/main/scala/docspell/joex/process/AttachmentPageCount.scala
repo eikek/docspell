@@ -78,7 +78,14 @@ object AttachmentPageCount {
             s"No attachmentmeta record exists for ${ra.id.id}. Creating new."
           ) *> ctx.store.transact(
             RAttachmentMeta.insert(
-              RAttachmentMeta(ra.id, None, Nil, MetaProposalList.empty, md.pageCount.some)
+              RAttachmentMeta(
+                ra.id,
+                None,
+                Nil,
+                MetaProposalList.empty,
+                md.pageCount.some,
+                None
+              )
             )
           )
         else 0.pure[F]
