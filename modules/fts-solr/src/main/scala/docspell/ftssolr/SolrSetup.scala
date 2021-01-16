@@ -63,6 +63,12 @@ object SolrSetup {
             solrEngine,
             "Index all from database",
             FtsMigration.Result.indexAll.pure[F]
+          ),
+          FtsMigration[F](
+            7,
+            solrEngine,
+            "Add content_it field",
+            addContentItField.map(_ => FtsMigration.Result.reIndexAll)
           )
         )
 
@@ -71,6 +77,9 @@ object SolrSetup {
 
       def addContentFrField: F[Unit] =
         addTextField(Some(Language.French))(Field.content_fr)
+
+      def addContentItField: F[Unit] =
+        addTextField(Some(Language.Italian))(Field.content_it)
 
       def setupCoreSchema: F[Unit] = {
         val cmds0 =
@@ -90,13 +99,15 @@ object SolrSetup {
         )
           .traverse(addTextField(None))
 
-        val cntLang = Language.all.traverse {
+        val cntLang = List(Language.German, Language.English, Language.French).traverse {
           case l @ Language.German =>
             addTextField(l.some)(Field.content_de)
           case l @ Language.English =>
             addTextField(l.some)(Field.content_en)
           case l @ Language.French =>
             addTextField(l.some)(Field.content_fr)
+          case _ =>
+            ().pure[F]
         }
 
         cmds0 *> cmds1 *> cntLang *> ().pure[F]
@@ -125,6 +136,9 @@ object SolrSetup {
           case Some(Language.French) =>
             run(DeleteField.command(DeleteField(field))).attempt *>
               run(AddField.command(AddField.textFR(field)))
+          case Some(Language.Italian) =>
+            run(DeleteField.command(DeleteField(field))).attempt *>
+              run(AddField.command(AddField.textIT(field)))
         }
     }
   }
@@ -161,6 +175,9 @@ object SolrSetup {
 
     def textFR(field: Field): AddField =
       AddField(field, "text_fr", true, true, false)
+
+    def textIT(field: Field): AddField =
+      AddField(field, "text_it", true, true, false)
   }
 
   case class DeleteField(name: Field)

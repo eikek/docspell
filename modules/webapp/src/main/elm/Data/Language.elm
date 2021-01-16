@@ -11,6 +11,7 @@ type Language
     = German
     | English
     | French
+    | Italian
 
 
 fromString : String -> Maybe Language
@@ -24,6 +25,8 @@ fromString str =
     else if str == "fra" || str == "fr" || str == "french" then
         Just French
 
+    else if str == "ita" || str == "it" || str == "italian" then
+        Just Italian
     else
         Nothing
 
@@ -40,6 +43,9 @@ toIso3 lang =
         French ->
             "fra"
 
+        Italian ->
+            "ita"
+
 
 toName : Language -> String
 toName lang =
@@ -53,7 +59,10 @@ toName lang =
         French ->
             "French"
 
+        Italian ->
+            "Italian"
+
 
 all : List Language
 all =
-    [ German, English, French ]
+    [ German, English, French, Italian ]

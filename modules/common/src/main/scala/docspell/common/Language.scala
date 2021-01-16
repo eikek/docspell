@@ -1,5 +1,7 @@
 package docspell.common
 
+import cats.data.NonEmptyList
+
 import io.circe.{Decoder, Encoder}
 
 sealed trait Language { self: Product =>
@@ -11,28 +13,41 @@ sealed trait Language { self: Product =>
 
   def iso3: String
 
+  val allowsNLP: Boolean = false
+
   private[common] def allNames =
     Set(name, iso3, iso2)
 }
 
 object Language {
+  sealed trait NLPLanguage extends Language with Product {
+    override val allowsNLP = true
+  }
+  object NLPLanguage {
+    val all: NonEmptyList[NLPLanguage] = NonEmptyList.of(German, English, French)
+  }
 
-  case object German extends Language {
+  case object German extends NLPLanguage {
     val iso2 = "de"
     val iso3 = "deu"
   }
 
-  case object English extends Language {
+  case object English extends NLPLanguage {
     val iso2 = "en"
     val iso3 = "eng"
   }
 
-  case object French extends Language {
+  case object French extends NLPLanguage {
     val iso2 = "fr"
     val iso3 = "fra"
   }
 
-  val all: List[Language] = List(German, English, French)
+  case object Italian extends Language {
+    val iso2 = "it"
+    val iso3 = "ita"
+  }
+
+  val all: List[Language] = List(German, English, French, Italian)
 
   def fromString(str: String): Either[String, Language] = {
     val lang = str.toLowerCase

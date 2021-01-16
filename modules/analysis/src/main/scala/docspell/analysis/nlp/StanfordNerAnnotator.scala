@@ -1,8 +1,9 @@
 package docspell.analysis.nlp
 
+import java.nio.file.Path
+
 import scala.jdk.CollectionConverters._
 
-import cats.Applicative
 import cats.effect._
 
 import docspell.common._
@@ -24,24 +25,24 @@ object StanfordNerAnnotator {
     * a new classifier must be created. It will then replace the
     * previous one.
     */
-  def nerAnnotate[F[_]: BracketThrow](
-      cacheKey: String,
-      cache: PipelineCache[F, StanfordCoreNLP]
-  )(settings: StanfordNerSettings, text: String): F[Vector[NerLabel]] =
-    cache
-      .obtain(cacheKey, settings)
-      .use(crf => Applicative[F].pure(nerAnnotate(crf, text)))
-
   def nerAnnotate(nerClassifier: StanfordCoreNLP, text: String): Vector[NerLabel] = {
     val doc = new CoreDocument(text)
     nerClassifier.annotate(doc)
     doc.tokens().asScala.collect(Function.unlift(LabelConverter.toNerLabel)).toVector
   }
 
-  def makePipeline(settings: StanfordNerSettings): StanfordCoreNLP = {
-    logger.info(s"Creating ${settings.lang.name} Stanford NLP NER classifier...")
-    new StanfordCoreNLP(Properties.forSettings(settings))
-  }
+  def makePipeline(settings: StanfordNerSettings): StanfordCoreNLP =
+    settings match {
+      case s: StanfordNerSettings.Full =>
+        logger.info(s"Creating ${s.lang.name} Stanford NLP NER classifier...")
+        new StanfordCoreNLP(Properties.forSettings(settings))
+      case StanfordNerSettings.RegexOnly(path) =>
+        logger.info(s"Creating regexNer-only Stanford NLP NER classifier...")
+        regexNerPipeline(path)
+    }
+
+  def regexNerPipeline(regexNerFile: Path): StanfordCoreNLP =
+    new StanfordCoreNLP(Properties.regexNerOnly(regexNerFile))
 
   def clearPipelineCaches[F[_]: Sync]: F[Unit] =
     Sync[F].delay {

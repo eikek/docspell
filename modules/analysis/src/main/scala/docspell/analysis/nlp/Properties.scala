@@ -1,9 +1,11 @@
 package docspell.analysis.nlp
 
+import java.nio.file.Path
 import java.util.{Properties => JProps}
 
 import docspell.analysis.nlp.Properties.Implicits._
 import docspell.common._
+import docspell.common.syntax.FileSyntax._
 
 object Properties {
 
@@ -17,18 +19,21 @@ object Properties {
     p
   }
 
-  def forSettings(settings: StanfordNerSettings): JProps = {
-    val regexNerFile = settings.regexNer
-      .map(p => p.normalize().toAbsolutePath().toString())
-    settings.lang match {
-      case Language.German =>
-        Properties.nerGerman(regexNerFile, settings.highRecall)
-      case Language.English =>
-        Properties.nerEnglish(regexNerFile)
-      case Language.French =>
-        Properties.nerFrench(regexNerFile, settings.highRecall)
+  def forSettings(settings: StanfordNerSettings): JProps =
+    settings match {
+      case StanfordNerSettings.Full(lang, highRecall, regexNer) =>
+        val regexNerFile = regexNer.map(p => p.absolutePathAsString)
+        lang match {
+          case Language.German =>
+            Properties.nerGerman(regexNerFile, highRecall)
+          case Language.English =>
+            Properties.nerEnglish(regexNerFile)
+          case Language.French =>
+            Properties.nerFrench(regexNerFile, highRecall)
+        }
+      case StanfordNerSettings.RegexOnly(path) =>
+        Properties.regexNerOnly(path)
     }
-  }
 
   def nerGerman(regexNerMappingFile: Option[String], highRecall: Boolean): JProps =
     Properties(
@@ -75,6 +80,11 @@ object Properties {
       "ner.language"                -> "de",
       "ner.model"                   -> "edu/stanford/nlp/models/ner/french-wikiner-4class.crf.ser.gz,edu/stanford/nlp/models/ner/english.conll.4class.distsim.crf.ser.gz"
     ).withRegexNer(regexNerMappingFile).withHighRecall(highRecall)
+
+  def regexNerOnly(regexNerMappingFile: Path): JProps =
+    Properties(
+      "annotators" -> "tokenize,ssplit"
+    ).withRegexNer(Some(regexNerMappingFile.absolutePathAsString))
 
   object Implicits {
     implicit final class JPropsOps(val p: JProps) extends AnyVal {

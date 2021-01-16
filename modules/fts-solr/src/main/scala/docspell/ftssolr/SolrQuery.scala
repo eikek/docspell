@@ -40,6 +40,7 @@ object SolrQuery {
             Field.content_de,
             Field.content_en,
             Field.content_fr,
+            Field.content_it,
             Field.itemName,
             Field.itemNotes,
             Field.attachmentName

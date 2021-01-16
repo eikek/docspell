@@ -7,9 +7,7 @@ import java.util.zip.GZIPInputStream
 import scala.jdk.CollectionConverters._
 import scala.util.Using
 
-import cats.Applicative
-import cats.effect.BracketThrow
-
+import docspell.common.Language.NLPLanguage
 import docspell.common._
 
 import edu.stanford.nlp.ie.AbstractSequenceClassifier
@@ -30,14 +28,6 @@ object BasicCRFAnnotator {
 
   type Annotator = AbstractSequenceClassifier[CoreLabel]
 
-  def nerAnnotate[F[_]: BracketThrow](
-      cacheKey: String,
-      cache: PipelineCache[F, Annotator]
-  )(settings: StanfordNerSettings, text: String): F[Vector[NerLabel]] =
-    cache
-      .obtain(cacheKey, settings)
-      .use(crf => Applicative[F].pure(nerAnnotate(crf)(text)))
-
   def nerAnnotate(nerClassifier: Annotator)(text: String): Vector[NerLabel] =
     nerClassifier
       .classify(text)
@@ -52,7 +42,7 @@ object BasicCRFAnnotator {
       })
       .toVector
 
-  private def makeClassifier(lang: Language): Annotator = {
+  def makeAnnotator(lang: NLPLanguage): Annotator = {
     logger.info(s"Creating ${lang.name} Stanford NLP NER-only classifier...")
     val ner = classifierResource(lang)
     Using(new GZIPInputStream(ner.openStream())) { in =>
@@ -60,7 +50,7 @@ object BasicCRFAnnotator {
     }.fold(throw _, identity)
   }
 
-  private def classifierResource(lang: Language): URL = {
+  private def classifierResource(lang: NLPLanguage): URL = {
     def check(name: String): URL =
       Option(getClass.getResource(name)) match {
         case None =>
@@ -79,11 +69,11 @@ object BasicCRFAnnotator {
   }
 
   final class Cache {
-    private[this] lazy val germanNerClassifier  = makeClassifier(Language.German)
-    private[this] lazy val englishNerClassifier = makeClassifier(Language.English)
-    private[this] lazy val frenchNerClassifier  = makeClassifier(Language.French)
+    private[this] lazy val germanNerClassifier  = makeAnnotator(Language.German)
+    private[this] lazy val englishNerClassifier = makeAnnotator(Language.English)
+    private[this] lazy val frenchNerClassifier  = makeAnnotator(Language.French)
 
-    def forLang(language: Language): Annotator =
+    def forLang(language: NLPLanguage): Annotator =
       language match {
         case Language.French  => frenchNerClassifier
         case Language.German  => germanNerClassifier
@@ -95,7 +85,7 @@ object BasicCRFAnnotator {
 
     private[this] val cacheRef = new AtomicReference[Cache](new Cache)
 
-    def getAnnotator(language: Language): Annotator =
+    def getAnnotator(language: NLPLanguage): Annotator =
       cacheRef.get().forLang(language)
 
     def clearCache(): Unit =

@@ -41,23 +41,30 @@ object DateFind {
   }
 
   object SimpleDate {
-    val p0 = (readYear >> readMonth >> readDay).map { case ((y, m), d) =>
-      List(SimpleDate(y, m, d))
+    def pattern0(lang: Language) = (readYear >> readMonth(lang) >> readDay).map {
+      case ((y, m), d) =>
+        List(SimpleDate(y, m, d))
     }
-    val p1 = (readDay >> readMonth >> readYear).map { case ((d, m), y) =>
-      List(SimpleDate(y, m, d))
+    def pattern1(lang: Language) = (readDay >> readMonth(lang) >> readYear).map {
+      case ((d, m), y) =>
+        List(SimpleDate(y, m, d))
     }
-    val p2 = (readMonth >> readDay >> readYear).map { case ((m, d), y) =>
-      List(SimpleDate(y, m, d))
+    def pattern2(lang: Language) = (readMonth(lang) >> readDay >> readYear).map {
+      case ((m, d), y) =>
+        List(SimpleDate(y, m, d))
     }
 
     // ymd ✔, ydm, dmy ✔, dym, myd, mdy ✔
     def fromParts(parts: List[Word], lang: Language): List[SimpleDate] = {
+      val p0 = pattern0(lang)
+      val p1 = pattern1(lang)
+      val p2 = pattern2(lang)
       val p = lang match {
         case Language.English =>
           p2.alt(p1).map(t => t._1 ++ t._2).or(p2).or(p0).or(p1)
-        case Language.German => p1.or(p0).or(p2)
-        case Language.French => p1.or(p0).or(p2)
+        case Language.German  => p1.or(p0).or(p2)
+        case Language.French  => p1.or(p0).or(p2)
+        case Language.Italian => p1.or(p0).or(p2)
       }
       p.read(parts) match {
         case Result.Success(sds, _) =>
@@ -76,9 +83,11 @@ object DateFind {
         }
       )
 
-    def readMonth: Reader[Int] =
+    def readMonth(lang: Language): Reader[Int] =
       Reader.readFirst(w =>
-        Some(months.indexWhere(_.contains(w.value))).filter(_ >= 0).map(_ + 1)
+        Some(MonthName.getAll(lang).indexWhere(_.contains(w.value)))
+          .filter(_ >= 0)
+          .map(_ + 1)
       )
 
     def readDay: Reader[Int] =
@@ -150,20 +159,5 @@ object DateFind {
             Failure
         }
     }
-
-    private val months = List(
-      List("jan", "january", "januar", "01"),
-      List("feb", "february", "februar", "02"),
-      List("mar", "march", "märz", "marz", "03"),
-      List("apr", "april", "04"),
-      List("may", "mai", "05"),
-      List("jun", "june", "juni", "06"),
-      List("jul", "july", "juli", "07"),
-      List("aug", "august", "08"),
-      List("sep", "september", "09"),
-      List("oct", "october", "oktober", "10"),
-      List("nov", "november", "11"),
-      List("dec", "december", "dezember", "12")
-    )
   }
 }

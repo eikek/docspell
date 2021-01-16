@@ -3,14 +3,13 @@ package docspell.analysis.nlp
 import scala.concurrent.duration.{Duration => _, _}
 
 import cats.Applicative
-import cats.data.Kleisli
 import cats.effect._
 import cats.effect.concurrent.Ref
 import cats.implicits._
 
+import docspell.analysis.NlpSettings
 import docspell.common._
 
-import edu.stanford.nlp.pipeline.StanfordCoreNLP
 import org.log4s.getLogger
 
 /** Creating the StanfordCoreNLP pipeline is quite expensive as it
@@ -20,58 +19,32 @@ import org.log4s.getLogger
   *
   * **This is an internal API**
   */
-trait PipelineCache[F[_], A] {
+trait PipelineCache[F[_]] {
 
-  def obtain(key: String, settings: StanfordNerSettings): Resource[F, A]
+  def obtain(key: String, settings: NlpSettings): Resource[F, Annotator[F]]
 
 }
 
 object PipelineCache {
   private[this] val logger = getLogger
 
-  def none[F[_]: Applicative, A](
-      creator: Kleisli[F, StanfordNerSettings, A]
-  ): PipelineCache[F, A] =
-    new PipelineCache[F, A] {
-      def obtain(
-          ignored: String,
-          settings: StanfordNerSettings
-      ): Resource[F, A] =
-        Resource.liftF(creator.run(settings))
-    }
-
-  def apply[F[_]: Concurrent: Timer, A](clearInterval: Duration)(
-      creator: StanfordNerSettings => A,
+  def apply[F[_]: Concurrent: Timer](clearInterval: Duration)(
+      creator: NlpSettings => Annotator[F],
       release: F[Unit]
-  ): F[PipelineCache[F, A]] =
+  ): F[PipelineCache[F]] =
     for {
-      data       <- Ref.of(Map.empty[String, Entry[A]])
+      data       <- Ref.of(Map.empty[String, Entry[Annotator[F]]])
       cacheClear <- CacheClearing.create(data, clearInterval, release)
-    } yield new Impl[F, A](data, creator, cacheClear)
+      _          <- Logger.log4s(logger).info("Creating nlp pipeline cache")
+    } yield new Impl[F](data, creator, cacheClear)
 
-  def full[F[_]: Concurrent: Timer](
-      clearInterval: Duration
-  ): F[PipelineCache[F, StanfordCoreNLP]] =
-    apply(clearInterval)(
-      StanfordNerAnnotator.makePipeline,
-      StanfordNerAnnotator.clearPipelineCaches
-    )
-
-  def basic[F[_]: Concurrent: Timer](
-      clearInterval: Duration
-  ): F[PipelineCache[F, BasicCRFAnnotator.Annotator]] =
-    apply(clearInterval)(
-      settings => BasicCRFAnnotator.Cache.getAnnotator(settings.lang),
-      Sync[F].delay(BasicCRFAnnotator.Cache.clearCache())
-    )
-
-  final private class Impl[F[_]: Sync, A](
-      data: Ref[F, Map[String, Entry[A]]],
-      creator: StanfordNerSettings => A,
+  final private class Impl[F[_]: Sync](
+      data: Ref[F, Map[String, Entry[Annotator[F]]]],
+      creator: NlpSettings => Annotator[F],
       cacheClear: CacheClearing[F]
-  ) extends PipelineCache[F, A] {
+  ) extends PipelineCache[F] {
 
-    def obtain(key: String, settings: StanfordNerSettings): Resource[F, A] =
+    def obtain(key: String, settings: NlpSettings): Resource[F, Annotator[F]] =
       for {
         _  <- cacheClear.withCache
         id <- Resource.liftF(makeSettingsId(settings))
@@ -83,10 +56,10 @@ object PipelineCache {
     private def getOrCreate(
         key: String,
         id: String,
-        cache: Map[String, Entry[A]],
-        settings: StanfordNerSettings,
-        creator: StanfordNerSettings => A
-    ): (Map[String, Entry[A]], A) =
+        cache: Map[String, Entry[Annotator[F]]],
+        settings: NlpSettings,
+        creator: NlpSettings => Annotator[F]
+    ): (Map[String, Entry[Annotator[F]]], Annotator[F]) =
       cache.get(key) match {
         case Some(entry) =>
           if (entry.id == id) (cache, entry.value)
@@ -105,7 +78,7 @@ object PipelineCache {
           (cache.updated(key, e), nlp)
       }
 
-    private def makeSettingsId(settings: StanfordNerSettings): F[String] = {
+    private def makeSettingsId(settings: NlpSettings): F[String] = {
       val base = settings.copy(regexNer = None).toString
       val size: F[Long] =
         settings.regexNer match {

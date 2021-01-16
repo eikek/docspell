@@ -4,9 +4,8 @@ import cats.data.OptionT
 import cats.effect._
 import cats.implicits._
 
-import docspell.analysis.TextAnalyser
 import docspell.analysis.classifier.{ClassifierModel, TextClassifier}
-import docspell.analysis.nlp.StanfordNerSettings
+import docspell.analysis.{NlpSettings, TextAnalyser}
 import docspell.common._
 import docspell.joex.Config
 import docspell.joex.analysis.RegexNerFile
@@ -54,7 +53,7 @@ object TextAnalysis {
       analyser: TextAnalyser[F],
       nerFile: RegexNerFile[F]
   )(rm: RAttachmentMeta): F[(RAttachmentMeta, AttachmentDates)] = {
-    val settings = StanfordNerSettings(ctx.args.meta.language, false, None)
+    val settings = NlpSettings(ctx.args.meta.language, false, None)
     for {
       customNer <- nerFile.makeFile(ctx.args.meta.collective)
       sett = settings.copy(regexNer = customNer)

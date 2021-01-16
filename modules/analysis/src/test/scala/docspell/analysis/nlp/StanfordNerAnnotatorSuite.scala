@@ -1,8 +1,12 @@
 package docspell.analysis.nlp
 
+import java.nio.file.Paths
+
+import cats.effect.IO
 import minitest.SimpleTestSuite
 import docspell.files.TestFiles
 import docspell.common._
+import docspell.common.syntax.FileSyntax._
 import edu.stanford.nlp.pipeline.StanfordCoreNLP
 
 object StanfordNerAnnotatorSuite extends SimpleTestSuite {
@@ -66,6 +70,38 @@ object StanfordNerAnnotatorSuite extends SimpleTestSuite {
       NerLabel("Mustermann", NerTag.Person, 509, 519)
     )
     assertEquals(labels, expect)
+    StanfordCoreNLP.clearAnnotatorPool()
+  }
+
+  test("regexner-only annotator") {
+    val regexNerContent =
+      s"""(?i)volantino ag${"\t"}ORGANIZATION${"\t"}LOCATION,PERSON,MISC${"\t"}3
+      |(?i)volantino${"\t"}ORGANIZATION${"\t"}LOCATION,PERSON,MISC${"\t"}3
+      |(?i)ag${"\t"}ORGANIZATION${"\t"}LOCATION,PERSON,MISC${"\t"}3
+      |(?i)andrea rossi${"\t"}PERSON${"\t"}LOCATION,MISC${"\t"}2
+      |(?i)andrea${"\t"}PERSON${"\t"}LOCATION,MISC${"\t"}2
+      |(?i)rossi${"\t"}PERSON${"\t"}LOCATION,MISC${"\t"}2
+      |""".stripMargin
+
+    File
+      .withTempDir[IO](Paths.get("target"), "test-regex-ner")
+      .use { dir =>
+        for {
+          out <- File.writeString[IO](dir / "regex.txt", regexNerContent)
+          ann    = StanfordNerAnnotator.makePipeline(StanfordNerSettings.RegexOnly(out))
+          labels = StanfordNerAnnotator.nerAnnotate(ann, "Hello Andrea Rossi, can you.")
+          _ <- IO(
+            assertEquals(
+              labels,
+              Vector(
+                NerLabel("Andrea", NerTag.Person, 6, 12),
+                NerLabel("Rossi", NerTag.Person, 13, 18)
+              )
+            )
+          )
+        } yield ()
+      }
+      .unsafeRunSync()
     StanfordCoreNLP.clearAnnotatorPool()
   }
 }

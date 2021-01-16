@@ -24,6 +24,7 @@ object Field {
   val content_de     = Field("content_de")
   val content_en     = Field("content_en")
   val content_fr     = Field("content_fr")
+  val content_it     = Field("content_it")
   val itemName       = Field("itemName")
   val itemNotes      = Field("itemNotes")
   val folderId       = Field("folder")
@@ -36,6 +37,8 @@ object Field {
         Field.content_en
       case Language.French =>
         Field.content_fr
+      case Language.Italian =>
+        Field.content_it
     }
 
   implicit val jsonEncoder: Encoder[Field] =

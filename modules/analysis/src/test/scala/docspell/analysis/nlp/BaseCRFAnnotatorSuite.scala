@@ -1,12 +1,13 @@
 package docspell.analysis.nlp
 
+import docspell.common.Language.NLPLanguage
 import minitest.SimpleTestSuite
 import docspell.files.TestFiles
 import docspell.common._
 
 object BaseCRFAnnotatorSuite extends SimpleTestSuite {
 
-  def annotate(language: Language): String => Vector[NerLabel] =
+  def annotate(language: NLPLanguage): String => Vector[NerLabel] =
     BasicCRFAnnotator.nerAnnotate(BasicCRFAnnotator.Cache.getAnnotator(language))
 
   test("find english ner labels") {

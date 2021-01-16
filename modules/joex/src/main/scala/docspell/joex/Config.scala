@@ -60,15 +60,14 @@ object Config {
   case class TextAnalysis(
       maxLength: Int,
       workingDir: Path,
-      nlpConfig: TextAnalysisConfig.NlpConfig,
-      regexNer: RegexNer,
+      nlp: NlpConfig,
       classification: Classification
   ) {
 
     def textAnalysisConfig: TextAnalysisConfig =
       TextAnalysisConfig(
         maxLength,
-        nlpConfig,
+        TextAnalysisConfig.NlpConfig(nlp.clearInterval, nlp.mode),
         TextClassifierConfig(
           workingDir,
           NonEmptyList
@@ -78,10 +77,16 @@ object Config {
       )
 
     def regexNerFileConfig: RegexNerFile.Config =
-      RegexNerFile.Config(regexNer.enabled, workingDir, regexNer.fileCacheTime)
+      RegexNerFile.Config(
+        nlp.regexNer.maxEntries,
+        workingDir,
+        nlp.regexNer.fileCacheTime
+      )
   }
 
-  case class RegexNer(enabled: Boolean, fileCacheTime: Duration)
+  case class NlpConfig(mode: NlpMode, clearInterval: Duration, regexNer: RegexNer)
+
+  case class RegexNer(maxEntries: Int, fileCacheTime: Duration)
 
   case class Classification(
       enabled: Boolean,

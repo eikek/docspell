@@ -29,7 +29,7 @@ trait RegexNerFile[F[_]] {
 object RegexNerFile {
   private[this] val logger = getLogger
 
-  case class Config(enabled: Boolean, directory: Path, minTime: Duration)
+  case class Config(maxEntries: Int, directory: Path, minTime: Duration)
 
   def apply[F[_]: Concurrent: ContextShift](
       cfg: Config,
@@ -49,7 +49,7 @@ object RegexNerFile {
   ) extends RegexNerFile[F] {
 
     def makeFile(collective: Ident): F[Option[Path]] =
-      if (cfg.enabled) doMakeFile(collective)
+      if (cfg.maxEntries > 0) doMakeFile(collective)
       else (None: Option[Path]).pure[F]
 
     def doMakeFile(collective: Ident): F[Option[Path]] =
@@ -127,7 +127,7 @@ object RegexNerFile {
 
       for {
         _     <- logger.finfo(s"Generating custom NER file for collective '${collective.id}'")
-        names <- store.transact(QCollective.allNames(collective))
+        names <- store.transact(QCollective.allNames(collective, cfg.maxEntries))
         nerFile = NerFile(collective, lastUpdate, now)
         _ <- update(nerFile, NerFile.mkNerConfig(names))
       } yield nerFile

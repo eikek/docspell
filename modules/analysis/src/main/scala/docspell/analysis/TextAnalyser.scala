@@ -10,13 +10,13 @@ import docspell.analysis.date.DateFind
 import docspell.analysis.nlp._
 import docspell.common._
 
-import edu.stanford.nlp.pipeline.StanfordCoreNLP
+import org.log4s.getLogger
 
 trait TextAnalyser[F[_]] {
 
   def annotate(
       logger: Logger[F],
-      settings: StanfordNerSettings,
+      settings: NlpSettings,
       cacheKey: Ident,
       text: String
   ): F[TextAnalyser.Result]
@@ -24,6 +24,7 @@ trait TextAnalyser[F[_]] {
   def classifier: TextClassifier[F]
 }
 object TextAnalyser {
+  private[this] val logger = getLogger
 
   case class Result(labels: Vector[NerLabel], dates: Vector[NerDateLabel]) {
 
@@ -41,13 +42,13 @@ object TextAnalyser {
         new TextAnalyser[F] {
           def annotate(
               logger: Logger[F],
-              settings: StanfordNerSettings,
+              settings: NlpSettings,
               cacheKey: Ident,
               text: String
           ): F[TextAnalyser.Result] =
             for {
               input <- textLimit(logger, text)
-              tags0 <- stanfordNer(Nlp.Input(cacheKey, settings, input))
+              tags0 <- stanfordNer(Nlp.Input(cacheKey, settings, logger, input))
               tags1 <- contactNer(input)
               dates <- dateNer(settings.lang, input)
               list  = tags0 ++ tags1
@@ -77,31 +78,36 @@ object TextAnalyser {
         }
       )
 
+  /** Provides the nlp pipeline based on the configuration. */
   private object Nlp {
-
     def apply[F[_]: Concurrent: Timer: BracketThrow](
         cfg: TextAnalysisConfig.NlpConfig
-    ): F[Input => F[Vector[NerLabel]]] =
+    ): F[Input[F] => F[Vector[NerLabel]]] =
       cfg.mode match {
-        case NlpMode.Full =>
-          PipelineCache.full(cfg.clearInterval).map(cache => full(cache))
-        case NlpMode.Basic =>
-          PipelineCache.basic(cfg.clearInterval).map(cache => basic(cache))
         case NlpMode.Disabled =>
-          Applicative[F].pure(_ => Vector.empty[NerLabel].pure[F])
+          Logger.log4s(logger).info("NLP is disabled as defined in config.") *>
+            Applicative[F].pure(_ => Vector.empty[NerLabel].pure[F])
+        case _ =>
+          PipelineCache(cfg.clearInterval)(
+            Annotator[F](cfg.mode),
+            Annotator.clearCaches[F]
+          )
+            .map(annotate[F])
       }
 
-    final case class Input(key: Ident, settings: StanfordNerSettings, text: String)
+    final case class Input[F[_]](
+        key: Ident,
+        settings: NlpSettings,
+        logger: Logger[F],
+        text: String
+    )
 
-    def full[F[_]: BracketThrow](
-        cache: PipelineCache[F, StanfordCoreNLP]
-    )(input: Input): F[Vector[NerLabel]] =
-      StanfordNerAnnotator.nerAnnotate(input.key.id, cache)(input.settings, input.text)
-
-    def basic[F[_]: BracketThrow](
-        cache: PipelineCache[F, BasicCRFAnnotator.Annotator]
-    )(input: Input): F[Vector[NerLabel]] =
-      BasicCRFAnnotator.nerAnnotate(input.key.id, cache)(input.settings, input.text)
+    def annotate[F[_]: BracketThrow](
+        cache: PipelineCache[F]
+    )(input: Input[F]): F[Vector[NerLabel]] =
+      cache
+        .obtain(input.key.id, input.settings)
+        .use(ann => ann.nerAnnotate(input.logger)(input.text))
 
   }
 }

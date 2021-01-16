@@ -6,16 +6,18 @@ sealed trait NlpMode { self: Product =>
     self.productPrefix
 }
 object NlpMode {
-  case object Full     extends NlpMode
-  case object Basic    extends NlpMode
-  case object Disabled extends NlpMode
+  case object Full      extends NlpMode
+  case object Basic     extends NlpMode
+  case object RegexOnly extends NlpMode
+  case object Disabled  extends NlpMode
 
   def fromString(name: String): Either[String, NlpMode] =
     name.toLowerCase match {
-      case "full"     => Right(Full)
-      case "basic"    => Right(Basic)
-      case "disabled" => Right(Disabled)
-      case _          => Left(s"Unknown nlp-mode: $name")
+      case "full"      => Right(Full)
+      case "basic"     => Right(Basic)
+      case "regexonly" => Right(RegexOnly)
+      case "disabled"  => Right(Disabled)
+      case _           => Left(s"Unknown nlp-mode: $name")
     }
 
   def unsafeFromString(name: String): NlpMode =
