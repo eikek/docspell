@@ -3,6 +3,7 @@ package docspell.analysis.nlp
 import java.nio.file.Paths
 
 import cats.effect.IO
+import docspell.analysis.Env
 import minitest.SimpleTestSuite
 import docspell.files.TestFiles
 import docspell.common._
@@ -16,6 +17,10 @@ object StanfordNerAnnotatorSuite extends SimpleTestSuite {
     new StanfordCoreNLP(Properties.nerEnglish(None))
 
   test("find english ner labels") {
+    if (Env.isCI) {
+      ignore("Test ignored on travis.")
+    }
+
     val labels =
       StanfordNerAnnotator.nerAnnotate(englishClassifier, TestFiles.letterENText)
     val expect = Vector(
@@ -53,6 +58,10 @@ object StanfordNerAnnotatorSuite extends SimpleTestSuite {
   }
 
   test("find german ner labels") {
+    if (Env.isCI) {
+      ignore("Test ignored on travis.")
+    }
+
     val labels =
       StanfordNerAnnotator.nerAnnotate(germanClassifier, TestFiles.letterDEText)
     val expect = Vector(
@@ -74,6 +83,10 @@ object StanfordNerAnnotatorSuite extends SimpleTestSuite {
   }
 
   test("regexner-only annotator") {
+    if (Env.isCI) {
+      ignore("Test ignored on travis.")
+    }
+
     val regexNerContent =
       s"""(?i)volantino ag${"\t"}ORGANIZATION${"\t"}LOCATION,PERSON,MISC${"\t"}3
       |(?i)volantino${"\t"}ORGANIZATION${"\t"}LOCATION,PERSON,MISC${"\t"}3

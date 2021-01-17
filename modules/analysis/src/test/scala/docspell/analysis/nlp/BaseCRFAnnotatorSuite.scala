@@ -1,5 +1,6 @@
 package docspell.analysis.nlp
 
+import docspell.analysis.Env
 import docspell.common.Language.NLPLanguage
 import minitest.SimpleTestSuite
 import docspell.files.TestFiles
@@ -11,6 +12,10 @@ object BaseCRFAnnotatorSuite extends SimpleTestSuite {
     BasicCRFAnnotator.nerAnnotate(BasicCRFAnnotator.Cache.getAnnotator(language))
 
   test("find english ner labels") {
+    if (Env.isCI) {
+      ignore("Test ignored on travis.")
+    }
+
     val labels = annotate(Language.English)(TestFiles.letterENText)
     val expect = Vector(
       NerLabel("Derek", NerTag.Person, 0, 5),
@@ -47,6 +52,10 @@ object BaseCRFAnnotatorSuite extends SimpleTestSuite {
   }
 
   test("find german ner labels") {
+    if (Env.isCI) {
+      ignore("Test ignored on travis.")
+    }
+
     val labels = annotate(Language.German)(TestFiles.letterDEText)
     val expect = Vector(
       NerLabel("Max", NerTag.Person, 0, 3),
