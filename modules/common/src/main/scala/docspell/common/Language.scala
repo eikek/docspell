@@ -52,7 +52,68 @@ object Language {
     val iso3 = "spa"
   }
 
-  val all: List[Language] = List(German, English, French, Italian, Spanish)
+  case object Portuguese extends Language {
+    val iso2 = "pt"
+    val iso3 = "por"
+  }
+
+  case object Czech extends Language {
+    val iso2 = "cs"
+    val iso3 = "ces"
+  }
+
+  case object Danish extends Language {
+    val iso2 = "da"
+    val iso3 = "dan"
+  }
+
+  case object Finnish extends Language {
+    val iso2 = "fi"
+    val iso3 = "fin"
+  }
+
+  case object Norwegian extends Language {
+    val iso2 = "no"
+    val iso3 = "nor"
+  }
+
+  case object Swedish extends Language {
+    val iso2 = "sv"
+    val iso3 = "swe"
+  }
+
+  case object Russian extends Language {
+    val iso2 = "ru"
+    val iso3 = "rus"
+  }
+
+  case object Romanian extends Language {
+    val iso2 = "ro"
+    val iso3 = "ron"
+  }
+
+  case object Dutch extends Language {
+    val iso2 = "nl"
+    val iso3 = "nld"
+  }
+
+  val all: List[Language] =
+    List(
+      German,
+      English,
+      French,
+      Italian,
+      Spanish,
+      Dutch,
+      Portuguese,
+      Czech,
+      Danish,
+      Finnish,
+      Norwegian,
+      Swedish,
+      Russian,
+      Romanian
+    )
 
   def fromString(str: String): Either[String, Language] = {
     val lang = str.toLowerCase

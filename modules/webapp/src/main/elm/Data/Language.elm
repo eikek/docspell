@@ -13,6 +13,15 @@ type Language
     | French
     | Italian
     | Spanish
+    | Portuguese
+    | Czech
+    | Danish
+    | Finnish
+    | Norwegian
+    | Swedish
+    | Russian
+    | Romanian
+    | Dutch
 
 
 fromString : String -> Maybe Language
@@ -31,6 +40,33 @@ fromString str =
 
     else if str == "spa" || str == "es" || str == "spanish" then
         Just Spanish
+
+    else if str == "por" || str == "pt" || str == "portuguese" then
+        Just Portuguese
+
+    else if str == "ces" || str == "cs" || str == "czech" then
+        Just Czech
+
+    else if str == "dan" || str == "da" || str == "danish" then
+        Just Danish
+
+    else if str == "nld" || str == "nd" || str == "dutch" then
+        Just Dutch
+
+    else if str == "fin" || str == "fi" || str == "finnish" then
+        Just Finnish
+
+    else if str == "nor" || str == "no" || str == "norwegian" then
+        Just Norwegian
+
+    else if str == "swe" || str == "sv" || str == "swedish" then
+        Just Swedish
+
+    else if str == "rus" || str == "ru" || str == "russian" then
+        Just Russian
+
+    else if str == "ron" || str == "ro" || str == "romanian" then
+        Just Romanian
 
     else
         Nothing
@@ -54,6 +90,33 @@ toIso3 lang =
         Spanish ->
             "spa"
 
+        Portuguese ->
+            "por"
+
+        Czech ->
+            "ces"
+
+        Danish ->
+            "dan"
+
+        Finnish ->
+            "fin"
+
+        Norwegian ->
+            "nor"
+
+        Swedish ->
+            "swe"
+
+        Russian ->
+            "rus"
+
+        Romanian ->
+            "ron"
+
+        Dutch ->
+            "nld"
+
 
 toName : Language -> String
 toName lang =
@@ -73,7 +136,48 @@ toName lang =
         Spanish ->
             "Spanish"
 
+        Portuguese ->
+            "Portuguese"
+
+        Czech ->
+            "Czech"
+
+        Danish ->
+            "Danish"
+
+        Finnish ->
+            "Finnish"
+
+        Norwegian ->
+            "Norwegian"
+
+        Swedish ->
+            "Swedish"
+
+        Russian ->
+            "Russian"
+
+        Romanian ->
+            "Romanian"
+
+        Dutch ->
+            "Dutch"
+
 
 all : List Language
 all =
-    [ German, English, French, Italian, Spanish ]
+    [ German
+    , English
+    , French
+    , Italian
+    , Spanish
+    , Portuguese
+    , Czech
+    , Dutch
+    , Danish
+    , Finnish
+    , Norwegian
+    , Swedish
+    , Russian
+    , Romanian
+    ]

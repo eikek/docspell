@@ -32,7 +32,8 @@ object Field {
     .map(contentField)
 
   def contentField(lang: Language): Field =
-    Field(s"content_${lang.iso2}")
+    if (lang == Language.Czech) Field(s"content_cz")
+    else Field(s"content_${lang.iso2}")
 
   implicit val jsonEncoder: Encoder[Field] =
     Encoder.encodeString.contramap(_.name)

@@ -75,11 +75,32 @@ object SolrSetup {
             solrEngine,
             "Add content_es field",
             addContentField(Language.Spanish).map(_ => FtsMigration.Result.reIndexAll)
+          ),
+          FtsMigration[F](
+            9,
+            solrEngine,
+            "Add more content fields",
+            addMoreContentFields.map(_ => FtsMigration.Result.reIndexAll)
           )
         )
 
       def addFolderField: F[Unit] =
         addStringField(Field.folderId)
+
+      def addMoreContentFields: F[Unit] = {
+        val remain = List[Language](
+          Language.Norwegian,
+          Language.Romanian,
+          Language.Swedish,
+          Language.Finnish,
+          Language.Danish,
+          Language.Czech,
+          Language.Dutch,
+          Language.Portuguese,
+          Language.Russian
+        )
+        remain.traverse(addContentField).map(_ => ())
+      }
 
       def setupCoreSchema: F[Unit] = {
         val cmds0 =
@@ -162,7 +183,8 @@ object SolrSetup {
       AddField(field, "text_general", true, true, false)
 
     def textLang(field: Field, lang: Language): AddField =
-      AddField(field, s"text_${lang.iso2}", true, true, false)
+      if (lang == Language.Czech) AddField(field, s"text_cz", true, true, false)
+      else AddField(field, s"text_${lang.iso2}", true, true, false)
   }
 
   case class DeleteField(name: Field)

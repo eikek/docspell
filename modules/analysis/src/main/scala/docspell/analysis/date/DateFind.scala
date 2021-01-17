@@ -56,16 +56,26 @@ object DateFind {
 
     // ymd ✔, ydm, dmy ✔, dym, myd, mdy ✔
     def fromParts(parts: List[Word], lang: Language): List[SimpleDate] = {
-      val p0 = pattern0(lang)
-      val p1 = pattern1(lang)
-      val p2 = pattern2(lang)
+      val ymd = pattern0(lang)
+      val dmy = pattern1(lang)
+      val mdy = pattern2(lang)
+      // most is from wikipedia…
       val p = lang match {
         case Language.English =>
-          p2.alt(p1).map(t => t._1 ++ t._2).or(p2).or(p0).or(p1)
-        case Language.German  => p1.or(p0).or(p2)
-        case Language.French  => p1.or(p0).or(p2)
-        case Language.Italian => p1.or(p0).or(p2)
-        case Language.Spanish => p1.or(p0).or(p2)
+          mdy.alt(dmy).map(t => t._1 ++ t._2).or(mdy).or(ymd).or(dmy)
+        case Language.German     => dmy.or(ymd).or(mdy)
+        case Language.French     => dmy.or(ymd).or(mdy)
+        case Language.Italian    => dmy.or(ymd).or(mdy)
+        case Language.Spanish    => dmy.or(ymd).or(mdy)
+        case Language.Czech      => dmy.or(ymd).or(mdy)
+        case Language.Danish     => dmy.or(ymd).or(mdy)
+        case Language.Finnish    => dmy.or(ymd).or(mdy)
+        case Language.Norwegian  => dmy.or(ymd).or(mdy)
+        case Language.Portuguese => dmy.or(ymd).or(mdy)
+        case Language.Romanian   => dmy.or(ymd).or(mdy)
+        case Language.Russian    => dmy.or(ymd).or(mdy)
+        case Language.Swedish    => ymd.or(dmy).or(mdy)
+        case Language.Dutch      => dmy.or(ymd).or(mdy)
       }
       p.read(parts) match {
         case Result.Success(sds, _) =>
