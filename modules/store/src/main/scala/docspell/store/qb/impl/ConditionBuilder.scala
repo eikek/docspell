@@ -69,6 +69,8 @@ object ConditionBuilder {
         val colFrag = op match {
           case Operator.LowerLike =>
             lower(col)
+          case Operator.LowerEq =>
+            lower(col)
           case _ =>
             SelectExprBuilder.column(col)
         }
@@ -80,6 +82,8 @@ object ConditionBuilder {
         val dbfFrag = op match {
           case Operator.LowerLike =>
             lower(dbf)
+          case Operator.LowerEq =>
+            lower(dbf)
           case _ =>
             DBFunctionBuilder.build(dbf)
         }
@@ -88,6 +92,8 @@ object ConditionBuilder {
       case Condition.CompareCol(c1, op, c2) =>
         val (c1Frag, c2Frag) = op match {
           case Operator.LowerLike =>
+            (lower(c1), lower(c2))
+          case Operator.LowerEq =>
             (lower(c1), lower(c2))
           case _ =>
             (SelectExprBuilder.column(c1), SelectExprBuilder.column(c2))
@@ -130,6 +136,8 @@ object ConditionBuilder {
   def operator(op: Operator): Fragment =
     op match {
       case Operator.Eq =>
+        fr" ="
+      case Operator.LowerEq =>
         fr" ="
       case Operator.Neq =>
         fr" <>"

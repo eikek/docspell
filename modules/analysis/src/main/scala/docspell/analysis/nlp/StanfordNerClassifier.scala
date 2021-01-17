@@ -1,10 +1,12 @@
 package docspell.analysis.nlp
 
-import cats.Applicative
-
 import scala.jdk.CollectionConverters._
+
+import cats.Applicative
 import cats.effect._
+
 import docspell.common._
+
 import edu.stanford.nlp.pipeline.{CoreDocument, StanfordCoreNLP}
 
 object StanfordNerClassifier {

@@ -36,7 +36,7 @@ object TagItemName {
 
   def itemsInAllCategories(cats: NonEmptyList[String]): Select =
     intersect(
-      cats.map(cat => Select(ti.itemId.s, taggedItems, t.category === cat).distinct)
+      cats.map(cat => Select(ti.itemId.s, taggedItems, t.category.lowerEq(cat)).distinct)
     )
 
   def itemsWithEitherTag(tags: NonEmptyList[Ident]): Select =
