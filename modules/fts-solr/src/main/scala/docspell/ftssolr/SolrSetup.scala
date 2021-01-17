@@ -56,7 +56,7 @@ object SolrSetup {
             5,
             solrEngine,
             "Add content_fr field",
-            addContentFrField.map(_ => FtsMigration.Result.workDone)
+            addContentField(Language.French).map(_ => FtsMigration.Result.workDone)
           ),
           FtsMigration[F](
             6,
@@ -68,26 +68,18 @@ object SolrSetup {
             7,
             solrEngine,
             "Add content_it field",
-            addContentItField.map(_ => FtsMigration.Result.reIndexAll)
+            addContentField(Language.Italian).map(_ => FtsMigration.Result.reIndexAll)
           ),
           FtsMigration[F](
             8,
             solrEngine,
             "Add content_es field",
-            addTextField(Some(Language.Spanish))(Field.content_es).map(_ =>
-              FtsMigration.Result.reIndexAll
-            )
+            addContentField(Language.Spanish).map(_ => FtsMigration.Result.reIndexAll)
           )
         )
 
       def addFolderField: F[Unit] =
         addStringField(Field.folderId)
-
-      def addContentFrField: F[Unit] =
-        addTextField(Some(Language.French))(Field.content_fr)
-
-      def addContentItField: F[Unit] =
-        addTextField(Some(Language.Italian))(Field.content_it)
 
       def setupCoreSchema: F[Unit] = {
         val cmds0 =
@@ -129,6 +121,9 @@ object SolrSetup {
       private def addStringField(field: Field): F[Unit] =
         run(DeleteField.command(DeleteField(field))).attempt *>
           run(AddField.command(AddField.string(field)))
+
+      private def addContentField(lang: Language): F[Unit] =
+        addTextField(Some(lang))(Field.contentField(lang))
 
       private def addTextField(lang: Option[Language])(field: Field): F[Unit] =
         lang match {
