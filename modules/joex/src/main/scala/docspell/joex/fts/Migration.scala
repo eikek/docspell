@@ -11,6 +11,11 @@ import docspell.joex.Config
 import docspell.store.records.RFtsMigration
 import docspell.store.{AddResult, Store}
 
+/** Migrating the index from the previous version to this version.
+  *
+  * The sql database stores the outcome of a migration task. If this
+  * task has already been applied, it is skipped.
+  */
 case class Migration[F[_]](
     version: Int,
     engine: Ident,

@@ -126,19 +126,10 @@ object SolrSetup {
         lang match {
           case None =>
             run(DeleteField.command(DeleteField(field))).attempt *>
-              run(AddField.command(AddField.text(field)))
-          case Some(Language.German) =>
+              run(AddField.command(AddField.textGeneral(field)))
+          case Some(lang) =>
             run(DeleteField.command(DeleteField(field))).attempt *>
-              run(AddField.command(AddField.textDE(field)))
-          case Some(Language.English) =>
-            run(DeleteField.command(DeleteField(field))).attempt *>
-              run(AddField.command(AddField.textEN(field)))
-          case Some(Language.French) =>
-            run(DeleteField.command(DeleteField(field))).attempt *>
-              run(AddField.command(AddField.textFR(field)))
-          case Some(Language.Italian) =>
-            run(DeleteField.command(DeleteField(field))).attempt *>
-              run(AddField.command(AddField.textIT(field)))
+              run(AddField.command(AddField.textLang(field, lang)))
         }
     }
   }
@@ -164,20 +155,11 @@ object SolrSetup {
     def string(field: Field): AddField =
       AddField(field, "string", true, true, false)
 
-    def text(field: Field): AddField =
+    def textGeneral(field: Field): AddField =
       AddField(field, "text_general", true, true, false)
 
-    def textDE(field: Field): AddField =
-      AddField(field, "text_de", true, true, false)
-
-    def textEN(field: Field): AddField =
-      AddField(field, "text_en", true, true, false)
-
-    def textFR(field: Field): AddField =
-      AddField(field, "text_fr", true, true, false)
-
-    def textIT(field: Field): AddField =
-      AddField(field, "text_it", true, true, false)
+    def textLang(field: Field, lang: Language): AddField =
+      AddField(field, s"text_${lang.iso2}", true, true, false)
   }
 
   case class DeleteField(name: Field)
