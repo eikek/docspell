@@ -65,6 +65,7 @@ object DateFind {
         case Language.German  => p1.or(p0).or(p2)
         case Language.French  => p1.or(p0).or(p2)
         case Language.Italian => p1.or(p0).or(p2)
+        case Language.Spanish => p1.or(p0).or(p2)
       }
       p.read(parts) match {
         case Result.Success(sds, _) =>

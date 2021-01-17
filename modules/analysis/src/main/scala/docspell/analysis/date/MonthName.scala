@@ -22,6 +22,8 @@ object MonthName {
         french
       case Language.Italian =>
         italian
+      case Language.Spanish =>
+        spanish
     }
 
   private val numbers = List(
@@ -97,5 +99,20 @@ object MonthName {
     List("ott", "ottobre"),
     List("nov", "novembre"),
     List("dic", "dicembre")
+  )
+
+  private val spanish = List(
+    List("ene", "enero"),
+    List("feb", "febrero"),
+    List("mar", "marzo"),
+    List("abr", "abril"),
+    List("may", "mayo"),
+    List("jun"),
+    List("jul"),
+    List("ago", "agosto"),
+    List("sep", "septiembre"),
+    List("oct", "octubre"),
+    List("nov", "noviembre"),
+    List("dic", "diciembre")
   )
 }

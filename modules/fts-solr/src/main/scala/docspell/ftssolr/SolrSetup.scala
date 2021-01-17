@@ -69,6 +69,14 @@ object SolrSetup {
             solrEngine,
             "Add content_it field",
             addContentItField.map(_ => FtsMigration.Result.reIndexAll)
+          ),
+          FtsMigration[F](
+            8,
+            solrEngine,
+            "Add content_es field",
+            addTextField(Some(Language.Spanish))(Field.content_es).map(_ =>
+              FtsMigration.Result.reIndexAll
+            )
           )
         )
 
