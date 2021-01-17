@@ -164,6 +164,9 @@ trait DSL extends DoobieMeta {
     def ===(value: A)(implicit P: Put[A]): Condition =
       Condition.CompareVal(col, Operator.Eq, value)
 
+    def lowerEq(value: A)(implicit P: Put[A]): Condition =
+      Condition.CompareVal(col, Operator.LowerEq, value)
+
     def ====(value: String): Condition =
       Condition.CompareVal(col.asInstanceOf[Column[String]], Operator.Eq, value)
 
