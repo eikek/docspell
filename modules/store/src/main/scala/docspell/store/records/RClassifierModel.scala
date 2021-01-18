@@ -1,7 +1,7 @@
 package docspell.store.records
 
-import cats.effect._
 import cats.data.NonEmptyList
+import cats.effect._
 import cats.implicits._
 
 import docspell.common._
@@ -63,6 +63,17 @@ object RClassifierModel {
         else 0.pure[ConnectionIO]
     } yield n + k
 
+  def deleteById(id: Ident): ConnectionIO[Int] =
+    DML.delete(T, T.id === id)
+
+  def deleteAll(ids: List[Ident]): ConnectionIO[Int] =
+    NonEmptyList.fromList(ids) match {
+      case Some(nel) =>
+        DML.delete(T, T.id.in(nel))
+      case None =>
+        0.pure[ConnectionIO]
+    }
+
   def findByName(cid: Ident, name: String): ConnectionIO[Option[RClassifierModel]] =
     Select(select(T.all), from(T), T.cid === cid && T.name === name).build
       .query[RClassifierModel]
@@ -75,4 +86,5 @@ object RClassifierModel {
     Select(select(T.all), from(T), T.cid === cid && T.name.in(names)).build
       .query[RClassifierModel]
       .to[List]
+
 }

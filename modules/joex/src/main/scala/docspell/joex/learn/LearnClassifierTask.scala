@@ -4,12 +4,13 @@ import cats.data.Kleisli
 import cats.data.OptionT
 import cats.effect._
 import cats.implicits._
+
 import docspell.analysis.TextAnalyser
 import docspell.backend.ops.OCollective
 import docspell.common._
 import docspell.joex.Config
 import docspell.joex.scheduler._
-import docspell.store.records.{RClassifierSetting, RTag}
+import docspell.store.records.{RClassifierModel, RClassifierSetting, RTag}
 
 object LearnClassifierTask {
   val pageSep = " --n-- "
@@ -31,6 +32,7 @@ object LearnClassifierTask {
         _ <- OptionT.liftF(
           learnAllTagCategories(analyser)(ctx.args.collective, maxItems).run(ctx)
         )
+        _ <- OptionT.liftF(clearObsoleteModels(ctx))
       } yield ())
         .getOrElseF(logInactiveWarning(ctx.logger))
     }
@@ -62,13 +64,26 @@ object LearnClassifierTask {
   ): Task[F, A, Unit] =
     Task { ctx =>
       for {
-        cats <- ctx.store.transact(
-          RTag.listCategories(collective, ClassifierName.noCategory.name)
-        )
+        cats <- ctx.store.transact(RTag.listCategories(collective))
         task = learnTagCategory[F, A](analyser, collective, maxItems) _
         _ <- cats.map(task).traverse(_.run(ctx))
       } yield ()
     }
+
+  private def clearObsoleteModels[F[_]: Sync](ctx: Context[F, Args]): F[Unit] =
+    for {
+      list <- ctx.store.transact(
+        ClassifierName.findOrphanTagModels(ctx.args.collective)
+      )
+      _ <- ctx.logger.info(
+        s"Found ${list.size} obsolete model files that are deleted now."
+      )
+      n <- ctx.store.transact(RClassifierModel.deleteAll(list.map(_.id)))
+      _ <- list
+        .map(_.fileId.id)
+        .traverse(id => ctx.store.bitpeace.delete(id).compile.drain)
+      _ <- ctx.logger.debug(s"Deleted $n model files.")
+    } yield ()
 
   private def findActiveSettings[F[_]: Sync](
       ctx: Context[F, Args],

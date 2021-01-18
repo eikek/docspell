@@ -148,11 +148,11 @@ object RTag {
     ).orderBy(T.name.asc).build.query[RTag].to[List]
   }
 
-  def listCategories(coll: Ident, fallback: String): ConnectionIO[List[String]] =
+  def listCategories(coll: Ident): ConnectionIO[List[String]] =
     Select(
-      coalesce(T.category.s, lit(fallback)).s,
+      T.category.s,
       from(T),
-      T.cid === coll
+      T.cid === coll && T.category.isNotNull
     ).distinct.build.query[String].to[List]
 
   def delete(tagId: Ident, coll: Ident): ConnectionIO[Int] =
