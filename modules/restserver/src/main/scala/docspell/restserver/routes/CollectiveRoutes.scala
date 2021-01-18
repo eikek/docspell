@@ -46,8 +46,7 @@ object CollectiveRoutes {
               OCollective.Classifier(
                 settings.classifier.enabled,
                 settings.classifier.schedule,
-                settings.classifier.itemCount,
-                settings.classifier.category
+                settings.classifier.itemCount
               )
             )
           )
@@ -65,8 +64,7 @@ object CollectiveRoutes {
               c.language,
               c.integrationEnabled,
               ClassifierSetting(
-                c.classifier.map(_.enabled).getOrElse(false),
-                c.classifier.flatMap(_.category),
+                c.classifier.exists(_.enabled),
                 c.classifier.map(_.itemCount).getOrElse(0),
                 c.classifier
                   .map(_.schedule)

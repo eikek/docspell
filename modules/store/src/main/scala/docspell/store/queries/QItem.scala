@@ -543,11 +543,14 @@ object QItem {
 
   def findAllNewesFirst(
       collective: Ident,
-      chunkSize: Int
+      chunkSize: Int,
+      limit: Batch
   ): Stream[ConnectionIO, Ident] = {
+
     val i = RItem.as("i")
     Select(i.id.s, from(i), i.cid === collective && i.state === ItemState.confirmed)
       .orderBy(i.created.desc)
+      .limit(limit)
       .build
       .query[Ident]
       .streamWithChunkSize(chunkSize)

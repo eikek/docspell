@@ -169,7 +169,7 @@ object JoexAppImpl {
         .withTask(
           JobTask.json(
             LearnClassifierArgs.taskName,
-            LearnClassifierTask[F](cfg.textAnalysis, blocker, analyser),
+            LearnClassifierTask[F](cfg.textAnalysis, analyser),
             LearnClassifierTask.onCancel[F]
           )
         )

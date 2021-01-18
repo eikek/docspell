@@ -4856,8 +4856,6 @@ components:
       properties:
         enabled:
           type: boolean
-        category:
-          type: string
         itemCount:
           type: integer
           format: int32

@@ -15,9 +15,7 @@ case class RClassifierSetting(
     cid: Ident,
     enabled: Boolean,
     schedule: CalEvent,
-    category: String,
     itemCount: Int,
-    fileId: Option[Ident],
     created: Timestamp
 ) {}
 
@@ -28,12 +26,10 @@ object RClassifierSetting {
     val cid       = Column[Ident]("cid", this)
     val enabled   = Column[Boolean]("enabled", this)
     val schedule  = Column[CalEvent]("schedule", this)
-    val category  = Column[String]("category", this)
     val itemCount = Column[Int]("item_count", this)
-    val fileId    = Column[Ident]("file_id", this)
     val created   = Column[Timestamp]("created", this)
     val all = NonEmptyList
-      .of[Column[_]](cid, enabled, schedule, category, itemCount, fileId, created)
+      .of[Column[_]](cid, enabled, schedule, itemCount, created)
   }
 
   val T = Table(None)
@@ -44,7 +40,7 @@ object RClassifierSetting {
     DML.insert(
       T,
       T.all,
-      fr"${v.cid},${v.enabled},${v.schedule},${v.category},${v.itemCount},${v.fileId},${v.created}"
+      fr"${v.cid},${v.enabled},${v.schedule},${v.itemCount},${v.created}"
     )
 
   def updateAll(v: RClassifierSetting): ConnectionIO[Int] =
@@ -54,14 +50,9 @@ object RClassifierSetting {
       DML.set(
         T.enabled.setTo(v.enabled),
         T.schedule.setTo(v.schedule),
-        T.category.setTo(v.category),
-        T.itemCount.setTo(v.itemCount),
-        T.fileId.setTo(v.fileId)
+        T.itemCount.setTo(v.itemCount)
       )
     )
-
-  def updateFile(coll: Ident, fid: Ident): ConnectionIO[Int] =
-    DML.update(T, T.cid === coll, DML.set(T.fileId.setTo(fid)))
 
   def updateSettings(v: RClassifierSetting): ConnectionIO[Int] =
     for {
@@ -71,8 +62,7 @@ object RClassifierSetting {
         DML.set(
           T.enabled.setTo(v.enabled),
           T.schedule.setTo(v.schedule),
-          T.itemCount.setTo(v.itemCount),
-          T.category.setTo(v.category)
+          T.itemCount.setTo(v.itemCount)
         )
       )
       n2 <- if (n1 <= 0) insert(v) else 0.pure[ConnectionIO]
@@ -89,8 +79,7 @@ object RClassifierSetting {
   case class Classifier(
       enabled: Boolean,
       schedule: CalEvent,
-      itemCount: Int,
-      category: Option[String]
+      itemCount: Int
   ) {
 
     def toRecord(coll: Ident, created: Timestamp): RClassifierSetting =
@@ -98,15 +87,13 @@ object RClassifierSetting {
         coll,
         enabled,
         schedule,
-        category.getOrElse(""),
         itemCount,
-        None,
         created
       )
   }
   object Classifier {
     def fromRecord(r: RClassifierSetting): Classifier =
-      Classifier(r.enabled, r.schedule, r.itemCount, r.category.some)
+      Classifier(r.enabled, r.schedule, r.itemCount)
   }
 
 }

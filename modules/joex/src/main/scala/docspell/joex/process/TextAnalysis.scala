@@ -9,12 +9,11 @@ import docspell.analysis.{NlpSettings, TextAnalyser}
 import docspell.common._
 import docspell.joex.Config
 import docspell.joex.analysis.RegexNerFile
-import docspell.joex.learn.LearnClassifierTask
+import docspell.joex.learn.{ClassifierName, LearnClassifierTask}
 import docspell.joex.process.ItemData.AttachmentDates
 import docspell.joex.scheduler.Context
 import docspell.joex.scheduler.Task
-import docspell.store.records.RAttachmentMeta
-import docspell.store.records.RClassifierSetting
+import docspell.store.records.{RAttachmentMeta, RClassifierSetting}
 
 import bitpeace.RangeDef
 
@@ -42,10 +41,13 @@ object TextAnalysis {
         e <- s
         _ <- ctx.logger.info(s"Text-Analysis finished in ${e.formatExact}")
         v = t.toVector
-        tag <- predictTag(ctx, cfg, item.metas, analyser.classifier).value
+        classifierEnabled <- getActive(ctx, cfg)
+        tag <-
+          if (classifierEnabled) predictTags(ctx, cfg, item.metas, analyser.classifier)
+          else List.empty[String].pure[F]
       } yield item
         .copy(metas = v.map(_._1), dateLabels = v.map(_._2))
-        .appendTags(tag.toSeq)
+        .appendTags(tag)
     }
 
   def annotateAttachment[F[_]: Sync](
@@ -66,15 +68,29 @@ object TextAnalysis {
     } yield (rm.copy(nerlabels = labels.all.toList), AttachmentDates(rm, labels.dates))
   }
 
+  def predictTags[F[_]: Sync: ContextShift](
+      ctx: Context[F, Args],
+      cfg: Config.TextAnalysis,
+      metas: Vector[RAttachmentMeta],
+      classifier: TextClassifier[F]
+  ): F[List[String]] =
+    for {
+      models <- ctx.store.transact(ClassifierName.findTagModels(ctx.args.meta.collective))
+      _      <- ctx.logger.debug(s"Guessing tags for ${models.size} categories")
+      tags <- models
+        .map(_.fileId.some)
+        .traverse(predictTag(ctx, cfg, metas, classifier))
+    } yield tags.flatten
+
   def predictTag[F[_]: Sync: ContextShift](
       ctx: Context[F, Args],
       cfg: Config.TextAnalysis,
       metas: Vector[RAttachmentMeta],
       classifier: TextClassifier[F]
-  ): OptionT[F, String] =
-    for {
-      model <- findActiveModel(ctx, cfg)
-      _     <- OptionT.liftF(ctx.logger.info(s"Guessing tag …"))
+  )(modelFileId: Option[Ident]): F[Option[String]] =
+    (for {
+      _     <- OptionT.liftF(ctx.logger.info(s"Guessing tag for ${modelFileId} …"))
+      model <- OptionT.fromOption[F](modelFileId)
       text = metas.flatMap(_.content).mkString(LearnClassifierTask.pageSep)
       modelData =
         ctx.store.bitpeace
@@ -90,20 +106,21 @@ object TextAnalysis {
           .flatMap(_ => classifier.classify(ctx.logger, ClassifierModel(modelFile), text))
       }).filter(_ != LearnClassifierTask.noClass)
       _ <- OptionT.liftF(ctx.logger.debug(s"Guessed tag: ${cls}"))
-    } yield cls
+    } yield cls).value
 
-  private def findActiveModel[F[_]: Sync](
+  private def getActive[F[_]: Sync](
       ctx: Context[F, Args],
       cfg: Config.TextAnalysis
-  ): OptionT[F, Ident] =
-    (if (cfg.classification.enabled)
-       OptionT(ctx.store.transact(RClassifierSetting.findById(ctx.args.meta.collective)))
-         .filter(_.enabled)
-         .mapFilter(_.fileId)
-     else
-       OptionT.none[F, Ident]).orElse(
-      OptionT.liftF(ctx.logger.info("Classification is disabled.")) *> OptionT
-        .none[F, Ident]
-    )
+  ): F[Boolean] =
+    if (cfg.classification.enabled)
+      ctx.store
+        .transact(RClassifierSetting.findById(ctx.args.meta.collective))
+        .map(_.exists(_.enabled))
+        .flatTap(enabled =>
+          if (enabled) ().pure[F]
+          else ctx.logger.info("Classification is disabled. Check config or settings.")
+        )
+    else
+      ctx.logger.info("Classification is disabled.") *> false.pure[F]
 
 }

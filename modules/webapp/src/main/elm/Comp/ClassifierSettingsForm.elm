@@ -25,8 +25,6 @@ import Util.Tag
 
 type alias Model =
     { enabled : Bool
-    , categoryModel : Comp.FixedDropdown.Model String
-    , category : Maybe String
     , scheduleModel : Comp.CalEventInput.Model
     , schedule : Validated CalEvent
     , itemCountModel : Comp.IntField.Model
@@ -35,10 +33,8 @@ type alias Model =
 
 
 type Msg
-    = GetTagsResp (Result Http.Error TagList)
-    | ScheduleMsg Comp.CalEventInput.Msg
+    = ScheduleMsg Comp.CalEventInput.Msg
     | ToggleEnabled
-    | CategoryMsg (Comp.FixedDropdown.Msg String)
     | ItemCountMsg Comp.IntField.Msg
 
 
@@ -53,17 +49,12 @@ init flags sett =
             Comp.CalEventInput.init flags newSchedule
     in
     ( { enabled = sett.enabled
-      , categoryModel = Comp.FixedDropdown.initString []
-      , category = sett.category
       , scheduleModel = cem
       , schedule = Data.Validated.Unknown newSchedule
       , itemCountModel = Comp.IntField.init (Just 0) Nothing True "Item Count"
       , itemCount = Just sett.itemCount
       }
-    , Cmd.batch
-        [ Api.getTags flags "" GetTagsResp
-        , Cmd.map ScheduleMsg cec
-        ]
+    , Cmd.map ScheduleMsg cec
     )
 
 
@@ -72,7 +63,6 @@ getSettings model =
     Data.Validated.map
         (\sch ->
             { enabled = model.enabled
-            , category = model.category
             , schedule =
                 Data.CalEvent.makeEvent sch
             , itemCount = Maybe.withDefault 0 model.itemCount
@@ -84,27 +74,6 @@ getSettings model =
 update : Flags -> Msg -> Model -> ( Model, Cmd Msg )
 update flags msg model =
     case msg of
-        GetTagsResp (Ok tl) ->
-            let
-                categories =
-                    Util.Tag.getCategories tl.items
-                        |> List.sort
-            in
-            ( { model
-                | categoryModel = Comp.FixedDropdown.initString categories
-                , category =
-                    if model.category == Nothing then
-                        List.head categories
-
-                    else
-                        model.category
-              }
-            , Cmd.none
-            )
-
-        GetTagsResp (Err _) ->
-            ( model, Cmd.none )
-
         ScheduleMsg lmsg ->
             let
                 ( cm, cc, ce ) =
@@ -123,23 +92,6 @@ update flags msg model =
 
         ToggleEnabled ->
             ( { model | enabled = not model.enabled }
-            , Cmd.none
-            )
-
-        CategoryMsg lmsg ->
-            let
-                ( mm, ma ) =
-                    Comp.FixedDropdown.update lmsg model.categoryModel
-            in
-            ( { model
-                | categoryModel = mm
-                , category =
-                    if ma == Nothing then
-                        model.category
-
-                    else
-                        ma
-              }
             , Cmd.none
             )
 
@@ -181,13 +133,6 @@ view model =
             , text "the text. The more documents you have correctly tagged, the better. Learning is done "
             , text "periodically based on a schedule and you need to specify a tag-group that should "
             , text "be used for learning."
-            ]
-        , div [ class "field" ]
-            [ label [] [ text "Category" ]
-            , Html.map CategoryMsg
-                (Comp.FixedDropdown.viewString model.category
-                    model.categoryModel
-                )
             ]
         , Html.map ItemCountMsg
             (Comp.IntField.viewWithInfo

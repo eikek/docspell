@@ -89,8 +89,7 @@ object RCollective {
         c.integration.s,
         cs.enabled.s,
         cs.schedule.s,
-        cs.itemCount.s,
-        cs.category.s
+        cs.itemCount.s
       ),
       from(c).leftJoin(cs, cs.cid === c.id),
       c.id === coll

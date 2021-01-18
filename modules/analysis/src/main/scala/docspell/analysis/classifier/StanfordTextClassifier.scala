@@ -11,6 +11,7 @@ import docspell.analysis.classifier
 import docspell.analysis.classifier.TextClassifier._
 import docspell.analysis.nlp.Properties
 import docspell.common._
+import docspell.common.syntax.FileSyntax._
 
 import edu.stanford.nlp.classify.ColumnDataClassifier
 
@@ -28,7 +29,7 @@ final class StanfordTextClassifier[F[_]: Sync: ContextShift](
       .use { dir =>
         for {
           rawData   <- writeDataFile(blocker, dir, data)
-          _         <- logger.info(s"Learning from ${rawData.count} items.")
+          _         <- logger.debug(s"Learning from ${rawData.count} items.")
           trainData <- splitData(logger, rawData)
           scores    <- cfg.classifierConfigs.traverse(m => train(logger, trainData, m))
           sorted = scores.sortBy(-_.score)
@@ -138,9 +139,9 @@ final class StanfordTextClassifier[F[_]: Sync: ContextShift](
       props: Map[String, String]
   ): Map[String, String] =
     prepend("2.", props) ++ Map(
-      "trainFile"   -> trainData.train.normalize().toAbsolutePath().toString(),
-      "testFile"    -> trainData.test.normalize().toAbsolutePath().toString(),
-      "serializeTo" -> trainData.modelFile.normalize().toAbsolutePath().toString()
+      "trainFile"   -> trainData.train.absolutePathAsString,
+      "testFile"    -> trainData.test.absolutePathAsString,
+      "serializeTo" -> trainData.modelFile.absolutePathAsString
     ).toList
 
   case class RawData(count: Long, file: Path)
