@@ -32,6 +32,10 @@ object DBFunctionBuilder extends CommonBuilder {
       case DBFunction.Substring(expr, start, len) =>
         sql"SUBSTRING(" ++ SelectExprBuilder.build(expr) ++ fr" FROM $start FOR $len)"
 
+      case DBFunction.Concat(exprs) =>
+        val inner = exprs.map(SelectExprBuilder.build).toList.reduce(_ ++ comma ++ _)
+        sql"CONCAT(" ++ inner ++ sql")"
+
       case DBFunction.Calc(op, left, right) =>
         SelectExprBuilder.build(left) ++
           buildOperator(op) ++

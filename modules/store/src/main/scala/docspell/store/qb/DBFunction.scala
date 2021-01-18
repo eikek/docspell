@@ -1,5 +1,7 @@
 package docspell.store.qb
 
+import cats.data.NonEmptyList
+
 sealed trait DBFunction {}
 
 object DBFunction {
@@ -30,6 +32,8 @@ object DBFunction {
   case class Avg(expr: SelectExpr) extends DBFunction
 
   case class Sum(expr: SelectExpr) extends DBFunction
+
+  case class Concat(exprs: NonEmptyList[SelectExpr]) extends DBFunction
 
   sealed trait Operator
   object Operator {
