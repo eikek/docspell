@@ -21,6 +21,7 @@ object QAttachment {
   private val item = RItem.as("i")
   private val am   = RAttachmentMeta.as("am")
   private val c    = RCollective.as("c")
+  private val im   = RItemProposal.as("im")
 
   def deletePreview[F[_]: Sync](store: Store[F])(attachId: Ident): F[Int] = {
     val findPreview =
@@ -118,24 +119,27 @@ object QAttachment {
     } yield ns.sum
 
   def getMetaProposals(itemId: Ident, coll: Ident): ConnectionIO[MetaProposalList] = {
-    val q = Select(
-      select(am.proposals, am.classifyProposals),
+    val qa = Select(
+      select(am.proposals),
       from(am)
         .innerJoin(a, a.id === am.id)
         .innerJoin(item, a.itemId === item.id),
       a.itemId === itemId && item.cid === coll
     ).build
 
+    val qi = Select(
+      select(im.classifyProposals),
+      from(im)
+        .innerJoin(item, item.id === im.itemId),
+      item.cid === coll && im.itemId === itemId
+    ).build
+
     for {
-      ml <- q.query[(MetaProposalList, Option[MetaProposalList])].to[Vector]
-      pairs = ml.foldLeft(
-        (Vector.empty[MetaProposalList], Vector.empty[MetaProposalList])
-      ) { case ((vl, vr), (m, o)) =>
-        (vl.appended(m), o.map(vr.appended).getOrElse(vr))
-      }
+      mla <- qa.query[MetaProposalList].to[Vector]
+      mli <- qi.query[MetaProposalList].to[Vector]
     } yield MetaProposalList
-      .flatten(pairs._1)
-      .fillEmptyFrom(MetaProposalList.flatten(pairs._2))
+      .flatten(mla)
+      .fillEmptyFrom(MetaProposalList.flatten(mli))
   }
 
   def getAttachmentMeta(

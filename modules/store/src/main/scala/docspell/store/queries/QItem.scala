@@ -441,8 +441,9 @@ object QItem {
       tn <- store.transact(RTagItem.deleteItemTags(itemId))
       mn <- store.transact(RSentMail.deleteByItem(itemId))
       cf <- store.transact(RCustomFieldValue.deleteByItem(itemId))
+      im <- store.transact(RItemProposal.deleteByItem(itemId))
       n  <- store.transact(RItem.deleteByIdAndCollective(itemId, collective))
-    } yield tn + rn + n + mn + cf
+    } yield tn + rn + n + mn + cf + im
 
   private def findByFileIdsQuery(
       fileMetaIds: Nel[Ident],

@@ -86,6 +86,9 @@ trait DoobieMeta extends EmilDoobieMeta {
   implicit val metaItemProposalList: Meta[MetaProposalList] =
     jsonMeta[MetaProposalList]
 
+  implicit val metaIdRef: Meta[List[IdRef]] =
+    jsonMeta[List[IdRef]]
+
   implicit val metaLanguage: Meta[Language] =
     Meta[String].imap(Language.unsafe)(_.iso3)
 
