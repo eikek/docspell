@@ -16,7 +16,9 @@ object SaveProposals {
       ctx.logger.info("Storing proposals") *>
         data.metas
           .traverse(rm =>
-            ctx.logger.debug(s"Storing attachment proposals: ${rm.proposals}") *>
+            ctx.logger.debug(
+              s"Storing attachment proposals: ${rm.proposals} and ${data.classifyProposals}"
+            ) *>
               ctx.store.transact(
                 RAttachmentMeta
                   .updateProposals(rm.id, rm.proposals, data.classifyProposals)

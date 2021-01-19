@@ -5,7 +5,6 @@ import java.time.ZoneId
 import cats.effect.Sync
 import cats.implicits._
 import cats.{Applicative, FlatMap}
-
 import docspell.analysis.contact._
 import docspell.common.MetaProposal.Candidate
 import docspell.common._
@@ -17,21 +16,92 @@ import docspell.store.records._
   * by looking up values from NER in the users address book.
   */
 object FindProposal {
+  type Args = ProcessItemArgs
 
   def apply[F[_]: Sync](
       cfg: Config.Processing
-  )(data: ItemData): Task[F, ProcessItemArgs, ItemData] =
+  )(data: ItemData): Task[F, Args, ItemData] =
     Task { ctx =>
       val rmas = data.metas.map(rm => rm.copy(nerlabels = removeDuplicates(rm.nerlabels)))
-
-      ctx.logger.info("Starting find-proposal") *>
-        rmas
+      for {
+        _ <- ctx.logger.info("Starting find-proposal")
+        rmv <- rmas
           .traverse(rm =>
             processAttachment(cfg, rm, data.findDates(rm), ctx)
               .map(ml => rm.copy(proposals = ml))
           )
-          .map(rmv => data.copy(metas = rmv))
+        clp <- data.classifyProposals match {
+          case Some(cmp) => lookupClassifierProposals(ctx, cmp)
+          case None      => MetaProposalList.empty.pure[F]
+        }
+      } yield data.copy(metas = rmv, classifyProposals = clp.some)
     }
+
+  def lookupClassifierProposals[F[_]: Sync](
+      ctx: Context[F, Args],
+      mpList: MetaProposalList
+  ): F[MetaProposalList] = {
+    val coll = ctx.args.meta.collective
+
+    def lookup(mp: MetaProposal): F[Option[IdRef]] =
+      mp.proposalType match {
+        case MetaProposalType.CorrOrg =>
+          ctx.store
+            .transact(
+              ROrganization
+                .findLike(coll, mp.values.head.ref.name.toLowerCase)
+                .map(_.headOption)
+            )
+            .flatTap(oref =>
+              ctx.logger.debug(s"Found classifier organization for $mp: $oref")
+            )
+        case MetaProposalType.CorrPerson =>
+          ctx.store
+            .transact(
+              RPerson
+                .findLike(coll, mp.values.head.ref.name.toLowerCase, false)
+                .map(_.headOption)
+            )
+            .flatTap(oref =>
+              ctx.logger.debug(s"Found classifier corr-person for $mp: $oref")
+            )
+        case MetaProposalType.ConcPerson =>
+          ctx.store
+            .transact(
+              RPerson
+                .findLike(coll, mp.values.head.ref.name.toLowerCase, true)
+                .map(_.headOption)
+            )
+            .flatTap(oref =>
+              ctx.logger.debug(s"Found classifier conc-person for $mp: $oref")
+            )
+        case MetaProposalType.ConcEquip =>
+          ctx.store
+            .transact(
+              REquipment
+                .findLike(coll, mp.values.head.ref.name.toLowerCase)
+                .map(_.headOption)
+            )
+            .flatTap(oref =>
+              ctx.logger.debug(s"Found classifier conc-equip for $mp: $oref")
+            )
+        case MetaProposalType.DocDate =>
+          (None: Option[IdRef]).pure[F]
+
+        case MetaProposalType.DueDate =>
+          (None: Option[IdRef]).pure[F]
+      }
+
+    def updateRef(mp: MetaProposal)(idRef: Option[IdRef]): Option[MetaProposal] =
+      idRef // this proposal contains a single value only, since coming from classifier
+        .map(ref => mp.copy(values = mp.values.map(_.copy(ref = ref))))
+
+    ctx.logger.debug(s"Looking up classifier results: ${mpList.proposals}") *>
+      mpList.proposals
+        .traverse(mp => lookup(mp).map(updateRef(mp)))
+        .map(_.flatten)
+        .map(MetaProposalList.apply)
+  }
 
   def processAttachment[F[_]: Sync](
       cfg: Config.Processing,
