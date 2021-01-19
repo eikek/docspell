@@ -119,7 +119,7 @@ object QAttachment {
 
   def getMetaProposals(itemId: Ident, coll: Ident): ConnectionIO[MetaProposalList] = {
     val q = Select(
-      am.proposals.s,
+      select(am.proposals, am.classifyProposals),
       from(am)
         .innerJoin(a, a.id === am.id)
         .innerJoin(item, a.itemId === item.id),
@@ -127,8 +127,15 @@ object QAttachment {
     ).build
 
     for {
-      ml <- q.query[MetaProposalList].to[Vector]
-    } yield MetaProposalList.flatten(ml)
+      ml <- q.query[(MetaProposalList, Option[MetaProposalList])].to[Vector]
+      pairs = ml.foldLeft(
+        (Vector.empty[MetaProposalList], Vector.empty[MetaProposalList])
+      ) { case ((vl, vr), (m, o)) =>
+        (vl.appended(m), o.map(vr.appended).getOrElse(vr))
+      }
+    } yield MetaProposalList
+      .flatten(pairs._1)
+      .fillEmptyFrom(MetaProposalList.flatten(pairs._2))
   }
 
   def getAttachmentMeta(
