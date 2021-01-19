@@ -567,7 +567,7 @@ object QItem {
     val tagsTid  = Column[Ident]("tid", tags)
     val tagsName = Column[String]("tname", tags)
 
-    val q =
+    readTextAndTag(collective, itemId, pageSep) {
       withCte(
         tags -> Select(
           select(ti.itemId.as(tagsItem), tag.tid.as(tagsTid), tag.name.as(tagsName)),
@@ -584,18 +584,87 @@ object QItem {
             .leftJoin(tags, tagsItem === i.id),
           i.id === itemId && i.cid === collective && m.content.isNotNull && m.content <> ""
         )
-      ).build
+      )
+    }
+  }
 
+  def resolveTextAndCorrOrg(
+      collective: Ident,
+      itemId: Ident,
+      pageSep: String
+  ): ConnectionIO[TextAndTag] =
+    readTextAndTag(collective, itemId, pageSep) {
+      Select(
+        select(m.content, org.oid, org.name),
+        from(i)
+          .innerJoin(a, a.itemId === i.id)
+          .innerJoin(m, m.id === a.id)
+          .leftJoin(org, org.oid === i.corrOrg),
+        i.id === itemId && m.content.isNotNull && m.content <> ""
+      )
+    }
+
+  def resolveTextAndCorrPerson(
+      collective: Ident,
+      itemId: Ident,
+      pageSep: String
+  ): ConnectionIO[TextAndTag] =
+    readTextAndTag(collective, itemId, pageSep) {
+      Select(
+        select(m.content, pers0.pid, pers0.name),
+        from(i)
+          .innerJoin(a, a.itemId === i.id)
+          .innerJoin(m, m.id === a.id)
+          .leftJoin(pers0, pers0.pid === i.corrPerson),
+        i.id === itemId && m.content.isNotNull && m.content <> ""
+      )
+    }
+
+  def resolveTextAndConcPerson(
+      collective: Ident,
+      itemId: Ident,
+      pageSep: String
+  ): ConnectionIO[TextAndTag] =
+    readTextAndTag(collective, itemId, pageSep) {
+      Select(
+        select(m.content, pers0.pid, pers0.name),
+        from(i)
+          .innerJoin(a, a.itemId === i.id)
+          .innerJoin(m, m.id === a.id)
+          .leftJoin(pers0, pers0.pid === i.concPerson),
+        i.id === itemId && m.content.isNotNull && m.content <> ""
+      )
+    }
+
+  def resolveTextAndConcEquip(
+      collective: Ident,
+      itemId: Ident,
+      pageSep: String
+  ): ConnectionIO[TextAndTag] =
+    readTextAndTag(collective, itemId, pageSep) {
+      Select(
+        select(m.content, equip.eid, equip.name),
+        from(i)
+          .innerJoin(a, a.itemId === i.id)
+          .innerJoin(m, m.id === a.id)
+          .leftJoin(equip, equip.eid === i.concEquipment),
+        i.id === itemId && m.content.isNotNull && m.content <> ""
+      )
+    }
+
+  private def readTextAndTag(collective: Ident, itemId: Ident, pageSep: String)(
+      q: Select
+  ): ConnectionIO[TextAndTag] =
     for {
       _ <- logger.ftrace[ConnectionIO](
-        s"query: $q  (${itemId.id}, ${collective.id}, ${tagCategory})"
+        s"query: $q  (${itemId.id}, ${collective.id})"
       )
-      texts <- q.query[(String, Option[TextAndTag.TagName])].to[List]
+      texts <- q.build.query[(String, Option[TextAndTag.TagName])].to[List]
       _ <- logger.ftrace[ConnectionIO](
         s"Got ${texts.size} text and tag entries for item ${itemId.id}"
       )
       tag = texts.headOption.flatMap(_._2)
       txt = texts.map(_._1).mkString(pageSep)
     } yield TextAndTag(itemId, txt, tag)
-  }
+
 }

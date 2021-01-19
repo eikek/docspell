@@ -1,6 +1,5 @@
 package docspell.joex.learn
 
-import cats.data.Kleisli
 import cats.data.OptionT
 import cats.effect._
 import cats.implicits._
@@ -25,16 +24,40 @@ object LearnClassifierTask {
       cfg: Config.TextAnalysis,
       analyser: TextAnalyser[F]
   ): Task[F, Args, Unit] =
+    learnTags(cfg, analyser)
+      .flatMap(_ => learnItemEntities(cfg, analyser))
+
+  private def learnItemEntities[F[_]: Sync: ContextShift](
+      cfg: Config.TextAnalysis,
+      analyser: TextAnalyser[F]
+  ): Task[F, Args, Unit] =
+    Task { ctx =>
+      if (cfg.classification.enabled)
+        LearnItemEntities
+          .learnAll(
+            analyser,
+            ctx.args.collective,
+            cfg.classification.itemCount
+          )
+          .run(ctx)
+      else ().pure[F]
+    }
+
+  private def learnTags[F[_]: Sync: ContextShift](
+      cfg: Config.TextAnalysis,
+      analyser: TextAnalyser[F]
+  ): Task[F, Args, Unit] =
     Task { ctx =>
       val learnTags =
         for {
           sett <- findActiveSettings[F](ctx, cfg)
           maxItems = math.min(cfg.classification.itemCount, sett.itemCount)
           _ <- OptionT.liftF(
-            learnAllTagCategories(analyser)(ctx.args.collective, maxItems).run(ctx)
+            LearnTags
+              .learnAllTagCategories(analyser)(ctx.args.collective, maxItems)
+              .run(ctx)
           )
         } yield ()
-
       // learn classifier models from active tag categories
       learnTags.getOrElseF(logInactiveWarning(ctx.logger)) *>
         // delete classifier model files for categories that have been removed
@@ -43,39 +66,6 @@ object LearnClassifierTask {
         ctx.store
           .transact(RClassifierSetting.fixCategoryList(ctx.args.collective))
           .map(_ => ())
-    }
-
-  def learnTagCategory[F[_]: Sync: ContextShift, A](
-      analyser: TextAnalyser[F],
-      collective: Ident,
-      maxItems: Int
-  )(
-      category: String
-  ): Task[F, A, Unit] =
-    Task { ctx =>
-      val data = SelectItems.forCategory(ctx, collective)(maxItems, category)
-      ctx.logger.info(s"Learn classifier for tag category: $category") *>
-        analyser.classifier.trainClassifier(ctx.logger, data)(
-          Kleisli(
-            StoreClassifierModel.handleModel(
-              ctx,
-              collective,
-              ClassifierName.tagCategory(category)
-            )
-          )
-        )
-    }
-
-  def learnAllTagCategories[F[_]: Sync: ContextShift, A](analyser: TextAnalyser[F])(
-      collective: Ident,
-      maxItems: Int
-  ): Task[F, A, Unit] =
-    Task { ctx =>
-      for {
-        cats <- ctx.store.transact(RClassifierSetting.getActiveCategories(collective))
-        task = learnTagCategory[F, A](analyser, collective, maxItems) _
-        _ <- cats.map(task).traverse(_.run(ctx))
-      } yield ()
     }
 
   private def clearObsoleteTagModels[F[_]: Sync](ctx: Context[F, Args]): F[Unit] =
