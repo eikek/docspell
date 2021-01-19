@@ -54,9 +54,9 @@ object TextAnalysis {
         .copy(
           metas = v.map(_._1),
           dateLabels = v.map(_._2),
-          classifyProposals = classProposals.some
+          classifyProposals = classProposals,
+          classifyTags = tag
         )
-        .appendTags(tag)
     }
 
   def annotateAttachment[F[_]: Sync](

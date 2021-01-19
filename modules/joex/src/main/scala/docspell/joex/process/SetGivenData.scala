@@ -45,7 +45,8 @@ object SetGivenData {
     Task { ctx =>
       val itemId     = data.item.id
       val collective = ctx.args.meta.collective
-      val tags       = (ctx.args.meta.tags.getOrElse(Nil) ++ data.tags).distinct
+      val tags =
+        (ctx.args.meta.tags.getOrElse(Nil) ++ data.tags ++ data.classifyTags).distinct
       for {
         _ <- ctx.logger.info(s"Set tags from given data: ${tags}")
         e <- ops.linkTags(itemId, tags, collective).attempt

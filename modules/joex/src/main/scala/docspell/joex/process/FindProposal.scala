@@ -5,6 +5,7 @@ import java.time.ZoneId
 import cats.effect.Sync
 import cats.implicits._
 import cats.{Applicative, FlatMap}
+
 import docspell.analysis.contact._
 import docspell.common.MetaProposal.Candidate
 import docspell.common._
@@ -30,11 +31,8 @@ object FindProposal {
             processAttachment(cfg, rm, data.findDates(rm), ctx)
               .map(ml => rm.copy(proposals = ml))
           )
-        clp <- data.classifyProposals match {
-          case Some(cmp) => lookupClassifierProposals(ctx, cmp)
-          case None      => MetaProposalList.empty.pure[F]
-        }
-      } yield data.copy(metas = rmv, classifyProposals = clp.some)
+        clp <- lookupClassifierProposals(ctx, data.classifyProposals)
+      } yield data.copy(metas = rmv, classifyProposals = clp)
     }
 
   def lookupClassifierProposals[F[_]: Sync](

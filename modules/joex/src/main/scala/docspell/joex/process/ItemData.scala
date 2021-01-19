@@ -29,7 +29,8 @@ case class ItemData(
     // a list of tags (names or ids) attached to the item if they exist
     tags: List[String],
     // proposals obtained from the classifier
-    classifyProposals: Option[MetaProposalList]
+    classifyProposals: MetaProposalList,
+    classifyTags: List[String]
 ) {
 
   def findMeta(attachId: Ident): Option[RAttachmentMeta] =
