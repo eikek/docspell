@@ -37,8 +37,7 @@ object TextAnalysis {
         _ <- t.traverse(m =>
           ctx.store.transact(RAttachmentMeta.updateLabels(m._1.id, m._1.nerlabels))
         )
-        e <- s
-        _ <- ctx.logger.info(s"Text-Analysis finished in ${e.formatExact}")
+
         v = t.toVector
         autoTagEnabled <- getActiveAutoTag(ctx, cfg)
         tag <-
@@ -50,6 +49,8 @@ object TextAnalysis {
             predictItemEntities(ctx, cfg, item.metas, analyser.classifier)
           else MetaProposalList.empty.pure[F]
 
+        e <- s
+        _ <- ctx.logger.info(s"Text-Analysis finished in ${e.formatExact}")
       } yield item
         .copy(
           metas = v.map(_._1),
@@ -109,7 +110,6 @@ object TextAnalysis {
         mtype: MetaProposalType
     ): F[Option[MetaProposal]] =
       for {
-        _     <- ctx.logger.debug(s"Guessing $mtype using classifier")
         label <- makeClassify(ctx, cfg, classifier)(text).apply(cname)
       } yield label.map(str =>
         MetaProposal(mtype, Candidate(IdRef(Ident.unsafe(""), str), Set.empty))

@@ -25,8 +25,9 @@ object Classify {
       text: String
   )(cname: ClassifierName): F[Option[String]] =
     (for {
-      _     <- OptionT.liftF(logger.info(s"Guessing label for ${cname.name} …"))
+      _ <- OptionT.liftF(logger.info(s"Guessing label for ${cname.name} …"))
       model <- OptionT(store.transact(RClassifierModel.findByName(coll, cname.name)))
+        .flatTapNone(logger.debug("No classifier model found."))
       modelData =
         store.bitpeace
           .get(model.fileId.id)
@@ -40,6 +41,7 @@ object Classify {
           .drain
           .flatMap(_ => classifier.classify(logger, ClassifierModel(modelFile), text))
       }).filter(_ != LearnClassifierTask.noClass)
+        .flatTapNone(logger.debug("Guessed: <none>"))
       _ <- OptionT.liftF(logger.debug(s"Guessed: ${cls}"))
     } yield cls).value
 
