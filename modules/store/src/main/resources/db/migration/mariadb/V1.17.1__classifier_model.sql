@@ -15,12 +15,34 @@ from `classifier_setting`
 where `file_id` is not null;
 
 alter table `classifier_setting`
+add column (`categories` mediumtext);
+
+alter table `classifier_setting`
+add column (`category_list_type` varchar(254));
+
+update `classifier_setting`
+set `category_list_type` = 'whitelist';
+
+update `classifier_setting`
+set `categories` = concat('[`', category, '`]')
+where category is not null;
+
+update `classifier_setting`
+set `categories` = '[]'
+where category is null;
+
+alter table `classifier_setting`
 drop column `category`;
 
--- mariadb needs special treatment when dropping a column that is part
--- of an index and foreign key
+-- mariadb requires to drop constraint manually when dropping a column
 alter table `classifier_setting`
 drop constraint `classifier_setting_ibfk_2`;
 
 alter table `classifier_setting`
 drop column `file_id`;
+
+ALTER TABLE `classifier_setting`
+MODIFY `categories` mediumtext NOT NULL;
+
+ALTER TABLE `classifier_setting`
+MODIFY `category_list_type` varchar(254) NOT NULL;

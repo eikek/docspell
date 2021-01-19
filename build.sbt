@@ -131,7 +131,8 @@ val openapiScalaSettings = Seq(
       case "ident" =>
         field => field.copy(typeDef = TypeDef("Ident", Imports("docspell.common.Ident")))
       case "accountid" =>
-        field => field.copy(typeDef = TypeDef("AccountId", Imports("docspell.common.AccountId")))
+        field =>
+          field.copy(typeDef = TypeDef("AccountId", Imports("docspell.common.AccountId")))
       case "collectivestate" =>
         field =>
           field.copy(typeDef =
@@ -190,6 +191,9 @@ val openapiScalaSettings = Seq(
           field.copy(typeDef =
             TypeDef("CustomFieldType", Imports("docspell.common.CustomFieldType"))
           )
+      case "listtype" =>
+        field =>
+          field.copy(typeDef = TypeDef("ListType", Imports("docspell.common.ListType")))
     }))
 )
 

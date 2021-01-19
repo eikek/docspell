@@ -4,9 +4,7 @@ import cats.data.NonEmptyList
 import cats.implicits._
 
 import docspell.common.Ident
-import docspell.store.qb.DSL._
-import docspell.store.qb._
-import docspell.store.records.{RClassifierModel, RTag}
+import docspell.store.records.{RClassifierModel, RClassifierSetting}
 
 import doobie._
 
@@ -16,7 +14,7 @@ object ClassifierName {
   def apply(name: String): ClassifierName =
     new ClassifierName(name)
 
-  val categoryPrefix = "tagcategory-"
+  private val categoryPrefix = "tagcategory-"
 
   def tagCategory(cat: String): ClassifierName =
     apply(s"${categoryPrefix}${cat}")
@@ -35,7 +33,7 @@ object ClassifierName {
 
   def findTagModels[F[_]](coll: Ident): ConnectionIO[List[RClassifierModel]] =
     for {
-      categories <- RTag.listCategories(coll)
+      categories <- RClassifierSetting.getActiveCategories(coll)
       models <- NonEmptyList.fromList(categories) match {
         case Some(nel) =>
           RClassifierModel.findAllByName(coll, nel.map(tagCategory).map(_.name))
@@ -44,22 +42,20 @@ object ClassifierName {
       }
     } yield models
 
-  def findOrphanTagModels[F[_]](coll: Ident): ConnectionIO[List[RClassifierModel]] = {
-    val model = RClassifierModel.as("m")
-    val tag   = RTag.as("t")
-    val sql =
-      Select(
-        select(model.all),
-        from(model),
-        model.cid === coll && model.name.notIn(
-          Select(
-            select(concat(lit(categoryPrefix), tag.category.s)),
-            from(tag),
-            tag.cid === coll && tag.category.isNotNull
-          ).distinct
-        )
-      ).build
-    sql.query[RClassifierModel].to[List]
-  }
+  def findOrphanTagModels[F[_]](coll: Ident): ConnectionIO[List[RClassifierModel]] =
+    for {
+      cats <- RClassifierSetting.getActiveCategories(coll)
+      allModels = RClassifierModel.findAllByQuery(coll, s"${categoryPrefix}%")
+      result <- NonEmptyList.fromList(cats) match {
+        case Some(nel) =>
+          allModels.flatMap(all =>
+            RClassifierModel
+              .findAllByName(coll, nel.map(tagCategory).map(_.name))
+              .map(active => all.diff(active))
+          )
+        case None =>
+          allModels
+      }
+    } yield result
 
 }

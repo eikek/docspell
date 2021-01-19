@@ -10,7 +10,7 @@ import docspell.backend.ops.OCollective
 import docspell.common._
 import docspell.joex.Config
 import docspell.joex.scheduler._
-import docspell.store.records.{RClassifierModel, RClassifierSetting, RTag}
+import docspell.store.records.{RClassifierModel, RClassifierSetting}
 
 object LearnClassifierTask {
   val pageSep = " --n-- "
@@ -26,15 +26,23 @@ object LearnClassifierTask {
       analyser: TextAnalyser[F]
   ): Task[F, Args, Unit] =
     Task { ctx =>
-      (for {
-        sett <- findActiveSettings[F](ctx, cfg)
-        maxItems = math.min(cfg.classification.itemCount, sett.itemCount)
-        _ <- OptionT.liftF(
-          learnAllTagCategories(analyser)(ctx.args.collective, maxItems).run(ctx)
-        )
-        _ <- OptionT.liftF(clearObsoleteModels(ctx))
-      } yield ())
-        .getOrElseF(logInactiveWarning(ctx.logger))
+      val learnTags =
+        for {
+          sett <- findActiveSettings[F](ctx, cfg)
+          maxItems = math.min(cfg.classification.itemCount, sett.itemCount)
+          _ <- OptionT.liftF(
+            learnAllTagCategories(analyser)(ctx.args.collective, maxItems).run(ctx)
+          )
+        } yield ()
+
+      // learn classifier models from active tag categories
+      learnTags.getOrElseF(logInactiveWarning(ctx.logger)) *>
+        // delete classifier model files for categories that have been removed
+        clearObsoleteTagModels(ctx) *>
+        // when tags are deleted, categories may get removed. fix the json array
+        ctx.store
+          .transact(RClassifierSetting.fixCategoryList(ctx.args.collective))
+          .map(_ => ())
     }
 
   def learnTagCategory[F[_]: Sync: ContextShift, A](
@@ -64,13 +72,13 @@ object LearnClassifierTask {
   ): Task[F, A, Unit] =
     Task { ctx =>
       for {
-        cats <- ctx.store.transact(RTag.listCategories(collective))
+        cats <- ctx.store.transact(RClassifierSetting.getActiveCategories(collective))
         task = learnTagCategory[F, A](analyser, collective, maxItems) _
         _ <- cats.map(task).traverse(_.run(ctx))
       } yield ()
     }
 
-  private def clearObsoleteModels[F[_]: Sync](ctx: Context[F, Args]): F[Unit] =
+  private def clearObsoleteTagModels[F[_]: Sync](ctx: Context[F, Args]): F[Unit] =
     for {
       list <- ctx.store.transact(
         ClassifierName.findOrphanTagModels(ctx.args.collective)
@@ -98,6 +106,6 @@ object LearnClassifierTask {
 
   private def logInactiveWarning[F[_]: Sync](logger: Logger[F]): F[Unit] =
     logger.warn(
-      "Classification is disabled. Check joex config and the collective settings."
+      "Auto-tagging is disabled. Check joex config and the collective settings."
     )
 }

@@ -97,6 +97,9 @@ trait DoobieMeta extends EmilDoobieMeta {
 
   implicit val metaCustomFieldType: Meta[CustomFieldType] =
     Meta[String].timap(CustomFieldType.unsafe)(_.name)
+
+  implicit val metaListType: Meta[ListType] =
+    Meta[String].timap(ListType.unsafeFromString)(_.name)
 }
 
 object DoobieMeta extends DoobieMeta {

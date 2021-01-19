@@ -6,7 +6,7 @@ import cats.implicits._
 import docspell.backend.BackendApp
 import docspell.backend.auth.AuthToken
 import docspell.backend.ops.OCollective
-import docspell.common.MakePreviewArgs
+import docspell.common.{ListType, MakePreviewArgs}
 import docspell.restapi.model._
 import docspell.restserver.conv.Conversions
 import docspell.restserver.http4s._
@@ -44,9 +44,10 @@ object CollectiveRoutes {
             settings.integrationEnabled,
             Some(
               OCollective.Classifier(
-                settings.classifier.enabled,
                 settings.classifier.schedule,
-                settings.classifier.itemCount
+                settings.classifier.itemCount,
+                settings.classifier.categoryList,
+                settings.classifier.listType
               )
             )
           )
@@ -64,11 +65,12 @@ object CollectiveRoutes {
               c.language,
               c.integrationEnabled,
               ClassifierSetting(
-                c.classifier.exists(_.enabled),
                 c.classifier.map(_.itemCount).getOrElse(0),
                 c.classifier
                   .map(_.schedule)
-                  .getOrElse(CalEvent.unsafe("*-1/3-01 01:00:00"))
+                  .getOrElse(CalEvent.unsafe("*-1/3-01 01:00:00")),
+                c.classifier.map(_.categories).getOrElse(Nil),
+                c.classifier.map(_.listType).getOrElse(ListType.whitelist)
               )
             )
           )

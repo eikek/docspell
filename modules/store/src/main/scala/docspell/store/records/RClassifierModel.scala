@@ -57,7 +57,12 @@ object RClassifierModel {
 
   def updateFile(coll: Ident, name: String, fid: Ident): ConnectionIO[Int] =
     for {
-      n <- DML.update(T, T.cid === coll && T.name === name, DML.set(T.fileId.setTo(fid)))
+      now <- Timestamp.current[ConnectionIO]
+      n <- DML.update(
+        T,
+        T.cid === coll && T.name === name,
+        DML.set(T.fileId.setTo(fid), T.created.setTo(now))
+      )
       k <-
         if (n == 0) createNew[ConnectionIO](coll, name, fid).flatMap(insert)
         else 0.pure[ConnectionIO]
@@ -87,4 +92,11 @@ object RClassifierModel {
       .query[RClassifierModel]
       .to[List]
 
+  def findAllByQuery(
+      cid: Ident,
+      nameQuery: String
+  ): ConnectionIO[List[RClassifierModel]] =
+    Select(select(T.all), from(T), T.cid === cid && T.name.like(nameQuery)).build
+      .query[RClassifierModel]
+      .to[List]
 }

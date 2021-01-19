@@ -4850,12 +4850,11 @@ components:
       description: |
         Settings for learning a document classifier.
       required:
-        - enabled
         - schedule
         - itemCount
+        - categoryList
+        - listType
       properties:
-        enabled:
-          type: boolean
         itemCount:
           type: integer
           format: int32
@@ -4865,6 +4864,16 @@ components:
         schedule:
           type: string
           format: calevent
+        categoryList:
+          type: array
+          items:
+            type: string
+        listType:
+          type: string
+          format: listtype
+          enum:
+            - blacklist
+            - whitelist
 
     SourceList:
       description: |
