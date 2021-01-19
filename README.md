@@ -9,25 +9,28 @@
 # Docspell
 
 Docspell is a personal document organizer. You'll need a scanner to
-convert your papers into files. Docspell can then assist in
-organizing the resulting mess :wink:.
+convert your papers into files. Docspell can then assist in organizing
+the resulting mess :wink:. It is targeted for home use, i.e. families
+and households and also for (smaller) groups/companies.
 
-You can associate tags, set correspondends, what a document is
-concerned with, a name, a date and much more. If your documents are
-associated with such meta data, you should be able to quickly find
-them later using the search feature. But adding this manually to each
-document is a tedious task. Docspell can help you by suggesting
-correspondents, guessing tags or finding dates using machine learning
-techniques. This makes adding metadata to your documents a lot easier.
+You can associate tags, set correspondends and lots of other
+predefined and custom metadata. If your documents are associated with
+such meta data, you can quickly find them later using the search
+feature. But adding this manually is a tedious task. Docspell can help
+by suggesting correspondents, guessing tags or finding dates using
+machine learning. It can learn metadata from existing documents and
+find things using NLP. This makes adding metadata to your documents a
+lot easier. For machine learning, it relies on the free (GPL)
+[Stanford Core NLP library](https://github.com/stanfordnlp/CoreNLP).
 
 Docspell also runs OCR (if needed) on your documents, can provide
 fulltext search and has great e-mail integration. Everything is
 accessible via a REST/HTTP api. A mobile friendly SPA web application
-is provided as the user interface and an [Android
-app](https://github.com/docspell/android-client) for conveniently
-uploading files from your phone/tablet. The [feature
-overview](https://docspell.org/#feature-selection) has a more complete
-list.
+is the default user interface. An [Android
+app](https://github.com/docspell/android-client) exists for
+conveniently uploading files from your phone/tablet. The [feature
+overview](https://docspell.org/#feature-selection) lists some more
+points.
 
 
 ## Impressions
