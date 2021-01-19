@@ -107,7 +107,8 @@ object CreateItem {
         Vector.empty,
         fm.map(a => a.id -> a.fileId).toMap,
         MetaProposalList.empty,
-        Nil
+        Nil,
+        None
       )
     }
 
@@ -166,7 +167,8 @@ object CreateItem {
           Vector.empty,
           origMap,
           MetaProposalList.empty,
-          Nil
+          Nil,
+          None
         )
       )
     }

@@ -20,7 +20,7 @@ case class RClassifierSetting(
     listType: ListType
 ) {
 
-  def enabled: Boolean =
+  def autoTagEnabled: Boolean =
     listType match {
       case ListType.Blacklist =>
         true

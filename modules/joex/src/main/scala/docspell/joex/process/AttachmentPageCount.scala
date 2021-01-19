@@ -84,6 +84,7 @@ object AttachmentPageCount {
                 Nil,
                 MetaProposalList.empty,
                 md.pageCount.some,
+                None,
                 None
               )
             )

@@ -65,7 +65,8 @@ object ReProcessItem {
         Vector.empty,
         asrcMap.view.mapValues(_.fileId).toMap,
         MetaProposalList.empty,
-        Nil
+        Nil,
+        None
       )).getOrElseF(
         Sync[F].raiseError(new Exception(s"Item not found: ${ctx.args.itemId.id}"))
       )

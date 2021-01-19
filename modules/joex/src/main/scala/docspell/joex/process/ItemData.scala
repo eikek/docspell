@@ -15,6 +15,9 @@ import docspell.store.records.{RAttachment, RAttachmentMeta, RItem}
   * containng the source or origin file
   * @param givenMeta meta data to this item that was not "guessed"
   * from an attachment but given and thus is always correct
+  * @param classifyProposals these are proposals that were obtained by
+  * a trained classifier. There are no ner-tags, it will only provide a
+  * single label
   */
 case class ItemData(
     item: RItem,
@@ -23,7 +26,10 @@ case class ItemData(
     dateLabels: Vector[AttachmentDates],
     originFile: Map[Ident, Ident], // maps RAttachment.id -> FileMeta.id
     givenMeta: MetaProposalList,   // given meta data not associated to a specific attachment
-    tags: List[String]             // a list of tags (names or ids) attached to the item if they exist
+    // a list of tags (names or ids) attached to the item if they exist
+    tags: List[String],
+    // proposals obtained from the classifier
+    classifyProposals: Option[MetaProposalList]
 ) {
 
   def findMeta(attachId: Ident): Option[RAttachmentMeta] =

@@ -16,7 +16,8 @@ case class RAttachmentMeta(
     nerlabels: List[NerLabel],
     proposals: MetaProposalList,
     pages: Option[Int],
-    language: Option[Language]
+    language: Option[Language],
+    classifyProposals: Option[MetaProposalList]
 ) {
 
   def setContentIfEmpty(txt: Option[String]): RAttachmentMeta =
@@ -29,19 +30,28 @@ case class RAttachmentMeta(
 
 object RAttachmentMeta {
   def empty(attachId: Ident, lang: Language) =
-    RAttachmentMeta(attachId, None, Nil, MetaProposalList.empty, None, Some(lang))
+    RAttachmentMeta(attachId, None, Nil, MetaProposalList.empty, None, Some(lang), None)
 
   final case class Table(alias: Option[String]) extends TableDef {
     val tableName = "attachmentmeta"
 
-    val id        = Column[Ident]("attachid", this)
-    val content   = Column[String]("content", this)
-    val nerlabels = Column[List[NerLabel]]("nerlabels", this)
-    val proposals = Column[MetaProposalList]("itemproposals", this)
-    val pages     = Column[Int]("page_count", this)
-    val language  = Column[Language]("language", this)
+    val id                = Column[Ident]("attachid", this)
+    val content           = Column[String]("content", this)
+    val nerlabels         = Column[List[NerLabel]]("nerlabels", this)
+    val proposals         = Column[MetaProposalList]("itemproposals", this)
+    val pages             = Column[Int]("page_count", this)
+    val language          = Column[Language]("language", this)
+    val classifyProposals = Column[MetaProposalList]("classify_proposals", this)
     val all =
-      NonEmptyList.of[Column[_]](id, content, nerlabels, proposals, pages, language)
+      NonEmptyList.of[Column[_]](
+        id,
+        content,
+        nerlabels,
+        proposals,
+        pages,
+        language,
+        classifyProposals
+      )
   }
 
   val T = Table(None)
@@ -52,7 +62,7 @@ object RAttachmentMeta {
     DML.insert(
       T,
       T.all,
-      fr"${v.id},${v.content},${v.nerlabels},${v.proposals},${v.pages},${v.language}"
+      fr"${v.id},${v.content},${v.nerlabels},${v.proposals},${v.pages},${v.language},${v.classifyProposals}"
     )
 
   def exists(attachId: Ident): ConnectionIO[Boolean] =
@@ -80,7 +90,8 @@ object RAttachmentMeta {
       DML.set(
         T.content.setTo(v.content),
         T.nerlabels.setTo(v.nerlabels),
-        T.proposals.setTo(v.proposals)
+        T.proposals.setTo(v.proposals),
+        T.classifyProposals.setTo(v.classifyProposals)
       )
     )
 
@@ -93,12 +104,17 @@ object RAttachmentMeta {
       )
     )
 
-  def updateProposals(mid: Ident, plist: MetaProposalList): ConnectionIO[Int] =
+  def updateProposals(
+      mid: Ident,
+      plist: MetaProposalList,
+      clist: Option[MetaProposalList]
+  ): ConnectionIO[Int] =
     DML.update(
       T,
       T.id === mid,
       DML.set(
-        T.proposals.setTo(plist)
+        T.proposals.setTo(plist),
+        T.classifyProposals.setTo(clist)
       )
     )
 

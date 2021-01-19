@@ -89,7 +89,7 @@ object LearnClassifierTask {
   ): OptionT[F, OCollective.Classifier] =
     if (cfg.classification.enabled)
       OptionT(ctx.store.transact(RClassifierSetting.findById(ctx.args.collective)))
-        .filter(_.enabled)
+        .filter(_.autoTagEnabled)
         .map(OCollective.Classifier.fromRecord)
     else
       OptionT.none

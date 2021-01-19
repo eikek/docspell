@@ -1,14 +1,17 @@
 package docspell.joex.learn
 
 import java.nio.file.Path
-import cats.implicits._
-import bitpeace.RangeDef
+
 import cats.data.OptionT
 import cats.effect._
-import docspell.store.Store
+import cats.implicits._
+
 import docspell.analysis.classifier.{ClassifierModel, TextClassifier}
 import docspell.common._
+import docspell.store.Store
 import docspell.store.records.RClassifierModel
+
+import bitpeace.RangeDef
 
 object Classify {
 

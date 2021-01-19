@@ -1,9 +1,12 @@
 package docspell.joex.process
 
+import cats.Traverse
 import cats.effect._
 import cats.implicits._
+
 import docspell.analysis.classifier.TextClassifier
 import docspell.analysis.{NlpSettings, TextAnalyser}
+import docspell.common.MetaProposal.Candidate
 import docspell.common._
 import docspell.joex.Config
 import docspell.joex.analysis.RegexNerFile
@@ -37,12 +40,22 @@ object TextAnalysis {
         e <- s
         _ <- ctx.logger.info(s"Text-Analysis finished in ${e.formatExact}")
         v = t.toVector
-        classifierEnabled <- getActive(ctx, cfg)
+        autoTagEnabled <- getActiveAutoTag(ctx, cfg)
         tag <-
-          if (classifierEnabled) predictTags(ctx, cfg, item.metas, analyser.classifier)
+          if (autoTagEnabled) predictTags(ctx, cfg, item.metas, analyser.classifier)
           else List.empty[String].pure[F]
+
+        classProposals <-
+          if (cfg.classification.enabled)
+            predictItemEntities(ctx, cfg, item.metas, analyser.classifier)
+          else MetaProposalList.empty.pure[F]
+
       } yield item
-        .copy(metas = v.map(_._1), dateLabels = v.map(_._2))
+        .copy(
+          metas = v.map(_._1),
+          dateLabels = v.map(_._2),
+          classifyProposals = classProposals.some
+        )
         .appendTags(tag)
     }
 
@@ -72,15 +85,8 @@ object TextAnalysis {
   ): F[List[String]] = {
     val text = metas.flatMap(_.content).mkString(LearnClassifierTask.pageSep)
     val classifyWith: ClassifierName => F[Option[String]] =
-      Classify[F](
-        ctx.blocker,
-        ctx.logger,
-        cfg.workingDir,
-        ctx.store,
-        classifier,
-        ctx.args.meta.collective,
-        text
-      )
+      makeClassify(ctx, cfg, classifier)(text)
+
     for {
       names <- ctx.store.transact(
         ClassifierName.findTagClassifiers(ctx.args.meta.collective)
@@ -90,14 +96,61 @@ object TextAnalysis {
     } yield tags.flatten
   }
 
-  private def getActive[F[_]: Sync](
+  def predictItemEntities[F[_]: Sync: ContextShift](
+      ctx: Context[F, Args],
+      cfg: Config.TextAnalysis,
+      metas: Vector[RAttachmentMeta],
+      classifier: TextClassifier[F]
+  ): F[MetaProposalList] = {
+    val text = metas.flatMap(_.content).mkString(LearnClassifierTask.pageSep)
+
+    def classifyWith(
+        cname: ClassifierName,
+        mtype: MetaProposalType
+    ): F[Option[MetaProposal]] =
+      for {
+        _     <- ctx.logger.debug(s"Guessing $mtype using classifier")
+        label <- makeClassify(ctx, cfg, classifier)(text).apply(cname)
+      } yield label.map(str =>
+        MetaProposal(mtype, Candidate(IdRef(Ident.unsafe(""), str), Set.empty))
+      )
+
+    Traverse[List]
+      .sequence(
+        List(
+          classifyWith(ClassifierName.correspondentOrg, MetaProposalType.CorrOrg),
+          classifyWith(ClassifierName.correspondentPerson, MetaProposalType.CorrPerson),
+          classifyWith(ClassifierName.concernedPerson, MetaProposalType.ConcPerson),
+          classifyWith(ClassifierName.concernedEquip, MetaProposalType.ConcEquip)
+        )
+      )
+      .map(_.flatten)
+      .map(MetaProposalList.apply)
+  }
+
+  private def makeClassify[F[_]: Sync: ContextShift](
+      ctx: Context[F, Args],
+      cfg: Config.TextAnalysis,
+      classifier: TextClassifier[F]
+  )(text: String): ClassifierName => F[Option[String]] =
+    Classify[F](
+      ctx.blocker,
+      ctx.logger,
+      cfg.workingDir,
+      ctx.store,
+      classifier,
+      ctx.args.meta.collective,
+      text
+    )
+
+  private def getActiveAutoTag[F[_]: Sync](
       ctx: Context[F, Args],
       cfg: Config.TextAnalysis
   ): F[Boolean] =
     if (cfg.classification.enabled)
       ctx.store
         .transact(RClassifierSetting.findById(ctx.args.meta.collective))
-        .map(_.exists(_.enabled))
+        .map(_.exists(_.autoTagEnabled))
         .flatTap(enabled =>
           if (enabled) ().pure[F]
           else ctx.logger.info("Classification is disabled. Check config or settings.")
