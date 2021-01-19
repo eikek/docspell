@@ -1,21 +1,17 @@
 package docspell.joex.process
 
-import cats.data.OptionT
 import cats.effect._
 import cats.implicits._
-
-import docspell.analysis.classifier.{ClassifierModel, TextClassifier}
+import docspell.analysis.classifier.TextClassifier
 import docspell.analysis.{NlpSettings, TextAnalyser}
 import docspell.common._
 import docspell.joex.Config
 import docspell.joex.analysis.RegexNerFile
-import docspell.joex.learn.{ClassifierName, LearnClassifierTask}
+import docspell.joex.learn.{ClassifierName, Classify, LearnClassifierTask}
 import docspell.joex.process.ItemData.AttachmentDates
 import docspell.joex.scheduler.Context
 import docspell.joex.scheduler.Task
 import docspell.store.records.{RAttachmentMeta, RClassifierSetting}
-
-import bitpeace.RangeDef
 
 object TextAnalysis {
   type Args = ProcessItemArgs
@@ -73,40 +69,26 @@ object TextAnalysis {
       cfg: Config.TextAnalysis,
       metas: Vector[RAttachmentMeta],
       classifier: TextClassifier[F]
-  ): F[List[String]] =
+  ): F[List[String]] = {
+    val text = metas.flatMap(_.content).mkString(LearnClassifierTask.pageSep)
+    val classifyWith: ClassifierName => F[Option[String]] =
+      Classify[F](
+        ctx.blocker,
+        ctx.logger,
+        cfg.workingDir,
+        ctx.store,
+        classifier,
+        ctx.args.meta.collective,
+        text
+      )
     for {
-      models <- ctx.store.transact(ClassifierName.findTagModels(ctx.args.meta.collective))
-      _      <- ctx.logger.debug(s"Guessing tags for ${models.size} categories")
-      tags <- models
-        .map(_.fileId.some)
-        .traverse(predictTag(ctx, cfg, metas, classifier))
+      names <- ctx.store.transact(
+        ClassifierName.findTagClassifiers(ctx.args.meta.collective)
+      )
+      _    <- ctx.logger.debug(s"Guessing tags for ${names.size} categories")
+      tags <- names.traverse(classifyWith)
     } yield tags.flatten
-
-  def predictTag[F[_]: Sync: ContextShift](
-      ctx: Context[F, Args],
-      cfg: Config.TextAnalysis,
-      metas: Vector[RAttachmentMeta],
-      classifier: TextClassifier[F]
-  )(modelFileId: Option[Ident]): F[Option[String]] =
-    (for {
-      _     <- OptionT.liftF(ctx.logger.info(s"Guessing tag for ${modelFileId} …"))
-      model <- OptionT.fromOption[F](modelFileId)
-      text = metas.flatMap(_.content).mkString(LearnClassifierTask.pageSep)
-      modelData =
-        ctx.store.bitpeace
-          .get(model.id)
-          .unNoneTerminate
-          .through(ctx.store.bitpeace.fetchData2(RangeDef.all))
-      cls <- OptionT(File.withTempDir(cfg.workingDir, "classify").use { dir =>
-        val modelFile = dir.resolve("model.ser.gz")
-        modelData
-          .through(fs2.io.file.writeAll(modelFile, ctx.blocker))
-          .compile
-          .drain
-          .flatMap(_ => classifier.classify(ctx.logger, ClassifierModel(modelFile), text))
-      }).filter(_ != LearnClassifierTask.noClass)
-      _ <- OptionT.liftF(ctx.logger.debug(s"Guessed tag: ${cls}"))
-    } yield cls).value
+  }
 
   private def getActive[F[_]: Sync](
       ctx: Context[F, Args],

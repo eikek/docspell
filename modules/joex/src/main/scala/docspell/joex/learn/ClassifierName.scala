@@ -31,6 +31,11 @@ object ClassifierName {
   val correspondentPerson: ClassifierName =
     apply("correspondentperson")
 
+  def findTagClassifiers[F[_]](coll: Ident): ConnectionIO[List[ClassifierName]] =
+    for {
+      categories <- RClassifierSetting.getActiveCategories(coll)
+    } yield categories.map(tagCategory)
+
   def findTagModels[F[_]](coll: Ident): ConnectionIO[List[RClassifierModel]] =
     for {
       categories <- RClassifierSetting.getActiveCategories(coll)
