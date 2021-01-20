@@ -331,91 +331,121 @@ images for a collective. There is also a bash script provided in the
 
 # Text Analysis
 
-This uses the extracted text to find what could be attached to the new
-item. There are multiple things provided.
+Finally, the extracted text is analysed to find possible metadata that
+can be attached to the new item. There are two different approaches
+provided.
 
-Docspell depends on the [Stanford NLP
+The basic idea here is, that instead of *you defining textual rules* to
+apply tags and other things, these rules *are found for you* based on
+what you have provided so far.
+
+Docspell relies on the [Stanford NLP
 Library](https://nlp.stanford.edu/software/) for its AI features.
-Among other things they provide a classifier (used for guessing tags)
-and NER annotators. The latter is also a classifier, that associates a
-label to terms in a text. It finds out whether some term is probably
-an organization, a person etc. This is then used to find matches in
-your address book.
+Among other things they provide a classifier and NER annotators. The
+latter is also a classifier, that associates a label to terms in a
+text. It finds out whether some term is probably an organization, a
+person etc. It tries to “understand” the structure of the text, like
+verb, nouns and their relation.
 
-When docspell finds several possible candidates for a match, it will
-show the first few to you. If then the first was not the correct one,
-it can usually be fixed by a single click, because it is among the
-suggestions.
+The two approaches used are sketched below. They have both advantages
+and disadvantages and are by default used together. However, depending
+on the document languages, not all approaches are possible. They also
+have different memory footprints, and you might want to disable some
+features if running on low-end machines.
 
 ## Classification
 
 If you enabled classification in the config file, a model is trained
-periodically from your files. This is used to guess a tag for the item
-for new documents.
+periodically from a collective's files. Very roughly speaking… this
+model contains the essence of "patterns" in the text that are likeley
+related to a tag, a corrpesondent etc.
 
-You can tell docspell how many documents it should use for training.
-Sometimes (when moving?), documents may change and you only like to
-base next guesses on the documents of last year only. This can be
-found in the collective settings.
+When a new document arrives, this model is used to ask for what
+metadata (tag, correspondent, etc) it thinks is likely to apply here.
 
-The admin can also limit the number of documents to train with,
-because it affects memory usage.
+Training the model is a rather resource intensive process, but using
+an existing model is quite cheap and fast. A model is trained
+periodically, the schedule can be defined in your collective settings.
+For tags, you can define the tag categories that should be trained (or
+that should not be trained). Docspell assigns one tag from all tags in
+a category to a new document.
+
+Note that tags that can not be derived from the text only, should
+probably be excluded from learning. For example, if you tag all your
+items with `Done` at some point, it may falsly learn patterns to this
+tag and tag your new documents with `Done`.
+
+The admin can also limit the number of documents to train with in the
+config file to control the memory footprint when training.
+
+Classification is used in Docspell once for guessing tags and also for
+finding correspondent and concerned entities. For correspondent and
+concerned entities, the NLP approach is used first and the classifier
+results then fill missing values.
 
 
 ## Natural Language Processing
 
-NLP is used to find out which terms in a text may be a company or
-person that is then used to find metadata in your address book. It can
-also uses your complete address book to match terms in the text. So
-there are two ways: using a statistical model, terms in a text are
-identified as organization or person etc. This information is then
-used to search your address book. Second, regexp rules are derived
-from the address book and run against the text. By default, both are
-applied, where the rules are run as the last step to identify missing
-terms.
+NLP is the other approach that works a bit differently. In this
+approach, algorithms are used that find lanugage properties from the
+given text, for example which terms are nouns, organization or person
+names etc. This also requires a statistical model, but this time for a
+whole language. These are also provided by [Stanford
+NLP](https://nlp.stanford.edu/software/), but not for all languages.
+So whether this can be used depends on the document language. Models
+exist for German, English and French currently.
 
-The statistical model approach is good, i.e. for large address books.
-Normally, a document contains only very few organizations or person
-names. So it is much more efficient to check these against your
-address book (in contrast to the other way around). It can also find
-things *not* in your address book. However, it might not detect all or
-there are no statistical models for your language. Then the address
-book is used to automatically create rules that are run against the
-document.
+Then [Stanford NLP](https://nlp.stanford.edu/software/) also allows to
+run custom rules against a text. This can be used as a fallback for
+terms where the statistical model didn't succeed. But it can also be
+used by itself. Docspell derives these rules from your address book,
+so it can find terms in the document text that match your organization
+and person names. This does not depend on the document language.
 
-These statistical models are provided by [Stanford
-NLP](https://nlp.stanford.edu/software/) and are currently available
-for German, English and French. All other languages can use the rule
-approach. The statistcal models, however, require quite some memory –
-depending on the size of the models which varies between languages.
-English has a lower memory footprint than German, for example. If you
-have a very large address book, the rule approach may also use a lot
-memory.
+By default, Docspell does both: it first uses the statistical language
+model (if available for the given language) and then runs the
+address-book derived rules as a last step on so far unclassified
+terms. This allows for the best results. If more than one candidate is
+found, the "most likely" one is set on the item and others are stored
+as suggestions.
 
+The statistical model approach works generally very well, i.e. for
+large address books. Normally, a document contains only very few
+organizations or person names. So it is more efficient to check these
+few against your (probably large) address book; in contrast to testing
+hundreds of company names against a single document. It can also find
+things *not* in your address book (but this is unused in Docspell
+currently). However, it might not detect all or there are no
+statistical models for your language. Then the address book is used to
+automatically create rules that are run against the document.
+
+Both ways require memory, it depends on the size of your address book
+and on the size of the language models (they vary for each language).
 In the config file, you can specify different modes of operation for
 nlp processing as follows:
 
 - mode `full`: creates the complete nlp pipeline, requiring the most
   amount of memory, providing the best results. I'd recommend to run
-  joex with a heap size of a least 1.5G (for English only, it can be
+  joex with a heap size of a least 1.4G (for English only, it can be
   lower that that).
 - mode `basic`: it only loads the NER tagger. This doesn't work as
-  well as the complete pipeline, because some steps are simply
-  skipped. But it gives quite good results and uses less memory. I'd
-  recommend to run joex with at least 600m heap in this mode.
+  well as the complete pipeline, because some NLP steps are simply
+  skipped. But it gives quite good results already and uses less
+  memory. I'd recommend to run joex with at least 500m heap in this
+  mode.
 - mode `regexonly`: this doesn't load any statistical models and is
-  therefore very memory efficient (depending on the address book size,
-  of course). It will use the address book to create regex rules and
-  match them against your document. It doesn't depend on a language,
-  so this is available for all languages.
-- mode = disabled: this disables nlp processing altogether
+  therefore much lighter on memory (depending on the address book
+  size, of course). It will use the address book to create regex rules
+  and match them against your document.
+- mode = disabled: this disables nlp processing altogether. Then only
+  the classifier is run (unless disabled).
 
 Note that mode `full` and `basic` is only relevant for the languages
 where models are available. For all other languages, it is effectively
 the same as `regexonly`.
 
-The config file allows some settings. You can specify a limit for
-texts. Large texts result in higher memory consumption. By default,
+The config file allows to specify a limit for texts to analyse in
+general. Large texts result in higher memory consumption. By default,
 the first 10'000 characters are taken into account.
 
 Then, for the `regexonly` mode, you can restrict the number of address
@@ -424,7 +454,7 @@ book entries that are used to create the rule set via
 footprint.
 
 The setting `clear-stanford-nlp-interval` allows to define an idle
-time after which the model files are cleared from memory. This allows
-memory to be reclaimed by the OS. The timer starts after the last file
-has been processed. If you can afford it, it is recommended to disable
-it by setting it to `0`.
+time after which the language models are cleared from memory. This
+allows memory to be reclaimed by the OS. The timer starts after the
+last file has been processed. If you can afford it, it is recommended
+to disable it by setting it to `0`.

@@ -796,7 +796,7 @@ in {
 
                       Memory usage varies greatly among the languages. German has
                       quite large models, that require about 1G heap. So joex should
-                      run with -Xmx1500M at least when using mode=full.
+                      run with -Xmx1400M at least when using mode=full.
 
                       The basic variant does a quite good job for German and
                       English. It might be worse for French, always depending on the
