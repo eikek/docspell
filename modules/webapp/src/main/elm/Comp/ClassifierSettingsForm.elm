@@ -204,7 +204,14 @@ Use an empty whitelist to disable auto tagging.
                 (Comp.FixedDropdown.view (Just catListTypeItem) model.categoryListTypeModel)
             ]
         , div [ class "field" ]
-            [ label [] [ text "Choose tag categories for learning" ]
+            [ label []
+                [ case model.categoryListType of
+                    Data.ListType.Whitelist ->
+                        text "Include tag categories for learning"
+
+                    Data.ListType.Blacklist ->
+                        text "Exclude tag categories from learning"
+                ]
             , Html.map CategoryListMsg
                 (Comp.Dropdown.view settings model.categoryListModel)
             ]
