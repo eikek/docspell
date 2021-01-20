@@ -24,7 +24,7 @@ update `classifier_setting`
 set `category_list_type` = 'whitelist';
 
 update `classifier_setting`
-set `categories` = concat('[`', category, '`]')
+set `categories` = concat('["', `category`, '"]')
 where category is not null;
 
 update `classifier_setting`
