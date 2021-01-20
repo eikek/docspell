@@ -20,7 +20,7 @@ object FindProposal {
   type Args = ProcessItemArgs
 
   def apply[F[_]: Sync](
-      cfg: Config.Processing
+      cfg: Config.TextAnalysis
   )(data: ItemData): Task[F, Args, ItemData] =
     Task { ctx =>
       val rmas = data.metas.map(rm => rm.copy(nerlabels = removeDuplicates(rm.nerlabels)))
@@ -102,7 +102,7 @@ object FindProposal {
   }
 
   def processAttachment[F[_]: Sync](
-      cfg: Config.Processing,
+      cfg: Config.TextAnalysis,
       rm: RAttachmentMeta,
       rd: Vector[NerDateLabel],
       ctx: Context[F, ProcessItemArgs]
@@ -114,11 +114,11 @@ object FindProposal {
   }
 
   def makeDateProposal[F[_]: Sync](
-      cfg: Config.Processing,
+      cfg: Config.TextAnalysis,
       dates: Vector[NerDateLabel]
   ): F[MetaProposalList] =
     Timestamp.current[F].map { now =>
-      val maxFuture = now.plus(Duration.years(cfg.maxDueDateYears.toLong))
+      val maxFuture = now.plus(Duration.years(cfg.nlp.maxDueDateYears.toLong))
       val latestFirst = dates
         .filter(_.date.isBefore(maxFuture.toUtcDate))
         .sortWith((l1, l2) => l1.date.isAfter(l2.date))

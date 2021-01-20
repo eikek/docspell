@@ -31,8 +31,7 @@ case class Config(
     sendMail: MailSendConfig,
     files: Files,
     mailDebug: Boolean,
-    fullTextSearch: Config.FullTextSearch,
-    processing: Config.Processing
+    fullTextSearch: Config.FullTextSearch
 )
 
 object Config {
@@ -54,8 +53,6 @@ object Config {
 
     final case class Migration(indexAllChunk: Int)
   }
-
-  case class Processing(maxDueDateYears: Int)
 
   case class TextAnalysis(
       maxLength: Int,
@@ -84,7 +81,12 @@ object Config {
       )
   }
 
-  case class NlpConfig(mode: NlpMode, clearInterval: Duration, regexNer: RegexNer)
+  case class NlpConfig(
+      mode: NlpMode,
+      clearInterval: Duration,
+      maxDueDateYears: Int,
+      regexNer: RegexNer
+  )
 
   case class RegexNer(maxEntries: Int, fileCacheTime: Duration)
 
