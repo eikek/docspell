@@ -197,8 +197,9 @@ object QOrganization {
     for {
       n0 <- RItem.removeCorrOrg(collective, orgId)
       n1 <- RContact.deleteOrg(orgId)
-      n2 <- ROrganization.delete(orgId, collective)
-    } yield n0 + n1 + n2
+      n2 <- RPerson.removeOrg(orgId)
+      n3 <- ROrganization.delete(orgId, collective)
+    } yield n0 + n1 + n2 + n3
 
   def deletePerson(personId: Ident, collective: Ident): ConnectionIO[Int] =
     for {

@@ -178,4 +178,7 @@ object RPerson {
       case None =>
         Sync[ConnectionIO].pure(Vector.empty)
     }
+
+  def removeOrg(orgId: Ident): ConnectionIO[Int] =
+    DML.update(T, T.oid === orgId, DML.set(T.oid.setTo(None)))
 }
