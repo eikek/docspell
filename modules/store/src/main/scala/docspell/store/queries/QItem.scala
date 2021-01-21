@@ -547,7 +547,6 @@ object QItem {
       chunkSize: Int,
       limit: Batch
   ): Stream[ConnectionIO, Ident] = {
-
     val i = RItem.as("i")
     Select(i.id.s, from(i), i.cid === collective && i.state === ItemState.confirmed)
       .orderBy(i.created.desc)
@@ -561,6 +560,7 @@ object QItem {
       collective: Ident,
       itemId: Ident,
       tagCategory: String,
+      maxLen: Int,
       pageSep: String
   ): ConnectionIO[TextAndTag] = {
     val tags     = TableDef("tags").as("tt")
@@ -578,7 +578,7 @@ object QItem {
         )
       )(
         Select(
-          select(m.content, tagsTid, tagsName),
+          select(substring(m.content.s, 0, maxLen).s, tagsTid.s, tagsName.s),
           from(i)
             .innerJoin(a, a.itemId === i.id)
             .innerJoin(m, a.id === m.id)
@@ -592,11 +592,12 @@ object QItem {
   def resolveTextAndCorrOrg(
       collective: Ident,
       itemId: Ident,
+      maxLen: Int,
       pageSep: String
   ): ConnectionIO[TextAndTag] =
     readTextAndTag(collective, itemId, pageSep) {
       Select(
-        select(m.content, org.oid, org.name),
+        select(substring(m.content.s, 0, maxLen).s, org.oid.s, org.name.s),
         from(i)
           .innerJoin(a, a.itemId === i.id)
           .innerJoin(m, m.id === a.id)
@@ -608,11 +609,12 @@ object QItem {
   def resolveTextAndCorrPerson(
       collective: Ident,
       itemId: Ident,
+      maxLen: Int,
       pageSep: String
   ): ConnectionIO[TextAndTag] =
     readTextAndTag(collective, itemId, pageSep) {
       Select(
-        select(m.content, pers0.pid, pers0.name),
+        select(substring(m.content.s, 0, maxLen).s, pers0.pid.s, pers0.name.s),
         from(i)
           .innerJoin(a, a.itemId === i.id)
           .innerJoin(m, m.id === a.id)
@@ -624,11 +626,12 @@ object QItem {
   def resolveTextAndConcPerson(
       collective: Ident,
       itemId: Ident,
+      maxLen: Int,
       pageSep: String
   ): ConnectionIO[TextAndTag] =
     readTextAndTag(collective, itemId, pageSep) {
       Select(
-        select(m.content, pers0.pid, pers0.name),
+        select(substring(m.content.s, 0, maxLen).s, pers0.pid.s, pers0.name.s),
         from(i)
           .innerJoin(a, a.itemId === i.id)
           .innerJoin(m, m.id === a.id)
@@ -640,11 +643,12 @@ object QItem {
   def resolveTextAndConcEquip(
       collective: Ident,
       itemId: Ident,
+      maxLen: Int,
       pageSep: String
   ): ConnectionIO[TextAndTag] =
     readTextAndTag(collective, itemId, pageSep) {
       Select(
-        select(m.content, equip.eid, equip.name),
+        select(substring(m.content.s, 0, maxLen).s, equip.eid.s, equip.name.s),
         from(i)
           .innerJoin(a, a.itemId === i.id)
           .innerJoin(m, m.id === a.id)

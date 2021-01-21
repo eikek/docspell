@@ -16,20 +16,24 @@ object SelectItems {
   val noClass = LearnClassifierTask.noClass
 
   def forCategory[F[_]](ctx: Context[F, _], collective: Ident)(
-      max: Int,
-      category: String
+      maxItems: Int,
+      category: String,
+      maxTextLen: Int
   ): Stream[F, Data] =
-    forCategory(ctx.store, collective, max, category)
+    forCategory(ctx.store, collective, maxItems, category, maxTextLen)
 
   def forCategory[F[_]](
       store: Store[F],
       collective: Ident,
-      max: Int,
-      category: String
+      maxItems: Int,
+      category: String,
+      maxTextLen: Int
   ): Stream[F, Data] = {
     val connStream =
-      allItems(collective, max)
-        .evalMap(item => QItem.resolveTextAndTag(collective, item, category, pageSep))
+      allItems(collective, maxItems)
+        .evalMap(item =>
+          QItem.resolveTextAndTag(collective, item, category, maxTextLen, pageSep)
+        )
         .through(mkData)
     store.transact(connStream)
   }
@@ -37,11 +41,14 @@ object SelectItems {
   def forCorrOrg[F[_]](
       store: Store[F],
       collective: Ident,
-      max: Int
+      maxItems: Int,
+      maxTextLen: Int
   ): Stream[F, Data] = {
     val connStream =
-      allItems(collective, max)
-        .evalMap(item => QItem.resolveTextAndCorrOrg(collective, item, pageSep))
+      allItems(collective, maxItems)
+        .evalMap(item =>
+          QItem.resolveTextAndCorrOrg(collective, item, maxTextLen, pageSep)
+        )
         .through(mkData)
     store.transact(connStream)
   }
@@ -49,11 +56,14 @@ object SelectItems {
   def forCorrPerson[F[_]](
       store: Store[F],
       collective: Ident,
-      max: Int
+      maxItems: Int,
+      maxTextLen: Int
   ): Stream[F, Data] = {
     val connStream =
-      allItems(collective, max)
-        .evalMap(item => QItem.resolveTextAndCorrPerson(collective, item, pageSep))
+      allItems(collective, maxItems)
+        .evalMap(item =>
+          QItem.resolveTextAndCorrPerson(collective, item, maxTextLen, pageSep)
+        )
         .through(mkData)
     store.transact(connStream)
   }
@@ -61,11 +71,14 @@ object SelectItems {
   def forConcPerson[F[_]](
       store: Store[F],
       collective: Ident,
-      max: Int
+      maxItems: Int,
+      maxTextLen: Int
   ): Stream[F, Data] = {
     val connStream =
-      allItems(collective, max)
-        .evalMap(item => QItem.resolveTextAndConcPerson(collective, item, pageSep))
+      allItems(collective, maxItems)
+        .evalMap(item =>
+          QItem.resolveTextAndConcPerson(collective, item, maxTextLen, pageSep)
+        )
         .through(mkData)
     store.transact(connStream)
   }
@@ -73,11 +86,14 @@ object SelectItems {
   def forConcEquip[F[_]](
       store: Store[F],
       collective: Ident,
-      max: Int
+      maxItems: Int,
+      maxTextLen: Int
   ): Stream[F, Data] = {
     val connStream =
-      allItems(collective, max)
-        .evalMap(item => QItem.resolveTextAndConcEquip(collective, item, pageSep))
+      allItems(collective, maxItems)
+        .evalMap(item =>
+          QItem.resolveTextAndConcEquip(collective, item, maxTextLen, pageSep)
+        )
         .through(mkData)
     store.transact(connStream)
   }

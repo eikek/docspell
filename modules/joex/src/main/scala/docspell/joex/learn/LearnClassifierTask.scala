@@ -37,7 +37,8 @@ object LearnClassifierTask {
           .learnAll(
             analyser,
             ctx.args.collective,
-            cfg.classification.itemCount
+            cfg.classification.itemCount,
+            cfg.maxLength
           )
           .run(ctx)
       else ().pure[F]
@@ -51,10 +52,14 @@ object LearnClassifierTask {
       val learnTags =
         for {
           sett <- findActiveSettings[F](ctx, cfg)
-          maxItems = math.min(cfg.classification.itemCount, sett.itemCount)
+          maxItems = cfg.classification.itemCountOrWhenLower(sett.itemCount)
           _ <- OptionT.liftF(
             LearnTags
-              .learnAllTagCategories(analyser)(ctx.args.collective, maxItems)
+              .learnAllTagCategories(analyser)(
+                ctx.args.collective,
+                maxItems,
+                cfg.maxLength
+              )
               .run(ctx)
           )
         } yield ()

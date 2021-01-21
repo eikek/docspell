@@ -94,5 +94,10 @@ object Config {
       enabled: Boolean,
       itemCount: Int,
       classifiers: List[Map[String, String]]
-  )
+  ) {
+
+    def itemCountOrWhenLower(other: Int): Int =
+      if (itemCount <= 0 || (itemCount > other && other > 0)) other
+      else itemCount
+  }
 }

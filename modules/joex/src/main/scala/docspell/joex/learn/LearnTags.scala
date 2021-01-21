@@ -14,12 +14,13 @@ object LearnTags {
   def learnTagCategory[F[_]: Sync: ContextShift, A](
       analyser: TextAnalyser[F],
       collective: Ident,
-      maxItems: Int
+      maxItems: Int,
+      maxTextLen: Int
   )(
       category: String
   ): Task[F, A, Unit] =
     Task { ctx =>
-      val data = SelectItems.forCategory(ctx, collective)(maxItems, category)
+      val data = SelectItems.forCategory(ctx, collective)(maxItems, category, maxTextLen)
       ctx.logger.info(s"Learn classifier for tag category: $category") *>
         analyser.classifier.trainClassifier(ctx.logger, data)(
           Kleisli(
@@ -34,12 +35,13 @@ object LearnTags {
 
   def learnAllTagCategories[F[_]: Sync: ContextShift, A](analyser: TextAnalyser[F])(
       collective: Ident,
-      maxItems: Int
+      maxItems: Int,
+      maxTextLen: Int
   ): Task[F, A, Unit] =
     Task { ctx =>
       for {
         cats <- ctx.store.transact(RClassifierSetting.getActiveCategories(collective))
-        task = learnTagCategory[F, A](analyser, collective, maxItems) _
+        task = learnTagCategory[F, A](analyser, collective, maxItems, maxTextLen) _
         _ <- cats.map(task).traverse(_.run(ctx))
       } yield ()
     }

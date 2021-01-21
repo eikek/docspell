@@ -14,51 +14,56 @@ object LearnItemEntities {
   def learnAll[F[_]: Sync: ContextShift, A](
       analyser: TextAnalyser[F],
       collective: Ident,
-      maxItems: Int
+      maxItems: Int,
+      maxTextLen: Int
   ): Task[F, A, Unit] =
-    learnCorrOrg(analyser, collective, maxItems)
-      .flatMap(_ => learnCorrPerson[F, A](analyser, collective, maxItems))
-      .flatMap(_ => learnConcPerson(analyser, collective, maxItems))
-      .flatMap(_ => learnConcEquip(analyser, collective, maxItems))
+    learnCorrOrg(analyser, collective, maxItems, maxTextLen)
+      .flatMap(_ => learnCorrPerson[F, A](analyser, collective, maxItems, maxTextLen))
+      .flatMap(_ => learnConcPerson(analyser, collective, maxItems, maxTextLen))
+      .flatMap(_ => learnConcEquip(analyser, collective, maxItems, maxTextLen))
 
   def learnCorrOrg[F[_]: Sync: ContextShift, A](
       analyser: TextAnalyser[F],
       collective: Ident,
-      maxItems: Int
+      maxItems: Int,
+      maxTextLen: Int
   ): Task[F, A, Unit] =
     learn(analyser, collective)(
       ClassifierName.correspondentOrg,
-      ctx => SelectItems.forCorrOrg(ctx.store, collective, maxItems)
+      ctx => SelectItems.forCorrOrg(ctx.store, collective, maxItems, maxTextLen)
     )
 
   def learnCorrPerson[F[_]: Sync: ContextShift, A](
       analyser: TextAnalyser[F],
       collective: Ident,
-      maxItems: Int
+      maxItems: Int,
+      maxTextLen: Int
   ): Task[F, A, Unit] =
     learn(analyser, collective)(
       ClassifierName.correspondentPerson,
-      ctx => SelectItems.forCorrPerson(ctx.store, collective, maxItems)
+      ctx => SelectItems.forCorrPerson(ctx.store, collective, maxItems, maxTextLen)
     )
 
   def learnConcPerson[F[_]: Sync: ContextShift, A](
       analyser: TextAnalyser[F],
       collective: Ident,
-      maxItems: Int
+      maxItems: Int,
+      maxTextLen: Int
   ): Task[F, A, Unit] =
     learn(analyser, collective)(
       ClassifierName.concernedPerson,
-      ctx => SelectItems.forConcPerson(ctx.store, collective, maxItems)
+      ctx => SelectItems.forConcPerson(ctx.store, collective, maxItems, maxTextLen)
     )
 
   def learnConcEquip[F[_]: Sync: ContextShift, A](
       analyser: TextAnalyser[F],
       collective: Ident,
-      maxItems: Int
+      maxItems: Int,
+      maxTextLen: Int
   ): Task[F, A, Unit] =
     learn(analyser, collective)(
       ClassifierName.concernedEquip,
-      ctx => SelectItems.forConcEquip(ctx.store, collective, maxItems)
+      ctx => SelectItems.forConcEquip(ctx.store, collective, maxItems, maxTextLen)
     )
 
   private def learn[F[_]: Sync: ContextShift, A](
