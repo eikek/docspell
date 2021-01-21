@@ -36,8 +36,8 @@ object Flags {
     )
 
   private def getBaseUrl(cfg: Config): String =
-    if (cfg.baseUrl.isLocal) cfg.baseUrl.path.asString
-    else cfg.baseUrl.asString
+    if (cfg.baseUrl.isLocal) cfg.baseUrl.rootPathToEmpty.path.asString
+    else cfg.baseUrl.rootPathToEmpty.asString
 
   implicit val jsonEncoder: Encoder[Flags] =
     deriveEncoder[Flags]
