@@ -290,7 +290,8 @@ Files are being processed by the joex component. So all the respective
 configuration is in this config only.
 
 File processing involves several stages, detailed information can be
-found [here](@/docs/joex/file-processing.md#text-analysis).
+found [here](@/docs/joex/file-processing.md#text-analysis) and in the
+corresponding sections in [joex default config](#joex).
 
 Configuration allows to define the external tools and set some
 limitations to control memory usage. The sections are:
@@ -301,9 +302,25 @@ limitations to control memory usage. The sections are:
 
 Options to external commands can use variables that are replaced by
 values at runtime. Variables are enclosed in double braces `{{…}}`.
-Please see the default configuration for more details.
+Please see the default configuration for what variables exist per
+command.
 
-### `text-analysis.nlp.mode`
+### Classification
+
+In `text-analysis.classification` you can define how many documents at
+most should be used for learning. The default settings should work
+well for most cases. However, it always depends on the amount of data
+and the machine that runs joex. For example, by default the documents
+to learn from are limited to 600 (`classification.item-count`) and
+every text is cut after 8000 characters (`text-analysis.max-length`).
+This is fine if *most* of your documents are small and only a few are
+near 8000 characters). But if *all* your documents are very large, you
+probably need to either assign more heap memory or go down with the
+limits.
+
+Classification can be disabled, too, for when it's not needed.
+
+### NLP
 
 This setting defines which NLP mode to use. It defaults to `full`,
 which requires more memory for certain languages (with the advantage
@@ -329,10 +346,7 @@ is used to find metadata.
 You might want to try different modes and see what combination suits
 best your usage pattern and machine running joex. If a powerful
 machine is used, simply leave the defaults. When running on an older
-raspberry pi, for example, you might need to adjust things. The
-corresponding sections in [joex default config](#joex) and the [file
-processing](@/docs/joex/file-processing.md#text-analysis) page provide more
-details.
+raspberry pi, for example, you might need to adjust things.
 
 # File Format
 
