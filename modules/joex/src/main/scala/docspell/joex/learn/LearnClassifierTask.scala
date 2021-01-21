@@ -26,6 +26,7 @@ object LearnClassifierTask {
   ): Task[F, Args, Unit] =
     learnTags(cfg, analyser)
       .flatMap(_ => learnItemEntities(cfg, analyser))
+      .flatMap(_ => Task(_ => Sync[F].delay(System.gc())))
 
   private def learnItemEntities[F[_]: Sync: ContextShift](
       cfg: Config.TextAnalysis,

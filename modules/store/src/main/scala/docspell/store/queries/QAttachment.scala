@@ -139,7 +139,7 @@ object QAttachment {
       mli <- qi.query[MetaProposalList].to[Vector]
     } yield MetaProposalList
       .flatten(mla)
-      .fillEmptyFrom(MetaProposalList.flatten(mli))
+      .insertSecond(MetaProposalList.flatten(mli))
   }
 
   def getAttachmentMeta(

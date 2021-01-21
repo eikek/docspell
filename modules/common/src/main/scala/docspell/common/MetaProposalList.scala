@@ -45,6 +45,19 @@ case class MetaProposalList private (proposals: List[MetaProposal]) {
 
   def sortByWeights: MetaProposalList =
     change(_.sortByWeight)
+
+  def insertSecond(ml: MetaProposalList): MetaProposalList =
+    MetaProposalList.flatten0(
+      Seq(this, ml),
+      (map, next) =>
+        map.get(next.proposalType) match {
+          case Some(MetaProposal(mt, values)) =>
+            val cand = NonEmptyList(values.head, next.values.toList ++ values.tail)
+            map.updated(next.proposalType, MetaProposal(mt, MetaProposal.flatten(cand)))
+          case None =>
+            map.updated(next.proposalType, next)
+        }
+    )
 }
 
 object MetaProposalList {
@@ -74,20 +87,25 @@ object MetaProposalList {
     * is preserved and candidates of proposals are appended as given
     * by the order of the given `seq'.
     */
-  def flatten(ml: Seq[MetaProposalList]): MetaProposalList = {
-    val init: Map[MetaProposalType, MetaProposal] = Map.empty
+  def flatten(ml: Seq[MetaProposalList]): MetaProposalList =
+    flatten0(
+      ml,
+      (map, mp) =>
+        map.get(mp.proposalType) match {
+          case Some(mp0) => map.updated(mp.proposalType, mp0.addIdRef(mp.values.toList))
+          case None      => map.updated(mp.proposalType, mp)
+        }
+    )
 
-    def updateMap(
-        map: Map[MetaProposalType, MetaProposal],
-        mp: MetaProposal
-    ): Map[MetaProposalType, MetaProposal] =
-      map.get(mp.proposalType) match {
-        case Some(mp0) => map.updated(mp.proposalType, mp0.addIdRef(mp.values.toList))
-        case None      => map.updated(mp.proposalType, mp)
-      }
-
-    val merged = ml.foldLeft(init)((map, el) => el.proposals.foldLeft(map)(updateMap))
-
+  private def flatten0(
+      ml: Seq[MetaProposalList],
+      merge: (
+          Map[MetaProposalType, MetaProposal],
+          MetaProposal
+      ) => Map[MetaProposalType, MetaProposal]
+  ): MetaProposalList = {
+    val init   = Map.empty[MetaProposalType, MetaProposal]
+    val merged = ml.foldLeft(init)((map, el) => el.proposals.foldLeft(map)(merge))
     fromMap(merged)
   }
 

@@ -958,7 +958,6 @@ renderSuggestions model mkName idnames tagger =
                 ]
             , div [ class "menu" ] <|
                 (idnames
-                    |> List.take 5
                     |> List.map (\p -> a [ class "item", href "#", onClick (tagger p) ] [ text (mkName p) ])
                 )
             ]
@@ -969,7 +968,7 @@ renderOrgSuggestions : Model -> Html Msg
 renderOrgSuggestions model =
     renderSuggestions model
         .name
-        (List.take 5 model.itemProposals.corrOrg)
+        (List.take 6 model.itemProposals.corrOrg)
         SetCorrOrgSuggestion
 
 
@@ -977,7 +976,7 @@ renderCorrPersonSuggestions : Model -> Html Msg
 renderCorrPersonSuggestions model =
     renderSuggestions model
         .name
-        (List.take 5 model.itemProposals.corrPerson)
+        (List.take 6 model.itemProposals.corrPerson)
         SetCorrPersonSuggestion
 
 
@@ -985,7 +984,7 @@ renderConcPersonSuggestions : Model -> Html Msg
 renderConcPersonSuggestions model =
     renderSuggestions model
         .name
-        (List.take 5 model.itemProposals.concPerson)
+        (List.take 6 model.itemProposals.concPerson)
         SetConcPersonSuggestion
 
 
@@ -993,7 +992,7 @@ renderConcEquipSuggestions : Model -> Html Msg
 renderConcEquipSuggestions model =
     renderSuggestions model
         .name
-        (List.take 5 model.itemProposals.concEquipment)
+        (List.take 6 model.itemProposals.concEquipment)
         SetConcEquipSuggestion
 
 
@@ -1001,7 +1000,7 @@ renderItemDateSuggestions : Model -> Html Msg
 renderItemDateSuggestions model =
     renderSuggestions model
         Util.Time.formatDate
-        (List.take 5 model.itemProposals.itemDate)
+        (List.take 6 model.itemProposals.itemDate)
         SetItemDateSuggestion
 
 
@@ -1009,7 +1008,7 @@ renderDueDateSuggestions : Model -> Html Msg
 renderDueDateSuggestions model =
     renderSuggestions model
         Util.Time.formatDate
-        (List.take 5 model.itemProposals.dueDate)
+        (List.take 6 model.itemProposals.dueDate)
         SetDueDateSuggestion
 
 
