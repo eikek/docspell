@@ -49,6 +49,12 @@ case class LenientUri(
   def withFragment(f: String): LenientUri =
     copy(fragment = Some(f))
 
+  def rootPathToEmpty: LenientUri =
+    path match {
+      case LenientUri.RootPath => copy(path = LenientUri.EmptyPath)
+      case _                   => this
+    }
+
   def toJavaUrl: Either[String, URL] =
     Either.catchNonFatal(new URL(asString)).left.map(_.getMessage)
 
