@@ -5,7 +5,7 @@ import java.nio.file.Path
 import cats.data.NonEmptyList
 
 import docspell.analysis.TextAnalysisConfig
-import docspell.analysis.nlp.TextClassifierConfig
+import docspell.analysis.classifier.TextClassifierConfig
 import docspell.backend.Config.Files
 import docspell.common._
 import docspell.convert.ConvertConfig
@@ -31,8 +31,7 @@ case class Config(
     sendMail: MailSendConfig,
     files: Files,
     mailDebug: Boolean,
-    fullTextSearch: Config.FullTextSearch,
-    processing: Config.Processing
+    fullTextSearch: Config.FullTextSearch
 )
 
 object Config {
@@ -55,20 +54,17 @@ object Config {
     final case class Migration(indexAllChunk: Int)
   }
 
-  case class Processing(maxDueDateYears: Int)
-
   case class TextAnalysis(
       maxLength: Int,
       workingDir: Path,
-      clearStanfordNlpInterval: Duration,
-      regexNer: RegexNer,
+      nlp: NlpConfig,
       classification: Classification
   ) {
 
     def textAnalysisConfig: TextAnalysisConfig =
       TextAnalysisConfig(
         maxLength,
-        clearStanfordNlpInterval,
+        TextAnalysisConfig.NlpConfig(nlp.clearInterval, nlp.mode),
         TextClassifierConfig(
           workingDir,
           NonEmptyList
@@ -78,14 +74,30 @@ object Config {
       )
 
     def regexNerFileConfig: RegexNerFile.Config =
-      RegexNerFile.Config(regexNer.enabled, workingDir, regexNer.fileCacheTime)
+      RegexNerFile.Config(
+        nlp.regexNer.maxEntries,
+        workingDir,
+        nlp.regexNer.fileCacheTime
+      )
   }
 
-  case class RegexNer(enabled: Boolean, fileCacheTime: Duration)
+  case class NlpConfig(
+      mode: NlpMode,
+      clearInterval: Duration,
+      maxDueDateYears: Int,
+      regexNer: RegexNer
+  )
+
+  case class RegexNer(maxEntries: Int, fileCacheTime: Duration)
 
   case class Classification(
       enabled: Boolean,
       itemCount: Int,
       classifiers: List[Map[String, String]]
-  )
+  ) {
+
+    def itemCountOrWhenLower(other: Int): Int =
+      if (itemCount <= 0 || (itemCount > other && other > 0)) other
+      else itemCount
+  }
 }

@@ -17,6 +17,9 @@ If you don't like to sign up to github/matrix or like to reach me
 personally, you can make a mail to `info [at] docspell.org` or on
 matrix, via `@eikek:matrix.org`.
 
+If you find a feature request already filed, you can vote on it. I
+tend to prefer most voted requests to those without much attention.
+
 
 ## Documentation
 

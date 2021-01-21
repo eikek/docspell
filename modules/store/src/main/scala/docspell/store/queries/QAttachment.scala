@@ -21,6 +21,7 @@ object QAttachment {
   private val item = RItem.as("i")
   private val am   = RAttachmentMeta.as("am")
   private val c    = RCollective.as("c")
+  private val im   = RItemProposal.as("im")
 
   def deletePreview[F[_]: Sync](store: Store[F])(attachId: Ident): F[Int] = {
     val findPreview =
@@ -118,17 +119,27 @@ object QAttachment {
     } yield ns.sum
 
   def getMetaProposals(itemId: Ident, coll: Ident): ConnectionIO[MetaProposalList] = {
-    val q = Select(
-      am.proposals.s,
+    val qa = Select(
+      select(am.proposals),
       from(am)
         .innerJoin(a, a.id === am.id)
         .innerJoin(item, a.itemId === item.id),
       a.itemId === itemId && item.cid === coll
     ).build
 
+    val qi = Select(
+      select(im.classifyProposals),
+      from(im)
+        .innerJoin(item, item.id === im.itemId),
+      item.cid === coll && im.itemId === itemId
+    ).build
+
     for {
-      ml <- q.query[MetaProposalList].to[Vector]
-    } yield MetaProposalList.flatten(ml)
+      mla <- qa.query[MetaProposalList].to[Vector]
+      mli <- qi.query[MetaProposalList].to[Vector]
+    } yield MetaProposalList
+      .flatten(mla)
+      .insertSecond(MetaProposalList.flatten(mli))
   }
 
   def getAttachmentMeta(
@@ -160,7 +171,15 @@ object QAttachment {
       chunkSize: Int
   ): Stream[ConnectionIO, ContentAndName] =
     Select(
-      select(a.id, a.itemId, item.cid, item.folder, c.language, a.name, am.content),
+      select(
+        a.id.s,
+        a.itemId.s,
+        item.cid.s,
+        item.folder.s,
+        coalesce(am.language.s, c.language.s).s,
+        a.name.s,
+        am.content.s
+      ),
       from(a)
         .innerJoin(am, am.id === a.id)
         .innerJoin(item, item.id === a.itemId)

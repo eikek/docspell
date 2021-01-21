@@ -46,6 +46,6 @@ object ReIndexTask {
               FtsWork.log[F](_.info("Clearing data failed. Continue re-indexing."))
             ) ++
             FtsWork.log[F](_.info("Running index initialize")) ++
-            FtsWork.allInitializeTasks[F]
+            FtsWork.reInitializeTasks[F]
       })
 }

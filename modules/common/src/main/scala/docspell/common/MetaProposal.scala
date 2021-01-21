@@ -87,7 +87,7 @@ object MetaProposal {
     }
   }
 
-  /** Merges candidates with same `IdRef' values and concatenates their
+  /** Merges candidates with same `IdRef` values and concatenates their
     * respective labels. The candidate order is preserved.
     */
   def flatten(s: NonEmptyList[Candidate]): NonEmptyList[Candidate] = {

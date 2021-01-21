@@ -1,4 +1,4 @@
-package docspell.analysis.nlp
+package docspell.analysis.classifier
 
 import java.nio.file.Path
 

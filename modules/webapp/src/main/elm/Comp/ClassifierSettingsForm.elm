@@ -11,35 +11,38 @@ import Api
 import Api.Model.ClassifierSetting exposing (ClassifierSetting)
 import Api.Model.TagList exposing (TagList)
 import Comp.CalEventInput
+import Comp.Dropdown
 import Comp.FixedDropdown
 import Comp.IntField
 import Data.CalEvent exposing (CalEvent)
 import Data.Flags exposing (Flags)
+import Data.ListType exposing (ListType)
+import Data.UiSettings exposing (UiSettings)
 import Data.Validated exposing (Validated(..))
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onCheck)
 import Http
+import Markdown
 import Util.Tag
 
 
 type alias Model =
-    { enabled : Bool
-    , categoryModel : Comp.FixedDropdown.Model String
-    , category : Maybe String
-    , scheduleModel : Comp.CalEventInput.Model
+    { scheduleModel : Comp.CalEventInput.Model
     , schedule : Validated CalEvent
     , itemCountModel : Comp.IntField.Model
     , itemCount : Maybe Int
+    , categoryListModel : Comp.Dropdown.Model String
+    , categoryListType : ListType
+    , categoryListTypeModel : Comp.FixedDropdown.Model ListType
     }
 
 
 type Msg
-    = GetTagsResp (Result Http.Error TagList)
-    | ScheduleMsg Comp.CalEventInput.Msg
-    | ToggleEnabled
-    | CategoryMsg (Comp.FixedDropdown.Msg String)
+    = ScheduleMsg Comp.CalEventInput.Msg
     | ItemCountMsg Comp.IntField.Msg
+    | GetTagsResp (Result Http.Error TagList)
+    | CategoryListMsg (Comp.Dropdown.Msg String)
+    | CategoryListTypeMsg (Comp.FixedDropdown.Msg ListType)
 
 
 init : Flags -> ClassifierSetting -> ( Model, Cmd Msg )
@@ -52,13 +55,36 @@ init flags sett =
         ( cem, cec ) =
             Comp.CalEventInput.init flags newSchedule
     in
-    ( { enabled = sett.enabled
-      , categoryModel = Comp.FixedDropdown.initString []
-      , category = sett.category
-      , scheduleModel = cem
+    ( { scheduleModel = cem
       , schedule = Data.Validated.Unknown newSchedule
       , itemCountModel = Comp.IntField.init (Just 0) Nothing True "Item Count"
       , itemCount = Just sett.itemCount
+      , categoryListModel =
+            let
+                mkOption s =
+                    { value = s, text = s, additional = "" }
+
+                minit =
+                    Comp.Dropdown.makeModel
+                        { multiple = True
+                        , searchable = \n -> n > 0
+                        , makeOption = mkOption
+                        , labelColor = \_ -> \_ -> "grey "
+                        , placeholder = "Choose categories …"
+                        }
+
+                lm =
+                    Comp.Dropdown.SetSelection sett.categoryList
+
+                ( m_, _ ) =
+                    Comp.Dropdown.update lm minit
+            in
+            m_
+      , categoryListType =
+            Data.ListType.fromString sett.listType
+                |> Maybe.withDefault Data.ListType.Whitelist
+      , categoryListTypeModel =
+            Comp.FixedDropdown.initMap Data.ListType.label Data.ListType.all
       }
     , Cmd.batch
         [ Api.getTags flags "" GetTagsResp
@@ -71,11 +97,11 @@ getSettings : Model -> Validated ClassifierSetting
 getSettings model =
     Data.Validated.map
         (\sch ->
-            { enabled = model.enabled
-            , category = model.category
-            , schedule =
+            { schedule =
                 Data.CalEvent.makeEvent sch
             , itemCount = Maybe.withDefault 0 model.itemCount
+            , listType = Data.ListType.toString model.categoryListType
+            , categoryList = Comp.Dropdown.getSelected model.categoryListModel
             }
         )
         model.schedule
@@ -89,18 +115,11 @@ update flags msg model =
                 categories =
                     Util.Tag.getCategories tl.items
                         |> List.sort
-            in
-            ( { model
-                | categoryModel = Comp.FixedDropdown.initString categories
-                , category =
-                    if model.category == Nothing then
-                        List.head categories
 
-                    else
-                        model.category
-              }
-            , Cmd.none
-            )
+                lm =
+                    Comp.Dropdown.SetOptions categories
+            in
+            update flags (CategoryListMsg lm) model
 
         GetTagsResp (Err _) ->
             ( model, Cmd.none )
@@ -121,28 +140,6 @@ update flags msg model =
             , Cmd.map ScheduleMsg cc
             )
 
-        ToggleEnabled ->
-            ( { model | enabled = not model.enabled }
-            , Cmd.none
-            )
-
-        CategoryMsg lmsg ->
-            let
-                ( mm, ma ) =
-                    Comp.FixedDropdown.update lmsg model.categoryModel
-            in
-            ( { model
-                | categoryModel = mm
-                , category =
-                    if ma == Nothing then
-                        model.category
-
-                    else
-                        ma
-              }
-            , Cmd.none
-            )
-
         ItemCountMsg lmsg ->
             let
                 ( im, iv ) =
@@ -155,39 +152,68 @@ update flags msg model =
             , Cmd.none
             )
 
+        CategoryListMsg lm ->
+            let
+                ( m_, cmd_ ) =
+                    Comp.Dropdown.update lm model.categoryListModel
+            in
+            ( { model | categoryListModel = m_ }
+            , Cmd.map CategoryListMsg cmd_
+            )
 
-view : Model -> Html Msg
-view model =
+        CategoryListTypeMsg lm ->
+            let
+                ( m_, sel ) =
+                    Comp.FixedDropdown.update lm model.categoryListTypeModel
+
+                newListType =
+                    Maybe.withDefault model.categoryListType sel
+            in
+            ( { model
+                | categoryListTypeModel = m_
+                , categoryListType = newListType
+              }
+            , Cmd.none
+            )
+
+
+view : UiSettings -> Model -> Html Msg
+view settings model =
+    let
+        catListTypeItem =
+            Comp.FixedDropdown.Item
+                model.categoryListType
+                (Data.ListType.label model.categoryListType)
+    in
     div []
-        [ div
-            [ class "field"
-            ]
-            [ div [ class "ui checkbox" ]
-                [ input
-                    [ type_ "checkbox"
-                    , onCheck (\_ -> ToggleEnabled)
-                    , checked model.enabled
-                    ]
-                    []
-                , label [] [ text "Enable classification" ]
-                , span [ class "small-info" ]
-                    [ text "Disable document classification if not needed."
-                    ]
-                ]
-            ]
-        , div [ class "ui basic segment" ]
-            [ text "Document classification tries to predict a tag for new incoming documents. This "
-            , text "works by learning from existing documents in order to find common patterns within "
-            , text "the text. The more documents you have correctly tagged, the better. Learning is done "
-            , text "periodically based on a schedule and you need to specify a tag-group that should "
-            , text "be used for learning."
+        [ Markdown.toHtml [ class "ui basic segment" ]
+            """
+
+Auto-tagging works by learning from existing documents. The more
+documents you have correctly tagged, the better. Learning is done
+periodically based on a schedule. You can specify tag-groups that
+should either be used (whitelist) or not used (blacklist) for
+learning.
+
+Use an empty whitelist to disable auto tagging.
+
+            """
+        , div [ class "field" ]
+            [ label [] [ text "Is the following a blacklist or whitelist?" ]
+            , Html.map CategoryListTypeMsg
+                (Comp.FixedDropdown.view (Just catListTypeItem) model.categoryListTypeModel)
             ]
         , div [ class "field" ]
-            [ label [] [ text "Category" ]
-            , Html.map CategoryMsg
-                (Comp.FixedDropdown.viewString model.category
-                    model.categoryModel
-                )
+            [ label []
+                [ case model.categoryListType of
+                    Data.ListType.Whitelist ->
+                        text "Include tag categories for learning"
+
+                    Data.ListType.Blacklist ->
+                        text "Exclude tag categories from learning"
+                ]
+            , Html.map CategoryListMsg
+                (Comp.Dropdown.view settings model.categoryListModel)
             ]
         , Html.map ItemCountMsg
             (Comp.IntField.viewWithInfo

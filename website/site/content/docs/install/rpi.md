@@ -25,19 +25,18 @@ work is done by the joex components.
 Running the joex component on the Raspberry Pi is possible, but will
 result in long processing times for OCR and text analysis. The board
 should provide 4G of RAM (like the current RPi4), especially if also a
-database and solr are running next to it. I recommend to give joex a
-heap of 1.5G (`-J-Xmx1536M`). You should also set the joex pool size
-to 1.
-
-When joex processes the first file, some models are built loaded into
-memory which can take a while. Subsequent processing times are faster
-then.
+database and solr are running next to it. The memory required by joex
+depends on the config and document language. Please pick a value that
+suits your setup from [here](@/docs/install/running.md#memory-usage).
+For boards like the RPi, it might be necessary to use
+`nlp.mode=basic`, rather than `nlp.mode=full`. You should also set the
+joex pool size to 1.
 
 An example: on this [UP
 board](https://up-board.org/up/specifications/) with an Intel Atom
-x5-Z8350 CPU (@1.44Ghz) and 4G RAM, a scanned (300dpi) pdf file with 6
-pages took *3:20 min* to process. This board also runs the SOLR and a
-postgresql database.
+x5-Z8350 CPU (@1.44Ghz) and 4G RAM, a scanned (300dpi, in German) pdf
+file with 6 pages took *3:20 min* to process. This board also runs the
+SOLR and a postgresql database.
 
 The same file was processed in 55s on a qemu virtual machine on my i7
 notebook, using 1 CPU and 4G RAM (and identical config for joex). The

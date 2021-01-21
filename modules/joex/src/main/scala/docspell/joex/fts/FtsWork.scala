@@ -14,16 +14,26 @@ object FtsWork {
   def apply[F[_]](f: FtsContext[F] => F[Unit]): FtsWork[F] =
     Kleisli(f)
 
-  def allInitializeTasks[F[_]: Monad]: FtsWork[F] =
-    FtsWork[F](_ => ().pure[F]).tap[FtsContext[F]].flatMap { ctx =>
-      NonEmptyList.fromList(ctx.fts.initialize.map(fm => from[F](fm.task))) match {
+  /** Runs all migration tasks unconditionally and inserts all data as last step. */
+  def reInitializeTasks[F[_]: Monad]: FtsWork[F] =
+    FtsWork { ctx =>
+      val migrations =
+        ctx.fts.initialize.map(fm => fm.changeResult(_ => FtsMigration.Result.workDone))
+
+      NonEmptyList.fromList(migrations) match {
         case Some(nel) =>
-          nel.reduce(semigroup[F])
+          nel
+            .map(fm => from[F](fm.task))
+            .append(insertAll[F](None))
+            .reduce(semigroup[F])
+            .run(ctx)
         case None =>
-          FtsWork[F](_ => ().pure[F])
+          ().pure[F]
       }
     }
 
+  /**
+    */
   def from[F[_]: FlatMap: Applicative](t: F[FtsMigration.Result]): FtsWork[F] =
     Kleisli.liftF(t).flatMap(transformResult[F])
 

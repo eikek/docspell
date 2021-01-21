@@ -46,10 +46,14 @@ object TextExtraction {
         )
         _   <- fts.indexData(ctx.logger, (idxItem +: txt.map(_.td)).toSeq: _*)
         dur <- start
-        _   <- ctx.logger.info(s"Text extraction finished in ${dur.formatExact}")
+        extractedTags = txt.flatMap(_.tags).distinct.toList
+        _ <- ctx.logger.info(s"Text extraction finished in ${dur.formatExact}.")
+        _ <-
+          if (extractedTags.isEmpty) ().pure[F]
+          else ctx.logger.debug(s"Found tags in file: $extractedTags")
       } yield item
         .copy(metas = txt.map(_.am))
-        .appendTags(txt.flatMap(_.tags).distinct.toList)
+        .appendTags(extractedTags)
     }
 
   // --  helpers
@@ -78,7 +82,7 @@ object TextExtraction {
         pair._2
       )
 
-    val rm = item.findOrCreate(ra.id)
+    val rm = item.findOrCreate(ra.id, lang)
     rm.content match {
       case Some(_) =>
         ctx.logger.info("TextExtraction skipped, since text is already available.") *>
@@ -102,6 +106,7 @@ object TextExtraction {
       res  <- extractTextFallback(ctx, cfg, ra, lang)(fids)
       meta = item.changeMeta(
         ra.id,
+        lang,
         rm =>
           rm.setContentIfEmpty(
             res.map(_.appendPdfMetaToText.text.trim).filter(_.nonEmpty)

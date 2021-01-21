@@ -20,6 +20,9 @@ The configuration of both components uses separate namespaces. The
 configuration for the REST server is below `docspell.server`, while
 the one for joex is below `docspell.joex`.
 
+You can therefore use two separate config files or one single file
+containing both namespaces.
+
 ## JDBC
 
 This configures the connection to the database. This has to be
@@ -280,6 +283,70 @@ The `session-valid` deterimens how long a token is valid. This can be
 just some minutes, the web application obtains new ones
 periodically. So a short time is recommended.
 
+
+## File Processing
+
+Files are being processed by the joex component. So all the respective
+configuration is in this config only.
+
+File processing involves several stages, detailed information can be
+found [here](@/docs/joex/file-processing.md#text-analysis) and in the
+corresponding sections in [joex default config](#joex).
+
+Configuration allows to define the external tools and set some
+limitations to control memory usage. The sections are:
+
+- `docspell.joex.extraction`
+- `docspell.joex.text-analysis`
+- `docspell.joex.convert`
+
+Options to external commands can use variables that are replaced by
+values at runtime. Variables are enclosed in double braces `{{…}}`.
+Please see the default configuration for what variables exist per
+command.
+
+### Classification
+
+In `text-analysis.classification` you can define how many documents at
+most should be used for learning. The default settings should work
+well for most cases. However, it always depends on the amount of data
+and the machine that runs joex. For example, by default the documents
+to learn from are limited to 600 (`classification.item-count`) and
+every text is cut after 8000 characters (`text-analysis.max-length`).
+This is fine if *most* of your documents are small and only a few are
+near 8000 characters). But if *all* your documents are very large, you
+probably need to either assign more heap memory or go down with the
+limits.
+
+Classification can be disabled, too, for when it's not needed.
+
+### NLP
+
+This setting defines which NLP mode to use. It defaults to `full`,
+which requires more memory for certain languages (with the advantage
+of better results). Other values are `basic`, `regexonly` and
+`disabled`. The modes `full` and `basic` use pre-defined lanugage
+models for procesing documents of languaes German, English and French.
+These require some amount of memory (see below).
+
+The mode `basic` is like the "light" variant to `full`. It doesn't use
+all NLP features, which makes memory consumption much lower, but comes
+with the compromise of less accurate results.
+
+The mode `regexonly` doesn't use pre-defined lanuage models, even if
+available. It checks your address book against a document to find
+metadata. That means, it is language independent. Also, when using
+`full` or `basic` with lanugages where no pre-defined models exist, it
+will degrade to `regexonly` for these.
+
+The mode `disabled` skips NLP processing completely. This has least
+impact in memory consumption, obviously, but then only the classifier
+is used to find metadata.
+
+You might want to try different modes and see what combination suits
+best your usage pattern and machine running joex. If a powerful
+machine is used, simply leave the defaults. When running on an older
+raspberry pi, for example, you might need to adjust things.
 
 # File Format
 

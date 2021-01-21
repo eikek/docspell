@@ -1,10 +1,8 @@
 package docspell.store.queries
 
-import cats.data.OptionT
 import fs2.Stream
 
-import docspell.common.ContactKind
-import docspell.common.{Direction, Ident}
+import docspell.common._
 import docspell.store.qb.DSL._
 import docspell.store.qb._
 import docspell.store.records._
@@ -17,6 +15,7 @@ object QCollective {
   private val t  = RTag.as("t")
   private val ro = ROrganization.as("o")
   private val rp = RPerson.as("p")
+  private val re = REquipment.as("e")
   private val rc = RContact.as("c")
   private val i  = RItem.as("i")
 
@@ -25,13 +24,37 @@ object QCollective {
     val empty = Names(Vector.empty, Vector.empty, Vector.empty)
   }
 
-  def allNames(collective: Ident): ConnectionIO[Names] =
-    (for {
-      orgs <- OptionT.liftF(ROrganization.findAllRef(collective, None, _.name))
-      pers <- OptionT.liftF(RPerson.findAllRef(collective, None, _.name))
-      equp <- OptionT.liftF(REquipment.findAll(collective, None, _.name))
-    } yield Names(orgs.map(_.name), pers.map(_.name), equp.map(_.name)))
-      .getOrElse(Names.empty)
+  def allNames(collective: Ident, maxEntries: Int): ConnectionIO[Names] = {
+    val created = Column[Timestamp]("created", TableDef(""))
+    union(
+      Select(
+        select(ro.name.s, lit(1).as("kind"), ro.created.as(created)),
+        from(ro),
+        ro.cid === collective
+      ),
+      Select(
+        select(rp.name.s, lit(2).as("kind"), rp.created.as(created)),
+        from(rp),
+        rp.cid === collective
+      ),
+      Select(
+        select(re.name.s, lit(3).as("kind"), re.created.as(created)),
+        from(re),
+        re.cid === collective
+      )
+    ).orderBy(created.desc)
+      .limit(Batch.limit(maxEntries))
+      .build
+      .query[(String, Int)]
+      .streamWithChunkSize(maxEntries)
+      .fold(Names.empty) { case (names, (name, kind)) =>
+        if (kind == 1) names.copy(org = names.org :+ name)
+        else if (kind == 2) names.copy(pers = names.pers :+ name)
+        else names.copy(equip = names.equip :+ name)
+      }
+      .compile
+      .lastOrError
+  }
 
   case class InsightData(
       incoming: Int,

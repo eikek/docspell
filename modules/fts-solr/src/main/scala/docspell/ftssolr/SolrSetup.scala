@@ -56,21 +56,51 @@ object SolrSetup {
             5,
             solrEngine,
             "Add content_fr field",
-            addContentFrField.map(_ => FtsMigration.Result.workDone)
+            addContentField(Language.French).map(_ => FtsMigration.Result.workDone)
           ),
           FtsMigration[F](
             6,
             solrEngine,
             "Index all from database",
             FtsMigration.Result.indexAll.pure[F]
+          ),
+          FtsMigration[F](
+            7,
+            solrEngine,
+            "Add content_it field",
+            addContentField(Language.Italian).map(_ => FtsMigration.Result.reIndexAll)
+          ),
+          FtsMigration[F](
+            8,
+            solrEngine,
+            "Add content_es field",
+            addContentField(Language.Spanish).map(_ => FtsMigration.Result.reIndexAll)
+          ),
+          FtsMigration[F](
+            9,
+            solrEngine,
+            "Add more content fields",
+            addMoreContentFields.map(_ => FtsMigration.Result.reIndexAll)
           )
         )
 
       def addFolderField: F[Unit] =
         addStringField(Field.folderId)
 
-      def addContentFrField: F[Unit] =
-        addTextField(Some(Language.French))(Field.content_fr)
+      def addMoreContentFields: F[Unit] = {
+        val remain = List[Language](
+          Language.Norwegian,
+          Language.Romanian,
+          Language.Swedish,
+          Language.Finnish,
+          Language.Danish,
+          Language.Czech,
+          Language.Dutch,
+          Language.Portuguese,
+          Language.Russian
+        )
+        remain.traverse(addContentField).map(_ => ())
+      }
 
       def setupCoreSchema: F[Unit] = {
         val cmds0 =
@@ -90,13 +120,15 @@ object SolrSetup {
         )
           .traverse(addTextField(None))
 
-        val cntLang = Language.all.traverse {
+        val cntLang = List(Language.German, Language.English, Language.French).traverse {
           case l @ Language.German =>
             addTextField(l.some)(Field.content_de)
           case l @ Language.English =>
             addTextField(l.some)(Field.content_en)
           case l @ Language.French =>
             addTextField(l.some)(Field.content_fr)
+          case _ =>
+            ().pure[F]
         }
 
         cmds0 *> cmds1 *> cntLang *> ().pure[F]
@@ -111,20 +143,17 @@ object SolrSetup {
         run(DeleteField.command(DeleteField(field))).attempt *>
           run(AddField.command(AddField.string(field)))
 
+      private def addContentField(lang: Language): F[Unit] =
+        addTextField(Some(lang))(Field.contentField(lang))
+
       private def addTextField(lang: Option[Language])(field: Field): F[Unit] =
         lang match {
           case None =>
             run(DeleteField.command(DeleteField(field))).attempt *>
-              run(AddField.command(AddField.text(field)))
-          case Some(Language.German) =>
+              run(AddField.command(AddField.textGeneral(field)))
+          case Some(lang) =>
             run(DeleteField.command(DeleteField(field))).attempt *>
-              run(AddField.command(AddField.textDE(field)))
-          case Some(Language.English) =>
-            run(DeleteField.command(DeleteField(field))).attempt *>
-              run(AddField.command(AddField.textEN(field)))
-          case Some(Language.French) =>
-            run(DeleteField.command(DeleteField(field))).attempt *>
-              run(AddField.command(AddField.textFR(field)))
+              run(AddField.command(AddField.textLang(field, lang)))
         }
     }
   }
@@ -150,17 +179,12 @@ object SolrSetup {
     def string(field: Field): AddField =
       AddField(field, "string", true, true, false)
 
-    def text(field: Field): AddField =
+    def textGeneral(field: Field): AddField =
       AddField(field, "text_general", true, true, false)
 
-    def textDE(field: Field): AddField =
-      AddField(field, "text_de", true, true, false)
-
-    def textEN(field: Field): AddField =
-      AddField(field, "text_en", true, true, false)
-
-    def textFR(field: Field): AddField =
-      AddField(field, "text_fr", true, true, false)
+    def textLang(field: Field, lang: Language): AddField =
+      if (lang == Language.Czech) AddField(field, s"text_cz", true, true, false)
+      else AddField(field, s"text_${lang.iso2}", true, true, false)
   }
 
   case class DeleteField(name: Field)

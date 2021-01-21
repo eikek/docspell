@@ -98,9 +98,13 @@ let
     };
     text-analysis = {
       max-length = 10000;
-      regex-ner = {
-        enabled = true;
-        file-cache-time = "1 minute";
+      nlp = {
+        mode = "full";
+        clear-interval = "15 minutes";
+        regex-ner = {
+          max-entries = 1000;
+          file-cache-time = "1 minute";
+        };
       };
       classification = {
         enabled = true;
@@ -118,7 +122,6 @@ let
         ];
       };
       working-dir = "/tmp/docspell-analysis";
-      clear-stanford-nlp-interval = "15 minutes";
     };
     processing = {
       max-due-date-years = 10;
@@ -772,47 +775,96 @@ in {
                 files.
               '';
             };
-            clear-stanford-nlp-interval = mkOption {
-              type = types.str;
-              default = defaults.text-analysis.clear-stanford-nlp-interval;
-              description = ''
-                Idle time after which the NLP caches are cleared to free
-                memory. If <= 0 clearing the cache is disabled.
-              '';
-            };
 
-            regex-ner = mkOption {
+            nlp = mkOption {
               type = types.submodule({
                 options = {
-                  enabled = mkOption {
-                    type = types.bool;
-                    default = defaults.text-analysis.regex-ner.enabled;
+                  mode = mkOption {
+                    type = types.str;
+                    default = defaults.text-analysis.nlp.mode;
                     description = ''
-                      Whether to enable custom NER annotation. This uses the address
-                      book of a collective as input for NER tagging (to automatically
-                      find correspondent and concerned entities). If the address book
-                      is large, this can be quite memory intensive and also makes text
-                      analysis slower. But it greatly improves accuracy. If this is
-                      false, NER tagging uses only statistical models (that also work
-                      quite well).
+                      The mode for configuring NLP models:
 
-                      This setting might be moved to the collective settings in the
-                      future.
+                      1. full – builds the complete pipeline
+                      2. basic - builds only the ner annotator
+                      3. regexonly - matches each entry in your address book via regexps
+                      4. disabled - doesn't use any stanford-nlp feature
+
+                      The full and basic variants rely on pre-build language models
+                      that are available for only 3 lanugages at the moment: German,
+                      English and French.
+
+                      Memory usage varies greatly among the languages. German has
+                      quite large models, that require about 1G heap. So joex should
+                      run with -Xmx1400M at least when using mode=full.
+
+                      The basic variant does a quite good job for German and
+                      English. It might be worse for French, always depending on the
+                      type of text that is analysed. Joex should run with about 600M
+                      heap, here again lanugage German uses the most.
+
+                      The regexonly variant doesn't depend on a language. It roughly
+                      works by converting all entries in your addressbook into
+                      regexps and matches each one against the text. This can get
+                      memory intensive, too, when the addressbook grows large. This
+                      is included in the full and basic by default, but can be used
+                      independently by setting mode=regexner.
+
+                      When mode=disabled, then the whole nlp pipeline is disabled,
+                      and you won't get any suggestions. Only what the classifier
+                      returns (if enabled).
                     '';
                   };
-                  file-cache-time = mkOption {
+
+                  clear-interval = mkOption {
                     type = types.str;
-                    default = defaults.text-analysis.ner-file-cache-time;
+                    default = defaults.text-analysis.nlp.clear-interval;
                     description = ''
-                      The NER annotation uses a file of patterns that is derived from
-                      a collective's address book. This is is the time how long this
-                      file will be kept until a check for a state change is done.
+                      Idle time after which the NLP caches are cleared to free
+                      memory. If <= 0 clearing the cache is disabled.
                     '';
+                  };
+
+                  regex-ner = mkOption {
+                    type = types.submodule({
+                      options = {
+                        enabled = mkOption {
+                          type = types.int;
+                          default = defaults.text-analysis.regex-ner.max-entries;
+                          description = ''
+                            Whether to enable custom NER annotation. This uses the
+                            address book of a collective as input for NER tagging (to
+                            automatically find correspondent and concerned entities). If
+                            the address book is large, this can be quite memory
+                            intensive and also makes text analysis much slower. But it
+                            improves accuracy and can be used independent of the
+                            lanugage. If this is set to 0, it is effectively disabled
+                            and NER tagging uses only statistical models (that also work
+                            quite well, but are restricted to the languages mentioned
+                            above).
+
+                            Note, this is only relevant if nlp-config.mode is not
+                            "disabled".
+                          '';
+                        };
+                        file-cache-time = mkOption {
+                          type = types.str;
+                          default = defaults.text-analysis.ner-file-cache-time;
+                          description = ''
+                            The NER annotation uses a file of patterns that is derived from
+                            a collective's address book. This is is the time how long this
+                            file will be kept until a check for a state change is done.
+                          '';
+                        };
+                      };
+                    });
+                    default = defaults.text-analysis.nlp.regex-ner;
+                    description = "";
                   };
                 };
               });
-              default = defaults.text-analysis.regex-ner;
-              description = "";
+              default = defaults.text-analysis.nlp;
+              description = "Configure NLP";
             };
 
             classification = mkOption {

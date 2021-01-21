@@ -108,7 +108,18 @@ object ConvertPdf {
         ctx.logger.info(s"Conversion to pdf+txt successful. Saving file.") *>
           storePDF(ctx, cfg, ra, pdf)
             .flatMap(r =>
-              txt.map(t => (r, item.changeMeta(ra.id, _.setContentIfEmpty(t.some)).some))
+              txt.map(t =>
+                (
+                  r,
+                  item
+                    .changeMeta(
+                      ra.id,
+                      ctx.args.meta.language,
+                      _.setContentIfEmpty(t.some)
+                    )
+                    .some
+                )
+              )
             )
 
       case ConversionResult.UnsupportedFormat(mt) =>

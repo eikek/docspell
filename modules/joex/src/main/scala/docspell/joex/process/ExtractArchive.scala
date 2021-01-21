@@ -42,7 +42,7 @@ object ExtractArchive {
       archive: Option[RAttachmentArchive]
   ): Task[F, ProcessItemArgs, (Option[RAttachmentArchive], ItemData)] =
     singlePass(item, archive).flatMap { t =>
-      if (t._1 == None) Task.pure(t)
+      if (t._1.isEmpty) Task.pure(t)
       else multiPass(t._2, t._1)
     }
 

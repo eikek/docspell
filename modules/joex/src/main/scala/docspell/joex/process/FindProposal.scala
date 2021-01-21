@@ -17,24 +17,92 @@ import docspell.store.records._
   * by looking up values from NER in the users address book.
   */
 object FindProposal {
+  type Args = ProcessItemArgs
 
   def apply[F[_]: Sync](
-      cfg: Config.Processing
-  )(data: ItemData): Task[F, ProcessItemArgs, ItemData] =
+      cfg: Config.TextAnalysis
+  )(data: ItemData): Task[F, Args, ItemData] =
     Task { ctx =>
       val rmas = data.metas.map(rm => rm.copy(nerlabels = removeDuplicates(rm.nerlabels)))
-
-      ctx.logger.info("Starting find-proposal") *>
-        rmas
+      for {
+        _ <- ctx.logger.info("Starting find-proposal")
+        rmv <- rmas
           .traverse(rm =>
             processAttachment(cfg, rm, data.findDates(rm), ctx)
               .map(ml => rm.copy(proposals = ml))
           )
-          .map(rmv => data.copy(metas = rmv))
+        clp <- lookupClassifierProposals(ctx, data.classifyProposals)
+      } yield data.copy(metas = rmv, classifyProposals = clp)
     }
 
+  def lookupClassifierProposals[F[_]: Sync](
+      ctx: Context[F, Args],
+      mpList: MetaProposalList
+  ): F[MetaProposalList] = {
+    val coll = ctx.args.meta.collective
+
+    def lookup(mp: MetaProposal): F[Option[IdRef]] =
+      mp.proposalType match {
+        case MetaProposalType.CorrOrg =>
+          ctx.store
+            .transact(
+              ROrganization
+                .findLike(coll, mp.values.head.ref.name.toLowerCase)
+                .map(_.headOption)
+            )
+            .flatTap(oref =>
+              ctx.logger.debug(s"Found classifier organization for $mp: $oref")
+            )
+        case MetaProposalType.CorrPerson =>
+          ctx.store
+            .transact(
+              RPerson
+                .findLike(coll, mp.values.head.ref.name.toLowerCase, false)
+                .map(_.headOption)
+            )
+            .flatTap(oref =>
+              ctx.logger.debug(s"Found classifier corr-person for $mp: $oref")
+            )
+        case MetaProposalType.ConcPerson =>
+          ctx.store
+            .transact(
+              RPerson
+                .findLike(coll, mp.values.head.ref.name.toLowerCase, true)
+                .map(_.headOption)
+            )
+            .flatTap(oref =>
+              ctx.logger.debug(s"Found classifier conc-person for $mp: $oref")
+            )
+        case MetaProposalType.ConcEquip =>
+          ctx.store
+            .transact(
+              REquipment
+                .findLike(coll, mp.values.head.ref.name.toLowerCase)
+                .map(_.headOption)
+            )
+            .flatTap(oref =>
+              ctx.logger.debug(s"Found classifier conc-equip for $mp: $oref")
+            )
+        case MetaProposalType.DocDate =>
+          (None: Option[IdRef]).pure[F]
+
+        case MetaProposalType.DueDate =>
+          (None: Option[IdRef]).pure[F]
+      }
+
+    def updateRef(mp: MetaProposal)(idRef: Option[IdRef]): Option[MetaProposal] =
+      idRef // this proposal contains a single value only, since coming from classifier
+        .map(ref => mp.copy(values = mp.values.map(_.copy(ref = ref))))
+
+    ctx.logger.debug(s"Looking up classifier results: ${mpList.proposals}") *>
+      mpList.proposals
+        .traverse(mp => lookup(mp).map(updateRef(mp)))
+        .map(_.flatten)
+        .map(MetaProposalList.apply)
+  }
+
   def processAttachment[F[_]: Sync](
-      cfg: Config.Processing,
+      cfg: Config.TextAnalysis,
       rm: RAttachmentMeta,
       rd: Vector[NerDateLabel],
       ctx: Context[F, ProcessItemArgs]
@@ -46,11 +114,11 @@ object FindProposal {
   }
 
   def makeDateProposal[F[_]: Sync](
-      cfg: Config.Processing,
+      cfg: Config.TextAnalysis,
       dates: Vector[NerDateLabel]
   ): F[MetaProposalList] =
     Timestamp.current[F].map { now =>
-      val maxFuture = now.plus(Duration.years(cfg.maxDueDateYears.toLong))
+      val maxFuture = now.plus(Duration.years(cfg.nlp.maxDueDateYears.toLong))
       val latestFirst = dates
         .filter(_.date.isBefore(maxFuture.toUtcDate))
         .sortWith((l1, l2) => l1.date.isAfter(l2.date))

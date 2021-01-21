@@ -441,8 +441,9 @@ object QItem {
       tn <- store.transact(RTagItem.deleteItemTags(itemId))
       mn <- store.transact(RSentMail.deleteByItem(itemId))
       cf <- store.transact(RCustomFieldValue.deleteByItem(itemId))
+      im <- store.transact(RItemProposal.deleteByItem(itemId))
       n  <- store.transact(RItem.deleteByIdAndCollective(itemId, collective))
-    } yield tn + rn + n + mn + cf
+    } yield tn + rn + n + mn + cf + im
 
   private def findByFileIdsQuery(
       fileMetaIds: Nel[Ident],
@@ -543,11 +544,13 @@ object QItem {
 
   def findAllNewesFirst(
       collective: Ident,
-      chunkSize: Int
+      chunkSize: Int,
+      limit: Batch
   ): Stream[ConnectionIO, Ident] = {
     val i = RItem.as("i")
     Select(i.id.s, from(i), i.cid === collective && i.state === ItemState.confirmed)
       .orderBy(i.created.desc)
+      .limit(limit)
       .build
       .query[Ident]
       .streamWithChunkSize(chunkSize)
@@ -557,6 +560,7 @@ object QItem {
       collective: Ident,
       itemId: Ident,
       tagCategory: String,
+      maxLen: Int,
       pageSep: String
   ): ConnectionIO[TextAndTag] = {
     val tags     = TableDef("tags").as("tt")
@@ -564,7 +568,7 @@ object QItem {
     val tagsTid  = Column[Ident]("tid", tags)
     val tagsName = Column[String]("tname", tags)
 
-    val q =
+    readTextAndTag(collective, itemId, pageSep) {
       withCte(
         tags -> Select(
           select(ti.itemId.as(tagsItem), tag.tid.as(tagsTid), tag.name.as(tagsName)),
@@ -574,25 +578,98 @@ object QItem {
         )
       )(
         Select(
-          select(m.content, tagsTid, tagsName),
+          select(substring(m.content.s, 0, maxLen).s, tagsTid.s, tagsName.s),
           from(i)
             .innerJoin(a, a.itemId === i.id)
             .innerJoin(m, a.id === m.id)
             .leftJoin(tags, tagsItem === i.id),
           i.id === itemId && i.cid === collective && m.content.isNotNull && m.content <> ""
         )
-      ).build
+      )
+    }
+  }
 
+  def resolveTextAndCorrOrg(
+      collective: Ident,
+      itemId: Ident,
+      maxLen: Int,
+      pageSep: String
+  ): ConnectionIO[TextAndTag] =
+    readTextAndTag(collective, itemId, pageSep) {
+      Select(
+        select(substring(m.content.s, 0, maxLen).s, org.oid.s, org.name.s),
+        from(i)
+          .innerJoin(a, a.itemId === i.id)
+          .innerJoin(m, m.id === a.id)
+          .leftJoin(org, org.oid === i.corrOrg),
+        i.id === itemId && m.content.isNotNull && m.content <> ""
+      )
+    }
+
+  def resolveTextAndCorrPerson(
+      collective: Ident,
+      itemId: Ident,
+      maxLen: Int,
+      pageSep: String
+  ): ConnectionIO[TextAndTag] =
+    readTextAndTag(collective, itemId, pageSep) {
+      Select(
+        select(substring(m.content.s, 0, maxLen).s, pers0.pid.s, pers0.name.s),
+        from(i)
+          .innerJoin(a, a.itemId === i.id)
+          .innerJoin(m, m.id === a.id)
+          .leftJoin(pers0, pers0.pid === i.corrPerson),
+        i.id === itemId && m.content.isNotNull && m.content <> ""
+      )
+    }
+
+  def resolveTextAndConcPerson(
+      collective: Ident,
+      itemId: Ident,
+      maxLen: Int,
+      pageSep: String
+  ): ConnectionIO[TextAndTag] =
+    readTextAndTag(collective, itemId, pageSep) {
+      Select(
+        select(substring(m.content.s, 0, maxLen).s, pers0.pid.s, pers0.name.s),
+        from(i)
+          .innerJoin(a, a.itemId === i.id)
+          .innerJoin(m, m.id === a.id)
+          .leftJoin(pers0, pers0.pid === i.concPerson),
+        i.id === itemId && m.content.isNotNull && m.content <> ""
+      )
+    }
+
+  def resolveTextAndConcEquip(
+      collective: Ident,
+      itemId: Ident,
+      maxLen: Int,
+      pageSep: String
+  ): ConnectionIO[TextAndTag] =
+    readTextAndTag(collective, itemId, pageSep) {
+      Select(
+        select(substring(m.content.s, 0, maxLen).s, equip.eid.s, equip.name.s),
+        from(i)
+          .innerJoin(a, a.itemId === i.id)
+          .innerJoin(m, m.id === a.id)
+          .leftJoin(equip, equip.eid === i.concEquipment),
+        i.id === itemId && m.content.isNotNull && m.content <> ""
+      )
+    }
+
+  private def readTextAndTag(collective: Ident, itemId: Ident, pageSep: String)(
+      q: Select
+  ): ConnectionIO[TextAndTag] =
     for {
       _ <- logger.ftrace[ConnectionIO](
-        s"query: $q  (${itemId.id}, ${collective.id}, ${tagCategory})"
+        s"query: $q  (${itemId.id}, ${collective.id})"
       )
-      texts <- q.query[(String, Option[TextAndTag.TagName])].to[List]
+      texts <- q.build.query[(String, Option[TextAndTag.TagName])].to[List]
       _ <- logger.ftrace[ConnectionIO](
         s"Got ${texts.size} text and tag entries for item ${itemId.id}"
       )
       tag = texts.headOption.flatMap(_._2)
       txt = texts.map(_._1).mkString(pageSep)
     } yield TextAndTag(itemId, txt, tag)
-  }
+
 }

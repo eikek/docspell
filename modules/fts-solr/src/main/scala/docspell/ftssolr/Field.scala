@@ -21,22 +21,19 @@ object Field {
   val discriminator  = Field("discriminator")
   val attachmentName = Field("attachmentName")
   val content        = Field("content")
-  val content_de     = Field("content_de")
-  val content_en     = Field("content_en")
-  val content_fr     = Field("content_fr")
+  val content_de     = contentField(Language.German)
+  val content_en     = contentField(Language.English)
+  val content_fr     = contentField(Language.French)
   val itemName       = Field("itemName")
   val itemNotes      = Field("itemNotes")
   val folderId       = Field("folder")
 
+  val contentLangFields = Language.all
+    .map(contentField)
+
   def contentField(lang: Language): Field =
-    lang match {
-      case Language.German =>
-        Field.content_de
-      case Language.English =>
-        Field.content_en
-      case Language.French =>
-        Field.content_fr
-    }
+    if (lang == Language.Czech) Field(s"content_cz")
+    else Field(s"content_${lang.iso2}")
 
   implicit val jsonEncoder: Encoder[Field] =
     Encoder.encodeString.contramap(_.name)

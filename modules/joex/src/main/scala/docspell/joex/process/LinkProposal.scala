@@ -24,6 +24,7 @@ object LinkProposal {
           .flatten(data.metas.map(_.proposals))
           .filter(_.proposalType != MetaProposalType.DocDate)
           .sortByWeights
+          .fillEmptyFrom(data.classifyProposals)
 
         ctx.logger.info(s"Starting linking proposals") *>
           MetaProposalType.all

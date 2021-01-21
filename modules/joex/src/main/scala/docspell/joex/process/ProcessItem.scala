@@ -41,7 +41,7 @@ object ProcessItem {
       regexNer: RegexNerFile[F]
   )(item: ItemData): Task[F, ProcessItemArgs, ItemData] =
     TextAnalysis[F](cfg.textAnalysis, analyser, regexNer)(item)
-      .flatMap(FindProposal[F](cfg.processing))
+      .flatMap(FindProposal[F](cfg.textAnalysis))
       .flatMap(EvalProposals[F])
       .flatMap(SaveProposals[F])
 

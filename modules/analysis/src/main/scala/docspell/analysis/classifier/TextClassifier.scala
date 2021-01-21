@@ -1,9 +1,9 @@
-package docspell.analysis.nlp
+package docspell.analysis.classifier
 
 import cats.data.Kleisli
 import fs2.Stream
 
-import docspell.analysis.nlp.TextClassifier.Data
+import docspell.analysis.classifier.TextClassifier.Data
 import docspell.common._
 
 trait TextClassifier[F[_]] {

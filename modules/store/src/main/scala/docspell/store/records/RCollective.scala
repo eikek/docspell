@@ -1,6 +1,6 @@
 package docspell.store.records
 
-import cats.data.NonEmptyList
+import cats.data.{NonEmptyList, OptionT}
 import fs2.Stream
 
 import docspell.common._
@@ -73,13 +73,24 @@ object RCollective {
           .map(now => settings.classifier.map(_.toRecord(cid, now)))
       n2 <- cls match {
         case Some(cr) =>
-          RClassifierSetting.updateSettings(cr)
+          RClassifierSetting.update(cr)
         case None =>
           RClassifierSetting.delete(cid)
       }
     } yield n1 + n2
 
-  def getSettings(coll: Ident): ConnectionIO[Option[Settings]] = {
+  // this hides categories that have been deleted in the meantime
+  // they are finally removed from the json array once the learn classifier task is run
+  def getSettings(coll: Ident): ConnectionIO[Option[Settings]] =
+    (for {
+      sett <- OptionT(getRawSettings(coll))
+      prev <- OptionT.fromOption[ConnectionIO](sett.classifier)
+      cats <- OptionT.liftF(RTag.listCategories(coll))
+      next = prev.copy(categories = prev.categories.intersect(cats))
+    } yield sett.copy(classifier = Some(next))).value
+
+  private def getRawSettings(coll: Ident): ConnectionIO[Option[Settings]] = {
+    import RClassifierSetting.stringListMeta
     val c  = RCollective.as("c")
     val cs = RClassifierSetting.as("cs")
 
@@ -87,10 +98,10 @@ object RCollective {
       select(
         c.language.s,
         c.integration.s,
-        cs.enabled.s,
         cs.schedule.s,
         cs.itemCount.s,
-        cs.category.s
+        cs.categories.s,
+        cs.listType.s
       ),
       from(c).leftJoin(cs, cs.cid === c.id),
       c.id === coll

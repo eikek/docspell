@@ -15,6 +15,17 @@ RUN apk add --no-cache openjdk11-jre \
     tesseract-ocr \
     tesseract-ocr-data-deu \
     tesseract-ocr-data-fra \
+    tesseract-ocr-data-ita \
+    tesseract-ocr-data-spa \
+    tesseract-ocr-data-por \
+    tesseract-ocr-data-ces \
+    tesseract-ocr-data-nld \
+    tesseract-ocr-data-dan \
+    tesseract-ocr-data-fin \
+    tesseract-ocr-data-nor \
+    tesseract-ocr-data-swe \
+    tesseract-ocr-data-rus \
+    tesseract-ocr-data-ron \
     unpaper \
     wkhtmltopdf \
     libreoffice \

@@ -98,6 +98,9 @@ trait DSL extends DoobieMeta {
   def substring(expr: SelectExpr, start: Int, length: Int): DBFunction =
     DBFunction.Substring(expr, start, length)
 
+  def concat(expr: SelectExpr, exprs: SelectExpr*): DBFunction =
+    DBFunction.Concat(Nel.of(expr, exprs: _*))
+
   def lit[A](value: A)(implicit P: Put[A]): SelectExpr.SelectLit[A] =
     SelectExpr.SelectLit(value, None)
 

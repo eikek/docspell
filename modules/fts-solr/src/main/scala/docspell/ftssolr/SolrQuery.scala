@@ -37,13 +37,10 @@ object SolrQuery {
           cfg,
           List(
             Field.content,
-            Field.content_de,
-            Field.content_en,
-            Field.content_fr,
             Field.itemName,
             Field.itemNotes,
             Field.attachmentName
-          ),
+          ) ++ Field.contentLangFields,
           List(
             Field.id,
             Field.itemId,

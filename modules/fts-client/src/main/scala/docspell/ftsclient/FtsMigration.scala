@@ -1,5 +1,8 @@
 package docspell.ftsclient
 
+import cats.Functor
+import cats.implicits._
+
 import docspell.common._
 
 final case class FtsMigration[F[_]](
@@ -7,7 +10,13 @@ final case class FtsMigration[F[_]](
     engine: Ident,
     description: String,
     task: F[FtsMigration.Result]
-)
+) {
+
+  def changeResult(f: FtsMigration.Result => FtsMigration.Result)(implicit
+      F: Functor[F]
+  ): FtsMigration[F] =
+    copy(task = task.map(f))
+}
 
 object FtsMigration {
 

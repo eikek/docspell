@@ -280,7 +280,7 @@ view flags settings model =
                 , ( "invisible hidden", not flags.config.showClassificationSettings )
                 ]
             ]
-            [ text "Document Classifier"
+            [ text "Auto-Tagging"
             ]
         , div
             [ classList
@@ -289,13 +289,10 @@ view flags settings model =
                 ]
             ]
             [ Html.map ClassifierSettingMsg
-                (Comp.ClassifierSettingsForm.view model.classifierModel)
+                (Comp.ClassifierSettingsForm.view settings model.classifierModel)
             , div [ class "ui vertical segment" ]
                 [ button
-                    [ classList
-                        [ ( "ui small secondary basic button", True )
-                        , ( "disabled", not model.classifierModel.enabled )
-                        ]
+                    [ class "ui small secondary basic button"
                     , title "Starts a task to train a classifier"
                     , onClick StartClassifierTask
                     ]

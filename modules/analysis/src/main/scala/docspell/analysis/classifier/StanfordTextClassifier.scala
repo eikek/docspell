@@ -1,4 +1,4 @@
-package docspell.analysis.nlp
+package docspell.analysis.classifier
 
 import java.nio.file.Path
 
@@ -7,8 +7,11 @@ import cats.effect.concurrent.Ref
 import cats.implicits._
 import fs2.Stream
 
-import docspell.analysis.nlp.TextClassifier._
+import docspell.analysis.classifier
+import docspell.analysis.classifier.TextClassifier._
+import docspell.analysis.nlp.Properties
 import docspell.common._
+import docspell.common.syntax.FileSyntax._
 
 import edu.stanford.nlp.classify.ColumnDataClassifier
 
@@ -26,7 +29,7 @@ final class StanfordTextClassifier[F[_]: Sync: ContextShift](
       .use { dir =>
         for {
           rawData   <- writeDataFile(blocker, dir, data)
-          _         <- logger.info(s"Learning from ${rawData.count} items.")
+          _         <- logger.debug(s"Learning from ${rawData.count} items.")
           trainData <- splitData(logger, rawData)
           scores    <- cfg.classifierConfigs.traverse(m => train(logger, trainData, m))
           sorted = scores.sortBy(-_.score)
@@ -43,7 +46,7 @@ final class StanfordTextClassifier[F[_]: Sync: ContextShift](
       case Some(text) =>
         Sync[F].delay {
           val cls = ColumnDataClassifier.getClassifier(
-            model.model.normalize().toAbsolutePath().toString()
+            model.model.normalize().toAbsolutePath.toString
           )
           val cat = cls.classOf(cls.makeDatumFromLine("\t\t" + normalisedText(text)))
           Option(cat)
@@ -65,7 +68,7 @@ final class StanfordTextClassifier[F[_]: Sync: ContextShift](
         val cdc = new ColumnDataClassifier(Properties.fromMap(amendProps(in, props)))
         cdc.trainClassifier(in.train.toString())
         val score = cdc.testClassifier(in.test.toString())
-        TrainResult(score.first(), ClassifierModel(in.modelFile))
+        TrainResult(score.first(), classifier.ClassifierModel(in.modelFile))
       }
       _ <- logger.debug(s"Trained with result $res")
     } yield res
@@ -136,9 +139,9 @@ final class StanfordTextClassifier[F[_]: Sync: ContextShift](
       props: Map[String, String]
   ): Map[String, String] =
     prepend("2.", props) ++ Map(
-      "trainFile"   -> trainData.train.normalize().toAbsolutePath().toString(),
-      "testFile"    -> trainData.test.normalize().toAbsolutePath().toString(),
-      "serializeTo" -> trainData.modelFile.normalize().toAbsolutePath().toString()
+      "trainFile"   -> trainData.train.absolutePathAsString,
+      "testFile"    -> trainData.test.absolutePathAsString,
+      "serializeTo" -> trainData.modelFile.absolutePathAsString
     ).toList
 
   case class RawData(count: Long, file: Path)

@@ -97,7 +97,7 @@ object JoexAppImpl {
       upload   <- OUpload(store, queue, cfg.files, joex)
       fts      <- createFtsClient(cfg)(httpClient)
       itemOps  <- OItem(store, fts, queue, joex)
-      analyser <- TextAnalyser.create[F](cfg.textAnalysis.textAnalysisConfig)
+      analyser <- TextAnalyser.create[F](cfg.textAnalysis.textAnalysisConfig, blocker)
       regexNer <- RegexNerFile(cfg.textAnalysis.regexNerFileConfig, blocker, store)
       javaEmil =
         JavaMailEmil(blocker, Settings.defaultSettings.copy(debug = cfg.mailDebug))
@@ -169,7 +169,7 @@ object JoexAppImpl {
         .withTask(
           JobTask.json(
             LearnClassifierArgs.taskName,
-            LearnClassifierTask[F](cfg.textAnalysis, blocker, analyser),
+            LearnClassifierTask[F](cfg.textAnalysis, analyser),
             LearnClassifierTask.onCancel[F]
           )
         )

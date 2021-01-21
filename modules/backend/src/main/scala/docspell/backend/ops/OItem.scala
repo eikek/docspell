@@ -591,7 +591,7 @@ object OItem {
           for {
             itemIds <- store.transact(RItem.filterItems(items, collective))
             results <- itemIds.traverse(item => deleteItem(item, collective))
-            n = results.fold(0)(_ + _)
+            n = results.sum
           } yield n
 
         def getProposals(item: Ident, collective: Ident): F[MetaProposalList] =

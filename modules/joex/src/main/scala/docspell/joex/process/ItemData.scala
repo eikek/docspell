@@ -15,6 +15,9 @@ import docspell.store.records.{RAttachment, RAttachmentMeta, RItem}
   * containng the source or origin file
   * @param givenMeta meta data to this item that was not "guessed"
   * from an attachment but given and thus is always correct
+  * @param classifyProposals these are proposals that were obtained by
+  * a trained classifier. There are no ner-tags, it will only provide a
+  * single label
   */
 case class ItemData(
     item: RItem,
@@ -23,7 +26,11 @@ case class ItemData(
     dateLabels: Vector[AttachmentDates],
     originFile: Map[Ident, Ident], // maps RAttachment.id -> FileMeta.id
     givenMeta: MetaProposalList,   // given meta data not associated to a specific attachment
-    tags: List[String]             // a list of tags (names or ids) attached to the item if they exist
+    // a list of tags (names or ids) attached to the item if they exist
+    tags: List[String],
+    // proposals obtained from the classifier
+    classifyProposals: MetaProposalList,
+    classifyTags: List[String]
 ) {
 
   def findMeta(attachId: Ident): Option[RAttachmentMeta] =
@@ -32,8 +39,12 @@ case class ItemData(
   def findDates(rm: RAttachmentMeta): Vector[NerDateLabel] =
     dateLabels.find(m => m.rm.id == rm.id).map(_.dates).getOrElse(Vector.empty)
 
-  def mapMeta(attachId: Ident, f: RAttachmentMeta => RAttachmentMeta): ItemData = {
-    val item = changeMeta(attachId, f)
+  def mapMeta(
+      attachId: Ident,
+      lang: Language,
+      f: RAttachmentMeta => RAttachmentMeta
+  ): ItemData = {
+    val item = changeMeta(attachId, lang, f)
     val next = metas.map(a => if (a.id == attachId) item else a)
     copy(metas = next)
   }
@@ -43,13 +54,14 @@ case class ItemData(
 
   def changeMeta(
       attachId: Ident,
+      lang: Language,
       f: RAttachmentMeta => RAttachmentMeta
   ): RAttachmentMeta =
-    f(findOrCreate(attachId))
+    f(findOrCreate(attachId, lang))
 
-  def findOrCreate(attachId: Ident): RAttachmentMeta =
+  def findOrCreate(attachId: Ident, lang: Language): RAttachmentMeta =
     metas.find(_.id == attachId).getOrElse {
-      RAttachmentMeta.empty(attachId)
+      RAttachmentMeta.empty(attachId, lang)
     }
 
 }

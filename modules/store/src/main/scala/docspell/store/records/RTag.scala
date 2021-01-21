@@ -148,6 +148,13 @@ object RTag {
     ).orderBy(T.name.asc).build.query[RTag].to[List]
   }
 
+  def listCategories(coll: Ident): ConnectionIO[List[String]] =
+    Select(
+      T.category.s,
+      from(T),
+      T.cid === coll && T.category.isNotNull
+    ).distinct.build.query[String].to[List]
+
   def delete(tagId: Ident, coll: Ident): ConnectionIO[Int] =
     DML.delete(T, T.tid === tagId && T.cid === coll)
 }
