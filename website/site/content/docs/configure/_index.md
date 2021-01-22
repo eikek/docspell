@@ -312,9 +312,9 @@ most should be used for learning. The default settings should work
 well for most cases. However, it always depends on the amount of data
 and the machine that runs joex. For example, by default the documents
 to learn from are limited to 600 (`classification.item-count`) and
-every text is cut after 8000 characters (`text-analysis.max-length`).
+every text is cut after 5000 characters (`text-analysis.max-length`).
 This is fine if *most* of your documents are small and only a few are
-near 8000 characters). But if *all* your documents are very large, you
+near 5000 characters). But if *all* your documents are very large, you
 probably need to either assign more heap memory or go down with the
 limits.
 

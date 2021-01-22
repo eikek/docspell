@@ -367,13 +367,15 @@ Training the model is a rather resource intensive process. How much
 memory is needed, depends on the number of documents to learn from and
 the size of text to consider. Both can be limited in the config file.
 The default values might require a heap of 1.4G if you have many and
-large documents. The maximum text length is about 8000 characters, if
+large documents. The maximum text length is set to 5000 characters. If
 *all* your documents would be that large, adjusting these values might
-be necessary. But using an existing model is quite cheap and fast. A
-model is trained periodically, the schedule can be defined in your
-collective settings. For tags, you can define the tag categories that
-should be trained (or that should not be trained). Docspell assigns
-one tag from all tags in a category to a new document.
+be necessary. A model is trained periodically, the schedule can be
+defined in your collective settings. Although learning is resource
+intensive, using an existing model is quite cheap and fast.
+
+For tags, you can define the tag categories that should be trained (or
+that should not be trained). Docspell assigns one tag (or none) from
+all tags in a category to a new document.
 
 Note that tags that can not be derived from the text only, should
 probably be excluded from learning. For example, if you tag all your
