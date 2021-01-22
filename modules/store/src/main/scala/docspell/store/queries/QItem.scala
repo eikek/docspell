@@ -578,7 +578,7 @@ object QItem {
         )
       )(
         Select(
-          select(substring(m.content.s, 0, maxLen).s, tagsTid.s, tagsName.s),
+          select(contentMax(maxLen), tagsTid.s, tagsName.s),
           from(i)
             .innerJoin(a, a.itemId === i.id)
             .innerJoin(m, a.id === m.id)
@@ -597,7 +597,7 @@ object QItem {
   ): ConnectionIO[TextAndTag] =
     readTextAndTag(collective, itemId, pageSep) {
       Select(
-        select(substring(m.content.s, 0, maxLen).s, org.oid.s, org.name.s),
+        select(contentMax(maxLen), org.oid.s, org.name.s),
         from(i)
           .innerJoin(a, a.itemId === i.id)
           .innerJoin(m, m.id === a.id)
@@ -614,7 +614,7 @@ object QItem {
   ): ConnectionIO[TextAndTag] =
     readTextAndTag(collective, itemId, pageSep) {
       Select(
-        select(substring(m.content.s, 0, maxLen).s, pers0.pid.s, pers0.name.s),
+        select(contentMax(maxLen), pers0.pid.s, pers0.name.s),
         from(i)
           .innerJoin(a, a.itemId === i.id)
           .innerJoin(m, m.id === a.id)
@@ -631,7 +631,7 @@ object QItem {
   ): ConnectionIO[TextAndTag] =
     readTextAndTag(collective, itemId, pageSep) {
       Select(
-        select(substring(m.content.s, 0, maxLen).s, pers0.pid.s, pers0.name.s),
+        select(contentMax(maxLen), pers0.pid.s, pers0.name.s),
         from(i)
           .innerJoin(a, a.itemId === i.id)
           .innerJoin(m, m.id === a.id)
@@ -648,7 +648,7 @@ object QItem {
   ): ConnectionIO[TextAndTag] =
     readTextAndTag(collective, itemId, pageSep) {
       Select(
-        select(substring(m.content.s, 0, maxLen).s, equip.eid.s, equip.name.s),
+        select(contentMax(maxLen), equip.eid.s, equip.name.s),
         from(i)
           .innerJoin(a, a.itemId === i.id)
           .innerJoin(m, m.id === a.id)
@@ -656,6 +656,12 @@ object QItem {
         i.id === itemId && m.content.isNotNull && m.content <> ""
       )
     }
+
+  private def contentMax(maxLen: Int): SelectExpr =
+    if (maxLen <= 0) {
+      logger.debug("Max text length limit disabled")
+      m.content.s
+    } else substring(m.content.s, 0, maxLen).s
 
   private def readTextAndTag(collective: Ident, itemId: Ident, pageSep: String)(
       q: Select

@@ -59,7 +59,9 @@ object TextAnalyser {
             new StanfordTextClassifier[F](cfg.classifier, blocker)
 
           private def textLimit(logger: Logger[F], text: String): F[String] =
-            if (text.length <= cfg.maxLength) text.pure[F]
+            if (cfg.maxLength <= 0)
+              logger.debug("Max text length limit disabled.") *> text.pure[F]
+            else if (text.length <= cfg.maxLength || cfg.maxLength <= 0) text.pure[F]
             else
               logger.info(
                 s"The text to analyse is larger than limit (${text.length} > ${cfg.maxLength})." +
