@@ -9,7 +9,10 @@ echo
 echo "#################################################"
 echo && echo
 
-jq --version > /dev/null
+CURL_CMD="curl"
+JQ_CMD="jq"
+
+"$JQ_CMD" --version > /dev/null
 if [ $? -ne 0 ]; then
   echo "please install 'jq'"
   exit -4
@@ -42,7 +45,7 @@ fi
 
 ############# FUNCTIONS
 function curl_call() {
-  curl_cmd="$1 -H 'X-Docspell-Auth: $ds_token'"
+  curl_cmd="$CURL_CMD $1 -H 'X-Docspell-Auth: $ds_token'"
   curl_result=$(eval $curl_cmd)
   curl_code=$?
 
@@ -60,12 +63,12 @@ function curl_call() {
 
 
 function login() {
-  curl_call "curl -s -X POST -d '{\"account\": \"$ds_collective/$ds_user\", \"password\": \"$ds_password\"}' ${ds_url}/api/v1/open/auth/login"
+  curl_call "-s -X POST -d '{\"account\": \"$ds_collective/$ds_user\", \"password\": \"$ds_password\"}' ${ds_url}/api/v1/open/auth/login"
 
-  curl_status=$(echo $curl_result | jq -r ".success")
+  curl_status=$(echo $curl_result | $JQ_CMD -r ".success")
 
   if [ "$curl_status" == "true" ]; then
-    ds_token=$(echo $curl_result | jq -r ".token")
+    ds_token=$(echo $curl_result | $JQ_CMD -r ".token")
     echo "Login successfull ( Token: $ds_token )"
 
   else
@@ -127,8 +130,8 @@ do
   # check for checksum
   tmp_checksum=$(sha256sum "$tmp_filepath" | awk '{print $1}')
 
-  curl_call "curl -s -X GET '$ds_url/api/v1/sec/checkfile/$tmp_checksum'"
-  curl_status=$(echo $curl_result | jq -r ".exists")
+  curl_call "-s -X GET '$ds_url/api/v1/sec/checkfile/$tmp_checksum'"
+  curl_status=$(echo $curl_result | $JQ_CMD -r ".exists")
 
   if [ $curl_code -ne 0 ]; then
     # error
@@ -136,8 +139,8 @@ do
 
   # file exists in Docspell
   elif [ "$curl_status" == "true" ]; then
-    item_name=$(echo $curl_result | jq -r ".items[0].name")
-    item_id=$(echo $curl_result | jq -r ".items[0].id")
+    item_name=$(echo $curl_result | $JQ_CMD -r ".items[0].name")
+    item_id=$(echo $curl_result | $JQ_CMD -r ".items[0].id")
     echo "File already exists: '$item_name (ID: $item_id)'"
 
     printf "%${#len_resultset}s" " "; printf "           "
@@ -145,7 +148,7 @@ do
       echo "... removing file"
       rm "$tmp_filepath"
     else
-      created=$(echo $curl_result | jq -r ".items[0].created")
+      created=$(echo $curl_result | $JQ_CMD -r ".items[0].created")
       cur_dir="$ds_archive_path/$(date -d @$(echo "($created+500)/1000" | bc) +%Y-%m
 )"
       echo "... moving to archive by month added ('$cur_dir')"
@@ -160,8 +163,8 @@ do
     if [ "$DS_CC_UPLOAD_MISSING" == true ]; then
       printf "%${#len_resultset}s" " "; printf "           "
       printf "...uploading file.."
-      curl_call "curl -s -X POST '$ds_url/api/v1/sec/upload/item' -H 'Content-Type: multipart/form-data' -F 'file=@$tmp_filepath'"
-      curl_status=$(echo $curl_result | jq -r ".success")
+      curl_call "-s -X POST '$ds_url/api/v1/sec/upload/item' -H 'Content-Type: multipart/form-data' -F 'file=@$tmp_filepath'"
+      curl_status=$(echo $curl_result | $JQ_CMD -r ".success")
       if [ "$curl_status" == "true" ]; then
         echo ". done"
       else
