@@ -121,7 +121,7 @@ view model =
                     , href "#"
                     , onClick SubmitSearch
                     ]
-                    [ img [ src "/icons/search-20.svg" ] []
+                    [ img [ src "/icons/search-white-20.svg" ] []
                     ]
                 ]
             , viewResults model.results

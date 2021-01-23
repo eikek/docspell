@@ -35,6 +35,16 @@ You should be able to create a new account and sign in. Check the
 [configuration page](@/docs/configure/_index.md) to further customize
 docspell.
 
+{% infobubble(mode="info", title="⚠ Please note") %}
+
+Please have a look at the [configuration
+page](@/docs/configure/_index.md) page, before making docspell
+available in the internet. By default, everyone can create an account.
+This is great for trying out and using it in an internal network. But
+when opened up to the outside, it is recommended to lock this down.
+
+{% end %}
+
 ## Memory Usage
 
 The memory requirements for the joex component depends on the document
