@@ -650,6 +650,22 @@ val website = project
     }.taskValue
   )
 
+val gatling = project
+  .in(file("modules/gatling"))
+  .disablePlugins(RevolverPlugin, ReleasePlugin)
+  .enablePlugins(GatlingPlugin)
+  .settings(sharedSettings)
+  .settings(noPublish)
+  .settings(
+    name := "docspell-gatling",
+    publishArtifact := false,
+    publish / skip := true,
+    libraryDependencies ++=
+      Dependencies.pureconfig ++
+        Dependencies.gatling.map(_ % "test,it")
+  )
+  .dependsOn(common)
+
 val root = project
   .in(file("."))
   .disablePlugins(RevolverPlugin)
