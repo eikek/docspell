@@ -11,7 +11,7 @@ object Dependencies {
   val CirceVersion            = "0.13.0"
   val ClipboardJsVersion      = "2.0.6"
   val DoobieVersion           = "0.10.0"
-  val EmilVersion             = "0.7.0"
+  val EmilVersion             = "0.7.1"
   val FastparseVersion        = "2.1.3"
   val FlexmarkVersion         = "0.62.2"
   val FlywayVersion           = "7.5.1"
@@ -41,7 +41,6 @@ object Dependencies {
   val TwelveMonkeysVersion    = "3.6.2"
   val JQueryVersion           = "3.5.1"
   val ViewerJSVersion         = "0.5.8"
-
 
   val kittens = Seq(
     "org.typelevel" %% "kittens" % KittensVersion
@@ -114,7 +113,9 @@ object Dependencies {
     "com.github.eikek" %% "emil-doobie" % EmilVersion
   )
   val emilTnef = Seq(
-    "com.github.eikek" %% "emil-tnef" % EmilVersion
+    "com.github.eikek" %% "emil-tnef" % EmilVersion excludeAll(
+      ExclusionRule("org.apache.poi")
+    )
   )
   val emilMarkdown = Seq(
     "com.github.eikek" %% "emil-markdown" % EmilVersion

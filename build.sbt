@@ -440,6 +440,7 @@ val joex = project
         Dependencies.circe ++
         Dependencies.pureconfig ++
         Dependencies.emilTnef ++
+        Dependencies.poi ++
         Dependencies.emilMarkdown ++
         Dependencies.emilJsoup ++
         Dependencies.jsoup ++
