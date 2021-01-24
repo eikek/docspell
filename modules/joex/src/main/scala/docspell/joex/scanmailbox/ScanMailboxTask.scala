@@ -14,6 +14,7 @@ import docspell.joex.scheduler.{Context, Task}
 import docspell.store.queries.QOrganization
 import docspell.store.records._
 
+import _root_.io.circe.syntax._
 import emil.SearchQuery.{All, ReceivedDate}
 import emil.javamail.syntax._
 import emil.{MimeType => _, _}
@@ -31,8 +32,9 @@ object ScanMailboxTask {
     Task { ctx =>
       for {
         _ <- ctx.logger.info(
-          s"Start importing mails for user ${ctx.args.account.user.id}"
+          s"=== Start importing mails for user ${ctx.args.account.user.id}"
         )
+        _       <- ctx.logger.debug(s"Settings: ${ctx.args.asJson.noSpaces}")
         mailCfg <- getMailSettings(ctx)
         folders  = ctx.args.folders.mkString(", ")
         userId   = ctx.args.account.user
@@ -249,25 +251,29 @@ object ScanMailboxTask {
         .getOrElse(Direction.Incoming)
     }
 
-    def postHandle[C](a: Access[F, C])(mh: MailHeader): MailOp[F, C, Unit] =
+    def postHandle[C](a: Access[F, C])(mh: MailHeaderItem): MailOp[F, C, Unit] = {
+      val postHandleAll = ctx.args.postHandleAll.exists(identity)
       ctx.args.targetFolder match {
-        case Some(tf) =>
-          logOp(_.debug(s"Post handling mail: ${mh.subject} - moving to folder: $tf"))
+        case Some(tf) if postHandleAll || mh.process =>
+          logOp(
+            _.debug(s"Post handling mail: ${mh.mh.subject} - moving to folder: $tf")
+          )
             .flatMap(_ =>
-              a.getOrCreateFolder(None, tf).flatMap(folder => a.moveMail(mh, folder))
+              a.getOrCreateFolder(None, tf).flatMap(folder => a.moveMail(mh.mh, folder))
             )
-        case None if ctx.args.deleteMail =>
-          logOp(_.debug(s"Post handling mail: ${mh.subject} - deleting mail.")).flatMap(
-            _ =>
-              a.deleteMail(mh).flatMapF { r =>
+        case None if ctx.args.deleteMail && (postHandleAll || mh.process) =>
+          logOp(_.debug(s"Post handling mail: ${mh.mh.subject} - deleting mail."))
+            .flatMap(_ =>
+              a.deleteMail(mh.mh).flatMapF { r =>
                 if (r.count == 0)
                   ctx.logger.warn(s"Mail could not be deleted!")
                 else ().pure[F]
               }
-          )
-        case None =>
-          logOp(_.debug(s"Post handling mail: ${mh.subject} - no handling defined!"))
+            )
+        case _ =>
+          logOp(_.debug(s"Post handling mail: ${mh.mh.subject} - no handling defined!"))
       }
+    }
 
     def submitMail(upload: OUpload[F], args: Args)(
         mail: Mail[F]
@@ -321,7 +327,7 @@ object ScanMailboxTask {
             Kleisli.liftF(
               ctx.logger.warn(s"Error submitting '${mh.mh.subject}': ${ex.getMessage}")
             ),
-          _ => postHandle(a)(mh.mh)
+          _ => postHandle(a)(mh)
         )
       } yield ()
   }

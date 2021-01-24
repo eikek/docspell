@@ -117,7 +117,8 @@ object ScanMailboxRoutes {
           settings.fileFilter,
           settings.tags.map(_.items),
           settings.subjectFilter,
-          settings.language
+          settings.language,
+          settings.postHandleAll
         )
       )
     )
@@ -149,6 +150,7 @@ object ScanMailboxRoutes {
       task.args.tags.map(StringList.apply),
       task.args.fileFilter,
       task.args.subjectFilter,
-      task.args.language
+      task.args.language,
+      task.args.postHandleAll
     )
 }
