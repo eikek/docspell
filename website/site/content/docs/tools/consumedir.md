@@ -47,6 +47,11 @@ url](@/docs/webapp/uploading.md#anonymous-upload). It is also possible
 to use the script with the [integration
 endpoint](@/docs/api/upload.md#integration-endpoint).
 
+The script can be run multiple times and on on multiple machines, the
+files are transferred via HTTP to the docspell server. For example, it
+is convenient to set it up on your workstation, so that you can drop
+files into some local folder to be immediatly transferred to docspell
+(e.g. when downloading something from the browser).
 
 ## Integration Endpoint
 
@@ -92,6 +97,32 @@ about duplicates. This allows to keep your files organized using the
 file-system and have them mirrored into docspell as well.
 
 
+## Network Filesystems (samba cifs, nfs)
+
+Watching a directory for changes relies on `inotify` subsystem on
+linux. This doesn't work on network filesystems like nfs or cifs. Here
+are some ideas to get around this limitation:
+
+1. The `consumedir.sh` is just a shell script and doesn't need to run
+   on the same machine as docspell. (Note that the default docker
+   setup is mainly for demoing and quickstart, it's not required to
+   run all of them on one machine). So the best option is to put the
+   consumedir on the machine that contains the local filesystem. All
+   files are send via HTTP to the docspell server anyways, so there is
+   no need to first transfer them via a network filesystem or rsync.
+2. If option 1 is not possible for some reason, and you need to check
+   a network filesystem, the only option left (that I know) is to
+   periodically poll this directory. This is also possible with
+   consumedir, using the `-o` or `--once` option (see above). You'd
+   need to setup the systemd unit file a bit differently and add a
+   timer to it (or you can use cron or something more fancy…).
+3. Copy the files to the machine that runs consumedir, via rsync for
+   example. Note that this has no advantage over otpion 1, as you now
+   need to setup rsync on the other machine to run either periodically
+   or when some file arrives. Then you can as well run the consumedir
+   script. But it might be more convenient, if rsync is already
+   running.
+
 # Systemd
 
 The script can be used with systemd to run as a service. This is an
@@ -116,7 +147,7 @@ url as described [here](@/docs/webapp/uploading.md#anonymous-upload).
 
 # Docker
 
-The provided docker image runs this script to watch a single
+The provided docker-compose setup runs this script to watch a single
 directory, `./docs` in current directory, for new files. If a new file
 is detected, it is pushed to docspell.
 
