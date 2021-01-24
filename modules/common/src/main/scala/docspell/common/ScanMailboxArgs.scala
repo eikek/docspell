@@ -37,7 +37,9 @@ case class ScanMailboxArgs(
     // a glob filter for the mail subject
     subjectFilter: Option[Glob],
     // the language for extraction and analysis
-    language: Option[Language]
+    language: Option[Language],
+    // apply additional filter to all mails or only imported
+    postHandleAll: Option[Boolean]
 )
 
 object ScanMailboxArgs {

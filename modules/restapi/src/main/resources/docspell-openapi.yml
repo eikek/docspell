@@ -3904,6 +3904,8 @@ components:
             processing mails.
           type: string
           format: language
+        postHandleAll:
+          type: boolean
 
     ImapSettingsList:
       description: |

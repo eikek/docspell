@@ -247,7 +247,7 @@ view settings model =
 
 viewForm : UiSettings -> Comp.ScanMailboxForm.Model -> Html Msg
 viewForm settings model =
-    Html.map DetailMsg (Comp.ScanMailboxForm.view "segment" settings model)
+    Html.map DetailMsg (Comp.ScanMailboxForm.view "" settings model)
 
 
 viewList : Model -> Html Msg
