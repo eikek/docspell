@@ -12,8 +12,11 @@ object SelectExprBuilder extends CommonBuilder {
       case SelectExpr.SelectColumn(col, alias) =>
         column(col) ++ appendAs(alias)
 
-      case s @ SelectExpr.SelectLit(value, aliasOpt) =>
+      case s @ SelectExpr.SelectConstant(value, aliasOpt) =>
         ConditionBuilder.buildValue(value)(s.P) ++ appendAs(aliasOpt)
+
+      case SelectExpr.SelectLiteral(value, alias) =>
+        Fragment.const(value) ++ appendAs(alias)
 
       case SelectExpr.SelectFun(fun, alias) =>
         DBFunctionBuilder.build(fun) ++ appendAs(alias)

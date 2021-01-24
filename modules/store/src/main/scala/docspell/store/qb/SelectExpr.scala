@@ -18,9 +18,14 @@ object SelectExpr {
       copy(alias = Some(a))
   }
 
-  case class SelectLit[A](value: A, alias: Option[String])(implicit val P: Put[A])
+  case class SelectConstant[A](value: A, alias: Option[String])(implicit val P: Put[A])
       extends SelectExpr {
-    def as(a: String): SelectLit[A] =
+    def as(a: String): SelectConstant[A] =
+      copy(alias = Some(a))
+  }
+
+  case class SelectLiteral(value: String, alias: Option[String]) extends SelectExpr {
+    def as(a: String): SelectLiteral =
       copy(alias = Some(a))
   }
 

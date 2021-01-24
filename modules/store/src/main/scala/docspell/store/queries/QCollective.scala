@@ -28,17 +28,17 @@ object QCollective {
     val created = Column[Timestamp]("created", TableDef(""))
     union(
       Select(
-        select(ro.name.s, lit(1).as("kind"), ro.created.as(created)),
+        select(ro.name.s, lit("1").as("kind"), ro.created.as(created)),
         from(ro),
         ro.cid === collective
       ),
       Select(
-        select(rp.name.s, lit(2).as("kind"), rp.created.as(created)),
+        select(rp.name.s, lit("2").as("kind"), rp.created.as(created)),
         from(rp),
         rp.cid === collective
       ),
       Select(
-        select(re.name.s, lit(3).as("kind"), re.created.as(created)),
+        select(re.name.s, lit("3").as("kind"), re.created.as(created)),
         from(re),
         re.cid === collective
       )
