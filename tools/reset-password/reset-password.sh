@@ -9,6 +9,9 @@
 #   ./reset-password.sh http://localhost:7880 test123 your/account
 #
 
+CURL_CMD="curl"
+JQ_CMD="jq"
+
 if [ -z "$1" ]; then
     echo "The docspell base-url is required as first argument."
     exit 1
@@ -32,15 +35,15 @@ fi
 
 RESET_URL="${BASE_URL}/api/v1/admin/user/resetPassword"
 
-OUT=$(curl -s -XPOST \
+OUT=$("$CURL_CMD" -s -XPOST \
            -H "Docspell-Admin-Secret: $SECRET" \
            -H "Content-Type: application/json" \
            -d "{\"account\": \"$USER\"}" \
            "$RESET_URL")
 
 
-if command -v jq > /dev/null; then
-    echo $OUT | jq
+if command -v "$JQ_CMD" > /dev/null; then
+    echo $OUT | "$JQ_CMD"
 else
     echo $OUT
 fi

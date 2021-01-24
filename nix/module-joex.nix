@@ -66,7 +66,6 @@ let
       preview = {
         dpi = 32;
       };
-
       ocr = {
         max-image-size = 14000000;
         page-range = {
@@ -97,10 +96,11 @@ let
       };
     };
     text-analysis = {
-      max-length = 10000;
+      max-length = 5000;
       nlp = {
         mode = "full";
         clear-interval = "15 minutes";
+        max-due-date-years = 10;
         regex-ner = {
           max-entries = 1000;
           file-cache-time = "1 minute";
@@ -108,7 +108,7 @@ let
       };
       classification = {
         enabled = true;
-        item-count = 0;
+        item-count = 600;
         classifiers = [
           { "useSplitWords" = "true";
             "splitWordsTokenizerRegexp" = ''[\p{L}][\p{L}0-9]*|(?:\$ ?)?[0-9]+(?:\.[0-9]{2})?%?|\s+|.'';
@@ -122,9 +122,6 @@ let
         ];
       };
       working-dir = "/tmp/docspell-analysis";
-    };
-    processing = {
-      max-due-date-years = 10;
     };
     convert = {
       chunk-size = 524288;
@@ -816,6 +813,15 @@ in {
                     '';
                   };
 
+                  max-due-date-years = mkOption {
+                    type = types.int;
+                    default = defaults.processing.max-due-date-years;
+                    description = ''
+                      Restricts proposalsfor due dates. Only dates earlier than this
+                      number of years in the future are considered.
+                    '';
+                  };
+
                   clear-interval = mkOption {
                     type = types.str;
                     default = defaults.text-analysis.nlp.clear-interval;
@@ -828,7 +834,7 @@ in {
                   regex-ner = mkOption {
                     type = types.submodule({
                       options = {
-                        enabled = mkOption {
+                        max-entries = mkOption {
                           type = types.int;
                           default = defaults.text-analysis.regex-ner.max-entries;
                           description = ''
@@ -923,23 +929,6 @@ in {
         });
         default = defaults.text-analysis;
         description = "Settings for text analysis";
-      };
-
-      processing = mkOption {
-        type = types.submodule({
-          options = {
-            max-due-date-years = mkOption {
-              type = types.int;
-              default = defaults.processing.max-due-date-years;
-              description = ''
-                Restricts proposals for due dates. Only dates earlier than this
-                number of years in the future are considered.
-              '';
-            };
-          };
-        });
-        default = defaults.processing;
-        description = "General config for processing documents";
       };
 
       convert = mkOption {

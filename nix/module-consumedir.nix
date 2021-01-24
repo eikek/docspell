@@ -114,7 +114,7 @@ in {
               else
                 []) ++
              (map (a: "'" + a + "'") cfg.urls);
-      cmd = "${pkgs.docspell.tools}/bin/consumedir.sh " + (builtins.concatStringsSep " " args);
+      cmd = "${pkgs.docspell.tools}/bin/ds-consumedir " + (builtins.concatStringsSep " " args);
     in
     {
       description = "Docspell Consumedir";

@@ -5,6 +5,10 @@
 # LIMIT_DOC="LIMIT 5"
 SKIP_EXISTING_DOCS=true
 
+CURL_CMD="curl"
+JQ_CMD="jq"
+SQLITE_CMD="sqlite3"
+
 echo "##################### START #####################"
 
 echo "  Docspell - Import from Paperless v '0.3 beta'"
@@ -14,7 +18,7 @@ echo
 echo "#################################################"
 echo && echo
 
-jq --version > /dev/null
+"$JQ_CMD" --version > /dev/null
 if [ $? -ne 0 ]; then
   echo "please install 'jq'"
   exit -4
@@ -62,7 +66,7 @@ if [ "$SKIP_EXISTING_DOCS" == "true" ]; then declare -A doc_skip; fi
 
 ############# FUNCTIONS
 function curl_call() {
-  curl_cmd="$1 -H 'X-Docspell-Auth: $ds_token'"
+  curl_cmd="$CURL_CMD $1 -H 'X-Docspell-Auth: $ds_token'"
   curl_result=$(eval $curl_cmd)
 
   if [ "$curl_result" == '"Authentication failed."' ] || [ "$curl_result" == 'Response timed out' ]; then
@@ -78,12 +82,12 @@ function curl_call() {
 }
 
 function login() {
-  curl_call "curl -s -X POST -d '{\"account\": \"$ds_user\", \"password\": \"$ds_password\"}' ${ds_url}/api/v1/open/auth/login"
+  curl_call "-s -X POST -d '{\"account\": \"$ds_user\", \"password\": \"$ds_password\"}' ${ds_url}/api/v1/open/auth/login"
 
-  curl_status=$(echo $curl_result | jq -r ".success")
+  curl_status=$(echo $curl_result | "$JQ_CMD" -r ".success")
 
   if [ "$curl_status" == "true" ]; then
-    ds_token=$(echo $curl_result | jq -r ".token")
+    ds_token=$(echo $curl_result | "$JQ_CMD" -r ".token")
     echo "Login successfull ( Token: $ds_token )"
 
   else
@@ -110,7 +114,7 @@ for mode in "${modes[@]}"; do
   else
     tmp_limit=$LIMIT
   fi
-  tmp_resultset=(`sqlite3 -header $db_path "select ${columns[$mode]} from $mode order by 1 DESC $tmp_limit;"`)
+  tmp_resultset=(`$SQLITE_CMD -header $db_path "select ${columns[$mode]} from $mode order by 1 DESC $tmp_limit;"`)
 
 
   tmp_headers=($(echo "${tmp_resultset[0]}" | tr '|' '\n'))
@@ -138,15 +142,15 @@ for mode in "${modes[@]}"; do
       echo "\"${tmp_result_arr[name]}\" [id: ${tmp_result_arr[id]}]"
       printf "%${#len_resultset}s" " "; printf "           "
 
-      curl_call "curl -s -X POST '$ds_url/api/v1/sec/organization' -H 'Content-Type: application/json' -d '{\"id\":\"\",\"name\":\"${tmp_result_arr[name]}\",\"address\":{\"street\":\"\",\"zip\":\"\",\"city\":\"\",\"country\":\"\"},\"contacts\":[],\"created\":0}'"
-      curl_status=$(echo $curl_result | jq -r ".success")
+      curl_call "-s -X POST '$ds_url/api/v1/sec/organization' -H 'Content-Type: application/json' -d '{\"id\":\"\",\"name\":\"${tmp_result_arr[name]}\",\"address\":{\"street\":\"\",\"zip\":\"\",\"city\":\"\",\"country\":\"\"},\"contacts\":[],\"created\":0}'"
+      curl_status=$(echo $curl_result | "$JQ_CMD" -r ".success")
 
       if [ "$curl_status" == "true" ]; then
         echo "Organization successfully created from correspondent"
-      elif [ "$(echo $curl_result | jq -r '.message')" == "Adding failed, because the entity already exists." ]; then
+      elif [ "$(echo $curl_result | "$JQ_CMD" -r '.message')" == "Adding failed, because the entity already exists." ]; then
         echo "Organization already exists, nothing to do"
       else
-        echo "FATAL  Error during creation of organization: $(echo $curl_result | jq -r '.message')"
+        echo "FATAL  Error during creation of organization: $(echo $curl_result | "$JQ_CMD" -r '.message')"
         exit 2
       fi
       echo
@@ -171,15 +175,15 @@ for mode in "${modes[@]}"; do
       # check for checksum
       tmp_checksum=$(sha256sum "$tmp_filepath" | awk '{print $1}')
 
-      curl_call "curl -s -X GET '$ds_url/api/v1/sec/checkfile/$tmp_checksum'"
-      curl_status=$(echo $curl_result | jq -r ".exists")
+      curl_call "-s -X GET '$ds_url/api/v1/sec/checkfile/$tmp_checksum'"
+      curl_status=$(echo $curl_result | "$JQ_CMD" -r ".exists")
 
       # upload if not existent
       if [ $? -eq 0 ] && [ "$curl_status" == "false" ]; then
         echo -n "File does not exist, uploading.."
-        curl_call "curl -s -X POST '$ds_url/api/v1/sec/upload/item' -H 'Content-Type: multipart/form-data' -F 'file=@$tmp_filepath;type=application/${tmp_result_arr[file_type]}'"
+        curl_call "-s -X POST '$ds_url/api/v1/sec/upload/item' -H 'Content-Type: multipart/form-data' -F 'file=@$tmp_filepath;type=application/${tmp_result_arr[file_type]}'"
 
-        curl_status=$(echo $curl_result | jq -r ".success")
+        curl_status=$(echo $curl_result | "$JQ_CMD" -r ".success")
         if [ "$curl_status" == "true" ]; then
           printf ". ."
 
@@ -206,13 +210,13 @@ for mode in "${modes[@]}"; do
         countMax=25
         while [ $count -le $countMax ]; do
           # get Docspell id of document
-          curl_call "curl -s -X GET '$ds_url/api/v1/sec/checkfile/$tmp_checksum'"
-          curl_status=$(echo $curl_result | jq -r ".exists")
+          curl_call "-s -X GET '$ds_url/api/v1/sec/checkfile/$tmp_checksum'"
+          curl_status=$(echo $curl_result | "$JQ_CMD" -r ".exists")
           res=$?
 
           # file id returned
           if [ $res -eq 0 ] && [ "$curl_status" == "true" ]; then
-            curl_status=$(echo $curl_result | jq -r ".items[0].id")
+            curl_status=$(echo $curl_result | "$JQ_CMD" -r ".items[0].id")
             # paperless id to docspell id for later use
             pl2ds_id[${tmp_result_arr[id]}]=$curl_status
             echo ".done"
@@ -245,19 +249,19 @@ for mode in "${modes[@]}"; do
             printf "Set link to organization \"${corr2name[${tmp_result_arr[correspondent_id]}]}\" .."
 
             # get organizations matching doc's orga (can be several when parts match)
-            curl_call "curl -s -X GET '$ds_url/api/v1/sec/organization' -G --data-urlencode 'q=${corr2name[${tmp_result_arr[correspondent_id]}]}'"
+            curl_call "-s -X GET '$ds_url/api/v1/sec/organization' -G --data-urlencode 'q=${corr2name[${tmp_result_arr[correspondent_id]}]}'"
 
             # Search for exact match of paperless correspondent in fetched organizations from Docspell
-            curl_status=$(echo $curl_result | jq -r ".items[] | select(.name==\"${corr2name[${tmp_result_arr[correspondent_id]}]}\") | .name")
+            curl_status=$(echo $curl_result | "$JQ_CMD" -r ".items[] | select(.name==\"${corr2name[${tmp_result_arr[correspondent_id]}]}\") | .name")
 
             # double-check that found organization matches doc's correspondent
             if [ "$curl_status" == "${corr2name[${tmp_result_arr[correspondent_id]}]}" ]; then
-              curl_status=$(echo $curl_result | jq -r ".items[] | select(.name==\"${corr2name[${tmp_result_arr[correspondent_id]}]}\") | .id")
+              curl_status=$(echo $curl_result | "$JQ_CMD" -r ".items[] | select(.name==\"${corr2name[${tmp_result_arr[correspondent_id]}]}\") | .id")
 
               # Set actual link to document
-              curl_call "curl -s -X PUT '$ds_url/api/v1/sec/item/${pl2ds_id[${tmp_result_arr[id]}]}/corrOrg' -H 'Content-Type: application/json' -d '{\"id\":\"$curl_status\"}'"
+              curl_call "-s -X PUT '$ds_url/api/v1/sec/item/${pl2ds_id[${tmp_result_arr[id]}]}/corrOrg' -H 'Content-Type: application/json' -d '{\"id\":\"$curl_status\"}'"
 
-              curl_status=$(echo $curl_result | jq -r ".success")
+              curl_status=$(echo $curl_result | "$JQ_CMD" -r ".success")
               if [ "$curl_status" == "true" ]; then
                 echo ". done"
 
@@ -280,9 +284,9 @@ for mode in "${modes[@]}"; do
         # Set name of document
         printf "%${#len_resultset}s" " "; printf "           "
 
-        curl_call "curl -s -X PUT '$ds_url/api/v1/sec/item/${pl2ds_id[${tmp_result_arr[id]}]}/name' -H 'Content-Type: application/json' -d '{\"text\":\"${tmp_result_arr[title]}\"}'"
+        curl_call "-s -X PUT '$ds_url/api/v1/sec/item/${pl2ds_id[${tmp_result_arr[id]}]}/name' -H 'Content-Type: application/json' -d '{\"text\":\"${tmp_result_arr[title]}\"}'"
 
-        curl_status=$(echo $curl_result | jq -r ".success")
+        curl_status=$(echo $curl_result | "$JQ_CMD" -r ".success")
         if [ "$curl_status" == "true" ]; then
           echo "Set name of item: \"${tmp_result_arr[title]}\""
 
@@ -296,9 +300,9 @@ for mode in "${modes[@]}"; do
         printf "%${#len_resultset}s" " "; printf "           "
 
         tmp_date="${tmp_result_arr[created]:0:10} 12:00:00" #fix for timezone variations
-        curl_call "curl -s -X PUT '$ds_url/api/v1/sec/item/${pl2ds_id[${tmp_result_arr[id]}]}/date' -H 'Content-Type: application/json' -d '{\"date\":$( echo "$(date -d "$tmp_date" +%s) * 1000" | bc )}'"
+        curl_call "-s -X PUT '$ds_url/api/v1/sec/item/${pl2ds_id[${tmp_result_arr[id]}]}/date' -H 'Content-Type: application/json' -d '{\"date\":$( echo "$(date -d "$tmp_date" +%s) * 1000" | bc )}'"
 
-        curl_status=$(echo $curl_result | jq -r ".success")
+        curl_status=$(echo $curl_result | "$JQ_CMD" -r ".success")
         if [ "$curl_status" == "true" ]; then
           echo "Set creation date of item: \"${tmp_date:0:10}\""
 
@@ -319,15 +323,15 @@ for mode in "${modes[@]}"; do
         # paperless tag id to name for later use
         tag2name[${tmp_result_arr[id]}]=${tmp_result_arr[name]}
 
-        curl_call "curl -s -X POST '$ds_url/api/v1/sec/tag' -H 'Content-Type: application/json' -d '{\"id\":\"ignored\",\"name\":\"${tmp_result_arr[name]}\",\"category\":\"imported (pl)\",\"created\":0}'"
+        curl_call "-s -X POST '$ds_url/api/v1/sec/tag' -H 'Content-Type: application/json' -d '{\"id\":\"ignored\",\"name\":\"${tmp_result_arr[name]}\",\"category\":\"imported (pl)\",\"created\":0}'"
 
-        curl_status=$(echo $curl_result | jq -r ".success")
+        curl_status=$(echo $curl_result | "$JQ_CMD" -r ".success")
         if [ "$curl_status" == "true" ]; then
           echo "Tag successfully created"
-        elif [ "$(echo $curl_result | jq -r '.message')" == "A tag '${tmp_result_arr[name]}' already exists" ]; then
+        elif [ "$(echo $curl_result | "$JQ_CMD" -r '.message')" == "A tag '${tmp_result_arr[name]}' already exists" ]; then
           echo "Tag already exists, nothing to do"
         else
-          echo "FATAL  Error during creation of tag: $(echo $curl_result | jq -r '.message')"
+          echo "FATAL  Error during creation of tag: $(echo $curl_result | "$JQ_CMD" -r '.message')"
           exit 9
         fi
       else
@@ -344,9 +348,9 @@ for mode in "${modes[@]}"; do
           printf "%${#len_resultset}s" " "; printf "           "
 
           #link tags to documents
-          curl_call "curl -s -X PUT '$ds_url/api/v1/sec/item/${pl2ds_id[${tmp_result_arr[document_id]}]}/taglink' -H 'Content-Type: application/json' -d '{\"items\":[\"${tag2name[${tmp_result_arr[tag_id]}]}\"]}'"
+          curl_call "-s -X PUT '$ds_url/api/v1/sec/item/${pl2ds_id[${tmp_result_arr[document_id]}]}/taglink' -H 'Content-Type: application/json' -d '{\"items\":[\"${tag2name[${tmp_result_arr[tag_id]}]}\"]}'"
 
-          curl_status=$(echo $curl_result | jq -r ".success")
+          curl_status=$(echo $curl_result | "$JQ_CMD" -r ".success")
           if [ "$curl_status" == "true" ]; then
             echo '...applied'
           else

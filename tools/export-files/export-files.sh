@@ -47,6 +47,9 @@
 # Docspell sends with each file its sha256 checksum via the ETag
 # header. This is used to do a integrity check after downloading.
 
+CURL_CMD="curl"
+JQ_CMD="jq"
+
 
 if [ -z "$1" ]; then
     echo "The base-url to docspell is required."
@@ -85,12 +88,12 @@ mcurl() {
     tmpfile1=$(mktemp -t "ds-export.XXXXX")
     tmpfile2=$(mktemp -t "ds-export.XXXXX")
     set +e
-    curl -# --fail --stderr "$tmpfile1" -o "$tmpfile2" -H "X-Docspell-Auth: $auth_token" "$@"
+    "$CURL_CMD" -# --fail --stderr "$tmpfile1" -o "$tmpfile2" -H "X-Docspell-Auth: $auth_token" "$@"
     status=$?
     set -e
     if [ $status -ne 0 ]; then
-        errout "curl -H 'X-Docspell-Auth: …' $@"
-        errout "Curl command failed (rc=$status)! Output is below."
+        errout "$CURL_CMD -H 'X-Docspell-Auth: …' $@"
+        errout "curl command failed (rc=$status)! Output is below."
         cat "$tmpfile1" >&2
         cat "$tmpfile2" >&2
         rm -f "$tmpfile1" "$tmpfile2"
@@ -121,12 +124,12 @@ declare auth_time
 
 
 login() {
-    auth=$(curl -s --fail -XPOST \
+    auth=$("$CURL_CMD" -s --fail -XPOST \
                  --data-binary "{\"account\":\"$DS_USER\", \"password\":\"$DS_PASS\"}" "$LOGIN_URL")
 
-    if [ "$(echo $auth | jq .success)" == "true" ]; then
+    if [ "$(echo $auth | "$JQ_CMD" .success)" == "true" ]; then
         errout "Login successful"
-        auth_token=$(echo $auth | jq -r .token)
+        auth_token=$(echo $auth | "$JQ_CMD" -r .token)
         auth_time=$(date +%s)
     else
         errout "Login failed."
@@ -136,7 +139,7 @@ login() {
 
 checkLogin() {
     elapsed=$((1000 * ($(date +%s) - $auth_time)))
-    maxtime=$(echo $auth | jq .validMs)
+    maxtime=$(echo $auth | "$JQ_CMD" .validMs)
 
     elapsed=$(($elapsed + 1000))
     if [ $elapsed -gt $maxtime ]; then
@@ -151,11 +154,11 @@ listItems() {
     errout "Get next items with offset=$OFFSET, limit=$LIMIT"
     REQ="{\"offset\":$OFFSET, \"limit\":$LIMIT, \"tagsInclude\":[],\"tagsExclude\":[],\"tagCategoriesInclude\":[], \"tagCategoriesExclude\":[],\"customValues\":[],\"inbox\":false}"
 
-    mcurl -XPOST -H 'ContentType: application/json' -d "$REQ" "$SEARCH_URL" | jq -r '.groups[].items[]|.id'
+    mcurl -XPOST -H 'ContentType: application/json' -d "$REQ" "$SEARCH_URL" | "$JQ_CMD" -r '.groups[].items[]|.id'
 }
 
 fetchItemCount() {
-    mcurl -XGET "$INSIGHT_URL" | jq '[.incomingCount, .outgoingCount] | add'
+    mcurl -XGET "$INSIGHT_URL" | "$JQ_CMD" '[.incomingCount, .outgoingCount] | add'
 }
 
 fetchItem() {
@@ -174,9 +177,9 @@ downloadAttachment() {
             rm -f "$attachOut"
         fi
 
-        checksum1=$(curl -s -I -H "X-Docspell-Auth: $auth_token" "$ATTACH_URL/$attachId/original" | \
-                        grep -i 'etag' | cut -d' ' -f2 | jq -r)
-        curl -s -o "$attachOut" -H "X-Docspell-Auth: $auth_token" "$ATTACH_URL/$attachId/original"
+        checksum1=$("$CURL_CMD" -s -I -H "X-Docspell-Auth: $auth_token" "$ATTACH_URL/$attachId/original" | \
+                        grep -i 'etag' | cut -d' ' -f2 | "$JQ_CMD" -r)
+        "$CURL_CMD" -s -o "$attachOut" -H "X-Docspell-Auth: $auth_token" "$ATTACH_URL/$attachId/original"
         checksum2=$(sha256sum "$attachOut" | cut -d' ' -f1 | xargs)
         if [ "$checksum1" == "$checksum2" ]; then
             errout " - Checksum ok."
@@ -190,10 +193,10 @@ downloadAttachment() {
 downloadItem() {
     checkLogin
     itemData=$(fetchItem "$1")
-    errout "Get item $(echo $itemData | jq -r .id)"
-    created=$(echo $itemData|jq '.created')
-    created=$((($(echo $itemData|jq '.created') + 500) / 1000))
-    itemId=$(echo $itemData | jq -r '.id')
+    errout "Get item $(echo $itemData | "$JQ_CMD" -r .id)"
+    created=$(echo $itemData|"$JQ_CMD" '.created')
+    created=$((($(echo $itemData|"$JQ_CMD" '.created') + 500) / 1000))
+    itemId=$(echo $itemData | "$JQ_CMD" -r '.id')
     out="$TARGET/$(date -d @$created +%Y-%m)/$itemId"
 
     if [ -d "$out" ] && [ "$DROP_ITEM" == "y" ]; then
@@ -209,14 +212,14 @@ downloadItem() {
             errout " - Removing metadata.json as requested"
             rm -f "$out/metadata.json"
         fi
-        echo $itemData | jq > "$out/metadata.json"
+        echo $itemData | "$JQ_CMD" > "$out/metadata.json"
     fi
 
     while read attachId attachName; do
         attachOut="$out/$attachName"
         checkLogin
         downloadAttachment "$attachId"
-    done < <(echo $itemData | jq -r '.sources[] | [.id,.name] | join(" ")')
+    done < <(echo $itemData | "$JQ_CMD" -r '.sources[] | [.id,.name] | join(" ")')
 
 }
 
