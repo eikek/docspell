@@ -1,5 +1,89 @@
 # Changelog
 
+## v0.19.0
+
+*tbd*
+
+This release comes with major improvements to the text analysis
+module. It is now much more configurable, has improved results and can
+learn tags from all categories. Additionally, more languages have been
+added (and it's now easier to add more, please open an issue if want
+more languages).
+
+- text analysis improvements (#263, #570)
+  - docspell can now learn from all your tag categories
+  - the detection for correspondents/concerned entities has been
+    improved by using the classifier for this, too
+  - all text analysis steps are now configurable that makes it
+    possible to adapt it better to your data and machine. 
+  - The docs have been updated with some details
+    [here](https://docspell.org/docs/configure/#file-processing) and
+    [here](https://docspell.org/docs/joex/file-processing/#text-analysis).
+- more languages (#488)
+  - Adds: Spanish, Italian, Portuguese, Czech, Dutch, Danish, Finnish,
+    Norwegian, Swedish, Russian, Romanian
+  - languages have different support for text-analysis, but there is
+    some basic support for all, there is extended support for English,
+    German and French through [Stanford
+    CoreNLP](https://stanfordnlp.github.io/CoreNLP/) nlp models
+  - if you want more languages, please open an issue.
+- scan mailbox change (#576)
+  - The change from last version (#551) has been moved behind a flag
+    in the "scan mailbox settings". Please review your scan mailbox
+    settings.
+  - The scan mailbox settings form view has been changed to tab-style,
+    as it grew too large for a single form.
+- nix tools package fixed (#584)
+  - If you are using docspell tools package for nix, it has now been
+    fixed in that all scripts are available. They are now all prefixed
+    by `ds-` (except the `ds` script)
+- fix deleting organization (#578)
+  - Due to the new relationship of a person to an organization,
+    deleting an organization whith references a person was not
+    possible. This is now fixed.
+- base url fix (#579)
+  - The `baseurl` setting is optional, but when specified it was
+    required to omit a trailing slash. This is now fixed in that it is
+    always rendered without the trailing slash to the client, no
+    matter what is in the config
+- tag category case sensitive search fix (#568)
+  - This was a bug introduced by the last release. When tag categories
+    can now be spelled upper- or lower-case. In 0.18.0 you had to
+    spell them lowercase, otherwise the search doesn't work.
+- adds a workaround for mails that don't specify the used charset (#591)
+
+### Breaking Changes
+
+- The joex configuration changed around text analysis. If you had some
+  custom settings there, please review these wrt the new default
+  config.
+- The tools package renamed the scripts to be better distinguishable,
+  since they all end up in `$PATH`. They are now prefixed by `ds-`.
+- The path of the consumedir script changed in the consumedir docker
+  image
+- The settings of the scan-mailbox task has been extended by another
+  flag. It controls when to apply the post-processing (moving or
+  deleting). If you were relying that all mails (even those excluded
+  by a subject filter) where moved away, you need to check the
+  settings.
+
+### REST Api Changes
+
+- the data structure for `ClassifierSettings` changed to allow
+  specfiying a blacklist or whitelist of tag categories and the
+  `enabled` flag has been removed.
+
+
+### Configuration Changes
+
+- joex
+  - the config regarding text analysis changed, there are new config
+    options, like `nlp.mode` and the `max-due-date-years` has been
+    moved inside `text-anlysis`. Please have a look at the new
+    [default config](https://docspell.org/docs/configure/#joex) if you
+    changed something there.
+
+
 ## v0.18.0
 
 *Jan 11, 2021*
