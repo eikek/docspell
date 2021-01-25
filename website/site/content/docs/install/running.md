@@ -45,42 +45,14 @@ when opened up to the outside, it is recommended to lock this down.
 
 {% end %}
 
-## Memory Usage
+## Memory
 
-The memory requirements for the joex component depends on the document
-language and the configuration for [file
-processing](@/docs/configure/_index.md#file-processing). The
-`nlp.mode` setting has significant impact, especially when your
-documents are in German. Here are some rough numbers on jvm heap usage
-(the same small jpeg file was used for all tries):
+Using the options below you can define how much memory the JVM process
+is able to use. This might be necessary to adopt depending on the
+usage scenario and configured text analysis features.
 
-<table class="table is-hoverable is-striped">
-<thead>
-  <tr><th>nlp.mode</th><th>English</th><th>German</th><th>French</th></tr>
-</thead>
-<tfoot>
-</tfoot>
-<tbody>
-  <tr><td>full</td><td>420M</td><td>950M</td><td>490M</td></tr>
-  <tr><td>basic</td><td>170M</td><td>380M</td><td>390M</td></tr>
-</tbody>
-</table>
-
-When using `mode=full`, a heap setting of at least `-Xmx1400M` is
-recommended. For `mode=basic` a heap setting of at least `-Xmx500M` is
-recommended.
-
-Other languages can't use these two modes, and so don't require this
-amount of memory (but don't have as good results). Then you can go
-with less heap.
-
-More details about these modes can be found
-[here](@/docs/joex/file-processing.md#text-analysis).
-
-
-The restserver component is very lightweight, here you can use
-defaults.
-
+Please have a look at the corresponding [configuration
+section](@/docs/configure/_index.md#memory-usage).
 
 ## Options
 

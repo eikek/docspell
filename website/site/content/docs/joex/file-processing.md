@@ -443,9 +443,10 @@ nlp processing as follows:
 - mode `regexonly`: this doesn't load any statistical models and is
   therefore much lighter on memory (depending on the address book
   size, of course). It will use the address book to create regex rules
-  and match them against your document.
-- mode = disabled: this disables nlp processing altogether. Then only
-  the classifier is run (unless disabled).
+  and match them against your document. Memory usage then doesn't
+  depend on the document language.
+- mode `disabled`: this disables nlp processing. Then only the
+  classifier is run (unless disabled).
 
 Note that mode `full` and `basic` is only relevant for the languages
 where models are available. For all other languages, it is effectively

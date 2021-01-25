@@ -42,6 +42,8 @@ directory and uploads all incoming files to Docspell. The script can
 watch directories recursively and can skip files already uploaded, so
 you can organize the files as you want in there (rename, move etc).
 
+This can be used multiple times on different machines, if desired.
+
 The scanner should support 300dpi for better results. Docspell
 converts the files into PDF adding a text layer of image-only files.
 

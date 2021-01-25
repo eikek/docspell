@@ -25,3 +25,8 @@ To get started, here are some quick links:
   user provided [notes and unraid
   templates](https://github.com/vakilando/unraid-docker-templates)
   which can get you started. Thanks for providing these!
+
+Every [component](@docs/intro/_index.md#components) (restserver, joex,
+consumedir) can run on different machines and multiple times. Most of
+the time running all on one machine is sufficient and also for
+simplicity, the docker-compose setup reflects this variant.

@@ -24,9 +24,10 @@ candidates for:
 - Correspondents
 - Concerned person or things
 - A date
+- Tags
 
-It will propose a few candidates and sets the most likely one to your
-item.
+For tags, it sets all that it thinks do apply. For the others, it will
+propose a few candidates and sets the most likely one to your item.
 
 This might be wrong, so it is recommended to curate the results.
 However, very often the correct one is either set or within the

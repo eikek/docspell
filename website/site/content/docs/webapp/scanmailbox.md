@@ -21,18 +21,21 @@ multiple e-mail accounts you want to import periodically.
 
 # Details
 
-Creating a task requires the following information:
+## General
 
-{{ figure(file="scanmailbox-detail.png") }}
+{{ figure(file="scanmailbox-detail-01.png") }}
 
 You can enable or disable this task. A disabled task will not run
 periodically. You can still choose to run it manually if you click the
 `Start Once` button.
 
-## E-Mail Settings
-
 Then you need to specify which [IMAP
 connection](@/docs/webapp/emailsettings.md#imap-settings) to use.
+
+
+## Processing
+
+{{ figure(file="scanmailbox-detail-02.png") }}
 
 A list of folders is required. Docspell will only look into these
 folders. You can specify multiple folders. The "Inbox" folder is a
@@ -43,30 +46,20 @@ mails in your inbox. Any other folder is usually case-sensitive
 except the INBOX folder). Type in a folder name and click the add
 button on the right.
 
-The next two settings tell docspell what to do once a mail has been
-submitted to docspell. It can be moved into another folder in your
-mail account. This moves it out of the way for the next run. You can
-also choose to delete the mail, but *note that it will really be
-deleted and not moved to your trash folder*. If both options are off,
-nothing happens with that mail, it simply stays (and could be re-read
-on the next run).
-
-Be careful when mails are neither moved nor deleted after processing.
-They could be selected anew in the next run, meaning that the job can
-not progress, because it filters out the same mails all the time. You
-can however, simply schedule the task in an interval >= the `Received
-Since Hours` setting.
-
-
-## Filtering
-
-The following properties allow to filter mails that are imported.
-
 Then the field *Received Since Hours* defines how many hours to go
 back and look for mails. Usually there are many mails in your inbox
 and importing them all at once is not feasible or desirable. It can
 work together with the *Schedule* field below. For example, you could
-run this task all 6 hours and read mails from 8 hours back.
+run this task all 6 hours and read mails from 8 hours back. This
+setting is used to query the mail server.
+
+
+## Additional Filter
+
+{{ figure(file="scanmailbox-detail-03.png") }}
+
+The following properties allow to filter those downloaded mails that
+should be imported.
 
 The *File Filter* can be specified as a glob to only import mail
 attachments based on their file name. For example, a value of `*.pdf`
@@ -82,10 +75,38 @@ pattern. For example, if your scanner mails to you with a certain
 subject like _"Scanned Document 214"_, you could include those via a
 `Scanned Document*` pattern.
 
+## Post Processing
+
+{{ figure(file="scanmailbox-detail-04.png") }}
+
+The next settings tell docspell what to do once a mail has been read
+by docspell. It can be moved into another folder in your mail account.
+This moves it out of the way for the next run. You can also choose to
+delete the mail, but *note that it will really be deleted and not
+moved to your trash folder*. If both options are off, nothing happens
+with that mail, it simply stays (and could be re-read on the next
+run).
+
+Be careful when mails are neither moved nor deleted after processing.
+They could be selected anew in the next run, meaning that the job can
+not progress, because it filters out the same mails all the time. You
+can however, simply schedule the task in an interval >= the `Received
+Since Hours` setting.
+
+By default, post-processing is only applied to mails that have been
+*submitted to docspell*. Some mails may have been skipped due subject
+filtering. If you also want these skipped mails to be affected by
+post-processing, enabled the *Apply post-processing to all fetched
+mails*.
+
+
+
 ## Metadata
 
-The last properties allow to specify some metadata that are
-automatically attached to the items being created.
+{{ figure(file="scanmailbox-detail-05.png") }}
+
+These properties allow to specify some metadata that are automatically
+attached to the items being created.
 
 Every item in docspell has a direction value (incoming or outgoing).
 If you know that all mails you want to import have a specific
@@ -104,17 +125,26 @@ resulting items.
 The *Tags* setting can be used to associate a fixed number of tags to
 all items that are imported from this mail task.
 
-The last field is the *Schedule* which defines when and how often this
-task should run. The syntax is similiar to a date-time string, like
-`2019-09-15 12:32`, where each part is a pattern to also match multple
-values. The ui tries to help a little by displaying the next two
-date-times this task would execute. A more in depth help is available
-[here](https://github.com/eikek/calev#what-are-calendar-events). For
-example, to execute the task every monday at noon, you would write:
-`Mon *-*-* 12:00`. A date-time part can match all values (`*`), a list
-of values (e.g. `1,5,12,19`) or a range (e.g. `1..9`). Long lists may
-be written in a shorter way using a repetition value. It is written
-like this: `1/7` which is the same as a list with `1` and all
+The *Language* setting is applied when processing the mails. If not
+set, the default language of the collective is used.
+
+
+## Schedule
+
+{{ figure(file="scanmailbox-detail-06.png") }}
+
+At last the *Schedule* defines when and how often this task should
+run. The syntax is similiar to a date-time string, like `2019-09-15
+12:32`, where each part is a pattern to also match multple values. The
+ui tries to help a little by displaying the next two date-times this
+task would execute. A more in depth help is available
+[here](https://github.com/eikek/calev#what-are-calendar-events).
+
+For example, to execute the task every monday at noon, you would
+write: `Mon *-*-* 12:00`. A date-time part can match all values (`*`),
+a list of values (e.g. `1,5,12,19`) or a range (e.g. `1..9`). Long
+lists may be written in a shorter way using a repetition value. It is
+written like this: `1/7` which is the same as a list with `1` and all
 multiples of `7` added to it. In other words, it matches `1`, `1+7`,
 `1+7+7`, `1+7+7+7` and so on.
 

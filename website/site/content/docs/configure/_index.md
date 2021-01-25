@@ -341,12 +341,58 @@ will degrade to `regexonly` for these.
 
 The mode `disabled` skips NLP processing completely. This has least
 impact in memory consumption, obviously, but then only the classifier
-is used to find metadata.
+is used to find metadata (unless it is disabled, too).
 
 You might want to try different modes and see what combination suits
 best your usage pattern and machine running joex. If a powerful
-machine is used, simply leave the defaults. When running on an older
+machine is used, simply leave the defaults. When running on an
 raspberry pi, for example, you might need to adjust things.
+
+### Memory Usage
+
+The memory requirements for the joex component depends on the document
+language and the enabled features for text-analysis. The `nlp.mode`
+setting has significant impact, especially when your documents are in
+German. Here are some rough numbers on jvm heap usage (the same file
+was used for all tries):
+
+<table class="table is-hoverable is-striped">
+<thead>
+  <tr><th>nlp.mode</th><th>English</th><th>German</th><th>French</th></tr>
+</thead>
+<tfoot>
+</tfoot>
+<tbody>
+  <tr><td>full</td><td>420M</td><td>950M</td><td>490M</td></tr>
+  <tr><td>basic</td><td>170M</td><td>380M</td><td>390M</td></tr>
+</tbody>
+</table>
+
+Note that these are only rough numbers and they show the maximum used
+heap memory while processing a file.
+
+When using `mode=full`, a heap setting of at least `-Xmx1400M` is
+recommended. For `mode=basic` a heap setting of at least `-Xmx500M` is
+recommended.
+
+Other languages can't use these two modes, and so don't require this
+amount of memory (but don't have as good results). Then you can go
+with less heap. For these languages, the nlp mode is the same as
+`regexonly`.
+
+Training the classifier is also memory intensive, which solely depends
+on the size and number of documents that are being trained. However,
+training the classifier is done periodically and can happen maybe
+every two weeks. When classifying new documents, memory requirements
+are lower, since the model already exists.
+
+More details about these modes can be found
+[here](@/docs/joex/file-processing.md#text-analysis).
+
+
+The restserver component is very lightweight, here you can use
+defaults.
+
 
 # File Format
 

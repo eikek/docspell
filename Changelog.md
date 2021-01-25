@@ -6,9 +6,9 @@
 
 This release comes with major improvements to the text analysis
 module. It is now much more configurable, has improved results and can
-learn tags from all categories. Additionally, more languages have been
-added (and it's now easier to add more, please open an issue if want
-more languages).
+learn tags from all categories. Additionally, more languages for
+document processing have been added and it's now easier to add more.
+Please open an issue if want more languages to be included.
 
 - text analysis improvements (#263, #570)
   - docspell can now learn from all your tag categories
@@ -23,15 +23,15 @@ more languages).
   - Adds: Spanish, Italian, Portuguese, Czech, Dutch, Danish, Finnish,
     Norwegian, Swedish, Russian, Romanian
   - languages have different support for text-analysis, but there is
-    some basic support for all, there is extended support for English,
-    German and French through [Stanford
-    CoreNLP](https://stanfordnlp.github.io/CoreNLP/) nlp models
-  - if you want more languages, please open an issue.
+    some basic support for all
+  - there is extended support for English, German and French through
+    [Stanford CoreNLP](https://stanfordnlp.github.io/CoreNLP/) nlp
+    models (as before)
 - scan mailbox change (#576)
   - The change from last version (#551) has been moved behind a flag
     in the "scan mailbox settings". Please review your scan mailbox
-    settings.
-  - The scan mailbox settings form view has been changed to tab-style,
+    tasks in your user settings.
+  - The scan mailbox settings form view has been organized into tabs,
     as it grew too large for a single form.
 - nix tools package fixed (#584)
   - If you are using docspell tools package for nix, it has now been
@@ -50,22 +50,23 @@ more languages).
   - This was a bug introduced by the last release. When tag categories
     can now be spelled upper- or lower-case. In 0.18.0 you had to
     spell them lowercase, otherwise the search doesn't work.
-- adds a workaround for mails that don't specify the used charset (#591)
+- adds a workaround for mails that don't specify their used charset (#591)
 
 ### Breaking Changes
 
 - The joex configuration changed around text analysis. If you had some
   custom settings there, please review these wrt the new default
   config.
-- The tools package renamed the scripts to be better distinguishable,
-  since they all end up in `$PATH`. They are now prefixed by `ds-`.
+- When using the nix package manager: the tools package renamed the
+  scripts to be better distinguishable, since they all end up in
+  `$PATH`. They are now prefixed by `ds-`.
 - The path of the consumedir script changed in the consumedir docker
   image
 - The settings of the scan-mailbox task has been extended by another
   flag. It controls when to apply the post-processing (moving or
   deleting). If you were relying that all mails (even those excluded
-  by a subject filter) where moved away, you need to check the
-  settings.
+  by a subject filter) where moved away, you need to check your
+  scan-mailbox task settings.
 
 ### REST Api Changes
 
@@ -82,6 +83,9 @@ more languages).
     moved inside `text-anlysis`. Please have a look at the new
     [default config](https://docspell.org/docs/configure/#joex) if you
     changed something there.
+  - The `regex-ner` section has changed: the `enabled` flag has been
+    removed, you can now limit the number of entries using
+    `max-entries` to apply and `0` means to disable it.
 
 
 ## v0.18.0
