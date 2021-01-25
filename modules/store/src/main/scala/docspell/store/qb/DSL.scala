@@ -101,8 +101,11 @@ trait DSL extends DoobieMeta {
   def concat(expr: SelectExpr, exprs: SelectExpr*): DBFunction =
     DBFunction.Concat(Nel.of(expr, exprs: _*))
 
-  def lit[A](value: A)(implicit P: Put[A]): SelectExpr.SelectLit[A] =
-    SelectExpr.SelectLit(value, None)
+  def const[A](value: A)(implicit P: Put[A]): SelectExpr.SelectConstant[A] =
+    SelectExpr.SelectConstant(value, None)
+
+  def lit(value: String): SelectExpr.SelectLiteral =
+    SelectExpr.SelectLiteral(value, None)
 
   def plus(left: SelectExpr, right: SelectExpr): DBFunction =
     DBFunction.Calc(DBFunction.Operator.Plus, left, right)
@@ -291,7 +294,7 @@ trait DSL extends DoobieMeta {
       DBFunction.Calc(
         DBFunction.Operator.Minus,
         SelectExpr.SelectFun(dbf, None),
-        SelectExpr.SelectLit(value, None)
+        SelectExpr.SelectConstant(value, None)
       )
   }
 }

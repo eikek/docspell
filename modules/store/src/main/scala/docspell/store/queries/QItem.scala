@@ -138,7 +138,7 @@ object QItem {
         i.source.s,
         i.incoming.s,
         i.created.s,
-        coalesce(Attachs.num.s, lit(0)).s,
+        coalesce(Attachs.num.s, const(0)).s,
         org.oid.s,
         org.name.s,
         pers0.pid.s,
@@ -302,10 +302,10 @@ object QItem {
 
     val basicFields = Nel.of(
       count(i.id).as("fc"),
-      lit(0).as("favg"),
-      lit(0).as("fsum"),
-      lit(0).as("fmax"),
-      lit(0).as("fmin")
+      const(0).as("favg"),
+      const(0).as("fsum"),
+      const(0).as("fmax"),
+      const(0).as("fmin")
     )
     val valueNum = cast(cv.value.s, "decimal").s
     val numericFields = Nel.of(

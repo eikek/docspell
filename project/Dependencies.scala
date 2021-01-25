@@ -12,7 +12,6 @@ object Dependencies {
   val ClipboardJsVersion      = "2.0.6"
   val DoobieVersion           = "0.10.0"
   val EmilVersion             = "0.7.1"
-  val FastparseVersion        = "2.1.3"
   val FlexmarkVersion         = "0.62.2"
   val FlywayVersion           = "7.5.1"
   val Fs2Version              = "2.5.0"
@@ -113,7 +112,7 @@ object Dependencies {
     "com.github.eikek" %% "emil-doobie" % EmilVersion
   )
   val emilTnef = Seq(
-    "com.github.eikek" %% "emil-tnef" % EmilVersion excludeAll(
+    ("com.github.eikek" %% "emil-tnef" % EmilVersion).excludeAll(
       ExclusionRule("org.apache.poi")
     )
   )
@@ -212,10 +211,6 @@ object Dependencies {
   // MPL 2.0
   val pureconfig = Seq(
     "com.github.pureconfig" %% "pureconfig" % PureConfigVersion
-  )
-
-  val fastparse = Seq(
-    "com.lihaoyi" %% "fastparse" % FastparseVersion
   )
 
   // https://github.com/h2database/h2database

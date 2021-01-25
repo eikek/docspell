@@ -118,8 +118,8 @@ object QJob {
 
   private def stuckTriggerValue(t: RJob.Table, initialPause: Duration, now: Timestamp) =
     plus(
-      coalesce(t.startedmillis.s, lit(now.toMillis)).s,
-      mult(power(2, t.retries.s).s, lit(initialPause.millis)).s
+      coalesce(t.startedmillis.s, const(now.toMillis)).s,
+      mult(power(2, t.retries.s).s, const(initialPause.millis)).s
     )
 
   def selectNextJob(
