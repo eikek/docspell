@@ -2,7 +2,7 @@
 
 ## v0.19.0
 
-*tbd*
+*Jan 25, 2021*
 
 This release comes with major improvements to the text analysis
 module. It is now much more configurable, has improved results and can
