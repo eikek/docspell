@@ -156,6 +156,12 @@
                                                 </a>
                                             </li>
                                             
+                                            <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;consumedir&#x2F;#network-filesystems-samba-cifs-nfs">
+                                                    Network Filesystems (samba cifs, nfs)
+                                                </a>
+                                            </li>
+                                            
                                         </ul>
                                     </li>
                                     
@@ -292,6 +298,11 @@ authentication. This is usually a <a href="https://docspell.org/docs/webapp/uplo
 url</a>. It is also possible
 to use the script with the <a href="https://docspell.org/docs/api/upload/#integration-endpoint">integration
 endpoint</a>.</p>
+<p>The script can be run multiple times and on on multiple machines, the
+files are transferred via HTTP to the docspell server. For example, it
+is convenient to set it up on your workstation, so that you can drop
+files into some local folder to be immediatly transferred to docspell
+(e.g. when downloading something from the browser).</p>
 <h2 id="integration-endpoint">Integration Endpoint<a class="zola-anchor" href="#integration-endpoint" aria-label="Anchor link for: integration-endpoint">🔗</a></h2>
 <p>When given the <code>-i</code> or <code>--integration</code> option, the script changes its
 behaviour slightly to work with the <a href="https://docspell.org/docs/api/upload/#integration-endpoint">integration
@@ -324,6 +335,31 @@ exist at docspell. For this the <code>sha256sum</code> command is required.</p>
 <p>So you can move and rename files in those folders without worring
 about duplicates. This allows to keep your files organized using the
 file-system and have them mirrored into docspell as well.</p>
+<h2 id="network-filesystems-samba-cifs-nfs">Network Filesystems (samba cifs, nfs)<a class="zola-anchor" href="#network-filesystems-samba-cifs-nfs" aria-label="Anchor link for: network-filesystems-samba-cifs-nfs">🔗</a></h2>
+<p>Watching a directory for changes relies on <code>inotify</code> subsystem on
+linux. This doesn't work on network filesystems like nfs or cifs. Here
+are some ideas to get around this limitation:</p>
+<ol>
+<li>The <code>consumedir.sh</code> is just a shell script and doesn't need to run
+on the same machine as docspell. (Note that the default docker
+setup is mainly for demoing and quickstart, it's not required to
+run all of them on one machine). So the best option is to put the
+consumedir on the machine that contains the local filesystem. All
+files are send via HTTP to the docspell server anyways, so there is
+no need to first transfer them via a network filesystem or rsync.</li>
+<li>If option 1 is not possible for some reason, and you need to check
+a network filesystem, the only option left (that I know) is to
+periodically poll this directory. This is also possible with
+consumedir, using the <code>-o</code> or <code>--once</code> option (see above). You'd
+need to setup the systemd unit file a bit differently and add a
+timer to it (or you can use cron or something more fancy…).</li>
+<li>Copy the files to the machine that runs consumedir, via rsync for
+example. Note that this has no advantage over otpion 1, as you now
+need to setup rsync on the other machine to run either periodically
+or when some file arrives. Then you can as well run the consumedir
+script. But it might be more convenient, if rsync is already
+running.</li>
+</ol>
 <h1 id="systemd">Systemd<a class="zola-anchor" href="#systemd" aria-label="Anchor link for: systemd">🔗</a></h1>
 <p>The script can be used with systemd to run as a service. This is an
 example unit file:</p>
@@ -342,7 +378,7 @@ an existing user <code>someuser</code> that is used to run this service. The url
 <code>http://localhost:7880/api/v1/open/upload/...</code> is an anonymous upload
 url as described <a href="https://docspell.org/docs/webapp/uploading/#anonymous-upload">here</a>.</p>
 <h1 id="docker">Docker<a class="zola-anchor" href="#docker" aria-label="Anchor link for: docker">🔗</a></h1>
-<p>The provided docker image runs this script to watch a single
+<p>The provided docker-compose setup runs this script to watch a single
 directory, <code>./docs</code> in current directory, for new files. If a new file
 is detected, it is pushed to docspell.</p>
 <p>This utilizes the <a href="https://docspell.org/docs/api/upload/#integration-endpoint">integration
@@ -373,7 +409,7 @@ the <code>consumedir</code> container will push it to docspell.</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell, 0.18.0
+                Docspell, 0.19.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>

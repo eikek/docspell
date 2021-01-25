@@ -211,17 +211,17 @@ work is done by the joex components.</p>
 <p>Running the joex component on the Raspberry Pi is possible, but will
 result in long processing times for OCR and text analysis. The board
 should provide 4G of RAM (like the current RPi4), especially if also a
-database and solr are running next to it. I recommend to give joex a
-heap of 1.5G (<code>-J-Xmx1536M</code>). You should also set the joex pool size
-to 1.</p>
-<p>When joex processes the first file, some models are built loaded into
-memory which can take a while. Subsequent processing times are faster
-then.</p>
+database and solr are running next to it. The memory required by joex
+depends on the config and document language. Please pick a value that
+suits your setup from <a href="https://docspell.org/docs/configure/#memory-usage">here</a>.
+For boards like the RPi, it might be necessary to use
+<code>nlp.mode=basic</code>, rather than <code>nlp.mode=full</code>. You should also set the
+joex pool size to 1.</p>
 <p>An example: on this <a href="https://up-board.org/up/specifications/">UP
 board</a> with an Intel Atom
-x5-Z8350 CPU (@1.44Ghz) and 4G RAM, a scanned (300dpi) pdf file with 6
-pages took <em>3:20 min</em> to process. This board also runs the SOLR and a
-postgresql database.</p>
+x5-Z8350 CPU (@1.44Ghz) and 4G RAM, a scanned (300dpi, in German) pdf
+file with 6 pages took <em>3:20 min</em> to process. This board also runs the
+SOLR and a postgresql database.</p>
 <p>The same file was processed in 55s on a qemu virtual machine on my i7
 notebook, using 1 CPU and 4G RAM (and identical config for joex). The
 virtual machine only had to host docspell (joex and restserver, but
@@ -241,7 +241,7 @@ items to consider in the collective settings page.</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell, 0.18.0
+                Docspell, 0.19.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>

@@ -154,6 +154,12 @@
                                         </a>
                                     </li>
                                     
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;configure&#x2F;#file-processing">
+                                            File Processing
+                                        </a>
+                                    </li>
+                                    
                                 </ul>
                             </li>
                             
@@ -212,6 +218,8 @@ necessary.</p>
 <p>The configuration of both components uses separate namespaces. The
 configuration for the REST server is below <code>docspell.server</code>, while
 the one for joex is below <code>docspell.joex</code>.</p>
+<p>You can therefore use two separate config files or one single file
+containing both namespaces.</p>
 <h2 id="jdbc">JDBC<a class="zola-anchor" href="#jdbc" aria-label="Anchor link for: jdbc">🔗</a></h2>
 <p>This configures the connection to the database. This has to be
 specified for the rest server and joex. By default, a H2 database in
@@ -412,6 +420,92 @@ of the string are used.</p>
 <p>The <code>session-valid</code> deterimens how long a token is valid. This can be
 just some minutes, the web application obtains new ones
 periodically. So a short time is recommended.</p>
+<h2 id="file-processing">File Processing<a class="zola-anchor" href="#file-processing" aria-label="Anchor link for: file-processing">🔗</a></h2>
+<p>Files are being processed by the joex component. So all the respective
+configuration is in this config only.</p>
+<p>File processing involves several stages, detailed information can be
+found <a href="https://docspell.org/docs/joex/file-processing/#text-analysis">here</a> and in the
+corresponding sections in <a href="https://docspell.org/docs/configure/#joex">joex default config</a>.</p>
+<p>Configuration allows to define the external tools and set some
+limitations to control memory usage. The sections are:</p>
+<ul>
+<li><code>docspell.joex.extraction</code></li>
+<li><code>docspell.joex.text-analysis</code></li>
+<li><code>docspell.joex.convert</code></li>
+</ul>
+<p>Options to external commands can use variables that are replaced by
+values at runtime. Variables are enclosed in double braces <code>{{…}}</code>.
+Please see the default configuration for what variables exist per
+command.</p>
+<h3 id="classification">Classification<a class="zola-anchor" href="#classification" aria-label="Anchor link for: classification">🔗</a></h3>
+<p>In <code>text-analysis.classification</code> you can define how many documents at
+most should be used for learning. The default settings should work
+well for most cases. However, it always depends on the amount of data
+and the machine that runs joex. For example, by default the documents
+to learn from are limited to 600 (<code>classification.item-count</code>) and
+every text is cut after 5000 characters (<code>text-analysis.max-length</code>).
+This is fine if <em>most</em> of your documents are small and only a few are
+near 5000 characters). But if <em>all</em> your documents are very large, you
+probably need to either assign more heap memory or go down with the
+limits.</p>
+<p>Classification can be disabled, too, for when it's not needed.</p>
+<h3 id="nlp">NLP<a class="zola-anchor" href="#nlp" aria-label="Anchor link for: nlp">🔗</a></h3>
+<p>This setting defines which NLP mode to use. It defaults to <code>full</code>,
+which requires more memory for certain languages (with the advantage
+of better results). Other values are <code>basic</code>, <code>regexonly</code> and
+<code>disabled</code>. The modes <code>full</code> and <code>basic</code> use pre-defined lanugage
+models for procesing documents of languaes German, English and French.
+These require some amount of memory (see below).</p>
+<p>The mode <code>basic</code> is like the &quot;light&quot; variant to <code>full</code>. It doesn't use
+all NLP features, which makes memory consumption much lower, but comes
+with the compromise of less accurate results.</p>
+<p>The mode <code>regexonly</code> doesn't use pre-defined lanuage models, even if
+available. It checks your address book against a document to find
+metadata. That means, it is language independent. Also, when using
+<code>full</code> or <code>basic</code> with lanugages where no pre-defined models exist, it
+will degrade to <code>regexonly</code> for these.</p>
+<p>The mode <code>disabled</code> skips NLP processing completely. This has least
+impact in memory consumption, obviously, but then only the classifier
+is used to find metadata (unless it is disabled, too).</p>
+<p>You might want to try different modes and see what combination suits
+best your usage pattern and machine running joex. If a powerful
+machine is used, simply leave the defaults. When running on an
+raspberry pi, for example, you might need to adjust things.</p>
+<h3 id="memory-usage">Memory Usage<a class="zola-anchor" href="#memory-usage" aria-label="Anchor link for: memory-usage">🔗</a></h3>
+<p>The memory requirements for the joex component depends on the document
+language and the enabled features for text-analysis. The <code>nlp.mode</code>
+setting has significant impact, especially when your documents are in
+German. Here are some rough numbers on jvm heap usage (the same file
+was used for all tries):</p>
+<table class="table is-hoverable is-striped">
+<thead>
+  <tr><th>nlp.mode</th><th>English</th><th>German</th><th>French</th></tr>
+</thead>
+<tfoot>
+</tfoot>
+<tbody>
+  <tr><td>full</td><td>420M</td><td>950M</td><td>490M</td></tr>
+  <tr><td>basic</td><td>170M</td><td>380M</td><td>390M</td></tr>
+</tbody>
+</table>
+<p>Note that these are only rough numbers and they show the maximum used
+heap memory while processing a file.</p>
+<p>When using <code>mode=full</code>, a heap setting of at least <code>-Xmx1400M</code> is
+recommended. For <code>mode=basic</code> a heap setting of at least <code>-Xmx500M</code> is
+recommended.</p>
+<p>Other languages can't use these two modes, and so don't require this
+amount of memory (but don't have as good results). Then you can go
+with less heap. For these languages, the nlp mode is the same as
+<code>regexonly</code>.</p>
+<p>Training the classifier is also memory intensive, which solely depends
+on the size and number of documents that are being trained. However,
+training the classifier is done periodically and can happen maybe
+every two weeks. When classifying new documents, memory requirements
+are lower, since the model already exists.</p>
+<p>More details about these modes can be found
+<a href="https://docspell.org/docs/joex/file-processing/#text-analysis">here</a>.</p>
+<p>The restserver component is very lightweight, here you can use
+defaults.</p>
 <h1 id="file-format">File Format<a class="zola-anchor" href="#file-format" aria-label="Anchor link for: file-format">🔗</a></h1>
 <p>The format of the configuration files can be
 <a href="https://github.com/lightbend/config/blob/master/HOCON.md#hocon-human-optimized-config-object-notation">HOCON</a>,
@@ -842,56 +936,101 @@ Please refer to their documentation for more on this.</p>
     # All text to analyse must fit into RAM. A large document may take
     # too much heap. Also, most important information is at the
     # beginning of a document, so in most cases the first two pages
-    # should suffice. Default is 10000, which are about 2-3 pages
-    # (just a rough guess, of course).
-</span><span style="color:#fdf4c1;">    max-length = 10000
+    # should suffice. Default is 5000, which are about 2 pages (just a
+    # rough guess, of course). For my data, more than 80% of the
+    # documents are less than 5000 characters.
+    #
+    # This values applies to nlp and the classifier. If this value is
+    # &lt;= 0, the limit is disabled.
+</span><span style="color:#fdf4c1;">    max-length = 5000
     </span><span style="font-style:italic;color:#928374;"># A working directory for the analyser to store temporary/working
     # files.
-</span><span style="color:#fdf4c1;">    working-dir = ${java.io.tmpdir}</span><span style="color:#b8bb26;">&quot;/docspell-analysis&quot;
-    </span><span style="font-style:italic;color:#928374;"># The StanfordCoreNLP library caches language models which
-    # requires quite some amount of memory. Setting this interval to a
-    # positive duration, the cache is cleared after this amount of
-    # idle time. Set it to 0 to disable it if you have enough memory,
-    # processing will be faster.
-</span><span style="color:#fdf4c1;">    clear-stanford-nlp-interval = </span><span style="color:#b8bb26;">&quot;15 minutes&quot;</span><span style="color:#fdf4c1;">
-    regex-ner {
-      </span><span style="font-style:italic;color:#928374;"># Whether to enable custom NER annotation. This uses the address
-      # book of a collective as input for NER tagging (to automatically
-      # find correspondent and concerned entities). If the address book
-      # is large, this can be quite memory intensive and also makes text
-      # analysis slower. But it greatly improves accuracy. If this is
-      # false, NER tagging uses only statistical models (that also work
-      # quite well).
+</span><span style="color:#fdf4c1;">    working-dir = ${java.io.tmpdir}</span><span style="color:#b8bb26;">&quot;/docspell-analysis&quot;</span><span style="color:#fdf4c1;">
+    nlp {
+      </span><span style="font-style:italic;color:#928374;"># The mode for configuring NLP models:
       #
-      # This setting might be moved to the collective settings in the
-      # future.
-</span><span style="color:#fdf4c1;">      enabled = true
-      </span><span style="font-style:italic;color:#928374;"># The NER annotation uses a file of patterns that is derived from
-      # a collective&#39;s address book. This is is the time how long this
-      # file will be kept until a check for a state change is done.
-</span><span style="color:#fdf4c1;">      file-cache-time = </span><span style="color:#b8bb26;">&quot;1 minute&quot;
-    </span><span style="color:#fdf4c1;">}
+      # 1. full – builds the complete pipeline
+      # 2. basic - builds only the ner annotator
+      # 3. regexonly - matches each entry in your address book via regexps
+      # 4. disabled - doesn&#39;t use any stanford-nlp feature
+      #
+      # The full and basic variants rely on pre-build language models
+      # that are available for only a few languages. Memory usage
+      # varies among the languages. So joex should run with -Xmx1400M
+      # at least when using mode=full.
+      #
+      # The basic variant does a quite good job for German and
+      # English. It might be worse for French, always depending on the
+      # type of text that is analysed. Joex should run with about 500M
+      # heap, here again lanugage German uses the most.
+      #
+      # The regexonly variant doesn&#39;t depend on a language. It roughly
+      # works by converting all entries in your addressbook into
+      # regexps and matches each one against the text. This can get
+      # memory intensive, too, when the addressbook grows large. This
+      # is included in the full and basic by default, but can be used
+      # independently by setting mode=regexner.
+      #
+      # When mode=disabled, then the whole nlp pipeline is disabled,
+      # and you won&#39;t get any suggestions. Only what the classifier
+      # returns (if enabled).
+</span><span style="color:#fdf4c1;">      mode = full
+      </span><span style="font-style:italic;color:#928374;"># The StanfordCoreNLP library caches language models which
+      # requires quite some amount of memory. Setting this interval to a
+      # positive duration, the cache is cleared after this amount of
+      # idle time. Set it to 0 to disable it if you have enough memory,
+      # processing will be faster.
+      #
+      # This has only any effect, if mode != disabled.
+</span><span style="color:#fdf4c1;">      clear-interval = </span><span style="color:#b8bb26;">&quot;15 minutes&quot;
+      </span><span style="font-style:italic;color:#928374;"># Restricts proposals for due dates. Only dates earlier than this
+      # number of years in the future are considered.
+</span><span style="color:#fdf4c1;">      max-due-date-years = 10
+      regex-ner {
+        </span><span style="font-style:italic;color:#928374;"># Whether to enable custom NER annotation. This uses the
+        # address book of a collective as input for NER tagging (to
+        # automatically find correspondent and concerned entities). If
+        # the address book is large, this can be quite memory
+        # intensive and also makes text analysis much slower. But it
+        # improves accuracy and can be used independent of the
+        # lanugage. If this is set to 0, it is effectively disabled
+        # and NER tagging uses only statistical models (that also work
+        # quite well, but are restricted to the languages mentioned
+        # above).
+        #
+        # Note, this is only relevant if nlp-config.mode is not
+        # &quot;disabled&quot;.
+</span><span style="color:#fdf4c1;">        max-entries = 1000
+        </span><span style="font-style:italic;color:#928374;"># The NER annotation uses a file of patterns that is derived
+        # from a collective&#39;s address book. This is is the time how
+        # long this data will be kept until a check for a state change
+        # is done.
+</span><span style="color:#fdf4c1;">        file-cache-time = </span><span style="color:#b8bb26;">&quot;1 minute&quot;
+      </span><span style="color:#fdf4c1;">}
+    }
     </span><span style="font-style:italic;color:#928374;"># Settings for doing document classification.
     #
-    # This works by learning from existing documents. A collective can
-    # specify a tag category and the system will try to predict a tag
-    # from this category for new incoming documents.
-    #
-    # This requires a satstical model that is computed from all
-    # existing documents. This process is run periodically as
-    # configured by the collective. It may require a lot of memory,
-    # depending on the amount of data.
+    # This works by learning from existing documents. This requires a
+    # satstical model that is computed from all existing documents.
+    # This process is run periodically as configured by the
+    # collective. It may require more memory, depending on the amount
+    # of data.
     #
     # It utilises this NLP library: https://nlp.stanford.edu/.
 </span><span style="color:#fdf4c1;">    classification {
       </span><span style="font-style:italic;color:#928374;"># Whether to enable classification globally. Each collective can
-      # decide to disable it. If it is disabled here, no collective
-      # can use classification.
+      # enable/disable auto-tagging. The classifier is also used for
+      # finding correspondents and concerned entities, if enabled
+      # here.
 </span><span style="color:#fdf4c1;">      enabled = true
       </span><span style="font-style:italic;color:#928374;"># If concerned with memory consumption, this restricts the
       # number of items to consider. More are better for training. A
-      # negative value or zero means no train on all items.
-</span><span style="color:#fdf4c1;">      item-count = 0
+      # negative value or zero means to train on all items.
+      #
+      # This limit and `text-analysis.max-length` define how much
+      # memory is required. On weaker hardware, it is advised to play
+      # with these values.
+</span><span style="color:#fdf4c1;">      item-count = 600
       </span><span style="font-style:italic;color:#928374;"># These settings are used to configure the classifier. If
       # multiple are given, they are all tried and the &quot;best&quot; is
       # chosen at the end. See
@@ -1032,12 +1171,6 @@ Please refer to their documentation for more on this.</p>
       working-dir = ${java.io.tmpdir}</span><span style="color:#b8bb26;">&quot;/docspell-convert&quot;
     </span><span style="color:#fdf4c1;">}
   }
-  </span><span style="font-style:italic;color:#928374;"># General config for processing documents
-</span><span style="color:#fdf4c1;">  processing {
-    </span><span style="font-style:italic;color:#928374;"># Restricts proposals for due dates. Only dates earlier than this
-    # number of years in the future are considered.
-</span><span style="color:#fdf4c1;">    max-due-date-years = 10
-  }
   </span><span style="font-style:italic;color:#928374;"># The same section is also present in the rest-server config. It is
   # used when submitting files into the job queue for processing.
   #
@@ -1135,7 +1268,7 @@ statements with level &quot;DEBUG&quot; will be printed, too.</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell, 0.18.0
+                Docspell, 0.19.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>

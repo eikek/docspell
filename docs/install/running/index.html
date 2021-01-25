@@ -154,6 +154,12 @@
                                         <ul>
                                             
                                             <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;running&#x2F;#memory">
+                                                    Memory
+                                                </a>
+                                            </li>
+                                            
+                                            <li>
                                                 <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;running&#x2F;#options">
                                                     Options
                                                 </a>
@@ -216,6 +222,26 @@ path <code>/app</code>, so using default values it would be
 <p>You should be able to create a new account and sign in. Check the
 <a href="https://docspell.org/docs/configure/">configuration page</a> to further customize
 docspell.</p>
+<div class="notification is-info is-light" style="z-index: -1">
+    <div class="content ">
+        <p class="title is-5">
+            ⚠ Please note
+        </p>
+        <div>
+            <p>Please have a look at the <a href="@/docs/configure/_index.md">configuration
+page</a> page, before making docspell
+available in the internet. By default, everyone can create an account.
+This is great for trying out and using it in an internal network. But
+when opened up to the outside, it is recommended to lock this down.</p>
+        </div>
+    </div>
+</div>
+<h2 id="memory">Memory<a class="zola-anchor" href="#memory" aria-label="Anchor link for: memory">🔗</a></h2>
+<p>Using the options below you can define how much memory the JVM process
+is able to use. This might be necessary to adopt depending on the
+usage scenario and configured text analysis features.</p>
+<p>Please have a look at the corresponding <a href="https://docspell.org/docs/configure/#memory-usage">configuration
+section</a>.</p>
 <h2 id="options">Options<a class="zola-anchor" href="#options" aria-label="Anchor link for: options">🔗</a></h2>
 <p>The start scripts support some options to configure the JVM. One often
 used setting is the maximum heap size of the JVM. By default, java
@@ -237,12 +263,12 @@ which can be configured:</p>
 <code><span style="color:#fdf4c1aa;">$ ./docspell-restserver*/bin/docspell-restserver -h
 </span></code></pre>
 <p>gives an overview of supported options.</p>
-<p>It is recommended to run joex with 1.5G heap space or more and with
-the G1GC enabled. If you use java8, you need to add an option to use
-G1GC, for java11 this is not necessary (but doesn't hurt either). This
-could look like this:</p>
+<p>It is recommended to run joex with the G1GC enabled. If you use java8,
+you need to add an option to use G1GC (<code>-XX:+UseG1GC</code>), for java11
+this is not necessary (but doesn't hurt either). This could look like
+this:</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">./docspell-joex-0.18.0/bin/docspell-joex -J-Xmx1596M -J-XX:+UseG1GC -- /path/to/joex.conf
+<code><span style="color:#fdf4c1aa;">./docspell-joex-0.19.0/bin/docspell-joex -J-Xmx1596M -J-XX:+UseG1GC -- /path/to/joex.conf
 </span></code></pre>
                         </div>
                     </div>
@@ -254,7 +280,7 @@ could look like this:</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell, 0.18.0
+                Docspell, 0.19.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>

@@ -5817,7 +5817,7 @@ var $author$project$Search$view = function (model) {
 										$elm$html$Html$img,
 										_List_fromArray(
 											[
-												$elm$html$Html$Attributes$src('/icons/search-20.svg')
+												$elm$html$Html$Attributes$src('/icons/search-white-20.svg')
 											]),
 										_List_Nil)
 									]))

@@ -2,7 +2,7 @@ openapi: 3.0.0
 
 info:
   title: Docspell
-  version: 0.18.0
+  version: 0.19.0
   description: |
     This is the remote API to Docspell, a personal document organizer.
 
@@ -3904,6 +3904,8 @@ components:
             processing mails.
           type: string
           format: language
+        postHandleAll:
+          type: boolean
 
     ImapSettingsList:
       description: |
@@ -4850,14 +4852,11 @@ components:
       description: |
         Settings for learning a document classifier.
       required:
-        - enabled
         - schedule
         - itemCount
+        - categoryList
+        - listType
       properties:
-        enabled:
-          type: boolean
-        category:
-          type: string
         itemCount:
           type: integer
           format: int32
@@ -4867,6 +4866,16 @@ components:
         schedule:
           type: string
           format: calevent
+        categoryList:
+          type: array
+          items:
+            type: string
+        listType:
+          type: string
+          format: listtype
+          enum:
+            - blacklist
+            - whitelist
 
     SourceList:
       description: |

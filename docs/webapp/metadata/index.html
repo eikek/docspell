@@ -378,12 +378,28 @@ automatically set when files arrive.</p>
 page</a> for more information.</p>
 <h1 id="document-language">Document Language<a class="zola-anchor" href="#document-language" aria-label="Anchor link for: document-language">🔗</a></h1>
 <p>An important setting is the language of your documents. This helps OCR
-and text analysis. You can select between English, German and French
-currently. The language can also specified with each <a href="https://docspell.org/docs/api/upload/">upload
+and text analysis. You can select between various languages. The
+language can also specified with each <a href="https://docspell.org/docs/api/upload/">upload
 request</a>.</p>
 <p>Go to the <em>Collective Settings</em> page and click <em>Document
 Language</em>. This will set the lanugage for all your documents. It is
 not (yet) possible to specify it when uploading.</p>
+<p>The language has effects in several areas: text extraction, fulltext
+search and text analysis. When extracting text from images, tesseract
+(the external tool used for this) can yield better results if the
+language is known. Also, solr (the fulltext search tool) can optimize
+its index given the language, which results in better fulltext search
+experience. The features of text analysis strongly depend on the
+language. Docspell uses the <a href="https://nlp.stanford.edu/software/">Stanford NLP
+Library</a> for its great machine
+learning algorithms. Some of them, like certain NLP features, are only
+available for some languages – namely German, English and French. The
+reason is that the required statistical models are not available for
+other languages. However, docspell can still run other algorithms for
+the other languages, like classification and custom rules based on the
+address book.</p>
+<p>More information about file processing and text analysis can be found
+<a href="https://docspell.org/docs/joex/file-processing/#text-analysis">here</a>.</p>
 
                         </div>
                     </div>
@@ -395,7 +411,7 @@ not (yet) possible to specify it when uploading.</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell, 0.18.0
+                Docspell, 0.19.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>

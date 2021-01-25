@@ -983,14 +983,8 @@
   "description" : "Results when searching for file checksums.\n"
 };
             defs["ClassifierSetting"] = {
-  "required" : [ "enabled", "itemCount", "schedule" ],
+  "required" : [ "categoryList", "itemCount", "listType", "schedule" ],
   "properties" : {
-    "enabled" : {
-      "type" : "boolean"
-    },
-    "category" : {
-      "type" : "string"
-    },
     "itemCount" : {
       "type" : "integer",
       "description" : "The max. number of items to learn from. The newest items\nare considered.\n",
@@ -999,6 +993,17 @@
     "schedule" : {
       "type" : "string",
       "format" : "calevent"
+    },
+    "categoryList" : {
+      "type" : "array",
+      "items" : {
+        "type" : "string"
+      }
+    },
+    "listType" : {
+      "type" : "string",
+      "format" : "listtype",
+      "enum" : [ "blacklist", "whitelist" ]
     }
   },
   "description" : "Settings for learning a document classifier.\n"
@@ -2536,6 +2541,9 @@
       "type" : "string",
       "description" : "The language used for text extraction and analysis when\nprocessing mails.\n",
       "format" : "language"
+    },
+    "postHandleAll" : {
+      "type" : "boolean"
     }
   },
   "description" : "Settings for the scan mailbox task.\n"
@@ -3445,7 +3453,7 @@
         <div id="header">
           <div id="api-_">
             <h2 id="welcome-to-apidoc">API and SDK Documentation</h2>
-              <div class="app-desc">Version: 0.18.0</div>
+              <div class="app-desc">Version: 0.19.0</div>
             <hr>
             <div>This is the remote API to Docspell, a personal document organizer.</div>
           </div>
