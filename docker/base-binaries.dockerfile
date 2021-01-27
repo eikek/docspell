@@ -38,7 +38,7 @@ RUN find "/src/docspell/modules/restserver/target/universal/" -name "docspell-re
 RUN mv /opt/docspell-restserver-* /opt/docspell-restserver
 RUN find "/src/docspell/tools/target/" -name "docspell-tools-*.zip" -exec unzip {} -d "/opt/" \;
 RUN mv /opt/docspell-tools-* /opt/docspell-tools
-RUN chmod 755 /opt/docspell-tools/*.sh
+RUN chmod 755 /opt/docspell-tools/**/*.sh
 
 COPY ./docker/docspell.conf /opt/docspell.conf
 
