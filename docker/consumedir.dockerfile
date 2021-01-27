@@ -1,19 +1,13 @@
 ## CONSUMEDIR
 
-ARG VERSION=
-ARG REPO=
-
-# hack to use args in from
-FROM ${REPO}:base-binaries-${VERSION} as docspell-base-binaries
-
-
-FROM ${REPO}:base-${VERSION}
+FROM alpine:latest
+LABEL maintainer="eikek0 <eike@docspell.org>"
 
 RUN apk add --no-cache curl bash inotify-tools
 
-COPY --from=docspell-base-binaries /opt/docspell-tools /opt/docspell-tools
+COPY ./tools/consumedir /opt/consumedir
 
-ENTRYPOINT ["/opt/docspell-tools/consumedir/consumedir-entrypoint.sh"]
+ENTRYPOINT ["bash", "/opt/consumedir/consumedir-entrypoint.sh"]
 
 HEALTHCHECK --interval=1m --timeout=10s --retries=2 --start-period=10s \
-  CMD pgrep inotifywait
+  CMD pgrep bash
