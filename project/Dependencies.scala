@@ -13,7 +13,7 @@ object Dependencies {
   val DoobieVersion           = "0.10.0"
   val EmilVersion             = "0.7.1"
   val FlexmarkVersion         = "0.62.2"
-  val FlywayVersion           = "7.5.1"
+  val FlywayVersion           = "7.5.2"
   val Fs2Version              = "2.5.0"
   val H2Version               = "1.4.200"
   val Http4sVersion           = "0.21.16"
