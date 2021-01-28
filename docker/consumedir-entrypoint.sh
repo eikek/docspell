@@ -70,6 +70,7 @@ if [ -z "${CONSUMEDIR_ARGS}" ]; then
 	CONSUMEDIR_ARGS="$CONSUMEDIR_ARGS $CONSUMEDIR_ENDPOINT"
 fi
 
+echo "Command: $CONSUMEDIR_SCRIPT $CONSUMEDIR_ARGS"
 if [ "${CONSUMEDIR_POLLING-n}" = "y" ]; then
 	echo "Running in polling mode"
 	while [ : ]
