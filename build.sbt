@@ -59,7 +59,7 @@ lazy val noPublish = Seq(
 val elmSettings = Seq(
   elmCompileMode := ElmCompileMode.Debug,
   Compile / resourceGenerators += Def.task {
-    openapiCodegen.value
+    val _ = openapiCodegen.value
     compileElm(
       streams.value.log,
       (Compile / baseDirectory).value,
@@ -74,6 +74,10 @@ val elmSettings = Seq(
     FileFilter.globFilter("*.elm"),
     HiddenFileFilter
   )
+)
+val stylesSettings = Seq(
+  stylesMode := StylesMode.Dev,
+  Compile / resourceGenerators += stylesBuild.taskValue
 )
 
 val webjarSettings = Seq(
@@ -406,9 +410,10 @@ val backend = project
 val webapp = project
   .in(file("modules/webapp"))
   .disablePlugins(RevolverPlugin)
-  .enablePlugins(OpenApiSchema)
+  .enablePlugins(OpenApiSchema, StylesPlugin)
   .settings(sharedSettings)
   .settings(elmSettings)
+  .settings(stylesSettings)
   .settings(webjarSettings)
   .settings(
     name := "docspell-webapp",
@@ -717,7 +722,7 @@ def packageTools(logger: Logger, dir: File, version: String): Seq[File] = {
 
 addCommandAlias(
   "make",
-  ";set webapp/elmCompileMode := ElmCompileMode.Production ;root/openapiCodegen ;root/test:compile"
+  ";set webapp/elmCompileMode := ElmCompileMode.Production; set webapp/stylesMode := StylesMode.Prod ;root/openapiCodegen ;root/test:compile"
 )
 addCommandAlias("make-zip", ";restserver/universal:packageBin ;joex/universal:packageBin")
 addCommandAlias("make-deb", ";restserver/debian:packageBin ;joex/debian:packageBin")
