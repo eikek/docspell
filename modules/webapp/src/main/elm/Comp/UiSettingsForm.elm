@@ -4,6 +4,7 @@ module Comp.UiSettingsForm exposing
     , init
     , update
     , view
+    , view2
     )
 
 import Api
@@ -12,6 +13,8 @@ import Comp.BasicSizeField
 import Comp.ColorTagger
 import Comp.FieldListSelect
 import Comp.IntField
+import Comp.MenuBar as MB
+import Comp.Tabs
 import Data.BasicSize exposing (BasicSize)
 import Data.Color exposing (Color)
 import Data.Fields exposing (Field)
@@ -24,6 +27,8 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onCheck, onClick, onInput)
 import Http
 import Markdown
+import Set exposing (Set)
+import Styles as S
 import Util.Maybe
 import Util.Tag
 
@@ -52,6 +57,8 @@ type alias Model =
     , cardSubtitlePattern : PatternModel
     , showPatternHelp : Bool
     , searchStatsVisible : Bool
+    , sideMenuVisible : Bool
+    , openTabs : Set String
     }
 
 
@@ -143,6 +150,8 @@ init flags settings =
       , cardSubtitlePattern = initPatternModel settings.cardSubtitleTemplate
       , showPatternHelp = False
       , searchStatsVisible = settings.searchStatsVisible
+      , sideMenuVisible = settings.sideMenuVisible
+      , openTabs = Set.empty
       }
     , Api.getTags flags "" GetTagsResp
     )
@@ -167,6 +176,8 @@ type Msg
     | SetCardSubtitlePattern String
     | TogglePatternHelpMsg
     | ToggleSearchStatsVisible
+    | ToggleAkkordionTab String
+    | ToggleSideMenuVisible
 
 
 
@@ -427,6 +438,28 @@ update sett msg model =
             , Just { sett | searchStatsVisible = flag }
             )
 
+        ToggleAkkordionTab title ->
+            let
+                tabs =
+                    if Set.member title model.openTabs then
+                        Set.remove title model.openTabs
+
+                    else
+                        Set.insert title model.openTabs
+            in
+            ( { model | openTabs = tabs }
+            , Nothing
+            )
+
+        ToggleSideMenuVisible ->
+            let
+                next =
+                    not model.sideMenuVisible
+            in
+            ( { model | sideMenuVisible = next }
+            , Just { sett | sideMenuVisible = next }
+            )
+
 
 
 --- View
@@ -655,3 +688,231 @@ view flags _ model =
             ]
         , Html.map FieldListMsg (Comp.FieldListSelect.view model.formFields)
         ]
+
+
+
+--- View2
+
+
+tagColorViewOpts2 : Comp.ColorTagger.ViewOpts
+tagColorViewOpts2 =
+    { renderItem =
+        \( k, v ) ->
+            span [ class (" label " ++ Data.Color.toString2 v) ]
+                [ text k ]
+    , label = "Choose color for tag categories"
+    , description = Just "Tags can be represented differently based on their category."
+    }
+
+
+view2 : Flags -> UiSettings -> Model -> Html Msg
+view2 flags settings model =
+    let
+        state tab =
+            if Set.member tab.title model.openTabs then
+                Comp.Tabs.Open
+
+            else
+                Comp.Tabs.Closed
+    in
+    div [ class "flex flex-col" ]
+        [ Comp.Tabs.akkordion
+            Comp.Tabs.defaultStyle
+            (\t -> ( state t, ToggleAkkordionTab t.title ))
+            (settingFormTabs flags settings model)
+        ]
+
+
+settingFormTabs : Flags -> UiSettings -> Model -> List (Comp.Tabs.Tab Msg)
+settingFormTabs flags _ model =
+    [ { title = "General"
+      , info = Nothing
+      , body =
+            [ div [ class "mb-4 " ]
+                [ MB.viewItem <|
+                    MB.Checkbox
+                        { id = "uisetting-sidemenu-visible"
+                        , label = "Show side menu by default"
+                        , tagger = \_ -> ToggleSideMenuVisible
+                        , value = model.sideMenuVisible
+                        }
+                ]
+            ]
+      }
+    , { title = "Item Search"
+      , info = Nothing
+      , body =
+            [ Html.map SearchPageSizeMsg
+                (Comp.IntField.viewWithInfo2
+                    ("Maximum results in one page when searching items. At most "
+                        ++ String.fromInt flags.config.maxPageSize
+                        ++ "."
+                    )
+                    model.itemSearchPageSize
+                    "mb-4"
+                    model.searchPageSizeModel
+                )
+            , div [ class "mb-4" ]
+                [ MB.viewItem <|
+                    MB.Checkbox
+                        { id = "uisetting-searchstats-visible"
+                        , value = model.searchStatsVisible
+                        , tagger = \_ -> ToggleSearchStatsVisible
+                        , label = "Show basic search statistics by default"
+                        }
+                ]
+            ]
+      }
+    , { title = "Item Cards"
+      , info = Nothing
+      , body =
+            [ Html.map NoteLengthMsg
+                (Comp.IntField.viewWithInfo2
+                    ("Maximum size of the item notes to display in card view. Between 0 - "
+                        ++ String.fromInt flags.config.maxNoteLength
+                        ++ "."
+                    )
+                    model.itemSearchNoteLength
+                    "mb-4"
+                    model.searchNoteLengthModel
+                )
+            , Html.map CardPreviewSizeMsg
+                (Comp.BasicSizeField.view2
+                    "mb-4"
+                    "Size of item preview"
+                    model.cardPreviewSize
+                )
+            , div [ class "mb-4" ]
+                [ label [ class S.inputLabel ]
+                    [ text "Card Title Pattern"
+                    , a
+                        [ class "float-right"
+                        , class S.link
+                        , title "Toggle pattern help text"
+                        , href "#"
+                        , onClick TogglePatternHelpMsg
+                        ]
+                        [ i [ class "fa fa-question" ] []
+                        ]
+                    ]
+                , input
+                    [ type_ "text"
+                    , Maybe.withDefault "" model.cardTitlePattern.pattern |> value
+                    , onInput SetCardTitlePattern
+                    , class S.textInput
+                    ]
+                    []
+                ]
+            , div [ class "mb-4" ]
+                [ label [ class S.inputLabel ]
+                    [ text "Card Subtitle Pattern"
+                    , a
+                        [ class "float-right"
+                        , class S.link
+                        , title "Toggle pattern help text"
+                        , href "#"
+                        , onClick TogglePatternHelpMsg
+                        ]
+                        [ i [ class "fa fa-question" ] []
+                        ]
+                    ]
+                , input
+                    [ type_ "text"
+                    , Maybe.withDefault "" model.cardSubtitlePattern.pattern |> value
+                    , onInput SetCardSubtitlePattern
+                    , class S.textInput
+                    ]
+                    []
+                ]
+            , Markdown.toHtml
+                [ classList
+                    [ ( S.message, True )
+                    , ( "hidden", not model.showPatternHelp )
+                    ]
+                ]
+                IT.helpMessage
+            ]
+      }
+    , { title = "Search Menu"
+      , info = Nothing
+      , body =
+            [ Html.map SearchMenuTagMsg
+                (Comp.IntField.viewWithInfo2
+                    "How many tags to display in search menu at once. Others can be expanded. Use 0 to always show all."
+                    model.searchMenuTagCount
+                    "mb-4"
+                    model.searchMenuTagCountModel
+                )
+            , Html.map SearchMenuTagCatMsg
+                (Comp.IntField.viewWithInfo2
+                    "How many categories to display in search menu at once. Others can be expanded. Use 0 to always show all."
+                    model.searchMenuTagCatCount
+                    "mb-4"
+                    model.searchMenuTagCatCountModel
+                )
+            , Html.map SearchMenuFolderMsg
+                (Comp.IntField.viewWithInfo2
+                    "How many folders to display in search menu at once. Other folders can be expanded. Use 0 to always show all."
+                    model.searchMenuFolderCount
+                    "mb-4"
+                    model.searchMenuFolderCountModel
+                )
+            ]
+      }
+    , { title = "Item Detail"
+      , info = Nothing
+      , body =
+            [ div [ class "mb-4" ]
+                [ MB.viewItem <|
+                    MB.Checkbox
+                        { tagger = \_ -> TogglePdfPreview
+                        , label = "Browser-native PDF preview"
+                        , value = model.nativePdfPreview
+                        , id = "uisetting-pdfpreview-toggle"
+                        }
+                ]
+            , div [ class "mb-4" ]
+                [ MB.viewItem <|
+                    MB.Checkbox
+                        { tagger = \_ -> ToggleItemDetailShortcuts
+                        , label = "Use keyboard shortcuts for navigation and confirm/unconfirm with open edit menu."
+                        , value = model.itemDetailShortcuts
+                        , id = "uisetting-itemdetailshortcuts-toggle"
+                        }
+                ]
+            , div [ class "mb-4 hidden" ]
+                [ MB.viewItem <|
+                    MB.Checkbox
+                        { id = "uisetting-editmenu-visible"
+                        , value = model.editMenuVisible
+                        , tagger = \_ -> ToggleEditMenuVisible
+                        , label = "Show edit side menu by default"
+                        }
+                ]
+            ]
+      }
+    , { title = "Tag Category Colors"
+      , info = Nothing
+      , body =
+            [ Html.map TagColorMsg
+                (Comp.ColorTagger.view2
+                    model.tagColors
+                    tagColorViewOpts2
+                    model.tagColorModel
+                )
+            ]
+      }
+    , { title = "Fields"
+      , info = Nothing
+      , body =
+            [ span [ class "opacity-50 text-sm" ]
+                [ text "Choose which fields to display in search and edit menus."
+                ]
+            , Html.map FieldListMsg
+                (Comp.FieldListSelect.view2
+                    "px-2"
+                    model.formFields
+                )
+            ]
+      }
+    ]

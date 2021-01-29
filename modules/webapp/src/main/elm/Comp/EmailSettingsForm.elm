@@ -7,17 +7,22 @@ module Comp.EmailSettingsForm exposing
     , isValid
     , update
     , view
+    , view2
     )
 
 import Api.Model.EmailSettings exposing (EmailSettings)
+import Comp.Basic as B
 import Comp.Dropdown
 import Comp.IntField
+import Comp.MenuBar as MB
 import Comp.PasswordInput
+import Data.DropdownStyle as DS
 import Data.SSLType exposing (SSLType)
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onCheck, onInput)
+import Styles as S
 import Util.Maybe
 
 
@@ -176,6 +181,10 @@ update msg model =
             ( { model | ignoreCertificates = not model.ignoreCertificates }, Cmd.none )
 
 
+
+--- View
+
+
 view : UiSettings -> Model -> Html Msg
 view settings model =
     div
@@ -271,5 +280,133 @@ view settings model =
                 [ label [] [ text "SSL" ]
                 , Html.map SSLTypeMsg (Comp.Dropdown.view settings model.sslType)
                 ]
+            ]
+        ]
+
+
+
+--- View2
+
+
+view2 : UiSettings -> Model -> Html Msg
+view2 settings model =
+    div [ class "grid grid-cols-4 gap-y-4 gap-x-2" ]
+        [ div [ class "col-span-4" ]
+            [ label
+                [ class S.inputLabel
+                ]
+                [ text "Name"
+                , B.inputRequired
+                ]
+            , input
+                [ type_ "text"
+                , value model.name
+                , onInput SetName
+                , placeholder "Connection name, e.g. 'gmail.com'"
+                , class S.textInput
+                , classList [ ( S.inputErrorBorder, model.name == "" ) ]
+                ]
+                []
+            , div
+                [ class S.message
+                , class "mt-2"
+                ]
+                [ text "The connection name must not contain whitespace or special characters."
+                ]
+            ]
+        , div [ class "col-span-3" ]
+            [ label [ class S.inputLabel ]
+                [ text "SMTP Host"
+                , B.inputRequired
+                ]
+            , input
+                [ type_ "text"
+                , placeholder "SMTP host name, e.g. 'mail.gmail.com'"
+                , value model.host
+                , onInput SetHost
+                , class S.textInput
+                , classList [ ( S.inputErrorBorder, model.host == "" ) ]
+                ]
+                []
+            ]
+        , Html.map PortMsg
+            (Comp.IntField.viewWithInfo2 ""
+                model.portNum
+                ""
+                model.portField
+            )
+        , div [ class "col-span-4 sm:col-span-2" ]
+            [ label
+                [ class S.inputLabel
+                ]
+                [ text "SMTP User"
+                ]
+            , input
+                [ type_ "text"
+                , placeholder "SMTP Username, e.g. 'your.name@gmail.com'"
+                , Maybe.withDefault "" model.user |> value
+                , onInput SetUser
+                , class S.textInput
+                ]
+                []
+            ]
+        , div [ class "col-span-4 sm:col-span-2" ]
+            [ label [ class S.inputLabel ]
+                [ text "SMTP Password"
+                ]
+            , Html.map PassMsg
+                (Comp.PasswordInput.view2
+                    model.password
+                    False
+                    model.passField
+                )
+            ]
+        , div [ class "col-span-4 sm:col-span-2" ]
+            [ label [ class S.inputLabel ]
+                [ text "From Address"
+                , B.inputRequired
+                ]
+            , input
+                [ type_ "text"
+                , placeholder "Sender E-Mail address"
+                , value model.from
+                , onInput SetFrom
+                , class S.textInput
+                , classList [ ( S.inputErrorBorder, model.from == "" ) ]
+                ]
+                []
+            ]
+        , div [ class "col-span-4 sm:col-span-2" ]
+            [ label [ class S.inputLabel ]
+                [ text "Reply-To"
+                ]
+            , input
+                [ type_ "text"
+                , placeholder "Optional reply-to E-Mail address"
+                , Maybe.withDefault "" model.replyTo |> value
+                , onInput SetReplyTo
+                , class S.textInput
+                ]
+                []
+            ]
+        , div [ class "col-span-4 sm:col-span-2" ]
+            [ label [ class S.inputLabel ]
+                [ text "SSL"
+                ]
+            , Html.map SSLTypeMsg
+                (Comp.Dropdown.view2
+                    DS.mainStyle
+                    settings
+                    model.sslType
+                )
+            ]
+        , div [ class "col-span-4 sm:col-span-2 flex items-center" ]
+            [ MB.viewItem <|
+                MB.Checkbox
+                    { tagger = \_ -> ToggleCheckCert
+                    , label = "Ignore certificate check"
+                    , value = model.ignoreCertificates
+                    , id = "smpt-no-cert-check"
+                    }
             ]
         ]

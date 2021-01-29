@@ -12,12 +12,92 @@
       @apply flex flex-row items-center px-2 py-0.5 rounded border ;
   }
 
-  .button {
-      @apply py-2 px-4 bg-blue-500 font-semibold rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-opacity-75;
+  .ds-item-card.current {
+      @apply shadow-lg dark:border-lightblue-600;
+  }
+
+  .elm-datepicker--input {
+      @apply pl-10 placeholder-gray-400 bg-blue-50 dark:text-bluegray-200 dark:bg-bluegray-700 dark:border-bluegray-500 border-gray-500 rounded w-full;
+  }
+
+  .elm-datepicker--container {
+      @apply w-full;
+  }
+  .elm-datepicker--picker {
+      @apply absolute top-11 z-50 bg-white dark:bg-bluegray-800 w-full flex flex-col border border-gray-300 dark:border-bluegray-500 shadow-lg;
+  }
+  .elm-datepicker--picker-header {
+      @apply flex flex-row items-center py-2 bg-blue-50 dark:bg-bluegray-700;
+  }
+  .elm-datepicker--prev-container {
+      @apply flex-none px-2;
+  }
+  .elm-datepicker--prev {
+      @apply fa fa-chevron-left inline-flex block px-2 py-2 focus:outline-none hover:opacity-75;
+  }
+  .elm-datepicker--month-container {
+      @apply flex-grow px-2 flex flex-col space-y-1 items-center;
+  }
+  .elm-datepicker--next-container {
+      @apply px-2;
+  }
+  .elm-datepicker--next {
+      @apply fa fa-chevron-right inline-flex block px-2 py-2 focus:outline-none hover:opacity-75;
+  }
+  .elm-datepicker--year-menu {
+      @apply dark:text-bluegray-200 dark:bg-bluegray-600 dark:border-bluegray-400 rounded text-sm py-1 focus:ring focus:ring-black focus:ring-opacity-50 focus:ring-offset-0 dark:focus:ring-bluegray-400;
+  }
+
+  .elm-datepicker--table {
+      @apply border-collapse w-full text-lg;
+  }
+  .elm-datepicker--weekdays {
+      @apply font-semibold text-sm  border-0 border-b dark:border-bluegray-500;
+  }
+  .elm-datepicker--year {
+      @apply h-8;
+  }
+  .elm-datepicker--dow  {
+      @apply px-1 py-1 text-center;
+  }
+  .elm-datepicker--day {
+      @apply cursor-pointer text-center hover:underline;
+  }
+  .elm-datepicker--day.elm-datepicker--other-month {
+      @apply opacity-50;
+  }
+  .elm-datepicker--day.elm-datepicker--today {
+      @apply border-2 rounded-full border-blue-500 dark:border-lightblue-500 h-5/6 w-5/6 flex items-center justify-center ;
+  }
+
+
+  .markdown-preview h3,h4,h5,h6 {
+      @apply text-lg font-semibold mb-2;
+  }
+  .markdown-preview h2 {
+      @apply text-xl font-semibold mb-2;
+  }
+  .markdown-preview h1 {
+      @apply text-2xl font-semibold mb-2;
+  }
+  .markdown-preview ul {
+      @apply list-disc py-2 ml-4;
+  }
+  .markdown-preview ol {
+      @apply list-decimal py-2 ml-4;
+  }
+  .markdown-preview p {
+      @apply py-2;
+  }
+  .markdown-preview a {
+      @apply text-blue-400 hover:text-blue-500 dark:text-lightblue-200 dark:hover:text-lightblue-100 cursor-pointer;
   }
 }
 
 @layer utilities {
+    .disabled {
+        @apply opacity-50 cursor-not-allowed;
+    }
     .h-screen-10 {
         height: calc(100vh - 2.5rem);
     }
@@ -36,10 +116,23 @@
     .h-full-12 {
         height: calc(100% - 3rem);
     }
+    .z-35 {
+        z-index: 35;
+    }
 
     .scrollbar-none {
-        scrollbar-width: none;
+        -ms-overflow-style: none;  /* IE and Edge */
+        scrollbar-width: none;  /* Firefox */
     }
+    /* Chrome, Safari and Opera */
+    .scrollbar-none::-webkit-scrollbar {
+        display: none;
+    }
+
+    .ds-card-search-hl strong {
+        @apply bg-lime-200 dark:bg-lightblue-700 italic font-bold px-1;
+    }
+
 
     .tag::before {
         position: absolute;
@@ -67,4 +160,5 @@
         box-shadow: 0 -1px 1px 0 rgba(0,0,0,.3);
         border-radius: 500rem;
     }
+
 }

@@ -5,14 +5,17 @@ module Comp.AddressForm exposing
     , getAddress
     , update
     , view
+    , view2
     )
 
 import Api.Model.Address exposing (Address)
 import Comp.Dropdown
+import Data.DropdownStyle as DS
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)
+import Styles as S
 import Util.List
 
 
@@ -148,5 +151,83 @@ view settings model =
         , div [ class "field" ]
             [ label [] [ text "Country" ]
             , Html.map CountryMsg (Comp.Dropdown.view settings model.country)
+            ]
+        ]
+
+
+
+--- View2
+
+
+view2 : UiSettings -> Model -> Html Msg
+view2 settings model =
+    div [ class "flex flex-col" ]
+        [ div
+            [ class "mb-2"
+            ]
+            [ label
+                [ for "street"
+                , class S.inputLabel
+                ]
+                [ text "Street"
+                ]
+            , input
+                [ type_ "text"
+                , onInput SetStreet
+                , placeholder "Street"
+                , value model.street
+                , name "street"
+                , class S.textInput
+                ]
+                []
+            ]
+        , div
+            [ class "mb-2"
+            ]
+            [ label
+                [ for "zip"
+                , class S.inputLabel
+                ]
+                [ text "Zip Code"
+                ]
+            , input
+                [ type_ "text"
+                , onInput SetZip
+                , placeholder "Zip"
+                , value model.zip
+                , name "zip"
+                , class S.textInput
+                ]
+                []
+            ]
+        , div
+            [ class "mb-2"
+            ]
+            [ label
+                [ for "city"
+                , class S.inputLabel
+                ]
+                [ text "City"
+                ]
+            , input
+                [ type_ "text"
+                , onInput SetCity
+                , placeholder "City"
+                , value model.city
+                , name "city"
+                , class S.textInput
+                ]
+                []
+            ]
+        , div [ class "" ]
+            [ label [ class S.inputLabel ]
+                [ text "Country"
+                ]
+            , Html.map CountryMsg
+                (Comp.Dropdown.view2
+                    DS.mainStyle
+                    settings
+                    model.country
+                )
             ]
         ]

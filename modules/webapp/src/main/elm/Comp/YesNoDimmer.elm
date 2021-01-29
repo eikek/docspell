@@ -4,6 +4,7 @@ module Comp.YesNoDimmer exposing
     , Settings
     , activate
     , defaultSettings
+    , defaultSettings2
     , disable
     , emptyModel
     , initActive
@@ -11,11 +12,13 @@ module Comp.YesNoDimmer exposing
     , update
     , view
     , view2
+    , viewN
     )
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
+import Styles as S
 
 
 type alias Model =
@@ -53,7 +56,6 @@ type alias Settings =
     , headerClass : String
     , confirmButton : String
     , cancelButton : String
-    , invertedDimmer : Bool
     , extraClass : String
     }
 
@@ -65,7 +67,17 @@ defaultSettings =
     , headerClass = "ui inverted icon header"
     , confirmButton = "Yes, do it!"
     , cancelButton = "No"
-    , invertedDimmer = False
+    , extraClass = ""
+    }
+
+
+defaultSettings2 : String -> Settings
+defaultSettings2 msg =
+    { message = msg
+    , headerIcon = "fa fa-exclamation-circle mr-3"
+    , headerClass = "text-2xl font-bold text-center w-full"
+    , confirmButton = "Yes, do it!"
+    , cancelButton = "No"
     , extraClass = ""
     }
 
@@ -104,7 +116,6 @@ view2 active settings model =
         [ classList
             [ ( "ui dimmer", True )
             , ( settings.extraClass, True )
-            , ( "inverted", settings.invertedDimmer )
             , ( "active", active && model.active )
             ]
         ]
@@ -127,6 +138,45 @@ view2 active settings model =
                 , a [ class "ui secondary button", onClick Disable, href "#" ]
                     [ text settings.cancelButton
                     ]
+                ]
+            ]
+        ]
+
+
+viewN : Bool -> Settings -> Model -> Html Msg
+viewN active settings model =
+    div
+        [ class S.dimmer
+        , class settings.extraClass
+        , classList
+            [ ( "hidden", not active || not model.active )
+            ]
+        ]
+        [ div [ class settings.headerClass ]
+            [ i
+                [ class settings.headerIcon
+                , class "text-gray-200 font-semibold"
+                , classList [ ( "hidden", settings.headerClass == "" ) ]
+                ]
+                []
+            , span [ class "text-gray-200 font-semibold" ]
+                [ text settings.message
+                ]
+            ]
+        , div [ class "flex flex-row space-x-2 text-xs mt-2" ]
+            [ a
+                [ class (S.primaryButton ++ "block font-semibold")
+                , href "#"
+                , onClick ConfirmDelete
+                ]
+                [ text settings.confirmButton
+                ]
+            , a
+                [ class (S.secondaryButton ++ "block font-semibold")
+                , href "#"
+                , onClick Disable
+                ]
+                [ text settings.cancelButton
                 ]
             ]
         ]

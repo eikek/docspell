@@ -4,9 +4,11 @@ module Comp.UiSettingsManage exposing
     , init
     , update
     , view
+    , view2
     )
 
 import Api.Model.BasicResult exposing (BasicResult)
+import Comp.MenuBar as MB
 import Comp.UiSettingsForm
 import Data.Flags exposing (Flags)
 import Data.UiSettings exposing (UiSettings)
@@ -14,6 +16,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Ports
+import Styles as S
 
 
 type alias Model =
@@ -146,4 +149,43 @@ view flags settings classes model =
                 |> Maybe.withDefault ""
                 |> text
             ]
+        ]
+
+
+
+--- View2
+
+
+view2 : Flags -> UiSettings -> String -> Model -> Html Msg
+view2 flags settings classes model =
+    div [ class classes ]
+        [ MB.view
+            { start =
+                [ MB.PrimaryButton
+                    { tagger = Submit
+                    , label = "Submit"
+                    , title = "Save settings"
+                    , icon = Just "fa fa-save"
+                    }
+                ]
+            , end = []
+            , rootClasses = "mb-4"
+            }
+        , div
+            [ classList
+                [ ( S.successMessage, isSuccess model )
+                , ( S.errorMessage, isError model )
+                , ( "hidden", model.message == Nothing )
+                ]
+            ]
+            [ Maybe.map .message model.message
+                |> Maybe.withDefault ""
+                |> text
+            ]
+        , Html.map UiSettingsFormMsg
+            (Comp.UiSettingsForm.view2
+                flags
+                settings
+                model.formModel
+            )
         ]

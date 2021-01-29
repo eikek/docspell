@@ -3,8 +3,10 @@ module Comp.TagSelect exposing
     , Model
     , Msg
     , Selection
+    , WorkModel
     , emptySelection
     , init
+    , makeWorkModel
     , modifyAll
     , modifyCount
     , reset
@@ -12,6 +14,9 @@ module Comp.TagSelect exposing
     , update
     , updateDrop
     , viewAll
+    , viewAll2
+    , viewCats2
+    , viewTagsDrop2
     )
 
 import Api.Model.Tag exposing (Tag)
@@ -25,6 +30,7 @@ import Html.Events exposing (onClick, onInput)
 import Set
 import Simple.Fuzzy
 import String as S
+import Styles as S
 import Util.ExpandCollapse
 import Util.ItemDragDrop as DD
 import Util.Maybe
@@ -413,6 +419,10 @@ catState model name =
             Deselect
 
 
+
+--- View
+
+
 viewAll : DD.Model -> UiSettings -> Selection -> Model -> List (Html Msg)
 viewAll ddm settings sel model =
     let
@@ -630,3 +640,219 @@ getIcon state color default =
 
         Deselect ->
             default color
+
+
+
+--- View2
+
+
+viewAll2 : DD.Model -> UiSettings -> Selection -> Model -> List (Html Msg)
+viewAll2 ddm settings sel model =
+    let
+        wm =
+            makeWorkModel sel model
+    in
+    viewTagsDrop2 ddm wm settings model ++ [ viewCats2 settings wm model ]
+
+
+viewTagsDrop2 : DD.Model -> WorkModel -> UiSettings -> Model -> List (Html Msg)
+viewTagsDrop2 ddm wm settings model =
+    [ div [ class "flex flex-col" ]
+        [ div [ class "flex flex-row h-6 items-center text-xs mb-2" ]
+            [ a
+                [ class S.secondaryBasicButtonPlain
+                , class "border rounded flex-none px-1 py-1"
+                , href "#"
+                , onClick ToggleShowEmpty
+                ]
+                [ if model.showEmpty then
+                    text " Hide empty"
+
+                  else
+                    text " Show empty"
+                ]
+            , div [ class "flex-grow" ] []
+            , div [ class " relative h-6" ]
+                [ input
+                    [ type_ "text"
+                    , placeholder "Filter …"
+                    , onInput Search
+                    , class "bg-blue-50 w-30 h-6 px-0 py-0 text-xs"
+                    , class "border-0 border-b border-gray-200 focus:ring-0 focus:border-black"
+                    , class "dark:bg-bluegray-700 dark:text-bluegray-200 dark:border-bluegray-400 dark:focus:border-white"
+                    ]
+                    []
+                , i [ class "fa fa-search absolute top-1/3 right-0 opacity-50" ] []
+                ]
+            ]
+        ]
+    , div [ class "flex flex-col space-y-2 md:space-y-1" ]
+        (renderTagItems2 ddm settings model wm)
+    ]
+
+
+viewCats2 : UiSettings -> WorkModel -> Model -> Html Msg
+viewCats2 settings wm model =
+    div [ class "flex flex-col" ]
+        [ div [ class "flex flex-col space-y-2 md:space-y-1" ]
+            (renderCatItems2 settings model wm)
+        ]
+
+
+renderTagItems2 : DD.Model -> UiSettings -> Model -> WorkModel -> List (Html Msg)
+renderTagItems2 ddm settings model wm =
+    let
+        tags =
+            wm.filteredTags
+
+        max =
+            settings.searchMenuTagCount
+
+        expLink =
+            Util.ExpandCollapse.expandToggle2
+                max
+                (List.length tags)
+                ToggleExpandTags
+
+        cpsLink =
+            Util.ExpandCollapse.collapseToggle2
+                max
+                (List.length tags)
+                ToggleExpandTags
+    in
+    if max <= 0 then
+        List.map (viewTagItem2 ddm settings wm) tags
+
+    else if model.expandedTags then
+        List.map (viewTagItem2 ddm settings wm) tags ++ cpsLink
+
+    else
+        List.map (viewTagItem2 ddm settings wm) (List.take max tags) ++ expLink
+
+
+viewTagItem2 : DD.Model -> UiSettings -> WorkModel -> TagCount -> Html Msg
+viewTagItem2 ddm settings model tag =
+    let
+        state =
+            tagState model tag.tag.id
+
+        color =
+            Data.UiSettings.tagColorFg2 tag.tag settings
+
+        icon =
+            getIcon2 state color I.tagIcon2
+
+        dropActive =
+            DD.getDropId ddm == Just (DD.Tag tag.tag.id)
+    in
+    a
+        ([ classList
+            [ ( "bg-blue-100 dark:bg-bluegray-600", dropActive )
+            ]
+         , class "flex flex-row items-center"
+         , class "rounded px-1 py-1 hover:bg-blue-100 dark:hover:bg-bluegray-600"
+         , href "#"
+         , onClick (ToggleTag tag.tag.id)
+         ]
+            ++ DD.droppable TagDDMsg (DD.Tag tag.tag.id)
+        )
+        [ icon
+        , div
+            [ classList
+                [ ( "font-semibold", state == Include )
+                , ( "", state /= Include )
+                ]
+            , class "ml-2"
+            ]
+            [ text tag.tag.name
+            ]
+        , div [ class "flex-grow" ] []
+        , numberLabel tag.count
+        ]
+
+
+viewCategoryItem2 : UiSettings -> WorkModel -> Category -> Html Msg
+viewCategoryItem2 settings model cat =
+    let
+        state =
+            catState model cat.name
+
+        color =
+            Data.UiSettings.catColorFg2 settings cat.name
+
+        icon =
+            getIcon2 state color I.tagsIcon2
+    in
+    a
+        [ class "flex flex-row items-center"
+        , class "rounded px-1 py-1 hover:bg-blue-100 dark:hover:bg-bluegray-600"
+        , href "#"
+        , onClick (ToggleCat cat.name)
+        ]
+        [ icon
+        , div
+            [ classList
+                [ ( "font-semibold", state == Include )
+                , ( "", state /= Include )
+                ]
+            , class "ml-2"
+            ]
+            [ text cat.name
+            ]
+        , div [ class "flex-grow" ] []
+        , numberLabel cat.count
+        ]
+
+
+renderCatItems2 : UiSettings -> Model -> WorkModel -> List (Html Msg)
+renderCatItems2 settings model wm =
+    let
+        cats =
+            wm.filteredCats
+
+        max =
+            settings.searchMenuTagCatCount
+
+        expLink =
+            Util.ExpandCollapse.expandToggle2
+                max
+                (List.length cats)
+                ToggleExpandCats
+
+        cpsLink =
+            Util.ExpandCollapse.collapseToggle2
+                max
+                (List.length cats)
+                ToggleExpandCats
+    in
+    if max <= 0 then
+        List.map (viewCategoryItem2 settings wm) cats
+
+    else if model.expandedCats then
+        List.map (viewCategoryItem2 settings wm) cats ++ cpsLink
+
+    else
+        List.map (viewCategoryItem2 settings wm) (List.take max cats) ++ expLink
+
+
+getIcon2 : SelState -> String -> (String -> Html msg) -> Html msg
+getIcon2 state color default =
+    case state of
+        Include ->
+            i [ class ("fa fa-check " ++ color) ] []
+
+        Exclude ->
+            i [ class ("fa fa-minus " ++ color) ] []
+
+        Deselect ->
+            default color
+
+
+numberLabel : Int -> Html msg
+numberLabel num =
+    div
+        [ class "bg-gray-200 border rounded-full h-6 w-6 flex items-center justify-center text-xs"
+        , class "dark:bg-bluegray-800 dark:text-bluegray-200 dark:border-bluegray-800 dark:bg-opacity-50"
+        ]
+        [ text (String.fromInt num)
+        ]

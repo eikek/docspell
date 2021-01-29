@@ -12,6 +12,7 @@ module Comp.SearchMenu exposing
     , updateDrop
     , view
     , viewDrop
+    , viewDrop2
     )
 
 import Api
@@ -24,14 +25,16 @@ import Api.Model.ItemSearch exposing (ItemSearch)
 import Api.Model.PersonList exposing (PersonList)
 import Api.Model.ReferenceList exposing (ReferenceList)
 import Api.Model.SearchStats exposing (SearchStats)
-import Api.Model.TagList exposing (TagList)
 import Comp.CustomFieldMultiInput
 import Comp.DatePicker
 import Comp.Dropdown exposing (isDropdownChangeMsg)
 import Comp.FolderSelect
+import Comp.MenuBar as MB
+import Comp.Tabs
 import Comp.TagSelect
 import Data.CustomFieldChange exposing (CustomFieldValueCollect)
 import Data.Direction exposing (Direction)
+import Data.DropdownStyle as DS
 import Data.Fields
 import Data.Flags exposing (Flags)
 import Data.Icons as Icons
@@ -41,6 +44,8 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onCheck, onClick, onInput)
 import Http
+import Set exposing (Set)
+import Styles as S
 import Util.Html exposing (KeyCode(..))
 import Util.ItemDragDrop as DD
 import Util.Maybe
@@ -75,6 +80,7 @@ type alias Model =
     , customFieldModel : Comp.CustomFieldMultiInput.Model
     , customValues : CustomFieldValueCollect
     , sourceModel : Maybe String
+    , openTabs : Set String
     }
 
 
@@ -141,6 +147,7 @@ init flags =
     , customFieldModel = Comp.CustomFieldMultiInput.initWith []
     , customValues = Data.CustomFieldChange.emptyCollect
     , sourceModel = Nothing
+    , openTabs = Set.fromList [ "Tags", "Inbox" ]
     }
 
 
@@ -361,6 +368,8 @@ type Msg
     | ResetToSource String
     | GetStatsResp (Result Http.Error SearchStats)
     | GetAllTagsResp (Result Http.Error SearchStats)
+    | ToggleAkkordionTab String
+    | ToggleOpenAllAkkordionTabs
 
 
 type alias NextState =
@@ -838,7 +847,7 @@ updateDrop ddm flags settings msg model =
         CustomFieldMsg lm ->
             let
                 res =
-                    Comp.CustomFieldMultiInput.updateSearch lm model.customFieldModel
+                    Comp.CustomFieldMultiInput.updateSearch flags lm model.customFieldModel
             in
             { model =
                 { model
@@ -880,6 +889,41 @@ updateDrop ddm flags settings msg model =
 
         ResetToSource str ->
             resetAndSet (SetSource str)
+
+        ToggleAkkordionTab title ->
+            let
+                tabs =
+                    if Set.member title model.openTabs then
+                        Set.remove title model.openTabs
+
+                    else
+                        Set.insert title model.openTabs
+            in
+            { model = { model | openTabs = tabs }
+            , cmd = Cmd.none
+            , stateChange = False
+            , dragDrop = DD.DragDropData ddm Nothing
+            }
+
+        ToggleOpenAllAkkordionTabs ->
+            let
+                allNames =
+                    searchTabs (DD.DragDropData ddm Nothing) flags settings model
+                        |> List.map .title
+                        |> Set.fromList
+
+                next =
+                    if model.openTabs == allNames then
+                        Set.empty
+
+                    else
+                        allNames
+            in
+            { model = { model | openTabs = next }
+            , cmd = Cmd.none
+            , stateChange = False
+            , dragDrop = DD.DragDropData ddm Nothing
+            }
 
 
 
@@ -1163,3 +1207,353 @@ viewDrop ddd flags settings model =
                 ]
             ]
         ]
+
+
+
+--- View2
+
+
+viewDrop2 : DD.DragDropData -> Flags -> UiSettings -> Model -> Html Msg
+viewDrop2 ddd flags settings model =
+    let
+        akkordionStyle =
+            Comp.Tabs.searchMenuStyle
+    in
+    Comp.Tabs.akkordion
+        akkordionStyle
+        (searchTabState settings model)
+        (searchTabs ddd flags settings model)
+
+
+searchTabState : UiSettings -> Model -> Comp.Tabs.Tab Msg -> ( Comp.Tabs.State, Msg )
+searchTabState settings model tab =
+    let
+        isHidden f =
+            Data.UiSettings.fieldHidden settings f
+
+        hidden =
+            case tab.title of
+                "Tags" ->
+                    isHidden Data.Fields.Tag
+
+                "Tag Categories" ->
+                    isHidden Data.Fields.Tag
+
+                "Folder" ->
+                    isHidden Data.Fields.Folder
+
+                "Correspondent" ->
+                    isHidden Data.Fields.CorrOrg && isHidden Data.Fields.CorrPerson
+
+                "Concerning" ->
+                    isHidden Data.Fields.ConcEquip && isHidden Data.Fields.ConcPerson
+
+                "Custom Fields" ->
+                    isHidden Data.Fields.CustomFields
+                        || Comp.CustomFieldMultiInput.isEmpty model.customFieldModel
+
+                "Date" ->
+                    isHidden Data.Fields.Date
+
+                "Due Date" ->
+                    isHidden Data.Fields.DueDate
+
+                "Source" ->
+                    isHidden Data.Fields.SourceName
+
+                "Direction" ->
+                    isHidden Data.Fields.Direction
+
+                _ ->
+                    False
+
+        state =
+            if hidden then
+                Comp.Tabs.Hidden
+
+            else if Set.member tab.title model.openTabs then
+                Comp.Tabs.Open
+
+            else
+                Comp.Tabs.Closed
+    in
+    ( state, ToggleAkkordionTab tab.title )
+
+
+searchTabs : DD.DragDropData -> Flags -> UiSettings -> Model -> List (Comp.Tabs.Tab Msg)
+searchTabs ddd flags settings model =
+    let
+        isHidden f =
+            Data.UiSettings.fieldHidden settings f
+
+        tagSelectWM =
+            Comp.TagSelect.makeWorkModel model.tagSelection model.tagSelectModel
+    in
+    [ { title = "Inbox"
+      , info = Nothing
+      , body =
+            [ MB.viewItem <|
+                MB.Checkbox
+                    { id = "search-inbox"
+                    , value = model.inboxCheckbox
+                    , label = "Inbox"
+                    , tagger = \_ -> ToggleInbox
+                    }
+            , div [ class "mt-2 hidden" ]
+                [ label [ class S.inputLabel ]
+                    [ text
+                        (case model.textSearchModel of
+                            Fulltext _ ->
+                                "Fulltext Search"
+
+                            Names _ ->
+                                "Search in names"
+                        )
+                    , a
+                        [ classList
+                            [ ( "hidden", not flags.config.fullTextSearchEnabled )
+                            ]
+                        , class "float-right"
+                        , class S.link
+                        , href "#"
+                        , onClick SwapTextSearch
+                        , title "Switch between text search modes"
+                        ]
+                        [ i [ class "fa fa-exchange-alt" ] []
+                        ]
+                    ]
+                , input
+                    [ type_ "text"
+                    , onInput SetTextSearch
+                    , Util.Html.onKeyUpCode KeyUpMsg
+                    , textSearchString model.textSearchModel |> Maybe.withDefault "" |> value
+                    , case model.textSearchModel of
+                        Fulltext _ ->
+                            placeholder "Content search…"
+
+                        Names _ ->
+                            placeholder "Search in various names…"
+                    , class S.textInputSidebar
+                    ]
+                    []
+                , span [ class "opacity-50 text-sm" ]
+                    [ case model.textSearchModel of
+                        Fulltext _ ->
+                            text "Fulltext search in document contents and notes."
+
+                        Names _ ->
+                            text "Looks in correspondents, concerned entities, item name and notes."
+                    ]
+                ]
+            ]
+      }
+    , { title = "Tags"
+      , info = Nothing
+      , body =
+            List.map (Html.map TagSelectMsg)
+                (Comp.TagSelect.viewTagsDrop2
+                    ddd.model
+                    tagSelectWM
+                    settings
+                    model.tagSelectModel
+                )
+      }
+    , { title = "Tag Categories"
+      , info = Nothing
+      , body =
+            [ Html.map TagSelectMsg
+                (Comp.TagSelect.viewCats2
+                    settings
+                    tagSelectWM
+                    model.tagSelectModel
+                )
+            ]
+      }
+    , { title = "Folder"
+      , info = Nothing
+      , body =
+            [ Html.map FolderSelectMsg
+                (Comp.FolderSelect.viewDrop2 ddd.model
+                    settings.searchMenuFolderCount
+                    model.folderList
+                )
+            ]
+      }
+    , { title = "Correspondent"
+      , info = Nothing
+      , body =
+            [ div
+                [ class "mb-4"
+                , classList [ ( "hidden", isHidden Data.Fields.CorrOrg ) ]
+                ]
+                [ label [ class S.inputLabel ]
+                    [ text "Organization" ]
+                , Html.map OrgMsg
+                    (Comp.Dropdown.view2
+                        DS.sidebarStyle
+                        settings
+                        model.orgModel
+                    )
+                ]
+            , div
+                [ class "mb-4"
+                , classList [ ( "hidden", isHidden Data.Fields.CorrPerson ) ]
+                ]
+                [ label [ class S.inputLabel ] [ text "Person" ]
+                , Html.map CorrPersonMsg
+                    (Comp.Dropdown.view2
+                        DS.sidebarStyle
+                        settings
+                        model.corrPersonModel
+                    )
+                ]
+            ]
+      }
+    , { title = "Concerning"
+      , info = Nothing
+      , body =
+            [ div
+                [ class "mb-4"
+                , classList [ ( "hidden", isHidden Data.Fields.ConcPerson ) ]
+                ]
+                [ label [ class S.inputLabel ] [ text "Person" ]
+                , Html.map ConcPersonMsg
+                    (Comp.Dropdown.view2
+                        DS.sidebarStyle
+                        settings
+                        model.concPersonModel
+                    )
+                ]
+            , div
+                [ class "mb-4"
+                , classList [ ( "hidden", isHidden Data.Fields.ConcEquip ) ]
+                ]
+                [ label [ class S.inputLabel ] [ text "Equipment" ]
+                , Html.map ConcEquipmentMsg
+                    (Comp.Dropdown.view2
+                        DS.sidebarStyle
+                        settings
+                        model.concEquipmentModel
+                    )
+                ]
+            ]
+      }
+    , { title = "Custom Fields"
+      , info = Nothing
+      , body =
+            [ Html.map CustomFieldMsg
+                (Comp.CustomFieldMultiInput.view2
+                    DS.sidebarStyle
+                    (Comp.CustomFieldMultiInput.ViewSettings False "field" (\_ -> Nothing))
+                    model.customFieldModel
+                )
+            ]
+      }
+    , { title = "Date"
+      , info = Nothing
+      , body =
+            [ div
+                [ class "flex flex-col" ]
+                [ div [ class "mb-2" ]
+                    [ label [ class S.inputLabel ]
+                        [ text "From"
+                        ]
+                    , div [ class "relative" ]
+                        [ Html.map FromDateMsg
+                            (Comp.DatePicker.viewTimeDefault
+                                model.fromDate
+                                model.fromDateModel
+                            )
+                        , i
+                            [ class S.dateInputIcon
+                            , class "fa fa-calendar"
+                            ]
+                            []
+                        ]
+                    ]
+                , div [ class "mb-2" ]
+                    [ label [ class S.inputLabel ]
+                        [ text "To"
+                        ]
+                    , div [ class "relative" ]
+                        [ Html.map UntilDateMsg
+                            (Comp.DatePicker.viewTimeDefault
+                                model.untilDate
+                                model.untilDateModel
+                            )
+                        , i [ class S.dateInputIcon, class "fa fa-calendar" ] []
+                        ]
+                    ]
+                ]
+            ]
+      }
+    , { title = "Due Date"
+      , info = Nothing
+      , body =
+            [ div
+                [ class "flex flex-col" ]
+                [ div [ class "mb-2" ]
+                    [ label [ class S.inputLabel ]
+                        [ text "Due From"
+                        ]
+                    , div [ class "relative" ]
+                        [ Html.map FromDueDateMsg
+                            (Comp.DatePicker.viewTimeDefault
+                                model.fromDueDate
+                                model.fromDueDateModel
+                            )
+                        , i
+                            [ class "fa fa-calendar"
+                            , class S.dateInputIcon
+                            ]
+                            []
+                        ]
+                    ]
+                , div [ class "mb-2" ]
+                    [ label [ class S.inputLabel ]
+                        [ text "Due To"
+                        ]
+                    , div [ class "relative" ]
+                        [ Html.map UntilDueDateMsg
+                            (Comp.DatePicker.viewTimeDefault
+                                model.untilDueDate
+                                model.untilDueDateModel
+                            )
+                        , i
+                            [ class "fa fa-calendar"
+                            , class S.dateInputIcon
+                            ]
+                            []
+                        ]
+                    ]
+                ]
+            ]
+      }
+    , { title = "Source"
+      , info = Nothing
+      , body =
+            [ div [ class "mb-4" ]
+                [ input
+                    [ type_ "text"
+                    , onInput SetSource
+                    , Util.Html.onKeyUpCode KeyUpMsg
+                    , model.sourceModel |> Maybe.withDefault "" |> value
+                    , placeholder "Search in item source…"
+                    , class S.textInputSidebar
+                    ]
+                    []
+                ]
+            ]
+      }
+    , { title = "Direction"
+      , info = Nothing
+      , body =
+            [ Html.map DirectionMsg
+                (Comp.Dropdown.view2
+                    DS.sidebarStyle
+                    settings
+                    model.directionModel
+                )
+            ]
+      }
+    ]

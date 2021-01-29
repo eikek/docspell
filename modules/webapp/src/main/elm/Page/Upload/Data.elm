@@ -38,22 +38,6 @@ type alias Model =
     }
 
 
-dropzoneSettings : Comp.Dropzone.Settings
-dropzoneSettings =
-    let
-        ds =
-            Comp.Dropzone.defaultSettings
-    in
-    { ds
-        | classList =
-            \m ->
-                [ ( "ui attached blue placeholder segment dropzone", True )
-                , ( "dragging", m.hover )
-                , ( "disabled", not m.active )
-                ]
-    }
-
-
 mkLanguageItem : Language -> Comp.FixedDropdown.Item Language
 mkLanguageItem lang =
     Comp.FixedDropdown.Item lang (Data.Language.toName lang)
@@ -67,7 +51,7 @@ emptyModel =
     , completed = Set.empty
     , errored = Set.empty
     , loading = Dict.empty
-    , dropzone = Comp.Dropzone.init dropzoneSettings
+    , dropzone = Comp.Dropzone.init []
     , skipDuplicates = True
     , languageModel =
         Comp.FixedDropdown.init

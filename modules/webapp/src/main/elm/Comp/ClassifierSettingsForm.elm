@@ -5,6 +5,7 @@ module Comp.ClassifierSettingsForm exposing
     , init
     , update
     , view
+    , view2
     )
 
 import Api
@@ -15,6 +16,7 @@ import Comp.Dropdown
 import Comp.FixedDropdown
 import Comp.IntField
 import Data.CalEvent exposing (CalEvent)
+import Data.DropdownStyle as DS
 import Data.Flags exposing (Flags)
 import Data.ListType exposing (ListType)
 import Data.UiSettings exposing (UiSettings)
@@ -23,6 +25,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Http
 import Markdown
+import Styles as S
 import Util.Tag
 
 
@@ -177,6 +180,10 @@ update flags msg model =
             )
 
 
+
+--- View
+
+
 view : UiSettings -> Model -> Html Msg
 view settings model =
     let
@@ -226,5 +233,68 @@ Use an empty whitelist to disable auto tagging.
             [ label [] [ text "Schedule" ]
             , Html.map ScheduleMsg
                 (Comp.CalEventInput.view "" (Data.Validated.value model.schedule) model.scheduleModel)
+            ]
+        ]
+
+
+
+--- View2
+
+
+view2 : UiSettings -> Model -> Html Msg
+view2 settings model =
+    let
+        catListTypeItem =
+            Comp.FixedDropdown.Item
+                model.categoryListType
+                (Data.ListType.label model.categoryListType)
+    in
+    div []
+        [ Markdown.toHtml [ class "px-2 py-2 opacity-75" ]
+            """
+
+Auto-tagging works by learning from existing documents. The more
+documents you have correctly tagged, the better. Learning is done
+periodically based on a schedule. You can specify tag-groups that
+should either be used (whitelist) or not used (blacklist) for
+learning.
+
+Use an empty whitelist to disable auto tagging.
+
+            """
+        , div [ class "mb-4" ]
+            [ label [ class S.inputLabel ]
+                [ text "Is the following a blacklist or whitelist?" ]
+            , Html.map CategoryListTypeMsg
+                (Comp.FixedDropdown.view2 (Just catListTypeItem) model.categoryListTypeModel)
+            ]
+        , div [ class "mb-4" ]
+            [ label [ class S.inputLabel ]
+                [ case model.categoryListType of
+                    Data.ListType.Whitelist ->
+                        text "Include tag categories for learning"
+
+                    Data.ListType.Blacklist ->
+                        text "Exclude tag categories from learning"
+                ]
+            , Html.map CategoryListMsg
+                (Comp.Dropdown.view2
+                    DS.mainStyle
+                    settings
+                    model.categoryListModel
+                )
+            ]
+        , Html.map ItemCountMsg
+            (Comp.IntField.viewWithInfo2
+                "The maximum number of items to learn from, order by date newest first. Use 0 to mean all."
+                model.itemCount
+                "mb-4"
+                model.itemCountModel
+            )
+        , div [ class "mb-4" ]
+            [ label [ class S.inputLabel ]
+                [ text "Schedule" ]
+            , Html.map ScheduleMsg
+                (Comp.CalEventInput.view2 "" (Data.Validated.value model.schedule) model.scheduleModel)
             ]
         ]

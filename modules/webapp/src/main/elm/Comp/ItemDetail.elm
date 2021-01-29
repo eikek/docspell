@@ -3,12 +3,14 @@ module Comp.ItemDetail exposing
     , emptyModel
     , update
     , view
+    , view2
     )
 
 import Browser.Navigation as Nav
 import Comp.ItemDetail.Model exposing (Msg(..), UpdateResult)
 import Comp.ItemDetail.Update
-import Comp.ItemDetail.View exposing (..)
+import Comp.ItemDetail.View
+import Comp.ItemDetail.View2
 import Data.Flags exposing (Flags)
 import Data.ItemNav exposing (ItemNav)
 import Data.UiSettings exposing (UiSettings)
@@ -33,3 +35,8 @@ update =
 view : ItemNav -> UiSettings -> Model -> Html Msg
 view =
     Comp.ItemDetail.View.view
+
+
+view2 : ItemNav -> UiSettings -> Model -> Html Msg
+view2 =
+    Comp.ItemDetail.View2.view

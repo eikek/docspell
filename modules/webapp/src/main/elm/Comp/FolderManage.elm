@@ -5,6 +5,7 @@ module Comp.FolderManage exposing
     , init
     , update
     , view
+    , view2
     )
 
 import Api
@@ -15,11 +16,13 @@ import Api.Model.User exposing (User)
 import Api.Model.UserList exposing (UserList)
 import Comp.FolderDetail
 import Comp.FolderTable
+import Comp.MenuBar as MB
 import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onCheck, onClick, onInput)
 import Http
+import Styles as S
 
 
 type alias Model =
@@ -226,6 +229,80 @@ viewTable model =
                 ]
             ]
         , Html.map TableMsg (Comp.FolderTable.view model.tableModel model.folders)
+        , div
+            [ classList
+                [ ( "ui dimmer", True )
+                , ( "active", model.loading )
+                ]
+            ]
+            [ div [ class "ui loader" ] []
+            ]
+        ]
+
+
+
+--- View2
+
+
+view2 : Flags -> Model -> Html Msg
+view2 flags model =
+    case model.detailModel of
+        Just dm ->
+            viewDetail2 flags dm
+
+        Nothing ->
+            viewTable2 model
+
+
+viewDetail2 : Flags -> Comp.FolderDetail.Model -> Html Msg
+viewDetail2 flags model =
+    div []
+        [ if model.folder.id == "" then
+            h3 [ class S.header2 ]
+                [ text "Create new Folder"
+                ]
+
+          else
+            h3 [ class S.header2 ]
+                [ text model.folder.name
+                , div [ class "opacity-50 text-sm" ]
+                    [ text "Id: "
+                    , text model.folder.id
+                    ]
+                ]
+        , Html.map DetailMsg (Comp.FolderDetail.view2 flags model)
+        ]
+
+
+viewTable2 : Model -> Html Msg
+viewTable2 model =
+    div [ class "flex flex-col" ]
+        [ MB.view
+            { start =
+                [ MB.TextInput
+                    { tagger = SetQuery
+                    , value = model.query
+                    , placeholder = "Search…"
+                    , icon = Just "fa fa-search"
+                    }
+                , MB.Checkbox
+                    { tagger = \_ -> ToggleOwningOnly
+                    , label = "Show owning folders only"
+                    , value = model.owningOnly
+                    , id = "folder-toggle-owner"
+                    }
+                ]
+            , end =
+                [ MB.PrimaryButton
+                    { tagger = InitNewFolder
+                    , title = "Create a new folder"
+                    , icon = Just "fa fa-plus"
+                    , label = "New Folder"
+                    }
+                ]
+            , rootClasses = "mb-4"
+            }
+        , Html.map TableMsg (Comp.FolderTable.view2 model.tableModel model.folders)
         , div
             [ classList
                 [ ( "ui dimmer", True )

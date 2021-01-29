@@ -7,17 +7,22 @@ module Comp.ImapSettingsForm exposing
     , isValid
     , update
     , view
+    , view2
     )
 
 import Api.Model.ImapSettings exposing (ImapSettings)
+import Comp.Basic as B
 import Comp.Dropdown
 import Comp.IntField
+import Comp.MenuBar as MB
 import Comp.PasswordInput
+import Data.DropdownStyle as DS
 import Data.SSLType exposing (SSLType)
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onCheck, onInput)
+import Styles as S
 import Util.Maybe
 
 
@@ -168,6 +173,10 @@ update msg model =
             ( { model | useOAuthToken = not model.useOAuthToken }, Cmd.none )
 
 
+
+--- View
+
+
 view : UiSettings -> Model -> Html Msg
 view settings model =
     div
@@ -251,6 +260,114 @@ view settings model =
             [ div [ class "field" ]
                 [ label [] [ text "SSL" ]
                 , Html.map SSLTypeMsg (Comp.Dropdown.view settings model.sslType)
+                ]
+            ]
+        ]
+
+
+
+--- View2
+
+
+view2 : UiSettings -> Model -> Html Msg
+view2 settings model =
+    div
+        [ class "grid grid-cols-4 gap-y-4 gap-x-2" ]
+        [ div [ class "col-span-4" ]
+            [ label [ class S.inputLabel ]
+                [ text "Name"
+                , B.inputRequired
+                ]
+            , input
+                [ type_ "text"
+                , value model.name
+                , onInput SetName
+                , placeholder "Connection name, e.g. 'gmail.com'"
+                , class S.textInput
+                , classList [ ( S.inputErrorBorder, model.name == "" ) ]
+                ]
+                []
+            , div
+                [ class S.message
+                , class "mt-2"
+                ]
+                [ text "The connection name must not contain whitespace or special characters."
+                ]
+            ]
+        , div [ class "col-span-3" ]
+            [ label [ class S.inputLabel ]
+                [ text "IMAP Host"
+                , B.inputRequired
+                ]
+            , input
+                [ type_ "text"
+                , placeholder "IMAP host name, e.g. 'mail.gmail.com'"
+                , value model.host
+                , onInput SetHost
+                , class S.textInput
+                , classList [ ( S.inputErrorBorder, model.host == "" ) ]
+                ]
+                []
+            ]
+        , Html.map PortMsg
+            (Comp.IntField.viewWithInfo2 ""
+                model.portNum
+                ""
+                model.portField
+            )
+        , div [ class "col-span-4 sm:col-span-2" ]
+            [ label [ class S.inputLabel ]
+                [ text "IMAP User"
+                ]
+            , input
+                [ type_ "text"
+                , placeholder "IMAP Username, e.g. 'your.name@gmail.com'"
+                , Maybe.withDefault "" model.user |> value
+                , onInput SetUser
+                , class S.textInput
+                ]
+                []
+            ]
+        , div [ class "col-span-4 sm:col-span-2" ]
+            [ label [ class S.inputLabel ]
+                [ text "IMAP Password" ]
+            , Html.map PassMsg
+                (Comp.PasswordInput.view2
+                    model.password
+                    False
+                    model.passField
+                )
+            ]
+        , div [ class "col-span-4 sm:col-span-2" ]
+            [ label [ class S.inputLabel ]
+                [ text "SSL"
+                ]
+            , Html.map SSLTypeMsg
+                (Comp.Dropdown.view2
+                    DS.mainStyle
+                    settings
+                    model.sslType
+                )
+            ]
+        , div [ class "col-span-4 sm:col-span-2 flex items-center" ]
+            [ MB.viewItem <|
+                MB.Checkbox
+                    { tagger = \_ -> ToggleCheckCert
+                    , label = "Ignore certificate check"
+                    , value = model.ignoreCertificates
+                    , id = "imap-no-cert-check"
+                    }
+            ]
+        , div [ class "col-span-4 sm:col-span-2 flex flex-col" ]
+            [ MB.viewItem <|
+                MB.Checkbox
+                    { tagger = \_ -> ToggleUseOAuth
+                    , label = "Enable OAuth2 authentication"
+                    , value = model.useOAuthToken
+                    , id = "imap-use-oauth"
+                    }
+            , div [ class "opacity-50 text-sm" ]
+                [ text "Enabling this, allows to connect via XOAuth using the password as access token."
                 ]
             ]
         ]

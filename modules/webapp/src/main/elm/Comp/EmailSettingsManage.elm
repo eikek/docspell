@@ -5,14 +5,17 @@ module Comp.EmailSettingsManage exposing
     , init
     , update
     , view
+    , view2
     )
 
 import Api
 import Api.Model.BasicResult exposing (BasicResult)
 import Api.Model.EmailSettings
 import Api.Model.EmailSettingsList exposing (EmailSettingsList)
+import Comp.Basic as B
 import Comp.EmailSettingsForm
 import Comp.EmailSettingsTable
+import Comp.MenuBar as MB
 import Comp.YesNoDimmer
 import Data.Flags exposing (Flags)
 import Data.UiSettings exposing (UiSettings)
@@ -20,6 +23,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Http
+import Styles as S
 import Util.Http
 
 
@@ -200,6 +204,10 @@ update flags msg model =
             ( { model | loading = False }, Cmd.none )
 
 
+
+--- View
+
+
 view : UiSettings -> Model -> Html Msg
 view settings model =
     case model.viewMode of
@@ -286,4 +294,100 @@ viewForm settings model =
             ]
             [ div [ class "ui loader" ] []
             ]
+        ]
+
+
+
+--- View2
+
+
+view2 : UiSettings -> Model -> Html Msg
+view2 settings model =
+    case model.viewMode of
+        Table ->
+            viewTable2 model
+
+        Form ->
+            viewForm2 settings model
+
+
+viewTable2 : Model -> Html Msg
+viewTable2 model =
+    div []
+        [ MB.view
+            { start =
+                [ MB.TextInput
+                    { tagger = SetQuery
+                    , value = model.query
+                    , placeholder = "Search…"
+                    , icon = Just "fa fa-search"
+                    }
+                ]
+            , end =
+                [ MB.PrimaryButton
+                    { tagger = InitNew
+                    , title = "Add new SMTP settings"
+                    , icon = Just "fa fa-plus"
+                    , label = "New Settings"
+                    }
+                ]
+            , rootClasses = "mb-4"
+            }
+        , Html.map TableMsg (Comp.EmailSettingsTable.view2 model.tableModel)
+        ]
+
+
+viewForm2 : UiSettings -> Model -> Html Msg
+viewForm2 settings model =
+    let
+        dimmerSettings =
+            Comp.YesNoDimmer.defaultSettings2 "Really delete these connection?"
+    in
+    div [ class "flex flex-col md:relative" ]
+        [ MB.view
+            { start =
+                [ MB.PrimaryButton
+                    { tagger = Submit
+                    , title = "Submit this form"
+                    , icon = Just "fa fa-save"
+                    , label = "Submit"
+                    }
+                , MB.SecondaryButton
+                    { tagger = SetViewMode Table
+                    , title = "Back to list"
+                    , icon = Just "fa fa-arrow-left"
+                    , label = "Cancel"
+                    }
+                ]
+            , end =
+                if model.formModel.settings.name /= "" then
+                    [ MB.DeleteButton
+                        { tagger = RequestDelete
+                        , title = "Delete this settings entry"
+                        , icon = Just "fa fa-trash"
+                        , label = "Delete"
+                        }
+                    ]
+
+                else
+                    []
+            , rootClasses = "mb-4"
+            }
+        , Html.map FormMsg
+            (Comp.EmailSettingsForm.view2 settings model.formModel)
+        , div
+            [ classList
+                [ ( "hidden", model.formError == Nothing )
+                ]
+            , class S.errorMessage
+            ]
+            [ Maybe.withDefault "" model.formError |> text
+            ]
+        , Html.map YesNoMsg
+            (Comp.YesNoDimmer.viewN
+                True
+                dimmerSettings
+                model.deleteConfirm
+            )
+        , B.loadingDimmer model.loading
         ]

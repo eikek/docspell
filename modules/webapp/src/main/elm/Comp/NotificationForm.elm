@@ -6,6 +6,7 @@ module Comp.NotificationForm exposing
     , initWith
     , update
     , view
+    , view2
     )
 
 import Api
@@ -14,12 +15,15 @@ import Api.Model.EmailSettingsList exposing (EmailSettingsList)
 import Api.Model.NotificationSettings exposing (NotificationSettings)
 import Api.Model.Tag exposing (Tag)
 import Api.Model.TagList exposing (TagList)
+import Comp.Basic as B
 import Comp.CalEventInput
 import Comp.Dropdown
 import Comp.EmailInput
 import Comp.IntField
+import Comp.MenuBar as MB
 import Comp.YesNoDimmer
 import Data.CalEvent exposing (CalEvent)
+import Data.DropdownStyle as DS
 import Data.Flags exposing (Flags)
 import Data.UiSettings exposing (UiSettings)
 import Data.Validated exposing (Validated(..))
@@ -27,6 +31,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onCheck, onClick)
 import Http
+import Styles as S
 import Util.Http
 import Util.Maybe
 import Util.Tag
@@ -142,8 +147,8 @@ init flags =
                 { makeOption = \a -> { value = a, text = a, additional = "" }
                 , placeholder = "Select connection..."
                 }
-      , tagInclModel = Util.Tag.makeDropdownModel
-      , tagExclModel = Util.Tag.makeDropdownModel
+      , tagInclModel = Util.Tag.makeDropdownModel2
+      , tagExclModel = Util.Tag.makeDropdownModel2
       , recipients = []
       , recipientsModel = Comp.EmailInput.init
       , remindDays = Just 1
@@ -620,5 +625,187 @@ view extraClasses settings model =
             , onClick StartOnce
             ]
             [ text "Start Once"
+            ]
+        ]
+
+
+
+--- View 2
+
+
+view2 : String -> UiSettings -> Model -> Html Msg
+view2 extraClasses settings model =
+    let
+        dimmerSettings =
+            Comp.YesNoDimmer.defaultSettings2 "Really delete this notification task?"
+    in
+    div
+        [ class "flex flex-col md:relative"
+        , class extraClasses
+        ]
+        [ Html.map YesNoDeleteMsg
+            (Comp.YesNoDimmer.viewN True
+                dimmerSettings
+                model.yesNoDelete
+            )
+        , B.loadingDimmer (model.loading > 0)
+        , MB.view
+            { start =
+                [ MB.PrimaryButton
+                    { tagger = Submit
+                    , label = "Submit"
+                    , title = "Save"
+                    , icon = Just "fa fa-save"
+                    }
+                , MB.SecondaryButton
+                    { tagger = Cancel
+                    , label = "Cancel"
+                    , title = "Back to list"
+                    , icon = Just "fa fa-arrow-left"
+                    }
+                ]
+            , end =
+                if model.settings.id /= "" then
+                    [ MB.DeleteButton
+                        { tagger = RequestDelete
+                        , label = "Delete"
+                        , title = "Delete this task"
+                        , icon = Just "fa fa-trash"
+                        }
+                    ]
+
+                else
+                    []
+            , rootClasses = "mb-4"
+            }
+        , div
+            [ classList
+                [ ( S.successMessage, isFormSuccess model )
+                , ( S.errorMessage, isFormError model )
+                , ( "hidden", model.formMsg == Nothing )
+                ]
+            , class "mb-4"
+            ]
+            [ Maybe.map .message model.formMsg
+                |> Maybe.withDefault ""
+                |> text
+            ]
+        , div [ class "mb-4" ]
+            [ MB.viewItem <|
+                MB.Checkbox
+                    { tagger = \_ -> ToggleEnabled
+                    , label = "Enable or disable this task."
+                    , value = model.enabled
+                    , id = "notify-enabled"
+                    }
+            ]
+        , div [ class "mb-4" ]
+            [ label [ class S.inputLabel ]
+                [ text "Send via"
+                , B.inputRequired
+                ]
+            , Html.map ConnMsg
+                (Comp.Dropdown.view2
+                    DS.mainStyle
+                    settings
+                    model.connectionModel
+                )
+            , span [ class "opacity-50 text-sm" ]
+                [ text "The SMTP connection to use when sending notification mails."
+                ]
+            ]
+        , div [ class "mb-4" ]
+            [ label
+                [ class S.inputLabel
+                ]
+                [ text "Recipient(s)"
+                , B.inputRequired
+                ]
+            , Html.map RecipientMsg
+                (Comp.EmailInput.view2
+                    DS.mainStyle
+                    model.recipients
+                    model.recipientsModel
+                )
+            , span [ class "opacity-50 text-sm" ]
+                [ text "One or more mail addresses, confirm each by pressing 'Return'."
+                ]
+            ]
+        , div [ class "mb-4" ]
+            [ label [ class S.inputLabel ]
+                [ text "Tags Include (and)" ]
+            , Html.map TagIncMsg
+                (Comp.Dropdown.view2
+                    DS.mainStyle
+                    settings
+                    model.tagInclModel
+                )
+            , span [ class "opacity-50 text-sm" ]
+                [ text "Items must have all the tags specified here."
+                ]
+            ]
+        , div [ class "mb-4" ]
+            [ label [ class S.inputLabel ]
+                [ text "Tags Exclude (or)" ]
+            , Html.map TagExcMsg
+                (Comp.Dropdown.view2
+                    DS.mainStyle
+                    settings
+                    model.tagExclModel
+                )
+            , span [ class "small-info" ]
+                [ text "Items must not have any tag specified here."
+                ]
+            ]
+        , Html.map RemindDaysMsg
+            (Comp.IntField.viewWithInfo2
+                "Select items with a due date *lower than* `today+remindDays`"
+                model.remindDays
+                "mb-4"
+                model.remindDaysModel
+            )
+        , div [ class "mb-4" ]
+            [ MB.viewItem <|
+                MB.Checkbox
+                    { tagger = \_ -> ToggleCapOverdue
+                    , id = "notify-toggle-cap-overdue"
+                    , value = model.capOverdue
+                    , label = "Cap overdue items"
+                    }
+            , div [ class "opacity-50 text-sm" ]
+                [ text "If checked, only items with a due date"
+                , em [ class "font-italic" ]
+                    [ text " greater than " ]
+                , code [ class "font-mono" ]
+                    [ text "today-remindDays" ]
+                , text " are considered."
+                ]
+            ]
+        , div [ class "mb-4" ]
+            [ label [ class S.inputLabel ]
+                [ text "Schedule"
+                , a
+                    [ class "float-right"
+                    , class S.link
+                    , href "https://github.com/eikek/calev#what-are-calendar-events"
+                    , target "_blank"
+                    ]
+                    [ i [ class "fa fa-question" ] []
+                    , span [ class "pl-2" ]
+                        [ text "Click here for help"
+                        ]
+                    ]
+                ]
+            , Html.map CalEventMsg
+                (Comp.CalEventInput.view2 ""
+                    (Data.Validated.value model.schedule)
+                    model.scheduleModel
+                )
+            , span [ class "opacity-50 text-sm" ]
+                [ text "Specify how often and when this task should run. "
+                , text "Use English 3-letter weekdays. Either a single value, "
+                , text "a list (ex. 1,2,3), a range (ex. 1..3) or a '*' (meaning all) "
+                , text "is allowed for each part."
+                ]
             ]
         ]

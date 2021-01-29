@@ -103,6 +103,8 @@ type alias Model =
     , customFieldThrottle : Throttle Msg
     , allTags : List Tag
     , allPersons : Dict String Person
+    , attachmentDropdownOpen : Bool
+    , editMenuTabsOpen : Set String
     }
 
 
@@ -134,7 +136,7 @@ emptyModel =
     , attachMenuOpen = False
     , menuOpen = False
     , tagModel =
-        Util.Tag.makeDropdownModel
+        Util.Tag.makeDropdownModel2
     , directionModel =
         Comp.Dropdown.makeSingleList
             { makeOption =
@@ -195,7 +197,7 @@ emptyModel =
     , pdfNativeView = Nothing
     , deleteAttachConfirm = Comp.YesNoDimmer.emptyModel
     , addFilesOpen = False
-    , addFilesModel = Comp.Dropzone.init Comp.Dropzone.defaultSettings
+    , addFilesModel = Comp.Dropzone.init []
     , selectedFiles = []
     , completed = Set.empty
     , errored = Set.empty
@@ -209,6 +211,8 @@ emptyModel =
     , customFieldThrottle = Throttle.create 1
     , allTags = []
     , allPersons = Dict.empty
+    , attachmentDropdownOpen = False
+    , editMenuTabsOpen = Set.empty
     }
 
 
@@ -297,6 +301,9 @@ type Msg
     | CustomFieldMsg Comp.CustomFieldMultiInput.Msg
     | CustomFieldSaveResp CustomField String (Result Http.Error BasicResult)
     | CustomFieldRemoveResp String (Result Http.Error BasicResult)
+    | ToggleAttachmentDropdown
+    | ToggleAkkordionTab String
+    | ToggleOpenAllAkkordionTabs
 
 
 type SaveNameState

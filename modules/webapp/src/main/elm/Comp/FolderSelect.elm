@@ -9,6 +9,7 @@ module Comp.FolderSelect exposing
     , updateDrop
     , view
     , viewDrop
+    , viewDrop2
     )
 
 import Api.Model.FolderStats exposing (FolderStats)
@@ -230,4 +231,94 @@ viewItem dropModel model item =
                     ]
                 ]
             ]
+        ]
+
+
+
+--- View2
+
+
+viewDrop2 : DD.Model -> Int -> Model -> Html Msg
+viewDrop2 dropModel constr model =
+    let
+        highlightDrop =
+            DD.getDropId dropModel == Just DD.FolderRemove
+    in
+    div [ class "ui list" ]
+        [ div [ class "item" ]
+            [ i [ class "folder open icon" ] []
+            , div [ class "content" ]
+                [ div
+                    (classList
+                        [ ( "hidden", True )
+                        , ( "current-drop-target", highlightDrop )
+                        ]
+                        :: DD.droppable FolderDDMsg DD.FolderRemove
+                     -- note: re-enable this when adding a "no-folder selection"
+                     -- this enables a drop target that removes a folder
+                    )
+                    [ text "Folders"
+                    ]
+                , div [ class "flex flex-col space-y-2 md:space-y-1" ]
+                    (renderItems2 dropModel constr model)
+                ]
+            ]
+        ]
+
+
+renderItems2 : DD.Model -> Int -> Model -> List (Html Msg)
+renderItems2 dropModel constr model =
+    if constr <= 0 then
+        List.map (viewItem2 dropModel model) model.all
+
+    else if model.expanded then
+        List.map (viewItem2 dropModel model) model.all ++ collapseToggle constr model
+
+    else
+        List.map (viewItem2 dropModel model) (List.take constr model.all) ++ expandToggle constr model
+
+
+viewItem2 : DD.Model -> Model -> FolderStats -> Html Msg
+viewItem2 dropModel model item =
+    let
+        selected =
+            Just item.id == model.selected
+
+        icon =
+            if selected then
+                "fa fa-folder-open font-thin"
+
+            else
+                "fa fa-folder font-thin"
+
+        highlightDrop =
+            DD.getDropId dropModel == Just (DD.Folder item.id)
+    in
+    a
+        ([ classList
+            [ ( "current-drop-target", highlightDrop )
+            ]
+         , class "flex flex-row items-center"
+         , class "rounded px-1 py-1 hover:bg-blue-100 dark:hover:bg-bluegray-600"
+         , href "#"
+         , onClick (Toggle item)
+         ]
+            ++ DD.droppable FolderDDMsg (DD.Folder item.id)
+        )
+        [ i [ class icon ] []
+        , div [ class "ml-2" ]
+            [ text item.name
+            ]
+        , div [ class "flex-grow" ] []
+        , numberLabel item.count
+        ]
+
+
+numberLabel : Int -> Html msg
+numberLabel num =
+    div
+        [ class "bg-gray-200 border rounded-full h-6 w-6 flex items-center justify-center text-xs"
+        , class "dark:bg-bluegray-800 dark:text-bluegray-200 dark:border-bluegray-800 dark:bg-opacity-50"
+        ]
+        [ text (String.fromInt num)
         ]

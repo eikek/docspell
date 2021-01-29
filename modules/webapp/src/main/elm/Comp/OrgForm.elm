@@ -7,16 +7,19 @@ module Comp.OrgForm exposing
     , update
     , view
     , view1
+    , view2
     )
 
 import Api.Model.Organization exposing (Organization)
 import Comp.AddressForm
+import Comp.Basic as B
 import Comp.ContactField
 import Data.Flags exposing (Flags)
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)
+import Styles as S
 
 
 type alias Model =
@@ -148,5 +151,64 @@ view1 settings compact model =
                 , Maybe.withDefault "" model.notes |> value
                 ]
                 []
+            ]
+        ]
+
+
+
+--- View2
+
+
+view2 : Bool -> UiSettings -> Model -> Html Msg
+view2 mobile settings model =
+    div [ class "flex flex-col" ]
+        [ div
+            [ class "mb-4" ]
+            [ label
+                [ for "orgname"
+                , class S.inputLabel
+                ]
+                [ text "Name"
+                , B.inputRequired
+                ]
+            , input
+                [ type_ "text"
+                , onInput SetName
+                , placeholder "Name"
+                , value model.name
+                , name "orgname"
+                , class S.textInput
+                , classList
+                    [ ( S.inputErrorBorder, not (isValid model) )
+                    ]
+                ]
+                []
+            ]
+        , div [ class "mb-4" ]
+            [ h3 [ class S.header3 ]
+                [ text "Address"
+                ]
+            , Html.map AddressMsg
+                (Comp.AddressForm.view2 settings model.addressModel)
+            ]
+        , div [ class "mb-4" ]
+            [ h3 [ class S.header3 ]
+                [ text "Contacts"
+                ]
+            , Html.map ContactMsg
+                (Comp.ContactField.view2 mobile settings model.contactModel)
+            ]
+        , div [ class "mb-4" ]
+            [ h3 [ class S.header3 ]
+                [ text "Notes"
+                ]
+            , div [ class "" ]
+                [ textarea
+                    [ onInput SetNotes
+                    , Maybe.withDefault "" model.notes |> value
+                    , class S.textAreaInput
+                    ]
+                    []
+                ]
             ]
         ]

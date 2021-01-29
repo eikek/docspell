@@ -3,7 +3,7 @@ module Page.Home.View exposing (view)
 import Api.Model.ItemSearch
 import Comp.FixedDropdown
 import Comp.ItemCardList
-import Comp.ItemDetail.EditMenu
+import Comp.ItemDetail.MultiEditMenu
 import Comp.SearchMenu
 import Comp.SearchStatsView
 import Comp.YesNoDimmer
@@ -191,7 +191,7 @@ viewLeftMenu flags settings model =
                 EditSelected ->
                     let
                         cfg_ =
-                            Comp.ItemDetail.EditMenu.defaultViewConfig
+                            Comp.ItemDetail.MultiEditMenu.defaultViewConfig
 
                         cfg =
                             { cfg_
@@ -199,10 +199,10 @@ viewLeftMenu flags settings model =
                                 , customFieldState =
                                     \fId ->
                                         if Set.member fId svm.saveCustomFieldState then
-                                            Comp.ItemDetail.EditMenu.Saving
+                                            Comp.ItemDetail.MultiEditMenu.Saving
 
                                         else
-                                            Comp.ItemDetail.EditMenu.SaveSuccess
+                                            Comp.ItemDetail.MultiEditMenu.SaveSuccess
                             }
                     in
                     [ div [ class "ui dividing header" ]
@@ -212,7 +212,7 @@ viewLeftMenu flags settings model =
                         [ text "Note that a change here immediatly affects all selected items on the right!"
                         ]
                     , Html.map EditMenuMsg
-                        (Comp.ItemDetail.EditMenu.view cfg settings svm.editModel)
+                        (Comp.ItemDetail.MultiEditMenu.view cfg settings svm.editModel)
                     ]
 
                 _ ->
@@ -412,6 +412,5 @@ deleteAllDimmer =
     , headerClass = "ui inverted icon header"
     , confirmButton = "Yes"
     , cancelButton = "No"
-    , invertedDimmer = False
     , extraClass = "top aligned"
     }

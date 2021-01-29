@@ -4,12 +4,15 @@ module Comp.UserManage exposing
     , emptyModel
     , update
     , view
+    , view2
     )
 
 import Api
 import Api.Model.BasicResult exposing (BasicResult)
 import Api.Model.User
 import Api.Model.UserList exposing (UserList)
+import Comp.Basic as B
+import Comp.MenuBar as MB
 import Comp.UserForm
 import Comp.UserTable
 import Comp.YesNoDimmer
@@ -19,6 +22,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onSubmit)
 import Http
+import Styles as S
 import Util.Http
 import Util.Maybe
 
@@ -195,6 +199,10 @@ update flags msg model =
             ( { model | deleteConfirm = cm }, cmd )
 
 
+
+--- View
+
+
 view : UiSettings -> Model -> Html Msg
 view settings model =
     if model.viewMode == Table then
@@ -270,4 +278,107 @@ viewForm settings model =
             ]
             [ div [ class "ui loader" ] []
             ]
+        ]
+
+
+
+--- View2
+
+
+view2 : UiSettings -> Model -> Html Msg
+view2 settings model =
+    if model.viewMode == Table then
+        viewTable2 model
+
+    else
+        viewForm2 settings model
+
+
+viewTable2 : Model -> Html Msg
+viewTable2 model =
+    div [ class "flex flex-col" ]
+        [ MB.view
+            { start = []
+            , end =
+                [ MB.PrimaryButton
+                    { tagger = InitNewUser
+                    , title = "Add a new user"
+                    , icon = Just "fa fa-plus"
+                    , label = "New user"
+                    }
+                ]
+            , rootClasses = "mb-4"
+            }
+        , Html.map TableMsg (Comp.UserTable.view2 model.tableModel)
+        , B.loadingDimmer model.loading
+        ]
+
+
+viewForm2 : UiSettings -> Model -> Html Msg
+viewForm2 settings model =
+    let
+        newUser =
+            Comp.UserForm.isNewUser model.formModel
+
+        dimmerSettings : Comp.YesNoDimmer.Settings
+        dimmerSettings =
+            Comp.YesNoDimmer.defaultSettings2 "Really delete this user?"
+    in
+    Html.form
+        [ class "flex flex-col md:relative"
+        , onSubmit Submit
+        ]
+        [ Html.map YesNoMsg
+            (Comp.YesNoDimmer.viewN True
+                dimmerSettings
+                model.deleteConfirm
+            )
+        , if newUser then
+            h3 [ class S.header2 ]
+                [ text "Create new user"
+                ]
+
+          else
+            h3 [ class S.header2 ]
+                [ text model.formModel.user.login
+                ]
+        , MB.view
+            { start =
+                [ MB.PrimaryButton
+                    { tagger = Submit
+                    , title = "Submit this form"
+                    , icon = Just "fa fa-save"
+                    , label = "Submit"
+                    }
+                , MB.SecondaryButton
+                    { tagger = SetViewMode Table
+                    , title = "Back to list"
+                    , icon = Just "fa fa-arrow-left"
+                    , label = "Cancel"
+                    }
+                ]
+            , end =
+                if not newUser then
+                    [ MB.DeleteButton
+                        { tagger = RequestDelete
+                        , title = "Delete this user"
+                        , icon = Just "fa fa-trash"
+                        , label = "Delete"
+                        }
+                    ]
+
+                else
+                    []
+            , rootClasses = "mb-4"
+            }
+        , Html.map FormMsg (Comp.UserForm.view2 settings model.formModel)
+        , div
+            [ classList
+                [ ( "hidden", Util.Maybe.isEmpty model.formError )
+                ]
+            , class S.errorMessage
+            ]
+            [ Maybe.withDefault "" model.formError |> text
+            ]
+        , B.loadingDimmer model.loading
         ]

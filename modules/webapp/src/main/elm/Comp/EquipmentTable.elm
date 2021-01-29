@@ -4,13 +4,16 @@ module Comp.EquipmentTable exposing
     , emptyModel
     , update
     , view
+    , view2
     )
 
 import Api.Model.Equipment exposing (Equipment)
+import Comp.Basic as B
 import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
+import Styles as S
 
 
 type alias Model =
@@ -75,6 +78,37 @@ renderEquipmentLine model equip =
                 ]
             ]
         , td []
+            [ text equip.name
+            ]
+        ]
+
+
+
+--- View2
+
+
+view2 : Model -> Html Msg
+view2 model =
+    table [ class S.tableMain ]
+        [ thead []
+            [ tr []
+                [ th [ class "" ] []
+                , th [ class "text-left" ] [ text "Name" ]
+                ]
+            ]
+        , tbody []
+            (List.map (renderEquipmentLine2 model) model.equips)
+        ]
+
+
+renderEquipmentLine2 : Model -> Equipment -> Html Msg
+renderEquipmentLine2 model equip =
+    tr
+        [ classList [ ( "active", model.selected == Just equip ) ]
+        , class S.tableRow
+        ]
+        [ B.editLinkTableCell (Select equip)
+        , td [ class "text-left" ]
             [ text equip.name
             ]
         ]

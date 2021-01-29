@@ -4,20 +4,24 @@ module Comp.EquipmentManage exposing
     , emptyModel
     , update
     , view
+    , view2
     )
 
 import Api
 import Api.Model.BasicResult exposing (BasicResult)
 import Api.Model.Equipment
 import Api.Model.EquipmentList exposing (EquipmentList)
+import Comp.Basic as B
 import Comp.EquipmentForm
 import Comp.EquipmentTable
+import Comp.MenuBar as MB
 import Comp.YesNoDimmer
 import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput, onSubmit)
 import Http
+import Styles as S
 import Util.Http
 import Util.Maybe
 
@@ -299,4 +303,125 @@ viewForm model =
             ]
             [ div [ class "ui loader" ] []
             ]
+        ]
+
+
+
+--- View2
+
+
+view2 : Model -> Html Msg
+view2 model =
+    if model.viewMode == Table then
+        viewTable2 model
+
+    else
+        viewForm2 model
+
+
+viewTable2 : Model -> Html Msg
+viewTable2 model =
+    div [ class "flex flex-col" ]
+        [ MB.view
+            { start =
+                [ MB.TextInput
+                    { tagger = SetQuery
+                    , value = model.query
+                    , placeholder = "Search…"
+                    , icon = Just "fa fa-search"
+                    }
+                ]
+            , end =
+                [ MB.PrimaryButton
+                    { tagger = InitNewEquipment
+                    , title = "Create a new equipment"
+                    , icon = Just "fa fa-plus"
+                    , label = "New Equipment"
+                    }
+                ]
+            , rootClasses = "mb-4"
+            }
+        , Html.map TableMsg (Comp.EquipmentTable.view2 model.tableModel)
+        , div
+            [ classList
+                [ ( "ui dimmer", True )
+                , ( "active", model.loading )
+                ]
+            ]
+            [ div [ class "ui loader" ] []
+            ]
+        ]
+
+
+viewForm2 : Model -> Html Msg
+viewForm2 model =
+    let
+        newEquipment =
+            model.formModel.equipment.id == ""
+
+        dimmerSettings2 =
+            Comp.YesNoDimmer.defaultSettings2 "Really delete this equipment?"
+    in
+    Html.form
+        [ class "relative flex flex-col"
+        , onSubmit Submit
+        ]
+        [ Html.map YesNoMsg
+            (Comp.YesNoDimmer.viewN
+                True
+                dimmerSettings2
+                model.deleteConfirm
+            )
+        , if newEquipment then
+            h1 [ class S.header2 ]
+                [ text "Create new equipment"
+                ]
+
+          else
+            h1 [ class S.header2 ]
+                [ text model.formModel.equipment.name
+                , div [ class "opacity-50 text-sm" ]
+                    [ text "Id: "
+                    , text model.formModel.equipment.id
+                    ]
+                ]
+        , MB.view
+            { start =
+                [ MB.PrimaryButton
+                    { tagger = Submit
+                    , title = "Submit this form"
+                    , icon = Just "fa fa-save"
+                    , label = "Submit"
+                    }
+                , MB.SecondaryButton
+                    { tagger = SetViewMode Table
+                    , title = "Back to list"
+                    , icon = Just "fa fa-arrow-left"
+                    , label = "Cancel"
+                    }
+                ]
+            , end =
+                if not newEquipment then
+                    [ MB.DeleteButton
+                        { tagger = RequestDelete
+                        , title = "Delete this equipment"
+                        , icon = Just "fa fa-trash"
+                        , label = "Delete"
+                        }
+                    ]
+
+                else
+                    []
+            , rootClasses = "mb-4"
+            }
+        , Html.map FormMsg (Comp.EquipmentForm.view2 model.formModel)
+        , div
+            [ classList
+                [ ( "hidden", Util.Maybe.isEmpty model.formError )
+                ]
+            , class S.errorMessage
+            ]
+            [ Maybe.withDefault "" model.formError |> text
+            ]
+        , B.loadingDimmer model.loading
         ]

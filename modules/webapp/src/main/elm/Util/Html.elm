@@ -1,6 +1,7 @@
 module Util.Html exposing
     ( KeyCode(..)
     , checkbox
+    , checkbox2
     , classActive
     , intToKeyCode
     , onClickk
@@ -38,6 +39,15 @@ checkbox flag =
 
     else
         checkboxUnchecked
+
+
+checkbox2 : Bool -> Html msg
+checkbox2 flag =
+    if flag then
+        i [ class "fa fa-check-square font-thin" ] []
+
+    else
+        i [ class "fa fa-minus-square font-thin" ] []
 
 
 type KeyCode

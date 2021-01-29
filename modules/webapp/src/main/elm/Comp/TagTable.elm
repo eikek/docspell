@@ -4,13 +4,16 @@ module Comp.TagTable exposing
     , emptyModel
     , update
     , view
+    , view2
     )
 
 import Api.Model.Tag exposing (Tag)
+import Comp.Basic as B
 import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
+import Styles as S
 
 
 type alias Model =
@@ -63,8 +66,7 @@ view model =
 renderTagLine : Model -> Tag -> Html Msg
 renderTagLine model tag =
     tr
-        [ classList [ ( "active", model.selected == Just tag ) ]
-        ]
+        []
         [ td [ class "collapsing" ]
             [ a
                 [ href "#"
@@ -79,6 +81,41 @@ renderTagLine model tag =
             [ text tag.name
             ]
         , td []
+            [ Maybe.withDefault "-" tag.category |> text
+            ]
+        ]
+
+
+
+--- View2
+
+
+view2 : Model -> Html Msg
+view2 model =
+    table [ class S.tableMain ]
+        [ thead []
+            [ tr []
+                [ th [ class "" ] []
+                , th [ class "text-left" ] [ text "Name" ]
+                , th [ class "text-left" ] [ text "Category" ]
+                ]
+            ]
+        , tbody []
+            (List.map (renderTagLine2 model) model.tags)
+        ]
+
+
+renderTagLine2 : Model -> Tag -> Html Msg
+renderTagLine2 model tag =
+    tr
+        [ classList [ ( "active", model.selected == Just tag ) ]
+        , class S.tableRow
+        ]
+        [ B.editLinkTableCell (Select tag)
+        , td [ class "text-left py-4 md:py-2" ]
+            [ text tag.name
+            ]
+        , td [ class "text-left py-4 md:py-2" ]
             [ Maybe.withDefault "-" tag.category |> text
             ]
         ]

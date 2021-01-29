@@ -7,18 +7,22 @@ module Comp.PersonForm exposing
     , update
     , view
     , view1
+    , view2
     )
 
 import Api.Model.IdName exposing (IdName)
 import Api.Model.Person exposing (Person)
 import Comp.AddressForm
+import Comp.Basic as B
 import Comp.ContactField
 import Comp.Dropdown
+import Data.DropdownStyle as DS
 import Data.Flags exposing (Flags)
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onCheck, onInput)
+import Styles as S
 
 
 type alias Model =
@@ -213,5 +217,96 @@ view1 settings compact model =
                 , Maybe.withDefault "" model.notes |> value
                 ]
                 []
+            ]
+        ]
+
+
+
+--- View2
+
+
+view2 : Bool -> UiSettings -> Model -> Html Msg
+view2 mobile settings model =
+    div [ class "flex flex-col" ]
+        [ div
+            [ class "mb-4"
+            ]
+            [ label
+                [ class S.inputLabel
+                , for "personname"
+                ]
+                [ text "Name"
+                , B.inputRequired
+                ]
+            , input
+                [ type_ "text"
+                , onInput SetName
+                , placeholder "Name"
+                , value model.name
+                , class S.textInput
+                , classList
+                    [ ( S.inputErrorBorder, not (isValid model) )
+                    ]
+                , name "personname"
+                ]
+                []
+            ]
+        , div [ class "mb-4" ]
+            [ label
+                [ class "inline-flex items-center"
+                , for "concerning"
+                ]
+                [ input
+                    [ type_ "checkbox"
+                    , checked model.concerning
+                    , onCheck SetConcerning
+                    , class S.checkboxInput
+                    , name "concerning"
+                    , id "concerning"
+                    ]
+                    []
+                , span [ class "ml-2" ]
+                    [ text "Use for concerning person suggestion only"
+                    ]
+                ]
+            ]
+        , div [ class "mb-4" ]
+            [ label
+                [ class S.inputLabel
+                ]
+                [ text "Organization"
+                ]
+            , Html.map OrgDropdownMsg
+                (Comp.Dropdown.view2
+                    DS.mainStyle
+                    settings
+                    model.orgModel
+                )
+            ]
+        , div [ class "mb-4" ]
+            [ h3 [ class "ui dividing header" ]
+                [ text "Address"
+                ]
+            , Html.map AddressMsg (Comp.AddressForm.view2 settings model.addressModel)
+            ]
+        , div [ class "mb-4" ]
+            [ h3 [ class S.header3 ]
+                [ text "Contacts"
+                ]
+            , Html.map ContactMsg
+                (Comp.ContactField.view2 mobile settings model.contactModel)
+            ]
+        , div [ class "mb-4" ]
+            [ h3 [ class S.header3 ]
+                [ text "Notes"
+                ]
+            , div [ class "" ]
+                [ textarea
+                    [ onInput SetNotes
+                    , Maybe.withDefault "" model.notes |> value
+                    , class S.textAreaInput
+                    ]
+                    []
+                ]
             ]
         ]

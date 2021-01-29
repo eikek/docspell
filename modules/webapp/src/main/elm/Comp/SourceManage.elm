@@ -4,13 +4,15 @@ module Comp.SourceManage exposing
     , init
     , update
     , view
+    , view2
     )
 
 import Api
 import Api.Model.BasicResult exposing (BasicResult)
 import Api.Model.SourceAndTags exposing (SourceAndTags)
 import Api.Model.SourceList exposing (SourceList)
-import Api.Model.SourceTagIn exposing (SourceTagIn)
+import Comp.Basic as B
+import Comp.MenuBar as MB
 import Comp.SourceForm
 import Comp.SourceTable exposing (SelectMode(..))
 import Comp.YesNoDimmer
@@ -22,6 +24,7 @@ import Html.Events exposing (onClick, onSubmit)
 import Http
 import Ports
 import QRCode
+import Styles as S
 import Util.Http
 import Util.Maybe
 
@@ -406,5 +409,242 @@ viewForm flags settings model =
             ]
             [ div [ class "ui loader" ] []
             ]
+        ]
+    ]
+
+
+
+--- View2
+
+
+view2 : Flags -> UiSettings -> Model -> Html Msg
+view2 flags settings model =
+    case model.viewMode of
+        None ->
+            viewTable2 model
+
+        Edit _ ->
+            div [] (viewForm2 flags settings model)
+
+        Display source ->
+            viewLinks2 flags settings source
+
+
+viewTable2 : Model -> Html Msg
+viewTable2 model =
+    div [ class "relative flex flex-col" ]
+        [ MB.view
+            { start = []
+            , end =
+                [ MB.PrimaryButton
+                    { tagger = InitNewSource
+                    , title = "Add a source url"
+                    , icon = Just "fa fa-plus"
+                    , label = "New source"
+                    }
+                ]
+            , rootClasses = "mb-4"
+            }
+        , Html.map TableMsg (Comp.SourceTable.view2 model.sources)
+        , B.loadingDimmer model.loading
+        ]
+
+
+viewLinks2 : Flags -> UiSettings -> SourceAndTags -> Html Msg
+viewLinks2 flags _ source =
+    let
+        appUrl =
+            flags.config.baseUrl ++ "/app/upload/" ++ source.source.id
+
+        apiUrl =
+            flags.config.baseUrl ++ "/api/v1/open/upload/item/" ++ source.source.id
+
+        styleUrl =
+            "truncate px-2 py-2 border-0 border-t border-b border-r font-mono text-sm my-auto rounded-r border-gray-400 dark:border-bluegray-500"
+
+        styleQr =
+            "max-w-min dark:bg-bluegray-400 bg-gray-50 mx-auto md:mx-0"
+    in
+    div
+        []
+        [ h2 [ class S.header2 ]
+            [ text "Public Uploads: "
+            , text source.source.abbrev
+            , div [ class "opacity-50 text-sm" ]
+                [ text source.source.id
+                ]
+            ]
+        , p [ class "text-lg pt-2 opacity-75" ]
+            [ text "This source defines URLs that can be used by anyone to send files to "
+            , text "you. There is a web page that you can share or the API url can be used "
+            , text "with other clients."
+            ]
+        , p [ class "text-lg py-2 opacity-75" ]
+            [ text "There have been "
+            , String.fromInt source.source.counter |> text
+            , text " items created through this source."
+            ]
+        , h3
+            [ class S.header3
+            , class "mt-2"
+            ]
+            [ text "Public Upload Page"
+            ]
+        , div [ class "" ]
+            [ div [ class "flex flex-row" ]
+                [ a
+                    [ class S.secondaryBasicButtonPlain
+                    , class "rounded-l border text-sm px-4 py-2"
+                    , title "Copy to clipboard"
+                    , href "#"
+                    , Tuple.second appClipboardData
+                        |> String.dropLeft 1
+                        |> id
+                    , attribute "data-clipboard-target" "#app-url"
+                    ]
+                    [ i [ class "fa fa-copy" ] []
+                    ]
+                , a
+                    [ class S.secondaryBasicButtonPlain
+                    , class "px-4 py-2 border-0 border-t border-b border-r text-sm"
+                    , href appUrl
+                    , target "_blank"
+                    , title "Open in new tab/window"
+                    ]
+                    [ i [ class "fa fa-external-link-alt" ] []
+                    ]
+                , div
+                    [ id "app-url"
+                    , class styleUrl
+                    ]
+                    [ text appUrl
+                    ]
+                ]
+            ]
+        , div [ class "py-2" ]
+            [ div
+                [ class S.border
+                , class styleQr
+                ]
+                [ qrCodeView appUrl
+                ]
+            ]
+        , h3
+            [ class S.header3
+            , class "mt-4"
+            ]
+            [ text "Public API Upload URL"
+            ]
+        , div [ class "" ]
+            [ div [ class "flex flex-row" ]
+                [ a
+                    [ class S.secondaryBasicButtonPlain
+                    , class "px-4 py-2 rounded-l border text-sm"
+                    , title "Copy to clipboard"
+                    , href "#"
+                    , Tuple.second apiClipboardData
+                        |> String.dropLeft 1
+                        |> id
+                    , attribute "data-clipboard-target" "#api-url"
+                    ]
+                    [ i [ class "fa fa-copy" ] []
+                    ]
+                , div
+                    [ class styleUrl
+                    , id "api-url"
+                    ]
+                    [ text apiUrl
+                    ]
+                ]
+            ]
+        , div [ class "py-2" ]
+            [ div
+                [ class S.border
+                , class styleQr
+                ]
+                [ qrCodeView apiUrl
+                ]
+            ]
+        , button
+            [ class S.secondaryButton
+            , class "mt-4 mb-2"
+            , onClick SetTableView
+            ]
+            [ text "Back"
+            ]
+        ]
+
+
+viewForm2 : Flags -> UiSettings -> Model -> List (Html Msg)
+viewForm2 flags settings model =
+    let
+        newSource =
+            model.formModel.source.source.id == ""
+
+        dimmerSettings =
+            Comp.YesNoDimmer.defaultSettings2 "Really delete this source?"
+    in
+    [ if newSource then
+        h3 [ class S.header2 ]
+            [ text "Create new source"
+            ]
+
+      else
+        h3 [ class S.header2 ]
+            [ text model.formModel.source.source.abbrev
+            , div [ class "opacity-50 text-sm" ]
+                [ text "Id: "
+                , text model.formModel.source.source.id
+                ]
+            ]
+    , Html.form
+        [ class "flex flex-col md:relative"
+        , onSubmit Submit
+        ]
+        [ MB.view
+            { start =
+                [ MB.PrimaryButton
+                    { tagger = Submit
+                    , title = "Submit this form"
+                    , icon = Just "fa fa-save"
+                    , label = "Submit"
+                    }
+                , MB.SecondaryButton
+                    { tagger = SetTableView
+                    , title = "Back to list"
+                    , icon = Just "fa fa-arrow-left"
+                    , label = "Cancel"
+                    }
+                ]
+            , end =
+                if not newSource then
+                    [ MB.DeleteButton
+                        { tagger = RequestDelete
+                        , title = "Delete this settings entry"
+                        , icon = Just "fa fa-trash"
+                        , label = "Delete"
+                        }
+                    ]
+
+                else
+                    []
+            , rootClasses = "mb-4"
+            }
+        , Html.map FormMsg
+            (Comp.SourceForm.view2 flags settings model.formModel)
+        , div
+            [ classList
+                [ ( S.errorMessage, True )
+                , ( "hidden", Util.Maybe.isEmpty model.formError )
+                ]
+            ]
+            [ Maybe.withDefault "" model.formError |> text
+            ]
+        , Html.map YesNoMsg
+            (Comp.YesNoDimmer.viewN True
+                dimmerSettings
+                model.deleteConfirm
+            )
+        , B.loadingDimmer model.loading
         ]
     ]

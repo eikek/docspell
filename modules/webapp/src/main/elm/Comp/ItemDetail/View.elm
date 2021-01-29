@@ -525,7 +525,7 @@ renderItemInfo settings model =
                 , title "Correspondent"
                 ]
                 (Icons.correspondentIcon ""
-                    :: Comp.LinkTarget.makeCorrLink model.item SetLinkTarget
+                    :: Comp.LinkTarget.makeCorrLink model.item [] SetLinkTarget
                 )
             , Data.UiSettings.fieldVisible settings Data.Fields.CorrOrg
                 || Data.UiSettings.fieldVisible settings Data.Fields.CorrPerson
@@ -537,7 +537,7 @@ renderItemInfo settings model =
                 , title "Concerning"
                 ]
                 (Icons.concernedIcon
-                    :: Comp.LinkTarget.makeConcLink model.item SetLinkTarget
+                    :: Comp.LinkTarget.makeConcLink model.item [] SetLinkTarget
                 )
             , Data.UiSettings.fieldVisible settings Data.Fields.ConcEquip
                 || Data.UiSettings.fieldVisible settings Data.Fields.ConcPerson
@@ -549,7 +549,7 @@ renderItemInfo settings model =
                 , title "Folder"
                 ]
                 [ Icons.folderIcon ""
-                , Comp.LinkTarget.makeFolderLink model.item SetLinkTarget
+                , Comp.LinkTarget.makeFolderLink model.item [] SetLinkTarget
                 ]
             , Data.UiSettings.fieldVisible settings Data.Fields.Folder
             )
@@ -1093,7 +1093,11 @@ renderAddFilesForm model =
         [ h4 [ class "ui header" ]
             [ text "Add more files to this item"
             ]
-        , Html.map AddFilesMsg (Comp.Dropzone.view model.addFilesModel)
+        , Html.map AddFilesMsg
+            (Comp.Dropzone.view
+                Comp.Dropzone.defaultSettings
+                model.addFilesModel
+            )
         , button
             [ class "ui primary button"
             , href "#"

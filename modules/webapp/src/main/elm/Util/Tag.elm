@@ -2,6 +2,7 @@ module Util.Tag exposing
     ( getCategories
     , makeCatDropdownModel
     , makeDropdownModel
+    , makeDropdownModel2
     )
 
 import Api.Model.Tag exposing (Tag)
@@ -20,6 +21,23 @@ makeDropdownModel =
             \tag ->
                 \settings ->
                     "basic " ++ Data.UiSettings.tagColorString tag settings
+        , placeholder = "Choose a tag…"
+        }
+
+
+makeDropdownModel2 : Comp.Dropdown.Model Tag
+makeDropdownModel2 =
+    Comp.Dropdown.makeModel
+        { multiple = True
+        , searchable = \n -> n > 0
+        , makeOption = \tag -> { value = tag.id, text = tag.name, additional = "" }
+        , labelColor =
+            \tag ->
+                \settings ->
+                    Data.UiSettings.tagColorString2 tag settings
+                        ++ -- legacy colors
+                           " basic "
+                        ++ Data.UiSettings.tagColorString tag settings
         , placeholder = "Choose a tag…"
         }
 

@@ -6,14 +6,18 @@ module Comp.TagForm exposing
     , isValid
     , update
     , view
+    , view2
     )
 
 import Api.Model.Tag exposing (Tag)
+import Comp.Basic as B
 import Comp.Dropdown
+import Data.DropdownStyle as DS
 import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)
+import Styles as S
 import Util.Maybe
 
 
@@ -135,5 +139,47 @@ view model =
             [ label []
                 [ text "Category" ]
             , Html.map CatMsg (Comp.Dropdown.viewSingle model.catDropdown)
+            ]
+        ]
+
+
+view2 : Model -> Html Msg
+view2 model =
+    div
+        [ class "flex flex-col" ]
+        [ div [ class "mb-4" ]
+            [ label
+                [ for "tagname"
+                , class S.inputLabel
+                ]
+                [ text "Name"
+                , B.inputRequired
+                ]
+            , input
+                [ type_ "text"
+                , onInput SetName
+                , placeholder "Name"
+                , value model.name
+                , id "tagname"
+                , class S.textInput
+                , classList
+                    [ ( S.inputErrorBorder
+                      , not (isValid model)
+                      )
+                    ]
+                ]
+                []
+            ]
+        , div [ class "mb-4" ]
+            [ label
+                [ class S.inputLabel
+                ]
+                [ text "Category"
+                ]
+            , Html.map CatMsg
+                (Comp.Dropdown.viewSingle2
+                    DS.mainStyle
+                    model.catDropdown
+                )
             ]
         ]

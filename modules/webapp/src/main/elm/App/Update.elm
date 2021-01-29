@@ -8,6 +8,7 @@ import App.Data exposing (..)
 import Browser exposing (UrlRequest(..))
 import Browser.Navigation as Nav
 import Data.Flags
+import Data.UiTheme
 import Page exposing (Page(..))
 import Page.CollectiveSettings.Data
 import Page.CollectiveSettings.Update
@@ -47,6 +48,38 @@ update msg model =
 updateWithSub : Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
 updateWithSub msg model =
     case msg of
+        ToggleSidebar ->
+            ( { model | sidebarVisible = not model.sidebarVisible }, Cmd.none, Sub.none )
+
+        ToggleDarkMode ->
+            let
+                settings =
+                    model.uiSettings
+
+                next =
+                    Data.UiTheme.cycle settings.uiTheme
+
+                newSettings =
+                    { settings | uiTheme = next }
+            in
+            case model.flags.account of
+                Just _ ->
+                    -- when authenticated, store it in settings only
+                    -- once new settings arrive via a subscription,
+                    -- the ui is updated. so it is also updated on
+                    -- page refresh
+                    ( { model | userMenuOpen = False }
+                    , Ports.storeUiSettings model.flags newSettings
+                    , Sub.none
+                    )
+
+                Nothing ->
+                    -- when not logged in, simply set the theme
+                    ( { model | userMenuOpen = False }
+                    , Ports.setUiTheme next
+                    , Sub.none
+                    )
+
         HomeMsg lm ->
             updateHome lm model
 
@@ -213,8 +246,17 @@ updateWithSub msg model =
             )
 
         GetUiSettings settings ->
+            let
+                setTheme =
+                    Ports.setUiTheme settings.uiTheme
+            in
             Util.Update.andThen2
-                [ updateUserSettings Page.UserSettings.Data.UpdateSettings
+                [ \m ->
+                    ( { m | sidebarVisible = settings.sideMenuVisible }
+                    , setTheme
+                    , Sub.none
+                    )
+                , updateUserSettings Page.UserSettings.Data.UpdateSettings
                 , updateHome Page.Home.Data.UiSettingsUpdated
                 , updateItemDetail Page.ItemDetail.Data.UiSettingsUpdated
                 ]

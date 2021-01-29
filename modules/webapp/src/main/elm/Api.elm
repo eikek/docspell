@@ -50,6 +50,7 @@ module Api exposing
     , getJobQueueState
     , getJobQueueStateIn
     , getMailSettings
+    , getNewUi
     , getNotifyDueItems
     , getOrgFull
     , getOrgLight
@@ -120,6 +121,7 @@ module Api exposing
     , startOnceScanMailbox
     , startReIndex
     , submitNotifyDueItems
+    , toggleNewUi
     , toggleTags
     , unconfirmMultiple
     , updateNotifyDueItems
@@ -1928,6 +1930,25 @@ getItemProposals flags item receive =
         { url = flags.config.baseUrl ++ "/api/v1/sec/item/" ++ item ++ "/proposals"
         , account = getAccount flags
         , expect = Http.expectJson receive Api.Model.ItemProposals.decoder
+        }
+
+
+toggleNewUi : Flags -> (Result Http.Error BasicResult -> msg) -> Cmd msg
+toggleNewUi flags receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/newui"
+        , account = getAccount flags
+        , body = Http.emptyBody
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+getNewUi : Flags -> (Result Http.Error BasicResult -> msg) -> Cmd msg
+getNewUi flags receive =
+    Http2.authGet
+        { url = flags.config.baseUrl ++ "/api/v1/sec/newui"
+        , account = getAccount flags
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
         }
 
 

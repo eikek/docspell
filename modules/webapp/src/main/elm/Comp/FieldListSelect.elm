@@ -1,5 +1,12 @@
-module Comp.FieldListSelect exposing (..)
+module Comp.FieldListSelect exposing
+    ( Model
+    , Msg
+    , update
+    , view
+    , view2
+    )
 
+import Comp.MenuBar as MB
 import Data.Fields exposing (Field)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -67,3 +74,31 @@ fieldCheckbox selected field =
             , label [] [ text (Data.Fields.label field) ]
             ]
         ]
+
+
+
+--- View2
+
+
+view2 : String -> Model -> Html Msg
+view2 classes selected =
+    div
+        [ class "flex flex-col space-y-4 md:space-y-2"
+        , class classes
+        ]
+        (List.map (fieldCheckbox2 selected) Data.Fields.all)
+
+
+fieldCheckbox2 : Model -> Field -> Html Msg
+fieldCheckbox2 selected field =
+    let
+        isChecked =
+            List.member field selected
+    in
+    MB.viewItem <|
+        MB.Checkbox
+            { id = "field-toggle-" ++ Data.Fields.toString field
+            , value = isChecked
+            , tagger = \_ -> Toggle field
+            , label = Data.Fields.label field
+            }

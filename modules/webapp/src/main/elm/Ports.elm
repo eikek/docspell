@@ -5,12 +5,14 @@ port module Ports exposing
     , onUiSettingsSaved
     , removeAccount
     , setAccount
+    , setUiTheme
     , storeUiSettings
     )
 
 import Api.Model.AuthResult exposing (AuthResult)
 import Data.Flags exposing (Flags)
 import Data.UiSettings exposing (StoredUiSettings, UiSettings)
+import Data.UiTheme exposing (UiTheme)
 
 
 {-| Save the result of authentication to local storage.
@@ -31,6 +33,14 @@ port requestUiSettings : ( AuthResult, StoredUiSettings ) -> Cmd msg
 
 
 port uiSettingsSaved : (() -> msg) -> Sub msg
+
+
+port internalSetUiTheme : String -> Cmd msg
+
+
+setUiTheme : UiTheme -> Cmd msg
+setUiTheme theme =
+    internalSetUiTheme (Data.UiTheme.toString theme)
 
 
 onUiSettingsSaved : msg -> Sub msg

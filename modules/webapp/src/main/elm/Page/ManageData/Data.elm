@@ -26,16 +26,20 @@ type alias Model =
 
 
 init : Flags -> ( Model, Cmd Msg )
-init _ =
-    ( { currentTab = Nothing
-      , tagManageModel = Comp.TagManage.emptyModel
+init flags =
+    let
+        ( m2, c2 ) =
+            Comp.TagManage.update flags Comp.TagManage.LoadTags Comp.TagManage.emptyModel
+    in
+    ( { currentTab = Just TagTab
+      , tagManageModel = m2
       , equipManageModel = Comp.EquipmentManage.emptyModel
       , orgManageModel = Comp.OrgManage.emptyModel
       , personManageModel = Comp.PersonManage.emptyModel
       , folderManageModel = Comp.FolderManage.empty
       , fieldManageModel = Comp.CustomFieldManage.empty
       }
-    , Cmd.none
+    , Cmd.map TagManageMsg c2
     )
 
 

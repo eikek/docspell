@@ -4,16 +4,20 @@ module Comp.EmailInput exposing
     , init
     , update
     , view
+    , view2
     )
 
 import Api
 import Api.Model.ContactList exposing (ContactList)
+import Comp.Dropdown
 import Data.ContactType
+import Data.DropdownStyle as DS
 import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Http
+import Styles as S
 import Util.Html exposing (onKeyUp)
 import Util.List
 import Util.Maybe
@@ -131,6 +135,10 @@ update flags current msg model =
             ( model, Cmd.none, List.filter (\e -> e /= str) current )
 
 
+
+--- View
+
+
 view : List String -> Model -> Html Msg
 view values model =
     div
@@ -146,9 +154,9 @@ view values model =
                     , placeholder "Recipients…"
                     , onKeyUp KeyPress
                     , onInput SetInput
+                    , value model.input
                     ]
-                    [ text model.input
-                    ]
+                    []
                , renderMenu model
                ]
         )
@@ -186,5 +194,73 @@ renderMenu model =
             [ ( "menu", True )
             , ( "transition visible", model.menuOpen )
             ]
+        ]
+        (List.map mkItem model.candidates)
+
+
+
+--- View2
+
+
+view2 : DS.DropdownStyle -> List String -> Model -> Html Msg
+view2 style values model =
+    div [ class "text-sm flex-row space-x-2 relative" ]
+        [ div [ class style.link ]
+            [ div
+                [ class "flex flex-row space-x-2 mr-2"
+                , classList [ ( "hidden", List.isEmpty values ) ]
+                ]
+                (List.map renderValue2 values)
+            , input
+                [ type_ "text"
+                , value model.input
+                , placeholder "Recipients…"
+                , onKeyUp KeyPress
+                , onInput SetInput
+                , class "inline-flex w-24 border-0 px-0 focus:ring-0 h-6 text-sm"
+                , class "placeholder-gray-400 dark:text-bluegray-200 dark:bg-bluegray-800 dark:border-bluegray-500"
+                ]
+                []
+            ]
+        , renderMenu2 style model
+        ]
+
+
+renderValue2 : String -> Html Msg
+renderValue2 str =
+    a
+        [ class "label border-gray-400"
+        , class S.border
+        , href "#"
+        , onClick (RemoveEmail str)
+        ]
+        [ span [ class "mr-1" ]
+            [ text str
+            ]
+        , i [ class "fa fa-times" ] []
+        ]
+
+
+renderMenu2 : DS.DropdownStyle -> Model -> Html Msg
+renderMenu2 style model =
+    let
+        mkItem v =
+            a
+                [ class style.item
+                , classList
+                    [ ( "bg-gray-200 dark:bg-bluegray-700 dark:text-bluegray-50", model.active == Just v )
+                    ]
+                , href "#"
+                , onClick (AddEmail v)
+                ]
+                [ text v
+                ]
+    in
+    div
+        [ classList
+            [ ( "hidden", not model.menuOpen )
+            ]
+        , class "-left-2"
+        , class style.menu
         ]
         (List.map mkItem model.candidates)

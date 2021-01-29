@@ -4,17 +4,20 @@ module Comp.ChangePasswordForm exposing
     , emptyModel
     , update
     , view
+    , view2
     )
 
 import Api
 import Api.Model.BasicResult exposing (BasicResult)
 import Api.Model.PasswordChange exposing (PasswordChange)
+import Comp.Basic as B
 import Comp.PasswordInput
 import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Http
+import Styles as S
 import Util.Http
 
 
@@ -88,7 +91,7 @@ validateModel model =
 
 
 
--- Update
+--- Update
 
 
 update : Flags -> Msg -> Model -> ( Model, Cmd Msg )
@@ -174,7 +177,7 @@ update flags msg model =
 
 
 
--- View
+--- View
 
 
 view : Model -> Html Msg
@@ -238,4 +241,96 @@ view model =
             ]
             [ div [ class "ui loader" ] []
             ]
+        ]
+
+
+
+--- View2
+
+
+view2 : Model -> Html Msg
+view2 model =
+    let
+        currentEmpty =
+            model.current == Nothing
+
+        pass1Empty =
+            model.newPass1 == Nothing
+
+        pass2Empty =
+            model.newPass2 == Nothing
+    in
+    div
+        [ class "flex flex-col space-y-4 relative" ]
+        [ div []
+            [ label [ class S.inputLabel ]
+                [ text "Current Password"
+                , B.inputRequired
+                ]
+            , Html.map SetCurrent
+                (Comp.PasswordInput.view2
+                    model.current
+                    currentEmpty
+                    model.currentModel
+                )
+            ]
+        , div []
+            [ label
+                [ class S.inputLabel
+                ]
+                [ text "New Password"
+                , B.inputRequired
+                ]
+            , Html.map SetNew1
+                (Comp.PasswordInput.view2
+                    model.newPass1
+                    pass1Empty
+                    model.pass1Model
+                )
+            ]
+        , div []
+            [ label [ class S.inputLabel ]
+                [ text "New Password (repeat)"
+                , B.inputRequired
+                ]
+            , Html.map SetNew2
+                (Comp.PasswordInput.view2
+                    model.newPass2
+                    pass2Empty
+                    model.pass2Model
+                )
+            ]
+        , div
+            [ class S.successMessage
+            , classList [ ( "hidden", model.successMsg == "" ) ]
+            ]
+            [ text model.successMsg
+            ]
+        , div
+            [ class S.errorMessage
+            , classList
+                [ ( "hidden"
+                  , List.isEmpty model.errors
+                        || (currentEmpty && pass1Empty && pass2Empty)
+                  )
+                ]
+            ]
+            [ case model.errors of
+                a :: [] ->
+                    text a
+
+                _ ->
+                    ul [ class "list-disc" ]
+                        (List.map (\em -> li [] [ text em ]) model.errors)
+            ]
+        , div [ class "flex flex-row" ]
+            [ button
+                [ class S.primaryButton
+                , onClick Submit
+                , href "#"
+                ]
+                [ text "Submit"
+                ]
+            ]
+        , B.loadingDimmer model.loading
         ]

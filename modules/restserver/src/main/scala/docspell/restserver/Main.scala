@@ -5,7 +5,7 @@ import java.nio.file.{Files, Paths}
 import cats.effect._
 import cats.implicits._
 
-import docspell.common.{Banner, Pools, ThreadFactories}
+import docspell.common._
 
 import org.log4s._
 
@@ -57,6 +57,10 @@ object Main extends IOApp {
     } yield Pools(cec, bec, blocker, rec)
 
     logger.info(s"\n${banner.render("***>")}")
+    if (EnvMode.current.isDev) {
+      logger.warn(">>>>>   Docspell is running in DEV mode!   <<<<<")
+    }
+
     pools.use(p =>
       RestServer
         .stream[IO](cfg, p)

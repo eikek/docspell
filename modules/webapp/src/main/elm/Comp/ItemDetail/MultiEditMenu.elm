@@ -1,4 +1,4 @@
-module Comp.ItemDetail.EditMenu exposing
+module Comp.ItemDetail.MultiEditMenu exposing
     ( Model
     , Msg
     , SaveNameState(..)
@@ -7,6 +7,7 @@ module Comp.ItemDetail.EditMenu exposing
     , loadModel
     , update
     , view
+    , view2
     )
 
 import Api
@@ -14,7 +15,6 @@ import Api.Model.EquipmentList exposing (EquipmentList)
 import Api.Model.FolderItem exposing (FolderItem)
 import Api.Model.FolderList exposing (FolderList)
 import Api.Model.IdName exposing (IdName)
-import Api.Model.ItemProposals exposing (ItemProposals)
 import Api.Model.PersonList exposing (PersonList)
 import Api.Model.ReferenceList exposing (ReferenceList)
 import Api.Model.Tag exposing (Tag)
@@ -23,9 +23,12 @@ import Comp.CustomFieldMultiInput
 import Comp.DatePicker
 import Comp.DetailEdit
 import Comp.Dropdown exposing (isDropdownChangeMsg)
+import Comp.ItemDetail.FieldTabState as FTabState
 import Comp.ItemDetail.FormChange exposing (FormChange(..))
+import Comp.Tabs as TB
 import Data.CustomFieldChange exposing (CustomFieldChange(..))
 import Data.Direction exposing (Direction)
+import Data.DropdownStyle
 import Data.Fields
 import Data.Flags exposing (Flags)
 import Data.Icons as Icons
@@ -37,6 +40,8 @@ import Html.Events exposing (onClick, onInput)
 import Http
 import Markdown
 import Page exposing (Page(..))
+import Set exposing (Set)
+import Styles as S
 import Task
 import Throttle exposing (Throttle)
 import Time
@@ -71,7 +76,6 @@ type alias Model =
     , directionModel : Comp.Dropdown.Model Direction
     , itemDatePicker : DatePicker
     , itemDate : Maybe Int
-    , itemProposals : ItemProposals
     , dueDate : Maybe Int
     , dueDatePicker : DatePicker
     , corrOrgModel : Comp.Dropdown.Model IdName
@@ -81,6 +85,7 @@ type alias Model =
     , modalEdit : Maybe Comp.DetailEdit.Model
     , tagEditMode : TagEditMode
     , customFieldModel : Comp.CustomFieldMultiInput.Model
+    , openTabs : Set String
     }
 
 
@@ -107,12 +112,13 @@ type Msg
     | GetEquipResp (Result Http.Error EquipmentList)
     | GetFolderResp (Result Http.Error FolderList)
     | CustomFieldMsg Comp.CustomFieldMultiInput.Msg
+    | ToggleAkkordionTab String
 
 
 init : Model
 init =
     { tagModel =
-        Util.Tag.makeDropdownModel
+        Util.Tag.makeDropdownModel2
     , directionModel =
         Comp.Dropdown.makeSingleList
             { makeOption =
@@ -155,12 +161,12 @@ init =
     , nameSaveThrottle = Throttle.create 1
     , itemDatePicker = Comp.DatePicker.emptyModel
     , itemDate = Nothing
-    , itemProposals = Api.Model.ItemProposals.empty
     , dueDate = Nothing
     , dueDatePicker = Comp.DatePicker.emptyModel
     , modalEdit = Nothing
     , tagEditMode = AddTags
     , customFieldModel = Comp.CustomFieldMultiInput.initWith []
+    , openTabs = Set.empty
     }
 
 
@@ -563,7 +569,7 @@ update flags msg model =
         CustomFieldMsg lm ->
             let
                 res =
-                    Comp.CustomFieldMultiInput.update lm model.customFieldModel
+                    Comp.CustomFieldMultiInput.update flags lm model.customFieldModel
 
                 model_ =
                     { model | customFieldModel = res.model }
@@ -586,6 +592,17 @@ update flags msg model =
                             NoFormChange
             in
             UpdateResult model_ cmd_ Sub.none change
+
+        ToggleAkkordionTab title ->
+            let
+                tabs =
+                    if Set.member title model.openTabs then
+                        Set.remove title model.openTabs
+
+                    else
+                        Set.insert title model.openTabs
+            in
+            UpdateResult { model | openTabs = tabs } Cmd.none Sub.none NoFormChange
 
 
 nameThrottleSub : Model -> Sub Msg
@@ -857,3 +874,286 @@ actionInputDatePicker =
             Comp.DatePicker.defaultSettings
     in
     { ds | containerClassList = [ ( "ui action input", True ) ] }
+
+
+
+--- View2
+
+
+view2 : ViewConfig -> UiSettings -> Model -> Html Msg
+view2 =
+    renderEditForm2
+
+
+renderEditForm2 : ViewConfig -> UiSettings -> Model -> Html Msg
+renderEditForm2 cfg settings model =
+    let
+        fieldVisible field =
+            Data.UiSettings.fieldVisible settings field
+
+        optional fields html =
+            if
+                List.map fieldVisible fields
+                    |> List.foldl (||) False
+            then
+                html
+
+            else
+                span [ class "hidden" ] []
+
+        tagModeIcon =
+            case model.tagEditMode of
+                AddTags ->
+                    i [ class "fa fa-plus" ] []
+
+                RemoveTags ->
+                    i [ class "fa fa-eraser" ] []
+
+                ReplaceTags ->
+                    i [ class "fa fa-redo-alt" ] []
+
+        tagModeMsg =
+            case model.tagEditMode of
+                AddTags ->
+                    "Tags chosen here are *added* to all selected items."
+
+                RemoveTags ->
+                    "Tags chosen here are *removed* from all selected items."
+
+                ReplaceTags ->
+                    "Tags chosen here *replace* those on selected items."
+
+        customFieldIcon field =
+            case cfg.customFieldState field.id of
+                SaveSuccess ->
+                    Nothing
+
+                SaveFailed ->
+                    Just "text-red-500 fa fa-exclamation-triangle"
+
+                Saving ->
+                    Just "fa fa-sync-alt animate-spin"
+
+        customFieldSettings =
+            Comp.CustomFieldMultiInput.ViewSettings
+                False
+                "mb-4"
+                customFieldIcon
+
+        dds =
+            Data.DropdownStyle.sidebarStyle
+
+        tabStyle =
+            TB.searchMenuStyle
+    in
+    div [ class cfg.menuClass, class "mt-2" ]
+        [ TB.akkordion
+            tabStyle
+            (tabState settings model)
+            [ { title = "Confirm/Unconfirm item metadata"
+              , info = Nothing
+              , body =
+                    [ div
+                        [ class "flex flex-row space-x-4"
+                        ]
+                        [ button
+                            [ class S.primaryButton
+                            , class "flex-grow"
+                            , onClick (ConfirmMsg True)
+                            ]
+                            [ text "Confirm"
+                            ]
+                        , button
+                            [ class S.secondaryButton
+                            , class "flex-grow"
+                            , onClick (ConfirmMsg False)
+                            ]
+                            [ text "Unconfirm"
+                            ]
+                        ]
+                    ]
+              }
+            , { title = "Tags"
+              , info = Nothing
+              , body =
+                    [ div [ class "field" ]
+                        [ label [ class S.inputLabel ]
+                            [ Icons.tagsIcon2 ""
+                            , text "Tags"
+                            , a
+                                [ class "float-right"
+                                , class S.link
+                                , href "#"
+                                , title "Change tag edit mode"
+                                , onClick ToggleTagEditMode
+                                ]
+                                [ tagModeIcon
+                                ]
+                            ]
+                        , Html.map TagDropdownMsg (Comp.Dropdown.view2 dds settings model.tagModel)
+                        , Markdown.toHtml [ class "opacity-50 text-sm" ] tagModeMsg
+                        ]
+                    ]
+              }
+            , { title = "Folder"
+              , info = Nothing
+              , body =
+                    [ Html.map FolderDropdownMsg (Comp.Dropdown.view2 dds settings model.folderModel)
+                    , div
+                        [ classList
+                            [ ( S.message, True )
+                            , ( "hidden", isFolderMember model )
+                            ]
+                        ]
+                        [ Markdown.toHtml [] """
+You are **not a member** of this folder. This item will be **hidden**
+from any search now. Use a folder where you are a member of to make this
+item visible. This message will disappear then.
+                      """
+                        ]
+                    ]
+              }
+            , { title = "Custom Fields"
+              , info = Nothing
+              , body =
+                    [ Html.map CustomFieldMsg
+                        (Comp.CustomFieldMultiInput.view2 dds customFieldSettings model.customFieldModel)
+                    ]
+              }
+            , { title = "Date"
+              , info = Nothing
+              , body =
+                    [ div [ class "relative" ]
+                        [ Html.map ItemDatePickerMsg
+                            (Comp.DatePicker.viewTime
+                                model.itemDate
+                                actionInputDatePicker2
+                                model.itemDatePicker
+                            )
+                        , a
+                            [ class S.inputLeftIconLinkSidebar
+                            , href "#"
+                            , onClick RemoveDate
+                            ]
+                            [ i [ class "fa fa-trash-alt font-thin" ] []
+                            ]
+                        , Icons.dateIcon2 S.dateInputIcon
+                        ]
+                    ]
+              }
+            , { title = "Due Date"
+              , info = Nothing
+              , body =
+                    [ div [ class "relative" ]
+                        [ Html.map DueDatePickerMsg
+                            (Comp.DatePicker.viewTime
+                                model.dueDate
+                                actionInputDatePicker2
+                                model.dueDatePicker
+                            )
+                        , a
+                            [ class S.inputLeftIconLinkSidebar
+                            , href "#"
+                            , onClick RemoveDueDate
+                            ]
+                            [ i [ class "fa fa-trash-alt font-thin" ] []
+                            ]
+                        , Icons.dueDateIcon2 S.dateInputIcon
+                        ]
+                    ]
+              }
+            , { title = "Correspondent"
+              , info = Nothing
+              , body =
+                    [ optional [ Data.Fields.CorrOrg ] <|
+                        div [ class "mb-4" ]
+                            [ label [ class S.inputLabel ]
+                                [ Icons.organizationIcon2 ""
+                                , span [ class "ml-2" ]
+                                    [ text "Organization"
+                                    ]
+                                ]
+                            , Html.map OrgDropdownMsg (Comp.Dropdown.view2 dds settings model.corrOrgModel)
+                            ]
+                    , optional [ Data.Fields.CorrPerson ] <|
+                        div [ class "mb-4" ]
+                            [ label [ class S.inputLabel ]
+                                [ Icons.personIcon2 ""
+                                , span [ class "ml-2" ]
+                                    [ text "Person"
+                                    ]
+                                ]
+                            , Html.map CorrPersonMsg (Comp.Dropdown.view2 dds settings model.corrPersonModel)
+                            ]
+                    ]
+              }
+            , { title =
+                    "Concerning"
+              , info = Nothing
+              , body =
+                    [ optional [ Data.Fields.ConcPerson ] <|
+                        div [ class "mb-4" ]
+                            [ label [ class S.inputLabel ]
+                                [ Icons.personIcon2 ""
+                                , span [ class "ml-2" ]
+                                    [ text "Person" ]
+                                ]
+                            , Html.map ConcPersonMsg (Comp.Dropdown.view2 dds settings model.concPersonModel)
+                            ]
+                    , optional [ Data.Fields.ConcEquip ] <|
+                        div [ class "mb-4" ]
+                            [ label [ class S.inputLabel ]
+                                [ Icons.equipmentIcon2 ""
+                                , span [ class "ml-2" ]
+                                    [ text "Equipment" ]
+                                ]
+                            , Html.map ConcEquipMsg (Comp.Dropdown.view2 dds settings model.concEquipModel)
+                            ]
+                    ]
+              }
+            , { title = "Direction"
+              , info = Nothing
+              , body =
+                    [ Html.map DirDropdownMsg (Comp.Dropdown.view2 dds settings model.directionModel)
+                    ]
+              }
+            , { title = "Name"
+              , info = Nothing
+              , body =
+                    [ div [ class "relative" ]
+                        [ input
+                            [ type_ "text"
+                            , value model.nameModel
+                            , onInput SetName
+                            , class S.textInputSidebar
+                            ]
+                            []
+                        , span [ class S.inputLeftIconOnly ]
+                            [ i
+                                [ classList
+                                    [ ( "text-green-500 fa fa-check", cfg.nameState == SaveSuccess )
+                                    , ( "text-red-500 fa fa-exclamation-triangle", cfg.nameState == SaveFailed )
+                                    , ( "sync fa fa-circle-notch animate-spin", cfg.nameState == Saving )
+                                    ]
+                                ]
+                                []
+                            ]
+                        ]
+                    ]
+              }
+            ]
+        ]
+
+
+tabState : UiSettings -> Model -> TB.Tab Msg -> ( TB.State, Msg )
+tabState settings model tab =
+    FTabState.tabState settings
+        model.openTabs
+        model.customFieldModel
+        (.title >> ToggleAkkordionTab)
+        tab
+
+
+actionInputDatePicker2 : DatePicker.Settings
+actionInputDatePicker2 =
+    Comp.DatePicker.defaultSettings

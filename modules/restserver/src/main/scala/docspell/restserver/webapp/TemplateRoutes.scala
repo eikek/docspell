@@ -14,6 +14,8 @@ import org.http4s.HttpRoutes
 import org.http4s._
 import org.http4s.dsl.Http4sDsl
 import org.http4s.headers._
+import org.http4s.util.CaseInsensitiveString
+import org.http4s.util.Writer
 import org.log4s._
 import yamusca.implicits._
 import yamusca.imports._
@@ -23,6 +25,27 @@ object TemplateRoutes {
 
   val `text/html`              = new MediaType("text", "html")
   val `application/javascript` = new MediaType("application", "javascript")
+
+  val ui2Header = CaseInsensitiveString("Docspell-Ui2")
+
+  case class UiVersion(version: Int) extends Header.Parsed {
+    val key = UiVersion
+    def renderValue(writer: Writer): writer.type =
+      writer.append(version)
+  }
+  object UiVersion extends HeaderKey.Singleton {
+    type HeaderT = UiVersion
+    val name = CaseInsensitiveString("Docspell-Ui")
+    override def parse(s: String): ParseResult[UiVersion] =
+      Either
+        .catchNonFatal(s.trim.toInt)
+        .leftMap(ex => ParseFailure("Invalid int header", ex.getMessage))
+        .map(UiVersion.apply)
+
+    override def matchHeader(h: Header): Option[UiVersion] =
+      if (h.name == name) parse(h.value).toOption
+      else None
+  }
 
   trait InnerRoutes[F[_]] {
     def doc: HttpRoutes[F]
@@ -53,22 +76,24 @@ object TemplateRoutes {
           } yield resp
         }
       def app =
-        HttpRoutes.of[F] { case GET -> _ =>
+        HttpRoutes.of[F] { case req @ GET -> _ =>
           for {
             templ <- indexTemplate
+            uiv = req.headers.get(UiVersion).map(_.version).getOrElse(1)
             resp <- Ok(
-              IndexData(cfg).render(templ),
+              IndexData(cfg, uiv).render(templ),
               `Content-Type`(`text/html`, Charset.`UTF-8`)
             )
           } yield resp
         }
 
       def serviceWorker =
-        HttpRoutes.of[F] { case GET -> _ =>
+        HttpRoutes.of[F] { case req @ GET -> _ =>
           for {
             templ <- swTemplate
+            uiv = req.headers.get(UiVersion).map(_.version).getOrElse(1)
             resp <- Ok(
-              IndexData(cfg).render(templ),
+              IndexData(cfg, uiv).render(templ),
               `Content-Type`(`application/javascript`, Charset.`UTF-8`)
             )
           } yield resp
@@ -134,21 +159,27 @@ object TemplateRoutes {
 
   object IndexData {
 
-    def apply(cfg: Config): IndexData =
+    def apply(cfg: Config, uiVersion: Int): IndexData =
       IndexData(
-        Flags(cfg),
-        Seq(
-          "/app/assets" + Webjars.fomanticslimdefault + "/semantic.min.css",
-          s"/app/assets/docspell-webapp/${BuildInfo.version}/docspell.css"
-        ),
+        Flags(cfg, uiVersion),
+        chooseUi(uiVersion),
         Seq(
           "/app/assets" + Webjars.clipboardjs + "/clipboard.min.js",
           s"/app/assets/docspell-webapp/${BuildInfo.version}/docspell-app.js"
         ),
         s"/app/assets/docspell-webapp/${BuildInfo.version}/favicon",
         s"/app/assets/docspell-webapp/${BuildInfo.version}/docspell.js",
-        Flags(cfg).asJson.spaces2
+        Flags(cfg, uiVersion).asJson.spaces2
       )
+
+    private def chooseUi(uiVersion: Int): Seq[String] =
+      if (uiVersion == 2)
+        Seq(s"/app/assets/docspell-webapp/${BuildInfo.version}/css/styles.css")
+      else
+        Seq(
+          "/app/assets" + Webjars.fomanticslimdefault + "/semantic.min.css",
+          s"/app/assets/docspell-webapp/${BuildInfo.version}/docspell.css"
+        )
 
     implicit def yamuscaValueConverter: ValueConverter[IndexData] =
       ValueConverter.deriveConverter[IndexData]
