@@ -4,6 +4,7 @@ services:
   restserver:
     image: eikek0/docspell:restserver-LATEST
     container_name: docspell-restserver
+    hostname: restserver
     restart: unless-stopped
     ports:
       - "7880:7880"
@@ -15,6 +16,7 @@ services:
 
   joex:
     image: eikek0/docspell:joex-LATEST
+    hostname: joex
     restart: unless-stopped
     env_file: ./.env
     ports:
