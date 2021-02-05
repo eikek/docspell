@@ -59,6 +59,10 @@ if [ -z "${CONSUMEDIR_ARGS}" ]; then
 		CONSUMEDIR_ARGS="$CONSUMEDIR_ARGS -v"
 	fi
 
+	if [ "${CONSUMEDIR_DELETE-n}" = "y" ]; then
+		CONSUMEDIR_ARGS="$CONSUMEDIR_ARGS -d"
+	fi
+
 	if [ "${CONSUMEDIR_UNIQUE-n}" = "y" ]; then
 		CONSUMEDIR_ARGS="$CONSUMEDIR_ARGS -m"
 	fi
