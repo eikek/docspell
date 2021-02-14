@@ -16,14 +16,34 @@ studying huge manuals in order to use it. With this in mind, it is
 rather opinionated and more targeted for home use and small/medium
 organizations.
 
-Docspell analyzes the text of your files and tries to find metadata
-that will be annotated automatically. This metadata is taken from an
-address book that must be maintained manually. Docspell then looks for
-candidates for:
+In contrast to many DMS, the main focus is not so much to provide all
+kinds of features to manually create organizational structures, like
+folder hierarchies, where you place the documents yourself. The
+approach is more to leave it as a big pile of documents, but extract
+and attach metadata from each document. These are mainly properties
+that emerge from the document itself. The reason is that this is
+possible to automate and that many custom folder structures include
+these metadata somewhere, too. This makes it very simple to *add*
+documents, because there is no time spent to think about where to put
+it. And it is possible to apply different structures on top later,
+like show first all documents of a specific correspondent, then all
+with tag 'invoice', etc. If these properties are attached to all
+documents, it is really easy to find a document. It even can be
+combined with fulltext search for the, hopefully rare, desperate
+cases.
+
+Of course, it is also possible to add custom properties and arbitrary
+tags.
+
+Docspell analyzes the text to find metadata automatically. It can
+learn from existing data and can apply
+[NLP](https://en.wikipedia.org/wiki/Natural_language_processing)
+techniques to support this. This metadata must be maintained manually
+in the application. Docspell looks for candidates for:
 
 - Correspondents
 - Concerned person or things
-- A date
+- A date and due date
 - Tags
 
 For tags, it sets all that it thinks do apply. For the others, it will
@@ -34,7 +54,7 @@ However, very often the correct one is either set or within the
 proposals where you fix it by a single click.
 
 Besides these properties, there are more metadata you can use to
-organize your files, for example tags, folders and notes.
+organize your files, for example custom fields, folders and notes.
 
 Docspell is also for programmers. Everything is available via a REST
 or HTTP api and can be easily used within your own scripts and tools,
