@@ -604,7 +604,7 @@ view2 cfg settings model item =
     in
     div
         ([ class cfg.extraClasses
-         , class "ds-item-card relative hover:shadow-lg rounded-lg flex flex-col"
+         , class "ds-item-card relative hover:shadow-lg rounded-lg flex flex-col break-all"
          , classList
             [ ( "border border-gray-400 dark:border-bluegray-600 dark:hover:border-bluegray-500", not (isMultiSelectMode cfg) )
             , ( "border-2 border-gray-800 border-dashed dark:border-lightblue-500", isMultiSelectMode cfg )
