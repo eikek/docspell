@@ -34,6 +34,11 @@ object TemplateRoutes {
       writer.append(version)
   }
   object UiVersion extends HeaderKey.Singleton {
+    val default = UiVersion(2)
+
+    def get[F[_]](req: Request[F]): UiVersion =
+      req.headers.get(UiVersion).getOrElse(UiVersion.default)
+
     type HeaderT = UiVersion
     val name = CaseInsensitiveString("Docspell-Ui")
     override def parse(s: String): ParseResult[UiVersion] =
@@ -79,7 +84,7 @@ object TemplateRoutes {
         HttpRoutes.of[F] { case req @ GET -> _ =>
           for {
             templ <- indexTemplate
-            uiv = req.headers.get(UiVersion).map(_.version).getOrElse(1)
+            uiv = UiVersion.get(req).version
             resp <- Ok(
               IndexData(cfg, uiv).render(templ),
               `Content-Type`(`text/html`, Charset.`UTF-8`)
@@ -91,7 +96,7 @@ object TemplateRoutes {
         HttpRoutes.of[F] { case req @ GET -> _ =>
           for {
             templ <- swTemplate
-            uiv = req.headers.get(UiVersion).map(_.version).getOrElse(1)
+            uiv = UiVersion.get(req).version
             resp <- Ok(
               IndexData(cfg, uiv).render(templ),
               `Content-Type`(`application/javascript`, Charset.`UTF-8`)
