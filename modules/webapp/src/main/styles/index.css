@@ -120,6 +120,13 @@
         z-index: 35;
     }
 
+    @variants responsive {
+        .min-h-7 {
+            min-height: 1.75rem;
+        }
+
+    }
+
     .scrollbar-none {
         -ms-overflow-style: none;  /* IE and Edge */
         scrollbar-width: none;  /* Firefox */
