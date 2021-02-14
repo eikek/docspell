@@ -84,12 +84,12 @@ topNavAnon model =
 headerNavItem : Model -> Html Msg
 headerNavItem model =
     a
-        [ class "font-bold hover:bg-blue-200 dark:hover:bg-bluegray-800 w-40 inline-flex items-center px-4"
+        [ class "inline-flex font-bold hover:bg-blue-200 dark:hover:bg-bluegray-800 items-center px-4"
         , Page.href HomePage
         ]
         [ img
             [ src (model.flags.config.docspellAssetPath ++ "/img/logo-96.png")
-            , class "h-full inline-block py-2 pr-2"
+            , class "w-9 h-9 mr-2 block"
             ]
             []
         , div [ class "" ]
