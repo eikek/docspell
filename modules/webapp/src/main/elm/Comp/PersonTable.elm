@@ -4,15 +4,19 @@ module Comp.PersonTable exposing
     , emptyModel
     , update
     , view
+    , view2
     )
 
 import Api.Model.Person exposing (Person)
+import Comp.Basic as B
 import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
+import Styles as S
 import Util.Address
 import Util.Contact
+import Util.Html
 
 
 type alias Model =
@@ -99,6 +103,53 @@ renderPersonLine model person =
             [ Util.Address.toString person.address |> text
             ]
         , td []
+            [ Util.Contact.toString person.contacts |> text
+            ]
+        ]
+
+
+
+--- View2
+
+
+view2 : Model -> Html Msg
+view2 model =
+    table [ class S.tableMain ]
+        [ thead []
+            [ tr []
+                [ th [ class "w-px whitespace-nowrap" ] []
+                , th [ class "w-px whitespace-nowrap text-center pr-1 md:px-2" ]
+                    [ text "Concerning"
+                    ]
+                , th [ class "text-left" ] [ text "Name" ]
+                , th [ class "text-left hidden sm:table-cell" ] [ text "Organization" ]
+                , th [ class "text-left hidden md:table-cell" ] [ text "Contact" ]
+                ]
+            ]
+        , tbody []
+            (List.map (renderPersonLine2 model) model.equips)
+        ]
+
+
+renderPersonLine2 : Model -> Person -> Html Msg
+renderPersonLine2 model person =
+    tr
+        [ classList [ ( "active", model.selected == Just person ) ]
+        , class S.tableRow
+        ]
+        [ B.editLinkTableCell (Select person)
+        , td [ class "w-px whitespace-nowrap text-center" ]
+            [ Util.Html.checkbox2 person.concerning
+            ]
+        , td []
+            [ text person.name
+            ]
+        , td [ class "hidden sm:table-cell" ]
+            [ Maybe.map .name person.organization
+                |> Maybe.withDefault "-"
+                |> text
+            ]
+        , td [ class "hidden md:table-cell" ]
             [ Util.Contact.toString person.contacts |> text
             ]
         ]

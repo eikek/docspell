@@ -8,13 +8,17 @@ module Comp.FixedDropdown exposing
     , initTuple
     , update
     , view
+    , view2
     , viewString
     , viewStyled
+    , viewStyled2
     )
 
+import Data.DropdownStyle as DS
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
+import Styles as S
 import Util.Html exposing (KeyCode(..), onKeyUpCode)
 import Util.List
 
@@ -34,6 +38,7 @@ type alias Model a =
 
 type Msg a
     = SelectItem (Item a)
+    | SelectItem2 (Item a)
     | ToggleMenu
     | KeyPress (Maybe KeyCode)
 
@@ -122,24 +127,23 @@ update msg model =
         SelectItem item ->
             ( model, Just item.id )
 
+        SelectItem2 item ->
+            ( { model | menuOpen = False }, Just item.id )
+
         KeyPress (Just Space) ->
             update ToggleMenu model
 
         KeyPress (Just Enter) ->
-            if not model.menuOpen then
-                update ToggleMenu model
+            let
+                selected =
+                    Util.List.find (isSelected model) model.options
+            in
+            case selected of
+                Just i ->
+                    ( { model | menuOpen = False }, Just i.id )
 
-            else
-                let
-                    selected =
-                        Util.List.find (isSelected model) model.options
-                in
-                case selected of
-                    Just i ->
-                        ( { model | menuOpen = False }, Just i.id )
-
-                    Nothing ->
-                        ( model, Nothing )
+                Nothing ->
+                    ( model, Nothing )
 
         KeyPress (Just Up) ->
             movePrevious model
@@ -223,3 +227,63 @@ renderItems model item =
         ]
         [ text item.display
         ]
+
+
+
+--- View2
+
+
+viewStyled2 : DS.DropdownStyle -> Bool -> Maybe (Item a) -> Model a -> Html (Msg a)
+viewStyled2 style error sel model =
+    let
+        renderItem item =
+            a
+                [ href "#"
+                , class style.item
+                , classList
+                    [ ( style.itemActive, isSelected model item )
+                    , ( "font-semibold", Just item == sel )
+                    ]
+                , onClick (SelectItem2 item)
+                ]
+                [ text item.display
+                ]
+    in
+    div
+        [ class ("relative " ++ style.root)
+        , onKeyUpCode KeyPress
+        ]
+        [ a
+            [ class style.link
+            , classList [ ( S.inputErrorBorder, error ) ]
+            , tabindex 0
+            , onClick ToggleMenu
+            , href "#"
+            ]
+            [ div
+                [ class "flex-grow"
+                , classList
+                    [ ( "opacity-50", sel == Nothing )
+                    ]
+                ]
+                [ Maybe.map .display sel
+                    |> Maybe.withDefault "Select…"
+                    |> text
+                ]
+            , div
+                [ class "rounded cursor-pointer ml-2 absolute right-2"
+                ]
+                [ i [ class "fa fa-angle-down px-2" ] []
+                ]
+            ]
+        , div
+            [ class style.menu
+            , classList [ ( "hidden", not model.menuOpen ) ]
+            ]
+            (List.map renderItem model.options)
+        ]
+
+
+view2 : Maybe (Item a) -> Model a -> Html (Msg a)
+view2 =
+    viewStyled2 DS.mainStyle False

@@ -5,18 +5,23 @@ module Comp.CustomFieldManage exposing
     , init
     , update
     , view
+    , view2
     )
 
 import Api
 import Api.Model.CustomField exposing (CustomField)
 import Api.Model.CustomFieldList exposing (CustomFieldList)
+import Comp.Basic as B
 import Comp.CustomFieldForm
 import Comp.CustomFieldTable
+import Comp.MenuBar as MB
 import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Http
+import Styles as S
+import Util.CustomField
 
 
 type alias Model =
@@ -191,4 +196,70 @@ viewTable model =
             ]
             [ div [ class "ui loader" ] []
             ]
+        ]
+
+
+
+--- View2
+
+
+view2 : Flags -> Model -> Html Msg
+view2 flags model =
+    case model.detailModel of
+        Just dm ->
+            viewDetail2 flags dm
+
+        Nothing ->
+            viewTable2 model
+
+
+viewDetail2 : Flags -> Comp.CustomFieldForm.Model -> Html Msg
+viewDetail2 _ detailModel =
+    let
+        viewSettings =
+            Comp.CustomFieldForm.fullViewSettings
+    in
+    div []
+        ([ if detailModel.field.id == "" then
+            h3 [ class S.header2 ]
+                [ text "Create new custom field"
+                ]
+
+           else
+            h3 [ class S.header2 ]
+                [ Util.CustomField.nameOrLabel detailModel.field |> text
+                , div [ class "opacity-50 text-sm" ]
+                    [ text "Id: "
+                    , text detailModel.field.id
+                    ]
+                ]
+         ]
+            ++ List.map (Html.map DetailMsg) (Comp.CustomFieldForm.view2 viewSettings detailModel)
+        )
+
+
+viewTable2 : Model -> Html Msg
+viewTable2 model =
+    div [ class "flex flex-col md:relative" ]
+        [ MB.view
+            { start =
+                [ MB.TextInput
+                    { tagger = SetQuery
+                    , value = model.query
+                    , placeholder = "Search…"
+                    , icon = Just "fa fa-search"
+                    }
+                ]
+            , end =
+                [ MB.PrimaryButton
+                    { tagger = InitNewCustomField
+                    , title = "Add a new custom field"
+                    , icon = Just "fa fa-plus"
+                    , label = "New custom field"
+                    }
+                ]
+            , rootClasses = "mb-4"
+            }
+        , Html.map TableMsg (Comp.CustomFieldTable.view2 model.tableModel model.fields)
+        , B.loadingDimmer model.loading
         ]

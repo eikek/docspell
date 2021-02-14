@@ -3,13 +3,16 @@ module Comp.LinkTarget exposing
     , makeConcLink
     , makeCorrLink
     , makeCustomFieldLink
+    , makeCustomFieldLink2
     , makeFolderLink
     , makeSourceLink
+    , makeTagIconLink
     , makeTagLink
     )
 
 import Api.Model.IdName exposing (IdName)
 import Api.Model.ItemFieldValue exposing (ItemFieldValue)
+import Api.Model.Tag exposing (Tag)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
@@ -30,42 +33,45 @@ type LinkTarget
 
 makeCorrLink :
     { a | corrOrg : Maybe IdName, corrPerson : Maybe IdName }
+    -> List ( String, Bool )
     -> (LinkTarget -> msg)
     -> List (Html msg)
-makeCorrLink item tagger =
+makeCorrLink item linkClasses tagger =
     let
         makeOrg idname =
-            makeLink [] (LinkCorrOrg >> tagger) idname
+            makeLink linkClasses (LinkCorrOrg >> tagger) idname
 
         makePerson idname =
-            makeLink [] (LinkCorrPerson >> tagger) idname
+            makeLink linkClasses (LinkCorrPerson >> tagger) idname
     in
     combine (Maybe.map makeOrg item.corrOrg) (Maybe.map makePerson item.corrPerson)
 
 
 makeConcLink :
     { a | concPerson : Maybe IdName, concEquipment : Maybe IdName }
+    -> List ( String, Bool )
     -> (LinkTarget -> msg)
     -> List (Html msg)
-makeConcLink item tagger =
+makeConcLink item linkClasses tagger =
     let
         makePerson idname =
-            makeLink [] (LinkConcPerson >> tagger) idname
+            makeLink linkClasses (LinkConcPerson >> tagger) idname
 
         makeEquip idname =
-            makeLink [] (LinkConcEquip >> tagger) idname
+            makeLink linkClasses (LinkConcEquip >> tagger) idname
     in
     combine (Maybe.map makePerson item.concPerson) (Maybe.map makeEquip item.concEquipment)
 
 
 makeFolderLink :
     { a | folder : Maybe IdName }
+    -> List ( String, Bool )
     -> (LinkTarget -> msg)
     -> Html msg
-makeFolderLink item tagger =
+makeFolderLink item linkClasses tagger =
     let
         makeFolder idname =
-            makeLink [] (LinkFolder >> tagger) idname
+            makeLink linkClasses (LinkFolder >> tagger) idname
     in
     Maybe.map makeFolder item.folder
         |> Maybe.withDefault (text "-")
@@ -77,7 +83,17 @@ makeTagLink :
     -> (LinkTarget -> msg)
     -> Html msg
 makeTagLink tagId classes tagger =
-    makeLink classes (LinkTag >> tagger) tagId
+    makeIconLink (i [ class "fa fa-tag mr-2" ] []) classes (LinkTag >> tagger) tagId
+
+
+makeTagIconLink :
+    Tag
+    -> Html msg
+    -> List ( String, Bool )
+    -> (LinkTarget -> msg)
+    -> Html msg
+makeTagIconLink tagId icon classes tagger =
+    makeIconLink icon classes (LinkTag >> tagger) tagId
 
 
 makeCustomFieldLink :
@@ -87,6 +103,18 @@ makeCustomFieldLink :
     -> Html msg
 makeCustomFieldLink cv classes tagger =
     Util.CustomField.renderValue1
+        classes
+        (tagger (LinkCustomField cv) |> Just)
+        cv
+
+
+makeCustomFieldLink2 :
+    ItemFieldValue
+    -> List ( String, Bool )
+    -> (LinkTarget -> msg)
+    -> Html msg
+makeCustomFieldLink2 cv classes tagger =
+    Util.CustomField.renderValue2
         classes
         (tagger (LinkCustomField cv) |> Just)
         cv
@@ -129,4 +157,23 @@ makeLink classes tagger idname =
         , classList classes
         ]
         [ text idname.name
+        ]
+
+
+makeIconLink :
+    Html msg
+    -> List ( String, Bool )
+    -> (IdName -> msg)
+    -> { x | id : String, name : String }
+    -> Html msg
+makeIconLink icon classes tagger tag =
+    a
+        [ onClick (tagger (IdName tag.id tag.name))
+        , href "#"
+        , classList classes
+        ]
+        [ icon
+        , span []
+            [ text tag.name
+            ]
         ]

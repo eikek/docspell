@@ -8,6 +8,7 @@ module Comp.ItemCardList exposing
     , update
     , updateDrag
     , view
+    , view2
     )
 
 import Api.Model.ItemLight exposing (ItemLight)
@@ -23,6 +24,7 @@ import Dict exposing (Dict)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Page exposing (Page(..))
+import Styles as S
 import Util.ItemDragDrop as DD
 import Util.List
 
@@ -189,6 +191,74 @@ viewItem model cfg settings item =
 
         cardHtml =
             Comp.ItemCard.view vvcfg settings cardModel item
+    in
+    Html.map (ItemCardMsg item) cardHtml
+
+
+
+--- View2
+
+
+view2 : ViewConfig -> UiSettings -> Model -> Html Msg
+view2 cfg settings model =
+    div
+        [ classList
+            [ ( "ds-item-list", True )
+            , ( "ds-multi-select-mode", isMultiSelectMode cfg )
+            ]
+        ]
+        (List.map (viewGroup2 model cfg settings) model.results.groups)
+
+
+viewGroup2 : Model -> ViewConfig -> UiSettings -> ItemLightGroup -> Html Msg
+viewGroup2 model cfg settings group =
+    div [ class "ds-item-group" ]
+        [ div
+            [ class "flex py-0 mt-2 flex flex-row items-center"
+            , class "bg-white dark:bg-bluegray-800 text-lg z-35"
+            , class "relative sticky top-10"
+            ]
+            [ hr
+                [ class S.border
+                , class "flex-grow"
+                ]
+                []
+            , div [ class "px-6" ]
+                [ i [ class "fa fa-calendar-alt font-thin" ] []
+                , span [ class "ml-2" ]
+                    [ text group.name
+                    ]
+                ]
+            , hr
+                [ class S.border
+                , class "flex-grow"
+                ]
+                []
+            ]
+        , div [ class "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-2" ]
+            (List.map (viewItem2 model cfg settings) group.items)
+        ]
+
+
+viewItem2 : Model -> ViewConfig -> UiSettings -> ItemLight -> Html Msg
+viewItem2 model cfg settings item =
+    let
+        currentClass =
+            if cfg.current == Just item.id then
+                "current"
+
+            else
+                ""
+
+        vvcfg =
+            Comp.ItemCard.ViewConfig cfg.selection currentClass
+
+        cardModel =
+            Dict.get item.id model.itemCards
+                |> Maybe.withDefault Comp.ItemCard.init
+
+        cardHtml =
+            Comp.ItemCard.view2 vvcfg settings cardModel item
     in
     Html.map (ItemCardMsg item) cardHtml
 

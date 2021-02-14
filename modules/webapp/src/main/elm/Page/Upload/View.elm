@@ -23,7 +23,7 @@ view mid model =
                 [ div [ class "ui top attached segment" ]
                     [ renderForm model
                     ]
-                , Html.map DropzoneMsg (Comp.Dropzone.view model.dropzone)
+                , Html.map DropzoneMsg (Comp.Dropzone.view dropzoneSettings model.dropzone)
                 , div [ class "ui bottom attached segment" ]
                     [ a [ class "ui primary button", href "#", onClick SubmitUpload ]
                         [ text "Submit"
@@ -48,6 +48,22 @@ view mid model =
           else
             renderUploads model
         ]
+
+
+dropzoneSettings : Comp.Dropzone.Settings
+dropzoneSettings =
+    let
+        ds =
+            Comp.Dropzone.defaultSettings
+    in
+    { ds
+        | classList =
+            \m ->
+                [ ( "ui attached blue placeholder segment dropzone", True )
+                , ( "dragging", m.hover )
+                , ( "disabled", not m.active )
+                ]
+    }
 
 
 renderErrorMsg : Model -> Html Msg

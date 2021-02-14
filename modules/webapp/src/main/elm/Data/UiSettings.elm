@@ -4,8 +4,11 @@ module Data.UiSettings exposing
     , StoredUiSettings
     , UiSettings
     , cardPreviewSize
+    , cardPreviewSize2
     , catColor
+    , catColorFg2
     , catColorString
+    , catColorString2
     , defaults
     , fieldHidden
     , fieldVisible
@@ -14,7 +17,9 @@ module Data.UiSettings exposing
     , posFromString
     , posToString
     , tagColor
+    , tagColorFg2
     , tagColorString
+    , tagColorString2
     , toStoredUiSettings
     )
 
@@ -23,6 +28,7 @@ import Data.BasicSize exposing (BasicSize)
 import Data.Color exposing (Color)
 import Data.Fields exposing (Field)
 import Data.ItemTemplate exposing (ItemTemplate)
+import Data.UiTheme exposing (UiTheme)
 import Dict exposing (Dict)
 import Html exposing (Attribute)
 import Html.Attributes as HA
@@ -53,6 +59,9 @@ type alias StoredUiSettings =
     , cardTitleTemplate : Maybe String
     , cardSubtitleTemplate : Maybe String
     , searchStatsVisible : Bool
+    , cardPreviewFullWidth : Bool
+    , uiTheme : Maybe String
+    , sideMenuVisible : Bool
     }
 
 
@@ -80,6 +89,9 @@ type alias UiSettings =
     , cardTitleTemplate : ItemPattern
     , cardSubtitleTemplate : ItemPattern
     , searchStatsVisible : Bool
+    , cardPreviewFullWidth : Bool
+    , uiTheme : UiTheme
+    , sideMenuVisible : Bool
     }
 
 
@@ -147,6 +159,9 @@ defaults =
         , pattern = "{{dateLong}}"
         }
     , searchStatsVisible = True
+    , cardPreviewFullWidth = False
+    , uiTheme = Data.UiTheme.Light
+    , sideMenuVisible = True
     }
 
 
@@ -193,6 +208,11 @@ merge given fallback =
         Maybe.andThen readPattern given.cardSubtitleTemplate
             |> Maybe.withDefault fallback.cardSubtitleTemplate
     , searchStatsVisible = given.searchStatsVisible
+    , cardPreviewFullWidth = given.cardPreviewFullWidth
+    , uiTheme =
+        Maybe.andThen Data.UiTheme.fromString given.uiTheme
+            |> Maybe.withDefault fallback.uiTheme
+    , sideMenuVisible = given.sideMenuVisible
     }
 
 
@@ -226,6 +246,9 @@ toStoredUiSettings settings =
     , cardTitleTemplate = settings.cardTitleTemplate.pattern |> Just
     , cardSubtitleTemplate = settings.cardSubtitleTemplate.pattern |> Just
     , searchStatsVisible = settings.searchStatsVisible
+    , cardPreviewFullWidth = settings.cardPreviewFullWidth
+    , uiTheme = Just (Data.UiTheme.toString settings.uiTheme)
+    , sideMenuVisible = settings.sideMenuVisible
     }
 
 
@@ -246,10 +269,38 @@ catColorString settings name =
         |> Maybe.withDefault ""
 
 
+catColorString2 : UiSettings -> String -> String
+catColorString2 settings name =
+    catColor settings name
+        |> Maybe.map Data.Color.toString2
+        |> Maybe.withDefault ""
+
+
+catColorFg2 : UiSettings -> String -> String
+catColorFg2 settings name =
+    catColor settings name
+        |> Maybe.map Data.Color.toStringFg2
+        |> Maybe.withDefault ""
+
+
 tagColorString : Tag -> UiSettings -> String
 tagColorString tag settings =
     tagColor tag settings
         |> Maybe.map Data.Color.toString
+        |> Maybe.withDefault ""
+
+
+tagColorString2 : Tag -> UiSettings -> String
+tagColorString2 tag settings =
+    tagColor tag settings
+        |> Maybe.map Data.Color.toString2
+        |> Maybe.withDefault "border-black dark:border-bluegray-200"
+
+
+tagColorFg2 : Tag -> UiSettings -> String
+tagColorFg2 tag settings =
+    tagColor tag settings
+        |> Maybe.map Data.Color.toStringFg2
         |> Maybe.withDefault ""
 
 
@@ -267,6 +318,19 @@ cardPreviewSize : UiSettings -> Attribute msg
 cardPreviewSize settings =
     Data.BasicSize.asString settings.cardPreviewSize
         |> HA.class
+
+
+cardPreviewSize2 : UiSettings -> String
+cardPreviewSize2 settings =
+    case settings.cardPreviewSize of
+        Data.BasicSize.Small ->
+            "max-h-16"
+
+        Data.BasicSize.Medium ->
+            "max-h-52"
+
+        Data.BasicSize.Large ->
+            "max-h-80"
 
 
 

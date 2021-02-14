@@ -1,6 +1,7 @@
 module Page.Queue.Data exposing
     ( Model
     , Msg(..)
+    , QueueView(..)
     , emptyModel
     , getDuration
     , getRunningTime
@@ -27,7 +28,16 @@ type alias Model =
     , showLog : Maybe JobDetail
     , deleteConfirm : Comp.YesNoDimmer.Model
     , cancelJobRequest : Maybe String
+    , queueView : QueueView
     }
+
+
+type QueueView
+    = CurrentJobs
+    | QueueAll
+    | QueueWaiting
+    | QueueError
+    | QueueSuccess
 
 
 emptyModel : Model
@@ -41,6 +51,7 @@ emptyModel =
     , showLog = Nothing
     , deleteConfirm = Comp.YesNoDimmer.emptyModel
     , cancelJobRequest = Nothing
+    , queueView = CurrentJobs
     }
 
 
@@ -55,6 +66,7 @@ type Msg
     | DimmerMsg JobDetail Comp.YesNoDimmer.Msg
     | CancelResp (Result Http.Error BasicResult)
     | ChangePrio String Priority
+    | SetQueueView QueueView
 
 
 getRunningTime : Model -> JobDetail -> Maybe String

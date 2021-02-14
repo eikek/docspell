@@ -32,7 +32,7 @@ init flags settings =
         ( um, uc ) =
             Comp.UiSettingsManage.init flags settings
     in
-    ( { currentTab = Nothing
+    ( { currentTab = Just UiSettingsTab
       , changePassModel = Comp.ChangePasswordForm.emptyModel
       , emailSettingsModel = Comp.EmailSettingsManage.emptyModel
       , imapSettingsModel = Comp.ImapSettingsManage.emptyModel

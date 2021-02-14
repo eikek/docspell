@@ -6,6 +6,7 @@ module App.Data exposing
     )
 
 import Api.Model.AuthResult exposing (AuthResult)
+import Api.Model.BasicResult exposing (BasicResult)
 import Api.Model.VersionInfo exposing (VersionInfo)
 import Browser exposing (UrlRequest)
 import Browser.Navigation exposing (Key)
@@ -45,6 +46,7 @@ type alias Model =
     , userMenuOpen : Bool
     , subs : Sub Msg
     , uiSettings : UiSettings
+    , sidebarVisible : Bool
     }
 
 
@@ -92,6 +94,7 @@ init key url flags_ settings =
       , userMenuOpen = False
       , subs = Sub.none
       , uiSettings = settings
+      , sidebarVisible = settings.sideMenuVisible
       }
     , Cmd.batch
         [ Cmd.map UserSettingsMsg uc
@@ -145,6 +148,8 @@ type Msg
     | ToggleNavMenu
     | ToggleUserMenu
     | GetUiSettings UiSettings
+    | ToggleSidebar
+    | ToggleDarkMode
 
 
 defaultPage : Flags -> Page

@@ -5,7 +5,7 @@ import java.nio.file.{Files, Paths}
 import cats.effect._
 import cats.implicits._
 
-import docspell.common.{Banner, Pools, ThreadFactories}
+import docspell.common._
 
 import org.log4s._
 
@@ -50,6 +50,10 @@ object Main extends IOApp {
       Some(cfg.fullTextSearch.solr.url).filter(_ => cfg.fullTextSearch.enabled)
     )
     logger.info(s"\n${banner.render("***>")}")
+    if (EnvMode.current.isDev) {
+      logger.warn(">>>>>   Docspell is running in DEV mode!   <<<<<")
+    }
+
     val pools = for {
       cec <- connectEC
       bec <- blockingEC

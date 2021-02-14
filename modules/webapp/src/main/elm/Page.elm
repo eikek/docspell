@@ -2,6 +2,7 @@ module Page exposing
     ( Page(..)
     , fromUrl
     , goto
+    , hasSidebar
     , href
     , isOpen
     , isSecured
@@ -68,6 +69,18 @@ isSecured page =
 
         ItemDetailPage _ ->
             True
+
+
+{-| Currently, all secured pages have a sidebar, except UploadPage.
+-}
+hasSidebar : Page -> Bool
+hasSidebar page =
+    case page of
+        UploadPage _ ->
+            False
+
+        _ ->
+            isSecured page
 
 
 isOpen : Page -> Bool

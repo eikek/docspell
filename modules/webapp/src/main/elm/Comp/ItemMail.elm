@@ -7,19 +7,24 @@ module Comp.ItemMail exposing
     , init
     , update
     , view
+    , view2
     )
 
 import Api
 import Api.Model.EmailSettingsList exposing (EmailSettingsList)
 import Api.Model.SimpleMail exposing (SimpleMail)
+import Comp.Basic as B
 import Comp.Dropdown
 import Comp.EmailInput
+import Comp.MenuBar as MB
+import Data.DropdownStyle
 import Data.Flags exposing (Flags)
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onCheck, onClick, onInput)
 import Http
+import Styles as S
 import Util.Http
 
 
@@ -216,6 +221,10 @@ isValid model =
         == Nothing
 
 
+
+--- View
+
+
 view : UiSettings -> Model -> Html Msg
 view settings model =
     div
@@ -291,5 +300,106 @@ view settings model =
             , onClick Cancel
             ]
             [ text "Cancel"
+            ]
+        ]
+
+
+
+--- View2
+
+
+view2 : UiSettings -> Model -> Html Msg
+view2 settings model =
+    let
+        dds =
+            Data.DropdownStyle.mainStyle
+    in
+    div
+        [ class "flex flex-col"
+        ]
+        [ div [ class "mb-4" ]
+            [ label [ class S.inputLabel ]
+                [ text "Send via"
+                , B.inputRequired
+                ]
+            , Html.map ConnMsg (Comp.Dropdown.view2 dds settings model.connectionModel)
+            ]
+        , div
+            [ class S.errorMessage
+            , classList [ ( "hidden", model.formError == Nothing ) ]
+            ]
+            [ Maybe.withDefault "" model.formError |> text
+            ]
+        , div [ class "mb-4" ]
+            [ label
+                [ class S.inputLabel
+                ]
+                [ text "Recipient(s)"
+                , B.inputRequired
+                ]
+            , Html.map RecipientMsg
+                (Comp.EmailInput.view2 dds model.recipients model.recipientsModel)
+            ]
+        , div [ class "mb-4" ]
+            [ label [ class S.inputLabel ]
+                [ text "CC(s)"
+                ]
+            , Html.map CCRecipientMsg
+                (Comp.EmailInput.view2 dds model.ccRecipients model.ccRecipientsModel)
+            ]
+        , div [ class "mb-4" ]
+            [ label [ class S.inputLabel ]
+                [ text "BCC(s)"
+                ]
+            , Html.map BCCRecipientMsg
+                (Comp.EmailInput.view2 dds model.bccRecipients model.bccRecipientsModel)
+            ]
+        , div [ class "mb-4" ]
+            [ label [ class S.inputLabel ]
+                [ text "Subject"
+                , B.inputRequired
+                ]
+            , input
+                [ type_ "text"
+                , class S.textInput
+                , onInput SetSubject
+                , value model.subject
+                ]
+                []
+            ]
+        , div [ class "mb-4" ]
+            [ label [ class S.inputLabel ]
+                [ text "Body"
+                , B.inputRequired
+                ]
+            , textarea
+                [ onInput SetBody
+                , value model.body
+                , class S.textAreaInput
+                ]
+                []
+            ]
+        , MB.viewItem <|
+            MB.Checkbox
+                { tagger = \_ -> ToggleAttachAll
+                , label = "Include all item attachments"
+                , value = model.attachAll
+                , id = "item-send-mail-attach-all"
+                }
+        , div [ class "flex flex-row space-x-2" ]
+            [ B.primaryButton
+                { label = "Send"
+                , icon = "fa fa-paper-plane font-thin"
+                , handler = onClick Send
+                , attrs = [ href "#" ]
+                , disabled = not (isValid model)
+                }
+            , B.secondaryButton
+                { label = "Cancel"
+                , icon = "fa fa-times"
+                , handler = onClick Cancel
+                , attrs = [ href "#" ]
+                , disabled = False
+                }
             ]
         ]

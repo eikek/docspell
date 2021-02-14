@@ -6,6 +6,7 @@ module Comp.SourceForm exposing
     , isValid
     , update
     , view
+    , view2
     )
 
 import Api
@@ -15,8 +16,10 @@ import Api.Model.IdName exposing (IdName)
 import Api.Model.SourceAndTags exposing (SourceAndTags)
 import Api.Model.Tag exposing (Tag)
 import Api.Model.TagList exposing (TagList)
+import Comp.Basic as B
 import Comp.Dropdown exposing (isDropdownChangeMsg)
 import Comp.FixedDropdown
+import Data.DropdownStyle as DS
 import Data.Flags exposing (Flags)
 import Data.Priority exposing (Priority)
 import Data.UiSettings exposing (UiSettings)
@@ -25,6 +28,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onCheck, onInput)
 import Http
 import Markdown
+import Styles as S
 import Util.Folder exposing (mkFolderOption)
 import Util.Maybe
 import Util.Tag
@@ -64,7 +68,7 @@ emptyModel =
             }
     , allFolders = []
     , folderId = Nothing
-    , tagModel = Util.Tag.makeDropdownModel
+    , tagModel = Util.Tag.makeDropdownModel2
     , fileFilter = Nothing
     }
 
@@ -408,6 +412,180 @@ disappear then.
 
 isFolderMember : Model -> Bool
 isFolderMember model =
+    let
+        selected =
+            Comp.Dropdown.getSelected model.folderModel
+                |> List.head
+                |> Maybe.map .id
+    in
+    Util.Folder.isFolderMember model.allFolders selected
+
+
+
+--- View2
+
+
+view2 : Flags -> UiSettings -> Model -> Html Msg
+view2 flags settings model =
+    let
+        priorityItem =
+            Comp.FixedDropdown.Item
+                model.priority
+                (Data.Priority.toName model.priority)
+    in
+    div [ class "flex flex-col" ]
+        [ div [ class "mb-4" ]
+            [ label
+                [ for "source-abbrev"
+                , class S.inputLabel
+                ]
+                [ text "Name"
+                , B.inputRequired
+                ]
+            , input
+                [ type_ "text"
+                , id "source-abbrev"
+                , onInput SetAbbrev
+                , placeholder "Name"
+                , value model.abbrev
+                , class S.textInput
+                , classList [ ( S.inputErrorBorder, not (isValid model) ) ]
+                ]
+                []
+            ]
+        , div [ class "mb-4" ]
+            [ label
+                [ for "source-descr"
+                , class S.inputLabel
+                ]
+                [ text "Description"
+                ]
+            , textarea
+                [ onInput SetDescr
+                , model.description |> Maybe.withDefault "" |> value
+                , rows 3
+                , class S.textAreaInput
+                , id "source-descr"
+                ]
+                []
+            ]
+        , div [ class "mb-4" ]
+            [ label
+                [ class "inline-flex items-center"
+                , for "source-enabled"
+                ]
+                [ input
+                    [ type_ "checkbox"
+                    , onCheck (\_ -> ToggleEnabled)
+                    , checked model.enabled
+                    , class S.checkboxInput
+                    , id "source-enabled"
+                    ]
+                    []
+                , span [ class "ml-2" ]
+                    [ text "Enabled"
+                    ]
+                ]
+            ]
+        , div [ class "mb-4" ]
+            [ label [ class S.inputLabel ]
+                [ text "Priority"
+                ]
+            , Html.map PrioDropdownMsg
+                (Comp.FixedDropdown.view2
+                    (Just priorityItem)
+                    model.priorityModel
+                )
+            , div [ class "opacity-50 text-sm" ]
+                [ text "The priority used by the scheduler when processing uploaded files."
+                ]
+            ]
+        , div
+            [ class S.header2
+            , class "mt-6"
+            ]
+            [ text "Metadata"
+            ]
+        , div
+            [ class S.message
+            , class "mb-4"
+            ]
+            [ text "Metadata specified here is automatically attached to each item uploaded "
+            , text "through this source, unless it is overriden in the upload request meta data. "
+            , text "Tags from the request are added to those defined here."
+            ]
+        , div [ class "mb-4" ]
+            [ label [ class S.inputLabel ]
+                [ text "Folder"
+                ]
+            , Html.map FolderDropdownMsg
+                (Comp.Dropdown.view2
+                    DS.mainStyle
+                    settings
+                    model.folderModel
+                )
+            , div [ class "opacity-50 text-sm" ]
+                [ text "Choose a folder to automatically put items into."
+                ]
+            , div
+                [ classList
+                    [ ( "hidden", isFolderMember2 model )
+                    ]
+                , class S.message
+                ]
+                [ Markdown.toHtml [] """
+You are **not a member** of this folder. Items created through this
+link will be **hidden** from any search results. Use a folder where
+you are a member of to make items visible. This message will
+disappear then.
+                      """
+                ]
+            ]
+        , div [ class "mb-4" ]
+            [ label [ class S.inputLabel ]
+                [ text "Tags" ]
+            , Html.map TagDropdownMsg
+                (Comp.Dropdown.view2
+                    DS.mainStyle
+                    settings
+                    model.tagModel
+                )
+            , div [ class "opacity-50 text-sm" ]
+                [ text "Choose tags that should be applied to items."
+                ]
+            ]
+        , div
+            [ class "mb-4"
+            ]
+            [ label [ class S.inputLabel ]
+                [ text "File Filter" ]
+            , input
+                [ type_ "text"
+                , onInput SetFileFilter
+                , placeholder "File Filter"
+                , model.fileFilter
+                    |> Maybe.withDefault ""
+                    |> value
+                , class S.textInput
+                ]
+                []
+            , div [ class "opacity-50 text-sm" ]
+                [ text "Specify a file glob to filter files when uploading archives "
+                , text "(e.g. for email and zip). For example, to only extract pdf files: "
+                , code [ class "font-mono" ]
+                    [ text "*.pdf"
+                    ]
+                , text ". Globs can be combined via OR, like this: "
+                , code [ class "font-mono" ]
+                    [ text "*.pdf|mail.html"
+                    ]
+                ]
+            ]
+        ]
+
+
+isFolderMember2 : Model -> Bool
+isFolderMember2 model =
     let
         selected =
             Comp.Dropdown.getSelected model.folderModel

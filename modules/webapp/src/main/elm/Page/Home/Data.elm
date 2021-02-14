@@ -7,6 +7,7 @@ module Page.Home.Data exposing
     , SelectViewModel
     , ViewMode(..)
     , doSearchCmd
+    , editActive
     , init
     , initSelectViewModel
     , itemNav
@@ -23,8 +24,8 @@ import Api.Model.SearchStats exposing (SearchStats)
 import Browser.Dom as Dom
 import Comp.FixedDropdown
 import Comp.ItemCardList
-import Comp.ItemDetail.EditMenu exposing (SaveNameState(..))
 import Comp.ItemDetail.FormChange exposing (FormChange)
+import Comp.ItemDetail.MultiEditMenu exposing (SaveNameState(..))
 import Comp.LinkTarget exposing (LinkTarget)
 import Comp.SearchMenu
 import Comp.YesNoDimmer
@@ -61,7 +62,7 @@ type alias SelectViewModel =
     { ids : Set String
     , action : SelectActionMode
     , deleteAllConfirm : Comp.YesNoDimmer.Model
-    , editModel : Comp.ItemDetail.EditMenu.Model
+    , editModel : Comp.ItemDetail.MultiEditMenu.Model
     , saveNameState : SaveNameState
     , saveCustomFieldState : Set String
     }
@@ -72,7 +73,7 @@ initSelectViewModel =
     { ids = Set.empty
     , action = NoneAction
     , deleteAllConfirm = Comp.YesNoDimmer.initActive
-    , editModel = Comp.ItemDetail.EditMenu.init
+    , editModel = Comp.ItemDetail.MultiEditMenu.init
     , saveNameState = SaveSuccess
     , saveCustomFieldState = Set.empty
     }
@@ -148,6 +149,19 @@ selectActive model =
             True
 
 
+editActive : Model -> Bool
+editActive model =
+    case model.viewMode of
+        SimpleView ->
+            False
+
+        SearchView ->
+            False
+
+        SelectView svm ->
+            svm.action == EditSelected
+
+
 type Msg
     = Init
     | SearchMenuMsg Comp.SearchMenu.Msg
@@ -162,6 +176,7 @@ type Msg
     | UpdateThrottle
     | SetBasicSearch String
     | SearchTypeMsg (Comp.FixedDropdown.Msg SearchType)
+    | ToggleSearchType
     | KeyUpSearchbarMsg (Maybe KeyCode)
     | ScrollResult (Result Dom.Error ())
     | ClearItemDetailId
@@ -170,13 +185,14 @@ type Msg
     | RequestDeleteSelected
     | DeleteSelectedConfirmMsg Comp.YesNoDimmer.Msg
     | EditSelectedItems
-    | EditMenuMsg Comp.ItemDetail.EditMenu.Msg
+    | EditMenuMsg Comp.ItemDetail.MultiEditMenu.Msg
     | MultiUpdateResp FormChange (Result Http.Error BasicResult)
     | ReplaceChangedItemsResp (Result Http.Error ItemLightList)
     | DeleteAllResp (Result Http.Error BasicResult)
     | UiSettingsUpdated
     | SetLinkTarget LinkTarget
     | SearchStatsResp (Result Http.Error SearchStats)
+    | TogglePreviewFullWidth
 
 
 type SearchType
@@ -206,7 +222,7 @@ searchTypeString st =
             "Names"
 
         ContentOnlySearch ->
-            "Contents Only"
+            "Contents"
 
 
 itemNav : String -> Model -> ItemNav

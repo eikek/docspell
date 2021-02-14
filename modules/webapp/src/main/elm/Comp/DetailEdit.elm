@@ -5,6 +5,7 @@ module Comp.DetailEdit exposing
     , editEquip
     , editOrg
     , editPerson
+    , formHeading
     , initConcPerson
     , initCorrPerson
     , initCustomField
@@ -14,7 +15,9 @@ module Comp.DetailEdit exposing
     , initTagByName
     , update
     , view
+    , view2
     , viewModal
+    , viewModal2
     )
 
 {-| Module for allowing to edit metadata in the item-edit menu.
@@ -32,6 +35,7 @@ import Api.Model.Organization exposing (Organization)
 import Api.Model.Person exposing (Person)
 import Api.Model.ReferenceList exposing (ReferenceList)
 import Api.Model.Tag exposing (Tag)
+import Comp.Basic as B
 import Comp.CustomFieldForm
 import Comp.EquipmentForm
 import Comp.OrgForm
@@ -45,6 +49,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Http
+import Styles as S
 import Util.Http
 
 
@@ -775,3 +780,171 @@ viewModal settings mm =
                 )
             ]
         ]
+
+
+
+--- View2
+
+
+view2 : List (Attribute Msg) -> UiSettings -> Model -> Html Msg
+view2 attr settings model =
+    div attr
+        (viewIntern2 settings True model)
+
+
+formHeading : String -> Model -> Html msg
+formHeading classes model =
+    let
+        heading =
+            fold (\_ -> "Add Tag")
+                (\_ -> "Add Person")
+                (\_ -> "Add Organization")
+                (\_ -> "Add Equipment")
+                (\_ -> "Add Custom Field")
+
+        headIcon =
+            fold (\_ -> Icons.tagIcon2 "mr-2")
+                (\_ -> Icons.personIcon2 "mr-2")
+                (\_ -> Icons.organizationIcon2 "mr-2")
+                (\_ -> Icons.equipmentIcon2 "mt-2")
+                (\_ -> Icons.customFieldIcon2 "mr-2")
+    in
+    div [ class classes ]
+        [ headIcon model.form
+        , text (heading model.form)
+        ]
+
+
+viewModal2 : UiSettings -> Maybe Model -> Html Msg
+viewModal2 settings mm =
+    let
+        hidden =
+            mm == Nothing
+
+        heading =
+            fold (\_ -> "Add Tag")
+                (\_ -> "Add Person")
+                (\_ -> "Add Organization")
+                (\_ -> "Add Equipment")
+                (\_ -> "Add Custom Field")
+
+        headIcon =
+            fold (\_ -> Icons.tagIcon2 "mr-2")
+                (\_ -> Icons.personIcon2 "mr-2")
+                (\_ -> Icons.organizationIcon2 "mr-2")
+                (\_ -> Icons.equipmentIcon2 "mt-2")
+                (\_ -> Icons.customFieldIcon2 "mr-2")
+    in
+    div
+        [ classList
+            [ ( S.dimmer, True )
+            , ( " hidden", hidden )
+            ]
+        , class "flex"
+        ]
+        [ div
+            [ class ""
+            ]
+            [ div [ class S.header2 ]
+                [ Maybe.map .form mm
+                    |> Maybe.map headIcon
+                    |> Maybe.withDefault (i [] [])
+                , Maybe.map .form mm
+                    |> Maybe.map heading
+                    |> Maybe.withDefault ""
+                    |> text
+                ]
+            , div [ class "scrolling content" ]
+                (case mm of
+                    Just model ->
+                        viewIntern2 settings False model
+
+                    Nothing ->
+                        []
+                )
+            , div [ class "flex flex-row space-x-2" ]
+                (case mm of
+                    Just model ->
+                        viewButtons2 model
+
+                    Nothing ->
+                        []
+                )
+            ]
+        ]
+
+
+viewButtons2 : Model -> List (Html Msg)
+viewButtons2 model =
+    [ B.primaryButton
+        { label = "Submit"
+        , icon =
+            if model.submitting || model.loading then
+                "fa fa-circle-notch animate-spin"
+
+            else
+                "fa fa-save"
+        , disabled = model.submitting || model.loading
+        , handler = onClick Submit
+        , attrs = [ href "#" ]
+        }
+    , B.secondaryButton
+        { label = "Cancel"
+        , handler = onClick Cancel
+        , disabled = False
+        , icon = "fa fa-times"
+        , attrs = [ href "#" ]
+        }
+    ]
+
+
+viewIntern2 : UiSettings -> Bool -> Model -> List (Html Msg)
+viewIntern2 settings withButtons model =
+    let
+        viewSettings =
+            Comp.CustomFieldForm.fullViewSettings
+    in
+    [ div
+        [ classList
+            [ ( S.errorMessage, Maybe.map .success model.result == Just False )
+            , ( S.successMessage, Maybe.map .success model.result == Just True )
+            , ( "hidden", model.result == Nothing )
+            ]
+        ]
+        [ Maybe.map .message model.result
+            |> Maybe.withDefault ""
+            |> text
+        ]
+    , case model.form of
+        TM tm ->
+            Html.map TagMsg (Comp.TagForm.view2 tm)
+
+        PMR pm ->
+            Html.map PersonMsg (Comp.PersonForm.view2 True settings pm)
+
+        PMC pm ->
+            Html.map PersonMsg (Comp.PersonForm.view2 True settings pm)
+
+        OM om ->
+            Html.map OrgMsg (Comp.OrgForm.view2 True settings om)
+
+        EM em ->
+            Html.map EquipMsg (Comp.EquipmentForm.view2 em)
+
+        CFM fm ->
+            div []
+                (List.map (Html.map CustomFieldMsg)
+                    (Comp.CustomFieldForm.view2
+                        customFieldFormSettings
+                        fm
+                    )
+                )
+    ]
+        ++ (if withButtons then
+                [ div [ class "flex flex-row space-x-2" ]
+                    (viewButtons2 model)
+                ]
+
+            else
+                []
+           )

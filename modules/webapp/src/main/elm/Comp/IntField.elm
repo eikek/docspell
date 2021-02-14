@@ -5,12 +5,14 @@ module Comp.IntField exposing
     , update
     , view
     , viewWithInfo
+    , viewWithInfo2
     )
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)
 import Markdown
+import Styles as S
 
 
 type alias Model =
@@ -129,6 +131,49 @@ viewWithInfo info nval classes model =
                 [ ( "ui pointing red basic label", True )
                 , ( "hidden", model.error == Nothing )
                 ]
+            ]
+            [ Maybe.withDefault "" model.error |> text
+            ]
+        ]
+
+
+
+--- View2
+
+
+viewWithInfo2 : String -> Maybe Int -> String -> Model -> Html Msg
+viewWithInfo2 info nval classes model =
+    div
+        [ classList
+            [ ( classes, True )
+            , ( "error", model.error /= Nothing )
+            ]
+        ]
+        [ label [ class S.inputLabel ]
+            [ text model.label
+            ]
+        , input
+            [ type_ "text"
+            , Maybe.map String.fromInt nval
+                |> Maybe.withDefault model.lastInput
+                |> value
+            , onInput SetValue
+            , class S.textInput
+            ]
+            []
+        , span
+            [ classList
+                [ ( "hidden", info == "" )
+                ]
+            , class "opacity-50 text-sm"
+            ]
+            [ Markdown.toHtml [] info
+            ]
+        , div
+            [ classList
+                [ ( "hidden", model.error == Nothing )
+                ]
+            , class S.errorMessage
             ]
             [ Maybe.withDefault "" model.error |> text
             ]

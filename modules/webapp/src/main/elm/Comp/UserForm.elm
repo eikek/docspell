@@ -7,16 +7,20 @@ module Comp.UserForm exposing
     , isValid
     , update
     , view
+    , view2
     )
 
 import Api.Model.User exposing (User)
+import Comp.Basic as B
 import Comp.Dropdown
+import Data.DropdownStyle as DS
 import Data.Flags exposing (Flags)
 import Data.UiSettings exposing (UiSettings)
 import Data.UserState exposing (UserState)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)
+import Styles as S
 import Util.Maybe
 
 
@@ -159,6 +163,10 @@ update _ msg model =
             )
 
 
+
+--- View
+
+
 view : UiSettings -> Model -> Html Msg
 view settings model =
     div [ class "ui form" ]
@@ -204,6 +212,74 @@ view settings model =
                 , onInput SetPassword
                 , placeholder "Password"
                 , Maybe.withDefault "" model.password |> value
+                ]
+                []
+            ]
+        ]
+
+
+
+--- View2
+
+
+view2 : UiSettings -> Model -> Html Msg
+view2 settings model =
+    div [ class "flex flex-col" ]
+        [ div
+            [ class "mb-4" ]
+            [ label [ class S.inputLabel ]
+                [ text "Login"
+                , B.inputRequired
+                ]
+            , input
+                [ type_ "text"
+                , onInput SetLogin
+                , placeholder "Login"
+                , value model.login
+                , class S.textInput
+                , classList [ ( S.inputErrorBorder, model.login == "" ) ]
+                ]
+                []
+            ]
+        , div [ class "mb-4" ]
+            [ label [ class S.inputLabel ]
+                [ text "E-Mail"
+                ]
+            , input
+                [ onInput SetEmail
+                , type_ "text"
+                , model.email |> Maybe.withDefault "" |> value
+                , placeholder "E-Mail"
+                , class S.textInput
+                ]
+                []
+            ]
+        , div [ class "mb-4" ]
+            [ label [ class S.inputLabel ]
+                [ text "State"
+                ]
+            , Html.map StateMsg
+                (Comp.Dropdown.view2
+                    DS.mainStyle
+                    settings
+                    model.state
+                )
+            ]
+        , div
+            [ class "mb-4"
+            , classList [ ( "hidden", model.user.login /= "" ) ]
+            ]
+            [ label [ class S.inputLabel ]
+                [ text "Password"
+                , B.inputRequired
+                ]
+            , input
+                [ type_ "text"
+                , onInput SetPassword
+                , placeholder "Password"
+                , Maybe.withDefault "" model.password |> value
+                , class S.textInput
+                , classList [ ( S.inputErrorBorder, Util.Maybe.isEmpty model.password ) ]
                 ]
                 []
             ]

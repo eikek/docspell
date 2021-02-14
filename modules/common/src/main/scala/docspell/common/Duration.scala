@@ -40,6 +40,7 @@ case class Duration(nanos: Long) {
 }
 
 object Duration {
+  val zero = Duration(0L)
 
   def apply(d: SDur): Duration =
     Duration(d.toNanos)

@@ -5,7 +5,8 @@ import cats.implicits._
 import fs2.Stream
 
 import docspell.backend.auth.AuthToken
-import docspell.common.Pools
+import docspell.common._
+import docspell.restserver.http4s.EnvMiddleware
 import docspell.restserver.routes._
 import docspell.restserver.webapp._
 
@@ -39,9 +40,9 @@ object RestServer {
           adminRoutes(cfg, restApp)
         },
         "/api/doc"    -> templates.doc,
-        "/app/assets" -> WebjarRoutes.appRoutes[F](pools.blocker),
-        "/app"        -> templates.app,
-        "/sw.js"      -> templates.serviceWorker,
+        "/app/assets" -> EnvMiddleware(WebjarRoutes.appRoutes[F](pools.blocker)),
+        "/app"        -> EnvMiddleware(templates.app),
+        "/sw.js"      -> EnvMiddleware(templates.serviceWorker),
         "/"           -> redirectTo("/app")
       ).orNotFound
 

@@ -3,8 +3,11 @@ module Data.Direction exposing
     , all
     , fromString
     , icon
+    , icon2
     , iconFromMaybe
+    , iconFromMaybe2
     , iconFromString
+    , iconFromString2
     , labelFromMaybe
     , toString
     )
@@ -55,9 +58,24 @@ icon dir =
             "level up alternate icon"
 
 
+icon2 : Direction -> String
+icon2 dir =
+    case dir of
+        Incoming ->
+            "fa fa-level-down-alt"
+
+        Outgoing ->
+            "fa fa-level-up-alt"
+
+
 unknownIcon : String
 unknownIcon =
     "question circle outline icon"
+
+
+unknownIcon2 : String
+unknownIcon2 =
+    "fa fa-question-circle font-thin"
 
 
 iconFromString : String -> String
@@ -67,10 +85,23 @@ iconFromString dir =
         |> Maybe.withDefault unknownIcon
 
 
+iconFromString2 : String -> String
+iconFromString2 dir =
+    fromString dir
+        |> Maybe.map icon2
+        |> Maybe.withDefault unknownIcon2
+
+
 iconFromMaybe : Maybe String -> String
 iconFromMaybe ms =
     Maybe.map iconFromString ms
         |> Maybe.withDefault unknownIcon
+
+
+iconFromMaybe2 : Maybe String -> String
+iconFromMaybe2 ms =
+    Maybe.map iconFromString2 ms
+        |> Maybe.withDefault unknownIcon2
 
 
 labelFromMaybe : Maybe String -> String

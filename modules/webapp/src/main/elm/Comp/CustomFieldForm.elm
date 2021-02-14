@@ -8,21 +8,26 @@ module Comp.CustomFieldForm exposing
     , makeField
     , update
     , view
+    , view2
     )
 
 import Api
 import Api.Model.BasicResult exposing (BasicResult)
 import Api.Model.CustomField exposing (CustomField)
 import Api.Model.NewCustomField exposing (NewCustomField)
+import Comp.Basic as B
 import Comp.FixedDropdown
+import Comp.MenuBar as MB
 import Comp.YesNoDimmer
 import Data.CustomFieldType exposing (CustomFieldType)
+import Data.DropdownStyle as DS
 import Data.Flags exposing (Flags)
 import Data.Validated exposing (Validated)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Http
+import Styles as S
 import Util.Http
 import Util.Maybe
 
@@ -304,3 +309,157 @@ viewButtons model =
         [ text "Delete"
         ]
     ]
+
+
+
+--- View2
+
+
+view2 : ViewSettings -> Model -> List (Html Msg)
+view2 viewSettings model =
+    let
+        mkItem cft =
+            Comp.FixedDropdown.Item cft (Data.CustomFieldType.label cft)
+
+        dimmerSettings =
+            Comp.YesNoDimmer.defaultSettings2 "Really delete this custom field?"
+    in
+    (if viewSettings.showControls then
+        [ viewButtons2 model ]
+
+     else
+        []
+    )
+        ++ [ div
+                [ class viewSettings.classes
+                , class "flex flex-col md:relative"
+                ]
+                [ Html.map DeleteMsg
+                    (Comp.YesNoDimmer.viewN
+                        True
+                        dimmerSettings
+                        model.deleteDimmer
+                    )
+                , if model.field.id == "" then
+                    div [ class "py-2 text-lg opacity-75" ]
+                        [ text "Create a new custom field."
+                        ]
+
+                  else
+                    div [ class "py-2 text-lg opacity-75" ]
+                        [ text "Note that changing the format may "
+                        , text "result in invisible values in the ui, if they don't comply to the new format!"
+                        ]
+                , div [ class "mb-4" ]
+                    [ label
+                        [ class S.inputLabel
+                        , for "fieldname"
+                        ]
+                        [ text "Name"
+                        , B.inputRequired
+                        ]
+                    , input
+                        [ type_ "text"
+                        , onInput SetName
+                        , model.name
+                            |> Maybe.withDefault ""
+                            |> value
+                        , class S.textInput
+                        , classList
+                            [ ( S.inputErrorBorder, model.name == Nothing )
+                            ]
+                        , id "fieldname"
+                        ]
+                        []
+                    , div [ class "opacity-75 text-sm" ]
+                        [ text "The name uniquely identifies this field. It must be a valid "
+                        , text "identifier, not contain spaces or weird characters."
+                        ]
+                    ]
+                , div
+                    [ class "mb-4"
+                    ]
+                    [ label [ class S.inputLabel ]
+                        [ text "Field Format"
+                        , B.inputRequired
+                        ]
+                    , Html.map FTypeMsg
+                        (Comp.FixedDropdown.viewStyled2
+                            DS.mainStyle
+                            (model.ftype == Nothing)
+                            (Maybe.map mkItem model.ftype)
+                            model.ftypeModel
+                        )
+                    , div [ class "opacity-75 text-sm" ]
+                        [ text "A field must have a format. Values are validated "
+                        , text "according to this format."
+                        ]
+                    ]
+                , div [ class "mb-4" ]
+                    [ label
+                        [ class S.inputLabel
+                        , for "fieldlabel"
+                        ]
+                        [ text "Label" ]
+                    , input
+                        [ type_ "text"
+                        , onInput SetLabel
+                        , model.label
+                            |> Maybe.withDefault ""
+                            |> value
+                        , class S.textInput
+                        , id "fieldlabel"
+                        ]
+                        []
+                    , div [ class "opacity-75 text-sm" ]
+                        [ text "The user defined label for this field. This is used to represent "
+                        , text "this field in the ui. If not present, the name is used."
+                        ]
+                    ]
+                , div
+                    [ classList
+                        [ ( "hidden", model.result == Nothing )
+                        , ( S.errorMessage, Maybe.map .success model.result == Just False )
+                        , ( S.successMessage, Maybe.map .success model.result == Just True )
+                        ]
+                    , class "mb-4"
+                    ]
+                    [ Maybe.map .message model.result
+                        |> Maybe.withDefault ""
+                        |> text
+                    ]
+                ]
+           ]
+
+
+viewButtons2 : Model -> Html Msg
+viewButtons2 model =
+    MB.view
+        { start =
+            [ MB.PrimaryButton
+                { tagger = SubmitForm
+                , title = "Submit this form"
+                , icon = Just "fa fa-save"
+                , label = "Submit"
+                }
+            , MB.SecondaryButton
+                { tagger = GoBack
+                , title = "Back to list"
+                , icon = Just "fa fa-arrow-left"
+                , label = "Cancel"
+                }
+            ]
+        , end =
+            if model.field.id /= "" then
+                [ MB.DeleteButton
+                    { tagger = RequestDelete
+                    , title = "Delete this field"
+                    , icon = Just "fa fa-trash"
+                    , label = "Delete"
+                    }
+                ]
+
+            else
+                []
+        , rootClasses = "mb-4"
+        }

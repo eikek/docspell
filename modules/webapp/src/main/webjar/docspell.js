@@ -25,6 +25,20 @@ var elmApp = Elm.Main.init({
     flags: elmFlags
 });
 
+elmApp.ports.internalSetUiTheme.subscribe(function(themeName) {
+    var body = document.getElementsByTagName("body");
+    if (body && body.length > 0) {
+        var bodyClasses = body[0].classList;
+        // seems that body attributes cannot be set from inside Elm.
+        if (themeName && themeName.toLowerCase() === 'dark') {
+            bodyClasses.add("bg-bluegray-800");
+            bodyClasses.add("dark");
+        } else {
+            bodyClasses.remove("bg-bluegray-800");
+            bodyClasses.remove("dark");
+        }
+    }
+});
 
 elmApp.ports.setAccount.subscribe(function(authResult) {
     console.log("Add account from local storage");

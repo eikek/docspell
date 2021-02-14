@@ -6,13 +6,16 @@ module Comp.EquipmentForm exposing
     , isValid
     , update
     , view
+    , view2
     )
 
 import Api.Model.Equipment exposing (Equipment)
+import Comp.Basic as B
 import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)
+import Styles as S
 
 
 type alias Model =
@@ -68,6 +71,41 @@ view model =
                 , onInput SetName
                 , placeholder "Name"
                 , value model.name
+                ]
+                []
+            ]
+        ]
+
+
+
+--- View2
+
+
+view2 : Model -> Html Msg
+view2 model =
+    div [ class "flex flex-col" ]
+        [ div
+            [ class "mb-4"
+            ]
+            [ label
+                [ for "equipname"
+                , class S.inputLabel
+                ]
+                [ text "Name"
+                , B.inputRequired
+                ]
+            , input
+                [ type_ "text"
+                , onInput SetName
+                , placeholder "Name"
+                , value model.name
+                , name "equipname"
+                , class S.textInput
+                , classList
+                    [ ( "border-red-600 dark:border-orange-600"
+                      , not (isValid model)
+                      )
+                    ]
                 ]
                 []
             ]

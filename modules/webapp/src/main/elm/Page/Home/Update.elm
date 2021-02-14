@@ -7,8 +7,8 @@ import Api.Model.ItemSearch
 import Browser.Navigation as Nav
 import Comp.FixedDropdown
 import Comp.ItemCardList
-import Comp.ItemDetail.EditMenu exposing (SaveNameState(..))
 import Comp.ItemDetail.FormChange exposing (FormChange(..))
+import Comp.ItemDetail.MultiEditMenu exposing (SaveNameState(..))
 import Comp.LinkTarget exposing (LinkTarget)
 import Comp.SearchMenu
 import Comp.YesNoDimmer
@@ -18,6 +18,7 @@ import Data.Items
 import Data.UiSettings exposing (UiSettings)
 import Page exposing (Page(..))
 import Page.Home.Data exposing (..)
+import Ports
 import Process
 import Scroll
 import Set exposing (Set)
@@ -268,6 +269,14 @@ update mId key flags settings msg model =
             in
             update mId key flags settings smMsg model
 
+        ToggleSearchType ->
+            case model.searchTypeDropdownValue of
+                BasicSearch ->
+                    update mId key flags settings (SearchMenuMsg Comp.SearchMenu.SetFulltextSearch) model
+
+                ContentOnlySearch ->
+                    update mId key flags settings (SearchMenuMsg Comp.SearchMenu.SetNamesSearch) model
+
         SearchTypeMsg lm ->
             let
                 ( sm, mv ) =
@@ -452,7 +461,7 @@ update mId key flags settings msg model =
                 SelectView svm ->
                     let
                         res =
-                            Comp.ItemDetail.EditMenu.update flags lmsg svm.editModel
+                            Comp.ItemDetail.MultiEditMenu.update flags lmsg svm.editModel
 
                         svm_ =
                             { svm
@@ -560,6 +569,16 @@ update mId key flags settings msg model =
             in
             update mId key flags settings lm { model | searchStats = stats }
 
+        TogglePreviewFullWidth ->
+            let
+                newSettings =
+                    { settings | cardPreviewFullWidth = not settings.cardPreviewFullWidth }
+
+                cmd =
+                    Ports.storeUiSettings flags newSettings
+            in
+            noSub ( model, cmd )
+
 
 
 --- Helpers
@@ -663,7 +682,7 @@ scrollToCard mId model =
 
 loadEditModel : Flags -> Cmd Msg
 loadEditModel flags =
-    Cmd.map EditMenuMsg (Comp.ItemDetail.EditMenu.loadModel flags)
+    Cmd.map EditMenuMsg (Comp.ItemDetail.MultiEditMenu.loadModel flags)
 
 
 doSearch : SearchParam -> Model -> ( Model, Cmd Msg, Sub Msg )

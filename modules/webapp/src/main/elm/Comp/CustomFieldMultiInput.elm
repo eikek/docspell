@@ -13,6 +13,7 @@ module Comp.CustomFieldMultiInput exposing
     , update
     , updateSearch
     , view
+    , view2
     )
 
 import Api
@@ -22,12 +23,14 @@ import Api.Model.ItemFieldValue exposing (ItemFieldValue)
 import Comp.CustomFieldInput
 import Comp.FixedDropdown
 import Data.CustomFieldChange exposing (CustomFieldChange(..))
+import Data.DropdownStyle as DS
 import Data.Flags exposing (Flags)
 import Dict exposing (Dict)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Http
+import Styles as S
 import Util.CustomField
 import Util.Maybe
 
@@ -148,18 +151,18 @@ mkItem f =
     Comp.FixedDropdown.Item f (Maybe.withDefault f.name f.label)
 
 
-update : Msg -> Model -> UpdateResult
+update : Flags -> Msg -> Model -> UpdateResult
 update =
     update1 False
 
 
-updateSearch : Msg -> Model -> UpdateResult
+updateSearch : Flags -> Msg -> Model -> UpdateResult
 updateSearch =
     update1 True
 
 
-update1 : Bool -> Msg -> Model -> UpdateResult
-update1 forSearch msg model =
+update1 : Bool -> Flags -> Msg -> Model -> UpdateResult
+update1 forSearch flags msg model =
     case msg of
         CreateNewField ->
             UpdateResult model Cmd.none FieldCreateNew
@@ -195,7 +198,7 @@ update1 forSearch msg model =
             in
             case sel of
                 Just field ->
-                    update (ApplyField field) model
+                    update flags (ApplyField field) model
 
                 Nothing ->
                     UpdateResult model_ Cmd.none NoFieldChange
@@ -213,11 +216,12 @@ update1 forSearch msg model =
 
                 -- have to re-state the open menu when this is invoked
                 -- from a click in the dropdown
+                -- this hack is only required for the semantic-ui version
                 fSelectDropdown =
                     fSelect.dropdown
 
                 dropdownOpen =
-                    { fSelectDropdown | menuOpen = True }
+                    { fSelectDropdown | menuOpen = flags.config.uiVersion /= 2 }
 
                 model_ =
                     { model
@@ -279,7 +283,7 @@ update1 forSearch msg model =
                                     NoFieldChange
                     in
                     if res.result == Comp.CustomFieldInput.RemoveField then
-                        update (RemoveField field) model_
+                        update flags (RemoveField field) model_
 
                     else
                         UpdateResult model_ cmd_ result
@@ -325,6 +329,10 @@ type alias ViewSettings =
     , classes : String
     , fieldIcon : CustomField -> Maybe String
     }
+
+
+
+--- View
 
 
 view : ViewSettings -> Model -> Html Msg
@@ -386,4 +394,81 @@ addFieldLink classes _ =
         , title "Create a new custom field"
         ]
         [ i [ class "plus link icon" ] []
+        ]
+
+
+
+--- View2
+
+
+view2 : DS.DropdownStyle -> ViewSettings -> Model -> Html Msg
+view2 ddstyle viewSettings model =
+    div [ class viewSettings.classes ]
+        (viewMenuBar2 ddstyle viewSettings model
+            :: List.map (viewCustomField2 viewSettings model) (visibleFields model)
+        )
+
+
+viewMenuBar2 : DS.DropdownStyle -> ViewSettings -> Model -> Html Msg
+viewMenuBar2 ddstyle viewSettings model =
+    let
+        { dropdown, selected } =
+            model.fieldSelect
+
+        ddstyleFlex =
+            { ddstyle | root = ddstyle.root ++ " flex-grow" }
+    in
+    div
+        [ classList
+            [ ( "", viewSettings.showAddButton )
+            ]
+        , class " flex flex-row"
+        ]
+        (Html.map FieldSelectMsg
+            (Comp.FixedDropdown.viewStyled2
+                ddstyleFlex
+                False
+                (Maybe.map mkItem selected)
+                dropdown
+            )
+            :: (if viewSettings.showAddButton then
+                    [ addFieldLink2 "ml-1" model
+                    ]
+
+                else
+                    []
+               )
+        )
+
+
+viewCustomField2 : ViewSettings -> Model -> CustomField -> Html Msg
+viewCustomField2 viewSettings model field =
+    let
+        visibleField =
+            Dict.get field.name model.visibleFields
+    in
+    case visibleField of
+        Just vf ->
+            Html.map (CustomFieldInputMsg field)
+                (Comp.CustomFieldInput.view2 "mt-2"
+                    (viewSettings.fieldIcon vf.field)
+                    vf.inputModel
+                )
+
+        Nothing ->
+            span [] []
+
+
+addFieldLink2 : String -> Model -> Html Msg
+addFieldLink2 classes _ =
+    a
+        [ class classes
+        , class S.secondaryButton
+
+        --        , class "absolute -right-12 top-0"
+        , href "#"
+        , onClick CreateNewField
+        , title "Create a new custom field"
+        ]
+        [ i [ class "fa fa-plus" ] []
         ]

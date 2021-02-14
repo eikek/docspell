@@ -10,13 +10,16 @@ module Comp.Dropzone exposing
     , setActive
     , update
     , view
+    , view2
     )
 
+import Comp.Basic as B
 import File exposing (File)
 import File.Select
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
+import Styles as S
 import Util.Html exposing (onDragEnter, onDragLeave, onDragOver, onDropFiles)
 
 
@@ -28,27 +31,25 @@ type alias State =
 
 type alias Settings =
     { classList : State -> List ( String, Bool )
-    , contentTypes : List String
     }
 
 
 defaultSettings : Settings
 defaultSettings =
     { classList = \_ -> [ ( "ui placeholder segment", True ) ]
-    , contentTypes = []
     }
 
 
 type alias Model =
     { state : State
-    , settings : Settings
+    , contentTypes : List String
     }
 
 
-init : Settings -> Model
-init settings =
+init : List String -> Model
+init contentTypes =
     { state = State False True
-    , settings = settings
+    , contentTypes = contentTypes
     }
 
 
@@ -76,7 +77,7 @@ update msg model =
             ( { model | state = ns }, Cmd.none, [] )
 
         PickFiles ->
-            ( model, File.Select.files model.settings.contentTypes GotFiles, [] )
+            ( model, File.Select.files model.contentTypes GotFiles, [] )
 
         DragEnter ->
             let
@@ -99,7 +100,7 @@ update msg model =
 
                 newFiles =
                     if model.state.active then
-                        filterMime model.settings (file :: files)
+                        filterMime model (file :: files)
 
                     else
                         []
@@ -107,10 +108,10 @@ update msg model =
             ( { model | state = ns }, Cmd.none, newFiles )
 
 
-view : Model -> Html Msg
-view model =
+view : Settings -> Model -> Html Msg
+view settings model =
     div
-        [ classList (model.settings.classList model.state)
+        [ classList (settings.classList model.state)
         , onDragEnter DragEnter
         , onDragOver DragEnter
         , onDragLeave DragLeave
@@ -143,14 +144,57 @@ view model =
         ]
 
 
-filterMime : Settings -> List File -> List File
-filterMime settings files =
+filterMime : Model -> List File -> List File
+filterMime model files =
     let
         pred f =
-            List.member (File.mime f) settings.contentTypes
+            List.member (File.mime f) model.contentTypes
     in
-    if settings.contentTypes == [] then
+    if model.contentTypes == [] then
         files
 
     else
         List.filter pred files
+
+
+view2 : Model -> Html Msg
+view2 model =
+    div
+        [ classList
+            [ ( "bg-opacity-100 bg-blue-100 dark:bg-lightblue-800", model.state.hover )
+            , ( "bg-blue-100 dark:bg-lightblue-900 bg-opacity-50", not model.state.hover )
+            , ( "disabled", not model.state.active )
+            ]
+        , class "flex flex-col justify-center items-center py-2 md:py-12 border-0 border-t-2 border-blue-500 dark:border-lightblue-500 dropzone"
+        , onDragEnter DragEnter
+        , onDragOver DragEnter
+        , onDragLeave DragLeave
+        , onDropFiles GotFiles
+        ]
+        [ div
+            [ class S.header1
+            , class "hidden md:inline-flex items-center"
+            ]
+            [ i [ class "fa fa-mouse-pointer" ] []
+            , div [ class "ml-3" ]
+                [ text "Drop files here"
+                ]
+            ]
+        , B.horizontalDivider
+            { label = "Or"
+            , topCss = "w-2/3 mb-4 hidden md:inline-flex"
+            , labelCss = "px-4 bg-gray-200 bg-opacity-50"
+            , lineColor = "bg-gray-300 dark:bg-bluegray-600"
+            }
+        , B.primaryBasicButton
+            { label = "Select ..."
+            , icon = "fa fa-folder-open font-thin"
+            , handler = onClick PickFiles
+            , attrs = [ href "#" ]
+            , disabled = not model.state.active
+            }
+        , div [ class "text-center opacity-75 text-sm mt-4" ]
+            [ text "Choose document files (pdf, docx, txt, html, …). "
+            , text "Archives (zip and eml) are extracted."
+            ]
+        ]

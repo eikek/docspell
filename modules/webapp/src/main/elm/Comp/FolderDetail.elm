@@ -5,6 +5,7 @@ module Comp.FolderDetail exposing
     , initEmpty
     , update
     , view
+    , view2
     )
 
 import Api
@@ -14,14 +15,16 @@ import Api.Model.IdName exposing (IdName)
 import Api.Model.IdResult exposing (IdResult)
 import Api.Model.NewFolder exposing (NewFolder)
 import Api.Model.User exposing (User)
-import Api.Model.UserList exposing (UserList)
+import Comp.Basic as B
 import Comp.FixedDropdown
+import Comp.MenuBar as MB
 import Comp.YesNoDimmer
 import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Http
+import Styles as S
 import Util.Http
 import Util.Maybe
 
@@ -416,3 +419,178 @@ viewMember member =
             [ text member.name
             ]
         ]
+
+
+
+--- View2
+
+
+view2 : Flags -> Model -> Html Msg
+view2 flags model =
+    let
+        isOwner =
+            Maybe.map .user flags.account
+                |> Maybe.map ((==) model.folder.owner.name)
+                |> Maybe.withDefault False
+
+        dimmerSettings : Comp.YesNoDimmer.Settings
+        dimmerSettings =
+            Comp.YesNoDimmer.defaultSettings2 "Really delete this folder?"
+    in
+    div [ class "flex flex-col md:relative" ]
+        (viewButtons2 model
+            :: [ Html.map DeleteMsg
+                    (Comp.YesNoDimmer.viewN
+                        True
+                        dimmerSettings
+                        model.deleteDimmer
+                    )
+               , div
+                    [ class "py-2 text-lg opacity-75"
+                    , classList [ ( "hidden", model.folder.id /= "" ) ]
+                    ]
+                    [ text "You are automatically set as owner of this new folder."
+                    ]
+               , div
+                    [ class "py-2 text-lg opacity-75"
+                    , classList [ ( "hidden", model.folder.id == "" ) ]
+                    ]
+                    [ text "Modify this folder by changing the name or add/remove members."
+                    ]
+               , div
+                    [ class S.message
+                    , classList [ ( "hidden", model.folder.id == "" || isOwner ) ]
+                    ]
+                    [ text "You are not the owner of this folder and therefore are not allowed to edit it."
+                    ]
+               , div [ class "mb-4 flex flex-col" ]
+                    [ label
+                        [ class S.inputLabel
+                        , for "folder-name"
+                        ]
+                        [ text "Name"
+                        , B.inputRequired
+                        ]
+                    , div [ class "flex flex-row space-x-2" ]
+                        [ input
+                            [ type_ "text"
+                            , onInput SetName
+                            , Maybe.withDefault "" model.name
+                                |> value
+                            , class S.textInput
+                            , id "folder-name"
+                            ]
+                            []
+                        , a
+                            [ class S.primaryButton
+                            , class "rounded-r -ml-1"
+                            , onClick SaveName
+                            , href "#"
+                            ]
+                            [ i [ class "fa fa-save" ] []
+                            , span [ class "ml-2 hidden sm:inline" ]
+                                [ text "Save"
+                                ]
+                            ]
+                        ]
+                    ]
+               , div
+                    [ classList
+                        [ ( "hidden", model.result == Nothing )
+                        , ( S.errorMessage, Maybe.map .success model.result == Just False )
+                        , ( S.successMessage, Maybe.map .success model.result == Just True )
+                        ]
+                    , class "my-4"
+                    ]
+                    [ Maybe.map .message model.result
+                        |> Maybe.withDefault ""
+                        |> text
+                    ]
+               ]
+            ++ viewMembers2 model
+        )
+
+
+viewMembers2 : Model -> List (Html Msg)
+viewMembers2 model =
+    if model.folder.id == "" then
+        []
+
+    else
+        [ div
+            [ class S.header3
+            , class "mt-4"
+            ]
+            [ text "Members"
+            ]
+        , div [ class "flex flex-col space-y-2" ]
+            [ div [ class "flex flex-row space-x-2" ]
+                [ div [ class "flex-grow" ]
+                    [ Html.map MemberDropdownMsg
+                        (Comp.FixedDropdown.view2
+                            (Maybe.map makeItem model.selectedMember)
+                            model.memberDropdown
+                        )
+                    ]
+                , a
+                    [ title "Add a new member"
+                    , onClick AddMember
+                    , class S.primaryButton
+                    , href "#"
+                    , class "flex-none"
+                    ]
+                    [ i [ class "fa fa-plus" ] []
+                    , span [ class "ml-2 hidden sm:inline" ]
+                        [ text "Add"
+                        ]
+                    ]
+                ]
+            ]
+        , div
+            [ class "flex flex-col space-y-4 md:space-y-2 mt-2"
+            , class "px-2 border-0 border-l dark:border-bluegray-600"
+            ]
+            (List.map viewMember2 model.members)
+        ]
+
+
+viewMember2 : IdName -> Html Msg
+viewMember2 member =
+    div
+        [ class "flex flex-row space-x-2 items-center"
+        ]
+        [ a
+            [ class S.deleteLabel
+            , href "#"
+            , title "Remove this member"
+            , onClick (RemoveMember member)
+            ]
+            [ i [ class "fa fa-trash " ] []
+            ]
+        , span [ class "ml-2" ]
+            [ text member.name
+            ]
+        ]
+
+
+viewButtons2 : Model -> Html Msg
+viewButtons2 model =
+    MB.view
+        { start =
+            [ MB.SecondaryButton
+                { tagger = GoBack
+                , label = "Back"
+                , icon = Just "fa fa-arrow-left"
+                , title = "Back to list"
+                }
+            ]
+        , end =
+            [ MB.DeleteButton
+                { tagger = RequestDelete
+                , label = "Delete"
+                , icon = Just "fa fa-trash"
+                , title = "Delete this folder"
+                }
+            ]
+        , rootClasses = "mb-4"
+        }

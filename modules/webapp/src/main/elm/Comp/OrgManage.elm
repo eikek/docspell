@@ -4,12 +4,15 @@ module Comp.OrgManage exposing
     , emptyModel
     , update
     , view
+    , view2
     )
 
 import Api
 import Api.Model.BasicResult exposing (BasicResult)
 import Api.Model.Organization
 import Api.Model.OrganizationList exposing (OrganizationList)
+import Comp.Basic as B
+import Comp.MenuBar as MB
 import Comp.OrgForm
 import Comp.OrgTable
 import Comp.YesNoDimmer
@@ -19,6 +22,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput, onSubmit)
 import Http
+import Styles as S
 import Util.Http
 import Util.Maybe
 
@@ -300,4 +304,118 @@ viewForm settings model =
             ]
             [ div [ class "ui loader" ] []
             ]
+        ]
+
+
+
+--- View2
+
+
+view2 : UiSettings -> Model -> Html Msg
+view2 settings model =
+    if model.viewMode == Table then
+        viewTable2 model
+
+    else
+        viewForm2 settings model
+
+
+viewTable2 : Model -> Html Msg
+viewTable2 model =
+    div [ class "flex flex-col relative" ]
+        [ MB.view
+            { start =
+                [ MB.TextInput
+                    { tagger = SetQuery
+                    , value = model.query
+                    , placeholder = "Search…"
+                    , icon = Just "fa fa-search"
+                    }
+                ]
+            , end =
+                [ MB.PrimaryButton
+                    { tagger = InitNewOrg
+                    , title = "Create a new organization"
+                    , icon = Just "fa fa-plus"
+                    , label = "New Organization"
+                    }
+                ]
+            , rootClasses = "mb-4"
+            }
+        , Html.map TableMsg (Comp.OrgTable.view2 model.tableModel)
+        , B.loadingDimmer model.loading
+        ]
+
+
+viewForm2 : UiSettings -> Model -> Html Msg
+viewForm2 settings model =
+    let
+        newOrg =
+            model.formModel.org.id == ""
+
+        dimmerSettings2 =
+            Comp.YesNoDimmer.defaultSettings2 "Really delete this organization?"
+    in
+    Html.form
+        [ class "md:relative flex flex-col"
+        , onSubmit Submit
+        ]
+        [ Html.map YesNoMsg
+            (Comp.YesNoDimmer.viewN
+                True
+                dimmerSettings2
+                model.deleteConfirm
+            )
+        , if newOrg then
+            h3 [ class S.header2 ]
+                [ text "Create new organization"
+                ]
+
+          else
+            h3 [ class S.header2 ]
+                [ text model.formModel.org.name
+                , div [ class "opacity-50 text-sm" ]
+                    [ text "Id: "
+                    , text model.formModel.org.id
+                    ]
+                ]
+        , MB.view
+            { start =
+                [ MB.PrimaryButton
+                    { tagger = Submit
+                    , title = "Submit this form"
+                    , icon = Just "fa fa-save"
+                    , label = "Submit"
+                    }
+                , MB.SecondaryButton
+                    { tagger = SetViewMode Table
+                    , title = "Back to list"
+                    , icon = Just "fa fa-arrow-left"
+                    , label = "Cancel"
+                    }
+                ]
+            , end =
+                if not newOrg then
+                    [ MB.DeleteButton
+                        { tagger = RequestDelete
+                        , title = "Delete this organization"
+                        , icon = Just "fa fa-trash"
+                        , label = "Delete"
+                        }
+                    ]
+
+                else
+                    []
+            , rootClasses = "mb-4"
+            }
+        , Html.map FormMsg (Comp.OrgForm.view2 False settings model.formModel)
+        , div
+            [ classList
+                [ ( "hidden", Util.Maybe.isEmpty model.formError )
+                ]
+            , class S.errorMessage
+            ]
+            [ Maybe.withDefault "" model.formError |> text
+            ]
+        , B.loadingDimmer model.loading
         ]

@@ -1,0 +1,33 @@
+- KEEP THIS
+
+this is only to prevent postcss-purge from removing these classes from
+the final css. These are provided by an elm component, that generates
+them using string concatenation, which cannot be detected by postcss.
+
+
+   elm-datepicker--container
+   elm-datepicker--input
+   elm-datepicker--picker
+   elm-datepicker--picker-header
+   elm-datepicker--prev-container
+   elm-datepicker--prev
+   elm-datepicker--month-container
+   elm-datepicker--month
+   elm-datepicker--year
+   elm-datepicker--year-menu
+   elm-datepicker--next-container
+   elm-datepicker--next
+   elm-datepicker--table
+   elm-datepicker--weekdays
+   elm-datepicker--dow
+   elm-datepicker--days
+   elm-datepicker--row
+   elm-datepicker--day
+   elm-datepicker--other-month
+   elm-datepicker--day
+   elm-datepicker--row
+   elm-datepicker--day
+   elm-datepicker--day
+   elm-datepicker--today
+   elm-datepicker--day
+   elm-datepicker--other-month

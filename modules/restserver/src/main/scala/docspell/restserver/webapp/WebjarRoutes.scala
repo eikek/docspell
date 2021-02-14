@@ -4,10 +4,9 @@ import cats.data.Kleisli
 import cats.data.OptionT
 import cats.effect._
 
-import org.http4s.HttpRoutes
-import org.http4s.Method
-import org.http4s.Response
-import org.http4s.StaticFile
+import docspell.common._
+
+import org.http4s._
 
 object WebjarRoutes {
 
@@ -37,12 +36,13 @@ object WebjarRoutes {
         if (p.contains("..") || !suffixes.exists(p.endsWith(_)))
           OptionT.pure(Response.notFound[F])
         else
-          StaticFile.fromResource(
-            s"/META-INF/resources/webjars$p",
-            blocker,
-            Some(req),
-            true
-          )
+          StaticFile
+            .fromResource(
+              s"/META-INF/resources/webjars$p",
+              blocker,
+              Some(req),
+              EnvMode.current.isProd
+            )
       case _ =>
         OptionT.none
     }

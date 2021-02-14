@@ -5,13 +5,17 @@ module Comp.CollectiveSettingsForm exposing
     , init
     , update
     , view
+    , view2
     )
 
 import Api
 import Api.Model.BasicResult exposing (BasicResult)
 import Api.Model.CollectiveSettings exposing (CollectiveSettings)
+import Comp.Basic as B
 import Comp.ClassifierSettingsForm
 import Comp.Dropdown
+import Comp.MenuBar as MB
+import Data.DropdownStyle as DS
 import Data.Flags exposing (Flags)
 import Data.Language exposing (Language)
 import Data.UiSettings exposing (UiSettings)
@@ -20,6 +24,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onCheck, onClick, onInput)
 import Http
+import Styles as S
 import Util.Http
 
 
@@ -192,6 +197,10 @@ update flags msg model =
             )
 
 
+
+--- View
+
+
 view : Flags -> UiSettings -> Model -> Html Msg
 view flags settings model =
     div
@@ -322,6 +331,168 @@ renderResultMessage result =
             , ( "error", Maybe.map .success result == Just False )
             , ( "success", Maybe.map .success result == Just True )
             , ( "hidden invisible", result == Nothing )
+            ]
+        ]
+        [ Maybe.map .message result
+            |> Maybe.withDefault ""
+            |> text
+        ]
+
+
+
+--- View2
+
+
+view2 : Flags -> UiSettings -> Model -> Html Msg
+view2 flags settings model =
+    div
+        [ classList
+            [ ( "ui form error success", True )
+            , ( "error", Maybe.map .success model.fullTextReIndexResult == Just False )
+            , ( "success", Maybe.map .success model.fullTextReIndexResult == Just True )
+            ]
+        , class "flex flex-col relative"
+        ]
+        [ MB.view
+            { start =
+                [ MB.CustomElement <|
+                    B.primaryButton
+                        { handler = onClick SaveSettings
+                        , label = "Save"
+                        , icon = "fa fa-save"
+                        , attrs =
+                            [ title "Save settings"
+                            , href "#"
+                            ]
+                        , disabled = getSettings model |> Data.Validated.isInvalid
+                        }
+                ]
+            , end = []
+            , rootClasses = "mb-4"
+            }
+        , h3 [ class S.header3 ]
+            [ text "Document Language"
+            ]
+        , div [ class "mb-4" ]
+            [ label [ class S.inputLabel ]
+                [ text "Document Language"
+                ]
+            , Html.map LangDropdownMsg
+                (Comp.Dropdown.view2
+                    DS.mainStyle
+                    settings
+                    model.langModel
+                )
+            , span [ class "opacity-50 text-sm" ]
+                [ text "The language of your documents. This helps text recognition (OCR) and text analysis."
+                ]
+            ]
+        , div
+            [ classList
+                [ ( "hidden", not flags.config.integrationEnabled )
+                ]
+            ]
+            [ h3
+                [ class S.header3
+                ]
+                [ text "Integration Endpoint"
+                ]
+            , div [ class "mb-4" ]
+                [ label
+                    [ class "inline-flex items-center"
+                    , for "intendpoint-enabled"
+                    ]
+                    [ input
+                        [ type_ "checkbox"
+                        , onCheck (\_ -> ToggleIntegrationEndpoint)
+                        , checked model.intEnabled
+                        , id "intendpoint-enabled"
+                        , class S.checkboxInput
+                        ]
+                        []
+                    , span [ class "ml-2" ]
+                        [ text "Enable integration endpoint"
+                        ]
+                    ]
+                , div [ class "opacity-50 text-sm" ]
+                    [ text "The integration endpoint allows (local) applications to submit files. "
+                    , text "You can choose to disable it for your collective."
+                    ]
+                ]
+            ]
+        , div
+            [ classList
+                [ ( "hidden", not flags.config.fullTextSearchEnabled )
+                ]
+            ]
+            [ h3
+                [ class S.header3 ]
+                [ text "Full-Text Search" ]
+            , div
+                [ class "mb-4" ]
+                [ div [ class "flex flex-row" ]
+                    [ input
+                        [ type_ "text"
+                        , value model.fullTextConfirmText
+                        , onInput SetFullTextConfirm
+                        , class S.textInput
+                        , class "rounded-r-none"
+                        ]
+                        []
+                    , a
+                        [ class S.primaryButtonPlain
+                        , class "rouded-r"
+                        , href "#"
+                        , onClick TriggerReIndex
+                        ]
+                        [ i [ class "fa fa-sync-alt" ] []
+                        , span [ class "ml-2 hidden sm:inline" ]
+                            [ text "Re-Index All Data"
+                            ]
+                        ]
+                    ]
+                , div [ class "opacity-50 text-sm" ]
+                    [ text "This starts a task that clears the full-text index and re-indexes all your data again."
+                    , text "You must type OK before clicking the button to avoid accidental re-indexing."
+                    ]
+                , renderResultMessage2 model.fullTextReIndexResult
+                ]
+            ]
+        , div
+            [ classList
+                [ ( " hidden", not flags.config.showClassificationSettings )
+                ]
+            ]
+            [ h3
+                [ class S.header3 ]
+                [ text "Auto-Tagging"
+                ]
+            , div
+                [ class "mb-4" ]
+                [ Html.map ClassifierSettingMsg
+                    (Comp.ClassifierSettingsForm.view2 settings model.classifierModel)
+                , div [ class "flex flex-row justify-end" ]
+                    [ B.secondaryBasicButton
+                        { handler = onClick StartClassifierTask
+                        , icon = "fa fa-play"
+                        , label = "Start now"
+                        , disabled = Data.Validated.isInvalid model.classifierModel.schedule
+                        , attrs = [ href "#" ]
+                        }
+                    , renderResultMessage2 model.startClassifierResult
+                    ]
+                ]
+            ]
+        ]
+
+
+renderResultMessage2 : Maybe BasicResult -> Html msg
+renderResultMessage2 result =
+    div
+        [ classList
+            [ ( S.errorMessage, Maybe.map .success result == Just False )
+            , ( S.successMessage, Maybe.map .success result == Just True )
+            , ( "hidden", result == Nothing )
             ]
         ]
         [ Maybe.map .message result

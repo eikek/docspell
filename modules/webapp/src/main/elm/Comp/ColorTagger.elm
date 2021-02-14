@@ -5,6 +5,7 @@ module Comp.ColorTagger exposing
     , init
     , update
     , view
+    , view2
     )
 
 import Comp.FixedDropdown
@@ -13,6 +14,7 @@ import Dict exposing (Dict)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
+import Styles as S
 import Util.Maybe
 
 
@@ -168,4 +170,93 @@ chooseColor tagger colors mtext =
                 ]
     in
     div [ class "ui labels" ] <|
+        List.map renderLabel colors
+
+
+
+--- View2
+
+
+view2 : FormData -> ViewOpts -> Model -> Html Msg
+view2 data opts model =
+    div [ class "flex flex-col" ]
+        [ label [ class S.inputLabel ]
+            [ text opts.label ]
+        , Html.map LeftMsg
+            (Comp.FixedDropdown.view2
+                (Maybe.map (\s -> Comp.FixedDropdown.Item s s) model.leftSelect)
+                model.leftDropdown
+            )
+        , div [ class "field" ]
+            [ chooseColor2
+                (AddPair data)
+                Data.Color.all
+                Nothing
+            ]
+        , renderFormData2 opts data
+        , span
+            [ classList
+                [ ( "opacity-50 text-sm", True )
+                , ( "hidden", opts.description == Nothing )
+                ]
+            ]
+            [ Maybe.withDefault "" opts.description
+                |> text
+            ]
+        ]
+
+
+renderFormData2 : ViewOpts -> FormData -> Html Msg
+renderFormData2 opts data =
+    let
+        values =
+            Dict.toList data
+
+        valueItem ( k, v ) =
+            div [ class "flex flex-row items-center" ]
+                [ a
+                    [ class S.link
+                    , class "mr-4 sm:mr-2 inline-flex"
+                    , onClick (DeleteItem data k)
+                    , href "#"
+                    ]
+                    [ i [ class "fa fa-trash" ] []
+                    ]
+                , a
+                    [ class S.link
+                    , class "mr-4 sm:mr-2 inline-flex"
+                    , onClick (EditItem k v)
+                    , href "#"
+                    ]
+                    [ i [ class "fa fa-edit" ] []
+                    ]
+                , span [ class "ml-2" ]
+                    [ opts.renderItem ( k, v )
+                    ]
+                ]
+    in
+    div
+        [ class "flex flex-col space-y-4 md:space-y-2 mt-2"
+        , class "px-2 border-0 border-l dark:border-bluegray-600"
+        ]
+        (List.map valueItem values)
+
+
+chooseColor2 : (Color -> msg) -> List Color -> Maybe String -> Html msg
+chooseColor2 tagger colors mtext =
+    let
+        renderLabel color =
+            a
+                [ class (Data.Color.toString2 color)
+                , class "label mt-1"
+                , href "#"
+                , onClick (tagger color)
+                ]
+                [ Maybe.withDefault
+                    (Data.Color.toString color)
+                    mtext
+                    |> text
+                ]
+    in
+    div [ class "flex flex-wrap flex-row space-x-2 mt-2" ] <|
         List.map renderLabel colors

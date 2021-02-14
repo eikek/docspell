@@ -8,11 +8,13 @@ module Comp.CustomFieldInput exposing
     , update
     , updateSearch
     , view
+    , view2
     )
 
 import Api.Model.CustomField exposing (CustomField)
 import Api.Model.ItemFieldValue exposing (ItemFieldValue)
 import Comp.DatePicker
+import Comp.MenuBar as MB
 import Data.CustomFieldType exposing (CustomFieldType)
 import Data.Icons as Icons
 import Data.Money
@@ -21,6 +23,7 @@ import DatePicker exposing (DatePicker)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onCheck, onClick, onInput)
+import Styles as S
 import Util.Maybe
 
 
@@ -329,11 +332,6 @@ hasWildCards msg =
 --- View
 
 
-mkLabel : Model -> String
-mkLabel model =
-    Maybe.withDefault model.field.name model.field.label
-
-
 removeButton : String -> Html Msg
 removeButton classes =
     a
@@ -443,7 +441,149 @@ makeInput icon model =
 
 
 
+--- View2
+
+
+view2 : String -> Maybe String -> Model -> Html Msg
+view2 classes icon model =
+    let
+        error =
+            errorMsg model
+    in
+    div
+        [ class classes
+        ]
+        [ label [ class S.inputLabel ]
+            [ mkLabel model |> text
+            ]
+        , makeInput2 icon model
+        , div
+            [ class S.errorMessage
+            , class "text-sm px-2 py-1 mt-1"
+            , classList
+                [ ( "hidden", error == Nothing )
+                ]
+            ]
+            [ Maybe.withDefault "" error |> text
+            ]
+        ]
+
+
+removeButton2 : String -> Html Msg
+removeButton2 classes =
+    a
+        [ class classes
+        , class S.inputLeftIconLinkSidebar
+        , href "#"
+        , title "Remove this value"
+        , onClick Remove
+        ]
+        [ i [ class "fa fa-trash-alt font-thin" ] []
+        ]
+
+
+makeInput2 : Maybe String -> Model -> Html Msg
+makeInput2 icon model =
+    let
+        iconOr c =
+            Maybe.withDefault c icon
+    in
+    case model.fieldModel of
+        TextField v ->
+            div [ class "flex flex-row relative" ]
+                [ input
+                    [ type_ "text"
+                    , Maybe.withDefault "" v |> value
+                    , onInput SetText
+                    , class S.textInputSidebar
+                    , class "pl-10 pr-10"
+                    ]
+                    []
+                , removeButton2 ""
+                , i
+                    [ class (iconOr <| Icons.customFieldType2 Data.CustomFieldType.Text)
+                    , class S.dateInputIcon
+                    ]
+                    []
+                ]
+
+        NumberField nm ->
+            div [ class "flex flex-row relative" ]
+                [ input
+                    [ type_ "text"
+                    , value nm.input
+                    , onInput NumberMsg
+                    , class S.textInputSidebar
+                    , class "pl-10 pr-10"
+                    ]
+                    []
+                , removeButton2 ""
+                , i
+                    [ class (iconOr <| Icons.customFieldType2 Data.CustomFieldType.Numeric)
+                    , class S.dateInputIcon
+                    ]
+                    []
+                ]
+
+        MoneyField nm ->
+            div [ class "flex flex-row relative" ]
+                [ input
+                    [ type_ "text"
+                    , value nm.input
+                    , class S.textInputSidebar
+                    , class "pl-10 pr-10"
+                    , onInput MoneyMsg
+                    ]
+                    []
+                , removeButton2 ""
+                , i
+                    [ class (iconOr <| Icons.customFieldType2 Data.CustomFieldType.Money)
+                    , class S.dateInputIcon
+                    ]
+                    []
+                ]
+
+        BoolField b ->
+            div [ class "flex flex-row items-center" ]
+                [ MB.viewItem <|
+                    MB.Checkbox
+                        { id = "customfield-flag-" ++ model.field.name
+                        , tagger = \_ -> ToggleBool
+                        , label = mkLabel model
+                        , value = b
+                        }
+                , div [ class "flex-grow" ] []
+                , a
+                    [ class S.secondaryButton
+                    , class "shadow-none"
+                    , href "#"
+                    , title "Remove this value"
+                    , onClick Remove
+                    ]
+                    [ i [ class "fa fa-trash-alt font-thin" ] []
+                    ]
+                ]
+
+        DateField v dp ->
+            div [ class "flex flex-row relative" ]
+                [ Html.map DateMsg
+                    (Comp.DatePicker.view v Comp.DatePicker.defaultSettings dp)
+                , removeButton2 ""
+                , i
+                    [ class (iconOr <| Icons.customFieldType2 Data.CustomFieldType.Date)
+                    , class S.dateInputIcon
+                    ]
+                    []
+                ]
+
+
+
 --- Helper
+
+
+mkLabel : Model -> String
+mkLabel model =
+    Maybe.withDefault model.field.name model.field.label
 
 
 string2Float : String -> Result String Float

@@ -4,12 +4,15 @@ module Comp.TagManage exposing
     , emptyModel
     , update
     , view
+    , view2
     )
 
 import Api
 import Api.Model.BasicResult exposing (BasicResult)
 import Api.Model.Tag
 import Api.Model.TagList exposing (TagList)
+import Comp.Basic as B
+import Comp.MenuBar as MB
 import Comp.TagForm
 import Comp.TagTable
 import Comp.YesNoDimmer
@@ -18,6 +21,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput, onSubmit)
 import Http
+import Styles as S
 import Util.Http
 import Util.Maybe
 import Util.Tag
@@ -50,6 +54,11 @@ emptyModel =
     , deleteConfirm = Comp.YesNoDimmer.emptyModel
     , query = ""
     }
+
+
+dimmerSettings : Comp.YesNoDimmer.Settings
+dimmerSettings =
+    Comp.YesNoDimmer.defaultSettings
 
 
 type Msg
@@ -308,4 +317,121 @@ viewForm model =
             ]
             [ div [ class "ui loader" ] []
             ]
+        ]
+
+
+view2 : Model -> Html Msg
+view2 model =
+    if model.viewMode == Table then
+        viewTable2 model
+
+    else
+        viewForm2 model
+
+
+viewTable2 : Model -> Html Msg
+viewTable2 model =
+    div [ class "flex flex-col" ]
+        [ MB.view
+            { start =
+                [ MB.TextInput
+                    { tagger = SetQuery
+                    , value = model.query
+                    , placeholder = "Search…"
+                    , icon = Just "fa fa-search"
+                    }
+                ]
+            , end =
+                [ MB.PrimaryButton
+                    { tagger = InitNewTag
+                    , title = "Create a new tag"
+                    , icon = Just "fa fa-plus"
+                    , label = "New Tag"
+                    }
+                ]
+            , rootClasses = "mb-4"
+            }
+        , Html.map TableMsg (Comp.TagTable.view2 model.tagTableModel)
+        , div
+            [ classList
+                [ ( "ui dimmer", True )
+                , ( "active", model.loading )
+                ]
+            ]
+            [ div [ class "ui loader" ] []
+            ]
+        ]
+
+
+viewForm2 : Model -> Html Msg
+viewForm2 model =
+    let
+        newTag =
+            model.tagFormModel.tag.id == ""
+
+        dimmerSettings2 =
+            Comp.YesNoDimmer.defaultSettings2 "Really delete this tag?"
+    in
+    Html.form
+        [ class "relative flex flex-col"
+        , onSubmit Submit
+        ]
+        [ Html.map YesNoMsg
+            (Comp.YesNoDimmer.viewN
+                True
+                dimmerSettings2
+                model.deleteConfirm
+            )
+        , if newTag then
+            h1 [ class S.header2 ]
+                [ text "Create new tag"
+                ]
+
+          else
+            h1 [ class S.header2 ]
+                [ text model.tagFormModel.tag.name
+                , div [ class "opacity-50 text-sm" ]
+                    [ text "Id: "
+                    , text model.tagFormModel.tag.id
+                    ]
+                ]
+        , MB.view
+            { start =
+                [ MB.PrimaryButton
+                    { tagger = Submit
+                    , title = "Submit this form"
+                    , icon = Just "fa fa-save"
+                    , label = "Submit"
+                    }
+                , MB.SecondaryButton
+                    { tagger = SetViewMode Table
+                    , title = "Back to list"
+                    , icon = Just "fa fa-arrow-left"
+                    , label = "Cancel"
+                    }
+                ]
+            , end =
+                if not newTag then
+                    [ MB.DeleteButton
+                        { tagger = RequestDelete
+                        , title = "Delete this tag"
+                        , icon = Just "fa fa-trash"
+                        , label = "Delete"
+                        }
+                    ]
+
+                else
+                    []
+            , rootClasses = "mb-4"
+            }
+        , Html.map FormMsg (Comp.TagForm.view2 model.tagFormModel)
+        , div
+            [ classList
+                [ ( "hidden", Util.Maybe.isEmpty model.formError )
+                ]
+            , class S.errorMessage
+            ]
+            [ Maybe.withDefault "" model.formError |> text
+            ]
+        , B.loadingDimmer model.loading
         ]

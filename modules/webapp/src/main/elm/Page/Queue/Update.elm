@@ -86,6 +86,9 @@ update flags msg model =
         ChangePrio id prio ->
             ( model, Api.setJobPrio flags id prio CancelResp )
 
+        SetQueueView v ->
+            ( { model | queueView = v }, Cmd.none )
+
 
 getNewTime : Cmd Msg
 getNewTime =

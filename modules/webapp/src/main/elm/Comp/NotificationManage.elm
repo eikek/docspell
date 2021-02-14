@@ -4,12 +4,14 @@ module Comp.NotificationManage exposing
     , init
     , update
     , view
+    , view2
     )
 
 import Api
 import Api.Model.BasicResult exposing (BasicResult)
 import Api.Model.NotificationSettings exposing (NotificationSettings)
 import Api.Model.NotificationSettingsList exposing (NotificationSettingsList)
+import Comp.MenuBar as MB
 import Comp.NotificationForm
 import Comp.NotificationList
 import Data.Flags exposing (Flags)
@@ -18,6 +20,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Http
+import Styles as S
 import Util.Http
 
 
@@ -253,3 +256,57 @@ viewForm settings model =
 viewList : Model -> Html Msg
 viewList model =
     Html.map ListMsg (Comp.NotificationList.view model.listModel model.items)
+
+
+
+--- View2
+
+
+view2 : UiSettings -> Model -> Html Msg
+view2 settings model =
+    div [ class "flex flex-col" ]
+        ([ div
+            [ classList
+                [ ( S.errorMessage, Maybe.map .success model.result == Just False )
+                , ( S.successMessage, Maybe.map .success model.result == Just True )
+                , ( "hidden", model.result == Nothing )
+                ]
+            ]
+            [ Maybe.map .message model.result
+                |> Maybe.withDefault ""
+                |> text
+            ]
+         ]
+            ++ (case model.detailModel of
+                    Just msett ->
+                        viewForm2 settings msett
+
+                    Nothing ->
+                        viewList2 model
+               )
+        )
+
+
+viewForm2 : UiSettings -> Comp.NotificationForm.Model -> List (Html Msg)
+viewForm2 settings model =
+    [ Html.map DetailMsg
+        (Comp.NotificationForm.view2 "flex flex-col" settings model)
+    ]
+
+
+viewList2 : Model -> List (Html Msg)
+viewList2 model =
+    [ MB.view
+        { start =
+            [ MB.PrimaryButton
+                { tagger = NewTask
+                , label = "New Task"
+                , icon = Just "fa fa-plus"
+                , title = "Create a new notification task"
+                }
+            ]
+        , end = []
+        , rootClasses = "mb-4"
+        }
+    , Html.map ListMsg (Comp.NotificationList.view2 model.listModel model.items)
+    ]

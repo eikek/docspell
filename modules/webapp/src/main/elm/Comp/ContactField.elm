@@ -6,20 +6,24 @@ module Comp.ContactField exposing
     , update
     , view
     , view1
+    , view2
     )
 
 import Api.Model.Contact exposing (Contact)
-import Comp.Dropdown
+import Comp.Basic as B
+import Comp.FixedDropdown
 import Data.ContactType exposing (ContactType)
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
+import Styles as S
 
 
 type alias Model =
     { items : List Contact
-    , kind : Comp.Dropdown.Model ContactType
+    , kind : Comp.FixedDropdown.Model ContactType
+    , selectedKind : Maybe ContactType
     , value : String
     }
 
@@ -28,17 +32,8 @@ emptyModel : Model
 emptyModel =
     { items = []
     , kind =
-        Comp.Dropdown.makeSingleList
-            { makeOption =
-                \ct ->
-                    { value = Data.ContactType.toString ct
-                    , text = Data.ContactType.toString ct
-                    , additional = ""
-                    }
-            , placeholder = ""
-            , options = Data.ContactType.all
-            , selected = List.head Data.ContactType.all
-            }
+        Comp.FixedDropdown.initMap Data.ContactType.toString Data.ContactType.all
+    , selectedKind = List.head Data.ContactType.all
     , value = ""
     }
 
@@ -48,9 +43,16 @@ getContacts model =
     List.filter (\c -> c.value /= "") model.items
 
 
+makeDropdownItem : ContactType -> Comp.FixedDropdown.Item ContactType
+makeDropdownItem ct =
+    { id = ct
+    , display = Data.ContactType.toString ct
+    }
+
+
 type Msg
     = SetValue String
-    | TypeMsg (Comp.Dropdown.Msg ContactType)
+    | TypeMsg (Comp.FixedDropdown.Msg ContactType)
     | AddContact
     | Select Contact
     | SetItems (List Contact)
@@ -67,25 +69,36 @@ update msg model =
 
         TypeMsg m ->
             let
-                ( m1, c1 ) =
-                    Comp.Dropdown.update m model.kind
+                ( m1, sel ) =
+                    Comp.FixedDropdown.update m model.kind
+
+                newSel =
+                    case sel of
+                        Just _ ->
+                            sel
+
+                        Nothing ->
+                            model.selectedKind
             in
-            ( { model | kind = m1 }, Cmd.map TypeMsg c1 )
+            ( { model | kind = m1, selectedKind = newSel }
+            , Cmd.none
+            )
 
         AddContact ->
             if model.value == "" then
                 ( model, Cmd.none )
 
             else
-                let
-                    kind =
-                        Comp.Dropdown.getSelected model.kind
-                            |> List.head
-                            |> Maybe.map Data.ContactType.toString
-                in
-                case kind of
+                case model.selectedKind of
                     Just k ->
-                        ( { model | items = Contact "" model.value k :: model.items, value = "" }
+                        let
+                            contact =
+                                { id = ""
+                                , value = model.value
+                                , kind = Data.ContactType.toString k
+                                }
+                        in
+                        ( { model | items = contact :: model.items, value = "" }
                         , Cmd.none
                         )
 
@@ -96,13 +109,14 @@ update msg model =
             let
                 newItems =
                     List.filter (\c -> c /= contact) model.items
-
-                ( m1, c1 ) =
-                    Data.ContactType.fromString contact.kind
-                        |> Maybe.map (\ct -> update (TypeMsg (Comp.Dropdown.SetSelection [ ct ])) model)
-                        |> Maybe.withDefault ( model, Cmd.none )
             in
-            ( { m1 | value = contact.value, items = newItems }, c1 )
+            ( { model
+                | value = contact.value
+                , selectedKind = Data.ContactType.fromString contact.kind
+                , items = newItems
+              }
+            , Cmd.none
+            )
 
 
 view : UiSettings -> Model -> Html Msg
@@ -111,7 +125,7 @@ view settings model =
 
 
 view1 : UiSettings -> Bool -> Model -> Html Msg
-view1 settings compact model =
+view1 _ compact model =
     div []
         [ div [ classList [ ( "fields", not compact ) ] ]
             [ div
@@ -120,7 +134,11 @@ view1 settings compact model =
                     , ( "four wide", not compact )
                     ]
                 ]
-                [ Html.map TypeMsg (Comp.Dropdown.view settings model.kind)
+                [ Html.map TypeMsg
+                    (Comp.FixedDropdown.view
+                        (Maybe.map makeDropdownItem model.selectedKind)
+                        model.kind
+                    )
                 ]
             , div
                 [ classList
@@ -161,4 +179,74 @@ renderItem contact =
             [ text contact.kind
             ]
         , text contact.value
+        ]
+
+
+
+--- View2
+
+
+view2 : Bool -> UiSettings -> Model -> Html Msg
+view2 mobile _ model =
+    div [ class "flex flex-col" ]
+        [ div
+            [ class "flex flex-col space-y-2"
+            , classList [ ( " md:flex-row md:space-y-0 md:space-x-2", not mobile ) ]
+            ]
+            [ div
+                [ classList [ ( "flex-none md:w-1/6", not mobile ) ]
+                ]
+                [ Html.map TypeMsg
+                    (Comp.FixedDropdown.view2
+                        (Maybe.map makeDropdownItem model.selectedKind)
+                        model.kind
+                    )
+                ]
+            , input
+                [ type_ "text"
+                , onInput SetValue
+                , value model.value
+                , class S.textInput
+                , class "flex-grow"
+                ]
+                []
+            , a
+                [ class S.secondaryButton
+                , class "shadow-none"
+                , onClick AddContact
+                , href "#"
+                ]
+                [ i [ class "fa fa-plus" ] []
+                ]
+            ]
+        , div
+            [ classList
+                [ ( "hidden", List.isEmpty model.items )
+                ]
+            , class "flex flex-col space-y-2 mt-2 px-2 border-0 border-l dark:border-bluegray-600 "
+            ]
+            (List.map (renderItem2 mobile) model.items)
+        ]
+
+
+renderItem2 : Bool -> Contact -> Html Msg
+renderItem2 mobile contact =
+    div
+        [ class "flex flex-row space-x-2 items-center"
+        ]
+        [ div [ class "mr-2 flex-nowrap" ]
+            [ B.editLinkLabel (Select contact)
+            ]
+        , div
+            [ class "inline-flex items-center" ]
+            [ div
+                [ class "label inline-block mr-2 hidden text-sm "
+                , classList [ ( " sm:inline-block", not mobile ) ]
+                ]
+                [ text contact.kind
+                ]
+            , div [ class "font-mono my-auto inline-block truncate" ]
+                [ text contact.value
+                ]
+            ]
         ]

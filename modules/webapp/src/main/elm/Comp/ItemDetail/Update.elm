@@ -22,6 +22,7 @@ import Comp.DetailEdit
 import Comp.Dropdown exposing (isDropdownChangeMsg)
 import Comp.Dropzone
 import Comp.EquipmentForm
+import Comp.ItemDetail.EditForm
 import Comp.ItemDetail.Model
     exposing
         ( AttachmentRename
@@ -863,7 +864,10 @@ update key flags inav settings msg model =
             case Dict.get id model.attachMeta of
                 Just _ ->
                     resultModel
-                        { model | attachMetaOpen = not model.attachMetaOpen }
+                        { model
+                            | attachMetaOpen = not model.attachMetaOpen
+                            , attachmentDropdownOpen = False
+                        }
 
                 Nothing ->
                     let
@@ -874,7 +878,11 @@ update key flags inav settings msg model =
                             Dict.insert id am model.attachMeta
                     in
                     resultModelCmd
-                        ( { model | attachMeta = nextMeta, attachMetaOpen = True }
+                        ( { model
+                            | attachMeta = nextMeta
+                            , attachMetaOpen = True
+                            , attachmentDropdownOpen = False
+                          }
                         , Cmd.map (AttachMetaMsg id) ac
                         )
 
@@ -901,6 +909,7 @@ update key flags inav settings msg model =
 
                             Nothing ->
                                 Just (not default)
+                    , attachmentDropdownOpen = False
                 }
 
         DeleteAttachConfirm attachId lmsg ->
@@ -933,7 +942,7 @@ update key flags inav settings msg model =
                 inav
                 settings
                 (DeleteAttachConfirm id Comp.YesNoDimmer.activate)
-                model
+                { model | attachmentDropdownOpen = False }
 
         AddFilesToggle ->
             resultModel
@@ -964,7 +973,7 @@ update key flags inav settings msg model =
             resultModel
                 { model
                     | selectedFiles = []
-                    , addFilesModel = Comp.Dropzone.init Comp.Dropzone.defaultSettings
+                    , addFilesModel = Comp.Dropzone.init []
                     , completed = Set.empty
                     , errored = Set.empty
                     , loading = Dict.empty
@@ -1220,13 +1229,21 @@ update key flags inav settings msg model =
                     in
                     case name of
                         Just n ->
-                            resultModel { model | attachRename = Just (AttachmentRename id n) }
+                            resultModel
+                                { model
+                                    | attachRename = Just (AttachmentRename id n)
+                                    , attachmentDropdownOpen = False
+                                }
 
                         Nothing ->
                             resultModel model
 
                 Just _ ->
-                    resultModel { model | attachRename = Nothing }
+                    resultModel
+                        { model
+                            | attachRename = Nothing
+                            , attachmentDropdownOpen = False
+                        }
 
         EditAttachNameCancel ->
             resultModel { model | attachRename = Nothing }
@@ -1370,7 +1387,7 @@ update key flags inav settings msg model =
         CustomFieldMsg lm ->
             let
                 result =
-                    Comp.CustomFieldMultiInput.update lm model.customFieldsModel
+                    Comp.CustomFieldMultiInput.update flags lm model.customFieldsModel
 
                 cmd_ =
                     Cmd.map CustomFieldMsg result.cmd
@@ -1459,6 +1476,36 @@ update key flags inav settings msg model =
 
         CustomFieldRemoveResp fieldId (Err _) ->
             resultModel { model | customFieldSavingIcon = Dict.remove fieldId model.customFieldSavingIcon }
+
+        ToggleAttachmentDropdown ->
+            resultModel { model | attachmentDropdownOpen = not model.attachmentDropdownOpen }
+
+        ToggleAkkordionTab title ->
+            let
+                tabs =
+                    if Set.member title model.editMenuTabsOpen then
+                        Set.remove title model.editMenuTabsOpen
+
+                    else
+                        Set.insert title model.editMenuTabsOpen
+            in
+            resultModel { model | editMenuTabsOpen = tabs }
+
+        ToggleOpenAllAkkordionTabs ->
+            let
+                allNames =
+                    Comp.ItemDetail.EditForm.formTabs settings model
+                        |> List.map .title
+                        |> Set.fromList
+
+                next =
+                    if model.editMenuTabsOpen == allNames then
+                        Set.empty
+
+                    else
+                        allNames
+            in
+            resultModel { model | editMenuTabsOpen = next }
 
 
 

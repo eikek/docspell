@@ -4,6 +4,7 @@ module Comp.PersonManage exposing
     , emptyModel
     , update
     , view
+    , view2
     )
 
 import Api
@@ -11,6 +12,8 @@ import Api.Model.BasicResult exposing (BasicResult)
 import Api.Model.Person
 import Api.Model.PersonList exposing (PersonList)
 import Api.Model.ReferenceList exposing (ReferenceList)
+import Comp.Basic as B
+import Comp.MenuBar as MB
 import Comp.PersonForm
 import Comp.PersonTable
 import Comp.YesNoDimmer
@@ -20,6 +23,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput, onSubmit)
 import Http
+import Styles as S
 import Util.Http
 import Util.Maybe
 
@@ -348,4 +352,118 @@ viewForm settings model =
             ]
             [ div [ class "ui loader" ] []
             ]
+        ]
+
+
+
+--- View2
+
+
+view2 : UiSettings -> Model -> Html Msg
+view2 settings model =
+    if model.viewMode == Table then
+        viewTable2 model
+
+    else
+        viewForm2 settings model
+
+
+viewTable2 : Model -> Html Msg
+viewTable2 model =
+    div [ class "flex flex-col" ]
+        [ MB.view
+            { start =
+                [ MB.TextInput
+                    { tagger = SetQuery
+                    , value = model.query
+                    , placeholder = "Search…"
+                    , icon = Just "fa fa-search"
+                    }
+                ]
+            , end =
+                [ MB.PrimaryButton
+                    { tagger = InitNewPerson
+                    , title = "Create a new person"
+                    , icon = Just "fa fa-plus"
+                    , label = "New Person"
+                    }
+                ]
+            , rootClasses = "mb-4"
+            }
+        , Html.map TableMsg (Comp.PersonTable.view2 model.tableModel)
+        , B.loadingDimmer (isLoading model)
+        ]
+
+
+viewForm2 : UiSettings -> Model -> Html Msg
+viewForm2 settings model =
+    let
+        newPerson =
+            model.formModel.person.id == ""
+
+        dimmerSettings2 =
+            Comp.YesNoDimmer.defaultSettings2 "Really delete this person?"
+    in
+    Html.form
+        [ class "md:relative flex flex-col"
+        , onSubmit Submit
+        ]
+        [ Html.map YesNoMsg
+            (Comp.YesNoDimmer.viewN
+                True
+                dimmerSettings2
+                model.deleteConfirm
+            )
+        , if newPerson then
+            h3 [ class S.header2 ]
+                [ text "Create new person"
+                ]
+
+          else
+            h3 [ class S.header2 ]
+                [ text model.formModel.person.name
+                , div [ class "opacity-50 text-sm" ]
+                    [ text "Id: "
+                    , text model.formModel.person.id
+                    ]
+                ]
+        , MB.view
+            { start =
+                [ MB.PrimaryButton
+                    { tagger = Submit
+                    , title = "Submit this form"
+                    , icon = Just "fa fa-save"
+                    , label = "Submit"
+                    }
+                , MB.SecondaryButton
+                    { tagger = SetViewMode Table
+                    , title = "Back to list"
+                    , icon = Just "fa fa-arrow-left"
+                    , label = "Cancel"
+                    }
+                ]
+            , end =
+                if not newPerson then
+                    [ MB.DeleteButton
+                        { tagger = RequestDelete
+                        , title = "Delete this person"
+                        , icon = Just "fa fa-trash"
+                        , label = "Delete"
+                        }
+                    ]
+
+                else
+                    []
+            , rootClasses = "mb-4"
+            }
+        , Html.map FormMsg (Comp.PersonForm.view2 False settings model.formModel)
+        , div
+            [ classList
+                [ ( "hidden", Util.Maybe.isEmpty model.formError )
+                ]
+            , class S.errorMessage
+            ]
+            [ Maybe.withDefault "" model.formError |> text
+            ]
+        , B.loadingDimmer (isLoading model)
         ]
