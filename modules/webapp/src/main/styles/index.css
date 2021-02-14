@@ -133,32 +133,4 @@
         @apply bg-lime-200 dark:bg-lightblue-700 italic font-bold px-1;
     }
 
-
-    .tag::before {
-        position: absolute;
-        transform: translateY(-50%) translateX(50%) rotate(-45deg);
-        top: 50%;
-        right: 100%;
-        content: '';
-        background-color: inherit;
-        background-image: none;
-        border-color: inherit;
-        width: 1.2em;
-        height: 1.2em;
-        border-radius: 4px;
-    }
-
-    .tag::after {
-        position: absolute;
-        content: '';
-        top: 50%;
-        left: -.25em;
-        margin-top: -.25em;
-        background-color: #fff;
-        width: .4em;
-        height: .4em;
-        box-shadow: 0 -1px 1px 0 rgba(0,0,0,.3);
-        border-radius: 500rem;
-    }
-
 }
