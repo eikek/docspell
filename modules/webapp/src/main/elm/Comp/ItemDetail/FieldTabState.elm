@@ -10,7 +10,7 @@ import Set exposing (Set)
 tabState :
     UiSettings
     -> Set String
-    -> Comp.CustomFieldMultiInput.Model
+    -> Maybe Comp.CustomFieldMultiInput.Model
     -> (TB.Tab msg -> msg)
     -> TB.Tab msg
     -> ( TB.State, msg )
@@ -35,7 +35,9 @@ tabState settings openTabs cfmodel toggle tab =
 
                 "Custom Fields" ->
                     isHidden Data.Fields.CustomFields
-                        || Comp.CustomFieldMultiInput.isEmpty cfmodel
+                        || (Maybe.map Comp.CustomFieldMultiInput.isEmpty cfmodel
+                                |> Maybe.withDefault False
+                           )
 
                 "Date" ->
                     isHidden Data.Fields.Date
