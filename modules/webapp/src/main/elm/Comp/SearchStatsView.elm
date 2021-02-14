@@ -152,7 +152,10 @@ view2 classes stats =
                     }
                 ]
             , div [ class "flex-grow" ]
-                [ table [ class "w-full text-sm" ]
+                [ table
+                    [ class "w-full text-sm"
+                    , classList [ ( "hidden", List.isEmpty fields ) ]
+                    ]
                     [ thead []
                         [ tr [ class "" ]
                             [ th [ class "py-2 text-left" ] []
