@@ -5,7 +5,7 @@ LABEL maintainer="eikek0 <eike@docspell.org>"
 ARG ELM_VERSION=0.19.1
 ARG SBT_VERSION=
 
-RUN apk add --virtual .build-dependencies --no-cache git curl bash openjdk8
+RUN apk add --virtual .build-dependencies --no-cache git curl bash openjdk8 npm
 
 # ELM
 RUN curl -L -o elm.gz https://github.com/elm/compiler/releases/download/${ELM_VERSION}/binary-for-linux-64-bit.gz
