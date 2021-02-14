@@ -1,5 +1,5 @@
 // use a cacheName for cache versioning
-var cacheName = 'v1:static';
+var cacheName = 'v{{ flags.uiVersion }}:static';
 
 // during the install phase you usually want to cache static assets
 self.addEventListener('install', function(e) {
