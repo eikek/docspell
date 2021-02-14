@@ -63,6 +63,45 @@ docspell.joex {
 }
 ```
 
+# Developing Frontend
+
+The frontend is a SPA written in [Elm](https://elm-lang.org). The UI
+framework in use is [tailwind](https://tailwindcss.com).
+
+The frontend code is in the sub-project `webapp`. Running sbt's
+`compile` task, compiles elm sources and creates the final CSS file.
+Whenever the `restserver` module is build by sbt, the `webapp`
+sub-project is built as well and the final files to deliver are
+updated. So, when in sbt shell, "watch-compile" the project
+`restserver`, (via `~ restserver/compile`), re-compiles elm-code on
+change. However, it also re-creates the final css, which is a rather
+long task.
+
+To speed things up when only developing the frontend, a bash script is
+provided in `project/dev-ui-build.sh`. Start the `restserver` once,
+using `restserver/reStart` task as described above. Then run this
+script in the source root. It will watch elm files and the css file
+and re-compiles only on change writing the resulting files in the
+correct locations so they get picked up by the restserver.
+
+Now you can edit elm files and the `index.css` and then only refresh
+the page. Elm compilation is *very* fast, it's difficult to reach the
+refresh button before it is done compiling :). When editing the CSS,
+it takes a little longer, but this is hardly necessary, thanks to
+tailwind.
+
+There is still a problem: the browser caches the js and css files by
+default, so a page refresh is not enough, you need to clear the cache,
+too. To avoid this annoyance, set a env variable `DOCSPELL_ENV` to the
+value `dev`. Docspell then adds a response header, preventing the
+browser to cache these files. This must be done, obviously, before
+starting the restserver:
+
+``` bash
+$ export DOCSPELL_ENV=dev
+$ sbt "restserver/reStart"
+```
+
 # Nix Expressions
 
 The directory `/nix` contains nix expressions to install docspell via

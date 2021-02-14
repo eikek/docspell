@@ -98,6 +98,28 @@ can also support activity by donating via
 
 Thank you so much!
 
+## Tech Stack
+
+**Backend**
+
+The servers is written in Scala in a pure functional style, based on
+libraries from the [typelevel](https://typelevel.org) stack: Cats,
+FS2, Doobie, Http4s, Circe and Pureconfig.
+
+There are more libraries and technologies used, of course. Docspell is
+only a orchestration of great tools and libs. One important is the
+[Stanford-NLP](https://nlp.stanford.edu/software/), that provides the
+ML features. Furthermore, file processing relies on external tools
+like tesseract, unoconv and ocrmypdf. All dependencies can be looked
+up in `project/Dependencies.scala`.
+
+
+**Frontend**
+
+The web frontend is a SPA written in [Elm](https://elm-lang.org). The
+UI framework in use is [tailwind](https://tailwindcss.com).
+
+
 ## License
 
 Docspell is free software, distributed under the [GPLv3 or
