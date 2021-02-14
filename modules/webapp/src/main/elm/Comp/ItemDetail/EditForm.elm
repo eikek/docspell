@@ -425,5 +425,5 @@ tabState settings allNames model =
     in
     FTabState.tabState settings
         openTabs
-        model.customFieldsModel
+        Nothing
         (.title >> ToggleAkkordionTab)

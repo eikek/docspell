@@ -149,16 +149,14 @@ view settings model =
                 ]
                 |> List.map Tuple.first
             )
-        , div [ class "font-semibold mb-2 mt-3 pr-3" ]
-            (renderTagsAndFields settings model)
+        , renderTagsAndFields settings model
         ]
 
 
-renderTagsAndFields : UiSettings -> Model -> List (Html Msg)
+renderTagsAndFields : UiSettings -> Model -> Html Msg
 renderTagsAndFields settings model =
-    [ div [ class "flex flex-row flex-wrap items-center sm:justify-end" ]
+    div [ class "flex flex-row flex-wrap items-center font-semibold sm:justify-end mt-1 min-h-7" ]
         (renderTags settings model ++ renderCustomValues settings model)
-    ]
 
 
 renderTags : UiSettings -> Model -> List (Html Msg)
@@ -167,7 +165,7 @@ renderTags settings model =
         tagView t =
             Comp.LinkTarget.makeTagLink
                 (IdName t.id t.name)
-                [ ( "label inline-flex ml-2 hover:opacity-90 mt-1 items-center", True )
+                [ ( "label md:text-sm inline-flex ml-2 hover:opacity-90 mt-1 items-center", True )
                 , ( Data.UiSettings.tagColorString2 t settings, True )
                 ]
                 SetLinkTarget
@@ -185,7 +183,7 @@ renderCustomValues settings model =
         fieldView cv =
             Comp.LinkTarget.makeCustomFieldLink2
                 cv
-                [ ( "ml-2 hover:opacity-90 mt-1 " ++ S.basicLabel, True ) ]
+                [ ( "ml-2 md:text-sm hover:opacity-90 mt-1 " ++ S.basicLabel, True ) ]
                 SetLinkTarget
 
         labelThenName cv =

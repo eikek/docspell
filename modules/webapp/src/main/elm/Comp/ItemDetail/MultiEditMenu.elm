@@ -1149,7 +1149,7 @@ tabState : UiSettings -> Model -> TB.Tab Msg -> ( TB.State, Msg )
 tabState settings model tab =
     FTabState.tabState settings
         model.openTabs
-        model.customFieldModel
+        (Just model.customFieldModel)
         (.title >> ToggleAkkordionTab)
         tab
 
