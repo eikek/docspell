@@ -312,7 +312,7 @@ menuItem model pos attach =
             , ( "dark:border-bluegray-600", pos /= 0 )
             ]
                 ++ highlight
-         , class "block flex-col relative border rounded px-1 py-1 mr-2"
+         , class "flex flex-col relative border rounded px-1 py-1 mr-2"
          , class " hover:shadow dark:hover:border-bluegray-500"
          , href "#"
          , onClick (SetActiveAttachment pos)
@@ -328,7 +328,7 @@ menuItem model pos attach =
             ]
             [ i [ class "fa fa-check-circle ml-1" ] []
             ]
-        , div [ class "" ]
+        , div [ class "flex-grow" ]
             [ img
                 [ src (Api.attachmentPreviewURL attach.id)
                 , class "block w-20 mx-auto"
