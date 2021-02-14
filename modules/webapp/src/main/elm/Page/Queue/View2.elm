@@ -18,6 +18,26 @@ import Util.Time exposing (formatDateTime, formatIsoDateTime)
 viewSidebar : Bool -> Flags -> UiSettings -> Model -> Html Msg
 viewSidebar visible _ _ model =
     let
+        count v =
+            case v of
+                CurrentJobs ->
+                    List.length model.state.progress
+
+                QueueAll ->
+                    List.length model.state.queued
+                        + List.length model.state.completed
+
+                QueueWaiting ->
+                    List.length model.state.queued
+
+                QueueSuccess ->
+                    filterJobDetails model.state.completed "success"
+                        |> List.length
+
+                QueueError ->
+                    filterJobDetails model.state.completed "failed"
+                        |> List.length
+
         tabLink cls v icon label =
             a
                 [ href "#"
@@ -28,9 +48,12 @@ viewSidebar visible _ _ model =
                 ]
                 [ i [ class icon ]
                     []
-                , span
+                , div
                     [ class "ml-3" ]
                     [ text label ]
+                , div [ class "ml-auto bg-gray-200 border rounded-full h-6 w-6 flex items-center justify-center text-xs dark:bg-bluegray-800 dark:text-bluegray-200 dark:border-bluegray-800 dark:bg-opacity-50" ]
+                    [ count v |> String.fromInt |> text
+                    ]
                 ]
     in
     div
@@ -59,9 +82,6 @@ viewContent _ _ model =
     let
         gridStyle =
             "grid gap-4 grid-cols-1 md:grid-cols-2"
-
-        isState state job =
-            state == job.state
 
         message str =
             div [ class "h-28 flex flex-col items-center justify-center w-full" ]
@@ -110,7 +130,7 @@ viewContent _ _ model =
             QueueError ->
                 let
                     items =
-                        List.filter (isState "failed") model.state.completed
+                        filterJobDetails model.state.completed "failed"
                 in
                 if List.isEmpty items then
                     message "No failed jobs to display."
@@ -122,7 +142,7 @@ viewContent _ _ model =
             QueueSuccess ->
                 let
                     items =
-                        List.filter (isState "success") model.state.completed
+                        filterJobDetails model.state.completed "success"
                 in
                 if List.isEmpty items then
                     message "No succesfull jobs to display."
@@ -131,6 +151,15 @@ viewContent _ _ model =
                     div [ class gridStyle ]
                         (List.map (renderInfoCard model) items)
         ]
+
+
+filterJobDetails : List JobDetail -> String -> List JobDetail
+filterJobDetails list state =
+    let
+        isState job =
+            state == job.state
+    in
+    List.filter isState list
 
 
 renderJobLog : JobDetail -> Html Msg
