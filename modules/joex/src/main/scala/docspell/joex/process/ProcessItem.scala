@@ -43,6 +43,7 @@ object ProcessItem {
     TextAnalysis[F](cfg.textAnalysis, analyser, regexNer)(item)
       .flatMap(FindProposal[F](cfg.textAnalysis))
       .flatMap(EvalProposals[F])
+      .flatMap(CrossCheckProposals[F])
       .flatMap(SaveProposals[F])
 
   private def processAttachments0[F[_]: ConcurrentEffect: ContextShift](

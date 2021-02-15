@@ -99,4 +99,34 @@ object MetaProposalListTest extends SimpleTestSuite {
       )
     )
   }
+
+  test("insert second, remove duplicates") {
+    val cand1 = Candidate(IdRef(Ident.unsafe("123"), "name"), Set.empty)
+    val cand2 = Candidate(IdRef(Ident.unsafe("456"), "name"), Set.empty)
+    val cand3 = Candidate(IdRef(Ident.unsafe("789"), "name"), Set.empty)
+    val cand5 = Candidate(IdRef(Ident.unsafe("def"), "name"), Set.empty)
+
+    val mpl1 = MetaProposalList
+      .of(
+        MetaProposal(MetaProposalType.CorrOrg, NonEmptyList.of(cand1, cand2)),
+        MetaProposal(MetaProposalType.ConcPerson, NonEmptyList.of(cand3))
+      )
+
+    val mpl2 = MetaProposalList
+      .of(
+        MetaProposal(MetaProposalType.CorrOrg, NonEmptyList.of(cand1)),
+        MetaProposal(MetaProposalType.ConcPerson, NonEmptyList.of(cand5))
+      )
+
+    val result = mpl1.insertSecond(mpl2)
+    assertEquals(
+      result,
+      MetaProposalList(
+        List(
+          MetaProposal(MetaProposalType.CorrOrg, NonEmptyList.of(cand1, cand2)),
+          MetaProposal(MetaProposalType.ConcPerson, NonEmptyList.of(cand3, cand5))
+        )
+      )
+    )
+  }
 }

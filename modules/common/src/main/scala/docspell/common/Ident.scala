@@ -6,6 +6,7 @@ import java.util.UUID
 import cats.Eq
 import cats.effect.Sync
 import cats.implicits._
+import cats.Order
 
 import io.circe.{Decoder, Encoder}
 import scodec.bits.ByteVector
@@ -65,5 +66,8 @@ object Ident {
 
   implicit val decodeIdent: Decoder[Ident] =
     Decoder.decodeString.emap(Ident.fromString)
+
+  implicit val order: Order[Ident] =
+    Order.by(_.id)
 
 }

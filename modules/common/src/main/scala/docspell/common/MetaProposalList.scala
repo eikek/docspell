@@ -40,6 +40,11 @@ case class MetaProposalList private (proposals: List[MetaProposal]) {
   def change(f: MetaProposal => MetaProposal): MetaProposalList =
     new MetaProposalList(proposals.map(f))
 
+  def replace(mp: MetaProposal): MetaProposalList = {
+    val next = proposals.filter(_.proposalType != mp.proposalType)
+    MetaProposalList(mp :: next)
+  }
+
   def filter(f: MetaProposal => Boolean): MetaProposalList =
     new MetaProposalList(proposals.filter(f))
 
@@ -52,7 +57,8 @@ case class MetaProposalList private (proposals: List[MetaProposal]) {
       (map, next) =>
         map.get(next.proposalType) match {
           case Some(MetaProposal(mt, values)) =>
-            val cand = NonEmptyList(values.head, next.values.toList ++ values.tail)
+            val cand =
+              NonEmptyList(values.head, next.values.toList ++ values.tail).distinct
             map.updated(next.proposalType, MetaProposal(mt, MetaProposal.flatten(cand)))
           case None =>
             map.updated(next.proposalType, next)
