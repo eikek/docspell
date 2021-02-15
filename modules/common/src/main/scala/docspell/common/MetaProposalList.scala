@@ -52,7 +52,8 @@ case class MetaProposalList private (proposals: List[MetaProposal]) {
       (map, next) =>
         map.get(next.proposalType) match {
           case Some(MetaProposal(mt, values)) =>
-            val cand = NonEmptyList(values.head, next.values.toList ++ values.tail)
+            val cand =
+              NonEmptyList(values.head, next.values.toList ++ values.tail).distinct
             map.updated(next.proposalType, MetaProposal(mt, MetaProposal.flatten(cand)))
           case None =>
             map.updated(next.proposalType, next)

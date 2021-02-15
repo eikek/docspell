@@ -2,9 +2,9 @@ package docspell.common
 
 import java.time.LocalDate
 
+import cats.Order
 import cats.data.NonEmptyList
 import cats.implicits._
-import cats.kernel.Order
 
 import docspell.common.MetaProposal.Candidate
 import docspell.common._
@@ -73,6 +73,9 @@ object MetaProposal {
       deriveEncoder[Candidate]
     implicit val jsonDecoder: Decoder[Candidate] =
       deriveDecoder[Candidate]
+
+    implicit val order: Order[Candidate] =
+      Order.by(_.ref)
 
     /** This deviates from standard order to sort None at last.
       */
