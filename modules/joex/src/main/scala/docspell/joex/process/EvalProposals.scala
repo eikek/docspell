@@ -28,7 +28,9 @@ object EvalProposals {
       ctx: Context[F, _]
   ): F[Map[Ident, PersonRef]] = {
     val corrPersIds = data.metas
-      .flatMap(_.proposals.find(MetaProposalType.CorrPerson))
+      .map(_.proposals)
+      .appended(data.classifyProposals)
+      .flatMap(_.find(MetaProposalType.CorrPerson))
       .flatMap(_.values.toList.map(_.ref.id))
       .toSet
     ctx.store

@@ -33,6 +33,17 @@ case class ItemData(
     classifyTags: List[String]
 ) {
 
+  /** sort by weight; order of equal weights is not important, just
+    * choose one others are then suggestions
+    *  doc-date is only set when given explicitely, not from "guessing"
+    */
+  def finalProposals: MetaProposalList =
+    MetaProposalList
+      .flatten(metas.map(_.proposals))
+      .filter(_.proposalType != MetaProposalType.DocDate)
+      .sortByWeights
+      .fillEmptyFrom(classifyProposals)
+
   def findMeta(attachId: Ident): Option[RAttachmentMeta] =
     metas.find(_.id == attachId)
 

@@ -40,6 +40,11 @@ case class MetaProposalList private (proposals: List[MetaProposal]) {
   def change(f: MetaProposal => MetaProposal): MetaProposalList =
     new MetaProposalList(proposals.map(f))
 
+  def replace(mp: MetaProposal): MetaProposalList = {
+    val next = proposals.filter(_.proposalType != mp.proposalType)
+    MetaProposalList(mp :: next)
+  }
+
   def filter(f: MetaProposal => Boolean): MetaProposalList =
     new MetaProposalList(proposals.filter(f))
 

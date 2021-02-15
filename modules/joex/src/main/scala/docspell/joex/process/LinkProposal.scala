@@ -17,14 +17,7 @@ object LinkProposal {
         .map(_ => data)
     else
       Task { ctx =>
-        // sort by weight; order of equal weights is not important, just
-        // choose one others are then suggestions
-        // doc-date is only set when given explicitely, not from "guessing"
-        val proposals = MetaProposalList
-          .flatten(data.metas.map(_.proposals))
-          .filter(_.proposalType != MetaProposalType.DocDate)
-          .sortByWeights
-          .fillEmptyFrom(data.classifyProposals)
+        val proposals = data.finalProposals
 
         ctx.logger.info(s"Starting linking proposals") *>
           MetaProposalType.all
