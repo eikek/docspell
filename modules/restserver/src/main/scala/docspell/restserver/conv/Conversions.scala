@@ -445,7 +445,7 @@ trait Conversions {
       Address(rp.street, rp.zip, rp.city, rp.country),
       v.contacts.map(mkContact).toList,
       rp.notes,
-      rp.concerning,
+      rp.use,
       rp.created
     )
   }
@@ -466,10 +466,10 @@ trait Conversions {
         v.address.city,
         v.address.country,
         v.notes,
-        v.concerning,
         now,
         now,
-        v.organization.map(_.id)
+        v.organization.map(_.id),
+        v.use
       )
     } yield OOrganization.PersonAndContacts(pers, None, cont)
   }
@@ -492,10 +492,10 @@ trait Conversions {
         v.address.city,
         v.address.country,
         v.notes,
-        v.concerning,
         v.created,
         now,
-        v.organization.map(_.id)
+        v.organization.map(_.id),
+        v.use
       )
     } yield OOrganization.PersonAndContacts(pers, None, cont)
   }

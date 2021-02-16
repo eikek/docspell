@@ -21,10 +21,10 @@ case class RPerson(
     city: String,
     country: String,
     notes: Option[String],
-    concerning: Boolean,
     created: Timestamp,
     updated: Timestamp,
-    oid: Option[Ident]
+    oid: Option[Ident],
+    use: PersonUse
 ) {}
 
 object RPerson {
@@ -34,18 +34,18 @@ object RPerson {
   final case class Table(alias: Option[String]) extends TableDef {
     val tableName = "person"
 
-    val pid        = Column[Ident]("pid", this)
-    val cid        = Column[Ident]("cid", this)
-    val name       = Column[String]("name", this)
-    val street     = Column[String]("street", this)
-    val zip        = Column[String]("zip", this)
-    val city       = Column[String]("city", this)
-    val country    = Column[String]("country", this)
-    val notes      = Column[String]("notes", this)
-    val concerning = Column[Boolean]("concerning", this)
-    val created    = Column[Timestamp]("created", this)
-    val updated    = Column[Timestamp]("updated", this)
-    val oid        = Column[Ident]("oid", this)
+    val pid     = Column[Ident]("pid", this)
+    val cid     = Column[Ident]("cid", this)
+    val name    = Column[String]("name", this)
+    val street  = Column[String]("street", this)
+    val zip     = Column[String]("zip", this)
+    val city    = Column[String]("city", this)
+    val country = Column[String]("country", this)
+    val notes   = Column[String]("notes", this)
+    val created = Column[Timestamp]("created", this)
+    val updated = Column[Timestamp]("updated", this)
+    val oid     = Column[Ident]("oid", this)
+    val use     = Column[PersonUse]("person_use", this)
     val all = NonEmptyList.of[Column[_]](
       pid,
       cid,
@@ -55,10 +55,10 @@ object RPerson {
       city,
       country,
       notes,
-      concerning,
       created,
       updated,
-      oid
+      oid,
+      use
     )
   }
 
@@ -70,7 +70,7 @@ object RPerson {
     DML.insert(
       T,
       T.all,
-      fr"${v.pid},${v.cid},${v.name},${v.street},${v.zip},${v.city},${v.country},${v.notes},${v.concerning},${v.created},${v.updated},${v.oid}"
+      fr"${v.pid},${v.cid},${v.name},${v.street},${v.zip},${v.city},${v.country},${v.notes},${v.created},${v.updated},${v.oid},${v.use}"
     )
 
   def update(v: RPerson): ConnectionIO[Int] = {
@@ -85,7 +85,7 @@ object RPerson {
           T.zip.setTo(v.zip),
           T.city.setTo(v.city),
           T.country.setTo(v.country),
-          T.concerning.setTo(v.concerning),
+          T.use.setTo(v.use),
           T.notes.setTo(v.notes),
           T.oid.setTo(v.oid),
           T.updated.setTo(now)
@@ -116,19 +116,19 @@ object RPerson {
   def findLike(
       coll: Ident,
       personName: String,
-      concerningOnly: Boolean
+      use: NonEmptyList[PersonUse]
   ): ConnectionIO[Vector[IdRef]] =
     run(
       select(T.pid, T.name),
       from(T),
-      where(T.cid === coll, T.concerning === concerningOnly, T.name.like(personName))
+      where(T.cid === coll, T.use.in(use), T.name.like(personName))
     ).query[IdRef].to[Vector]
 
   def findLike(
       coll: Ident,
       contactKind: ContactKind,
       value: String,
-      concerningOnly: Boolean
+      use: NonEmptyList[PersonUse]
   ): ConnectionIO[Vector[IdRef]] = {
     val p = RPerson.as("p")
     val c = RContact.as("c")
@@ -139,7 +139,7 @@ object RPerson {
       where(
         p.cid === coll,
         c.kind === contactKind,
-        p.concerning === concerningOnly,
+        p.use.in(use),
         c.value.like(value)
       )
     ).query[IdRef].to[Vector]

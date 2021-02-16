@@ -198,6 +198,9 @@ val openapiScalaSettings = Seq(
       case "listtype" =>
         field =>
           field.copy(typeDef = TypeDef("ListType", Imports("docspell.common.ListType")))
+      case "personuse" =>
+        field =>
+          field.copy(typeDef = TypeDef("PersonUse", Imports("docspell.common.PersonUse")))
     }))
 )
 

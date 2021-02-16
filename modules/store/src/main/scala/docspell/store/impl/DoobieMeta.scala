@@ -103,6 +103,9 @@ trait DoobieMeta extends EmilDoobieMeta {
 
   implicit val metaListType: Meta[ListType] =
     Meta[String].timap(ListType.unsafeFromString)(_.name)
+
+  implicit val metaPersonUse: Meta[PersonUse] =
+    Meta[String].timap(PersonUse.unsafeFromString)(_.name)
 }
 
 object DoobieMeta extends DoobieMeta {

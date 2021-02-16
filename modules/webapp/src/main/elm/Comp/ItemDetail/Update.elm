@@ -49,6 +49,7 @@ import Data.Direction
 import Data.Fields exposing (Field)
 import Data.Flags exposing (Flags)
 import Data.ItemNav exposing (ItemNav)
+import Data.PersonUse
 import Data.UiSettings exposing (UiSettings)
 import DatePicker
 import Dict
@@ -612,8 +613,8 @@ update key flags inav settings msg model =
 
         GetPersonResp (Ok ps) ->
             let
-                ( conc, corr ) =
-                    List.partition .concerning ps.items
+                { concerning, correspondent } =
+                    Data.PersonUse.spanPersonList ps.items
 
                 personDict =
                     List.map (\p -> ( p.id, p )) ps.items
@@ -632,10 +633,10 @@ update key flags inav settings msg model =
                             \_ -> True
 
                 concRefs =
-                    List.map (\e -> IdName e.id e.name) conc
+                    List.map (\e -> IdName e.id e.name) concerning
 
                 corrRefs =
-                    List.filter personFilter corr
+                    List.filter personFilter correspondent
                         |> List.map (\e -> IdName e.id e.name)
 
                 mkPersonOption idref =

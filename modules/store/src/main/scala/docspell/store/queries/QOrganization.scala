@@ -1,5 +1,6 @@
 package docspell.store.queries
 
+import cats.data.NonEmptyList
 import cats.implicits._
 import fs2._
 
@@ -121,13 +122,13 @@ object QOrganization {
       coll: Ident,
       value: String,
       ck: Option[ContactKind],
-      concerning: Option[Boolean]
+      use: Option[NonEmptyList[PersonUse]]
   ): Stream[ConnectionIO, RPerson] =
     runDistinct(
       select(p.all),
       from(p).innerJoin(c, c.personId === p.pid),
       c.value.like(s"%${value.toLowerCase}%") && p.cid === coll &&?
-        concerning.map(c => p.concerning === c) &&?
+        use.map(u => p.use.in(u)) &&?
         ck.map(k => c.kind === k)
     ).query[RPerson].stream
 

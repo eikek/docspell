@@ -16,12 +16,14 @@ import Comp.AddressForm
 import Comp.Basic as B
 import Comp.ContactField
 import Comp.Dropdown
+import Comp.FixedDropdown
 import Data.DropdownStyle as DS
 import Data.Flags exposing (Flags)
+import Data.PersonUse exposing (PersonUse)
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onCheck, onInput)
+import Html.Events exposing (onInput)
 import Styles as S
 
 
@@ -31,7 +33,8 @@ type alias Model =
     , addressModel : Comp.AddressForm.Model
     , contactModel : Comp.ContactField.Model
     , notes : Maybe String
-    , concerning : Bool
+    , use : PersonUse
+    , useModel : Comp.FixedDropdown.Model PersonUse
     , orgModel : Comp.Dropdown.Model IdName
     }
 
@@ -43,7 +46,11 @@ emptyModel =
     , addressModel = Comp.AddressForm.emptyModel
     , contactModel = Comp.ContactField.emptyModel
     , notes = Nothing
-    , concerning = False
+    , use = Data.PersonUse.Both
+    , useModel =
+        Comp.FixedDropdown.initMap
+            Data.PersonUse.label
+            Data.PersonUse.all
     , orgModel = Comp.Dropdown.orgDropdown
     }
 
@@ -68,7 +75,7 @@ getPerson model =
         , address = Comp.AddressForm.getAddress model.addressModel
         , contacts = Comp.ContactField.getContacts model.contactModel
         , notes = model.notes
-        , concerning = model.concerning
+        , use = Data.PersonUse.asString model.use
         , organization = org
     }
 
@@ -79,9 +86,9 @@ type Msg
     | AddressMsg Comp.AddressForm.Msg
     | ContactMsg Comp.ContactField.Msg
     | SetNotes String
-    | SetConcerning Bool
     | SetOrgs (List IdName)
     | OrgDropdownMsg (Comp.Dropdown.Msg IdName)
+    | UseDropdownMsg (Comp.FixedDropdown.Msg PersonUse)
 
 
 update : Flags -> Msg -> Model -> ( Model, Cmd Msg )
@@ -108,7 +115,9 @@ update flags msg model =
                 | person = t
                 , name = t.name
                 , notes = t.notes
-                , concerning = t.concerning
+                , use =
+                    Data.PersonUse.fromString t.use
+                        |> Maybe.withDefault Data.PersonUse.Both
               }
             , Cmd.batch [ c1, c2, c3 ]
             )
@@ -149,8 +158,15 @@ update flags msg model =
             , Cmd.none
             )
 
-        SetConcerning _ ->
-            ( { model | concerning = not model.concerning }, Cmd.none )
+        UseDropdownMsg lm ->
+            let
+                ( nm, mu ) =
+                    Comp.FixedDropdown.update lm model.useModel
+
+                newUse =
+                    Maybe.withDefault model.use mu
+            in
+            ( { model | useModel = nm, use = newUse }, Cmd.none )
 
         OrgDropdownMsg lm ->
             let
@@ -185,16 +201,10 @@ view1 settings compact model =
                 ]
                 []
             ]
-        , div [ class "inline field" ]
-            [ div [ class "ui checkbox" ]
-                [ input
-                    [ type_ "checkbox"
-                    , checked model.concerning
-                    , onCheck SetConcerning
-                    ]
-                    []
-                , label [] [ text "Use for concerning person suggestion only" ]
-                ]
+        , div [ class "field" ]
+            [ label [] [ text "Use" ]
+            , Html.map UseDropdownMsg (Comp.FixedDropdown.view (makeUseItem model) model.useModel)
+            , label [] [ text "Use for concerning person suggestion only" ]
             ]
         , div [ class "field" ]
             [ label [] [ text "Organization" ]
@@ -219,6 +229,12 @@ view1 settings compact model =
                 []
             ]
         ]
+
+
+makeUseItem : Model -> Maybe (Comp.FixedDropdown.Item PersonUse)
+makeUseItem model =
+    Just <|
+        Comp.FixedDropdown.Item model.use (Data.PersonUse.label model.use)
 
 
 
@@ -253,21 +269,21 @@ view2 mobile settings model =
             ]
         , div [ class "mb-4" ]
             [ label
-                [ class "inline-flex items-center"
-                , for "concerning"
+                [ class S.inputLabel
                 ]
-                [ input
-                    [ type_ "checkbox"
-                    , checked model.concerning
-                    , onCheck SetConcerning
-                    , class S.checkboxInput
-                    , name "concerning"
-                    , id "concerning"
-                    ]
-                    []
-                , span [ class "ml-2" ]
-                    [ text "Use for concerning person suggestion only"
-                    ]
+                [ text "Use of this person" ]
+            , Html.map UseDropdownMsg
+                (Comp.FixedDropdown.view2 (makeUseItem model) model.useModel)
+            , span [ class "opacity-50 text-sm" ]
+                [ case model.use of
+                    Data.PersonUse.Concerning ->
+                        text "Use as concerning person only"
+
+                    Data.PersonUse.Correspondent ->
+                        text "Use as correspondent person only"
+
+                    Data.PersonUse.Both ->
+                        text "Use as both concerning or correspondent person"
                 ]
             ]
         , div [ class "mb-4" ]

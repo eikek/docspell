@@ -4999,7 +4999,7 @@ components:
         - address
         - contacts
         - created
-        - concerning
+        - use
       properties:
         id:
           type: string
@@ -5016,11 +5016,16 @@ components:
             $ref: "#/components/schemas/Contact"
         notes:
           type: string
-        concerning:
-          type: boolean
+        use:
+          type: string
+          format: personuse
+          enum:
+            - concerning
+            - correspondent
+            - both
           description: |
             Whether this person should be used to create suggestions
-            for the "concerning person" association.
+            for the "concerning person", "correspondent" or both.
         created:
           description: DateTime
           type: integer

@@ -10,6 +10,7 @@ module Comp.PersonTable exposing
 import Api.Model.Person exposing (Person)
 import Comp.Basic as B
 import Data.Flags exposing (Flags)
+import Data.PersonUse
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
@@ -57,7 +58,7 @@ view model =
         [ thead []
             [ tr []
                 [ th [ class "collapsing" ] []
-                , th [ class "collapsing center aligned" ] [ text "Concerning" ]
+                , th [ class "collapsing center aligned" ] [ text "Use" ]
                 , th [] [ text "Name" ]
                 , th [] [ text "Organization" ]
                 , th [] [ text "Address" ]
@@ -85,11 +86,10 @@ renderPersonLine model person =
                 ]
             ]
         , td [ class "center aligned" ]
-            [ if person.concerning then
-                i [ class "check square outline icon" ] []
-
-              else
-                i [ class "minus square outline icon" ] []
+            [ Data.PersonUse.fromString person.use
+                |> Maybe.withDefault Data.PersonUse.Both
+                |> Data.PersonUse.label
+                |> text
             ]
         , td []
             [ text person.name
@@ -118,8 +118,8 @@ view2 model =
         [ thead []
             [ tr []
                 [ th [ class "w-px whitespace-nowrap" ] []
-                , th [ class "w-px whitespace-nowrap text-center pr-1 md:px-2" ]
-                    [ text "Concerning"
+                , th [ class "text-left pr-1 md:px-2" ]
+                    [ text "Use"
                     ]
                 , th [ class "text-left" ] [ text "Name" ]
                 , th [ class "text-left hidden sm:table-cell" ] [ text "Organization" ]
@@ -138,8 +138,13 @@ renderPersonLine2 model person =
         , class S.tableRow
         ]
         [ B.editLinkTableCell (Select person)
-        , td [ class "w-px whitespace-nowrap text-center" ]
-            [ Util.Html.checkbox2 person.concerning
+        , td [ class "text-left pr-1 md:px-2" ]
+            [ div [ class "label inline-flex text-sm" ]
+                [ Data.PersonUse.fromString person.use
+                    |> Maybe.withDefault Data.PersonUse.Both
+                    |> Data.PersonUse.label
+                    |> text
+                ]
             ]
         , td []
             [ text person.name
