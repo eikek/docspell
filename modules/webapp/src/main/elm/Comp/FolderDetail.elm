@@ -477,6 +477,7 @@ view2 flags model =
                             , onInput SetName
                             , Maybe.withDefault "" model.name
                                 |> value
+                            , classList [ ( S.inputErrorBorder, model.name == Nothing ) ]
                             , class S.textInput
                             , id "folder-name"
                             ]
@@ -585,11 +586,15 @@ viewButtons2 model =
                 }
             ]
         , end =
-            [ MB.DeleteButton
+            [ MB.CustomButton
                 { tagger = RequestDelete
                 , label = "Delete"
                 , icon = Just "fa fa-trash"
                 , title = "Delete this folder"
+                , inputClass =
+                    [ ( S.deleteButton, True )
+                    , ( "hidden", model.folder.id == "" )
+                    ]
                 }
             ]
         , rootClasses = "mb-4"

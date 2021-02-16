@@ -340,6 +340,18 @@ view2 viewSettings model =
                         dimmerSettings
                         model.deleteDimmer
                     )
+                , div
+                    [ classList
+                        [ ( "hidden", model.result == Nothing )
+                        , ( S.errorMessage, Maybe.map .success model.result == Just False )
+                        , ( S.successMessage, Maybe.map .success model.result == Just True )
+                        ]
+                    , class "my-2"
+                    ]
+                    [ Maybe.map .message model.result
+                        |> Maybe.withDefault ""
+                        |> text
+                    ]
                 , if model.field.id == "" then
                     div [ class "py-2 text-lg opacity-75" ]
                         [ text "Create a new custom field."
@@ -415,18 +427,6 @@ view2 viewSettings model =
                         [ text "The user defined label for this field. This is used to represent "
                         , text "this field in the ui. If not present, the name is used."
                         ]
-                    ]
-                , div
-                    [ classList
-                        [ ( "hidden", model.result == Nothing )
-                        , ( S.errorMessage, Maybe.map .success model.result == Just False )
-                        , ( S.successMessage, Maybe.map .success model.result == Just True )
-                        ]
-                    , class "mb-4"
-                    ]
-                    [ Maybe.map .message model.result
-                        |> Maybe.withDefault ""
-                        |> text
                     ]
                 ]
            ]
