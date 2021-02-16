@@ -57,7 +57,11 @@ object FindProposal {
           ctx.store
             .transact(
               RPerson
-                .findLike(coll, mp.values.head.ref.name.toLowerCase, false)
+                .findLike(
+                  coll,
+                  mp.values.head.ref.name.toLowerCase,
+                  PersonUse.correspondentAndBoth
+                )
                 .map(_.headOption)
             )
             .flatTap(oref =>
@@ -67,7 +71,11 @@ object FindProposal {
           ctx.store
             .transact(
               RPerson
-                .findLike(coll, mp.values.head.ref.name.toLowerCase, true)
+                .findLike(
+                  coll,
+                  mp.values.head.ref.name.toLowerCase,
+                  PersonUse.concerningAndBoth
+                )
                 .map(_.headOption)
             )
             .flatTap(oref =>
@@ -231,10 +239,16 @@ object FindProposal {
 
         case NerTag.Person =>
           val s1 = ctx.store
-            .transact(RPerson.findLike(ctx.args.meta.collective, value, true))
+            .transact(
+              RPerson
+                .findLike(ctx.args.meta.collective, value, PersonUse.concerningAndBoth)
+            )
             .map(MetaProposalList.from(MetaProposalType.ConcPerson, nt))
           val s2 = ctx.store
-            .transact(RPerson.findLike(ctx.args.meta.collective, value, false))
+            .transact(
+              RPerson
+                .findLike(ctx.args.meta.collective, value, PersonUse.correspondentAndBoth)
+            )
             .map(MetaProposalList.from(MetaProposalType.CorrPerson, nt))
           val s3 =
             ctx.store
@@ -288,10 +302,16 @@ object FindProposal {
       .transact(ROrganization.findLike(ctx.args.meta.collective, kind, value))
       .map(MetaProposalList.from(MetaProposalType.CorrOrg, nt))
     val corrP = ctx.store
-      .transact(RPerson.findLike(ctx.args.meta.collective, kind, value, false))
+      .transact(
+        RPerson
+          .findLike(ctx.args.meta.collective, kind, value, PersonUse.correspondentAndBoth)
+      )
       .map(MetaProposalList.from(MetaProposalType.CorrPerson, nt))
     val concP = ctx.store
-      .transact(RPerson.findLike(ctx.args.meta.collective, kind, value, true))
+      .transact(
+        RPerson
+          .findLike(ctx.args.meta.collective, kind, value, PersonUse.concerningAndBoth)
+      )
       .map(MetaProposalList.from(MetaProposalType.CorrPerson, nt))
 
     ctx.logger.debug(s"Looking with $kind: $value") *>

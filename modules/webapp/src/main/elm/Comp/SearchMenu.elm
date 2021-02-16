@@ -38,6 +38,7 @@ import Data.DropdownStyle as DS
 import Data.Fields
 import Data.Flags exposing (Flags)
 import Data.Icons as Icons
+import Data.PersonUse
 import Data.UiSettings exposing (UiSettings)
 import DatePicker exposing (DatePicker)
 import Html exposing (..)
@@ -561,14 +562,14 @@ updateDrop ddm flags settings msg model =
 
         GetPersonResp (Ok ps) ->
             let
-                ( conc, corr ) =
-                    List.partition .concerning ps.items
+                { concerning, correspondent } =
+                    Data.PersonUse.spanPersonList ps.items
 
                 concRefs =
-                    List.map (\e -> IdName e.id e.name) conc
+                    List.map (\e -> IdName e.id e.name) concerning
 
                 corrRefs =
-                    List.map (\e -> IdName e.id e.name) corr
+                    List.map (\e -> IdName e.id e.name) correspondent
 
                 next1 =
                     updateDrop ddm

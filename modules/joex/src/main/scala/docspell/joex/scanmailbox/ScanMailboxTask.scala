@@ -236,7 +236,7 @@ object ScanMailboxTask {
                   ctx.args.account.collective,
                   from.address,
                   Some(ContactKind.Email),
-                  Some(true)
+                  Some(NonEmptyList.of(PersonUse.concerning))
                 )
                 .take(1)
                 .compile
