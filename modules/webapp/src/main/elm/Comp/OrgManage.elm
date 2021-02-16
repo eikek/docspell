@@ -408,14 +408,15 @@ viewForm2 settings model =
                     []
             , rootClasses = "mb-4"
             }
-        , Html.map FormMsg (Comp.OrgForm.view2 False settings model.formModel)
         , div
             [ classList
                 [ ( "hidden", Util.Maybe.isEmpty model.formError )
                 ]
             , class S.errorMessage
+            , class "my-2"
             ]
             [ Maybe.withDefault "" model.formError |> text
             ]
+        , Html.map FormMsg (Comp.OrgForm.view2 False settings model.formModel)
         , B.loadingDimmer model.loading
         ]

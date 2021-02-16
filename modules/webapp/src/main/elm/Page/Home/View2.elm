@@ -287,18 +287,19 @@ itemCardList flags settings model =
     in
     [ Html.map ItemCardListMsg
         (Comp.ItemCardList.view2 itemViewCfg settings model.itemListModel)
-    , loadMore model
+    , loadMore settings model
     ]
 
 
-loadMore : Model -> Html Msg
-loadMore model =
+loadMore : UiSettings -> Model -> Html Msg
+loadMore settings model =
     let
         inactive =
             not model.moreAvailable || model.moreInProgress || model.searchInProgress
     in
     div
         [ class "h-40 flex flex-col items-center justify-center w-full"
+        , classList [ ( "hidden", resultsBelowLimit settings model ) ]
         ]
         [ B.secondaryBasicButton
             { label =

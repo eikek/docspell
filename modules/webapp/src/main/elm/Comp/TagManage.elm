@@ -424,14 +424,15 @@ viewForm2 model =
                     []
             , rootClasses = "mb-4"
             }
-        , Html.map FormMsg (Comp.TagForm.view2 model.tagFormModel)
         , div
             [ classList
                 [ ( "hidden", Util.Maybe.isEmpty model.formError )
                 ]
+            , class "my-2"
             , class S.errorMessage
             ]
             [ Maybe.withDefault "" model.formError |> text
             ]
+        , Html.map FormMsg (Comp.TagForm.view2 model.tagFormModel)
         , B.loadingDimmer model.loading
         ]

@@ -373,16 +373,17 @@ viewForm2 settings model =
                     []
             , rootClasses = "mb-4"
             }
-        , Html.map FormMsg
-            (Comp.EmailSettingsForm.view2 settings model.formModel)
         , div
             [ classList
                 [ ( "hidden", model.formError == Nothing )
                 ]
+            , class "my-2"
             , class S.errorMessage
             ]
             [ Maybe.withDefault "" model.formError |> text
             ]
+        , Html.map FormMsg
+            (Comp.EmailSettingsForm.view2 settings model.formModel)
         , Html.map YesNoMsg
             (Comp.YesNoDimmer.viewN
                 True
