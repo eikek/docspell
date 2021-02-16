@@ -755,7 +755,7 @@ viewMultiple2 style settings model =
         renderSelectMultiple item =
             a
                 [ class (model.labelColor item.value settings)
-                , class "label font-medium inline-flex relative items-center hover:shadow-md mt-1"
+                , class "label font-medium inline-flex relative items-center hover:shadow-md mt-1 mr-1"
                 , onClick (RemoveItem item)
                 , href "#"
                 ]
@@ -776,7 +776,7 @@ viewMultiple2 style settings model =
             , class "flex inline-flex flex-wrap items-center"
             ]
             [ div
-                [ class "flex flex-row flex-wrap space-x-1 items-center mr-2 -mt-1"
+                [ class "flex flex-row flex-wrap items-center mr-2 -mt-1"
                 , classList [ ( "hidden", List.isEmpty model.selected ) ]
                 ]
                 (List.map renderSelectMultiple model.selected)
