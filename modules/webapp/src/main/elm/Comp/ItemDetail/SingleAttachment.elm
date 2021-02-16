@@ -55,7 +55,10 @@ view settings model pos attach =
             case Dict.get attach.id model.attachMeta of
                 Just am ->
                     Html.map (AttachMetaMsg attach.id)
-                        (Comp.AttachmentMeta.view2 am)
+                        (Comp.AttachmentMeta.view2
+                            [ class "border-r border-l dark:border-bluegray-600 px-2" ]
+                            am
+                        )
 
                 Nothing ->
                     span [ class "hidden" ] []

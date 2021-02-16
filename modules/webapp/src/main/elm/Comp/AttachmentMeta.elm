@@ -220,9 +220,9 @@ renderLabel label =
 --- View2
 
 
-view2 : Model -> Html Msg
-view2 model =
-    div []
+view2 : List (Attribute Msg) -> Model -> Html Msg
+view2 attrs model =
+    div attrs
         [ h3 [ class S.header3 ]
             [ text "Extracted Meta Data"
             ]
@@ -252,7 +252,7 @@ viewData2 meta =
         , div [ class "text-lg font-bold mt-2" ]
             [ text "Labels"
             ]
-        , div [ class "flex fex-row flex-wrap space-x-2" ]
+        , div [ class "flex fex-row flex-wrap" ]
             (List.map renderLabelItem2 meta.labels)
         , div [ class "text-lg font-bold mt-2" ]
             [ text "Proposals"
@@ -354,14 +354,14 @@ renderLabel2 label =
     in
     div
         [ class S.basicLabel
-        , class "mt-1 text-sm"
+        , class "mt-1 mr-2 text-sm"
         , title label.labelType
         ]
         [ i [ class icon ] []
         , span [ class "ml-2" ]
             [ text label.label
             ]
-        , div [ class "opacity-75 ml-3" ]
+        , div [ class "opacity-75 ml-3 font-mono" ]
             [ String.fromInt label.beginPos |> text
             , text "-"
             , String.fromInt label.endPos |> text
