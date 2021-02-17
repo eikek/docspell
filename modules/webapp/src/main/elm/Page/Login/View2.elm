@@ -1,5 +1,6 @@
 module Page.Login.View2 exposing (viewContent, viewSidebar)
 
+import Api.Model.VersionInfo exposing (VersionInfo)
 import Data.Flags exposing (Flags)
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
@@ -19,8 +20,8 @@ viewSidebar _ _ _ _ =
         []
 
 
-viewContent : Flags -> UiSettings -> Model -> Html Msg
-viewContent flags _ model =
+viewContent : Flags -> VersionInfo -> UiSettings -> Model -> Html Msg
+viewContent flags versionInfo _ model =
     div
         [ id "content"
         , class "h-full flex flex-col items-center justify-center w-full"
@@ -134,6 +135,21 @@ viewContent flags _ model =
                         , text "Sign up"
                         ]
                     ]
+                ]
+            ]
+        , a
+            [ class "inline-flex items-center mt-4 text-xs opacity-50 hover:opacity-90"
+            , href "https://docspell.org"
+            , target "_new"
+            ]
+            [ img
+                [ src (flags.config.docspellAssetPath ++ "/img/logo-mc-96.png")
+                , class "w-3 h-3 mr-1"
+                ]
+                []
+            , span []
+                [ text "Docspell "
+                , text versionInfo.version
                 ]
             ]
         ]

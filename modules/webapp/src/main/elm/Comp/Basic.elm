@@ -11,6 +11,7 @@ module Comp.Basic exposing
     , secondaryBasicButton
     , secondaryButton
     , stats
+    , tooltipRight
     )
 
 import Html exposing (..)
@@ -261,6 +262,17 @@ inputRequired : Html msg
 inputRequired =
     span [ class "ml-1 text-red-700" ]
         [ text "*"
+        ]
+
+
+tooltipRight : Bool -> String -> Html msg
+tooltipRight show msg =
+    div
+        [ class "absolute bottom-0 right-5 px-2 py-2 rounded-lg z-50 w-40"
+        , class "bg-white border"
+        , class "text-sm font-thin"
+        ]
+        [ text msg
         ]
 
 

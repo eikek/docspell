@@ -152,7 +152,7 @@ styleMain =
 
 
 dataMenu : AuthResult -> Model -> Html Msg
-dataMenu acc model =
+dataMenu _ model =
     div [ class "relative" ]
         [ a
             [ class dropdownLink
@@ -374,7 +374,7 @@ viewLogin model =
     [ Html.map LoginMsg
         (Login.viewSidebar model.sidebarVisible model.flags model.uiSettings model.loginModel)
     , Html.map LoginMsg
-        (Login.viewContent model.flags model.uiSettings model.loginModel)
+        (Login.viewContent model.flags model.version model.uiSettings model.loginModel)
     ]
 
 

@@ -6,7 +6,6 @@ module App.Data exposing
     )
 
 import Api.Model.AuthResult exposing (AuthResult)
-import Api.Model.BasicResult exposing (BasicResult)
 import Api.Model.VersionInfo exposing (VersionInfo)
 import Browser exposing (UrlRequest)
 import Browser.Navigation exposing (Key)
