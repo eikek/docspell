@@ -25,7 +25,7 @@ object QOrganization {
   ): Stream[ConnectionIO, (ROrganization, Vector[RContact])] = {
     val valFilter = query.map { q =>
       val v = s"%$q%"
-      c.value.like(v) || org.name.like(v) || org.notes.like(v)
+      c.value.like(v) || org.name.like(v) || org.shortName.like(v) || org.notes.like(v)
     }
     val sql = Select(
       select(org.all, c.all),

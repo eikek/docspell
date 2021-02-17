@@ -386,7 +386,8 @@ trait Conversions {
       Address(ro.street, ro.zip, ro.city, ro.country),
       v.contacts.map(mkContact).toList,
       ro.notes,
-      ro.created
+      ro.created,
+      ro.shortName
     )
   }
 
@@ -407,7 +408,8 @@ trait Conversions {
         v.address.country,
         v.notes,
         now,
-        now
+        now,
+        v.shortName
       )
     } yield OOrganization.OrgAndContacts(org, cont)
   }
@@ -431,7 +433,8 @@ trait Conversions {
         v.address.country,
         v.notes,
         v.created,
-        now
+        now,
+        v.shortName
       )
     } yield OOrganization.OrgAndContacts(org, cont)
   }
