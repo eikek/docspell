@@ -296,7 +296,7 @@ viewItem2 dropModel model item =
     in
     a
         ([ classList
-            [ ( "current-drop-target", highlightDrop )
+            [ ( "bg-blue-100 dark:bg-bluegray-600", highlightDrop )
             ]
          , class "flex flex-row items-center"
          , class "rounded px-1 py-1 hover:bg-blue-100 dark:hover:bg-bluegray-600"
