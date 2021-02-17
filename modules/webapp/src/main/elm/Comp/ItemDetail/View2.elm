@@ -85,6 +85,19 @@ menuBar inav settings model =
                             [ title ("Previous item." ++ keyDescr "Ctrl-,")
                             ]
                         }
+                    , div
+                        [ classList [ ( "hidden", inav.index == Nothing ) ]
+                        , class S.secondaryBasicButtonMain
+                        , class " px-4 py-2 border-t border-b border-r opacity-75"
+                        ]
+                        [ Maybe.map ((+) 1) inav.index
+                            |> Maybe.map String.fromInt
+                            |> Maybe.withDefault ""
+                            |> text
+                        , text " / "
+                        , String.fromInt inav.length
+                            |> text
+                        ]
                     , B.genericButton
                         { label = ""
                         , icon = "fa fa-caret-right"
