@@ -16,11 +16,13 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)
 import Styles as S
+import Util.Maybe
 
 
 type alias Model =
     { equipment : Equipment
     , name : String
+    , notes : Maybe String
     }
 
 
@@ -28,6 +30,7 @@ emptyModel : Model
 emptyModel =
     { equipment = Api.Model.Equipment.empty
     , name = ""
+    , notes = Nothing
     }
 
 
@@ -38,22 +41,36 @@ isValid model =
 
 getEquipment : Model -> Equipment
 getEquipment model =
-    Equipment model.equipment.id model.name model.equipment.created
+    { id = model.equipment.id
+    , name = model.name
+    , created = model.equipment.created
+    , notes = model.notes
+    }
 
 
 type Msg
     = SetName String
     | SetEquipment Equipment
+    | SetNotes String
 
 
 update : Flags -> Msg -> Model -> ( Model, Cmd Msg )
 update _ msg model =
     case msg of
         SetEquipment t ->
-            ( { model | equipment = t, name = t.name }, Cmd.none )
+            ( { model
+                | equipment = t
+                , name = t.name
+                , notes = t.notes
+              }
+            , Cmd.none
+            )
 
         SetName n ->
             ( { model | name = n }, Cmd.none )
+
+        SetNotes str ->
+            ( { model | notes = Util.Maybe.fromString str }, Cmd.none )
 
 
 view : Model -> Html Msg
@@ -84,9 +101,7 @@ view model =
 view2 : Model -> Html Msg
 view2 model =
     div [ class "flex flex-col" ]
-        [ div
-            [ class "mb-4"
-            ]
+        [ div [ class "mb-4" ]
             [ label
                 [ for "equipname"
                 , class S.inputLabel
@@ -108,5 +123,18 @@ view2 model =
                     ]
                 ]
                 []
+            ]
+        , div [ class "mb-4" ]
+            [ h3 [ class S.header3 ]
+                [ text "Notes"
+                ]
+            , div [ class "" ]
+                [ textarea
+                    [ onInput SetNotes
+                    , Maybe.withDefault "" model.notes |> value
+                    , class S.textAreaInput
+                    ]
+                    []
+                ]
             ]
         ]

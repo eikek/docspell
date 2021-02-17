@@ -386,7 +386,8 @@ trait Conversions {
       Address(ro.street, ro.zip, ro.city, ro.country),
       v.contacts.map(mkContact).toList,
       ro.notes,
-      ro.created
+      ro.created,
+      ro.shortName
     )
   }
 
@@ -407,7 +408,8 @@ trait Conversions {
         v.address.country,
         v.notes,
         now,
-        now
+        now,
+        v.shortName
       )
     } yield OOrganization.OrgAndContacts(org, cont)
   }
@@ -431,7 +433,8 @@ trait Conversions {
         v.address.country,
         v.notes,
         v.created,
-        now
+        now,
+        v.shortName
       )
     } yield OOrganization.OrgAndContacts(org, cont)
   }
@@ -617,15 +620,17 @@ trait Conversions {
 
   // equipment
   def mkEquipment(re: REquipment): Equipment =
-    Equipment(re.eid, re.name, re.created)
+    Equipment(re.eid, re.name, re.created, re.notes)
 
   def newEquipment[F[_]: Sync](e: Equipment, cid: Ident): F[REquipment] =
     timeId.map({ case (id, now) =>
-      REquipment(id, cid, e.name, now, now)
+      REquipment(id, cid, e.name, now, now, e.notes)
     })
 
   def changeEquipment[F[_]: Sync](e: Equipment, cid: Ident): F[REquipment] =
-    Timestamp.current[F].map(now => REquipment(e.id, cid, e.name, e.created, now))
+    Timestamp
+      .current[F]
+      .map(now => REquipment(e.id, cid, e.name, e.created, now, e.notes))
 
   // idref
 

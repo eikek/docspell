@@ -20,6 +20,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)
 import Styles as S
+import Util.Maybe
 
 
 type alias Model =
@@ -28,6 +29,7 @@ type alias Model =
     , addressModel : Comp.AddressForm.Model
     , contactModel : Comp.ContactField.Model
     , notes : Maybe String
+    , shortName : Maybe String
     }
 
 
@@ -38,6 +40,7 @@ emptyModel =
     , addressModel = Comp.AddressForm.emptyModel
     , contactModel = Comp.ContactField.emptyModel
     , notes = Nothing
+    , shortName = Nothing
     }
 
 
@@ -57,6 +60,7 @@ getOrg model =
         , address = Comp.AddressForm.getAddress model.addressModel
         , contacts = Comp.ContactField.getContacts model.contactModel
         , notes = model.notes
+        , shortName = model.shortName
     }
 
 
@@ -66,6 +70,7 @@ type Msg
     | AddressMsg Comp.AddressForm.Msg
     | ContactMsg Comp.ContactField.Msg
     | SetNotes String
+    | SetShortName String
 
 
 update : Flags -> Msg -> Model -> ( Model, Cmd Msg )
@@ -79,7 +84,14 @@ update flags msg model =
                 ( m2, c2 ) =
                     update flags (ContactMsg (Comp.ContactField.SetItems t.contacts)) m1
             in
-            ( { m2 | org = t, name = t.name, notes = t.notes }, Cmd.batch [ c1, c2 ] )
+            ( { m2
+                | org = t
+                , name = t.name
+                , notes = t.notes
+                , shortName = t.shortName
+              }
+            , Cmd.batch [ c1, c2 ]
+            )
 
         AddressMsg am ->
             let
@@ -99,14 +111,12 @@ update flags msg model =
             ( { model | name = n }, Cmd.none )
 
         SetNotes str ->
-            ( { model
-                | notes =
-                    if str == "" then
-                        Nothing
+            ( { model | notes = Util.Maybe.fromString str }
+            , Cmd.none
+            )
 
-                    else
-                        Just str
-              }
+        SetShortName str ->
+            ( { model | shortName = Util.Maybe.fromString str }
             , Cmd.none
             )
 
@@ -181,6 +191,25 @@ view2 mobile settings model =
                 , classList
                     [ ( S.inputErrorBorder, not (isValid model) )
                     ]
+                ]
+                []
+            ]
+        , div
+            [ class "mb-4" ]
+            [ label
+                [ for "org-short-name"
+                , class S.inputLabel
+                ]
+                [ text "Short Name"
+                ]
+            , input
+                [ type_ "text"
+                , onInput SetShortName
+                , placeholder "Abbreviation"
+                , Maybe.withDefault "" model.shortName
+                    |> value
+                , name "org-short-name"
+                , class S.textInput
                 ]
                 []
             ]

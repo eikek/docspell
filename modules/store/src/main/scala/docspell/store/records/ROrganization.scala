@@ -21,7 +21,8 @@ case class ROrganization(
     country: String,
     notes: Option[String],
     created: Timestamp,
-    updated: Timestamp
+    updated: Timestamp,
+    shortName: Option[String]
 ) {}
 
 object ROrganization {
@@ -31,16 +32,17 @@ object ROrganization {
   final case class Table(alias: Option[String]) extends TableDef {
     val tableName = "organization"
 
-    val oid     = Column[Ident]("oid", this)
-    val cid     = Column[Ident]("cid", this)
-    val name    = Column[String]("name", this)
-    val street  = Column[String]("street", this)
-    val zip     = Column[String]("zip", this)
-    val city    = Column[String]("city", this)
-    val country = Column[String]("country", this)
-    val notes   = Column[String]("notes", this)
-    val created = Column[Timestamp]("created", this)
-    val updated = Column[Timestamp]("updated", this)
+    val oid       = Column[Ident]("oid", this)
+    val cid       = Column[Ident]("cid", this)
+    val name      = Column[String]("name", this)
+    val street    = Column[String]("street", this)
+    val zip       = Column[String]("zip", this)
+    val city      = Column[String]("city", this)
+    val country   = Column[String]("country", this)
+    val notes     = Column[String]("notes", this)
+    val created   = Column[Timestamp]("created", this)
+    val updated   = Column[Timestamp]("updated", this)
+    val shortName = Column[String]("short_name", this)
     val all =
       NonEmptyList.of[Column[_]](
         oid,
@@ -52,7 +54,8 @@ object ROrganization {
         country,
         notes,
         created,
-        updated
+        updated,
+        shortName
       )
   }
 
@@ -64,7 +67,7 @@ object ROrganization {
     DML.insert(
       T,
       T.all,
-      fr"${v.oid},${v.cid},${v.name},${v.street},${v.zip},${v.city},${v.country},${v.notes},${v.created},${v.updated}"
+      fr"${v.oid},${v.cid},${v.name},${v.street},${v.zip},${v.city},${v.country},${v.notes},${v.created},${v.updated},${v.shortName}"
     )
 
   def update(v: ROrganization): ConnectionIO[Int] = {
@@ -80,7 +83,8 @@ object ROrganization {
           T.city.setTo(v.city),
           T.country.setTo(v.country),
           T.notes.setTo(v.notes),
-          T.updated.setTo(now)
+          T.updated.setTo(now),
+          T.shortName.setTo(v.shortName)
         )
       )
     for {
@@ -106,7 +110,11 @@ object ROrganization {
   }
 
   def findLike(coll: Ident, orgName: String): ConnectionIO[Vector[IdRef]] =
-    run(select(T.oid, T.name), from(T), T.cid === coll && T.name.like(orgName))
+    run(
+      select(T.oid, T.name),
+      from(T),
+      T.cid === coll && (T.name.like(orgName) || T.shortName.like(orgName))
+    )
       .query[IdRef]
       .to[Vector]
 
@@ -141,7 +149,9 @@ object ROrganization {
       nameQ: Option[String],
       order: Table => Column[_]
   ): ConnectionIO[Vector[IdRef]] = {
-    val nameFilter = nameQ.map(s => T.name.like(s"%${s.toLowerCase}%"))
+    val nameFilter = nameQ.map(s =>
+      T.name.like(s"%${s.toLowerCase}%") || T.shortName.like(s"%${s.toLowerCase}%")
+    )
     val sql = Select(select(T.oid, T.name), from(T), T.cid === coll &&? nameFilter)
       .orderBy(order(T))
     sql.build.query[IdRef].to[Vector]

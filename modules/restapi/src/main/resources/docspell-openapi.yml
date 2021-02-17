@@ -4980,6 +4980,8 @@ components:
           description: DateTime
           type: integer
           format: date-time
+        notes:
+          type: string
     ReferenceList:
       description:
         Listing of entities with their id and a name.
@@ -5067,6 +5069,8 @@ components:
           description: DateTime
           type: integer
           format: date-time
+        shortName:
+          type: string
     OrganizationList:
       description: |
         A list of full organization values.
