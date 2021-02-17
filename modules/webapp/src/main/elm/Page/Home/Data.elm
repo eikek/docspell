@@ -227,16 +227,7 @@ searchTypeString st =
 
 itemNav : String -> Model -> ItemNav
 itemNav id model =
-    let
-        prev =
-            Comp.ItemCardList.prevItem model.itemListModel id
-
-        next =
-            Comp.ItemCardList.nextItem model.itemListModel id
-    in
-    { prev = Maybe.map .id prev
-    , next = Maybe.map .id next
-    }
+    Data.ItemNav.fromList model.itemListModel.results id
 
 
 doSearchCmd : SearchParam -> Model -> Cmd Msg
