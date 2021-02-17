@@ -479,7 +479,7 @@ updateDrop ddm flags settings msg model =
         SetConcEquip id ->
             let
                 equip =
-                    Equipment id.id id.name 0
+                    Equipment id.id id.name 0 Nothing
             in
             resetAndSet (ConcEquipmentMsg (Comp.Dropdown.SetSelection [ equip ]))
 

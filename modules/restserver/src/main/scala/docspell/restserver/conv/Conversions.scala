@@ -617,15 +617,17 @@ trait Conversions {
 
   // equipment
   def mkEquipment(re: REquipment): Equipment =
-    Equipment(re.eid, re.name, re.created)
+    Equipment(re.eid, re.name, re.created, re.notes)
 
   def newEquipment[F[_]: Sync](e: Equipment, cid: Ident): F[REquipment] =
     timeId.map({ case (id, now) =>
-      REquipment(id, cid, e.name, now, now)
+      REquipment(id, cid, e.name, now, now, e.notes)
     })
 
   def changeEquipment[F[_]: Sync](e: Equipment, cid: Ident): F[REquipment] =
-    Timestamp.current[F].map(now => REquipment(e.id, cid, e.name, e.created, now))
+    Timestamp
+      .current[F]
+      .map(now => REquipment(e.id, cid, e.name, e.created, now, e.notes))
 
   // idref
 

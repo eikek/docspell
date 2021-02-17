@@ -14,7 +14,8 @@ case class REquipment(
     cid: Ident,
     name: String,
     created: Timestamp,
-    updated: Timestamp
+    updated: Timestamp,
+    notes: Option[String]
 ) {}
 
 object REquipment {
@@ -26,7 +27,8 @@ object REquipment {
     val name    = Column[String]("name", this)
     val created = Column[Timestamp]("created", this)
     val updated = Column[Timestamp]("updated", this)
-    val all     = NonEmptyList.of[Column[_]](eid, cid, name, created, updated)
+    val notes   = Column[String]("notes", this)
+    val all     = NonEmptyList.of[Column[_]](eid, cid, name, created, updated, notes)
   }
 
   val T = Table(None)
@@ -39,7 +41,7 @@ object REquipment {
       .insert(
         t,
         t.all,
-        fr"${v.eid},${v.cid},${v.name},${v.created},${v.updated}"
+        fr"${v.eid},${v.cid},${v.name},${v.created},${v.updated},${v.notes}"
       )
   }
 
@@ -54,7 +56,8 @@ object REquipment {
           DML.set(
             t.cid.setTo(v.cid),
             t.name.setTo(v.name),
-            t.updated.setTo(now)
+            t.updated.setTo(now),
+            t.notes.setTo(v.notes)
           )
         )
     } yield n
