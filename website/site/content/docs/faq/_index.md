@@ -14,7 +14,7 @@ mktoc = true
 Everything, including all files, are stored in the database.
 
 Now that seems to put off some people coming to Docspell, so here are
-some thoughts on why this is and why is may be not such a big deal. It
+some thoughts on why this is and why it may be not such a big deal. It
 was a conscious decision and the option to hold all files in the file
 system was considered, but not chosen in the end.
 
@@ -36,7 +36,7 @@ were the reasons for the current decision:
   system used by the application and not two which reduces complexity
   in the code.
 - Consistency: Both "databases" (filesystem + relational db) can
-  easily get out of sync and this will break the application. It's
+  easily get out of sync and this will break the application. It's a
   very strong plus to be able to rely on the strong ACID guarantees of
   database systems.
 - Distributed/Scaling: One goal is to run Docspell in a distributed

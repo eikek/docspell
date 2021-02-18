@@ -1,5 +1,58 @@
 # Changelog
 
+## v0.20.0
+
+*Soon*
+
+This release comes with a completely new ui, including a dark theme!
+Additionally there are some other minor features and bug fixes.
+
+- New Web-UI with a light and dark theme (#293). 
+  - All markup and css was reworked. For this release, the old ui is
+    still available as a fallback if something got missing while
+    porting. The old ui will be removed in the next release.
+  - Experience on mobile devices is greatly improved
+  - to get back to the old ui, you need to install a browser extension
+    to be able to add a request header. Check [this for
+    firefox](https://addons.mozilla.org/en-US/firefox/addon/modheader-firefox/)
+    or [this for
+    chromium](https://chrome.google.com/webstore/detail/modheader/idgpnmonknjnojddfkpgkljpfnnfcklj)
+  - then add the request header `Docspell-Ui` with value `1`.
+    Reloading the page gets you back the old ui.
+- With new Web-UI, certain features and fixes were realized, but not
+  backported to the old ui:
+  - foldable sections in search and multi-edit menu (#613, #527)
+  - show current item in detail view (#369)
+  - fixed some ui issues regarding processing logs (#363)
+  - scrollbar fix (#600)
+- Allow a person to be correspondent, concerning or both (#605)
+- Add a short-name field to the organization (#560)
+- Add a description field to the equipment (#633)
+- Allow to specify a language for a source url (#651). This can be
+  used to define upload urls per document language.
+- Trim whitespace for certain fields (#539)
+- A different docker entrypoint for the consumedir script was added
+  that supports polling (thanks @JaCoB1123, #603, #624)
+- Fix duplicate suggestions (#627)
+- Fix reading mails with empty headers (#606)
+- Fix suggesting person that doesn't belong to the suggested
+  organization (#625)
+- Cleanup registered nodes periodically (#618)
+
+### REST Api Changes
+
+- The `Person` structure was changed: the `concerning` boolean flag is
+  replaced by a `use` attribute
+- The `Equipment` structure has an additional `notes` attribute
+- The `Source` structure has an additional `language` attribute
+
+### Configuration Changes
+
+- joex: 
+  - additional section in `house-keeping` to configure the periodic
+    node cleanup task
+
+
 ## v0.19.0
 
 *Jan 25, 2021*

@@ -31,9 +31,12 @@ description = "A list of features and limitations."
   [REST Api](@/docs/api/_index.md); allows to [generate
   clients](https://openapi-generator.tech/docs/generators) for
   (almost) any language
-- mobile-friendly Web-UI
-- [Create “share-urls”](@/docs/webapp/uploading.md#anonymous-upload)
-  to upload files anonymously
+- mobile-friendly Web-UI with dark and light theme
+- [Create anonymous
+  “upload-urls”](@/docs/webapp/uploading.md#anonymous-upload) to
+  upload files; these urls allow to be configured with metadata like
+  tags, folder etc that are applied to all files uploaded through this
+  url
 - [Send documents via e-mail](@/docs/webapp/mailitem.md)
 - [E-Mail notification](@/docs/webapp/notifydueitems.md) for documents
   with due dates

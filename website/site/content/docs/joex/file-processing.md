@@ -10,8 +10,8 @@ mktoc = true
 When uploading a file, it is only saved to the database together with
 the given meta information. The file is not visible in the ui yet.
 Then joex takes the next such file (or files in case you uploaded
-many) and starts processing it. When processing finished, it the item
-and its files will show up in the ui.
+many) and starts processing it. When processing finished, the item and
+its files will show up in the ui.
 
 If an error occurs during processing, the item will be created
 anyways, so you can see it. Depending on the error, some information
