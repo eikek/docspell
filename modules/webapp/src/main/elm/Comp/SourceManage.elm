@@ -474,6 +474,18 @@ viewLinks2 flags _ source =
                 [ text source.source.id
                 ]
             ]
+        , MB.view
+            { start =
+                [ MB.SecondaryButton
+                    { label = "Back"
+                    , icon = Just "fa fa-arrow-left"
+                    , tagger = SetTableView
+                    , title = "Back to list"
+                    }
+                ]
+            , end = []
+            , rootClasses = "mb-4"
+            }
         , p [ class "text-lg pt-2 opacity-75" ]
             [ text "This source defines URLs that can be used by anyone to send files to "
             , text "you. There is a web page that you can share or the API url can be used "
@@ -564,13 +576,6 @@ viewLinks2 flags _ source =
                 ]
                 [ qrCodeView apiUrl
                 ]
-            ]
-        , button
-            [ class S.secondaryButton
-            , class "mt-4 mb-2"
-            , onClick SetTableView
-            ]
-            [ text "Back"
             ]
         ]
 

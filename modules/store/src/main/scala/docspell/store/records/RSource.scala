@@ -19,7 +19,8 @@ case class RSource(
     priority: Priority,
     created: Timestamp,
     folderId: Option[Ident],
-    fileFilter: Option[Glob]
+    fileFilter: Option[Glob],
+    language: Option[Language]
 ) {
 
   def fileFilterOrAll: Glob =
@@ -41,6 +42,7 @@ object RSource {
     val created     = Column[Timestamp]("created", this)
     val folder      = Column[Ident]("folder_id", this)
     val fileFilter  = Column[Glob]("file_filter", this)
+    val language    = Column[Language]("doc_lang", this)
 
     val all =
       NonEmptyList.of[Column[_]](
@@ -53,7 +55,8 @@ object RSource {
         priority,
         created,
         folder,
-        fileFilter
+        fileFilter,
+        language
       )
   }
 
@@ -66,7 +69,7 @@ object RSource {
     DML.insert(
       table,
       table.all,
-      fr"${v.sid},${v.cid},${v.abbrev},${v.description},${v.counter},${v.enabled},${v.priority},${v.created},${v.folderId},${v.fileFilter}"
+      fr"${v.sid},${v.cid},${v.abbrev},${v.description},${v.counter},${v.enabled},${v.priority},${v.created},${v.folderId},${v.fileFilter},${v.language}"
     )
 
   def updateNoCounter(v: RSource): ConnectionIO[Int] =
@@ -80,7 +83,8 @@ object RSource {
         table.enabled.setTo(v.enabled),
         table.priority.setTo(v.priority),
         table.folder.setTo(v.folderId),
-        table.fileFilter.setTo(v.fileFilter)
+        table.fileFilter.setTo(v.fileFilter),
+        table.language.setTo(v.language)
       )
     )
 
