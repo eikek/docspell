@@ -15,12 +15,13 @@ object HouseKeepingTask {
 
   val taskName: Ident = Ident.unsafe("housekeeping")
 
-  def apply[F[_]: Sync](cfg: Config): Task[F, Unit, Unit] =
+  def apply[F[_]: ConcurrentEffect](cfg: Config): Task[F, Unit, Unit] =
     Task
       .log[F, Unit](_.info(s"Running house-keeping task now"))
       .flatMap(_ => CleanupInvitesTask(cfg.houseKeeping.cleanupInvites))
       .flatMap(_ => CleanupRememberMeTask(cfg.houseKeeping.cleanupRememberMe))
       .flatMap(_ => CleanupJobsTask(cfg.houseKeeping.cleanupJobs))
+      .flatMap(_ => CheckNodesTask(cfg.houseKeeping.checkNodes))
 
   def onCancel[F[_]: Sync]: Task[F, Unit, Unit] =
     Task.log[F, Unit](_.warn("Cancelling house-keeping task"))

@@ -9,7 +9,8 @@ case class HouseKeepingConfig(
     schedule: CalEvent,
     cleanupInvites: CleanupInvites,
     cleanupJobs: CleanupJobs,
-    cleanupRememberMe: CleanupRememberMe
+    cleanupRememberMe: CleanupRememberMe,
+    checkNodes: CheckNodes
 )
 
 object HouseKeepingConfig {
@@ -19,5 +20,7 @@ object HouseKeepingConfig {
   case class CleanupJobs(enabled: Boolean, olderThan: Duration, deleteBatch: Int)
 
   case class CleanupRememberMe(enabled: Boolean, olderThan: Duration)
+
+  case class CheckNodes(enabled: Boolean, minNotFound: Int)
 
 }

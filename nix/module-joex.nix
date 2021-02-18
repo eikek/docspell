@@ -58,6 +58,10 @@ let
         enabled = true;
         older-than = "30 days";
       };
+      check-nodes = {
+        enabled = true;
+        min-not-found = 2;
+      };
     };
     extraction = {
       pdf = {
@@ -539,6 +543,24 @@ in {
               });
               default = defaults.house-keeping.cleanup-remember-me;
               description = "Settings for cleaning up remember me tokens.";
+            };
+            check-nodes = mkOption {
+              type = types.submodule({
+                options = {
+                  enabled = mkOption {
+                    type = types.bool;
+                    default = defaults.house-keeping.check-nodes.enabled;
+                    description = "Whether this task is enabled.";
+                  };
+                  min-not-found = mkOption {
+                    type = types.int;
+                    default = defaults.house-keeping.check-nodes.min-not-found;
+                    description = "How often the node must be unreachable, before it is removed.";
+                  };
+                };
+              });
+              default = defaults.house-keeping.cleanup-nodes;
+              description = "Removes node entries that are not reachable anymore.";
             };
           };
         });
