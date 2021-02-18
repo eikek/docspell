@@ -401,15 +401,15 @@ trait Conversions {
       org = ROrganization(
         oid,
         cid,
-        v.name,
-        v.address.street,
-        v.address.zip,
-        v.address.city,
-        v.address.country,
+        v.name.trim,
+        v.address.street.trim,
+        v.address.zip.trim,
+        v.address.city.trim,
+        v.address.country.trim,
         v.notes,
         now,
         now,
-        v.shortName
+        v.shortName.map(_.trim)
       )
     } yield OOrganization.OrgAndContacts(org, cont)
   }
@@ -426,15 +426,15 @@ trait Conversions {
       org = ROrganization(
         v.id,
         cid,
-        v.name,
-        v.address.street,
-        v.address.zip,
-        v.address.city,
-        v.address.country,
+        v.name.trim,
+        v.address.street.trim,
+        v.address.zip.trim,
+        v.address.city.trim,
+        v.address.country.trim,
         v.notes,
         v.created,
         now,
-        v.shortName
+        v.shortName.map(_.trim)
       )
     } yield OOrganization.OrgAndContacts(org, cont)
   }
@@ -463,11 +463,11 @@ trait Conversions {
       pers = RPerson(
         pid,
         cid,
-        v.name,
-        v.address.street,
-        v.address.zip,
-        v.address.city,
-        v.address.country,
+        v.name.trim,
+        v.address.street.trim,
+        v.address.zip.trim,
+        v.address.city.trim,
+        v.address.country.trim,
         v.notes,
         now,
         now,
@@ -489,11 +489,11 @@ trait Conversions {
       pers = RPerson(
         v.id,
         cid,
-        v.name,
-        v.address.street,
-        v.address.zip,
-        v.address.city,
-        v.address.country,
+        v.name.trim,
+        v.address.street.trim,
+        v.address.zip.trim,
+        v.address.city.trim,
+        v.address.country.trim,
         v.notes,
         v.created,
         now,
@@ -513,7 +513,7 @@ trait Conversions {
       pid: Option[Ident]
   ): F[RContact] =
     timeId.map { case (id, now) =>
-      RContact(id, c.value, c.kind, pid, oid, now)
+      RContact(id, c.value.trim, c.kind, pid, oid, now)
     }
 
   // users
@@ -564,11 +564,11 @@ trait Conversions {
 
   def newTag[F[_]: Sync](t: Tag, cid: Ident): F[RTag] =
     timeId.map { case (id, now) =>
-      RTag(id, cid, t.name, t.category, now)
+      RTag(id, cid, t.name.trim, t.category.map(_.trim), now)
     }
 
   def changeTag(t: Tag, cid: Ident): RTag =
-    RTag(t.id, cid, t.name, t.category, t.created)
+    RTag(t.id, cid, t.name.trim, t.category.map(_.trim), t.created)
 
   // sources
 
@@ -593,7 +593,7 @@ trait Conversions {
       RSource(
         id,
         cid,
-        s.abbrev,
+        s.abbrev.trim,
         s.description,
         0,
         s.enabled,
@@ -608,7 +608,7 @@ trait Conversions {
     RSource(
       s.id,
       coll,
-      s.abbrev,
+      s.abbrev.trim,
       s.description,
       s.counter,
       s.enabled,
@@ -624,13 +624,13 @@ trait Conversions {
 
   def newEquipment[F[_]: Sync](e: Equipment, cid: Ident): F[REquipment] =
     timeId.map({ case (id, now) =>
-      REquipment(id, cid, e.name, now, now, e.notes)
+      REquipment(id, cid, e.name.trim, now, now, e.notes)
     })
 
   def changeEquipment[F[_]: Sync](e: Equipment, cid: Ident): F[REquipment] =
     Timestamp
       .current[F]
-      .map(now => REquipment(e.id, cid, e.name, e.created, now, e.notes))
+      .map(now => REquipment(e.id, cid, e.name.trim, e.created, now, e.notes))
 
   // idref
 
