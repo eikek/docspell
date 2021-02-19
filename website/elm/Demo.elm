@@ -39,13 +39,13 @@ demo data =
 
 navigateDemo =
     { title = "Navigation"
-    , url = "/videos/docspell-navigate-2021-01-11.mp4"
+    , url = "/videos/docspell-navigate-2021-02-19.mp4"
     , info = "Shows basic navigation through documents using tags and tag categories."
     }
 
 
 processDemo =
     { title = "Processing"
-    , url = "/videos/docspell-process-2021-01-11.mp4"
+    , url = "/videos/docspell-process-2021-02-19-dark.mp4"
     , info = "Presents the basic idea: maintain an address book and let docspell find matches for new uploaded documents and attach them automatically."
     }
