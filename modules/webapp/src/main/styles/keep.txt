@@ -31,3 +31,5 @@ them using string concatenation, which cannot be detected by postcss.
    elm-datepicker--today
    elm-datepicker--day
    elm-datepicker--other-month
+   ds-card-search-hl
+   strong
