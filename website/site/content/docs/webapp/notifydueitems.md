@@ -19,7 +19,7 @@ will be submitted to the job queue and is picked up by an available
 [job executor](@/docs/joex/_index.md) eventually. This can be setup in
 the user settings page.
 
-{{ figure(file="notify-due-items.jpg") }}
+{{ figure(file="notify-due-items.png") }}
 
 At first, the task can be disabled/enabled any time.
 

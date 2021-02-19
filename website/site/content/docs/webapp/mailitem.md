@@ -27,7 +27,7 @@ item, or you may choose to send the mail without any attachments.
 In the item detail view, click on the envelope icon to open the mail
 form:
 
-{{ figure(file="mail-item-1.jpg") }}
+{{ figure(file="mail-item-1.png") }}
 
 Then write the mail. Multiple recipients may be specified. The input
 field shows completion proposals from all contacts in your address
@@ -55,16 +55,11 @@ database and you'll see a message in the form.
 
 # Accessing Sent Mails
 
-If there is an e-mail for an item, a tab shows up at the right side,
-next to the attachments.
+If there is an e-mail for an item, another section is rendered below
+the item notes.
 
-{{ figure(file="mail-item-2.jpg") }}
+{{ figure(file="mail-item-2.png") }}
 
-This tab shows a list of all mails that have been sent related to this
-item.
+Clicking on a the eye icon opens the mail.
 
-{{ figure(file="mail-item-3.jpg") }}
-
-Clicking on a mail opens it in detail.
-
-{{ figure(file="mail-item-4.jpg") }}
+{{ figure(file="mail-item-4.png") }}

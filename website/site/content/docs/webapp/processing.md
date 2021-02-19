@@ -17,7 +17,7 @@ page refreshes itself automatically to show the progress.
 
 Example screenshot:
 
-{{ figure(file="processing-queue.jpg") }}
+{{ figure(file="processing-queue.png") }}
 
 You can cancel running jobs or remove waiting ones from the queue. If
 you click on the small file symbol on finished jobs, you can inspect
