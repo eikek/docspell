@@ -12,21 +12,14 @@ amend with existing data.
 After files have been uploaded and the job executor created the
 corresponding items, they will show up on the main page. All items the
 job executor has just created are initially marked as *New*. The
-option *only New* in the left search menu can be used to select only
-new items:
+option *Inbox* in the left search menu can be used to select only new
+items:
 
-{{ figure(file="docspell-curate-1.jpg") }}
+{{ figure(file="docspell-curate-1.png") }}
 
 Then you can go through all new items and check their metadata: Click
 on the first item to open the detail view. This shows the documents
 and the meta data in the header.
-
-# Check selected items
-
-To change something, click the *Edit* button in the menu above the
-document view. This will open a form next to your documents.
-
-{{ figure(file="docspell-curate-2.jpg") }}
 
 
 # Modify if necessary
@@ -34,9 +27,11 @@ document view. This will open a form next to your documents.
 You can compare the data with the documents and change as you like.
 Since the item status is *New*, you'll see the suggestions docspell
 found during processing. If there were multiple candidates, you can
-select another one by clicking its name in the suggestion list.
+select another one by clicking its name in the suggestion list. In
+state *New* the left menu is fully expanded so you see all suggestions
+immediatly.
 
-{{ figure(file="docspell-curate-3.jpg") }}
+{{ figure(file="docspell-curate-3.png") }}
 
 
 When you change something in the form, it is immediatly applied.
@@ -54,11 +49,12 @@ drag&drop.
 
 If everything looks good, click the *Confirm* button to confirm the
 current data. The *New* status goes away and also the suggestions are
-hidden in this state. You can always go back by clicking the
-*Unconfirm* button.
+hidden in this state. All metadata form fields are folded as they were
+before. You can always go back by clicking the *Unconfirm* button at
+the right of the menu bar.
 
 
-{{ figure(file="docspell-curate-5.jpg") }}
+{{ figure(file="docspell-curate-5.png") }}
 
 
 # Proceed with next item
@@ -69,4 +65,4 @@ keep the current view, so you can continue checking the data. If you
 are on the last item, the view switches to the listing view when
 clicking *Next*.
 
-{{ figure(file="docspell-curate-6.jpg") }}
+{{ figure(file="docspell-curate-6.png") }}

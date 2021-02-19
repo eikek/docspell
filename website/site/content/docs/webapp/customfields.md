@@ -74,7 +74,7 @@ multiple fields. Only one value is allowed to set per item and field.
 The example below shows a text field and a money field:
 
 <div class="columns is-centered">
-    <div class="column is-three-quarters">
+    <div class="column">
     {{ figure(file="custom-fields-03.png") }}
     </div>
 </div>
@@ -92,7 +92,7 @@ next to an input, the value is removed from the item.
 The item card also shows custom fields, in the same place as tags:
 
 <div class="columns is-centered">
-    <div class="column is-half">
+    <div class="column is-one-quarter">
     {{ imgnormal(file="custom-fields-05.png", width=300) }}
     </div>
 </div>
@@ -107,7 +107,7 @@ The search menu shows the same dropdown for selecting a custom field.
 Then you can set values that are matched against your items.
 
 <div class="columns is-centered">
-    <div class="column is-three-quarters">
+    <div class="column">
     {{ figure(file="custom-fields-06.png") }}
     </div>
 </div>
@@ -118,13 +118,9 @@ a wildcard at beginning and/or end to do a substring match:
 
 {{ figure(file="custom-fields-07.png") }}
 
-It is possible to use it for numeric fields, too. Just be aware that
-this is text-based matching.
+For all numeric and money values, a little summary is displayed next
+to the overall item count at the top of the page.
 
-<div class="columns is-centered">
-    <div class="column is-three-quarters">
-    {{ figure(file="custom-fields-08.png") }}
-    </div>
-</div>
-
-Using a single `*` allows to find items that have any value set.
+A wildcard can be used with all fields. Just be aware that this is
+always text-based matching. Using a single `*` allows to find items
+that have any value set.

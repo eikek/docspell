@@ -8,8 +8,9 @@ Docspell allows to edit and delete multiple items at once.
 ## Toggle Selection Mode
 
 Search the items you want to edit or delete and then select them by
-changing into "select mode". This changes the view slightly by adding
-a menu to the main area and the item cards have a dashed border:
+changing into "select mode". This changes the view slightly by
+changing the menu to the main area and the item cards have a dashed
+border:
 
 {{ figure(file="multiedit-01.png") }}
 
@@ -36,10 +37,8 @@ selected items. You can change the selection anytime.
 {{ figure(file="multiedit-04.png") }}
 
 
-If you are done, just click on the icon from the beginning to go back
-to "normal" mode.
-
-{{ figure(file="multiedit-05.png") }}
+If you are done, just click on the *Close* button or the icon from the
+beginning to go back to "normal" mode.
 
 
 ### Tags
