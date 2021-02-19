@@ -21,6 +21,7 @@ import Comp.Dropdown exposing (isDropdownChangeMsg)
 import Comp.FixedDropdown
 import Data.DropdownStyle as DS
 import Data.Flags exposing (Flags)
+import Data.Language exposing (Language)
 import Data.Priority exposing (Priority)
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
@@ -47,6 +48,8 @@ type alias Model =
     , folderId : Maybe String
     , tagModel : Comp.Dropdown.Model Tag
     , fileFilter : Maybe String
+    , languageModel : Comp.Dropdown.Model Language
+    , language : Maybe String
     }
 
 
@@ -70,6 +73,19 @@ emptyModel =
     , folderId = Nothing
     , tagModel = Util.Tag.makeDropdownModel2
     , fileFilter = Nothing
+    , languageModel =
+        Comp.Dropdown.makeSingleList
+            { makeOption =
+                \a ->
+                    { value = Data.Language.toName a
+                    , text = Data.Language.toName a
+                    , additional = ""
+                    }
+            , placeholder = "Select…"
+            , options = Data.Language.all
+            , selected = Nothing
+            }
+    , language = Nothing
     }
 
 
@@ -108,6 +124,7 @@ getSource model =
                 , priority = Data.Priority.toName model.priority
                 , folder = model.folderId
                 , fileFilter = model.fileFilter
+                , language = model.language
             }
     in
     { st | source = n, tags = TagList (List.length tags) tags }
@@ -124,6 +141,7 @@ type Msg
     | GetTagResp (Result Http.Error TagList)
     | TagDropdownMsg (Comp.Dropdown.Msg Tag)
     | SetFileFilter String
+    | LanguageMsg (Comp.Dropdown.Msg Language)
 
 
 
@@ -285,6 +303,28 @@ update flags msg model =
             , Cmd.none
             )
 
+        LanguageMsg lm ->
+            let
+                ( dm, dc ) =
+                    Comp.Dropdown.update lm model.languageModel
+
+                newModel =
+                    { model | languageModel = dm }
+
+                lang =
+                    Comp.Dropdown.getSelected dm |> List.head
+
+                model_ =
+                    if isDropdownChangeMsg lm then
+                        { newModel | language = Maybe.map Data.Language.toIso3 lang }
+
+                    else
+                        newModel
+            in
+            ( model_
+            , Cmd.map LanguageMsg dc
+            )
+
 
 
 --- View
@@ -426,7 +466,7 @@ isFolderMember model =
 
 
 view2 : Flags -> UiSettings -> Model -> Html Msg
-view2 flags settings model =
+view2 _ settings model =
     let
         priorityItem =
             Comp.FixedDropdown.Item
@@ -579,6 +619,21 @@ disappear then.
                 , code [ class "font-mono" ]
                     [ text "*.pdf|mail.html"
                     ]
+                ]
+            ]
+        , div [ class "mb-4" ]
+            [ label [ class S.inputLabel ]
+                [ text "Language:"
+                ]
+            , Html.map LanguageMsg
+                (Comp.Dropdown.view2
+                    DS.mainStyle
+                    settings
+                    model.languageModel
+                )
+            , div [ class "text-gray-400 text-xs" ]
+                [ text "Used for text extraction and analysis. The collective's "
+                , text "default language is used if not specified here."
                 ]
             ]
         ]
