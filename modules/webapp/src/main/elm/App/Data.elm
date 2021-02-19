@@ -11,6 +11,7 @@ import Browser exposing (UrlRequest)
 import Browser.Navigation exposing (Key)
 import Data.Flags exposing (Flags)
 import Data.UiSettings exposing (UiSettings)
+import Data.UiTheme exposing (UiTheme)
 import Http
 import Page exposing (Page(..))
 import Page.CollectiveSettings.Data
@@ -46,6 +47,7 @@ type alias Model =
     , subs : Sub Msg
     , uiSettings : UiSettings
     , sidebarVisible : Bool
+    , anonymousTheme : UiTheme
     }
 
 
@@ -94,6 +96,7 @@ init key url flags_ settings =
       , subs = Sub.none
       , uiSettings = settings
       , sidebarVisible = settings.sideMenuVisible
+      , anonymousTheme = Data.UiTheme.Light
       }
     , Cmd.batch
         [ Cmd.map UserSettingsMsg uc

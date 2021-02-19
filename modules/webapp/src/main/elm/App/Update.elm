@@ -52,18 +52,18 @@ updateWithSub msg model =
             ( { model | sidebarVisible = not model.sidebarVisible }, Cmd.none, Sub.none )
 
         ToggleDarkMode ->
-            let
-                settings =
-                    model.uiSettings
-
-                next =
-                    Data.UiTheme.cycle settings.uiTheme
-
-                newSettings =
-                    { settings | uiTheme = next }
-            in
             case model.flags.account of
                 Just _ ->
+                    let
+                        settings =
+                            model.uiSettings
+
+                        next =
+                            Data.UiTheme.cycle settings.uiTheme
+
+                        newSettings =
+                            { settings | uiTheme = next }
+                    in
                     -- when authenticated, store it in settings only
                     -- once new settings arrive via a subscription,
                     -- the ui is updated. so it is also updated on
@@ -74,8 +74,12 @@ updateWithSub msg model =
                     )
 
                 Nothing ->
+                    let
+                        next =
+                            Data.UiTheme.cycle model.anonymousTheme
+                    in
                     -- when not logged in, simply set the theme
-                    ( { model | userMenuOpen = False }
+                    ( { model | userMenuOpen = False, anonymousTheme = next }
                     , Ports.setUiTheme next
                     , Sub.none
                     )
