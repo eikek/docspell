@@ -39,10 +39,12 @@ Checkout the short demo videos (<1min), present on the [project
 page](https://docspell.org/#demos). Here are some screenshots:
 
 ![screenshot-1](website/site/content/docs/webapp/docspell-curate-1-dark.png)
-![screenshot-2](website/site/content/docs/webapp/docspell-curate-2-dark.png)
-![screenshot-3](website/site/content/docs/webapp/custom-fields-03-dark.png)
-![screenshot-4](website/site/content/docs/webapp/multiedit-04-dark.png)
-![screenshot-5](website/site/content/docs/webapp/mail-item-1.png)
+![screenshot-2](website/site/content/docs/webapp/custom-fields-03-dark.png)
+![screenshot-3](website/site/content/docs/webapp/multiedit-04-dark.png)
+![screenshot-4](website/site/content/docs/webapp/mail-item-1.png)
+![screenshot-5](website/site/static/screenshots/mobile/Screenshot_2021-02-14-03-small.jpg)
+![screenshot-5](website/site/static/screenshots/mobile/Screenshot_2021-02-14-04-small.jpg)
+![screenshot-5](website/site/static/screenshots/mobile/Screenshot_2021-02-14-09-small.jpg)
 
 ## Try it
 
