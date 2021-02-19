@@ -38,11 +38,11 @@ points.
 Checkout the short demo videos (<1min), present on the [project
 page](https://docspell.org/#demos). Here are some screenshots:
 
-![screenshot-1](website/site/content/docs/webapp/docspell-curate-1.jpg)
-![screenshot-2](website/site/content/docs/webapp/docspell-curate-2.jpg)
-![screenshot-3](website/site/content/docs/webapp/custom-fields-03.png)
-![screenshot-4](website/site/content/docs/webapp/multiedit-04.png)
-![screenshot-5](website/site/content/docs/webapp/mail-item-1.jpg)
+![screenshot-1](website/site/content/docs/webapp/docspell-curate-1-dark.png)
+![screenshot-2](website/site/content/docs/webapp/docspell-curate-2-dark.png)
+![screenshot-3](website/site/content/docs/webapp/custom-fields-03-dark.png)
+![screenshot-4](website/site/content/docs/webapp/multiedit-04-dark.png)
+![screenshot-5](website/site/content/docs/webapp/mail-item-1.png)
 
 ## Try it
 
