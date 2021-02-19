@@ -2,12 +2,12 @@
 
 ## v0.20.0
 
-*Soon*
+*Feb 19, 2021*
 
 This release comes with a completely new ui, including a dark theme!
 Additionally there are some other minor features and bug fixes.
 
-- New Web-UI with a light and dark theme (#293). 
+- New Web-UI with light and dark theme (#293).
   - All markup and css was reworked. For this release, the old ui is
     still available as a fallback if something got missing while
     porting. The old ui will be removed in the next release.
