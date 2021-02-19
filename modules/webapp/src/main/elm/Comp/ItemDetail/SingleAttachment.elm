@@ -56,7 +56,7 @@ view settings model pos attach =
                 Just am ->
                     Html.map (AttachMetaMsg attach.id)
                         (Comp.AttachmentMeta.view2
-                            [ class "border-r border-l dark:border-bluegray-600 px-2" ]
+                            [ class "border-r border-l border-b dark:border-bluegray-600 px-2" ]
                             am
                         )
 
