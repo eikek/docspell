@@ -27,7 +27,8 @@
                 </div>
             </div>
         </section>
-        <nav class="breadcrumb has-succeeds-separator" aria-label="breadcrumbs">
+        <nav class="breadcrumb has-succeeds-separator" aria-label="breadcrumbs"
+             style="position:sticky; top: 0; z-index:10;" >
             <ul>
                 {% for parent in section.ancestors %}
                 {% set s = get_section(path = parent, metadata_only = true) %}
@@ -44,7 +45,8 @@
         <div class="container">
             <div class="columns">
                 <div class="column is-3">
-                    <aside class="menu">
+                    <aside class="menu"
+                           style="position:sticky; top:2rem; z-index:10;">
                         <p class="menu-label">
                             Contents
                         </p>
