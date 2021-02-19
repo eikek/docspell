@@ -1201,6 +1201,9 @@
       "type" : "integer",
       "description" : "DateTime",
       "format" : "date-time"
+    },
+    "notes" : {
+      "type" : "string"
     }
   },
   "description" : "Some \"thing\" that occurs in documents.\n"
@@ -2338,6 +2341,9 @@
       "type" : "integer",
       "description" : "DateTime",
       "format" : "date-time"
+    },
+    "shortName" : {
+      "type" : "string"
     }
   },
   "description" : "An organisation.\n"
@@ -2369,7 +2375,7 @@
   "description" : "Change the password, by given the old and new one.\n"
 };
             defs["Person"] = {
-  "required" : [ "address", "concerning", "contacts", "created", "id", "name" ],
+  "required" : [ "address", "contacts", "created", "id", "name", "use" ],
   "properties" : {
     "id" : {
       "type" : "string",
@@ -2393,9 +2399,11 @@
     "notes" : {
       "type" : "string"
     },
-    "concerning" : {
-      "type" : "boolean",
-      "description" : "Whether this person should be used to create suggestions\nfor the \"concerning person\" association.\n"
+    "use" : {
+      "type" : "string",
+      "description" : "Whether this person should be used to create suggestions\nfor the \"concerning person\", \"correspondent\" or both.\n",
+      "format" : "personuse",
+      "enum" : [ "concerning", "correspondent", "both" ]
     },
     "created" : {
       "type" : "integer",
@@ -2703,6 +2711,10 @@
     "fileFilter" : {
       "type" : "string",
       "format" : "glob"
+    },
+    "language" : {
+      "type" : "string",
+      "format" : "language"
     },
     "created" : {
       "type" : "integer",
@@ -3453,7 +3465,7 @@
         <div id="header">
           <div id="api-_">
             <h2 id="welcome-to-apidoc">API and SDK Documentation</h2>
-              <div class="app-desc">Version: 0.19.0</div>
+              <div class="app-desc">Version: 0.20.0</div>
             <hr>
             <div>This is the remote API to Docspell, a personal document organizer.</div>
           </div>

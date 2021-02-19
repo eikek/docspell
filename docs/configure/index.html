@@ -848,6 +848,13 @@ Please refer to their documentation for more on this.</p>
       # whether more or less memory should be used.
 </span><span style="color:#fdf4c1;">      delete-batch = </span><span style="color:#b8bb26;">&quot;100&quot;
     </span><span style="color:#fdf4c1;">}
+    </span><span style="font-style:italic;color:#928374;"># Removes node entries that are not reachable anymore.
+</span><span style="color:#fdf4c1;">    check-nodes {
+      </span><span style="font-style:italic;color:#928374;"># Whether this task is enabled
+</span><span style="color:#fdf4c1;">      enabled = true
+      </span><span style="font-style:italic;color:#928374;"># How often the node must be unreachable, before it is removed.
+</span><span style="color:#fdf4c1;">      min-not-found = 2
+    }
   }
   </span><span style="font-style:italic;color:#928374;"># Configuration of text extraction
 </span><span style="color:#fdf4c1;">  extraction {
@@ -1270,7 +1277,7 @@ statements with level &quot;DEBUG&quot; will be printed, too.</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell, 0.19.0
+                Docspell, 0.20.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>

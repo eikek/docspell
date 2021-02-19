@@ -2,7 +2,7 @@ openapi: 3.0.0
 
 info:
   title: Docspell
-  version: 0.19.0
+  version: 0.20.0
   description: |
     This is the remote API to Docspell, a personal document organizer.
 
@@ -4924,6 +4924,9 @@ components:
         fileFilter:
           type: string
           format: glob
+        language:
+          type: string
+          format: language
         created:
           description: DateTime
           type: integer
@@ -4980,6 +4983,8 @@ components:
           description: DateTime
           type: integer
           format: date-time
+        notes:
+          type: string
     ReferenceList:
       description:
         Listing of entities with their id and a name.
@@ -4999,7 +5004,7 @@ components:
         - address
         - contacts
         - created
-        - concerning
+        - use
       properties:
         id:
           type: string
@@ -5016,11 +5021,16 @@ components:
             $ref: "#/components/schemas/Contact"
         notes:
           type: string
-        concerning:
-          type: boolean
+        use:
+          type: string
+          format: personuse
+          enum:
+            - concerning
+            - correspondent
+            - both
           description: |
             Whether this person should be used to create suggestions
-            for the "concerning person" association.
+            for the "concerning person", "correspondent" or both.
         created:
           description: DateTime
           type: integer
@@ -5062,6 +5072,8 @@ components:
           description: DateTime
           type: integer
           format: date-time
+        shortName:
+          type: string
     OrganizationList:
       description: |
         A list of full organization values.

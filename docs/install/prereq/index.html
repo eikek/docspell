@@ -231,10 +231,13 @@ terminal and typing <code>java -version</code>. Otherwise install Java using you
 package manager or see <a href="https://adoptopenjdk.net/">this site</a> for
 other options.</p>
 <p>It is enough to install the JRE. The JDK is required, if you want to
-build docspell from source.</p>
+build docspell from source. For newer versions, the JRE is not shipped
+anymore, simply use JDK then.</p>
 <p>Docspell has been tested with Java version 1.8 (or sometimes referred
-to as JRE 8 and JDK 8, respectively). The pre-build packages are also
-build using JDK 8. But a later version of Java should work as well.</p>
+to as JRE 8 and JDK 8, respectively). The pre-build packages are build
+using JDK 8. So at least a JDK/JRE 8 is required. However, it also
+works on newer java versions, I recommend JDK 11 as this has better
+default options. The provided docker images use JDK11, too.</p>
 <p>The next tools are only required on machines running the <em>Joex</em>
 component.</p>
 <h1 id="external-programs-for-joex">External Programs for Joex<a class="zola-anchor" href="#external-programs-for-joex" aria-label="Anchor link for: external-programs-for-joex">🔗</a></h1>
@@ -313,7 +316,7 @@ table) to that database.</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell, 0.19.0
+                Docspell, 0.20.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>

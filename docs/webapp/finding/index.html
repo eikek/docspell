@@ -181,7 +181,7 @@
                                             
                                             <li>
                                                 <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;finding&#x2F;#contents-only">
-                                                    The Contents Only option
+                                                    The Contents option
                                                 </a>
                                             </li>
                                             
@@ -195,14 +195,8 @@
                                         <ul>
                                             
                                             <li>
-                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;finding&#x2F;#show-new-items">
-                                                    Show new items
-                                                </a>
-                                            </li>
-                                            
-                                            <li>
-                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;finding&#x2F;#fulltext-and-name-search">
-                                                    Fulltext and Name Search
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;finding&#x2F;#inbox">
+                                                    Inbox
                                                 </a>
                                             </li>
                                             
@@ -245,6 +239,12 @@
                                             <li>
                                                 <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;finding&#x2F;#due-date">
                                                     Due Date
+                                                </a>
+                                            </li>
+                                            
+                                            <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;finding&#x2F;#source">
+                                                    Source
                                                 </a>
                                             </li>
                                             
@@ -355,55 +355,32 @@
                             <p>Items can be searched by their annotated meta data and their contents
 using full text search. The landing page shows a list of current
 items. Items are displayed sorted by their date, newest first.</p>
-<p>Docspell has two modes for searching: a simple search bar and a search
-menu with many options. Both are active at the same time, but only one
-is visible. You can switch between them without affecting the results.</p>
 <h1 id="search-bar">Search Bar<a class="zola-anchor" href="#search-bar" aria-label="Anchor link for: search-bar">🔗</a></h1>
 <img style="float:right; padding-left:0.25em;" src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;search-bar.png">
-<p>By default, the search bar is shown. It provides a shortcut to search
-for names and a mode for fulltext-only search. The dropdown contains
-the different options.</p>
+<p>The search bar let's you search in item and attachment names names and
+do fulltext search. The icon next to the search field can switch
+between these modes.</p>
 <h2 id="names">The <em>Names</em> option<a class="zola-anchor" href="#names" aria-label="Anchor link for: names">🔗</a></h2>
-<p>This option corresponds to the same named field in the search menu. If
-you switch between search menu and search bar (by clicking the icon on
-the left), you'll see that they are the same fields. Typing in the
-search bar also fills the corresponding field in the search menu (and
-vice versa).</p>
-<p>The <em>Names</em> searches in the item name, names of correspondent
-organization and person, and names of concering person and equipment.
-It uses a simple substring search. When searching with this option
-active, it simply submits the (hidden) search menu. So if the menu has
+<p>This searches in the item name, names of correspondent organization
+and person, and names of concering person and equipment. It uses a
+simple substring search. When searching with this option active, it
+simply submits the (maybe hidden) search menu. So if the menu has
 other fields filled out, they will affect the result, too.</p>
-<p>If the left button in the search bar shows a little blue bubble, it
-means that there are more search fields filled out in the search menu
-that you currently can't see. In this case the results are not only
-restricted by the search term given in the search-bar, but also by
-what is specified in the search menu.</p>
-<h2 id="contents-only">The <em>Contents Only</em> option<a class="zola-anchor" href="#contents-only" aria-label="Anchor link for: contents-only">🔗</a></h2>
-<p>This option has no corresponding part in the search menu. Searching
-with this option active, there is a full text search done in:
-attachments contents, attachment names, item name and item notes.</p>
-<p>The results are not ordered by item date, but by relevance with
-respect to the search term. This ordering is returned from the full
-text search engine and is simply transfered unmodified.</p>
+<h2 id="contents-only">The <em>Contents</em> option<a class="zola-anchor" href="#contents-only" aria-label="Anchor link for: contents-only">🔗</a></h2>
+<p>Searching with this option active, there is a full text search done
+in: attachments contents, attachment names, item name and item notes.</p>
+<p>If no other fields are selected, the results are not ordered by item
+date, but by relevance with respect to the search term. This ordering
+is returned from the full text search engine and is simply transfered
+unmodified.</p>
 <h1 id="search-menu">Search Menu<a class="zola-anchor" href="#search-menu" aria-label="Anchor link for: search-menu">🔗</a></h1>
 <img style="float:right; padding-left:0.25em;" src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;search-menu.png">
 <p>The search menu can be opened by clicking the left icon in the top
 bar. It shows some options to constrain the item list:</p>
-<h2 id="show-new-items">Show new items<a class="zola-anchor" href="#show-new-items" aria-label="Anchor link for: show-new-items">🔗</a></h2>
-<p>Clicking the checkbox &quot;Only new&quot; shows items that have not been
+<h2 id="inbox">Inbox<a class="zola-anchor" href="#inbox" aria-label="Anchor link for: inbox">🔗</a></h2>
+<p>Clicking the checkbox &quot;Inbox&quot; shows items that have not been
 &quot;Confirmed&quot;. All items that have been created by docspell and not
 looked at are marked as &quot;new&quot; automatically.</p>
-<h2 id="fulltext-and-name-search">Fulltext and Name Search<a class="zola-anchor" href="#fulltext-and-name-search" aria-label="Anchor link for: fulltext-and-name-search">🔗</a></h2>
-<p>You can choose tags or correspondents in the search menu and further
-restrict the results using full text search with the <em>content</em> field.</p>
-<p>If this is the only filled field, then a normal fulltext search is
-done. It is exactly the same as filling out the <em>Contents Only</em> search
-bar. However, if some other fields are also set, then first a search
-using all other fields is done and these results are then further
-constraint by a fulltext search.</p>
-<p>You can switch to &quot;Name Search&quot; using the little icon on the right.
-This will then only search in item names and notes.</p>
 <h2 id="tags-tag-categories">Tags &amp; Tag Categories<a class="zola-anchor" href="#tags-tag-categories" aria-label="Anchor link for: tags-tag-categories">🔗</a></h2>
 <p>Click on a tag to show only items with this tag, the tag is marked
 with a check (✔) icon. Click again, to show only items that are not
@@ -456,15 +433,17 @@ date is used.</p>
 <h2 id="due-date">Due Date<a class="zola-anchor" href="#due-date" aria-label="Anchor link for: due-date">🔗</a></h2>
 <p>Specify a date range to show only items whose due date property is
 within this range. Items without a due date are not shown.</p>
+<h2 id="source">Source<a class="zola-anchor" href="#source" aria-label="Anchor link for: source">🔗</a></h2>
+<p>This field allows to search by source id. Wildcards are supported.</p>
 <h2 id="direction">Direction<a class="zola-anchor" href="#direction" aria-label="Anchor link for: direction">🔗</a></h2>
 <p>Specify whether to show only incoming, only outgoing or all items.</p>
 <h1 id="customize-substring-search">Customize Substring Search<a class="zola-anchor" href="#customize-substring-search" aria-label="Anchor link for: customize-substring-search">🔗</a></h1>
-<p>The substring search of the <em>All Names</em> and <em>Name</em> field can be
-customized in the following way: A wildcard <code>*</code> can be used at the
-start or end of a search term to do a substring match. A <code>*</code> means
-&quot;everything&quot;. So a term <code>*company</code> matches all names ending in
-<code>company</code> and <code>*company*</code> matches all names containing the word
-<code>company</code>. The matching is case insensitive.</p>
+<p>The substring search of <em>Search in names</em> field can be customized in
+the following way: A wildcard <code>*</code> can be used at the start or end of a
+search term to do a substring match. A <code>*</code> means &quot;everything&quot;. So a
+term <code>*company</code> matches all names ending in <code>company</code> and <code>*company*</code>
+matches all names containing the word <code>company</code>. The matching is case
+insensitive.</p>
 <p>Docspell adds a <code>*</code> to the front and end of a term automatically,
 unless one of the following is true:</p>
 <ul>
@@ -508,7 +487,7 @@ with the highlighted occurrence of the match.</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell, 0.19.0
+                Docspell, 0.20.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>

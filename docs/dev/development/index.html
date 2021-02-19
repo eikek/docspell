@@ -150,6 +150,15 @@
                                     </li>
                                     
                                     <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;development&#x2F;#developing-frontend">
+                                            Developing Frontend
+                                        </a>
+                                        <ul>
+                                            
+                                        </ul>
+                                    </li>
+                                    
+                                    <li>
                                         <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;development&#x2F;#nix-expressions">
                                             Nix Expressions
                                         </a>
@@ -230,6 +239,37 @@ docspell.joex {
     pool-size = 1
   }
 }
+</span></code></pre><h1 id="developing-frontend">Developing Frontend<a class="zola-anchor" href="#developing-frontend" aria-label="Anchor link for: developing-frontend">🔗</a></h1>
+<p>The frontend is a SPA written in <a href="https://elm-lang.org">Elm</a>. The UI
+framework in use is <a href="https://tailwindcss.com">tailwind</a>.</p>
+<p>The frontend code is in the sub-project <code>webapp</code>. Running sbt's
+<code>compile</code> task, compiles elm sources and creates the final CSS file.
+Whenever the <code>restserver</code> module is build by sbt, the <code>webapp</code>
+sub-project is built as well and the final files to deliver are
+updated. So, when in sbt shell, &quot;watch-compile&quot; the project
+<code>restserver</code>, (via <code>~ restserver/compile</code>), re-compiles elm-code on
+change. However, it also re-creates the final css, which is a rather
+long task.</p>
+<p>To speed things up when only developing the frontend, a bash script is
+provided in <code>project/dev-ui-build.sh</code>. Start the <code>restserver</code> once,
+using <code>restserver/reStart</code> task as described above. Then run this
+script in the source root. It will watch elm files and the css file
+and re-compiles only on change writing the resulting files in the
+correct locations so they get picked up by the restserver.</p>
+<p>Now you can edit elm files and the <code>index.css</code> and then only refresh
+the page. Elm compilation is <em>very</em> fast, it's difficult to reach the
+refresh button before it is done compiling :). When editing the CSS,
+it takes a little longer, but this is hardly necessary, thanks to
+tailwind.</p>
+<p>There is still a problem: the browser caches the js and css files by
+default, so a page refresh is not enough, you need to clear the cache,
+too. To avoid this annoyance, set a env variable <code>DOCSPELL_ENV</code> to the
+value <code>dev</code>. Docspell then adds a response header, preventing the
+browser to cache these files. This must be done, obviously, before
+starting the restserver:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1;">$ export DOCSPELL_ENV=dev
+$ sbt </span><span style="color:#b8bb26;">&quot;restserver/reStart&quot;
 </span></code></pre><h1 id="nix-expressions">Nix Expressions<a class="zola-anchor" href="#nix-expressions" aria-label="Anchor link for: nix-expressions">🔗</a></h1>
 <p>The directory <code>/nix</code> contains nix expressions to install docspell via
 the nix package manager and to integrate it into NixOS.</p>
@@ -272,7 +312,7 @@ internal/background info for various topics.</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell, 0.19.0
+                Docspell, 0.20.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>
