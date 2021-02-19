@@ -952,6 +952,7 @@ renderEditForm2 cfg settings model =
             tabStyle
             (tabState settings model)
             [ { title = "Confirm/Unconfirm item metadata"
+              , titleRight = []
               , info = Nothing
               , body =
                     [ div
@@ -975,6 +976,7 @@ renderEditForm2 cfg settings model =
                     ]
               }
             , { title = "Tags"
+              , titleRight = []
               , info = Nothing
               , body =
                     [ div [ class "field" ]
@@ -997,6 +999,7 @@ renderEditForm2 cfg settings model =
                     ]
               }
             , { title = "Folder"
+              , titleRight = []
               , info = Nothing
               , body =
                     [ Html.map FolderDropdownMsg (Comp.Dropdown.view2 dds settings model.folderModel)
@@ -1015,6 +1018,7 @@ item visible. This message will disappear then.
                     ]
               }
             , { title = "Custom Fields"
+              , titleRight = []
               , info = Nothing
               , body =
                     [ Html.map CustomFieldMsg
@@ -1022,6 +1026,7 @@ item visible. This message will disappear then.
                     ]
               }
             , { title = "Date"
+              , titleRight = []
               , info = Nothing
               , body =
                     [ div [ class "relative" ]
@@ -1043,6 +1048,7 @@ item visible. This message will disappear then.
                     ]
               }
             , { title = "Due Date"
+              , titleRight = []
               , info = Nothing
               , body =
                     [ div [ class "relative" ]
@@ -1064,6 +1070,7 @@ item visible. This message will disappear then.
                     ]
               }
             , { title = "Correspondent"
+              , titleRight = []
               , info = Nothing
               , body =
                     [ optional [ Data.Fields.CorrOrg ] <|
@@ -1088,8 +1095,8 @@ item visible. This message will disappear then.
                             ]
                     ]
               }
-            , { title =
-                    "Concerning"
+            , { title = "Concerning"
+              , titleRight = []
               , info = Nothing
               , body =
                     [ optional [ Data.Fields.ConcPerson ] <|
@@ -1113,12 +1120,14 @@ item visible. This message will disappear then.
                     ]
               }
             , { title = "Direction"
+              , titleRight = []
               , info = Nothing
               , body =
                     [ Html.map DirDropdownMsg (Comp.Dropdown.view2 dds settings model.directionModel)
                     ]
               }
             , { title = "Name"
+              , titleRight = []
               , info = Nothing
               , body =
                     [ div [ class "relative" ]

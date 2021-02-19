@@ -726,6 +726,7 @@ view2 flags settings model =
 settingFormTabs : Flags -> UiSettings -> Model -> List (Comp.Tabs.Tab Msg)
 settingFormTabs flags _ model =
     [ { title = "General"
+      , titleRight = []
       , info = Nothing
       , body =
             [ div [ class "mb-4 " ]
@@ -740,6 +741,7 @@ settingFormTabs flags _ model =
             ]
       }
     , { title = "Item Search"
+      , titleRight = []
       , info = Nothing
       , body =
             [ Html.map SearchPageSizeMsg
@@ -764,6 +766,7 @@ settingFormTabs flags _ model =
             ]
       }
     , { title = "Item Cards"
+      , titleRight = []
       , info = Nothing
       , body =
             [ Html.map NoteLengthMsg
@@ -834,6 +837,7 @@ settingFormTabs flags _ model =
             ]
       }
     , { title = "Search Menu"
+      , titleRight = []
       , info = Nothing
       , body =
             [ Html.map SearchMenuTagMsg
@@ -860,6 +864,7 @@ settingFormTabs flags _ model =
             ]
       }
     , { title = "Item Detail"
+      , titleRight = []
       , info = Nothing
       , body =
             [ div [ class "mb-4" ]
@@ -892,6 +897,7 @@ settingFormTabs flags _ model =
             ]
       }
     , { title = "Tag Category Colors"
+      , titleRight = []
       , info = Nothing
       , body =
             [ Html.map TagColorMsg
@@ -903,6 +909,7 @@ settingFormTabs flags _ model =
             ]
       }
     , { title = "Fields"
+      , titleRight = []
       , info = Nothing
       , body =
             [ span [ class "opacity-50 text-sm" ]

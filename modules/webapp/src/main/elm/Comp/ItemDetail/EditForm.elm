@@ -108,6 +108,7 @@ formTabs settings model =
                 span [ class "invisible hidden" ] []
     in
     [ { title = "Name"
+      , titleRight = []
       , info = Nothing
       , body =
             [ div [ class "relative mb-4" ]
@@ -133,6 +134,7 @@ formTabs settings model =
             ]
       }
     , { title = "Date"
+      , titleRight = []
       , info = Nothing
       , body =
             [ div [ class "mb-4" ]
@@ -157,14 +159,26 @@ formTabs settings model =
             ]
       }
     , { title = "Tags"
+      , titleRight = []
       , info = Nothing
       , body =
-            [ div [ class "mb-4" ]
+            [ div [ class "mb-4 flex flex-col" ]
                 [ Html.map TagDropdownMsg (Comp.Dropdown.view2 dds settings model.tagModel)
+                , div [ class "flex flex-row items-center justify-end" ]
+                    [ a
+                        [ class S.secondaryButton
+                        , class "text-xs mt-2"
+                        , href "#"
+                        , onClick StartTagModal
+                        ]
+                        [ i [ class "fa fa-plus" ] []
+                        ]
+                    ]
                 ]
             ]
       }
     , { title = "Folder"
+      , titleRight = []
       , info = Nothing
       , body =
             [ div [ class "mb-4" ]
@@ -190,6 +204,7 @@ item visible. This message will disappear then.
             ]
       }
     , { title = "Custom Fields"
+      , titleRight = []
       , info = Nothing
       , body =
             [ div [ class "mb-4" ]
@@ -203,6 +218,7 @@ item visible. This message will disappear then.
             ]
       }
     , { title = "Due Date"
+      , titleRight = []
       , info = Nothing
       , body =
             [ div [ class "mb-4" ]
@@ -227,6 +243,7 @@ item visible. This message will disappear then.
             ]
       }
     , { title = "Correspondent"
+      , titleRight = []
       , info = Nothing
       , body =
             [ optional [ Data.Fields.CorrOrg ] <|
@@ -266,6 +283,7 @@ item visible. This message will disappear then.
             ]
       }
     , { title = "Concerning"
+      , titleRight = []
       , info = Nothing
       , body =
             [ optional [ Data.Fields.ConcPerson ] <|
@@ -307,6 +325,7 @@ item visible. This message will disappear then.
             ]
       }
     , { title = "Direction"
+      , titleRight = []
       , info = Nothing
       , body =
             [ div [ class "mb-4" ]

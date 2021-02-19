@@ -1292,6 +1292,7 @@ searchTabs ddd flags settings model =
     in
     [ { title = "Inbox"
       , info = Nothing
+      , titleRight = []
       , body =
             [ MB.viewItem <|
                 MB.Checkbox
@@ -1349,6 +1350,7 @@ searchTabs ddd flags settings model =
             ]
       }
     , { title = "Tags"
+      , titleRight = []
       , info = Nothing
       , body =
             List.map (Html.map TagSelectMsg)
@@ -1360,6 +1362,7 @@ searchTabs ddd flags settings model =
                 )
       }
     , { title = "Tag Categories"
+      , titleRight = []
       , info = Nothing
       , body =
             [ Html.map TagSelectMsg
@@ -1371,6 +1374,7 @@ searchTabs ddd flags settings model =
             ]
       }
     , { title = "Folder"
+      , titleRight = []
       , info = Nothing
       , body =
             [ Html.map FolderSelectMsg
@@ -1381,6 +1385,7 @@ searchTabs ddd flags settings model =
             ]
       }
     , { title = "Correspondent"
+      , titleRight = []
       , info = Nothing
       , body =
             [ div
@@ -1411,6 +1416,7 @@ searchTabs ddd flags settings model =
             ]
       }
     , { title = "Concerning"
+      , titleRight = []
       , info = Nothing
       , body =
             [ div
@@ -1440,6 +1446,7 @@ searchTabs ddd flags settings model =
             ]
       }
     , { title = "Custom Fields"
+      , titleRight = []
       , info = Nothing
       , body =
             [ Html.map CustomFieldMsg
@@ -1451,6 +1458,7 @@ searchTabs ddd flags settings model =
             ]
       }
     , { title = "Date"
+      , titleRight = []
       , info = Nothing
       , body =
             [ div
@@ -1489,6 +1497,7 @@ searchTabs ddd flags settings model =
             ]
       }
     , { title = "Due Date"
+      , titleRight = []
       , info = Nothing
       , body =
             [ div
@@ -1531,6 +1540,7 @@ searchTabs ddd flags settings model =
             ]
       }
     , { title = "Source"
+      , titleRight = []
       , info = Nothing
       , body =
             [ div [ class "mb-4" ]
@@ -1547,6 +1557,7 @@ searchTabs ddd flags settings model =
             ]
       }
     , { title = "Direction"
+      , titleRight = []
       , info = Nothing
       , body =
             [ Html.map DirectionMsg

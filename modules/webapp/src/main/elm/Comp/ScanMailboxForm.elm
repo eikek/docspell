@@ -1255,26 +1255,32 @@ tabTitle tab =
 formTabs : UiSettings -> Model -> List (Comp.Tabs.Tab Msg)
 formTabs settings model =
     [ { title = tabTitle TabGeneral
+      , titleRight = []
       , info = Nothing
       , body = viewGeneral2 settings model
       }
     , { title = tabTitle TabProcessing
+      , titleRight = []
       , info = Just "These settings define which mails are fetched from the mail server."
       , body = viewProcessing2 model
       }
     , { title = tabTitle TabAdditionalFilter
+      , titleRight = []
       , info = Just "These filters are applied to mails that have been fetched from the mailbox to select those that should be imported."
       , body = viewAdditionalFilter2 model
       }
     , { title = tabTitle TabPostProcessing
+      , titleRight = []
       , info = Just "This defines what happens to mails that have been downloaded."
       , body = viewPostProcessing2 model
       }
     , { title = tabTitle TabMetadata
+      , titleRight = []
       , info = Just "Define metadata that should be attached to all items created by this task."
       , body = viewMetadata2 settings model
       }
     , { title = tabTitle TabSchedule
+      , titleRight = []
       , info = Just "Define when mails should be imported."
       , body = viewSchedule2 model
       }

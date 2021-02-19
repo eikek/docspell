@@ -11,10 +11,12 @@ module Comp.Tabs exposing
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
+import Styles as S
 
 
 type alias Tab msg =
     { title : String
+    , titleRight : List (Html msg)
     , info : Maybe String
     , body : List (Html msg)
     }
@@ -73,28 +75,34 @@ akkordionTab : Style -> State -> msg -> Tab msg -> Html msg
 akkordionTab style state toggle tab =
     let
         tabTitle =
-            a
-                [ class "flex flex-row items-center"
+            div
+                [ class "flex flex-row"
                 , class style.titleClasses
-                , href "#"
-                , onClick toggle
                 ]
-                [ div [ class "inline-flex mr-2 w-2" ]
-                    [ if state == Open then
-                        i [ class "fa fa-caret-down" ] []
+                ([ a
+                    [ class "flex flex-row items-center flex-grow"
+                    , href "#"
+                    , onClick toggle
+                    ]
+                    [ div [ class "inline-flex mr-2 w-2" ]
+                        [ if state == Open then
+                            i [ class "fa fa-caret-down" ] []
 
-                      else
-                        i [ class "fa fa-caret-right" ] []
-                    ]
-                , div [ class "flex flex-col" ]
-                    [ div [ class "px-2 font-semibold" ]
-                        [ text tab.title
+                          else
+                            i [ class "fa fa-caret-right" ] []
                         ]
-                    , div [ class "px-2 opacity-50 text-sm" ]
-                        [ text (Maybe.withDefault "" tab.info)
+                    , div [ class "flex flex-col" ]
+                        [ div [ class "px-2 font-semibold" ]
+                            [ text tab.title
+                            ]
+                        , div [ class "px-2 opacity-50 text-sm" ]
+                            [ text (Maybe.withDefault "" tab.info)
+                            ]
                         ]
                     ]
-                ]
+                 ]
+                    ++ tab.titleRight
+                )
 
         tabContent =
             div
