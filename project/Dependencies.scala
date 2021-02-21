@@ -1,6 +1,7 @@
 package docspell.build
 
 import sbt._
+import org.portablescala.sbtplatformdeps.PlatformDepsPlugin.autoImport._
 
 object Dependencies {
 
@@ -8,6 +9,7 @@ object Dependencies {
   val BetterMonadicForVersion = "0.3.1"
   val BitpeaceVersion         = "0.6.0"
   val CalevVersion            = "0.4.1"
+  val CatsParseVersion        = "0.3.1"
   val CirceVersion            = "0.13.0"
   val ClipboardJsVersion      = "2.0.6"
   val DoobieVersion           = "0.10.0"
@@ -40,6 +42,15 @@ object Dependencies {
   val TwelveMonkeysVersion    = "3.6.3"
   val JQueryVersion           = "3.5.1"
   val ViewerJSVersion         = "0.5.8"
+
+  val catsParse = Seq(
+    "org.typelevel" %% "cats-parse" % CatsParseVersion
+  )
+  val catsParseJS =
+    Def.setting("org.typelevel" %%% "cats-parse" % CatsParseVersion)
+
+  val scalaJsStubs =
+    "org.scala-js" %% "scalajs-stubs" % "1.0.0" % "provided"
 
   val kittens = Seq(
     "org.typelevel" %% "kittens" % KittensVersion

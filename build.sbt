@@ -264,6 +264,24 @@ ${lines.map(_._1).mkString(",\n")}
   )
   .dependsOn(common)
 
+val query =
+  crossProject(JSPlatform, JVMPlatform)
+    .crossType(CrossType.Pure)
+    .in(file("modules/query"))
+    .settings(sharedSettings)
+    .settings(testSettings)
+    .settings(
+      name := "docspell-query",
+      libraryDependencies +=
+        Dependencies.catsParseJS.value
+    )
+    .jvmSettings(
+      libraryDependencies +=
+        Dependencies.scalaJsStubs
+    )
+val queryJVM = query.jvm
+val queryJS  = query.js
+
 val store = project
   .in(file("modules/store"))
   .disablePlugins(RevolverPlugin)
@@ -284,7 +302,7 @@ val store = project
         Dependencies.calevCore ++
         Dependencies.calevFs2
   )
-  .dependsOn(common)
+  .dependsOn(common, queryJVM)
 
 val extract = project
   .in(file("modules/extract"))
@@ -425,6 +443,7 @@ val webapp = project
     openapiSpec := (restapi / Compile / resourceDirectory).value / "docspell-openapi.yml",
     openapiElmConfig := ElmConfig().withJson(ElmJson.decodePipeline)
   )
+  .dependsOn(queryJS)
 
 // --- Application(s)
 
@@ -594,7 +613,9 @@ val root = project
     backend,
     webapp,
     restapi,
-    restserver
+    restserver,
+    queryJVM,
+    queryJS
   )
 
 // --- Helpers
