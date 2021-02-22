@@ -93,7 +93,7 @@ viewSidebar visible _ _ model =
                 [ i [ class "fa fa-user-secret" ] []
                 , span
                     [ class "ml-3" ]
-                    [ text "CHange Password" ]
+                    [ text "Change Password" ]
                 ]
             ]
         ]
