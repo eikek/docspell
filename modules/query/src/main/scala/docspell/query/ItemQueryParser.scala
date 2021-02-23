@@ -15,4 +15,6 @@ object ItemQueryParser {
       .map(_.toString)
       .map(expr => ItemQuery(expr, Some(input.trim)))
 
+  def parseUnsafe(input: String): ItemQuery =
+    parse(input).fold(sys.error, identity)
 }

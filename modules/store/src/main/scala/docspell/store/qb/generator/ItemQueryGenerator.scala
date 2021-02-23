@@ -1,11 +1,11 @@
 package docspell.store.qb.generator
 
+import java.time.{Instant, LocalDate}
+
 import cats.data.NonEmptyList
 import docspell.common._
-import docspell.query.ItemQuery
-import docspell.query.ItemQuery.Attr._
-import docspell.query.ItemQuery.Property.{DateProperty, StringProperty}
-import docspell.query.ItemQuery.{Attr, Expr, Operator, TagOperator}
+import docspell.query.{Date, ItemQuery}
+import docspell.query.ItemQuery._
 import docspell.store.qb.{Operator => QOp, _}
 import docspell.store.qb.DSL._
 import docspell.store.records.{RCustomField, RCustomFieldValue, TagItemName}
@@ -74,7 +74,7 @@ object ItemQueryGenerator {
       case Expr.Exists(field) =>
         anyColumn(tables)(field).isNotNull
 
-      case Expr.SimpleExpr(op, StringProperty(attr, value)) =>
+      case Expr.SimpleExpr(op, Property.StringProperty(attr, value)) =>
         val col = stringColumn(tables)(attr)
         op match {
           case Operator.Like =>
@@ -83,8 +83,13 @@ object ItemQueryGenerator {
             Condition.CompareVal(col, makeOp(op), value)
         }
 
-      case Expr.SimpleExpr(op, DateProperty(attr, value)) =>
-        val dt  = Timestamp.atUtc(value.atStartOfDay())
+      case Expr.SimpleExpr(op, Property.DateProperty(attr, value)) =>
+        val dt = value match {
+          case Date.Local(year, month, day) =>
+            Timestamp.atUtc(LocalDate.of(year, month, day).atStartOfDay())
+          case Date.Millis(ms) =>
+            Timestamp(Instant.ofEpochMilli(ms))
+        }
         val col = timestampColumn(tables)(attr)
         Condition.CompareVal(col, makeOp(op), dt)
 
@@ -135,13 +140,13 @@ object ItemQueryGenerator {
 
   private def anyColumn(tables: Tables)(attr: Attr): Column[_] =
     attr match {
-      case s: StringAttr =>
+      case s: Attr.StringAttr =>
         stringColumn(tables)(s)
-      case t: DateAttr =>
+      case t: Attr.DateAttr =>
         timestampColumn(tables)(t)
     }
 
-  private def timestampColumn(tables: Tables)(attr: DateAttr) =
+  private def timestampColumn(tables: Tables)(attr: Attr.DateAttr) =
     attr match {
       case Attr.Date =>
         tables.item.itemDate
@@ -149,7 +154,7 @@ object ItemQueryGenerator {
         tables.item.dueDate
     }
 
-  private def stringColumn(tables: Tables)(attr: StringAttr): Column[String] =
+  private def stringColumn(tables: Tables)(attr: Attr.StringAttr): Column[String] =
     attr match {
       case Attr.ItemId                   => tables.item.id.cast[String]
       case Attr.ItemName                 => tables.item.name

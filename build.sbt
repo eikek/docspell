@@ -47,7 +47,8 @@ val sharedSettings = Seq(
 
 val testSettings = Seq(
   testFrameworks += new TestFramework("minitest.runner.Framework"),
-  libraryDependencies ++= Dependencies.miniTest ++ Dependencies.logging.map(_ % Test)
+  libraryDependencies ++= Dependencies.miniTest ++ Dependencies.logging.map(_ % Test),
+  Test / fork := true
 )
 
 lazy val noPublish = Seq(
@@ -274,6 +275,9 @@ val query =
       name := "docspell-query",
       libraryDependencies +=
         Dependencies.catsParseJS.value
+    )
+    .jsSettings(
+      Test / fork := false
     )
     .jvmSettings(
       libraryDependencies +=
