@@ -42,8 +42,26 @@ object TagItemName {
   def itemsWithEitherTag(tags: NonEmptyList[Ident]): Select =
     Select(ti.itemId.s, from(ti), orTags(tags)).distinct
 
+  def itemsWithEitherTagNameOrIds(tags: NonEmptyList[String]): Select =
+    Select(
+      ti.itemId.s,
+      from(ti).innerJoin(t, t.tid === ti.tagId),
+      ti.tagId.cast[String].in(tags) || t.name.inLower(tags.map(_.toLowerCase))
+    ).distinct
+
   def itemsWithAllTags(tags: NonEmptyList[Ident]): Select =
     intersect(tags.map(tid => Select(ti.itemId.s, from(ti), ti.tagId === tid).distinct))
+
+  def itemsWithAllTagNameOrIds(tags: NonEmptyList[String]): Select =
+    intersect(
+      tags.map(tag =>
+        Select(
+          ti.itemId.s,
+          from(ti).innerJoin(t, t.tid === ti.tagId),
+          ti.tagId ==== tag || t.name.lowerEq(tag.toLowerCase)
+        ).distinct
+      )
+    )
 
   def itemsWithEitherTagOrCategory(
       tags: NonEmptyList[Ident],

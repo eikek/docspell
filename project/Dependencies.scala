@@ -52,6 +52,8 @@ object Dependencies {
   val scalaJsStubs =
     "org.scala-js" %% "scalajs-stubs" % "1.0.0" % "provided"
 
+  val catsJS = Def.setting("org.typelevel" %%% "cats-core" % "2.4.2")
+
   val kittens = Seq(
     "org.typelevel" %% "kittens" % KittensVersion
   )

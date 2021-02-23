@@ -279,8 +279,6 @@ val query =
       libraryDependencies +=
         Dependencies.scalaJsStubs
     )
-val queryJVM = query.jvm
-val queryJS  = query.js
 
 val store = project
   .in(file("modules/store"))
@@ -302,7 +300,7 @@ val store = project
         Dependencies.calevCore ++
         Dependencies.calevFs2
   )
-  .dependsOn(common, queryJVM)
+  .dependsOn(common, query.jvm)
 
 val extract = project
   .in(file("modules/extract"))
@@ -443,7 +441,7 @@ val webapp = project
     openapiSpec := (restapi / Compile / resourceDirectory).value / "docspell-openapi.yml",
     openapiElmConfig := ElmConfig().withJson(ElmJson.decodePipeline)
   )
-  .dependsOn(queryJS)
+  .dependsOn(query.js)
 
 // --- Application(s)
 
@@ -614,8 +612,8 @@ val root = project
     webapp,
     restapi,
     restserver,
-    queryJVM,
-    queryJS
+    query.jvm,
+    query.js
   )
 
 // --- Helpers

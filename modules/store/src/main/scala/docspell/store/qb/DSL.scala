@@ -174,13 +174,13 @@ trait DSL extends DoobieMeta {
       Condition.CompareVal(col, Operator.LowerEq, value)
 
     def ====(value: String): Condition =
-      Condition.CompareVal(col.asInstanceOf[Column[String]], Operator.Eq, value)
+      Condition.CompareVal(col.cast[String], Operator.Eq, value)
 
     def like(value: A)(implicit P: Put[A]): Condition =
       Condition.CompareVal(col, Operator.LowerLike, value)
 
     def likes(value: String): Condition =
-      Condition.CompareVal(col.asInstanceOf[Column[String]], Operator.LowerLike, value)
+      Condition.CompareVal(col.cast[String], Operator.LowerLike, value)
 
     def <=(value: A)(implicit P: Put[A]): Condition =
       Condition.CompareVal(col, Operator.Lte, value)
