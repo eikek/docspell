@@ -23,7 +23,7 @@ object ItemQueryGeneratorTest extends SimpleTestSuite {
     RAttachmentMeta.as("m")
   )
 
-  test("migration") {
+  test("basic test") {
     val q = ItemQueryParser
       .parseUnsafe("(& name:hello date>=2020-02-01 (| source=expense folder=test ))")
     val cond = ItemQueryGenerator(tables, Ident.unsafe("coll"))(q)

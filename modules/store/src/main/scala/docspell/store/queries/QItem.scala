@@ -117,7 +117,7 @@ object QItem {
       .map(nel => intersect(nel.map(singleSelect)))
   }
 
-  private def findItemsBase(q: Query, noteMaxLen: Int): Select = {
+  private def findItemsBase(q: Query.Fix, noteMaxLen: Int): Select = {
     object Attachs extends TableDef {
       val tableName = "attachs"
       val aliasName = "cta"
@@ -128,7 +128,7 @@ object QItem {
 
     val coll = q.account.collective
 
-    val baseSelect = Select(
+    Select(
       select(
         i.id.s,
         i.name.s,
@@ -172,27 +172,23 @@ object QItem {
         .leftJoin(pers1, pers1.pid === i.concPerson && pers1.cid === coll)
         .leftJoin(equip, equip.eid === i.concEquipment && equip.cid === coll),
       where(
-        i.cid === coll &&? Nel.fromList(q.states.toList).map(nel => i.state.in(nel)) &&
-          or(i.folder.isNull, i.folder.in(QFolder.findMemberFolderIds(q.account)))
+        i.cid === coll && or(
+          i.folder.isNull,
+          i.folder.in(QFolder.findMemberFolderIds(q.account))
+        )
       )
     ).distinct.orderBy(
       q.orderAsc
         .map(of => OrderBy.asc(coalesce(of(i).s, i.created.s).s))
         .getOrElse(OrderBy.desc(coalesce(i.itemDate.s, i.created.s).s))
     )
-
-    findCustomFieldValuesForColl(coll, q.customValues) match {
-      case Some(itemIds) =>
-        baseSelect.changeWhere(c => c && i.id.in(itemIds))
-      case None =>
-        baseSelect
-    }
   }
 
-  def queryCondition(q: Query): Condition =
+  def queryCondition(coll: Ident, q: Query.QueryCond): Condition =
     Condition.unit &&?
       q.direction.map(d => i.incoming === d) &&?
       q.name.map(n => i.name.like(QueryWildcard.lower(n))) &&?
+      Nel.fromList(q.states.toList).map(nel => i.state.in(nel)) &&?
       q.allNames
         .map(QueryWildcard.lower)
         .map(n =>
@@ -221,15 +217,17 @@ object QItem {
         .map(subsel => i.id.in(subsel)) &&?
       TagItemName
         .itemsWithEitherTagOrCategory(q.tagsExclude, q.tagCategoryExcl)
-        .map(subsel => i.id.notIn(subsel))
+        .map(subsel => i.id.notIn(subsel)) &&?
+      findCustomFieldValuesForColl(coll, q.customValues)
+        .map(itemIds => i.id.in(itemIds))
 
   def findItems(
       q: Query,
       maxNoteLen: Int,
       batch: Batch
   ): Stream[ConnectionIO, ListItem] = {
-    val sql = findItemsBase(q, maxNoteLen)
-      .changeWhere(c => c && queryCondition(q))
+    val sql = findItemsBase(q.fix, maxNoteLen)
+      .changeWhere(c => c && queryCondition(q.fix.account.collective, q.cond))
       .limit(batch)
       .build
     logger.trace(s"List $batch items: $sql")
@@ -251,10 +249,10 @@ object QItem {
         .innerJoin(i, i.id === ti.itemId)
 
     val tagCloud =
-      findItemsBase(q, 0).unwrap
+      findItemsBase(q.fix, 0).unwrap
         .withSelect(select(tag.all).append(count(i.id).as("num")))
         .changeFrom(_.prepend(tagFrom))
-        .changeWhere(c => c && queryCondition(q))
+        .changeWhere(c => c && queryCondition(q.fix.account.collective, q.cond))
         .groupBy(tag.tid)
         .build
         .query[TagCount]
@@ -264,24 +262,24 @@ object QItem {
     // are not included they are fetched separately
     for {
       existing <- tagCloud
-      other    <- RTag.findOthers(q.account.collective, existing.map(_.tag.tagId))
+      other    <- RTag.findOthers(q.fix.account.collective, existing.map(_.tag.tagId))
     } yield existing ++ other.map(TagCount(_, 0))
   }
 
   def searchCountSummary(q: Query): ConnectionIO[Int] =
-    findItemsBase(q, 0).unwrap
+    findItemsBase(q.fix, 0).unwrap
       .withSelect(Nel.of(count(i.id).as("num")))
-      .changeWhere(c => c && queryCondition(q))
+      .changeWhere(c => c && queryCondition(q.fix.account.collective, q.cond))
       .build
       .query[Int]
       .unique
 
   def searchFolderSummary(q: Query): ConnectionIO[List[FolderCount]] = {
     val fu = RUser.as("fu")
-    findItemsBase(q, 0).unwrap
+    findItemsBase(q.fix, 0).unwrap
       .withSelect(select(f.id, f.name, f.owner, fu.login).append(count(i.id).as("num")))
       .changeFrom(_.innerJoin(fu, fu.uid === f.owner))
-      .changeWhere(c => c && queryCondition(q))
+      .changeWhere(c => c && queryCondition(q.fix.account.collective, q.cond))
       .groupBy(f.id, f.name, f.owner, fu.login)
       .build
       .query[FolderCount]
@@ -295,9 +293,9 @@ object QItem {
         .innerJoin(i, i.id === cv.itemId)
 
     val base =
-      findItemsBase(q, 0).unwrap
+      findItemsBase(q.fix, 0).unwrap
         .changeFrom(_.prepend(fieldJoin))
-        .changeWhere(c => c && queryCondition(q))
+        .changeWhere(c => c && queryCondition(q.fix.account.collective, q.cond))
         .groupBy(GroupBy(cf.all))
 
     val basicFields = Nel.of(
@@ -374,7 +372,7 @@ object QItem {
           )
         )
 
-      val from = findItemsBase(q, maxNoteLen)
+      val from = findItemsBase(q.fix, maxNoteLen)
         .appendCte(cte)
         .appendSelect(Tids.weight.s)
         .changeFrom(_.innerJoin(Tids, Tids.itemId === i.id))

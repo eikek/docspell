@@ -72,13 +72,16 @@ object NotifyDueItemsTask {
       q =
         Query
           .empty(ctx.args.account)
-          .copy(
-            states = ItemState.validStates.toList,
-            tagsInclude = ctx.args.tagsInclude,
-            tagsExclude = ctx.args.tagsExclude,
-            dueDateFrom = ctx.args.daysBack.map(back => now - Duration.days(back.toLong)),
-            dueDateTo = Some(now + Duration.days(ctx.args.remindDays.toLong)),
-            orderAsc = Some(_.dueDate)
+          .withOrder(orderAsc = _.dueDate)
+          .withCond(
+            _.copy(
+              states = ItemState.validStates.toList,
+              tagsInclude = ctx.args.tagsInclude,
+              tagsExclude = ctx.args.tagsExclude,
+              dueDateFrom =
+                ctx.args.daysBack.map(back => now - Duration.days(back.toLong)),
+              dueDateTo = Some(now + Duration.days(ctx.args.remindDays.toLong))
+            )
           )
       res <-
         ctx.store

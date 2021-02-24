@@ -145,31 +145,32 @@ trait Conversions {
 
   def mkQuery(m: ItemSearch, account: AccountId): OItemSearch.Query =
     OItemSearch.Query(
-      account,
-      m.name,
-      if (m.inbox) Seq(ItemState.Created)
-      else ItemState.validStates.toList,
-      m.direction,
-      m.corrPerson,
-      m.corrOrg,
-      m.concPerson,
-      m.concEquip,
-      m.folder,
-      m.tagsInclude.map(Ident.unsafe),
-      m.tagsExclude.map(Ident.unsafe),
-      m.tagCategoriesInclude,
-      m.tagCategoriesExclude,
-      m.dateFrom,
-      m.dateUntil,
-      m.dueDateFrom,
-      m.dueDateUntil,
-      m.allNames,
-      m.itemSubset
-        .map(_.ids.flatMap(i => Ident.fromString(i).toOption).toSet)
-        .filter(_.nonEmpty),
-      m.customValues.map(mkCustomValue),
-      m.source,
-      None
+      OItemSearch.Query.Fix(account, None),
+      OItemSearch.Query.QueryCond(
+        m.name,
+        if (m.inbox) Seq(ItemState.Created)
+        else ItemState.validStates.toList,
+        m.direction,
+        m.corrPerson,
+        m.corrOrg,
+        m.concPerson,
+        m.concEquip,
+        m.folder,
+        m.tagsInclude.map(Ident.unsafe),
+        m.tagsExclude.map(Ident.unsafe),
+        m.tagCategoriesInclude,
+        m.tagCategoriesExclude,
+        m.dateFrom,
+        m.dateUntil,
+        m.dueDateFrom,
+        m.dueDateUntil,
+        m.allNames,
+        m.itemSubset
+          .map(_.ids.flatMap(i => Ident.fromString(i).toOption).toSet)
+          .filter(_.nonEmpty),
+        m.customValues.map(mkCustomValue),
+        m.source
+      )
     )
 
   def mkCustomValue(v: CustomFieldValue): OItemSearch.CustomValue =
@@ -182,7 +183,7 @@ trait Conversions {
       ItemLightGroup(g._1, g._2.map(mkItemLight).toList)
 
     val gs =
-      groups.map(mkGroup _).toList.sortWith((g1, g2) => g1.name.compareTo(g2.name) >= 0)
+      groups.map(mkGroup).toList.sortWith((g1, g2) => g1.name.compareTo(g2.name) >= 0)
     ItemLightList(gs)
   }
 
