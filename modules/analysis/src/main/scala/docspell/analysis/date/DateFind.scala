@@ -4,7 +4,9 @@ import java.time.LocalDate
 
 import scala.util.Try
 
+import cats.data.{NonEmptyList => Nel}
 import cats.implicits._
+import cats.kernel.Semigroup
 import fs2.{Pure, Stream}
 
 import docspell.analysis.split._
@@ -61,8 +63,7 @@ object DateFind {
       val mdy = pattern2(lang)
       // most is from wikipedia…
       val p = lang match {
-        case Language.English =>
-          mdy.alt(dmy).map(t => t._1 ++ t._2).or(mdy).or(ymd).or(dmy)
+        case Language.English    => Reader.all(dmy, mdy, ymd)
         case Language.German     => dmy.or(ymd).or(mdy)
         case Language.French     => dmy.or(ymd).or(mdy)
         case Language.Italian    => dmy.or(ymd).or(mdy)
@@ -117,9 +118,6 @@ object DateFind {
           case Result.Failure          => Result.Failure
         })
 
-      def alt(other: Reader[A]): Reader[(A, A)] =
-        Reader(words => Result.combine(read(words), other.read(words)))
-
       def or(other: Reader[A]): Reader[A] =
         Reader(words =>
           read(words) match {
@@ -132,6 +130,9 @@ object DateFind {
     object Reader {
       def fail[A]: Reader[A] =
         Reader(_ => Result.Failure)
+
+      def all[A: Semigroup](reader: Reader[A], more: Reader[A]*): Reader[A] =
+        Reader(words => Nel.of(reader, more: _*).map(_.read(words)).reduce)
 
       def readFirst[A](f: Word => Option[A]): Reader[A] =
         Reader({
@@ -162,12 +163,22 @@ object DateFind {
         def map[B](f: Nothing => B): Result[B]             = this
         def next[B](r: Reader[B]): Result[(Nothing, B)]    = this
       }
-      def combine[A](r0: Result[A], r1: Result[A]): Result[(A, A)] =
-        (r0, r1) match {
-          case (Success(a0, _), Success(a1, r1)) =>
-            Success((a0, a1), r1)
-          case _ =>
-            Failure
+
+      implicit def resultSemigroup[A: Semigroup]: Semigroup[Result[A]] =
+        Semigroup.instance { (r0, r1) =>
+          (r0, r1) match {
+            case (Success(a0, r0), Success(a1, r1)) =>
+              Success(Semigroup[A].combine(a0, a1), if (r0.size < r1.size) r0 else r1)
+
+            case (s @ Success(_, _), Failure) =>
+              s
+
+            case (Failure, s @ Success(_, _)) =>
+              s
+
+            case (Failure, Failure) =>
+              Failure
+          }
         }
     }
   }
