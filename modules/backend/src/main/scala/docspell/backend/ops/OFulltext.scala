@@ -164,7 +164,7 @@ object OFulltext {
             .flatMap(r => Stream.emits(r.results.map(_.itemId)))
             .compile
             .to(Set)
-          q = Query.empty(account).withCond(_.copy(itemIds = itemIds.some))
+          q = Query.empty(account).withFix(_.copy(itemIds = itemIds.some))
           res <- store.transact(QItem.searchStats(q))
         } yield res
       }
@@ -220,7 +220,7 @@ object OFulltext {
             .flatMap(r => Stream.emits(r.results.map(_.itemId)))
             .compile
             .to(Set)
-          qnext = q.withCond(_.copy(itemIds = items.some))
+          qnext = q.withFix(_.copy(itemIds = items.some))
           res <- store.transact(QItem.searchStats(qnext))
         } yield res
 

@@ -5,14 +5,14 @@ import cats.effect.Sync
 import cats.effect.concurrent.Ref
 import cats.implicits._
 import fs2.Stream
-
 import docspell.common.syntax.all._
 import docspell.common.{IdRef, _}
+import docspell.query.ItemQuery
 import docspell.store.Store
 import docspell.store.qb.DSL._
 import docspell.store.qb._
+import docspell.store.qb.generator.{ItemQueryGenerator, Tables}
 import docspell.store.records._
-
 import doobie.implicits._
 import doobie.{Query => _, _}
 import org.log4s.getLogger
@@ -172,10 +172,13 @@ object QItem {
         .leftJoin(pers1, pers1.pid === i.concPerson && pers1.cid === coll)
         .leftJoin(equip, equip.eid === i.concEquipment && equip.cid === coll),
       where(
-        i.cid === coll && or(
-          i.folder.isNull,
-          i.folder.in(QFolder.findMemberFolderIds(q.account))
+        i.cid === coll &&? q.itemIds.map(s =>
+          Nel.fromList(s.toList).map(nel => i.id.in(nel)).getOrElse(i.id.isNull)
         )
+          && or(
+            i.folder.isNull,
+            i.folder.in(QFolder.findMemberFolderIds(q.account))
+          )
       )
     ).distinct.orderBy(
       q.orderAsc
@@ -184,7 +187,7 @@ object QItem {
     )
   }
 
-  def queryCondition(coll: Ident, q: Query.QueryCond): Condition =
+  def queryCondFromForm(coll: Ident, q: Query.QueryForm): Condition =
     Condition.unit &&?
       q.direction.map(d => i.incoming === d) &&?
       q.name.map(n => i.name.like(QueryWildcard.lower(n))) &&?
@@ -220,6 +223,19 @@ object QItem {
         .map(subsel => i.id.notIn(subsel)) &&?
       findCustomFieldValuesForColl(coll, q.customValues)
         .map(itemIds => i.id.in(itemIds))
+
+  def queryCondFromExpr(coll: Ident, q: ItemQuery): Condition = {
+    val tables = Tables(i, org, pers0, pers1, equip, f, a, m)
+    ItemQueryGenerator.fromExpr(tables, coll)(q.expr)
+  }
+
+  def queryCondition(coll: Ident, cond: Query.QueryCond): Condition =
+    cond match {
+      case fm: Query.QueryForm =>
+        queryCondFromForm(coll, fm)
+      case expr: Query.QueryExpr =>
+        queryCondFromExpr(coll, expr.q)
+    }
 
   def findItems(
       q: Query,

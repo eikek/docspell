@@ -73,8 +73,8 @@ object NotifyDueItemsTask {
         Query
           .empty(ctx.args.account)
           .withOrder(orderAsc = _.dueDate)
-          .withCond(
-            _.copy(
+          .withCond(_ =>
+            Query.QueryForm.empty.copy(
               states = ItemState.validStates.toList,
               tagsInclude = ctx.args.tagsInclude,
               tagsExclude = ctx.args.tagsExclude,

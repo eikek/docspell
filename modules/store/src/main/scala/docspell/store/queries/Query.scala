@@ -1,6 +1,7 @@
 package docspell.store.queries
 
 import docspell.common._
+import docspell.query.ItemQuery
 import docspell.store.qb.Column
 import docspell.store.records.RItem
 
@@ -9,14 +10,23 @@ case class Query(fix: Query.Fix, cond: Query.QueryCond) {
     copy(cond = f(cond))
 
   def withOrder(orderAsc: RItem.Table => Column[_]): Query =
-    copy(fix = fix.copy(orderAsc = Some(orderAsc)))
+    withFix(_.copy(orderAsc = Some(orderAsc)))
+
+  def withFix(f: Query.Fix => Query.Fix): Query =
+    copy(fix = f(fix))
 }
 
 object Query {
 
-  case class Fix(account: AccountId, orderAsc: Option[RItem.Table => Column[_]])
+  case class Fix(
+      account: AccountId,
+      itemIds: Option[Set[Ident]],
+      orderAsc: Option[RItem.Table => Column[_]]
+  )
 
-  case class QueryCond(
+  sealed trait QueryCond
+
+  case class QueryForm(
       name: Option[String],
       states: Seq[ItemState],
       direction: Option[Direction],
@@ -37,10 +47,10 @@ object Query {
       itemIds: Option[Set[Ident]],
       customValues: Seq[CustomValue],
       source: Option[String]
-  )
-  object QueryCond {
+  ) extends QueryCond
+  object QueryForm {
     val empty =
-      QueryCond(
+      QueryForm(
         None,
         Seq.empty,
         None,
@@ -64,7 +74,9 @@ object Query {
       )
   }
 
+  case class QueryExpr(q: ItemQuery) extends QueryCond
+
   def empty(account: AccountId): Query =
-    Query(Fix(account, None), QueryCond.empty)
+    Query(Fix(account, None, None), QueryForm.empty)
 
 }

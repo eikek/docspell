@@ -4,21 +4,20 @@ import cats.Monoid
 import cats.data.NonEmptyList
 import cats.effect._
 import cats.implicits._
-
 import docspell.backend.BackendApp
 import docspell.backend.auth.AuthToken
 import docspell.backend.ops.OCustomFields.{RemoveValue, SetValue}
 import docspell.backend.ops.OFulltext
-import docspell.backend.ops.OItemSearch.Batch
+import docspell.backend.ops.OItemSearch.{Batch, Query}
 import docspell.common._
 import docspell.common.syntax.all._
+import docspell.query.ItemQueryParser
 import docspell.restapi.model._
 import docspell.restserver.Config
 import docspell.restserver.conv.Conversions
 import docspell.restserver.http4s.BinaryUtil
 import docspell.restserver.http4s.Responses
 import docspell.restserver.http4s.{QueryParam => QP}
-
 import org.http4s.HttpRoutes
 import org.http4s.circe.CirceEntityDecoder._
 import org.http4s.circe.CirceEntityEncoder._
@@ -45,6 +44,33 @@ object ItemRoutes {
             backend.item.convertAllPdf(user.account.collective.some, user.account, true)
           resp <- Ok(Conversions.basicResult(res, "Task submitted"))
         } yield resp
+
+      case GET -> Root / "search" :? QP.Query(q) :? QP.Limit(limit) :? QP.Offset(
+            offset
+          ) =>
+        val query =
+          q.map(ItemQueryParser.parse) match {
+            case Some(Right(q)) =>
+              Right(Query(Query.Fix(user.account, None, None), Query.QueryExpr(q)))
+            case Some(Left(err)) =>
+              Left(err)
+            case None =>
+              Right(Query(Query.Fix(user.account, None, None), Query.QueryForm.empty))
+          }
+        val li = limit.getOrElse(cfg.maxItemPageSize)
+        val of = offset.getOrElse(0)
+        query match {
+          case Left(err) =>
+            BadRequest(BasicResult(false, err))
+          case Right(sq) =>
+            for {
+              items <- backend.itemSearch.findItems(cfg.maxNoteLength)(
+                sq,
+                Batch(of, li).restrictLimitTo(cfg.maxItemPageSize)
+              )
+              ok <- Ok(Conversions.mkItemList(items))
+            } yield ok
+        }
 
       case req @ POST -> Root / "search" =>
         for {

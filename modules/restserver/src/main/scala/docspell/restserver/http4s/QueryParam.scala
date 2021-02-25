@@ -25,5 +25,9 @@ object QueryParam {
 
   object QueryOpt extends OptionalQueryParamDecoderMatcher[QueryString]("q")
 
+  object Query  extends OptionalQueryParamDecoderMatcher[String]("q")
+  object Limit  extends OptionalQueryParamDecoderMatcher[Int]("limit")
+  object Offset extends OptionalQueryParamDecoderMatcher[Int]("offset")
+
   object WithFallback extends OptionalQueryParamDecoderMatcher[Boolean]("withFallback")
 }

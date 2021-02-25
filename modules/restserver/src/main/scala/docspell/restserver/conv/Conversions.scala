@@ -145,8 +145,8 @@ trait Conversions {
 
   def mkQuery(m: ItemSearch, account: AccountId): OItemSearch.Query =
     OItemSearch.Query(
-      OItemSearch.Query.Fix(account, None),
-      OItemSearch.Query.QueryCond(
+      OItemSearch.Query.Fix(account, None, None),
+      OItemSearch.Query.QueryForm(
         m.name,
         if (m.inbox) Seq(ItemState.Created)
         else ItemState.validStates.toList,

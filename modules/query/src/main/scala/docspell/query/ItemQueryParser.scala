@@ -12,7 +12,7 @@ object ItemQueryParser {
     ExprParser.exprParser
       .parseAll(input.trim)
       .left
-      .map(_.toString)
+      .map(pe => s"Error parsing: '${input.trim}': $pe")
       .map(expr => ItemQuery(expr, Some(input.trim)))
 
   def parseUnsafe(input: String): ItemQuery =
