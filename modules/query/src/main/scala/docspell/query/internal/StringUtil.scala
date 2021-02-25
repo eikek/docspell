@@ -22,7 +22,7 @@ package docspell.query.internal
 
 // modified, from
 // https://github.com/typelevel/cats-parse/blob/e7a58ef15925358fbe7a4c0c1a204296e366a06c/bench/src/main/scala/cats/parse/bench/self.scala
-import cats.parse.{Parser0 => P0, Parser => P}
+import cats.parse.{Parser => P, Parser0 => P0}
 
 object StringUtil {
 

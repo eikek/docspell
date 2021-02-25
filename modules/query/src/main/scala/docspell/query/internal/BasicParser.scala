@@ -1,7 +1,7 @@
 package docspell.query.internal
 
 import cats.data.{NonEmptyList => Nel}
-import cats.parse.{Parser0, Parser => P}
+import cats.parse.{Parser => P, Parser0}
 
 object BasicParser {
   private[this] val whitespace: P[Unit] = P.charIn(" \t\r\n").void

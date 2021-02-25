@@ -1,6 +1,7 @@
 package docspell.query
 
 import cats.data.{NonEmptyList => Nel}
+
 import docspell.query.ItemQuery.Attr.{DateAttr, StringAttr}
 
 /** A query evaluates to `true` or `false` given enough details about

@@ -5,6 +5,7 @@ import cats.effect.Sync
 import cats.effect.concurrent.Ref
 import cats.implicits._
 import fs2.Stream
+
 import docspell.common.syntax.all._
 import docspell.common.{IdRef, _}
 import docspell.query.ItemQuery
@@ -13,6 +14,7 @@ import docspell.store.qb.DSL._
 import docspell.store.qb._
 import docspell.store.qb.generator.{ItemQueryGenerator, Tables}
 import docspell.store.records._
+
 import doobie.implicits._
 import doobie.{Query => _, _}
 import org.log4s.getLogger

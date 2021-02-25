@@ -4,6 +4,7 @@ import cats.Monoid
 import cats.data.NonEmptyList
 import cats.effect._
 import cats.implicits._
+
 import docspell.backend.BackendApp
 import docspell.backend.auth.AuthToken
 import docspell.backend.ops.OCustomFields.{RemoveValue, SetValue}
@@ -18,6 +19,7 @@ import docspell.restserver.conv.Conversions
 import docspell.restserver.http4s.BinaryUtil
 import docspell.restserver.http4s.Responses
 import docspell.restserver.http4s.{QueryParam => QP}
+
 import org.http4s.HttpRoutes
 import org.http4s.circe.CirceEntityDecoder._
 import org.http4s.circe.CirceEntityEncoder._

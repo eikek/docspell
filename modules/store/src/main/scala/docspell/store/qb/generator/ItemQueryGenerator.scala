@@ -3,12 +3,14 @@ package docspell.store.qb.generator
 import java.time.{Instant, LocalDate}
 
 import cats.data.NonEmptyList
+
 import docspell.common._
-import docspell.query.{Date, ItemQuery}
 import docspell.query.ItemQuery._
-import docspell.store.qb.{Operator => QOp, _}
+import docspell.query.{Date, ItemQuery}
 import docspell.store.qb.DSL._
+import docspell.store.qb.{Operator => QOp, _}
 import docspell.store.records.{RCustomField, RCustomFieldValue, TagItemName}
+
 import doobie.util.Put
 
 object ItemQueryGenerator {

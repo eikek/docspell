@@ -1,6 +1,7 @@
 package docspell.query.internal
 
 import cats.parse.{Parser => P}
+
 import docspell.query.ItemQuery._
 
 object OperatorParser {

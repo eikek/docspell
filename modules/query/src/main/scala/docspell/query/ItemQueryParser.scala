@@ -1,8 +1,8 @@
 package docspell.query
 
-import docspell.query.internal.ExprParser
-
 import scala.scalajs.js.annotation._
+
+import docspell.query.internal.ExprParser
 
 @JSExportTopLevel("DsItemQueryParser")
 object ItemQueryParser {

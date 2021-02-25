@@ -2,6 +2,7 @@ package docspell.query.internal
 
 import cats.implicits._
 import cats.parse.{Numbers, Parser => P}
+
 import docspell.query.Date
 
 object DateParser {
