@@ -12,6 +12,7 @@ import docspell.store.qb.{Operator => QOp, _}
 import docspell.store.records.{RCustomField, RCustomFieldValue, TagItemName}
 
 import doobie.util.Put
+import docspell.store.queries.QueryWildcard
 
 object ItemQueryGenerator {
 
@@ -80,18 +81,13 @@ object ItemQueryGenerator {
         val col = stringColumn(tables)(attr)
         op match {
           case Operator.Like =>
-            Condition.CompareVal(col, makeOp(op), value.toLowerCase)
+            Condition.CompareVal(col, makeOp(op), QueryWildcard.lower(value))
           case _ =>
             Condition.CompareVal(col, makeOp(op), value)
         }
 
       case Expr.SimpleExpr(op, Property.DateProperty(attr, value)) =>
-        val dt = value match {
-          case Date.Local(year, month, day) =>
-            Timestamp.atUtc(LocalDate.of(year, month, day).atStartOfDay())
-          case Date.Millis(ms) =>
-            Timestamp(Instant.ofEpochMilli(ms))
-        }
+        val dt  = dateToTimestamp(value)
         val col = timestampColumn(tables)(attr)
         Condition.CompareVal(col, makeOp(op), dt)
 
@@ -99,6 +95,12 @@ object ItemQueryGenerator {
         val col = stringColumn(tables)(attr)
         if (values.tail.isEmpty) col === values.head
         else col.in(values)
+
+      case Expr.InDateExpr(attr, values) =>
+        val col = timestampColumn(tables)(attr)
+        val dts = values.map(dateToTimestamp)
+        if (values.tail.isEmpty) col === dts.head
+        else col.in(dts)
 
       case Expr.TagIdsMatch(op, tags) =>
         val ids = tags.toList.flatMap(s => Ident.fromString(s).toOption)
@@ -140,6 +142,14 @@ object ItemQueryGenerator {
         Condition.unit
     }
 
+  private def dateToTimestamp(date: Date): Timestamp =
+    date match {
+      case Date.Local(year, month, day) =>
+        Timestamp.atUtc(LocalDate.of(year, month, day).atStartOfDay())
+      case Date.Millis(ms) =>
+        Timestamp(Instant.ofEpochMilli(ms))
+    }
+
   private def anyColumn(tables: Tables)(attr: Attr): Column[_] =
     attr match {
       case s: Attr.StringAttr =>
@@ -177,6 +187,8 @@ object ItemQueryGenerator {
     operator match {
       case Operator.Eq =>
         QOp.Eq
+      case Operator.Neq =>
+        QOp.Neq
       case Operator.Like =>
         QOp.LowerLike
       case Operator.Gt =>

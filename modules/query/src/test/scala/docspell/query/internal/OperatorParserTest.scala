@@ -1,4 +1,4 @@
-package docspell.query
+package docspell.query.internal
 
 import minitest._
 import docspell.query.ItemQuery.{Operator, TagOperator}
@@ -8,6 +8,7 @@ object OperatorParserTest extends SimpleTestSuite {
   test("operator values") {
     val p = OperatorParser.op
     assertEquals(p.parseAll("="), Right(Operator.Eq))
+    assertEquals(p.parseAll("!="), Right(Operator.Neq))
     assertEquals(p.parseAll(":"), Right(Operator.Like))
     assertEquals(p.parseAll("<"), Right(Operator.Lt))
     assertEquals(p.parseAll(">"), Right(Operator.Gt))

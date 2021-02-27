@@ -51,13 +51,11 @@ object ItemRoutes {
             offset
           ) =>
         val query =
-          q.map(ItemQueryParser.parse) match {
-            case Some(Right(q)) =>
+          ItemQueryParser.parse(q.getOrElse("")) match {
+            case Right(q) =>
               Right(Query(Query.Fix(user.account, None, None), Query.QueryExpr(q)))
-            case Some(Left(err)) =>
+            case Left(err) =>
               Left(err)
-            case None =>
-              Right(Query(Query.Fix(user.account, None, None), Query.QueryForm.empty))
           }
         val li = limit.getOrElse(cfg.maxItemPageSize)
         val of = offset.getOrElse(0)

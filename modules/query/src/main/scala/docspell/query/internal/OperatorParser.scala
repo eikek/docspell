@@ -8,6 +8,9 @@ object OperatorParser {
   private[this] val Eq: P[Operator] =
     P.char('=').void.map(_ => Operator.Eq)
 
+  private[this] val Neq: P[Operator] =
+    P.string("!=").void.map(_ => Operator.Neq)
+
   private[this] val Like: P[Operator] =
     P.char(':').void.map(_ => Operator.Like)
 
@@ -24,7 +27,7 @@ object OperatorParser {
     P.string("<=").map(_ => Operator.Lte)
 
   val op: P[Operator] =
-    P.oneOf(List(Like, Eq, Gte, Lte, Gt, Lt))
+    P.oneOf(List(Like, Eq, Neq, Gte, Lte, Gt, Lt))
 
   private[this] val anyOp: P[TagOperator] =
     P.char(':').map(_ => TagOperator.AnyMatch)

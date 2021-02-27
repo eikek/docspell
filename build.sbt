@@ -269,6 +269,7 @@ val query =
   crossProject(JSPlatform, JVMPlatform)
     .crossType(CrossType.Pure)
     .in(file("modules/query"))
+    .disablePlugins(RevolverPlugin)
     .settings(sharedSettings)
     .settings(testSettings)
     .settings(
@@ -596,6 +597,7 @@ val website = project
 
 val root = project
   .in(file("."))
+  .disablePlugins(RevolverPlugin)
   .settings(sharedSettings)
   .settings(noPublish)
   .settings(

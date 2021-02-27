@@ -14,10 +14,12 @@ import docspell.query.ItemQuery.Attr.{DateAttr, StringAttr}
 final case class ItemQuery(expr: ItemQuery.Expr, raw: Option[String])
 
 object ItemQuery {
+  val all = ItemQuery(Expr.Exists(Attr.ItemId), Some(""))
 
   sealed trait Operator
   object Operator {
     case object Eq   extends Operator
+    case object Neq  extends Operator
     case object Like extends Operator
     case object Gt   extends Operator
     case object Lt   extends Operator
@@ -75,24 +77,26 @@ object ItemQuery {
   }
 
   object Expr {
-    case class AndExpr(expr: Nel[Expr]) extends Expr
-    case class OrExpr(expr: Nel[Expr])  extends Expr
-    case class NotExpr(expr: Expr) extends Expr {
+    final case class AndExpr(expr: Nel[Expr]) extends Expr
+    final case class OrExpr(expr: Nel[Expr])  extends Expr
+    final case class NotExpr(expr: Expr) extends Expr {
       override def negate: Expr =
         expr
     }
 
-    case class SimpleExpr(op: Operator, prop: Property)      extends Expr
-    case class Exists(field: Attr)                           extends Expr
-    case class InExpr(attr: StringAttr, values: Nel[String]) extends Expr
+    final case class SimpleExpr(op: Operator, prop: Property)      extends Expr
+    final case class Exists(field: Attr)                           extends Expr
+    final case class InExpr(attr: StringAttr, values: Nel[String]) extends Expr
+    final case class InDateExpr(attr: DateAttr, values: Nel[Date]) extends Expr
 
-    case class TagIdsMatch(op: TagOperator, tags: Nel[String])      extends Expr
-    case class TagsMatch(op: TagOperator, tags: Nel[String])        extends Expr
-    case class TagCategoryMatch(op: TagOperator, cats: Nel[String]) extends Expr
+    final case class TagIdsMatch(op: TagOperator, tags: Nel[String])      extends Expr
+    final case class TagsMatch(op: TagOperator, tags: Nel[String])        extends Expr
+    final case class TagCategoryMatch(op: TagOperator, cats: Nel[String]) extends Expr
 
-    case class CustomFieldMatch(name: String, op: Operator, value: String) extends Expr
+    final case class CustomFieldMatch(name: String, op: Operator, value: String)
+        extends Expr
 
-    case class Fulltext(query: String) extends Expr
+    final case class Fulltext(query: String) extends Expr
   }
 
 }

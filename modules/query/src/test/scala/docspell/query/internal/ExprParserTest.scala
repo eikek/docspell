@@ -1,8 +1,7 @@
-package docspell.query
+package docspell.query.internal
 
 import docspell.query.ItemQuery._
-import docspell.query.SimpleExprParserTest.stringExpr
-import docspell.query.internal.ExprParser
+import docspell.query.internal.SimpleExprParserTest.stringExpr
 import minitest._
 import cats.data.{NonEmptyList => Nel}
 
@@ -40,6 +39,30 @@ object ExprParserTest extends SimpleTestSuite {
           Nel.of(
             stringExpr(Operator.Like, Attr.ItemName, "hello"),
             stringExpr(Operator.Eq, Attr.ItemSource, "webapp")
+          )
+        )
+      )
+    )
+  }
+
+  test("tag list inside and/or") {
+    val p = ExprParser.exprParser
+    assertEquals(
+      p.parseAll("(& tag:a,b,c)"),
+      Right(
+        Expr.AndExpr(
+          Nel.of(
+            Expr.TagsMatch(TagOperator.AnyMatch, Nel.of("a", "b", "c"))
+          )
+        )
+      )
+    )
+    assertEquals(
+      p.parseAll("(& tag:a,b,c )"),
+      Right(
+        Expr.AndExpr(
+          Nel.of(
+            Expr.TagsMatch(TagOperator.AnyMatch, Nel.of("a", "b", "c"))
           )
         )
       )

@@ -10,15 +10,29 @@ object SimpleExprParser {
   private[this] val op: P[Operator] =
     OperatorParser.op.surroundedBy(BasicParser.ws0)
 
-  val stringExpr: P[Expr.SimpleExpr] =
-    (AttrParser.stringAttr ~ op ~ BasicParser.singleString).map {
-      case ((attr, op), value) =>
+  private[this] val inOp: P[Unit] =
+    P.string("~=").surroundedBy(BasicParser.ws0)
+
+  private[this] val inOrOpStr =
+    P.eitherOr(op ~ BasicParser.singleString, inOp *> BasicParser.stringOrMore)
+
+  private[this] val inOrOpDate =
+    P.eitherOr(op ~ DateParser.localDate, inOp *> DateParser.localDateOrMore)
+
+  val stringExpr: P[Expr] =
+    (AttrParser.stringAttr ~ inOrOpStr).map {
+      case (attr, Right((op, value))) =>
         Expr.SimpleExpr(op, Property.StringProperty(attr, value))
+      case (attr, Left(values)) =>
+        Expr.InExpr(attr, values)
     }
 
-  val dateExpr: P[Expr.SimpleExpr] =
-    (AttrParser.dateAttr ~ op ~ DateParser.localDate).map { case ((attr, op), value) =>
-      Expr.SimpleExpr(op, Property.DateProperty(attr, value))
+  val dateExpr: P[Expr] =
+    (AttrParser.dateAttr ~ inOrOpDate).map {
+      case (attr, Right((op, value))) =>
+        Expr.SimpleExpr(op, Property.DateProperty(attr, value))
+      case (attr, Left(values)) =>
+        Expr.InDateExpr(attr, values)
     }
 
   val existsExpr: P[Expr.Exists] =

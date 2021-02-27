@@ -1,5 +1,6 @@
 package docspell.query.internal
 
+import cats.data.NonEmptyList
 import cats.implicits._
 import cats.parse.{Numbers, Parser => P}
 
@@ -38,5 +39,8 @@ object DateParser {
 
   val localDate: P[Date] =
     localDateFromString.backtrack.orElse(dateFromMillis)
+
+  val localDateOrMore: P[NonEmptyList[Date]] =
+    localDate.repSep(BasicParser.stringListSep)
 
 }

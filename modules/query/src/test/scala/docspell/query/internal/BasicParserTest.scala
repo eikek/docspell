@@ -1,4 +1,4 @@
-package docspell.query
+package docspell.query.internal
 
 import minitest._
 import cats.data.{NonEmptyList => Nel}
@@ -14,13 +14,7 @@ object BasicParserTest extends SimpleTestSuite {
   }
 
   test("string list values") {
-    val p = BasicParser.stringListValue
-    assertEquals(p.parseAll("[ab,cd]"), Right(Nel.of("ab", "cd")))
-    assertEquals(p.parseAll("[\"ab 12\",cd]"), Right(Nel.of("ab 12", "cd")))
-    assertEquals(
-      p.parseAll("[\"ab, 12\",cd]"),
-      Right(Nel.of("ab, 12", "cd"))
-    )
+    val p = BasicParser.stringOrMore
     assertEquals(p.parseAll("ab,cd,123"), Right(Nel.of("ab", "cd", "123")))
     assertEquals(p.parseAll("a,b"), Right(Nel.of("a", "b")))
     assert(p.parseAll("[a,b").isLeft)
@@ -30,6 +24,7 @@ object BasicParserTest extends SimpleTestSuite {
     val p = BasicParser.stringOrMore
     assertEquals(p.parseAll("abcde"), Right(Nel.of("abcde")))
     assertEquals(p.parseAll(""""a,b,c""""), Right(Nel.of("a,b,c")))
-    assertEquals(p.parseAll("[a,b,c]"), Right(Nel.of("a", "b", "c")))
+
+    assertEquals(p.parse("a, b, c "), Right((" ", Nel.of("a", "b", "c"))))
   }
 }

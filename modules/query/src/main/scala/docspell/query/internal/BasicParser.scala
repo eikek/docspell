@@ -7,17 +7,14 @@ object BasicParser {
   private[this] val whitespace: P[Unit] = P.charIn(" \t\r\n").void
 
   val ws0: Parser0[Unit] = whitespace.rep0.void
-  val ws1: P[Unit]       = whitespace.rep(1).void
+  val ws1: P[Unit]       = whitespace.rep.void
 
-  private[this] val listSep: P[Unit] =
-    P.char(',').surroundedBy(BasicParser.ws0).void
-
-  def rep[A](pa: P[A]): P[Nel[A]] =
-    pa.repSep(listSep)
+  val stringListSep: P[Unit] =
+    (ws0.with1.soft ~ P.char(',') ~ ws0).void
 
   private[this] val basicString: P[String] =
     P.charsWhile(c =>
-      c > ' ' && c != '"' && c != '\\' && c != ',' && c != '[' && c != ']'
+      c > ' ' && c != '"' && c != '\\' && c != ',' && c != '[' && c != ']' && c != '(' && c != ')'
     )
 
   private[this] val identChars: Set[Char] =
@@ -38,14 +35,7 @@ object BasicParser {
   val singleString: P[String] =
     basicString.backtrack.orElse(StringUtil.quoted('"'))
 
-  val stringListValue: P[Nel[String]] = rep(singleString).with1
-    .between(P.char('['), P.char(']'))
-    .backtrack
-    .orElse(rep(singleString))
-
   val stringOrMore: P[Nel[String]] =
-    stringListValue.backtrack.orElse(
-      singleString.map(v => Nel.of(v))
-    )
+    singleString.repSep(stringListSep)
 
 }

@@ -1,7 +1,7 @@
-package docspell.query
+package docspell.query.internal
 
-import docspell.query.internal.DateParser
 import minitest._
+import docspell.query.Date
 
 object DateParserTest extends SimpleTestSuite {
 

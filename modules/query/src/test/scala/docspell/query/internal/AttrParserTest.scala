@@ -1,4 +1,4 @@
-package docspell.query
+package docspell.query.internal
 
 import docspell.query.ItemQuery.Attr
 import docspell.query.internal.AttrParser

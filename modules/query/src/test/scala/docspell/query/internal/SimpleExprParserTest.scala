@@ -1,9 +1,9 @@
-package docspell.query
+package docspell.query.internal
 
 import cats.data.{NonEmptyList => Nel}
 import docspell.query.ItemQuery._
-import docspell.query.internal.SimpleExprParser
 import minitest._
+import docspell.query.Date
 
 object SimpleExprParserTest extends SimpleTestSuite {
 
@@ -29,6 +29,11 @@ object SimpleExprParserTest extends SimpleTestSuite {
       p.parseAll("conc.pers.id=Aaiet-aied"),
       Right(stringExpr(Operator.Eq, Attr.Concerning.PersonId, "Aaiet-aied"))
     )
+    assert(p.parseAll("conc.pers.id=Aaiet,aied").isLeft)
+    assertEquals(
+      p.parseAll("name~=hello,world"),
+      Right(Expr.InExpr(Attr.ItemName, Nel.of("hello", "world")))
+    )
   }
 
   test("date expr") {
@@ -40,6 +45,10 @@ object SimpleExprParserTest extends SimpleTestSuite {
     assertEquals(
       p.parseAll("due<2021-03-14"),
       Right(dateExpr(Operator.Lt, Attr.DueDate, ld(2021, 3, 14)))
+    )
+    assertEquals(
+      p.parseAll("due~=2021-03-14,2021-03-13"),
+      Right(Expr.InDateExpr(Attr.DueDate, Nel.of(ld(2021, 3, 14), ld(2021, 3, 13))))
     )
   }
 
