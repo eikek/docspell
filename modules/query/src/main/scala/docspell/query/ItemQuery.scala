@@ -40,6 +40,7 @@ object ItemQuery {
 
     case object ItemName   extends StringAttr
     case object ItemSource extends StringAttr
+    case object ItemNotes  extends StringAttr
     case object ItemId     extends StringAttr
     case object Date       extends DateAttr
     case object DueDate    extends DateAttr
@@ -69,6 +70,11 @@ object ItemQuery {
     final case class StringProperty(attr: StringAttr, value: String) extends Property
     final case class DateProperty(attr: DateAttr, value: Date)       extends Property
 
+    def apply(sa: StringAttr, value: String): Property =
+      StringProperty(sa, value)
+
+    def apply(da: DateAttr, value: Date): Property =
+      DateProperty(da, value)
   }
 
   sealed trait Expr {
@@ -88,6 +94,8 @@ object ItemQuery {
     final case class Exists(field: Attr)                           extends Expr
     final case class InExpr(attr: StringAttr, values: Nel[String]) extends Expr
     final case class InDateExpr(attr: DateAttr, values: Nel[Date]) extends Expr
+    final case class InboxExpr(inbox: Boolean)                     extends Expr
+    final case class DirectionExpr(incoming: Boolean)              extends Expr
 
     final case class TagIdsMatch(op: TagOperator, tags: Nel[String])      extends Expr
     final case class TagsMatch(op: TagOperator, tags: Nel[String])        extends Expr
@@ -97,6 +105,21 @@ object ItemQuery {
         extends Expr
 
     final case class Fulltext(query: String) extends Expr
+
+    def or(expr0: Expr, exprs: Expr*): OrExpr =
+      OrExpr(Nel.of(expr0, exprs: _*))
+
+    def and(expr0: Expr, exprs: Expr*): AndExpr =
+      AndExpr(Nel.of(expr0, exprs: _*))
+
+    def string(op: Operator, attr: StringAttr, value: String): SimpleExpr =
+      SimpleExpr(op, Property(attr, value))
+
+    def like(attr: StringAttr, value: String): SimpleExpr =
+      string(Operator.Like, attr, value)
+
+    def date(op: Operator, attr: DateAttr, value: Date): SimpleExpr =
+      SimpleExpr(op, Property(attr, value))
   }
 
 }

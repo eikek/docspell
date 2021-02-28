@@ -17,7 +17,7 @@ object SimpleExprParser {
     P.eitherOr(op ~ BasicParser.singleString, inOp *> BasicParser.stringOrMore)
 
   private[this] val inOrOpDate =
-    P.eitherOr(op ~ DateParser.localDate, inOp *> DateParser.localDateOrMore)
+    P.eitherOr(op ~ DateParser.date, inOp *> DateParser.dateOrMore)
 
   val stringExpr: P[Expr] =
     (AttrParser.stringAttr ~ inOrOpStr).map {
@@ -65,6 +65,12 @@ object SimpleExprParser {
         CustomFieldMatch(name, op, value)
     }
 
+  val inboxExpr: P[Expr.InboxExpr] =
+    (P.string("inbox:") *> BasicParser.bool).map(Expr.InboxExpr.apply)
+
+  val dirExpr: P[Expr.DirectionExpr] =
+    (P.string("incoming:") *> BasicParser.bool).map(Expr.DirectionExpr.apply)
+
   val simpleExpr: P[Expr] =
     P.oneOf(
       List(
@@ -75,7 +81,9 @@ object SimpleExprParser {
         tagIdExpr,
         tagExpr,
         catExpr,
-        customFieldExpr
+        customFieldExpr,
+        inboxExpr,
+        dirExpr
       )
     )
 }

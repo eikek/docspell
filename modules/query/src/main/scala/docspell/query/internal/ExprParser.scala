@@ -24,10 +24,11 @@ object ExprParser {
 
   val exprParser: P[Expr] =
     P.recursive[Expr] { recurse =>
-      val andP = and(recurse)
-      val orP  = or(recurse)
-      val notP = not(recurse)
-      P.oneOf(SimpleExprParser.simpleExpr :: andP :: orP :: notP :: Nil)
+      val andP   = and(recurse)
+      val orP    = or(recurse)
+      val notP   = not(recurse)
+      val macros = MacroParser.all
+      P.oneOf(SimpleExprParser.simpleExpr :: macros :: andP :: orP :: notP :: Nil)
     }
 
   def parseQuery(input: String): Either[P.Error, ItemQuery] = {

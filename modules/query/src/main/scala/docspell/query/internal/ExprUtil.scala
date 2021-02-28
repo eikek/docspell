@@ -22,9 +22,19 @@ object ExprUtil {
         inner match {
           case NotExpr(inner2) =>
             reduce(inner2)
+          case InboxExpr(flag) =>
+            InboxExpr(!flag)
+          case DirectionExpr(flag) =>
+            DirectionExpr(!flag)
           case _ =>
             expr
         }
+
+      case DirectionExpr(_) =>
+        expr
+
+      case InboxExpr(_) =>
+        expr
 
       case InExpr(_, _) =>
         expr

@@ -275,7 +275,9 @@ val query =
     .settings(
       name := "docspell-query",
       libraryDependencies +=
-        Dependencies.catsParseJS.value
+        Dependencies.catsParseJS.value,
+      libraryDependencies +=
+        Dependencies.scalaJavaTime.value
     )
     .jsSettings(
       Test / fork := false

@@ -1,6 +1,7 @@
 package docspell.store.qb.generator
 
-import java.time.{Instant, LocalDate}
+import java.time.Instant
+import java.time.LocalDate
 
 import cats.data.NonEmptyList
 
@@ -9,27 +10,27 @@ import docspell.query.ItemQuery._
 import docspell.query.{Date, ItemQuery}
 import docspell.store.qb.DSL._
 import docspell.store.qb.{Operator => QOp, _}
+import docspell.store.queries.QueryWildcard
 import docspell.store.records.{RCustomField, RCustomFieldValue, TagItemName}
 
 import doobie.util.Put
-import docspell.store.queries.QueryWildcard
 
 object ItemQueryGenerator {
 
-  def apply(tables: Tables, coll: Ident)(q: ItemQuery)(implicit
+  def apply(today: LocalDate, tables: Tables, coll: Ident)(q: ItemQuery)(implicit
       PT: Put[Timestamp]
   ): Condition =
-    fromExpr(tables, coll)(q.expr)
+    fromExpr(today, tables, coll)(q.expr)
 
-  final def fromExpr(tables: Tables, coll: Ident)(
+  final def fromExpr(today: LocalDate, tables: Tables, coll: Ident)(
       expr: Expr
   )(implicit PT: Put[Timestamp]): Condition =
     expr match {
       case Expr.AndExpr(inner) =>
-        Condition.And(inner.map(fromExpr(tables, coll)))
+        Condition.And(inner.map(fromExpr(today, tables, coll)))
 
       case Expr.OrExpr(inner) =>
-        Condition.Or(inner.map(fromExpr(tables, coll)))
+        Condition.Or(inner.map(fromExpr(today, tables, coll)))
 
       case Expr.NotExpr(inner) =>
         inner match {
@@ -71,7 +72,7 @@ object ItemQueryGenerator {
             Condition.unit
 
           case _ =>
-            Condition.Not(fromExpr(tables, coll)(inner))
+            Condition.Not(fromExpr(today, tables, coll)(inner))
         }
 
       case Expr.Exists(field) =>
@@ -87,9 +88,10 @@ object ItemQueryGenerator {
         }
 
       case Expr.SimpleExpr(op, Property.DateProperty(attr, value)) =>
-        val dt  = dateToTimestamp(value)
-        val col = timestampColumn(tables)(attr)
-        Condition.CompareVal(col, makeOp(op), dt)
+        val dt       = dateToTimestamp(today)(value)
+        val col      = timestampColumn(tables)(attr)
+        val noLikeOp = if (op == Operator.Like) Operator.Eq else op
+        Condition.CompareVal(col, makeOp(noLikeOp), dt)
 
       case Expr.InExpr(attr, values) =>
         val col = stringColumn(tables)(attr)
@@ -98,9 +100,17 @@ object ItemQueryGenerator {
 
       case Expr.InDateExpr(attr, values) =>
         val col = timestampColumn(tables)(attr)
-        val dts = values.map(dateToTimestamp)
+        val dts = values.map(dateToTimestamp(today))
         if (values.tail.isEmpty) col === dts.head
         else col.in(dts)
+
+      case Expr.DirectionExpr(incoming) =>
+        if (incoming) tables.item.incoming === Direction.Incoming
+        else tables.item.incoming === Direction.Outgoing
+
+      case Expr.InboxExpr(flag) =>
+        if (flag) tables.item.state === ItemState.created
+        else tables.item.state === ItemState.confirmed
 
       case Expr.TagIdsMatch(op, tags) =>
         val ids = tags.toList.flatMap(s => Ident.fromString(s).toOption)
@@ -142,12 +152,31 @@ object ItemQueryGenerator {
         Condition.unit
     }
 
-  private def dateToTimestamp(date: Date): Timestamp =
+  private def dateToTimestamp(today: LocalDate)(date: Date): Timestamp =
     date match {
-      case Date.Local(year, month, day) =>
-        Timestamp.atUtc(LocalDate.of(year, month, day).atStartOfDay())
+      case d: Date.DateLiteral =>
+        val ld = dateLiteralToDate(today)(d)
+        println(s">>>> date= $ld")
+        Timestamp.atUtc(ld.atStartOfDay)
+      case Date.Calc(date, c, period) =>
+        val ld = c match {
+          case Date.CalcDirection.Plus =>
+            dateLiteralToDate(today)(date).plus(period)
+          case Date.CalcDirection.Minus =>
+            dateLiteralToDate(today)(date).minus(period)
+        }
+        println(s">>>> date= $ld")
+        Timestamp.atUtc(ld.atStartOfDay())
+    }
+
+  private def dateLiteralToDate(today: LocalDate)(dateLit: Date.DateLiteral): LocalDate =
+    dateLit match {
+      case Date.Local(date) =>
+        date
       case Date.Millis(ms) =>
-        Timestamp(Instant.ofEpochMilli(ms))
+        Instant.ofEpochMilli(ms).atZone(Timestamp.UTC).toLocalDate()
+      case Date.Today =>
+        today
     }
 
   private def anyColumn(tables: Tables)(attr: Attr): Column[_] =
@@ -171,6 +200,7 @@ object ItemQueryGenerator {
       case Attr.ItemId                   => tables.item.id.cast[String]
       case Attr.ItemName                 => tables.item.name
       case Attr.ItemSource               => tables.item.source
+      case Attr.ItemNotes                => tables.item.notes
       case Attr.Correspondent.OrgId      => tables.corrOrg.oid.cast[String]
       case Attr.Correspondent.OrgName    => tables.corrOrg.name
       case Attr.Correspondent.PersonId   => tables.corrPers.pid.cast[String]

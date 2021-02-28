@@ -159,13 +159,14 @@ object OFulltext {
 
         for {
           folder <- store.transact(QFolder.getMemberFolders(account))
+          now    <- Timestamp.current[F]
           itemIds <- fts
             .searchAll(fq.withFolders(folder))
             .flatMap(r => Stream.emits(r.results.map(_.itemId)))
             .compile
             .to(Set)
           q = Query.empty(account).withFix(_.copy(itemIds = itemIds.some))
-          res <- store.transact(QItem.searchStats(q))
+          res <- store.transact(QItem.searchStats(now.toUtcDate)(q))
         } yield res
       }
 
@@ -221,7 +222,8 @@ object OFulltext {
             .compile
             .to(Set)
           qnext = q.withFix(_.copy(itemIds = items.some))
-          res <- store.transact(QItem.searchStats(qnext))
+          now <- Timestamp.current[F]
+          res <- store.transact(QItem.searchStats(now.toUtcDate)(qnext))
         } yield res
 
       // Helper

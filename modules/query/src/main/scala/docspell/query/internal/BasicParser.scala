@@ -38,4 +38,10 @@ object BasicParser {
   val stringOrMore: P[Nel[String]] =
     singleString.repSep(stringListSep)
 
+  val bool: P[Boolean] = {
+    val trueP  = P.stringIn(List("yes", "true", "Yes", "True")).as(true)
+    val falseP = P.stringIn(List("no", "false", "No", "False")).as(false)
+    trueP | falseP
+  }
+
 }

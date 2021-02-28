@@ -1,5 +1,7 @@
 package docspell.store.queries
 
+import java.time.LocalDate
+
 import cats.data.{NonEmptyList => Nel}
 import cats.effect.Sync
 import cats.effect.concurrent.Ref
@@ -226,41 +228,42 @@ object QItem {
       findCustomFieldValuesForColl(coll, q.customValues)
         .map(itemIds => i.id.in(itemIds))
 
-  def queryCondFromExpr(coll: Ident, q: ItemQuery): Condition = {
+  def queryCondFromExpr(today: LocalDate, coll: Ident, q: ItemQuery): Condition = {
     val tables = Tables(i, org, pers0, pers1, equip, f, a, m)
-    ItemQueryGenerator.fromExpr(tables, coll)(q.expr)
+    ItemQueryGenerator.fromExpr(today, tables, coll)(q.expr)
   }
 
-  def queryCondition(coll: Ident, cond: Query.QueryCond): Condition =
+  def queryCondition(today: LocalDate, coll: Ident, cond: Query.QueryCond): Condition =
     cond match {
       case fm: Query.QueryForm =>
         queryCondFromForm(coll, fm)
       case expr: Query.QueryExpr =>
-        queryCondFromExpr(coll, expr.q)
+        queryCondFromExpr(today, coll, expr.q)
     }
 
   def findItems(
       q: Query,
+      today: LocalDate,
       maxNoteLen: Int,
       batch: Batch
   ): Stream[ConnectionIO, ListItem] = {
     val sql = findItemsBase(q.fix, maxNoteLen)
-      .changeWhere(c => c && queryCondition(q.fix.account.collective, q.cond))
+      .changeWhere(c => c && queryCondition(today, q.fix.account.collective, q.cond))
       .limit(batch)
       .build
     logger.trace(s"List $batch items: $sql")
     sql.query[ListItem].stream
   }
 
-  def searchStats(q: Query): ConnectionIO[SearchSummary] =
+  def searchStats(today: LocalDate)(q: Query): ConnectionIO[SearchSummary] =
     for {
-      count   <- searchCountSummary(q)
-      tags    <- searchTagSummary(q)
-      fields  <- searchFieldSummary(q)
-      folders <- searchFolderSummary(q)
+      count   <- searchCountSummary(today)(q)
+      tags    <- searchTagSummary(today)(q)
+      fields  <- searchFieldSummary(today)(q)
+      folders <- searchFolderSummary(today)(q)
     } yield SearchSummary(count, tags, fields, folders)
 
-  def searchTagSummary(q: Query): ConnectionIO[List[TagCount]] = {
+  def searchTagSummary(today: LocalDate)(q: Query): ConnectionIO[List[TagCount]] = {
     val tagFrom =
       from(ti)
         .innerJoin(tag, tag.tid === ti.tagId)
@@ -270,7 +273,7 @@ object QItem {
       findItemsBase(q.fix, 0).unwrap
         .withSelect(select(tag.all).append(count(i.id).as("num")))
         .changeFrom(_.prepend(tagFrom))
-        .changeWhere(c => c && queryCondition(q.fix.account.collective, q.cond))
+        .changeWhere(c => c && queryCondition(today, q.fix.account.collective, q.cond))
         .groupBy(tag.tid)
         .build
         .query[TagCount]
@@ -284,27 +287,27 @@ object QItem {
     } yield existing ++ other.map(TagCount(_, 0))
   }
 
-  def searchCountSummary(q: Query): ConnectionIO[Int] =
+  def searchCountSummary(today: LocalDate)(q: Query): ConnectionIO[Int] =
     findItemsBase(q.fix, 0).unwrap
       .withSelect(Nel.of(count(i.id).as("num")))
-      .changeWhere(c => c && queryCondition(q.fix.account.collective, q.cond))
+      .changeWhere(c => c && queryCondition(today, q.fix.account.collective, q.cond))
       .build
       .query[Int]
       .unique
 
-  def searchFolderSummary(q: Query): ConnectionIO[List[FolderCount]] = {
+  def searchFolderSummary(today: LocalDate)(q: Query): ConnectionIO[List[FolderCount]] = {
     val fu = RUser.as("fu")
     findItemsBase(q.fix, 0).unwrap
       .withSelect(select(f.id, f.name, f.owner, fu.login).append(count(i.id).as("num")))
       .changeFrom(_.innerJoin(fu, fu.uid === f.owner))
-      .changeWhere(c => c && queryCondition(q.fix.account.collective, q.cond))
+      .changeWhere(c => c && queryCondition(today, q.fix.account.collective, q.cond))
       .groupBy(f.id, f.name, f.owner, fu.login)
       .build
       .query[FolderCount]
       .to[List]
   }
 
-  def searchFieldSummary(q: Query): ConnectionIO[List[FieldStats]] = {
+  def searchFieldSummary(today: LocalDate)(q: Query): ConnectionIO[List[FieldStats]] = {
     val fieldJoin =
       from(cv)
         .innerJoin(cf, cf.id === cv.field)
@@ -313,7 +316,7 @@ object QItem {
     val base =
       findItemsBase(q.fix, 0).unwrap
         .changeFrom(_.prepend(fieldJoin))
-        .changeWhere(c => c && queryCondition(q.fix.account.collective, q.cond))
+        .changeWhere(c => c && queryCondition(today, q.fix.account.collective, q.cond))
         .groupBy(GroupBy(cf.all))
 
     val basicFields = Nel.of(

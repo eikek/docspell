@@ -4,6 +4,7 @@ import cats.data.{NonEmptyList => Nel}
 import docspell.query.ItemQuery._
 import minitest._
 import docspell.query.Date
+import java.time.Period
 
 object SimpleExprParserTest extends SimpleTestSuite {
 
@@ -39,8 +40,8 @@ object SimpleExprParserTest extends SimpleTestSuite {
   test("date expr") {
     val p = SimpleExprParser.dateExpr
     assertEquals(
-      p.parseAll("due:2021-03-14"),
-      Right(dateExpr(Operator.Like, Attr.DueDate, ld(2021, 3, 14)))
+      p.parseAll("date:2021-03-14"),
+      Right(dateExpr(Operator.Like, Attr.Date, ld(2021, 3, 14)))
     )
     assertEquals(
       p.parseAll("due<2021-03-14"),
@@ -49,6 +50,28 @@ object SimpleExprParserTest extends SimpleTestSuite {
     assertEquals(
       p.parseAll("due~=2021-03-14,2021-03-13"),
       Right(Expr.InDateExpr(Attr.DueDate, Nel.of(ld(2021, 3, 14), ld(2021, 3, 13))))
+    )
+    assertEquals(
+      p.parseAll("due>2021"),
+      Right(dateExpr(Operator.Gt, Attr.DueDate, ld(2021, 1, 1)))
+    )
+    assertEquals(
+      p.parseAll("date<2021-01"),
+      Right(dateExpr(Operator.Lt, Attr.Date, ld(2021, 1, 1)))
+    )
+    assertEquals(
+      p.parseAll("date<today"),
+      Right(dateExpr(Operator.Lt, Attr.Date, Date.Today))
+    )
+    assertEquals(
+      p.parseAll("date>today;-2m"),
+      Right(
+        dateExpr(
+          Operator.Gt,
+          Attr.Date,
+          Date.Calc(Date.Today, Date.CalcDirection.Minus, Period.ofMonths(2))
+        )
+      )
     )
   }
 

@@ -2,35 +2,68 @@ package docspell.query.internal
 
 import minitest._
 import docspell.query.Date
+import java.time.Period
 
 object DateParserTest extends SimpleTestSuite {
 
-  def ld(year: Int, m: Int, d: Int): Date =
-    Date(year, m, d)
+  def ld(year: Int, m: Int, d: Int): Date.DateLiteral =
+    Date(year, m, d).fold(throw _, identity)
+
+  def ldPlus(year: Int, m: Int, d: Int, p: Period): Date.Calc =
+    Date.Calc(ld(year, m, d), Date.CalcDirection.Plus, p)
+
+  def ldMinus(year: Int, m: Int, d: Int, p: Period): Date.Calc =
+    Date.Calc(ld(year, m, d), Date.CalcDirection.Minus, p)
 
   test("local date string") {
-    val p = DateParser.localDateFromString
+    val p = DateParser.dateFromString
     assertEquals(p.parseAll("2021-02-22"), Right(ld(2021, 2, 22)))
     assertEquals(p.parseAll("1999-11-11"), Right(ld(1999, 11, 11)))
     assertEquals(p.parseAll("2032-01-21"), Right(ld(2032, 1, 21)))
     assert(p.parseAll("0-0-0").isLeft)
-    assert(p.parseAll("2021-02-30").isRight)
+    assert(p.parseAll("2021-02-30").isLeft)
   }
 
   test("local date millis") {
     val p = DateParser.dateFromMillis
-    assertEquals(p.parseAll("0"), Right(Date(0)))
+    assertEquals(p.parseAll("ms0"), Right(Date(0)))
     assertEquals(
-      p.parseAll("1600000065463"),
+      p.parseAll("ms1600000065463"),
       Right(Date(1600000065463L))
     )
   }
 
   test("local date") {
-    val p = DateParser.localDate
+    val p = DateParser.date
     assertEquals(p.parseAll("2021-02-22"), Right(ld(2021, 2, 22)))
     assertEquals(p.parseAll("1999-11-11"), Right(ld(1999, 11, 11)))
-    assertEquals(p.parseAll("0"), Right(Date(0)))
-    assertEquals(p.parseAll("1600000065463"), Right(Date(1600000065463L)))
+    assertEquals(p.parseAll("ms0"), Right(Date(0)))
+    assertEquals(p.parseAll("ms1600000065463"), Right(Date(1600000065463L)))
+  }
+
+  test("local partial date") {
+    val p = DateParser.date
+    assertEquals(p.parseAll("2021-04"), Right(ld(2021, 4, 1)))
+    assertEquals(p.parseAll("2021-12"), Right(ld(2021, 12, 1)))
+    assert(p.parseAll("2021-13").isLeft)
+    assert(p.parseAll("2021-28").isLeft)
+    assertEquals(p.parseAll("2021"), Right(ld(2021, 1, 1)))
+  }
+
+  test("date calcs") {
+    val p = DateParser.date
+    assertEquals(p.parseAll("2020-02;+2d"), Right(ldPlus(2020, 2, 1, Period.ofDays(2))))
+    assertEquals(
+      p.parseAll("today;-2m"),
+      Right(Date.Calc(Date.Today, Date.CalcDirection.Minus, Period.ofMonths(2)))
+    )
+  }
+
+  test("period") {
+    val p = DateParser.periods
+    assertEquals(p.parseAll("15d"), Right(Period.ofDays(15)))
+    assertEquals(p.parseAll("15m"), Right(Period.ofMonths(15)))
+    assertEquals(p.parseAll("15d10m"), Right(Period.ofMonths(10).plus(Period.ofDays(15))))
+    assertEquals(p.parseAll("10m15d"), Right(Period.ofMonths(10).plus(Period.ofDays(15))))
   }
 }

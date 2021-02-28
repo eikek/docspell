@@ -33,6 +33,7 @@ object Dependencies {
   val PoiVersion              = "4.1.2"
   val PostgresVersion         = "42.2.19"
   val PureConfigVersion       = "0.14.1"
+  val ScalaJavaTimeVersion    = "2.2.0"
   val Slf4jVersion            = "1.7.30"
   val StanfordNlpVersion      = "4.2.0"
   val TikaVersion             = "1.25"
@@ -53,6 +54,9 @@ object Dependencies {
     "org.scala-js" %% "scalajs-stubs" % "1.0.0" % "provided"
 
   val catsJS = Def.setting("org.typelevel" %%% "cats-core" % "2.4.2")
+
+  val scalaJavaTime =
+    Def.setting("io.github.cquiroz" %%% "scala-java-time" % ScalaJavaTimeVersion)
 
   val kittens = Seq(
     "org.typelevel" %% "kittens" % KittensVersion

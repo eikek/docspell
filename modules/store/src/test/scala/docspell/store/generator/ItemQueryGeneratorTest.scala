@@ -22,11 +22,12 @@ object ItemQueryGeneratorTest extends SimpleTestSuite {
     RAttachment.as("a"),
     RAttachmentMeta.as("m")
   )
+  val now: LocalDate = LocalDate.of(2021, 2, 25)
 
   test("basic test") {
     val q = ItemQueryParser
       .parseUnsafe("(& name:hello date>=2020-02-01 (| source=expense folder=test ))")
-    val cond = ItemQueryGenerator(tables, Ident.unsafe("coll"))(q)
+    val cond = ItemQueryGenerator(now, tables, Ident.unsafe("coll"))(q)
     val expect =
       tables.item.name.like("hello") && tables.item.itemDate >= Timestamp.atUtc(
         LocalDate.of(2020, 2, 1).atStartOfDay()
@@ -35,29 +36,4 @@ object ItemQueryGeneratorTest extends SimpleTestSuite {
     assertEquals(cond, expect)
   }
 
-//  test("migration2") {
-//    withStore("db2") { store =>
-//      val c = RCollective(
-//        Ident.unsafe("coll1"),
-//        CollectiveState.Active,
-//        Language.German,
-//        true,
-//        Timestamp.Epoch
-//      )
-//      val e =
-//        REquipment(
-//          Ident.unsafe("equip"),
-//          Ident.unsafe("coll1"),
-//          "name",
-//          Timestamp.Epoch,
-//          Timestamp.Epoch,
-//          None
-//        )
-//
-//      for {
-//        _ <- store.transact(RCollective.insert(c))
-//        _ <- store.transact(REquipment.insert(e)).map(_ => ())
-//      } yield ()
-//    }
-//  }
 }

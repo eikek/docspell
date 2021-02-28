@@ -16,7 +16,7 @@ object ItemQueryParser {
       ExprParser
         .parseQuery(in)
         .left
-        .map(pe => s"Error parsing: '$input': $pe")
+        .map(pe => s"Error parsing: '$input': $pe") //TODO
         .map(q => q.copy(expr = ExprUtil.reduce(q.expr)))
     }
 
