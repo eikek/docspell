@@ -1,10 +1,10 @@
 package docspell.query.internal
 
-import minitest._
+import munit._
 import cats.data.{NonEmptyList => Nel}
 import docspell.query.internal.BasicParser
 
-object BasicParserTest extends SimpleTestSuite {
+class BasicParserTest extends FunSuite {
   test("single string values") {
     val p = BasicParser.singleString
     assertEquals(p.parseAll("abcde"), Right("abcde"))

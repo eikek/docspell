@@ -1,11 +1,10 @@
 package docspell.query.internal
 
 import docspell.query.ItemQuery._
-import docspell.query.internal.SimpleExprParserTest.stringExpr
-import minitest._
+import munit._
 import cats.data.{NonEmptyList => Nel}
 
-object ExprParserTest extends SimpleTestSuite {
+class ExprParserTest extends FunSuite with ValueHelper {
 
   test("simple expr") {
     val p = ExprParser.exprParser

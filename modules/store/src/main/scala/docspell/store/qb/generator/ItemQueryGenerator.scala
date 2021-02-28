@@ -156,7 +156,6 @@ object ItemQueryGenerator {
     date match {
       case d: Date.DateLiteral =>
         val ld = dateLiteralToDate(today)(d)
-        println(s">>>> date= $ld")
         Timestamp.atUtc(ld.atStartOfDay)
       case Date.Calc(date, c, period) =>
         val ld = c match {
@@ -165,7 +164,6 @@ object ItemQueryGenerator {
           case Date.CalcDirection.Minus =>
             dateLiteralToDate(today)(date).minus(period)
         }
-        println(s">>>> date= $ld")
         Timestamp.atUtc(ld.atStartOfDay())
     }
 

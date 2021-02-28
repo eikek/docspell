@@ -2,11 +2,11 @@ package docspell.query.internal
 
 import cats.data.{NonEmptyList => Nel}
 import docspell.query.ItemQuery._
-import minitest._
+import munit._
 import docspell.query.Date
 import java.time.Period
 
-object SimpleExprParserTest extends SimpleTestSuite {
+class SimpleExprParserTest extends FunSuite with ValueHelper {
 
   test("string expr") {
     val p = SimpleExprParser.stringExpr
@@ -175,12 +175,4 @@ object SimpleExprParserTest extends SimpleTestSuite {
     )
   }
 
-  def ld(y: Int, m: Int, d: Int) =
-    DateParserTest.ld(y, m, d)
-
-  def stringExpr(op: Operator, name: Attr.StringAttr, value: String): Expr.SimpleExpr =
-    Expr.SimpleExpr(op, Property.StringProperty(name, value))
-
-  def dateExpr(op: Operator, name: Attr.DateAttr, value: Date): Expr.SimpleExpr =
-    Expr.SimpleExpr(op, Property.DateProperty(name, value))
 }

@@ -1,9 +1,9 @@
 package docspell.query.internal
 
-import minitest._
+import munit._
 import cats.parse.{Parser => P}
 
-object MacroParserTest extends SimpleTestSuite {
+class MacroParserTest extends FunSuite {
 
   test("fail with unkown macro names") {
     val p = MacroParser.parser(Map.empty)

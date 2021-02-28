@@ -2,9 +2,9 @@ package docspell.query.internal
 
 import docspell.query.ItemQuery.Attr
 import docspell.query.internal.AttrParser
-import minitest._
+import munit._
 
-object AttrParserTest extends SimpleTestSuite {
+class AttrParserTest extends FunSuite {
 
   test("string attributes") {
     val p = AttrParser.stringAttr

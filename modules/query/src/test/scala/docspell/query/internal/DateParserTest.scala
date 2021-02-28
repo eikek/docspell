@@ -1,19 +1,10 @@
 package docspell.query.internal
 
-import minitest._
+import munit._
 import docspell.query.Date
 import java.time.Period
 
-object DateParserTest extends SimpleTestSuite {
-
-  def ld(year: Int, m: Int, d: Int): Date.DateLiteral =
-    Date(year, m, d).fold(throw _, identity)
-
-  def ldPlus(year: Int, m: Int, d: Int, p: Period): Date.Calc =
-    Date.Calc(ld(year, m, d), Date.CalcDirection.Plus, p)
-
-  def ldMinus(year: Int, m: Int, d: Int, p: Period): Date.Calc =
-    Date.Calc(ld(year, m, d), Date.CalcDirection.Minus, p)
+class DateParserTest extends FunSuite with ValueHelper {
 
   test("local date string") {
     val p = DateParser.dateFromString

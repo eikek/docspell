@@ -51,6 +51,11 @@ val testSettings = Seq(
   Test / fork := true
 )
 
+val testSettingsMUnit = Seq(
+  libraryDependencies ++= Dependencies.munit.map(_ % Test),
+  testFrameworks += new TestFramework("munit.Framework")
+)
+
 lazy val noPublish = Seq(
   publish := {},
   publishLocal := {},
@@ -267,11 +272,12 @@ ${lines.map(_._1).mkString(",\n")}
 
 val query =
   crossProject(JSPlatform, JVMPlatform)
+    .withoutSuffixFor(JVMPlatform)
     .crossType(CrossType.Pure)
     .in(file("modules/query"))
     .disablePlugins(RevolverPlugin)
     .settings(sharedSettings)
-    .settings(testSettings)
+    .settings(testSettingsMUnit)
     .settings(
       name := "docspell-query",
       libraryDependencies +=

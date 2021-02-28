@@ -1,10 +1,10 @@
 package docspell.query.internal
 
-import minitest._
+import munit._
 import docspell.query.ItemQueryParser
 import docspell.query.ItemQuery
 
-object ItemQueryParserTest extends SimpleTestSuite {
+class ItemQueryParserTest extends FunSuite {
 
   test("reduce ands") {
     val q    = ItemQueryParser.parseUnsafe("(&(&(&(& name:hello))))")

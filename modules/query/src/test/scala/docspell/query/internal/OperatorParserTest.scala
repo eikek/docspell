@@ -1,10 +1,10 @@
 package docspell.query.internal
 
-import minitest._
+import munit._
 import docspell.query.ItemQuery.{Operator, TagOperator}
 import docspell.query.internal.OperatorParser
 
-object OperatorParserTest extends SimpleTestSuite {
+class OperatorParserTest extends FunSuite {
   test("operator values") {
     val p = OperatorParser.op
     assertEquals(p.parseAll("="), Right(Operator.Eq))
