@@ -31,7 +31,7 @@ trait PeriodicScheduler[F[_]] {
 
 object PeriodicScheduler {
 
-  def create[F[_]: ConcurrentEffect: ContextShift](
+  def create[F[_]: ConcurrentEffect](
       cfg: PeriodicSchedulerConfig,
       sch: Scheduler[F],
       queue: JobQueue[F],

@@ -696,8 +696,7 @@ def packageTools(logger: Logger, dir: File, version: String): Seq[File] = {
       wx / "icons" / "logo-96.png"     -> "icons/logo-96.png",
       wx / "manifest.json"             -> "manifest.json"
     ),
-    webext,
-    None
+    webext
   )
 
   val excludes = Seq(wx, target)
@@ -714,8 +713,7 @@ def packageTools(logger: Logger, dir: File, version: String): Seq[File] = {
       wx / "native/app_manifest.json" -> s"docspell-tools-${version}/firefox/native/app_manifest.json",
       wx / "native/native.py"         -> s"docspell-tools-${version}/firefox/native/native.py"
     ) ++ files,
-    archive,
-    None
+    archive
   )
 
   Seq(archive)

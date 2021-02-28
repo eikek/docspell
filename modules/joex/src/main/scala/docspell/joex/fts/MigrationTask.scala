@@ -25,7 +25,7 @@ object MigrationTask {
         )
       )
 
-  def onCancel[F[_]: Sync]: Task[F, Unit, Unit] =
+  def onCancel[F[_]]: Task[F, Unit, Unit] =
     Task.log[F, Unit](_.warn("Cancelling full-text-index task"))
 
   def job[F[_]: Sync]: F[RJob] =

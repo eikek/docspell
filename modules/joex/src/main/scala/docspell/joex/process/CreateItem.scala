@@ -113,7 +113,7 @@ object CreateItem {
       )
     }
 
-  def insertAttachment[F[_]: Sync](ctx: Context[F, _])(ra: RAttachment): F[Int] = {
+  def insertAttachment[F[_]](ctx: Context[F, _])(ra: RAttachment): F[Int] = {
     val rs = RAttachmentSource.of(ra)
     ctx.store.transact(for {
       n <- RAttachment.insert(ra)

@@ -18,7 +18,7 @@ import docspell.store.records.RItem
 object ItemHandler {
   type Args = ProcessItemArgs
 
-  def onCancel[F[_]: Sync: ContextShift]: Task[F, Args, Unit] =
+  def onCancel[F[_]: Sync]: Task[F, Args, Unit] =
     logWarn("Now cancelling.").flatMap(_ =>
       markItemCreated.flatMap {
         case true =>
@@ -105,7 +105,7 @@ object ItemHandler {
         )
     }
 
-  private def deleteByFileIds[F[_]: Sync: ContextShift]: Task[F, Args, Unit] =
+  private def deleteByFileIds[F[_]: Sync]: Task[F, Args, Unit] =
     Task { ctx =>
       val states = ItemState.invalidStates
       for {

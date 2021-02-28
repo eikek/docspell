@@ -23,7 +23,7 @@ object HouseKeepingTask {
       .flatMap(_ => CleanupJobsTask(cfg.houseKeeping.cleanupJobs))
       .flatMap(_ => CheckNodesTask(cfg.houseKeeping.checkNodes))
 
-  def onCancel[F[_]: Sync]: Task[F, Unit, Unit] =
+  def onCancel[F[_]]: Task[F, Unit, Unit] =
     Task.log[F, Unit](_.warn("Cancelling house-keeping task"))
 
   def periodicTask[F[_]: Sync](ce: CalEvent): F[RPeriodicTask] =

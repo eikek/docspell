@@ -46,7 +46,7 @@ object ScanMailboxTask {
       } yield ()
     }
 
-  def onCancel[F[_]: Sync]: Task[F, ScanMailboxArgs, Unit] =
+  def onCancel[F[_]]: Task[F, ScanMailboxArgs, Unit] =
     Task.log(_.warn("Cancelling scan-mailbox task"))
 
   def getMailSettings[F[_]: Sync](ctx: Context[F, Args]): F[RUserImap] =

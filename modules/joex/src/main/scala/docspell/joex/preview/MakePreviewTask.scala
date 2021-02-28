@@ -34,7 +34,7 @@ object MakePreviewTask {
       } yield ()
     }
 
-  def onCancel[F[_]: Sync]: Task[F, Args, Unit] =
+  def onCancel[F[_]]: Task[F, Args, Unit] =
     Task.log(_.warn("Cancelling make-preview task"))
 
   private def generatePreview[F[_]: Sync](

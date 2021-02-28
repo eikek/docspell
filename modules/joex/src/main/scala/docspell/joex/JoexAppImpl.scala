@@ -33,7 +33,7 @@ import emil.javamail._
 import org.http4s.client.Client
 import org.http4s.client.blaze.BlazeClientBuilder
 
-final class JoexAppImpl[F[_]: ConcurrentEffect: ContextShift: Timer](
+final class JoexAppImpl[F[_]: ConcurrentEffect: Timer](
     cfg: Config,
     nodeOps: ONode[F],
     store: Store[F],
@@ -214,7 +214,7 @@ object JoexAppImpl {
       appR <- Resource.make(app.init.map(_ => app))(_.shutdown)
     } yield appR
 
-  private def createFtsClient[F[_]: ConcurrentEffect: ContextShift](
+  private def createFtsClient[F[_]: ConcurrentEffect](
       cfg: Config
   )(client: Client[F]): Resource[F, FtsClient[F]] =
     if (cfg.fullTextSearch.enabled) SolrFtsClient(cfg.fullTextSearch.solr, client)

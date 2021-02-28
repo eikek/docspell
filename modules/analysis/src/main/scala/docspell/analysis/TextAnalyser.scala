@@ -82,7 +82,7 @@ object TextAnalyser {
 
   /** Provides the nlp pipeline based on the configuration. */
   private object Nlp {
-    def apply[F[_]: Concurrent: Timer: BracketThrow](
+    def apply[F[_]: Concurrent: Timer](
         cfg: TextAnalysisConfig.NlpConfig
     ): F[Input[F] => F[Vector[NerLabel]]] =
       cfg.mode match {

@@ -29,7 +29,7 @@ object ReProcessItem {
       .flatMap(safeProcess[F](cfg, fts, analyser, regexNer))
       .map(_ => ())
 
-  def onCancel[F[_]: Sync: ContextShift]: Task[F, Args, Unit] =
+  def onCancel[F[_]]: Task[F, Args, Unit] =
     logWarn("Now cancelling re-processing.")
 
   // --- Helpers

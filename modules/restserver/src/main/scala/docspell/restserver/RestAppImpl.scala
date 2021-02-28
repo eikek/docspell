@@ -12,7 +12,7 @@ import docspell.ftssolr.SolrFtsClient
 
 import org.http4s.client.Client
 
-final class RestAppImpl[F[_]: Sync](val config: Config, val backend: BackendApp[F])
+final class RestAppImpl[F[_]](val config: Config, val backend: BackendApp[F])
     extends RestApp[F] {
 
   def init: F[Unit] =
@@ -38,7 +38,7 @@ object RestAppImpl {
       appR <- Resource.make(app.init.map(_ => app))(_.shutdown)
     } yield appR
 
-  private def createFtsClient[F[_]: ConcurrentEffect: ContextShift](
+  private def createFtsClient[F[_]: ConcurrentEffect](
       cfg: Config
   )(client: Client[F]): Resource[F, FtsClient[F]] =
     if (cfg.fullTextSearch.enabled) SolrFtsClient(cfg.fullTextSearch.solr, client)

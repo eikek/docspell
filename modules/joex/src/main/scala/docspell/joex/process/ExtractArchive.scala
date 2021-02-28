@@ -150,7 +150,7 @@ object ExtractArchive {
         .lastOrError
   }
 
-  def extractMail[F[_]: ConcurrentEffect: ContextShift](
+  def extractMail[F[_]: ConcurrentEffect](
       ctx: Context[F, ProcessItemArgs],
       archive: Option[RAttachmentArchive]
   )(ra: RAttachment, pos: Int): F[Extracted] = {
@@ -225,7 +225,7 @@ object ExtractArchive {
     } yield n1 + n2
   }
 
-  def storeArchive[F[_]: Sync](ctx: Context[F, _])(aa: RAttachmentArchive): F[Int] =
+  def storeArchive[F[_]](ctx: Context[F, _])(aa: RAttachmentArchive): F[Int] =
     ctx.store.transact(RAttachmentArchive.insert(aa))
 
   case class Extracted(
