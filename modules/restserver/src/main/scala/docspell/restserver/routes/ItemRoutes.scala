@@ -61,7 +61,7 @@ object ItemRoutes {
         val of = offset.getOrElse(0)
         query match {
           case Left(err) =>
-            BadRequest(BasicResult(false, err))
+            BadRequest(BasicResult(false, err.render))
           case Right(sq) =>
             for {
               items <- backend.itemSearch.findItems(cfg.maxNoteLength)(

@@ -9,17 +9,18 @@ import docspell.query.internal.ExprUtil
 object ItemQueryParser {
 
   @JSExport
-  def parse(input: String): Either[String, ItemQuery] =
+  def parse(input: String): Either[ParseFailure, ItemQuery] =
     if (input.isEmpty) Right(ItemQuery.all)
     else {
       val in = if (input.charAt(0) == '(') input else s"(& $input )"
       ExprParser
         .parseQuery(in)
         .left
-        .map(pe => s"Error parsing: '$input': $pe") //TODO
+        .map(ParseFailure.fromError(in))
         .map(q => q.copy(expr = ExprUtil.reduce(q.expr)))
     }
 
   def parseUnsafe(input: String): ItemQuery =
-    parse(input).fold(sys.error, identity)
+    parse(input).fold(m => sys.error(m.render), identity)
+
 }
