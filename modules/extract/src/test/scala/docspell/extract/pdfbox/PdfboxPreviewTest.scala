@@ -11,9 +11,9 @@ object PdfboxPreviewTest extends SimpleTestSuite {
   implicit val CS = TestFiles.CS
 
   val testPDFs = List(
-    ExampleFiles.letter_de_pdf     -> "83bdb379fe9ce86e830adfbe11238808bed9da6e31c1b66687d70b6b59a0d815",
-    ExampleFiles.letter_en_pdf     -> "699655a162c0c21dd9f19d8638f4e03811c6626a52bb30a1ac733d7fa5638932",
-    ExampleFiles.scanner_pdf13_pdf -> "a1680b80b42d8e04365ffd1e806ea2a8adb0492104cc41d8b40435b0fe4d4e65"
+    ExampleFiles.letter_de_pdf     -> "7d98be75b239816d6c751b3f3c56118ebf1a4632c43baf35a68a662f9d595ab8",
+    ExampleFiles.letter_en_pdf     -> "2bffbd01634525c6ce1fe477de23464e038055c4917afa41dd6186fe03a49f5b",
+    ExampleFiles.scanner_pdf13_pdf -> "05ce4fd686b3d24b0e2d60df0c6d79b1df2338fcf7a6957e34cb4d11c65682b4"
   )
 
   test("extract first page image from PDFs") {
