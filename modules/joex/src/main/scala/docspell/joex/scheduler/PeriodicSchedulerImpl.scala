@@ -15,7 +15,7 @@ import docspell.store.records.RPeriodicTask
 import com.github.eikek.fs2calev._
 import org.log4s.getLogger
 
-final class PeriodicSchedulerImpl[F[_]: ConcurrentEffect: ContextShift](
+final class PeriodicSchedulerImpl[F[_]: ConcurrentEffect](
     val config: PeriodicSchedulerConfig,
     sch: Scheduler[F],
     queue: JobQueue[F],

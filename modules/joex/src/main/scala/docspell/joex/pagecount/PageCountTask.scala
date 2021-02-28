@@ -30,7 +30,7 @@ object MakePageCountTask {
       } yield ()
     }
 
-  def onCancel[F[_]: Sync]: Task[F, Args, Unit] =
+  def onCancel[F[_]]: Task[F, Args, Unit] =
     Task.log(_.warn("Cancelling make-page-count task"))
 
   private def generatePageCount[F[_]: Sync](
@@ -45,7 +45,7 @@ object MakePageCountTask {
         )
     } yield ()
 
-  private def pageCountExists[F[_]: Sync](ctx: Context[F, Args]): F[Boolean] =
+  private def pageCountExists[F[_]](ctx: Context[F, Args]): F[Boolean] =
     ctx.store.transact(
       RAttachmentMeta
         .findPageCountById(ctx.args.attachment)

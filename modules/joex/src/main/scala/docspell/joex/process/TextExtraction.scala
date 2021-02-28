@@ -119,7 +119,7 @@ object TextExtraction {
       )
     } yield (meta, tags)
 
-  def extractText[F[_]: Sync: ContextShift](
+  def extractText[F[_]: Sync](
       ctx: Context[F, _],
       extr: Extraction[F],
       lang: Language

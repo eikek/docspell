@@ -24,7 +24,7 @@ object ReIndexTask {
         Task(ctx => clearData[F](ctx.args.collective).forContext(cfg, fts).run(ctx))
       )
 
-  def onCancel[F[_]: Sync]: Task[F, Args, Unit] =
+  def onCancel[F[_]]: Task[F, Args, Unit] =
     Task.log[F, Args](_.warn("Cancelling full-text re-index task"))
 
   private def clearData[F[_]: ConcurrentEffect](collective: Option[Ident]): FtsWork[F] =

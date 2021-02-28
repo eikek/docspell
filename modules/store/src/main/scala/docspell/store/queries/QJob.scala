@@ -1,7 +1,7 @@
 package docspell.store.queries
 
 import cats.data.NonEmptyList
-import cats.effect.Effect
+import cats.effect._
 import cats.implicits._
 import fs2.Stream
 
@@ -197,7 +197,7 @@ object QJob {
   def runningToWaiting[F[_]: Effect](workerId: Ident, store: Store[F]): F[Unit] =
     store.transact(RJob.setRunningToWaiting(workerId)).map(_ => ())
 
-  def findAll[F[_]: Effect](ids: Seq[Ident], store: Store[F]): F[Vector[RJob]] =
+  def findAll[F[_]](ids: Seq[Ident], store: Store[F]): F[Vector[RJob]] =
     store.transact(RJob.findFromIds(ids))
 
   def queueStateSnapshot(

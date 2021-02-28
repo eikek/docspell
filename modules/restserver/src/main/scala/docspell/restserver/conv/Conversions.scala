@@ -606,7 +606,7 @@ trait Conversions {
       )
     })
 
-  def changeSource[F[_]: Sync](s: Source, coll: Ident): RSource =
+  def changeSource[F[_]](s: Source, coll: Ident): RSource =
     RSource(
       s.id,
       coll,

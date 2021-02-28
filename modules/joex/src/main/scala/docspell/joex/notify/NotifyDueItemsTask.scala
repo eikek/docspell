@@ -40,7 +40,7 @@ object NotifyDueItemsTask {
       } yield ()
     }
 
-  def onCancel[F[_]: Sync]: Task[F, NotifyDueItemsArgs, Unit] =
+  def onCancel[F[_]]: Task[F, NotifyDueItemsArgs, Unit] =
     Task.log(_.warn("Cancelling notify-due-items task"))
 
   def getMailSettings[F[_]: Sync](ctx: Context[F, Args]): F[RUserEmail] =

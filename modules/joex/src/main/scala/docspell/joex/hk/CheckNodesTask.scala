@@ -58,7 +58,7 @@ object CheckNodesTask {
     } yield res.isRight
   }
 
-  def removeNodes[F[_]: Sync](
+  def removeNodes[F[_]](
       ctx: Context[F, _],
       cfg: HouseKeepingConfig.CheckNodes
   ): F[Int] =

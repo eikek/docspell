@@ -53,7 +53,7 @@ object DuplicateCheck {
     else ().pure[F]
   }
 
-  private def findDuplicates[F[_]: Sync](
+  private def findDuplicates[F[_]](
       ctx: Context[F, Args]
   ): F[Vector[FileMetaDupes]] =
     ctx.store.transact(for {

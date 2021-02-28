@@ -17,7 +17,7 @@ object LearnClassifierTask {
 
   type Args = LearnClassifierArgs
 
-  def onCancel[F[_]: Sync]: Task[F, Args, Unit] =
+  def onCancel[F[_]]: Task[F, Args, Unit] =
     Task.log(_.warn("Cancelling learn-classifier task"))
 
   def apply[F[_]: Sync: ContextShift](
@@ -100,7 +100,7 @@ object LearnClassifierTask {
     else
       OptionT.none
 
-  private def logInactiveWarning[F[_]: Sync](logger: Logger[F]): F[Unit] =
+  private def logInactiveWarning[F[_]](logger: Logger[F]): F[Unit] =
     logger.warn(
       "Auto-tagging is disabled. Check joex config and the collective settings."
     )

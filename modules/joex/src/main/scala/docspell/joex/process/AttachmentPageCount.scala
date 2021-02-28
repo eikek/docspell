@@ -22,7 +22,7 @@ import bitpeace.{Mimetype, RangeDef}
   */
 object AttachmentPageCount {
 
-  def apply[F[_]: Sync: ContextShift]()(
+  def apply[F[_]: Sync]()(
       item: ItemData
   ): Task[F, ProcessItemArgs, ItemData] =
     Task { ctx =>

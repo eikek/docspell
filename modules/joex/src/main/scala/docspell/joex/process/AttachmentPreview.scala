@@ -24,7 +24,7 @@ import bitpeace.{Mimetype, MimetypeHint, RangeDef}
   */
 object AttachmentPreview {
 
-  def apply[F[_]: Sync: ContextShift](cfg: ConvertConfig, pcfg: PreviewConfig)(
+  def apply[F[_]: Sync](cfg: ConvertConfig, pcfg: PreviewConfig)(
       item: ItemData
   ): Task[F, ProcessItemArgs, ItemData] =
     Task { ctx =>

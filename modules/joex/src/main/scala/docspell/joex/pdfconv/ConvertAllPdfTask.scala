@@ -28,7 +28,7 @@ object ConvertAllPdfTask {
       } yield ()
     }
 
-  def onCancel[F[_]: Sync]: Task[F, Args, Unit] =
+  def onCancel[F[_]]: Task[F, Args, Unit] =
     Task.log(_.warn("Cancelling convert-old-pdf task"))
 
   def submitConversionJobs[F[_]: Sync](

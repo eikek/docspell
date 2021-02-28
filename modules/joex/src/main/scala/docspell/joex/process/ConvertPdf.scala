@@ -61,7 +61,7 @@ object ConvertPdf {
 
     }
 
-  def isConverted[F[_]: Sync](ctx: Context[F, ProcessItemArgs])(
+  def isConverted[F[_]](ctx: Context[F, ProcessItemArgs])(
       ra: RAttachment
   ): F[Boolean] =
     ctx.store.transact(RAttachmentSource.isConverted(ra.id))
