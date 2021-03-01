@@ -320,8 +320,9 @@ viewSearchBar flags model =
         [ a
             [ classList
                 [ ( "search-menu-toggle ui icon button", True )
-                , ( "primary", not (searchMenuFilled model) )
-                , ( "secondary", searchMenuFilled model )
+
+                -- , ( "primary", not (searchMenuFilled model) )
+                -- , ( "secondary", searchMenuFilled model )
                 ]
             , onClick ToggleSearchMenu
             , href "#"
@@ -332,24 +333,23 @@ viewSearchBar flags model =
         , div [ class "right menu" ]
             [ div [ class "fitted item" ]
                 [ div [ class "ui left icon right action input" ]
-                    [ i
-                        [ classList
-                            [ ( "search link icon", not model.searchInProgress )
-                            , ( "loading spinner icon", model.searchInProgress )
-                            ]
-                        , href "#"
-                        , onClick (DoSearch model.searchTypeDropdownValue)
-                        ]
-                        (if hasMoreSearch model then
-                            [ i [ class "icons search-corner-icons" ]
-                                [ i [ class "tiny blue circle icon" ] []
-                                ]
-                            ]
-
-                         else
-                            []
-                        )
-                    , input
+                    [ -- i
+                      --    [ classList
+                      --        [ ( "search link icon", not model.searchInProgress )
+                      --        , ( "loading spinner icon", model.searchInProgress )
+                      --        ]
+                      --    , href "#"
+                      --    , onClick (DoSearch model.searchTypeDropdownValue)
+                      --    ]
+                      --    (if hasMoreSearch model then
+                      --        [ i [ class "icons search-corner-icons" ]
+                      --            [ i [ class "tiny blue circle icon" ] []
+                      --            ]
+                      --        ]
+                      --     else
+                      --        []
+                      --    )
+                      input
                         [ type_ "text"
                         , placeholder
                             (case model.searchTypeDropdownValue of
@@ -382,27 +382,6 @@ viewSearchBar flags model =
                 ]
             ]
         ]
-
-
-searchMenuFilled : Model -> Bool
-searchMenuFilled model =
-    let
-        is =
-            Comp.SearchMenu.getItemSearch model.searchMenuModel
-    in
-    is /= Api.Model.ItemSearch.empty
-
-
-hasMoreSearch : Model -> Bool
-hasMoreSearch model =
-    let
-        is =
-            Comp.SearchMenu.getItemSearch model.searchMenuModel
-
-        is_ =
-            { is | allNames = Nothing, fullText = Nothing }
-    in
-    is_ /= Api.Model.ItemSearch.empty
 
 
 deleteAllDimmer : Comp.YesNoDimmer.Settings

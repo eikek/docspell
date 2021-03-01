@@ -3,7 +3,7 @@ module Page.Home.Update exposing (update)
 import Api
 import Api.Model.IdList exposing (IdList)
 import Api.Model.ItemLightList exposing (ItemLightList)
-import Api.Model.ItemSearch
+import Api.Model.ItemQuery
 import Browser.Navigation as Nav
 import Comp.FixedDropdown
 import Comp.ItemCardList
@@ -13,6 +13,7 @@ import Comp.LinkTarget exposing (LinkTarget)
 import Comp.SearchMenu
 import Comp.YesNoDimmer
 import Data.Flags exposing (Flags)
+import Data.ItemQuery as Q
 import Data.ItemSelection
 import Data.Items
 import Data.UiSettings exposing (UiSettings)
@@ -648,16 +649,15 @@ loadChangedItems flags ids =
 
     else
         let
-            searchInit =
-                Api.Model.ItemSearch.empty
-
             idList =
-                IdList (Set.toList ids)
+                Set.toList ids
+
+            searchInit =
+                Q.request (Just <| Q.ItemIdIn idList)
 
             search =
                 { searchInit
-                    | itemSubset = Just idList
-                    , limit = Set.size ids
+                    | limit = Just <| Set.size ids
                 }
         in
         Api.itemSearch flags search ReplaceChangedItemsResp

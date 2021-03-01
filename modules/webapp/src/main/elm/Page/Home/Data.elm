@@ -31,6 +31,7 @@ import Comp.SearchMenu
 import Comp.YesNoDimmer
 import Data.Flags exposing (Flags)
 import Data.ItemNav exposing (ItemNav)
+import Data.ItemQuery as Q
 import Data.Items
 import Data.UiSettings exposing (UiSettings)
 import Http
@@ -239,12 +240,13 @@ doSearchDefaultCmd : SearchParam -> Model -> Cmd Msg
 doSearchDefaultCmd param model =
     let
         smask =
-            Comp.SearchMenu.getItemSearch model.searchMenuModel
+            Q.request
+                (Comp.SearchMenu.getItemQuery model.searchMenuModel)
 
         mask =
             { smask
-                | limit = param.pageSize
-                , offset = param.offset
+                | limit = Just param.pageSize
+                , offset = Just param.offset
             }
     in
     if param.offset == 0 then

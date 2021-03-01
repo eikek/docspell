@@ -3,7 +3,7 @@ module Comp.SearchMenu exposing
     , Msg(..)
     , NextState
     , TextSearchModel
-    , getItemSearch
+    , getItemQuery
     , init
     , isFulltextSearch
     , isNamesSearch
@@ -21,7 +21,7 @@ import Api.Model.EquipmentList exposing (EquipmentList)
 import Api.Model.FolderStats exposing (FolderStats)
 import Api.Model.IdName exposing (IdName)
 import Api.Model.ItemFieldValue exposing (ItemFieldValue)
-import Api.Model.ItemSearch exposing (ItemSearch)
+import Api.Model.ItemQuery exposing (ItemQuery)
 import Api.Model.PersonList exposing (PersonList)
 import Api.Model.ReferenceList exposing (ReferenceList)
 import Api.Model.SearchStats exposing (SearchStats)
@@ -38,6 +38,7 @@ import Data.DropdownStyle as DS
 import Data.Fields
 import Data.Flags exposing (Flags)
 import Data.Icons as Icons
+import Data.ItemQuery as Q exposing (ItemQuery)
 import Data.PersonUse
 import Data.UiSettings exposing (UiSettings)
 import DatePicker exposing (DatePicker)
@@ -234,11 +235,21 @@ getDirection model =
             Nothing
 
 
-getItemSearch : Model -> ItemSearch
-getItemSearch model =
+getItemQuery : Model -> Maybe ItemQuery
+getItemQuery model =
     let
-        e =
-            Api.Model.ItemSearch.empty
+        when flag body =
+            if flag then
+                Just body
+
+            else
+                Nothing
+
+        whenNot flag body =
+            when (not flag) body
+
+        whenNotEmpty list f =
+            whenNot (List.isEmpty list) (f list)
 
         amendWildcards s =
             if String.startsWith "\"" s && String.endsWith "\"" s then
@@ -254,35 +265,52 @@ getItemSearch model =
         textSearch =
             textSearchValue model.textSearchModel
     in
-    { e
-        | tagsInclude = model.tagSelection.includeTags |> List.map .tag |> List.map .id
-        , tagsExclude = model.tagSelection.excludeTags |> List.map .tag |> List.map .id
-        , corrPerson = Comp.Dropdown.getSelected model.corrPersonModel |> List.map .id |> List.head
-        , corrOrg = Comp.Dropdown.getSelected model.orgModel |> List.map .id |> List.head
-        , concPerson = Comp.Dropdown.getSelected model.concPersonModel |> List.map .id |> List.head
-        , concEquip = Comp.Dropdown.getSelected model.concEquipmentModel |> List.map .id |> List.head
-        , folder = model.selectedFolder |> Maybe.map .id
-        , direction =
-            Comp.Dropdown.getSelected model.directionModel
-                |> List.head
-                |> Maybe.map Data.Direction.toString
-        , inbox = model.inboxCheckbox
-        , dateFrom = model.fromDate
-        , dateUntil = model.untilDate
-        , dueDateFrom = model.fromDueDate
-        , dueDateUntil = model.untilDueDate
-        , name =
-            model.nameModel
-                |> Maybe.map amendWildcards
-        , allNames =
-            textSearch.nameSearch
-                |> Maybe.map amendWildcards
-        , fullText = textSearch.fullText
-        , tagCategoriesInclude = model.tagSelection.includeCats |> List.map .name
-        , tagCategoriesExclude = model.tagSelection.excludeCats |> List.map .name
-        , customValues = Data.CustomFieldChange.toFieldValues model.customValues
-        , source = model.sourceModel
-    }
+    Q.and
+        [ when model.inboxCheckbox (Q.Inbox True)
+        , whenNotEmpty (model.tagSelection.includeTags |> List.map (.tag >> .id))
+            (Q.TagIds Q.AllMatch)
+        , whenNotEmpty (model.tagSelection.excludeTags |> List.map (.tag >> .id))
+            (\ids -> Q.Not (Q.TagIds Q.AnyMatch ids))
+        , whenNotEmpty (model.tagSelection.includeCats |> List.map .name)
+            (Q.CatNames Q.AllMatch)
+        , whenNotEmpty (model.tagSelection.excludeCats |> List.map .name)
+            (\ids -> Q.Not <| Q.CatNames Q.AnyMatch ids)
+        , model.selectedFolder |> Maybe.map .id |> Maybe.map (Q.FolderId Q.Eq)
+        , Comp.Dropdown.getSelected model.orgModel
+            |> List.map .id
+            |> List.head
+            |> Maybe.map (Q.CorrOrgId Q.Eq)
+        , Comp.Dropdown.getSelected model.corrPersonModel
+            |> List.map .id
+            |> List.head
+            |> Maybe.map (Q.CorrPersId Q.Eq)
+        , Comp.Dropdown.getSelected model.concPersonModel
+            |> List.map .id
+            |> List.head
+            |> Maybe.map (Q.ConcPersId Q.Eq)
+        , Comp.Dropdown.getSelected model.concEquipmentModel
+            |> List.map .id
+            |> List.head
+            |> Maybe.map (Q.ConcEquipId Q.Eq)
+        , whenNotEmpty (Data.CustomFieldChange.toFieldValues model.customValues)
+            (List.map (Q.CustomField Q.Like) >> Q.And)
+        , Maybe.map (Q.DateMs Q.Gte) model.fromDate
+        , Maybe.map (Q.DateMs Q.Lte) model.untilDate
+        , Maybe.map (Q.DueDateMs Q.Gte) model.fromDueDate
+        , Maybe.map (Q.DueDateMs Q.Lte) model.untilDueDate
+        , Maybe.map (Q.Source Q.Like) model.sourceModel
+        , model.nameModel
+            |> Maybe.map amendWildcards
+            |> Maybe.map (Q.ItemName Q.Like)
+        , textSearch.nameSearch
+            |> Maybe.map amendWildcards
+            |> Maybe.map Q.AllNames
+        , Comp.Dropdown.getSelected model.directionModel
+            |> List.head
+            |> Maybe.map Q.Dir
+        , textSearch.fullText
+            |> Maybe.map Q.Contents
+        ]
 
 
 resetModel : Model -> Model
@@ -437,7 +465,7 @@ updateDrop ddm flags settings msg model =
             { model = mdp
             , cmd =
                 Cmd.batch
-                    [ Api.itemSearchStats flags Api.Model.ItemSearch.empty GetAllTagsResp
+                    [ Api.itemSearchStats flags Api.Model.ItemQuery.empty GetAllTagsResp
                     , Api.getOrgLight flags GetOrgResp
                     , Api.getEquipments flags "" GetEquipResp
                     , Api.getPersons flags "" GetPersonResp
@@ -450,7 +478,7 @@ updateDrop ddm flags settings msg model =
 
         ResetForm ->
             { model = resetModel model
-            , cmd = Api.itemSearchStats flags Api.Model.ItemSearch.empty GetAllTagsResp
+            , cmd = Api.itemSearchStats flags Api.Model.ItemQuery.empty GetAllTagsResp
             , stateChange = True
             , dragDrop = DD.DragDropData ddm Nothing
             }

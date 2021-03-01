@@ -1696,22 +1696,22 @@ itemIndexSearch flags query receive =
         }
 
 
-itemSearch : Flags -> ItemSearch -> (Result Http.Error ItemLightList -> msg) -> Cmd msg
+itemSearch : Flags -> ItemQuery -> (Result Http.Error ItemLightList -> msg) -> Cmd msg
 itemSearch flags search receive =
     Http2.authPost
-        { url = flags.config.baseUrl ++ "/api/v1/sec/item/searchFormWithTags"
+        { url = flags.config.baseUrl ++ "/api/v1/sec/item/search"
         , account = getAccount flags
-        , body = Http.jsonBody (Api.Model.ItemSearch.encode search)
+        , body = Http.jsonBody (Api.Model.ItemQuery.encode search)
         , expect = Http.expectJson receive Api.Model.ItemLightList.decoder
         }
 
 
-itemSearchStats : Flags -> ItemSearch -> (Result Http.Error SearchStats -> msg) -> Cmd msg
+itemSearchStats : Flags -> ItemQuery -> (Result Http.Error SearchStats -> msg) -> Cmd msg
 itemSearchStats flags search receive =
     Http2.authPost
-        { url = flags.config.baseUrl ++ "/api/v1/sec/item/searchFormStats"
+        { url = flags.config.baseUrl ++ "/api/v1/sec/item/searchStats"
         , account = getAccount flags
-        , body = Http.jsonBody (Api.Model.ItemSearch.encode search)
+        , body = Http.jsonBody (Api.Model.ItemQuery.encode search)
         , expect = Http.expectJson receive Api.Model.SearchStats.decoder
         }
 

@@ -10,7 +10,6 @@ module Data.CustomFieldChange exposing
 
 import Api.Model.CustomField exposing (CustomField)
 import Api.Model.CustomFieldValue exposing (CustomFieldValue)
-import Api.Model.ItemFieldValue exposing (ItemFieldValue)
 import Dict exposing (Dict)
 
 
