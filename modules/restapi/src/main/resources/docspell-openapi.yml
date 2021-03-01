@@ -1314,6 +1314,7 @@ paths:
     post:
       tags: [ Item Search ]
       summary: Search for items.
+      deprecated: true
       description: |
         Search for items given a search form. The results are grouped
         by month and are sorted by item date (newest first). Tags and
@@ -1348,6 +1349,7 @@ paths:
     post:
       tags: [ Item Search ]
       summary: Search for items.
+      deprecated: true
       description: |
         Search for items given a search form. The results are grouped
         by month by default. For each item, its tags and attachments
@@ -1459,6 +1461,7 @@ paths:
     post:
       tags: [ Item Search ]
       summary: Get basic statistics about the data of a search.
+      deprecated: true
       description: |
         Takes a search query and returns a summary about the results.
 
