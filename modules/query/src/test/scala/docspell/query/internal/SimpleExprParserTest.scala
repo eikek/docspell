@@ -173,6 +173,10 @@ class SimpleExprParserTest extends FunSuite with ValueHelper {
       p.parseAll("f:usd=26.66"),
       Right(Expr.CustomFieldMatch("usd", Operator.Eq, "26.66"))
     )
+    assertEquals(
+      p.parseAll("f:usd=\"26.66\""),
+      Right(Expr.CustomFieldMatch("usd", Operator.Eq, "26.66"))
+    )
   }
 
 }

@@ -67,4 +67,26 @@ class ExprParserTest extends FunSuite with ValueHelper {
       )
     )
   }
+
+  test("nest and/ with simple expr") {
+    val p = ExprParser.exprParser
+    assertEquals(
+      p.parseAll("(& (& f:usd=\"4.99\" ) source:*test* )"),
+      Right(
+        Expr.and(
+          Expr.and(Expr.CustomFieldMatch("usd", Operator.Eq, "4.99")),
+          Expr.string(Operator.Like, Attr.ItemSource, "*test*")
+        )
+      )
+    )
+    assertEquals(
+      p.parseAll("(& (& f:usd=\"4.99\" ) (| source:*test*) )"),
+      Right(
+        Expr.and(
+          Expr.and(Expr.CustomFieldMatch("usd", Operator.Eq, "4.99")),
+          Expr.or(Expr.string(Operator.Like, Attr.ItemSource, "*test*"))
+        )
+      )
+    )
+  }
 }

@@ -21,13 +21,13 @@ object BasicParser {
     (('A' to 'Z') ++ ('a' to 'z') ++ ('0' to '9') ++ "-_.").toSet
 
   val parenAnd: P[Unit] =
-    P.stringIn(List("(&", "(and")).void.surroundedBy(ws0)
+    P.stringIn(List("(&", "(and")).void <* ws0
 
   val parenClose: P[Unit] =
-    P.char(')').surroundedBy(ws0)
+    ws0.soft.with1 *> P.char(')')
 
   val parenOr: P[Unit] =
-    P.stringIn(List("(|", "(or")).void.surroundedBy(ws0)
+    P.stringIn(List("(|", "(or")).void <* ws0
 
   val identParser: P[String] =
     P.charsWhile(identChars.contains)
