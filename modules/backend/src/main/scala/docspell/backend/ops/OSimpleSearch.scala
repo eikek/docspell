@@ -1,13 +1,180 @@
 package docspell.backend.ops
 
-import docspell.backend.ops.OItemSearch.ListItemWithTags
-import docspell.common.ItemQueryString
-import docspell.store.qb.Batch
+import cats.implicits._
 
+import docspell.common._
+import docspell.store.qb.Batch
+import docspell.store.queries.Query
+import docspell.query.{ItemQueryParser, ParseFailure}
+
+import OSimpleSearch._
+import docspell.store.queries.SearchSummary
+import cats.effect.Sync
+
+/** A "porcelain" api on top of OFulltext and OItemSearch. */
 trait OSimpleSearch[F[_]] {
 
-  def searchByString(q: ItemQueryString, batch: Batch): F[Vector[ListItemWithTags]]
+  def search(settings: Settings)(q: Query, fulltextQuery: Option[String]): F[Items]
+  def searchSummary(
+      settings: Settings
+  )(q: Query, fulltextQuery: Option[String]): F[SearchSummary]
+
+  def searchByString(
+      settings: Settings
+  )(fix: Query.Fix, q: ItemQueryString): Either[ParseFailure, F[Items]]
+  def searchSummaryByString(
+      settings: Settings
+  )(fix: Query.Fix, q: ItemQueryString): Either[ParseFailure, F[SearchSummary]]
 
 }
 
-object OSimpleSearch {}
+object OSimpleSearch {
+
+  final case class Settings(
+      batch: Batch,
+      useFTS: Boolean,
+      resolveDetails: Boolean,
+      maxNoteLen: Int
+  )
+  object Settings {
+    def plain(batch: Batch, useFulltext: Boolean, maxNoteLen: Int): Settings =
+      Settings(batch, useFulltext, false, maxNoteLen)
+    def detailed(batch: Batch, useFulltext: Boolean, maxNoteLen: Int): Settings =
+      Settings(batch, useFulltext, true, maxNoteLen)
+  }
+
+  sealed trait Items {
+    def fold[A](
+        f1: Vector[OFulltext.FtsItem] => A,
+        f2: Vector[OFulltext.FtsItemWithTags] => A,
+        f3: Vector[OItemSearch.ListItem] => A,
+        f4: Vector[OItemSearch.ListItemWithTags] => A
+    ): A
+
+  }
+  object Items {
+    def ftsItems(items: Vector[OFulltext.FtsItem]): Items =
+      FtsItems(items)
+
+    case class FtsItems(items: Vector[OFulltext.FtsItem]) extends Items {
+      def fold[A](
+          f1: Vector[OFulltext.FtsItem] => A,
+          f2: Vector[OFulltext.FtsItemWithTags] => A,
+          f3: Vector[OItemSearch.ListItem] => A,
+          f4: Vector[OItemSearch.ListItemWithTags] => A
+      ): A = f1(items)
+
+    }
+
+    def ftsItemsFull(items: Vector[OFulltext.FtsItemWithTags]): Items =
+      FtsItemsFull(items)
+
+    case class FtsItemsFull(items: Vector[OFulltext.FtsItemWithTags]) extends Items {
+      def fold[A](
+          f1: Vector[OFulltext.FtsItem] => A,
+          f2: Vector[OFulltext.FtsItemWithTags] => A,
+          f3: Vector[OItemSearch.ListItem] => A,
+          f4: Vector[OItemSearch.ListItemWithTags] => A
+      ): A = f2(items)
+    }
+
+    def itemsPlain(items: Vector[OItemSearch.ListItem]): Items =
+      ItemsPlain(items)
+
+    case class ItemsPlain(items: Vector[OItemSearch.ListItem]) extends Items {
+      def fold[A](
+          f1: Vector[OFulltext.FtsItem] => A,
+          f2: Vector[OFulltext.FtsItemWithTags] => A,
+          f3: Vector[OItemSearch.ListItem] => A,
+          f4: Vector[OItemSearch.ListItemWithTags] => A
+      ): A = f3(items)
+    }
+
+    def itemsFull(items: Vector[OItemSearch.ListItemWithTags]): Items =
+      ItemsFull(items)
+
+    case class ItemsFull(items: Vector[OItemSearch.ListItemWithTags]) extends Items {
+      def fold[A](
+          f1: Vector[OFulltext.FtsItem] => A,
+          f2: Vector[OFulltext.FtsItemWithTags] => A,
+          f3: Vector[OItemSearch.ListItem] => A,
+          f4: Vector[OItemSearch.ListItemWithTags] => A
+      ): A = f4(items)
+    }
+
+  }
+
+  def apply[F[_]: Sync](fts: OFulltext[F], is: OItemSearch[F]): OSimpleSearch[F] =
+    new Impl(fts, is)
+
+  final class Impl[F[_]: Sync](fts: OFulltext[F], is: OItemSearch[F])
+      extends OSimpleSearch[F] {
+    def searchByString(
+        settings: Settings
+    )(fix: Query.Fix, q: ItemQueryString): Either[ParseFailure, F[Items]] =
+      ItemQueryParser
+        .parse(q.query)
+        .map(iq => Query(fix, Query.QueryExpr(iq)))
+        .map(search(settings)(_, None)) //TODO resolve content:xyz expressions
+
+    def searchSummaryByString(
+        settings: Settings
+    )(fix: Query.Fix, q: ItemQueryString): Either[ParseFailure, F[SearchSummary]] =
+      ItemQueryParser
+        .parse(q.query)
+        .map(iq => Query(fix, Query.QueryExpr(iq)))
+        .map(searchSummary(settings)(_, None)) //TODO resolve content:xyz expressions
+
+    def searchSummary(
+        settings: Settings
+    )(q: Query, fulltextQuery: Option[String]): F[SearchSummary] =
+      fulltextQuery match {
+        case Some(ftq) if settings.useFTS =>
+          if (q.isEmpty)
+            fts.findIndexOnlySummary(q.fix.account, OFulltext.FtsInput(ftq))
+          else
+            fts
+              .findItemsSummary(q, OFulltext.FtsInput(ftq))
+
+        case _ =>
+          is.findItemsSummary(q)
+      }
+
+    def search(settings: Settings)(q: Query, fulltextQuery: Option[String]): F[Items] =
+      // 1. fulltext only   if fulltextQuery.isDefined && q.isEmpty && useFTS
+      // 2. sql+fulltext    if fulltextQuery.isDefined && q.nonEmpty && useFTS
+      // 3. sql-only        else (if fulltextQuery.isEmpty || !useFTS)
+      fulltextQuery match {
+        case Some(ftq) if settings.useFTS =>
+          if (q.isEmpty)
+            fts
+              .findIndexOnly(settings.maxNoteLen)(
+                OFulltext.FtsInput(ftq),
+                q.fix.account,
+                settings.batch
+              )
+              .map(Items.ftsItemsFull)
+          else if (settings.resolveDetails)
+            fts
+              .findItemsWithTags(settings.maxNoteLen)(
+                q,
+                OFulltext.FtsInput(ftq),
+                settings.batch
+              )
+              .map(Items.ftsItemsFull)
+          else
+            fts
+              .findItems(settings.maxNoteLen)(q, OFulltext.FtsInput(ftq), settings.batch)
+              .map(Items.ftsItems)
+
+        case _ =>
+          if (settings.resolveDetails)
+            is.findItemsWithTags(settings.maxNoteLen)(q, settings.batch)
+              .map(Items.itemsFull)
+          else
+            is.findItems(settings.maxNoteLen)(q, settings.batch)
+              .map(Items.itemsPlain)
+      }
+  }
+
+}

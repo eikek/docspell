@@ -14,6 +14,12 @@ case class Query(fix: Query.Fix, cond: Query.QueryCond) {
 
   def withFix(f: Query.Fix => Query.Fix): Query =
     copy(fix = f(fix))
+
+  def isEmpty: Boolean =
+    fix.isEmpty && cond.isEmpty
+
+  def nonEmpty: Boolean =
+    !isEmpty
 }
 
 object Query {
@@ -22,9 +28,18 @@ object Query {
       account: AccountId,
       itemIds: Option[Set[Ident]],
       orderAsc: Option[RItem.Table => Column[_]]
-  )
+  ) {
 
-  sealed trait QueryCond
+    def isEmpty: Boolean =
+      itemIds.isEmpty
+  }
+
+  sealed trait QueryCond {
+    def isEmpty: Boolean
+
+    def nonEmpty: Boolean =
+      !isEmpty
+  }
 
   case class QueryForm(
       name: Option[String],
@@ -47,7 +62,11 @@ object Query {
       itemIds: Option[Set[Ident]],
       customValues: Seq[CustomValue],
       source: Option[String]
-  ) extends QueryCond
+  ) extends QueryCond {
+
+    def isEmpty: Boolean =
+      this == QueryForm.empty
+  }
   object QueryForm {
     val empty =
       QueryForm(
@@ -74,7 +93,10 @@ object Query {
       )
   }
 
-  case class QueryExpr(q: ItemQuery) extends QueryCond
+  case class QueryExpr(q: ItemQuery) extends QueryCond {
+    def isEmpty: Boolean =
+      q.expr == ItemQuery.all.expr
+  }
 
   def empty(account: AccountId): Query =
     Query(Fix(account, None, None), QueryForm.empty)
