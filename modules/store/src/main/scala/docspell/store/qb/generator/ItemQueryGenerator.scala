@@ -236,7 +236,11 @@ object ItemQueryGenerator {
     Select(
       select(cfv.itemId),
       from(cfv).innerJoin(cf, cf.id === cfv.field),
-      cf.cid === coll && cf.name ==== field && Condition.CompareVal(cfv.value, op, v)
+      cf.cid === coll && (cf.name ==== field || cf.id ==== field) && Condition.CompareVal(
+        cfv.value,
+        op,
+        v
+      )
     )
   }
 }
