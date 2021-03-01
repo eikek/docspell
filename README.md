@@ -6,12 +6,14 @@
 [![Docker Pulls](https://img.shields.io/docker/pulls/eikek0/docspell?color=steelblue&style=for-the-badge&logo=docker)](https://hub.docker.com/r/eikek0/docspell)
 [![Gitter chat](https://img.shields.io/gitter/room/eikek/docspell?style=for-the-badge&color=steelblue&logo=gitter)](https://gitter.im/eikek/docspell)
 
-# Docspell
+# Docspell - Document Management System (DMS)
 
-Docspell is a personal document organizer. You'll need a scanner to
-convert your papers into files. Docspell can then assist in organizing
-the resulting mess :wink:. It is targeted for home use, i.e. families
-and households and also for (smaller) groups/companies.
+Docspell is a personal document organizer. Or sometimes called a
+"Document Management System" (DMS). You'll need a scanner to convert
+your papers into files. Docspell can then assist in organizing the
+resulting mess :wink:. It can unify your files from scanners, emails
+and other sources. It is targeted for home use, i.e. families,
+households and also for smaller groups/companies.
 
 You can associate tags, set correspondends and lots of other
 predefined and custom metadata. If your documents are associated with
