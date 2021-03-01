@@ -5,7 +5,7 @@ LABEL maintainer="eikek0 <eike@docspell.org>"
 ARG ELM_VERSION=0.19.1
 ARG SBT_VERSION=
 
-RUN apk add --virtual .build-dependencies --no-cache git curl bash openjdk8 npm
+RUN apk add --virtual .build-dependencies --no-cache git curl bash openjdk11 npm
 
 # ELM
 RUN curl -L -o elm.gz https://github.com/elm/compiler/releases/download/${ELM_VERSION}/binary-for-linux-64-bit.gz
@@ -25,11 +25,8 @@ COPY . /src/docspell/
 # for a build without cloned project the following line would replace the one above
 # RUN git -C /src clone https://github.com/eikek/docspell
 
-
-#RUN SBT_OPTS="-Xms1024M -Xmx8G -Xss2M -XX:MaxMetaspaceSize=8G" && \
 WORKDIR /src/docspell
-RUN sbt -mem 4096 make make-zip make-tools
-#RUN SBT_OPTS= && \
+RUN sbt -J-XX:+UseG1GC -J-XX:+PrintCommandLineFlags -mem 2048 make make-zip make-tools
 
 RUN mkdir -p /opt
 RUN find "/src/docspell/modules/joex/target/universal/" -name "docspell-joex*.zip" -exec unzip {} -d "/opt/" \;
