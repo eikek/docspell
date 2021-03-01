@@ -56,6 +56,7 @@ type alias Model =
     , dragDropData : DD.DragDropData
     , scrollToCard : Maybe String
     , searchStats : SearchStats
+    , powerSearchInput : Maybe String
     }
 
 
@@ -121,6 +122,7 @@ init flags viewMode =
     , scrollToCard = Nothing
     , viewMode = viewMode
     , searchStats = Api.Model.SearchStats.empty
+    , powerSearchInput = Nothing
     }
 
 
@@ -194,6 +196,8 @@ type Msg
     | SetLinkTarget LinkTarget
     | SearchStatsResp (Result Http.Error SearchStats)
     | TogglePreviewFullWidth
+    | SetPowerSearch String
+    | KeyUpPowerSearchbarMsg (Maybe KeyCode)
 
 
 type SearchType
@@ -240,8 +244,11 @@ doSearchDefaultCmd : SearchParam -> Model -> Cmd Msg
 doSearchDefaultCmd param model =
     let
         smask =
-            Q.request
-                (Comp.SearchMenu.getItemQuery model.searchMenuModel)
+            Q.request <|
+                Q.and
+                    [ Comp.SearchMenu.getItemQuery model.searchMenuModel
+                    , Maybe.map Q.Fragment model.powerSearchInput
+                    ]
 
         mask =
             { smask

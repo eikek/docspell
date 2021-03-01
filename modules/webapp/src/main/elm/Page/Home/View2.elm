@@ -92,7 +92,7 @@ itemsBar flags settings model =
 
 
 defaultMenuBar : Flags -> UiSettings -> Model -> Html Msg
-defaultMenuBar flags settings model =
+defaultMenuBar _ settings model =
     let
         btnStyle =
             S.secondaryBasicButton ++ " text-sm"
@@ -100,6 +100,53 @@ defaultMenuBar flags settings model =
         searchInput =
             Comp.SearchMenu.textSearchString
                 model.searchMenuModel.textSearchModel
+
+        simpleSearchBar =
+            div
+                [ class "relative flex flex-row" ]
+                [ input
+                    [ type_ "text"
+                    , placeholder
+                        (case model.searchTypeDropdownValue of
+                            ContentOnlySearch ->
+                                "Content search…"
+
+                            BasicSearch ->
+                                "Search in names…"
+                        )
+                    , onInput SetBasicSearch
+                    , Util.Html.onKeyUpCode KeyUpSearchbarMsg
+                    , Maybe.map value searchInput
+                        |> Maybe.withDefault (value "")
+                    , class (String.replace "rounded" "" S.textInput)
+                    , class "py-1 text-sm border-r-0 rounded-l"
+                    ]
+                    []
+                , a
+                    [ class S.secondaryBasicButtonPlain
+                    , class "text-sm px-4 py-2 border rounded-r"
+                    , href "#"
+                    , onClick ToggleSearchType
+                    ]
+                    [ i [ class "fa fa-exchange-alt" ] []
+                    ]
+                ]
+
+        powerSearchBar =
+            div
+                [ class "relative flex flex-grow flex-row" ]
+                [ input
+                    [ type_ "text"
+                    , placeholder "Search query …"
+                    , onInput SetPowerSearch
+                    , Util.Html.onKeyUpCode KeyUpPowerSearchbarMsg
+                    , Maybe.map value model.powerSearchInput
+                        |> Maybe.withDefault (value "")
+                    , class S.textInput
+                    , class "text-sm "
+                    ]
+                    []
+                ]
     in
     MB.view
         { end =
@@ -129,35 +176,11 @@ defaultMenuBar flags settings model =
             ]
         , start =
             [ MB.CustomElement <|
-                div
-                    [ class "relative flex flex-row" ]
-                    [ input
-                        [ type_ "text"
-                        , placeholder
-                            (case model.searchTypeDropdownValue of
-                                ContentOnlySearch ->
-                                    "Content search…"
+                if settings.powerSearchEnabled then
+                    powerSearchBar
 
-                                BasicSearch ->
-                                    "Search in names…"
-                            )
-                        , onInput SetBasicSearch
-                        , Util.Html.onKeyUpCode KeyUpSearchbarMsg
-                        , Maybe.map value searchInput
-                            |> Maybe.withDefault (value "")
-                        , class (String.replace "rounded" "" S.textInput)
-                        , class "py-1 text-sm border-r-0 rounded-l"
-                        ]
-                        []
-                    , a
-                        [ class S.secondaryBasicButtonPlain
-                        , class "text-sm px-4 py-2 border rounded-r"
-                        , href "#"
-                        , onClick ToggleSearchType
-                        ]
-                        [ i [ class "fa fa-exchange-alt" ] []
-                        ]
-                    ]
+                else
+                    simpleSearchBar
             , MB.CustomButton
                 { tagger = TogglePreviewFullWidth
                 , label = ""
@@ -271,7 +294,7 @@ searchStats _ settings model =
 
 
 itemCardList : Flags -> UiSettings -> Model -> List (Html Msg)
-itemCardList flags settings model =
+itemCardList _ settings model =
     let
         itemViewCfg =
             case model.viewMode of

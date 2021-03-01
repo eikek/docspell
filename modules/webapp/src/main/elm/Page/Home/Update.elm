@@ -54,7 +54,7 @@ update mId key flags settings msg model =
         ResetSearch ->
             let
                 nm =
-                    { model | searchOffset = 0 }
+                    { model | searchOffset = 0, powerSearchInput = Nothing }
             in
             update mId key flags settings (SearchMenuMsg Comp.SearchMenu.ResetForm) nm
 
@@ -579,6 +579,15 @@ update mId key flags settings msg model =
                     Ports.storeUiSettings flags newSettings
             in
             noSub ( model, cmd )
+
+        SetPowerSearch str ->
+            noSub ( { model | powerSearchInput = Util.Maybe.fromString str }, Cmd.none )
+
+        KeyUpPowerSearchbarMsg (Just Enter) ->
+            update mId key flags settings (DoSearch model.searchTypeDropdownValue) model
+
+        KeyUpPowerSearchbarMsg _ ->
+            withSub ( model, Cmd.none )
 
 
 

@@ -52,6 +52,7 @@ type ItemQuery
     | ItemName AttrMatch String
     | AllNames String
     | Contents String
+    | Fragment String
 
 
 and : List (Maybe ItemQuery) -> Maybe ItemQuery
@@ -175,6 +176,9 @@ render q =
 
         Contents str ->
             "content:" ++ quoteStr str
+
+        Fragment str ->
+            "(& " ++ str ++ " )"
 
 
 attrMatch : AttrMatch -> String
