@@ -10,9 +10,9 @@ import docspell.backend.auth.AuthToken
 import docspell.backend.ops.OCustomFields.{RemoveValue, SetValue}
 import docspell.backend.ops.OFulltext
 import docspell.backend.ops.OItemSearch.{Batch, Query}
+import docspell.backend.ops.OSimpleSearch
 import docspell.common._
 import docspell.common.syntax.all._
-import docspell.query.ItemQueryParser
 import docspell.restapi.model._
 import docspell.restserver.Config
 import docspell.restserver.conv.Conversions
@@ -49,30 +49,96 @@ object ItemRoutes {
 
       case GET -> Root / "search" :? QP.Query(q) :? QP.Limit(limit) :? QP.Offset(
             offset
-          ) =>
-        val query =
-          ItemQueryParser.parse(q.getOrElse("")) match {
-            case Right(q) =>
-              Right(Query(Query.Fix(user.account, None, None), Query.QueryExpr(q)))
-            case Left(err) =>
-              Left(err)
-          }
-        val li = limit.getOrElse(cfg.maxItemPageSize)
-        val of = offset.getOrElse(0)
-        query match {
-          case Left(err) =>
-            BadRequest(BasicResult(false, err.render))
-          case Right(sq) =>
-            for {
-              items <- backend.itemSearch.findItems(cfg.maxNoteLength)(
-                sq,
-                Batch(of, li).restrictLimitTo(cfg.maxItemPageSize)
+          ) :? QP.WithDetails(detailFlag) =>
+        val batch = Batch(offset.getOrElse(0), limit.getOrElse(cfg.maxItemPageSize))
+          .restrictLimitTo(cfg.maxItemPageSize)
+        val itemQuery = ItemQueryString(q)
+        val settings = OSimpleSearch.Settings(
+          batch,
+          cfg.fullTextSearch.enabled,
+          detailFlag.getOrElse(false),
+          cfg.maxNoteLength
+        )
+        val fixQuery = Query.Fix(user.account, None, None)
+        backend.simpleSearch.searchByString(settings)(fixQuery, itemQuery) match {
+          case Right(results) =>
+            val items = results.map(
+              _.fold(
+                Conversions.mkItemListFts,
+                Conversions.mkItemListWithTagsFts,
+                Conversions.mkItemList,
+                Conversions.mkItemListWithTags
               )
-              ok <- Ok(Conversions.mkItemList(items))
-            } yield ok
+            )
+            Ok(items)
+          case Left(fail) =>
+            BadRequest(BasicResult(false, fail.render))
+        }
+
+      case GET -> Root / "searchStats" :? QP.Query(q) =>
+        val itemQuery = ItemQueryString(q)
+        val fixQuery  = Query.Fix(user.account, None, None)
+        backend.simpleSearch
+          .searchSummaryByString(cfg.fullTextSearch.enabled)(fixQuery, itemQuery) match {
+          case Right(summary) =>
+            summary.flatMap(s => Ok(Conversions.mkSearchStats(s)))
+          case Left(fail) =>
+            BadRequest(BasicResult(false, fail.render))
         }
 
       case req @ POST -> Root / "search" =>
+        for {
+          userQuery <- req.as[ItemQuery]
+          batch = Batch(
+            userQuery.offset.getOrElse(0),
+            userQuery.limit.getOrElse(cfg.maxItemPageSize)
+          ).restrictLimitTo(
+            cfg.maxItemPageSize
+          )
+          itemQuery = ItemQueryString(userQuery.query)
+          settings = OSimpleSearch.Settings(
+            batch,
+            cfg.fullTextSearch.enabled,
+            userQuery.withDetails.getOrElse(false),
+            cfg.maxNoteLength
+          )
+          fixQuery = Query.Fix(user.account, None, None)
+          resp <- backend.simpleSearch
+            .searchByString(settings)(fixQuery, itemQuery) match {
+            case Right(results) =>
+              val items = results.map(
+                _.fold(
+                  Conversions.mkItemListFts,
+                  Conversions.mkItemListWithTagsFts,
+                  Conversions.mkItemList,
+                  Conversions.mkItemListWithTags
+                )
+              )
+              Ok(items)
+            case Left(fail) =>
+              BadRequest(BasicResult(false, fail.render))
+          }
+        } yield resp
+
+      case req @ POST -> Root / "searchStats" =>
+        for {
+          userQuery <- req.as[ItemQuery]
+          itemQuery = ItemQueryString(userQuery.query)
+          fixQuery  = Query.Fix(user.account, None, None)
+          resp <- backend.simpleSearch
+            .searchSummaryByString(cfg.fullTextSearch.enabled)(
+              fixQuery,
+              itemQuery
+            ) match {
+            case Right(summary) =>
+              summary.flatMap(s => Ok(Conversions.mkSearchStats(s)))
+            case Left(fail) =>
+              BadRequest(BasicResult(false, fail.render))
+          }
+        } yield resp
+
+      //DEPRECATED
+      case req @ POST -> Root / "searchForm" =>
         for {
           mask <- req.as[ItemSearch]
           _    <- logger.ftrace(s"Got search mask: $mask")
@@ -111,7 +177,8 @@ object ItemRoutes {
           }
         } yield resp
 
-      case req @ POST -> Root / "searchWithTags" =>
+      //DEPRECATED
+      case req @ POST -> Root / "searchFormWithTags" =>
         for {
           mask <- req.as[ItemSearch]
           _    <- logger.ftrace(s"Got search mask: $mask")
@@ -151,7 +218,7 @@ object ItemRoutes {
 
       case req @ POST -> Root / "searchIndex" =>
         for {
-          mask <- req.as[ItemFtsSearch]
+          mask <- req.as[ItemQuery]
           resp <- mask.query match {
             case q if q.length > 1 =>
               val ftsIn = OFulltext.FtsInput(q)
@@ -159,7 +226,10 @@ object ItemRoutes {
                 items <- backend.fulltext.findIndexOnly(cfg.maxNoteLength)(
                   ftsIn,
                   user.account,
-                  Batch(mask.offset, mask.limit).restrictLimitTo(cfg.maxItemPageSize)
+                  Batch(
+                    mask.offset.getOrElse(0),
+                    mask.limit.getOrElse(cfg.maxItemPageSize)
+                  ).restrictLimitTo(cfg.maxItemPageSize)
                 )
                 ok <- Ok(Conversions.mkItemListWithTagsFtsPlain(items))
               } yield ok
@@ -169,7 +239,8 @@ object ItemRoutes {
           }
         } yield resp
 
-      case req @ POST -> Root / "searchStats" =>
+      //DEPRECATED
+      case req @ POST -> Root / "searchFormStats" =>
         for {
           mask <- req.as[ItemSearch]
           query = Conversions.mkQuery(mask, user.account)
@@ -479,12 +550,12 @@ object ItemRoutes {
     private val itemSearchMonoid: Monoid[ItemSearch] =
       cats.derived.semiauto.monoid
 
-    def unapply(m: ItemSearch): Option[ItemFtsSearch] =
+    def unapply(m: ItemSearch): Option[ItemQuery] =
       m.fullText match {
         case Some(fq) =>
           val me = m.copy(fullText = None, offset = 0, limit = 0)
           if (itemSearchMonoid.empty == me)
-            Some(ItemFtsSearch(m.offset, m.limit, fq))
+            Some(ItemQuery(m.offset.some, m.limit.some, Some(false), fq))
           else None
         case _ =>
           None

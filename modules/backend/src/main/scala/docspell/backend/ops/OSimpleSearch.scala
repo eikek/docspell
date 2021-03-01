@@ -1,29 +1,28 @@
 package docspell.backend.ops
 
+import cats.effect.Sync
 import cats.implicits._
 
+import docspell.backend.ops.OSimpleSearch._
 import docspell.common._
+import docspell.query.{ItemQueryParser, ParseFailure}
 import docspell.store.qb.Batch
 import docspell.store.queries.Query
-import docspell.query.{ItemQueryParser, ParseFailure}
-
-import OSimpleSearch._
 import docspell.store.queries.SearchSummary
-import cats.effect.Sync
 
 /** A "porcelain" api on top of OFulltext and OItemSearch. */
 trait OSimpleSearch[F[_]] {
 
   def search(settings: Settings)(q: Query, fulltextQuery: Option[String]): F[Items]
   def searchSummary(
-      settings: Settings
+      useFTS: Boolean
   )(q: Query, fulltextQuery: Option[String]): F[SearchSummary]
 
   def searchByString(
       settings: Settings
   )(fix: Query.Fix, q: ItemQueryString): Either[ParseFailure, F[Items]]
   def searchSummaryByString(
-      settings: Settings
+      useFTS: Boolean
   )(fix: Query.Fix, q: ItemQueryString): Either[ParseFailure, F[SearchSummary]]
 
 }
@@ -36,12 +35,6 @@ object OSimpleSearch {
       resolveDetails: Boolean,
       maxNoteLen: Int
   )
-  object Settings {
-    def plain(batch: Batch, useFulltext: Boolean, maxNoteLen: Int): Settings =
-      Settings(batch, useFulltext, false, maxNoteLen)
-    def detailed(batch: Batch, useFulltext: Boolean, maxNoteLen: Int): Settings =
-      Settings(batch, useFulltext, true, maxNoteLen)
-  }
 
   sealed trait Items {
     def fold[A](
@@ -118,18 +111,18 @@ object OSimpleSearch {
         .map(search(settings)(_, None)) //TODO resolve content:xyz expressions
 
     def searchSummaryByString(
-        settings: Settings
+        useFTS: Boolean
     )(fix: Query.Fix, q: ItemQueryString): Either[ParseFailure, F[SearchSummary]] =
       ItemQueryParser
         .parse(q.query)
         .map(iq => Query(fix, Query.QueryExpr(iq)))
-        .map(searchSummary(settings)(_, None)) //TODO resolve content:xyz expressions
+        .map(searchSummary(useFTS)(_, None)) //TODO resolve content:xyz expressions
 
     def searchSummary(
-        settings: Settings
+        useFTS: Boolean
     )(q: Query, fulltextQuery: Option[String]): F[SearchSummary] =
       fulltextQuery match {
-        case Some(ftq) if settings.useFTS =>
+        case Some(ftq) if useFTS =>
           if (q.isEmpty)
             fts.findIndexOnlySummary(q.fix.account, OFulltext.FtsInput(ftq))
           else

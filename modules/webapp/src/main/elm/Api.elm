@@ -156,10 +156,10 @@ import Api.Model.ImapSettings exposing (ImapSettings)
 import Api.Model.ImapSettingsList exposing (ImapSettingsList)
 import Api.Model.InviteResult exposing (InviteResult)
 import Api.Model.ItemDetail exposing (ItemDetail)
-import Api.Model.ItemFtsSearch exposing (ItemFtsSearch)
 import Api.Model.ItemInsights exposing (ItemInsights)
 import Api.Model.ItemLightList exposing (ItemLightList)
 import Api.Model.ItemProposals exposing (ItemProposals)
+import Api.Model.ItemQuery exposing (ItemQuery)
 import Api.Model.ItemSearch exposing (ItemSearch)
 import Api.Model.ItemUploadMeta exposing (ItemUploadMeta)
 import Api.Model.ItemsAndDate exposing (ItemsAndDate)
@@ -1684,14 +1684,14 @@ moveAttachmentBefore flags itemId data receive =
 
 itemIndexSearch :
     Flags
-    -> ItemFtsSearch
+    -> ItemQuery
     -> (Result Http.Error ItemLightList -> msg)
     -> Cmd msg
 itemIndexSearch flags query receive =
     Http2.authPost
         { url = flags.config.baseUrl ++ "/api/v1/sec/item/searchIndex"
         , account = getAccount flags
-        , body = Http.jsonBody (Api.Model.ItemFtsSearch.encode query)
+        , body = Http.jsonBody (Api.Model.ItemQuery.encode query)
         , expect = Http.expectJson receive Api.Model.ItemLightList.decoder
         }
 
@@ -1699,7 +1699,7 @@ itemIndexSearch flags query receive =
 itemSearch : Flags -> ItemSearch -> (Result Http.Error ItemLightList -> msg) -> Cmd msg
 itemSearch flags search receive =
     Http2.authPost
-        { url = flags.config.baseUrl ++ "/api/v1/sec/item/searchWithTags"
+        { url = flags.config.baseUrl ++ "/api/v1/sec/item/searchFormWithTags"
         , account = getAccount flags
         , body = Http.jsonBody (Api.Model.ItemSearch.encode search)
         , expect = Http.expectJson receive Api.Model.ItemLightList.decoder
@@ -1709,7 +1709,7 @@ itemSearch flags search receive =
 itemSearchStats : Flags -> ItemSearch -> (Result Http.Error SearchStats -> msg) -> Cmd msg
 itemSearchStats flags search receive =
     Http2.authPost
-        { url = flags.config.baseUrl ++ "/api/v1/sec/item/searchStats"
+        { url = flags.config.baseUrl ++ "/api/v1/sec/item/searchFormStats"
         , account = getAccount flags
         , body = Http.jsonBody (Api.Model.ItemSearch.encode search)
         , expect = Http.expectJson receive Api.Model.SearchStats.decoder

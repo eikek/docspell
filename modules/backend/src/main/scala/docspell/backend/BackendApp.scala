@@ -37,6 +37,7 @@ trait BackendApp[F[_]] {
   def userTask: OUserTask[F]
   def folder: OFolder[F]
   def customFields: OCustomFields[F]
+  def simpleSearch: OSimpleSearch[F]
 }
 
 object BackendApp {
@@ -71,6 +72,7 @@ object BackendApp {
       userTaskImpl     <- OUserTask(utStore, queue, joexImpl)
       folderImpl       <- OFolder(store)
       customFieldsImpl <- OCustomFields(store)
+      simpleSearchImpl = OSimpleSearch(fulltextImpl, itemSearchImpl)
     } yield new BackendApp[F] {
       val login        = loginImpl
       val signup       = signupImpl
@@ -90,6 +92,7 @@ object BackendApp {
       val userTask     = userTaskImpl
       val folder       = folderImpl
       val customFields = customFieldsImpl
+      val simpleSearch = simpleSearchImpl
     }
 
   def apply[F[_]: ConcurrentEffect: ContextShift](
