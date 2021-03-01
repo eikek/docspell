@@ -86,7 +86,7 @@ val stylesSettings = Seq(
   Compile / resourceGenerators += stylesBuild.taskValue
 )
 
-val webjarSettings = Seq(
+def webjarSettings(queryJS: Project) = Seq(
   Compile / resourceGenerators += Def.task {
     copyWebjarResources(
       Seq((sourceDirectory in Compile).value / "webjar"),
@@ -94,6 +94,18 @@ val webjarSettings = Seq(
       name.value,
       version.value,
       streams.value.log
+    )
+  }.taskValue,
+  Compile / resourceGenerators += Def.task {
+    val logger = streams.value.log
+    val out = (queryJS/Compile/fullOptJS).value
+    logger.info(s"Produced query js file: ${out.data}")
+    copyWebjarResources(
+      Seq(out.data),
+      (Compile/resourceManaged).value,
+      name.value,
+      version.value,
+      logger
     )
   }.taskValue,
   watchSources += Watched.WatchSource(
@@ -273,7 +285,6 @@ ${lines.map(_._1).mkString(",\n")}
 val query =
   crossProject(JSPlatform, JVMPlatform)
     .withoutSuffixFor(JVMPlatform)
-    .crossType(CrossType.Pure)
     .in(file("modules/query"))
     .disablePlugins(RevolverPlugin)
     .settings(sharedSettings)
@@ -446,7 +457,7 @@ val webapp = project
   .settings(sharedSettings)
   .settings(elmSettings)
   .settings(stylesSettings)
-  .settings(webjarSettings)
+  .settings(webjarSettings(query.js))
   .settings(
     name := "docspell-webapp",
     openapiTargetLanguage := Language.Elm,

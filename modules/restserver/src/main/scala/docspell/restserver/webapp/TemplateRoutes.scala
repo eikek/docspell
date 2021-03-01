@@ -170,7 +170,8 @@ object TemplateRoutes {
         chooseUi(uiVersion),
         Seq(
           "/app/assets" + Webjars.clipboardjs + "/clipboard.min.js",
-          s"/app/assets/docspell-webapp/${BuildInfo.version}/docspell-app.js"
+          s"/app/assets/docspell-webapp/${BuildInfo.version}/docspell-app.js",
+          s"/app/assets/docspell-webapp/${BuildInfo.version}/docspell-query-opt.js"
         ),
         s"/app/assets/docspell-webapp/${BuildInfo.version}/favicon",
         s"/app/assets/docspell-webapp/${BuildInfo.version}/docspell.js",
