@@ -232,7 +232,7 @@ object ItemQueryGenerator {
   def itemsWithCustomField(coll: Ident, field: String, op: QOp, value: String): Select = {
     val cf  = RCustomField.as("cf")
     val cfv = RCustomFieldValue.as("cfv")
-    val v   = if (op == QOp.LowerLike) value.toLowerCase else value
+    val v   = if (op == QOp.LowerLike) QueryWildcard.lower(value) else value
     Select(
       select(cfv.itemId),
       from(cfv).innerJoin(cf, cf.id === cfv.field),
