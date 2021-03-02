@@ -103,6 +103,8 @@ object ItemQuery {
 
     final case class CustomFieldMatch(name: String, op: Operator, value: String)
         extends Expr
+    final case class CustomFieldIdMatch(id: String, op: Operator, value: String)
+        extends Expr
 
     final case class Fulltext(query: String) extends Expr
 

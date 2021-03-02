@@ -2,7 +2,6 @@ package docspell.query.internal
 
 import cats.parse.{Parser => P}
 
-import docspell.query.ItemQuery.Expr.CustomFieldMatch
 import docspell.query.ItemQuery._
 
 object SimpleExprParser {
@@ -62,7 +61,13 @@ object SimpleExprParser {
   val customFieldExpr: P[Expr.CustomFieldMatch] =
     (P.string("f:") *> BasicParser.identParser ~ op ~ BasicParser.singleString).map {
       case ((name, op), value) =>
-        CustomFieldMatch(name, op, value)
+        Expr.CustomFieldMatch(name, op, value)
+    }
+
+  val customFieldIdExpr: P[Expr.CustomFieldIdMatch] =
+    (P.string("f.id:") *> BasicParser.identParser ~ op ~ BasicParser.singleString).map {
+      case ((name, op), value) =>
+        Expr.CustomFieldIdMatch(name, op, value)
     }
 
   val inboxExpr: P[Expr.InboxExpr] =
@@ -81,6 +86,7 @@ object SimpleExprParser {
         tagIdExpr,
         tagExpr,
         catExpr,
+        customFieldIdExpr,
         customFieldExpr,
         inboxExpr,
         dirExpr

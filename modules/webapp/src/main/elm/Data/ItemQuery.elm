@@ -44,6 +44,7 @@ type ItemQuery
     | ConcPersId AttrMatch String
     | ConcEquipId AttrMatch String
     | CustomField AttrMatch CustomFieldValue
+    | CustomFieldId AttrMatch CustomFieldValue
     | DateMs AttrMatch Int
     | DueDateMs AttrMatch Int
     | Source AttrMatch String
@@ -152,6 +153,9 @@ render q =
 
         CustomField m kv ->
             "f:" ++ kv.field ++ attrMatch m ++ quoteStr kv.value
+
+        CustomFieldId m kv ->
+            "f.id:" ++ kv.field ++ attrMatch m ++ quoteStr kv.value
 
         DateMs m ms ->
             "date" ++ attrMatch m ++ "ms" ++ String.fromInt ms

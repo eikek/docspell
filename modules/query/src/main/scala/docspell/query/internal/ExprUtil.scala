@@ -56,5 +56,7 @@ object ExprUtil {
         expr
       case CustomFieldMatch(_, _, _) =>
         expr
+      case CustomFieldIdMatch(_, _, _) =>
+        expr
     }
 }

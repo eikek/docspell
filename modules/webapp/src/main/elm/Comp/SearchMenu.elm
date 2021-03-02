@@ -293,7 +293,7 @@ getItemQuery model =
             |> List.head
             |> Maybe.map (Q.ConcEquipId Q.Eq)
         , whenNotEmpty (Data.CustomFieldChange.toFieldValues model.customValues)
-            (List.map (Q.CustomField Q.Like) >> Q.And)
+            (List.map (Q.CustomFieldId Q.Like) >> Q.And)
         , Maybe.map (Q.DateMs Q.Gte) model.fromDate
         , Maybe.map (Q.DateMs Q.Lte) model.untilDate
         , Maybe.map (Q.DueDateMs Q.Gte) model.fromDueDate

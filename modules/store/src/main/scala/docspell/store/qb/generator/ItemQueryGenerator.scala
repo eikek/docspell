@@ -145,7 +145,10 @@ object ItemQueryGenerator {
         }
 
       case Expr.CustomFieldMatch(field, op, value) =>
-        tables.item.id.in(itemsWithCustomField(coll, field, makeOp(op), value))
+        tables.item.id.in(itemsWithCustomField(_.name ==== field)(coll, makeOp(op), value))
+
+      case Expr.CustomFieldIdMatch(field, op, value) =>
+        tables.item.id.in(itemsWithCustomField(_.id ==== field)(coll, makeOp(op), value))
 
       case Expr.Fulltext(_) =>
         // not supported here
@@ -229,18 +232,21 @@ object ItemQueryGenerator {
         QOp.Lte
     }
 
-  def itemsWithCustomField(coll: Ident, field: String, op: QOp, value: String): Select = {
+  private def itemsWithCustomField(
+    sel: RCustomField.Table => Condition
+  )(coll: Ident, op: QOp, value: String): Select = {
     val cf  = RCustomField.as("cf")
     val cfv = RCustomFieldValue.as("cfv")
     val v   = if (op == QOp.LowerLike) QueryWildcard.lower(value) else value
     Select(
       select(cfv.itemId),
       from(cfv).innerJoin(cf, cf.id === cfv.field),
-      cf.cid === coll && (cf.name ==== field || cf.id ==== field) && Condition.CompareVal(
+      cf.cid === coll && sel(cf) && Condition.CompareVal(
         cfv.value,
         op,
         v
       )
     )
   }
+
 }
