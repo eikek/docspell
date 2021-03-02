@@ -5,61 +5,29 @@ import cats.parse.{Parser => P}
 import docspell.query.ItemQuery._
 
 object MacroParser {
-  private[this] val macroDef: P[String] =
-    P.char('$') *> BasicParser.identParser <* P.char(':')
+  private def macroDef(name: String): P[Unit] =
+    P.char('$').soft.with1 *> P.string(name) <* P.char(':')
 
-  def parser[A](macros: Map[String, P[A]]): P[A] = {
-    val p: P[P[A]] = macroDef.map { name =>
-      macros
-        .get(name)
-        .getOrElse(P.failWith(s"Unknown macro: $name"))
+  private def dateRangeMacroImpl(
+      name: String,
+      attr: Attr.DateAttr
+  ): P[Expr.DateRangeMacro] =
+    (macroDef(name) *> DateParser.dateRange).map { case (left, right) =>
+      Expr.DateRangeMacro(attr, left, right)
     }
 
-    val px = (p ~ P.index ~ BasicParser.singleString).map { case ((pexpr, index), str) =>
-      pexpr
-        .parseAll(str)
-        .left
-        .map(err => err.copy(failedAtOffset = err.failedAtOffset + index))
-    }
+  val namesMacro: P[Expr.NamesMacro] =
+    (macroDef("names") *> BasicParser.singleString).map(Expr.NamesMacro.apply)
 
-    P.select(px)(P.Fail)
-  }
+  val dateRangeMacro: P[Expr.DateRangeMacro] =
+    dateRangeMacroImpl("datein", Attr.Date)
 
-  // --- definitions of available macros
-
-  /** Expands in an OR expression that matches name fields of item and
-    * correspondent/concerning metadata.
-    */
-  val names: P[Expr] =
-    P.string(P.anyChar.rep.void).map { input =>
-      Expr.or(
-        Expr.like(Attr.ItemName, input),
-        Expr.like(Attr.ItemNotes, input),
-        Expr.like(Attr.Correspondent.OrgName, input),
-        Expr.like(Attr.Correspondent.PersonName, input),
-        Expr.like(Attr.Concerning.PersonName, input),
-        Expr.like(Attr.Concerning.EquipName, input)
-      )
-    }
-
-  def dateRange(attr: Attr.DateAttr): P[Expr] =
-    DateParser.dateRange.map { case (left, right) =>
-      Expr.and(
-        Expr.date(Operator.Gte, attr, left),
-        Expr.date(Operator.Lte, attr, right)
-      )
-    }
+  val dueDateRangeMacro: P[Expr.DateRangeMacro] =
+    dateRangeMacroImpl("duein", Attr.DueDate)
 
   // --- all macro parser
 
-  val allMacros: Map[String, P[Expr]] =
-    Map(
-      "names"  -> names,
-      "datein" -> dateRange(Attr.Date),
-      "duein"  -> dateRange(Attr.DueDate)
-    )
-
   val all: P[Expr] =
-    parser(allMacros)
+    P.oneOf(List(namesMacro, dateRangeMacro, dueDateRangeMacro))
 
 }

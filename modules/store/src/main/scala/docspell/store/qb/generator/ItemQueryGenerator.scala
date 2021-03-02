@@ -145,13 +145,18 @@ object ItemQueryGenerator {
         }
 
       case Expr.CustomFieldMatch(field, op, value) =>
-        tables.item.id.in(itemsWithCustomField(_.name ==== field)(coll, makeOp(op), value))
+        tables.item.id.in(
+          itemsWithCustomField(_.name ==== field)(coll, makeOp(op), value)
+        )
 
       case Expr.CustomFieldIdMatch(field, op, value) =>
         tables.item.id.in(itemsWithCustomField(_.id ==== field)(coll, makeOp(op), value))
 
       case Expr.Fulltext(_) =>
         // not supported here
+        Condition.unit
+
+      case _: Expr.MacroExpr =>
         Condition.unit
     }
 
@@ -233,7 +238,7 @@ object ItemQueryGenerator {
     }
 
   private def itemsWithCustomField(
-    sel: RCustomField.Table => Condition
+      sel: RCustomField.Table => Condition
   )(coll: Ident, op: QOp, value: String): Select = {
     val cf  = RCustomField.as("cf")
     val cfv = RCustomFieldValue.as("cfv")

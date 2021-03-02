@@ -108,6 +108,26 @@ object ItemQuery {
 
     final case class Fulltext(query: String) extends Expr
 
+    // things that can be expressed with terms above
+    sealed trait MacroExpr extends Expr {
+      def body: Expr
+    }
+    case class NamesMacro(searchTerm: String) extends MacroExpr {
+      val body =
+        Expr.or(
+          like(Attr.ItemName, searchTerm),
+          like(Attr.ItemNotes, searchTerm),
+          like(Attr.Correspondent.OrgName, searchTerm),
+          like(Attr.Correspondent.PersonName, searchTerm),
+          like(Attr.Concerning.PersonName, searchTerm),
+          like(Attr.Concerning.EquipName, searchTerm)
+        )
+    }
+    case class DateRangeMacro(attr: DateAttr, left: Date, right: Date) extends MacroExpr {
+      val body =
+        and(date(Operator.Gte, attr, left), date(Operator.Lte, attr, right))
+    }
+
     def or(expr0: Expr, exprs: Expr*): OrExpr =
       OrExpr(Nel.of(expr0, exprs: _*))
 
