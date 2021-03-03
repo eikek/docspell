@@ -242,16 +242,33 @@ object ItemQueryGenerator {
   )(coll: Ident, op: QOp, value: String): Select = {
     val cf  = RCustomField.as("cf")
     val cfv = RCustomFieldValue.as("cfv")
-    val v   = if (op == QOp.LowerLike) QueryWildcard.lower(value) else value
-    Select(
-      select(cfv.itemId),
-      from(cfv).innerJoin(cf, cf.id === cfv.field),
-      cf.cid === coll && sel(cf) && Condition.CompareVal(
-        cfv.value,
-        op,
-        v
+
+    val baseSelect =
+      Select(
+        select(cfv.itemId),
+        from(cfv).innerJoin(cf, sel(cf) && cf.cid === coll && cf.id === cfv.field)
       )
-    )
+
+    if (op == QOp.LowerLike) {
+      val v = QueryWildcard.lower(value)
+      baseSelect.where(Condition.CompareVal(cfv.value, op, v))
+    } else {
+      val stringCmp =
+        Condition.CompareVal(cfv.value, op, value)
+
+      value.toDoubleOption
+        .map { n =>
+          val numericCmp = Condition.CompareFVal(castNumeric(cfv.value.s), op, n)
+          val fieldIsNumeric =
+            cf.ftype === CustomFieldType.Numeric || cf.ftype === CustomFieldType.Money
+          val fieldNotNumeric =
+            cf.ftype <> CustomFieldType.Numeric && cf.ftype <> CustomFieldType.Money
+          baseSelect.where(
+            (fieldIsNumeric && numericCmp) || (fieldNotNumeric && stringCmp)
+          )
+        }
+        .getOrElse(baseSelect.where(stringCmp))
+    }
   }
 
 }

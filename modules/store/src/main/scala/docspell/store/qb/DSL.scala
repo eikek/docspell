@@ -89,6 +89,9 @@ trait DSL extends DoobieMeta {
   def cast(expr: SelectExpr, targetType: String): DBFunction =
     DBFunction.Cast(expr, targetType)
 
+  def castNumeric(expr: SelectExpr): DBFunction =
+    DBFunction.CastNumeric(expr)
+
   def coalesce(expr: SelectExpr, more: SelectExpr*): DBFunction.Coalesce =
     DBFunction.Coalesce(expr, more.toVector)
 

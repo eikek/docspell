@@ -46,6 +46,9 @@ object DBFunctionBuilder extends CommonBuilder {
           fr" AS" ++ Fragment.const(newType) ++
           sql")"
 
+      case DBFunction.CastNumeric(f) =>
+        sql"CAST_TO_NUMERIC(" ++ SelectExprBuilder.build(f) ++ sql")"
+
       case DBFunction.Avg(expr) =>
         sql"AVG(" ++ SelectExprBuilder.build(expr) ++ fr")"
 

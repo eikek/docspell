@@ -29,6 +29,8 @@ object DBFunction {
 
   case class Cast(expr: SelectExpr, newType: String) extends DBFunction
 
+  case class CastNumeric(expr: SelectExpr) extends DBFunction
+
   case class Avg(expr: SelectExpr) extends DBFunction
 
   case class Sum(expr: SelectExpr) extends DBFunction
