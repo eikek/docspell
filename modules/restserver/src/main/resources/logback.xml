@@ -9,7 +9,6 @@
 
   <logger name="docspell" level="debug" />
   <logger name="emil" level="debug"/>
-  <logger name="docspell.store.queries.QItem" level="trace"/>
 
   <root level="INFO">
     <appender-ref ref="STDOUT" />

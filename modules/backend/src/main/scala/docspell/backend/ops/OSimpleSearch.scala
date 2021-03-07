@@ -52,37 +52,41 @@ object OSimpleSearch {
 
   sealed trait Items {
     def fold[A](
-        f1: Vector[OFulltext.FtsItem] => A,
-        f2: Vector[OFulltext.FtsItemWithTags] => A,
+        f1: Items.FtsItems => A,
+        f2: Items.FtsItemsFull => A,
         f3: Vector[OItemSearch.ListItem] => A,
         f4: Vector[OItemSearch.ListItemWithTags] => A
     ): A
 
   }
   object Items {
-    def ftsItems(items: Vector[OFulltext.FtsItem]): Items =
-      FtsItems(items)
+    def ftsItems(indexOnly: Boolean)(items: Vector[OFulltext.FtsItem]): Items =
+      FtsItems(items, indexOnly)
 
-    case class FtsItems(items: Vector[OFulltext.FtsItem]) extends Items {
+    case class FtsItems(items: Vector[OFulltext.FtsItem], indexOnly: Boolean)
+        extends Items {
       def fold[A](
-          f1: Vector[OFulltext.FtsItem] => A,
-          f2: Vector[OFulltext.FtsItemWithTags] => A,
+          f1: FtsItems => A,
+          f2: FtsItemsFull => A,
           f3: Vector[OItemSearch.ListItem] => A,
           f4: Vector[OItemSearch.ListItemWithTags] => A
-      ): A = f1(items)
+      ): A = f1(this)
 
     }
 
-    def ftsItemsFull(items: Vector[OFulltext.FtsItemWithTags]): Items =
-      FtsItemsFull(items)
+    def ftsItemsFull(indexOnly: Boolean)(
+        items: Vector[OFulltext.FtsItemWithTags]
+    ): Items =
+      FtsItemsFull(items, indexOnly)
 
-    case class FtsItemsFull(items: Vector[OFulltext.FtsItemWithTags]) extends Items {
+    case class FtsItemsFull(items: Vector[OFulltext.FtsItemWithTags], indexOnly: Boolean)
+        extends Items {
       def fold[A](
-          f1: Vector[OFulltext.FtsItem] => A,
-          f2: Vector[OFulltext.FtsItemWithTags] => A,
+          f1: FtsItems => A,
+          f2: FtsItemsFull => A,
           f3: Vector[OItemSearch.ListItem] => A,
           f4: Vector[OItemSearch.ListItemWithTags] => A
-      ): A = f2(items)
+      ): A = f2(this)
     }
 
     def itemsPlain(items: Vector[OItemSearch.ListItem]): Items =
@@ -90,8 +94,8 @@ object OSimpleSearch {
 
     case class ItemsPlain(items: Vector[OItemSearch.ListItem]) extends Items {
       def fold[A](
-          f1: Vector[OFulltext.FtsItem] => A,
-          f2: Vector[OFulltext.FtsItemWithTags] => A,
+          f1: FtsItems => A,
+          f2: FtsItemsFull => A,
           f3: Vector[OItemSearch.ListItem] => A,
           f4: Vector[OItemSearch.ListItemWithTags] => A
       ): A = f3(items)
@@ -102,8 +106,8 @@ object OSimpleSearch {
 
     case class ItemsFull(items: Vector[OItemSearch.ListItemWithTags]) extends Items {
       def fold[A](
-          f1: Vector[OFulltext.FtsItem] => A,
-          f2: Vector[OFulltext.FtsItemWithTags] => A,
+          f1: FtsItems => A,
+          f2: FtsItemsFull => A,
           f3: Vector[OItemSearch.ListItem] => A,
           f4: Vector[OItemSearch.ListItemWithTags] => A
       ): A = f4(items)
@@ -190,7 +194,7 @@ object OSimpleSearch {
                 q.fix.account,
                 settings.batch
               )
-              .map(Items.ftsItemsFull)
+              .map(Items.ftsItemsFull(true))
           else if (settings.resolveDetails)
             fts
               .findItemsWithTags(settings.maxNoteLen)(
@@ -198,11 +202,11 @@ object OSimpleSearch {
                 OFulltext.FtsInput(ftq),
                 settings.batch
               )
-              .map(Items.ftsItemsFull)
+              .map(Items.ftsItemsFull(false))
           else
             fts
               .findItems(settings.maxNoteLen)(q, OFulltext.FtsInput(ftq), settings.batch)
-              .map(Items.ftsItems)
+              .map(Items.ftsItems(false))
 
         case _ =>
           if (settings.resolveDetails)

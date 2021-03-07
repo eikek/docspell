@@ -224,6 +224,10 @@ trait Conversions {
     if (v.isEmpty) ItemLightList(Nil)
     else ItemLightList(List(ItemLightGroup("Results", v.map(mkItemLightWithTags).toList)))
 
+  def mkItemListFtsPlain(v: Vector[OFulltext.FtsItem]): ItemLightList =
+    if (v.isEmpty) ItemLightList(Nil)
+    else ItemLightList(List(ItemLightGroup("Results", v.map(mkItemLight).toList)))
+
   def mkItemLight(i: OItemSearch.ListItem): ItemLight =
     ItemLight(
       i.id,

@@ -497,14 +497,22 @@ object ItemRoutes {
   )(settings: OSimpleSearch.Settings, fixQuery: Query.Fix, itemQuery: ItemQueryString) = {
     import dsl._
 
+    def convertFts(res: OSimpleSearch.Items.FtsItems): ItemLightList =
+      if (res.indexOnly) Conversions.mkItemListFtsPlain(res.items)
+      else Conversions.mkItemListFts(res.items)
+
+    def convertFtsFull(res: OSimpleSearch.Items.FtsItemsFull): ItemLightList =
+      if (res.indexOnly) Conversions.mkItemListWithTagsFtsPlain(res.items)
+      else Conversions.mkItemListWithTagsFts(res.items)
+
     backend.simpleSearch
       .searchByString(settings)(fixQuery, itemQuery)
       .flatMap {
         case StringSearchResult.Success(items) =>
           Ok(
             items.fold(
-              Conversions.mkItemListFts,
-              Conversions.mkItemListWithTagsFts,
+              convertFts,
+              convertFtsFull,
               Conversions.mkItemList,
               Conversions.mkItemListWithTags
             )

@@ -29,6 +29,11 @@ class FulltextExtractTest extends FunSuite {
       findFts("content:\"what OR hello\""),
       Result.Success(ItemQuery.all.expr, "what OR hello".some)
     )
+
+    assertEquals(
+      findFts("(& content:\"what OR hello\" )"),
+      Result.Success(ItemQuery.all.expr, "what OR hello".some)
+    )
   }
 
   test("find no fulltext") {
