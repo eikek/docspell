@@ -1,5 +1,7 @@
 package docspell.query.internal
 
+import cats.implicits._
+
 import munit._
 import docspell.query.ItemQueryParser
 import docspell.query.ItemQuery
@@ -39,5 +41,21 @@ class ItemQueryParserTest extends FunSuite {
   test("return all if query is empty") {
     val q = ItemQueryParser.parseUnsafe("")
     assertEquals(ItemQuery.all, q)
+  }
+
+  test("splice inner and nodes") {
+    val raw = "(& name:hello (& date:2021-02 name:world) (& name:hello) )"
+    val q   = ItemQueryParser.parseUnsafe(raw)
+    val expect =
+      ItemQueryParser.parseUnsafe("name:hello date:2021-02 name:world name:hello")
+    assertEquals(expect.copy(raw = raw.some), q)
+  }
+
+  test("splice inner or nodes") {
+    val raw = "(| name:hello (| date:2021-02 name:world) (| name:hello) )"
+    val q   = ItemQueryParser.parseUnsafe(raw)
+    val expect =
+      ItemQueryParser.parseUnsafe("(| name:hello date:2021-02 name:world name:hello )")
+    assertEquals(expect.copy(raw = raw.some), q)
   }
 }

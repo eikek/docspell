@@ -52,6 +52,6 @@ class FulltextExtractTest extends FunSuite {
 
   test("wrong fulltext search position") {
     assertFts("name:test (| date:2021-02 content:yes)", Result.UnsupportedPosition)
-    assertFts("name:test (& date:2021-02 content:yes)", Result.UnsupportedPosition) //TODO
+    assertFtsSuccess("name:test (& date:2021-02 content:yes)", "yes".some)
   }
 }

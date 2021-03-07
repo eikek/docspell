@@ -1,5 +1,7 @@
 package docspell.query.internal
 
+import cats.data.{NonEmptyList => Nel}
+
 import docspell.query.ItemQuery.Expr._
 import docspell.query.ItemQuery._
 
@@ -11,12 +13,14 @@ object ExprUtil {
   def reduce(expr: Expr): Expr =
     expr match {
       case AndExpr(inner) =>
-        if (inner.tail.isEmpty) reduce(inner.head)
-        else AndExpr(inner.map(reduce))
+        val nodes = spliceAnd(inner)
+        if (nodes.tail.isEmpty) reduce(nodes.head)
+        else AndExpr(nodes.map(reduce))
 
       case OrExpr(inner) =>
-        if (inner.tail.isEmpty) reduce(inner.head)
-        else OrExpr(inner.map(reduce))
+        val nodes = spliceOr(inner)
+        if (nodes.tail.isEmpty) reduce(nodes.head)
+        else OrExpr(nodes.map(reduce))
 
       case NotExpr(inner) =>
         inner match {
@@ -61,5 +65,20 @@ object ExprUtil {
         expr
       case CustomFieldIdMatch(_, _, _) =>
         expr
+    }
+
+  private def spliceAnd(nodes: Nel[Expr]): Nel[Expr] =
+    nodes.flatMap {
+      case Expr.AndExpr(inner) =>
+        spliceAnd(inner)
+      case node =>
+        Nel.of(node)
+    }
+  private def spliceOr(nodes: Nel[Expr]): Nel[Expr] =
+    nodes.flatMap {
+      case Expr.OrExpr(inner) =>
+        spliceOr(inner)
+      case node =>
+        Nel.of(node)
     }
 }
