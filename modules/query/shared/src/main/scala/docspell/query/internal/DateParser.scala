@@ -43,6 +43,9 @@ object DateParser {
   private val dateFromToday: P[Date.DateLiteral] =
     P.string("today").as(Date.Today)
 
+  val yearOnly: P[Int] =
+    digits4
+
   val dateLiteral: P[Date.DateLiteral] =
     P.oneOf(List(dateFromString, dateFromToday, dateFromMillis))
 

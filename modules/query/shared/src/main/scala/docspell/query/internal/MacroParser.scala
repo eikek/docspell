@@ -16,6 +16,9 @@ object MacroParser {
       Expr.DateRangeMacro(attr, left, right)
     }
 
+  private def yearMacroImpl(name: String, attr: Attr.DateAttr): P[Expr.YearMacro] =
+    (macroDef(name) *> DateParser.yearOnly).map(year => Expr.YearMacro(attr, year))
+
   val namesMacro: P[Expr.NamesMacro] =
     (macroDef("names") *> BasicParser.singleString).map(Expr.NamesMacro.apply)
 
@@ -25,9 +28,12 @@ object MacroParser {
   val dueDateRangeMacro: P[Expr.DateRangeMacro] =
     dateRangeMacroImpl("duein", Attr.DueDate)
 
+  val yearDateMacro: P[Expr.YearMacro] =
+    yearMacroImpl("year", Attr.Date)
+
   // --- all macro parser
 
   val all: P[Expr] =
-    P.oneOf(List(namesMacro, dateRangeMacro, dueDateRangeMacro))
+    P.oneOf(List(namesMacro, dateRangeMacro, dueDateRangeMacro, yearDateMacro))
 
 }

@@ -131,6 +131,14 @@ object ItemQuery {
         and(date(Operator.Gte, attr, left), date(Operator.Lte, attr, right))
     }
 
+    case class YearMacro(attr: DateAttr, year: Int) extends MacroExpr {
+      val body =
+        DateRangeMacro(attr, date(year), date(year + 1))
+
+      private def date(y: Int): Date =
+        Date(y, 1, 1).fold(throw _, identity)
+    }
+
     def or(expr0: Expr, exprs: Expr*): OrExpr =
       OrExpr(Nel.of(expr0, exprs: _*))
 
