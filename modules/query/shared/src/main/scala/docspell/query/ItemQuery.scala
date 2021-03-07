@@ -11,7 +11,10 @@ import docspell.query.ItemQuery.Attr.{DateAttr, StringAttr}
   * against a specific field of an item using some operator or a
   * combination thereof.
   */
-final case class ItemQuery(expr: ItemQuery.Expr, raw: Option[String])
+final case class ItemQuery(expr: ItemQuery.Expr, raw: Option[String]) {
+  def findFulltext: FulltextExtract.Result =
+    FulltextExtract.findFulltext(expr)
+}
 
 object ItemQuery {
   val all = ItemQuery(Expr.Exists(Attr.ItemId), Some(""))

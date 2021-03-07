@@ -11,8 +11,11 @@ import docspell.backend.ops.OCustomFields.{RemoveValue, SetValue}
 import docspell.backend.ops.OFulltext
 import docspell.backend.ops.OItemSearch.{Batch, Query}
 import docspell.backend.ops.OSimpleSearch
+import docspell.backend.ops.OSimpleSearch.StringSearchResult
 import docspell.common._
 import docspell.common.syntax.all._
+import docspell.query.FulltextExtract.Result.TooMany
+import docspell.query.FulltextExtract.Result.UnsupportedPosition
 import docspell.restapi.model._
 import docspell.restserver.Config
 import docspell.restserver.conv.Conversions
@@ -60,31 +63,12 @@ object ItemRoutes {
           cfg.maxNoteLength
         )
         val fixQuery = Query.Fix(user.account, None, None)
-        backend.simpleSearch.searchByString(settings)(fixQuery, itemQuery) match {
-          case Right(results) =>
-            val items = results.map(
-              _.fold(
-                Conversions.mkItemListFts,
-                Conversions.mkItemListWithTagsFts,
-                Conversions.mkItemList,
-                Conversions.mkItemListWithTags
-              )
-            )
-            Ok(items)
-          case Left(fail) =>
-            BadRequest(BasicResult(false, fail.render))
-        }
+        searchItems(backend, dsl)(settings, fixQuery, itemQuery)
 
       case GET -> Root / "searchStats" :? QP.Query(q) =>
         val itemQuery = ItemQueryString(q)
         val fixQuery  = Query.Fix(user.account, None, None)
-        backend.simpleSearch
-          .searchSummaryByString(cfg.fullTextSearch.enabled)(fixQuery, itemQuery) match {
-          case Right(summary) =>
-            summary.flatMap(s => Ok(Conversions.mkSearchStats(s)))
-          case Left(fail) =>
-            BadRequest(BasicResult(false, fail.render))
-        }
+        searchItemStats(backend, dsl)(cfg.fullTextSearch.enabled, fixQuery, itemQuery)
 
       case req @ POST -> Root / "search" =>
         for {
@@ -103,21 +87,7 @@ object ItemRoutes {
             cfg.maxNoteLength
           )
           fixQuery = Query.Fix(user.account, None, None)
-          resp <- backend.simpleSearch
-            .searchByString(settings)(fixQuery, itemQuery) match {
-            case Right(results) =>
-              val items = results.map(
-                _.fold(
-                  Conversions.mkItemListFts,
-                  Conversions.mkItemListWithTagsFts,
-                  Conversions.mkItemList,
-                  Conversions.mkItemListWithTags
-                )
-              )
-              Ok(items)
-            case Left(fail) =>
-              BadRequest(BasicResult(false, fail.render))
-          }
+          resp <- searchItems(backend, dsl)(settings, fixQuery, itemQuery)
         } yield resp
 
       case req @ POST -> Root / "searchStats" =>
@@ -125,16 +95,11 @@ object ItemRoutes {
           userQuery <- req.as[ItemQuery]
           itemQuery = ItemQueryString(userQuery.query)
           fixQuery  = Query.Fix(user.account, None, None)
-          resp <- backend.simpleSearch
-            .searchSummaryByString(cfg.fullTextSearch.enabled)(
-              fixQuery,
-              itemQuery
-            ) match {
-            case Right(summary) =>
-              summary.flatMap(s => Ok(Conversions.mkSearchStats(s)))
-            case Left(fail) =>
-              BadRequest(BasicResult(false, fail.render))
-          }
+          resp <- searchItemStats(backend, dsl)(
+            cfg.fullTextSearch.enabled,
+            fixQuery,
+            itemQuery
+          )
         } yield resp
 
       //DEPRECATED
@@ -524,6 +489,63 @@ object ItemRoutes {
           resp <- Ok(res)
         } yield resp
     }
+  }
+
+  def searchItems[F[_]: Sync](
+      backend: BackendApp[F],
+      dsl: Http4sDsl[F]
+  )(settings: OSimpleSearch.Settings, fixQuery: Query.Fix, itemQuery: ItemQueryString) = {
+    import dsl._
+
+    backend.simpleSearch
+      .searchByString(settings)(fixQuery, itemQuery)
+      .flatMap {
+        case StringSearchResult.Success(items) =>
+          Ok(
+            items.fold(
+              Conversions.mkItemListFts,
+              Conversions.mkItemListWithTagsFts,
+              Conversions.mkItemList,
+              Conversions.mkItemListWithTags
+            )
+          )
+        case StringSearchResult.FulltextMismatch(TooMany) =>
+          BadRequest(BasicResult(false, "Only one fulltext search term is allowed."))
+        case StringSearchResult.FulltextMismatch(UnsupportedPosition) =>
+          BadRequest(
+            BasicResult(
+              false,
+              "Fulltext search must be in root position or inside the first AND."
+            )
+          )
+        case StringSearchResult.ParseFailed(pf) =>
+          BadRequest(BasicResult(false, s"Error reading query: ${pf.render}"))
+      }
+  }
+
+  def searchItemStats[F[_]: Sync](
+      backend: BackendApp[F],
+      dsl: Http4sDsl[F]
+  )(ftsEnabled: Boolean, fixQuery: Query.Fix, itemQuery: ItemQueryString) = {
+    import dsl._
+    backend.simpleSearch
+      .searchSummaryByString(ftsEnabled)(fixQuery, itemQuery)
+      .flatMap {
+        case StringSearchResult.Success(summary) =>
+          Ok(Conversions.mkSearchStats(summary))
+        case StringSearchResult.FulltextMismatch(TooMany) =>
+          BadRequest(BasicResult(false, "Only one fulltext search term is allowed."))
+        case StringSearchResult.FulltextMismatch(UnsupportedPosition) =>
+          BadRequest(
+            BasicResult(
+              false,
+              "Fulltext search must be in root position or inside the first AND."
+            )
+          )
+        case StringSearchResult.ParseFailed(pf) =>
+          BadRequest(BasicResult(false, s"Error reading query: ${pf.render}"))
+      }
+
   }
 
   implicit final class OptionString(opt: Option[String]) {

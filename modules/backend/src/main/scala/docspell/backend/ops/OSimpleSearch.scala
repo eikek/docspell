@@ -5,7 +5,7 @@ import cats.implicits._
 
 import docspell.backend.ops.OSimpleSearch._
 import docspell.common._
-import docspell.query.{ItemQueryParser, ParseFailure}
+import docspell.query._
 import docspell.store.qb.Batch
 import docspell.store.queries.Query
 import docspell.store.queries.SearchSummary
@@ -20,14 +20,28 @@ trait OSimpleSearch[F[_]] {
 
   def searchByString(
       settings: Settings
-  )(fix: Query.Fix, q: ItemQueryString): Either[ParseFailure, F[Items]]
+  )(fix: Query.Fix, q: ItemQueryString): F[StringSearchResult[Items]]
   def searchSummaryByString(
       useFTS: Boolean
-  )(fix: Query.Fix, q: ItemQueryString): Either[ParseFailure, F[SearchSummary]]
+  )(fix: Query.Fix, q: ItemQueryString): F[StringSearchResult[SearchSummary]]
 
 }
 
 object OSimpleSearch {
+
+  sealed trait StringSearchResult[+A]
+  object StringSearchResult {
+    case class ParseFailed(error: ParseFailure) extends StringSearchResult[Nothing]
+    def parseFailed[A](error: ParseFailure): StringSearchResult[A] =
+      ParseFailed(error)
+
+    case class FulltextMismatch(error: FulltextExtract.FailureResult)
+        extends StringSearchResult[Nothing]
+    def fulltextMismatch[A](error: FulltextExtract.FailureResult): StringSearchResult[A] =
+      FulltextMismatch(error)
+
+    case class Success[A](value: A) extends StringSearchResult[A]
+  }
 
   final case class Settings(
       batch: Batch,
@@ -104,19 +118,49 @@ object OSimpleSearch {
       extends OSimpleSearch[F] {
     def searchByString(
         settings: Settings
-    )(fix: Query.Fix, q: ItemQueryString): Either[ParseFailure, F[Items]] =
-      ItemQueryParser
-        .parse(q.query)
-        .map(iq => Query(fix, Query.QueryExpr(iq)))
-        .map(search(settings)(_, None)) //TODO resolve content:xyz expressions
+    )(fix: Query.Fix, q: ItemQueryString): F[StringSearchResult[Items]] = {
+      val parsed: Either[StringSearchResult[Items], ItemQuery] =
+        ItemQueryParser.parse(q.query).leftMap(StringSearchResult.parseFailed)
+
+      def makeQuery(iq: ItemQuery): F[StringSearchResult[Items]] =
+        iq.findFulltext match {
+          case FulltextExtract.Result.Success(expr, ftq) =>
+            search(settings)(Query(fix, Query.QueryExpr(iq.copy(expr = expr))), ftq)
+              .map(StringSearchResult.Success.apply)
+          case other: FulltextExtract.FailureResult =>
+            StringSearchResult.fulltextMismatch[Items](other).pure[F]
+        }
+
+      parsed match {
+        case Right(iq) =>
+          makeQuery(iq)
+        case Left(err) =>
+          err.pure[F]
+      }
+    }
 
     def searchSummaryByString(
         useFTS: Boolean
-    )(fix: Query.Fix, q: ItemQueryString): Either[ParseFailure, F[SearchSummary]] =
-      ItemQueryParser
-        .parse(q.query)
-        .map(iq => Query(fix, Query.QueryExpr(iq)))
-        .map(searchSummary(useFTS)(_, None)) //TODO resolve content:xyz expressions
+    )(fix: Query.Fix, q: ItemQueryString): F[StringSearchResult[SearchSummary]] = {
+      val parsed: Either[StringSearchResult[SearchSummary], ItemQuery] =
+        ItemQueryParser.parse(q.query).leftMap(StringSearchResult.parseFailed)
+
+      def makeQuery(iq: ItemQuery): F[StringSearchResult[SearchSummary]] =
+        iq.findFulltext match {
+          case FulltextExtract.Result.Success(expr, ftq) =>
+            searchSummary(useFTS)(Query(fix, Query.QueryExpr(iq.copy(expr = expr))), ftq)
+              .map(StringSearchResult.Success.apply)
+          case other: FulltextExtract.FailureResult =>
+            StringSearchResult.fulltextMismatch[SearchSummary](other).pure[F]
+        }
+
+      parsed match {
+        case Right(iq) =>
+          makeQuery(iq)
+        case Left(err) =>
+          err.pure[F]
+      }
+    }
 
     def searchSummary(
         useFTS: Boolean
