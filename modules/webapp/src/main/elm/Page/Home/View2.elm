@@ -3,6 +3,7 @@ module Page.Home.View2 exposing (viewContent, viewSidebar)
 import Comp.Basic as B
 import Comp.ItemCardList
 import Comp.MenuBar as MB
+import Comp.PowerSearchInput
 import Comp.SearchMenu
 import Comp.SearchStatsView
 import Comp.YesNoDimmer
@@ -135,17 +136,12 @@ defaultMenuBar _ settings model =
         powerSearchBar =
             div
                 [ class "relative flex flex-grow flex-row" ]
-                [ input
-                    [ type_ "text"
-                    , placeholder "Search query …"
-                    , onInput SetPowerSearch
-                    , Util.Html.onKeyUpCode KeyUpPowerSearchbarMsg
-                    , Maybe.map value model.powerSearchInput
-                        |> Maybe.withDefault (value "")
-                    , class S.textInput
-                    , class "text-sm "
-                    ]
-                    []
+                [ Html.map PowerSearchMsg
+                    (Comp.PowerSearchInput.viewInput []
+                        model.powerSearchInput
+                    )
+                , Html.map PowerSearchMsg
+                    (Comp.PowerSearchInput.viewResult [] model.powerSearchInput)
                 ]
     in
     MB.view

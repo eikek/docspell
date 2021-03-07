@@ -27,6 +27,7 @@ import Comp.ItemCardList
 import Comp.ItemDetail.FormChange exposing (FormChange)
 import Comp.ItemDetail.MultiEditMenu exposing (SaveNameState(..))
 import Comp.LinkTarget exposing (LinkTarget)
+import Comp.PowerSearchInput
 import Comp.SearchMenu
 import Comp.YesNoDimmer
 import Data.Flags exposing (Flags)
@@ -56,7 +57,7 @@ type alias Model =
     , dragDropData : DD.DragDropData
     , scrollToCard : Maybe String
     , searchStats : SearchStats
-    , powerSearchInput : Maybe String
+    , powerSearchInput : Comp.PowerSearchInput.Model
     }
 
 
@@ -122,7 +123,7 @@ init flags viewMode =
     , scrollToCard = Nothing
     , viewMode = viewMode
     , searchStats = Api.Model.SearchStats.empty
-    , powerSearchInput = Nothing
+    , powerSearchInput = Comp.PowerSearchInput.init
     }
 
 
@@ -196,7 +197,7 @@ type Msg
     | SetLinkTarget LinkTarget
     | SearchStatsResp (Result Http.Error SearchStats)
     | TogglePreviewFullWidth
-    | SetPowerSearch String
+    | PowerSearchMsg Comp.PowerSearchInput.Msg
     | KeyUpPowerSearchbarMsg (Maybe KeyCode)
 
 
@@ -247,7 +248,7 @@ doSearchDefaultCmd param model =
             Q.request <|
                 Q.and
                     [ Comp.SearchMenu.getItemQuery model.searchMenuModel
-                    , Maybe.map Q.Fragment model.powerSearchInput
+                    , Maybe.map Q.Fragment model.powerSearchInput.input
                     ]
 
         mask =

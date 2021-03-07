@@ -97,3 +97,29 @@ elmApp.ports.initClipboard.subscribe(function(args) {
         docspell_clipboards[page] = new ClipboardJS(sel);
     }
 });
+
+elmApp.ports.checkSearchQueryString.subscribe(function(args) {
+    var qStr = args;
+    if (qStr && DsItemQueryParser && DsItemQueryParser['parseToFailure']) {
+        var result = DsItemQueryParser.parseToFailure(qStr);
+        var answer;
+        if (result) {
+            answer =
+                { success: false,
+                  input: result.input,
+                  index: result.failedAt,
+                  messages: result.messages
+                };
+
+        } else {
+            answer =
+                { success: true,
+                  input: qStr,
+                  index: 0,
+                  messages: []
+                };
+        }
+        console.log("Sending: " + answer.success);
+        elmApp.ports.receiveCheckQueryResult.send(answer);
+    }
+});

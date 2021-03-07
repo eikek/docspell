@@ -106,8 +106,8 @@ render q =
                     "="
 
         quoteStr =
-            --TODO escape quotes
-            surround "\""
+            String.replace "\"" "\\\""
+                >> surround "\""
     in
     case q of
         And inner ->

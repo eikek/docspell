@@ -1,15 +1,14 @@
 module Page.Home.Update exposing (update)
 
 import Api
-import Api.Model.IdList exposing (IdList)
 import Api.Model.ItemLightList exposing (ItemLightList)
-import Api.Model.ItemQuery
 import Browser.Navigation as Nav
 import Comp.FixedDropdown
 import Comp.ItemCardList
 import Comp.ItemDetail.FormChange exposing (FormChange(..))
 import Comp.ItemDetail.MultiEditMenu exposing (SaveNameState(..))
 import Comp.LinkTarget exposing (LinkTarget)
+import Comp.PowerSearchInput
 import Comp.SearchMenu
 import Comp.YesNoDimmer
 import Data.Flags exposing (Flags)
@@ -54,7 +53,7 @@ update mId key flags settings msg model =
         ResetSearch ->
             let
                 nm =
-                    { model | searchOffset = 0, powerSearchInput = Nothing }
+                    { model | searchOffset = 0, powerSearchInput = Comp.PowerSearchInput.init }
             in
             update mId key flags settings (SearchMenuMsg Comp.SearchMenu.ResetForm) nm
 
@@ -580,8 +579,23 @@ update mId key flags settings msg model =
             in
             noSub ( model, cmd )
 
-        SetPowerSearch str ->
-            noSub ( { model | powerSearchInput = Util.Maybe.fromString str }, Cmd.none )
+        PowerSearchMsg lm ->
+            let
+                result =
+                    Comp.PowerSearchInput.update lm model.powerSearchInput
+
+                cmd_ =
+                    Cmd.map PowerSearchMsg result.cmd
+
+                model_ =
+                    { model | powerSearchInput = result.model }
+            in
+            case result.action of
+                Comp.PowerSearchInput.NoAction ->
+                    ( model_, cmd_, Sub.map PowerSearchMsg result.subs )
+
+                Comp.PowerSearchInput.SubmitSearch ->
+                    update mId key flags settings (DoSearch model_.searchTypeDropdownValue) model_
 
         KeyUpPowerSearchbarMsg (Just Enter) ->
             update mId key flags settings (DoSearch model.searchTypeDropdownValue) model
