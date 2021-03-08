@@ -109,7 +109,8 @@ object ItemQuery {
     final case class CustomFieldIdMatch(id: String, op: Operator, value: String)
         extends Expr
 
-    final case class Fulltext(query: String) extends Expr
+    final case class Fulltext(query: String)         extends Expr
+    final case class ChecksumMatch(checksum: String) extends Expr
 
     // things that can be expressed with terms above
     sealed trait MacroExpr extends Expr {

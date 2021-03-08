@@ -65,6 +65,8 @@ object ExprUtil {
         expr
       case CustomFieldIdMatch(_, _, _) =>
         expr
+      case ChecksumMatch(_) =>
+        expr
     }
 
   private def spliceAnd(nodes: Nel[Expr]): Nel[Expr] =

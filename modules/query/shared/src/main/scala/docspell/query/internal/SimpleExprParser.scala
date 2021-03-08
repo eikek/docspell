@@ -76,6 +76,9 @@ object SimpleExprParser {
   val dirExpr: P[Expr.DirectionExpr] =
     (P.string("incoming:") *> BasicParser.bool).map(Expr.DirectionExpr.apply)
 
+  val checksumExpr: P[Expr.ChecksumMatch] =
+    (P.string("checksum:") *> BasicParser.singleString).map(Expr.ChecksumMatch.apply)
+
   val simpleExpr: P[Expr] =
     P.oneOf(
       List(
@@ -89,7 +92,8 @@ object SimpleExprParser {
         customFieldIdExpr,
         customFieldExpr,
         inboxExpr,
-        dirExpr
+        dirExpr,
+        checksumExpr
       )
     )
 }

@@ -509,6 +509,16 @@ object QItem {
       collective: Ident,
       excludeFileMeta: Set[Ident]
   ): ConnectionIO[Vector[RItem]] = {
+    val qq = findByChecksumQuery(checksum, collective, excludeFileMeta).build
+    logger.debug(s"FindByChecksum: $qq")
+    qq.query[RItem].to[Vector]
+  }
+
+  def findByChecksumQuery(
+      checksum: String,
+      collective: Ident,
+      excludeFileMeta: Set[Ident]
+  ): Select = {
     val m1  = RFileMeta.as("m1")
     val m2  = RFileMeta.as("m2")
     val m3  = RFileMeta.as("m3")
@@ -517,26 +527,23 @@ object QItem {
     val s   = RAttachmentSource.as("s")
     val r   = RAttachmentArchive.as("r")
     val fms = Nel.of(m1, m2, m3)
-    val qq =
-      Select(
-        select(i.all),
-        from(i)
-          .innerJoin(a, a.itemId === i.id)
-          .innerJoin(s, s.id === a.id)
-          .innerJoin(m1, m1.id === a.fileId)
-          .innerJoin(m2, m2.id === s.fileId)
-          .leftJoin(r, r.id === a.id)
-          .leftJoin(m3, m3.id === r.fileId),
-        where(
-          i.cid === collective &&
-            Condition.Or(fms.map(m => m.checksum === checksum)) &&?
-            Nel
-              .fromList(excludeFileMeta.toList)
-              .map(excl => Condition.And(fms.map(m => m.id.isNull || m.id.notIn(excl))))
-        )
-      ).distinct.build
-    logger.debug(s"FindByChecksum: $qq")
-    qq.query[RItem].to[Vector]
+    Select(
+      select(i.all),
+      from(i)
+        .innerJoin(a, a.itemId === i.id)
+        .innerJoin(s, s.id === a.id)
+        .innerJoin(m1, m1.id === a.fileId)
+        .innerJoin(m2, m2.id === s.fileId)
+        .leftJoin(r, r.id === a.id)
+        .leftJoin(m3, m3.id === r.fileId),
+      where(
+        i.cid === collective &&
+          Condition.Or(fms.map(m => m.checksum === checksum)) &&?
+          Nel
+            .fromList(excludeFileMeta.toList)
+            .map(excl => Condition.And(fms.map(m => m.id.isNull || m.id.notIn(excl))))
+      )
+    ).distinct
   }
 
   final case class NameAndNotes(

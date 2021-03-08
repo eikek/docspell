@@ -3,15 +3,16 @@ package docspell.store.qb.generator
 import java.time.Instant
 import java.time.LocalDate
 
-import cats.data.NonEmptyList
+import cats.data.{NonEmptyList => Nel}
 
 import docspell.common._
 import docspell.query.ItemQuery._
 import docspell.query.{Date, ItemQuery}
 import docspell.store.qb.DSL._
 import docspell.store.qb.{Operator => QOp, _}
+import docspell.store.queries.QItem
 import docspell.store.queries.QueryWildcard
-import docspell.store.records.{RCustomField, RCustomFieldValue, TagItemName}
+import docspell.store.records._
 
 import doobie.util.Put
 
@@ -39,7 +40,7 @@ object ItemQueryGenerator {
 
           case Expr.TagIdsMatch(op, tags) =>
             val ids = tags.toList.flatMap(s => Ident.fromString(s).toOption)
-            NonEmptyList
+            Nel
               .fromList(ids)
               .map { nel =>
                 op match {
@@ -114,7 +115,7 @@ object ItemQueryGenerator {
 
       case Expr.TagIdsMatch(op, tags) =>
         val ids = tags.toList.flatMap(s => Ident.fromString(s).toOption)
-        NonEmptyList
+        Nel
           .fromList(ids)
           .map { nel =>
             op match {
@@ -151,6 +152,10 @@ object ItemQueryGenerator {
 
       case Expr.CustomFieldIdMatch(field, op, value) =>
         tables.item.id.in(itemsWithCustomField(_.id ==== field)(coll, makeOp(op), value))
+
+      case Expr.ChecksumMatch(checksum) =>
+        val select = QItem.findByChecksumQuery(checksum, coll, Set.empty)
+        tables.item.id.in(select.withSelect(Nel.of(RItem.as("i").id.s)))
 
       case Expr.Fulltext(_) =>
         // not supported here
