@@ -62,6 +62,7 @@ type alias StoredUiSettings =
     , cardPreviewFullWidth : Bool
     , uiTheme : Maybe String
     , sideMenuVisible : Bool
+    , powerSearchEnabled : Bool
     }
 
 
@@ -92,6 +93,7 @@ type alias UiSettings =
     , cardPreviewFullWidth : Bool
     , uiTheme : UiTheme
     , sideMenuVisible : Bool
+    , powerSearchEnabled : Bool
     }
 
 
@@ -162,6 +164,7 @@ defaults =
     , cardPreviewFullWidth = False
     , uiTheme = Data.UiTheme.Light
     , sideMenuVisible = True
+    , powerSearchEnabled = False
     }
 
 
@@ -213,6 +216,7 @@ merge given fallback =
         Maybe.andThen Data.UiTheme.fromString given.uiTheme
             |> Maybe.withDefault fallback.uiTheme
     , sideMenuVisible = given.sideMenuVisible
+    , powerSearchEnabled = given.powerSearchEnabled
     }
 
 
@@ -249,6 +253,7 @@ toStoredUiSettings settings =
     , cardPreviewFullWidth = settings.cardPreviewFullWidth
     , uiTheme = Just (Data.UiTheme.toString settings.uiTheme)
     , sideMenuVisible = settings.sideMenuVisible
+    , powerSearchEnabled = settings.powerSearchEnabled
     }
 
 

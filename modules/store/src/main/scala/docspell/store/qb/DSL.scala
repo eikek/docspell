@@ -89,6 +89,9 @@ trait DSL extends DoobieMeta {
   def cast(expr: SelectExpr, targetType: String): DBFunction =
     DBFunction.Cast(expr, targetType)
 
+  def castNumeric(expr: SelectExpr): DBFunction =
+    DBFunction.CastNumeric(expr)
+
   def coalesce(expr: SelectExpr, more: SelectExpr*): DBFunction.Coalesce =
     DBFunction.Coalesce(expr, more.toVector)
 
@@ -174,13 +177,13 @@ trait DSL extends DoobieMeta {
       Condition.CompareVal(col, Operator.LowerEq, value)
 
     def ====(value: String): Condition =
-      Condition.CompareVal(col.asInstanceOf[Column[String]], Operator.Eq, value)
+      Condition.CompareVal(col.cast[String], Operator.Eq, value)
 
     def like(value: A)(implicit P: Put[A]): Condition =
       Condition.CompareVal(col, Operator.LowerLike, value)
 
     def likes(value: String): Condition =
-      Condition.CompareVal(col.asInstanceOf[Column[String]], Operator.LowerLike, value)
+      Condition.CompareVal(col.cast[String], Operator.LowerLike, value)
 
     def <=(value: A)(implicit P: Put[A]): Condition =
       Condition.CompareVal(col, Operator.Lte, value)
@@ -204,22 +207,22 @@ trait DSL extends DoobieMeta {
       in(subsel).negate
 
     def in(values: Nel[A])(implicit P: Put[A]): Condition =
-      Condition.InValues(col, values, false)
+      Condition.InValues(col.s, values, false)
 
     def notIn(values: Nel[A])(implicit P: Put[A]): Condition =
       in(values).negate
 
     def inLower(values: Nel[A])(implicit P: Put[A]): Condition =
-      Condition.InValues(col, values, true)
+      Condition.InValues(col.s, values, true)
 
     def notInLower(values: Nel[A])(implicit P: Put[A]): Condition =
-      Condition.InValues(col, values, true).negate
+      Condition.InValues(col.s, values, true).negate
 
     def isNull: Condition =
-      Condition.IsNull(col)
+      Condition.IsNull(col.s)
 
     def isNotNull: Condition =
-      Condition.IsNull(col).negate
+      Condition.IsNull(col.s).negate
 
     def ===(other: Column[A]): Condition =
       Condition.CompareCol(col, Operator.Eq, other)
@@ -264,31 +267,31 @@ trait DSL extends DoobieMeta {
       SelectExpr.SelectFun(dbf, Some(otherCol.name))
 
     def ===[A](value: A)(implicit P: Put[A]): Condition =
-      Condition.CompareFVal(dbf, Operator.Eq, value)
+      Condition.CompareFVal(dbf.s, Operator.Eq, value)
 
     def ====(value: String): Condition =
-      Condition.CompareFVal(dbf, Operator.Eq, value)
+      Condition.CompareFVal(dbf.s, Operator.Eq, value)
 
     def like[A](value: A)(implicit P: Put[A]): Condition =
-      Condition.CompareFVal(dbf, Operator.LowerLike, value)
+      Condition.CompareFVal(dbf.s, Operator.LowerLike, value)
 
     def likes(value: String): Condition =
-      Condition.CompareFVal(dbf, Operator.LowerLike, value)
+      Condition.CompareFVal(dbf.s, Operator.LowerLike, value)
 
     def <=[A](value: A)(implicit P: Put[A]): Condition =
-      Condition.CompareFVal(dbf, Operator.Lte, value)
+      Condition.CompareFVal(dbf.s, Operator.Lte, value)
 
     def >=[A](value: A)(implicit P: Put[A]): Condition =
-      Condition.CompareFVal(dbf, Operator.Gte, value)
+      Condition.CompareFVal(dbf.s, Operator.Gte, value)
 
     def >[A](value: A)(implicit P: Put[A]): Condition =
-      Condition.CompareFVal(dbf, Operator.Gt, value)
+      Condition.CompareFVal(dbf.s, Operator.Gt, value)
 
     def <[A](value: A)(implicit P: Put[A]): Condition =
-      Condition.CompareFVal(dbf, Operator.Lt, value)
+      Condition.CompareFVal(dbf.s, Operator.Lt, value)
 
     def <>[A](value: A)(implicit P: Put[A]): Condition =
-      Condition.CompareFVal(dbf, Operator.Neq, value)
+      Condition.CompareFVal(dbf.s, Operator.Neq, value)
 
     def -[A](value: A)(implicit P: Put[A]): DBFunction =
       DBFunction.Calc(
@@ -296,6 +299,35 @@ trait DSL extends DoobieMeta {
         SelectExpr.SelectFun(dbf, None),
         SelectExpr.SelectConstant(value, None)
       )
+  }
+
+  implicit final class SelectExprOps(sel: SelectExpr) {
+    def isNull: Condition =
+      Condition.IsNull(sel)
+
+    def isNotNull: Condition =
+      Condition.IsNull(sel).negate
+
+    def ===[A](value: A)(implicit P: Put[A]): Condition =
+      Condition.CompareFVal(sel, Operator.Eq, value)
+
+    def <=[A](value: A)(implicit P: Put[A]): Condition =
+      Condition.CompareFVal(sel, Operator.Lte, value)
+
+    def >=[A](value: A)(implicit P: Put[A]): Condition =
+      Condition.CompareFVal(sel, Operator.Gte, value)
+
+    def >[A](value: A)(implicit P: Put[A]): Condition =
+      Condition.CompareFVal(sel, Operator.Gt, value)
+
+    def <[A](value: A)(implicit P: Put[A]): Condition =
+      Condition.CompareFVal(sel, Operator.Lt, value)
+
+    def <>[A](value: A)(implicit P: Put[A]): Condition =
+      Condition.CompareFVal(sel, Operator.Neq, value)
+
+    def in[A](values: Nel[A])(implicit P: Put[A]): Condition =
+      Condition.InValues(sel, values, false)
   }
 }
 

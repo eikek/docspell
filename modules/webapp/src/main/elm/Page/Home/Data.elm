@@ -27,10 +27,12 @@ import Comp.ItemCardList
 import Comp.ItemDetail.FormChange exposing (FormChange)
 import Comp.ItemDetail.MultiEditMenu exposing (SaveNameState(..))
 import Comp.LinkTarget exposing (LinkTarget)
+import Comp.PowerSearchInput
 import Comp.SearchMenu
 import Comp.YesNoDimmer
 import Data.Flags exposing (Flags)
 import Data.ItemNav exposing (ItemNav)
+import Data.ItemQuery as Q
 import Data.Items
 import Data.UiSettings exposing (UiSettings)
 import Http
@@ -55,6 +57,7 @@ type alias Model =
     , dragDropData : DD.DragDropData
     , scrollToCard : Maybe String
     , searchStats : SearchStats
+    , powerSearchInput : Comp.PowerSearchInput.Model
     }
 
 
@@ -120,6 +123,7 @@ init flags viewMode =
     , scrollToCard = Nothing
     , viewMode = viewMode
     , searchStats = Api.Model.SearchStats.empty
+    , powerSearchInput = Comp.PowerSearchInput.init
     }
 
 
@@ -193,6 +197,8 @@ type Msg
     | SetLinkTarget LinkTarget
     | SearchStatsResp (Result Http.Error SearchStats)
     | TogglePreviewFullWidth
+    | PowerSearchMsg Comp.PowerSearchInput.Msg
+    | KeyUpPowerSearchbarMsg (Maybe KeyCode)
 
 
 type SearchType
@@ -239,12 +245,16 @@ doSearchDefaultCmd : SearchParam -> Model -> Cmd Msg
 doSearchDefaultCmd param model =
     let
         smask =
-            Comp.SearchMenu.getItemSearch model.searchMenuModel
+            Q.request <|
+                Q.and
+                    [ Comp.SearchMenu.getItemQuery model.searchMenuModel
+                    , Maybe.map Q.Fragment model.powerSearchInput.input
+                    ]
 
         mask =
             { smask
-                | limit = param.pageSize
-                , offset = param.offset
+                | limit = Just param.pageSize
+                , offset = Just param.offset
             }
     in
     if param.offset == 0 then

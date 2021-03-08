@@ -43,7 +43,12 @@ errorMessage =
 
 warnMessage : String
 warnMessage =
-    " border border-yellow-800 bg-yellow-50 text-yellow-800 dark:border-amber-200 dark:bg-amber-800 dark:text-amber-200 dark:bg-opacity-25 px-2 py-2 rounded "
+    warnMessageColors ++ " border dark:bg-opacity-25 px-2 py-2 rounded "
+
+
+warnMessageColors : String
+warnMessageColors =
+    " border-yellow-800 bg-yellow-50 text-yellow-800 dark:border-amber-200 dark:bg-amber-800 dark:text-amber-200 "
 
 
 infoMessage : String

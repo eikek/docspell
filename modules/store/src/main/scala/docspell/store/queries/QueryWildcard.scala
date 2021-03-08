@@ -19,4 +19,11 @@ object QueryWildcard {
     else res
   }
 
+  def atEnd(s: String): String =
+    if (s.endsWith("*")) s"${s.dropRight(1)}%"
+    else s
+
+  def addAtEnd(s: String): String =
+    if (s.endsWith("*")) atEnd(s)
+    else s"${s}%"
 }

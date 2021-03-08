@@ -9,9 +9,13 @@ import docspell.backend.BackendApp
 import docspell.backend.auth.AuthToken
 import docspell.backend.ops.OCustomFields.{RemoveValue, SetValue}
 import docspell.backend.ops.OFulltext
-import docspell.backend.ops.OItemSearch.Batch
+import docspell.backend.ops.OItemSearch.{Batch, Query}
+import docspell.backend.ops.OSimpleSearch
+import docspell.backend.ops.OSimpleSearch.StringSearchResult
 import docspell.common._
 import docspell.common.syntax.all._
+import docspell.query.FulltextExtract.Result.TooMany
+import docspell.query.FulltextExtract.Result.UnsupportedPosition
 import docspell.restapi.model._
 import docspell.restserver.Config
 import docspell.restserver.conv.Conversions
@@ -46,7 +50,60 @@ object ItemRoutes {
           resp <- Ok(Conversions.basicResult(res, "Task submitted"))
         } yield resp
 
+      case GET -> Root / "search" :? QP.Query(q) :? QP.Limit(limit) :? QP.Offset(
+            offset
+          ) :? QP.WithDetails(detailFlag) =>
+        val batch = Batch(offset.getOrElse(0), limit.getOrElse(cfg.maxItemPageSize))
+          .restrictLimitTo(cfg.maxItemPageSize)
+        val itemQuery = ItemQueryString(q)
+        val settings = OSimpleSearch.Settings(
+          batch,
+          cfg.fullTextSearch.enabled,
+          detailFlag.getOrElse(false),
+          cfg.maxNoteLength
+        )
+        val fixQuery = Query.Fix(user.account, None, None)
+        searchItems(backend, dsl)(settings, fixQuery, itemQuery)
+
+      case GET -> Root / "searchStats" :? QP.Query(q) =>
+        val itemQuery = ItemQueryString(q)
+        val fixQuery  = Query.Fix(user.account, None, None)
+        searchItemStats(backend, dsl)(cfg.fullTextSearch.enabled, fixQuery, itemQuery)
+
       case req @ POST -> Root / "search" =>
+        for {
+          userQuery <- req.as[ItemQuery]
+          batch = Batch(
+            userQuery.offset.getOrElse(0),
+            userQuery.limit.getOrElse(cfg.maxItemPageSize)
+          ).restrictLimitTo(
+            cfg.maxItemPageSize
+          )
+          itemQuery = ItemQueryString(userQuery.query)
+          settings = OSimpleSearch.Settings(
+            batch,
+            cfg.fullTextSearch.enabled,
+            userQuery.withDetails.getOrElse(false),
+            cfg.maxNoteLength
+          )
+          fixQuery = Query.Fix(user.account, None, None)
+          resp <- searchItems(backend, dsl)(settings, fixQuery, itemQuery)
+        } yield resp
+
+      case req @ POST -> Root / "searchStats" =>
+        for {
+          userQuery <- req.as[ItemQuery]
+          itemQuery = ItemQueryString(userQuery.query)
+          fixQuery  = Query.Fix(user.account, None, None)
+          resp <- searchItemStats(backend, dsl)(
+            cfg.fullTextSearch.enabled,
+            fixQuery,
+            itemQuery
+          )
+        } yield resp
+
+      //DEPRECATED
+      case req @ POST -> Root / "searchForm" =>
         for {
           mask <- req.as[ItemSearch]
           _    <- logger.ftrace(s"Got search mask: $mask")
@@ -85,7 +142,8 @@ object ItemRoutes {
           }
         } yield resp
 
-      case req @ POST -> Root / "searchWithTags" =>
+      //DEPRECATED
+      case req @ POST -> Root / "searchFormWithTags" =>
         for {
           mask <- req.as[ItemSearch]
           _    <- logger.ftrace(s"Got search mask: $mask")
@@ -125,7 +183,7 @@ object ItemRoutes {
 
       case req @ POST -> Root / "searchIndex" =>
         for {
-          mask <- req.as[ItemFtsSearch]
+          mask <- req.as[ItemQuery]
           resp <- mask.query match {
             case q if q.length > 1 =>
               val ftsIn = OFulltext.FtsInput(q)
@@ -133,7 +191,10 @@ object ItemRoutes {
                 items <- backend.fulltext.findIndexOnly(cfg.maxNoteLength)(
                   ftsIn,
                   user.account,
-                  Batch(mask.offset, mask.limit).restrictLimitTo(cfg.maxItemPageSize)
+                  Batch(
+                    mask.offset.getOrElse(0),
+                    mask.limit.getOrElse(cfg.maxItemPageSize)
+                  ).restrictLimitTo(cfg.maxItemPageSize)
                 )
                 ok <- Ok(Conversions.mkItemListWithTagsFtsPlain(items))
               } yield ok
@@ -143,7 +204,8 @@ object ItemRoutes {
           }
         } yield resp
 
-      case req @ POST -> Root / "searchStats" =>
+      //DEPRECATED
+      case req @ POST -> Root / "searchFormStats" =>
         for {
           mask <- req.as[ItemSearch]
           query = Conversions.mkQuery(mask, user.account)
@@ -429,6 +491,71 @@ object ItemRoutes {
     }
   }
 
+  def searchItems[F[_]: Sync](
+      backend: BackendApp[F],
+      dsl: Http4sDsl[F]
+  )(settings: OSimpleSearch.Settings, fixQuery: Query.Fix, itemQuery: ItemQueryString) = {
+    import dsl._
+
+    def convertFts(res: OSimpleSearch.Items.FtsItems): ItemLightList =
+      if (res.indexOnly) Conversions.mkItemListFtsPlain(res.items)
+      else Conversions.mkItemListFts(res.items)
+
+    def convertFtsFull(res: OSimpleSearch.Items.FtsItemsFull): ItemLightList =
+      if (res.indexOnly) Conversions.mkItemListWithTagsFtsPlain(res.items)
+      else Conversions.mkItemListWithTagsFts(res.items)
+
+    backend.simpleSearch
+      .searchByString(settings)(fixQuery, itemQuery)
+      .flatMap {
+        case StringSearchResult.Success(items) =>
+          Ok(
+            items.fold(
+              convertFts,
+              convertFtsFull,
+              Conversions.mkItemList,
+              Conversions.mkItemListWithTags
+            )
+          )
+        case StringSearchResult.FulltextMismatch(TooMany) =>
+          BadRequest(BasicResult(false, "Only one fulltext search term is allowed."))
+        case StringSearchResult.FulltextMismatch(UnsupportedPosition) =>
+          BadRequest(
+            BasicResult(
+              false,
+              "Fulltext search must be in root position or inside the first AND."
+            )
+          )
+        case StringSearchResult.ParseFailed(pf) =>
+          BadRequest(BasicResult(false, s"Error reading query: ${pf.render}"))
+      }
+  }
+
+  def searchItemStats[F[_]: Sync](
+      backend: BackendApp[F],
+      dsl: Http4sDsl[F]
+  )(ftsEnabled: Boolean, fixQuery: Query.Fix, itemQuery: ItemQueryString) = {
+    import dsl._
+    backend.simpleSearch
+      .searchSummaryByString(ftsEnabled)(fixQuery, itemQuery)
+      .flatMap {
+        case StringSearchResult.Success(summary) =>
+          Ok(Conversions.mkSearchStats(summary))
+        case StringSearchResult.FulltextMismatch(TooMany) =>
+          BadRequest(BasicResult(false, "Only one fulltext search term is allowed."))
+        case StringSearchResult.FulltextMismatch(UnsupportedPosition) =>
+          BadRequest(
+            BasicResult(
+              false,
+              "Fulltext search must be in root position or inside the first AND."
+            )
+          )
+        case StringSearchResult.ParseFailed(pf) =>
+          BadRequest(BasicResult(false, s"Error reading query: ${pf.render}"))
+      }
+
+  }
+
   implicit final class OptionString(opt: Option[String]) {
     def notEmpty: Option[String] =
       opt.map(_.trim).filter(_.nonEmpty)
@@ -453,12 +580,12 @@ object ItemRoutes {
     private val itemSearchMonoid: Monoid[ItemSearch] =
       cats.derived.semiauto.monoid
 
-    def unapply(m: ItemSearch): Option[ItemFtsSearch] =
+    def unapply(m: ItemSearch): Option[ItemQuery] =
       m.fullText match {
         case Some(fq) =>
           val me = m.copy(fullText = None, offset = 0, limit = 0)
           if (itemSearchMonoid.empty == me)
-            Some(ItemFtsSearch(m.offset, m.limit, fq))
+            Some(ItemQuery(m.offset.some, m.limit.some, Some(false), fq))
           else None
         case _ =>
           None

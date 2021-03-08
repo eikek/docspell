@@ -156,10 +156,10 @@ import Api.Model.ImapSettings exposing (ImapSettings)
 import Api.Model.ImapSettingsList exposing (ImapSettingsList)
 import Api.Model.InviteResult exposing (InviteResult)
 import Api.Model.ItemDetail exposing (ItemDetail)
-import Api.Model.ItemFtsSearch exposing (ItemFtsSearch)
 import Api.Model.ItemInsights exposing (ItemInsights)
 import Api.Model.ItemLightList exposing (ItemLightList)
 import Api.Model.ItemProposals exposing (ItemProposals)
+import Api.Model.ItemQuery exposing (ItemQuery)
 import Api.Model.ItemSearch exposing (ItemSearch)
 import Api.Model.ItemUploadMeta exposing (ItemUploadMeta)
 import Api.Model.ItemsAndDate exposing (ItemsAndDate)
@@ -1684,34 +1684,34 @@ moveAttachmentBefore flags itemId data receive =
 
 itemIndexSearch :
     Flags
-    -> ItemFtsSearch
+    -> ItemQuery
     -> (Result Http.Error ItemLightList -> msg)
     -> Cmd msg
 itemIndexSearch flags query receive =
     Http2.authPost
         { url = flags.config.baseUrl ++ "/api/v1/sec/item/searchIndex"
         , account = getAccount flags
-        , body = Http.jsonBody (Api.Model.ItemFtsSearch.encode query)
+        , body = Http.jsonBody (Api.Model.ItemQuery.encode query)
         , expect = Http.expectJson receive Api.Model.ItemLightList.decoder
         }
 
 
-itemSearch : Flags -> ItemSearch -> (Result Http.Error ItemLightList -> msg) -> Cmd msg
+itemSearch : Flags -> ItemQuery -> (Result Http.Error ItemLightList -> msg) -> Cmd msg
 itemSearch flags search receive =
     Http2.authPost
-        { url = flags.config.baseUrl ++ "/api/v1/sec/item/searchWithTags"
+        { url = flags.config.baseUrl ++ "/api/v1/sec/item/search"
         , account = getAccount flags
-        , body = Http.jsonBody (Api.Model.ItemSearch.encode search)
+        , body = Http.jsonBody (Api.Model.ItemQuery.encode search)
         , expect = Http.expectJson receive Api.Model.ItemLightList.decoder
         }
 
 
-itemSearchStats : Flags -> ItemSearch -> (Result Http.Error SearchStats -> msg) -> Cmd msg
+itemSearchStats : Flags -> ItemQuery -> (Result Http.Error SearchStats -> msg) -> Cmd msg
 itemSearchStats flags search receive =
     Http2.authPost
         { url = flags.config.baseUrl ++ "/api/v1/sec/item/searchStats"
         , account = getAccount flags
-        , body = Http.jsonBody (Api.Model.ItemSearch.encode search)
+        , body = Http.jsonBody (Api.Model.ItemQuery.encode search)
         , expect = Http.expectJson receive Api.Model.SearchStats.decoder
         }
 

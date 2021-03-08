@@ -1,6 +1,7 @@
 package docspell.build
 
 import sbt._
+import org.portablescala.sbtplatformdeps.PlatformDepsPlugin.autoImport._
 
 object Dependencies {
 
@@ -8,6 +9,7 @@ object Dependencies {
   val BetterMonadicForVersion = "0.3.1"
   val BitpeaceVersion         = "0.6.0"
   val CalevVersion            = "0.4.1"
+  val CatsParseVersion        = "0.3.1"
   val CirceVersion            = "0.13.0"
   val ClipboardJsVersion      = "2.0.6"
   val DoobieVersion           = "0.10.0"
@@ -26,11 +28,13 @@ object Dependencies {
   val LogbackVersion          = "1.2.3"
   val MariaDbVersion          = "2.7.2"
   val MiniTestVersion         = "2.9.3"
+  val MUnitVersion            = "0.7.22"
   val OrganizeImportsVersion  = "0.5.0"
   val PdfboxVersion           = "2.0.22"
   val PoiVersion              = "4.1.2"
   val PostgresVersion         = "42.2.19"
   val PureConfigVersion       = "0.14.1"
+  val ScalaJavaTimeVersion    = "2.2.0"
   val Slf4jVersion            = "1.7.30"
   val StanfordNlpVersion      = "4.2.0"
   val TikaVersion             = "1.25"
@@ -40,6 +44,20 @@ object Dependencies {
   val TwelveMonkeysVersion    = "3.6.4"
   val JQueryVersion           = "3.5.1"
   val ViewerJSVersion         = "0.5.8"
+
+  val catsParse = Seq(
+    "org.typelevel" %% "cats-parse" % CatsParseVersion
+  )
+  val catsParseJS =
+    Def.setting("org.typelevel" %%% "cats-parse" % CatsParseVersion)
+
+  val scalaJsStubs =
+    "org.scala-js" %% "scalajs-stubs" % "1.0.0" % "provided"
+
+  val catsJS = Def.setting("org.typelevel" %%% "cats-core" % "2.4.2")
+
+  val scalaJavaTime =
+    Def.setting("io.github.cquiroz" %%% "scala-java-time" % ScalaJavaTimeVersion)
 
   val kittens = Seq(
     "org.typelevel" %% "kittens" % KittensVersion
@@ -253,6 +271,11 @@ object Dependencies {
     "io.monix" %% "minitest"      % MiniTestVersion,
     "io.monix" %% "minitest-laws" % MiniTestVersion
   ).map(_ % Test)
+
+  val munit = Seq(
+    "org.scalameta" %% "munit" % MUnitVersion,
+    "org.scalameta" %% "munit-scalacheck" % MUnitVersion
+  )
 
   val kindProjectorPlugin = "org.typelevel" %% "kind-projector"     % KindProjectorVersion
   val betterMonadicFor    = "com.olegpy"    %% "better-monadic-for" % BetterMonadicForVersion

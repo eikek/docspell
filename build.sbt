@@ -47,7 +47,13 @@ val sharedSettings = Seq(
 
 val testSettings = Seq(
   testFrameworks += new TestFramework("minitest.runner.Framework"),
-  libraryDependencies ++= Dependencies.miniTest ++ Dependencies.logging.map(_ % Test)
+  libraryDependencies ++= Dependencies.miniTest ++ Dependencies.logging.map(_ % Test),
+  Test / fork := true
+)
+
+val testSettingsMUnit = Seq(
+  libraryDependencies ++= Dependencies.munit.map(_ % Test),
+  testFrameworks += new TestFramework("munit.Framework")
 )
 
 lazy val noPublish = Seq(
@@ -80,7 +86,7 @@ val stylesSettings = Seq(
   Compile / resourceGenerators += stylesBuild.taskValue
 )
 
-val webjarSettings = Seq(
+def webjarSettings(queryJS: Project) = Seq(
   Compile / resourceGenerators += Def.task {
     copyWebjarResources(
       Seq((sourceDirectory in Compile).value / "webjar"),
@@ -88,6 +94,18 @@ val webjarSettings = Seq(
       name.value,
       version.value,
       streams.value.log
+    )
+  }.taskValue,
+  Compile / resourceGenerators += Def.task {
+    val logger = streams.value.log
+    val out = (queryJS/Compile/fullOptJS).value
+    logger.info(s"Produced query js file: ${out.data}")
+    copyWebjarResources(
+      Seq(out.data),
+      (Compile/resourceManaged).value,
+      name.value,
+      version.value,
+      logger
     )
   }.taskValue,
   watchSources += Watched.WatchSource(
@@ -264,6 +282,28 @@ ${lines.map(_._1).mkString(",\n")}
   )
   .dependsOn(common)
 
+val query =
+  crossProject(JSPlatform, JVMPlatform)
+    .withoutSuffixFor(JVMPlatform)
+    .in(file("modules/query"))
+    .disablePlugins(RevolverPlugin)
+    .settings(sharedSettings)
+    .settings(testSettingsMUnit)
+    .settings(
+      name := "docspell-query",
+      libraryDependencies +=
+        Dependencies.catsParseJS.value,
+      libraryDependencies +=
+        Dependencies.scalaJavaTime.value
+    )
+    .jsSettings(
+      Test / fork := false
+    )
+    .jvmSettings(
+      libraryDependencies +=
+        Dependencies.scalaJsStubs
+    )
+
 val store = project
   .in(file("modules/store"))
   .disablePlugins(RevolverPlugin)
@@ -284,7 +324,7 @@ val store = project
         Dependencies.calevCore ++
         Dependencies.calevFs2
   )
-  .dependsOn(common)
+  .dependsOn(common, query.jvm)
 
 val extract = project
   .in(file("modules/extract"))
@@ -417,7 +457,7 @@ val webapp = project
   .settings(sharedSettings)
   .settings(elmSettings)
   .settings(stylesSettings)
-  .settings(webjarSettings)
+  .settings(webjarSettings(query.js))
   .settings(
     name := "docspell-webapp",
     openapiTargetLanguage := Language.Elm,
@@ -425,6 +465,7 @@ val webapp = project
     openapiSpec := (restapi / Compile / resourceDirectory).value / "docspell-openapi.yml",
     openapiElmConfig := ElmConfig().withJson(ElmJson.decodePipeline)
   )
+  .dependsOn(query.js)
 
 // --- Application(s)
 
@@ -575,6 +616,7 @@ val website = project
 
 val root = project
   .in(file("."))
+  .disablePlugins(RevolverPlugin)
   .settings(sharedSettings)
   .settings(noPublish)
   .settings(
@@ -594,7 +636,9 @@ val root = project
     backend,
     webapp,
     restapi,
-    restserver
+    restserver,
+    query.jvm,
+    query.js
   )
 
 // --- Helpers

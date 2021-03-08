@@ -58,6 +58,7 @@ type alias Model =
     , showPatternHelp : Bool
     , searchStatsVisible : Bool
     , sideMenuVisible : Bool
+    , powerSearchEnabled : Bool
     , openTabs : Set String
     }
 
@@ -151,6 +152,7 @@ init flags settings =
       , showPatternHelp = False
       , searchStatsVisible = settings.searchStatsVisible
       , sideMenuVisible = settings.sideMenuVisible
+      , powerSearchEnabled = settings.powerSearchEnabled
       , openTabs = Set.empty
       }
     , Api.getTags flags "" GetTagsResp
@@ -178,6 +180,7 @@ type Msg
     | ToggleSearchStatsVisible
     | ToggleAkkordionTab String
     | ToggleSideMenuVisible
+    | TogglePowerSearch
 
 
 
@@ -458,6 +461,15 @@ update sett msg model =
             in
             ( { model | sideMenuVisible = next }
             , Just { sett | sideMenuVisible = next }
+            )
+
+        TogglePowerSearch ->
+            let
+                next =
+                    not model.powerSearchEnabled
+            in
+            ( { model | powerSearchEnabled = next }
+            , Just { sett | powerSearchEnabled = next }
             )
 
 
@@ -761,6 +773,15 @@ settingFormTabs flags _ model =
                         , value = model.searchStatsVisible
                         , tagger = \_ -> ToggleSearchStatsVisible
                         , label = "Show basic search statistics by default"
+                        }
+                ]
+            , div [ class "mb-4" ]
+                [ MB.viewItem <|
+                    MB.Checkbox
+                        { id = "uisetting-powersearch-enabled"
+                        , value = model.powerSearchEnabled
+                        , tagger = \_ -> TogglePowerSearch
+                        , label = "Enable power-user search bar"
                         }
                 ]
             ]

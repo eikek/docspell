@@ -159,13 +159,14 @@ object OFulltext {
 
         for {
           folder <- store.transact(QFolder.getMemberFolders(account))
+          now    <- Timestamp.current[F]
           itemIds <- fts
             .searchAll(fq.withFolders(folder))
             .flatMap(r => Stream.emits(r.results.map(_.itemId)))
             .compile
             .to(Set)
-          q = Query.empty(account).copy(itemIds = itemIds.some)
-          res <- store.transact(QItem.searchStats(q))
+          q = Query.empty(account).withFix(_.copy(itemIds = itemIds.some))
+          res <- store.transact(QItem.searchStats(now.toUtcDate)(q))
         } yield res
       }
 
@@ -208,7 +209,7 @@ object OFulltext {
           search <- itemSearch.findItems(0)(q, Batch.all)
           fq = FtsQuery(
             ftsQ.query,
-            q.account.collective,
+            q.fix.account.collective,
             search.map(_.id).toSet,
             Set.empty,
             500,
@@ -220,8 +221,9 @@ object OFulltext {
             .flatMap(r => Stream.emits(r.results.map(_.itemId)))
             .compile
             .to(Set)
-          qnext = q.copy(itemIds = items.some)
-          res <- store.transact(QItem.searchStats(qnext))
+          qnext = q.withFix(_.copy(itemIds = items.some))
+          now <- Timestamp.current[F]
+          res <- store.transact(QItem.searchStats(now.toUtcDate)(qnext))
         } yield res
 
       // Helper
@@ -253,7 +255,7 @@ object OFulltext {
         val sqlResult = search(q, batch)
         val fq = FtsQuery(
           ftsQ.query,
-          q.account.collective,
+          q.fix.account.collective,
           Set.empty,
           Set.empty,
           0,

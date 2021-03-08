@@ -1,8 +1,10 @@
 port module Ports exposing
-    ( getUiSettings
+    ( checkSearchQueryString
+    , getUiSettings
     , initClipboard
     , loadUiSettings
     , onUiSettingsSaved
+    , receiveCheckQueryResult
     , removeAccount
     , setAccount
     , setUiTheme
@@ -10,7 +12,9 @@ port module Ports exposing
     )
 
 import Api.Model.AuthResult exposing (AuthResult)
+import Api.Model.BasicResult exposing (BasicResult)
 import Data.Flags exposing (Flags)
+import Data.QueryParseResult exposing (QueryParseResult)
 import Data.UiSettings exposing (StoredUiSettings, UiSettings)
 import Data.UiTheme exposing (UiTheme)
 
@@ -36,6 +40,12 @@ port uiSettingsSaved : (() -> msg) -> Sub msg
 
 
 port internalSetUiTheme : String -> Cmd msg
+
+
+port checkSearchQueryString : String -> Cmd msg
+
+
+port receiveCheckQueryResult : (QueryParseResult -> msg) -> Sub msg
 
 
 setUiTheme : UiTheme -> Cmd msg
