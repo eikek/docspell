@@ -92,7 +92,7 @@ object ItemQueryGenerator {
         val dt       = dateToTimestamp(today)(value)
         val col      = timestampColumn(tables)(attr)
         val noLikeOp = if (op == Operator.Like) Operator.Eq else op
-        Condition.CompareVal(col, makeOp(noLikeOp), dt)
+        Condition.CompareFVal(col, makeOp(noLikeOp), dt)
 
       case Expr.SimpleExpr(op, Property.IntProperty(attr, value)) =>
         val col = intColumn(tables)(attr)
@@ -203,22 +203,22 @@ object ItemQueryGenerator {
         today
     }
 
-  private def anyColumn(tables: Tables)(attr: Attr): Column[_] =
+  private def anyColumn(tables: Tables)(attr: Attr): SelectExpr =
     attr match {
       case s: Attr.StringAttr =>
-        stringColumn(tables)(s)
+        stringColumn(tables)(s).s
       case t: Attr.DateAttr =>
         timestampColumn(tables)(t)
       case n: Attr.IntAttr =>
-        intColumn(tables)(n)
+        intColumn(tables)(n).s
     }
 
-  private def timestampColumn(tables: Tables)(attr: Attr.DateAttr) =
+  private def timestampColumn(tables: Tables)(attr: Attr.DateAttr): SelectExpr =
     attr match {
       case Attr.Date =>
-        tables.item.itemDate
+        coalesce(tables.item.itemDate.s, tables.item.created.s).s
       case Attr.DueDate =>
-        tables.item.dueDate
+        tables.item.dueDate.s
     }
 
   private def stringColumn(tables: Tables)(attr: Attr.StringAttr): Column[String] =
@@ -283,7 +283,7 @@ object ItemQueryGenerator {
 
       value.toDoubleOption
         .map { n =>
-          val numericCmp = Condition.CompareFVal(castNumeric(cfv.value.s), op, n)
+          val numericCmp = Condition.CompareFVal(castNumeric(cfv.value.s).s, op, n)
           val fieldIsNumeric =
             cf.ftype === CustomFieldType.Numeric || cf.ftype === CustomFieldType.Money
           val fieldNotNumeric =

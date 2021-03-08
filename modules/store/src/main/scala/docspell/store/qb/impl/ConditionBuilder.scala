@@ -85,7 +85,7 @@ object ConditionBuilder {
           case Operator.LowerEq =>
             lower(dbf)
           case _ =>
-            DBFunctionBuilder.build(dbf)
+            SelectExprBuilder.build(dbf)
         }
         dbfFrag ++ opFrag ++ valFrag
 
@@ -105,13 +105,13 @@ object ConditionBuilder {
         SelectExprBuilder.column(col) ++ sql" IN (" ++ sub ++ parenClose
 
       case c @ Condition.InValues(col, values, toLower) =>
-        val cfrag = if (toLower) lower(col) else SelectExprBuilder.column(col)
+        val cfrag = if (toLower) lower(col) else SelectExprBuilder.build(col)
         cfrag ++ sql" IN (" ++ values.toList
           .map(a => buildValue(a)(c.P))
           .reduce(_ ++ comma ++ _) ++ parenClose
 
       case Condition.IsNull(col) =>
-        SelectExprBuilder.column(col) ++ fr" is null"
+        SelectExprBuilder.build(col) ++ fr" is null"
 
       case Condition.And(ands) =>
         val inner = ands.map(build).reduceLeft(_ ++ and ++ _)
@@ -124,7 +124,7 @@ object ConditionBuilder {
         else parenOpen ++ inner ++ parenClose
 
       case Condition.Not(Condition.IsNull(col)) =>
-        SelectExprBuilder.column(col) ++ fr" is not null"
+        SelectExprBuilder.build(col) ++ fr" is not null"
 
       case Condition.Not(c) =>
         fr"NOT" ++ build(c)
@@ -158,6 +158,9 @@ object ConditionBuilder {
 
   def buildOptValue[A: Put](v: Option[A]): Fragment =
     fr"$v"
+
+  def lower(sel: SelectExpr): Fragment =
+    Fragment.const0("LOWER(") ++ SelectExprBuilder.build(sel) ++ parenClose
 
   def lower(col: Column[_]): Fragment =
     Fragment.const0("LOWER(") ++ SelectExprBuilder.column(col) ++ parenClose

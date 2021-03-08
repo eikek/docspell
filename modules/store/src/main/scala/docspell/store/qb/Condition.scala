@@ -15,7 +15,7 @@ object Condition {
       val P: Put[A]
   ) extends Condition
 
-  case class CompareFVal[A](dbf: DBFunction, op: Operator, value: A)(implicit
+  case class CompareFVal[A](sel: SelectExpr, op: Operator, value: A)(implicit
       val P: Put[A]
   ) extends Condition
 
@@ -23,11 +23,11 @@ object Condition {
       extends Condition
 
   case class InSubSelect[A](col: Column[A], subSelect: Select) extends Condition
-  case class InValues[A](col: Column[A], values: NonEmptyList[A], lower: Boolean)(implicit
-      val P: Put[A]
+  case class InValues[A](sel: SelectExpr, values: NonEmptyList[A], lower: Boolean)(
+      implicit val P: Put[A]
   ) extends Condition
 
-  case class IsNull(col: Column[_]) extends Condition
+  case class IsNull(sel: SelectExpr) extends Condition
 
   case class And(inner: NonEmptyList[Condition]) extends Condition {
     def append(other: Condition): And =
