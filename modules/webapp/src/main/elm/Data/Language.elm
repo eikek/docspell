@@ -22,6 +22,7 @@ type Language
     | Russian
     | Romanian
     | Dutch
+    | Latvian
 
 
 fromString : String -> Maybe Language
@@ -67,6 +68,9 @@ fromString str =
 
     else if str == "ron" || str == "ro" || str == "romanian" then
         Just Romanian
+
+    else if str == "lav" || str == "lv" || str == "latvian" then
+        Just Latvian
 
     else
         Nothing
@@ -117,6 +121,9 @@ toIso3 lang =
         Dutch ->
             "nld"
 
+        Latvian ->
+            "lav"
+
 
 toName : Language -> String
 toName lang =
@@ -163,6 +170,9 @@ toName lang =
         Dutch ->
             "Dutch"
 
+        Latvian ->
+            "Latvian"
+
 
 all : List Language
 all =
@@ -180,4 +190,5 @@ all =
     , Swedish
     , Russian
     , Romanian
+    , Latvian
     ]

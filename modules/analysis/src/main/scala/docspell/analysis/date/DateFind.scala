@@ -17,6 +17,7 @@ object DateFind {
   def findDates(text: String, lang: Language): Stream[Pure, NerDateLabel] =
     TextSplitter
       .splitToken(text, " \t.,\n\r/".toSet)
+      .filter(w => lang != Language.Latvian || w.value != "gada")
       .sliding(3)
       .filter(_.length == 3)
       .flatMap(q =>
@@ -55,6 +56,10 @@ object DateFind {
       case ((m, d), y) =>
         List(SimpleDate(y, m, d))
     }
+    def lavLong =
+      (readYear >> readDay >> readMonth(Language.Latvian)).map { case ((y, d), m) =>
+        List(SimpleDate(y, m, d))
+      }
 
     // ymd ✔, ydm, dmy ✔, dym, myd, mdy ✔
     def fromParts(parts: List[Word], lang: Language): List[SimpleDate] = {
@@ -77,6 +82,7 @@ object DateFind {
         case Language.Russian    => dmy.or(ymd).or(mdy)
         case Language.Swedish    => ymd.or(dmy).or(mdy)
         case Language.Dutch      => dmy.or(ymd).or(mdy)
+        case Language.Latvian    => dmy.or(lavLong).or(ymd)
       }
       p.read(parts) match {
         case Result.Success(sds, _) =>
