@@ -17,6 +17,8 @@ description = "A list of features and limitations."
 - Conversion to PDF: all files are converted into a PDF file. PDFs
   with only images (as often returned from scanners) are converted
   into searchable PDF/A pdfs.
+- A powerful [query language](@/docs/query/_index.md) to find
+  documents
 - Non-destructive: all your uploaded files are never modified and can
   always be downloaded untouched
 - Organize files using tags, folders, [Custom

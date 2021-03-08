@@ -116,3 +116,74 @@ $ curl -H 'X-Docspell-Auth: 1568142446077-ZWlrZS9laWtl-$2a$10$3B0teJ9rMpsBJPzHfZ
 ,"tagCloud":{"items":[]}
 }
 ```
+
+### Search for items
+
+``` bash
+$ curl -i -H 'X-Docspell-Auth: 1615240493…kYtFynj4' \
+  'http://localhost:7880/api/v1/sec/item/search?q=tag=todo,invoice%20year:2021'
+{
+  "groups": [
+    {
+      "name": "2021-02",
+      "items": [
+        {
+          "id": "41J962DjS7T-sjP9idxJ6o9-hJrmBk34YJN-mQqysHwcFD6",
+          "name": "something.txt",
+          "state": "confirmed",
+          "date": 1613598750202,
+          "dueDate": 1617883200000,
+          "source": "webapp",
+          "direction": "outgoing",
+          "corrOrg": {
+            "id": "J58tYifCh4X-cze5R8eSJcc-YAFr6qt1VKL-1ZmhRwiTXoH",
+            "name": "EasyCare AG"
+          },
+          "corrPerson": null,
+          "concPerson": null,
+          "concEquipment": null,
+          "folder": {
+            "id": "GKwSvYVdvfb-QeAwzzT7pBM-Gbji2hQc2bL-uCyrMCAg3wo",
+            "name": "test"
+          },
+          "attachments": [],
+          "tags": [],
+          "customfields": [],
+          "notes": null,
+          "highlighting": []
+        }
+      ]
+    },
+    {
+      "name": "2021-01",
+      "items": [
+        {
+          "id": "ANqtuDynXWU-PrhzUxzQVmH-PDuJfeJ6dYB-Ut3g1jrcFhw",
+          "name": "letter-de.pdf",
+          "state": "confirmed",
+          "date": 1611144000000,
+          "dueDate": null,
+          "source": "webapp",
+          "direction": "incoming",
+          "corrOrg": {
+            "id": "J58tYifCh4X-cze5R8eSJcc-YAFr6qt1VKL-1ZmhRwiTXoH",
+            "name": "EasyCare AG"
+          },
+          "corrPerson": null,
+          "concPerson": {
+            "id": "AA5sV1nH9ve-mDCn4DxDRvu-tWkUquiW4fZ-fVJimW4Vq79",
+            "name": "Max Mustermann"
+          },
+          "concEquipment": null,
+          "folder": null,
+          "attachments": [],
+          "tags": [],
+          "customfields": [],
+          "notes": null,
+          "highlighting": []
+        }
+      ]
+    }
+  ]
+}
+```
