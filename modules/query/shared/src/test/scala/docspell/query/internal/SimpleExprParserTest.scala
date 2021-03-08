@@ -77,10 +77,10 @@ class SimpleExprParserTest extends FunSuite with ValueHelper {
 
   test("exists expr") {
     val p = SimpleExprParser.existsExpr
-    assertEquals(p.parseAll("exists:name"), Right(Expr.Exists(Attr.ItemName)))
-    assert(p.parseAll("exists:blabla").isLeft)
+    assertEquals(p.parseAll("exist:name"), Right(Expr.Exists(Attr.ItemName)))
+    assert(p.parseAll("exist:blabla").isLeft)
     assertEquals(
-      p.parseAll("exists:conc.pers.id"),
+      p.parseAll("exist:conc.pers.id"),
       Right(Expr.Exists(Attr.Concerning.PersonId))
     )
   }
@@ -153,7 +153,7 @@ class SimpleExprParserTest extends FunSuite with ValueHelper {
       Right(dateExpr(Operator.Lt, Attr.DueDate, ld(2021, 3, 14)))
     )
     assertEquals(
-      p.parseAll("exists:conc.pers.id"),
+      p.parseAll("exist:conc.pers.id"),
       Right(Expr.Exists(Attr.Concerning.PersonId))
     )
     assertEquals(p.parseAll("content:test"), Right(Expr.Fulltext("test")))

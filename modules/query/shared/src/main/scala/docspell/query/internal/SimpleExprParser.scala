@@ -4,6 +4,7 @@ import cats.parse.Numbers
 import cats.parse.{Parser => P}
 
 import docspell.query.ItemQuery._
+import docspell.query.internal.{Constants => C}
 
 object SimpleExprParser {
 
@@ -11,7 +12,7 @@ object SimpleExprParser {
     OperatorParser.op.surroundedBy(BasicParser.ws0)
 
   private[this] val inOp: P[Unit] =
-    P.string("~=").surroundedBy(BasicParser.ws0)
+    P.string(C.in).surroundedBy(BasicParser.ws0)
 
   private[this] val inOrOpStr =
     P.eitherOr(op ~ BasicParser.singleString, inOp *> BasicParser.stringOrMore)
@@ -44,52 +45,63 @@ object SimpleExprParser {
     }
 
   val existsExpr: P[Expr.Exists] =
-    (P.ignoreCase("exists:") *> AttrParser.anyAttr).map(attr => Expr.Exists(attr))
+    (P.ignoreCase(C.exist) *> P.char(C.like) *> AttrParser.anyAttr).map(attr =>
+      Expr.Exists(attr)
+    )
 
   val fulltextExpr: P[Expr.Fulltext] =
-    (P.ignoreCase("content:") *> BasicParser.singleString).map(q => Expr.Fulltext(q))
+    (P.ignoreCase(C.content) *> P.char(C.like) *> BasicParser.singleString).map(q =>
+      Expr.Fulltext(q)
+    )
 
   val tagIdExpr: P[Expr.TagIdsMatch] =
-    (P.ignoreCase("tag.id") *> OperatorParser.tagOp ~ BasicParser.stringOrMore).map {
+    (P.ignoreCase(C.tagId) *> OperatorParser.tagOp ~ BasicParser.stringOrMore).map {
       case (op, values) =>
         Expr.TagIdsMatch(op, values)
     }
 
   val tagExpr: P[Expr.TagsMatch] =
-    (P.ignoreCase("tag") *> OperatorParser.tagOp ~ BasicParser.stringOrMore).map {
+    (P.ignoreCase(C.tag) *> OperatorParser.tagOp ~ BasicParser.stringOrMore).map {
       case (op, values) =>
         Expr.TagsMatch(op, values)
     }
 
   val catExpr: P[Expr.TagCategoryMatch] =
-    (P.ignoreCase("cat") *> OperatorParser.tagOp ~ BasicParser.stringOrMore).map {
+    (P.ignoreCase(C.cat) *> OperatorParser.tagOp ~ BasicParser.stringOrMore).map {
       case (op, values) =>
         Expr.TagCategoryMatch(op, values)
     }
 
   val customFieldExpr: P[Expr.CustomFieldMatch] =
-    (P.string("f:") *> BasicParser.identParser ~ op ~ BasicParser.singleString).map {
-      case ((name, op), value) =>
+    (P.string(C.customField) *> P.char(
+      C.like
+    ) *> BasicParser.identParser ~ op ~ BasicParser.singleString)
+      .map { case ((name, op), value) =>
         Expr.CustomFieldMatch(name, op, value)
-    }
+      }
 
   val customFieldIdExpr: P[Expr.CustomFieldIdMatch] =
-    (P.string("f.id:") *> BasicParser.identParser ~ op ~ BasicParser.singleString).map {
-      case ((name, op), value) =>
+    (P.string(C.customFieldId) *> P.char(
+      C.like
+    ) *> BasicParser.identParser ~ op ~ BasicParser.singleString)
+      .map { case ((name, op), value) =>
         Expr.CustomFieldIdMatch(name, op, value)
-    }
+      }
 
   val inboxExpr: P[Expr.InboxExpr] =
-    (P.string("inbox:") *> BasicParser.bool).map(Expr.InboxExpr.apply)
+    (P.string(C.inbox) *> P.char(C.like) *> BasicParser.bool).map(Expr.InboxExpr.apply)
 
   val dirExpr: P[Expr.DirectionExpr] =
-    (P.string("incoming:") *> BasicParser.bool).map(Expr.DirectionExpr.apply)
+    (P.string(C.incoming) *> P.char(C.like) *> BasicParser.bool)
+      .map(Expr.DirectionExpr.apply)
 
   val checksumExpr: P[Expr.ChecksumMatch] =
-    (P.string("checksum:") *> BasicParser.singleString).map(Expr.ChecksumMatch.apply)
+    (P.string(C.checksum) *> P.char(C.like) *> BasicParser.singleString)
+      .map(Expr.ChecksumMatch.apply)
 
   val attachIdExpr: P[Expr.AttachId] =
-    (P.ignoreCase("attach.id:") *> BasicParser.singleString).map(Expr.AttachId.apply)
+    (P.ignoreCase(C.attachId) *> P.char(C.eqs) *> BasicParser.singleString)
+      .map(Expr.AttachId.apply)
 
   val simpleExpr: P[Expr] =
     P.oneOf(

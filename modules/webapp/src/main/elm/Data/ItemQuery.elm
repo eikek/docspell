@@ -140,16 +140,16 @@ render q =
             "folder.id" ++ attrMatch m ++ quoteStr id
 
         CorrOrgId m id ->
-            "correspondent.org.id" ++ attrMatch m ++ quoteStr id
+            "corr.org.id" ++ attrMatch m ++ quoteStr id
 
         CorrPersId m id ->
-            "correspondent.person.id" ++ attrMatch m ++ quoteStr id
+            "corr.pers.id" ++ attrMatch m ++ quoteStr id
 
         ConcPersId m id ->
-            "concerning.person.id" ++ attrMatch m ++ quoteStr id
+            "conc.pers.id" ++ attrMatch m ++ quoteStr id
 
         ConcEquipId m id ->
-            "concerning.equip.id" ++ attrMatch m ++ quoteStr id
+            "conc.equip.id" ++ attrMatch m ++ quoteStr id
 
         CustomField m kv ->
             "f:" ++ kv.field ++ attrMatch m ++ quoteStr kv.value

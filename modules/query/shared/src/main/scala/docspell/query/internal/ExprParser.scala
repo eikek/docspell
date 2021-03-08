@@ -4,6 +4,7 @@ import cats.parse.{Parser => P}
 
 import docspell.query.ItemQuery
 import docspell.query.ItemQuery._
+import docspell.query.internal.{Constants => C}
 
 object ExprParser {
 
@@ -20,7 +21,7 @@ object ExprParser {
       .map(Expr.OrExpr.apply)
 
   def not(inner: P[Expr]): P[Expr] =
-    (P.char('!') *> inner).map(_.negate)
+    (P.char(C.notPrefix) *> inner).map(_.negate)
 
   val exprParser: P[Expr] =
     P.recursive[Expr] { recurse =>
@@ -28,7 +29,7 @@ object ExprParser {
       val orP    = or(recurse)
       val notP   = not(recurse)
       val macros = MacroParser.all
-      P.oneOf(SimpleExprParser.simpleExpr :: macros :: andP :: orP :: notP :: Nil)
+      P.oneOf(macros :: SimpleExprParser.simpleExpr :: andP :: orP :: notP :: Nil)
     }
 
   def parseQuery(input: String): Either[P.Error, ItemQuery] = {

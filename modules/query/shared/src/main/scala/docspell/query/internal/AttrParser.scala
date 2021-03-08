@@ -3,67 +3,68 @@ package docspell.query.internal
 import cats.parse.{Parser => P}
 
 import docspell.query.ItemQuery.Attr
+import docspell.query.internal.{Constants => C}
 
 object AttrParser {
 
   val name: P[Attr.StringAttr] =
-    P.ignoreCase("name").as(Attr.ItemName)
+    P.ignoreCase(C.name).as(Attr.ItemName)
 
   val source: P[Attr.StringAttr] =
-    P.ignoreCase("source").as(Attr.ItemSource)
+    P.ignoreCase(C.source).as(Attr.ItemSource)
 
   val id: P[Attr.StringAttr] =
-    P.ignoreCase("id").as(Attr.ItemId)
+    P.ignoreCase(C.id).as(Attr.ItemId)
 
   val date: P[Attr.DateAttr] =
-    P.ignoreCase("date").as(Attr.Date)
+    P.ignoreCase(C.date).as(Attr.Date)
 
   val notes: P[Attr.StringAttr] =
-    P.ignoreCase("notes").as(Attr.ItemNotes)
+    P.ignoreCase(C.notes).as(Attr.ItemNotes)
 
   val dueDate: P[Attr.DateAttr] =
-    P.stringIn(List("dueDate", "due", "due-date")).as(Attr.DueDate)
+    P.ignoreCase(C.due).as(Attr.DueDate)
 
   val corrOrgId: P[Attr.StringAttr] =
-    P.stringIn(List("correspondent.org.id", "corr.org.id"))
+    P.ignoreCase(C.corrOrgId)
       .as(Attr.Correspondent.OrgId)
 
   val corrOrgName: P[Attr.StringAttr] =
-    P.stringIn(List("correspondent.org.name", "corr.org.name"))
+    P.ignoreCase(C.corrOrgName)
       .as(Attr.Correspondent.OrgName)
 
   val corrPersId: P[Attr.StringAttr] =
-    P.stringIn(List("correspondent.person.id", "corr.pers.id"))
+    P.ignoreCase(C.corrPersId)
       .as(Attr.Correspondent.PersonId)
 
   val corrPersName: P[Attr.StringAttr] =
-    P.stringIn(List("correspondent.person.name", "corr.pers.name"))
+    P.ignoreCase(C.corrPersName)
       .as(Attr.Correspondent.PersonName)
 
   val concPersId: P[Attr.StringAttr] =
-    P.stringIn(List("concerning.person.id", "conc.pers.id"))
+    P.ignoreCase(C.concPersId)
       .as(Attr.Concerning.PersonId)
 
   val concPersName: P[Attr.StringAttr] =
-    P.stringIn(List("concerning.person.name", "conc.pers.name"))
+    P.ignoreCase(C.concPersName)
       .as(Attr.Concerning.PersonName)
 
   val concEquipId: P[Attr.StringAttr] =
-    P.stringIn(List("concerning.equip.id", "conc.equip.id"))
+    P.ignoreCase(C.concEquipId)
       .as(Attr.Concerning.EquipId)
 
   val concEquipName: P[Attr.StringAttr] =
-    P.stringIn(List("concerning.equip.name", "conc.equip.name"))
+    P.ignoreCase(C.concEquipName)
       .as(Attr.Concerning.EquipName)
 
   val folderId: P[Attr.StringAttr] =
-    P.ignoreCase("folder.id").as(Attr.Folder.FolderId)
+    P.ignoreCase(C.folderId).as(Attr.Folder.FolderId)
 
   val folderName: P[Attr.StringAttr] =
-    P.ignoreCase("folder").as(Attr.Folder.FolderName)
+    P.ignoreCase(C.folder).as(Attr.Folder.FolderName)
 
   val attachCountAttr: P[Attr.IntAttr] =
-    P.ignoreCase("attach.count").as(Attr.AttachCount)
+    P.ignoreCase(C.attachCount).as(Attr.AttachCount)
 
   // combining grouped by type
 

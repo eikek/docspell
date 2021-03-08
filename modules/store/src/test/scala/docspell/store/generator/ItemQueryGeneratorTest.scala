@@ -35,7 +35,8 @@ object ItemQueryGeneratorTest extends SimpleTestSuite {
     val cond = ItemQueryGenerator(now, tables, Ident.unsafe("coll"))(q)
     val expect =
       tables.item.name.like("hello") &&
-        tables.item.itemDate >= mkTimestamp(2020, 2, 1) &&
+        coalesce(tables.item.itemDate.s, tables.item.created.s) >=
+        mkTimestamp(2020, 2, 1) &&
         (tables.item.source.like("expense%") || tables.folder.name === "test")
 
     assertEquals(cond, expect)

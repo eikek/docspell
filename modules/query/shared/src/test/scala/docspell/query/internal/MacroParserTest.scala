@@ -6,10 +6,10 @@ import docspell.query.ItemQuery.Expr
 
 class MacroParserTest extends FunSuite {
 
-  test("start with $") {
+  test("recognize names shortcut") {
     val p = MacroParser.namesMacro
-    assertEquals(p.parseAll("$names:test"), Right(Expr.NamesMacro("test")))
-    assert(p.parseAll("names:test").isLeft)
+    assertEquals(p.parseAll("names:test"), Right(Expr.NamesMacro("test")))
+    assert(p.parseAll("$names:test").isLeft)
   }
 
 }

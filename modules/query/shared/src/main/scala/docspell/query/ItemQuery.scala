@@ -123,23 +123,40 @@ object ItemQuery {
     sealed trait MacroExpr extends Expr {
       def body: Expr
     }
-    case class NamesMacro(searchTerm: String) extends MacroExpr {
+    final case class NamesMacro(searchTerm: String) extends MacroExpr {
       val body =
         Expr.or(
           like(Attr.ItemName, searchTerm),
-          like(Attr.ItemNotes, searchTerm),
           like(Attr.Correspondent.OrgName, searchTerm),
           like(Attr.Correspondent.PersonName, searchTerm),
           like(Attr.Concerning.PersonName, searchTerm),
           like(Attr.Concerning.EquipName, searchTerm)
         )
     }
-    case class DateRangeMacro(attr: DateAttr, left: Date, right: Date) extends MacroExpr {
+
+    final case class CorrMacro(term: String) extends MacroExpr {
       val body =
-        and(date(Operator.Gte, attr, left), date(Operator.Lte, attr, right))
+        Expr.or(
+          like(Attr.Correspondent.OrgName, term),
+          like(Attr.Correspondent.PersonName, term)
+        )
     }
 
-    case class YearMacro(attr: DateAttr, year: Int) extends MacroExpr {
+    final case class ConcMacro(term: String) extends MacroExpr {
+      val body =
+        Expr.or(
+          like(Attr.Concerning.PersonName, term),
+          like(Attr.Concerning.EquipName, term)
+        )
+    }
+
+    final case class DateRangeMacro(attr: DateAttr, left: Date, right: Date)
+        extends MacroExpr {
+      val body =
+        and(date(Operator.Gte, attr, left), date(Operator.Lt, attr, right))
+    }
+
+    final case class YearMacro(attr: DateAttr, year: Int) extends MacroExpr {
       val body =
         DateRangeMacro(attr, date(year), date(year + 1))
 

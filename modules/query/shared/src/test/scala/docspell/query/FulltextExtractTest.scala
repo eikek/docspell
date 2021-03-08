@@ -42,9 +42,9 @@ class FulltextExtractTest extends FunSuite {
 
   test("find fulltext within and") {
     assertFtsSuccess("content:what name:test", "what".some)
-    assertFtsSuccess("$names:marc* content:what name:test", "what".some)
+    assertFtsSuccess("names:marc* content:what name:test", "what".some)
     assertFtsSuccess(
-      "$names:marc* date:2021-02 content:\"what else\" name:test",
+      "names:marc* date:2021-02 content:\"what else\" name:test",
       "what else".some
     )
   }

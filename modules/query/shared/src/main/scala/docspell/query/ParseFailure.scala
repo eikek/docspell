@@ -31,9 +31,10 @@ object ParseFailure {
   }
   final case class SimpleMessage(offset: Int, msg: String) extends Message {
     def render: String =
-       s"Failed at $offset: $msg"
+      s"Failed at $offset: $msg"
   }
-  final case class ExpectMessage(offset: Int, expected: List[String], exhaustive: Boolean) extends Message {
+  final case class ExpectMessage(offset: Int, expected: List[String], exhaustive: Boolean)
+      extends Message {
     def render: String = {
       val opts = expected.mkString(", ")
       val dots = if (exhaustive) "" else "…"
@@ -50,7 +51,8 @@ object ParseFailure {
 
   private[query] def packMsg(msg: Nel[Message]): Nel[Message] = {
     val expectMsg = combineExpected(msg.collect({ case em: ExpectMessage => em }))
-      .sortBy(_.offset).headOption
+      .sortBy(_.offset)
+      .headOption
 
     val simpleMsg = msg.collect({ case sm: SimpleMessage => sm })
 
@@ -58,9 +60,16 @@ object ParseFailure {
   }
 
   private[query] def combineExpected(msg: List[ExpectMessage]): List[ExpectMessage] =
-    msg.groupBy(_.offset).map({ case (offset, es) =>
-      ExpectMessage(offset, es.flatMap(_.expected).distinct.sorted, es.forall(_.exhaustive))
-    }).toList
+    msg
+      .groupBy(_.offset)
+      .map({ case (offset, es) =>
+        ExpectMessage(
+          offset,
+          es.flatMap(_.expected).distinct.sorted,
+          es.forall(_.exhaustive)
+        )
+      })
+      .toList
 
   private[query] def expectationToMsg(e: Parser.Expectation): Message =
     e match {

@@ -13,10 +13,8 @@ class AttrParserTest extends FunSuite {
     assertEquals(p.parseAll("id"), Right(Attr.ItemId))
     assertEquals(p.parseAll("corr.org.id"), Right(Attr.Correspondent.OrgId))
     assertEquals(p.parseAll("corr.org.name"), Right(Attr.Correspondent.OrgName))
-    assertEquals(p.parseAll("correspondent.org.name"), Right(Attr.Correspondent.OrgName))
     assertEquals(p.parseAll("conc.pers.id"), Right(Attr.Concerning.PersonId))
     assertEquals(p.parseAll("conc.pers.name"), Right(Attr.Concerning.PersonName))
-    assertEquals(p.parseAll("concerning.person.name"), Right(Attr.Concerning.PersonName))
     assertEquals(p.parseAll("folder"), Right(Attr.Folder.FolderName))
     assertEquals(p.parseAll("folder.id"), Right(Attr.Folder.FolderId))
   }
@@ -24,14 +22,12 @@ class AttrParserTest extends FunSuite {
   test("date attributes") {
     val p = AttrParser.dateAttr
     assertEquals(p.parseAll("date"), Right(Attr.Date))
-    assertEquals(p.parseAll("dueDate"), Right(Attr.DueDate))
     assertEquals(p.parseAll("due"), Right(Attr.DueDate))
   }
 
   test("all attributes parser") {
     val p = AttrParser.anyAttr
     assertEquals(p.parseAll("date"), Right(Attr.Date))
-    assertEquals(p.parseAll("dueDate"), Right(Attr.DueDate))
     assertEquals(p.parseAll("name"), Right(Attr.ItemName))
     assertEquals(p.parseAll("source"), Right(Attr.ItemSource))
     assertEquals(p.parseAll("id"), Right(Attr.ItemId))
