@@ -2,7 +2,7 @@ package docspell.query
 
 import cats.data.{NonEmptyList => Nel}
 
-import docspell.query.ItemQuery.Attr.{DateAttr, StringAttr}
+import docspell.query.ItemQuery.Attr.{DateAttr, IntAttr, StringAttr}
 
 /** A query evaluates to `true` or `false` given enough details about
   * an item.
@@ -40,13 +40,15 @@ object ItemQuery {
   object Attr {
     sealed trait StringAttr extends Attr
     sealed trait DateAttr   extends Attr
+    sealed trait IntAttr    extends Attr
 
-    case object ItemName   extends StringAttr
-    case object ItemSource extends StringAttr
-    case object ItemNotes  extends StringAttr
-    case object ItemId     extends StringAttr
-    case object Date       extends DateAttr
-    case object DueDate    extends DateAttr
+    case object ItemName    extends StringAttr
+    case object ItemSource  extends StringAttr
+    case object ItemNotes   extends StringAttr
+    case object ItemId      extends StringAttr
+    case object Date        extends DateAttr
+    case object DueDate     extends DateAttr
+    case object AttachCount extends IntAttr
 
     object Correspondent {
       case object OrgId      extends StringAttr
@@ -72,12 +74,16 @@ object ItemQuery {
   object Property {
     final case class StringProperty(attr: StringAttr, value: String) extends Property
     final case class DateProperty(attr: DateAttr, value: Date)       extends Property
+    final case class IntProperty(attr: IntAttr, value: Int)          extends Property
 
     def apply(sa: StringAttr, value: String): Property =
       StringProperty(sa, value)
 
     def apply(da: DateAttr, value: Date): Property =
       DateProperty(da, value)
+
+    def apply(na: IntAttr, value: Int): Property =
+      IntProperty(na, value)
   }
 
   sealed trait Expr {
@@ -111,6 +117,7 @@ object ItemQuery {
 
     final case class Fulltext(query: String)         extends Expr
     final case class ChecksumMatch(checksum: String) extends Expr
+    final case class AttachId(id: String)            extends Expr
 
     // things that can be expressed with terms above
     sealed trait MacroExpr extends Expr {

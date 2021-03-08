@@ -67,6 +67,8 @@ object ExprUtil {
         expr
       case ChecksumMatch(_) =>
         expr
+      case AttachId(_) =>
+        expr
     }
 
   private def spliceAnd(nodes: Nel[Expr]): Nel[Expr] =

@@ -122,15 +122,8 @@ object QItem {
   }
 
   private def findItemsBase(q: Query.Fix, noteMaxLen: Int): Select = {
-    object Attachs extends TableDef {
-      val tableName = "attachs"
-      val aliasName = "cta"
-      val alias     = Some(aliasName)
-      val num       = Column[Int]("num", this)
-      val itemId    = Column[Ident]("item_id", this)
-    }
-
-    val coll = q.account.collective
+    val attachs = AttachCountTable("cta")
+    val coll    = q.account.collective
 
     Select(
       select(
@@ -142,7 +135,7 @@ object QItem {
         i.source.s,
         i.incoming.s,
         i.created.s,
-        coalesce(Attachs.num.s, const(0)).s,
+        coalesce(attachs.num.s, const(0)).s,
         org.oid.s,
         org.name.s,
         pers0.pid.s,
@@ -162,14 +155,14 @@ object QItem {
         .leftJoin(f, f.id === i.folder && f.collective === coll)
         .leftJoin(
           Select(
-            select(countAll.as(Attachs.num), a.itemId.as(Attachs.itemId)),
+            select(countAll.as(attachs.num), a.itemId.as(attachs.itemId)),
             from(a)
               .innerJoin(i, i.id === a.itemId),
             i.cid === q.account.collective,
             GroupBy(a.itemId)
           ),
-          Attachs.aliasName,
-          Attachs.itemId === i.id
+          attachs.aliasName,
+          attachs.itemId === i.id
         )
         .leftJoin(pers0, pers0.pid === i.corrPerson && pers0.cid === coll)
         .leftJoin(org, org.oid === i.corrOrg && org.cid === coll)
@@ -229,7 +222,7 @@ object QItem {
         .map(itemIds => i.id.in(itemIds))
 
   def queryCondFromExpr(today: LocalDate, coll: Ident, q: ItemQuery): Condition = {
-    val tables = Tables(i, org, pers0, pers1, equip, f, a, m)
+    val tables = Tables(i, org, pers0, pers1, equip, f, a, m, AttachCountTable("cta"))
     ItemQueryGenerator.fromExpr(today, tables, coll)(q.expr)
   }
 

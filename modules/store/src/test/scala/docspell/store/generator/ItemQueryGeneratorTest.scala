@@ -6,6 +6,7 @@ import docspell.store.records._
 import minitest._
 import docspell.common._
 import docspell.query.ItemQueryParser
+import docspell.store.queries.AttachCountTable
 import docspell.store.qb.DSL._
 import docspell.store.qb.generator.{ItemQueryGenerator, Tables}
 
@@ -20,7 +21,8 @@ object ItemQueryGeneratorTest extends SimpleTestSuite {
     REquipment.as("ne"),
     RFolder.as("f"),
     RAttachment.as("a"),
-    RAttachmentMeta.as("m")
+    RAttachmentMeta.as("m"),
+    AttachCountTable("cta")
   )
   val now: LocalDate = LocalDate.of(2021, 2, 25)
 

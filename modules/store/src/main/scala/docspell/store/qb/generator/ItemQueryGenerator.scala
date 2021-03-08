@@ -94,6 +94,10 @@ object ItemQueryGenerator {
         val noLikeOp = if (op == Operator.Like) Operator.Eq else op
         Condition.CompareVal(col, makeOp(noLikeOp), dt)
 
+      case Expr.SimpleExpr(op, Property.IntProperty(attr, value)) =>
+        val col = intColumn(tables)(attr)
+        Condition.CompareVal(col, makeOp(op), value)
+
       case Expr.InExpr(attr, values) =>
         val col = stringColumn(tables)(attr)
         if (values.tail.isEmpty) col === values.head
@@ -157,6 +161,15 @@ object ItemQueryGenerator {
         val select = QItem.findByChecksumQuery(checksum, coll, Set.empty)
         tables.item.id.in(select.withSelect(Nel.of(RItem.as("i").id.s)))
 
+      case Expr.AttachId(id) =>
+        tables.item.id.in(
+          Select(
+            select(RAttachment.T.itemId),
+            from(RAttachment.T),
+            RAttachment.T.id.cast[String] === id
+          ).distinct
+        )
+
       case Expr.Fulltext(_) =>
         // not supported here
         Condition.unit
@@ -196,6 +209,8 @@ object ItemQueryGenerator {
         stringColumn(tables)(s)
       case t: Attr.DateAttr =>
         timestampColumn(tables)(t)
+      case n: Attr.IntAttr =>
+        intColumn(tables)(n)
     }
 
   private def timestampColumn(tables: Tables)(attr: Attr.DateAttr) =
@@ -222,6 +237,11 @@ object ItemQueryGenerator {
       case Attr.Concerning.EquipName     => tables.concEquip.name
       case Attr.Folder.FolderId          => tables.folder.id.cast[String]
       case Attr.Folder.FolderName        => tables.folder.name
+    }
+
+  private def intColumn(tables: Tables)(attr: Attr.IntAttr): Column[Int] =
+    attr match {
+      case Attr.AttachCount => tables.attachCount.num
     }
 
   private def makeOp(operator: Operator): QOp =
