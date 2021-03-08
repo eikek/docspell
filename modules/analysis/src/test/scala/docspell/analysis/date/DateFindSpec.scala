@@ -103,4 +103,36 @@ object DateFindSpec extends SimpleTestSuite {
     )
   }
 
+  test("find latvian dates") {
+    assertEquals(
+      DateFind.findDates("on 2020. gada 30. jūlijs there", Language.Latvian).toVector,
+      Vector(
+        NerDateLabel(
+          LocalDate.of(2020, 7, 30),
+          NerLabel("2020. gada 30. jūlijs", NerTag.Date, 3, 24)
+        )
+      )
+    )
+    assertEquals(
+      DateFind.findDates("Lai gan 30.07.2020", Language.Latvian).toVector,
+      Vector(
+        NerDateLabel(
+          LocalDate.of(2020, 7, 30),
+          NerLabel("30.07.2020", NerTag.Date, 8, 18)
+        )
+      )
+    )
+    assertEquals(
+      DateFind
+        .findDates("Es nevaru šodien 2020.gada 30.oktobris iet uz", Language.Latvian)
+        .toVector,
+      Vector(
+        NerDateLabel(
+          LocalDate.of(2020, 10, 30),
+          NerLabel("2020.gada 30.oktobris", NerTag.Date, 17, 38)
+        )
+      )
+    )
+  }
+
 }

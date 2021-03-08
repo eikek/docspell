@@ -26,6 +26,7 @@ RUN apk add --no-cache openjdk11-jre \
     tesseract-ocr-data-swe \
     tesseract-ocr-data-rus \
     tesseract-ocr-data-ron \
+    tesseract-ocr-data-lav \
     unpaper \
     wkhtmltopdf \
     libreoffice \

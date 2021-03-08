@@ -42,6 +42,8 @@ object MonthName {
         finnish
       case Language.Russian =>
         russian
+      case Language.Latvian =>
+        latvian
     }
 
   private val numbers = List(
@@ -266,5 +268,20 @@ object MonthName {
     List("okt", "oct", "oktober"),
     List("nov", "november"),
     List("dec", "december")
+  )
+
+  private val latvian = List(
+    List("janvāris", "janv."),
+    List("februāris", "febr."),
+    List("marts"),
+    List("aprīlis", "apr."),
+    List("maijs"),
+    List("jūnijs", "jūn."),
+    List("jūlijs", "jūl."),
+    List("augusts", "aug."),
+    List("septembris", "sept."),
+    List("oktobris", "okt."),
+    List("novembris", "nov."),
+    List("decembris", "dec.")
   )
 }
