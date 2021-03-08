@@ -18,7 +18,7 @@ object JSItemQueryParser {
         new Failure(
           fr.input,
           fr.failedAt,
-          js.Array(fr.messages.toList.toSeq.map(_.msg): _*)
+          js.Array(fr.messages.toList.toSeq.map(_.render): _*)
         )
       )
       .orNull
