@@ -40,7 +40,6 @@ object Dependencies {
   val TikaVersion             = "1.25"
   val YamuscaVersion          = "0.8.0"
   val SwaggerUIVersion        = "3.44.0"
-  val FomanticUIVersion       = "2.8.7-3"
   val TwelveMonkeysVersion    = "3.6.4"
   val JQueryVersion           = "3.5.1"
   val ViewerJSVersion         = "0.5.8"
@@ -282,7 +281,6 @@ object Dependencies {
 
   val webjars = Seq(
     "org.webjars"      % "swagger-ui"            % SwaggerUIVersion,
-    "com.github.eikek" % "fomantic-slim-default" % FomanticUIVersion,
     "org.webjars"      % "viewerjs"              % ViewerJSVersion,
     "org.webjars"      % "clipboard.js"          % ClipboardJsVersion
   )
