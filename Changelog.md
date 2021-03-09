@@ -4,7 +4,8 @@
 
 *Feb 19, 2021*
 
-This release comes with a completely new ui, including a dark theme!
+This release comes with a completely new ui based on
+[tailwindcss](https://tailwindcss.com), including a dark theme!
 Additionally there are some other minor features and bug fixes.
 
 - New Web-UI with light and dark theme (#293).
