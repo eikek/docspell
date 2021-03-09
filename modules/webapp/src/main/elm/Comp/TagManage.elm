@@ -3,7 +3,6 @@ module Comp.TagManage exposing
     , Msg(..)
     , emptyModel
     , update
-    , view
     , view2
     )
 
@@ -19,7 +18,7 @@ import Comp.YesNoDimmer
 import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick, onInput, onSubmit)
+import Html.Events exposing (onSubmit)
 import Http
 import Styles as S
 import Util.Http
@@ -54,11 +53,6 @@ emptyModel =
     , deleteConfirm = Comp.YesNoDimmer.emptyModel
     , query = ""
     }
-
-
-dimmerSettings : Comp.YesNoDimmer.Settings
-dimmerSettings =
-    Comp.YesNoDimmer.defaultSettings
 
 
 type Msg
@@ -215,109 +209,8 @@ update flags msg model =
             ( m, Api.getTags flags str TagResp )
 
 
-view : Model -> Html Msg
-view model =
-    if model.viewMode == Table then
-        viewTable model
 
-    else
-        viewForm model
-
-
-viewTable : Model -> Html Msg
-viewTable model =
-    div []
-        [ div [ class "ui secondary menu" ]
-            [ div [ class "horizontally fitted item" ]
-                [ div [ class "ui icon input" ]
-                    [ input
-                        [ type_ "text"
-                        , onInput SetQuery
-                        , value model.query
-                        , placeholder "Search…"
-                        ]
-                        []
-                    , i [ class "ui search icon" ]
-                        []
-                    ]
-                ]
-            , div [ class "right menu" ]
-                [ div [ class "item" ]
-                    [ a
-                        [ class "ui primary button"
-                        , href "#"
-                        , onClick InitNewTag
-                        ]
-                        [ i [ class "plus icon" ] []
-                        , text "New Tag"
-                        ]
-                    ]
-                ]
-            ]
-        , Html.map TableMsg (Comp.TagTable.view model.tagTableModel)
-        , div
-            [ classList
-                [ ( "ui dimmer", True )
-                , ( "active", model.loading )
-                ]
-            ]
-            [ div [ class "ui loader" ] []
-            ]
-        ]
-
-
-viewForm : Model -> Html Msg
-viewForm model =
-    let
-        newTag =
-            model.tagFormModel.tag.id == ""
-    in
-    Html.form [ class "ui segment", onSubmit Submit ]
-        [ Html.map YesNoMsg (Comp.YesNoDimmer.view model.deleteConfirm)
-        , if newTag then
-            h3 [ class "ui dividing header" ]
-                [ text "Create new tag"
-                ]
-
-          else
-            h3 [ class "ui dividing header" ]
-                [ text ("Edit tag: " ++ model.tagFormModel.tag.name)
-                , div [ class "sub header" ]
-                    [ text "Id: "
-                    , text model.tagFormModel.tag.id
-                    ]
-                ]
-        , Html.map FormMsg (Comp.TagForm.view model.tagFormModel)
-        , div
-            [ classList
-                [ ( "ui error message", True )
-                , ( "invisible", Util.Maybe.isEmpty model.formError )
-                ]
-            ]
-            [ Maybe.withDefault "" model.formError |> text
-            ]
-        , div [ class "ui horizontal divider" ] []
-        , button [ class "ui primary button", type_ "submit" ]
-            [ text "Submit"
-            ]
-        , a [ class "ui secondary button", onClick (SetViewMode Table), href "#" ]
-            [ text "Cancel"
-            ]
-        , if not newTag then
-            a [ class "ui right floated red button", href "#", onClick RequestDelete ]
-                [ text "Delete" ]
-
-          else
-            span [] []
-        , div
-            [ classList
-                [ ( "ui dimmer", True )
-                , ( "active", model.loading )
-                ]
-            ]
-            [ div [ class "ui loader" ] []
-            ]
-        ]
+--- View2
 
 
 view2 : Model -> Html Msg

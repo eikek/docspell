@@ -2,12 +2,10 @@ module Comp.CustomFieldForm exposing
     ( Model
     , Msg
     , ViewSettings
-    , fullViewSettings
     , init
     , initEmpty
     , makeField
     , update
-    , view
     , view2
     )
 
@@ -193,122 +191,6 @@ type alias ViewSettings =
     { classes : String
     , showControls : Bool
     }
-
-
-fullViewSettings : ViewSettings
-fullViewSettings =
-    { classes = "ui error form segment"
-    , showControls = True
-    }
-
-
-view : ViewSettings -> Model -> Html Msg
-view viewSettings model =
-    let
-        mkItem cft =
-            Comp.FixedDropdown.Item cft (Data.CustomFieldType.label cft)
-    in
-    div [ class viewSettings.classes ]
-        ([ Html.map DeleteMsg (Comp.YesNoDimmer.view model.deleteDimmer)
-         , if model.field.id == "" then
-            div []
-                [ text "Create a new custom field."
-                ]
-
-           else
-            div []
-                [ text "Modify this custom field. Note that changing the format may "
-                , text "result in invisible values in the ui, if they don't comply to the new format!"
-                ]
-         , div
-            [ classList
-                [ ( "ui message", True )
-                , ( "invisible hidden", model.result == Nothing )
-                , ( "error", Maybe.map .success model.result == Just False )
-                , ( "success", Maybe.map .success model.result == Just True )
-                ]
-            ]
-            [ Maybe.map .message model.result
-                |> Maybe.withDefault ""
-                |> text
-            ]
-         , div [ class "required field" ]
-            [ label [] [ text "Name" ]
-            , input
-                [ type_ "text"
-                , onInput SetName
-                , model.name
-                    |> Maybe.withDefault ""
-                    |> value
-                ]
-                []
-            , div [ class "small-info" ]
-                [ text "The name uniquely identifies this field. It must be a valid "
-                , text "identifier, not contain spaces or weird characters."
-                ]
-            ]
-         , div [ class "required field" ]
-            [ label [] [ text "Field Format" ]
-            , Html.map FTypeMsg
-                (Comp.FixedDropdown.view
-                    (Maybe.map mkItem model.ftype)
-                    model.ftypeModel
-                )
-            , div [ class "small-info" ]
-                [ text "A field must have a format. Values are validated "
-                , text "according to this format."
-                ]
-            ]
-         , div [ class "field" ]
-            [ label [] [ text "Label" ]
-            , input
-                [ type_ "text"
-                , onInput SetLabel
-                , model.label
-                    |> Maybe.withDefault ""
-                    |> value
-                ]
-                []
-            , div [ class "small-info" ]
-                [ text "The user defined label for this field. This is used to represent "
-                , text "this field in the ui. If not present, the name is used."
-                ]
-            ]
-         ]
-            ++ (if viewSettings.showControls then
-                    viewButtons model
-
-                else
-                    []
-               )
-        )
-
-
-viewButtons : Model -> List (Html Msg)
-viewButtons model =
-    [ div [ class "ui divider" ] []
-    , button
-        [ class "ui primary button"
-        , onClick SubmitForm
-        ]
-        [ text "Submit"
-        ]
-    , button
-        [ class "ui button"
-        , onClick GoBack
-        ]
-        [ text "Back"
-        ]
-    , button
-        [ classList
-            [ ( "ui red button", True )
-            , ( "invisible hidden", model.field.id == "" )
-            ]
-        , onClick RequestDelete
-        ]
-        [ text "Delete"
-        ]
-    ]
 
 
 

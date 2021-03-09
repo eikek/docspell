@@ -10,8 +10,6 @@ module Comp.YesNoDimmer exposing
     , initActive
     , initInactive
     , update
-    , view
-    , view2
     , viewN
     )
 
@@ -105,42 +103,8 @@ update msg model =
             ( { model | active = False }, True )
 
 
-view : Model -> Html Msg
-view model =
-    view2 True defaultSettings model
 
-
-view2 : Bool -> Settings -> Model -> Html Msg
-view2 active settings model =
-    div
-        [ classList
-            [ ( "ui dimmer", True )
-            , ( settings.extraClass, True )
-            , ( "active", active && model.active )
-            ]
-        ]
-        [ div [ class "content" ]
-            [ h3 [ class settings.headerClass ]
-                [ if settings.headerIcon == "" then
-                    span [] []
-
-                  else
-                    i [ class settings.headerIcon ] []
-                , text settings.message
-                ]
-            ]
-        , div [ class "content" ]
-            [ div [ class "ui buttons" ]
-                [ a [ class "ui primary button", onClick ConfirmDelete, href "#" ]
-                    [ text settings.confirmButton
-                    ]
-                , div [ class "or" ] []
-                , a [ class "ui secondary button", onClick Disable, href "#" ]
-                    [ text settings.cancelButton
-                    ]
-                ]
-            ]
-        ]
+--- View2
 
 
 viewN : Bool -> Settings -> Model -> Html Msg

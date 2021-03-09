@@ -3,7 +3,6 @@ module Comp.TagTable exposing
     , Msg(..)
     , emptyModel
     , update
-    , view
     , view2
     )
 
@@ -12,7 +11,6 @@ import Comp.Basic as B
 import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick)
 import Styles as S
 
 
@@ -46,44 +44,6 @@ update _ msg model =
 
         Deselect ->
             ( { model | selected = Nothing }, Cmd.none )
-
-
-view : Model -> Html Msg
-view model =
-    table [ class "ui very basic aligned table" ]
-        [ thead []
-            [ tr []
-                [ th [ class "collapsing" ] []
-                , th [ class "eight wide" ] [ text "Name" ]
-                , th [] [ text "Category" ]
-                ]
-            ]
-        , tbody []
-            (List.map (renderTagLine model) model.tags)
-        ]
-
-
-renderTagLine : Model -> Tag -> Html Msg
-renderTagLine model tag =
-    tr
-        []
-        [ td [ class "collapsing" ]
-            [ a
-                [ href "#"
-                , class "ui basic small blue label"
-                , onClick (Select tag)
-                ]
-                [ i [ class "edit icon" ] []
-                , text "Edit"
-                ]
-            ]
-        , td []
-            [ text tag.name
-            ]
-        , td []
-            [ Maybe.withDefault "-" tag.category |> text
-            ]
-        ]
 
 
 

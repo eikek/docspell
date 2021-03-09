@@ -4,7 +4,6 @@ module Comp.StringListInput exposing
     , Msg
     , init
     , update
-    , view
     , view2
     )
 
@@ -59,45 +58,6 @@ update msg model =
 
         RemoveString s ->
             ( model, RemoveAction s )
-
-
-
---- View
-
-
-view : List String -> Model -> Html Msg
-view values model =
-    let
-        valueItem s =
-            div [ class "item" ]
-                [ a
-                    [ class "ui icon link"
-                    , onClick (RemoveString s)
-                    , href "#"
-                    ]
-                    [ i [ class "delete icon" ] []
-                    ]
-                , text s
-                ]
-    in
-    div [ class "string-list-input" ]
-        [ div [ class "ui list" ]
-            (List.map valueItem values)
-        , div [ class "ui icon input" ]
-            [ input
-                [ placeholder ""
-                , type_ "text"
-                , onInput SetString
-                , value model.currentInput
-                ]
-                []
-            , i
-                [ class "circular add link icon"
-                , onClick AddString
-                ]
-                []
-            ]
-        ]
 
 
 

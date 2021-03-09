@@ -14,9 +14,7 @@ module Comp.DetailEdit exposing
     , initTag
     , initTagByName
     , update
-    , view
     , view2
-    , viewModal
     , viewModal2
     )
 
@@ -638,151 +636,6 @@ update flags msg model =
 
 
 
---- View
-
-
-customFieldFormSettings : Comp.CustomFieldForm.ViewSettings
-customFieldFormSettings =
-    { classes = "ui error form"
-    , showControls = False
-    }
-
-
-viewButtons : Model -> List (Html Msg)
-viewButtons model =
-    [ button
-        [ class "ui primary button"
-        , href "#"
-        , onClick Submit
-        , disabled (model.submitting || model.loading)
-        ]
-        [ if model.submitting || model.loading then
-            i [ class "ui spinner loading icon" ] []
-
-          else
-            text "Submit"
-        ]
-    , button
-        [ class "ui button"
-        , href "#"
-        , onClick Cancel
-        ]
-        [ text "Cancel"
-        ]
-    ]
-
-
-viewIntern : UiSettings -> Bool -> Model -> List (Html Msg)
-viewIntern settings withButtons model =
-    [ div
-        [ classList
-            [ ( "ui message", True )
-            , ( "error", Maybe.map .success model.result == Just False )
-            , ( "success", Maybe.map .success model.result == Just True )
-            , ( "invisible hidden", model.result == Nothing )
-            ]
-        ]
-        [ Maybe.map .message model.result
-            |> Maybe.withDefault ""
-            |> text
-        ]
-    , case model.form of
-        TM tm ->
-            Html.map TagMsg (Comp.TagForm.view tm)
-
-        PMR pm ->
-            Html.map PersonMsg (Comp.PersonForm.view1 settings True pm)
-
-        PMC pm ->
-            Html.map PersonMsg (Comp.PersonForm.view1 settings True pm)
-
-        OM om ->
-            Html.map OrgMsg (Comp.OrgForm.view1 settings True om)
-
-        EM em ->
-            Html.map EquipMsg (Comp.EquipmentForm.view em)
-
-        CFM fm ->
-            Html.map CustomFieldMsg (Comp.CustomFieldForm.view customFieldFormSettings fm)
-    ]
-        ++ (if withButtons then
-                div [ class "ui divider" ] [] :: viewButtons model
-
-            else
-                []
-           )
-
-
-view : UiSettings -> Model -> Html Msg
-view settings model =
-    div []
-        (viewIntern settings True model)
-
-
-viewModal : UiSettings -> Maybe Model -> Html Msg
-viewModal settings mm =
-    let
-        hidden =
-            mm == Nothing
-
-        heading =
-            fold (\_ -> "Add Tag")
-                (\_ -> "Add Person")
-                (\_ -> "Add Organization")
-                (\_ -> "Add Equipment")
-                (\_ -> "Add Custom Field")
-
-        headIcon =
-            fold (\_ -> Icons.tagIcon "")
-                (\_ -> Icons.personIcon "")
-                (\_ -> Icons.organizationIcon "")
-                (\_ -> Icons.equipmentIcon "")
-                (\_ -> Icons.customFieldIcon "")
-    in
-    div
-        [ classList
-            [ ( "ui inverted dimmer keep-small", True )
-            , ( "invisibe hidden", hidden )
-            , ( "active", not hidden )
-            ]
-        , style "display" "flex !important"
-        ]
-        [ div
-            [ classList
-                [ ( "ui modal keep-small", True )
-                , ( "active", not hidden )
-                ]
-            ]
-            [ div [ class "header" ]
-                [ Maybe.map .form mm
-                    |> Maybe.map headIcon
-                    |> Maybe.withDefault (i [] [])
-                , Maybe.map .form mm
-                    |> Maybe.map heading
-                    |> Maybe.withDefault ""
-                    |> text
-                ]
-            , div [ class "scrolling content" ]
-                (case mm of
-                    Just model ->
-                        viewIntern settings False model
-
-                    Nothing ->
-                        []
-                )
-            , div [ class "actions" ]
-                (case mm of
-                    Just model ->
-                        viewButtons model
-
-                    Nothing ->
-                        []
-                )
-            ]
-        ]
-
-
-
 --- View2
 
 
@@ -900,10 +753,6 @@ viewButtons2 model =
 
 viewIntern2 : UiSettings -> Bool -> Model -> List (Html Msg)
 viewIntern2 settings withButtons model =
-    let
-        viewSettings =
-            Comp.CustomFieldForm.fullViewSettings
-    in
     [ div
         [ classList
             [ ( S.errorMessage, Maybe.map .success model.result == Just False )
@@ -935,7 +784,9 @@ viewIntern2 settings withButtons model =
             div []
                 (List.map (Html.map CustomFieldMsg)
                     (Comp.CustomFieldForm.view2
-                        customFieldFormSettings
+                        { classes = ""
+                        , showControls = False
+                        }
                         fm
                     )
                 )

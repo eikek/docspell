@@ -10,8 +10,6 @@ module Comp.SearchMenu exposing
     , textSearchString
     , update
     , updateDrop
-    , view
-    , viewDrop
     , viewDrop2
     )
 
@@ -37,14 +35,13 @@ import Data.Direction exposing (Direction)
 import Data.DropdownStyle as DS
 import Data.Fields
 import Data.Flags exposing (Flags)
-import Data.Icons as Icons
 import Data.ItemQuery as Q exposing (ItemQuery)
 import Data.PersonUse
 import Data.UiSettings exposing (UiSettings)
 import DatePicker exposing (DatePicker)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onCheck, onClick, onInput)
+import Html.Events exposing (onClick, onInput)
 import Http
 import Set exposing (Set)
 import Styles as S
@@ -219,20 +216,6 @@ isNamesSearch model =
 
         Names _ ->
             True
-
-
-getDirection : Model -> Maybe Direction
-getDirection model =
-    let
-        selection =
-            Comp.Dropdown.getSelected model.directionModel
-    in
-    case selection of
-        [ d ] ->
-            Just d
-
-        _ ->
-            Nothing
 
 
 getItemQuery : Model -> Maybe ItemQuery
@@ -953,289 +936,6 @@ updateDrop ddm flags settings msg model =
             , stateChange = False
             , dragDrop = DD.DragDropData ddm Nothing
             }
-
-
-
--- View
-
-
-view : Flags -> UiSettings -> Model -> Html Msg
-view =
-    viewDrop (DD.DragDropData DD.init Nothing)
-
-
-viewDrop : DD.DragDropData -> Flags -> UiSettings -> Model -> Html Msg
-viewDrop ddd flags settings model =
-    let
-        formHeader icon headline =
-            div [ class "ui tiny header" ]
-                [ icon
-                , div [ class "content" ]
-                    [ text headline
-                    ]
-                ]
-
-        segmentClass =
-            "ui vertical segment"
-
-        fieldVisible field =
-            Data.UiSettings.fieldVisible settings field
-
-        fieldHidden field =
-            Data.UiSettings.fieldHidden settings field
-
-        optional fields html =
-            if
-                List.map fieldVisible fields
-                    |> List.foldl (||) False
-            then
-                html
-
-            else
-                span [ class "invisible hidden" ] []
-    in
-    div [ class "ui form" ]
-        [ div [ class segmentClass ]
-            [ div [ class "inline field" ]
-                [ div [ class "ui checkbox" ]
-                    [ input
-                        [ type_ "checkbox"
-                        , onCheck (\_ -> ToggleInbox)
-                        , checked model.inboxCheckbox
-                        ]
-                        []
-                    , label []
-                        [ text "Only New"
-                        ]
-                    ]
-                ]
-            ]
-        , div [ class segmentClass ]
-            [ div
-                [ class "field"
-                ]
-                [ label []
-                    [ text
-                        (case model.textSearchModel of
-                            Fulltext _ ->
-                                "Fulltext Search"
-
-                            Names _ ->
-                                "Search in names"
-                        )
-                    , a
-                        [ classList
-                            [ ( "right-float", True )
-                            , ( "invisible hidden", not flags.config.fullTextSearchEnabled )
-                            ]
-                        , href "#"
-                        , onClick SwapTextSearch
-                        , title "Switch between text search modes"
-                        ]
-                        [ i [ class "small grey exchange alternate icon" ] []
-                        ]
-                    ]
-                , input
-                    [ type_ "text"
-                    , onInput SetTextSearch
-                    , Util.Html.onKeyUpCode KeyUpMsg
-                    , textSearchString model.textSearchModel |> Maybe.withDefault "" |> value
-                    , case model.textSearchModel of
-                        Fulltext _ ->
-                            placeholder "Content search…"
-
-                        Names _ ->
-                            placeholder "Search in various names…"
-                    ]
-                    []
-                , span [ class "small-info" ]
-                    [ case model.textSearchModel of
-                        Fulltext _ ->
-                            text "Fulltext search in document contents and notes."
-
-                        Names _ ->
-                            text "Looks in correspondents, concerned entities, item name and notes."
-                    ]
-                ]
-            ]
-        , div
-            [ classList
-                [ ( segmentClass, True )
-                , ( "invisible hidden", fieldHidden Data.Fields.Tag && fieldHidden Data.Fields.Folder )
-                ]
-            ]
-            ((if fieldVisible Data.Fields.Tag then
-                List.map (Html.map TagSelectMsg)
-                    (Comp.TagSelect.viewAll
-                        ddd.model
-                        settings
-                        model.tagSelection
-                        model.tagSelectModel
-                    )
-
-              else
-                []
-             )
-                ++ [ optional [ Data.Fields.Folder ] <|
-                        Html.map FolderSelectMsg
-                            (Comp.FolderSelect.viewDrop ddd.model
-                                settings.searchMenuFolderCount
-                                model.folderList
-                            )
-                   ]
-            )
-        , div
-            [ classList
-                [ ( segmentClass, True )
-                , ( "hidden invisible", fieldHidden Data.Fields.CorrOrg && fieldHidden Data.Fields.CorrPerson )
-                ]
-            ]
-            [ optional
-                [ Data.Fields.CorrOrg
-                , Data.Fields.CorrPerson
-                ]
-              <|
-                formHeader (Icons.correspondentIcon "")
-                    (case getDirection model of
-                        Just Data.Direction.Incoming ->
-                            "Sender"
-
-                        Just Data.Direction.Outgoing ->
-                            "Recipient"
-
-                        Nothing ->
-                            "Correspondent"
-                    )
-            , optional [ Data.Fields.CorrOrg ] <|
-                div [ class "field" ]
-                    [ label [] [ text "Organization" ]
-                    , Html.map OrgMsg (Comp.Dropdown.view settings model.orgModel)
-                    ]
-            , optional [ Data.Fields.CorrPerson ] <|
-                div [ class "field" ]
-                    [ label [] [ text "Person" ]
-                    , Html.map CorrPersonMsg (Comp.Dropdown.view settings model.corrPersonModel)
-                    ]
-            , optional
-                [ Data.Fields.ConcPerson
-                , Data.Fields.ConcEquip
-                ]
-              <|
-                formHeader Icons.concernedIcon "Concerned"
-            , optional [ Data.Fields.ConcPerson ] <|
-                div [ class "field" ]
-                    [ label [] [ text "Person" ]
-                    , Html.map ConcPersonMsg (Comp.Dropdown.view settings model.concPersonModel)
-                    ]
-            , optional [ Data.Fields.ConcEquip ] <|
-                div [ class "field" ]
-                    [ label [] [ text "Equipment" ]
-                    , Html.map ConcEquipmentMsg (Comp.Dropdown.view settings model.concEquipmentModel)
-                    ]
-            ]
-        , div
-            [ classList
-                [ ( segmentClass, True )
-                , ( "hidden invisible"
-                  , fieldHidden Data.Fields.CustomFields
-                        || Comp.CustomFieldMultiInput.isEmpty model.customFieldModel
-                  )
-                ]
-            ]
-            [ formHeader (Icons.customFieldIcon "") "Custom Fields"
-            , Html.map CustomFieldMsg
-                (Comp.CustomFieldMultiInput.view
-                    (Comp.CustomFieldMultiInput.ViewSettings False "field" (\_ -> Nothing))
-                    model.customFieldModel
-                )
-            ]
-        , div
-            [ classList
-                [ ( segmentClass, True )
-                , ( "invisible hidden", fieldHidden Data.Fields.Date && fieldHidden Data.Fields.DueDate )
-                ]
-            ]
-            [ optional [ Data.Fields.Date ] <|
-                formHeader (Icons.dateIcon "") "Date"
-            , optional [ Data.Fields.Date ] <|
-                div [ class "fields" ]
-                    [ div [ class "field" ]
-                        [ label []
-                            [ text "From"
-                            ]
-                        , Html.map FromDateMsg
-                            (Comp.DatePicker.viewTimeDefault
-                                model.fromDate
-                                model.fromDateModel
-                            )
-                        ]
-                    , div [ class "field" ]
-                        [ label []
-                            [ text "To"
-                            ]
-                        , Html.map UntilDateMsg
-                            (Comp.DatePicker.viewTimeDefault
-                                model.untilDate
-                                model.untilDateModel
-                            )
-                        ]
-                    ]
-            , optional [ Data.Fields.DueDate ] <|
-                formHeader (Icons.dueDateIcon "") "Due Date"
-            , optional [ Data.Fields.DueDate ] <|
-                div [ class "fields" ]
-                    [ div [ class "field" ]
-                        [ label []
-                            [ text "Due From"
-                            ]
-                        , Html.map FromDueDateMsg
-                            (Comp.DatePicker.viewTimeDefault
-                                model.fromDueDate
-                                model.fromDueDateModel
-                            )
-                        ]
-                    , div [ class "field" ]
-                        [ label []
-                            [ text "Due To"
-                            ]
-                        , Html.map UntilDueDateMsg
-                            (Comp.DatePicker.viewTimeDefault
-                                model.untilDueDate
-                                model.untilDueDateModel
-                            )
-                        ]
-                    ]
-            ]
-        , div
-            [ classList
-                [ ( segmentClass, not (fieldHidden Data.Fields.SourceName) )
-                , ( "invisible hidden", fieldHidden Data.Fields.SourceName )
-                ]
-            ]
-            [ formHeader (Icons.sourceIcon "") "Source"
-            , div [ class "field" ]
-                [ input
-                    [ type_ "text"
-                    , onInput SetSource
-                    , Util.Html.onKeyUpCode KeyUpMsg
-                    , model.sourceModel |> Maybe.withDefault "" |> value
-                    , placeholder "Search in item source…"
-                    ]
-                    []
-                ]
-            ]
-        , div
-            [ classList
-                [ ( segmentClass, True )
-                , ( "invisible hidden", fieldHidden Data.Fields.Direction )
-                ]
-            ]
-            [ formHeader (Icons.directionIcon "") "Direction"
-            , div [ class "field" ]
-                [ Html.map DirectionMsg (Comp.Dropdown.view settings model.directionModel)
-                ]
-            ]
-        ]
 
 
 

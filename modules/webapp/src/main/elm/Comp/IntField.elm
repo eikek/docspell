@@ -3,8 +3,6 @@ module Comp.IntField exposing
     , Msg
     , init
     , update
-    , view
-    , viewWithInfo
     , viewWithInfo2
     )
 
@@ -94,47 +92,6 @@ update msg model =
                         ( { m | error = Just ("'" ++ str ++ "' is not a valid number!") }
                         , Nothing
                         )
-
-
-view : Maybe Int -> String -> Model -> Html Msg
-view =
-    viewWithInfo ""
-
-
-viewWithInfo : String -> Maybe Int -> String -> Model -> Html Msg
-viewWithInfo info nval classes model =
-    div
-        [ classList
-            [ ( classes, True )
-            , ( "error", model.error /= Nothing )
-            ]
-        ]
-        [ label [] [ text model.label ]
-        , input
-            [ type_ "text"
-            , Maybe.map String.fromInt nval
-                |> Maybe.withDefault model.lastInput
-                |> value
-            , onInput SetValue
-            ]
-            []
-        , span
-            [ classList
-                [ ( "small-info", True )
-                , ( "hidden invisible", info == "" )
-                ]
-            ]
-            [ Markdown.toHtml [] info
-            ]
-        , div
-            [ classList
-                [ ( "ui pointing red basic label", True )
-                , ( "hidden", model.error == Nothing )
-                ]
-            ]
-            [ Maybe.withDefault "" model.error |> text
-            ]
-        ]
 
 
 

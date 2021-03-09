@@ -4,7 +4,6 @@ module Comp.ImapSettingsManage exposing
     , emptyModel
     , init
     , update
-    , view
     , view2
     )
 
@@ -21,7 +20,6 @@ import Data.Flags exposing (Flags)
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick, onInput)
 import Http
 import Styles as S
 import Util.Http
@@ -202,99 +200,6 @@ update flags msg model =
 
         MailSettingsResp (Err _) ->
             ( { model | loading = False }, Cmd.none )
-
-
-
---- View
-
-
-view : UiSettings -> Model -> Html Msg
-view settings model =
-    case model.viewMode of
-        Table ->
-            viewTable model
-
-        Form ->
-            viewForm settings model
-
-
-viewTable : Model -> Html Msg
-viewTable model =
-    div []
-        [ div [ class "ui secondary menu" ]
-            [ div [ class "horizontally fitted item" ]
-                [ div [ class "ui icon input" ]
-                    [ input
-                        [ type_ "text"
-                        , onInput SetQuery
-                        , value model.query
-                        , placeholder "Search…"
-                        ]
-                        []
-                    , i [ class "ui search icon" ]
-                        []
-                    ]
-                ]
-            , div [ class "right menu" ]
-                [ div [ class "item" ]
-                    [ a
-                        [ class "ui primary button"
-                        , href "#"
-                        , onClick InitNew
-                        ]
-                        [ i [ class "plus icon" ] []
-                        , text "New Settings"
-                        ]
-                    ]
-                ]
-            ]
-        , Html.map TableMsg (Comp.ImapSettingsTable.view model.tableModel)
-        ]
-
-
-viewForm : UiSettings -> Model -> Html Msg
-viewForm settings model =
-    div [ class "ui segment" ]
-        [ Html.map YesNoMsg (Comp.YesNoDimmer.view model.deleteConfirm)
-        , Html.map FormMsg (Comp.ImapSettingsForm.view settings model.formModel)
-        , div
-            [ classList
-                [ ( "ui error message", True )
-                , ( "invisible", model.formError == Nothing )
-                ]
-            ]
-            [ Maybe.withDefault "" model.formError |> text
-            ]
-        , div [ class "ui divider" ] []
-        , button
-            [ class "ui primary button"
-            , onClick Submit
-            , href "#"
-            ]
-            [ text "Submit"
-            ]
-        , a
-            [ class "ui secondary button"
-            , onClick (SetViewMode Table)
-            , href "#"
-            ]
-            [ text "Cancel"
-            ]
-        , if model.formModel.settings.name /= "" then
-            a [ class "ui right floated red button", href "#", onClick RequestDelete ]
-                [ text "Delete" ]
-
-          else
-            span [] []
-        , div
-            [ classList
-                [ ( "ui dimmer", True )
-                , ( "active", model.loading )
-                ]
-            ]
-            [ div [ class "ui loader" ] []
-            ]
-        ]
 
 
 

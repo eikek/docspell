@@ -20,7 +20,6 @@ type alias Config =
     , maxPageSize : Int
     , maxNoteLength : Int
     , showClassificationSettings : Bool
-    , uiVersion : Int
     }
 
 

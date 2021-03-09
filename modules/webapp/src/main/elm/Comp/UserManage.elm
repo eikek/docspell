@@ -3,7 +3,6 @@ module Comp.UserManage exposing
     , Msg(..)
     , emptyModel
     , update
-    , view
     , view2
     )
 
@@ -20,7 +19,7 @@ import Data.Flags exposing (Flags)
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick, onSubmit)
+import Html.Events exposing (onSubmit)
 import Http
 import Styles as S
 import Util.Http
@@ -197,88 +196,6 @@ update flags msg model =
                         Cmd.none
             in
             ( { model | deleteConfirm = cm }, cmd )
-
-
-
---- View
-
-
-view : UiSettings -> Model -> Html Msg
-view settings model =
-    if model.viewMode == Table then
-        viewTable model
-
-    else
-        viewForm settings model
-
-
-viewTable : Model -> Html Msg
-viewTable model =
-    div []
-        [ button [ class "ui basic button", onClick InitNewUser ]
-            [ i [ class "plus icon" ] []
-            , text "Create new"
-            ]
-        , Html.map TableMsg (Comp.UserTable.view model.tableModel)
-        , div
-            [ classList
-                [ ( "ui dimmer", True )
-                , ( "active", model.loading )
-                ]
-            ]
-            [ div [ class "ui loader" ] []
-            ]
-        ]
-
-
-viewForm : UiSettings -> Model -> Html Msg
-viewForm settings model =
-    let
-        newUser =
-            Comp.UserForm.isNewUser model.formModel
-    in
-    Html.form [ class "ui segment", onSubmit Submit ]
-        [ Html.map YesNoMsg (Comp.YesNoDimmer.view model.deleteConfirm)
-        , if newUser then
-            h3 [ class "ui dividing header" ]
-                [ text "Create new user"
-                ]
-
-          else
-            h3 [ class "ui dividing header" ]
-                [ text ("Edit user: " ++ model.formModel.user.login)
-                ]
-        , Html.map FormMsg (Comp.UserForm.view settings model.formModel)
-        , div
-            [ classList
-                [ ( "ui error message", True )
-                , ( "invisible", Util.Maybe.isEmpty model.formError )
-                ]
-            ]
-            [ Maybe.withDefault "" model.formError |> text
-            ]
-        , div [ class "ui horizontal divider" ] []
-        , button [ class "ui primary button", type_ "submit" ]
-            [ text "Submit"
-            ]
-        , a [ class "ui secondary button", onClick (SetViewMode Table), href "#" ]
-            [ text "Cancel"
-            ]
-        , if not newUser then
-            a [ class "ui right floated red button", href "#", onClick RequestDelete ]
-                [ text "Delete" ]
-
-          else
-            span [] []
-        , div
-            [ classList
-                [ ( "ui dimmer", True )
-                , ( "active", model.loading )
-                ]
-            ]
-            [ div [ class "ui loader" ] []
-            ]
-        ]
 
 
 

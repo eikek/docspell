@@ -3,7 +3,6 @@ module Comp.OrgManage exposing
     , Msg(..)
     , emptyModel
     , update
-    , view
     , view2
     )
 
@@ -20,7 +19,7 @@ import Data.Flags exposing (Flags)
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick, onInput, onSubmit)
+import Html.Events exposing (onSubmit)
 import Http
 import Styles as S
 import Util.Http
@@ -200,111 +199,6 @@ update flags msg model =
                     { model | query = str }
             in
             ( m, Api.getOrganizations flags str OrgResp )
-
-
-view : UiSettings -> Model -> Html Msg
-view settings model =
-    if model.viewMode == Table then
-        viewTable model
-
-    else
-        viewForm settings model
-
-
-viewTable : Model -> Html Msg
-viewTable model =
-    div []
-        [ div [ class "ui secondary menu" ]
-            [ div [ class "horizontally fitted item" ]
-                [ div [ class "ui icon input" ]
-                    [ input
-                        [ type_ "text"
-                        , onInput SetQuery
-                        , value model.query
-                        , placeholder "Search…"
-                        ]
-                        []
-                    , i [ class "ui search icon" ]
-                        []
-                    ]
-                ]
-            , div [ class "right menu" ]
-                [ div [ class "item" ]
-                    [ a
-                        [ class "ui primary button"
-                        , href "#"
-                        , onClick InitNewOrg
-                        ]
-                        [ i [ class "plus icon" ] []
-                        , text "New Organization"
-                        ]
-                    ]
-                ]
-            ]
-        , Html.map TableMsg (Comp.OrgTable.view model.tableModel)
-        , div
-            [ classList
-                [ ( "ui dimmer", True )
-                , ( "active", model.loading )
-                ]
-            ]
-            [ div [ class "ui loader" ] []
-            ]
-        ]
-
-
-viewForm : UiSettings -> Model -> Html Msg
-viewForm settings model =
-    let
-        newOrg =
-            model.formModel.org.id == ""
-    in
-    Html.form [ class "ui segment", onSubmit Submit ]
-        [ Html.map YesNoMsg (Comp.YesNoDimmer.view model.deleteConfirm)
-        , if newOrg then
-            h3 [ class "ui dividing header" ]
-                [ text "Create new organization"
-                ]
-
-          else
-            h3 [ class "ui dividing header" ]
-                [ text ("Edit org: " ++ model.formModel.org.name)
-                , div [ class "sub header" ]
-                    [ text "Id: "
-                    , text model.formModel.org.id
-                    ]
-                ]
-        , Html.map FormMsg (Comp.OrgForm.view settings model.formModel)
-        , div
-            [ classList
-                [ ( "ui error message", True )
-                , ( "invisible", Util.Maybe.isEmpty model.formError )
-                ]
-            ]
-            [ Maybe.withDefault "" model.formError |> text
-            ]
-        , div [ class "ui horizontal divider" ] []
-        , button [ class "ui primary button", type_ "submit" ]
-            [ text "Submit"
-            ]
-        , a [ class "ui secondary button", onClick (SetViewMode Table), href "#" ]
-            [ text "Cancel"
-            ]
-        , if not newOrg then
-            a [ class "ui right floated red button", href "#", onClick RequestDelete ]
-                [ text "Delete" ]
-
-          else
-            span [] []
-        , div
-            [ classList
-                [ ( "ui dimmer", True )
-                , ( "active", model.loading )
-                ]
-            ]
-            [ div [ class "ui loader" ] []
-            ]
-        ]
 
 
 

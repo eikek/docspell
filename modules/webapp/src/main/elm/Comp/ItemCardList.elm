@@ -7,7 +7,6 @@ module Comp.ItemCardList exposing
     , prevItem
     , update
     , updateDrag
-    , view
     , view2
     )
 
@@ -140,63 +139,13 @@ updateDrag dm _ msg model =
 
 
 
---- View
+--- View2
 
 
 type alias ViewConfig =
     { current : Maybe String
     , selection : ItemSelection
     }
-
-
-view : ViewConfig -> UiSettings -> Model -> Html Msg
-view cfg settings model =
-    div
-        [ classList
-            [ ( "ui container", True )
-            , ( "multi-select-mode", isMultiSelectMode cfg )
-            ]
-        ]
-        (List.map (viewGroup model cfg settings) model.results.groups)
-
-
-viewGroup : Model -> ViewConfig -> UiSettings -> ItemLightGroup -> Html Msg
-viewGroup model cfg settings group =
-    div [ class "item-group" ]
-        [ div [ class "ui horizontal divider header item-list" ]
-            [ i [ class "calendar alternate outline icon" ] []
-            , text group.name
-            ]
-        , div [ class "ui stackable three cards" ]
-            (List.map (viewItem model cfg settings) group.items)
-        ]
-
-
-viewItem : Model -> ViewConfig -> UiSettings -> ItemLight -> Html Msg
-viewItem model cfg settings item =
-    let
-        currentClass =
-            if cfg.current == Just item.id then
-                "current"
-
-            else
-                ""
-
-        vvcfg =
-            Comp.ItemCard.ViewConfig cfg.selection currentClass
-
-        cardModel =
-            Dict.get item.id model.itemCards
-                |> Maybe.withDefault Comp.ItemCard.init
-
-        cardHtml =
-            Comp.ItemCard.view vvcfg settings cardModel item
-    in
-    Html.map (ItemCardMsg item) cardHtml
-
-
-
---- View2
 
 
 view2 : ViewConfig -> UiSettings -> Model -> Html Msg

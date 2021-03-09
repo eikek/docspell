@@ -8,7 +8,6 @@ module Comp.PowerSearchInput exposing
     , viewResult
     )
 
-import Data.DropdownStyle
 import Data.QueryParseResult exposing (QueryParseResult)
 import Html exposing (..)
 import Html.Attributes exposing (..)

@@ -9,10 +9,9 @@ module Comp.MenuBar exposing
     , viewSide
     )
 
-import Data.DropdownStyle exposing (DropdownStyle)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onBlur, onCheck, onClick, onFocus, onInput)
+import Html.Events exposing (onCheck, onClick, onInput)
 import Styles as S
 
 

@@ -6,7 +6,6 @@ module Comp.EmailSettingsForm exposing
     , init
     , isValid
     , update
-    , view
     , view2
     )
 
@@ -21,7 +20,7 @@ import Data.SSLType exposing (SSLType)
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onCheck, onInput)
+import Html.Events exposing (onInput)
 import Styles as S
 import Util.Maybe
 
@@ -179,109 +178,6 @@ update msg model =
 
         ToggleCheckCert ->
             ( { model | ignoreCertificates = not model.ignoreCertificates }, Cmd.none )
-
-
-
---- View
-
-
-view : UiSettings -> Model -> Html Msg
-view settings model =
-    div
-        [ classList
-            [ ( "ui form", True )
-            , ( "error", not (isValid model) )
-            , ( "success", isValid model )
-            ]
-        ]
-        [ div [ class "required field" ]
-            [ label [] [ text "Name" ]
-            , input
-                [ type_ "text"
-                , value model.name
-                , onInput SetName
-                , placeholder "Connection name, e.g. 'gmail.com'"
-                ]
-                []
-            , div [ class "ui info message" ]
-                [ text "The connection name must not contain whitespace or special characters."
-                ]
-            ]
-        , div [ class "fields" ]
-            [ div [ class "thirteen wide required field" ]
-                [ label [] [ text "SMTP Host" ]
-                , input
-                    [ type_ "text"
-                    , placeholder "SMTP host name, e.g. 'mail.gmail.com'"
-                    , value model.host
-                    , onInput SetHost
-                    ]
-                    []
-                ]
-            , Html.map PortMsg
-                (Comp.IntField.view model.portNum
-                    "three wide field"
-                    model.portField
-                )
-            ]
-        , div [ class "two fields" ]
-            [ div [ class "field" ]
-                [ label [] [ text "SMTP User" ]
-                , input
-                    [ type_ "text"
-                    , placeholder "SMTP Username, e.g. 'your.name@gmail.com'"
-                    , Maybe.withDefault "" model.user |> value
-                    , onInput SetUser
-                    ]
-                    []
-                ]
-            , div [ class "field" ]
-                [ label [] [ text "SMTP Password" ]
-                , Html.map PassMsg (Comp.PasswordInput.view model.password model.passField)
-                ]
-            ]
-        , div [ class "two fields" ]
-            [ div [ class "required field" ]
-                [ label [] [ text "From Address" ]
-                , input
-                    [ type_ "text"
-                    , placeholder "Sender E-Mail address"
-                    , value model.from
-                    , onInput SetFrom
-                    ]
-                    []
-                ]
-            , div [ class "field" ]
-                [ label [] [ text "Reply-To" ]
-                , input
-                    [ type_ "text"
-                    , placeholder "Optional reply-to E-Mail address"
-                    , Maybe.withDefault "" model.replyTo |> value
-                    , onInput SetReplyTo
-                    ]
-                    []
-                ]
-            ]
-        , div [ class "two fields" ]
-            [ div [ class "inline field" ]
-                [ div [ class "ui checkbox" ]
-                    [ input
-                        [ type_ "checkbox"
-                        , checked model.ignoreCertificates
-                        , onCheck (\_ -> ToggleCheckCert)
-                        ]
-                        []
-                    , label [] [ text "Ignore certificate check" ]
-                    ]
-                ]
-            ]
-        , div [ class "two fields" ]
-            [ div [ class "field" ]
-                [ label [] [ text "SSL" ]
-                , Html.map SSLTypeMsg (Comp.Dropdown.view settings model.sslType)
-                ]
-            ]
-        ]
 
 
 

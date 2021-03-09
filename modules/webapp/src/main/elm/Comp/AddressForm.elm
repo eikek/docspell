@@ -4,7 +4,6 @@ module Comp.AddressForm exposing
     , emptyModel
     , getAddress
     , update
-    , view
     , view2
     )
 
@@ -107,52 +106,6 @@ update msg model =
                     Comp.Dropdown.update m model.country
             in
             ( { model | country = m1 }, Cmd.map CountryMsg c1 )
-
-
-view : UiSettings -> Model -> Html Msg
-view settings model =
-    div [ class "ui form" ]
-        [ div
-            [ class "field"
-            ]
-            [ label [] [ text "Street" ]
-            , input
-                [ type_ "text"
-                , onInput SetStreet
-                , placeholder "Street"
-                , value model.street
-                ]
-                []
-            ]
-        , div
-            [ class "field"
-            ]
-            [ label [] [ text "Zip Code" ]
-            , input
-                [ type_ "text"
-                , onInput SetZip
-                , placeholder "Zip"
-                , value model.zip
-                ]
-                []
-            ]
-        , div
-            [ class "field"
-            ]
-            [ label [] [ text "City" ]
-            , input
-                [ type_ "text"
-                , onInput SetCity
-                , placeholder "City"
-                , value model.city
-                ]
-                []
-            ]
-        , div [ class "field" ]
-            [ label [] [ text "Country" ]
-            , Html.map CountryMsg (Comp.Dropdown.view settings model.country)
-            ]
-        ]
 
 
 

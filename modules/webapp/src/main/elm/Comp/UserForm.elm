@@ -6,7 +6,6 @@ module Comp.UserForm exposing
     , isNewUser
     , isValid
     , update
-    , view
     , view2
     )
 
@@ -161,61 +160,6 @@ update _ msg model =
               }
             , Cmd.none
             )
-
-
-
---- View
-
-
-view : UiSettings -> Model -> Html Msg
-view settings model =
-    div [ class "ui form" ]
-        [ div
-            [ classList
-                [ ( "field", True )
-                , ( "error", model.login == "" )
-                , ( "invisible", model.user.login /= "" )
-                ]
-            ]
-            [ label [] [ text "Login*" ]
-            , input
-                [ type_ "text"
-                , onInput SetLogin
-                , placeholder "Login"
-                , value model.login
-                ]
-                []
-            ]
-        , div [ class "field" ]
-            [ label [] [ text "E-Mail" ]
-            , input
-                [ onInput SetEmail
-                , model.email |> Maybe.withDefault "" |> value
-                , placeholder "E-Mail"
-                ]
-                []
-            ]
-        , div [ class "field" ]
-            [ label [] [ text "State" ]
-            , Html.map StateMsg (Comp.Dropdown.view settings model.state)
-            ]
-        , div
-            [ classList
-                [ ( "field", True )
-                , ( "invisible", model.user.login /= "" )
-                , ( "error", Util.Maybe.isEmpty model.password )
-                ]
-            ]
-            [ label [] [ text "Password*" ]
-            , input
-                [ type_ "text"
-                , onInput SetPassword
-                , placeholder "Password"
-                , Maybe.withDefault "" model.password |> value
-                ]
-                []
-            ]
-        ]
 
 
 

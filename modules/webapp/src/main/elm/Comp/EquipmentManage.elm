@@ -3,7 +3,6 @@ module Comp.EquipmentManage exposing
     , Msg(..)
     , emptyModel
     , update
-    , view
     , view2
     )
 
@@ -19,7 +18,7 @@ import Comp.YesNoDimmer
 import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick, onInput, onSubmit)
+import Html.Events exposing (onSubmit)
 import Http
 import Styles as S
 import Util.Http
@@ -199,111 +198,6 @@ update flags msg model =
                     { model | query = str }
             in
             ( m, Api.getEquipments flags str EquipmentResp )
-
-
-view : Model -> Html Msg
-view model =
-    if model.viewMode == Table then
-        viewTable model
-
-    else
-        viewForm model
-
-
-viewTable : Model -> Html Msg
-viewTable model =
-    div []
-        [ div [ class "ui secondary menu" ]
-            [ div [ class "horizontally fitted item" ]
-                [ div [ class "ui icon input" ]
-                    [ input
-                        [ type_ "text"
-                        , onInput SetQuery
-                        , value model.query
-                        , placeholder "Search…"
-                        ]
-                        []
-                    , i [ class "ui search icon" ]
-                        []
-                    ]
-                ]
-            , div [ class "right menu" ]
-                [ div [ class "item" ]
-                    [ a
-                        [ class "ui primary button"
-                        , href "#"
-                        , onClick InitNewEquipment
-                        ]
-                        [ i [ class "plus icon" ] []
-                        , text "New Equipment"
-                        ]
-                    ]
-                ]
-            ]
-        , Html.map TableMsg (Comp.EquipmentTable.view model.tableModel)
-        , div
-            [ classList
-                [ ( "ui dimmer", True )
-                , ( "active", model.loading )
-                ]
-            ]
-            [ div [ class "ui loader" ] []
-            ]
-        ]
-
-
-viewForm : Model -> Html Msg
-viewForm model =
-    let
-        newEquipment =
-            model.formModel.equipment.id == ""
-    in
-    Html.form [ class "ui segment", onSubmit Submit ]
-        [ Html.map YesNoMsg (Comp.YesNoDimmer.view model.deleteConfirm)
-        , if newEquipment then
-            h3 [ class "ui dividing header" ]
-                [ text "Create new equipment"
-                ]
-
-          else
-            h3 [ class "ui dividing header" ]
-                [ text ("Edit equipment: " ++ model.formModel.equipment.name)
-                , div [ class "sub header" ]
-                    [ text "Id: "
-                    , text model.formModel.equipment.id
-                    ]
-                ]
-        , Html.map FormMsg (Comp.EquipmentForm.view model.formModel)
-        , div
-            [ classList
-                [ ( "ui error message", True )
-                , ( "invisible", Util.Maybe.isEmpty model.formError )
-                ]
-            ]
-            [ Maybe.withDefault "" model.formError |> text
-            ]
-        , div [ class "ui horizontal divider" ] []
-        , button [ class "ui primary button", type_ "submit" ]
-            [ text "Submit"
-            ]
-        , a [ class "ui secondary button", onClick (SetViewMode Table), href "#" ]
-            [ text "Cancel"
-            ]
-        , if not newEquipment then
-            a [ class "ui right floated red button", href "#", onClick RequestDelete ]
-                [ text "Delete" ]
-
-          else
-            span [] []
-        , div
-            [ classList
-                [ ( "ui dimmer", True )
-                , ( "active", model.loading )
-                ]
-            ]
-            [ div [ class "ui loader" ] []
-            ]
-        ]
 
 
 

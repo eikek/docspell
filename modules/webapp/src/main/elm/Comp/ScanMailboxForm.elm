@@ -5,7 +5,6 @@ module Comp.ScanMailboxForm exposing
     , init
     , initWith
     , update
-    , view
     , view2
     )
 
@@ -76,7 +75,6 @@ type alias Model =
     , languageModel : Comp.FixedDropdown.Model Language
     , language : Maybe Language
     , postHandleAll : Bool
-    , menuTab : MenuTab
     , openTabs : Set String
     }
 
@@ -122,7 +120,6 @@ type Msg
     | LanguageMsg (Comp.FixedDropdown.Msg Language)
     | RemoveLanguage
     | TogglePostHandleAll
-    | SetMenuTab MenuTab
     | ToggleAkkordionTab String
 
 
@@ -170,7 +167,6 @@ initWith flags s =
             Comp.FixedDropdown.init (List.map mkLanguageItem Data.Language.all)
         , language = Maybe.andThen Data.Language.fromString s.language
         , postHandleAll = Maybe.withDefault False s.postHandleAll
-        , menuTab = TabGeneral
       }
     , Cmd.batch
         [ Api.getImapSettings flags "" ConnResp
@@ -225,7 +221,6 @@ init flags =
             Comp.FixedDropdown.init (List.map mkLanguageItem Data.Language.all)
       , language = Nothing
       , postHandleAll = False
-      , menuTab = TabGeneral
       , openTabs = Set.insert (tabTitle TabGeneral) Set.empty
       }
     , Cmd.batch
@@ -680,12 +675,6 @@ update flags msg model =
             , Cmd.none
             )
 
-        SetMenuTab tab ->
-            ( { model | menuTab = tab }
-            , NoAction
-            , Cmd.none
-            )
-
         ToggleAkkordionTab title ->
             let
                 tabs =
@@ -702,7 +691,7 @@ update flags msg model =
 
 
 
---- View
+--- View2
 
 
 isFormError : Model -> Bool
@@ -727,426 +716,6 @@ isFolderMember model =
                 |> Maybe.map .id
     in
     Util.Folder.isFolderMember model.allFolders selected
-
-
-
---- View
-
-
-view : String -> UiSettings -> Model -> Html Msg
-view extraClasses settings model =
-    div
-        [ classList
-            [ ( "ui warning form", True )
-            , ( extraClasses, True )
-            , ( "error", isFormError model )
-            , ( "success", isFormSuccess model )
-            ]
-        ]
-        [ viewMenu model
-        , div [ class "ui bottom attached segment" ]
-            (case model.menuTab of
-                TabGeneral ->
-                    viewGeneral settings model
-
-                TabProcessing ->
-                    viewProcessing model
-
-                TabAdditionalFilter ->
-                    viewAdditionalFilter model
-
-                TabPostProcessing ->
-                    viewPostProcessing model
-
-                TabMetadata ->
-                    viewMetadata settings model
-
-                TabSchedule ->
-                    viewSchedule model
-            )
-        , div
-            [ classList
-                [ ( "ui message", True )
-                , ( "success", isFormSuccess model )
-                , ( "error", isFormError model )
-                , ( "hidden", model.formMsg == Nothing )
-                ]
-            ]
-            [ Maybe.map .message model.formMsg
-                |> Maybe.withDefault ""
-                |> text
-            ]
-        , button
-            [ class "ui primary button"
-            , onClick Submit
-            ]
-            [ text "Submit"
-            ]
-        , button
-            [ class "ui secondary button"
-            , onClick Cancel
-            ]
-            [ text "Cancel"
-            ]
-        , button
-            [ classList
-                [ ( "ui red button", True )
-                , ( "hidden invisible", model.settings.id == "" )
-                ]
-            , onClick RequestDelete
-            ]
-            [ text "Delete"
-            ]
-        , button
-            [ class "ui right floated button"
-            , onClick StartOnce
-            ]
-            [ text "Start Once"
-            ]
-        , Html.map YesNoDeleteMsg (Comp.YesNoDimmer.view model.yesNoDelete)
-        , div
-            [ classList
-                [ ( "ui dimmer", True )
-                , ( "active", model.loading > 0 )
-                , ( "invisible hidden", model.loading == 0 )
-                ]
-            ]
-            [ div [ class "ui text loader" ]
-                [ text "Loading..."
-                ]
-            ]
-        ]
-
-
-viewMenu : Model -> Html Msg
-viewMenu model =
-    let
-        tabLink tab txt =
-            a
-                [ class "item"
-                , classList
-                    [ ( "active", model.menuTab == tab ) ]
-                , href "#"
-                , onClick (SetMenuTab tab)
-                ]
-                [ text txt
-                ]
-    in
-    div [ class "ui top attached stacked tabular menu" ]
-        [ tabLink TabGeneral "General"
-        , tabLink TabProcessing "Processing"
-        , tabLink TabAdditionalFilter "Additional Filter"
-        , tabLink TabPostProcessing "Post Processing"
-        , tabLink TabMetadata "Metadata"
-        , tabLink TabSchedule "Schedule"
-        ]
-
-
-viewGeneral : UiSettings -> Model -> List (Html Msg)
-viewGeneral settings model =
-    [ div [ class "inline field" ]
-        [ div [ class "ui checkbox" ]
-            [ input
-                [ type_ "checkbox"
-                , onCheck (\_ -> ToggleEnabled)
-                , checked model.enabled
-                ]
-                []
-            , label [] [ text "Enabled" ]
-            ]
-        , span [ class "small-info" ]
-            [ text "Enable or disable this task."
-            ]
-        ]
-    , div [ class "required field" ]
-        [ label [] [ text "Mailbox" ]
-        , Html.map ConnMsg (Comp.Dropdown.view settings model.connectionModel)
-        , span [ class "small-info" ]
-            [ text "The IMAP connection to use when sending notification mails."
-            ]
-        ]
-    ]
-
-
-viewProcessing : Model -> List (Html Msg)
-viewProcessing model =
-    [ div [ class "ui message" ]
-        [ text "These settings define which mails are fetched from the mail server."
-        ]
-    , div [ class "required field" ]
-        [ label [] [ text "Folders" ]
-        , Html.map FoldersMsg (Comp.StringListInput.view model.folders model.foldersModel)
-        , span [ class "small-info" ]
-            [ text "The folders to go through"
-            ]
-        ]
-    , Html.map ReceivedHoursMsg
-        (Comp.IntField.viewWithInfo
-            "Select mails newer than `now - receivedHours`"
-            model.receivedHours
-            "field"
-            model.receivedHoursModel
-        )
-    ]
-
-
-viewAdditionalFilter : Model -> List (Html Msg)
-viewAdditionalFilter model =
-    [ div [ class "ui message" ]
-        [ text "These filters are applied to mails that have been fetched from the "
-        , text "mailbox to select those that should be imported."
-        ]
-    , div
-        [ class "field"
-        ]
-        [ label [] [ text "File Filter" ]
-        , input
-            [ type_ "text"
-            , onInput SetFileFilter
-            , placeholder "File Filter"
-            , model.fileFilter
-                |> Maybe.withDefault ""
-                |> value
-            ]
-            []
-        , div [ class "small-info" ]
-            [ text "Specify a file glob to filter attachments. For example, to only extract pdf files: "
-            , code []
-                [ text "*.pdf"
-                ]
-            , text ". If you want to include the mail body, allow html files or "
-            , code []
-                [ text "mail.html"
-                ]
-            , text ". Globs can be combined via OR, like this: "
-            , code []
-                [ text "*.pdf|mail.html"
-                ]
-            , text ". No file filter defaults to "
-            , code []
-                [ text "*"
-                ]
-            , text " that includes all"
-            ]
-        ]
-    , div
-        [ class "field"
-        ]
-        [ label [] [ text "Subject Filter" ]
-        , input
-            [ type_ "text"
-            , onInput SetSubjectFilter
-            , placeholder "Subject Filter"
-            , model.subjectFilter
-                |> Maybe.withDefault ""
-                |> value
-            ]
-            []
-        , div [ class "small-info" ]
-            [ text "Specify a file glob to filter mails by subject. For example: "
-            , code []
-                [ text "*Scanned Document*"
-                ]
-            , text ". No file filter defaults to "
-            , code []
-                [ text "*"
-                ]
-            , text " that includes all"
-            ]
-        ]
-    ]
-
-
-viewPostProcessing : Model -> List (Html Msg)
-viewPostProcessing model =
-    [ div [ class "ui message" ]
-        [ text "This defines what happens to mails that have been downloaded."
-        ]
-    , div [ class "inline field" ]
-        [ div [ class "ui checkbox" ]
-            [ input
-                [ type_ "checkbox"
-                , onCheck (\_ -> TogglePostHandleAll)
-                , checked model.postHandleAll
-                ]
-                []
-            , label [] [ text "Apply post-processing to all fetched mails." ]
-            ]
-        , span [ class "small-info" ]
-            [ text "When mails are not imported due to the 'Additional Filters', this flag can "
-            , text "control whether they should be moved to a target folder or deleted (whatever is "
-            , text "defined here) nevertheless. If unchecked only imported mails "
-            , text "are post-processed, others stay where they are."
-            ]
-        ]
-    , div [ class "field" ]
-        [ label [] [ text "Target folder" ]
-        , input
-            [ type_ "text"
-            , onInput SetTargetFolder
-            , Maybe.withDefault "" model.targetFolder |> value
-            ]
-            []
-        , span [ class "small-info" ]
-            [ text "Move mails into this folder."
-            ]
-        ]
-    , div [ class "inline field" ]
-        [ div [ class "ui checkbox" ]
-            [ input
-                [ type_ "checkbox"
-                , onCheck (\_ -> ToggleDeleteMail)
-                , checked model.deleteMail
-                ]
-                []
-            , label [] [ text "Delete imported mails" ]
-            ]
-        , span [ class "small-info" ]
-            [ text "Whether to delete all mails fetched by docspell. This only applies if "
-            , em [] [ text "target folder" ]
-            , text " is not set."
-            ]
-        ]
-    ]
-
-
-viewMetadata : UiSettings -> Model -> List (Html Msg)
-viewMetadata settings model =
-    [ div [ class "ui message" ]
-        [ text "Define metadata that should be attached to all items created by this task."
-        ]
-    , div [ class "required field" ]
-        [ label [] [ text "Item direction" ]
-        , div [ class "grouped fields" ]
-            [ div [ class "field" ]
-                [ div [ class "ui radio checkbox" ]
-                    [ input
-                        [ type_ "radio"
-                        , checked (model.direction == Nothing)
-                        , onCheck (\_ -> DirectionMsg Nothing)
-                        ]
-                        []
-                    , label [] [ text "Automatic" ]
-                    ]
-                ]
-            , div [ class "field" ]
-                [ div [ class "ui radio checkbox" ]
-                    [ input
-                        [ type_ "radio"
-                        , checked (model.direction == Just Incoming)
-                        , onCheck (\_ -> DirectionMsg (Just Incoming))
-                        ]
-                        []
-                    , label [] [ text "Incoming" ]
-                    ]
-                ]
-            , div [ class "field" ]
-                [ div [ class "ui radio checkbox" ]
-                    [ input
-                        [ type_ "radio"
-                        , checked (model.direction == Just Outgoing)
-                        , onCheck (\_ -> DirectionMsg (Just Outgoing))
-                        ]
-                        []
-                    , label [] [ text "Outgoing" ]
-                    ]
-                ]
-            , span [ class "small-info" ]
-                [ text "Sets the direction for an item. If you know all mails are incoming or "
-                , text "outgoing, you can set it here. Otherwise it will be guessed from looking "
-                , text "at sender and receiver."
-                ]
-            ]
-        ]
-    , div [ class "field" ]
-        [ label []
-            [ text "Item Folder"
-            ]
-        , Html.map FolderDropdownMsg (Comp.Dropdown.view settings model.folderModel)
-        , span [ class "small-info" ]
-            [ text "Put all items from this mailbox into the selected folder"
-            ]
-        , div
-            [ classList
-                [ ( "ui warning message", True )
-                , ( "hidden", isFolderMember model )
-                ]
-            ]
-            [ Markdown.toHtml [] """
-You are **not a member** of this folder. Items created from mails in
-this mailbox will be **hidden** from any search results. Use a folder
-where you are a member of to make items visible. This message will
-disappear then.
-                      """
-            ]
-        ]
-    , div [ class "field" ]
-        [ label [] [ text "Tags" ]
-        , Html.map TagDropdownMsg (Comp.Dropdown.view settings model.tagModel)
-        , div [ class "small-info" ]
-            [ text "Choose tags that should be applied to items."
-            ]
-        ]
-    , div [ class "field" ]
-        [ label []
-            [ text "Language"
-            ]
-        , div [ class "ui action input" ]
-            [ Html.map LanguageMsg
-                (Comp.FixedDropdown.viewStyled "fluid"
-                    (Maybe.map mkLanguageItem model.language)
-                    model.languageModel
-                )
-            , a
-                [ class "ui icon button"
-                , href "#"
-                , onClick RemoveLanguage
-                ]
-                [ i [ class "delete icon" ] []
-                ]
-            ]
-        , div [ class "small-info" ]
-            [ text "Used for text extraction and text analysis. The "
-            , text "collective's default language is used, if not specified here."
-            ]
-        ]
-    ]
-
-
-viewSchedule : Model -> List (Html Msg)
-viewSchedule model =
-    [ div [ class "ui message" ]
-        [ text "Define when mails should be imported."
-        ]
-    , div [ class "required field" ]
-        [ label []
-            [ text "Schedule"
-            , a
-                [ class "right-float"
-                , href "https://github.com/eikek/calev#what-are-calendar-events"
-                , target "_blank"
-                ]
-                [ i [ class "help icon" ] []
-                , text "Click here for help"
-                ]
-            ]
-        , Html.map CalEventMsg
-            (Comp.CalEventInput.view ""
-                (Data.Validated.value model.schedule)
-                model.scheduleModel
-            )
-        , span [ class "small-info" ]
-            [ text "Specify how often and when this task should run. "
-            , text "Use English 3-letter weekdays. Either a single value, "
-            , text "a list (ex. 1,2,3), a range (ex. 1..3) or a '*' (meaning all) "
-            , text "is allowed for each part."
-            ]
-        ]
-    ]
-
-
-
---- View2
 
 
 view2 : String -> UiSettings -> Model -> Html Msg

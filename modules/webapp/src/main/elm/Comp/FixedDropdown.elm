@@ -7,10 +7,7 @@ module Comp.FixedDropdown exposing
     , initString
     , initTuple
     , update
-    , view
     , view2
-    , viewString
-    , viewStyled
     , viewStyled2
     )
 
@@ -37,8 +34,7 @@ type alias Model a =
 
 
 type Msg a
-    = SelectItem (Item a)
-    | SelectItem2 (Item a)
+    = SelectItem2 (Item a)
     | ToggleMenu
     | KeyPress (Maybe KeyCode)
 
@@ -124,9 +120,6 @@ update msg model =
         ToggleMenu ->
             ( { model | menuOpen = not model.menuOpen }, Nothing )
 
-        SelectItem item ->
-            ( model, Just item.id )
-
         SelectItem2 item ->
             ( { model | menuOpen = False }, Just item.id )
 
@@ -168,65 +161,6 @@ update msg model =
 
         KeyPress _ ->
             ( model, Nothing )
-
-
-viewStyled : String -> Maybe (Item a) -> Model a -> Html (Msg a)
-viewStyled classes selected model =
-    div
-        [ classList
-            [ ( "ui selection dropdown", True )
-            , ( classes, True )
-            , ( "open", model.menuOpen )
-            ]
-        , tabindex 0
-        , onClick ToggleMenu
-        , onKeyUpCode KeyPress
-        ]
-        [ input [ type_ "hidden" ] []
-        , i [ class "dropdown icon" ] []
-        , div
-            [ classList
-                [ ( "default", selected == Nothing )
-                , ( "text", True )
-                ]
-            ]
-            [ Maybe.map .display selected
-                |> Maybe.withDefault "Select…"
-                |> text
-            ]
-        , div
-            [ classList
-                [ ( "menu transition", True )
-                , ( "hidden", not model.menuOpen )
-                , ( "visible", model.menuOpen )
-                ]
-            ]
-          <|
-            List.map (renderItems model) model.options
-        ]
-
-
-view : Maybe (Item a) -> Model a -> Html (Msg a)
-view selected model =
-    viewStyled "" selected model
-
-
-viewString : Maybe String -> Model String -> Html (Msg String)
-viewString selected model =
-    view (Maybe.map (\s -> Item s s) selected) model
-
-
-renderItems : Model a -> Item a -> Html (Msg a)
-renderItems model item =
-    div
-        [ classList
-            [ ( "item", True )
-            , ( "selected", isSelected model item )
-            ]
-        , onClick (SelectItem item)
-        ]
-        [ text item.display
-        ]
 
 
 
