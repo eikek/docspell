@@ -3,7 +3,6 @@ module Comp.SourceManage exposing
     , Msg(..)
     , init
     , update
-    , view
     , view2
     )
 
@@ -20,7 +19,7 @@ import Data.Flags exposing (Flags)
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick, onSubmit)
+import Html.Events exposing (onSubmit)
 import Http
 import Ports
 import QRCode
@@ -209,7 +208,7 @@ update flags msg model =
 
 
 
---- View
+--- View2
 
 
 qrCodeView : String -> Html msg
@@ -218,203 +217,6 @@ qrCodeView message =
         |> Result.map QRCode.toSvg
         |> Result.withDefault
             (Html.text "Error generating QR-Code")
-
-
-view : Flags -> UiSettings -> Model -> Html Msg
-view flags settings model =
-    case model.viewMode of
-        None ->
-            viewTable model
-
-        Edit _ ->
-            div [] (viewForm flags settings model)
-
-        Display source ->
-            viewLinks flags settings source
-
-
-viewTable : Model -> Html Msg
-viewTable model =
-    div []
-        [ button [ class "ui basic button", onClick InitNewSource ]
-            [ i [ class "plus icon" ] []
-            , text "Create new"
-            ]
-        , Html.map TableMsg (Comp.SourceTable.view model.sources)
-        , div
-            [ classList
-                [ ( "ui dimmer", True )
-                , ( "active", model.loading )
-                ]
-            ]
-            [ div [ class "ui loader" ] []
-            ]
-        ]
-
-
-viewLinks : Flags -> UiSettings -> SourceAndTags -> Html Msg
-viewLinks flags _ source =
-    let
-        appUrl =
-            flags.config.baseUrl ++ "/app/upload/" ++ source.source.id
-
-        apiUrl =
-            flags.config.baseUrl ++ "/api/v1/open/upload/item/" ++ source.source.id
-    in
-    div
-        []
-        [ h3 [ class "ui dividing header" ]
-            [ text "Public Uploads: "
-            , text source.source.abbrev
-            , div [ class "sub header" ]
-                [ text source.source.id
-                ]
-            ]
-        , p []
-            [ text "This source defines URLs that can be used by anyone to send files to "
-            , text "you. There is a web page that you can share or the API url can be used "
-            , text "with other clients."
-            ]
-        , p []
-            [ text "There have been "
-            , String.fromInt source.source.counter |> text
-            , text " items created through this source."
-            ]
-        , h4 [ class "ui header" ]
-            [ text "Public Upload Page"
-            ]
-        , div [ class "ui attached message" ]
-            [ div [ class "ui fluid left action input" ]
-                [ a
-                    [ class "ui left icon button"
-                    , title "Copy to clipboard"
-                    , href "#"
-                    , Tuple.second appClipboardData
-                        |> String.dropLeft 1
-                        |> id
-                    , attribute "data-clipboard-target" "#app-url"
-                    ]
-                    [ i [ class "copy icon" ] []
-                    ]
-                , a
-                    [ class "ui icon button"
-                    , href appUrl
-                    , target "_blank"
-                    , title "Open in new tab/window"
-                    ]
-                    [ i [ class "link external icon" ] []
-                    ]
-                , input
-                    [ type_ "text"
-                    , id "app-url"
-                    , value appUrl
-                    , readonly True
-                    ]
-                    []
-                ]
-            ]
-        , div [ class "ui attached segment" ]
-            [ div [ class "qr-code" ]
-                [ qrCodeView appUrl
-                ]
-            ]
-        , h4 [ class "ui header" ]
-            [ text "Public API Upload URL"
-            ]
-        , div [ class "ui attached message" ]
-            [ div [ class "ui fluid left action input" ]
-                [ a
-                    [ class "ui left icon button"
-                    , title "Copy to clipboard"
-                    , href "#"
-                    , Tuple.second apiClipboardData
-                        |> String.dropLeft 1
-                        |> id
-                    , attribute "data-clipboard-target" "#api-url"
-                    ]
-                    [ i [ class "copy icon" ] []
-                    ]
-                , input
-                    [ type_ "text"
-                    , value apiUrl
-                    , readonly True
-                    , id "api-url"
-                    ]
-                    []
-                ]
-            ]
-        , div [ class "ui attached segment" ]
-            [ div [ class "qr-code" ]
-                [ qrCodeView apiUrl
-                ]
-            ]
-        , div [ class "ui divider" ] []
-        , button
-            [ class "ui button"
-            , onClick SetTableView
-            ]
-            [ text "Back"
-            ]
-        ]
-
-
-viewForm : Flags -> UiSettings -> Model -> List (Html Msg)
-viewForm flags settings model =
-    let
-        newSource =
-            model.formModel.source.source.id == ""
-    in
-    [ if newSource then
-        h3 [ class "ui top attached header" ]
-            [ text "Create new source"
-            ]
-
-      else
-        h3 [ class "ui top attached header" ]
-            [ text ("Edit: " ++ model.formModel.source.source.abbrev)
-            , div [ class "sub header" ]
-                [ text "Id: "
-                , text model.formModel.source.source.id
-                ]
-            ]
-    , Html.form [ class "ui attached segment", onSubmit Submit ]
-        [ Html.map YesNoMsg (Comp.YesNoDimmer.view model.deleteConfirm)
-        , Html.map FormMsg (Comp.SourceForm.view flags settings model.formModel)
-        , div
-            [ classList
-                [ ( "ui error message", True )
-                , ( "invisible", Util.Maybe.isEmpty model.formError )
-                ]
-            ]
-            [ Maybe.withDefault "" model.formError |> text
-            ]
-        , div [ class "ui horizontal divider" ] []
-        , button [ class "ui primary button", type_ "submit" ]
-            [ text "Submit"
-            ]
-        , a [ class "ui secondary button", onClick SetTableView, href "#" ]
-            [ text "Cancel"
-            ]
-        , if not newSource then
-            a [ class "ui right floated red button", href "#", onClick RequestDelete ]
-                [ text "Delete" ]
-
-          else
-            span [] []
-        , div
-            [ classList
-                [ ( "ui dimmer", True )
-                , ( "active", model.loading )
-                ]
-            ]
-            [ div [ class "ui loader" ] []
-            ]
-        ]
-    ]
-
-
-
---- View2
 
 
 view2 : Flags -> UiSettings -> Model -> Html Msg

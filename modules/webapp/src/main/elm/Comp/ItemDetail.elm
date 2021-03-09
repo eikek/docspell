@@ -2,14 +2,12 @@ module Comp.ItemDetail exposing
     ( Model
     , emptyModel
     , update
-    , view
     , view2
     )
 
 import Browser.Navigation as Nav
 import Comp.ItemDetail.Model exposing (Msg(..), UpdateResult)
 import Comp.ItemDetail.Update
-import Comp.ItemDetail.View
 import Comp.ItemDetail.View2
 import Data.Flags exposing (Flags)
 import Data.ItemNav exposing (ItemNav)
@@ -30,11 +28,6 @@ emptyModel =
 update : Nav.Key -> Flags -> ItemNav -> UiSettings -> Msg -> Model -> UpdateResult
 update =
     Comp.ItemDetail.Update.update
-
-
-view : ItemNav -> UiSettings -> Model -> Html Msg
-view =
-    Comp.ItemDetail.View.view
 
 
 view2 : ItemNav -> UiSettings -> Model -> Html Msg

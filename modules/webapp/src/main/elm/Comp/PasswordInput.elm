@@ -3,7 +3,6 @@ module Comp.PasswordInput exposing
     , Msg
     , init
     , update
-    , view
     , view2
     )
 
@@ -44,36 +43,6 @@ update msg model =
                     Util.Maybe.fromString str
             in
             ( model, pw )
-
-
-view : Maybe String -> Model -> Html Msg
-view pw model =
-    div [ class "ui  left action input" ]
-        [ button
-            [ class "ui icon button"
-            , type_ "button"
-            , onClick (ToggleShow pw)
-            ]
-            [ i
-                [ classList
-                    [ ( "ui eye icon", True )
-                    , ( "slash", model.show )
-                    ]
-                ]
-                []
-            ]
-        , input
-            [ type_ <|
-                if model.show then
-                    "text"
-
-                else
-                    "password"
-            , onInput SetPassword
-            , Maybe.withDefault "" pw |> value
-            ]
-            []
-        ]
 
 
 

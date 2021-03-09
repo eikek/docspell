@@ -3,7 +3,6 @@ module Main exposing (init, main)
 import Api
 import App.Data exposing (..)
 import App.Update exposing (..)
-import App.View
 import App.View2
 import Browser exposing (Document)
 import Browser.Navigation exposing (Key)
@@ -74,12 +73,7 @@ viewDoc model =
     in
     { title = model.flags.config.appName ++ ": " ++ title
     , body =
-        if model.flags.config.uiVersion == 2 then
-            App.View2.view model
-
-        else
-            [ App.View.view model
-            ]
+        App.View2.view model
     }
 
 

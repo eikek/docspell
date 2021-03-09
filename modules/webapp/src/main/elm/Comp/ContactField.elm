@@ -4,8 +4,6 @@ module Comp.ContactField exposing
     , emptyModel
     , getContacts
     , update
-    , view
-    , view1
     , view2
     )
 
@@ -117,69 +115,6 @@ update msg model =
               }
             , Cmd.none
             )
-
-
-view : UiSettings -> Model -> Html Msg
-view settings model =
-    view1 settings False model
-
-
-view1 : UiSettings -> Bool -> Model -> Html Msg
-view1 _ compact model =
-    div []
-        [ div [ classList [ ( "fields", not compact ) ] ]
-            [ div
-                [ classList
-                    [ ( "field", True )
-                    , ( "four wide", not compact )
-                    ]
-                ]
-                [ Html.map TypeMsg
-                    (Comp.FixedDropdown.view
-                        (Maybe.map makeDropdownItem model.selectedKind)
-                        model.kind
-                    )
-                ]
-            , div
-                [ classList
-                    [ ( "twelve wide", not compact )
-                    , ( "field", True )
-                    ]
-                ]
-                [ div [ class "ui action input" ]
-                    [ input
-                        [ type_ "text"
-                        , onInput SetValue
-                        , value model.value
-                        ]
-                        []
-                    , a [ class "ui button", onClick AddContact, href "#" ]
-                        [ text "Add"
-                        ]
-                    ]
-                ]
-            ]
-        , div
-            [ classList
-                [ ( "field", True )
-                , ( "invisible", List.isEmpty model.items )
-                ]
-            ]
-            [ div [ class "ui vertical secondary fluid menu" ]
-                (List.map renderItem model.items)
-            ]
-        ]
-
-
-renderItem : Contact -> Html Msg
-renderItem contact =
-    div [ class "link item", onClick (Select contact) ]
-        [ i [ class "delete icon" ] []
-        , div [ class "ui blue label" ]
-            [ text contact.kind
-            ]
-        , text contact.value
-        ]
 
 
 

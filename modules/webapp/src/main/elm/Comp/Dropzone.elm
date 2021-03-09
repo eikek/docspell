@@ -9,7 +9,6 @@ module Comp.Dropzone exposing
     , init
     , setActive
     , update
-    , view
     , view2
     )
 
@@ -108,42 +107,6 @@ update msg model =
             ( { model | state = ns }, Cmd.none, newFiles )
 
 
-view : Settings -> Model -> Html Msg
-view settings model =
-    div
-        [ classList (settings.classList model.state)
-        , onDragEnter DragEnter
-        , onDragOver DragEnter
-        , onDragLeave DragLeave
-        , onDropFiles GotFiles
-        ]
-        [ div [ class "ui icon header" ]
-            [ i [ class "mouse pointer icon" ] []
-            , text "Drop files here"
-            ]
-        , div [ class "ui horizontal divider" ]
-            [ text "Or"
-            ]
-        , a
-            [ classList
-                [ ( "ui basic primary button", True )
-                , ( "disabled", not model.state.active )
-                ]
-            , onClick PickFiles
-            , href "#"
-            ]
-            [ i [ class "folder open icon" ] []
-            , text "Select ..."
-            ]
-        , div [ class "ui center aligned text container" ]
-            [ span [ class "small-info" ]
-                [ text "Choose document files (pdf, docx, txt, html, …). "
-                , text "Archives (zip and eml) are extracted."
-                ]
-            ]
-        ]
-
-
 filterMime : Model -> List File -> List File
 filterMime model files =
     let
@@ -155,6 +118,10 @@ filterMime model files =
 
     else
         List.filter pred files
+
+
+
+--- View2
 
 
 view2 : Model -> Html Msg

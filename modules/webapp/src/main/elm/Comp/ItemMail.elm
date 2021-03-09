@@ -6,7 +6,6 @@ module Comp.ItemMail exposing
     , emptyModel
     , init
     , update
-    , view
     , view2
     )
 
@@ -22,7 +21,7 @@ import Data.Flags exposing (Flags)
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onCheck, onClick, onInput)
+import Html.Events exposing (onClick, onInput)
 import Http
 import Styles as S
 import Util.Http
@@ -219,89 +218,6 @@ isValid model =
         /= ""
         && model.formError
         == Nothing
-
-
-
---- View
-
-
-view : UiSettings -> Model -> Html Msg
-view settings model =
-    div
-        [ classList
-            [ ( "ui form", True )
-            , ( "error", model.formError /= Nothing )
-            ]
-        ]
-        [ div [ class "field" ]
-            [ label [] [ text "Send via" ]
-            , Html.map ConnMsg (Comp.Dropdown.view settings model.connectionModel)
-            ]
-        , div [ class "ui error message" ]
-            [ Maybe.withDefault "" model.formError |> text
-            ]
-        , div [ class "field" ]
-            [ label []
-                [ text "Recipient(s)"
-                ]
-            , Html.map RecipientMsg (Comp.EmailInput.view model.recipients model.recipientsModel)
-            ]
-        , div [ class "field" ]
-            [ label []
-                [ text "CC(s)"
-                ]
-            , Html.map CCRecipientMsg (Comp.EmailInput.view model.ccRecipients model.ccRecipientsModel)
-            ]
-        , div [ class "field" ]
-            [ label []
-                [ text "BCC(s)"
-                ]
-            , Html.map BCCRecipientMsg (Comp.EmailInput.view model.bccRecipients model.bccRecipientsModel)
-            ]
-        , div [ class "field" ]
-            [ label [] [ text "Subject" ]
-            , input
-                [ type_ "text"
-                , onInput SetSubject
-                , value model.subject
-                ]
-                []
-            ]
-        , div [ class "field" ]
-            [ label [] [ text "Body" ]
-            , textarea
-                [ onInput SetBody
-                , value model.body
-                ]
-                []
-            ]
-        , div [ class "inline field" ]
-            [ div [ class "ui checkbox" ]
-                [ input
-                    [ type_ "checkbox"
-                    , checked model.attachAll
-                    , onCheck (\_ -> ToggleAttachAll)
-                    ]
-                    []
-                , label [] [ text "Include all item attachments" ]
-                ]
-            ]
-        , button
-            [ classList
-                [ ( "ui primary button", True )
-                , ( "disabled", not (isValid model) )
-                ]
-            , onClick Send
-            ]
-            [ text "Send"
-            ]
-        , button
-            [ class "ui secondary button"
-            , onClick Cancel
-            ]
-            [ text "Cancel"
-            ]
-        ]
 
 
 

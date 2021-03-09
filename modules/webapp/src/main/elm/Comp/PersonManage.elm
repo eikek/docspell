@@ -3,7 +3,6 @@ module Comp.PersonManage exposing
     , Msg(..)
     , emptyModel
     , update
-    , view
     , view2
     )
 
@@ -21,7 +20,7 @@ import Data.Flags exposing (Flags)
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick, onInput, onSubmit)
+import Html.Events exposing (onSubmit)
 import Http
 import Styles as S
 import Util.Http
@@ -237,122 +236,6 @@ update flags msg model =
 isLoading : Model -> Bool
 isLoading model =
     model.loading /= 0
-
-
-view : UiSettings -> Model -> Html Msg
-view settings model =
-    if model.viewMode == Table then
-        viewTable model
-
-    else
-        viewForm settings model
-
-
-viewTable : Model -> Html Msg
-viewTable model =
-    div []
-        [ div [ class "ui secondary menu" ]
-            [ div [ class "horizontally fitted item" ]
-                [ div [ class "ui icon input" ]
-                    [ input
-                        [ type_ "text"
-                        , onInput SetQuery
-                        , value model.query
-                        , placeholder "Search…"
-                        ]
-                        []
-                    , i [ class "ui search icon" ]
-                        []
-                    ]
-                ]
-            , div [ class "right menu" ]
-                [ div [ class "item" ]
-                    [ a
-                        [ class "ui primary button"
-                        , href "#"
-                        , onClick InitNewPerson
-                        ]
-                        [ i [ class "plus icon" ] []
-                        , text "New Person"
-                        ]
-                    ]
-                ]
-            ]
-        , Html.map TableMsg (Comp.PersonTable.view model.tableModel)
-        , div
-            [ classList
-                [ ( "ui dimmer", True )
-                , ( "active", isLoading model )
-                ]
-            ]
-            [ div [ class "ui loader" ] []
-            ]
-        ]
-
-
-viewForm : UiSettings -> Model -> Html Msg
-viewForm settings model =
-    let
-        newPerson =
-            model.formModel.person.id == ""
-    in
-    div [ class "ui segment" ]
-        [ Html.map YesNoMsg (Comp.YesNoDimmer.view model.deleteConfirm)
-        , if newPerson then
-            h3 [ class "ui dividing header" ]
-                [ text "Create new person"
-                ]
-
-          else
-            h3 [ class "ui dividing header" ]
-                [ text ("Edit person: " ++ model.formModel.person.name)
-                , div [ class "sub header" ]
-                    [ text "Id: "
-                    , text model.formModel.person.id
-                    ]
-                ]
-        , Html.map FormMsg (Comp.PersonForm.view settings model.formModel)
-        , div
-            [ classList
-                [ ( "ui error message", True )
-                , ( "invisible", Util.Maybe.isEmpty model.formError )
-                ]
-            ]
-            [ Maybe.withDefault "" model.formError |> text
-            ]
-        , div [ class "ui horizontal divider" ] []
-        , button
-            [ class "ui primary button"
-            , onClick Submit
-            ]
-            [ text "Submit"
-            ]
-        , a
-            [ class "ui secondary button"
-            , onClick (SetViewMode Table)
-            , href "#"
-            ]
-            [ text "Cancel"
-            ]
-        , if not newPerson then
-            a
-                [ class "ui right floated red button"
-                , href "#"
-                , onClick RequestDelete
-                ]
-                [ text "Delete" ]
-
-          else
-            span [] []
-        , div
-            [ classList
-                [ ( "ui dimmer", True )
-                , ( "active", isLoading model )
-                ]
-            ]
-            [ div [ class "ui loader" ] []
-            ]
-        ]
 
 
 

@@ -4,7 +4,6 @@ module Comp.FolderManage exposing
     , empty
     , init
     , update
-    , view
     , view2
     )
 
@@ -20,7 +19,6 @@ import Comp.MenuBar as MB
 import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onCheck, onClick, onInput)
 import Http
 import Styles as S
 
@@ -139,13 +137,13 @@ update flags msg model =
         UserListResp (Ok ul) ->
             ( { model | users = ul.items }, Cmd.none )
 
-        UserListResp (Err err) ->
+        UserListResp (Err _) ->
             ( model, Cmd.none )
 
         FolderListResp (Ok sl) ->
             ( { model | folders = sl.items }, Cmd.none )
 
-        FolderListResp (Err err) ->
+        FolderListResp (Err _) ->
             ( model, Cmd.none )
 
         FolderDetailResp (Ok sd) ->
@@ -153,7 +151,7 @@ update flags msg model =
             , Cmd.none
             )
 
-        FolderDetailResp (Err err) ->
+        FolderDetailResp (Err _) ->
             ( model, Cmd.none )
 
         InitNewFolder ->
@@ -164,80 +162,6 @@ update flags msg model =
             ( { model | detailModel = Just sd }
             , Cmd.none
             )
-
-
-
---- View
-
-
-view : Flags -> Model -> Html Msg
-view flags model =
-    case model.detailModel of
-        Just dm ->
-            viewDetail flags dm
-
-        Nothing ->
-            viewTable model
-
-
-viewDetail : Flags -> Comp.FolderDetail.Model -> Html Msg
-viewDetail flags detailModel =
-    div []
-        [ Html.map DetailMsg (Comp.FolderDetail.view flags detailModel)
-        ]
-
-
-viewTable : Model -> Html Msg
-viewTable model =
-    div []
-        [ div [ class "ui secondary menu" ]
-            [ div [ class "horizontally fitted item" ]
-                [ div [ class "ui icon input" ]
-                    [ input
-                        [ type_ "text"
-                        , onInput SetQuery
-                        , value model.query
-                        , placeholder "Search…"
-                        ]
-                        []
-                    , i [ class "ui search icon" ]
-                        []
-                    ]
-                ]
-            , div [ class "item" ]
-                [ div [ class "ui checkbox" ]
-                    [ input
-                        [ type_ "checkbox"
-                        , onCheck (\_ -> ToggleOwningOnly)
-                        , checked model.owningOnly
-                        ]
-                        []
-                    , label [] [ text "Show owning folders only" ]
-                    ]
-                ]
-            , div [ class "right menu" ]
-                [ div [ class "item" ]
-                    [ a
-                        [ class "ui primary button"
-                        , href "#"
-                        , onClick InitNewFolder
-                        ]
-                        [ i [ class "plus icon" ] []
-                        , text "New Folder"
-                        ]
-                    ]
-                ]
-            ]
-        , Html.map TableMsg (Comp.FolderTable.view model.tableModel model.folders)
-        , div
-            [ classList
-                [ ( "ui dimmer", True )
-                , ( "active", model.loading )
-                ]
-            ]
-            [ div [ class "ui loader" ] []
-            ]
-        ]
 
 
 

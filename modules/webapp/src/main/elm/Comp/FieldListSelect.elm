@@ -2,7 +2,6 @@ module Comp.FieldListSelect exposing
     ( Model
     , Msg
     , update
-    , view
     , view2
     )
 
@@ -10,7 +9,6 @@ import Comp.MenuBar as MB
 import Data.Fields exposing (Field)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onCheck)
 
 
 type alias Model =
@@ -45,35 +43,6 @@ removeField selected field =
 addField : Model -> Field -> Model
 addField selected field =
     Data.Fields.sort (field :: selected)
-
-
-
---- View
-
-
-view : Model -> Html Msg
-view selected =
-    div [ class "grouped fields" ]
-        (List.map (fieldCheckbox selected) Data.Fields.all)
-
-
-fieldCheckbox : Model -> Field -> Html Msg
-fieldCheckbox selected field =
-    let
-        isChecked =
-            List.member field selected
-    in
-    div [ class "field" ]
-        [ div [ class "ui checkbox" ]
-            [ input
-                [ type_ "checkbox"
-                , checked isChecked
-                , onCheck (\_ -> Toggle field)
-                ]
-                []
-            , label [] [ text (Data.Fields.label field) ]
-            ]
-        ]
 
 
 

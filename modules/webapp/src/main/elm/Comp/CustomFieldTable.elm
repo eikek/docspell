@@ -4,7 +4,6 @@ module Comp.CustomFieldTable exposing
     , Msg
     , init
     , update
-    , view
     , view2
     )
 
@@ -40,59 +39,6 @@ update msg model =
     case msg of
         EditItem item ->
             ( model, EditAction item )
-
-
-
---- View
-
-
-view : Model -> List CustomField -> Html Msg
-view _ items =
-    div []
-        [ table [ class "ui very basic aligned table" ]
-            [ thead []
-                [ tr []
-                    [ th [ class "collapsing" ] []
-                    , th [] [ text "Name/Label" ]
-                    , th [] [ text "Format" ]
-                    , th [] [ text "#Usage" ]
-                    , th [] [ text "Created" ]
-                    ]
-                ]
-            , tbody []
-                (List.map viewItem items)
-            ]
-        ]
-
-
-viewItem : CustomField -> Html Msg
-viewItem item =
-    tr []
-        [ td [ class "collapsing" ]
-            [ a
-                [ href "#"
-                , class "ui basic small blue label"
-                , onClick (EditItem item)
-                ]
-                [ i [ class "edit icon" ] []
-                , text "Edit"
-                ]
-            ]
-        , td []
-            [ text <| Maybe.withDefault item.name item.label
-            ]
-        , td []
-            [ text item.ftype
-            ]
-        , td []
-            [ String.fromInt item.usages
-                |> text
-            ]
-        , td []
-            [ Util.Time.formatDateShort item.created
-                |> text
-            ]
-        ]
 
 
 

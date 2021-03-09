@@ -5,7 +5,6 @@ module Comp.EquipmentForm exposing
     , getEquipment
     , isValid
     , update
-    , view
     , view2
     )
 
@@ -71,27 +70,6 @@ update _ msg model =
 
         SetNotes str ->
             ( { model | notes = Util.Maybe.fromString str }, Cmd.none )
-
-
-view : Model -> Html Msg
-view model =
-    div [ class "ui form" ]
-        [ div
-            [ classList
-                [ ( "field", True )
-                , ( "error", not (isValid model) )
-                ]
-            ]
-            [ label [] [ text "Name*" ]
-            , input
-                [ type_ "text"
-                , onInput SetName
-                , placeholder "Name"
-                , value model.name
-                ]
-                []
-            ]
-        ]
 
 
 

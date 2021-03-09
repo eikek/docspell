@@ -5,7 +5,6 @@ module Comp.TagForm exposing
     , getTag
     , isValid
     , update
-    , view
     , view2
     )
 
@@ -117,30 +116,8 @@ update _ msg model =
             ( { model | catDropdown = dm_ }, Cmd.map CatMsg cmd_ )
 
 
-view : Model -> Html Msg
-view model =
-    div [ class "ui form" ]
-        [ div
-            [ classList
-                [ ( "field", True )
-                , ( "error", not (isValid model) )
-                ]
-            ]
-            [ label [] [ text "Name*" ]
-            , input
-                [ type_ "text"
-                , onInput SetName
-                , placeholder "Name"
-                , value model.name
-                ]
-                []
-            ]
-        , div [ class "field" ]
-            [ label []
-                [ text "Category" ]
-            , Html.map CatMsg (Comp.Dropdown.viewSingle model.catDropdown)
-            ]
-        ]
+
+--- View2
 
 
 view2 : Model -> Html Msg

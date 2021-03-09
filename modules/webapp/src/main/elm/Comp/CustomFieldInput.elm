@@ -7,7 +7,6 @@ module Comp.CustomFieldInput exposing
     , initWith
     , update
     , updateSearch
-    , view
     , view2
     )
 
@@ -326,118 +325,6 @@ updateFloatModel forSearch msg parse normalize =
 hasWildCards : String -> Bool
 hasWildCards msg =
     String.startsWith "*" msg || String.endsWith "*" msg
-
-
-
---- View
-
-
-removeButton : String -> Html Msg
-removeButton classes =
-    a
-        [ class "ui icon button"
-        , class classes
-        , href "#"
-        , title "Remove this value"
-        , onClick Remove
-        ]
-        [ i [ class "trash alternate outline icon" ] []
-        ]
-
-
-view : String -> Maybe String -> Model -> Html Msg
-view classes icon model =
-    let
-        error =
-            errorMsg model
-    in
-    div
-        [ class classes
-        , classList
-            [ ( "error", error /= Nothing )
-            ]
-        ]
-        [ label []
-            [ mkLabel model |> text
-            ]
-        , makeInput icon model
-        , div
-            [ class "ui red pointing basic label"
-            , classList
-                [ ( "invisible hidden", error == Nothing )
-                ]
-            ]
-            [ Maybe.withDefault "" error |> text
-            ]
-        ]
-
-
-makeInput : Maybe String -> Model -> Html Msg
-makeInput icon model =
-    let
-        iconOr c =
-            Maybe.withDefault c icon
-    in
-    case model.fieldModel of
-        TextField v ->
-            div [ class "ui action left icon input" ]
-                [ input
-                    [ type_ "text"
-                    , Maybe.withDefault "" v |> value
-                    , onInput SetText
-                    ]
-                    []
-                , removeButton ""
-                , i [ class (iconOr <| Icons.customFieldType Data.CustomFieldType.Text) ] []
-                ]
-
-        NumberField nm ->
-            div [ class "ui action left icon input" ]
-                [ input
-                    [ type_ "text"
-                    , value nm.input
-                    , onInput NumberMsg
-                    ]
-                    []
-                , removeButton ""
-                , i [ class (iconOr <| Icons.customFieldType Data.CustomFieldType.Numeric) ] []
-                ]
-
-        MoneyField nm ->
-            div [ class "ui action left icon input" ]
-                [ input
-                    [ type_ "text"
-                    , value nm.input
-                    , onInput MoneyMsg
-                    ]
-                    []
-                , removeButton ""
-                , i [ class (iconOr <| Icons.customFieldType Data.CustomFieldType.Money) ] []
-                ]
-
-        BoolField b ->
-            div [ class "ui container" ]
-                [ div [ class "ui checkbox" ]
-                    [ input
-                        [ type_ "checkbox"
-                        , onCheck (\_ -> ToggleBool)
-                        , checked b
-                        ]
-                        []
-                    , label []
-                        [ text (mkLabel model)
-                        ]
-                    ]
-                , removeButton "right floated"
-                ]
-
-        DateField v dp ->
-            div [ class "ui action left icon input" ]
-                [ Html.map DateMsg
-                    (Comp.DatePicker.view v Comp.DatePicker.defaultSettings dp)
-                , removeButton ""
-                , i [ class (iconOr <| Icons.customFieldType Data.CustomFieldType.Date) ] []
-                ]
 
 
 

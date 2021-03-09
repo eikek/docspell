@@ -5,7 +5,6 @@ module Comp.NotificationForm exposing
     , init
     , initWith
     , update
-    , view
     , view2
     )
 
@@ -29,7 +28,6 @@ import Data.UiSettings exposing (UiSettings)
 import Data.Validated exposing (Validated(..))
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onCheck, onClick)
 import Http
 import Styles as S
 import Util.Http
@@ -454,7 +452,7 @@ update flags msg model =
 
 
 
---- View
+--- View2
 
 
 isFormError : Model -> Bool
@@ -468,169 +466,6 @@ isFormSuccess : Model -> Bool
 isFormSuccess model =
     Maybe.map .success model.formMsg
         |> Maybe.withDefault False
-
-
-view : String -> UiSettings -> Model -> Html Msg
-view extraClasses settings model =
-    div
-        [ classList
-            [ ( "ui form", True )
-            , ( extraClasses, True )
-            , ( "error", isFormError model )
-            , ( "success", isFormSuccess model )
-            ]
-        ]
-        [ Html.map YesNoDeleteMsg (Comp.YesNoDimmer.view model.yesNoDelete)
-        , div
-            [ classList
-                [ ( "ui dimmer", True )
-                , ( "active", model.loading > 0 )
-                ]
-            ]
-            [ div [ class "ui text loader" ]
-                [ text "Loading..."
-                ]
-            ]
-        , div [ class "inline field" ]
-            [ div [ class "ui checkbox" ]
-                [ input
-                    [ type_ "checkbox"
-                    , onCheck (\_ -> ToggleEnabled)
-                    , checked model.enabled
-                    ]
-                    []
-                , label [] [ text "Enabled" ]
-                ]
-            , span [ class "small-info" ]
-                [ text "Enable or disable this task."
-                ]
-            ]
-        , div [ class "required field" ]
-            [ label [] [ text "Send via" ]
-            , Html.map ConnMsg (Comp.Dropdown.view settings model.connectionModel)
-            , span [ class "small-info" ]
-                [ text "The SMTP connection to use when sending notification mails."
-                ]
-            ]
-        , div [ class "required field" ]
-            [ label []
-                [ text "Recipient(s)"
-                ]
-            , Html.map RecipientMsg
-                (Comp.EmailInput.view model.recipients model.recipientsModel)
-            , span [ class "small-info" ]
-                [ text "One or more mail addresses, confirm each by pressing 'Return'."
-                ]
-            ]
-        , div [ class "field" ]
-            [ label [] [ text "Tags Include (and)" ]
-            , Html.map TagIncMsg (Comp.Dropdown.view settings model.tagInclModel)
-            , span [ class "small-info" ]
-                [ text "Items must have all the tags specified here."
-                ]
-            ]
-        , div [ class "field" ]
-            [ label [] [ text "Tags Exclude (or)" ]
-            , Html.map TagExcMsg (Comp.Dropdown.view settings model.tagExclModel)
-            , span [ class "small-info" ]
-                [ text "Items must not have any tag specified here."
-                ]
-            ]
-        , Html.map RemindDaysMsg
-            (Comp.IntField.viewWithInfo
-                "Select items with a due date *lower than* `today+remindDays`"
-                model.remindDays
-                "required field"
-                model.remindDaysModel
-            )
-        , div [ class "required inline field" ]
-            [ div [ class "ui checkbox" ]
-                [ input
-                    [ type_ "checkbox"
-                    , onCheck (\_ -> ToggleCapOverdue)
-                    , checked model.capOverdue
-                    ]
-                    []
-                , label []
-                    [ text "Cap overdue items"
-                    ]
-                ]
-            , div [ class "small-info" ]
-                [ text "If checked, only items with a due date"
-                , em [] [ text " greater than " ]
-                , code [] [ text "today-remindDays" ]
-                , text " are considered."
-                ]
-            ]
-        , div [ class "required field" ]
-            [ label []
-                [ text "Schedule"
-                , a
-                    [ class "right-float"
-                    , href "https://github.com/eikek/calev#what-are-calendar-events"
-                    , target "_blank"
-                    ]
-                    [ i [ class "help icon" ] []
-                    , text "Click here for help"
-                    ]
-                ]
-            , Html.map CalEventMsg
-                (Comp.CalEventInput.view ""
-                    (Data.Validated.value model.schedule)
-                    model.scheduleModel
-                )
-            , span [ class "small-info" ]
-                [ text "Specify how often and when this task should run. "
-                , text "Use English 3-letter weekdays. Either a single value, "
-                , text "a list (ex. 1,2,3), a range (ex. 1..3) or a '*' (meaning all) "
-                , text "is allowed for each part."
-                ]
-            ]
-        , div [ class "ui divider" ] []
-        , div
-            [ classList
-                [ ( "ui message", True )
-                , ( "success", isFormSuccess model )
-                , ( "error", isFormError model )
-                , ( "hidden", model.formMsg == Nothing )
-                ]
-            ]
-            [ Maybe.map .message model.formMsg
-                |> Maybe.withDefault ""
-                |> text
-            ]
-        , button
-            [ class "ui primary button"
-            , onClick Submit
-            ]
-            [ text "Submit"
-            ]
-        , button
-            [ class "ui secondary button"
-            , onClick Cancel
-            ]
-            [ text "Cancel"
-            ]
-        , button
-            [ classList
-                [ ( "ui red button", True )
-                , ( "hidden invisible", model.settings.id == "" )
-                ]
-            , onClick RequestDelete
-            ]
-            [ text "Delete"
-            ]
-        , button
-            [ class "ui right floated button"
-            , onClick StartOnce
-            ]
-            [ text "Start Once"
-            ]
-        ]
-
-
-
---- View 2
 
 
 view2 : String -> UiSettings -> Model -> Html Msg

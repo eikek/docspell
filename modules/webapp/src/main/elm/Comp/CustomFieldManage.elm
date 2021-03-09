@@ -4,7 +4,6 @@ module Comp.CustomFieldManage exposing
     , empty
     , init
     , update
-    , view
     , view2
     )
 
@@ -133,73 +132,6 @@ update flags msg model =
 
 
 
---- View
-
-
-view : Flags -> Model -> Html Msg
-view flags model =
-    case model.detailModel of
-        Just dm ->
-            viewDetail flags dm
-
-        Nothing ->
-            viewTable model
-
-
-viewDetail : Flags -> Comp.CustomFieldForm.Model -> Html Msg
-viewDetail flags detailModel =
-    let
-        viewSettings =
-            Comp.CustomFieldForm.fullViewSettings
-    in
-    div []
-        [ Html.map DetailMsg (Comp.CustomFieldForm.view viewSettings detailModel)
-        ]
-
-
-viewTable : Model -> Html Msg
-viewTable model =
-    div []
-        [ div [ class "ui secondary menu" ]
-            [ div [ class "horizontally fitted item" ]
-                [ div [ class "ui icon input" ]
-                    [ input
-                        [ type_ "text"
-                        , onInput SetQuery
-                        , value model.query
-                        , placeholder "Search…"
-                        ]
-                        []
-                    , i [ class "ui search icon" ]
-                        []
-                    ]
-                ]
-            , div [ class "right menu" ]
-                [ div [ class "item" ]
-                    [ a
-                        [ class "ui primary button"
-                        , href "#"
-                        , onClick InitNewCustomField
-                        ]
-                        [ i [ class "plus icon" ] []
-                        , text "New CustomField"
-                        ]
-                    ]
-                ]
-            ]
-        , Html.map TableMsg (Comp.CustomFieldTable.view model.tableModel model.fields)
-        , div
-            [ classList
-                [ ( "ui dimmer", True )
-                , ( "active", model.loading )
-                ]
-            ]
-            [ div [ class "ui loader" ] []
-            ]
-        ]
-
-
-
 --- View2
 
 
@@ -217,15 +149,17 @@ viewDetail2 : Flags -> Comp.CustomFieldForm.Model -> Html Msg
 viewDetail2 _ detailModel =
     let
         viewSettings =
-            Comp.CustomFieldForm.fullViewSettings
+            { showControls = True
+            , classes = ""
+            }
     in
     div []
-        ([ if detailModel.field.id == "" then
+        ((if detailModel.field.id == "" then
             h3 [ class S.header2 ]
                 [ text "Create new custom field"
                 ]
 
-           else
+          else
             h3 [ class S.header2 ]
                 [ Util.CustomField.nameOrLabel detailModel.field |> text
                 , div [ class "opacity-50 text-sm" ]
@@ -233,8 +167,8 @@ viewDetail2 _ detailModel =
                     , text detailModel.field.id
                     ]
                 ]
-         ]
-            ++ List.map (Html.map DetailMsg) (Comp.CustomFieldForm.view2 viewSettings detailModel)
+         )
+            :: List.map (Html.map DetailMsg) (Comp.CustomFieldForm.view2 viewSettings detailModel)
         )
 
 

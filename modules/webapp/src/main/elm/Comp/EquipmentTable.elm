@@ -3,7 +3,6 @@ module Comp.EquipmentTable exposing
     , Msg(..)
     , emptyModel
     , update
-    , view
     , view2
     )
 
@@ -46,41 +45,6 @@ update _ msg model =
 
         Deselect ->
             ( { model | selected = Nothing }, Cmd.none )
-
-
-view : Model -> Html Msg
-view model =
-    table [ class "ui very basic aligned table" ]
-        [ thead []
-            [ tr []
-                [ th [ class "collapsing" ] []
-                , th [] [ text "Name" ]
-                ]
-            ]
-        , tbody []
-            (List.map (renderEquipmentLine model) model.equips)
-        ]
-
-
-renderEquipmentLine : Model -> Equipment -> Html Msg
-renderEquipmentLine model equip =
-    tr
-        [ classList [ ( "active", model.selected == Just equip ) ]
-        ]
-        [ td [ class "collapsing" ]
-            [ a
-                [ href "#"
-                , class "ui basic small blue label"
-                , onClick (Select equip)
-                ]
-                [ i [ class "edit icon" ] []
-                , text "Edit"
-                ]
-            ]
-        , td []
-            [ text equip.name
-            ]
-        ]
 
 
 

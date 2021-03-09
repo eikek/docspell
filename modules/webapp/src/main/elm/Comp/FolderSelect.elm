@@ -7,8 +7,6 @@ module Comp.FolderSelect exposing
     , setSelected
     , update
     , updateDrop
-    , view
-    , viewDrop
     , viewDrop2
     )
 
@@ -133,50 +131,7 @@ selectedFolder model =
 
 
 
---- View
-
-
-view : Int -> Model -> Html Msg
-view =
-    viewDrop DD.init
-
-
-viewDrop : DD.Model -> Int -> Model -> Html Msg
-viewDrop dropModel constr model =
-    let
-        highlightDrop =
-            DD.getDropId dropModel == Just DD.FolderRemove
-    in
-    div [ class "ui list" ]
-        [ div [ class "item" ]
-            [ i [ class "folder open icon" ] []
-            , div [ class "content" ]
-                [ div
-                    (classList
-                        [ ( "header", True )
-                        , ( "current-drop-target", highlightDrop )
-                        ]
-                        :: DD.droppable FolderDDMsg DD.FolderRemove
-                    )
-                    [ text "Folders"
-                    ]
-                , div [ class "ui relaxed list" ]
-                    (renderItems dropModel constr model)
-                ]
-            ]
-        ]
-
-
-renderItems : DD.Model -> Int -> Model -> List (Html Msg)
-renderItems dropModel constr model =
-    if constr <= 0 then
-        List.map (viewItem dropModel model) model.all
-
-    else if model.expanded then
-        List.map (viewItem dropModel model) model.all ++ collapseToggle constr model
-
-    else
-        List.map (viewItem dropModel model) (List.take constr model.all) ++ expandToggle constr model
+--- View2
 
 
 expandToggle : Int -> Model -> List (Html Msg)
@@ -193,49 +148,6 @@ collapseToggle max model =
         max
         (List.length model.all)
         ToggleExpand
-
-
-viewItem : DD.Model -> Model -> FolderStats -> Html Msg
-viewItem dropModel model item =
-    let
-        selected =
-            Just item.id == model.selected
-
-        icon =
-            if selected then
-                "folder outline open icon"
-
-            else
-                "folder outline icon"
-
-        highlightDrop =
-            DD.getDropId dropModel == Just (DD.Folder item.id)
-    in
-    a
-        ([ classList
-            [ ( "item", True )
-            , ( "active", selected )
-            , ( "current-drop-target", highlightDrop )
-            ]
-         , href "#"
-         , onClick (Toggle item)
-         ]
-            ++ DD.droppable FolderDDMsg (DD.Folder item.id)
-        )
-        [ i [ class icon ] []
-        , div [ class "content" ]
-            [ div [ class "description" ]
-                [ text item.name
-                , div [ class "ui right floated circular label" ]
-                    [ text (String.fromInt item.count)
-                    ]
-                ]
-            ]
-        ]
-
-
-
---- View2
 
 
 viewDrop2 : DD.Model -> Int -> Model -> Html Msg

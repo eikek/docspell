@@ -4,7 +4,6 @@ module Comp.FolderDetail exposing
     , init
     , initEmpty
     , update
-    , view
     , view2
     )
 
@@ -273,156 +272,12 @@ update flags msg model =
 
 
 
---- View
-
-
-view : Flags -> Model -> Html Msg
-view flags model =
-    let
-        isOwner =
-            Maybe.map .user flags.account
-                |> Maybe.map ((==) model.folder.owner.name)
-                |> Maybe.withDefault False
-    in
-    div []
-        ([ Html.map DeleteMsg (Comp.YesNoDimmer.view model.deleteDimmer)
-         , if model.folder.id == "" then
-            div []
-                [ text "Create a new folder. You are automatically set as owner of this new folder."
-                ]
-
-           else
-            div []
-                [ text "Modify this folder by changing the name or add/remove members."
-                ]
-         , if model.folder.id /= "" && not isOwner then
-            div [ class "ui info message" ]
-                [ text "You are not the owner of this folder and therefore are not allowed to edit it."
-                ]
-
-           else
-            div [] []
-         , div
-            [ classList
-                [ ( "ui message", True )
-                , ( "invisible hidden", model.result == Nothing )
-                , ( "error", Maybe.map .success model.result == Just False )
-                , ( "success", Maybe.map .success model.result == Just True )
-                ]
-            ]
-            [ Maybe.map .message model.result
-                |> Maybe.withDefault ""
-                |> text
-            ]
-         , div [ class "ui header" ]
-            [ text "Owner"
-            ]
-         , div [ class "" ]
-            [ text model.folder.owner.name
-            ]
-         , div [ class "ui header" ]
-            [ text "Name"
-            ]
-         , div [ class "ui action input" ]
-            [ input
-                [ type_ "text"
-                , onInput SetName
-                , Maybe.withDefault "" model.name
-                    |> value
-                ]
-                []
-            , button
-                [ class "ui icon button"
-                , onClick SaveName
-                ]
-                [ i [ class "save icon" ] []
-                ]
-            ]
-         ]
-            ++ viewMembers model
-            ++ viewButtons model
-        )
-
-
-viewButtons : Model -> List (Html Msg)
-viewButtons model =
-    [ div [ class "ui divider" ] []
-    , button
-        [ class "ui button"
-        , onClick GoBack
-        ]
-        [ text "Back"
-        ]
-    , button
-        [ classList
-            [ ( "ui red button", True )
-            , ( "invisible hidden", model.folder.id == "" )
-            ]
-        , onClick RequestDelete
-        ]
-        [ text "Delete"
-        ]
-    ]
-
-
-viewMembers : Model -> List (Html Msg)
-viewMembers model =
-    if model.folder.id == "" then
-        []
-
-    else
-        [ div [ class "ui header" ]
-            [ text "Members"
-            ]
-        , div [ class "ui form" ]
-            [ div [ class "inline field" ]
-                [ Html.map MemberDropdownMsg
-                    (Comp.FixedDropdown.view
-                        (Maybe.map makeItem model.selectedMember)
-                        model.memberDropdown
-                    )
-                , button
-                    [ class "ui primary button"
-                    , title "Add a new member"
-                    , onClick AddMember
-                    ]
-                    [ text "Add"
-                    ]
-                ]
-            ]
-        , div
-            [ class "ui list"
-            ]
-            (List.map viewMember model.members)
-        ]
+--- View2
 
 
 makeItem : IdName -> Comp.FixedDropdown.Item IdName
 makeItem idn =
     Comp.FixedDropdown.Item idn idn.name
-
-
-viewMember : IdName -> Html Msg
-viewMember member =
-    div
-        [ class "item"
-        ]
-        [ a
-            [ class "link icon"
-            , href "#"
-            , title "Remove this member"
-            , onClick (RemoveMember member)
-            ]
-            [ i [ class "red trash icon" ] []
-            ]
-        , span []
-            [ text member.name
-            ]
-        ]
-
-
-
---- View2
 
 
 view2 : Flags -> Model -> Html Msg

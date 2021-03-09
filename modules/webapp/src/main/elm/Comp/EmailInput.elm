@@ -3,13 +3,11 @@ module Comp.EmailInput exposing
     , Msg
     , init
     , update
-    , view
     , view2
     )
 
 import Api
 import Api.Model.ContactList exposing (ContactList)
-import Comp.Dropdown
 import Data.ContactType
 import Data.DropdownStyle as DS
 import Data.Flags exposing (Flags)
@@ -133,69 +131,6 @@ update flags current msg model =
 
         RemoveEmail str ->
             ( model, Cmd.none, List.filter (\e -> e /= str) current )
-
-
-
---- View
-
-
-view : List String -> Model -> Html Msg
-view values model =
-    div
-        [ classList
-            [ ( "ui search dropdown multiple selection", True )
-            , ( "open", model.menuOpen )
-            ]
-        ]
-        (List.map renderValue values
-            ++ [ input
-                    [ type_ "text"
-                    , class "search long-search"
-                    , placeholder "Recipients…"
-                    , onKeyUp KeyPress
-                    , onInput SetInput
-                    , value model.input
-                    ]
-                    []
-               , renderMenu model
-               ]
-        )
-
-
-renderValue : String -> Html Msg
-renderValue str =
-    a
-        [ class "ui label"
-        , href "#"
-        , onClick (RemoveEmail str)
-        ]
-        [ text str
-        , i [ class "delete icon" ] []
-        ]
-
-
-renderMenu : Model -> Html Msg
-renderMenu model =
-    let
-        mkItem v =
-            a
-                [ classList
-                    [ ( "item", True )
-                    , ( "active", model.active == Just v )
-                    ]
-                , href "#"
-                , onClick (AddEmail v)
-                ]
-                [ text v
-                ]
-    in
-    div
-        [ classList
-            [ ( "menu", True )
-            , ( "transition visible", model.menuOpen )
-            ]
-        ]
-        (List.map mkItem model.candidates)
 
 
 

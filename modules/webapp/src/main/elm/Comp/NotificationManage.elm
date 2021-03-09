@@ -3,7 +3,6 @@ module Comp.NotificationManage exposing
     , Msg
     , init
     , update
-    , view
     , view2
     )
 
@@ -18,7 +17,6 @@ import Data.Flags exposing (Flags)
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick)
 import Http
 import Styles as S
 import Util.Http
@@ -211,61 +209,13 @@ update flags msg model =
 
 
 
---- View
-
-
-view : UiSettings -> Model -> Html Msg
-view settings model =
-    div []
-        [ div [ class "ui menu" ]
-            [ a
-                [ class "link item"
-                , href "#"
-                , onClick NewTask
-                ]
-                [ i [ class "add icon" ] []
-                , text "New Task"
-                ]
-            ]
-        , div
-            [ classList
-                [ ( "ui message", True )
-                , ( "error", Maybe.map .success model.result == Just False )
-                , ( "success", Maybe.map .success model.result == Just True )
-                , ( "invisible hidden", model.result == Nothing )
-                ]
-            ]
-            [ Maybe.map .message model.result
-                |> Maybe.withDefault ""
-                |> text
-            ]
-        , case model.detailModel of
-            Just msett ->
-                viewForm settings msett
-
-            Nothing ->
-                viewList model
-        ]
-
-
-viewForm : UiSettings -> Comp.NotificationForm.Model -> Html Msg
-viewForm settings model =
-    Html.map DetailMsg (Comp.NotificationForm.view "segment" settings model)
-
-
-viewList : Model -> Html Msg
-viewList model =
-    Html.map ListMsg (Comp.NotificationList.view model.listModel model.items)
-
-
-
 --- View2
 
 
 view2 : UiSettings -> Model -> Html Msg
 view2 settings model =
     div [ class "flex flex-col" ]
-        ([ div
+        (div
             [ classList
                 [ ( S.errorMessage, Maybe.map .success model.result == Just False )
                 , ( S.successMessage, Maybe.map .success model.result == Just True )
@@ -276,8 +226,7 @@ view2 settings model =
                 |> Maybe.withDefault ""
                 |> text
             ]
-         ]
-            ++ (case model.detailModel of
+            :: (case model.detailModel of
                     Just msett ->
                         viewForm2 settings msett
 

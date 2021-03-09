@@ -4,7 +4,6 @@ module Comp.NotificationList exposing
     , Msg
     , init
     , update
-    , view
     , view2
     )
 
@@ -12,7 +11,6 @@ import Api.Model.NotificationSettings exposing (NotificationSettings)
 import Comp.Basic as B
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick)
 import Styles as S
 import Util.Html
 
@@ -40,66 +38,6 @@ update msg model =
     case msg of
         EditSettings settings ->
             ( model, EditAction settings )
-
-
-
---- View
-
-
-view : Model -> List NotificationSettings -> Html Msg
-view _ items =
-    div []
-        [ table [ class "ui very basic center aligned table" ]
-            [ thead []
-                [ tr []
-                    [ th [ class "collapsing" ] []
-                    , th [ class "collapsing" ]
-                        [ i [ class "check icon" ] []
-                        ]
-                    , th [] [ text "Schedule" ]
-                    , th [] [ text "Connection" ]
-                    , th [] [ text "Recipients" ]
-                    , th [] [ text "Remind Days" ]
-                    ]
-                ]
-            , tbody []
-                (List.map viewItem items)
-            ]
-        ]
-
-
-viewItem : NotificationSettings -> Html Msg
-viewItem item =
-    tr []
-        [ td [ class "collapsing" ]
-            [ a
-                [ href "#"
-                , class "ui basic small blue label"
-                , onClick (EditSettings item)
-                ]
-                [ i [ class "edit icon" ] []
-                , text "Edit"
-                ]
-            ]
-        , td [ class "collapsing" ]
-            [ Util.Html.checkbox item.enabled
-            ]
-        , td []
-            [ code []
-                [ text item.schedule
-                ]
-            ]
-        , td []
-            [ text item.smtpConnection
-            ]
-        , td []
-            [ String.join ", " item.recipients |> text
-            ]
-        , td []
-            [ String.fromInt item.remindDays
-                |> text
-            ]
-        ]
 
 
 

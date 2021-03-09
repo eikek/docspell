@@ -4,7 +4,6 @@ module Comp.ClassifierSettingsForm exposing
     , getSettings
     , init
     , update
-    , view
     , view2
     )
 
@@ -178,63 +177,6 @@ update flags msg model =
               }
             , Cmd.none
             )
-
-
-
---- View
-
-
-view : UiSettings -> Model -> Html Msg
-view settings model =
-    let
-        catListTypeItem =
-            Comp.FixedDropdown.Item
-                model.categoryListType
-                (Data.ListType.label model.categoryListType)
-    in
-    div []
-        [ Markdown.toHtml [ class "ui basic segment" ]
-            """
-
-Auto-tagging works by learning from existing documents. The more
-documents you have correctly tagged, the better. Learning is done
-periodically based on a schedule. You can specify tag-groups that
-should either be used (whitelist) or not used (blacklist) for
-learning.
-
-Use an empty whitelist to disable auto tagging.
-
-            """
-        , div [ class "field" ]
-            [ label [] [ text "Is the following a blacklist or whitelist?" ]
-            , Html.map CategoryListTypeMsg
-                (Comp.FixedDropdown.view (Just catListTypeItem) model.categoryListTypeModel)
-            ]
-        , div [ class "field" ]
-            [ label []
-                [ case model.categoryListType of
-                    Data.ListType.Whitelist ->
-                        text "Include tag categories for learning"
-
-                    Data.ListType.Blacklist ->
-                        text "Exclude tag categories from learning"
-                ]
-            , Html.map CategoryListMsg
-                (Comp.Dropdown.view settings model.categoryListModel)
-            ]
-        , Html.map ItemCountMsg
-            (Comp.IntField.viewWithInfo
-                "The maximum number of items to learn from, order by date newest first. Use 0 to mean all."
-                model.itemCount
-                "field"
-                model.itemCountModel
-            )
-        , div [ class "field" ]
-            [ label [] [ text "Schedule" ]
-            , Html.map ScheduleMsg
-                (Comp.CalEventInput.view "" (Data.Validated.value model.schedule) model.scheduleModel)
-            ]
-        ]
 
 
 

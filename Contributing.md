@@ -61,10 +61,7 @@ processes.
 The web frontend is written in [Elm](https://elm-lang.org), which is a
 nice functional language that compiles to javascript. The frontend is
 included in the http/restserver component. The CSS is provided by
-[Fomantic-UI](https://fomantic-ui.com/), where a [custom
-build](https://github.com/eikek/fomantic-slim-default) of it is used
-to avoid dependency to a google font and jquery (all javascript
-modules are removed).
+[TailwindCSS](https://tailwindcss.com/)..
 
 The [development](https://docspell.org/docs/dev/building/) page
 contains some tips to get started.

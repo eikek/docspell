@@ -3,7 +3,6 @@ module Comp.ChangePasswordForm exposing
     , Msg(..)
     , emptyModel
     , update
-    , view
     , view2
     )
 
@@ -174,74 +173,6 @@ update flags msg model =
               }
             , Cmd.none
             )
-
-
-
---- View
-
-
-view : Model -> Html Msg
-view model =
-    div
-        [ classList
-            [ ( "ui form", True )
-            , ( "error", List.isEmpty model.errors |> not )
-            , ( "success", model.successMsg /= "" )
-            ]
-        ]
-        [ div
-            [ classList
-                [ ( "required field", True )
-                , ( "error", model.current == Nothing )
-                ]
-            ]
-            [ label [] [ text "Current Password" ]
-            , Html.map SetCurrent (Comp.PasswordInput.view model.current model.currentModel)
-            ]
-        , div
-            [ classList
-                [ ( "required field", True )
-                , ( "error", model.newPass1 == Nothing )
-                ]
-            ]
-            [ label [] [ text "New Password" ]
-            , Html.map SetNew1 (Comp.PasswordInput.view model.newPass1 model.pass1Model)
-            ]
-        , div
-            [ classList
-                [ ( "required field", True )
-                , ( "error", model.newPass2 == Nothing )
-                ]
-            ]
-            [ label [] [ text "New Password (repeat)" ]
-            , Html.map SetNew2 (Comp.PasswordInput.view model.newPass2 model.pass2Model)
-            ]
-        , div [ class "ui horizontal divider" ] []
-        , div [ class "ui success message" ]
-            [ text model.successMsg
-            ]
-        , div [ class "ui error message" ]
-            [ case model.errors of
-                a :: [] ->
-                    text a
-
-                _ ->
-                    ul [ class "ui list" ]
-                        (List.map (\em -> li [] [ text em ]) model.errors)
-            ]
-        , div [ class "ui horizontal divider" ] []
-        , button [ class "ui primary button", onClick Submit ]
-            [ text "Submit"
-            ]
-        , div
-            [ classList
-                [ ( "ui dimmer", True )
-                , ( "active", model.loading )
-                ]
-            ]
-            [ div [ class "ui loader" ] []
-            ]
-        ]
 
 
 

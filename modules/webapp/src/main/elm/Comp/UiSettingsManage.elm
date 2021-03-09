@@ -3,7 +3,6 @@ module Comp.UiSettingsManage exposing
     , Msg(..)
     , init
     , update
-    , view
     , view2
     )
 
@@ -113,7 +112,7 @@ update flags settings msg model =
 
 
 
---- View
+--- View2
 
 
 isError : Model -> Bool
@@ -124,36 +123,6 @@ isError model =
 isSuccess : Model -> Bool
 isSuccess model =
     Maybe.map .success model.message == Just True
-
-
-view : Flags -> UiSettings -> String -> Model -> Html Msg
-view flags settings classes model =
-    div [ class classes ]
-        [ Html.map UiSettingsFormMsg (Comp.UiSettingsForm.view flags settings model.formModel)
-        , div [ class "ui divider" ] []
-        , button
-            [ class "ui primary button"
-            , onClick Submit
-            ]
-            [ text "Submit"
-            ]
-        , div
-            [ classList
-                [ ( "ui message", True )
-                , ( "success", isSuccess model )
-                , ( "error", isError model )
-                , ( "hidden invisible", model.message == Nothing )
-                ]
-            ]
-            [ Maybe.map .message model.message
-                |> Maybe.withDefault ""
-                |> text
-            ]
-        ]
-
-
-
---- View2
 
 
 view2 : Flags -> UiSettings -> String -> Model -> Html Msg

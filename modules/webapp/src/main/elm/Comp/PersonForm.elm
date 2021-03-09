@@ -5,8 +5,6 @@ module Comp.PersonForm exposing
     , getPerson
     , isValid
     , update
-    , view
-    , view1
     , view2
     )
 
@@ -176,59 +174,6 @@ update flags msg model =
             ( { model | orgModel = dm_ }
             , Cmd.map OrgDropdownMsg cmd_
             )
-
-
-view : UiSettings -> Model -> Html Msg
-view settings model =
-    view1 settings False model
-
-
-view1 : UiSettings -> Bool -> Model -> Html Msg
-view1 settings compact model =
-    div [ class "ui form" ]
-        [ div
-            [ classList
-                [ ( "field", True )
-                , ( "error", not (isValid model) )
-                ]
-            ]
-            [ label [] [ text "Name*" ]
-            , input
-                [ type_ "text"
-                , onInput SetName
-                , placeholder "Name"
-                , value model.name
-                ]
-                []
-            ]
-        , div [ class "field" ]
-            [ label [] [ text "Use" ]
-            , Html.map UseDropdownMsg (Comp.FixedDropdown.view (makeUseItem model) model.useModel)
-            , label [] [ text "Use for concerning person suggestion only" ]
-            ]
-        , div [ class "field" ]
-            [ label [] [ text "Organization" ]
-            , Html.map OrgDropdownMsg (Comp.Dropdown.view settings model.orgModel)
-            ]
-        , h3 [ class "ui dividing header" ]
-            [ text "Address"
-            ]
-        , Html.map AddressMsg (Comp.AddressForm.view settings model.addressModel)
-        , h3 [ class "ui dividing header" ]
-            [ text "Contacts"
-            ]
-        , Html.map ContactMsg (Comp.ContactField.view1 settings compact model.contactModel)
-        , h3 [ class "ui dividing header" ]
-            [ text "Notes"
-            ]
-        , div [ class "field" ]
-            [ textarea
-                [ onInput SetNotes
-                , Maybe.withDefault "" model.notes |> value
-                ]
-                []
-            ]
-        ]
 
 
 makeUseItem : Model -> Maybe (Comp.FixedDropdown.Item PersonUse)

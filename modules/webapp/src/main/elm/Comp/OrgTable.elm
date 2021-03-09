@@ -3,7 +3,6 @@ module Comp.OrgTable exposing
     , Msg(..)
     , emptyModel
     , update
-    , view
     , view2
     )
 
@@ -12,7 +11,6 @@ import Comp.Basic as B
 import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick)
 import Styles as S
 import Util.Address
 import Util.Contact
@@ -48,49 +46,6 @@ update _ msg model =
 
         Deselect ->
             ( { model | selected = Nothing }, Cmd.none )
-
-
-view : Model -> Html Msg
-view model =
-    table [ class "ui very basic aligned table" ]
-        [ thead []
-            [ tr []
-                [ th [ class "collapsing" ] []
-                , th [ class "collapsing" ] [ text "Name" ]
-                , th [] [ text "Address" ]
-                , th [] [ text "Contact" ]
-                ]
-            ]
-        , tbody []
-            (List.map (renderOrgLine model) model.orgs)
-        ]
-
-
-renderOrgLine : Model -> Organization -> Html Msg
-renderOrgLine model org =
-    tr
-        [ classList [ ( "active", model.selected == Just org ) ]
-        ]
-        [ td [ class "collapsing" ]
-            [ a
-                [ href "#"
-                , class "ui basic small blue label"
-                , onClick (Select org)
-                ]
-                [ i [ class "edit icon" ] []
-                , text "Edit"
-                ]
-            ]
-        , td [ class "collapsing" ]
-            [ text org.name
-            ]
-        , td []
-            [ Util.Address.toString org.address |> text
-            ]
-        , td []
-            [ Util.Contact.toString org.contacts |> text
-            ]
-        ]
 
 
 
