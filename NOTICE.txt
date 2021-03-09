@@ -1,6 +1,6 @@
 Docspell
-Copyright 2019-2020
-Licensed under the GPLv3
+Copyright 2019-2021, Eike Kettner
+Licensed under the GPLv3 or later
 
 This software contains portions of code from tika-parser
 https://tika.apache.org
@@ -11,3 +11,8 @@ This software contains portions of code from http4s
 https://http4s.org
 Copyright 2013-2018 http4s.org
 Licensed under Apache License 2.0
+
+This software contains portions of code from cats-parse
+https://github.com/typelevel/cats-parse
+Copyright 2020 typelevel.scala
+Licensed under MIT License
