@@ -2,9 +2,9 @@ package docspell.extract.pdfbox
 
 import cats.effect._
 import docspell.files.{ExampleFiles, TestFiles}
-import minitest.SimpleTestSuite
+import munit._
 
-object PdfboxExtractTest extends SimpleTestSuite {
+class PdfboxExtractTest extends FunSuite {
   val blocker     = TestFiles.blocker
   implicit val CS = TestFiles.CS
 

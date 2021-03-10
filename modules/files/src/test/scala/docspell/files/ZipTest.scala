@@ -1,12 +1,12 @@
 package docspell.files
 
-import minitest._
+import munit._
 import cats.effect._
 import cats.implicits._
 import scala.concurrent.ExecutionContext
 import docspell.common.Glob
 
-object ZipTest extends SimpleTestSuite {
+class ZipTest extends FunSuite {
 
   val blocker     = Blocker.liftExecutionContext(ExecutionContext.global)
   implicit val CS = IO.contextShift(ExecutionContext.global)

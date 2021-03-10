@@ -1,11 +1,11 @@
 package docspell.store.qb.impl
 
-import minitest._
+import munit._
 import docspell.store.qb._
 import docspell.store.qb.model._
 import docspell.store.qb.DSL._
 
-object SelectBuilderTest extends SimpleTestSuite {
+class SelectBuilderTest extends FunSuite {
 
   test("basic fragment") {
     val c        = CourseRecord.as("c")

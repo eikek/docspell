@@ -1,9 +1,9 @@
 package docspell.analysis.contact
 
 import docspell.common.{NerLabel, NerTag}
-import minitest.SimpleTestSuite
+import munit._
 
-object ContactAnnotateSpec extends SimpleTestSuite {
+class ContactAnnotateSpec extends FunSuite {
 
   test("find email") {
 

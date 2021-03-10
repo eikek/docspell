@@ -1,6 +1,6 @@
 package docspell.analysis.classifier
 
-import minitest._
+import munit._
 import cats.effect._
 import scala.concurrent.ExecutionContext
 import java.nio.file.Paths
@@ -10,7 +10,7 @@ import fs2.Stream
 import cats.data.Kleisli
 import TextClassifier.Data
 
-object StanfordTextClassifierSuite extends SimpleTestSuite {
+class StanfordTextClassifierSuite extends FunSuite {
   val logger = Logger.log4s[IO](org.log4s.getLogger)
 
   implicit val CS = IO.contextShift(ExecutionContext.global)

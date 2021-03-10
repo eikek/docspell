@@ -3,15 +3,14 @@ package docspell.extract.ocr
 import cats.effect.IO
 import docspell.common.Logger
 import docspell.files.TestFiles
-import minitest.SimpleTestSuite
+import munit._
 
-object TextExtractionSuite extends SimpleTestSuite {
+class TextExtractionSuite extends FunSuite {
   import TestFiles._
 
   val logger = Logger.log4s[IO](org.log4s.getLogger)
 
-  test("extract english pdf") {
-    ignore()
+  test("extract english pdf".ignore) {
     val text = TextExtract
       .extract[IO](letterSourceEN, blocker, logger, "eng", OcrConfig.default)
       .compile
@@ -20,8 +19,7 @@ object TextExtractionSuite extends SimpleTestSuite {
     println(text)
   }
 
-  test("extract german pdf") {
-    ignore()
+  test("extract german pdf".ignore) {
     val expect = TestFiles.letterDEText
     val extract = TextExtract
       .extract[IO](letterSourceDE, blocker, logger, "deu", OcrConfig.default)

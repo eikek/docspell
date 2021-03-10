@@ -1,9 +1,9 @@
 package docspell.joex.scheduler
 
 import docspell.common.Priority
-import minitest.SimpleTestSuite
+import munit._
 
-object CountingSchemeSpec extends SimpleTestSuite {
+class CountingSchemeSpec extends FunSuite {
 
   test("counting") {
     val cs     = CountingScheme(2, 1)

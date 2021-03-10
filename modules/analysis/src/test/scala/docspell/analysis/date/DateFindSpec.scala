@@ -1,11 +1,11 @@
 package docspell.analysis.date
 
 import docspell.files.TestFiles
-import minitest.SimpleTestSuite
+import munit._
 import docspell.common._
 import java.time._
 
-object DateFindSpec extends SimpleTestSuite {
+class DateFindSpec extends FunSuite {
 
   test("find simple dates") {
     val expect = Vector(

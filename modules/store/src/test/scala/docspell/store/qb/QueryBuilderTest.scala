@@ -1,10 +1,10 @@
 package docspell.store.qb
 
-import minitest._
+import munit._
 import docspell.store.qb.model._
 import docspell.store.qb.DSL._
 
-object QueryBuilderTest extends SimpleTestSuite {
+class QueryBuilderTest extends FunSuite {
 
   test("simple") {
     val c        = CourseRecord.as("c")

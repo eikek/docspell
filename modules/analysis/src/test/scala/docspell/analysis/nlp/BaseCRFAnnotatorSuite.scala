@@ -2,19 +2,17 @@ package docspell.analysis.nlp
 
 import docspell.analysis.Env
 import docspell.common.Language.NLPLanguage
-import minitest.SimpleTestSuite
+import munit._
 import docspell.files.TestFiles
 import docspell.common._
 
-object BaseCRFAnnotatorSuite extends SimpleTestSuite {
+class BaseCRFAnnotatorSuite extends FunSuite {
 
   def annotate(language: NLPLanguage): String => Vector[NerLabel] =
     BasicCRFAnnotator.nerAnnotate(BasicCRFAnnotator.Cache.getAnnotator(language))
 
   test("find english ner labels") {
-    if (Env.isCI) {
-      ignore("Test ignored on travis.")
-    }
+    assume(!Env.isCI, "Test ignored on travis.")
 
     val labels = annotate(Language.English)(TestFiles.letterENText)
     val expect = Vector(
@@ -52,9 +50,7 @@ object BaseCRFAnnotatorSuite extends SimpleTestSuite {
   }
 
   test("find german ner labels") {
-    if (Env.isCI) {
-      ignore("Test ignored on travis.")
-    }
+    assume(!Env.isCI, "Test ignored on travis.")
 
     val labels = annotate(Language.German)(TestFiles.letterDEText)
     val expect = Vector(

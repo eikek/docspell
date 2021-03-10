@@ -1,11 +1,11 @@
 package docspell.store.qb.impl
 
-import minitest._
+import munit._
 import docspell.store.qb._
 import docspell.store.qb.DSL._
 import docspell.store.qb.model.{CourseRecord, PersonRecord}
 
-object ConditionBuilderTest extends SimpleTestSuite {
+class ConditionBuilderTest extends FunSuite {
 
   val c = CourseRecord.as("c")
   val p = PersonRecord.as("p")

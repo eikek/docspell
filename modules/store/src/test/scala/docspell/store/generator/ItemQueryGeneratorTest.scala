@@ -3,14 +3,14 @@ package docspell.store.generator
 import java.time.LocalDate
 
 import docspell.store.records._
-import minitest._
+import munit._
 import docspell.common._
 import docspell.query.ItemQueryParser
 import docspell.store.queries.AttachCountTable
 import docspell.store.qb.DSL._
 import docspell.store.qb.generator.{ItemQueryGenerator, Tables}
 
-object ItemQueryGeneratorTest extends SimpleTestSuite {
+class ItemQueryGeneratorTest extends FunSuite {
   import docspell.store.impl.DoobieMeta._
 
   val tables = Tables(

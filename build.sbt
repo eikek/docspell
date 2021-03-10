@@ -45,12 +45,6 @@ val sharedSettings = Seq(
     (scalacOptions.value.filter(o => !o.contains("-Xlint") && !o.contains("-W")))
 ) ++ scalafixSettings
 
-val testSettings = Seq(
-  testFrameworks += new TestFramework("minitest.runner.Framework"),
-  libraryDependencies ++= Dependencies.miniTest ++ Dependencies.logging.map(_ % Test),
-  Test / fork := true
-)
-
 val testSettingsMUnit = Seq(
   libraryDependencies ++= Dependencies.munit.map(_ % Test),
   testFrameworks += new TestFramework("munit.Framework")
@@ -231,7 +225,7 @@ val common = project
   .in(file("modules/common"))
   .disablePlugins(RevolverPlugin)
   .settings(sharedSettings)
-  .settings(testSettings)
+  .settings(testSettingsMUnit)
   .settings(
     name := "docspell-common",
     libraryDependencies ++=
@@ -249,7 +243,7 @@ val files = project
   .in(file("modules/files"))
   .disablePlugins(RevolverPlugin)
   .settings(sharedSettings)
-  .settings(testSettings)
+  .settings(testSettingsMUnit)
   .settings(
     name := "docspell-files",
     libraryDependencies ++=
@@ -308,7 +302,7 @@ val store = project
   .in(file("modules/store"))
   .disablePlugins(RevolverPlugin)
   .settings(sharedSettings)
-  .settings(testSettings)
+  .settings(testSettingsMUnit)
   .settings(
     name := "docspell-store",
     libraryDependencies ++=
@@ -330,7 +324,7 @@ val extract = project
   .in(file("modules/extract"))
   .disablePlugins(RevolverPlugin)
   .settings(sharedSettings)
-  .settings(testSettings)
+  .settings(testSettingsMUnit)
   .settings(
     name := "docspell-extract",
     libraryDependencies ++=
@@ -347,7 +341,7 @@ val convert = project
   .in(file("modules/convert"))
   .disablePlugins(RevolverPlugin)
   .settings(sharedSettings)
-  .settings(testSettings)
+  .settings(testSettingsMUnit)
   .settings(
     name := "docspell-convert",
     libraryDependencies ++=
@@ -361,7 +355,7 @@ val analysis = project
   .disablePlugins(RevolverPlugin)
   .enablePlugins(NerModelsPlugin)
   .settings(sharedSettings)
-  .settings(testSettings)
+  .settings(testSettingsMUnit)
   .settings(NerModelsPlugin.nerClassifierSettings)
   .settings(
     name := "docspell-analysis",
@@ -375,7 +369,7 @@ val ftsclient = project
   .in(file("modules/fts-client"))
   .disablePlugins(RevolverPlugin)
   .settings(sharedSettings)
-  .settings(testSettings)
+  .settings(testSettingsMUnit)
   .settings(
     name := "docspell-fts-client",
     libraryDependencies ++= Seq.empty
@@ -386,7 +380,7 @@ val ftssolr = project
   .in(file("modules/fts-solr"))
   .disablePlugins(RevolverPlugin)
   .settings(sharedSettings)
-  .settings(testSettings)
+  .settings(testSettingsMUnit)
   .settings(
     name := "docspell-fts-solr",
     libraryDependencies ++=
@@ -402,7 +396,7 @@ val restapi = project
   .disablePlugins(RevolverPlugin)
   .enablePlugins(OpenApiSchema)
   .settings(sharedSettings)
-  .settings(testSettings)
+  .settings(testSettingsMUnit)
   .settings(openapiScalaSettings)
   .settings(
     name := "docspell-restapi",
@@ -420,7 +414,7 @@ val joexapi = project
   .disablePlugins(RevolverPlugin)
   .enablePlugins(OpenApiSchema)
   .settings(sharedSettings)
-  .settings(testSettings)
+  .settings(testSettingsMUnit)
   .settings(openapiScalaSettings)
   .settings(
     name := "docspell-joexapi",
@@ -438,7 +432,7 @@ val backend = project
   .in(file("modules/backend"))
   .disablePlugins(RevolverPlugin)
   .settings(sharedSettings)
-  .settings(testSettings)
+  .settings(testSettingsMUnit)
   .settings(
     name := "docspell-backend",
     libraryDependencies ++=
@@ -473,7 +467,7 @@ val joex = project
   .in(file("modules/joex"))
   .enablePlugins(BuildInfoPlugin, JavaServerAppPackaging, DebianPlugin, SystemdPlugin)
   .settings(sharedSettings)
-  .settings(testSettings)
+  .settings(testSettingsMUnit)
   .settings(debianSettings("docspell-joex"))
   .settings(buildInfoSettings)
   .settings(
@@ -512,7 +506,7 @@ val restserver = project
   .in(file("modules/restserver"))
   .enablePlugins(BuildInfoPlugin, JavaServerAppPackaging, DebianPlugin, SystemdPlugin)
   .settings(sharedSettings)
-  .settings(testSettings)
+  .settings(testSettingsMUnit)
   .settings(debianSettings("docspell-server"))
   .settings(buildInfoSettings)
   .settings(
@@ -740,7 +734,8 @@ def packageTools(logger: Logger, dir: File, version: String): Seq[File] = {
       wx / "icons" / "logo-96.png"     -> "icons/logo-96.png",
       wx / "manifest.json"             -> "manifest.json"
     ),
-    webext
+    webext,
+    None
   )
 
   val excludes = Seq(wx, target)
@@ -757,7 +752,8 @@ def packageTools(logger: Logger, dir: File, version: String): Seq[File] = {
       wx / "native/app_manifest.json" -> s"docspell-tools-${version}/firefox/native/app_manifest.json",
       wx / "native/native.py"         -> s"docspell-tools-${version}/firefox/native/native.py"
     ) ++ files,
-    archive
+    archive,
+    None
   )
 
   Seq(archive)

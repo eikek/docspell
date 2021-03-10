@@ -1,9 +1,9 @@
 package docspell.common
 
-import minitest._
+import munit._
 import Glob._
 
-object GlobTest extends SimpleTestSuite {
+class GlobTest extends FunSuite {
 
   test("literals") {
     assert(Glob.pattern(Pattern(Segment(Token.Literal("hello")))).matches(true)("hello"))

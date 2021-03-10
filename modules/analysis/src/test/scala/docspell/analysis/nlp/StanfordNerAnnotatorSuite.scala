@@ -4,22 +4,20 @@ import java.nio.file.Paths
 
 import cats.effect.IO
 import docspell.analysis.Env
-import minitest.SimpleTestSuite
+import munit._
 import docspell.files.TestFiles
 import docspell.common._
 import docspell.common.syntax.FileSyntax._
 import edu.stanford.nlp.pipeline.StanfordCoreNLP
 
-object StanfordNerAnnotatorSuite extends SimpleTestSuite {
+class StanfordNerAnnotatorSuite extends FunSuite {
   lazy val germanClassifier =
     new StanfordCoreNLP(Properties.nerGerman(None, false))
   lazy val englishClassifier =
     new StanfordCoreNLP(Properties.nerEnglish(None))
 
   test("find english ner labels") {
-    if (Env.isCI) {
-      ignore("Test ignored on travis.")
-    }
+    assume(!Env.isCI, "Test ignored on travis.")
 
     val labels =
       StanfordNerAnnotator.nerAnnotate(englishClassifier, TestFiles.letterENText)
@@ -58,9 +56,7 @@ object StanfordNerAnnotatorSuite extends SimpleTestSuite {
   }
 
   test("find german ner labels") {
-    if (Env.isCI) {
-      ignore("Test ignored on travis.")
-    }
+    assume(!Env.isCI, "Test ignored on travis.")
 
     val labels =
       StanfordNerAnnotator.nerAnnotate(germanClassifier, TestFiles.letterDEText)
@@ -83,9 +79,7 @@ object StanfordNerAnnotatorSuite extends SimpleTestSuite {
   }
 
   test("regexner-only annotator") {
-    if (Env.isCI) {
-      ignore("Test ignored on travis.")
-    }
+    assume(!Env.isCI, "Test ignored on travis.")
 
     val regexNerContent =
       s"""(?i)volantino ag${"\t"}ORGANIZATION${"\t"}LOCATION,PERSON,MISC${"\t"}3
