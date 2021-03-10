@@ -5064,6 +5064,7 @@ components:
         - id
         - name
         - created
+        - use
       properties:
         id:
           type: string
@@ -5076,6 +5077,12 @@ components:
           format: date-time
         notes:
           type: string
+        use:
+          type: string
+          format: equipmentuse
+          enum:
+            - concerning
+            - disabled
     ReferenceList:
       description:
         Listing of entities with their id and a name.
@@ -5119,6 +5126,7 @@ components:
             - concerning
             - correspondent
             - both
+            - disabled
           description: |
             Whether this person should be used to create suggestions
             for the "concerning person", "correspondent" or both.
@@ -5145,6 +5153,7 @@ components:
         - address
         - contacts
         - created
+        - use
       properties:
         id:
           type: string
@@ -5165,6 +5174,12 @@ components:
           format: date-time
         shortName:
           type: string
+        use:
+          type: string
+          format: orguse
+          enum:
+            - correspondent
+            - disabled
     OrganizationList:
       description: |
         A list of full organization values.
