@@ -3,9 +3,9 @@ package docspell.extract.poi
 import cats.effect._
 import docspell.common.MimeTypeHint
 import docspell.files.{ExampleFiles, TestFiles}
-import minitest.SimpleTestSuite
+import munit._
 
-object PoiExtractTest extends SimpleTestSuite {
+class PoiExtractTest extends FunSuite {
   val blocker     = TestFiles.blocker
   implicit val CS = TestFiles.CS
 

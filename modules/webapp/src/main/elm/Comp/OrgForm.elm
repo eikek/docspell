@@ -12,7 +12,9 @@ import Api.Model.Organization exposing (Organization)
 import Comp.AddressForm
 import Comp.Basic as B
 import Comp.ContactField
+import Comp.FixedDropdown
 import Data.Flags exposing (Flags)
+import Data.OrgUse exposing (OrgUse)
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -28,6 +30,8 @@ type alias Model =
     , contactModel : Comp.ContactField.Model
     , notes : Maybe String
     , shortName : Maybe String
+    , use : OrgUse
+    , useModel : Comp.FixedDropdown.Model OrgUse
     }
 
 
@@ -39,6 +43,11 @@ emptyModel =
     , contactModel = Comp.ContactField.emptyModel
     , notes = Nothing
     , shortName = Nothing
+    , use = Data.OrgUse.Correspondent
+    , useModel =
+        Comp.FixedDropdown.initMap
+            Data.OrgUse.label
+            Data.OrgUse.all
     }
 
 
@@ -59,6 +68,7 @@ getOrg model =
         , contacts = Comp.ContactField.getContacts model.contactModel
         , notes = model.notes
         , shortName = model.shortName
+        , use = Data.OrgUse.asString model.use
     }
 
 
@@ -69,6 +79,7 @@ type Msg
     | ContactMsg Comp.ContactField.Msg
     | SetNotes String
     | SetShortName String
+    | UseDropdownMsg (Comp.FixedDropdown.Msg OrgUse)
 
 
 update : Flags -> Msg -> Model -> ( Model, Cmd Msg )
@@ -87,6 +98,9 @@ update flags msg model =
                 , name = t.name
                 , notes = t.notes
                 , shortName = t.shortName
+                , use =
+                    Data.OrgUse.fromString t.use
+                        |> Maybe.withDefault Data.OrgUse.Correspondent
               }
             , Cmd.batch [ c1, c2 ]
             )
@@ -118,9 +132,25 @@ update flags msg model =
             , Cmd.none
             )
 
+        UseDropdownMsg lm ->
+            let
+                ( nm, mu ) =
+                    Comp.FixedDropdown.update lm model.useModel
+
+                newUse =
+                    Maybe.withDefault model.use mu
+            in
+            ( { model | useModel = nm, use = newUse }, Cmd.none )
+
 
 
 --- View2
+
+
+makeUseItem : Model -> Maybe (Comp.FixedDropdown.Item OrgUse)
+makeUseItem model =
+    Just <|
+        Comp.FixedDropdown.Item model.use (Data.OrgUse.label model.use)
 
 
 view2 : Bool -> UiSettings -> Model -> Html Msg
@@ -166,6 +196,22 @@ view2 mobile settings model =
                 , class S.textInput
                 ]
                 []
+            ]
+        , div [ class "mb-4" ]
+            [ label
+                [ class S.inputLabel
+                ]
+                [ text "Use" ]
+            , Html.map UseDropdownMsg
+                (Comp.FixedDropdown.view2 (makeUseItem model) model.useModel)
+            , span [ class "opacity-50 text-sm" ]
+                [ case model.use of
+                    Data.OrgUse.Correspondent ->
+                        text "Use as correspondent"
+
+                    Data.OrgUse.Disabled ->
+                        text "Do not use for suggestions."
+                ]
             ]
         , div [ class "mb-4" ]
             [ h3 [ class S.header3 ]

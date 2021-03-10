@@ -1,8 +1,8 @@
 package docspell.common
 
-import minitest._
+import munit._
 
-object NerLabelSpanTest extends SimpleTestSuite {
+class NerLabelSpanTest extends FunSuite {
 
   test("build") {
     val labels = List(

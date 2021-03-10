@@ -1,8 +1,8 @@
 package docspell.store.queries
 
-import minitest._
+import munit._
 
-object QueryWildcardTest extends SimpleTestSuite {
+class QueryWildcardTest extends FunSuite {
 
   test("replace prefix") {
     assertEquals("%name", QueryWildcard("*name"))

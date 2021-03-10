@@ -1,10 +1,10 @@
 package docspell.common
 
-import minitest._
+import munit._
 import cats.data.NonEmptyList
 import docspell.common.MetaProposal.Candidate
 
-object MetaProposalListTest extends SimpleTestSuite {
+class MetaProposalListTest extends FunSuite {
 
   test("flatten retains order of candidates") {
     val cand1 = Candidate(IdRef(Ident.unsafe("123"), "name"), Set.empty)

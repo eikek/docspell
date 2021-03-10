@@ -2,9 +2,9 @@ package docspell.extract.odf
 
 import cats.effect._
 import docspell.files.{ExampleFiles, TestFiles}
-import minitest.SimpleTestSuite
+import munit._
 
-object OdfExtractTest extends SimpleTestSuite {
+class OdfExtractTest extends FunSuite {
   val blocker     = TestFiles.blocker
   implicit val CS = TestFiles.CS
 

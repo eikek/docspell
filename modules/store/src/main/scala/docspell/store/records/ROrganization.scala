@@ -22,7 +22,8 @@ case class ROrganization(
     notes: Option[String],
     created: Timestamp,
     updated: Timestamp,
-    shortName: Option[String]
+    shortName: Option[String],
+    use: OrgUse
 ) {}
 
 object ROrganization {
@@ -43,6 +44,7 @@ object ROrganization {
     val created   = Column[Timestamp]("created", this)
     val updated   = Column[Timestamp]("updated", this)
     val shortName = Column[String]("short_name", this)
+    val use       = Column[OrgUse]("org_use", this)
     val all =
       NonEmptyList.of[Column[_]](
         oid,
@@ -55,7 +57,8 @@ object ROrganization {
         notes,
         created,
         updated,
-        shortName
+        shortName,
+        use
       )
   }
 
@@ -67,7 +70,7 @@ object ROrganization {
     DML.insert(
       T,
       T.all,
-      fr"${v.oid},${v.cid},${v.name},${v.street},${v.zip},${v.city},${v.country},${v.notes},${v.created},${v.updated},${v.shortName}"
+      fr"${v.oid},${v.cid},${v.name},${v.street},${v.zip},${v.city},${v.country},${v.notes},${v.created},${v.updated},${v.shortName},${v.use}"
     )
 
   def update(v: ROrganization): ConnectionIO[Int] = {
@@ -84,7 +87,8 @@ object ROrganization {
           T.country.setTo(v.country),
           T.notes.setTo(v.notes),
           T.updated.setTo(now),
-          T.shortName.setTo(v.shortName)
+          T.shortName.setTo(v.shortName),
+          T.use.setTo(v.use)
         )
       )
     for {
@@ -109,11 +113,17 @@ object ROrganization {
     sql.query[ROrganization].option
   }
 
-  def findLike(coll: Ident, orgName: String): ConnectionIO[Vector[IdRef]] =
+  def findLike(
+      coll: Ident,
+      orgName: String,
+      use: NonEmptyList[OrgUse]
+  ): ConnectionIO[Vector[IdRef]] =
     run(
       select(T.oid, T.name),
       from(T),
-      T.cid === coll && (T.name.like(orgName) || T.shortName.like(orgName))
+      T.cid === coll && (T.name.like(orgName) || T.shortName.like(orgName)) && T.use.in(
+        use
+      )
     )
       .query[IdRef]
       .to[Vector]

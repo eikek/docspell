@@ -1,8 +1,8 @@
 package docspell.common
 
-import minitest._
+import munit._
 
-object FileNameTest extends SimpleTestSuite {
+class FileNameTest extends FunSuite {
 
   test("make filename") {
     val data = List(

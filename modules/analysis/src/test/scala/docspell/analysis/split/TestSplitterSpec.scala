@@ -1,8 +1,8 @@
 package docspell.analysis.split
 
-import minitest.SimpleTestSuite
+import munit._
 
-object TestSplitterSpec extends SimpleTestSuite {
+class TestSplitterSpec extends FunSuite {
 
   test("simple splitting") {
     val text = """hiermit kündige ich meine Mitgliedschaft in der Kranken- und

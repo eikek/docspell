@@ -9,6 +9,7 @@ module Comp.OrgTable exposing
 import Api.Model.Organization exposing (Organization)
 import Comp.Basic as B
 import Data.Flags exposing (Flags)
+import Data.OrgUse
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Styles as S
@@ -58,6 +59,9 @@ view2 model =
         [ thead []
             [ tr []
                 [ th [ class "" ] []
+                , th [ class "text-left pr-1 md:px-2" ]
+                    [ text "Use"
+                    ]
                 , th [ class "text-left" ] [ text "Name" ]
                 , th [ class "text-left hidden md:table-cell" ] [ text "Address" ]
                 , th [ class "text-left hidden sm:table-cell" ] [ text "Contact" ]
@@ -75,6 +79,14 @@ renderOrgLine2 model org =
         , class S.tableRow
         ]
         [ B.editLinkTableCell (Select org)
+        , td [ class "text-left pr-1 md:px-2" ]
+            [ div [ class "label inline-flex text-sm" ]
+                [ Data.OrgUse.fromString org.use
+                    |> Maybe.withDefault Data.OrgUse.Correspondent
+                    |> Data.OrgUse.label
+                    |> text
+                ]
+            ]
         , td [ class "py-4 sm:py-2 pr-2 md:pr-4" ]
             [ text org.name
             ]

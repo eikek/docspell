@@ -2,11 +2,11 @@ package docspell.extract.pdfbox
 
 import cats.effect._
 import docspell.files.{ExampleFiles, TestFiles}
-import minitest.SimpleTestSuite
+import munit._
 import java.nio.file.Path
 import fs2.Stream
 
-object PdfboxPreviewTest extends SimpleTestSuite {
+class PdfboxPreviewTest extends FunSuite {
   val blocker     = TestFiles.blocker
   implicit val CS = TestFiles.CS
 

@@ -1,9 +1,11 @@
 module Page.Register.Update exposing (update)
 
 import Api
+import Api.Model.BasicResult exposing (BasicResult)
 import Data.Flags exposing (Flags)
 import Page exposing (Page(..))
 import Page.Register.Data exposing (..)
+import Util.Http
 
 
 update : Flags -> Msg -> Model -> ( Model, Cmd Msg )
@@ -106,8 +108,16 @@ update flags msg model =
             , cmd
             )
 
-        SubmitResp (Err _) ->
-            ( model, Cmd.none )
+        SubmitResp (Err err) ->
+            let
+                errMsg =
+                    Util.Http.errorToString err
+
+                res =
+                    BasicResult False
+                        (errMsg ++ " Please check the form and try again.")
+            in
+            ( { model | result = Just res }, Cmd.none )
 
 
 validateForm : Model -> List String

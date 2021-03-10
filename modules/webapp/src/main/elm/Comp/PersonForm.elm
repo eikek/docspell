@@ -229,6 +229,9 @@ view2 mobile settings model =
 
                     Data.PersonUse.Both ->
                         text "Use as both concerning or correspondent person"
+
+                    Data.PersonUse.Disabled ->
+                        text "Do not use for suggestions."
                 ]
             ]
         , div [ class "mb-4" ]

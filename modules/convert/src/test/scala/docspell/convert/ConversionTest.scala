@@ -11,10 +11,10 @@ import docspell.convert.ConversionResult.Handler
 import docspell.convert.extern.{TesseractConfig, UnoconvConfig, WkHtmlPdfConfig}
 import docspell.convert.flexmark.MarkdownConfig
 import docspell.files.{ExampleFiles, TestFiles}
-import minitest.SimpleTestSuite
+import munit._
 import docspell.convert.extern.OcrMyPdfConfig
 
-object ConversionTest extends SimpleTestSuite with FileChecks {
+class ConversionTest extends FunSuite with FileChecks {
   val blocker     = TestFiles.blocker
   implicit val CS = TestFiles.CS
 
@@ -101,59 +101,58 @@ object ConversionTest extends SimpleTestSuite with FileChecks {
   )
 
   test("convert to pdf") {
-    if (!commandsExist) ignore("At least one of the conversion programs not found")
-    else
-      File
-        .withTempDir[IO](target, "convpdf")
-        .use { dir =>
-          conversion.use { conv =>
-            def check(n: Long): Handler[IO, Unit] =
-              storePdfHandler(dir.resolve(s"test-$n.pdf")).map { p =>
-                assert(p.isNonEmpty && p.isPDF)
-              }
+    assume(commandsExist, "At least one of the conversion programs not found")
 
-            runConversion(pdfOnly, check, conv).compile.drain
-          }
+    File
+      .withTempDir[IO](target, "convpdf")
+      .use { dir =>
+        conversion.use { conv =>
+          def check(n: Long): Handler[IO, Unit] =
+            storePdfHandler(dir.resolve(s"test-$n.pdf")).map { p =>
+              assert(p.isNonEmpty && p.isPDF)
+            }
+
+          runConversion(pdfOnly, check, conv).compile.drain
         }
-        .unsafeRunSync()
+      }
+      .unsafeRunSync()
   }
 
   test("convert image to pdf and txt") {
-    if (!commandsExist) ignore("At least one of the conversion programs not found")
-    else
-      File
-        .withTempDir[IO](target, "convimgpdf")
-        .use { dir =>
-          conversion.use { conv =>
-            def check(n: Long): Handler[IO, Unit] =
-              storePdfTxtHandler(dir.resolve(s"test-$n.pdf"), dir.resolve(s"test-$n.txt"))
-                .map { case (p, t) =>
-                  assert(p.isNonEmpty && p.isPDF)
-                  assert(t.isNonEmpty && t.isPlainText)
-                }
+    assume(commandsExist, "At least one of the conversion programs not found")
+    File
+      .withTempDir[IO](target, "convimgpdf")
+      .use { dir =>
+        conversion.use { conv =>
+          def check(n: Long): Handler[IO, Unit] =
+            storePdfTxtHandler(dir.resolve(s"test-$n.pdf"), dir.resolve(s"test-$n.txt"))
+              .map { case (p, t) =>
+                assert(p.isNonEmpty && p.isPDF)
+                assert(t.isNonEmpty && t.isPlainText)
+              }
 
-            runConversion(pdfAndTxt, check, conv).compile.drain
-          }
+          runConversion(pdfAndTxt, check, conv).compile.drain
         }
-        .unsafeRunSync()
+      }
+      .unsafeRunSync()
   }
 
   test("do not convert image bombs") {
-    if (!commandsExist) ignore("At least one of the conversion programs not found")
-    else
-      conversion
-        .use { conv =>
-          def check: Handler[IO, Unit] =
-            Kleisli({
-              case ConversionResult.InputMalformed(_, _) =>
-                ().pure[IO]
-              case cr =>
-                IO.raiseError(new Exception(s"Unexpected result: $cr"))
-            })
+    assume(commandsExist, "At least one of the conversion programs not found")
 
-          runConversion(bombs, _ => check, conv).compile.drain
-        }
-        .unsafeRunSync()
+    conversion
+      .use { conv =>
+        def check: Handler[IO, Unit] =
+          Kleisli({
+            case ConversionResult.InputMalformed(_, _) =>
+              ().pure[IO]
+            case cr =>
+              IO.raiseError(new Exception(s"Unexpected result: $cr"))
+          })
+
+        runConversion(bombs, _ => check, conv).compile.drain
+      }
+      .unsafeRunSync()
   }
 
   def runConversion[A](

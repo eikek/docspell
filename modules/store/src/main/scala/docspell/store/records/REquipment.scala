@@ -15,7 +15,8 @@ case class REquipment(
     name: String,
     created: Timestamp,
     updated: Timestamp,
-    notes: Option[String]
+    notes: Option[String],
+    use: EquipmentUse
 ) {}
 
 object REquipment {
@@ -28,7 +29,8 @@ object REquipment {
     val created = Column[Timestamp]("created", this)
     val updated = Column[Timestamp]("updated", this)
     val notes   = Column[String]("notes", this)
-    val all     = NonEmptyList.of[Column[_]](eid, cid, name, created, updated, notes)
+    val use     = Column[EquipmentUse]("equip_use", this)
+    val all     = NonEmptyList.of[Column[_]](eid, cid, name, created, updated, notes, use)
   }
 
   val T = Table(None)
@@ -41,7 +43,7 @@ object REquipment {
       .insert(
         t,
         t.all,
-        fr"${v.eid},${v.cid},${v.name},${v.created},${v.updated},${v.notes}"
+        fr"${v.eid},${v.cid},${v.name},${v.created},${v.updated},${v.notes},${v.use}"
       )
   }
 
@@ -57,7 +59,8 @@ object REquipment {
             t.cid.setTo(v.cid),
             t.name.setTo(v.name),
             t.updated.setTo(now),
-            t.notes.setTo(v.notes)
+            t.notes.setTo(v.notes),
+            t.use.setTo(v.use)
           )
         )
     } yield n
@@ -90,9 +93,17 @@ object REquipment {
     sql.query[REquipment].to[Vector]
   }
 
-  def findLike(coll: Ident, equipName: String): ConnectionIO[Vector[IdRef]] = {
+  def findLike(
+      coll: Ident,
+      equipName: String,
+      use: NonEmptyList[EquipmentUse]
+  ): ConnectionIO[Vector[IdRef]] = {
     val t = Table(None)
-    run(select(t.eid, t.name), from(t), t.cid === coll && t.name.like(equipName))
+    run(
+      select(t.eid, t.name),
+      from(t),
+      t.cid === coll && t.name.like(equipName) && t.use.in(use)
+    )
       .query[IdRef]
       .to[Vector]
   }

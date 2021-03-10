@@ -1,10 +1,10 @@
 package docspell.joex.analysis
 
-import minitest._
+import munit._
 import NerFile.Pattern
 import java.{util => ju}
 
-object NerFileTest extends SimpleTestSuite {
+class NerFileTest extends FunSuite {
 
   test("create valid case insensitive patterns") {
     val names = List(

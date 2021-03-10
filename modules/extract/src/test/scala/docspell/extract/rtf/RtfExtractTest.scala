@@ -1,9 +1,9 @@
 package docspell.extract.rtf
 
 import docspell.files.ExampleFiles
-import minitest.SimpleTestSuite
+import munit._
 
-object RtfExtractTest extends SimpleTestSuite {
+class RtfExtractTest extends FunSuite {
 
   test("extract text from rtf using java input-stream") {
     val file = ExampleFiles.examples_sample_rtf

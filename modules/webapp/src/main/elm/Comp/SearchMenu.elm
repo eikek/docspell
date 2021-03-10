@@ -33,6 +33,7 @@ import Comp.TagSelect
 import Data.CustomFieldChange exposing (CustomFieldValueCollect)
 import Data.Direction exposing (Direction)
 import Data.DropdownStyle as DS
+import Data.EquipmentUse
 import Data.Fields
 import Data.Flags exposing (Flags)
 import Data.ItemQuery as Q exposing (ItemQuery)
@@ -490,7 +491,11 @@ updateDrop ddm flags settings msg model =
         SetConcEquip id ->
             let
                 equip =
-                    Equipment id.id id.name 0 Nothing
+                    Equipment id.id
+                        id.name
+                        0
+                        Nothing
+                        (Data.EquipmentUse.asString Data.EquipmentUse.Concerning)
             in
             resetAndSet (ConcEquipmentMsg (Comp.Dropdown.SetSelection [ equip ]))
 
