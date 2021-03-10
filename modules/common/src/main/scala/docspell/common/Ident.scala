@@ -26,7 +26,7 @@ object Ident {
   implicit val identEq: Eq[Ident] =
     Eq.by(_.id)
 
-  val chars: Set[Char] = (('A' to 'Z') ++ ('a' to 'z') ++ ('0' to '9') ++ "-_.").toSet
+  val chars: Set[Char] = (('A' to 'Z') ++ ('a' to 'z') ++ ('0' to '9') ++ "-_.@").toSet
 
   def randomUUID[F[_]: Sync]: F[Ident] =
     Sync[F].delay(unsafe(UUID.randomUUID.toString))

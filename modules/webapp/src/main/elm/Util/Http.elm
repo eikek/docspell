@@ -164,12 +164,14 @@ errorToString : Http.Error -> String
 errorToString error =
     let
         f sc =
-            case sc of
-                404 ->
-                    "The requested resource doesn't exist."
+            if sc == 404 then
+                "The requested resource doesn't exist."
 
-                _ ->
-                    "There was an invalid response status: " ++ String.fromInt sc
+            else if sc >= 400 && sc < 500 then
+                "Invalid input when processing the request."
+
+            else
+                "There was an invalid response status: " ++ String.fromInt sc ++ "."
     in
     errorToStringStatus error f
 
