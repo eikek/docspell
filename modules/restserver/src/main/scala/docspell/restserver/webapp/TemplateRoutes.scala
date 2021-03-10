@@ -133,10 +133,11 @@ object TemplateRoutes {
   )
 
   object IndexData {
+    private[this] val uiVersion = 2
 
     def apply(cfg: Config): IndexData =
       IndexData(
-        Flags(cfg),
+        Flags(cfg, uiVersion),
         chooseUi,
         Seq(
           "/app/assets" + Webjars.clipboardjs + "/clipboard.min.js",
@@ -145,7 +146,7 @@ object TemplateRoutes {
         ),
         s"/app/assets/docspell-webapp/${BuildInfo.version}/favicon",
         s"/app/assets/docspell-webapp/${BuildInfo.version}/docspell.js",
-        Flags(cfg).asJson.spaces2
+        Flags(cfg, uiVersion).asJson.spaces2
       )
 
     private def chooseUi: Seq[String] =

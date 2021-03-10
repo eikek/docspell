@@ -18,11 +18,12 @@ case class Flags(
     fullTextSearchEnabled: Boolean,
     maxPageSize: Int,
     maxNoteLength: Int,
-    showClassificationSettings: Boolean
+    showClassificationSettings: Boolean,
+    uiVersion: Int
 )
 
 object Flags {
-  def apply(cfg: Config): Flags =
+  def apply(cfg: Config, uiVersion: Int): Flags =
     Flags(
       cfg.appName,
       getBaseUrl(cfg),
@@ -32,7 +33,8 @@ object Flags {
       cfg.fullTextSearch.enabled,
       cfg.maxItemPageSize,
       cfg.maxNoteLength,
-      cfg.showClassificationSettings
+      cfg.showClassificationSettings,
+      uiVersion
     )
 
   private def getBaseUrl(cfg: Config): String =
