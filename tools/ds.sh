@@ -34,7 +34,7 @@ if [[ ${PIPESTATUS[0]} -ne 4 ]]; then
 fi
 
 OPTIONS=c:hsde
-LONGOPTS=config:,help,skip,delete,exists
+LONGOPTS=config:,help,skip,delete,exists,allow-duplicates
 
 ! PARSED=$(getopt --options=$OPTIONS --longoptions=$LONGOPTS --name "$0" -- "$@")
 if [[ ${PIPESTATUS[0]} -ne 0 ]]; then
@@ -46,7 +46,7 @@ fi
 # read getopt’s output this way to handle the quoting right:
 eval set -- "$PARSED"
 
-exists=n delete=n help=n config="${XDG_CONFIG_HOME:-$HOME/.config}/docspell/ds.conf"
+exists=n delete=n help=n config="${XDG_CONFIG_HOME:-$HOME/.config}/docspell/ds.conf" dupes=n
 while true; do
     case "$1" in
         -h|--help)
@@ -63,6 +63,10 @@ while true; do
             ;;
         -e|--exists)
             exists=y
+            shift
+            ;;
+        --allow-duplicates)
+            dupes=y
             shift
             ;;
         --)
@@ -93,7 +97,16 @@ checkFile() {
 
 upload_file() {
     tf=$($MKTEMP_CMD) rc=0
-    $CURL_CMD -# -o "$tf" --stderr "$tf" -w "%{http_code}" -XPOST -F file=@"$1" "$2" | (2>&1 1>/dev/null grep 200)
+    META1=""
+    META2=""
+    if [ "$dupes" = "y" ]; then
+        META1="-F"
+        META2="meta={\"multiple\": false, \"skipDuplicates\": false}"
+    else
+        META1="-F"
+        META2="meta={\"multiple\": false, \"skipDuplicates\": true}"
+    fi
+    $CURL_CMD -# -o "$tf" --stderr "$tf" -w "%{http_code}" -XPOST $META1 "$META2" -F file=@"$1" "$2" | (2>&1 1>/dev/null grep 200)
     rc=$(expr $rc + $?)
     cat $tf | (2>&1 1>/dev/null grep '{"success":true')
     rc=$(expr $rc + $?)
@@ -110,12 +123,16 @@ upload_file() {
 }
 
 upload() {
-    checkFile "$2" "$1"
-    if [ $? -eq 0 ]; then
-        info "File already exists at url $2"
-        return 0
-    else
+    if [ "$dupes" == "y" ]; then
         upload_file "$1" "$2"
+    else
+        checkFile "$2" "$1"
+        if [ $? -eq 0 ]; then
+            info "File already exists at url $2"
+            return 0
+        else
+            upload_file "$1" "$2"
+        fi
     fi
 }
 
@@ -129,6 +146,7 @@ showUsage() {
     info "  -d | --delete        Delete the files when successfully uploaded (value: $delete)"
     info "  -h | --help          Prints this help text. (value: $help)"
     info "  -e | --exists        Checks for the existence of a file instead of uploading (value: $exists)"
+    info "  --allow-duplicates   Do not skip existing files in docspell (value: $dupes)"
     info ""
     info "Arguments:"
     info "  One or more files to check for existence or upload."
