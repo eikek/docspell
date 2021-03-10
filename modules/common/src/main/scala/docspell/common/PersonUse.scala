@@ -16,6 +16,7 @@ object PersonUse {
   case object Correspondent extends PersonUse
   case object Concerning    extends PersonUse
   case object Both          extends PersonUse
+  case object Disabled      extends PersonUse
 
   def concerning: PersonUse    = Concerning
   def correspondent: PersonUse = Correspondent
@@ -35,6 +36,8 @@ object PersonUse {
         Right(Concerning)
       case "both" =>
         Right(Both)
+      case "disabled" =>
+        Right(Disabled)
       case _ =>
         Left(s"Unknown person-use: $str")
     }

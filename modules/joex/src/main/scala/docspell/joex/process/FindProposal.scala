@@ -47,7 +47,7 @@ object FindProposal {
           ctx.store
             .transact(
               ROrganization
-                .findLike(coll, mp.values.head.ref.name.toLowerCase)
+                .findLike(coll, mp.values.head.ref.name.toLowerCase, OrgUse.notDisabled)
                 .map(_.headOption)
             )
             .flatTap(oref =>
@@ -85,7 +85,11 @@ object FindProposal {
           ctx.store
             .transact(
               REquipment
-                .findLike(coll, mp.values.head.ref.name.toLowerCase)
+                .findLike(
+                  coll,
+                  mp.values.head.ref.name.toLowerCase,
+                  EquipmentUse.notDisabled
+                )
                 .map(_.headOption)
             )
             .flatTap(oref =>
@@ -234,7 +238,10 @@ object FindProposal {
         case NerTag.Organization =>
           ctx.logger.debug(s"Looking for organizations: $value") *>
             ctx.store
-              .transact(ROrganization.findLike(ctx.args.meta.collective, value))
+              .transact(
+                ROrganization
+                  .findLike(ctx.args.meta.collective, value, OrgUse.notDisabled)
+              )
               .map(MetaProposalList.from(MetaProposalType.CorrOrg, nt))
 
         case NerTag.Person =>
@@ -252,7 +259,10 @@ object FindProposal {
             .map(MetaProposalList.from(MetaProposalType.CorrPerson, nt))
           val s3 =
             ctx.store
-              .transact(ROrganization.findLike(ctx.args.meta.collective, value))
+              .transact(
+                ROrganization
+                  .findLike(ctx.args.meta.collective, value, OrgUse.notDisabled)
+              )
               .map(MetaProposalList.from(MetaProposalType.CorrOrg, nt))
           ctx.logger.debug(s"Looking for persons and organizations: $value") *> (for {
             ml0 <- s1
@@ -268,7 +278,10 @@ object FindProposal {
         case NerTag.Misc =>
           ctx.logger.debug(s"Looking for equipments: $value") *>
             ctx.store
-              .transact(REquipment.findLike(ctx.args.meta.collective, value))
+              .transact(
+                REquipment
+                  .findLike(ctx.args.meta.collective, value, EquipmentUse.notDisabled)
+              )
               .map(MetaProposalList.from(MetaProposalType.ConcEquip, nt))
 
         case NerTag.Email =>

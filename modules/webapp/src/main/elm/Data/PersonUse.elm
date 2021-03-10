@@ -14,6 +14,7 @@ type PersonUse
     = Correspondent
     | Concerning
     | Both
+    | Disabled
 
 
 fromString : String -> Maybe PersonUse
@@ -27,6 +28,9 @@ fromString str =
 
         "both" ->
             Just Both
+
+        "disabled" ->
+            Just Disabled
 
         _ ->
             Nothing
@@ -44,6 +48,9 @@ asString pu =
         Both ->
             "both"
 
+        Disabled ->
+            "disabled"
+
 
 label : PersonUse -> String
 label pu =
@@ -57,10 +64,13 @@ label pu =
         Both ->
             "Both"
 
+        Disabled ->
+            "Disabled"
+
 
 all : List PersonUse
 all =
-    [ Correspondent, Concerning, Both ]
+    [ Correspondent, Concerning, Both, Disabled ]
 
 
 spanPersonList : List Person -> { concerning : List Person, correspondent : List Person }
@@ -86,5 +96,8 @@ spanPersonList input =
                         | correspondent = p :: res.correspondent
                         , concerning = p :: res.concerning
                     }
+
+                Disabled ->
+                    res
     in
     List.foldl merge init input
