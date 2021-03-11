@@ -81,6 +81,12 @@ object SolrSetup {
             solrEngine,
             "Add more content fields",
             addMoreContentFields.map(_ => FtsMigration.Result.reIndexAll)
+          ),
+          FtsMigration[F](
+            10,
+            solrEngine,
+            "Add latvian content field",
+            addContentField(Language.Latvian).map(_ => FtsMigration.Result.reIndexAll)
           )
         )
 
