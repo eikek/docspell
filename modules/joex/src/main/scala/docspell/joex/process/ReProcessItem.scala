@@ -5,6 +5,7 @@ import cats.effect._
 import cats.implicits._
 
 import docspell.analysis.TextAnalyser
+import docspell.backend.ops.OItem
 import docspell.common._
 import docspell.ftsclient.FtsClient
 import docspell.joex.Config
@@ -22,12 +23,17 @@ object ReProcessItem {
   def apply[F[_]: ConcurrentEffect: ContextShift](
       cfg: Config,
       fts: FtsClient[F],
+      itemOps: OItem[F],
       analyser: TextAnalyser[F],
       regexNer: RegexNerFile[F]
   ): Task[F, Args, Unit] =
-    loadItem[F]
-      .flatMap(safeProcess[F](cfg, fts, analyser, regexNer))
-      .map(_ => ())
+    Task
+      .log[F, Args](_.info("===== Start reprocessing ======"))
+      .flatMap(_ =>
+        loadItem[F]
+          .flatMap(safeProcess[F](cfg, fts, itemOps, analyser, regexNer))
+          .map(_ => ())
+      )
 
   def onCancel[F[_]]: Task[F, Args, Unit] =
     logWarn("Now cancelling re-processing.")
@@ -58,6 +64,11 @@ object ReProcessItem {
                 a.copy(fileId = src.fileId, name = src.name)
               }
             )
+        _ <- OptionT.liftF(
+          ctx.logger.debug(
+            s"Loaded item and ${attachSrc.size} attachments to reprocess"
+          )
+        )
       } yield ItemData(
         item,
         attachSrc,
@@ -76,6 +87,7 @@ object ReProcessItem {
   def processFiles[F[_]: ConcurrentEffect: ContextShift](
       cfg: Config,
       fts: FtsClient[F],
+      itemOps: OItem[F],
       analyser: TextAnalyser[F],
       regexNer: RegexNerFile[F],
       data: ItemData
@@ -89,9 +101,9 @@ object ReProcessItem {
               data.item.cid,
               args.itemId.some,
               lang,
-              None, //direction
-              "",   //source-id
-              None, //folder
+              None,             //direction
+              data.item.source, //source-id
+              None,             //folder
               Seq.empty,
               false,
               None,
@@ -103,6 +115,8 @@ object ReProcessItem {
     getLanguage[F].flatMap { lang =>
       ProcessItem
         .processAttachments[F](cfg, fts, analyser, regexNer)(data)
+        .flatMap(LinkProposal[F])
+        .flatMap(SetGivenData[F](itemOps))
         .contramap[Args](convertArgs(lang))
     }
   }
@@ -121,12 +135,13 @@ object ReProcessItem {
   def safeProcess[F[_]: ConcurrentEffect: ContextShift](
       cfg: Config,
       fts: FtsClient[F],
+      itemOps: OItem[F],
       analyser: TextAnalyser[F],
       regexNer: RegexNerFile[F]
   )(data: ItemData): Task[F, Args, ItemData] =
     isLastRetry[F].flatMap {
       case true =>
-        processFiles[F](cfg, fts, analyser, regexNer, data).attempt
+        processFiles[F](cfg, fts, itemOps, analyser, regexNer, data).attempt
           .flatMap({
             case Right(d) =>
               Task.pure(d)
@@ -136,7 +151,7 @@ object ReProcessItem {
               ).andThen(_ => Sync[F].raiseError(ex))
           })
       case false =>
-        processFiles[F](cfg, fts, analyser, regexNer, data)
+        processFiles[F](cfg, fts, itemOps, analyser, regexNer, data)
     }
 
   private def logWarn[F[_]](msg: => String): Task[F, Args, Unit] =

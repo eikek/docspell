@@ -2113,7 +2113,11 @@ paths:
       summary: Start reprocessing the files of the item.
       description: |
         This submits a job that will re-process the files (either all
-        or the ones specified) of the item and replace the metadata.
+        or the ones specified) of the item and replace their metadata.
+
+        If the item is not in "confirmed" state, its associated metada
+        is also updated. Otherwise only the file metadata is updated
+        (like extracted text etc).
       security:
         - authTokenHeader: []
       parameters:

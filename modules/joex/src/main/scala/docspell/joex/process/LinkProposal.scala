@@ -10,10 +10,18 @@ import docspell.store.records.RItem
 
 object LinkProposal {
 
-  def apply[F[_]: Sync](data: ItemData): Task[F, ProcessItemArgs, ItemData] =
+  def onlyNew[F[_]: Sync](data: ItemData): Task[F, ProcessItemArgs, ItemData] =
     if (data.item.state.isValid)
       Task
         .log[F, ProcessItemArgs](_.debug(s"Not linking proposals on existing item"))
+        .map(_ => data)
+    else
+      LinkProposal[F](data)
+
+  def apply[F[_]: Sync](data: ItemData): Task[F, ProcessItemArgs, ItemData] =
+    if (data.item.state == ItemState.Confirmed)
+      Task
+        .log[F, ProcessItemArgs](_.debug(s"Not linking proposals on confirmed item"))
         .map(_ => data)
     else
       Task { ctx =>
