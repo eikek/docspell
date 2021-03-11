@@ -22,6 +22,7 @@ import Api.Model.BasicResult exposing (BasicResult)
 import Api.Model.ItemLightList exposing (ItemLightList)
 import Api.Model.SearchStats exposing (SearchStats)
 import Browser.Dom as Dom
+import Comp.ConfirmModal
 import Comp.FixedDropdown
 import Comp.ItemCardList
 import Comp.ItemDetail.FormChange exposing (FormChange)
@@ -64,7 +65,7 @@ type alias Model =
 type alias SelectViewModel =
     { ids : Set String
     , action : SelectActionMode
-    , deleteAllConfirm : Comp.YesNoDimmer.Model
+    , confirmModal : Maybe (Comp.ConfirmModal.Settings Msg)
     , editModel : Comp.ItemDetail.MultiEditMenu.Model
     , saveNameState : SaveNameState
     , saveCustomFieldState : Set String
@@ -75,7 +76,7 @@ initSelectViewModel : SelectViewModel
 initSelectViewModel =
     { ids = Set.empty
     , action = NoneAction
-    , deleteAllConfirm = Comp.YesNoDimmer.initActive
+    , confirmModal = Nothing
     , editModel = Comp.ItemDetail.MultiEditMenu.init
     , saveNameState = SaveSuccess
     , saveCustomFieldState = Set.empty
@@ -187,7 +188,8 @@ type Msg
     | SelectAllItems
     | SelectNoItems
     | RequestDeleteSelected
-    | DeleteSelectedConfirmMsg Comp.YesNoDimmer.Msg
+    | DeleteSelectedConfirmed
+    | CloseConfirmModal
     | EditSelectedItems
     | EditMenuMsg Comp.ItemDetail.MultiEditMenu.Msg
     | MultiUpdateResp FormChange (Result Http.Error BasicResult)
@@ -199,6 +201,8 @@ type Msg
     | TogglePreviewFullWidth
     | PowerSearchMsg Comp.PowerSearchInput.Msg
     | KeyUpPowerSearchbarMsg (Maybe KeyCode)
+    | RequestReprocessSelected
+    | ReprocessSelectedConfirmed
 
 
 type SearchType
@@ -210,6 +214,7 @@ type SelectActionMode
     = NoneAction
     | DeleteSelected
     | EditSelected
+    | ReprocessSelected
 
 
 type alias SearchParam =

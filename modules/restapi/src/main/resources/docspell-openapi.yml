@@ -2117,7 +2117,7 @@ paths:
 
         If the item is not in "confirmed" state, its associated metada
         is also updated. Otherwise only the file metadata is updated
-        (like extracted text etc).
+        (text analysis).
       security:
         - authTokenHeader: []
       parameters:
@@ -2519,7 +2519,8 @@ paths:
       description: |
         Given a list of item-ids, submits all these items for
         reprocessing. All attachments of these items will be
-        reprocessed. Item metadata is not changed.
+        reprocessed. Item metadata may be changed if an item is not
+        confirmed. Confirmed items are not changed.
       security:
         - authTokenHeader: []
       requestBody:

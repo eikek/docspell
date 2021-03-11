@@ -16,6 +16,7 @@ import Api.Model.ReferenceList exposing (ReferenceList)
 import Api.Model.Tag exposing (Tag)
 import Browser.Navigation as Nav
 import Comp.AttachmentMeta
+import Comp.ConfirmModal
 import Comp.CustomFieldMultiInput
 import Comp.DatePicker
 import Comp.DetailEdit
@@ -43,7 +44,6 @@ import Comp.MarkdownInput
 import Comp.OrgForm
 import Comp.PersonForm
 import Comp.SentMails
-import Comp.YesNoDimmer
 import Data.CustomFieldChange exposing (CustomFieldChange(..))
 import Data.Direction
 import Data.Fields exposing (Field)
@@ -532,22 +532,28 @@ update key flags inav settings msg model =
         RemoveDueDate ->
             resultModelCmd ( { model | dueDate = Nothing }, setDueDate flags model Nothing )
 
-        DeleteItemConfirm m ->
+        DeleteItemConfirmed ->
             let
-                ( cm, confirmed ) =
-                    Comp.YesNoDimmer.update m model.deleteItemConfirm
-
                 cmd =
-                    if confirmed then
-                        Api.deleteItem flags model.item.id DeleteResp
-
-                    else
-                        Cmd.none
+                    Api.deleteItem flags model.item.id DeleteResp
             in
-            resultModelCmd ( { model | deleteItemConfirm = cm }, cmd )
+            resultModelCmd ( { model | itemModal = Nothing }, cmd )
+
+        ItemModalCancelled ->
+            resultModel { model | itemModal = Nothing }
 
         RequestDelete ->
-            update key flags inav settings (DeleteItemConfirm Comp.YesNoDimmer.activate) model
+            let
+                confirmMsg =
+                    "Really delete this item? This cannot be undone."
+
+                confirm =
+                    Comp.ConfirmModal.defaultSettings
+                        DeleteItemConfirmed
+                        ItemModalCancelled
+                        confirmMsg
+            in
+            resultModel { model | itemModal = Just confirm }
 
         SetCorrOrgSuggestion idname ->
             resultModelCmd ( model, setCorrOrg flags model (Just idname) )
@@ -913,19 +919,15 @@ update key flags inav settings msg model =
                     , attachmentDropdownOpen = False
                 }
 
-        DeleteAttachConfirm attachId lmsg ->
+        DeleteAttachConfirmed attachId ->
             let
-                ( cm, confirmed ) =
-                    Comp.YesNoDimmer.update lmsg model.deleteAttachConfirm
-
                 cmd =
-                    if confirmed then
-                        Api.deleteAttachment flags attachId DeleteAttachResp
-
-                    else
-                        Cmd.none
+                    Api.deleteAttachment flags attachId DeleteAttachResp
             in
-            resultModelCmd ( { model | deleteAttachConfirm = cm }, cmd )
+            resultModelCmd ( { model | attachModal = Nothing }, cmd )
+
+        AttachModalCancelled ->
+            resultModel { model | attachModal = Nothing }
 
         DeleteAttachResp (Ok res) ->
             if res.success then
@@ -938,12 +940,20 @@ update key flags inav settings msg model =
             resultModel model
 
         RequestDeleteAttachment id ->
-            update key
-                flags
-                inav
-                settings
-                (DeleteAttachConfirm id Comp.YesNoDimmer.activate)
-                { model | attachmentDropdownOpen = False }
+            let
+                confirmModal =
+                    Comp.ConfirmModal.defaultSettings
+                        (DeleteAttachConfirmed id)
+                        AttachModalCancelled
+                        "Really delete this file?"
+
+                model_ =
+                    { model
+                        | attachmentDropdownOpen = False
+                        , attachModal = Just confirmModal
+                    }
+            in
+            resultModel model_
 
         AddFilesToggle ->
             resultModel
@@ -1507,6 +1517,73 @@ update key flags inav settings msg model =
                         allNames
             in
             resultModel { model | editMenuTabsOpen = next }
+
+        RequestReprocessFile id ->
+            let
+                confirmMsg =
+                    if model.item.state == "created" then
+                        "Reprocessing this file may change metadata of "
+                            ++ "this item, since it is unconfirmed. Do you want to proceed?"
+
+                    else
+                        "Reprocessing this file will not change metadata of "
+                            ++ "this item, since it has been confirmed. Do you want to proceed?"
+
+                confirmModal =
+                    Comp.ConfirmModal.defaultSettings
+                        (ReprocessFileConfirmed id)
+                        AttachModalCancelled
+                        confirmMsg
+
+                model_ =
+                    { model
+                        | attachmentDropdownOpen = False
+                        , attachModal = Just confirmModal
+                    }
+            in
+            resultModel model_
+
+        ReprocessFileConfirmed id ->
+            let
+                cmd =
+                    Api.reprocessItem flags model.item.id [ id ] ReprocessFileResp
+            in
+            resultModelCmd ( { model | attachModal = Nothing }, cmd )
+
+        ReprocessFileResp _ ->
+            resultModel model
+
+        RequestReprocessItem ->
+            let
+                confirmMsg =
+                    if model.item.state == "created" then
+                        "Reprocessing this item may change its metadata, "
+                            ++ "since it is unconfirmed. Do you want to proceed?"
+
+                    else
+                        "Reprocessing this item will not change its metadata, "
+                            ++ "since it has been confirmed. Do you want to proceed?"
+
+                confirmModal =
+                    Comp.ConfirmModal.defaultSettings
+                        ReprocessItemConfirmed
+                        ItemModalCancelled
+                        confirmMsg
+
+                model_ =
+                    { model
+                        | attachmentDropdownOpen = False
+                        , itemModal = Just confirmModal
+                    }
+            in
+            resultModel model_
+
+        ReprocessItemConfirmed ->
+            let
+                cmd =
+                    Api.reprocessItem flags model.item.id [] ReprocessFileResp
+            in
+            resultModelCmd ( { model | itemModal = Nothing }, cmd )
 
 
 
