@@ -40,14 +40,14 @@ object ConvertPdf {
     Task { ctx =>
       def convert(ra: RAttachment): F[(RAttachment, Option[RAttachmentMeta])] =
         isConverted(ctx)(ra).flatMap {
-          case true =>
+          case true if ctx.args.isNormalProcessing =>
             ctx.logger.info(
               s"Conversion to pdf already done for attachment ${ra.name}."
             ) *>
               ctx.store
                 .transact(RAttachmentMeta.findById(ra.id))
                 .map(rmOpt => (ra, rmOpt))
-          case false =>
+          case _ =>
             findMime(ctx)(ra).flatMap(m =>
               convertSafe(cfg, JsoupSanitizer.clean, ctx, item)(ra, m)
             )
