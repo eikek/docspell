@@ -107,7 +107,8 @@ object ReProcessItem {
               Seq.empty,
               false,
               None,
-              None
+              None,
+              true
             ),
             Nil
           ).pure[F]

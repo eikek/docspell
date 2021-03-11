@@ -13,6 +13,8 @@ import io.circe.generic.semiauto._
   *
   * If the `itemId' is set to some value, the item is tried to load to
   * ammend with the given files. Otherwise a new item is created.
+  *
+  * It is also re-used by the 'ReProcessItem' task.
   */
 case class ProcessItemArgs(meta: ProcessMeta, files: List[File]) {
 
@@ -24,6 +26,8 @@ case class ProcessItemArgs(meta: ProcessMeta, files: List[File]) {
       case _               => s"${files.size} files from ${meta.sourceAbbrev}"
     }
 
+  def isNormalProcessing: Boolean =
+    !meta.reprocess
 }
 
 object ProcessItemArgs {
@@ -40,7 +44,8 @@ object ProcessItemArgs {
       validFileTypes: Seq[MimeType],
       skipDuplicate: Boolean,
       fileFilter: Option[Glob],
-      tags: Option[List[String]]
+      tags: Option[List[String]],
+      reprocess: Boolean
   )
 
   object ProcessMeta {

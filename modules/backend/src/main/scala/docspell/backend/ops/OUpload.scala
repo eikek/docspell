@@ -145,7 +145,8 @@ object OUpload {
             data.meta.validFileTypes,
             data.meta.skipDuplicates,
             data.meta.fileFilter.some,
-            data.meta.tags.some
+            data.meta.tags.some,
+            false
           )
           args =
             if (data.multiple) files.map(f => ProcessItemArgs(meta, List(f)))
