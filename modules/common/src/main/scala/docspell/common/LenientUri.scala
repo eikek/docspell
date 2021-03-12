@@ -148,16 +148,20 @@ object LenientUri {
     unsafe(u.toExternalForm)
 
   def parse(str: String): Either[String, LenientUri] = {
-    def makePath(str: String): Path =
+    def makePath(str: String): Either[String, Path] =
       str.trim match {
-        case "/" => RootPath
-        case ""  => EmptyPath
+        case "/" => Right(RootPath)
+        case ""  => Right(EmptyPath)
         case _ =>
-          NonEmptyList
-            .fromList(stripLeading(str, '/').split('/').toList.map(percentDecode)) match {
-            case Some(nl) => NonEmptyPath(nl)
-            case None     => sys.error(s"Invalid url: $str")
-          }
+          Either.fromOption(
+            stripLeading(str, '/')
+              .split('/')
+              .toList
+              .traverse(percentDecode)
+              .flatMap(NonEmptyList.fromList)
+              .map(NonEmptyPath.apply),
+            s"Invalid path: $str"
+          )
       }
 
     def makeNonEmpty(str: String): Option[String] =
@@ -165,7 +169,7 @@ object LenientUri {
     def makeScheme(s: String): Option[NonEmptyList[String]] =
       NonEmptyList.fromList(s.split(':').toList.filter(_.nonEmpty).map(_.toLowerCase))
 
-    def splitPathQF(pqf: String): (Path, Option[String], Option[String]) =
+    def splitPathQF(pqf: String): (Either[String, Path], Option[String], Option[String]) =
       pqf.indexOf('?') match {
         case -1 =>
           pqf.indexOf('#') match {
@@ -200,7 +204,7 @@ object LenientUri {
           case None =>
             Left(s"No scheme found: $str")
           case Some(nl) =>
-            Right(LenientUri(nl, auth, path, query, frag))
+            path.map(p => LenientUri(nl, auth, p, query, frag))
         }
       case Array(p0) =>
         // scheme:scheme:path
@@ -214,10 +218,11 @@ object LenientUri {
               case None =>
                 Left(s"No scheme found: $str")
               case Some(nl) =>
-                Right(LenientUri(nl, None, path, query, frag))
+                path.map(p => LenientUri(nl, None, p, query, frag))
             }
         }
       case _ =>
+        // str.split(…, 2) returns either array of length 2 or 1, never empty
         sys.error("Unreachable code")
     }
   }
@@ -230,17 +235,34 @@ object LenientUri {
   def percentEncode(s: String): String =
     s.flatMap(c => if (delims.contains(c)) percent(c.toString) else c.toString)
 
-  def percentDecode(s: String): String =
-    if (!s.contains("%")) s
-    else
-      s.foldLeft(("", ByteVector.empty)) { case ((acc, res), c) =>
-        if (acc.length == 2) ("", res ++ ByteVector.fromValidHex(acc.drop(1) + c))
-        else if (acc.startsWith("%")) (acc :+ c, res)
-        else if (c == '%') ("%", res)
-        else (acc, res :+ c.toByte)
-      }._2
-        .decodeUtf8
-        .fold(throw _, identity)
+  def percentDecode(s: String): Option[String] = {
+    @annotation.tailrec
+    def go(pos: Int, acc: Option[String], result: ByteVector): Option[ByteVector] =
+      if (pos >= s.length) Some(result)
+      else {
+        val c = s.charAt(pos)
+        acc match {
+          case Some(enc) if enc.length == 1 =>
+            ByteVector.fromHex(enc + c) match {
+              case Some(next) =>
+                go(pos + 1, None, result ++ next)
+              case None =>
+                None
+            }
+
+          case Some(enc) =>
+            go(pos + 1, Some(enc + c), result)
+
+          case None if c == '%' =>
+            go(pos + 1, Some(""), result)
+
+          case None =>
+            go(pos + 1, acc, result :+ c.toByte)
+        }
+      }
+
+    go(0, None, ByteVector.empty).flatMap(bv => bv.decodeUtf8.toOption)
+  }
 
   private def stripLeading(s: String, c: Char): String =
     if (s.length > 0 && s.charAt(0) == c) s.substring(1)
