@@ -18,6 +18,10 @@ The search bar let's you search in item and attachment names names and
 do fulltext search. The icon next to the search field can switch
 between these modes.
 
+In the user profile, you can switch this search bar to "power search"
+mode. This allows then to enter [complex
+queries](@/docs/query/_index.md).
+
 ## The *Names* option {#names}
 
 This searches in the item name, names of correspondent organization

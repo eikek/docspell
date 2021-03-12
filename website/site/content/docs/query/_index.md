@@ -9,7 +9,7 @@ mktoc = true
 
 
 Docspell uses a query language to provide a powerful way to search for
-your documents. It is targeted at advanced users and it needs to be
+your documents. It is targeted at "power users" and it needs to be
 enabled explicitely in your user settings.
 
 <div class="colums">
@@ -62,7 +62,7 @@ There are 7 operators:
 - `>` for greater-than
 - `>=` for greater-equals
 - `~=` for "in" (a shorter way to say "a or b or c or d")
-- `:` for "like"
+- `:` for "like", this is used in a context-sensitive way
 - `<` for lower than
 - `<=` for lower-equal
 - `!=` for not-equals
@@ -76,7 +76,7 @@ what operators are allowed. There are fields where an item can have at
 most one value (like `name` or `notes`) and there are fields where an
 item can have multiple values (like `tag`). At last there are special
 fields that are either implemented directly using custom sql or that
-are shortcuts to a longer form.
+are only shortcuts to a longer form.
 
 Here is the list of all available fields.
 
@@ -104,7 +104,7 @@ These fields map to at most one value:
   show only incoming, `false` to show only outgoing.
 
 These fields support all operators, except `incoming` and `inbox`
-which expect boolean values and there these operators don't make much
+which expect boolean values and for those some operators don't make
 sense.
 
 Fields that map to more than one value:
@@ -117,18 +117,18 @@ The tag and category fields use two operators: `:` and `=`.
 
 Other special fields:
 
-- `attach.id`
-- `checksum`
-- `content`
+- `attach.id` references the id of an attachment
+- `checksum` references the sha256 checksum of a file
+- `content` for fulltext search
 - `f` for referencing custom fields by name
 - `f.id` for referencing custom fields by their id
 - `dateIn` a shortcut for a range search
 - `dueIn` a shortcut for a range search
 - `exist` check if some porperty exists
-- `names`
-- `year`
-- `conc`
-- `corr`
+- `names` a shortcut to search in several names via `:`
+- `year` a shortcut for a year range
+- `conc` a shortcut for concerning person and equipment names
+- `corr` a shortcut for correspondent org and person names
 
 These fields are often using the `:` operator to simply separate field
 and value. They are often backed by a custom implementation, or they
@@ -137,8 +137,8 @@ are shortcuts for a longer query.
 ## Values
 
 Values are the data you want to search for. There are different kinds
-of that, too: there are text-based values, numbers, boolean and dates.
-When multiple values are allowed, they must be separated by comma `,`.
+of that, too: there are text values, numbers, boolean and dates. When
+multiple values are allowed, they must be separated by comma `,`.
 
 ### Text Values
 
@@ -152,6 +152,7 @@ these characters:
 - parens `()`
 
 Any quotes inside a quoted string must be escaped with a backslash.
+
 Examples: `scan_123`, `a-b-c`, `x.y.z`, `"scan from today"`, `"a \"strange\"
 name.pdf"`
 
@@ -185,13 +186,14 @@ prefixed by `ms`. The time part is ignored. Examples:
 
 #### Calculation
 
-Dates can be defined by providing a base date and a period to add or
-substract. This is especially useful with the `today` pattern. The
-period must be separated from the date by a semi-colon `;`. Then write
-a `+` or a `-` to add or substract and at last the number of days
-(suffix `d`) or months (suffix `m`).
+Dates can be defined by providing a base date via the forms above and
+a period to add or substract. This is especially useful with the
+`today` pattern. The period must be separated from the date by a
+semi-colon `;`. Then write a `+` or a `-` to add or substract and at
+last the number of days (suffix `d`) or months (suffix `m`).
 
 Examples: `today;-14d`, `2020-02;+1m`
+
 
 # Simple Expressions
 
@@ -201,24 +203,29 @@ except for boolean fields.
 
 The like operator `:` can be used with all values, but makes only
 sense for text values. It allows to do a substring search for a field.
-For example, to look for an item with a name of exactly 'invoice_22':
+
+For example, this looks for an item with a name of exactly
+'invoice_22':
 
 ```
 name=invoice_22
 ```
 
-Using `:` it is possible to look for items that have 'invoice' in
-their name:
+By using `:`, it is possible to look for items that have 'invoice'
+somewhere in their name:
 
 ```
 name:*invoice*
 ```
 
 The asterisk `*` can be added at the beginning and/or end of the
-value. Furthermore, the like operator is case-insensitive, whereas `=`
-is not. This applies to all fields with a text value; this is another
-example looking for a correspondent person of with 'marcus' in the
-name:
+value, but not in betwee. Furthermore, the like operator is
+case-insensitive, whereas `=` is not. This applies to all fields with
+a text value.
+
+This is another example looking for a correspondent person of with
+'marcus' in the name:
+
 ```
 corr.pers.name:*marcus*
 ```
@@ -233,9 +240,9 @@ operators don't make sense and therefore don't work there.
 ----
 
 All these fields (except boolean fields) allow to use the in-operator,
-`~=`. This is a more efficient form to specify a list of alternatives
-and is logically the same as combining multiple expressions with
-`OR`. For example:
+`~=`. This is a more efficient form to specify a list of alternative
+values for the same field. It is logically the same as combining
+multiple expressions with `OR`. For example:
 
 ```
 source~=webapp,mailbox
@@ -287,9 +294,9 @@ incoming:no
 
 # Tags
 
-Tags have their own syntax, because they are an important tool for
-organizing items. Tags only allow for two operators: `=` and `:`.
-Combined with negation (the `!` operator), this is quite flexible.
+Tags have their own syntax, because they can appear multiple times on
+an item. Tags only allow for two operators: `=` and `:`. Combined with
+negation (the `!` operator), this is quite flexible.
 
 For tags, `=` means that items must have *all* specified tags (or
 more), while `:` means that items must have at least *one* of the
@@ -298,12 +305,14 @@ given as a comma separated list (just like when using the
 in-operator).
 
 Some examples: Find all invoices that are todo:
+
 ```
 tag=invoice,todo
 ```
 
-This returns all items that have tags `invoice` and `todo` – and
-possible some other tags. Negating this:
+This returns all items that have both tags `invoice` and `todo`.
+Negating this:
+
 ```
 !tag=invoice,todo
 ```
@@ -332,9 +341,10 @@ instead of `tag`.
 
 The field `cat` can be used the same way to search for tag categories.
 
+
 # Custom Fields
 
-Custom fields are implemented via the following syntax:
+Custom fields can be used via the following syntax:
 
 ```
 f:<field-name><operator><value>
@@ -378,8 +388,8 @@ f.id:J2ES1Z4Ni9W-xw1VdFbt3KA-rL725kuyVzh-7La95Yw7Ax2:15.00
 # Fulltext Search
 
 The special field `content` allows to add a fulltext search. Using
-this is currently restricted: it must occur in the root query and
-cannot be nested in other complex expressions.
+this is currently restricted: it must occur in the root (AND) query
+and cannot be nested in other complex expressions.
 
 The form is:
 
@@ -396,10 +406,18 @@ For example, do a fulltext search for 'red needle':
 content:"red needle"
 ```
 
-It can be combined in an AND expression (but not deeper):
+It can be combined in an AND expression:
+
 ```
 content:"red needle" tag:todo
 ```
+
+But it can't be combined via OR. This is not possible:
+
+```
+tag:todo (| content:"red needle" tag:waiting)
+```
+
 
 
 # File Checksums
@@ -419,16 +437,17 @@ checksum:40675c22ab035b8a4ffe760732b65e5f1d452c59b44d3d0a2a08a95d28853497
 # Exist
 
 The `exist` field can be used with another field, to check whether an
-item has some value for a given field. It only works for fields that
-have at most one value.
+item has some value for it. It only works for fields that have at most
+one value.
 
-For example, it could be used to find fields that are in any folder:
+For example, it could be used to find items that are in any folder:
 
 ```
 exist:folder
 ```
 
 When negating, it finds all items that are not in a folder:
+
 ```
 !exist:folder
 ```

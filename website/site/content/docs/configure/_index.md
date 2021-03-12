@@ -405,7 +405,30 @@ allows comments and has some [advanced
 features](https://github.com/lightbend/config#features-of-hocon).
 Please refer to their documentation for more on this.
 
-Here are the default configurations.
+A short description (please see the links for better understanding):
+The config consists of key-value pairs and can be written in a
+JSON-like format (called HOCON). Keys are organized in trees, and a
+key defines a full path into the tree. There are two ways:
+
+```
+a.b.c.d=15
+```
+
+or
+
+```
+a {
+  b {
+    c {
+      d = 15
+    }
+  }
+}
+```
+
+Both are exactly the same and these forms are both used at the same
+time. Usually the braces approach is used to group some more settings,
+for better readability.
 
 
 # Default Config

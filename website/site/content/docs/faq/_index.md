@@ -114,6 +114,11 @@ Currently there exists a bash script to import files and metadata from
 [Paperless](https://github.com/the-paperless-project/paperless/).
 Please see this [issue](https://github.com/eikek/docspell/issues/358).
 
+## Why another DMS?
+
+Back when Docspell started, there weren't as many options as there are
+now. I wanted to try out a different approach. You can read more about
+that [here](@/docs/intro/_index.md#rationale).
 
 ## Wh…?
 
