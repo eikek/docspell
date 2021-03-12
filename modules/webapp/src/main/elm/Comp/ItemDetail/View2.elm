@@ -1,6 +1,7 @@
 module Comp.ItemDetail.View2 exposing (view)
 
 import Comp.Basic as B
+import Comp.ConfirmModal
 import Comp.DetailEdit
 import Comp.ItemDetail.AddFilesForm
 import Comp.ItemDetail.ItemInfoHeader
@@ -16,7 +17,6 @@ import Comp.ItemDetail.SingleAttachment
 import Comp.ItemMail
 import Comp.MenuBar as MB
 import Comp.SentMails
-import Comp.YesNoDimmer
 import Data.Icons as Icons
 import Data.ItemNav exposing (ItemNav)
 import Data.UiSettings exposing (UiSettings)
@@ -34,13 +34,18 @@ view inav settings model =
         [ header settings model
         , menuBar inav settings model
         , body inav settings model
-        , Html.map DeleteItemConfirm
-            (Comp.YesNoDimmer.viewN
-                True
-                (Comp.YesNoDimmer.defaultSettings2 "Really delete the complete item?")
-                model.deleteItemConfirm
-            )
+        , itemModal model
         ]
+
+
+itemModal : Model -> Html Msg
+itemModal model =
+    case model.itemModal of
+        Just confirm ->
+            Comp.ConfirmModal.view confirm
+
+        Nothing ->
+            span [ class "hidden" ] []
 
 
 header : UiSettings -> Model -> Html Msg
@@ -165,6 +170,15 @@ menuBar inav settings model =
                     , classList [ ( "hidden", model.item.state == "created" ) ]
                     ]
                     [ i [ class "fa fa-eye-slash font-thin" ] []
+                    ]
+            , MB.CustomElement <|
+                a
+                    [ class S.secondaryBasicButton
+                    , href "#"
+                    , onClick RequestReprocessItem
+                    , title "Reprocess this item"
+                    ]
+                    [ i [ class "fa fa-redo" ] []
                     ]
             , MB.CustomElement <|
                 a

@@ -3,6 +3,7 @@ module Comp.ItemDetail.SingleAttachment exposing (view)
 import Api
 import Api.Model.Attachment exposing (Attachment)
 import Comp.AttachmentMeta
+import Comp.ConfirmModal
 import Comp.ItemDetail.Model
     exposing
         ( Model
@@ -11,7 +12,6 @@ import Comp.ItemDetail.Model
         , SaveNameState(..)
         )
 import Comp.MenuBar as MB
-import Comp.YesNoDimmer
 import Data.UiSettings exposing (UiSettings)
 import Dict
 import Html exposing (..)
@@ -37,12 +37,7 @@ view settings model pos attach =
             [ ( "hidden", not (attachmentVisible model pos) )
             ]
         ]
-        [ Html.map (DeleteAttachConfirm attach.id)
-            (Comp.YesNoDimmer.viewN
-                True
-                (Comp.YesNoDimmer.defaultSettings2 "Really delete this file?")
-                model.deleteAttachConfirm
-            )
+        [ renderModal model
         , div
             [ class "flex flex-row px-2 py-2 text-sm"
             , class S.border
@@ -213,6 +208,13 @@ attachHeader settings model _ attach =
                                 , href "#"
                                 ]
                           }
+                        , { icon = "fa fa-redo-alt"
+                          , label = "Re-process this file"
+                          , attrs =
+                                [ onClick (RequestReprocessFile attach.id)
+                                , href "#"
+                                ]
+                          }
                         , { icon = "fa fa-trash"
                           , label = "Delete this file"
                           , attrs =
@@ -344,3 +346,13 @@ menuItem model pos attach =
                 |> text
             ]
         ]
+
+
+renderModal : Model -> Html Msg
+renderModal model =
+    case model.attachModal of
+        Just confirmModal ->
+            Comp.ConfirmModal.view confirmModal
+
+        Nothing ->
+            span [ class "hidden" ] []

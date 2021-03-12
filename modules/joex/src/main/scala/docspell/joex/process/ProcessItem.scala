@@ -22,8 +22,8 @@ object ProcessItem {
     ExtractArchive(item)
       .flatMap(Task.setProgress(20))
       .flatMap(processAttachments0(cfg, fts, analyser, regexNer, (40, 60, 80)))
-      .flatMap(LinkProposal[F])
-      .flatMap(SetGivenData[F](itemOps))
+      .flatMap(LinkProposal.onlyNew[F])
+      .flatMap(SetGivenData.onlyNew[F](itemOps))
       .flatMap(Task.setProgress(99))
       .flatMap(RemoveEmptyItem(itemOps))
 

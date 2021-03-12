@@ -89,6 +89,8 @@ module Api exposing
     , register
     , removeMember
     , removeTagsMultiple
+    , reprocessItem
+    , reprocessMultiple
     , sendMail
     , setAttachmentName
     , setCollectiveSettings
@@ -1423,6 +1425,20 @@ getJobQueueStateTask flags =
 --- Item (Mulit Edit)
 
 
+reprocessMultiple :
+    Flags
+    -> Set String
+    -> (Result Http.Error BasicResult -> msg)
+    -> Cmd msg
+reprocessMultiple flags items receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/items/reprocess"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.IdList.encode (Set.toList items |> IdList))
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
 confirmMultiple :
     Flags
     -> Set String
@@ -1635,6 +1651,21 @@ deleteAllItems flags ids receive =
 
 
 --- Item
+
+
+reprocessItem :
+    Flags
+    -> String
+    -> List String
+    -> (Result Http.Error BasicResult -> msg)
+    -> Cmd msg
+reprocessItem flags itemId attachIds receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/item/" ++ itemId ++ "/reprocess"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.IdList.encode (IdList attachIds))
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
 
 
 attachmentPreviewURL : String -> String

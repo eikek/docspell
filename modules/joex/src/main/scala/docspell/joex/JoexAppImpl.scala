@@ -113,7 +113,7 @@ object JoexAppImpl {
         .withTask(
           JobTask.json(
             ReProcessItemArgs.taskName,
-            ReProcessItem[F](cfg, fts, analyser, regexNer),
+            ReProcessItem[F](cfg, fts, itemOps, analyser, regexNer),
             ReProcessItem.onCancel[F]
           )
         )

@@ -28,6 +28,7 @@ import Api.Model.SentMails exposing (SentMails)
 import Api.Model.Tag exposing (Tag)
 import Api.Model.TagList exposing (TagList)
 import Comp.AttachmentMeta
+import Comp.ConfirmModal
 import Comp.CustomFieldMultiInput
 import Comp.DatePicker
 import Comp.DetailEdit
@@ -72,7 +73,7 @@ type alias Model =
     , nameSaveThrottle : Throttle Msg
     , notesModel : Maybe String
     , notesField : NotesField
-    , deleteItemConfirm : Comp.YesNoDimmer.Model
+    , itemModal : Maybe (Comp.ConfirmModal.Settings Msg)
     , itemDatePicker : DatePicker
     , itemDate : Maybe Int
     , itemProposals : ItemProposals
@@ -87,7 +88,7 @@ type alias Model =
     , attachMeta : Dict String Comp.AttachmentMeta.Model
     , attachMetaOpen : Bool
     , pdfNativeView : Maybe Bool
-    , deleteAttachConfirm : Comp.YesNoDimmer.Model
+    , attachModal : Maybe (Comp.ConfirmModal.Settings Msg)
     , addFilesOpen : Bool
     , addFilesModel : Comp.Dropzone.Model
     , selectedFiles : List File
@@ -180,7 +181,7 @@ emptyModel =
     , nameSaveThrottle = Throttle.create 1
     , notesModel = Nothing
     , notesField = ViewNotes
-    , deleteItemConfirm = Comp.YesNoDimmer.emptyModel
+    , itemModal = Nothing
     , itemDatePicker = Comp.DatePicker.emptyModel
     , itemDate = Nothing
     , itemProposals = Api.Model.ItemProposals.empty
@@ -195,7 +196,7 @@ emptyModel =
     , attachMeta = Dict.empty
     , attachMetaOpen = False
     , pdfNativeView = Nothing
-    , deleteAttachConfirm = Comp.YesNoDimmer.emptyModel
+    , attachModal = Nothing
     , addFilesOpen = False
     , addFilesModel = Comp.Dropzone.init []
     , selectedFiles = []
@@ -247,7 +248,8 @@ type Msg
     | SetDueDateSuggestion Int
     | ItemDatePickerMsg Comp.DatePicker.Msg
     | DueDatePickerMsg Comp.DatePicker.Msg
-    | DeleteItemConfirm Comp.YesNoDimmer.Msg
+    | DeleteItemConfirmed
+    | ItemModalCancelled
     | RequestDelete
     | SaveResp (Result Http.Error BasicResult)
     | DeleteResp (Result Http.Error BasicResult)
@@ -265,7 +267,8 @@ type Msg
     | AttachMetaMsg String Comp.AttachmentMeta.Msg
     | TogglePdfNativeView Bool
     | RequestDeleteAttachment String
-    | DeleteAttachConfirm String Comp.YesNoDimmer.Msg
+    | DeleteAttachConfirmed String
+    | AttachModalCancelled
     | DeleteAttachResp (Result Http.Error BasicResult)
     | AddFilesToggle
     | AddFilesMsg Comp.Dropzone.Msg
@@ -304,6 +307,11 @@ type Msg
     | ToggleAttachmentDropdown
     | ToggleAkkordionTab String
     | ToggleOpenAllAkkordionTabs
+    | RequestReprocessFile String
+    | ReprocessFileConfirmed String
+    | ReprocessFileResp (Result Http.Error BasicResult)
+    | RequestReprocessItem
+    | ReprocessItemConfirmed
 
 
 type SaveNameState

@@ -84,10 +84,10 @@ object TextExtraction {
 
     val rm = item.findOrCreate(ra.id, lang)
     rm.content match {
-      case Some(_) =>
+      case Some(_) if ctx.args.isNormalProcessing =>
         ctx.logger.info("TextExtraction skipped, since text is already available.") *>
           makeTextData((rm, Nil)).pure[F]
-      case None =>
+      case _ =>
         extractTextToMeta[F](ctx, cfg, lang, item)(ra)
           .map(makeTextData)
     }

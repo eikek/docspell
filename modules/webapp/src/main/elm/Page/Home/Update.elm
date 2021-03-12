@@ -3,6 +3,7 @@ module Page.Home.Update exposing (update)
 import Api
 import Api.Model.ItemLightList exposing (ItemLightList)
 import Browser.Navigation as Nav
+import Comp.ConfirmModal
 import Comp.FixedDropdown
 import Comp.ItemCardList
 import Comp.ItemDetail.FormChange exposing (FormChange(..))
@@ -10,7 +11,6 @@ import Comp.ItemDetail.MultiEditMenu exposing (SaveNameState(..))
 import Comp.LinkTarget exposing (LinkTarget)
 import Comp.PowerSearchInput
 import Comp.SearchMenu
-import Comp.YesNoDimmer
 import Data.Flags exposing (Flags)
 import Data.ItemQuery as Q
 import Data.ItemSelection
@@ -358,34 +358,20 @@ update mId key flags settings msg model =
                 _ ->
                     noSub ( model, Cmd.none )
 
-        DeleteSelectedConfirmMsg lmsg ->
+        DeleteSelectedConfirmed ->
             case model.viewMode of
                 SelectView svm ->
                     let
-                        ( confirmModel, confirmed ) =
-                            Comp.YesNoDimmer.update lmsg svm.deleteAllConfirm
-
                         cmd =
-                            if confirmed then
-                                Api.deleteAllItems flags svm.ids DeleteAllResp
-
-                            else
-                                Cmd.none
-
-                        act =
-                            if confirmModel.active || confirmed then
-                                DeleteSelected
-
-                            else
-                                NoneAction
+                            Api.deleteAllItems flags svm.ids DeleteAllResp
                     in
                     noSub
                         ( { model
                             | viewMode =
                                 SelectView
                                     { svm
-                                        | deleteAllConfirm = confirmModel
-                                        , action = act
+                                        | confirmModal = Nothing
+                                        , action = DeleteSelected
                                     }
                           }
                         , cmd
@@ -416,6 +402,74 @@ update mId key flags settings msg model =
         DeleteAllResp (Err _) ->
             noSub ( model, Cmd.none )
 
+        RequestReprocessSelected ->
+            case model.viewMode of
+                SelectView svm ->
+                    if svm.ids == Set.empty then
+                        noSub ( model, Cmd.none )
+
+                    else
+                        let
+                            lmsg =
+                                Comp.ConfirmModal.defaultSettings
+                                    ReprocessSelectedConfirmed
+                                    CloseConfirmModal
+                                    "Really reprocess all selected items? Metadata of unconfirmed items may change."
+
+                            model_ =
+                                { model
+                                    | viewMode =
+                                        SelectView
+                                            { svm
+                                                | action = ReprocessSelected
+                                                , confirmModal = Just lmsg
+                                            }
+                                }
+                        in
+                        noSub ( model_, Cmd.none )
+
+                _ ->
+                    noSub ( model, Cmd.none )
+
+        CloseConfirmModal ->
+            case model.viewMode of
+                SelectView svm ->
+                    noSub
+                        ( { model
+                            | viewMode = SelectView { svm | confirmModal = Nothing, action = NoneAction }
+                          }
+                        , Cmd.none
+                        )
+
+                _ ->
+                    noSub ( model, Cmd.none )
+
+        ReprocessSelectedConfirmed ->
+            case model.viewMode of
+                SelectView svm ->
+                    if svm.ids == Set.empty then
+                        noSub ( model, Cmd.none )
+
+                    else
+                        let
+                            cmd =
+                                Api.reprocessMultiple flags svm.ids DeleteAllResp
+                        in
+                        noSub
+                            ( { model
+                                | viewMode =
+                                    SelectView
+                                        { svm
+                                            | confirmModal = Nothing
+                                            , action = ReprocessSelected
+                                        }
+                              }
+                            , cmd
+                            )
+
+                _ ->
+                    noSub ( model, Cmd.none )
+
         RequestDeleteSelected ->
             case model.viewMode of
                 SelectView svm ->
@@ -425,12 +479,22 @@ update mId key flags settings msg model =
                     else
                         let
                             lmsg =
-                                DeleteSelectedConfirmMsg Comp.YesNoDimmer.activate
+                                Comp.ConfirmModal.defaultSettings
+                                    DeleteSelectedConfirmed
+                                    CloseConfirmModal
+                                    "Really delete all selected items?"
 
                             model_ =
-                                { model | viewMode = SelectView { svm | action = DeleteSelected } }
+                                { model
+                                    | viewMode =
+                                        SelectView
+                                            { svm
+                                                | action = DeleteSelected
+                                                , confirmModal = Just lmsg
+                                            }
+                                }
                         in
-                        update mId key flags settings lmsg model_
+                        noSub ( model_, Cmd.none )
 
                 _ ->
                     noSub ( model, Cmd.none )

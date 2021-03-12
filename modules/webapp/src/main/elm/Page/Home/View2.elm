@@ -1,6 +1,7 @@
 module Page.Home.View2 exposing (viewContent, viewSidebar)
 
 import Comp.Basic as B
+import Comp.ConfirmModal
 import Comp.ItemCardList
 import Comp.MenuBar as MB
 import Comp.PowerSearchInput
@@ -67,13 +68,13 @@ deleteSelectedDimmer model =
     in
     case model.viewMode of
         SelectView svm ->
-            [ Html.map DeleteSelectedConfirmMsg
-                (Comp.YesNoDimmer.viewN
-                    (selectAction == DeleteSelected)
-                    deleteAllDimmer
-                    svm.deleteAllConfirm
-                )
-            ]
+            case svm.confirmModal of
+                Just confirm ->
+                    [ Comp.ConfirmModal.view confirm
+                    ]
+
+                Nothing ->
+                    []
 
         _ ->
             []
@@ -217,6 +218,16 @@ editMenuBar model svm =
                 , inputClass =
                     [ ( btnStyle, True )
                     , ( "bg-gray-200 dark:bg-bluegray-600", svm.action == EditSelected )
+                    ]
+                }
+            , MB.CustomButton
+                { tagger = RequestReprocessSelected
+                , label = ""
+                , icon = Just "fa fa-redo"
+                , title = "Reprocess " ++ selectCount ++ " selected items"
+                , inputClass =
+                    [ ( btnStyle, True )
+                    , ( "bg-gray-200 dark:bg-bluegray-600", svm.action == ReprocessSelected )
                     ]
                 }
             , MB.CustomButton
