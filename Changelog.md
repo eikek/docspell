@@ -1,5 +1,60 @@
 # Changelog
 
+## v0.21.0
+
+*Mar 13, 2021*
+
+The main feature of this release gives a very flexible way of
+searching for documents, using a query.
+
+- Add a query language to provide a flexible way for searching
+  - the search form now is translated into a search query
+  - allows to search for items not in a folder or not in a specific
+    folder (#628, #379)
+  - Allows for range searches in custom fields (#540)
+  - And more! See [the
+    documentation](https://docspell.org/docs/query/)
+- Add a `use` attribute to all metadata, to be able to exclude them
+  from suggestions (#659)
+- Allow to submit items for reprocessing via the UI (#365)
+- Add Latvian language (#679)
+- Scrollbars are back! (#681, #677)
+- The `ds.sh` script was changed to inform the processing jobs to also
+  check for duplicates (#653)
+- Docker setup now uses again a fixed hostname (#608)
+- Moving the unit tests to MUnit (#672)
+- Remove the old UI code (#636)
+- Fix date extraction for English (#665)
+- Fix bug when reading contacts from extracted text (#709)
+- Fix bugs when reading mails (#691, #678)
+- Fix a bug that wouldn't show an error message when entering bad
+  characters in the register form (#663)
+- Fixes a typo in the user settings menu (#654, thanks
+  @ChristianKlass)
+
+Thanks to everyone showing interest in docspell and dedicating time by
+opening issues, testing and providing ideas!
+
+### REST Api Changes
+
+*Note there are breaking changes in the REST Api*
+
+- previous `search` and `searchWithTags` has been renamed to
+  `searchForm` and `searchFormWithTags`, respectively
+- same with `searchStats`, it has been renamed to `searchFormStats`
+- The new `search` route can be used with `GET` and `POST` requests
+  and accepts now a search query and also a flag for whether returning
+  details or not (there are no separate endpoints anymore)
+- The new `searchStats` accepts a query
+- The `ItemQuery` data structure is now only a query string, without
+  `limit` and `offset`
+- `Organization` and `Person` have an additional `use` attribute
+
+### Configuration Changes
+
+There were no changes to the configuration files.
+
+
 ## v0.20.0
 
 *Feb 19, 2021*
