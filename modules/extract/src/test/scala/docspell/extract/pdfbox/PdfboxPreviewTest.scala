@@ -16,7 +16,7 @@ class PdfboxPreviewTest extends FunSuite {
     ExampleFiles.scanner_pdf13_pdf -> "05ce4fd686b3d24b0e2d60df0c6d79b1df2338fcf7a6957e34cb4d11c65682b4"
   )
 
-  test("extract first page image from PDFs") {
+  test("extract first page image from PDFs".flaky) {
     testPDFs.foreach { case (file, checksum) =>
       val data = file.readURL[IO](8192, blocker)
       val sha256out =
