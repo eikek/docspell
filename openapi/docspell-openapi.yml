@@ -2,7 +2,7 @@ openapi: 3.0.0
 
 info:
   title: Docspell
-  version: 0.20.0
+  version: 0.21.0
   description: |
     This is the remote API to Docspell, a personal document organizer.
 
@@ -1310,16 +1310,17 @@ paths:
                 $ref: "#/components/schemas/BasicResult"
 
 
-  /sec/item/search:
+  /sec/item/searchForm:
     post:
-      tags: [ Item ]
+      tags: [ Item Search ]
       summary: Search for items.
+      deprecated: true
       description: |
         Search for items given a search form. The results are grouped
         by month and are sorted by item date (newest first). Tags and
         attachments are *not* resolved. The results will always
         contain an empty list for item tags and attachments. Use
-        `/searchWithTags` to also retrieve all tags and a list of
+        `/searchFormWithTags` to also retrieve all tags and a list of
         attachments of an item.
 
         The `fulltext` field can be used to restrict the results by
@@ -1328,6 +1329,8 @@ paths:
         The customfields used in the search query are allowed to be
         specified by either field id or field name. The values may
         contain the wildcard `*` at beginning or end.
+
+        **NOTE** This is deprecated in favor for using a search query.
       security:
         - authTokenHeader: []
       requestBody:
@@ -1342,10 +1345,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ItemLightList"
-  /sec/item/searchWithTags:
+  /sec/item/searchFormWithTags:
     post:
-      tags: [ Item ]
+      tags: [ Item Search ]
       summary: Search for items.
+      deprecated: true
       description: |
         Search for items given a search form. The results are grouped
         by month by default. For each item, its tags and attachments
@@ -1355,6 +1359,8 @@ paths:
 
         The `fulltext` field can be used to restrict the results by
         using full-text search in the documents contents.
+
+        **NOTE** This is deprecated in favor for using search query.
       security:
         - authTokenHeader: []
       requestBody:
@@ -1369,9 +1375,60 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ItemLightList"
+
+  /sec/item/search:
+    get:
+      tags: [ Item Search ]
+      summary: Search for items.
+      description: |
+        Search for items given a search query. The results are grouped
+        by month and are sorted by item date (newest first). Tags and
+        attachments are *not* resolved. The results will always
+        contain an empty list for item tags and attachments. Set
+        `withDetails` to `true` for retrieving all tags and a list of
+        attachments of an item.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/q"
+        - $ref: "#/components/parameters/limit"
+        - $ref: "#/components/parameters/offset"
+        - $ref: "#/components/parameters/withDetails"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ItemLightList"
+    post:
+      tags: [ Item Search ]
+      summary: Search for items.
+      description: |
+        Search for items given a search query. The results are grouped
+        by month and are sorted by item date (newest first). Tags and
+        attachments are *not* resolved. The results will always
+        contain an empty list for item tags and attachments. Use
+        `withDetails` to also retrieve all tags and a list of
+        attachments of an item.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ItemQuery"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ItemLightList"
+
   /sec/item/searchIndex:
     post:
-      tags: [ Item ]
+      tags: [ Item Search ]
       summary: Search for items using full-text search only.
       description: |
         Search for items by only using the full-text search index.
@@ -1391,7 +1448,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ItemFtsSearch"
+              $ref: "#/components/schemas/ItemQuery"
       responses:
         200:
           description: Ok
@@ -1400,12 +1457,15 @@ paths:
               schema:
                 $ref: "#/components/schemas/ItemLightList"
 
-  /sec/item/searchStats:
+  /sec/item/searchFormStats:
     post:
-      tags: [ Item ]
+      tags: [ Item Search ]
       summary: Get basic statistics about the data of a search.
+      deprecated: true
       description: |
         Takes a search query and returns a summary about the results.
+
+        **NOTE** This is deprecated in favor of using a search query.
       security:
         - authTokenHeader: []
       requestBody:
@@ -1413,6 +1473,44 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/ItemSearch"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SearchStats"
+  /sec/item/searchStats:
+    post:
+      tags: [ Item Search ]
+      summary: Get basic statistics about search results.
+      description: |
+        Instead of returning the results of a query, uses it to return
+        a summary.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ItemQuery"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SearchStats"
+    get:
+      tags: [ Item Search ]
+      summary: Get basic statistics about search results.
+      description: |
+        Instead of returning the results of a query, uses it to return
+        a summary.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/q"
       responses:
         200:
           description: Ok
@@ -2015,7 +2113,11 @@ paths:
       summary: Start reprocessing the files of the item.
       description: |
         This submits a job that will re-process the files (either all
-        or the ones specified) of the item and replace the metadata.
+        or the ones specified) of the item and replace their metadata.
+
+        If the item is not in "confirmed" state, its associated metada
+        is also updated. Otherwise only the file metadata is updated
+        (text analysis).
       security:
         - authTokenHeader: []
       parameters:
@@ -2417,7 +2519,8 @@ paths:
       description: |
         Given a list of item-ids, submits all these items for
         reprocessing. All attachments of these items will be
-        reprocessed. Item metadata is not changed.
+        reprocessed. Item metadata may be changed if an item is not
+        confirmed. Confirmed items are not changed.
       security:
         - authTokenHeader: []
       requestBody:
@@ -3777,22 +3880,12 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/IdName"
-    FolderMember:
+    ItemQuery:
       description: |
-        Information to add or remove a folder member.
-      required:
-        - userId
-      properties:
-        userId:
-          type: string
-          format: ident
-    ItemFtsSearch:
-      description: |
-        Query description for a full-text only search.
+        Query description for a search. Is used for fulltext-only
+        searches and combined searches.
       required:
         - query
-        - offset
-        - limit
       properties:
         offset:
           type: integer
@@ -3804,6 +3897,9 @@ components:
             The maximum number of results to return. Note that this
             limit is a soft limit, there is some hard limit on the
             server, too.
+        withDetails:
+          type: boolean
+          default: false
         query:
           type: string
           description: |
@@ -4973,6 +5069,7 @@ components:
         - id
         - name
         - created
+        - use
       properties:
         id:
           type: string
@@ -4985,6 +5082,12 @@ components:
           format: date-time
         notes:
           type: string
+        use:
+          type: string
+          format: equipmentuse
+          enum:
+            - concerning
+            - disabled
     ReferenceList:
       description:
         Listing of entities with their id and a name.
@@ -5028,6 +5131,7 @@ components:
             - concerning
             - correspondent
             - both
+            - disabled
           description: |
             Whether this person should be used to create suggestions
             for the "concerning person", "correspondent" or both.
@@ -5054,6 +5158,7 @@ components:
         - address
         - contacts
         - created
+        - use
       properties:
         id:
           type: string
@@ -5074,6 +5179,12 @@ components:
           format: date-time
         shortName:
           type: string
+        use:
+          type: string
+          format: orguse
+          enum:
+            - correspondent
+            - disabled
     OrganizationList:
       description: |
         A list of full organization values.
@@ -5547,6 +5658,26 @@ components:
       required: false
       schema:
         type: string
+    limit:
+      name: limit
+      in: query
+      description: A limit for a search query
+      schema:
+        type: integer
+        format: int32
+    offset:
+      name: offset
+      in: query
+      description: A offset into the results for a search query
+      schema:
+        type: integer
+        format: int32
+    withDetails:
+      name: withDetails
+      in: query
+      description: Whether to return details to each item.
+      schema:
+        type: boolean
     name:
       name: name
       in: path

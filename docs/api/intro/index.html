@@ -176,6 +176,12 @@
                                                 </a>
                                             </li>
                                             
+                                            <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;api&#x2F;intro&#x2F;#search-for-items">
+                                                    Search for items
+                                                </a>
+                                            </li>
+                                            
                                         </ul>
                                     </li>
                                     
@@ -280,6 +286,74 @@ url:</p>
 ,</span><span style="color:#b8bb26;">&quot;itemSize&quot;</span><span style="color:#fdf4c1;">:207310
 ,</span><span style="color:#b8bb26;">&quot;tagCloud&quot;</span><span style="color:#fdf4c1;">:{</span><span style="color:#b8bb26;">&quot;items&quot;</span><span style="color:#fdf4c1;">:[]</span><span style="color:#fdf4c1aa;">}
 }
+</span></code></pre><h3 id="search-for-items">Search for items<a class="zola-anchor" href="#search-for-items" aria-label="Anchor link for: search-for-items">🔗</a></h3>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1;">$ curl -i -H </span><span style="color:#b8bb26;">&#39;X-Docspell-Auth: 1615240493…kYtFynj4&#39; </span><span style="color:#fdf4c1;">\
+  </span><span style="color:#b8bb26;">&#39;http://localhost:7880/api/v1/sec/item/search?q=tag=todo,invoice%20year:2021&#39;
+</span><span style="color:#fdf4c1aa;">{
+  </span><span style="color:#b8bb26;">&quot;groups&quot;</span><span style="color:#fdf4c1;">: [
+    </span><span style="color:#fdf4c1aa;">{
+      </span><span style="color:#b8bb26;">&quot;name&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;2021-02&quot;</span><span style="color:#fdf4c1;">,
+      </span><span style="color:#b8bb26;">&quot;items&quot;</span><span style="color:#fdf4c1;">: [
+        </span><span style="color:#fdf4c1aa;">{
+          </span><span style="color:#b8bb26;">&quot;id&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;41J962DjS7T-sjP9idxJ6o9-hJrmBk34YJN-mQqysHwcFD6&quot;</span><span style="color:#fdf4c1;">,
+          </span><span style="color:#b8bb26;">&quot;name&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;something.txt&quot;</span><span style="color:#fdf4c1;">,
+          </span><span style="color:#b8bb26;">&quot;state&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;confirmed&quot;</span><span style="color:#fdf4c1;">,
+          </span><span style="color:#b8bb26;">&quot;date&quot;</span><span style="color:#fdf4c1;">: 1613598750202,
+          </span><span style="color:#b8bb26;">&quot;dueDate&quot;</span><span style="color:#fdf4c1;">: 1617883200000,
+          </span><span style="color:#b8bb26;">&quot;source&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;webapp&quot;</span><span style="color:#fdf4c1;">,
+          </span><span style="color:#b8bb26;">&quot;direction&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;outgoing&quot;</span><span style="color:#fdf4c1;">,
+          </span><span style="color:#b8bb26;">&quot;corrOrg&quot;</span><span style="color:#fdf4c1;">: {
+            </span><span style="color:#b8bb26;">&quot;id&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;J58tYifCh4X-cze5R8eSJcc-YAFr6qt1VKL-1ZmhRwiTXoH&quot;</span><span style="color:#fdf4c1;">,
+            </span><span style="color:#b8bb26;">&quot;name&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;EasyCare AG&quot;
+          </span><span style="color:#fdf4c1;">},
+          </span><span style="color:#b8bb26;">&quot;corrPerson&quot;</span><span style="color:#fdf4c1;">: null,
+          </span><span style="color:#b8bb26;">&quot;concPerson&quot;</span><span style="color:#fdf4c1;">: null,
+          </span><span style="color:#b8bb26;">&quot;concEquipment&quot;</span><span style="color:#fdf4c1;">: null,
+          </span><span style="color:#b8bb26;">&quot;folder&quot;</span><span style="color:#fdf4c1;">: {
+            </span><span style="color:#b8bb26;">&quot;id&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;GKwSvYVdvfb-QeAwzzT7pBM-Gbji2hQc2bL-uCyrMCAg3wo&quot;</span><span style="color:#fdf4c1;">,
+            </span><span style="color:#b8bb26;">&quot;name&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;test&quot;
+          </span><span style="color:#fdf4c1;">},
+          </span><span style="color:#b8bb26;">&quot;attachments&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#fa5c4b;">[]</span><span style="color:#fdf4c1;">,
+          </span><span style="color:#b8bb26;">&quot;tags&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#fa5c4b;">[]</span><span style="color:#fdf4c1;">,
+          </span><span style="color:#b8bb26;">&quot;customfields&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#fa5c4b;">[]</span><span style="color:#fdf4c1;">,
+          </span><span style="color:#b8bb26;">&quot;notes&quot;</span><span style="color:#fdf4c1;">: null,
+          </span><span style="color:#b8bb26;">&quot;highlighting&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#fa5c4b;">[]
+        </span><span style="color:#fdf4c1aa;">}
+      </span><span style="color:#fdf4c1;">]
+    </span><span style="color:#fdf4c1aa;">}</span><span style="color:#fdf4c1;">,
+    </span><span style="color:#fdf4c1aa;">{
+      </span><span style="color:#b8bb26;">&quot;name&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;2021-01&quot;</span><span style="color:#fdf4c1;">,
+      </span><span style="color:#b8bb26;">&quot;items&quot;</span><span style="color:#fdf4c1;">: [
+        </span><span style="color:#fdf4c1aa;">{
+          </span><span style="color:#b8bb26;">&quot;id&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;ANqtuDynXWU-PrhzUxzQVmH-PDuJfeJ6dYB-Ut3g1jrcFhw&quot;</span><span style="color:#fdf4c1;">,
+          </span><span style="color:#b8bb26;">&quot;name&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;letter-de.pdf&quot;</span><span style="color:#fdf4c1;">,
+          </span><span style="color:#b8bb26;">&quot;state&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;confirmed&quot;</span><span style="color:#fdf4c1;">,
+          </span><span style="color:#b8bb26;">&quot;date&quot;</span><span style="color:#fdf4c1;">: 1611144000000,
+          </span><span style="color:#b8bb26;">&quot;dueDate&quot;</span><span style="color:#fdf4c1;">: null,
+          </span><span style="color:#b8bb26;">&quot;source&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;webapp&quot;</span><span style="color:#fdf4c1;">,
+          </span><span style="color:#b8bb26;">&quot;direction&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;incoming&quot;</span><span style="color:#fdf4c1;">,
+          </span><span style="color:#b8bb26;">&quot;corrOrg&quot;</span><span style="color:#fdf4c1;">: {
+            </span><span style="color:#b8bb26;">&quot;id&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;J58tYifCh4X-cze5R8eSJcc-YAFr6qt1VKL-1ZmhRwiTXoH&quot;</span><span style="color:#fdf4c1;">,
+            </span><span style="color:#b8bb26;">&quot;name&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;EasyCare AG&quot;
+          </span><span style="color:#fdf4c1;">},
+          </span><span style="color:#b8bb26;">&quot;corrPerson&quot;</span><span style="color:#fdf4c1;">: null,
+          </span><span style="color:#b8bb26;">&quot;concPerson&quot;</span><span style="color:#fdf4c1;">: {
+            </span><span style="color:#b8bb26;">&quot;id&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;AA5sV1nH9ve-mDCn4DxDRvu-tWkUquiW4fZ-fVJimW4Vq79&quot;</span><span style="color:#fdf4c1;">,
+            </span><span style="color:#b8bb26;">&quot;name&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;Max Mustermann&quot;
+          </span><span style="color:#fdf4c1;">},
+          </span><span style="color:#b8bb26;">&quot;concEquipment&quot;</span><span style="color:#fdf4c1;">: null,
+          </span><span style="color:#b8bb26;">&quot;folder&quot;</span><span style="color:#fdf4c1;">: null,
+          </span><span style="color:#b8bb26;">&quot;attachments&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#fa5c4b;">[]</span><span style="color:#fdf4c1;">,
+          </span><span style="color:#b8bb26;">&quot;tags&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#fa5c4b;">[]</span><span style="color:#fdf4c1;">,
+          </span><span style="color:#b8bb26;">&quot;customfields&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#fa5c4b;">[]</span><span style="color:#fdf4c1;">,
+          </span><span style="color:#b8bb26;">&quot;notes&quot;</span><span style="color:#fdf4c1;">: null,
+          </span><span style="color:#b8bb26;">&quot;highlighting&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#fa5c4b;">[]
+        </span><span style="color:#fdf4c1aa;">}
+      </span><span style="color:#fdf4c1;">]
+    </span><span style="color:#fdf4c1aa;">}
+  </span><span style="color:#fdf4c1;">]
+</span><span style="color:#fdf4c1aa;">}
 </span></code></pre>
                         </div>
                     </div>
@@ -291,7 +365,7 @@ url:</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell, 0.20.0
+                Docspell, 0.21.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>

@@ -13,7 +13,7 @@
 <meta name="title" property="og:title" content="Docspell – Simple Document Organizer">
 <meta name="og:image" content="/img/poster.png">
 <meta name="og:title" content="Docspell – Simple Document Organizer">
-<meta name="og:site_name" content="Customize Item Card - Docspell">
+<meta name="og:site_name" content="Auto Tagging - Docspell">
 <meta name="og:url" content="">
 <meta name="og:type" content="website">
 <meta name="og:description" content="Simple Document Organizer">
@@ -25,7 +25,7 @@
 <link rel="shortcut icon" href="/favicon-mc.ico" type="image/x-icon">
 <link rel="icon" href="/favicon-mc.ico" type="image/x-icon">
 
-        <title>Customize Item Card – Docspell Documentation</title>
+        <title>Auto Tagging – Docspell Documentation</title>
         <link rel="stylesheet" href="/styles.css">
         <script type="application/javascript" src="/search_index.en.js"></script>
 <script type="application/javascript" src="/elasticlunr.min.js"></script>
@@ -66,7 +66,7 @@
                 <div class="columns is-vcentered">
                     <div class="column is-8">
                         <h1 class="title">
-                            Customize Item Card
+                            Auto Tagging
                         </h1>
                         <h2 class="subtitle">
                             Docspell Documentation
@@ -98,7 +98,7 @@
                 </li>
                 
                 <li>
-                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;itemcard-customize&#x2F;">Customize Item Card</a>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;autotagging&#x2F;">Auto Tagging</a>
                 </li>
             </ul>
         </nav>
@@ -173,40 +173,9 @@
                             
                             <li>
                                 <a href="https://docspell.org/docs/webapp/itemcard-customize/"
-                                   class="is-active">
+                                   >
                                     Customize Item Card
                                 </a>
-                                
-                                <ul class="menu-list">
-                                    
-                                    <li>
-                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;itemcard-customize&#x2F;#max-note-length">
-                                            Max Note Length
-                                        </a>
-                                        <ul>
-                                            
-                                        </ul>
-                                    </li>
-                                    
-                                    <li>
-                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;itemcard-customize&#x2F;#size-of-item-preview">
-                                            Size of item preview
-                                        </a>
-                                        <ul>
-                                            
-                                        </ul>
-                                    </li>
-                                    
-                                    <li>
-                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;itemcard-customize&#x2F;#card-title-subtitle-pattern">
-                                            Card Title&#x2F;Subtitle Pattern
-                                        </a>
-                                        <ul>
-                                            
-                                        </ul>
-                                    </li>
-                                    
-                                </ul>
                                 
                             </li>
                             
@@ -258,9 +227,13 @@
                             
                             <li>
                                 <a href="https://docspell.org/docs/webapp/autotagging/"
-                                   >
+                                   class="is-active">
                                     Auto Tagging
                                 </a>
+                                
+                                <ul class="menu-list">
+                                    
+                                </ul>
                                 
                             </li>
                             
@@ -271,71 +244,29 @@
                 <div class="column is-9">
                     <div class="container">
                         <div class="content doc">
-                            <p>The search view or list view displays the search results as a list of
-item cards. Each cards represents one item.</p>
-<p>The item card can be customized a bit in the user settings. In the
-user menu (the user icon, top right), choose <em>User Profile</em> and then
-<em>UI Settings</em>. Among other things, there is a <em>Item Cards</em> section:</p>
+                            <p>Auto-Tagging must be enabled in the collective profile. Docspell can
+go through your items periodically and learn from your existing tags.
+But not all tags are suited for learning. Docspell can only learn
+relationships between tags and the document's extracted text. Thus,
+all tags that don't relate to the contents of a documents, should be
+excluded.</p>
+<p>For example, assume there is a tag <code>Done</code> that is associated to all
+items that have been worked on. Over time, most of the items have this
+tag. Whether an item is tagged with <code>Done</code> or not cannot be well
+determined by looking at the text of the document. It would mean that
+Docspell could learn relationships that are not correct and then tag
+the next incoming items with <code>Done</code>.</p>
 <figure class="image">
-    <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;itemcard-customize-01.png">
+    <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;collective-settings-autotag.png">
 </figure>
-<h3 id="max-note-length">Max Note Length<a class="zola-anchor" href="#max-note-length" aria-label="Anchor link for: max-note-length">🔗</a></h3>
-<p>This defines how many of the item notes to display in the card. You
-can set it to <code>0</code> to not show any notes at all. This is only a &quot;soft
-limit&quot;, there is also a &quot;hard limit&quot; in <a href="https://docspell.org/docs/configure/#rest-server">docspell's
-configuration</a> (see <code>max-note-length</code>),
-that is an upper limit to this value.</p>
-<h3 id="size-of-item-preview">Size of item preview<a class="zola-anchor" href="#size-of-item-preview" aria-label="Anchor link for: size-of-item-preview">🔗</a></h3>
-<p>The item preview is an image of the first page of the first
-attachment. You can change the order of attachments in the item detail
-view. This image has a predefined size, which is specified <a href="https://docspell.org/docs/configure/#joex">docspell's
-configuration</a> (see
-<code>extraction.preview.dpi</code>). The size for displaying it, can be
-specified via this setting. A <em>small</em> preview uses about 80px width, a
-<em>medium</em> one 160px and <em>large</em> means to use the available space in the
-card.</p>
-<div class="columns">
-    <div class="column">
-      <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;itemcard-customize-04.png" width="300">
-    </div>
-    <div class="column">
-      <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;itemcard-customize-03.png" width="300">
-    </div>
-    <div class="column">
-      <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;itemcard-customize-02.png" width="300">
-    </div>
-</div>
-<h3 id="card-title-subtitle-pattern">Card Title/Subtitle Pattern<a class="zola-anchor" href="#card-title-subtitle-pattern" aria-label="Anchor link for: card-title-subtitle-pattern">🔗</a></h3>
-<p>Allows to define a pattern to customize the appearance of title and
-subtitle of each card. Variables expressions are enclosed in <code>{{</code> and
-<code>}}</code>, other text is used as-is. The following variables are available:</p>
-<ul>
-<li><code>{{name}}</code> the item name</li>
-<li><code>{{source}}</code> the source the item was created from</li>
-<li><code>{{folder}}</code> the items folder</li>
-<li><code>{{corrOrg}}</code> the correspondent organization</li>
-<li><code>{{corrPerson}}</code> the correspondent person</li>
-<li><code>{{correspondent}}</code> organization and person separated by a comma</li>
-<li><code>{{concPerson}}</code> the concerning person</li>
-<li><code>{{concEquip}}</code> the concerning equipment</li>
-<li><code>{{concerning}}</code> person and equipment separated by a comma</li>
-<li><code>{{fileCount}}</code> the number of attachments of this item</li>
-<li><code>{{dateLong}}</code> the item date as full formatted date (<em>Tue, December 12nd, 2020</em>)</li>
-<li><code>{{dateShort}}</code> the item date as short formatted date (<em>yyyy/mm/dd</em>)</li>
-<li><code>{{dueDateLong}}</code> the item due date as full formatted date (<em>Tue, December 12nd, 2020</em>)</li>
-<li><code>{{dueDateShort}}</code> the item due date as short formatted date (<em>yyyy/mm/dd</em>)</li>
-<li><code>{{direction}}</code> the items direction values as string</li>
-</ul>
-<p>You can combine multiple variables with <code>|</code> to use the first non-empty
-one, for example <code>{{corrOrg|corrPerson|-}}</code> would render the
-organization and if that is not present the person. If both are absent
-a dash <code>-</code> is rendered. A part (like the <code>-</code> here) is rendered as is,
-if it cannot be matched against a known variable.</p>
-<p>The default patterns are:</p>
-<ul>
-<li>title: <code>{{name}}</code></li>
-<li>subtitle: <code>{{dateLong}}</code></li>
-</ul>
+<p>That is why you need to specify what tags to learn. This is done by
+defining whitelist or a blacklist of tag categories. When defining a
+whitelist, then only tags in these categories are selected for
+learning. When defining a blacklist, all tags <em>except</em> the one in the
+list are chosen for learning.</p>
+<p>The <em>Schedule</em> allows to define at what intervals tags should be
+learned. When clicking the <em>Start Now</em> button, the task is submitted
+immediately.</p>
 
                         </div>
                     </div>

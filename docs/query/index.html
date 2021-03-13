@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Eike Kettner">
+<meta name="description" content="Docspell is a Document Management System (DMS), a system that asists in organizing your piles of documents, resulting from scanners, e-mails and other sources with miminal effort.">
+<meta name="keywords" content="document management system dms organizer ocr open source free scan pdf word doc archive gpl machine learning nlp auto tagging"/>
+<meta name="robots" content="index,follow"/>
+<meta name="image" property="og:image" content="/img/poster.png">
+<meta name="title" property="og:title" content="Docspell – Simple Document Organizer">
+<meta name="og:image" content="/img/poster.png">
+<meta name="og:title" content="Docspell – Simple Document Organizer">
+<meta name="og:site_name" content="Query Language - Docspell">
+<meta name="og:url" content="">
+<meta name="og:type" content="website">
+<meta name="og:description" content="Simple Document Organizer">
+<meta name="twitter:title" content="Docspell">
+<meta name="twitter:image" content="/img/poster.png">
+<meta name="twitter:description" content="Simple Document Organizer">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="shortcut icon" href="/favicon-mc.ico" type="image/x-icon">
+<link rel="icon" href="/favicon-mc.ico" type="image/x-icon">
+
+        <title>Query Language – Docspell Documentation</title>
+        <link rel="stylesheet" href="/styles.css">
+        <script type="application/javascript" src="/search_index.en.js"></script>
+<script type="application/javascript" src="/elasticlunr.min.js"></script>
+<script type="application/javascript" src="/js/bundle.js"></script>
+<script type="application/javascript" src="/js/searchhelper.js"></script>
+
+    </head>
+    <body>
+        <section class="hero is-info is-small">
+            <div class="hero-head">
+                <nav class="navbar">
+    <div class="navbar-brand">
+        <a class="navbar-item" href="/">
+            <span class="icon">
+                <img src="/icons/logo-only-36.svg">
+            </span>
+            <span>
+                Docspell
+            </span>
+        </a>
+    </div>
+    <div class="navbar-start">
+        <a target="_blank"
+           href="https://github.com/eikek/docspell"
+           class="navbar-item">
+            <span class="icon">
+                <img src="/icons/github-40.svg">
+            </span>
+            <span>
+                Github
+            </span>
+        </a>
+    </div>
+</nav>
+
+            </div>
+            <div class="hero-body">
+                <div class="columns is-vcentered">
+                    <div class="column is-8">
+                        <h1 class="title">
+                            Query Language
+                        </h1>
+                        <h2 class="subtitle">
+                            Docspell Documentation
+                        </h2>
+                    </div>
+                    <div class="column">
+                        <div id="search"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <nav class="breadcrumb has-succeeds-separator" aria-label="breadcrumbs"
+             style="position:sticky; top: 0; z-index:10;">
+            <ul>
+                
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;"></a>
+                </li>
+                
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;">Overview</a>
+                </li>
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;">Query Language</a>
+                </li>
+            </ul>
+        </nav>
+        
+        <section class="section pt-2">
+            <div class="columns is-desktop">
+                <div class="column is-3">
+                    <div class="menu"
+                         style="position:sticky; top:2rem; z-index:10;">
+                        <ul class="menu-list">
+                            
+                            <li>
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;#structure">
+                                    Structure
+                                </a>
+                                <ul>
+                                    
+                                </ul>
+                            </li>
+                            
+                            <li>
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;#the-parts">
+                                    The Parts
+                                </a>
+                                <ul>
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;#operators">
+                                            Operators
+                                        </a>
+                                    </li>
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;#fields">
+                                            Fields
+                                        </a>
+                                    </li>
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;#values">
+                                            Values
+                                        </a>
+                                    </li>
+                                    
+                                </ul>
+                            </li>
+                            
+                            <li>
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;#simple-expressions">
+                                    Simple Expressions
+                                </a>
+                                <ul>
+                                    
+                                </ul>
+                            </li>
+                            
+                            <li>
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;#tags">
+                                    Tags
+                                </a>
+                                <ul>
+                                    
+                                </ul>
+                            </li>
+                            
+                            <li>
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;#custom-fields">
+                                    Custom Fields
+                                </a>
+                                <ul>
+                                    
+                                </ul>
+                            </li>
+                            
+                            <li>
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;#fulltext-search">
+                                    Fulltext Search
+                                </a>
+                                <ul>
+                                    
+                                </ul>
+                            </li>
+                            
+                            <li>
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;#file-checksums">
+                                    File Checksums
+                                </a>
+                                <ul>
+                                    
+                                </ul>
+                            </li>
+                            
+                            <li>
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;#exist">
+                                    Exist
+                                </a>
+                                <ul>
+                                    
+                                </ul>
+                            </li>
+                            
+                            <li>
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;#attach-id">
+                                    Attach-Id
+                                </a>
+                                <ul>
+                                    
+                                </ul>
+                            </li>
+                            
+                            <li>
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;#shortcuts">
+                                    Shortcuts
+                                </a>
+                                <ul>
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;#date-ranges">
+                                            Date Ranges
+                                        </a>
+                                    </li>
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;#names">
+                                            Names
+                                        </a>
+                                    </li>
+                                    
+                                </ul>
+                            </li>
+                            
+                            <li>
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;#examples">
+                                    Examples
+                                </a>
+                                <ul>
+                                    
+                                </ul>
+                            </li>
+                            
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="column is-9">
+                    <div class="container">
+                        <div class="content doc">
+                            <p>Docspell uses a query language to provide a powerful way to search for
+your documents. It is targeted at &quot;power users&quot; and it needs to be
+enabled explicitely in your user settings.</p>
+<div class="colums">
+<figure class="image">
+    <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;enable-powersearch.png">
+</figure>
+</div>
+<p>This changes the search bar on the items list page to expect a query
+as described below.</p>
+<p>The search menu works as before, the query coming from the search menu
+is combined with a query from the search bar.</p>
+<p>For taking a quick look, head over to the <a href="https://docspell.org/docs/query/#examples">examples</a>.</p>
+<h1 id="structure">Structure<a class="zola-anchor" href="#structure" aria-label="Anchor link for: structure">🔗</a></h1>
+<p>The overall query is an expression that evaluates to <code>true</code> or <code>false</code>
+when applied to an item and so selects whether to include it in the
+results or not. It consists of smaller expressions that can be
+combined via the common ways: <code>and</code>, <code>or</code> and <code>not</code>.</p>
+<p>Simple expressions check some property of an item. The form is:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">&lt;field&gt;&lt;operator&gt;&lt;value&gt;
+</span></code></pre>
+<p>For example: <code>tag=invoice</code> – where <code>tag</code> is the field, <code>=</code> the
+operator and <code>invoice</code> the value. It would evaluate to <code>true</code> if the
+item has a tag with name <code>invoice</code> and to <code>false</code> if the item doesn't
+have a tag with name <code>invoice</code>.</p>
+<p>Multiple expressions are separated by whitespace and are combined via
+<code>AND</code> by default. To explicitely combine them, wrap a list of
+expressions into one of these:</p>
+<ul>
+<li><code>(&amp; … )</code> to combine them via <code>AND</code></li>
+<li><code>(| … )</code> to combine them via <code>OR</code></li>
+</ul>
+<p>It is also possible to negate an expression, by prefixing it with a
+<code>!</code>; for example <code>!tag=invoice</code>.</p>
+<h1 id="the-parts">The Parts<a class="zola-anchor" href="#the-parts" aria-label="Anchor link for: the-parts">🔗</a></h1>
+<h2 id="operators">Operators<a class="zola-anchor" href="#operators" aria-label="Anchor link for: operators">🔗</a></h2>
+<p>There are 7 operators:</p>
+<ul>
+<li><code>=</code> for equals</li>
+<li><code>&gt;</code> for greater-than</li>
+<li><code>&gt;=</code> for greater-equals</li>
+<li><code>~=</code> for &quot;in&quot; (a shorter way to say &quot;a or b or c or d&quot;)</li>
+<li><code>:</code> for &quot;like&quot;, this is used in a context-sensitive way</li>
+<li><code>&lt;</code> for lower than</li>
+<li><code>&lt;=</code> for lower-equal</li>
+<li><code>!=</code> for not-equals</li>
+</ul>
+<p>Not all operators work with every field.</p>
+<h2 id="fields">Fields<a class="zola-anchor" href="#fields" aria-label="Anchor link for: fields">🔗</a></h2>
+<p>Fields are used to identify a property of an item. They also define
+what operators are allowed. There are fields where an item can have at
+most one value (like <code>name</code> or <code>notes</code>) and there are fields where an
+item can have multiple values (like <code>tag</code>). At last there are special
+fields that are either implemented directly using custom sql or that
+are only shortcuts to a longer form.</p>
+<p>Here is the list of all available fields.</p>
+<p>These fields map to at most one value:</p>
+<ul>
+<li><code>name</code> the item name</li>
+<li><code>source</code> the source used for uploading</li>
+<li><code>notes</code> the item notes</li>
+<li><code>id</code> the item id</li>
+<li><code>date</code> the item date</li>
+<li><code>due</code> the due date of the item</li>
+<li><code>attach.count</code> the number of attachments of the item</li>
+<li><code>corr.org.id</code> the id of the correspondent organization</li>
+<li><code>corr.org.name</code> the name of the correspondent organization</li>
+<li><code>corr.pers.name</code> name of correspondent person</li>
+<li><code>corr.pers.id</code> id of correspondent person</li>
+<li><code>conc.pers.name</code> name of concerning person</li>
+<li><code>conc.pers.id</code> id of concerning person</li>
+<li><code>conc.equip.name</code> name of equipment</li>
+<li><code>conc.equip.id</code> id of equipment</li>
+<li><code>folder.id</code> id of a folder</li>
+<li><code>folder</code> name of a folder</li>
+<li><code>inbox</code> whether to return &quot;new&quot; items (boolean)</li>
+<li><code>incoming</code> whether to return incoming items (boolean), <code>true</code> to
+show only incoming, <code>false</code> to show only outgoing.</li>
+</ul>
+<p>These fields support all operators, except <code>incoming</code> and <code>inbox</code>
+which expect boolean values and for those some operators don't make
+sense.</p>
+<p>Fields that map to more than one value:</p>
+<ul>
+<li><code>tag</code> the tag name</li>
+<li><code>tag.id</code> the tag id</li>
+<li><code>cat</code> name of the tag category</li>
+</ul>
+<p>The tag and category fields use two operators: <code>:</code> and <code>=</code>.</p>
+<p>Other special fields:</p>
+<ul>
+<li><code>attach.id</code> references the id of an attachment</li>
+<li><code>checksum</code> references the sha256 checksum of a file</li>
+<li><code>content</code> for fulltext search</li>
+<li><code>f</code> for referencing custom fields by name</li>
+<li><code>f.id</code> for referencing custom fields by their id</li>
+<li><code>dateIn</code> a shortcut for a range search</li>
+<li><code>dueIn</code> a shortcut for a range search</li>
+<li><code>exist</code> check if some porperty exists</li>
+<li><code>names</code> a shortcut to search in several names via <code>:</code></li>
+<li><code>year</code> a shortcut for a year range</li>
+<li><code>conc</code> a shortcut for concerning person and equipment names</li>
+<li><code>corr</code> a shortcut for correspondent org and person names</li>
+</ul>
+<p>These fields are often using the <code>:</code> operator to simply separate field
+and value. They are often backed by a custom implementation, or they
+are shortcuts for a longer query.</p>
+<h2 id="values">Values<a class="zola-anchor" href="#values" aria-label="Anchor link for: values">🔗</a></h2>
+<p>Values are the data you want to search for. There are different kinds
+of that, too: there are text values, numbers, boolean and dates. When
+multiple values are allowed, they must be separated by comma <code>,</code>.</p>
+<h3 id="text-values">Text Values<a class="zola-anchor" href="#text-values" aria-label="Anchor link for: text-values">🔗</a></h3>
+<p>Text values need to be put in quotes (<code>&quot;</code>) if they contain one of
+these characters:</p>
+<ul>
+<li>whitespace <code> </code></li>
+<li>quotes <code>&quot;</code></li>
+<li>backslash <code>\</code></li>
+<li>comma <code>,</code></li>
+<li>brackets <code>[]</code></li>
+<li>parens <code>()</code></li>
+</ul>
+<p>Any quotes inside a quoted string must be escaped with a backslash.</p>
+<p>Examples: <code>scan_123</code>, <code>a-b-c</code>, <code>x.y.z</code>, <code>&quot;scan from today&quot;</code>, <code>&quot;a \&quot;strange\&quot; name.pdf&quot;</code></p>
+<h3 id="numeric-and-boolean-values">Numeric and Boolean Values<a class="zola-anchor" href="#numeric-and-boolean-values" aria-label="Anchor link for: numeric-and-boolean-values">🔗</a></h3>
+<p>Numeric values can be entered literally; an optional fraction part is
+separetd by a dot. Examples: <code>1</code>, <code>2.15</code>.</p>
+<p>A boolean value can be specfied by <code>yes</code> or <code>true</code> and <code>no</code> or
+<code>false</code>, respectively. Example: <code>inbox:yes</code></p>
+<h3 id="dates">Dates<a class="zola-anchor" href="#dates" aria-label="Anchor link for: dates">🔗</a></h3>
+<p>Dates are always treated as local dates and can be entered in multiple
+ways.</p>
+<h4 id="date-pattern">Date Pattern<a class="zola-anchor" href="#date-pattern" aria-label="Anchor link for: date-pattern">🔗</a></h4>
+<p>They can be in the following form: <code>YYYY-MM-DD</code> or <code>YYYY/MM/DD</code>.
+The month and day part are optional; if they are missing they are
+filled automatically with a <code>1</code>. So <code>2020-01</code> would be the same as
+<code>2020-01-01</code>.</p>
+<p>A special pattern is <code>today</code> which marks the current day.</p>
+<h4 id="unix-epoch">Unix Epoch<a class="zola-anchor" href="#unix-epoch" aria-label="Anchor link for: unix-epoch">🔗</a></h4>
+<p>Dates can be given in milliseconds from unix epoch. Then it must be
+prefixed by <code>ms</code>. The time part is ignored. Examples:
+<code>ms1615209591627</code>.</p>
+<h4 id="calculation">Calculation<a class="zola-anchor" href="#calculation" aria-label="Anchor link for: calculation">🔗</a></h4>
+<p>Dates can be defined by providing a base date via the forms above and
+a period to add or substract. This is especially useful with the
+<code>today</code> pattern. The period must be separated from the date by a
+semi-colon <code>;</code>. Then write a <code>+</code> or a <code>-</code> to add or substract and at
+last the number of days (suffix <code>d</code>) or months (suffix <code>m</code>).</p>
+<p>Examples: <code>today;-14d</code>, <code>2020-02;+1m</code></p>
+<h1 id="simple-expressions">Simple Expressions<a class="zola-anchor" href="#simple-expressions" aria-label="Anchor link for: simple-expressions">🔗</a></h1>
+<p>Simple expressions are made up of a field with at most one value, an
+operator and one or more values. These fields support all operators,
+except for boolean fields.</p>
+<p>The like operator <code>:</code> can be used with all values, but makes only
+sense for text values. It allows to do a substring search for a field.</p>
+<p>For example, this looks for an item with a name of exactly
+'invoice_22':</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">name=invoice_22
+</span></code></pre>
+<p>By using <code>:</code>, it is possible to look for items that have 'invoice'
+somewhere in their name:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">name:*invoice*
+</span></code></pre>
+<p>The asterisk <code>*</code> can be added at the beginning and/or end of the
+value, but not in betwee. Furthermore, the like operator is
+case-insensitive, whereas <code>=</code> is not. This applies to all fields with
+a text value.</p>
+<p>This is another example looking for a correspondent person of with
+'marcus' in the name:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">corr.pers.name:*marcus*
+</span></code></pre>
+<hr />
+<p>Comparisons via <code>&lt;</code>/<code>&gt;</code> are done alphanumerically for text based
+values and numerically for numeric values. For booleans these
+operators don't make sense and therefore don't work there.</p>
+<hr />
+<p>All these fields (except boolean fields) allow to use the in-operator,
+<code>~=</code>. This is a more efficient form to specify a list of alternative
+values for the same field. It is logically the same as combining
+multiple expressions with <code>OR</code>. For example:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">source~=webapp,mailbox
+</span></code></pre>
+<p>is the same as</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">(| source=webapp source=mailbox )
+</span></code></pre>
+<p>The <code>~=</code> version is nicer to read, safes some key strokes and also
+runs more efficient when the list grows. It is <em>not</em> possible to use a
+wildcard <code>*</code> here. If a wildcard is required, you need to write the
+longer form.</p>
+<p>If one value contains whitespace or other characters that require
+quoting, each value must be quoted, not the whole list. So this is
+correct:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">source~=&quot;web app&quot;,&quot;mail box&quot;
+</span></code></pre>
+<p>This is not correct: <code>source~=&quot;web app,mail box&quot;</code> – it would be treated
+as one single value and is then essentially the same as using <code>=</code>.</p>
+<hr />
+<p>The two fields <code>incoming</code> and <code>inbox</code> expect a boolean value: one of
+<code>true</code> or <code>false</code>. The synonyms <code>yes</code> and <code>no</code> can also be used to
+make it better readable.</p>
+<p>This finds all items that have not been confirmed:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">inbox:yes
+</span></code></pre>
+<p>The <code>incoming</code> can be used to show only incoming or only outgoing
+documents:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">incoming:yes
+</span></code></pre>
+<p>For outgoing, you need to say:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">incoming:no
+</span></code></pre><h1 id="tags">Tags<a class="zola-anchor" href="#tags" aria-label="Anchor link for: tags">🔗</a></h1>
+<p>Tags have their own syntax, because they can appear multiple times on
+an item. Tags only allow for two operators: <code>=</code> and <code>:</code>. Combined with
+negation (the <code>!</code> operator), this is quite flexible.</p>
+<p>For tags, <code>=</code> means that items must have <em>all</em> specified tags (or
+more), while <code>:</code> means that items must have at least <em>one</em> of the
+specified tags. Tags can be identified by their name or id and are
+given as a comma separated list (just like when using the
+in-operator).</p>
+<p>Some examples: Find all invoices that are todo:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">tag=invoice,todo
+</span></code></pre>
+<p>This returns all items that have both tags <code>invoice</code> and <code>todo</code>.
+Negating this:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">!tag=invoice,todo
+</span></code></pre>
+<p>… results in an expression that returns all items that don't have
+<em>both</em> tags. It might return items with tag <code>invoice</code> and also items
+with tag <code>todo</code>, but no items that have both of them.</p>
+<p>Using <code>:</code> is just analog to <code>=</code>. This finds all items that are either
+<code>waiting</code> or <code>todo</code> (or both):</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">tag:waiting,todo
+</span></code></pre>
+<p>When negating this:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">!tag:waiting,todo
+</span></code></pre>
+<p>it finds all items that have <em>none</em> of the tags.</p>
+<p>Tag names are always compared case-insensitive. Tags can also be
+selected using their id, then the field name <code>tag.id</code> must be used
+instead of <code>tag</code>.</p>
+<p>The field <code>cat</code> can be used the same way to search for tag categories.</p>
+<h1 id="custom-fields">Custom Fields<a class="zola-anchor" href="#custom-fields" aria-label="Anchor link for: custom-fields">🔗</a></h1>
+<p>Custom fields can be used via the following syntax:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">f:&lt;field-name&gt;&lt;operator&gt;&lt;value&gt;
+</span></code></pre>
+<p>They look almost like a simple expression, only prefixed with a <code>f:</code>
+to indicate that the following is the name of a custom field.</p>
+<p>The type of a custom field is honored. So if you have a money or
+numeric type, comparsions are done numerically. Otherwise a
+alphnumeric comparison is performed. Custom fields do not support the
+in-operator (<code>~=</code>).</p>
+<p>For example: assuming there is a custom field of type <em>money</em> and name
+<em>usd</em>, the following selects all items with an amount between 10 and
+150:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">f:usd&gt;10 f:usd&lt;150
+</span></code></pre>
+<p>The like-operator can be used, too. For example, to find all items
+that have a custom field <code>asn</code> (often used for a serial number printed
+on the document):</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">f:asn:*
+</span></code></pre>
+<p>If the like operator is used on numeric fields, it falls back to
+text-comparison.</p>
+<p>Instead of using the name, the field-id can be used to select a field.
+Then the prefix is <code>f.id</code>:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">f.id:J2ES1Z4Ni9W-xw1VdFbt3KA-rL725kuyVzh-7La95Yw7Ax2:15.00
+</span></code></pre><h1 id="fulltext-search">Fulltext Search<a class="zola-anchor" href="#fulltext-search" aria-label="Anchor link for: fulltext-search">🔗</a></h1>
+<p>The special field <code>content</code> allows to add a fulltext search. Using
+this is currently restricted: it must occur in the root (AND) query
+and cannot be nested in other complex expressions.</p>
+<p>The form is:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">content:&lt;your search query&gt;
+</span></code></pre>
+<p>The search query is interpreted by the fulltext index (currently it is
+SOLR). This is usually very powerful and in many cases this value must
+be quoted.</p>
+<p>For example, do a fulltext search for 'red needle':</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">content:&quot;red needle&quot;
+</span></code></pre>
+<p>It can be combined in an AND expression:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">content:&quot;red needle&quot; tag:todo
+</span></code></pre>
+<p>But it can't be combined via OR. This is not possible:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">tag:todo (| content:&quot;red needle&quot; tag:waiting)
+</span></code></pre><h1 id="file-checksums">File Checksums<a class="zola-anchor" href="#file-checksums" aria-label="Anchor link for: file-checksums">🔗</a></h1>
+<p>The <code>checksum</code> field can be used to look for items that have a certain
+file attached. It expects a SHA256 string.</p>
+<p>For example, this is the sha256 checksum of some file on the hard
+disk:
+<code>40675c22ab035b8a4ffe760732b65e5f1d452c59b44d3d0a2a08a95d28853497</code>.</p>
+<p>To find all items that have (exactly) this file attached:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">checksum:40675c22ab035b8a4ffe760732b65e5f1d452c59b44d3d0a2a08a95d28853497
+</span></code></pre><h1 id="exist">Exist<a class="zola-anchor" href="#exist" aria-label="Anchor link for: exist">🔗</a></h1>
+<p>The <code>exist</code> field can be used with another field, to check whether an
+item has some value for it. It only works for fields that have at most
+one value.</p>
+<p>For example, it could be used to find items that are in any folder:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">exist:folder
+</span></code></pre>
+<p>When negating, it finds all items that are not in a folder:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">!exist:folder
+</span></code></pre><h1 id="attach-id">Attach-Id<a class="zola-anchor" href="#attach-id" aria-label="Anchor link for: attach-id">🔗</a></h1>
+<p>The <code>attach.id</code> field is a special field to find items by providing
+the id of an attachment. This can be helpful in certain situations
+when you only have the id of an attachment. It always uses equality,
+so all other operators are not supported.</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">attach.id=5YjdnuTAdKJ-V6ofWTYsqKV-mAwB5aXTNWE-FAbeRU58qLb
+</span></code></pre><h1 id="shortcuts">Shortcuts<a class="zola-anchor" href="#shortcuts" aria-label="Anchor link for: shortcuts">🔗</a></h1>
+<p>Shortcuts are only a short form of a longer query and are provided for
+convenience. The following exist:</p>
+<ul>
+<li><code>dateIn</code> and <code>dueIn</code></li>
+<li><code>year</code></li>
+<li><code>names</code></li>
+<li><code>conc</code></li>
+<li><code>corr</code></li>
+</ul>
+<h3 id="date-ranges">Date Ranges<a class="zola-anchor" href="#date-ranges" aria-label="Anchor link for: date-ranges">🔗</a></h3>
+<p>The first three are all short forms to specify a range search. With
+<code>dateIn</code> and <code>dueIn</code> have three forms that are translated into a range
+search:</p>
+<ul>
+<li><code>dateIn:2020-01;+15d</code>  →  <code>date&gt;=2020-01 date&lt;2020-01;+15d</code></li>
+<li><code>dateIn:2020-01;-15d</code>  →  <code>date&gt;=2020-01;-15d date&lt;2020-01</code></li>
+<li><code>dateIn:2020-01;/15d</code>  →  <code>date&gt;=2020-01;-15d date&lt;2020-01;+15d</code></li>
+</ul>
+<p>The syntax is the same as defining a date by adding a period to some
+base date. These two dates are used to expand the form into a range
+search. There is an additional <code>/</code> character to allow to subtract and
+add the period.</p>
+<p>The <code>year</code> is almost the same thing, only a lot shorter to write. It
+expands into a range search (only for the item date!) that selects all
+items with a date in the specified year:</p>
+<ul>
+<li><code>year:2020</code>  →  <code>date&gt;=2020-01-01 date&lt;2021-01-01</code></li>
+</ul>
+<p>The last shortcut is <code>names</code>. It allows to search in many &quot;names&quot; of
+related entities at once:</p>
+<h3 id="names">Names<a class="zola-anchor" href="#names" aria-label="Anchor link for: names">🔗</a></h3>
+<ul>
+<li><code>names:tim</code> → <code>(| name:tim corr.org.name:tim corr.pers.name:tim conc.pers.name:tim conc.equip.name:tim )</code></li>
+</ul>
+<p>The <code>names</code> field uses the like-operator.</p>
+<p>The fields <code>conc</code> and <code>corr</code> are analog to <code>names</code>, only that they
+look into correspondent names and concerning names.</p>
+<ul>
+<li><code>conc:marc*</code> → <code>(| conc.pers.name:marc* conc.equip.name:marc* )</code></li>
+<li><code>corr:marc*</code> → <code>(| corr.org.name:marc* corr.pers.name:marc* )</code></li>
+</ul>
+<h1 id="examples">Examples<a class="zola-anchor" href="#examples" aria-label="Anchor link for: examples">🔗</a></h1>
+<p>Find items with 2 or more attachments:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">attach.count&gt;2
+</span></code></pre>
+<p>Find items with at least one tag invoice or todo:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">tag:invoice,todo
+</span></code></pre>
+<p>Find items with at least both tags invoice and todo:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">tag=invoice,todo
+</span></code></pre>
+<p>Find items with a concerning person of name starting with &quot;Marcus&quot;:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">conc.pers.name:marcus*
+</span></code></pre>
+<p>Find items with at least a tag &quot;todo&quot; in year 2020:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">tag:todo year:2020
+</span></code></pre>
+<p>Find items within the last 30 days:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">date&gt;today;-30d
+</span></code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+
+        
+        <footer class="footer">
+    <div class="container">
+        <div class="content has-text-centered">
+            <span>
+                Docspell, 0.21.0
+            </span>
+            <span class="ml-1 mr-1">•</span>
+            <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>
+            <span class="ml-1 mr-1">•</span>
+            <a href="https://github.com/eikek/docspell" target="_blank">
+                Source Code
+            </a>
+            <span class="ml-1 mr-1">•</span>
+            <span>
+                <a href="https://gitter.im/eikek/docspell">Chat on Gitter</a>
+            </span>
+        </div>
+    </div>
+    
+</footer>
+
+        <script>
+ var initSearch = function() {
+     var elmSearch = Elm.Search.init({
+         node: document.getElementById("search"),
+         flags: {}
+     });
+     initElmSearch(elmSearch);
+ }
+ if (document.readyState === "complete" ||
+     (document.readyState !== "loading" && !document.documentElement.doScroll)
+ ) {
+     initSearch();
+ } else {
+     document.addEventListener("DOMContentLoaded", initSearch);
+ }
+</script>
+
+        <!-- Fathom - simple website analytics - https://github.com/usefathom/fathom -->
+<script>
+ (function(f, a, t, h, o, m){
+     a[h]=a[h]||function(){
+         (a[h].q=a[h].q||[]).push(arguments)
+     };
+     o=f.createElement('script'),
+     m=f.getElementsByTagName('script')[0];
+     o.async=1; o.src=t; o.id='fathom-script';
+     m.parentNode.insertBefore(o,m)
+ })(document, window, '//webstats.daheim.site/tracker.js', 'fathom');
+ fathom('set', 'siteId', 'OGJDF');
+ fathom('trackPageview');
+</script>
+<!-- / Fathom -->
+
+    </body>
+</html>

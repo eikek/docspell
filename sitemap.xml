@@ -130,6 +130,9 @@
         <loc>https://docspell.org/docs/joex/intro/</loc>
     </url>
     <url>
+        <loc>https://docspell.org/docs/query/</loc>
+    </url>
+    <url>
         <loc>https://docspell.org/docs/tools/</loc>
     </url>
     <url>
@@ -167,6 +170,9 @@
     </url>
     <url>
         <loc>https://docspell.org/docs/webapp/</loc>
+    </url>
+    <url>
+        <loc>https://docspell.org/docs/webapp/autotagging/</loc>
     </url>
     <url>
         <loc>https://docspell.org/docs/webapp/curate/</loc>

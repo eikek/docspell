@@ -520,7 +520,26 @@ values below are in HOCON format, which is recommended, since it
 allows comments and has some <a href="https://github.com/lightbend/config#features-of-hocon">advanced
 features</a>.
 Please refer to their documentation for more on this.</p>
-<p>Here are the default configurations.</p>
+<p>A short description (please see the links for better understanding):
+The config consists of key-value pairs and can be written in a
+JSON-like format (called HOCON). Keys are organized in trees, and a
+key defines a full path into the tree. There are two ways:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">a.b.c.d=15
+</span></code></pre>
+<p>or</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">a {
+  b {
+    c {
+      d = 15
+    }
+  }
+}
+</span></code></pre>
+<p>Both are exactly the same and these forms are both used at the same
+time. Usually the braces approach is used to group some more settings,
+for better readability.</p>
 <h1 id="default-config">Default Config<a class="zola-anchor" href="#default-config" aria-label="Anchor link for: default-config">🔗</a></h1>
 <h2 id="rest-server">Rest Server<a class="zola-anchor" href="#rest-server" aria-label="Anchor link for: rest-server">🔗</a></h2>
 <pre style="background-color:#282828;">
@@ -1280,7 +1299,7 @@ statements with level &quot;DEBUG&quot; will be printed, too.</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell, 0.20.0
+                Docspell, 0.21.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>
