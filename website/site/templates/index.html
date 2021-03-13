@@ -7,15 +7,16 @@
         <script type="application/javascript" src="js/bundle.js"></script>
     </head>
     <body id="app">
+
+        <script type="application/javascript">
+         var elmFlags = {
+             "version": "{{ config.extra.version }}"
+         };
+         var elmApp = Elm.Main.init({
+             node: document.getElementById("app"),
+             flags: elmFlags
+         });
+        </script>
+        {% include "fathom.html" %}
     </body>
-    <script type="application/javascript">
-     var elmFlags = {
-         "version": "{{ config.extra.version }}"
-     };
-     var elmApp = Elm.Main.init({
-         node: document.getElementById("app"),
-         flags: elmFlags
-     });
-    </script>
-    {% include "fathom.html" %}
 </html>
