@@ -3,7 +3,7 @@ module Styles exposing (..)
 
 sidebar : String
 sidebar =
-    " flex flex-col flex-none md:w-80 w-full min-h-max px-4 dark:text-gray-200 shadow overflow-y-auto scrollbar-none h-full transition-opacity transition-duration-200 "
+    " flex flex-col flex-none md:w-80 w-full min-h-max px-4 dark:text-gray-200 shadow overflow-y-auto h-full transition-opacity transition-duration-200 scrollbar-thin scrollbar-light-sidebar dark:scrollbar-dark-sidebar"
 
 
 sidebarBg : String
@@ -18,7 +18,7 @@ sidebarMenuItemActive =
 
 content : String
 content =
-    "container mx-auto px-2 h-screen-12 overflow-y-auto scrollbar-none"
+    "container mx-auto px-2 h-screen-12 overflow-y-auto scrollbar-main scrollbar-thin"
 
 
 sidebarLink : String

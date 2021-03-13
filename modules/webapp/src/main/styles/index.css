@@ -136,8 +136,47 @@
         display: none;
     }
 
+    .scrollbar-thin {
+        scrollbar-width: thin;
+    }
+    .scrollbar-thin::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    @variants dark {
+        .scrollbar-dark-sidebar {
+            scrollbar-color: rgba(15,23,42,0.9) rgba(15,23,42,0.3);
+        }
+        .scrollbar-light-sidebar {
+            scrollbar-color: rgba(219, 234, 254, 1.0) rgba(219, 234, 254,0.3);
+        }
+        .scrollbar-main {
+            scrollbar-color: rgba(156, 163, 175,0.9) rgba(156, 163, 175,0.3);
+        }
+
+        .scrollbar-dark-sidebar::-webkit-scrollbar {
+            background-color: rgba(15,23,42,0.3);
+        }
+        .scrollbar-dark-sidebar::-webkit-scrollbar-thumb {
+            background: rgba(15,23,42,0.9);
+        }
+
+        .scrollbar-light-sidebar::-webkit-scrollbar {
+            background-color: rgba(219, 234, 254, 0.3);
+        }
+        .scrollbar-light-sidebar::-webkit-scrollbar-thumb {
+            background: rgba(219, 234, 254, 1.0);
+        }
+
+        .scrollbar-main::-webkit-scrollbar {
+            background-color: rgba(156, 163, 175, 0.3);
+        }
+        .scrollbar-main::-webkit-scrollbar-thumb {
+            background:  rgba(156, 163, 175, 0.9);
+        }
+    }
+
     .ds-card-search-hl strong {
         @apply bg-lime-200 dark:bg-lightblue-700 italic font-bold px-1;
     }
-
 }
