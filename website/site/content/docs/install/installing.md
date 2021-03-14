@@ -15,6 +15,14 @@ creates a container to watch a directory for incoming files. It's only
    ```bash
    $ git clone https://github.com/eikek/docspell
    ```
+   If you don't have git or don't want to clone the whole repo, use these steps instead:
+   ``` bash
+   mkdir -p docspell/docker
+   cd docspell/docker
+   wget https://raw.githubusercontent.com/eikek/docspell/master/docker/docker-compose.yml
+   wget https://raw.githubusercontent.com/eikek/docspell/master/docker/docspell.conf
+   wget https://raw.githubusercontent.com/eikek/docspell/master/docker/.env
+   ```
 2. Change into the `docker` directory:
    ```bash
    $ cd docspell/docker
