@@ -209,6 +209,24 @@
                             
                             
                             <li>
+                                <a href="https://docspell.org/docs/install/upgrading/"
+                                   >
+                                    Upgrading
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/install/downgrading/"
+                                   >
+                                    Downgrading
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
                                 <a href="https://docspell.org/docs/install/rpi/"
                                    >
                                     Raspberry-Pi And Similiar
@@ -243,6 +261,14 @@ creates a container to watch a directory for incoming files. It's only
 <p>Clone the github repository</p>
 <pre style="background-color:#282828;">
 <code><span style="color:#fdf4c1;">$ git clone https://github.com/eikek/docspell
+</span></code></pre>
+<p>If you don't have git or don't want to clone the whole repo, use these steps instead:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1;">mkdir -p docspell/docker
+</span><span style="color:#fabd2f;">cd</span><span style="color:#fdf4c1;"> docspell/docker
+</span><span style="color:#fdf4c1;">wget https://raw.githubusercontent.com/eikek/docspell/master/docker/docker-compose.yml
+</span><span style="color:#fdf4c1;">wget https://raw.githubusercontent.com/eikek/docspell/master/docker/docspell.conf
+</span><span style="color:#fdf4c1;">wget https://raw.githubusercontent.com/eikek/docspell/master/docker/.env
 </span></code></pre></li>
 <li>
 <p>Change into the <code>docker</code> directory:</p>

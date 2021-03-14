@@ -100,6 +100,9 @@
         <loc>https://docspell.org/docs/install/</loc>
     </url>
     <url>
+        <loc>https://docspell.org/docs/install/downgrading/</loc>
+    </url>
+    <url>
         <loc>https://docspell.org/docs/install/installing/</loc>
     </url>
     <url>
@@ -116,6 +119,9 @@
     </url>
     <url>
         <loc>https://docspell.org/docs/install/running/</loc>
+    </url>
+    <url>
+        <loc>https://docspell.org/docs/install/upgrading/</loc>
     </url>
     <url>
         <loc>https://docspell.org/docs/intro/</loc>

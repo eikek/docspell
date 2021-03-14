@@ -13,7 +13,7 @@
 <meta name="title" property="og:title" content="Docspell – Simple Document Organizer">
 <meta name="og:image" content="/img/poster.png">
 <meta name="og:title" content="Docspell – Simple Document Organizer">
-<meta name="og:site_name" content="Reverse Proxy - Docspell">
+<meta name="og:site_name" content="Downgrading - Docspell">
 <meta name="og:url" content="">
 <meta name="og:type" content="website">
 <meta name="og:description" content="Simple Document Organizer">
@@ -25,7 +25,7 @@
 <link rel="shortcut icon" href="/favicon-mc.ico" type="image/x-icon">
 <link rel="icon" href="/favicon-mc.ico" type="image/x-icon">
 
-        <title>Reverse Proxy – Docspell Documentation</title>
+        <title>Downgrading – Docspell Documentation</title>
         <link rel="stylesheet" href="/styles.css">
         <script type="application/javascript" src="/search_index.en.js"></script>
 <script type="application/javascript" src="/elasticlunr.min.js"></script>
@@ -66,7 +66,7 @@
                 <div class="columns is-vcentered">
                     <div class="column is-8">
                         <h1 class="title">
-                            Reverse Proxy
+                            Downgrading
                         </h1>
                         <h2 class="subtitle">
                             Docspell Documentation
@@ -98,7 +98,7 @@
                 </li>
                 
                 <li>
-                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;reverseproxy&#x2F;">Reverse Proxy</a>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;downgrading&#x2F;">Downgrading</a>
                 </li>
             </ul>
         </nav>
@@ -164,9 +164,40 @@
                             
                             <li>
                                 <a href="https://docspell.org/docs/install/downgrading/"
-                                   >
+                                   class="is-active">
                                     Downgrading
                                 </a>
+                                
+                                <ul class="menu-list">
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;downgrading&#x2F;#docker-compose">
+                                            Docker-Compose
+                                        </a>
+                                        <ul>
+                                            
+                                        </ul>
+                                    </li>
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;downgrading&#x2F;#zip-deb-files">
+                                            ZIP &#x2F; Deb Files
+                                        </a>
+                                        <ul>
+                                            
+                                        </ul>
+                                    </li>
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;downgrading&#x2F;#nix">
+                                            Nix
+                                        </a>
+                                        <ul>
+                                            
+                                        </ul>
+                                    </li>
+                                    
+                                </ul>
                                 
                             </li>
                             
@@ -182,31 +213,9 @@
                             
                             <li>
                                 <a href="https://docspell.org/docs/install/reverseproxy/"
-                                   class="is-active">
+                                   >
                                     Reverse Proxy
                                 </a>
-                                
-                                <ul class="menu-list">
-                                    
-                                    <li>
-                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;reverseproxy&#x2F;#configuring-docspell">
-                                            Configuring Docspell
-                                        </a>
-                                        <ul>
-                                            
-                                        </ul>
-                                    </li>
-                                    
-                                    <li>
-                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;reverseproxy&#x2F;#nginx">
-                                            Nginx
-                                        </a>
-                                        <ul>
-                                            
-                                        </ul>
-                                    </li>
-                                    
-                                </ul>
                                 
                             </li>
                             
@@ -217,85 +226,32 @@
                 <div class="column is-9">
                     <div class="container">
                         <div class="content doc">
-                            <p>This contains examples for how to use docspell behind a reverse proxy.</p>
-<p>For the examples below, assume the following:</p>
-<ul>
-<li>Docspell app is available at <code>192.168.1.11:7880</code>. If it is running
-on the same machine as the reverse proxy server, you can set
-<code>localhost:7880</code> instead.</li>
-<li>The external domain/hostname is <code>docspell.example.com</code></li>
-</ul>
-<h1 id="configuring-docspell">Configuring Docspell<a class="zola-anchor" href="#configuring-docspell" aria-label="Anchor link for: configuring-docspell">🔗</a></h1>
-<p>These settings require a complement config part in the docspell
-configuration file:</p>
-<ul>
-<li>First, if Docspell REST server is on a different machine, you need
-to change the <code>bind.address</code> setting to be either <code>0.0.0.0</code> or the
-ip address of the network interface that the reverse proxy server
-connects to.<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1;">docspell.server {
-</span><span style="color:#fdf4c1;">  </span><span style="font-style:italic;color:#928374;"># Where the server binds to.
-</span><span style="color:#fdf4c1;">  bind {
-</span><span style="color:#fdf4c1;">    address = </span><span style="color:#b8bb26;">&quot;192.168.1.11&quot;
-</span><span style="color:#fdf4c1;">    port = 7880
-</span><span style="color:#fdf4c1;">  }
-</span><span style="color:#fdf4c1;">}
-</span></code></pre>Note that a value of <code>0.0.0.0</code> instead of <code>192.168.1.11</code> will bind
-the server to every network interface.</li>
-<li>Docspell needs to know the external url. The <code>base-url</code> setting
-must point to the external address. Using above values, it must be
-set to <code>https://docspell.example.com</code>.<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1;">docspell.server {
-</span><span style="color:#fdf4c1;">  </span><span style="font-style:italic;color:#928374;"># This is the base URL this application is deployed to. This is used
-</span><span style="color:#fdf4c1;">  </span><span style="font-style:italic;color:#928374;"># to create absolute URLs and to configure the cookie.
-</span><span style="color:#fdf4c1;">  base-url = </span><span style="color:#b8bb26;">&quot;https://docspell.example.com&quot;
-</span><span style="color:#fdf4c1;"> ...
-</span><span style="color:#fdf4c1;">}
-</span></code></pre></li>
-</ul>
-<p>Note that this example assumes that the docspell-joex component is on
-the same machine. This page is only related for exposing the REST
-server and web application.</p>
-<p>If you have examples for more servers, please let me know or add it to
-this site.</p>
-<h1 id="nginx">Nginx<a class="zola-anchor" href="#nginx" aria-label="Anchor link for: nginx">🔗</a></h1>
-<p>This defines two servers: one listens for http traffic and redirects
-to the https variant. Additionally it defines the let's encrypt
-<code>.well-known</code> folder name.</p>
-<p>The https server endpoint is configured with the let's encrypt
-certificates and acts as a proxy for the application at
-<code>192.168.1.11:7880</code>.</p>
+                            <p>Downgrading is currently not supported!</p>
+<p>Note, it is not safe to install a previous version, because the
+database will not be compatible. Therefore, it is recommended to take
+a backup of the database before upgrading.</p>
+<p>Should something not work out as expected, you need to restore the
+backup and then go back to the previous version.</p>
+<h2 id="docker-compose">Docker-Compose<a class="zola-anchor" href="#docker-compose" aria-label="Anchor link for: docker-compose">🔗</a></h2>
+<p>The default <code>docker-compose.yml</code> file points to images using the
+<code>-LATEST</code> tag. You need to edit this file and replace <code>-LATEST</code> with
+the concrete version, like <code>-v0.20.0</code>.</p>
+<p>Then run the three steps as when upgrading:</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1;">server {
-    listen 0.0.0.0:80 ;
-    listen </span><span style="color:#fa5c4b;">[</span><span style="color:#fdf4c1;">::</span><span style="color:#fa5c4b;">]</span><span style="color:#fdf4c1;">:80 ;
-    server_name docspell.example.com ;
-    location /.well-known/acme-challenge {
-        root /var/data/nginx/ACME-PUBLIC;
-        auth_basic off;
-    }
-    location / {
-        return 301 https://$host$request_uri;
-    }
-}
-server {
-    listen 0.0.0.0:443 ssl http2 ;
-    listen </span><span style="color:#fa5c4b;">[</span><span style="color:#fdf4c1;">::</span><span style="color:#fa5c4b;">]</span><span style="color:#fdf4c1;">:443 ssl http2 ;
-    server_name docspell.example.com ;
-    location /.well-known/acme-challenge {
-        root /var/data/nginx/ACME-PUBLIC;
-        auth_basic off;
-    }
-    ssl_certificate /var/lib/acme/docspell.example.com/fullchain.pem;
-    ssl_certificate_key /var/lib/acme/docspell.example.com/key.pem;
-    ssl_trusted_certificate /var/lib/acme/docspell.example.com/full.pem;
-    location / {
-        proxy_pass http://192.168.1.11:7880;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection $connection_upgrade;
-    }
-}
+<code><span style="color:#fdf4c1;">$ docker-compose down
+$ docker-compose pull
+$ docker-compose up --force-recreate --build -d
+</span></code></pre><h2 id="zip-deb-files">ZIP / Deb Files<a class="zola-anchor" href="#zip-deb-files" aria-label="Anchor link for: zip-deb-files">🔗</a></h2>
+<p>Simply download a concrete version and re-install it using your
+package manager or unpack the zip file.</p>
+<h2 id="nix">Nix<a class="zola-anchor" href="#nix" aria-label="Anchor link for: nix">🔗</a></h2>
+<p>When using the provided nix setup, the <code>currentPkg</code> always points to
+the latest version. But most other versions are also provided and can
+be chosen from:</p>
+<pre style="background-color:#282828;">
+<code><span style="font-style:italic;color:#928374;"># …
+       </span><span style="color:#fdf4c1;">docspell </span><span style="background-color:#932b1e;color:#fdf4c1;">=</span><span style="color:#fdf4c1aa;"> </span><span style="color:#fdf4c1;">callPackage </span><span style="color:#fdf4c1aa;">(</span><span style="color:#fdf4c1;">docspell</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">pkg docspell</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">cfg</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">v0_20_0</span><span style="color:#fdf4c1aa;">) {}</span><span style="background-color:#932b1e;color:#fdf4c1;">;</span><span style="color:#fdf4c1aa;">
+</span><span style="font-style:italic;color:#928374;"># …
 </span></code></pre>
                         </div>
                     </div>
