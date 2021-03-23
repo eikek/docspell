@@ -347,8 +347,10 @@ special folder, which will usually appear translated in your web-mail
 client. You can specify &quot;INBOX&quot; case insensitive, it will then read
 mails in your inbox. Any other folder is usually case-sensitive
 (depends on the imap server, but usually they are case sensitive
-except the INBOX folder). Type in a folder name and click the add
-button on the right.</p>
+except the INBOX folder). The path separator may also vary depending
+on your imap server - if the slash doesn't work, try using a dot
+(i.e. &quot;INBOX.invoices&quot; instead of &quot;INBOX/invoices&quot;).
+Type in a folder name and click the add button on the right.</p>
 <p>Then the field <em>Received Since Hours</em> defines how many hours to go
 back and look for mails. Usually there are many mails in your inbox
 and importing them all at once is not feasible or desirable. It can
