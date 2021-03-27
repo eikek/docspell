@@ -54,13 +54,13 @@ view2 _ items =
                     , th [ class "text-center mr-2" ]
                         [ i [ class "fa fa-check" ] []
                         ]
+                    , th [ class "text-left " ] [ text "Summary" ]
                     , th [ class "text-left hidden sm:table-cell mr-2" ]
                         [ text "Schedule" ]
                     , th [ class "text-left mr-2" ]
                         [ text "Connection" ]
                     , th [ class "text-left hidden sm:table-cell mr-2" ]
                         [ text "Recipients" ]
-                    , th [ class "text-center " ] [ text "Remind Days" ]
                     ]
                 ]
             , tbody []
@@ -76,6 +76,10 @@ viewItem2 item =
         , td [ class "w-px whitespace-nowrap px-2 text-center" ]
             [ Util.Html.checkbox2 item.enabled
             ]
+        , td [ class "text-left" ]
+            [ Maybe.withDefault "" item.summary
+                |> text
+            ]
         , td [ class "text-left hidden sm:table-cell mr-2" ]
             [ code [ class "font-mono text-sm" ]
                 [ text item.schedule
@@ -86,9 +90,5 @@ viewItem2 item =
             ]
         , td [ class "text-left hidden sm:table-cell mr-2" ]
             [ String.join ", " item.recipients |> text
-            ]
-        , td [ class "text-center" ]
-            [ String.fromInt item.remindDays
-                |> text
             ]
         ]

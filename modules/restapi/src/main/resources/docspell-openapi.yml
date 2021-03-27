@@ -3853,6 +3853,8 @@ components:
           format: ident
         enabled:
           type: boolean
+        summary:
+          type: string
         imapConnection:
           type: string
           format: ident
@@ -4012,6 +4014,8 @@ components:
           format: ident
         enabled:
           type: boolean
+        summary:
+          type: string
         smtpConnection:
           type: string
           format: ident

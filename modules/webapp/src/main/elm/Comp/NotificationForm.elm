@@ -28,6 +28,7 @@ import Data.UiSettings exposing (UiSettings)
 import Data.Validated exposing (Validated(..))
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Html.Events exposing (onInput)
 import Http
 import Styles as S
 import Util.Http
@@ -52,6 +53,7 @@ type alias Model =
     , formMsg : Maybe BasicResult
     , loading : Int
     , yesNoDelete : Comp.YesNoDimmer.Model
+    , summary : Maybe String
     }
 
 
@@ -79,6 +81,7 @@ type Msg
     | Cancel
     | RequestDelete
     | YesNoDeleteMsg Comp.YesNoDimmer.Msg
+    | SetSummary String
 
 
 initWith : Flags -> NotificationSettings -> ( Model, Cmd Msg )
@@ -121,6 +124,7 @@ initWith flags s =
         , formMsg = Nothing
         , loading = im.loading
         , yesNoDelete = Comp.YesNoDimmer.emptyModel
+        , summary = s.summary
       }
     , Cmd.batch
         [ nc
@@ -158,6 +162,7 @@ init flags =
       , formMsg = Nothing
       , loading = 2
       , yesNoDelete = Comp.YesNoDimmer.emptyModel
+      , summary = Nothing
       }
     , Cmd.batch
         [ Api.getMailSettings flags "" ConnResp
@@ -203,6 +208,7 @@ makeSettings model =
                 , capOverdue = model.capOverdue
                 , enabled = model.enabled
                 , schedule = Data.CalEvent.makeEvent timer
+                , summary = model.summary
             }
     in
     Data.Validated.map4 make
@@ -450,6 +456,12 @@ update flags msg model =
             , Cmd.none
             )
 
+        SetSummary str ->
+            ( { model | summary = Util.Maybe.fromString str }
+            , NoAction
+            , Cmd.none
+            )
+
 
 
 --- View2
@@ -543,6 +555,22 @@ view2 extraClasses settings model =
                     , value = model.enabled
                     , id = "notify-enabled"
                     }
+            ]
+        , div [ class "mb-4" ]
+            [ label [ class S.inputLabel ]
+                [ text "Summary"
+                ]
+            , input
+                [ type_ "text"
+                , onInput SetSummary
+                , class S.textInput
+                , Maybe.withDefault "" model.summary
+                    |> value
+                ]
+                []
+            , span [ class "opacity-50 text-sm" ]
+                [ text "Some human readable name, only for displaying"
+                ]
             ]
         , div [ class "mb-4" ]
             [ label [ class S.inputLabel ]

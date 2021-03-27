@@ -85,6 +85,6 @@ object QUserTask {
     )
 
   def makeUserTask(r: RPeriodicTask): UserTask[String] =
-    UserTask(r.id, r.task, r.enabled, r.timer, r.args)
+    UserTask(r.id, r.task, r.enabled, r.timer, r.summary, r.args)
 
 }

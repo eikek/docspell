@@ -112,6 +112,7 @@ object NotifyDueItemsRoutes {
         NotifyDueItemsArgs.taskName,
         settings.enabled,
         settings.schedule,
+        settings.summary,
         NotifyDueItemsArgs(
           user,
           settings.smtpConnection,
@@ -144,6 +145,7 @@ object NotifyDueItemsRoutes {
     } yield NotificationSettings(
       task.id,
       task.enabled,
+      task.summary,
       conn.getOrElse(Ident.unsafe("")),
       task.args.recipients,
       task.timer,

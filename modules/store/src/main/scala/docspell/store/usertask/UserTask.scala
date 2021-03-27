@@ -16,6 +16,7 @@ case class UserTask[A](
     name: Ident,
     enabled: Boolean,
     timer: CalEvent,
+    summary: Option[String],
     args: A
 ) {
 
@@ -47,7 +48,8 @@ object UserTask {
           s"${account.user.id}: ${ut.name.id}",
           account.user,
           Priority.Low,
-          ut.timer
+          ut.timer,
+          ut.summary
         )
         .map(r => r.copy(id = ut.id))
   }

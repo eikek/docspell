@@ -30,7 +30,8 @@ case class RPeriodicTask(
     marked: Option[Timestamp],
     timer: CalEvent,
     nextrun: Timestamp,
-    created: Timestamp
+    created: Timestamp,
+    summary: Option[String]
 ) {
 
   def toJob[F[_]: Sync]: F[RJob] =
@@ -66,7 +67,8 @@ object RPeriodicTask {
       subject: String,
       submitter: Ident,
       priority: Priority,
-      timer: CalEvent
+      timer: CalEvent,
+      summary: Option[String]
   ): F[RPeriodicTask] =
     Ident
       .randomId[F]
@@ -91,7 +93,8 @@ object RPeriodicTask {
                 .map(_.toInstant)
                 .map(Timestamp.apply)
                 .getOrElse(Timestamp.Epoch),
-              now
+              now,
+              summary
             )
           }
       )
@@ -104,9 +107,20 @@ object RPeriodicTask {
       subject: String,
       submitter: Ident,
       priority: Priority,
-      timer: CalEvent
+      timer: CalEvent,
+      summary: Option[String]
   )(implicit E: Encoder[A]): F[RPeriodicTask] =
-    create[F](enabled, task, group, E(args).noSpaces, subject, submitter, priority, timer)
+    create[F](
+      enabled,
+      task,
+      group,
+      E(args).noSpaces,
+      subject,
+      submitter,
+      priority,
+      timer,
+      summary
+    )
 
   final case class Table(alias: Option[String]) extends TableDef {
     val tableName = "periodic_task"
@@ -124,6 +138,7 @@ object RPeriodicTask {
     val timer     = Column[CalEvent]("timer", this)
     val nextrun   = Column[Timestamp]("nextrun", this)
     val created   = Column[Timestamp]("created", this)
+    val summary   = Column[String]("summary", this)
     val all = NonEmptyList.of[Column[_]](
       id,
       enabled,
@@ -137,7 +152,8 @@ object RPeriodicTask {
       marked,
       timer,
       nextrun,
-      created
+      created,
+      summary
     )
   }
 
@@ -151,7 +167,7 @@ object RPeriodicTask {
       T.all,
       fr"${v.id},${v.enabled},${v.task},${v.group},${v.args}," ++
         fr"${v.subject},${v.submitter},${v.priority},${v.worker}," ++
-        fr"${v.marked},${v.timer},${v.nextrun},${v.created}"
+        fr"${v.marked},${v.timer},${v.nextrun},${v.created},${v.summary}"
     )
 
   def update(v: RPeriodicTask): ConnectionIO[Int] =
@@ -168,7 +184,8 @@ object RPeriodicTask {
         T.worker.setTo(v.worker),
         T.marked.setTo(v.marked),
         T.timer.setTo(v.timer),
-        T.nextrun.setTo(v.nextrun)
+        T.nextrun.setTo(v.nextrun),
+        T.summary.setTo(v.summary)
       )
     )
 
