@@ -336,6 +336,7 @@ view2 _ settings model =
             Comp.FixedDropdown.Item
                 model.priority
                 (Data.Priority.toName model.priority)
+                Nothing
     in
     div [ class "flex flex-col" ]
         [ div [ class "mb-4" ]

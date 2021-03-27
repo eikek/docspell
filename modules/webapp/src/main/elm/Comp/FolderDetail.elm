@@ -277,7 +277,7 @@ update flags msg model =
 
 makeItem : IdName -> Comp.FixedDropdown.Item IdName
 makeItem idn =
-    Comp.FixedDropdown.Item idn idn.name
+    Comp.FixedDropdown.Item idn idn.name Nothing
 
 
 view2 : Flags -> Model -> Html Msg

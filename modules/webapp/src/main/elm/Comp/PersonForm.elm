@@ -179,7 +179,7 @@ update flags msg model =
 makeUseItem : Model -> Maybe (Comp.FixedDropdown.Item PersonUse)
 makeUseItem model =
     Just <|
-        Comp.FixedDropdown.Item model.use (Data.PersonUse.label model.use)
+        Comp.FixedDropdown.Item model.use (Data.PersonUse.label model.use) Nothing
 
 
 

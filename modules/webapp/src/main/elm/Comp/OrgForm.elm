@@ -150,7 +150,7 @@ update flags msg model =
 makeUseItem : Model -> Maybe (Comp.FixedDropdown.Item OrgUse)
 makeUseItem model =
     Just <|
-        Comp.FixedDropdown.Item model.use (Data.OrgUse.label model.use)
+        Comp.FixedDropdown.Item model.use (Data.OrgUse.label model.use) Nothing
 
 
 view2 : Bool -> UiSettings -> Model -> Html Msg

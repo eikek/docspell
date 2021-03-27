@@ -161,4 +161,4 @@ view2 model =
 makeUseItem : Model -> Maybe (Comp.FixedDropdown.Item EquipmentUse)
 makeUseItem model =
     Just <|
-        Comp.FixedDropdown.Item model.use (Data.EquipmentUse.label model.use)
+        Comp.FixedDropdown.Item model.use (Data.EquipmentUse.label model.use) Nothing

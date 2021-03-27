@@ -201,7 +201,7 @@ view2 : ViewSettings -> Model -> List (Html Msg)
 view2 viewSettings model =
     let
         mkItem cft =
-            Comp.FixedDropdown.Item cft (Data.CustomFieldType.label cft)
+            Comp.FixedDropdown.Item cft (Data.CustomFieldType.label cft) Nothing
 
         dimmerSettings =
             Comp.YesNoDimmer.defaultSettings2 "Really delete this custom field?"

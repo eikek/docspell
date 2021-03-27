@@ -190,6 +190,7 @@ view2 settings model =
             Comp.FixedDropdown.Item
                 model.categoryListType
                 (Data.ListType.label model.categoryListType)
+                Nothing
     in
     div []
         [ Markdown.toHtml [ class "px-2 py-2 opacity-75" ]

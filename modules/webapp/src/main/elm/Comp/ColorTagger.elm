@@ -101,7 +101,7 @@ view2 data opts model =
             [ text opts.label ]
         , Html.map LeftMsg
             (Comp.FixedDropdown.view2
-                (Maybe.map (\s -> Comp.FixedDropdown.Item s s) model.leftSelect)
+                (Maybe.map (\s -> Comp.FixedDropdown.Item s s Nothing) model.leftSelect)
                 model.leftDropdown
             )
         , div [ class "field" ]

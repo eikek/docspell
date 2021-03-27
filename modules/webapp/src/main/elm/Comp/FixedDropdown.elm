@@ -23,6 +23,7 @@ import Util.List
 type alias Item a =
     { id : a
     , display : String
+    , icon : Maybe String
     }
 
 
@@ -49,19 +50,19 @@ init options =
 
 initString : List String -> Model String
 initString strings =
-    init <| List.map (\s -> Item s s) strings
+    init <| List.map (\s -> Item s s Nothing) strings
 
 
 initMap : (a -> String) -> List a -> Model a
 initMap elToString els =
-    init <| List.map (\a -> Item a (elToString a)) els
+    init <| List.map (\a -> Item a (elToString a) Nothing) els
 
 
 initTuple : List ( String, a ) -> Model a
 initTuple tuples =
     let
         mkItem ( txt, id ) =
-            Item id txt
+            Item id txt Nothing
     in
     init <| List.map mkItem tuples
 
@@ -170,6 +171,14 @@ update msg model =
 viewStyled2 : DS.DropdownStyle -> Bool -> Maybe (Item a) -> Model a -> Html (Msg a)
 viewStyled2 style error sel model =
     let
+        iconItem item =
+            span
+                [ classList [ ( "hidden", item.icon == Nothing ) ]
+                , class (Maybe.withDefault "" item.icon)
+                , class "mr-2"
+                ]
+                []
+
         renderItem item =
             a
                 [ href "#"
@@ -180,8 +189,13 @@ viewStyled2 style error sel model =
                     ]
                 , onClick (SelectItem2 item)
                 ]
-                [ text item.display
+                [ iconItem item
+                , text item.display
                 ]
+
+        selIcon =
+            Maybe.map iconItem sel
+                |> Maybe.withDefault (span [ class "hidden" ] [])
     in
     div
         [ class ("relative " ++ style.root)
@@ -200,7 +214,8 @@ viewStyled2 style error sel model =
                     [ ( "opacity-50", sel == Nothing )
                     ]
                 ]
-                [ Maybe.map .display sel
+                [ selIcon
+                , Maybe.map .display sel
                     |> Maybe.withDefault "Select…"
                     |> text
                 ]

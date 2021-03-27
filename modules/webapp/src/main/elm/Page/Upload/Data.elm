@@ -40,7 +40,7 @@ type alias Model =
 
 mkLanguageItem : Language -> Comp.FixedDropdown.Item Language
 mkLanguageItem lang =
-    Comp.FixedDropdown.Item lang (Data.Language.toName lang)
+    Comp.FixedDropdown.Item lang (Data.Language.toName lang) Nothing
 
 
 emptyModel : Model

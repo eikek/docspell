@@ -45,6 +45,7 @@ makeDropdownItem : ContactType -> Comp.FixedDropdown.Item ContactType
 makeDropdownItem ct =
     { id = ct
     , display = Data.ContactType.toString ct
+    , icon = Nothing
     }
 
 

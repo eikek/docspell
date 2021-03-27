@@ -147,7 +147,7 @@ type alias UpdateResult =
 
 mkItem : CustomField -> Comp.FixedDropdown.Item CustomField
 mkItem f =
-    Comp.FixedDropdown.Item f (Maybe.withDefault f.name f.label)
+    Comp.FixedDropdown.Item f (Maybe.withDefault f.name f.label) Nothing
 
 
 update : Flags -> Msg -> Model -> UpdateResult
