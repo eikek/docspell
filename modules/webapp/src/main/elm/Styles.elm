@@ -18,7 +18,7 @@ sidebarMenuItemActive =
 
 content : String
 content =
-    "container mx-auto px-2 h-screen-12 overflow-y-auto scrollbar-main scrollbar-thin"
+    "w-full mx-auto px-2 h-screen-12 overflow-y-auto scrollbar-main scrollbar-thin"
 
 
 sidebarLink : String

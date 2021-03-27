@@ -34,35 +34,37 @@ viewContent mid _ _ model =
         [ id "content"
         , class S.content
         ]
-        [ div [ class "px-0 flex flex-col" ]
-            [ div [ class "py-4" ]
-                [ renderForm model
+        [ div [ class "container mx-auto" ]
+            [ div [ class "px-0 flex flex-col" ]
+                [ div [ class "py-4" ]
+                    [ renderForm model
+                    ]
+                , div [ class "py-0" ]
+                    [ Html.map DropzoneMsg
+                        (Comp.Dropzone.view2 model.dropzone)
+                    ]
+                , div [ class "py-4" ]
+                    [ a
+                        [ class S.primaryButton
+                        , href "#"
+                        , onClick SubmitUpload
+                        ]
+                        [ text "Submit"
+                        ]
+                    , a
+                        [ class S.secondaryButton
+                        , class "ml-2"
+                        , href "#"
+                        , onClick Clear
+                        ]
+                        [ text "Reset"
+                        ]
+                    ]
                 ]
-            , div [ class "py-0" ]
-                [ Html.map DropzoneMsg
-                    (Comp.Dropzone.view2 model.dropzone)
-                ]
-            , div [ class "py-4" ]
-                [ a
-                    [ class S.primaryButton
-                    , href "#"
-                    , onClick SubmitUpload
-                    ]
-                    [ text "Submit"
-                    ]
-                , a
-                    [ class S.secondaryButton
-                    , class "ml-2"
-                    , href "#"
-                    , onClick Clear
-                    ]
-                    [ text "Reset"
-                    ]
-                ]
+            , renderErrorMsg model
+            , renderSuccessMsg (Util.Maybe.nonEmpty mid) model
+            , renderUploads model
             ]
-        , renderErrorMsg model
-        , renderSuccessMsg (Util.Maybe.nonEmpty mid) model
-        , renderUploads model
         ]
 
 
