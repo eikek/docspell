@@ -32,6 +32,8 @@ import Data.UiTheme exposing (UiTheme)
 import Dict exposing (Dict)
 import Html exposing (Attribute)
 import Html.Attributes as HA
+import Messages
+import UiLanguage exposing (UiLanguage)
 
 
 {-| Settings for the web ui. All fields should be optional, since it
@@ -63,6 +65,7 @@ type alias StoredUiSettings =
     , uiTheme : Maybe String
     , sideMenuVisible : Bool
     , powerSearchEnabled : Bool
+    , uiLang : Maybe String
     }
 
 
@@ -94,6 +97,7 @@ type alias UiSettings =
     , uiTheme : UiTheme
     , sideMenuVisible : Bool
     , powerSearchEnabled : Bool
+    , uiLang : UiLanguage
     }
 
 
@@ -165,6 +169,7 @@ defaults =
     , uiTheme = Data.UiTheme.Light
     , sideMenuVisible = True
     , powerSearchEnabled = False
+    , uiLang = UiLanguage.English
     }
 
 
@@ -217,6 +222,9 @@ merge given fallback =
             |> Maybe.withDefault fallback.uiTheme
     , sideMenuVisible = given.sideMenuVisible
     , powerSearchEnabled = given.powerSearchEnabled
+    , uiLang =
+        Maybe.map Messages.fromIso2 given.uiLang
+            |> Maybe.withDefault UiLanguage.English
     }
 
 
@@ -254,6 +262,7 @@ toStoredUiSettings settings =
     , uiTheme = Just (Data.UiTheme.toString settings.uiTheme)
     , sideMenuVisible = settings.sideMenuVisible
     , powerSearchEnabled = settings.powerSearchEnabled
+    , uiLang = Just <| Messages.toIso2 settings.uiLang
     }
 
 

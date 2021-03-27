@@ -7,6 +7,7 @@ import Data.Flags
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
+import Messages
 import Page exposing (Page(..))
 import Page.CollectiveSettings.View2 as CollectiveSettings
 import Page.Home.Data
@@ -20,6 +21,7 @@ import Page.Register.View2 as Register
 import Page.Upload.View2 as Upload
 import Page.UserSettings.View2 as UserSettings
 import Styles as S
+import UiLanguage
 
 
 view : Model -> List (Html Msg)
@@ -64,13 +66,18 @@ topNavUser auth model =
 
 topNavAnon : Model -> Html Msg
 topNavAnon model =
+    let
+        texts =
+            Messages.get <| App.Data.getUiLanguage model
+    in
     nav
         [ id "top-nav"
         , class styleTopNav
         ]
         [ headerNavItem model
         , div [ class "flex flex-grow justify-end" ]
-            [ a
+            [ langMenu model
+            , a
                 [ href "#"
                 , onClick ToggleDarkMode
                 , class dropdownLink
@@ -100,6 +107,10 @@ headerNavItem model =
 
 mainContent : Model -> Html Msg
 mainContent model =
+    let
+        texts =
+            Messages.get <| App.Data.getUiLanguage model
+    in
     div
         [ id "main"
         , class styleMain
@@ -149,6 +160,45 @@ styleTopNav =
 styleMain : String
 styleMain =
     "mt-12 flex md:flex-row flex-col w-full h-screen-12 overflow-y-hidden bg-white dark:bg-bluegray-800 text-gray-800 dark:text-bluegray-300 antialiased"
+
+
+langMenu : Model -> Html Msg
+langMenu model =
+    let
+        texts =
+            Messages.get <| App.Data.getUiLanguage model
+
+        langItem lang =
+            let
+                langMsg =
+                    Messages.get lang
+            in
+            a
+                [ classList
+                    [ ( dropdownItem, True )
+                    , ( "bg-gray-200 dark:bg-bluegray-700", lang == texts.lang )
+                    ]
+                , onClick (SetLanguage lang)
+                , href "#"
+                ]
+                [ i [ langMsg |> .flagIcon |> class ] []
+                , span [ class "ml-2" ] [ text langMsg.label ]
+                ]
+    in
+    div [ class "relative" ]
+        [ a
+            [ class dropdownLink
+            , onClick ToggleLangMenu
+            , href "#"
+            ]
+            [ i [ class texts.flagIcon ] []
+            ]
+        , div
+            [ class dropdownMenu
+            , classList [ ( "hidden", not model.langMenuOpen ) ]
+            ]
+            (List.map langItem UiLanguage.all)
+        ]
 
 
 dataMenu : AuthResult -> Model -> Html Msg

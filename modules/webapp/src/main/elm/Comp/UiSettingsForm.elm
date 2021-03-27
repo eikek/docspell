@@ -11,11 +11,13 @@ import Api.Model.TagList exposing (TagList)
 import Comp.BasicSizeField
 import Comp.ColorTagger
 import Comp.FieldListSelect
+import Comp.FixedDropdown
 import Comp.IntField
 import Comp.MenuBar as MB
 import Comp.Tabs
 import Data.BasicSize exposing (BasicSize)
 import Data.Color exposing (Color)
+import Data.DropdownStyle as DS
 import Data.Fields exposing (Field)
 import Data.Flags exposing (Flags)
 import Data.ItemTemplate as IT exposing (ItemTemplate)
@@ -26,8 +28,10 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Http
 import Markdown
+import Messages
 import Set exposing (Set)
 import Styles as S
+import UiLanguage exposing (UiLanguage)
 import Util.Maybe
 import Util.Tag
 
@@ -56,6 +60,8 @@ type alias Model =
     , searchStatsVisible : Bool
     , sideMenuVisible : Bool
     , powerSearchEnabled : Bool
+    , uiLangModel : Comp.FixedDropdown.Model UiLanguage
+    , uiLang : UiLanguage
     , openTabs : Set String
     }
 
@@ -148,6 +154,10 @@ init flags settings =
       , searchStatsVisible = settings.searchStatsVisible
       , sideMenuVisible = settings.sideMenuVisible
       , powerSearchEnabled = settings.powerSearchEnabled
+      , uiLang = settings.uiLang
+      , uiLangModel =
+            List.map langItem UiLanguage.all
+                |> Comp.FixedDropdown.init
       , openTabs = Set.empty
       }
     , Api.getTags flags "" GetTagsResp
@@ -174,6 +184,15 @@ type Msg
     | ToggleAkkordionTab String
     | ToggleSideMenuVisible
     | TogglePowerSearch
+    | UiLangMsg (Comp.FixedDropdown.Msg UiLanguage)
+
+
+langItem : UiLanguage -> Comp.FixedDropdown.Item UiLanguage
+langItem lang =
+    { id = lang
+    , display = Messages.get lang |> .label
+    , icon = Just (Messages.get lang |> .flagIcon)
+    }
 
 
 
@@ -445,6 +464,22 @@ update sett msg model =
             , Just { sett | powerSearchEnabled = next }
             )
 
+        UiLangMsg lm ->
+            let
+                ( m, sel ) =
+                    Comp.FixedDropdown.update lm model.uiLangModel
+
+                newLang =
+                    Maybe.withDefault model.uiLang sel
+            in
+            ( { model | uiLangModel = m, uiLang = newLang }
+            , if newLang == model.uiLang then
+                Nothing
+
+              else
+                Just { sett | uiLang = newLang }
+            )
+
 
 
 --- View2
@@ -493,6 +528,15 @@ settingFormTabs flags _ model =
                         , tagger = \_ -> ToggleSideMenuVisible
                         , value = model.sideMenuVisible
                         }
+                ]
+            , div [ class "mb-4" ]
+                [ label [ class S.inputLabel ] [ text "UI Language" ]
+                , Html.map UiLangMsg
+                    (Comp.FixedDropdown.viewStyled2 DS.mainStyle
+                        False
+                        (Just <| langItem model.uiLang)
+                        model.uiLangModel
+                    )
                 ]
             ]
       }

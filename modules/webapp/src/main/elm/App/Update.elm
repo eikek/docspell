@@ -84,6 +84,15 @@ updateWithSub msg model =
                     , Sub.none
                     )
 
+        ToggleLangMenu ->
+            ( { model | langMenuOpen = not model.langMenuOpen }
+            , Cmd.none
+            , Sub.none
+            )
+
+        SetLanguage lang ->
+            ( { model | anonymousUiLang = lang, langMenuOpen = False }, Cmd.none, Sub.none )
+
         HomeMsg lm ->
             updateHome lm model
 
