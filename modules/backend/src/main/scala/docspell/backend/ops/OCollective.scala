@@ -150,6 +150,7 @@ object OCollective {
             LearnClassifierArgs.taskName,
             on,
             timer,
+            None,
             LearnClassifierArgs(coll)
           )
           _ <- uts.updateOneTask(AccountId(coll, LearnClassifierArgs.taskName), ut)
@@ -164,6 +165,7 @@ object OCollective {
             LearnClassifierArgs.taskName,
             true,
             CalEvent(WeekdayComponent.All, DateEvent.All, TimeEvent.All),
+            None,
             LearnClassifierArgs(collective)
           ).encode.toPeriodicTask(AccountId(collective, LearnClassifierArgs.taskName))
           job <- ut.toJob

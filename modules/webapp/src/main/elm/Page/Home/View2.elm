@@ -7,7 +7,6 @@ import Comp.MenuBar as MB
 import Comp.PowerSearchInput
 import Comp.SearchMenu
 import Comp.SearchStatsView
-import Comp.YesNoDimmer
 import Data.Flags exposing (Flags)
 import Data.ItemSelection
 import Data.UiSettings exposing (UiSettings)
@@ -53,19 +52,6 @@ viewContent flags settings model =
 
 deleteSelectedDimmer : Model -> List (Html Msg)
 deleteSelectedDimmer model =
-    let
-        selectAction =
-            case model.viewMode of
-                SelectView svm ->
-                    svm.action
-
-                _ ->
-                    NoneAction
-
-        deleteAllDimmer : Comp.YesNoDimmer.Settings
-        deleteAllDimmer =
-            Comp.YesNoDimmer.defaultSettings2 "Really delete all selected items?"
-    in
     case model.viewMode of
         SelectView svm ->
             case svm.confirmModal of

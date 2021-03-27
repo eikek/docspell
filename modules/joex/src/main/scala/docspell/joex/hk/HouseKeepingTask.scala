@@ -36,7 +36,8 @@ object HouseKeepingTask {
         "Docspell house-keeping",
         DocspellSystem.taskGroup,
         Priority.Low,
-        ce
+        ce,
+        None
       )
       .map(_.copy(id = periodicId))
 }

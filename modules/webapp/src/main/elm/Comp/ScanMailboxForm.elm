@@ -75,6 +75,7 @@ type alias Model =
     , languageModel : Comp.FixedDropdown.Model Language
     , language : Maybe Language
     , postHandleAll : Bool
+    , summary : Maybe String
     , openTabs : Set String
     }
 
@@ -121,6 +122,7 @@ type Msg
     | RemoveLanguage
     | TogglePostHandleAll
     | ToggleAkkordionTab String
+    | SetSummary String
 
 
 initWith : Flags -> ScanMailboxSettings -> ( Model, Cmd Msg )
@@ -167,6 +169,7 @@ initWith flags s =
             Comp.FixedDropdown.init (List.map mkLanguageItem Data.Language.all)
         , language = Maybe.andThen Data.Language.fromString s.language
         , postHandleAll = Maybe.withDefault False s.postHandleAll
+        , summary = s.summary
       }
     , Cmd.batch
         [ Api.getImapSettings flags "" ConnResp
@@ -221,6 +224,7 @@ init flags =
             Comp.FixedDropdown.init (List.map mkLanguageItem Data.Language.all)
       , language = Nothing
       , postHandleAll = False
+      , summary = Nothing
       , openTabs = Set.insert (tabTitle TabGeneral) Set.empty
       }
     , Cmd.batch
@@ -283,6 +287,7 @@ makeSettings model =
                                 |> Just
                 , language = Maybe.map Data.Language.toIso3 model.language
                 , postHandleAll = Just model.postHandleAll
+                , summary = model.summary
             }
     in
     Data.Validated.map3 make
@@ -689,6 +694,12 @@ update flags msg model =
             , Cmd.none
             )
 
+        SetSummary str ->
+            ( { model | summary = Util.Maybe.fromString str }
+            , NoAction
+            , Cmd.none
+            )
+
 
 
 --- View2
@@ -869,6 +880,22 @@ viewGeneral2 settings model =
         [ label [ class S.inputLabel ]
             [ text "Mailbox"
             , B.inputRequired
+            ]
+        , div [ class "mb-4" ]
+            [ label [ class S.inputLabel ]
+                [ text "Summary"
+                ]
+            , input
+                [ type_ "text"
+                , onInput SetSummary
+                , class S.textInput
+                , Maybe.withDefault "" model.summary
+                    |> value
+                ]
+                []
+            , span [ class "opacity-50 text-sm" ]
+                [ text "Some human readable name, only for displaying"
+                ]
             ]
         , Html.map ConnMsg
             (Comp.Dropdown.view2

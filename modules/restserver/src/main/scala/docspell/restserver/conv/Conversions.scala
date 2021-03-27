@@ -143,36 +143,6 @@ trait Conversions {
 
   // item list
 
-  def mkQuery(m: ItemSearch, account: AccountId): OItemSearch.Query =
-    OItemSearch.Query(
-      OItemSearch.Query.Fix(account, None, None),
-      OItemSearch.Query.QueryForm(
-        m.name,
-        if (m.inbox) Seq(ItemState.Created)
-        else ItemState.validStates.toList,
-        m.direction,
-        m.corrPerson,
-        m.corrOrg,
-        m.concPerson,
-        m.concEquip,
-        m.folder,
-        m.tagsInclude.map(Ident.unsafe),
-        m.tagsExclude.map(Ident.unsafe),
-        m.tagCategoriesInclude,
-        m.tagCategoriesExclude,
-        m.dateFrom,
-        m.dateUntil,
-        m.dueDateFrom,
-        m.dueDateUntil,
-        m.allNames,
-        m.itemSubset
-          .map(_.ids.flatMap(i => Ident.fromString(i).toOption).toSet)
-          .filter(_.nonEmpty),
-        m.customValues.map(mkCustomValue),
-        m.source
-      )
-    )
-
   def mkCustomValue(v: CustomFieldValue): OItemSearch.CustomValue =
     OItemSearch.CustomValue(v.field, v.value)
 

@@ -221,6 +221,7 @@ view2 settings model =
                 , ( S.successMessage, Maybe.map .success model.result == Just True )
                 , ( "hidden", model.result == Nothing )
                 ]
+            , class "mb-2"
             ]
             [ Maybe.map .message model.result
                 |> Maybe.withDefault ""

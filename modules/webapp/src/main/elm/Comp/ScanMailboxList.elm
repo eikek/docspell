@@ -54,12 +54,11 @@ view2 _ items =
                     , th [ class "" ]
                         [ i [ class "fa fa-check" ] []
                         ]
-                    , th [ class "text-left mr-2 hidden md:table-cell" ] [ text "Schedule" ]
-                    , th [ class "text-left mr-2" ] [ text "Connection" ]
-                    , th [ class "text-left mr-2" ] [ text "Folders" ]
-                    , th [ class "text-left mr-2 hidden md:table-cell" ] [ text "Received Since" ]
-                    , th [ class "text-left mr-2 hidden md:table-cell" ] [ text "Target" ]
-                    , th [ class "hidden md:table-cell" ] [ text "Delete" ]
+                    , th [ class "text-left" ] [ text "Summary" ]
+                    , th [ class "text-left mr-2" ] [ text "Schedule" ]
+                    , th [ class "text-left mr-2 hidden md:table-cell" ] [ text "Connection" ]
+                    , th [ class "text-left mr-2 hidden md:table-cell" ] [ text "Folders" ]
+                    , th [ class "text-left mr-2 hidden lg:table-cell" ] [ text "Received Since" ]
                     ]
                 ]
             , tbody []
@@ -75,28 +74,24 @@ viewItem2 item =
         , td [ class "w-px px-2" ]
             [ Util.Html.checkbox2 item.enabled
             ]
-        , td [ class "mr-2 hidden md:table-cell" ]
+        , td [ class "text-left" ]
+            [ Maybe.withDefault "–" item.summary |> text
+            ]
+        , td [ class "mr-2" ]
             [ code [ class "font-mono text-sm" ]
                 [ text item.schedule
                 ]
             ]
-        , td [ class "text-left mr-2" ]
+        , td [ class "text-left mr-2 hidden md:table-cell" ]
             [ text item.imapConnection
             ]
-        , td [ class "text-left mr-2" ]
+        , td [ class "text-left mr-2 hidden md:table-cell" ]
             [ String.join ", " item.folders |> text
             ]
-        , td [ class "text-left mr-2 hidden md:table-cell" ]
+        , td [ class "text-left mr-2 hidden lg:table-cell" ]
             [ Maybe.map String.fromInt item.receivedSinceHours
                 |> Maybe.withDefault "-"
                 |> text
             , text " h"
-            ]
-        , td [ class "text-left mr-2 hidden md:table-cell" ]
-            [ Maybe.withDefault "-" item.targetFolder
-                |> text
-            ]
-        , td [ class "w-px px-2 hidden md:table-cell" ]
-            [ Util.Html.checkbox2 item.deleteMail
             ]
         ]

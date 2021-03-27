@@ -105,6 +105,7 @@ object ScanMailboxRoutes {
         ScanMailboxArgs.taskName,
         settings.enabled,
         settings.schedule,
+        settings.summary,
         ScanMailboxArgs(
           user,
           settings.imapConnection,
@@ -139,6 +140,7 @@ object ScanMailboxRoutes {
     } yield ScanMailboxSettings(
       task.id,
       task.enabled,
+      task.summary,
       conn.getOrElse(Ident.unsafe("")),
       task.args.folders,
       task.timer,

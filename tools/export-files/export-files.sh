@@ -70,7 +70,7 @@ fi
 set -o errexit -o pipefail -o noclobber -o nounset
 
 LOGIN_URL="$BASE_URL/api/v1/open/auth/login"
-SEARCH_URL="$BASE_URL/api/v1/sec/item/searchWithTags"
+SEARCH_URL="$BASE_URL/api/v1/sec/item/search"
 INSIGHT_URL="$BASE_URL/api/v1/sec/collective/insights"
 DETAIL_URL="$BASE_URL/api/v1/sec/item"
 ATTACH_URL="$BASE_URL/api/v1/sec/attachment"
@@ -108,11 +108,11 @@ mcurl() {
 
 errout "Login to Docspell."
 errout "Using url: $BASE_URL"
-if [ -z "$DS_USER" ]; then
+if [ -z "${DS_USER:-}" ]; then
     errout -n "Account: "
     read DS_USER
 fi
-if [ -z "$DS_PASS" ]; then
+if [ -z "${DS_PASS:-}" ]; then
     errout -n "Password: "
     read -s DS_PASS
 fi
@@ -152,7 +152,7 @@ listItems() {
     OFFSET="${1:-0}"
     LIMIT="${2:-50}"
     errout "Get next items with offset=$OFFSET, limit=$LIMIT"
-    REQ="{\"offset\":$OFFSET, \"limit\":$LIMIT, \"tagsInclude\":[],\"tagsExclude\":[],\"tagCategoriesInclude\":[], \"tagCategoriesExclude\":[],\"customValues\":[],\"inbox\":false}"
+    REQ="{\"offset\":$OFFSET, \"limit\":$LIMIT, \"withDetails\":true, \"query\":\"\"}"
 
     mcurl -XPOST -H 'ContentType: application/json' -d "$REQ" "$SEARCH_URL" | "$JQ_CMD" -r '.groups[].items[]|.id'
 }

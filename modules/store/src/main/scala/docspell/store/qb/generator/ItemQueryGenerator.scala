@@ -117,6 +117,9 @@ object ItemQueryGenerator {
         if (flag) tables.item.state === ItemState.created
         else tables.item.state === ItemState.confirmed
 
+      case Expr.ValidItemStates =>
+        tables.item.state.in(ItemState.validStates)
+
       case Expr.TagIdsMatch(op, tags) =>
         val ids = tags.toList.flatMap(s => Ident.fromString(s).toOption)
         Nel
