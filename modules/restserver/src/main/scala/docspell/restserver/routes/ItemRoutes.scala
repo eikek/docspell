@@ -15,6 +15,7 @@ import docspell.common._
 import docspell.common.syntax.all._
 import docspell.query.FulltextExtract.Result.TooMany
 import docspell.query.FulltextExtract.Result.UnsupportedPosition
+import docspell.query.ItemQuery.Expr
 import docspell.restapi.model._
 import docspell.restserver.Config
 import docspell.restserver.conv.Conversions
@@ -61,12 +62,12 @@ object ItemRoutes {
           detailFlag.getOrElse(false),
           cfg.maxNoteLength
         )
-        val fixQuery = Query.Fix(user.account, None, None)
+        val fixQuery = Query.Fix(user.account, Some(Expr.ValidItemStates), None)
         searchItems(backend, dsl)(settings, fixQuery, itemQuery)
 
       case GET -> Root / "searchStats" :? QP.Query(q) =>
         val itemQuery = ItemQueryString(q)
-        val fixQuery  = Query.Fix(user.account, None, None)
+        val fixQuery  = Query.Fix(user.account, Some(Expr.ValidItemStates), None)
         searchItemStats(backend, dsl)(cfg.fullTextSearch.enabled, fixQuery, itemQuery)
 
       case req @ POST -> Root / "search" =>
@@ -85,7 +86,7 @@ object ItemRoutes {
             userQuery.withDetails.getOrElse(false),
             cfg.maxNoteLength
           )
-          fixQuery = Query.Fix(user.account, None, None)
+          fixQuery = Query.Fix(user.account, Some(Expr.ValidItemStates), None)
           resp <- searchItems(backend, dsl)(settings, fixQuery, itemQuery)
         } yield resp
 
@@ -93,7 +94,7 @@ object ItemRoutes {
         for {
           userQuery <- req.as[ItemQuery]
           itemQuery = ItemQueryString(userQuery.query)
-          fixQuery  = Query.Fix(user.account, None, None)
+          fixQuery  = Query.Fix(user.account, Some(Expr.ValidItemStates), None)
           resp <- searchItemStats(backend, dsl)(
             cfg.fullTextSearch.enabled,
             fixQuery,
