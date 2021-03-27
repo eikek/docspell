@@ -1309,73 +1309,6 @@ paths:
               schema:
                 $ref: "#/components/schemas/BasicResult"
 
-
-  /sec/item/searchForm:
-    post:
-      tags: [ Item Search ]
-      summary: Search for items.
-      deprecated: true
-      description: |
-        Search for items given a search form. The results are grouped
-        by month and are sorted by item date (newest first). Tags and
-        attachments are *not* resolved. The results will always
-        contain an empty list for item tags and attachments. Use
-        `/searchFormWithTags` to also retrieve all tags and a list of
-        attachments of an item.
-
-        The `fulltext` field can be used to restrict the results by
-        using full-text search in the documents contents.
-
-        The customfields used in the search query are allowed to be
-        specified by either field id or field name. The values may
-        contain the wildcard `*` at beginning or end.
-
-        **NOTE** This is deprecated in favor for using a search query.
-      security:
-        - authTokenHeader: []
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/ItemSearch"
-      responses:
-        200:
-          description: Ok
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ItemLightList"
-  /sec/item/searchFormWithTags:
-    post:
-      tags: [ Item Search ]
-      summary: Search for items.
-      deprecated: true
-      description: |
-        Search for items given a search form. The results are grouped
-        by month by default. For each item, its tags and attachments
-        are also returned. This uses more queries and is therefore
-        slower, but returns all tags to an item as well as their
-        attachments with some minor details.
-
-        The `fulltext` field can be used to restrict the results by
-        using full-text search in the documents contents.
-
-        **NOTE** This is deprecated in favor for using search query.
-      security:
-        - authTokenHeader: []
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/ItemSearch"
-      responses:
-        200:
-          description: Ok
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ItemLightList"
-
   /sec/item/search:
     get:
       tags: [ Item Search ]
@@ -1457,29 +1390,6 @@ paths:
               schema:
                 $ref: "#/components/schemas/ItemLightList"
 
-  /sec/item/searchFormStats:
-    post:
-      tags: [ Item Search ]
-      summary: Get basic statistics about the data of a search.
-      deprecated: true
-      description: |
-        Takes a search query and returns a summary about the results.
-
-        **NOTE** This is deprecated in favor of using a search query.
-      security:
-        - authTokenHeader: []
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/ItemSearch"
-      responses:
-        200:
-          description: Ok
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SearchStats"
   /sec/item/searchStats:
     post:
       tags: [ Item Search ]
@@ -5268,104 +5178,6 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/ItemLight"
-    ItemSearch:
-      description: |
-        A structure for a search form.
-      required:
-        - tagsInclude
-        - tagsExclude
-        - tagCategoriesInclude
-        - tagCategoriesExclude
-        - inbox
-        - offset
-        - limit
-        - customValues
-      properties:
-        tagsInclude:
-          type: array
-          items:
-            type: string
-            format: ident
-        tagsExclude:
-          type: array
-          items:
-            type: string
-            format: ident
-        tagCategoriesInclude:
-          type: array
-          items:
-            type: string
-        tagCategoriesExclude:
-          type: array
-          items:
-            type: string
-        inbox:
-          type: boolean
-        offset:
-          type: integer
-          format: int32
-        limit:
-          type: integer
-          format: int32
-          description: |
-            The maximum number of results to return. Note that this
-            limit is a soft limit, there is some hard limit on the
-            server, too.
-        direction:
-          type: string
-          format: direction
-          enum:
-            - incoming
-            - outgoing
-        name:
-          type: string
-          description: |
-            Search in item names.
-        allNames:
-          type: string
-          description: |
-            Search in item names, correspondents, concerned entities
-            and notes.
-        fullText:
-          type: string
-          description: |
-            A query searching the contents of documents. If only this
-            field is set, then a fulltext-only search is done.
-        corrOrg:
-          type: string
-          format: ident
-        corrPerson:
-          type: string
-          format: ident
-        concPerson:
-          type: string
-          format: ident
-        concEquip:
-          type: string
-          format: ident
-        folder:
-          type: string
-          format: ident
-        dateFrom:
-          type: integer
-          format: date-time
-        dateUntil:
-          type: integer
-          format: date-time
-        dueDateFrom:
-          type: integer
-          format: date-time
-        dueDateUntil:
-          type: integer
-          format: date-time
-        itemSubset:
-          $ref: "#/components/schemas/IdList"
-        customValues:
-          type: array
-          items:
-            $ref: "#/components/schemas/CustomFieldValue"
-        source:
-          type: string
     ItemLight:
       description: |
         An item with only a few important properties.

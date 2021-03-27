@@ -1,5 +1,6 @@
 package docspell.backend.ops
 
+import cats.data.NonEmptyList
 import cats.effect._
 import cats.implicits._
 import fs2.Stream
@@ -9,6 +10,8 @@ import docspell.backend.ops.OItemSearch._
 import docspell.common._
 import docspell.common.syntax.all._
 import docspell.ftsclient._
+import docspell.query.ItemQuery._
+import docspell.query.ItemQueryDsl._
 import docspell.store.queries.{QFolder, QItem, SelectedItem}
 import docspell.store.queue.JobQueue
 import docspell.store.records.RJob
@@ -125,12 +128,18 @@ object OFulltext {
               .map(_.minBy(-_.score))
               .map(r => SelectedItem(r.itemId, r.score))
               .toSet
+          now <- Timestamp.current[F]
           itemsWithTags <-
             store
               .transact(
                 QItem.findItemsWithTags(
                   account.collective,
-                  QItem.findSelectedItems(Query.empty(account), maxNoteLen, select)
+                  QItem.findSelectedItems(
+                    Query.all(account),
+                    now.toUtcDate,
+                    maxNoteLen,
+                    select
+                  )
                 )
               )
               .take(batch.limit.toLong)
@@ -165,7 +174,13 @@ object OFulltext {
             .flatMap(r => Stream.emits(r.results.map(_.itemId)))
             .compile
             .to(Set)
-          q = Query.empty(account).withFix(_.copy(itemIds = itemIds.some))
+          itemIdsQuery = NonEmptyList
+            .fromList(itemIds.toList)
+            .map(ids => Attr.ItemId.in(ids.map(_.id)))
+            .getOrElse(Attr.ItemId.notExists)
+          q = Query
+            .all(account)
+            .withFix(_.copy(query = itemIdsQuery.some))
           res <- store.transact(QItem.searchStats(now.toUtcDate)(q))
         } yield res
       }
@@ -221,7 +236,11 @@ object OFulltext {
             .flatMap(r => Stream.emits(r.results.map(_.itemId)))
             .compile
             .to(Set)
-          qnext = q.withFix(_.copy(itemIds = items.some))
+          itemIdsQuery = NonEmptyList
+            .fromList(items.toList)
+            .map(ids => Attr.ItemId.in(ids.map(_.id)))
+            .getOrElse(Attr.ItemId.notExists)
+          qnext = q.withFix(_.copy(query = itemIdsQuery.some))
           now <- Timestamp.current[F]
           res <- store.transact(QItem.searchStats(now.toUtcDate)(qnext))
         } yield res

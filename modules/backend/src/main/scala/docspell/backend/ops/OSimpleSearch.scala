@@ -129,7 +129,7 @@ object OSimpleSearch {
       def makeQuery(iq: ItemQuery): F[StringSearchResult[Items]] =
         iq.findFulltext match {
           case FulltextExtract.Result.Success(expr, ftq) =>
-            search(settings)(Query(fix, Query.QueryExpr(iq.copy(expr = expr))), ftq)
+            search(settings)(Query(fix, Query.QueryExpr(expr.some)), ftq)
               .map(StringSearchResult.Success.apply)
           case other: FulltextExtract.FailureResult =>
             StringSearchResult.fulltextMismatch[Items](other).pure[F]
@@ -152,7 +152,7 @@ object OSimpleSearch {
       def makeQuery(iq: ItemQuery): F[StringSearchResult[SearchSummary]] =
         iq.findFulltext match {
           case FulltextExtract.Result.Success(expr, ftq) =>
-            searchSummary(useFTS)(Query(fix, Query.QueryExpr(iq.copy(expr = expr))), ftq)
+            searchSummary(useFTS)(Query(fix, Query.QueryExpr(expr.some)), ftq)
               .map(StringSearchResult.Success.apply)
           case other: FulltextExtract.FailureResult =>
             StringSearchResult.fulltextMismatch[SearchSummary](other).pure[F]

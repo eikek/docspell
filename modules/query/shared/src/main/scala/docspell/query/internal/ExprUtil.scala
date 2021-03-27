@@ -69,6 +69,9 @@ object ExprUtil {
         expr
       case AttachId(_) =>
         expr
+
+      case ValidItemStates =>
+        expr
     }
 
   private def spliceAnd(nodes: Nel[Expr]): Nel[Expr] =

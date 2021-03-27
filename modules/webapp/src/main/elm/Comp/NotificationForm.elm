@@ -473,6 +473,14 @@ view2 extraClasses settings model =
     let
         dimmerSettings =
             Comp.YesNoDimmer.defaultSettings2 "Really delete this notification task?"
+
+        startOnceBtn =
+            MB.SecondaryButton
+                { tagger = StartOnce
+                , label = "Start Once"
+                , title = "Start this task now"
+                , icon = Just "fa fa-play"
+                }
     in
     div
         [ class "flex flex-col md:relative"
@@ -501,7 +509,8 @@ view2 extraClasses settings model =
                 ]
             , end =
                 if model.settings.id /= "" then
-                    [ MB.DeleteButton
+                    [ startOnceBtn
+                    , MB.DeleteButton
                         { tagger = RequestDelete
                         , label = "Delete"
                         , title = "Delete this task"
@@ -510,7 +519,8 @@ view2 extraClasses settings model =
                     ]
 
                 else
-                    []
+                    [ startOnceBtn
+                    ]
             , rootClasses = "mb-4"
             }
         , div

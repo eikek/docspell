@@ -1,6 +1,5 @@
 package docspell.restserver.routes
 
-import cats.Monoid
 import cats.data.NonEmptyList
 import cats.effect._
 import cats.implicits._
@@ -102,85 +101,6 @@ object ItemRoutes {
           )
         } yield resp
 
-      //DEPRECATED
-      case req @ POST -> Root / "searchForm" =>
-        for {
-          mask <- req.as[ItemSearch]
-          _    <- logger.ftrace(s"Got search mask: $mask")
-          query = Conversions.mkQuery(mask, user.account)
-          _ <- logger.ftrace(s"Running query: $query")
-          resp <- mask match {
-            case SearchFulltextOnly(ftq) if cfg.fullTextSearch.enabled =>
-              val ftsIn = OFulltext.FtsInput(ftq.query)
-              for {
-                items <- backend.fulltext.findIndexOnly(cfg.maxNoteLength)(
-                  ftsIn,
-                  user.account,
-                  Batch(mask.offset, mask.limit).restrictLimitTo(cfg.maxItemPageSize)
-                )
-                ok <- Ok(Conversions.mkItemListWithTagsFtsPlain(items))
-              } yield ok
-
-            case SearchWithFulltext(fq) if cfg.fullTextSearch.enabled =>
-              for {
-                items <- backend.fulltext.findItems(cfg.maxNoteLength)(
-                  query,
-                  OFulltext.FtsInput(fq),
-                  Batch(mask.offset, mask.limit).restrictLimitTo(cfg.maxItemPageSize)
-                )
-                ok <- Ok(Conversions.mkItemListFts(items))
-              } yield ok
-
-            case _ =>
-              for {
-                items <- backend.itemSearch.findItems(cfg.maxNoteLength)(
-                  query,
-                  Batch(mask.offset, mask.limit).restrictLimitTo(cfg.maxItemPageSize)
-                )
-                ok <- Ok(Conversions.mkItemList(items))
-              } yield ok
-          }
-        } yield resp
-
-      //DEPRECATED
-      case req @ POST -> Root / "searchFormWithTags" =>
-        for {
-          mask <- req.as[ItemSearch]
-          _    <- logger.ftrace(s"Got search mask: $mask")
-          query = Conversions.mkQuery(mask, user.account)
-          _ <- logger.ftrace(s"Running query: $query")
-          resp <- mask match {
-            case SearchFulltextOnly(ftq) if cfg.fullTextSearch.enabled =>
-              val ftsIn = OFulltext.FtsInput(ftq.query)
-              for {
-                items <- backend.fulltext.findIndexOnly(cfg.maxNoteLength)(
-                  ftsIn,
-                  user.account,
-                  Batch(mask.offset, mask.limit).restrictLimitTo(cfg.maxItemPageSize)
-                )
-                ok <- Ok(Conversions.mkItemListWithTagsFtsPlain(items))
-              } yield ok
-
-            case SearchWithFulltext(fq) if cfg.fullTextSearch.enabled =>
-              for {
-                items <- backend.fulltext.findItemsWithTags(cfg.maxNoteLength)(
-                  query,
-                  OFulltext.FtsInput(fq),
-                  Batch(mask.offset, mask.limit).restrictLimitTo(cfg.maxItemPageSize)
-                )
-                ok <- Ok(Conversions.mkItemListWithTagsFts(items))
-              } yield ok
-            case _ =>
-              for {
-                items <- backend.itemSearch.findItemsWithTags(cfg.maxNoteLength)(
-                  query,
-                  Batch(mask.offset, mask.limit).restrictLimitTo(cfg.maxItemPageSize)
-                )
-                ok <- Ok(Conversions.mkItemListWithTags(items))
-              } yield ok
-          }
-        } yield resp
-
       case req @ POST -> Root / "searchIndex" =>
         for {
           mask <- req.as[ItemQuery]
@@ -202,26 +122,6 @@ object ItemRoutes {
             case _ =>
               BadRequest(BasicResult(false, "Query string too short"))
           }
-        } yield resp
-
-      //DEPRECATED
-      case req @ POST -> Root / "searchFormStats" =>
-        for {
-          mask <- req.as[ItemSearch]
-          query = Conversions.mkQuery(mask, user.account)
-          stats <- mask match {
-            case SearchFulltextOnly(ftq) if cfg.fullTextSearch.enabled =>
-              logger.finfo(s"Make index only summary: $ftq") *>
-                backend.fulltext.findIndexOnlySummary(
-                  user.account,
-                  OFulltext.FtsInput(ftq.query)
-                )
-            case SearchWithFulltext(fq) if cfg.fullTextSearch.enabled =>
-              backend.fulltext.findItemsSummary(query, OFulltext.FtsInput(fq))
-            case _ =>
-              backend.itemSearch.findItemsSummary(query)
-          }
-          resp <- Ok(Conversions.mkSearchStats(stats))
         } yield resp
 
       case GET -> Root / Ident(id) =>
@@ -559,41 +459,5 @@ object ItemRoutes {
   implicit final class OptionString(opt: Option[String]) {
     def notEmpty: Option[String] =
       opt.map(_.trim).filter(_.nonEmpty)
-  }
-
-  object SearchFulltextOnly {
-    implicit private val identMonoid: Monoid[Ident] =
-      Monoid.instance(Ident.unsafe(""), _ / _)
-
-    implicit private val timestampMonoid: Monoid[Timestamp] =
-      Monoid.instance(Timestamp.Epoch, (a, _) => a)
-
-    implicit private val directionMonoid: Monoid[Direction] =
-      Monoid.instance(Direction.Incoming, (a, _) => a)
-
-    implicit private val idListMonoid: Monoid[IdList] =
-      Monoid.instance(IdList(Nil), (a, b) => IdList(a.ids ++ b.ids))
-
-    implicit private val boolMonoid: Monoid[Boolean] =
-      Monoid.instance(false, _ || _)
-
-    private val itemSearchMonoid: Monoid[ItemSearch] =
-      cats.derived.semiauto.monoid
-
-    def unapply(m: ItemSearch): Option[ItemQuery] =
-      m.fullText match {
-        case Some(fq) =>
-          val me = m.copy(fullText = None, offset = 0, limit = 0)
-          if (itemSearchMonoid.empty == me)
-            Some(ItemQuery(m.offset.some, m.limit.some, Some(false), fq))
-          else None
-        case _ =>
-          None
-      }
-  }
-
-  object SearchWithFulltext {
-    def unapply(m: ItemSearch): Option[String] =
-      m.fullText
   }
 }

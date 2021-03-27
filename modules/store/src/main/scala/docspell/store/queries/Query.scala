@@ -26,12 +26,12 @@ object Query {
 
   case class Fix(
       account: AccountId,
-      itemIds: Option[Set[Ident]],
+      query: Option[ItemQuery.Expr],
       orderAsc: Option[RItem.Table => Column[_]]
   ) {
 
     def isEmpty: Boolean =
-      itemIds.isEmpty
+      query.isEmpty
   }
 
   sealed trait QueryCond {
@@ -41,64 +41,17 @@ object Query {
       !isEmpty
   }
 
-  case class QueryForm(
-      name: Option[String],
-      states: Seq[ItemState],
-      direction: Option[Direction],
-      corrPerson: Option[Ident],
-      corrOrg: Option[Ident],
-      concPerson: Option[Ident],
-      concEquip: Option[Ident],
-      folder: Option[Ident],
-      tagsInclude: List[Ident],
-      tagsExclude: List[Ident],
-      tagCategoryIncl: List[String],
-      tagCategoryExcl: List[String],
-      dateFrom: Option[Timestamp],
-      dateTo: Option[Timestamp],
-      dueDateFrom: Option[Timestamp],
-      dueDateTo: Option[Timestamp],
-      allNames: Option[String],
-      itemIds: Option[Set[Ident]],
-      customValues: Seq[CustomValue],
-      source: Option[String]
-  ) extends QueryCond {
-
+  case class QueryExpr(q: Option[ItemQuery.Expr]) extends QueryCond {
     def isEmpty: Boolean =
-      this == QueryForm.empty
-  }
-  object QueryForm {
-    val empty =
-      QueryForm(
-        None,
-        Seq.empty,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        Nil,
-        Nil,
-        Nil,
-        Nil,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        Seq.empty,
-        None
-      )
+      q.isEmpty
   }
 
-  case class QueryExpr(q: ItemQuery) extends QueryCond {
-    def isEmpty: Boolean =
-      q.expr == ItemQuery.all.expr
+  object QueryExpr {
+    def apply(q: ItemQuery.Expr): QueryExpr =
+      QueryExpr(Some(q))
   }
 
-  def empty(account: AccountId): Query =
-    Query(Fix(account, None, None), QueryForm.empty)
+  def all(account: AccountId): Query =
+    Query(Fix(account, None, None), QueryExpr(None))
 
 }

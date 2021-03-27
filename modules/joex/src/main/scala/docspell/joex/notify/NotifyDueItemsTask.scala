@@ -1,6 +1,6 @@
 package docspell.joex.notify
 
-import cats.data.OptionT
+import cats.data.{NonEmptyList => Nel, OptionT}
 import cats.effect._
 import cats.implicits._
 
@@ -10,6 +10,9 @@ import docspell.joex.mail.EmilHeader
 import docspell.joex.scheduler.{Context, Task}
 import docspell.store.queries.QItem
 import docspell.store.records._
+import docspell.query.Date
+import docspell.query.ItemQuery._
+import docspell.query.ItemQueryDsl._
 
 import emil._
 import emil.builder._
@@ -69,18 +72,24 @@ object NotifyDueItemsTask {
   def findItems[F[_]: Sync](ctx: Context[F, Args]): F[Vector[ListItem]] =
     for {
       now <- Timestamp.current[F]
+      rightDate = Date((now + Duration.days(ctx.args.remindDays.toLong)).toMillis)
       q =
         Query
-          .empty(ctx.args.account)
+          .all(ctx.args.account)
           .withOrder(orderAsc = _.dueDate)
+          .withFix(_.copy(query = Expr.ValidItemStates.some))
           .withCond(_ =>
-            Query.QueryForm.empty.copy(
-              states = ItemState.validStates.toList,
-              tagsInclude = ctx.args.tagsInclude,
-              tagsExclude = ctx.args.tagsExclude,
-              dueDateFrom =
-                ctx.args.daysBack.map(back => now - Duration.days(back.toLong)),
-              dueDateTo = Some(now + Duration.days(ctx.args.remindDays.toLong))
+            Query.QueryExpr(
+              Attr.DueDate <= rightDate &&?
+                ctx.args.daysBack.map(back =>
+                  Attr.DueDate >= Date((now - Duration.days(back.toLong)).toMillis)
+                ) &&?
+                Nel
+                  .fromList(ctx.args.tagsInclude)
+                  .map(ids => Q.tagIdsEq(ids.map(_.id))) &&?
+                Nel
+                  .fromList(ctx.args.tagsExclude)
+                  .map(ids => Q.tagIdsIn(ids.map(_.id)).negate)
             )
           )
       res <-

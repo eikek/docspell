@@ -98,30 +98,7 @@ object QItem {
       cv.itemId === itemId
     ).build.query[ItemFieldValue].to[Vector]
 
-  private def findCustomFieldValuesForColl(
-      coll: Ident,
-      values: Seq[CustomValue]
-  ): Option[Select] = {
-    val cf = RCustomField.as("cf")
-    val cv = RCustomFieldValue.as("cv")
-
-    def singleSelect(v: CustomValue) =
-      Select(
-        cv.itemId.s,
-        from(cv).innerJoin(cf, cv.field === cf.id),
-        where(
-          cf.cid === coll &&
-            (cf.name === v.field || cf.id === v.field) &&
-            cv.value.like(QueryWildcard(v.value.toLowerCase))
-        )
-      )
-
-    Nel
-      .fromList(values.toList)
-      .map(nel => intersect(nel.map(singleSelect)))
-  }
-
-  private def findItemsBase(q: Query.Fix, noteMaxLen: Int): Select = {
+  private def findItemsBase(q: Query.Fix, today: LocalDate, noteMaxLen: Int): Select = {
     val attachs = AttachCountTable("cta")
     val coll    = q.account.collective
 
@@ -169,9 +146,7 @@ object QItem {
         .leftJoin(pers1, pers1.pid === i.concPerson && pers1.cid === coll)
         .leftJoin(equip, equip.eid === i.concEquipment && equip.cid === coll),
       where(
-        i.cid === coll &&? q.itemIds.map(s =>
-          Nel.fromList(s.toList).map(nel => i.id.in(nel)).getOrElse(i.id.isNull)
-        )
+        i.cid === coll &&? q.query.map(qs => queryCondFromExpr(today, coll, qs))
           && or(
             i.folder.isNull,
             i.folder.in(QFolder.findMemberFolderIds(q.account))
@@ -184,54 +159,17 @@ object QItem {
     )
   }
 
-  def queryCondFromForm(coll: Ident, q: Query.QueryForm): Condition =
-    Condition.unit &&?
-      q.direction.map(d => i.incoming === d) &&?
-      q.name.map(n => i.name.like(QueryWildcard.lower(n))) &&?
-      Nel.fromList(q.states.toList).map(nel => i.state.in(nel)) &&?
-      q.allNames
-        .map(QueryWildcard.lower)
-        .map(n =>
-          org.name.like(n) ||
-            pers0.name.like(n) ||
-            pers1.name.like(n) ||
-            equip.name.like(n) ||
-            i.name.like(n) ||
-            i.notes.like(n)
-        ) &&?
-      q.corrPerson.map(p => pers0.pid === p) &&?
-      q.corrOrg.map(o => org.oid === o) &&?
-      q.concPerson.map(p => pers1.pid === p) &&?
-      q.concEquip.map(e => equip.eid === e) &&?
-      q.folder.map(fid => f.id === fid) &&?
-      q.dateFrom.map(d => coalesce(i.itemDate.s, i.created.s) >= d) &&?
-      q.dateTo.map(d => coalesce(i.itemDate.s, i.created.s) <= d) &&?
-      q.dueDateFrom.map(d => i.dueDate > d) &&?
-      q.dueDateTo.map(d => i.dueDate < d) &&?
-      q.source.map(n => i.source.like(QueryWildcard.lower(n))) &&?
-      q.itemIds.map(s =>
-        Nel.fromList(s.toList).map(nel => i.id.in(nel)).getOrElse(i.id.isNull)
-      ) &&?
-      TagItemName
-        .itemsWithAllTagAndCategory(q.tagsInclude, q.tagCategoryIncl)
-        .map(subsel => i.id.in(subsel)) &&?
-      TagItemName
-        .itemsWithEitherTagOrCategory(q.tagsExclude, q.tagCategoryExcl)
-        .map(subsel => i.id.notIn(subsel)) &&?
-      findCustomFieldValuesForColl(coll, q.customValues)
-        .map(itemIds => i.id.in(itemIds))
-
-  def queryCondFromExpr(today: LocalDate, coll: Ident, q: ItemQuery): Condition = {
+  def queryCondFromExpr(today: LocalDate, coll: Ident, q: ItemQuery.Expr): Condition = {
     val tables = Tables(i, org, pers0, pers1, equip, f, a, m, AttachCountTable("cta"))
-    ItemQueryGenerator.fromExpr(today, tables, coll)(q.expr)
+    ItemQueryGenerator.fromExpr(today, tables, coll)(q)
   }
 
   def queryCondition(today: LocalDate, coll: Ident, cond: Query.QueryCond): Condition =
     cond match {
-      case fm: Query.QueryForm =>
-        queryCondFromForm(coll, fm)
-      case expr: Query.QueryExpr =>
-        queryCondFromExpr(today, coll, expr.q)
+      case Query.QueryExpr(Some(expr)) =>
+        queryCondFromExpr(today, coll, expr)
+      case Query.QueryExpr(None) =>
+        Condition.unit
     }
 
   def findItems(
@@ -240,7 +178,7 @@ object QItem {
       maxNoteLen: Int,
       batch: Batch
   ): Stream[ConnectionIO, ListItem] = {
-    val sql = findItemsBase(q.fix, maxNoteLen)
+    val sql = findItemsBase(q.fix, today, maxNoteLen)
       .changeWhere(c => c && queryCondition(today, q.fix.account.collective, q.cond))
       .limit(batch)
       .build
@@ -263,7 +201,7 @@ object QItem {
         .innerJoin(i, i.id === ti.itemId)
 
     val tagCloud =
-      findItemsBase(q.fix, 0).unwrap
+      findItemsBase(q.fix, today, 0).unwrap
         .withSelect(select(tag.all).append(count(i.id).as("num")))
         .changeFrom(_.prepend(tagFrom))
         .changeWhere(c => c && queryCondition(today, q.fix.account.collective, q.cond))
@@ -281,7 +219,7 @@ object QItem {
   }
 
   def searchCountSummary(today: LocalDate)(q: Query): ConnectionIO[Int] =
-    findItemsBase(q.fix, 0).unwrap
+    findItemsBase(q.fix, today, 0).unwrap
       .withSelect(Nel.of(count(i.id).as("num")))
       .changeWhere(c => c && queryCondition(today, q.fix.account.collective, q.cond))
       .build
@@ -290,7 +228,7 @@ object QItem {
 
   def searchFolderSummary(today: LocalDate)(q: Query): ConnectionIO[List[FolderCount]] = {
     val fu = RUser.as("fu")
-    findItemsBase(q.fix, 0).unwrap
+    findItemsBase(q.fix, today, 0).unwrap
       .withSelect(select(f.id, f.name, f.owner, fu.login).append(count(i.id).as("num")))
       .changeFrom(_.innerJoin(fu, fu.uid === f.owner))
       .changeWhere(c => c && queryCondition(today, q.fix.account.collective, q.cond))
@@ -307,7 +245,7 @@ object QItem {
         .innerJoin(i, i.id === cv.itemId)
 
     val base =
-      findItemsBase(q.fix, 0).unwrap
+      findItemsBase(q.fix, today, 0).unwrap
         .changeFrom(_.prepend(fieldJoin))
         .changeWhere(c => c && queryCondition(today, q.fix.account.collective, q.cond))
         .groupBy(GroupBy(cf.all))
@@ -359,6 +297,7 @@ object QItem {
 
   def findSelectedItems(
       q: Query,
+      today: LocalDate,
       maxNoteLen: Int,
       items: Set[SelectedItem]
   ): Stream[ConnectionIO, ListItem] =
@@ -386,7 +325,7 @@ object QItem {
           )
         )
 
-      val from = findItemsBase(q.fix, maxNoteLen)
+      val from = findItemsBase(q.fix, today, maxNoteLen)
         .appendCte(cte)
         .appendSelect(Tids.weight.s)
         .changeFrom(_.innerJoin(Tids, Tids.itemId === i.id))
