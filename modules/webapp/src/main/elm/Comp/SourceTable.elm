@@ -12,6 +12,7 @@ import Data.Flags exposing (Flags)
 import Data.Priority
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Messages.SourceTableComp exposing (Texts)
 import Styles as S
 import Util.Html
 
@@ -54,26 +55,26 @@ update _ msg =
 --- View2
 
 
-view2 : List SourceAndTags -> Html Msg
-view2 sources =
+view2 : Texts -> List SourceAndTags -> Html Msg
+view2 texts sources =
     table [ class S.tableMain ]
         [ thead []
             [ tr []
                 [ th [ class "" ] []
-                , th [ class "text-left" ] [ text "Abbrev" ]
-                , th [ class "px-2 text-center" ] [ text "Enabled" ]
-                , th [ class "hidden md:table-cell" ] [ text "Counter" ]
-                , th [ class "hidden md:table-cell" ] [ text "Priority" ]
-                , th [ class "hidden sm:table-cell" ] [ text "Id" ]
+                , th [ class "text-left" ] [ text texts.abbrev ]
+                , th [ class "px-2 text-center" ] [ text texts.enabled ]
+                , th [ class "hidden md:table-cell" ] [ text texts.counter ]
+                , th [ class "hidden md:table-cell" ] [ text texts.priority ]
+                , th [ class "hidden sm:table-cell" ] [ text texts.id ]
                 ]
             ]
         , tbody []
-            (List.map renderSourceLine2 sources)
+            (List.map (renderSourceLine2 texts) sources)
         ]
 
 
-renderSourceLine2 : SourceAndTags -> Html Msg
-renderSourceLine2 source =
+renderSourceLine2 : Texts -> SourceAndTags -> Html Msg
+renderSourceLine2 texts source =
     tr
         [ class S.tableRow ]
         [ td [ class S.editLinkTableCellStyle ]
@@ -82,7 +83,7 @@ renderSourceLine2 source =
                 ]
                 [ B.editLinkLabel (Select source)
                 , B.linkLabel
-                    { label = "Show"
+                    { label = texts.show
                     , icon = "fa fa-eye"
                     , handler = Show source
                     , disabled = not source.source.enabled

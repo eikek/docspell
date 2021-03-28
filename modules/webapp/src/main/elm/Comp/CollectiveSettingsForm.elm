@@ -23,6 +23,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onCheck, onClick, onInput)
 import Http
+import Messages.CollectiveSettingsFormComp exposing (Texts)
 import Styles as S
 import Util.Http
 
@@ -200,8 +201,8 @@ update flags msg model =
 --- View2
 
 
-view2 : Flags -> UiSettings -> Model -> Html Msg
-view2 flags settings model =
+view2 : Flags -> Texts -> UiSettings -> Model -> Html Msg
+view2 flags texts settings model =
     div
         [ classList
             [ ( "ui form error success", True )
@@ -215,10 +216,10 @@ view2 flags settings model =
                 [ MB.CustomElement <|
                     B.primaryButton
                         { handler = onClick SaveSettings
-                        , label = "Save"
+                        , label = texts.save
                         , icon = "fa fa-save"
                         , attrs =
-                            [ title "Save settings"
+                            [ title texts.saveSettings
                             , href "#"
                             ]
                         , disabled = getSettings model |> Data.Validated.isInvalid
@@ -228,11 +229,11 @@ view2 flags settings model =
             , rootClasses = "mb-4"
             }
         , h3 [ class S.header3 ]
-            [ text "Document Language"
+            [ text texts.documentLanguage
             ]
         , div [ class "mb-4" ]
             [ label [ class S.inputLabel ]
-                [ text "Document Language"
+                [ text texts.documentLanguage
                 ]
             , Html.map LangDropdownMsg
                 (Comp.Dropdown.view2
@@ -241,7 +242,7 @@ view2 flags settings model =
                     model.langModel
                 )
             , span [ class "opacity-50 text-sm" ]
-                [ text "The language of your documents. This helps text recognition (OCR) and text analysis."
+                [ text texts.documentLanguageHelp
                 ]
             ]
         , div
@@ -252,7 +253,7 @@ view2 flags settings model =
             [ h3
                 [ class S.header3
                 ]
-                [ text "Integration Endpoint"
+                [ text texts.integrationEndpoint
                 ]
             , div [ class "mb-4" ]
                 [ label
@@ -268,12 +269,11 @@ view2 flags settings model =
                         ]
                         []
                     , span [ class "ml-2" ]
-                        [ text "Enable integration endpoint"
+                        [ text texts.integrationEndpointHelp
                         ]
                     ]
                 , div [ class "opacity-50 text-sm" ]
-                    [ text "The integration endpoint allows (local) applications to submit files. "
-                    , text "You can choose to disable it for your collective."
+                    [ text texts.integrationEndpointHelp
                     ]
                 ]
             ]
@@ -284,7 +284,7 @@ view2 flags settings model =
             ]
             [ h3
                 [ class S.header3 ]
-                [ text "Full-Text Search" ]
+                [ text texts.fulltextSearch ]
             , div
                 [ class "mb-4" ]
                 [ div [ class "flex flex-row" ]
@@ -304,13 +304,12 @@ view2 flags settings model =
                         ]
                         [ i [ class "fa fa-sync-alt" ] []
                         , span [ class "ml-2 hidden sm:inline" ]
-                            [ text "Re-Index All Data"
+                            [ text texts.reindexAllData
                             ]
                         ]
                     ]
                 , div [ class "opacity-50 text-sm" ]
-                    [ text "This starts a task that clears the full-text index and re-indexes all your data again."
-                    , text "You must type OK before clicking the button to avoid accidental re-indexing."
+                    [ text texts.reindexAllDataHelp
                     ]
                 , renderResultMessage2 model.fullTextReIndexResult
                 ]
@@ -322,17 +321,20 @@ view2 flags settings model =
             ]
             [ h3
                 [ class S.header3 ]
-                [ text "Auto-Tagging"
+                [ text texts.autoTagging
                 ]
             , div
                 [ class "mb-4" ]
                 [ Html.map ClassifierSettingMsg
-                    (Comp.ClassifierSettingsForm.view2 settings model.classifierModel)
+                    (Comp.ClassifierSettingsForm.view2 texts.classifierSettingsForm
+                        settings
+                        model.classifierModel
+                    )
                 , div [ class "flex flex-row justify-end" ]
                     [ B.secondaryBasicButton
                         { handler = onClick StartClassifierTask
                         , icon = "fa fa-play"
-                        , label = "Start now"
+                        , label = texts.startNow
                         , disabled = Data.Validated.isInvalid model.classifierModel.schedule
                         , attrs = [ href "#" ]
                         }

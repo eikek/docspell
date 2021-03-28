@@ -11,6 +11,7 @@ import Comp.Basic as B
 import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Messages.UserTableComp exposing (Texts)
 import Styles as S
 import Util.Time exposing (formatDateTime)
 
@@ -51,32 +52,34 @@ update _ msg model =
 --- View2
 
 
-view2 : Model -> Html Msg
-view2 model =
+view2 : Texts -> Model -> Html Msg
+view2 texts model =
     table [ class S.tableMain ]
         [ thead []
             [ tr []
                 [ th [ class "w-px whitespace-nowrap" ] []
-                , th [ class "text-left" ] [ text "Login" ]
-                , th [ class "text-center" ] [ text "State" ]
-                , th [ class "hidden md:table-cell text-left" ] [ text "Email" ]
-                , th [ class "hidden md:table-cell text-center" ] [ text "Logins" ]
-                , th [ class "hidden sm:table-cell text-center" ] [ text "Last Login" ]
-                , th [ class "hidden md:table-cell text-center" ] [ text "Created" ]
+                , th [ class "text-left" ] [ text texts.login ]
+                , th [ class "text-center" ] [ text texts.state ]
+                , th [ class "hidden md:table-cell text-left" ] [ text texts.email ]
+                , th [ class "hidden md:table-cell text-center" ] [ text texts.login ]
+                , th [ class "hidden sm:table-cell text-center" ] [ text texts.lastLogin ]
+                , th [ class "hidden md:table-cell text-center" ]
+                    [ text texts.basics.created
+                    ]
                 ]
             ]
         , tbody []
-            (List.map (renderUserLine2 model) model.users)
+            (List.map (renderUserLine2 texts model) model.users)
         ]
 
 
-renderUserLine2 : Model -> User -> Html Msg
-renderUserLine2 model user =
+renderUserLine2 : Texts -> Model -> User -> Html Msg
+renderUserLine2 texts model user =
     tr
         [ classList [ ( "active", model.selected == Just user ) ]
         , class S.tableRow
         ]
-        [ B.editLinkTableCell (Select user)
+        [ B.editLinkTableCell2 texts.basics (Select user)
         , td [ class "text-left" ]
             [ text user.login
             ]

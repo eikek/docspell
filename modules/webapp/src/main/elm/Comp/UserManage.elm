@@ -21,6 +21,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onSubmit)
 import Http
+import Messages.UserManageComp exposing (Texts)
 import Styles as S
 import Util.Http
 import Util.Maybe
@@ -30,7 +31,7 @@ type alias Model =
     { tableModel : Comp.UserTable.Model
     , formModel : Comp.UserForm.Model
     , viewMode : ViewMode
-    , formError : Maybe String
+    , formError : FormError
     , loading : Bool
     , deleteConfirm : Comp.YesNoDimmer.Model
     }
@@ -41,12 +42,18 @@ type ViewMode
     | Form
 
 
+type FormError
+    = FormErrorNone
+    | FormErrorSubmit String
+    | FormErrorInvalid
+
+
 emptyModel : Model
 emptyModel =
     { tableModel = Comp.UserTable.emptyModel
     , formModel = Comp.UserForm.emptyModel
     , viewMode = Table
-    , formError = Nothing
+    , formError = FormErrorNone
     , loading = False
     , deleteConfirm = Comp.YesNoDimmer.emptyModel
     }
@@ -79,7 +86,7 @@ update flags msg model =
                         , viewMode = Maybe.map (\_ -> Form) tm.selected |> Maybe.withDefault Table
                         , formError =
                             if Util.Maybe.nonEmpty tm.selected then
-                                Nothing
+                                FormErrorNone
 
                             else
                                 model.formError
@@ -132,7 +139,7 @@ update flags msg model =
         InitNewUser ->
             let
                 nm =
-                    { model | viewMode = Form, formError = Nothing }
+                    { model | viewMode = Form, formError = FormErrorNone }
 
                 user =
                     Api.Model.User.empty
@@ -158,7 +165,7 @@ update flags msg model =
                 ( { model | loading = True }, cmd )
 
             else
-                ( { model | formError = Just "Please correct the errors in the form." }, Cmd.none )
+                ( { model | formError = FormErrorInvalid }, Cmd.none )
 
         SubmitResp (Ok res) ->
             if res.success then
@@ -172,10 +179,15 @@ update flags msg model =
                 ( { m3 | loading = False }, Cmd.batch [ c2, c3 ] )
 
             else
-                ( { model | formError = Just res.message, loading = False }, Cmd.none )
+                ( { model | formError = FormErrorSubmit res.message, loading = False }, Cmd.none )
 
         SubmitResp (Err err) ->
-            ( { model | formError = Just (Util.Http.errorToString err), loading = False }, Cmd.none )
+            ( { model
+                | formError = FormErrorSubmit (Util.Http.errorToString err)
+                , loading = False
+              }
+            , Cmd.none
+            )
 
         RequestDelete ->
             update flags (YesNoMsg Comp.YesNoDimmer.activate) model
@@ -202,44 +214,44 @@ update flags msg model =
 --- View2
 
 
-view2 : UiSettings -> Model -> Html Msg
-view2 settings model =
+view2 : Texts -> UiSettings -> Model -> Html Msg
+view2 texts settings model =
     if model.viewMode == Table then
-        viewTable2 model
+        viewTable2 texts model
 
     else
-        viewForm2 settings model
+        viewForm2 texts settings model
 
 
-viewTable2 : Model -> Html Msg
-viewTable2 model =
+viewTable2 : Texts -> Model -> Html Msg
+viewTable2 texts model =
     div [ class "flex flex-col" ]
         [ MB.view
             { start = []
             , end =
                 [ MB.PrimaryButton
                     { tagger = InitNewUser
-                    , title = "Add a new user"
+                    , title = texts.addNewUser
                     , icon = Just "fa fa-plus"
-                    , label = "New user"
+                    , label = texts.newUser
                     }
                 ]
             , rootClasses = "mb-4"
             }
-        , Html.map TableMsg (Comp.UserTable.view2 model.tableModel)
+        , Html.map TableMsg (Comp.UserTable.view2 texts.userTable model.tableModel)
         , B.loadingDimmer model.loading
         ]
 
 
-viewForm2 : UiSettings -> Model -> Html Msg
-viewForm2 settings model =
+viewForm2 : Texts -> UiSettings -> Model -> Html Msg
+viewForm2 texts settings model =
     let
         newUser =
             Comp.UserForm.isNewUser model.formModel
 
         dimmerSettings : Comp.YesNoDimmer.Settings
         dimmerSettings =
-            Comp.YesNoDimmer.defaultSettings2 "Really delete this user?"
+            Comp.YesNoDimmer.defaultSettings2 texts.reallyDeleteUser
     in
     Html.form
         [ class "flex flex-col md:relative"
@@ -252,7 +264,7 @@ viewForm2 settings model =
             )
         , if newUser then
             h3 [ class S.header2 ]
-                [ text "Create new user"
+                [ text texts.createNewUser
                 ]
 
           else
@@ -263,24 +275,24 @@ viewForm2 settings model =
             { start =
                 [ MB.PrimaryButton
                     { tagger = Submit
-                    , title = "Submit this form"
+                    , title = texts.basics.submitThisForm
                     , icon = Just "fa fa-save"
-                    , label = "Submit"
+                    , label = texts.basics.submit
                     }
                 , MB.SecondaryButton
                     { tagger = SetViewMode Table
-                    , title = "Back to list"
+                    , title = texts.basics.backToList
                     , icon = Just "fa fa-arrow-left"
-                    , label = "Cancel"
+                    , label = texts.basics.cancel
                     }
                 ]
             , end =
                 if not newUser then
                     [ MB.DeleteButton
                         { tagger = RequestDelete
-                        , title = "Delete this user"
+                        , title = texts.deleteThisUser
                         , icon = Just "fa fa-trash"
-                        , label = "Delete"
+                        , label = texts.basics.delete
                         }
                     ]
 
@@ -288,14 +300,22 @@ viewForm2 settings model =
                     []
             , rootClasses = "mb-4"
             }
-        , Html.map FormMsg (Comp.UserForm.view2 settings model.formModel)
+        , Html.map FormMsg (Comp.UserForm.view2 texts.userForm settings model.formModel)
         , div
             [ classList
-                [ ( "hidden", Util.Maybe.isEmpty model.formError )
+                [ ( "hidden", model.formError == FormErrorNone )
                 ]
             , class S.errorMessage
             ]
-            [ Maybe.withDefault "" model.formError |> text
+            [ case model.formError of
+                FormErrorNone ->
+                    text ""
+
+                FormErrorSubmit err ->
+                    text err
+
+                FormErrorInvalid ->
+                    text texts.pleaseCorrectErrors
             ]
         , B.loadingDimmer model.loading
         ]

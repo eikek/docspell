@@ -28,6 +28,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onCheck, onInput)
 import Http
 import Markdown
+import Messages.SourceFormComp exposing (Texts)
 import Styles as S
 import Util.Folder exposing (mkFolderOption)
 import Util.Maybe
@@ -329,8 +330,8 @@ update flags msg model =
 --- View2
 
 
-view2 : Flags -> UiSettings -> Model -> Html Msg
-view2 _ settings model =
+view2 : Flags -> Texts -> UiSettings -> Model -> Html Msg
+view2 _ texts settings model =
     let
         priorityItem =
             Comp.FixedDropdown.Item
@@ -344,14 +345,14 @@ view2 _ settings model =
                 [ for "source-abbrev"
                 , class S.inputLabel
                 ]
-                [ text "Name"
+                [ text texts.name
                 , B.inputRequired
                 ]
             , input
                 [ type_ "text"
                 , id "source-abbrev"
                 , onInput SetAbbrev
-                , placeholder "Name"
+                , placeholder texts.name
                 , value model.abbrev
                 , class S.textInput
                 , classList [ ( S.inputErrorBorder, not (isValid model) ) ]
@@ -363,7 +364,7 @@ view2 _ settings model =
                 [ for "source-descr"
                 , class S.inputLabel
                 ]
-                [ text "Description"
+                [ text texts.description
                 ]
             , textarea
                 [ onInput SetDescr
@@ -388,13 +389,13 @@ view2 _ settings model =
                     ]
                     []
                 , span [ class "ml-2" ]
-                    [ text "Enabled"
+                    [ text texts.enabled
                     ]
                 ]
             ]
         , div [ class "mb-4" ]
             [ label [ class S.inputLabel ]
-                [ text "Priority"
+                [ text texts.priority
                 ]
             , Html.map PrioDropdownMsg
                 (Comp.FixedDropdown.view2
@@ -402,26 +403,24 @@ view2 _ settings model =
                     model.priorityModel
                 )
             , div [ class "opacity-50 text-sm" ]
-                [ text "The priority used by the scheduler when processing uploaded files."
+                [ text texts.priorityInfo
                 ]
             ]
         , div
             [ class S.header2
             , class "mt-6"
             ]
-            [ text "Metadata"
+            [ text texts.metadata
             ]
         , div
             [ class S.message
             , class "mb-4"
             ]
-            [ text "Metadata specified here is automatically attached to each item uploaded "
-            , text "through this source, unless it is overriden in the upload request meta data. "
-            , text "Tags from the request are added to those defined here."
+            [ text texts.metadataInfoText
             ]
         , div [ class "mb-4" ]
             [ label [ class S.inputLabel ]
-                [ text "Folder"
+                [ text texts.folder
                 ]
             , Html.map FolderDropdownMsg
                 (Comp.Dropdown.view2
@@ -430,7 +429,7 @@ view2 _ settings model =
                     model.folderModel
                 )
             , div [ class "opacity-50 text-sm" ]
-                [ text "Choose a folder to automatically put items into."
+                [ text texts.folderInfo
                 ]
             , div
                 [ classList
@@ -438,17 +437,13 @@ view2 _ settings model =
                     ]
                 , class S.message
                 ]
-                [ Markdown.toHtml [] """
-You are **not a member** of this folder. Items created through this
-link will be **hidden** from any search results. Use a folder where
-you are a member of to make items visible. This message will
-disappear then.
-                      """
+                [ Markdown.toHtml [] texts.folderForbiddenText
                 ]
             ]
         , div [ class "mb-4" ]
             [ label [ class S.inputLabel ]
-                [ text "Tags" ]
+                [ text texts.basics.tags
+                ]
             , Html.map TagDropdownMsg
                 (Comp.Dropdown.view2
                     DS.mainStyle
@@ -456,18 +451,18 @@ disappear then.
                     model.tagModel
                 )
             , div [ class "opacity-50 text-sm" ]
-                [ text "Choose tags that should be applied to items."
+                [ text texts.tagsInfo
                 ]
             ]
         , div
             [ class "mb-4"
             ]
             [ label [ class S.inputLabel ]
-                [ text "File Filter" ]
+                [ text texts.fileFilter ]
             , input
                 [ type_ "text"
                 , onInput SetFileFilter
-                , placeholder "File Filter"
+                , placeholder texts.fileFilter
                 , model.fileFilter
                     |> Maybe.withDefault ""
                     |> value
@@ -475,20 +470,12 @@ disappear then.
                 ]
                 []
             , div [ class "opacity-50 text-sm" ]
-                [ text "Specify a file glob to filter files when uploading archives "
-                , text "(e.g. for email and zip). For example, to only extract pdf files: "
-                , code [ class "font-mono" ]
-                    [ text "*.pdf"
-                    ]
-                , text ". Globs can be combined via OR, like this: "
-                , code [ class "font-mono" ]
-                    [ text "*.pdf|mail.html"
-                    ]
+                [ Markdown.toHtml [] texts.fileFilterInfo
                 ]
             ]
         , div [ class "mb-4" ]
             [ label [ class S.inputLabel ]
-                [ text "Language:"
+                [ text (texts.language ++ ":")
                 ]
             , Html.map LanguageMsg
                 (Comp.Dropdown.view2
@@ -496,9 +483,8 @@ disappear then.
                     settings
                     model.languageModel
                 )
-            , div [ class "text-gray-400 text-xs" ]
-                [ text "Used for text extraction and analysis. The collective's "
-                , text "default language is used if not specified here."
+            , div [ class "opacity-50 text-sm" ]
+                [ text texts.languageInfo
                 ]
             ]
         ]

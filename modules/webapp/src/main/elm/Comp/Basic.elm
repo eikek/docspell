@@ -1,6 +1,7 @@
 module Comp.Basic exposing
     ( editLinkLabel
     , editLinkTableCell
+    , editLinkTableCell2
     , genericButton
     , horizontalDivider
     , inputRequired
@@ -17,6 +18,7 @@ module Comp.Basic exposing
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
+import Messages.Basics
 import Styles as S
 
 
@@ -192,9 +194,14 @@ loadingDimmer active =
 
 
 editLinkLabel : msg -> Html msg
-editLinkLabel click =
+editLinkLabel =
+    editLinkLabel2 Messages.Basics.gb
+
+
+editLinkLabel2 : Messages.Basics.Texts -> msg -> Html msg
+editLinkLabel2 texts click =
     linkLabel
-        { label = "Edit"
+        { label = texts.edit
         , icon = "fa fa-edit"
         , handler = click
         , disabled = False
@@ -204,7 +211,14 @@ editLinkLabel click =
 editLinkTableCell : msg -> Html msg
 editLinkTableCell m =
     td [ class S.editLinkTableCellStyle ]
-        [ editLinkLabel m
+        [ editLinkLabel2 Messages.Basics.gb m
+        ]
+
+
+editLinkTableCell2 : Messages.Basics.Texts -> msg -> Html msg
+editLinkTableCell2 texts m =
+    td [ class S.editLinkTableCellStyle ]
+        [ editLinkLabel2 texts m
         ]
 
 

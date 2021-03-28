@@ -24,6 +24,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Http
 import Markdown
+import Messages.ClassifierSettingsFormComp exposing (Texts)
 import Styles as S
 import Util.Tag
 
@@ -59,7 +60,7 @@ init flags sett =
     in
     ( { scheduleModel = cem
       , schedule = Data.Validated.Unknown newSchedule
-      , itemCountModel = Comp.IntField.init (Just 0) Nothing True "Item Count"
+      , itemCountModel = Comp.IntField.init (Just 0) Nothing True ""
       , itemCount = Just sett.itemCount
       , categoryListModel =
             let
@@ -183,8 +184,8 @@ update flags msg model =
 --- View2
 
 
-view2 : UiSettings -> Model -> Html Msg
-view2 settings model =
+view2 : Texts -> UiSettings -> Model -> Html Msg
+view2 texts settings model =
     let
         catListTypeItem =
             Comp.FixedDropdown.Item
@@ -194,20 +195,10 @@ view2 settings model =
     in
     div []
         [ Markdown.toHtml [ class "px-2 py-2 opacity-75" ]
-            """
-
-Auto-tagging works by learning from existing documents. The more
-documents you have correctly tagged, the better. Learning is done
-periodically based on a schedule. You can specify tag-groups that
-should either be used (whitelist) or not used (blacklist) for
-learning.
-
-Use an empty whitelist to disable auto tagging.
-
-            """
+            texts.autoTaggingText
         , div [ class "mb-4" ]
             [ label [ class S.inputLabel ]
-                [ text "Is the following a blacklist or whitelist?" ]
+                [ text texts.blacklistOrWhitelist ]
             , Html.map CategoryListTypeMsg
                 (Comp.FixedDropdown.view2 (Just catListTypeItem) model.categoryListTypeModel)
             ]
@@ -215,10 +206,10 @@ Use an empty whitelist to disable auto tagging.
             [ label [ class S.inputLabel ]
                 [ case model.categoryListType of
                     Data.ListType.Whitelist ->
-                        text "Include tag categories for learning"
+                        text texts.whitelistLabel
 
                     Data.ListType.Blacklist ->
-                        text "Exclude tag categories from learning"
+                        text texts.blacklistLabel
                 ]
             , Html.map CategoryListMsg
                 (Comp.Dropdown.view2
@@ -228,16 +219,22 @@ Use an empty whitelist to disable auto tagging.
                 )
             ]
         , Html.map ItemCountMsg
-            (Comp.IntField.viewWithInfo2
-                "The maximum number of items to learn from, order by date newest first. Use 0 to mean all."
-                model.itemCount
-                "mb-4"
+            (Comp.IntField.view
+                { label = texts.itemCount
+                , info = texts.itemCountHelp
+                , classes = "mb-4"
+                , number = model.itemCount
+                }
                 model.itemCountModel
             )
         , div [ class "mb-4" ]
             [ label [ class S.inputLabel ]
-                [ text "Schedule" ]
+                [ text texts.schedule ]
             , Html.map ScheduleMsg
-                (Comp.CalEventInput.view2 "" (Data.Validated.value model.schedule) model.scheduleModel)
+                (Comp.CalEventInput.view2
+                    ""
+                    (Data.Validated.value model.schedule)
+                    model.scheduleModel
+                )
             ]
         ]

@@ -1,14 +1,16 @@
 module Messages.LoginPage exposing
     ( Texts
     , de
-    , fr
     , gb
     )
 
 
 type alias Texts =
-    { username : String
+    { loginToDocspell : String
+    , username : String
+    , collectiveSlashLogin : String
     , password : String
+    , rememberMe : String
     , loginPlaceholder : String
     , passwordPlaceholder : String
     , loginButton : String
@@ -20,8 +22,11 @@ type alias Texts =
 
 gb : Texts
 gb =
-    { username = "Username"
+    { loginToDocspell = "Login to Docspell"
+    , username = "Username"
+    , collectiveSlashLogin = "Collective / Login"
     , password = "Password"
+    , rememberMe = "Remember Me"
     , loginPlaceholder = "Login"
     , passwordPlaceholder = "Password"
     , loginButton = "Login"
@@ -33,25 +38,15 @@ gb =
 
 de : Texts
 de =
-    { username = "Benutzer"
+    { loginToDocspell = "Docspell Anmeldung"
+    , username = "Benutzer"
+    , collectiveSlashLogin = "Kollektiv / Benutzer"
     , password = "Passwort"
+    , rememberMe = "Anmeldung speichern"
     , loginPlaceholder = "Benutzer"
     , passwordPlaceholder = "Passwort"
     , loginButton = "Anmelden"
     , loginSuccessful = "Anmeldung erfolgreich"
     , noAccount = "Kein Konto?"
     , signupLink = "Hier registrieren!"
-    }
-
-
-fr : Texts
-fr =
-    { username = "Identifiant"
-    , password = "Mot de passe"
-    , loginPlaceholder = "Utilisateur"
-    , passwordPlaceholder = "Mot de passe"
-    , loginButton = "Connexion"
-    , loginSuccessful = "Identification réussie"
-    , noAccount = "Pas de compte ?"
-    , signupLink = "S'inscrire"
     }

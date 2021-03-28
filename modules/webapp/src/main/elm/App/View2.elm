@@ -7,7 +7,7 @@ import Data.Flags
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Messages
+import Messages exposing (Messages)
 import Messages.App exposing (Texts)
 import Page exposing (Page(..))
 import Page.CollectiveSettings.View2 as CollectiveSettings
@@ -121,10 +121,10 @@ mainContent model =
                 viewHome model
 
             CollectiveSettingPage ->
-                viewCollectiveSettings model
+                viewCollectiveSettings texts model
 
             LoginPage _ ->
-                viewLogin model
+                viewLogin texts model
 
             ManageDataPage ->
                 viewManageData model
@@ -404,28 +404,30 @@ viewHome model =
     ]
 
 
-viewCollectiveSettings : Model -> List (Html Msg)
-viewCollectiveSettings model =
+viewCollectiveSettings : Messages -> Model -> List (Html Msg)
+viewCollectiveSettings texts model =
     [ Html.map CollSettingsMsg
-        (CollectiveSettings.viewSidebar model.sidebarVisible
+        (CollectiveSettings.viewSidebar texts.collectiveSettings
+            model.sidebarVisible
             model.flags
             model.uiSettings
             model.collSettingsModel
         )
     , Html.map CollSettingsMsg
-        (CollectiveSettings.viewContent model.flags
+        (CollectiveSettings.viewContent texts.collectiveSettings
+            model.flags
             model.uiSettings
             model.collSettingsModel
         )
     ]
 
 
-viewLogin : Model -> List (Html Msg)
-viewLogin model =
+viewLogin : Messages -> Model -> List (Html Msg)
+viewLogin texts model =
     [ Html.map LoginMsg
         (Login.viewSidebar model.sidebarVisible model.flags model.uiSettings model.loginModel)
     , Html.map LoginMsg
-        (Login.viewContent model.flags model.version model.uiSettings model.loginModel)
+        (Login.viewContent texts.login model.flags model.version model.uiSettings model.loginModel)
     ]
 
 

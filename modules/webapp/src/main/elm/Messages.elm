@@ -6,6 +6,7 @@ module Messages exposing
     )
 
 import Messages.App
+import Messages.CollectiveSettingsPage
 import Messages.LoginPage
 import UiLanguage exposing (UiLanguage(..))
 
@@ -18,6 +19,7 @@ type alias Messages =
     , label : String
     , flagIcon : String
     , app : Messages.App.Texts
+    , collectiveSettings : Messages.CollectiveSettingsPage.Texts
     , login : Messages.LoginPage.Texts
     }
 
@@ -72,6 +74,7 @@ gb =
     , label = "English"
     , flagIcon = "flag-icon flag-icon-gb"
     , app = Messages.App.gb
+    , collectiveSettings = Messages.CollectiveSettingsPage.gb
     , login = Messages.LoginPage.gb
     }
 
@@ -83,5 +86,6 @@ de =
     , label = "Deutsch"
     , flagIcon = "flag-icon flag-icon-de"
     , app = Messages.App.de
+    , collectiveSettings = Messages.CollectiveSettingsPage.de
     , login = Messages.LoginPage.de
     }
