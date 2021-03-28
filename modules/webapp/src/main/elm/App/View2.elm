@@ -8,6 +8,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Messages
+import Messages.App exposing (Texts)
 import Page exposing (Page(..))
 import Page.CollectiveSettings.View2 as CollectiveSettings
 import Page.Home.Data
@@ -43,6 +44,10 @@ topNavbar model =
 
 topNavUser : AuthResult -> Model -> Html Msg
 topNavUser auth model =
+    let
+        texts =
+            Messages.get <| App.Data.getUiLanguage model
+    in
     nav
         [ id "top-nav"
         , class styleTopNav
@@ -58,18 +63,14 @@ topNavUser auth model =
             }
         , headerNavItem model
         , div [ class "flex flex-grow justify-end" ]
-            [ userMenu auth model
-            , dataMenu auth model
+            [ userMenu texts.app auth model
+            , dataMenu texts.app auth model
             ]
         ]
 
 
 topNavAnon : Model -> Html Msg
 topNavAnon model =
-    let
-        texts =
-            Messages.get <| App.Data.getUiLanguage model
-    in
     nav
         [ id "top-nav"
         , class styleTopNav
@@ -201,8 +202,8 @@ langMenu model =
         ]
 
 
-dataMenu : AuthResult -> Model -> Html Msg
-dataMenu _ model =
+dataMenu : Texts -> AuthResult -> Model -> Html Msg
+dataMenu texts _ model =
     div [ class "relative" ]
         [ a
             [ class dropdownLink
@@ -224,7 +225,7 @@ dataMenu _ model =
                     ]
                     []
                 , div [ class "inline-block ml-2" ]
-                    [ text "Items"
+                    [ text texts.items
                     ]
                 ]
             , div [ class "py-1" ] [ hr [ class S.border ] [] ]
@@ -233,7 +234,7 @@ dataMenu _ model =
                 []
                 [ i [ class "fa fa-cubes w-6" ] []
                 , span [ class "ml-1" ]
-                    [ text "Manage Data"
+                    [ text texts.manageData
                     ]
                 ]
             , div [ class "divider" ] []
@@ -242,7 +243,7 @@ dataMenu _ model =
                 []
                 [ i [ class "fa fa-upload w-6" ] []
                 , span [ class "ml-1" ]
-                    [ text "Upload files"
+                    [ text texts.uploadFiles
                     ]
                 ]
             , dataPageLink model
@@ -250,7 +251,7 @@ dataMenu _ model =
                 []
                 [ i [ class "fa fa-tachometer-alt w-6" ] []
                 , span [ class "ml-1" ]
-                    [ text "Processing Queue"
+                    [ text texts.processingQueue
                     ]
                 ]
             , div
@@ -265,7 +266,7 @@ dataMenu _ model =
                 [ ( "hidden", model.flags.config.signupMode /= "invite" ) ]
                 [ i [ class "fa fa-key w-6" ] []
                 , span [ class "ml-1" ]
-                    [ text "New Invites"
+                    [ text texts.newInvites
                     ]
                 ]
             , div [ class "py-1" ]
@@ -279,7 +280,7 @@ dataMenu _ model =
                 , title "Opens https://docspell.org/docs"
                 ]
                 [ i [ class "fa fa-question-circle w-6" ] []
-                , span [ class "ml-1" ] [ text "Help" ]
+                , span [ class "ml-1" ] [ text texts.help ]
                 , span [ class "float-right" ]
                     [ i [ class "fa fa-external-link-alt w-6" ] []
                     ]
@@ -288,8 +289,8 @@ dataMenu _ model =
         ]
 
 
-userMenu : AuthResult -> Model -> Html Msg
-userMenu acc model =
+userMenu : Texts -> AuthResult -> Model -> Html Msg
+userMenu texts acc model =
     div [ class "relative" ]
         [ a
             [ class dropdownLink
@@ -313,14 +314,14 @@ userMenu acc model =
                 CollectiveSettingPage
                 [ i [ class "fa fa-users w-6" ] []
                 , span [ class "ml-1" ]
-                    [ text "Collective Profile"
+                    [ text texts.collectiveProfile
                     ]
                 ]
             , userPageLink model
                 UserSettingPage
                 [ i [ class "fa fa-user-circle w-6" ] []
                 , span [ class "ml-1" ]
-                    [ text "User Profile"
+                    [ text texts.userProfile
                     ]
                 ]
             , a
@@ -330,7 +331,7 @@ userMenu acc model =
                 ]
                 [ i [ class "fa fa-adjust w-6" ] []
                 , span [ class "ml-1" ]
-                    [ text "Light/Dark"
+                    [ text texts.lightDark
                     ]
                 ]
             , div [ class "py-1" ] [ hr [ class S.border ] [] ]
@@ -341,7 +342,7 @@ userMenu acc model =
                 ]
                 [ i [ class "fa fa-sign-out-alt w-6" ] []
                 , span [ class "ml-1" ]
-                    [ text "Logout"
+                    [ text texts.logout
                     ]
                 ]
             ]
