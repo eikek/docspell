@@ -8,6 +8,7 @@ module Messages exposing
 import Messages.App
 import Messages.CollectiveSettingsPage
 import Messages.LoginPage
+import Messages.RegisterPage
 import UiLanguage exposing (UiLanguage(..))
 
 
@@ -21,6 +22,7 @@ type alias Messages =
     , app : Messages.App.Texts
     , collectiveSettings : Messages.CollectiveSettingsPage.Texts
     , login : Messages.LoginPage.Texts
+    , register : Messages.RegisterPage.Texts
     }
 
 
@@ -76,6 +78,7 @@ gb =
     , app = Messages.App.gb
     , collectiveSettings = Messages.CollectiveSettingsPage.gb
     , login = Messages.LoginPage.gb
+    , register = Messages.RegisterPage.gb
     }
 
 
@@ -88,4 +91,5 @@ de =
     , app = Messages.App.de
     , collectiveSettings = Messages.CollectiveSettingsPage.de
     , login = Messages.LoginPage.de
+    , register = Messages.RegisterPage.de
     }

@@ -6,6 +6,7 @@ import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput, onSubmit)
+import Messages.RegisterPage exposing (Texts)
 import Page exposing (Page(..))
 import Page.Register.Data exposing (..)
 import Styles as S
@@ -20,8 +21,8 @@ viewSidebar _ _ _ _ =
         []
 
 
-viewContent : Flags -> UiSettings -> Model -> Html Msg
-viewContent flags _ model =
+viewContent : Texts -> Flags -> UiSettings -> Model -> Html Msg
+viewContent texts flags _ model =
     div
         [ id "content"
         , class "h-full flex flex-col items-center justify-center w-full"
@@ -36,7 +37,7 @@ viewContent flags _ model =
                     []
                 ]
             , div [ class "font-medium self-center text-xl sm:text-2xl" ]
-                [ text "Signup to Docspell"
+                [ text texts.signupToDocspell
                 ]
             , Html.form
                 [ action "#"
@@ -48,7 +49,7 @@ viewContent flags _ model =
                         [ for "username"
                         , class S.inputLabel
                         ]
-                        [ text "Collective ID"
+                        [ text texts.collectiveId
                         , B.inputRequired
                         ]
                     , div [ class "relative" ]
@@ -63,7 +64,7 @@ viewContent flags _ model =
                             , value model.collId
                             , autofocus True
                             , class ("pl-10 pr-4 py-2 rounded-lg" ++ S.textInput)
-                            , placeholder "Collective"
+                            , placeholder texts.collective
                             ]
                             []
                         ]
@@ -73,7 +74,7 @@ viewContent flags _ model =
                         [ for "user"
                         , class S.inputLabel
                         ]
-                        [ text "User Login"
+                        [ text texts.userLogin
                         , B.inputRequired
                         ]
                     , div [ class "relative" ]
@@ -87,7 +88,7 @@ viewContent flags _ model =
                             , onInput SetLogin
                             , value model.login
                             , class ("pl-10 pr-4 py-2 rounded-lg" ++ S.textInput)
-                            , placeholder "Username"
+                            , placeholder texts.username
                             ]
                             []
                         ]
@@ -97,7 +98,7 @@ viewContent flags _ model =
                         [ for "passw1"
                         , class S.inputLabel
                         ]
-                        [ text "Password"
+                        [ text texts.password
                         , B.inputRequired
                         ]
                     , div [ class "relative" ]
@@ -124,7 +125,7 @@ viewContent flags _ model =
                             , onInput SetPass1
                             , value model.pass1
                             , class ("pl-10 pr-10 py-2 rounded-lg" ++ S.textInput)
-                            , placeholder "Password"
+                            , placeholder texts.password
                             ]
                             []
                         , a
@@ -141,7 +142,7 @@ viewContent flags _ model =
                         [ for "passw2"
                         , class S.inputLabel
                         ]
-                        [ text "Password (repeat)"
+                        [ text texts.passwordRepeat
                         , B.inputRequired
                         ]
                     , div [ class "relative" ]
@@ -168,7 +169,7 @@ viewContent flags _ model =
                             , onInput SetPass2
                             , value model.pass2
                             , class ("pl-10 pr-10 py-2 rounded-lg" ++ S.textInput)
-                            , placeholder "Password (repeat)"
+                            , placeholder texts.passwordRepeat
                             ]
                             []
                         , a
@@ -188,7 +189,7 @@ viewContent flags _ model =
                         [ for "invitekey"
                         , class S.inputLabel
                         ]
-                        [ text "Invitation Key"
+                        [ text texts.invitationKey
                         , B.inputRequired
                         ]
                     , div [ class "relative" ]
@@ -202,7 +203,7 @@ viewContent flags _ model =
                             , onInput SetInvite
                             , model.invite |> Maybe.withDefault "" |> value
                             , class ("pl-10 pr-4 py-2 rounded-lg" ++ S.textInput)
-                            , placeholder "Invitation Key"
+                            , placeholder texts.invitationKey
                             ]
                             []
                         ]
@@ -212,23 +213,23 @@ viewContent flags _ model =
                         [ type_ "submit"
                         , class S.primaryButton
                         ]
-                        [ text "Submit"
+                        [ text texts.basics.submit
                         ]
                     ]
-                , resultMessage model
+                , resultMessage texts model
                 , div
                     [ class "flex justify-end text-sm pt-4"
                     , classList [ ( "hidden", flags.config.signupMode == "closed" ) ]
                     ]
                     [ span []
-                        [ text "Already signed up?"
+                        [ text texts.alreadySignedUp
                         ]
                     , a
                         [ Page.href (LoginPage Nothing)
                         , class ("ml-2" ++ S.link)
                         ]
                         [ i [ class "fa fa-user-plus mr-1" ] []
-                        , text "Sign in"
+                        , text texts.signIn
                         ]
                     ]
                 ]
@@ -236,13 +237,13 @@ viewContent flags _ model =
         ]
 
 
-resultMessage : Model -> Html Msg
-resultMessage model =
+resultMessage : Texts -> Model -> Html Msg
+resultMessage texts model =
     case model.result of
         Just r ->
             if r.success then
                 div [ class S.successMessage ]
-                    [ text "Registration successful."
+                    [ text texts.registrationSuccessful
                     ]
 
             else

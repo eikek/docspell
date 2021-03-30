@@ -136,7 +136,7 @@ mainContent model =
                 viewQueue model
 
             RegisterPage ->
-                viewRegister model
+                viewRegister texts model
 
             UploadPage mid ->
                 viewUpload mid model
@@ -458,12 +458,12 @@ viewQueue model =
     ]
 
 
-viewRegister : Model -> List (Html Msg)
-viewRegister model =
+viewRegister : Messages -> Model -> List (Html Msg)
+viewRegister texts model =
     [ Html.map RegisterMsg
         (Register.viewSidebar model.sidebarVisible model.flags model.uiSettings model.registerModel)
     , Html.map RegisterMsg
-        (Register.viewContent model.flags model.uiSettings model.registerModel)
+        (Register.viewContent texts.register model.flags model.uiSettings model.registerModel)
     ]
 
 
