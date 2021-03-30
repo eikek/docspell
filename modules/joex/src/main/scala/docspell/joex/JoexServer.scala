@@ -28,8 +28,8 @@ object JoexServer {
   )(implicit T: Timer[F]): Stream[F, Nothing] = {
 
     val app = for {
-      signal   <- Resource.liftF(SignallingRef[F, Boolean](false))
-      exitCode <- Resource.liftF(Ref[F].of(ExitCode.Success))
+      signal   <- Resource.eval(SignallingRef[F, Boolean](false))
+      exitCode <- Resource.eval(Ref[F].of(ExitCode.Success))
       joexApp <-
         JoexAppImpl
           .create[F](cfg, signal, pools.connectEC, pools.httpClientEC, pools.blocker)

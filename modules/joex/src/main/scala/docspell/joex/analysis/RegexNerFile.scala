@@ -38,7 +38,7 @@ object RegexNerFile {
   ): Resource[F, RegexNerFile[F]] =
     for {
       dir    <- File.withTempDir[F](cfg.directory, "regexner-")
-      writer <- Resource.liftF(Semaphore(1))
+      writer <- Resource.eval(Semaphore(1))
     } yield new Impl[F](cfg.copy(directory = dir), blocker, store, writer)
 
   final private class Impl[F[_]: Concurrent: ContextShift](

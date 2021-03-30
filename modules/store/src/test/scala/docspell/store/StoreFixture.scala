@@ -62,6 +62,6 @@ object StoreFixture {
     for {
       xa <- makeXA(jdbc)
       store = new StoreImpl[IO](jdbc, xa)
-      _ <- Resource.liftF(store.migrate)
+      _ <- Resource.eval(store.migrate)
     } yield store
 }
