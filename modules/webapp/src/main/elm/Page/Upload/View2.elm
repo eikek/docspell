@@ -11,6 +11,7 @@ import File exposing (File)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onCheck, onClick)
+import Messages.UploadPage exposing (Texts)
 import Page exposing (Page(..))
 import Page.Upload.Data exposing (..)
 import Styles as S
@@ -28,8 +29,8 @@ viewSidebar _ _ _ _ _ =
         []
 
 
-viewContent : Maybe String -> Flags -> UiSettings -> Model -> Html Msg
-viewContent mid _ _ model =
+viewContent : Texts -> Maybe String -> Flags -> UiSettings -> Model -> Html Msg
+viewContent texts mid _ _ model =
     div
         [ id "content"
         , class S.content
@@ -37,11 +38,11 @@ viewContent mid _ _ model =
         [ div [ class "container mx-auto" ]
             [ div [ class "px-0 flex flex-col" ]
                 [ div [ class "py-4" ]
-                    [ renderForm model
+                    [ renderForm texts model
                     ]
                 , div [ class "py-0" ]
                     [ Html.map DropzoneMsg
-                        (Comp.Dropzone.view2 model.dropzone)
+                        (Comp.Dropzone.view2 texts.dropzone model.dropzone)
                     ]
                 , div [ class "py-4" ]
                     [ a
@@ -49,7 +50,7 @@ viewContent mid _ _ model =
                         , href "#"
                         , onClick SubmitUpload
                         ]
-                        [ text "Submit"
+                        [ text texts.basics.submit
                         ]
                     , a
                         [ class S.secondaryButton
@@ -57,19 +58,19 @@ viewContent mid _ _ model =
                         , href "#"
                         , onClick Clear
                         ]
-                        [ text "Reset"
+                        [ text texts.reset
                         ]
                     ]
                 ]
-            , renderErrorMsg model
-            , renderSuccessMsg (Util.Maybe.nonEmpty mid) model
-            , renderUploads model
+            , renderErrorMsg texts model
+            , renderSuccessMsg texts (Util.Maybe.nonEmpty mid) model
+            , renderUploads texts model
             ]
         ]
 
 
-renderForm : Model -> Html Msg
-renderForm model =
+renderForm : Texts -> Model -> Html Msg
+renderForm texts model =
     div [ class "row" ]
         [ Html.form [ action "#" ]
             [ div [ class "flex flex-col mb-3" ]
@@ -81,7 +82,7 @@ renderForm model =
                         , class S.radioInput
                         ]
                         []
-                    , span [ class "ml-2" ] [ text "Incoming" ]
+                    , span [ class "ml-2" ] [ text texts.basics.incoming ]
                     ]
                 , label [ class "inline-flex items-center" ]
                     [ input
@@ -91,7 +92,7 @@ renderForm model =
                         , class S.radioInput
                         ]
                         []
-                    , span [ class "ml-2" ] [ text "Outgoing" ]
+                    , span [ class "ml-2" ] [ text texts.basics.outgoing ]
                     ]
                 ]
             , div [ class "flex flex-col mb-3" ]
@@ -104,7 +105,7 @@ renderForm model =
                         ]
                         []
                     , span [ class "ml-2" ]
-                        [ text "All files are one single item"
+                        [ text texts.allFilesOneItem
                         ]
                     ]
                 ]
@@ -118,13 +119,13 @@ renderForm model =
                         ]
                         []
                     , span [ class "ml-2" ]
-                        [ text "Skip files already present in docspell"
+                        [ text texts.skipExistingFiles
                         ]
                     ]
                 ]
             , div [ class "flex flex-col mb-3" ]
                 [ label [ class "inline-flex items-center mb-2" ]
-                    [ span [ class "mr-2" ] [ text "Language:" ]
+                    [ span [ class "mr-2" ] [ text (texts.language ++ ":") ]
                     , Html.map LanguageMsg
                         (Comp.FixedDropdown.viewStyled2
                             (DS.mainStyleWith "w-40")
@@ -134,30 +135,29 @@ renderForm model =
                         )
                     ]
                 , div [ class "text-gray-400 text-xs" ]
-                    [ text "Used for text extraction and analysis. The collective's "
-                    , text "default language is used if not specified here."
+                    [ text texts.languageInfo
                     ]
                 ]
             ]
         ]
 
 
-renderErrorMsg : Model -> Html Msg
-renderErrorMsg model =
+renderErrorMsg : Texts -> Model -> Html Msg
+renderErrorMsg texts model =
     div
         [ class "row"
         , classList [ ( "hidden", not (isDone model && hasErrors model) ) ]
         ]
         [ div [ class "mt-4" ]
             [ div [ class S.errorMessage ]
-                [ text "There were errors uploading some files."
+                [ text texts.uploadErrorMessage
                 ]
             ]
         ]
 
 
-renderSuccessMsg : Bool -> Model -> Html Msg
-renderSuccessMsg public model =
+renderSuccessMsg : Texts -> Bool -> Model -> Html Msg
+renderSuccessMsg texts public model =
     div
         [ class "row"
         , classList [ ( "hidden", List.isEmpty model.files || not (isSuccessAll model) ) ]
@@ -167,47 +167,46 @@ renderSuccessMsg public model =
                 [ h3 [ class S.header2, class "text-green-800 dark:text-lime-800" ]
                     [ i [ class "fa fa-smile font-thin" ] []
                     , span [ class "ml-2" ]
-                        [ text "All files uploaded"
+                        [ text texts.successBox.allFilesUploaded
                         ]
                     ]
                 , p
                     [ classList [ ( "hidden", public ) ]
                     ]
-                    [ text "Your files have been successfully uploaded. "
-                    , text "They are now being processed. Check the "
+                    [ text texts.successBox.line1
                     , a
                         [ class S.successMessageLink
                         , Page.href HomePage
                         ]
-                        [ text "Items page"
+                        [ text texts.successBox.itemsPage
                         ]
-                    , text " later where the files will arrive eventually. Or go to the "
+                    , text texts.successBox.line2
                     , a
                         [ class S.successMessageLink
                         , Page.href QueuePage
                         ]
-                        [ text "Processing Page"
+                        [ text texts.successBox.processingPage
                         ]
-                    , text " to view the current processing state."
+                    , text texts.successBox.line3
                     ]
                 , p []
-                    [ text "Click "
+                    [ text texts.successBox.resetLine1
                     , a
                         [ class S.successMessageLink
                         , href "#"
                         , onClick Clear
                         ]
-                        [ text "Reset"
+                        [ text texts.successBox.reset
                         ]
-                    , text " to upload more files."
+                    , text texts.successBox.resetLine2
                     ]
                 ]
             ]
         ]
 
 
-renderUploads : Model -> Html Msg
-renderUploads model =
+renderUploads : Texts -> Model -> Html Msg
+renderUploads texts model =
     div
         [ class "mt-4"
         , classList [ ( "hidden", List.isEmpty model.files || isSuccessAll model ) ]
@@ -215,7 +214,7 @@ renderUploads model =
         [ div [ class "sixteen wide column" ]
             [ div [ class "ui basic segment" ]
                 [ h2 [ class S.header2 ]
-                    [ text "Selected Files"
+                    [ text texts.selectedFiles
                     ]
                 , div [ class "ui items" ] <|
                     if model.singleItem then

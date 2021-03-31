@@ -7,8 +7,11 @@ module Messages exposing
 
 import Messages.App
 import Messages.CollectiveSettingsPage
+import Messages.ItemDetailPage
 import Messages.LoginPage
+import Messages.NewInvitePage
 import Messages.RegisterPage
+import Messages.UploadPage
 import UiLanguage exposing (UiLanguage(..))
 
 
@@ -23,6 +26,9 @@ type alias Messages =
     , collectiveSettings : Messages.CollectiveSettingsPage.Texts
     , login : Messages.LoginPage.Texts
     , register : Messages.RegisterPage.Texts
+    , newInvite : Messages.NewInvitePage.Texts
+    , upload : Messages.UploadPage.Texts
+    , itemDetail : Messages.ItemDetailPage.Texts
     }
 
 
@@ -79,6 +85,9 @@ gb =
     , collectiveSettings = Messages.CollectiveSettingsPage.gb
     , login = Messages.LoginPage.gb
     , register = Messages.RegisterPage.gb
+    , newInvite = Messages.NewInvitePage.gb
+    , upload = Messages.UploadPage.gb
+    , itemDetail = Messages.ItemDetailPage.gb
     }
 
 
@@ -92,4 +101,7 @@ de =
     , collectiveSettings = Messages.CollectiveSettingsPage.de
     , login = Messages.LoginPage.de
     , register = Messages.RegisterPage.de
+    , newInvite = Messages.NewInvitePage.de
+    , upload = Messages.UploadPage.de
+    , itemDetail = Messages.ItemDetailPage.de
     }

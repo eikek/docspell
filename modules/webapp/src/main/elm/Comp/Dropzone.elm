@@ -18,6 +18,7 @@ import File.Select
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
+import Messages.DropzoneComp exposing (Texts)
 import Styles as S
 import Util.Html exposing (onDragEnter, onDragLeave, onDragOver, onDropFiles)
 
@@ -124,8 +125,8 @@ filterMime model files =
 --- View2
 
 
-view2 : Model -> Html Msg
-view2 model =
+view2 : Texts -> Model -> Html Msg
+view2 texts model =
     div
         [ classList
             [ ( "bg-opacity-100 bg-blue-100 dark:bg-lightblue-800", model.state.hover )
@@ -144,24 +145,23 @@ view2 model =
             ]
             [ i [ class "fa fa-mouse-pointer" ] []
             , div [ class "ml-3" ]
-                [ text "Drop files here"
+                [ text texts.dropFilesHere
                 ]
             ]
         , B.horizontalDivider
-            { label = "Or"
+            { label = texts.or
             , topCss = "w-2/3 mb-4 hidden md:inline-flex"
             , labelCss = "px-4 bg-gray-200 bg-opacity-50"
             , lineColor = "bg-gray-300 dark:bg-bluegray-600"
             }
         , B.primaryBasicButton
-            { label = "Select ..."
+            { label = texts.select
             , icon = "fa fa-folder-open font-thin"
             , handler = onClick PickFiles
             , attrs = [ href "#" ]
             , disabled = not model.state.active
             }
         , div [ class "text-center opacity-75 text-sm mt-4" ]
-            [ text "Choose document files (pdf, docx, txt, html, …). "
-            , text "Archives (zip and eml) are extracted."
+            [ text texts.selectInfo
             ]
         ]

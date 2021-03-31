@@ -23,17 +23,18 @@ import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
+import Messages.ItemDetailComp exposing (Texts)
 import Page exposing (Page(..))
 import Styles as S
 import Util.Time
 
 
-view : ItemNav -> UiSettings -> Model -> Html Msg
-view inav settings model =
+view : Texts -> ItemNav -> UiSettings -> Model -> Html Msg
+view texts inav settings model =
     div [ class "flex flex-col h-full" ]
         [ header settings model
         , menuBar inav settings model
-        , body inav settings model
+        , body texts inav settings model
         , itemModal model
         ]
 
@@ -194,20 +195,20 @@ menuBar inav settings model =
         }
 
 
-body : ItemNav -> UiSettings -> Model -> Html Msg
-body inav settings model =
+body : Texts -> ItemNav -> UiSettings -> Model -> Html Msg
+body texts _ settings model =
     div [ class "grid gap-2 grid-cols-1 md:grid-cols-3 h-full" ]
-        [ leftArea settings model
+        [ leftArea texts settings model
         , rightArea settings model
         ]
 
 
-leftArea : UiSettings -> Model -> Html Msg
-leftArea settings model =
+leftArea : Texts -> UiSettings -> Model -> Html Msg
+leftArea texts settings model =
     div [ class "w-full md:order-first md:mr-2 flex flex-col" ]
         [ addDetailForm settings model
         , sendMailForm settings model
-        , Comp.ItemDetail.AddFilesForm.view model
+        , Comp.ItemDetail.AddFilesForm.view texts.addFilesForm model
         , Comp.ItemDetail.Notes.view model
         , div
             [ classList

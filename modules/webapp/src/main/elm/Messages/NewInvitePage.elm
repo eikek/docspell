@@ -31,3 +31,8 @@ gb =
          Creating an invite requires providing the password
          from the configuration."""
     }
+
+
+de : Texts
+de =
+    gb

@@ -139,13 +139,13 @@ mainContent model =
                 viewRegister texts model
 
             UploadPage mid ->
-                viewUpload mid model
+                viewUpload texts mid model
 
             NewInvitePage ->
                 viewNewInvite texts model
 
             ItemDetailPage id ->
-                viewItemDetail id model
+                viewItemDetail texts id model
         )
 
 
@@ -476,8 +476,8 @@ viewNewInvite texts model =
     ]
 
 
-viewUpload : Maybe String -> Model -> List (Html Msg)
-viewUpload mid model =
+viewUpload : Messages -> Maybe String -> Model -> List (Html Msg)
+viewUpload texts mid model =
     [ Html.map UploadMsg
         (Upload.viewSidebar
             mid
@@ -487,7 +487,8 @@ viewUpload mid model =
             model.uploadModel
         )
     , Html.map UploadMsg
-        (Upload.viewContent mid
+        (Upload.viewContent texts.upload
+            mid
             model.flags
             model.uiSettings
             model.uploadModel
@@ -495,21 +496,21 @@ viewUpload mid model =
     ]
 
 
-viewItemDetail : String -> Model -> List (Html Msg)
-viewItemDetail id model =
+viewItemDetail : Messages -> String -> Model -> List (Html Msg)
+viewItemDetail texts id model =
     let
         inav =
             Page.Home.Data.itemNav id model.homeModel
     in
     [ Html.map ItemDetailMsg
-        (ItemDetail.viewSidebar
+        (ItemDetail.viewSidebar texts.itemDetail
             model.sidebarVisible
             model.flags
             model.uiSettings
             model.itemDetailModel
         )
     , Html.map ItemDetailMsg
-        (ItemDetail.viewContent
+        (ItemDetail.viewContent texts.itemDetail
             inav
             model.flags
             model.uiSettings

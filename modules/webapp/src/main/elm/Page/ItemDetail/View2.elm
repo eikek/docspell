@@ -11,12 +11,13 @@ import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
+import Messages.ItemDetailPage exposing (Texts)
 import Page.ItemDetail.Data exposing (..)
 import Styles as S
 
 
-viewSidebar : Bool -> Flags -> UiSettings -> Model -> Html Msg
-viewSidebar visible _ settings model =
+viewSidebar : Texts -> Bool -> Flags -> UiSettings -> Model -> Html Msg
+viewSidebar texts visible _ settings model =
     div
         [ id "sidebar"
         , class S.sidebar
@@ -28,7 +29,7 @@ viewSidebar visible _ settings model =
             , class "font-bold mt-2"
             ]
             [ i [ class "fa fa-pencil-alt mr-2" ] []
-            , text "Edit Metadata"
+            , text texts.editMetadata
             ]
         , MB.viewSide
             { start =
@@ -52,12 +53,12 @@ viewSidebar visible _ settings model =
         ]
 
 
-viewContent : ItemNav -> Flags -> UiSettings -> Model -> Html Msg
-viewContent inav _ settings model =
+viewContent : Texts -> ItemNav -> Flags -> UiSettings -> Model -> Html Msg
+viewContent texts inav _ settings model =
     div
         [ id "content"
         , class S.content
         ]
         [ Html.map ItemDetailMsg
-            (Comp.ItemDetail.view2 inav settings model.detail)
+            (Comp.ItemDetail.view2 texts.itemDetail inav settings model.detail)
         ]
