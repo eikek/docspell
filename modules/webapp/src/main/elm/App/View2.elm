@@ -142,7 +142,7 @@ mainContent model =
                 viewUpload mid model
 
             NewInvitePage ->
-                viewNewInvite model
+                viewNewInvite texts model
 
             ItemDetailPage id ->
                 viewItemDetail id model
@@ -467,12 +467,12 @@ viewRegister texts model =
     ]
 
 
-viewNewInvite : Model -> List (Html Msg)
-viewNewInvite model =
+viewNewInvite : Messages -> Model -> List (Html Msg)
+viewNewInvite texts model =
     [ Html.map NewInviteMsg
         (NewInvite.viewSidebar model.sidebarVisible model.flags model.uiSettings model.newInviteModel)
     , Html.map NewInviteMsg
-        (NewInvite.viewContent model.flags model.uiSettings model.newInviteModel)
+        (NewInvite.viewContent texts.newInvite model.flags model.uiSettings model.newInviteModel)
     ]
 
 
