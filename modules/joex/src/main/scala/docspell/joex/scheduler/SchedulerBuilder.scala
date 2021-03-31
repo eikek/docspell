@@ -46,9 +46,9 @@ case class SchedulerBuilder[F[_]: ConcurrentEffect: ContextShift](
   def resource: Resource[F, Scheduler[F]] = {
     val scheduler = for {
       jq     <- queue
-      waiter <- Resource.liftF(SignallingRef(true))
-      state  <- Resource.liftF(SignallingRef(SchedulerImpl.emptyState[F]))
-      perms  <- Resource.liftF(Semaphore(config.poolSize.toLong))
+      waiter <- Resource.eval(SignallingRef(true))
+      state  <- Resource.eval(SignallingRef(SchedulerImpl.emptyState[F]))
+      perms  <- Resource.eval(Semaphore(config.poolSize.toLong))
     } yield new SchedulerImpl[F](
       config,
       blocker,

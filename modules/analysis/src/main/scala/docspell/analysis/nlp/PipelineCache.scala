@@ -47,8 +47,8 @@ object PipelineCache {
     def obtain(key: String, settings: NlpSettings): Resource[F, Annotator[F]] =
       for {
         _  <- cacheClear.withCache
-        id <- Resource.liftF(makeSettingsId(settings))
-        nlp <- Resource.liftF(
+        id <- Resource.eval(makeSettingsId(settings))
+        nlp <- Resource.eval(
           data.modify(cache => getOrCreate(key, id, cache, settings, creator))
         )
       } yield nlp

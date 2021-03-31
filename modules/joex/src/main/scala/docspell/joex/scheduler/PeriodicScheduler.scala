@@ -40,8 +40,8 @@ object PeriodicScheduler {
       timer: Timer[F]
   ): Resource[F, PeriodicScheduler[F]] =
     for {
-      waiter <- Resource.liftF(SignallingRef(true))
-      state  <- Resource.liftF(SignallingRef(PeriodicSchedulerImpl.emptyState[F]))
+      waiter <- Resource.eval(SignallingRef(true))
+      state  <- Resource.eval(SignallingRef(PeriodicSchedulerImpl.emptyState[F]))
       psch = new PeriodicSchedulerImpl[F](
         cfg,
         sch,
@@ -52,7 +52,7 @@ object PeriodicScheduler {
         state,
         timer
       )
-      _ <- Resource.liftF(psch.init)
+      _ <- Resource.eval(psch.init)
     } yield psch
 
 }

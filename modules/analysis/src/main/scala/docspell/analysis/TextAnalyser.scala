@@ -37,7 +37,7 @@ object TextAnalyser {
       blocker: Blocker
   ): Resource[F, TextAnalyser[F]] =
     Resource
-      .liftF(Nlp(cfg.nlpConfig))
+      .eval(Nlp(cfg.nlpConfig))
       .map(stanfordNer =>
         new TextAnalyser[F] {
           def annotate(

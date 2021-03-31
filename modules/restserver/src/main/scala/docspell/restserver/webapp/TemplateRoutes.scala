@@ -158,7 +158,7 @@ object TemplateRoutes {
 
   private def memo[F[_]: Sync, A](fa: => F[A]): F[A] = {
     val ref = new AtomicReference[A]()
-    Sync[F].suspend {
+    Sync[F].defer {
       Option(ref.get) match {
         case Some(a) => a.pure[F]
         case None =>
