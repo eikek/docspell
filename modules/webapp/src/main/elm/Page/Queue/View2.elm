@@ -10,13 +10,14 @@ import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
+import Messages.QueuePage exposing (Texts)
 import Page.Queue.Data exposing (..)
 import Styles as S
 import Util.Time exposing (formatDateTime, formatIsoDateTime)
 
 
-viewSidebar : Bool -> Flags -> UiSettings -> Model -> Html Msg
-viewSidebar visible _ _ model =
+viewSidebar : Texts -> Bool -> Flags -> UiSettings -> Model -> Html Msg
+viewSidebar texts visible _ _ model =
     let
         count v =
             case v of
@@ -68,17 +69,17 @@ viewSidebar visible _ _ model =
                 ]
             ]
         , div [ class "flex flex-col my-2" ]
-            [ tabLink "" CurrentJobs "fa fa-play-circle" "Currently Running"
-            , tabLink "" QueueAll "fa fa-hourglass-half" "Queue"
-            , tabLink "ml-8" QueueWaiting "fa fa-clock" "Waiting"
-            , tabLink "ml-8" QueueError "fa fa-bolt" "Errored"
-            , tabLink "ml-8" QueueSuccess "fa fa-check" "Success"
+            [ tabLink "" CurrentJobs "fa fa-play-circle" texts.currentlyRunning
+            , tabLink "" QueueAll "fa fa-hourglass-half" texts.queue
+            , tabLink "ml-8" QueueWaiting "fa fa-clock" texts.waiting
+            , tabLink "ml-8" QueueError "fa fa-bolt" texts.errored
+            , tabLink "ml-8" QueueSuccess "fa fa-check" texts.success
             ]
         ]
 
 
-viewContent : Flags -> UiSettings -> Model -> Html Msg
-viewContent _ _ model =
+viewContent : Texts -> Flags -> UiSettings -> Model -> Html Msg
+viewContent texts _ _ model =
     let
         gridStyle =
             "grid gap-4 grid-cols-1 md:grid-cols-2"
@@ -103,29 +104,29 @@ viewContent _ _ model =
         , case model.queueView of
             CurrentJobs ->
                 if List.isEmpty model.state.progress then
-                    message "No jobs currently running."
+                    message texts.noJobsRunning
 
                 else
                     div [ class "flex flex-col space-y-2" ]
-                        (List.map (renderProgressCard model) model.state.progress)
+                        (List.map (renderProgressCard texts model) model.state.progress)
 
             QueueAll ->
                 if List.isEmpty model.state.completed && List.isEmpty model.state.completed then
-                    message "No jobs to display."
+                    message texts.noJobsDisplay
 
                 else
                     div [ class gridStyle ]
-                        (List.map (renderInfoCard model)
+                        (List.map (renderInfoCard texts model)
                             (model.state.queued ++ model.state.completed)
                         )
 
             QueueWaiting ->
                 if List.isEmpty model.state.queued then
-                    message "No waiting jobs."
+                    message texts.noJobsWaiting
 
                 else
                     div [ class gridStyle ]
-                        (List.map (renderInfoCard model) model.state.queued)
+                        (List.map (renderInfoCard texts model) model.state.queued)
 
             QueueError ->
                 let
@@ -133,11 +134,11 @@ viewContent _ _ model =
                         filterJobDetails model.state.completed "failed"
                 in
                 if List.isEmpty items then
-                    message "No failed jobs to display."
+                    message texts.noJobsFailed
 
                 else
                     div [ class gridStyle ]
-                        (List.map (renderInfoCard model) items)
+                        (List.map (renderInfoCard texts model) items)
 
             QueueSuccess ->
                 let
@@ -145,11 +146,11 @@ viewContent _ _ model =
                         filterJobDetails model.state.completed "success"
                 in
                 if List.isEmpty items then
-                    message "No succesfull jobs to display."
+                    message texts.noJobsSuccess
 
                 else
                     div [ class gridStyle ]
-                        (List.map (renderInfoCard model) items)
+                        (List.map (renderInfoCard texts model) items)
         ]
 
 
@@ -189,14 +190,14 @@ renderJobLog job =
         ]
 
 
-renderProgressCard : Model -> JobDetail -> Html Msg
-renderProgressCard model job =
+renderProgressCard : Texts -> Model -> JobDetail -> Html Msg
+renderProgressCard texts model job =
     div [ class (S.box ++ "px-2 flex flex-col") ]
         [ Comp.Progress.topAttachedIndicating job.progress
         , Html.map (DimmerMsg job)
             (Comp.YesNoDimmer.viewN
                 (model.cancelJobRequest == Just job.id)
-                dimmerSettings
+                (dimmerSettings texts)
                 model.deleteConfirm
             )
         , div [ class "py-2 flex flex-row x-space-2 items-center" ]
@@ -227,7 +228,7 @@ renderProgressCard model job =
             ]
         , div [ class "py-2 flex flex-row justify-end" ]
             [ button [ class S.secondaryButton, onClick (RequestCancelJob job) ]
-                [ text "Cancel"
+                [ text texts.basics.cancel
                 ]
             ]
         ]
@@ -282,8 +283,8 @@ isFinal job =
             False
 
 
-dimmerSettings : Comp.YesNoDimmer.Settings
-dimmerSettings =
+dimmerSettings : Texts -> Comp.YesNoDimmer.Settings
+dimmerSettings texts =
     let
         defaults =
             Comp.YesNoDimmer.defaultSettings
@@ -292,12 +293,12 @@ dimmerSettings =
         | headerClass = "text-lg text-white"
         , headerIcon = ""
         , extraClass = "rounded"
-        , message = "Cancel/Delete this job?"
+        , message = texts.deleteThisJob
     }
 
 
-renderInfoCard : Model -> JobDetail -> Html Msg
-renderInfoCard model job =
+renderInfoCard : Texts -> Model -> JobDetail -> Html Msg
+renderInfoCard texts model job =
     let
         prio =
             Data.Priority.fromString job.priority
@@ -315,7 +316,7 @@ renderInfoCard model job =
         [ Html.map (DimmerMsg job)
             (Comp.YesNoDimmer.viewN
                 (model.cancelJobRequest == Just job.id)
-                dimmerSettings
+                (dimmerSettings texts)
                 model.deleteConfirm
             )
         , div [ class "flex flex-row" ]
@@ -345,10 +346,14 @@ renderInfoCard model job =
                     , class S.link
                     , classList [ ( "hidden", not (isFinal job || job.state == "stuck") ) ]
                     ]
-                    [ i [ class "fa fa-file", title "Show log" ] []
+                    [ i
+                        [ class "fa fa-file"
+                        , title texts.showLog
+                        ]
+                        []
                     ]
                 , a
-                    [ title "Remove"
+                    [ title texts.remove
                     , href "#"
                     , class S.link
                     , onClick (RequestCancelJob job)
@@ -391,7 +396,7 @@ renderInfoCard model job =
                     ]
                 , div [ class (labelStyle False) ]
                     [ span [ class "mr-3" ]
-                        [ text "Retries"
+                        [ text texts.retries
                         ]
                     , span []
                         [ job.retries |> String.fromInt |> text
@@ -403,7 +408,7 @@ renderInfoCard model job =
                             [ class (labelStyle False)
                             , onClick (ChangePrio job.id (Data.Priority.next prio))
                             , href "#"
-                            , title "Change priority of this job"
+                            , title texts.changePriority
                             ]
                             [ i [ class "sort numeric up icon" ] []
                             , text "Prio"
@@ -422,7 +427,7 @@ renderInfoCard model job =
                             [ class (labelStyle False)
                             ]
                             [ span [ class "mr-3" ]
-                                [ text "Prio"
+                                [ text texts.prio
                                 ]
                             , code [ class "font-mono" ]
                                 [ Data.Priority.fromString job.priority

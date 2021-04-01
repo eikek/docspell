@@ -133,7 +133,7 @@ mainContent model =
                 viewUserSettings model
 
             QueuePage ->
-                viewQueue model
+                viewQueue texts model
 
             RegisterPage ->
                 viewRegister texts model
@@ -449,12 +449,17 @@ viewUserSettings model =
     ]
 
 
-viewQueue : Model -> List (Html Msg)
-viewQueue model =
+viewQueue : Messages -> Model -> List (Html Msg)
+viewQueue texts model =
     [ Html.map QueueMsg
-        (Queue.viewSidebar model.sidebarVisible model.flags model.uiSettings model.queueModel)
+        (Queue.viewSidebar texts.queue
+            model.sidebarVisible
+            model.flags
+            model.uiSettings
+            model.queueModel
+        )
     , Html.map QueueMsg
-        (Queue.viewContent model.flags model.uiSettings model.queueModel)
+        (Queue.viewContent texts.queue model.flags model.uiSettings model.queueModel)
     ]
 
 

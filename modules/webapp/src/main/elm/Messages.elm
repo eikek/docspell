@@ -10,6 +10,7 @@ import Messages.CollectiveSettingsPage
 import Messages.ItemDetailPage
 import Messages.LoginPage
 import Messages.NewInvitePage
+import Messages.QueuePage
 import Messages.RegisterPage
 import Messages.UploadPage
 import UiLanguage exposing (UiLanguage(..))
@@ -29,6 +30,7 @@ type alias Messages =
     , newInvite : Messages.NewInvitePage.Texts
     , upload : Messages.UploadPage.Texts
     , itemDetail : Messages.ItemDetailPage.Texts
+    , queue : Messages.QueuePage.Texts
     }
 
 
@@ -88,6 +90,7 @@ gb =
     , newInvite = Messages.NewInvitePage.gb
     , upload = Messages.UploadPage.gb
     , itemDetail = Messages.ItemDetailPage.gb
+    , queue = Messages.QueuePage.gb
     }
 
 
@@ -104,4 +107,5 @@ de =
     , newInvite = Messages.NewInvitePage.de
     , upload = Messages.UploadPage.de
     , itemDetail = Messages.ItemDetailPage.de
+    , queue = Messages.QueuePage.de
     }
