@@ -47,7 +47,7 @@ view flags settings model =
                 SelectView svm ->
                     case svm.action of
                         EditSelected ->
-                            viewEditMenu svm settings
+                            viewEditMenu flags svm settings
 
                         _ ->
                             viewSearch flags settings model
@@ -83,8 +83,8 @@ viewSearch flags settings model =
     ]
 
 
-viewEditMenu : SelectViewModel -> UiSettings -> List (Html Msg)
-viewEditMenu svm settings =
+viewEditMenu : Flags -> SelectViewModel -> UiSettings -> List (Html Msg)
+viewEditMenu flags svm settings =
     let
         cfg_ =
             Comp.ItemDetail.MultiEditMenu.defaultViewConfig
@@ -127,5 +127,5 @@ viewEditMenu svm settings =
         , rootClasses = "mt-2 text-sm"
         }
     , Html.map EditMenuMsg
-        (Comp.ItemDetail.MultiEditMenu.view2 cfg settings svm.editModel)
+        (Comp.ItemDetail.MultiEditMenu.view2 flags cfg settings svm.editModel)
     ]

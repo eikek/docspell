@@ -62,7 +62,6 @@ import Set exposing (Set)
 import Throttle
 import Time
 import Util.File exposing (makeFileId)
-import Util.Folder exposing (mkFolderOption)
 import Util.Http
 import Util.List
 import Util.Maybe
@@ -576,13 +575,7 @@ update key flags inav settings msg model =
         GetFolderResp (Ok fs) ->
             let
                 model_ =
-                    { model
-                        | allFolders = fs.items
-                        , folderModel =
-                            Comp.Dropdown.setMkOption
-                                (mkFolderOption flags fs.items)
-                                model.folderModel
-                    }
+                    { model | allFolders = fs.items }
 
                 mkIdName fitem =
                     IdName fitem.id fitem.name
@@ -645,23 +638,8 @@ update key flags inav settings msg model =
                     List.filter personFilter correspondent
                         |> List.map (\e -> IdName e.id e.name)
 
-                mkPersonOption idref =
-                    let
-                        org =
-                            Dict.get idref.id personDict
-                                |> Maybe.andThen .organization
-                                |> Maybe.map .name
-                                |> Maybe.map (Util.String.ellipsis 15)
-                                |> Maybe.withDefault ""
-                    in
-                    Comp.Dropdown.Option idref.id idref.name org
-
                 model_ =
-                    { model
-                        | corrPersonModel = Comp.Dropdown.setMkOption mkPersonOption model.corrPersonModel
-                        , concPersonModel = Comp.Dropdown.setMkOption mkPersonOption model.concPersonModel
-                        , allPersons = personDict
-                    }
+                    { model | allPersons = personDict }
 
                 res1 =
                     update key
@@ -1505,7 +1483,7 @@ update key flags inav settings msg model =
         ToggleOpenAllAkkordionTabs ->
             let
                 allNames =
-                    Comp.ItemDetail.EditForm.formTabs settings model
+                    Comp.ItemDetail.EditForm.formTabs flags settings model
                         |> List.map .title
                         |> Set.fromList
 

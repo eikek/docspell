@@ -55,14 +55,7 @@ emptyModel =
     , replyTo = Nothing
     , sslType =
         Comp.Dropdown.makeSingleList
-            { makeOption =
-                \s ->
-                    { value = Data.SSLType.toString s
-                    , text = Data.SSLType.label s
-                    , additional = ""
-                    }
-            , placeholder = ""
-            , options = Data.SSLType.all
+            { options = Data.SSLType.all
             , selected = Just Data.SSLType.None
             }
     , ignoreCertificates = False
@@ -83,14 +76,7 @@ init ems =
     , replyTo = ems.replyTo
     , sslType =
         Comp.Dropdown.makeSingleList
-            { makeOption =
-                \s ->
-                    { value = Data.SSLType.toString s
-                    , text = Data.SSLType.label s
-                    , additional = ""
-                    }
-            , placeholder = ""
-            , options = Data.SSLType.all
+            { options = Data.SSLType.all
             , selected =
                 Data.SSLType.fromString ems.sslType
                     |> Maybe.withDefault Data.SSLType.None
@@ -186,6 +172,18 @@ update msg model =
 
 view2 : UiSettings -> Model -> Html Msg
 view2 settings model =
+    let
+        sslCfg =
+            { makeOption =
+                \s ->
+                    { text = Data.SSLType.label s
+                    , additional = ""
+                    }
+            , placeholder = ""
+            , labelColor = \_ -> \_ -> ""
+            , style = DS.mainStyle
+            }
+    in
     div [ class "grid grid-cols-4 gap-y-4 gap-x-2" ]
         [ div [ class "col-span-4" ]
             [ label
@@ -291,7 +289,7 @@ view2 settings model =
                 ]
             , Html.map SSLTypeMsg
                 (Comp.Dropdown.view2
-                    DS.mainStyle
+                    sslCfg
                     settings
                     model.sslType
                 )

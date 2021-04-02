@@ -41,14 +41,7 @@ emptyModel =
     , password = Nothing
     , state =
         Comp.Dropdown.makeSingleList
-            { makeOption =
-                \s ->
-                    { value = Data.UserState.toString s
-                    , text = Data.UserState.toString s
-                    , additional = ""
-                    }
-            , placeholder = ""
-            , options = Data.UserState.all
+            { options = Data.UserState.all
             , selected = List.head Data.UserState.all
             }
     }
@@ -103,14 +96,7 @@ update _ msg model =
             let
                 state =
                     Comp.Dropdown.makeSingleList
-                        { makeOption =
-                            \s ->
-                                { value = Data.UserState.toString s
-                                , text = Data.UserState.toString s
-                                , additional = ""
-                                }
-                        , placeholder = ""
-                        , options = Data.UserState.all
+                        { options = Data.UserState.all
                         , selected =
                             Data.UserState.fromString t.state
                                 |> Maybe.map (\u -> List.filter ((==) u) Data.UserState.all)
@@ -169,6 +155,18 @@ update _ msg model =
 
 view2 : Texts -> UiSettings -> Model -> Html Msg
 view2 texts settings model =
+    let
+        stateCfg =
+            { makeOption =
+                \s ->
+                    { text = Data.UserState.toString s
+                    , additional = ""
+                    }
+            , placeholder = ""
+            , style = DS.mainStyle
+            , labelColor = \_ -> \_ -> ""
+            }
+    in
     div [ class "flex flex-col" ]
         [ div
             [ class "mb-4" ]
@@ -205,7 +203,7 @@ view2 texts settings model =
                 ]
             , Html.map StateMsg
                 (Comp.Dropdown.view2
-                    DS.mainStyle
+                    stateCfg
                     settings
                     model.state
                 )

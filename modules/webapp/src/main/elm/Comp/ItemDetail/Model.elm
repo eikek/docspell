@@ -39,7 +39,6 @@ import Comp.KeyInput
 import Comp.LinkTarget exposing (LinkTarget)
 import Comp.MarkdownInput
 import Comp.SentMails
-import Comp.YesNoDimmer
 import Data.Direction exposing (Direction)
 import Data.Fields exposing (Field)
 import DatePicker exposing (DatePicker)
@@ -136,45 +135,17 @@ emptyModel =
     , visibleAttach = 0
     , attachMenuOpen = False
     , menuOpen = False
-    , tagModel =
-        Util.Tag.makeDropdownModel2
+    , tagModel = Util.Tag.makeDropdownModel
     , directionModel =
         Comp.Dropdown.makeSingleList
-            { makeOption =
-                \entry ->
-                    { value = Data.Direction.toString entry
-                    , text = Data.Direction.toString entry
-                    , additional = ""
-                    }
-            , options = Data.Direction.all
-            , placeholder = "Choose a direction…"
+            { options = Data.Direction.all
             , selected = Nothing
             }
-    , corrOrgModel =
-        Comp.Dropdown.makeSingle
-            { makeOption = \e -> { value = e.id, text = e.name, additional = "" }
-            , placeholder = ""
-            }
-    , corrPersonModel =
-        Comp.Dropdown.makeSingle
-            { makeOption = \e -> { value = e.id, text = e.name, additional = "" }
-            , placeholder = ""
-            }
-    , concPersonModel =
-        Comp.Dropdown.makeSingle
-            { makeOption = \e -> { value = e.id, text = e.name, additional = "" }
-            , placeholder = ""
-            }
-    , concEquipModel =
-        Comp.Dropdown.makeSingle
-            { makeOption = \e -> { value = e.id, text = e.name, additional = "" }
-            , placeholder = ""
-            }
-    , folderModel =
-        Comp.Dropdown.makeSingle
-            { makeOption = \e -> { value = e.id, text = e.name, additional = "" }
-            , placeholder = ""
-            }
+    , corrOrgModel = Comp.Dropdown.makeSingle
+    , corrPersonModel = Comp.Dropdown.makeSingle
+    , concPersonModel = Comp.Dropdown.makeSingle
+    , concEquipModel = Comp.Dropdown.makeSingle
+    , folderModel = Comp.Dropdown.makeSingle
     , allFolders = []
     , nameModel = ""
     , nameState = SaveSuccess

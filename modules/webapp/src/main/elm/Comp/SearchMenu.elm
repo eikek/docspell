@@ -95,36 +95,13 @@ init flags =
     , tagSelection = Comp.TagSelect.emptySelection
     , directionModel =
         Comp.Dropdown.makeSingleList
-            { makeOption =
-                \entry ->
-                    { value = Data.Direction.toString entry
-                    , text = Data.Direction.toString entry
-                    , additional = ""
-                    }
-            , options = Data.Direction.all
-            , placeholder = "Choose a direction…"
+            { options = Data.Direction.all
             , selected = Nothing
             }
-    , orgModel =
-        Comp.Dropdown.orgDropdown
-    , corrPersonModel =
-        Comp.Dropdown.makeSingle
-            { makeOption = \e -> { value = e.id, text = e.name, additional = "" }
-            , placeholder = "Choose a person"
-            }
-    , concPersonModel =
-        Comp.Dropdown.makeSingle
-            { makeOption = \e -> { value = e.id, text = e.name, additional = "" }
-            , placeholder = "Choose a person"
-            }
-    , concEquipmentModel =
-        Comp.Dropdown.makeModel
-            { multiple = False
-            , searchable = \n -> n > 0
-            , makeOption = \e -> { value = e.id, text = e.name, additional = "" }
-            , labelColor = \_ -> \_ -> ""
-            , placeholder = "Choose an equipment"
-            }
+    , orgModel = Comp.Dropdown.makeSingle
+    , corrPersonModel = Comp.Dropdown.makeSingle
+    , concPersonModel = Comp.Dropdown.makeSingle
+    , concEquipmentModel = Comp.Dropdown.makeSingle
     , folderList = Comp.FolderSelect.init Nothing []
     , selectedFolder = Nothing
     , inboxCheckbox = False
@@ -1022,6 +999,38 @@ searchTabs ddd flags settings model =
 
         tagSelectWM =
             Comp.TagSelect.makeWorkModel model.tagSelection model.tagSelectModel
+
+        directionCfg =
+            { makeOption =
+                \entry ->
+                    { text = Data.Direction.toString entry
+                    , additional = ""
+                    }
+            , placeholder = "Choose a direction…"
+            , labelColor = \_ -> \_ -> ""
+            , style = DS.sidebarStyle
+            }
+
+        corrPersonCfg =
+            { makeOption = \e -> { text = e.name, additional = "" }
+            , placeholder = "Choose a person"
+            , labelColor = \_ -> \_ -> ""
+            , style = DS.sidebarStyle
+            }
+
+        concPersonCfg =
+            { makeOption = \e -> { text = e.name, additional = "" }
+            , placeholder = "Choose a person"
+            , labelColor = \_ -> \_ -> ""
+            , style = DS.sidebarStyle
+            }
+
+        concEquipCfg =
+            { makeOption = \e -> { text = e.name, additional = "" }
+            , labelColor = \_ -> \_ -> ""
+            , placeholder = "Choose an equipment"
+            , style = DS.sidebarStyle
+            }
     in
     [ { title = "Inbox"
       , info = Nothing
@@ -1129,7 +1138,7 @@ searchTabs ddd flags settings model =
                     [ text "Organization" ]
                 , Html.map OrgMsg
                     (Comp.Dropdown.view2
-                        DS.sidebarStyle
+                        (Comp.Dropdown.orgFormViewSettings DS.sidebarStyle)
                         settings
                         model.orgModel
                     )
@@ -1141,7 +1150,7 @@ searchTabs ddd flags settings model =
                 [ label [ class S.inputLabel ] [ text "Person" ]
                 , Html.map CorrPersonMsg
                     (Comp.Dropdown.view2
-                        DS.sidebarStyle
+                        corrPersonCfg
                         settings
                         model.corrPersonModel
                     )
@@ -1159,7 +1168,7 @@ searchTabs ddd flags settings model =
                 [ label [ class S.inputLabel ] [ text "Person" ]
                 , Html.map ConcPersonMsg
                     (Comp.Dropdown.view2
-                        DS.sidebarStyle
+                        concPersonCfg
                         settings
                         model.concPersonModel
                     )
@@ -1171,7 +1180,7 @@ searchTabs ddd flags settings model =
                 [ label [ class S.inputLabel ] [ text "Equipment" ]
                 , Html.map ConcEquipmentMsg
                     (Comp.Dropdown.view2
-                        DS.sidebarStyle
+                        concEquipCfg
                         settings
                         model.concEquipmentModel
                     )
@@ -1295,7 +1304,7 @@ searchTabs ddd flags settings model =
       , body =
             [ Html.map DirectionMsg
                 (Comp.Dropdown.view2
-                    DS.sidebarStyle
+                    directionCfg
                     settings
                     model.directionModel
                 )

@@ -49,7 +49,7 @@ emptyModel =
         Comp.FixedDropdown.initMap
             Data.PersonUse.label
             Data.PersonUse.all
-    , orgModel = Comp.Dropdown.orgDropdown
+    , orgModel = Comp.Dropdown.makeSingle
     }
 
 
@@ -242,7 +242,7 @@ view2 mobile settings model =
                 ]
             , Html.map OrgDropdownMsg
                 (Comp.Dropdown.view2
-                    DS.mainStyle
+                    (Comp.Dropdown.orgFormViewSettings DS.mainStyle)
                     settings
                     model.orgModel
                 )

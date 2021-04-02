@@ -119,7 +119,7 @@ viewContent flags settings model =
                 viewImapSettings settings model
 
             Just ScanMailboxTab ->
-                viewScanMailboxManage settings model
+                viewScanMailboxManage flags settings model
 
             Just UiSettingsTab ->
                 viewUiSettings flags settings model
@@ -247,8 +247,8 @@ viewNotificationManage settings model =
     ]
 
 
-viewScanMailboxManage : UiSettings -> Model -> List (Html Msg)
-viewScanMailboxManage settings model =
+viewScanMailboxManage : Flags -> UiSettings -> Model -> List (Html Msg)
+viewScanMailboxManage flags settings model =
     [ h2
         [ class S.header1
         , class "inline-flex items-center"
@@ -276,6 +276,7 @@ viewScanMailboxManage settings model =
         ]
     , Html.map ScanMailboxMsg
         (Comp.ScanMailboxManage.view2
+            flags
             settings
             model.scanMailboxModel
         )

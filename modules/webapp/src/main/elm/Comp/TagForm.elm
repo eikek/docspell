@@ -37,9 +37,7 @@ emptyModel categories =
         let
             cm =
                 Comp.Dropdown.makeSingleList
-                    { makeOption = \s -> Comp.Dropdown.mkOption s s
-                    , placeholder = "Select or define category..."
-                    , options = categories
+                    { options = categories
                     , selected = Nothing
                     }
         in
@@ -122,6 +120,14 @@ update _ msg model =
 
 view2 : Model -> Html Msg
 view2 model =
+    let
+        categoryCfg =
+            { makeOption = \s -> Comp.Dropdown.mkOption s
+            , placeholder = "Select or define category..."
+            , labelColor = \_ -> \_ -> ""
+            , style = DS.mainStyle
+            }
+    in
     div
         [ class "flex flex-col" ]
         [ div [ class "mb-4" ]
@@ -155,7 +161,7 @@ view2 model =
                 ]
             , Html.map CatMsg
                 (Comp.Dropdown.viewSingle2
-                    DS.mainStyle
+                    categoryCfg
                     model.catDropdown
                 )
             ]

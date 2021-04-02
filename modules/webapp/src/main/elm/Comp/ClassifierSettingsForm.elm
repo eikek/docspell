@@ -64,16 +64,10 @@ init flags sett =
       , itemCount = Just sett.itemCount
       , categoryListModel =
             let
-                mkOption s =
-                    { value = s, text = s, additional = "" }
-
                 minit =
                     Comp.Dropdown.makeModel
                         { multiple = True
                         , searchable = \n -> n > 0
-                        , makeOption = mkOption
-                        , labelColor = \_ -> \_ -> "grey "
-                        , placeholder = "Choose categories …"
                         }
 
                 lm =
@@ -192,6 +186,13 @@ view2 texts settings model =
                 model.categoryListType
                 (Data.ListType.label model.categoryListType)
                 Nothing
+
+        categoryCfg =
+            { makeOption = \s -> { text = s, additional = "" }
+            , labelColor = \_ -> \_ -> "grey "
+            , placeholder = "Choose categories …"
+            , style = DS.mainStyle
+            }
     in
     div []
         [ Markdown.toHtml [ class "px-2 py-2 opacity-75" ]
@@ -213,7 +214,7 @@ view2 texts settings model =
                 ]
             , Html.map CategoryListMsg
                 (Comp.Dropdown.view2
-                    DS.mainStyle
+                    categoryCfg
                     settings
                     model.categoryListModel
                 )

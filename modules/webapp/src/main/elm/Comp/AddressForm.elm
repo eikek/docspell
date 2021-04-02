@@ -51,9 +51,7 @@ emptyModel =
     , city = ""
     , country =
         Comp.Dropdown.makeSingleList
-            { makeOption = \c -> { value = c.code, text = c.label, additional = "" }
-            , placeholder = "Select Country"
-            , options = countries
+            { options = countries
             , selected = Nothing
             }
     }
@@ -114,6 +112,14 @@ update msg model =
 
 view2 : UiSettings -> Model -> Html Msg
 view2 settings model =
+    let
+        countryCfg =
+            { makeOption = \c -> { text = c.label, additional = "" }
+            , placeholder = "Select Country"
+            , labelColor = \_ -> \_ -> ""
+            , style = DS.mainStyle
+            }
+    in
     div [ class "flex flex-col" ]
         [ div
             [ class "mb-2"
@@ -178,7 +184,7 @@ view2 settings model =
                 ]
             , Html.map CountryMsg
                 (Comp.Dropdown.view2
-                    DS.mainStyle
+                    countryCfg
                     settings
                     model.country
                 )

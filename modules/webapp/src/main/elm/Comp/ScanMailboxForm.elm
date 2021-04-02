@@ -191,11 +191,7 @@ init flags =
             Comp.CalEventInput.initDefault
     in
     ( { settings = Api.Model.ScanMailboxSettings.empty
-      , connectionModel =
-            Comp.Dropdown.makeSingle
-                { makeOption = \a -> { value = a, text = a, additional = "" }
-                , placeholder = "Select connection..."
-                }
+      , connectionModel = Comp.Dropdown.makeSingle
       , enabled = False
       , deleteMail = False
       , receivedHours = Nothing
@@ -209,11 +205,7 @@ init flags =
       , formMsg = Nothing
       , loading = 3
       , yesNoDelete = Comp.YesNoDimmer.emptyModel
-      , folderModel =
-            Comp.Dropdown.makeSingle
-                { makeOption = \e -> { value = e.id, text = e.name, additional = "" }
-                , placeholder = ""
-                }
+      , folderModel = Comp.Dropdown.makeSingle
       , allFolders = []
       , itemFolderId = Nothing
       , tagModel = Util.Tag.makeDropdownModel
@@ -370,9 +362,7 @@ update flags msg model =
 
                 cm =
                     Comp.Dropdown.makeSingleList
-                        { makeOption = \a -> { value = a, text = a, additional = "" }
-                        , placeholder = "Select Connection..."
-                        , options = names
+                        { options = names
                         , selected =
                             Util.Maybe.or
                                 [ List.head (Comp.Dropdown.getSelected model.connectionModel)
@@ -522,10 +512,6 @@ update flags msg model =
                     { model
                         | allFolders = fs.items
                         , loading = model.loading - 1
-                        , folderModel =
-                            Comp.Dropdown.setMkOption
-                                (mkFolderOption flags fs.items)
-                                model.folderModel
                     }
 
                 mkIdName fitem =
@@ -729,8 +715,8 @@ isFolderMember model =
     Util.Folder.isFolderMember model.allFolders selected
 
 
-view2 : String -> UiSettings -> Model -> Html Msg
-view2 extraClasses settings model =
+view2 : Flags -> String -> UiSettings -> Model -> Html Msg
+view2 flags extraClasses settings model =
     let
         dimmerSettings =
             Comp.YesNoDimmer.defaultSettings2 "Really delete this scan mailbox task?"
@@ -799,7 +785,7 @@ view2 extraClasses settings model =
         , Comp.Tabs.akkordion
             Comp.Tabs.defaultStyle
             tabActive
-            (formTabs settings model)
+            (formTabs flags settings model)
         , Html.map YesNoDeleteMsg
             (Comp.YesNoDimmer.viewN
                 True
@@ -832,8 +818,8 @@ tabTitle tab =
             "Schedule"
 
 
-formTabs : UiSettings -> Model -> List (Comp.Tabs.Tab Msg)
-formTabs settings model =
+formTabs : Flags -> UiSettings -> Model -> List (Comp.Tabs.Tab Msg)
+formTabs flags settings model =
     [ { title = tabTitle TabGeneral
       , titleRight = []
       , info = Nothing
@@ -857,7 +843,7 @@ formTabs settings model =
     , { title = tabTitle TabMetadata
       , titleRight = []
       , info = Just "Define metadata that should be attached to all items created by this task."
-      , body = viewMetadata2 settings model
+      , body = viewMetadata2 flags settings model
       }
     , { title = tabTitle TabSchedule
       , titleRight = []
@@ -869,6 +855,14 @@ formTabs settings model =
 
 viewGeneral2 : UiSettings -> Model -> List (Html Msg)
 viewGeneral2 settings model =
+    let
+        connectionCfg =
+            { makeOption = \a -> { text = a, additional = "" }
+            , placeholder = "Select connection..."
+            , labelColor = \_ -> \_ -> ""
+            , style = DS.mainStyle
+            }
+    in
     [ MB.viewItem <|
         MB.Checkbox
             { id = "scanmail-enabled"
@@ -899,7 +893,7 @@ viewGeneral2 settings model =
             ]
         , Html.map ConnMsg
             (Comp.Dropdown.view2
-                DS.mainStyle
+                connectionCfg
                 settings
                 model.connectionModel
             )
@@ -1054,8 +1048,16 @@ viewPostProcessing2 model =
     ]
 
 
-viewMetadata2 : UiSettings -> Model -> List (Html Msg)
-viewMetadata2 settings model =
+viewMetadata2 : Flags -> UiSettings -> Model -> List (Html Msg)
+viewMetadata2 flags settings model =
+    let
+        folderCfg =
+            { makeOption = Util.Folder.mkFolderOption flags model.allFolders
+            , placeholder = ""
+            , labelColor = \_ -> \_ -> ""
+            , style = DS.mainStyle
+            }
+    in
     [ div [ class "mb-4" ]
         [ label [ class S.inputLabel ]
             [ text "Item direction"
@@ -1105,7 +1107,7 @@ viewMetadata2 settings model =
             ]
         , Html.map FolderDropdownMsg
             (Comp.Dropdown.view2
-                DS.mainStyle
+                folderCfg
                 settings
                 model.folderModel
             )
@@ -1131,7 +1133,7 @@ disappear then.
             [ text "Tags" ]
         , Html.map TagDropdownMsg
             (Comp.Dropdown.view2
-                DS.mainStyle
+                (Util.Tag.tagSettings DS.mainStyle)
                 settings
                 model.tagModel
             )

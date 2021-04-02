@@ -37,7 +37,7 @@ mkFolderOption flags allFolders idref =
             else
                 ""
     in
-    { value = idref.id, text = idref.name, additional = adds }
+    { text = idref.name, additional = adds }
 
 
 isFolderMember : List FolderItem -> Maybe String -> Bool

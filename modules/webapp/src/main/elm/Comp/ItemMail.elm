@@ -69,11 +69,7 @@ type FormAction
 
 emptyModel : Model
 emptyModel =
-    { connectionModel =
-        Comp.Dropdown.makeSingle
-            { makeOption = \a -> { value = a, text = a, additional = "" }
-            , placeholder = "Select connection..."
-            }
+    { connectionModel = Comp.Dropdown.makeSingle
     , subject = ""
     , recipients = []
     , recipientsModel = Comp.EmailInput.init
@@ -160,9 +156,7 @@ update flags msg model =
 
                 cm =
                     Comp.Dropdown.makeSingleList
-                        { makeOption = \a -> { value = a, text = a, additional = "" }
-                        , placeholder = "Select Connection..."
-                        , options = names
+                        { options = names
                         , selected = List.head names
                         }
             in
@@ -229,6 +223,13 @@ view2 settings model =
     let
         dds =
             Data.DropdownStyle.mainStyle
+
+        connectionCfg =
+            { makeOption = \a -> { text = a, additional = "" }
+            , placeholder = "Select connection..."
+            , labelColor = \_ -> \_ -> ""
+            , style = dds
+            }
     in
     div
         [ class "flex flex-col"
@@ -238,7 +239,7 @@ view2 settings model =
                 [ text "Send via"
                 , B.inputRequired
                 ]
-            , Html.map ConnMsg (Comp.Dropdown.view2 dds settings model.connectionModel)
+            , Html.map ConnMsg (Comp.Dropdown.view2 connectionCfg settings model.connectionModel)
             ]
         , div
             [ class S.errorMessage

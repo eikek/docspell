@@ -48,6 +48,7 @@ import Time
 import Util.Folder exposing (mkFolderOption)
 import Util.List
 import Util.Maybe
+import Util.Person
 import Util.Tag
 
 
@@ -117,45 +118,17 @@ type Msg
 
 init : Model
 init =
-    { tagModel =
-        Util.Tag.makeDropdownModel2
+    { tagModel = Util.Tag.makeDropdownModel
     , directionModel =
         Comp.Dropdown.makeSingleList
-            { makeOption =
-                \entry ->
-                    { value = Data.Direction.toString entry
-                    , text = Data.Direction.toString entry
-                    , additional = ""
-                    }
-            , options = Data.Direction.all
-            , placeholder = "Choose a direction…"
+            { options = Data.Direction.all
             , selected = Nothing
             }
-    , corrOrgModel =
-        Comp.Dropdown.makeSingle
-            { makeOption = \e -> { value = e.id, text = e.name, additional = "" }
-            , placeholder = ""
-            }
-    , corrPersonModel =
-        Comp.Dropdown.makeSingle
-            { makeOption = \e -> { value = e.id, text = e.name, additional = "" }
-            , placeholder = ""
-            }
-    , concPersonModel =
-        Comp.Dropdown.makeSingle
-            { makeOption = \e -> { value = e.id, text = e.name, additional = "" }
-            , placeholder = ""
-            }
-    , concEquipModel =
-        Comp.Dropdown.makeSingle
-            { makeOption = \e -> { value = e.id, text = e.name, additional = "" }
-            , placeholder = ""
-            }
-    , folderModel =
-        Comp.Dropdown.makeSingle
-            { makeOption = \e -> { value = e.id, text = e.name, additional = "" }
-            , placeholder = ""
-            }
+    , corrOrgModel = Comp.Dropdown.makeSingle
+    , corrPersonModel = Comp.Dropdown.makeSingle
+    , concPersonModel = Comp.Dropdown.makeSingle
+    , concEquipModel = Comp.Dropdown.makeSingle
+    , folderModel = Comp.Dropdown.makeSingle
     , allFolders = []
     , nameModel = ""
     , nameSaveThrottle = Throttle.create 1
@@ -310,13 +283,7 @@ update flags msg model =
         GetFolderResp (Ok fs) ->
             let
                 model_ =
-                    { model
-                        | allFolders = fs.items
-                        , folderModel =
-                            Comp.Dropdown.setMkOption
-                                (mkFolderOption flags fs.items)
-                                model.folderModel
-                    }
+                    { model | allFolders = fs.items }
 
                 mkIdName fitem =
                     IdName fitem.id fitem.name
@@ -635,13 +602,13 @@ defaultViewConfig =
 --- View2
 
 
-view2 : ViewConfig -> UiSettings -> Model -> Html Msg
+view2 : Flags -> ViewConfig -> UiSettings -> Model -> Html Msg
 view2 =
     renderEditForm2
 
 
-renderEditForm2 : ViewConfig -> UiSettings -> Model -> Html Msg
-renderEditForm2 cfg settings model =
+renderEditForm2 : Flags -> ViewConfig -> UiSettings -> Model -> Html Msg
+renderEditForm2 flags cfg settings model =
     let
         fieldVisible field =
             Data.UiSettings.fieldVisible settings field
@@ -700,6 +667,31 @@ renderEditForm2 cfg settings model =
 
         tabStyle =
             TB.searchMenuStyle
+
+        folderCfg =
+            { makeOption = Util.Folder.mkFolderOption flags model.allFolders
+            , placeholder = ""
+            , labelColor = \_ -> \_ -> ""
+            , style = dds
+            }
+
+        idNameCfg =
+            { makeOption = \e -> { text = e.name, additional = "" }
+            , labelColor = \_ -> \_ -> ""
+            , placeholder = "Select…"
+            , style = dds
+            }
+
+        directionCfg =
+            { makeOption =
+                \entry ->
+                    { text = Data.Direction.toString entry
+                    , additional = ""
+                    }
+            , placeholder = "Choose a direction…"
+            , labelColor = \_ -> \_ -> ""
+            , style = dds
+            }
     in
     div [ class cfg.menuClass, class "mt-2" ]
         [ TB.akkordion
@@ -747,7 +739,11 @@ renderEditForm2 cfg settings model =
                                 [ tagModeIcon
                                 ]
                             ]
-                        , Html.map TagDropdownMsg (Comp.Dropdown.view2 dds settings model.tagModel)
+                        , Html.map TagDropdownMsg
+                            (Comp.Dropdown.view2 (Util.Tag.tagSettings dds)
+                                settings
+                                model.tagModel
+                            )
                         , Markdown.toHtml [ class "opacity-50 text-sm" ] tagModeMsg
                         ]
                     ]
@@ -756,7 +752,7 @@ renderEditForm2 cfg settings model =
               , titleRight = []
               , info = Nothing
               , body =
-                    [ Html.map FolderDropdownMsg (Comp.Dropdown.view2 dds settings model.folderModel)
+                    [ Html.map FolderDropdownMsg (Comp.Dropdown.view2 folderCfg settings model.folderModel)
                     , div
                         [ classList
                             [ ( S.message, True )
@@ -835,7 +831,7 @@ item visible. This message will disappear then.
                                     [ text "Organization"
                                     ]
                                 ]
-                            , Html.map OrgDropdownMsg (Comp.Dropdown.view2 dds settings model.corrOrgModel)
+                            , Html.map OrgDropdownMsg (Comp.Dropdown.view2 idNameCfg settings model.corrOrgModel)
                             ]
                     , optional [ Data.Fields.CorrPerson ] <|
                         div [ class "mb-4" ]
@@ -845,7 +841,7 @@ item visible. This message will disappear then.
                                     [ text "Person"
                                     ]
                                 ]
-                            , Html.map CorrPersonMsg (Comp.Dropdown.view2 dds settings model.corrPersonModel)
+                            , Html.map CorrPersonMsg (Comp.Dropdown.view2 idNameCfg settings model.corrPersonModel)
                             ]
                     ]
               }
@@ -860,7 +856,7 @@ item visible. This message will disappear then.
                                 , span [ class "ml-2" ]
                                     [ text "Person" ]
                                 ]
-                            , Html.map ConcPersonMsg (Comp.Dropdown.view2 dds settings model.concPersonModel)
+                            , Html.map ConcPersonMsg (Comp.Dropdown.view2 idNameCfg settings model.concPersonModel)
                             ]
                     , optional [ Data.Fields.ConcEquip ] <|
                         div [ class "mb-4" ]
@@ -869,7 +865,11 @@ item visible. This message will disappear then.
                                 , span [ class "ml-2" ]
                                     [ text "Equipment" ]
                                 ]
-                            , Html.map ConcEquipMsg (Comp.Dropdown.view2 dds settings model.concEquipModel)
+                            , Html.map ConcEquipMsg
+                                (Comp.Dropdown.view2 idNameCfg
+                                    settings
+                                    model.concEquipModel
+                                )
                             ]
                     ]
               }
@@ -877,7 +877,7 @@ item visible. This message will disappear then.
               , titleRight = []
               , info = Nothing
               , body =
-                    [ Html.map DirDropdownMsg (Comp.Dropdown.view2 dds settings model.directionModel)
+                    [ Html.map DirDropdownMsg (Comp.Dropdown.view2 directionCfg settings model.directionModel)
                     ]
               }
             , { title = "Name"

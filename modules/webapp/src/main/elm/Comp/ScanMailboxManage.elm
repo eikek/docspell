@@ -17,7 +17,6 @@ import Data.Flags exposing (Flags)
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick)
 import Http
 import Styles as S
 import Util.Http
@@ -213,8 +212,8 @@ update flags msg model =
 --- View2
 
 
-view2 : UiSettings -> Model -> Html Msg
-view2 settings model =
+view2 : Flags -> UiSettings -> Model -> Html Msg
+view2 flags settings model =
     div [ class "flex flex-col" ]
         (div
             [ classList
@@ -229,7 +228,7 @@ view2 settings model =
             ]
             :: (case model.detailModel of
                     Just msett ->
-                        viewForm2 settings msett
+                        viewForm2 flags settings msett
 
                     Nothing ->
                         viewList2 model
@@ -237,10 +236,10 @@ view2 settings model =
         )
 
 
-viewForm2 : UiSettings -> Comp.ScanMailboxForm.Model -> List (Html Msg)
-viewForm2 settings model =
+viewForm2 : Flags -> UiSettings -> Comp.ScanMailboxForm.Model -> List (Html Msg)
+viewForm2 flags settings model =
     [ Html.map DetailMsg
-        (Comp.ScanMailboxForm.view2 "" settings model)
+        (Comp.ScanMailboxForm.view2 flags "" settings model)
     ]
 
 

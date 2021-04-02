@@ -7,7 +7,6 @@ module Data.UiSettings exposing
     , cardPreviewSize2
     , catColor
     , catColorFg2
-    , catColorString
     , catColorString2
     , defaults
     , fieldHidden
@@ -18,7 +17,6 @@ module Data.UiSettings exposing
     , posToString
     , tagColor
     , tagColorFg2
-    , tagColorString
     , tagColorString2
     , toStoredUiSettings
     )
@@ -276,13 +274,6 @@ tagColor tag settings =
     Maybe.andThen (catColor settings) tag.category
 
 
-catColorString : UiSettings -> String -> String
-catColorString settings name =
-    catColor settings name
-        |> Maybe.map Data.Color.toString
-        |> Maybe.withDefault ""
-
-
 catColorString2 : UiSettings -> String -> String
 catColorString2 settings name =
     catColor settings name
@@ -294,13 +285,6 @@ catColorFg2 : UiSettings -> String -> String
 catColorFg2 settings name =
     catColor settings name
         |> Maybe.map Data.Color.toStringFg2
-        |> Maybe.withDefault ""
-
-
-tagColorString : Tag -> UiSettings -> String
-tagColorString tag settings =
-    tagColor tag settings
-        |> Maybe.map Data.Color.toString
         |> Maybe.withDefault ""
 
 

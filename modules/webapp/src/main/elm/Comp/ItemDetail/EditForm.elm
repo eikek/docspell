@@ -14,8 +14,10 @@ import Comp.ItemDetail.Model
         )
 import Comp.KeyInput
 import Comp.Tabs as TB
+import Data.Direction
 import Data.DropdownStyle
 import Data.Fields
+import Data.Flags exposing (Flags)
 import Data.Icons as Icons
 import Data.UiSettings exposing (UiSettings)
 import Dict
@@ -27,11 +29,13 @@ import Page exposing (Page(..))
 import Set exposing (Set)
 import Styles as S
 import Util.Folder
+import Util.Person
+import Util.Tag
 import Util.Time
 
 
-view2 : UiSettings -> Model -> Html Msg
-view2 settings model =
+view2 : Flags -> UiSettings -> Model -> Html Msg
+view2 flags settings model =
     let
         keyAttr =
             if settings.itemDetailShortcuts then
@@ -44,7 +48,7 @@ view2 settings model =
             TB.searchMenuStyle
 
         tabs =
-            formTabs settings model
+            formTabs flags settings model
 
         allTabNames =
             List.map .title tabs
@@ -57,8 +61,8 @@ view2 settings model =
         ]
 
 
-formTabs : UiSettings -> Model -> List (TB.Tab Msg)
-formTabs settings model =
+formTabs : Flags -> UiSettings -> Model -> List (TB.Tab Msg)
+formTabs flags settings model =
     let
         dds =
             Data.DropdownStyle.sidebarStyle
@@ -106,6 +110,38 @@ formTabs settings model =
 
             else
                 span [ class "invisible hidden" ] []
+
+        directionCfg =
+            { makeOption =
+                \entry ->
+                    { text = Data.Direction.toString entry
+                    , additional = ""
+                    }
+            , placeholder = "Choose a direction…"
+            , labelColor = \_ -> \_ -> ""
+            , style = dds
+            }
+
+        folderCfg =
+            { makeOption = Util.Folder.mkFolderOption flags model.allFolders
+            , placeholder = ""
+            , labelColor = \_ -> \_ -> ""
+            , style = dds
+            }
+
+        idNameCfg =
+            { makeOption = \e -> { text = e.name, additional = "" }
+            , labelColor = \_ -> \_ -> ""
+            , placeholder = "Select…"
+            , style = dds
+            }
+
+        personCfg =
+            { makeOption = \p -> Util.Person.mkPersonOption p model.allPersons
+            , labelColor = \_ -> \_ -> ""
+            , placeholder = "Select…"
+            , style = dds
+            }
     in
     [ { title = "Name"
       , titleRight = []
@@ -163,7 +199,11 @@ formTabs settings model =
       , info = Nothing
       , body =
             [ div [ class "mb-4 flex flex-col" ]
-                [ Html.map TagDropdownMsg (Comp.Dropdown.view2 dds settings model.tagModel)
+                [ Html.map TagDropdownMsg
+                    (Comp.Dropdown.view2 (Util.Tag.tagSettings dds)
+                        settings
+                        model.tagModel
+                    )
                 , div [ class "flex flex-row items-center justify-end" ]
                     [ a
                         [ class S.secondaryButton
@@ -184,7 +224,7 @@ formTabs settings model =
             [ div [ class "mb-4" ]
                 [ Html.map FolderDropdownMsg
                     (Comp.Dropdown.view2
-                        dds
+                        folderCfg
                         settings
                         model.folderModel
                     )
@@ -254,7 +294,12 @@ item visible. This message will disappear then.
                         , addIconLink "Add new organization" StartCorrOrgModal
                         , editIconLink "Edit organization" model.corrOrgModel StartEditCorrOrgModal
                         ]
-                    , Html.map OrgDropdownMsg (Comp.Dropdown.view2 dds settings model.corrOrgModel)
+                    , Html.map OrgDropdownMsg
+                        (Comp.Dropdown.view2
+                            (Comp.Dropdown.orgFormViewSettings dds)
+                            settings
+                            model.corrOrgModel
+                        )
                     , renderOrgSuggestions model
                     ]
             , optional [ Data.Fields.CorrPerson ] <|
@@ -267,7 +312,11 @@ item visible. This message will disappear then.
                             model.corrPersonModel
                             (StartEditPersonModal model.corrPersonModel)
                         ]
-                    , Html.map CorrPersonMsg (Comp.Dropdown.view2 dds settings model.corrPersonModel)
+                    , Html.map CorrPersonMsg
+                        (Comp.Dropdown.view2 personCfg
+                            settings
+                            model.corrPersonModel
+                        )
                     , renderCorrPersonSuggestions model
                     , div
                         [ classList
@@ -298,7 +347,7 @@ item visible. This message will disappear then.
                         ]
                     , Html.map ConcPersonMsg
                         (Comp.Dropdown.view2
-                            dds
+                            personCfg
                             settings
                             model.concPersonModel
                         )
@@ -316,7 +365,7 @@ item visible. This message will disappear then.
                         ]
                     , Html.map ConcEquipMsg
                         (Comp.Dropdown.view2
-                            dds
+                            idNameCfg
                             settings
                             model.concEquipModel
                         )
@@ -331,7 +380,7 @@ item visible. This message will disappear then.
             [ div [ class "mb-4" ]
                 [ Html.map DirDropdownMsg
                     (Comp.Dropdown.view2
-                        dds
+                        directionCfg
                         settings
                         model.directionModel
                     )

@@ -17,7 +17,7 @@ import Styles as S
 
 
 viewSidebar : Texts -> Bool -> Flags -> UiSettings -> Model -> Html Msg
-viewSidebar texts visible _ settings model =
+viewSidebar texts visible flags settings model =
     div
         [ id "sidebar"
         , class S.sidebar
@@ -49,7 +49,7 @@ viewSidebar texts visible _ settings model =
             , rootClasses = "text-sm mb-3 "
             }
         , Html.map ItemDetailMsg
-            (Comp.ItemDetail.EditForm.view2 settings model.detail)
+            (Comp.ItemDetail.EditForm.view2 flags settings model.detail)
         ]
 
 

@@ -64,25 +64,14 @@ emptyModel =
             Data.Priority.all
     , priority = Data.Priority.Low
     , enabled = False
-    , folderModel =
-        Comp.Dropdown.makeSingle
-            { makeOption = \e -> { value = e.id, text = e.name, additional = "" }
-            , placeholder = ""
-            }
+    , folderModel = Comp.Dropdown.makeSingle
     , allFolders = []
     , folderId = Nothing
-    , tagModel = Util.Tag.makeDropdownModel2
+    , tagModel = Util.Tag.makeDropdownModel
     , fileFilter = Nothing
     , languageModel =
         Comp.Dropdown.makeSingleList
-            { makeOption =
-                \a ->
-                    { value = Data.Language.toName a
-                    , text = Data.Language.toName a
-                    , additional = ""
-                    }
-            , placeholder = "Select…"
-            , options = Data.Language.all
+            { options = Data.Language.all
             , selected = Nothing
             }
     , language = Nothing
@@ -237,13 +226,7 @@ update flags msg model =
         GetFolderResp (Ok fs) ->
             let
                 model_ =
-                    { model
-                        | allFolders = fs.items
-                        , folderModel =
-                            Comp.Dropdown.setMkOption
-                                (mkFolderOption flags fs.items)
-                                model.folderModel
-                    }
+                    { model | allFolders = fs.items }
 
                 mkIdName fitem =
                     IdName fitem.id fitem.name
@@ -331,13 +314,34 @@ update flags msg model =
 
 
 view2 : Flags -> Texts -> UiSettings -> Model -> Html Msg
-view2 _ texts settings model =
+view2 flags texts settings model =
     let
         priorityItem =
             Comp.FixedDropdown.Item
                 model.priority
                 (Data.Priority.toName model.priority)
                 Nothing
+
+        folderCfg =
+            { makeOption = mkFolderOption flags model.allFolders
+            , placeholder = ""
+            , labelColor = \_ -> \_ -> ""
+            , style = DS.mainStyle
+            }
+
+        tagCfg =
+            Util.Tag.tagSettings DS.mainStyle
+
+        languageCfg =
+            { makeOption =
+                \a ->
+                    { text = Data.Language.toName a
+                    , additional = ""
+                    }
+            , placeholder = "Select…"
+            , labelColor = \_ -> \_ -> ""
+            , style = DS.mainStyle
+            }
     in
     div [ class "flex flex-col" ]
         [ div [ class "mb-4" ]
@@ -424,7 +428,7 @@ view2 _ texts settings model =
                 ]
             , Html.map FolderDropdownMsg
                 (Comp.Dropdown.view2
-                    DS.mainStyle
+                    folderCfg
                     settings
                     model.folderModel
                 )
@@ -446,7 +450,7 @@ view2 _ texts settings model =
                 ]
             , Html.map TagDropdownMsg
                 (Comp.Dropdown.view2
-                    DS.mainStyle
+                    tagCfg
                     settings
                     model.tagModel
                 )
@@ -479,7 +483,7 @@ view2 _ texts settings model =
                 ]
             , Html.map LanguageMsg
                 (Comp.Dropdown.view2
-                    DS.mainStyle
+                    languageCfg
                     settings
                     model.languageModel
                 )

@@ -51,14 +51,7 @@ init flags settings =
     in
     ( { langModel =
             Comp.Dropdown.makeSingleList
-                { makeOption =
-                    \l ->
-                        { value = Data.Language.toIso3 l
-                        , text = Data.Language.toName l
-                        , additional = ""
-                        }
-                , placeholder = ""
-                , options = Data.Language.all
+                { options = Data.Language.all
                 , selected = Just lang
                 }
       , intEnabled = settings.integrationEnabled
@@ -203,6 +196,18 @@ update flags msg model =
 
 view2 : Flags -> Texts -> UiSettings -> Model -> Html Msg
 view2 flags texts settings model =
+    let
+        languageCfg =
+            { makeOption =
+                \l ->
+                    { text = Data.Language.toName l
+                    , additional = ""
+                    }
+            , placeholder = ""
+            , labelColor = \_ -> \_ -> ""
+            , style = DS.mainStyle
+            }
+    in
     div
         [ classList
             [ ( "ui form error success", True )
@@ -237,7 +242,7 @@ view2 flags texts settings model =
                 ]
             , Html.map LangDropdownMsg
                 (Comp.Dropdown.view2
-                    DS.mainStyle
+                    languageCfg
                     settings
                     model.langModel
                 )

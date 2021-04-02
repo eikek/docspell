@@ -144,13 +144,9 @@ init flags =
             Comp.CalEventInput.initDefault
     in
     ( { settings = Api.Model.NotificationSettings.empty
-      , connectionModel =
-            Comp.Dropdown.makeSingle
-                { makeOption = \a -> { value = a, text = a, additional = "" }
-                , placeholder = "Select connection..."
-                }
-      , tagInclModel = Util.Tag.makeDropdownModel2
-      , tagExclModel = Util.Tag.makeDropdownModel2
+      , connectionModel = Comp.Dropdown.makeSingle
+      , tagInclModel = Util.Tag.makeDropdownModel
+      , tagExclModel = Util.Tag.makeDropdownModel
       , recipients = []
       , recipientsModel = Comp.EmailInput.init
       , remindDays = Just 1
@@ -298,9 +294,7 @@ update flags msg model =
 
                 cm =
                     Comp.Dropdown.makeSingleList
-                        { makeOption = \a -> { value = a, text = a, additional = "" }
-                        , placeholder = "Select Connection..."
-                        , options = names
+                        { options = names
                         , selected = List.head names
                         }
             in
@@ -493,6 +487,13 @@ view2 extraClasses settings model =
                 , title = "Start this task now"
                 , icon = Just "fa fa-play"
                 }
+
+        connectionCfg =
+            { makeOption = \a -> { text = a, additional = "" }
+            , placeholder = "Select connection..."
+            , labelColor = \_ -> \_ -> ""
+            , style = DS.mainStyle
+            }
     in
     div
         [ class "flex flex-col md:relative"
@@ -579,7 +580,7 @@ view2 extraClasses settings model =
                 ]
             , Html.map ConnMsg
                 (Comp.Dropdown.view2
-                    DS.mainStyle
+                    connectionCfg
                     settings
                     model.connectionModel
                 )
@@ -609,7 +610,7 @@ view2 extraClasses settings model =
                 [ text "Tags Include (and)" ]
             , Html.map TagIncMsg
                 (Comp.Dropdown.view2
-                    DS.mainStyle
+                    (Util.Tag.tagSettings DS.mainStyle)
                     settings
                     model.tagInclModel
                 )
@@ -622,7 +623,7 @@ view2 extraClasses settings model =
                 [ text "Tags Exclude (or)" ]
             , Html.map TagExcMsg
                 (Comp.Dropdown.view2
-                    DS.mainStyle
+                    (Util.Tag.tagSettings DS.mainStyle)
                     settings
                     model.tagExclModel
                 )
