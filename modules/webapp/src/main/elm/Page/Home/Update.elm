@@ -277,38 +277,6 @@ update mId key flags settings msg model =
                 ContentOnlySearch ->
                     update mId key flags settings (SearchMenuMsg Comp.SearchMenu.SetNamesSearch) model
 
-        SearchTypeMsg lm ->
-            let
-                ( sm, mv ) =
-                    Comp.FixedDropdown.update lm model.searchTypeDropdown
-
-                mvChange =
-                    Util.Maybe.filter (\a -> a /= model.searchTypeDropdownValue) mv
-
-                m0 =
-                    { model
-                        | searchTypeDropdown = sm
-                        , searchTypeDropdownValue = Maybe.withDefault model.searchTypeDropdownValue mv
-                    }
-
-                next =
-                    case mvChange of
-                        Just BasicSearch ->
-                            Just Comp.SearchMenu.SetNamesSearch
-
-                        Just ContentOnlySearch ->
-                            Just Comp.SearchMenu.SetFulltextSearch
-
-                        _ ->
-                            Nothing
-            in
-            case next of
-                Just lm_ ->
-                    update mId key flags settings (SearchMenuMsg lm_) m0
-
-                Nothing ->
-                    withSub ( m0, Cmd.none )
-
         KeyUpSearchbarMsg (Just Enter) ->
             update mId key flags settings (DoSearch model.searchTypeDropdownValue) model
 

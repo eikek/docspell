@@ -22,7 +22,6 @@ import Api.Model.ItemLightList exposing (ItemLightList)
 import Api.Model.SearchStats exposing (SearchStats)
 import Browser.Dom as Dom
 import Comp.ConfirmModal
-import Comp.FixedDropdown
 import Comp.ItemCardList
 import Comp.ItemDetail.FormChange exposing (FormChange)
 import Comp.ItemDetail.MultiEditMenu exposing (SaveNameState(..))
@@ -50,7 +49,6 @@ type alias Model =
     , moreAvailable : Bool
     , moreInProgress : Bool
     , throttle : Throttle Msg
-    , searchTypeDropdown : Comp.FixedDropdown.Model SearchType
     , searchTypeDropdownValue : SearchType
     , lastSearchType : SearchType
     , dragDropData : DD.DragDropData
@@ -92,13 +90,6 @@ init flags viewMode =
     let
         searchMenuModel =
             Comp.SearchMenu.init flags
-
-        searchTypeOptions =
-            if flags.config.fullTextSearchEnabled then
-                [ BasicSearch, ContentOnlySearch ]
-
-            else
-                [ BasicSearch ]
     in
     { searchMenuModel = searchMenuModel
     , itemListModel = Comp.ItemCardList.init
@@ -107,8 +98,6 @@ init flags viewMode =
     , moreAvailable = True
     , moreInProgress = False
     , throttle = Throttle.create 1
-    , searchTypeDropdown =
-        Comp.FixedDropdown.init searchTypeOptions
     , searchTypeDropdownValue =
         if Comp.SearchMenu.isFulltextSearch searchMenuModel then
             ContentOnlySearch
@@ -177,7 +166,6 @@ type Msg
     | LoadMore
     | UpdateThrottle
     | SetBasicSearch String
-    | SearchTypeMsg (Comp.FixedDropdown.Msg SearchType)
     | ToggleSearchType
     | KeyUpSearchbarMsg (Maybe KeyCode)
     | ScrollResult (Result Dom.Error ())
