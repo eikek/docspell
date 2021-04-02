@@ -130,7 +130,7 @@ reset model =
 mkFieldSelect : List CustomField -> FieldSelect
 mkFieldSelect fields =
     { selected = Nothing
-    , dropdown = Comp.FixedDropdown.init (List.map mkItem fields)
+    , dropdown = Comp.FixedDropdown.init fields
     }
 
 
@@ -143,11 +143,6 @@ type alias UpdateResult =
     , cmd : Cmd Msg
     , result : CustomFieldChange
     }
-
-
-mkItem : CustomField -> Comp.FixedDropdown.Item CustomField
-mkItem f =
-    Comp.FixedDropdown.Item f (Maybe.withDefault f.name f.label) Nothing
 
 
 update : Flags -> Msg -> Model -> UpdateResult
@@ -336,7 +331,10 @@ viewMenuBar2 ddstyle viewSettings model =
             model.fieldSelect
 
         ddstyleFlex =
-            { ddstyle | root = ddstyle.root ++ " flex-grow" }
+            { display = \f -> Maybe.withDefault f.name f.label
+            , icon = \_ -> Nothing
+            , style = { ddstyle | root = ddstyle.root ++ " flex-grow" }
+            }
     in
     div
         [ classList
@@ -348,7 +346,7 @@ viewMenuBar2 ddstyle viewSettings model =
             (Comp.FixedDropdown.viewStyled2
                 ddstyleFlex
                 False
-                (Maybe.map mkItem selected)
+                selected
                 dropdown
             )
             :: (if viewSettings.showAddButton then

@@ -81,7 +81,7 @@ init flags sett =
             Data.ListType.fromString sett.listType
                 |> Maybe.withDefault Data.ListType.Whitelist
       , categoryListTypeModel =
-            Comp.FixedDropdown.initMap Data.ListType.label Data.ListType.all
+            Comp.FixedDropdown.init Data.ListType.all
       }
     , Cmd.batch
         [ Api.getTags flags "" GetTagsResp
@@ -181,16 +181,16 @@ update flags msg model =
 view2 : Texts -> UiSettings -> Model -> Html Msg
 view2 texts settings model =
     let
-        catListTypeItem =
-            Comp.FixedDropdown.Item
-                model.categoryListType
-                (Data.ListType.label model.categoryListType)
-                Nothing
-
         categoryCfg =
             { makeOption = \s -> { text = s, additional = "" }
             , labelColor = \_ -> \_ -> "grey "
             , placeholder = "Choose categories …"
+            , style = DS.mainStyle
+            }
+
+        catListCfg =
+            { display = Data.ListType.label
+            , icon = \_ -> Nothing
             , style = DS.mainStyle
             }
     in
@@ -201,7 +201,11 @@ view2 texts settings model =
             [ label [ class S.inputLabel ]
                 [ text texts.blacklistOrWhitelist ]
             , Html.map CategoryListTypeMsg
-                (Comp.FixedDropdown.view2 (Just catListTypeItem) model.categoryListTypeModel)
+                (Comp.FixedDropdown.viewStyled2 catListCfg
+                    False
+                    (Just model.categoryListType)
+                    model.categoryListTypeModel
+                )
             ]
         , div [ class "mb-4" ]
             [ label [ class S.inputLabel ]

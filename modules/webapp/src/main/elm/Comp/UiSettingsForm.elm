@@ -156,8 +156,7 @@ init flags settings =
       , powerSearchEnabled = settings.powerSearchEnabled
       , uiLang = settings.uiLang
       , uiLangModel =
-            List.map langItem UiLanguage.all
-                |> Comp.FixedDropdown.init
+            Comp.FixedDropdown.init UiLanguage.all
       , openTabs = Set.empty
       }
     , Api.getTags flags "" GetTagsResp
@@ -185,14 +184,6 @@ type Msg
     | ToggleSideMenuVisible
     | TogglePowerSearch
     | UiLangMsg (Comp.FixedDropdown.Msg UiLanguage)
-
-
-langItem : UiLanguage -> Comp.FixedDropdown.Item UiLanguage
-langItem lang =
-    { id = lang
-    , display = Messages.get lang |> .label
-    , icon = Just (Messages.get lang |> .flagIcon)
-    }
 
 
 
@@ -516,6 +507,13 @@ view2 flags settings model =
 
 settingFormTabs : Flags -> UiSettings -> Model -> List (Comp.Tabs.Tab Msg)
 settingFormTabs flags _ model =
+    let
+        langCfg =
+            { display = \lang -> Messages.get lang |> .label
+            , icon = \lang -> Just (Messages.get lang |> .flagIcon)
+            , style = DS.mainStyle
+            }
+    in
     [ { title = "General"
       , titleRight = []
       , info = Nothing
@@ -532,9 +530,10 @@ settingFormTabs flags _ model =
             , div [ class "mb-4" ]
                 [ label [ class S.inputLabel ] [ text "UI Language" ]
                 , Html.map UiLangMsg
-                    (Comp.FixedDropdown.viewStyled2 DS.mainStyle
+                    (Comp.FixedDropdown.viewStyled2
+                        langCfg
                         False
-                        (Just <| langItem model.uiLang)
+                        (Just model.uiLang)
                         model.uiLangModel
                     )
                 ]

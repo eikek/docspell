@@ -13,7 +13,6 @@ module Page.Home.Data exposing
     , itemNav
     , menuCollapsed
     , resultsBelowLimit
-    , searchTypeString
     , selectActive
     )
 
@@ -30,7 +29,6 @@ import Comp.ItemDetail.MultiEditMenu exposing (SaveNameState(..))
 import Comp.LinkTarget exposing (LinkTarget)
 import Comp.PowerSearchInput
 import Comp.SearchMenu
-import Comp.YesNoDimmer
 import Data.Flags exposing (Flags)
 import Data.ItemNav exposing (ItemNav)
 import Data.ItemQuery as Q
@@ -110,8 +108,7 @@ init flags viewMode =
     , moreInProgress = False
     , throttle = Throttle.create 1
     , searchTypeDropdown =
-        Comp.FixedDropdown.initMap searchTypeString
-            searchTypeOptions
+        Comp.FixedDropdown.init searchTypeOptions
     , searchTypeDropdownValue =
         if Comp.SearchMenu.isFulltextSearch searchMenuModel then
             ContentOnlySearch
@@ -224,16 +221,6 @@ type alias SearchParam =
     , offset : Int
     , scroll : Bool
     }
-
-
-searchTypeString : SearchType -> String
-searchTypeString st =
-    case st of
-        BasicSearch ->
-            "Names"
-
-        ContentOnlySearch ->
-            "Contents"
 
 
 itemNav : String -> Model -> ItemNav

@@ -13,6 +13,7 @@ import Comp.AddressForm
 import Comp.Basic as B
 import Comp.ContactField
 import Comp.FixedDropdown
+import Data.DropdownStyle as DS
 import Data.Flags exposing (Flags)
 import Data.OrgUse exposing (OrgUse)
 import Data.UiSettings exposing (UiSettings)
@@ -45,9 +46,7 @@ emptyModel =
     , shortName = Nothing
     , use = Data.OrgUse.Correspondent
     , useModel =
-        Comp.FixedDropdown.initMap
-            Data.OrgUse.label
-            Data.OrgUse.all
+        Comp.FixedDropdown.init Data.OrgUse.all
     }
 
 
@@ -147,14 +146,15 @@ update flags msg model =
 --- View2
 
 
-makeUseItem : Model -> Maybe (Comp.FixedDropdown.Item OrgUse)
-makeUseItem model =
-    Just <|
-        Comp.FixedDropdown.Item model.use (Data.OrgUse.label model.use) Nothing
-
-
 view2 : Bool -> UiSettings -> Model -> Html Msg
 view2 mobile settings model =
+    let
+        orgUseCfg =
+            { display = Data.OrgUse.label
+            , icon = \_ -> Nothing
+            , style = DS.mainStyle
+            }
+    in
     div [ class "flex flex-col" ]
         [ div
             [ class "mb-4" ]
@@ -203,7 +203,11 @@ view2 mobile settings model =
                 ]
                 [ text "Use" ]
             , Html.map UseDropdownMsg
-                (Comp.FixedDropdown.view2 (makeUseItem model) model.useModel)
+                (Comp.FixedDropdown.viewStyled2 orgUseCfg
+                    False
+                    (Just model.use)
+                    model.useModel
+                )
             , span [ class "opacity-50 text-sm" ]
                 [ case model.use of
                     Data.OrgUse.Correspondent ->

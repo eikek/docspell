@@ -11,6 +11,7 @@ module Comp.EquipmentForm exposing
 import Api.Model.Equipment exposing (Equipment)
 import Comp.Basic as B
 import Comp.FixedDropdown
+import Data.DropdownStyle as DS
 import Data.EquipmentUse exposing (EquipmentUse)
 import Data.Flags exposing (Flags)
 import Html exposing (..)
@@ -36,9 +37,7 @@ emptyModel =
     , notes = Nothing
     , use = Data.EquipmentUse.Concerning
     , useModel =
-        Comp.FixedDropdown.initMap
-            Data.EquipmentUse.label
-            Data.EquipmentUse.all
+        Comp.FixedDropdown.init Data.EquipmentUse.all
     }
 
 
@@ -102,6 +101,13 @@ update _ msg model =
 
 view2 : Model -> Html Msg
 view2 model =
+    let
+        equipUseCfg =
+            { display = Data.EquipmentUse.label
+            , icon = \_ -> Nothing
+            , style = DS.mainStyle
+            }
+    in
     div [ class "flex flex-col" ]
         [ div [ class "mb-4" ]
             [ label
@@ -132,7 +138,7 @@ view2 model =
                 ]
                 [ text "Use" ]
             , Html.map UseDropdownMsg
-                (Comp.FixedDropdown.view2 (makeUseItem model) model.useModel)
+                (Comp.FixedDropdown.viewStyled2 equipUseCfg False (Just model.use) model.useModel)
             , span [ class "opacity-50 text-sm" ]
                 [ case model.use of
                     Data.EquipmentUse.Concerning ->
@@ -156,9 +162,3 @@ view2 model =
                 ]
             ]
         ]
-
-
-makeUseItem : Model -> Maybe (Comp.FixedDropdown.Item EquipmentUse)
-makeUseItem model =
-    Just <|
-        Comp.FixedDropdown.Item model.use (Data.EquipmentUse.label model.use) Nothing

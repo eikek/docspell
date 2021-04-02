@@ -46,9 +46,7 @@ emptyModel =
     , notes = Nothing
     , use = Data.PersonUse.Both
     , useModel =
-        Comp.FixedDropdown.initMap
-            Data.PersonUse.label
-            Data.PersonUse.all
+        Comp.FixedDropdown.init Data.PersonUse.all
     , orgModel = Comp.Dropdown.makeSingle
     }
 
@@ -176,18 +174,19 @@ update flags msg model =
             )
 
 
-makeUseItem : Model -> Maybe (Comp.FixedDropdown.Item PersonUse)
-makeUseItem model =
-    Just <|
-        Comp.FixedDropdown.Item model.use (Data.PersonUse.label model.use) Nothing
-
-
 
 --- View2
 
 
 view2 : Bool -> UiSettings -> Model -> Html Msg
 view2 mobile settings model =
+    let
+        personUseCfg =
+            { display = Data.PersonUse.label
+            , icon = \_ -> Nothing
+            , style = DS.mainStyle
+            }
+    in
     div [ class "flex flex-col" ]
         [ div
             [ class "mb-4"
@@ -218,7 +217,7 @@ view2 mobile settings model =
                 ]
                 [ text "Use of this person" ]
             , Html.map UseDropdownMsg
-                (Comp.FixedDropdown.view2 (makeUseItem model) model.useModel)
+                (Comp.FixedDropdown.viewStyled2 personUseCfg False (Just model.use) model.useModel)
             , span [ class "opacity-50 text-sm" ]
                 [ case model.use of
                     Data.PersonUse.Concerning ->

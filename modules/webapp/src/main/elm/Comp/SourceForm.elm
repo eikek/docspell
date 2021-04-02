@@ -59,9 +59,7 @@ emptyModel =
     , abbrev = ""
     , description = Nothing
     , priorityModel =
-        Comp.FixedDropdown.initMap
-            Data.Priority.toName
-            Data.Priority.all
+        Comp.FixedDropdown.init Data.Priority.all
     , priority = Data.Priority.Low
     , enabled = False
     , folderModel = Comp.Dropdown.makeSingle
@@ -316,12 +314,6 @@ update flags msg model =
 view2 : Flags -> Texts -> UiSettings -> Model -> Html Msg
 view2 flags texts settings model =
     let
-        priorityItem =
-            Comp.FixedDropdown.Item
-                model.priority
-                (Data.Priority.toName model.priority)
-                Nothing
-
         folderCfg =
             { makeOption = mkFolderOption flags model.allFolders
             , placeholder = ""
@@ -340,6 +332,12 @@ view2 flags texts settings model =
                     }
             , placeholder = "Select…"
             , labelColor = \_ -> \_ -> ""
+            , style = DS.mainStyle
+            }
+
+        priorityCfg =
+            { display = Data.Priority.toName
+            , icon = \_ -> Nothing
             , style = DS.mainStyle
             }
     in
@@ -402,8 +400,10 @@ view2 flags texts settings model =
                 [ text texts.priority
                 ]
             , Html.map PrioDropdownMsg
-                (Comp.FixedDropdown.view2
-                    (Just priorityItem)
+                (Comp.FixedDropdown.viewStyled2
+                    priorityCfg
+                    False
+                    (Just model.priority)
                     model.priorityModel
                 )
             , div [ class "opacity-50 text-sm" ]

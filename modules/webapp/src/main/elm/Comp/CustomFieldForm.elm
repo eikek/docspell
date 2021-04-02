@@ -61,8 +61,7 @@ init field =
     , label = field.label
     , ftype = Data.CustomFieldType.fromString field.ftype
     , ftypeModel =
-        Comp.FixedDropdown.initMap Data.CustomFieldType.label
-            Data.CustomFieldType.all
+        Comp.FixedDropdown.init Data.CustomFieldType.all
     , loading = False
     , deleteDimmer = Comp.YesNoDimmer.emptyModel
     }
@@ -200,11 +199,14 @@ type alias ViewSettings =
 view2 : ViewSettings -> Model -> List (Html Msg)
 view2 viewSettings model =
     let
-        mkItem cft =
-            Comp.FixedDropdown.Item cft (Data.CustomFieldType.label cft) Nothing
-
         dimmerSettings =
             Comp.YesNoDimmer.defaultSettings2 "Really delete this custom field?"
+
+        ftypeCfg =
+            { display = Data.CustomFieldType.label
+            , icon = \_ -> Nothing
+            , style = DS.mainStyle
+            }
     in
     (if viewSettings.showControls then
         [ viewButtons2 model ]
@@ -279,9 +281,9 @@ view2 viewSettings model =
                         ]
                     , Html.map FTypeMsg
                         (Comp.FixedDropdown.viewStyled2
-                            DS.mainStyle
+                            ftypeCfg
                             (model.ftype == Nothing)
-                            (Maybe.map mkItem model.ftype)
+                            model.ftype
                             model.ftypeModel
                         )
                     , div [ class "opacity-75 text-sm" ]

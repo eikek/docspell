@@ -9,6 +9,7 @@ module Comp.ColorTagger exposing
 
 import Comp.FixedDropdown
 import Data.Color exposing (Color)
+import Data.DropdownStyle as DS
 import Dict exposing (Dict)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -37,7 +38,7 @@ type Msg
 
 init : List String -> List Color -> Model
 init leftSel colors =
-    { leftDropdown = Comp.FixedDropdown.initString leftSel
+    { leftDropdown = Comp.FixedDropdown.init leftSel
     , colors = colors
     , leftSelect = Nothing
     }
@@ -96,12 +97,21 @@ type alias ViewOpts =
 
 view2 : FormData -> ViewOpts -> Model -> Html Msg
 view2 data opts model =
+    let
+        colorLabelCfg =
+            { display = identity
+            , icon = \_ -> Nothing
+            , style = DS.mainStyle
+            }
+    in
     div [ class "flex flex-col" ]
         [ label [ class S.inputLabel ]
             [ text opts.label ]
         , Html.map LeftMsg
-            (Comp.FixedDropdown.view2
-                (Maybe.map (\s -> Comp.FixedDropdown.Item s s Nothing) model.leftSelect)
+            (Comp.FixedDropdown.viewStyled2
+                colorLabelCfg
+                False
+                model.leftSelect
                 model.leftDropdown
             )
         , div [ class "field" ]

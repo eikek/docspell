@@ -18,6 +18,7 @@ import Comp.Basic as B
 import Comp.FixedDropdown
 import Comp.MenuBar as MB
 import Comp.YesNoDimmer
+import Data.DropdownStyle as DS
 import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -65,8 +66,7 @@ init users folder =
     , members = folder.members
     , users = users
     , memberDropdown =
-        Comp.FixedDropdown.initMap .name
-            (makeOptions users folder)
+        Comp.FixedDropdown.init (makeOptions users folder)
     , selectedMember = Nothing
     , loading = False
     , deleteDimmer = Comp.YesNoDimmer.emptyModel
@@ -275,11 +275,6 @@ update flags msg model =
 --- View2
 
 
-makeItem : IdName -> Comp.FixedDropdown.Item IdName
-makeItem idn =
-    Comp.FixedDropdown.Item idn idn.name Nothing
-
-
 view2 : Flags -> Model -> Html Msg
 view2 flags model =
     let
@@ -369,6 +364,13 @@ view2 flags model =
 
 viewMembers2 : Model -> List (Html Msg)
 viewMembers2 model =
+    let
+        folderCfg =
+            { display = .name
+            , icon = \_ -> Nothing
+            , style = DS.mainStyle
+            }
+    in
     if model.folder.id == "" then
         []
 
@@ -383,8 +385,10 @@ viewMembers2 model =
             [ div [ class "flex flex-row space-x-2" ]
                 [ div [ class "flex-grow" ]
                     [ Html.map MemberDropdownMsg
-                        (Comp.FixedDropdown.view2
-                            (Maybe.map makeItem model.selectedMember)
+                        (Comp.FixedDropdown.viewStyled2
+                            folderCfg
+                            False
+                            model.selectedMember
                             model.memberDropdown
                         )
                     ]

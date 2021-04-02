@@ -11,6 +11,7 @@ import Api.Model.Contact exposing (Contact)
 import Comp.Basic as B
 import Comp.FixedDropdown
 import Data.ContactType exposing (ContactType)
+import Data.DropdownStyle as DS
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -30,7 +31,7 @@ emptyModel : Model
 emptyModel =
     { items = []
     , kind =
-        Comp.FixedDropdown.initMap Data.ContactType.toString Data.ContactType.all
+        Comp.FixedDropdown.init Data.ContactType.all
     , selectedKind = List.head Data.ContactType.all
     , value = ""
     }
@@ -39,14 +40,6 @@ emptyModel =
 getContacts : Model -> List Contact
 getContacts model =
     List.filter (\c -> c.value /= "") model.items
-
-
-makeDropdownItem : ContactType -> Comp.FixedDropdown.Item ContactType
-makeDropdownItem ct =
-    { id = ct
-    , display = Data.ContactType.toString ct
-    , icon = Nothing
-    }
 
 
 type Msg
@@ -124,6 +117,13 @@ update msg model =
 
 view2 : Bool -> UiSettings -> Model -> Html Msg
 view2 mobile _ model =
+    let
+        kindCfg =
+            { display = Data.ContactType.toString
+            , icon = \_ -> Nothing
+            , style = DS.mainStyle
+            }
+    in
     div [ class "flex flex-col" ]
         [ div
             [ class "flex flex-col space-y-2"
@@ -133,8 +133,10 @@ view2 mobile _ model =
                 [ classList [ ( "flex-none md:w-1/6", not mobile ) ]
                 ]
                 [ Html.map TypeMsg
-                    (Comp.FixedDropdown.view2
-                        (Maybe.map makeDropdownItem model.selectedKind)
+                    (Comp.FixedDropdown.viewStyled2
+                        kindCfg
+                        False
+                        model.selectedKind
                         model.kind
                     )
                 ]

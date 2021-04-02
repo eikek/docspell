@@ -5,6 +5,7 @@ import Comp.FixedDropdown
 import Comp.Progress
 import Data.DropdownStyle as DS
 import Data.Flags exposing (Flags)
+import Data.Language
 import Data.UiSettings exposing (UiSettings)
 import Dict
 import File exposing (File)
@@ -71,6 +72,13 @@ viewContent texts mid _ _ model =
 
 renderForm : Texts -> Model -> Html Msg
 renderForm texts model =
+    let
+        languageCfg =
+            { display = Data.Language.toName
+            , icon = \_ -> Nothing
+            , style = DS.mainStyleWith "w-40"
+            }
+    in
     div [ class "row" ]
         [ Html.form [ action "#" ]
             [ div [ class "flex flex-col mb-3" ]
@@ -128,9 +136,9 @@ renderForm texts model =
                     [ span [ class "mr-2" ] [ text (texts.language ++ ":") ]
                     , Html.map LanguageMsg
                         (Comp.FixedDropdown.viewStyled2
-                            (DS.mainStyleWith "w-40")
+                            languageCfg
                             False
-                            (Maybe.map mkLanguageItem model.language)
+                            model.language
                             model.languageModel
                         )
                     ]

@@ -166,7 +166,7 @@ initWith flags s =
         , fileFilter = s.fileFilter
         , subjectFilter = s.subjectFilter
         , languageModel =
-            Comp.FixedDropdown.init (List.map mkLanguageItem Data.Language.all)
+            Comp.FixedDropdown.init Data.Language.all
         , language = Maybe.andThen Data.Language.fromString s.language
         , postHandleAll = Maybe.withDefault False s.postHandleAll
         , summary = s.summary
@@ -213,7 +213,7 @@ init flags =
       , fileFilter = Nothing
       , subjectFilter = Nothing
       , languageModel =
-            Comp.FixedDropdown.init (List.map mkLanguageItem Data.Language.all)
+            Comp.FixedDropdown.init Data.Language.all
       , language = Nothing
       , postHandleAll = False
       , summary = Nothing
@@ -225,11 +225,6 @@ init flags =
         , Api.getTags flags "" GetTagResp
         ]
     )
-
-
-mkLanguageItem : Language -> Comp.FixedDropdown.Item Language
-mkLanguageItem lang =
-    Comp.FixedDropdown.Item lang (Data.Language.toName lang) Nothing
 
 
 
@@ -1057,6 +1052,12 @@ viewMetadata2 flags settings model =
             , labelColor = \_ -> \_ -> ""
             , style = DS.mainStyle
             }
+
+        languageCfg =
+            { display = Data.Language.toName
+            , icon = \_ -> Nothing
+            , style = DS.mainStyleWith "flex-grow mr-2"
+            }
     in
     [ div [ class "mb-4" ]
         [ label [ class S.inputLabel ]
@@ -1148,9 +1149,9 @@ disappear then.
         , div [ class "flex flex-row" ]
             [ Html.map LanguageMsg
                 (Comp.FixedDropdown.viewStyled2
-                    (DS.mainStyleWith "flex-grow mr-2")
+                    languageCfg
                     False
-                    (Maybe.map mkLanguageItem model.language)
+                    model.language
                     model.languageModel
                 )
             , a
