@@ -327,10 +327,10 @@ view2 flags texts settings model =
         languageCfg =
             { makeOption =
                 \a ->
-                    { text = Data.Language.toName a
+                    { text = texts.languageLabel a
                     , additional = ""
                     }
-            , placeholder = "Select…"
+            , placeholder = texts.selectPlaceholder
             , labelColor = \_ -> \_ -> ""
             , style = DS.mainStyle
             }

@@ -1,7 +1,9 @@
 module Messages.UploadPage exposing (..)
 
+import Data.Language exposing (Language)
 import Messages.Basics
 import Messages.DropzoneComp
+import Messages.LanguageData
 
 
 type alias Texts =
@@ -25,6 +27,7 @@ type alias Texts =
         , resetLine2 : String
         }
     , selectedFiles : String
+    , languageLabel : Language -> String
     }
 
 
@@ -54,6 +57,7 @@ gb =
         , resetLine2 = " to upload more files."
         }
     , selectedFiles = "Selected Files"
+    , languageLabel = Messages.LanguageData.gb
     }
 
 

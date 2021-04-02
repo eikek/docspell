@@ -1,6 +1,8 @@
 module Messages.SourceFormComp exposing (..)
 
+import Data.Language exposing (Language)
 import Messages.Basics
+import Messages.LanguageData
 
 
 type alias Texts =
@@ -20,6 +22,8 @@ type alias Texts =
     , fileFilterInfo : String
     , language : String
     , languageInfo : String
+    , languageLabel : Language -> String
+    , selectPlaceholder : String
     }
 
 
@@ -58,4 +62,6 @@ Specify a file glob to filter files when uploading archives
     , languageInfo =
         "Used for text extraction and analysis. The collective's "
             ++ "default language is used if not specified here."
+    , languageLabel = Messages.LanguageData.gb
+    , selectPlaceholder = "Select…"
     }

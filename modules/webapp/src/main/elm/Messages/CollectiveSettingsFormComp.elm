@@ -1,6 +1,8 @@
 module Messages.CollectiveSettingsFormComp exposing (..)
 
+import Data.Language exposing (Language)
 import Messages.ClassifierSettingsFormComp
+import Messages.LanguageData
 
 
 type alias Texts =
@@ -17,6 +19,7 @@ type alias Texts =
     , reindexAllDataHelp : String
     , autoTagging : String
     , startNow : String
+    , languageLabel : Language -> String
     }
 
 
@@ -39,4 +42,5 @@ gb =
             ++ "You must type OK before clicking the button to avoid accidental re-indexing."
     , autoTagging = "Auto-Tagging"
     , startNow = "Start now"
+    , languageLabel = Messages.LanguageData.gb
     }

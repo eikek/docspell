@@ -74,7 +74,7 @@ renderForm : Texts -> Model -> Html Msg
 renderForm texts model =
     let
         languageCfg =
-            { display = Data.Language.toName
+            { display = texts.languageLabel
             , icon = \_ -> Nothing
             , style = DS.mainStyleWith "w-40"
             }

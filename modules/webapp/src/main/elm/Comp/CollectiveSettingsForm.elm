@@ -200,7 +200,7 @@ view2 flags texts settings model =
         languageCfg =
             { makeOption =
                 \l ->
-                    { text = Data.Language.toName l
+                    { text = texts.languageLabel l
                     , additional = ""
                     }
             , placeholder = ""
