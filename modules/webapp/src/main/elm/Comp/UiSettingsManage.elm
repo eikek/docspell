@@ -14,6 +14,7 @@ import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
+import Messages.UiSettingsManageComp exposing (Texts)
 import Ports
 import Styles as S
 
@@ -125,15 +126,15 @@ isSuccess model =
     Maybe.map .success model.message == Just True
 
 
-view2 : Flags -> UiSettings -> String -> Model -> Html Msg
-view2 flags settings classes model =
+view2 : Texts -> Flags -> UiSettings -> String -> Model -> Html Msg
+view2 texts flags settings classes model =
     div [ class classes ]
         [ MB.view
             { start =
                 [ MB.PrimaryButton
                     { tagger = Submit
-                    , label = "Submit"
-                    , title = "Save settings"
+                    , label = texts.basics.submit
+                    , title = texts.saveSettings
                     , icon = Just "fa fa-save"
                     }
                 ]
@@ -153,6 +154,7 @@ view2 flags settings classes model =
             ]
         , Html.map UiSettingsFormMsg
             (Comp.UiSettingsForm.view2
+                texts.uiSettingsForm
                 flags
                 settings
                 model.formModel

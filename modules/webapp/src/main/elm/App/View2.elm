@@ -130,7 +130,7 @@ mainContent model =
                 viewManageData model
 
             UserSettingPage ->
-                viewUserSettings model
+                viewUserSettings texts model
 
             QueuePage ->
                 viewQueue texts model
@@ -440,12 +440,21 @@ viewManageData model =
     ]
 
 
-viewUserSettings : Model -> List (Html Msg)
-viewUserSettings model =
+viewUserSettings : Messages -> Model -> List (Html Msg)
+viewUserSettings texts model =
     [ Html.map UserSettingsMsg
-        (UserSettings.viewSidebar model.sidebarVisible model.flags model.uiSettings model.userSettingsModel)
+        (UserSettings.viewSidebar texts.userSettings
+            model.sidebarVisible
+            model.flags
+            model.uiSettings
+            model.userSettingsModel
+        )
     , Html.map UserSettingsMsg
-        (UserSettings.viewContent model.flags model.uiSettings model.userSettingsModel)
+        (UserSettings.viewContent texts.userSettings
+            model.flags
+            model.uiSettings
+            model.userSettingsModel
+        )
     ]
 
 

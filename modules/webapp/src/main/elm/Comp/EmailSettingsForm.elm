@@ -250,6 +250,7 @@ view2 settings model =
                 ]
             , Html.map PassMsg
                 (Comp.PasswordInput.view2
+                    { placeholder = "Password" }
                     model.password
                     False
                     model.passField

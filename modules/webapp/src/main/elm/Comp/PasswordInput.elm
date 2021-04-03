@@ -49,8 +49,13 @@ update msg model =
 --- View2
 
 
-view2 : Maybe String -> Bool -> Model -> Html Msg
-view2 pw isError model =
+type alias ViewSettings =
+    { placeholder : String
+    }
+
+
+view2 : ViewSettings -> Maybe String -> Bool -> Model -> Html Msg
+view2 cfg pw isError model =
     div [ class "relative" ]
         [ div [ class S.inputIcon ]
             [ i
@@ -81,7 +86,7 @@ view2 pw isError model =
 
                 else
                     ""
-            , placeholder "Password"
+            , placeholder cfg.placeholder
             ]
             []
         , a

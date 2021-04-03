@@ -11,12 +11,13 @@ import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
+import Messages.UserSettingsPage exposing (Texts)
 import Page.UserSettings.Data exposing (..)
 import Styles as S
 
 
-viewSidebar : Bool -> Flags -> UiSettings -> Model -> Html Msg
-viewSidebar visible _ _ model =
+viewSidebar : Texts -> Bool -> Flags -> UiSettings -> Model -> Html Msg
+viewSidebar texts visible _ _ model =
     div
         [ id "sidebar"
         , class S.sidebar
@@ -25,7 +26,7 @@ viewSidebar visible _ _ model =
         ]
         [ div [ class "" ]
             [ h1 [ class S.header1 ]
-                [ text "User Settings"
+                [ text texts.userSettings
                 ]
             ]
         , div [ class "flex flex-col my-2" ]
@@ -38,7 +39,7 @@ viewSidebar visible _ _ model =
                 [ i [ class "fa fa-cog" ] []
                 , span
                     [ class "ml-3" ]
-                    [ text "UI Settings" ]
+                    [ text texts.uiSettings ]
                 ]
             , a
                 [ href "#"
@@ -49,7 +50,7 @@ viewSidebar visible _ _ model =
                 [ i [ class "fa fa-bullhorn" ] []
                 , span
                     [ class "ml-3" ]
-                    [ text "Notifications" ]
+                    [ text texts.notifications ]
                 ]
             , a
                 [ href "#"
@@ -60,7 +61,7 @@ viewSidebar visible _ _ model =
                 [ i [ class "fa fa-envelope-open font-thin" ] []
                 , span
                     [ class "ml-3" ]
-                    [ text "Scan Mailbox" ]
+                    [ text texts.scanMailbox ]
                 ]
             , a
                 [ href "#"
@@ -71,7 +72,7 @@ viewSidebar visible _ _ model =
                 [ i [ class "fa fa-envelope" ] []
                 , span
                     [ class "ml-3" ]
-                    [ text "E-Mail Settings (SMTP)" ]
+                    [ text texts.emailSettingSmtp ]
                 ]
             , a
                 [ href "#"
@@ -82,7 +83,7 @@ viewSidebar visible _ _ model =
                 [ i [ class "fa fa-envelope" ] []
                 , span
                     [ class "ml-3" ]
-                    [ text "E-Mail Settings (IMAP)" ]
+                    [ text texts.emailSettingImap ]
                 ]
             , a
                 [ href "#"
@@ -93,21 +94,21 @@ viewSidebar visible _ _ model =
                 [ i [ class "fa fa-user-secret" ] []
                 , span
                     [ class "ml-3" ]
-                    [ text "Change Password" ]
+                    [ text texts.changePassword ]
                 ]
             ]
         ]
 
 
-viewContent : Flags -> UiSettings -> Model -> Html Msg
-viewContent flags settings model =
+viewContent : Texts -> Flags -> UiSettings -> Model -> Html Msg
+viewContent texts flags settings model =
     div
         [ id "content"
         , class S.content
         ]
         (case model.currentTab of
             Just ChangePassTab ->
-                viewChangePassword model
+                viewChangePassword texts model
 
             Just EmailSettingsTab ->
                 viewEmailSettings settings model
@@ -122,7 +123,7 @@ viewContent flags settings model =
                 viewScanMailboxManage flags settings model
 
             Just UiSettingsTab ->
-                viewUiSettings flags settings model
+                viewUiSettings texts flags settings model
 
             Nothing ->
                 []
@@ -142,38 +143,41 @@ menuEntryActive model tab =
         class ""
 
 
-viewChangePassword : Model -> List (Html Msg)
-viewChangePassword model =
+viewChangePassword : Texts -> Model -> List (Html Msg)
+viewChangePassword texts model =
     [ h2
         [ class S.header1
         , class "inline-flex items-center"
         ]
         [ i [ class "fa fa-user-secret" ] []
         , div [ class "ml-3" ]
-            [ text "Change Password"
+            [ text texts.changePassword
             ]
         ]
-    , Html.map ChangePassMsg (Comp.ChangePasswordForm.view2 model.changePassModel)
+    , Html.map ChangePassMsg
+        (Comp.ChangePasswordForm.view2 texts.changePasswordForm
+            model.changePassModel
+        )
     ]
 
 
-viewUiSettings : Flags -> UiSettings -> Model -> List (Html Msg)
-viewUiSettings flags settings model =
+viewUiSettings : Texts -> Flags -> UiSettings -> Model -> List (Html Msg)
+viewUiSettings texts flags settings model =
     [ h2
         [ class S.header1
         , class "inline-flex items-center"
         ]
         [ i [ class "fa fa-cog" ] []
         , span [ class "ml-3" ]
-            [ text "UI Settings"
+            [ text texts.uiSettings
             ]
         ]
     , p [ class "opacity-75 text-lg mb-4" ]
-        [ text "These settings only affect the web ui. They are stored in the browser, "
-        , text "so they are separated between browsers and devices."
+        [ text texts.uiSettingsInfo
         ]
     , Html.map UiSettingsMsg
         (Comp.UiSettingsManage.view2
+            texts.uiSettingsManage
             flags
             settings
             ""
