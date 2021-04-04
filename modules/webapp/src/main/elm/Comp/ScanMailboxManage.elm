@@ -18,6 +18,7 @@ import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Http
+import Messages.ScanMailboxManageComp exposing (Texts)
 import Styles as S
 import Util.Http
 
@@ -212,8 +213,8 @@ update flags msg model =
 --- View2
 
 
-view2 : Flags -> UiSettings -> Model -> Html Msg
-view2 flags settings model =
+view2 : Texts -> Flags -> UiSettings -> Model -> Html Msg
+view2 texts flags settings model =
     div [ class "flex flex-col" ]
         (div
             [ classList
@@ -228,34 +229,38 @@ view2 flags settings model =
             ]
             :: (case model.detailModel of
                     Just msett ->
-                        viewForm2 flags settings msett
+                        viewForm2 texts flags settings msett
 
                     Nothing ->
-                        viewList2 model
+                        viewList2 texts model
                )
         )
 
 
-viewForm2 : Flags -> UiSettings -> Comp.ScanMailboxForm.Model -> List (Html Msg)
-viewForm2 flags settings model =
+viewForm2 : Texts -> Flags -> UiSettings -> Comp.ScanMailboxForm.Model -> List (Html Msg)
+viewForm2 texts flags settings model =
     [ Html.map DetailMsg
-        (Comp.ScanMailboxForm.view2 flags "" settings model)
+        (Comp.ScanMailboxForm.view2 texts.form flags "" settings model)
     ]
 
 
-viewList2 : Model -> List (Html Msg)
-viewList2 model =
+viewList2 : Texts -> Model -> List (Html Msg)
+viewList2 texts model =
     [ MB.view
         { start =
             [ MB.PrimaryButton
                 { tagger = NewTask
-                , label = "New Task"
+                , label = texts.newTask
                 , icon = Just "fa fa-plus"
-                , title = "Create a new scan mailbox task"
+                , title = texts.createNewTask
                 }
             ]
         , end = []
         , rootClasses = "mb-4"
         }
-    , Html.map ListMsg (Comp.ScanMailboxList.view2 model.listModel model.items)
+    , Html.map ListMsg
+        (Comp.ScanMailboxList.view2 texts.table
+            model.listModel
+            model.items
+        )
     ]

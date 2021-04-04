@@ -22,7 +22,7 @@ import Comp.CustomFieldMultiInput
 import Comp.DatePicker
 import Comp.DetailEdit
 import Comp.Dropdown exposing (isDropdownChangeMsg)
-import Comp.ItemDetail.FieldTabState as FTabState
+import Comp.ItemDetail.FieldTabState as FTabState exposing (EditTab(..), tabName)
 import Comp.ItemDetail.FormChange exposing (FormChange(..))
 import Comp.Tabs as TB
 import Data.CustomFieldChange exposing (CustomFieldChange(..))
@@ -48,7 +48,6 @@ import Time
 import Util.Folder exposing (mkFolderOption)
 import Util.List
 import Util.Maybe
-import Util.Person
 import Util.Tag
 
 
@@ -560,14 +559,14 @@ update flags msg model =
             in
             UpdateResult model_ cmd_ Sub.none change
 
-        ToggleAkkordionTab title ->
+        ToggleAkkordionTab name ->
             let
                 tabs =
-                    if Set.member title model.openTabs then
-                        Set.remove title model.openTabs
+                    if Set.member name model.openTabs then
+                        Set.remove name model.openTabs
 
                     else
-                        Set.insert title model.openTabs
+                        Set.insert name model.openTabs
             in
             UpdateResult { model | openTabs = tabs } Cmd.none Sub.none NoFormChange
 
@@ -697,7 +696,8 @@ renderEditForm2 flags cfg settings model =
         [ TB.akkordion
             tabStyle
             (tabState settings model)
-            [ { title = "Confirm/Unconfirm item metadata"
+            [ { name = tabName TabConfirmUnconfirm
+              , title = "Confirm/Unconfirm item metadata"
               , titleRight = []
               , info = Nothing
               , body =
@@ -721,7 +721,8 @@ renderEditForm2 flags cfg settings model =
                         ]
                     ]
               }
-            , { title = "Tags"
+            , { name = tabName TabTags
+              , title = "Tags"
               , titleRight = []
               , info = Nothing
               , body =
@@ -748,7 +749,8 @@ renderEditForm2 flags cfg settings model =
                         ]
                     ]
               }
-            , { title = "Folder"
+            , { name = tabName TabFolder
+              , title = "Folder"
               , titleRight = []
               , info = Nothing
               , body =
@@ -767,7 +769,8 @@ item visible. This message will disappear then.
                         ]
                     ]
               }
-            , { title = "Custom Fields"
+            , { name = tabName TabCustomFields
+              , title = "Custom Fields"
               , titleRight = []
               , info = Nothing
               , body =
@@ -775,7 +778,8 @@ item visible. This message will disappear then.
                         (Comp.CustomFieldMultiInput.view2 dds customFieldSettings model.customFieldModel)
                     ]
               }
-            , { title = "Date"
+            , { name = tabName TabDate
+              , title = "Date"
               , titleRight = []
               , info = Nothing
               , body =
@@ -797,7 +801,8 @@ item visible. This message will disappear then.
                         ]
                     ]
               }
-            , { title = "Due Date"
+            , { name = tabName TabDueDate
+              , title = "Due Date"
               , titleRight = []
               , info = Nothing
               , body =
@@ -819,7 +824,8 @@ item visible. This message will disappear then.
                         ]
                     ]
               }
-            , { title = "Correspondent"
+            , { name = tabName TabCorrespondent
+              , title = "Correspondent"
               , titleRight = []
               , info = Nothing
               , body =
@@ -845,7 +851,8 @@ item visible. This message will disappear then.
                             ]
                     ]
               }
-            , { title = "Concerning"
+            , { name = tabName TabConcerning
+              , title = "Concerning"
               , titleRight = []
               , info = Nothing
               , body =
@@ -873,14 +880,16 @@ item visible. This message will disappear then.
                             ]
                     ]
               }
-            , { title = "Direction"
+            , { name = tabName TabDirection
+              , title = "Direction"
               , titleRight = []
               , info = Nothing
               , body =
                     [ Html.map DirDropdownMsg (Comp.Dropdown.view2 directionCfg settings model.directionModel)
                     ]
               }
-            , { title = "Name"
+            , { name = tabName TabName
+              , title = "Name"
               , titleRight = []
               , info = Nothing
               , body =

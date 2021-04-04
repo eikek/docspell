@@ -413,14 +413,14 @@ update sett msg model =
             , Just { sett | searchStatsVisible = flag }
             )
 
-        ToggleAkkordionTab title ->
+        ToggleAkkordionTab name ->
             let
                 tabs =
-                    if Set.member title model.openTabs then
-                        Set.remove title model.openTabs
+                    if Set.member name model.openTabs then
+                        Set.remove name model.openTabs
 
                     else
-                        Set.insert title model.openTabs
+                        Set.insert name model.openTabs
             in
             ( { model | openTabs = tabs }
             , Nothing
@@ -489,7 +489,7 @@ view2 texts flags settings model =
     div [ class "flex flex-col" ]
         [ Comp.Tabs.akkordion
             Comp.Tabs.defaultStyle
-            (\t -> ( state t, ToggleAkkordionTab t.title ))
+            (\t -> ( state t, ToggleAkkordionTab t.name ))
             (settingFormTabs texts flags settings model)
         ]
 
@@ -503,7 +503,8 @@ settingFormTabs texts flags _ model =
             , style = DS.mainStyle
             }
     in
-    [ { title = texts.general
+    [ { name = "general"
+      , title = texts.general
       , titleRight = []
       , info = Nothing
       , body =
@@ -528,7 +529,8 @@ settingFormTabs texts flags _ model =
                 ]
             ]
       }
-    , { title = texts.itemSearch
+    , { name = "item-search"
+      , title = texts.itemSearch
       , titleRight = []
       , info = Nothing
       , body =
@@ -559,7 +561,8 @@ settingFormTabs texts flags _ model =
                 ]
             ]
       }
-    , { title = texts.itemCards
+    , { name = "item-cards"
+      , title = texts.itemCards
       , titleRight = []
       , info = Nothing
       , body =
@@ -627,7 +630,8 @@ settingFormTabs texts flags _ model =
                 IT.helpMessage
             ]
       }
-    , { title = texts.searchMenu
+    , { name = "search-menu"
+      , title = texts.searchMenu
       , titleRight = []
       , info = Nothing
       , body =
@@ -654,7 +658,8 @@ settingFormTabs texts flags _ model =
                 )
             ]
       }
-    , { title = texts.itemDetail
+    , { name = "item-detail"
+      , title = texts.itemDetail
       , titleRight = []
       , info = Nothing
       , body =
@@ -678,7 +683,8 @@ settingFormTabs texts flags _ model =
                 ]
             ]
       }
-    , { title = texts.tagCategoryColors
+    , { name = "tag-category-colors"
+      , title = texts.tagCategoryColors
       , titleRight = []
       , info = Nothing
       , body =
@@ -690,7 +696,8 @@ settingFormTabs texts flags _ model =
                 )
             ]
       }
-    , { title = texts.fields
+    , { name = "fields"
+      , title = texts.fields
       , titleRight = []
       , info = Nothing
       , body =

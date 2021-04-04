@@ -3,7 +3,7 @@ module Comp.ItemDetail.EditForm exposing (formTabs, view2)
 import Comp.CustomFieldMultiInput
 import Comp.DatePicker
 import Comp.Dropdown
-import Comp.ItemDetail.FieldTabState as FTabState
+import Comp.ItemDetail.FieldTabState as FTabState exposing (EditTab(..))
 import Comp.ItemDetail.Model
     exposing
         ( Model
@@ -143,7 +143,8 @@ formTabs flags settings model =
             , style = dds
             }
     in
-    [ { title = "Name"
+    [ { name = FTabState.tabName TabName
+      , title = "Name"
       , titleRight = []
       , info = Nothing
       , body =
@@ -169,7 +170,8 @@ formTabs flags settings model =
                 ]
             ]
       }
-    , { title = "Date"
+    , { name = FTabState.tabName TabDate
+      , title = "Date"
       , titleRight = []
       , info = Nothing
       , body =
@@ -194,7 +196,8 @@ formTabs flags settings model =
                 ]
             ]
       }
-    , { title = "Tags"
+    , { name = FTabState.tabName TabTags
+      , title = "Tags"
       , titleRight = []
       , info = Nothing
       , body =
@@ -217,7 +220,8 @@ formTabs flags settings model =
                 ]
             ]
       }
-    , { title = "Folder"
+    , { name = FTabState.tabName TabFolder
+      , title = "Folder"
       , titleRight = []
       , info = Nothing
       , body =
@@ -243,7 +247,8 @@ item visible. This message will disappear then.
                 ]
             ]
       }
-    , { title = "Custom Fields"
+    , { name = FTabState.tabName TabCustomFields
+      , title = "Custom Fields"
       , titleRight = []
       , info = Nothing
       , body =
@@ -257,7 +262,8 @@ item visible. This message will disappear then.
                 ]
             ]
       }
-    , { title = "Due Date"
+    , { name = FTabState.tabName TabDueDate
+      , title = "Due Date"
       , titleRight = []
       , info = Nothing
       , body =
@@ -282,7 +288,8 @@ item visible. This message will disappear then.
                 ]
             ]
       }
-    , { title = "Correspondent"
+    , { name = FTabState.tabName TabCorrespondent
+      , title = "Correspondent"
       , titleRight = []
       , info = Nothing
       , body =
@@ -331,7 +338,8 @@ item visible. This message will disappear then.
                     ]
             ]
       }
-    , { title = "Concerning"
+    , { name = FTabState.tabName TabConcerning
+      , title = "Concerning"
       , titleRight = []
       , info = Nothing
       , body =
@@ -373,7 +381,8 @@ item visible. This message will disappear then.
                     ]
             ]
       }
-    , { title = "Direction"
+    , { name = FTabState.tabName TabDirection
+      , title = "Direction"
       , titleRight = []
       , info = Nothing
       , body =
@@ -494,4 +503,4 @@ tabState settings allNames model =
     FTabState.tabState settings
         openTabs
         Nothing
-        (.title >> ToggleAkkordionTab)
+        (.name >> ToggleAkkordionTab)

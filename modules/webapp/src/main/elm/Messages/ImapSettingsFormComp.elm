@@ -1,0 +1,41 @@
+module Messages.ImapSettingsFormComp exposing (..)
+
+import Data.SSLType exposing (SSLType)
+import Messages.SSLTypeData
+
+
+type alias Texts =
+    { sslTypeLabel : SSLType -> String
+    , name : String
+    , connectionNamePlaceholder : String
+    , connectionNameInfo : String
+    , imapHost : String
+    , imapHostPlaceholder : String
+    , imapUser : String
+    , imapUserPlaceholder : String
+    , imapPassword : String
+    , imapPasswordPlaceholder : String
+    , ssl : String
+    , ignoreCertCheck : String
+    , enableOAuth2 : String
+    , oauth2Info : String
+    }
+
+
+gb : Texts
+gb =
+    { sslTypeLabel = Messages.SSLTypeData.gb
+    , name = "Name"
+    , connectionNamePlaceholder = "Connection name, e.g. 'gmail.com'"
+    , connectionNameInfo = "The connection name must not contain whitespace or special characters."
+    , imapHost = "IMAP Host"
+    , imapHostPlaceholder = "IMAP host name, e.g. 'mail.gmail.com'"
+    , imapUser = "IMAP User"
+    , imapUserPlaceholder = "IMAP Username, e.g. 'your.name@gmail.com'"
+    , imapPassword = "IMAP Password"
+    , imapPasswordPlaceholder = "Password"
+    , ssl = "SSL"
+    , ignoreCertCheck = "Ignore certificate check"
+    , enableOAuth2 = "Enable OAuth2 authentication"
+    , oauth2Info = "Enabling this, allows to connect via XOAuth using the password as access token."
+    }

@@ -21,6 +21,7 @@ import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)
+import Messages.ImapSettingsFormComp exposing (Texts)
 import Styles as S
 import Util.Maybe
 
@@ -162,13 +163,13 @@ update msg model =
 --- View2
 
 
-view2 : UiSettings -> Model -> Html Msg
-view2 settings model =
+view2 : Texts -> UiSettings -> Model -> Html Msg
+view2 texts settings model =
     let
         sslCfg =
             { makeOption =
                 \s ->
-                    { text = Data.SSLType.label s
+                    { text = texts.sslTypeLabel s
                     , additional = ""
                     }
             , placeholder = ""
@@ -180,14 +181,14 @@ view2 settings model =
         [ class "grid grid-cols-4 gap-y-4 gap-x-2" ]
         [ div [ class "col-span-4" ]
             [ label [ class S.inputLabel ]
-                [ text "Name"
+                [ text texts.name
                 , B.inputRequired
                 ]
             , input
                 [ type_ "text"
                 , value model.name
                 , onInput SetName
-                , placeholder "Connection name, e.g. 'gmail.com'"
+                , placeholder texts.connectionNamePlaceholder
                 , class S.textInput
                 , classList [ ( S.inputErrorBorder, model.name == "" ) ]
                 ]
@@ -196,17 +197,17 @@ view2 settings model =
                 [ class S.message
                 , class "mt-2"
                 ]
-                [ text "The connection name must not contain whitespace or special characters."
+                [ text texts.connectionNameInfo
                 ]
             ]
         , div [ class "col-span-3" ]
             [ label [ class S.inputLabel ]
-                [ text "IMAP Host"
+                [ text texts.imapHost
                 , B.inputRequired
                 ]
             , input
                 [ type_ "text"
-                , placeholder "IMAP host name, e.g. 'mail.gmail.com'"
+                , placeholder texts.imapHostPlaceholder
                 , value model.host
                 , onInput SetHost
                 , class S.textInput
@@ -222,11 +223,11 @@ view2 settings model =
             )
         , div [ class "col-span-4 sm:col-span-2" ]
             [ label [ class S.inputLabel ]
-                [ text "IMAP User"
+                [ text texts.imapUser
                 ]
             , input
                 [ type_ "text"
-                , placeholder "IMAP Username, e.g. 'your.name@gmail.com'"
+                , placeholder texts.imapUserPlaceholder
                 , Maybe.withDefault "" model.user |> value
                 , onInput SetUser
                 , class S.textInput
@@ -235,10 +236,10 @@ view2 settings model =
             ]
         , div [ class "col-span-4 sm:col-span-2" ]
             [ label [ class S.inputLabel ]
-                [ text "IMAP Password" ]
+                [ text texts.imapPassword ]
             , Html.map PassMsg
                 (Comp.PasswordInput.view2
-                    { placeholder = "Password" }
+                    { placeholder = texts.imapPasswordPlaceholder }
                     model.password
                     False
                     model.passField
@@ -246,7 +247,7 @@ view2 settings model =
             ]
         , div [ class "col-span-4 sm:col-span-2" ]
             [ label [ class S.inputLabel ]
-                [ text "SSL"
+                [ text texts.ssl
                 ]
             , Html.map SSLTypeMsg
                 (Comp.Dropdown.view2
@@ -259,7 +260,7 @@ view2 settings model =
             [ MB.viewItem <|
                 MB.Checkbox
                     { tagger = \_ -> ToggleCheckCert
-                    , label = "Ignore certificate check"
+                    , label = texts.ignoreCertCheck
                     , value = model.ignoreCertificates
                     , id = "imap-no-cert-check"
                     }
@@ -268,12 +269,12 @@ view2 settings model =
             [ MB.viewItem <|
                 MB.Checkbox
                     { tagger = \_ -> ToggleUseOAuth
-                    , label = "Enable OAuth2 authentication"
+                    , label = texts.enableOAuth2
                     , value = model.useOAuthToken
                     , id = "imap-use-oauth"
                     }
             , div [ class "opacity-50 text-sm" ]
-                [ text "Enabling this, allows to connect via XOAuth using the password as access token."
+                [ text texts.oauth2Info
                 ]
             ]
         ]

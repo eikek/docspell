@@ -21,6 +21,7 @@ import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)
+import Messages.EmailSettingsFormComp exposing (Texts)
 import Styles as S
 import Util.Maybe
 
@@ -170,13 +171,13 @@ update msg model =
 --- View2
 
 
-view2 : UiSettings -> Model -> Html Msg
-view2 settings model =
+view2 : Texts -> UiSettings -> Model -> Html Msg
+view2 texts settings model =
     let
         sslCfg =
             { makeOption =
                 \s ->
-                    { text = Data.SSLType.label s
+                    { text = texts.sslTypeLabel s
                     , additional = ""
                     }
             , placeholder = ""
@@ -189,14 +190,14 @@ view2 settings model =
             [ label
                 [ class S.inputLabel
                 ]
-                [ text "Name"
+                [ text texts.name
                 , B.inputRequired
                 ]
             , input
                 [ type_ "text"
                 , value model.name
                 , onInput SetName
-                , placeholder "Connection name, e.g. 'gmail.com'"
+                , placeholder texts.connectionPlaceholder
                 , class S.textInput
                 , classList [ ( S.inputErrorBorder, model.name == "" ) ]
                 ]
@@ -205,17 +206,17 @@ view2 settings model =
                 [ class S.message
                 , class "mt-2"
                 ]
-                [ text "The connection name must not contain whitespace or special characters."
+                [ text texts.connectionNameInfo
                 ]
             ]
         , div [ class "col-span-3" ]
             [ label [ class S.inputLabel ]
-                [ text "SMTP Host"
+                [ text texts.smtpHost
                 , B.inputRequired
                 ]
             , input
                 [ type_ "text"
-                , placeholder "SMTP host name, e.g. 'mail.gmail.com'"
+                , placeholder texts.smtpHostPlaceholder
                 , value model.host
                 , onInput SetHost
                 , class S.textInput
@@ -233,11 +234,11 @@ view2 settings model =
             [ label
                 [ class S.inputLabel
                 ]
-                [ text "SMTP User"
+                [ text texts.smtpUser
                 ]
             , input
                 [ type_ "text"
-                , placeholder "SMTP Username, e.g. 'your.name@gmail.com'"
+                , placeholder texts.smtpUserPlaceholder
                 , Maybe.withDefault "" model.user |> value
                 , onInput SetUser
                 , class S.textInput
@@ -246,11 +247,11 @@ view2 settings model =
             ]
         , div [ class "col-span-4 sm:col-span-2" ]
             [ label [ class S.inputLabel ]
-                [ text "SMTP Password"
+                [ text texts.smtpPassword
                 ]
             , Html.map PassMsg
                 (Comp.PasswordInput.view2
-                    { placeholder = "Password" }
+                    { placeholder = texts.smtpPasswordPlaceholder }
                     model.password
                     False
                     model.passField
@@ -258,12 +259,12 @@ view2 settings model =
             ]
         , div [ class "col-span-4 sm:col-span-2" ]
             [ label [ class S.inputLabel ]
-                [ text "From Address"
+                [ text texts.fromAddress
                 , B.inputRequired
                 ]
             , input
                 [ type_ "text"
-                , placeholder "Sender E-Mail address"
+                , placeholder texts.fromAddressPlaceholder
                 , value model.from
                 , onInput SetFrom
                 , class S.textInput
@@ -273,11 +274,11 @@ view2 settings model =
             ]
         , div [ class "col-span-4 sm:col-span-2" ]
             [ label [ class S.inputLabel ]
-                [ text "Reply-To"
+                [ text texts.replyTo
                 ]
             , input
                 [ type_ "text"
-                , placeholder "Optional reply-to E-Mail address"
+                , placeholder texts.replyToPlaceholder
                 , Maybe.withDefault "" model.replyTo |> value
                 , onInput SetReplyTo
                 , class S.textInput
@@ -286,7 +287,7 @@ view2 settings model =
             ]
         , div [ class "col-span-4 sm:col-span-2" ]
             [ label [ class S.inputLabel ]
-                [ text "SSL"
+                [ text texts.ssl
                 ]
             , Html.map SSLTypeMsg
                 (Comp.Dropdown.view2
@@ -299,7 +300,7 @@ view2 settings model =
             [ MB.viewItem <|
                 MB.Checkbox
                     { tagger = \_ -> ToggleCheckCert
-                    , label = "Ignore certificate check"
+                    , label = texts.ignoreCertCheck
                     , value = model.ignoreCertificates
                     , id = "smpt-no-cert-check"
                     }

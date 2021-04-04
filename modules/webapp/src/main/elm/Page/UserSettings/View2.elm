@@ -11,6 +11,7 @@ import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
+import Markdown
 import Messages.UserSettingsPage exposing (Texts)
 import Page.UserSettings.Data exposing (..)
 import Styles as S
@@ -111,16 +112,16 @@ viewContent texts flags settings model =
                 viewChangePassword texts model
 
             Just EmailSettingsTab ->
-                viewEmailSettings settings model
+                viewEmailSettings texts settings model
 
             Just NotificationTab ->
-                viewNotificationManage settings model
+                viewNotificationManage texts settings model
 
             Just ImapSettingsTab ->
-                viewImapSettings settings model
+                viewImapSettings texts settings model
 
             Just ScanMailboxTab ->
-                viewScanMailboxManage flags settings model
+                viewScanMailboxManage texts flags settings model
 
             Just UiSettingsTab ->
                 viewUiSettings texts flags settings model
@@ -186,100 +187,91 @@ viewUiSettings texts flags settings model =
     ]
 
 
-viewEmailSettings : UiSettings -> Model -> List (Html Msg)
-viewEmailSettings settings model =
+viewEmailSettings : Texts -> UiSettings -> Model -> List (Html Msg)
+viewEmailSettings texts settings model =
     [ h2
         [ class S.header1
         , class "inline-flex items-center"
         ]
         [ i [ class "fa fa-envelope" ] []
         , div [ class "ml-3" ]
-            [ text "E-Mail Settings (Smtp)"
+            [ text texts.emailSettingSmtp
             ]
         ]
     , Html.map EmailSettingsMsg
         (Comp.EmailSettingsManage.view2
+            texts.emailSettingsManage
             settings
             model.emailSettingsModel
         )
     ]
 
 
-viewImapSettings : UiSettings -> Model -> List (Html Msg)
-viewImapSettings settings model =
+viewImapSettings : Texts -> UiSettings -> Model -> List (Html Msg)
+viewImapSettings texts settings model =
     [ h2
         [ class S.header1
         , class "inline-flex items-center"
         ]
         [ i [ class "fa fa-envelope" ] []
         , div [ class "ml-3" ]
-            [ text "E-Mail Settings (Imap)"
+            [ text texts.emailSettingImap
             ]
         ]
     , Html.map ImapSettingsMsg
         (Comp.ImapSettingsManage.view2
+            texts.imapSettingsManage
             settings
             model.imapSettingsModel
         )
     ]
 
 
-viewNotificationManage : UiSettings -> Model -> List (Html Msg)
-viewNotificationManage settings model =
+viewNotificationManage : Texts -> UiSettings -> Model -> List (Html Msg)
+viewNotificationManage texts settings model =
     [ h2
         [ class S.header1
         , class "inline-flex items-center"
         ]
         [ i [ class "fa fa-bullhorn" ] []
         , div [ class "ml-3" ]
-            [ text "Notification"
+            [ text texts.notifications
             ]
         ]
     , p [ class "opacity-80 text-lg mb-3" ]
-        [ text """
-            Docspell can notify you once the due dates of your items
-            come closer. Notification is done via e-mail. You need to
-            provide a connection in your e-mail settings."""
+        [ text texts.notificationInfoText
         ]
     , p [ class "opacity-80 text-lg mb-3" ]
-        [ text "Docspell finds all items that are due in "
-        , em [ class "font-italic" ] [ text "Remind Days" ]
-        , text " days and sends this list via e-mail."
+        [ Markdown.toHtml [] texts.notificationRemindDaysInfo
         ]
     , Html.map NotificationMsg
-        (Comp.NotificationManage.view2 settings model.notificationModel)
+        (Comp.NotificationManage.view2 texts.notificationManage
+            settings
+            model.notificationModel
+        )
     ]
 
 
-viewScanMailboxManage : Flags -> UiSettings -> Model -> List (Html Msg)
-viewScanMailboxManage flags settings model =
+viewScanMailboxManage : Texts -> Flags -> UiSettings -> Model -> List (Html Msg)
+viewScanMailboxManage texts flags settings model =
     [ h2
         [ class S.header1
         , class "inline-flex items-center"
         ]
         [ i [ class "fa fa-envelope-open font-thin" ] []
         , div [ class "ml-3" ]
-            [ text "Scan Mailbox"
+            [ text texts.scanMailbox
             ]
         ]
     , p [ class "opacity-80 text-lg mb-3" ]
-        [ text "Docspell can scan folders of your mailbox to import your mails. "
-        , text "You need to provide a connection in "
-        , text "your e-mail (imap) settings."
+        [ text texts.scanMailboxInfo1
         ]
     , p [ class "opacity-80 text-lg mb-3 hidden" ]
-        [ text """
-            Docspell goes through all configured folders and imports
-            mails matching the search criteria. Mails are skipped if
-            they were imported in a previous run and the corresponding
-            items still exist. After submitting a mail into docspell,
-            you can choose to move it to another folder, to delete it
-            or to just leave it there. In the latter case you should
-            adjust the schedule to avoid reading over the same mails
-            again."""
+        [ text texts.scanMailboxInfo2
         ]
     , Html.map ScanMailboxMsg
         (Comp.ScanMailboxManage.view2
+            texts.scanMailboxManage
             flags
             settings
             model.scanMailboxModel

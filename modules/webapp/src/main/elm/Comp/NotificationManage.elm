@@ -18,6 +18,7 @@ import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Http
+import Messages.NotificationManageComp exposing (Texts)
 import Styles as S
 import Util.Http
 
@@ -212,8 +213,8 @@ update flags msg model =
 --- View2
 
 
-view2 : UiSettings -> Model -> Html Msg
-view2 settings model =
+view2 : Texts -> UiSettings -> Model -> Html Msg
+view2 texts settings model =
     div [ class "flex flex-col" ]
         (div
             [ classList
@@ -229,34 +230,38 @@ view2 settings model =
             ]
             :: (case model.detailModel of
                     Just msett ->
-                        viewForm2 settings msett
+                        viewForm2 texts settings msett
 
                     Nothing ->
-                        viewList2 model
+                        viewList2 texts model
                )
         )
 
 
-viewForm2 : UiSettings -> Comp.NotificationForm.Model -> List (Html Msg)
-viewForm2 settings model =
+viewForm2 : Texts -> UiSettings -> Comp.NotificationForm.Model -> List (Html Msg)
+viewForm2 texts settings model =
     [ Html.map DetailMsg
-        (Comp.NotificationForm.view2 "flex flex-col" settings model)
+        (Comp.NotificationForm.view2 texts.notificationForm "flex flex-col" settings model)
     ]
 
 
-viewList2 : Model -> List (Html Msg)
-viewList2 model =
+viewList2 : Texts -> Model -> List (Html Msg)
+viewList2 texts model =
     [ MB.view
         { start =
             [ MB.PrimaryButton
                 { tagger = NewTask
-                , label = "New Task"
+                , label = texts.newTask
                 , icon = Just "fa fa-plus"
-                , title = "Create a new notification task"
+                , title = texts.createNewTask
                 }
             ]
         , end = []
         , rootClasses = "mb-4"
         }
-    , Html.map ListMsg (Comp.NotificationList.view2 model.listModel model.items)
+    , Html.map ListMsg
+        (Comp.NotificationList.view2 texts.notificationTable
+            model.listModel
+            model.items
+        )
     ]

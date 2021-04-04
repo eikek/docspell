@@ -255,21 +255,30 @@ view2 settings model =
                 , B.inputRequired
                 ]
             , Html.map RecipientMsg
-                (Comp.EmailInput.view2 dds model.recipients model.recipientsModel)
+                (Comp.EmailInput.view2 { style = dds, placeholder = "Recipient(s)..." }
+                    model.recipients
+                    model.recipientsModel
+                )
             ]
         , div [ class "mb-4" ]
             [ label [ class S.inputLabel ]
                 [ text "CC(s)"
                 ]
             , Html.map CCRecipientMsg
-                (Comp.EmailInput.view2 dds model.ccRecipients model.ccRecipientsModel)
+                (Comp.EmailInput.view2 { style = dds, placeholder = "CC recipient(s)..." }
+                    model.ccRecipients
+                    model.ccRecipientsModel
+                )
             ]
         , div [ class "mb-4" ]
             [ label [ class S.inputLabel ]
                 [ text "BCC(s)"
                 ]
             , Html.map BCCRecipientMsg
-                (Comp.EmailInput.view2 dds model.bccRecipients model.bccRecipientsModel)
+                (Comp.EmailInput.view2 { style = dds, placeholder = "BCC recipient(s)..." }
+                    model.bccRecipients
+                    model.bccRecipientsModel
+                )
             ]
         , div [ class "mb-4" ]
             [ label [ class S.inputLabel ]

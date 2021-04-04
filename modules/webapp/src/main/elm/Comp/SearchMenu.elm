@@ -936,6 +936,97 @@ viewDrop2 ddd flags settings model =
         (searchTabs ddd flags settings model)
 
 
+type SearchTab
+    = TabInbox
+    | TabTags
+    | TabTagCategories
+    | TabFolder
+    | TabCorrespondent
+    | TabConcerning
+    | TabCustomFields
+    | TabDate
+    | TabDueDate
+    | TabSource
+    | TabDirection
+
+
+tabName : SearchTab -> String
+tabName tab =
+    case tab of
+        TabInbox ->
+            "inbox"
+
+        TabTags ->
+            "tags"
+
+        TabTagCategories ->
+            "categories"
+
+        TabFolder ->
+            "folder"
+
+        TabCorrespondent ->
+            "correspondent"
+
+        TabConcerning ->
+            "concerning"
+
+        TabCustomFields ->
+            "custom-fields"
+
+        TabDate ->
+            "date"
+
+        TabDueDate ->
+            "due-date"
+
+        TabSource ->
+            "source"
+
+        TabDirection ->
+            "direction"
+
+
+findTab : Comp.Tabs.Tab msg -> Maybe SearchTab
+findTab tab =
+    case tab.name of
+        "inbox" ->
+            Just TabInbox
+
+        "tags" ->
+            Just TabTags
+
+        "categories" ->
+            Just TabTagCategories
+
+        "folder" ->
+            Just TabFolder
+
+        "correspondent" ->
+            Just TabCorrespondent
+
+        "concerning" ->
+            Just TabConcerning
+
+        "custom-fields" ->
+            Just TabCustomFields
+
+        "date" ->
+            Just TabDate
+
+        "due-date" ->
+            Just TabDueDate
+
+        "source" ->
+            Just TabSource
+
+        "direction" ->
+            Just TabDirection
+
+        _ ->
+            Nothing
+
+
 searchTabState : UiSettings -> Model -> Comp.Tabs.Tab Msg -> ( Comp.Tabs.State, Msg )
 searchTabState settings model tab =
     let
@@ -943,52 +1034,55 @@ searchTabState settings model tab =
             Data.UiSettings.fieldHidden settings f
 
         hidden =
-            case tab.title of
-                "Tags" ->
+            case findTab tab of
+                Just TabTags ->
                     isHidden Data.Fields.Tag
 
-                "Tag Categories" ->
+                Just TabTagCategories ->
                     isHidden Data.Fields.Tag
 
-                "Folder" ->
+                Just TabFolder ->
                     isHidden Data.Fields.Folder
 
-                "Correspondent" ->
+                Just TabCorrespondent ->
                     isHidden Data.Fields.CorrOrg && isHidden Data.Fields.CorrPerson
 
-                "Concerning" ->
+                Just TabConcerning ->
                     isHidden Data.Fields.ConcEquip && isHidden Data.Fields.ConcPerson
 
-                "Custom Fields" ->
+                Just TabCustomFields ->
                     isHidden Data.Fields.CustomFields
                         || Comp.CustomFieldMultiInput.isEmpty model.customFieldModel
 
-                "Date" ->
+                Just TabDate ->
                     isHidden Data.Fields.Date
 
-                "Due Date" ->
+                Just TabDueDate ->
                     isHidden Data.Fields.DueDate
 
-                "Source" ->
+                Just TabSource ->
                     isHidden Data.Fields.SourceName
 
-                "Direction" ->
+                Just TabDirection ->
                     isHidden Data.Fields.Direction
 
-                _ ->
+                Just TabInbox ->
+                    False
+
+                Nothing ->
                     False
 
         state =
             if hidden then
                 Comp.Tabs.Hidden
 
-            else if Set.member tab.title model.openTabs then
+            else if Set.member tab.name model.openTabs then
                 Comp.Tabs.Open
 
             else
                 Comp.Tabs.Closed
     in
-    ( state, ToggleAkkordionTab tab.title )
+    ( state, ToggleAkkordionTab tab.name )
 
 
 searchTabs : DD.DragDropData -> Flags -> UiSettings -> Model -> List (Comp.Tabs.Tab Msg)
@@ -1032,7 +1126,8 @@ searchTabs ddd flags settings model =
             , style = DS.sidebarStyle
             }
     in
-    [ { title = "Inbox"
+    [ { name = tabName TabInbox
+      , title = "Inbox"
       , info = Nothing
       , titleRight = []
       , body =
@@ -1091,7 +1186,8 @@ searchTabs ddd flags settings model =
                 ]
             ]
       }
-    , { title = "Tags"
+    , { name = tabName TabTags
+      , title = "Tags"
       , titleRight = []
       , info = Nothing
       , body =
@@ -1103,7 +1199,8 @@ searchTabs ddd flags settings model =
                     model.tagSelectModel
                 )
       }
-    , { title = "Tag Categories"
+    , { name = tabName TabTagCategories
+      , title = "Tag Categories"
       , titleRight = []
       , info = Nothing
       , body =
@@ -1115,7 +1212,8 @@ searchTabs ddd flags settings model =
                 )
             ]
       }
-    , { title = "Folder"
+    , { name = tabName TabFolder
+      , title = "Folder"
       , titleRight = []
       , info = Nothing
       , body =
@@ -1126,7 +1224,8 @@ searchTabs ddd flags settings model =
                 )
             ]
       }
-    , { title = "Correspondent"
+    , { name = tabName TabCorrespondent
+      , title = "Correspondent"
       , titleRight = []
       , info = Nothing
       , body =
@@ -1157,7 +1256,8 @@ searchTabs ddd flags settings model =
                 ]
             ]
       }
-    , { title = "Concerning"
+    , { name = tabName TabConcerning
+      , title = "Concerning"
       , titleRight = []
       , info = Nothing
       , body =
@@ -1187,7 +1287,8 @@ searchTabs ddd flags settings model =
                 ]
             ]
       }
-    , { title = "Custom Fields"
+    , { name = tabName TabCustomFields
+      , title = "Custom Fields"
       , titleRight = []
       , info = Nothing
       , body =
@@ -1199,7 +1300,8 @@ searchTabs ddd flags settings model =
                 )
             ]
       }
-    , { title = "Date"
+    , { name = tabName TabDate
+      , title = "Date"
       , titleRight = []
       , info = Nothing
       , body =
@@ -1238,7 +1340,8 @@ searchTabs ddd flags settings model =
                 ]
             ]
       }
-    , { title = "Due Date"
+    , { name = tabName TabDueDate
+      , title = "Due Date"
       , titleRight = []
       , info = Nothing
       , body =
@@ -1281,7 +1384,8 @@ searchTabs ddd flags settings model =
                 ]
             ]
       }
-    , { title = "Source"
+    , { name = tabName TabSource
+      , title = "Source"
       , titleRight = []
       , info = Nothing
       , body =
@@ -1298,7 +1402,8 @@ searchTabs ddd flags settings model =
                 ]
             ]
       }
-    , { title = "Direction"
+    , { name = tabName TabDirection
+      , title = "Direction"
       , titleRight = []
       , info = Nothing
       , body =

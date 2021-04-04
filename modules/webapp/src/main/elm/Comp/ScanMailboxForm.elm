@@ -40,6 +40,7 @@ import Html.Events exposing (onCheck, onClick, onInput)
 import Http
 import Markdown
 import Messages.LanguageData
+import Messages.ScanMailboxFormComp exposing (Texts)
 import Set exposing (Set)
 import Styles as S
 import Util.Folder exposing (mkFolderOption)
@@ -96,6 +97,30 @@ type MenuTab
     | TabPostProcessing
     | TabMetadata
     | TabSchedule
+
+
+{-| Only exits to be able to put tabs in a Set.
+-}
+tabName : MenuTab -> String
+tabName tab =
+    case tab of
+        TabGeneral ->
+            "general"
+
+        TabProcessing ->
+            "processing"
+
+        TabAdditionalFilter ->
+            "additional-filter"
+
+        TabPostProcessing ->
+            "post-processing"
+
+        TabMetadata ->
+            "metadata"
+
+        TabSchedule ->
+            "schedule"
 
 
 type Msg
@@ -218,7 +243,7 @@ init flags =
       , language = Nothing
       , postHandleAll = False
       , summary = Nothing
-      , openTabs = Set.insert (tabTitle TabGeneral) Set.empty
+      , openTabs = Set.singleton (tabName TabGeneral)
       }
     , Cmd.batch
         [ Api.getImapSettings flags "" ConnResp
@@ -662,14 +687,14 @@ update flags msg model =
             , Cmd.none
             )
 
-        ToggleAkkordionTab title ->
+        ToggleAkkordionTab name ->
             let
                 tabs =
-                    if Set.member title model.openTabs then
-                        Set.remove title model.openTabs
+                    if Set.member name model.openTabs then
+                        Set.remove name model.openTabs
 
                     else
-                        Set.insert title model.openTabs
+                        Set.insert name model.openTabs
             in
             ( { model | openTabs = tabs }
             , NoAction
@@ -711,26 +736,26 @@ isFolderMember model =
     Util.Folder.isFolderMember model.allFolders selected
 
 
-view2 : Flags -> String -> UiSettings -> Model -> Html Msg
-view2 flags extraClasses settings model =
+view2 : Texts -> Flags -> String -> UiSettings -> Model -> Html Msg
+view2 texts flags extraClasses settings model =
     let
         dimmerSettings =
-            Comp.YesNoDimmer.defaultSettings2 "Really delete this scan mailbox task?"
+            Comp.YesNoDimmer.defaultSettings2 texts.reallyDeleteTask
 
         startOnceBtn =
             MB.SecondaryButton
                 { tagger = StartOnce
-                , label = "Start Once"
-                , title = "Start this task now"
+                , label = texts.startOnce
+                , title = texts.startNow
                 , icon = Just "fa fa-play"
                 }
 
         tabActive t =
-            if Set.member t.title model.openTabs then
-                ( Comp.Tabs.Open, ToggleAkkordionTab t.title )
+            if Set.member t.name model.openTabs then
+                ( Comp.Tabs.Open, ToggleAkkordionTab t.name )
 
             else
-                ( Comp.Tabs.Closed, ToggleAkkordionTab t.title )
+                ( Comp.Tabs.Closed, ToggleAkkordionTab t.name )
     in
     div
         [ class extraClasses
@@ -740,14 +765,14 @@ view2 flags extraClasses settings model =
             { start =
                 [ MB.PrimaryButton
                     { tagger = Submit
-                    , label = "Submit"
-                    , title = "Save"
+                    , label = texts.basics.submit
+                    , title = texts.basics.submitThisForm
                     , icon = Just "fa fa-save"
                     }
                 , MB.SecondaryButton
                     { tagger = Cancel
-                    , label = "Cancel"
-                    , title = "Back to list"
+                    , label = texts.basics.cancel
+                    , title = texts.basics.backToList
                     , icon = Just "fa fa-arrow-left"
                     }
                 ]
@@ -756,8 +781,8 @@ view2 flags extraClasses settings model =
                     [ startOnceBtn
                     , MB.DeleteButton
                         { tagger = RequestDelete
-                        , label = "Delete"
-                        , title = "Delete this task"
+                        , label = texts.basics.delete
+                        , title = texts.deleteThisTask
                         , icon = Just "fa fa-trash"
                         }
                     ]
@@ -781,7 +806,7 @@ view2 flags extraClasses settings model =
         , Comp.Tabs.akkordion
             Comp.Tabs.defaultStyle
             tabActive
-            (formTabs flags settings model)
+            (formTabs texts flags settings model)
         , Html.map YesNoDeleteMsg
             (Comp.YesNoDimmer.viewN
                 True
@@ -792,69 +817,53 @@ view2 flags extraClasses settings model =
         ]
 
 
-tabTitle : MenuTab -> String
-tabTitle tab =
-    case tab of
-        TabGeneral ->
-            "General"
-
-        TabProcessing ->
-            "Processing"
-
-        TabAdditionalFilter ->
-            "Additional Filter"
-
-        TabPostProcessing ->
-            "Post Processing"
-
-        TabMetadata ->
-            "Metadata"
-
-        TabSchedule ->
-            "Schedule"
-
-
-formTabs : Flags -> UiSettings -> Model -> List (Comp.Tabs.Tab Msg)
-formTabs flags settings model =
-    [ { title = tabTitle TabGeneral
+formTabs : Texts -> Flags -> UiSettings -> Model -> List (Comp.Tabs.Tab Msg)
+formTabs texts flags settings model =
+    [ { name = tabName TabGeneral
+      , title = texts.generalTab
       , titleRight = []
       , info = Nothing
-      , body = viewGeneral2 settings model
+      , body = viewGeneral2 texts settings model
       }
-    , { title = tabTitle TabProcessing
+    , { name = tabName TabProcessing
+      , title = texts.processingTab
       , titleRight = []
-      , info = Just "These settings define which mails are fetched from the mail server."
-      , body = viewProcessing2 model
+      , info = Just texts.processingTabInfo
+      , body = viewProcessing2 texts model
       }
-    , { title = tabTitle TabAdditionalFilter
+    , { name = tabName TabAdditionalFilter
+      , title = texts.additionalFilterTab
       , titleRight = []
-      , info = Just "These filters are applied to mails that have been fetched from the mailbox to select those that should be imported."
-      , body = viewAdditionalFilter2 model
+      , info = Just texts.additionalFilterTabInfo
+      , body = viewAdditionalFilter2 texts model
       }
-    , { title = tabTitle TabPostProcessing
+    , { name = tabName TabPostProcessing
+      , title = texts.postProcessingTab
       , titleRight = []
-      , info = Just "This defines what happens to mails that have been downloaded."
-      , body = viewPostProcessing2 model
+      , info = Just texts.postProcessingTabInfo
+      , body = viewPostProcessing2 texts model
       }
-    , { title = tabTitle TabMetadata
+    , { name = tabName TabMetadata
+      , title = texts.metadataTab
       , titleRight = []
-      , info = Just "Define metadata that should be attached to all items created by this task."
-      , body = viewMetadata2 flags settings model
+      , info = Just texts.metadataTabInfo
+      , body = viewMetadata2 texts flags settings model
       }
-    , { title = tabTitle TabSchedule
+    , { name = tabName TabSchedule
+      , title = texts.scheduleTab
       , titleRight = []
-      , info = Just "Define when mails should be imported."
-      , body = viewSchedule2 model
+      , info = Just texts.scheduleTabInfo
+      , body = viewSchedule2 texts model
       }
     ]
 
 
-viewGeneral2 : UiSettings -> Model -> List (Html Msg)
-viewGeneral2 settings model =
+viewGeneral2 : Texts -> UiSettings -> Model -> List (Html Msg)
+viewGeneral2 texts settings model =
     let
         connectionCfg =
             { makeOption = \a -> { text = a, additional = "" }
-            , placeholder = "Select connection..."
+            , placeholder = texts.selectConnection
             , labelColor = \_ -> \_ -> ""
             , style = DS.mainStyle
             }
@@ -864,16 +873,16 @@ viewGeneral2 settings model =
             { id = "scanmail-enabled"
             , value = model.enabled
             , tagger = \_ -> ToggleEnabled
-            , label = "Enable or disable this task."
+            , label = texts.enableDisable
             }
     , div [ class "mb-4 mt-4" ]
         [ label [ class S.inputLabel ]
-            [ text "Mailbox"
+            [ text texts.mailbox
             , B.inputRequired
             ]
         , div [ class "mb-4" ]
             [ label [ class S.inputLabel ]
-                [ text "Summary"
+                [ text texts.summary
                 ]
             , input
                 [ type_ "text"
@@ -884,7 +893,7 @@ viewGeneral2 settings model =
                 ]
                 []
             , span [ class "opacity-50 text-sm" ]
-                [ text "Some human readable name, only for displaying"
+                [ text texts.summaryInfo
                 ]
             ]
         , Html.map ConnMsg
@@ -894,17 +903,17 @@ viewGeneral2 settings model =
                 model.connectionModel
             )
         , span [ class "opacity-50 text-sm" ]
-            [ text "The IMAP connection to use when sending notification mails."
+            [ text texts.connectionInfo
             ]
         ]
     ]
 
 
-viewProcessing2 : Model -> List (Html Msg)
-viewProcessing2 model =
+viewProcessing2 : Texts -> Model -> List (Html Msg)
+viewProcessing2 texts model =
     [ div [ class "mb-4" ]
         [ label [ class S.inputLabel ]
-            [ text "Folders"
+            [ text texts.folders
             , B.inputRequired
             ]
         , Html.map FoldersMsg
@@ -913,12 +922,12 @@ viewProcessing2 model =
                 model.foldersModel
             )
         , span [ class "opacity-50 text-sm mt-1" ]
-            [ text "The folders to look for mails."
+            [ text texts.foldersInfo
             ]
         ]
     , Html.map ReceivedHoursMsg
         (Comp.IntField.viewWithInfo2
-            "Select mails newer than `now - receivedHours`"
+            texts.receivedHoursInfo
             model.receivedHours
             "mb-4"
             model.receivedHoursModel
@@ -926,19 +935,19 @@ viewProcessing2 model =
     ]
 
 
-viewAdditionalFilter2 : Model -> List (Html Msg)
-viewAdditionalFilter2 model =
+viewAdditionalFilter2 : Texts -> Model -> List (Html Msg)
+viewAdditionalFilter2 texts model =
     [ div
         [ class "mb-4"
         ]
         [ label
             [ class S.inputLabel
             ]
-            [ text "File Filter" ]
+            [ text texts.fileFilter ]
         , input
             [ type_ "text"
             , onInput SetFileFilter
-            , placeholder "File Filter"
+            , placeholder texts.fileFilter
             , model.fileFilter
                 |> Maybe.withDefault ""
                 |> value
@@ -946,34 +955,18 @@ viewAdditionalFilter2 model =
             ]
             []
         , div [ class "opacity-50 text-sm" ]
-            [ text "Specify a file glob to filter attachments. For example, to only extract pdf files: "
-            , code [ class "font-mono" ]
-                [ text "*.pdf"
-                ]
-            , text ". If you want to include the mail body, allow html files or "
-            , code [ class "font-mono" ]
-                [ text "mail.html"
-                ]
-            , text ". Globs can be combined via OR, like this: "
-            , code [ class "font-mono" ]
-                [ text "*.pdf|mail.html"
-                ]
-            , text ". No file filter defaults to "
-            , code [ class "font-mono" ]
-                [ text "*"
-                ]
-            , text " that includes all"
+            [ Markdown.toHtml [] texts.fileFilterInfo
             ]
         ]
     , div
         [ class "mb-4"
         ]
         [ label [ class S.inputLabel ]
-            [ text "Subject Filter" ]
+            [ text texts.subjectFilter ]
         , input
             [ type_ "text"
             , onInput SetSubjectFilter
-            , placeholder "Subject Filter"
+            , placeholder texts.subjectFilter
             , model.subjectFilter
                 |> Maybe.withDefault ""
                 |> value
@@ -981,40 +974,29 @@ viewAdditionalFilter2 model =
             ]
             []
         , div [ class "opacity-50 text-sm" ]
-            [ text "Specify a file glob to filter mails by subject. For example: "
-            , code [ class "font-mono" ]
-                [ text "*Scanned Document*"
-                ]
-            , text ". No file filter defaults to "
-            , code [ class "font-mono" ]
-                [ text "*"
-                ]
-            , text " that includes all"
+            [ Markdown.toHtml [] texts.subjectFilterInfo
             ]
         ]
     ]
 
 
-viewPostProcessing2 : Model -> List (Html Msg)
-viewPostProcessing2 model =
+viewPostProcessing2 : Texts -> Model -> List (Html Msg)
+viewPostProcessing2 texts model =
     [ div [ class "mb-4" ]
         [ MB.viewItem <|
             MB.Checkbox
                 { id = "scanmail-posthandle-all"
                 , value = model.postHandleAll
-                , label = "Apply post-processing to all fetched mails."
+                , label = texts.postProcessingLabel
                 , tagger = \_ -> TogglePostHandleAll
                 }
         , span [ class "opacity-50 text-sm mt-1" ]
-            [ text "When mails are fetched but not imported due to the 'Additional Filters', this flag can "
-            , text "control whether they should be moved to a target folder or deleted (whatever is "
-            , text "defined here) nevertheless. If unchecked only imported mails "
-            , text "are post-processed, others stay where they are."
+            [ Markdown.toHtml [] texts.postProcessingInfo
             ]
         ]
     , div [ class "mb-4" ]
         [ label [ class S.inputLabel ]
-            [ text "Target folder"
+            [ text texts.targetFolder
             ]
         , input
             [ type_ "text"
@@ -1024,28 +1006,26 @@ viewPostProcessing2 model =
             ]
             []
         , span [ class "opacity-50 text-sm" ]
-            [ text "Move mails into this folder."
+            [ text texts.targetFolderInfo
             ]
         ]
     , div [ class "mb-4" ]
         [ MB.viewItem <|
             MB.Checkbox
                 { id = "scanmail-delete-all"
-                , label = "Delete imported mails"
+                , label = texts.deleteMailLabel
                 , tagger = \_ -> ToggleDeleteMail
                 , value = model.deleteMail
                 }
         , span [ class "opacity-50 text-sm" ]
-            [ text "Whether to delete all mails fetched by docspell. This only applies if "
-            , em [] [ text "target folder" ]
-            , text " is not set."
+            [ Markdown.toHtml [] texts.deleteMailInfo
             ]
         ]
     ]
 
 
-viewMetadata2 : Flags -> UiSettings -> Model -> List (Html Msg)
-viewMetadata2 flags settings model =
+viewMetadata2 : Texts -> Flags -> UiSettings -> Model -> List (Html Msg)
+viewMetadata2 texts flags settings model =
     let
         folderCfg =
             { makeOption = Util.Folder.mkFolderOption flags model.allFolders
@@ -1062,7 +1042,7 @@ viewMetadata2 flags settings model =
     in
     [ div [ class "mb-4" ]
         [ label [ class S.inputLabel ]
-            [ text "Item direction"
+            [ text texts.itemDirection
             , B.inputRequired
             ]
         , div [ class "flex flex-col " ]
@@ -1074,7 +1054,7 @@ viewMetadata2 flags settings model =
                     , class S.radioInput
                     ]
                     []
-                , span [ class "ml-2" ] [ text "Automatic" ]
+                , span [ class "ml-2" ] [ text texts.automatic ]
                 ]
             , label [ class "inline-flex items-center" ]
                 [ input
@@ -1084,7 +1064,7 @@ viewMetadata2 flags settings model =
                     , onCheck (\_ -> DirectionMsg (Just Incoming))
                     ]
                     []
-                , span [ class "ml-2" ] [ text "Incoming" ]
+                , span [ class "ml-2" ] [ text texts.basics.incoming ]
                 ]
             , label [ class "inline-flex items-center" ]
                 [ input
@@ -1094,18 +1074,16 @@ viewMetadata2 flags settings model =
                     , class S.radioInput
                     ]
                     []
-                , span [ class "ml-2" ] [ text "Outgoing" ]
+                , span [ class "ml-2" ] [ text texts.basics.outgoing ]
                 ]
             , span [ class "opacity-50 text-sm" ]
-                [ text "Sets the direction for an item. If you know all mails are incoming or "
-                , text "outgoing, you can set it here. Otherwise it will be guessed from looking "
-                , text "at sender and receiver."
+                [ Markdown.toHtml [] texts.itemDirectionInfo
                 ]
             ]
         ]
     , div [ class "mb-4" ]
         [ label [ class S.inputLabel ]
-            [ text "Item Folder"
+            [ text texts.itemFolder
             ]
         , Html.map FolderDropdownMsg
             (Comp.Dropdown.view2
@@ -1114,7 +1092,7 @@ viewMetadata2 flags settings model =
                 model.folderModel
             )
         , span [ class "opacity-50 text-sm" ]
-            [ text "Put all items from this mailbox into the selected folder"
+            [ text texts.itemFolderInfo
             ]
         , div
             [ classList
@@ -1122,17 +1100,12 @@ viewMetadata2 flags settings model =
                 ]
             , class S.message
             ]
-            [ Markdown.toHtml [] """
-You are **not a member** of this folder. Items created from mails in
-this mailbox will be **hidden** from any search results. Use a folder
-where you are a member of to make items visible. This message will
-disappear then.
-                      """
+            [ Markdown.toHtml [] texts.folderOwnerWarning
             ]
         ]
     , div [ class "mb-4" ]
         [ label [ class S.inputLabel ]
-            [ text "Tags" ]
+            [ text texts.basics.tags ]
         , Html.map TagDropdownMsg
             (Comp.Dropdown.view2
                 (Util.Tag.tagSettings DS.mainStyle)
@@ -1140,12 +1113,12 @@ disappear then.
                 model.tagModel
             )
         , div [ class "opacity-50 text-sm" ]
-            [ text "Choose tags that should be applied to items."
+            [ text texts.tagsInfo
             ]
         ]
     , div [ class "mb-4" ]
         [ label [ class S.inputLabel ]
-            [ text "Language"
+            [ text texts.documentLanguage
             ]
         , div [ class "flex flex-row" ]
             [ Html.map LanguageMsg
@@ -1165,18 +1138,17 @@ disappear then.
                 ]
             ]
         , div [ class "opacity-50 text-sm" ]
-            [ text "Used for text extraction and text analysis. The "
-            , text "collective's default language is used, if not specified here."
+            [ text texts.documentLanguageInfo
             ]
         ]
     ]
 
 
-viewSchedule2 : Model -> List (Html Msg)
-viewSchedule2 model =
+viewSchedule2 : Texts -> Model -> List (Html Msg)
+viewSchedule2 texts model =
     [ div [ class "mb-4" ]
         [ label [ class S.inputLabel ]
-            [ text "Schedule"
+            [ text texts.schedule
             , B.inputRequired
             , a
                 [ class "float-right"
@@ -1186,7 +1158,7 @@ viewSchedule2 model =
                 ]
                 [ i [ class "fa fa-question" ] []
                 , span [ class "ml-2" ]
-                    [ text "Click here for help"
+                    [ text texts.scheduleClickForHelp
                     ]
                 ]
             ]
@@ -1196,10 +1168,7 @@ viewSchedule2 model =
                 model.scheduleModel
             )
         , span [ class "opacity-50 text-sm" ]
-            [ text "Specify how often and when this task should run. "
-            , text "Use English 3-letter weekdays. Either a single value, "
-            , text "a list (ex. 1,2,3), a range (ex. 1..3) or a '*' (meaning all) "
-            , text "is allowed for each part."
+            [ Markdown.toHtml [] texts.scheduleInfo
             ]
         ]
     ]

@@ -21,6 +21,7 @@ import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Http
+import Messages.EmailSettingsManageComp exposing (Texts)
 import Styles as S
 import Util.Http
 
@@ -206,71 +207,74 @@ update flags msg model =
 --- View2
 
 
-view2 : UiSettings -> Model -> Html Msg
-view2 settings model =
+view2 : Texts -> UiSettings -> Model -> Html Msg
+view2 texts settings model =
     case model.viewMode of
         Table ->
-            viewTable2 model
+            viewTable2 texts model
 
         Form ->
-            viewForm2 settings model
+            viewForm2 texts settings model
 
 
-viewTable2 : Model -> Html Msg
-viewTable2 model =
+viewTable2 : Texts -> Model -> Html Msg
+viewTable2 texts model =
     div []
         [ MB.view
             { start =
                 [ MB.TextInput
                     { tagger = SetQuery
                     , value = model.query
-                    , placeholder = "Search…"
+                    , placeholder = texts.basics.searchPlaceholder
                     , icon = Just "fa fa-search"
                     }
                 ]
             , end =
                 [ MB.PrimaryButton
                     { tagger = InitNew
-                    , title = "Add new SMTP settings"
+                    , title = texts.addNewSmtpSettings
                     , icon = Just "fa fa-plus"
-                    , label = "New Settings"
+                    , label = texts.newSettings
                     }
                 ]
             , rootClasses = "mb-4"
             }
-        , Html.map TableMsg (Comp.EmailSettingsTable.view2 model.tableModel)
+        , Html.map TableMsg
+            (Comp.EmailSettingsTable.view2 texts.settingsTable
+                model.tableModel
+            )
         ]
 
 
-viewForm2 : UiSettings -> Model -> Html Msg
-viewForm2 settings model =
+viewForm2 : Texts -> UiSettings -> Model -> Html Msg
+viewForm2 texts settings model =
     let
         dimmerSettings =
-            Comp.YesNoDimmer.defaultSettings2 "Really delete these connection?"
+            Comp.YesNoDimmer.defaultSettings2 texts.reallyDeleteConnection
     in
     div [ class "flex flex-col md:relative" ]
         [ MB.view
             { start =
                 [ MB.PrimaryButton
                     { tagger = Submit
-                    , title = "Submit this form"
+                    , title = texts.basics.submitThisForm
                     , icon = Just "fa fa-save"
-                    , label = "Submit"
+                    , label = texts.basics.submit
                     }
                 , MB.SecondaryButton
                     { tagger = SetViewMode Table
-                    , title = "Back to list"
+                    , title = texts.basics.backToList
                     , icon = Just "fa fa-arrow-left"
-                    , label = "Cancel"
+                    , label = texts.basics.cancel
                     }
                 ]
             , end =
                 if model.formModel.settings.name /= "" then
                     [ MB.DeleteButton
                         { tagger = RequestDelete
-                        , title = "Delete this settings entry"
+                        , title = texts.deleteThisEntry
                         , icon = Just "fa fa-trash"
-                        , label = "Delete"
+                        , label = texts.basics.delete
                         }
                     ]
 
@@ -288,7 +292,10 @@ viewForm2 settings model =
             [ Maybe.withDefault "" model.formError |> text
             ]
         , Html.map FormMsg
-            (Comp.EmailSettingsForm.view2 settings model.formModel)
+            (Comp.EmailSettingsForm.view2 texts.settingsForm
+                settings
+                model.formModel
+            )
         , Html.map YesNoMsg
             (Comp.YesNoDimmer.viewN
                 True

@@ -8,6 +8,8 @@ module Comp.IntField exposing
     , viewWithInfo2
     )
 
+--- L10N TODO
+
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)

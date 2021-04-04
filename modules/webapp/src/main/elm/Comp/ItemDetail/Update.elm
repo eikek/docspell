@@ -1469,14 +1469,14 @@ update key flags inav settings msg model =
         ToggleAttachmentDropdown ->
             resultModel { model | attachmentDropdownOpen = not model.attachmentDropdownOpen }
 
-        ToggleAkkordionTab title ->
+        ToggleAkkordionTab name ->
             let
                 tabs =
-                    if Set.member title model.editMenuTabsOpen then
-                        Set.remove title model.editMenuTabsOpen
+                    if Set.member name model.editMenuTabsOpen then
+                        Set.remove name model.editMenuTabsOpen
 
                     else
-                        Set.insert title model.editMenuTabsOpen
+                        Set.insert name model.editMenuTabsOpen
             in
             resultModel { model | editMenuTabsOpen = tabs }
 

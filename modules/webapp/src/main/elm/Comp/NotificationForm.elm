@@ -30,6 +30,8 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)
 import Http
+import Markdown
+import Messages.NotificationFormComp exposing (Texts)
 import Styles as S
 import Util.Http
 import Util.Maybe
@@ -474,23 +476,23 @@ isFormSuccess model =
         |> Maybe.withDefault False
 
 
-view2 : String -> UiSettings -> Model -> Html Msg
-view2 extraClasses settings model =
+view2 : Texts -> String -> UiSettings -> Model -> Html Msg
+view2 texts extraClasses settings model =
     let
         dimmerSettings =
-            Comp.YesNoDimmer.defaultSettings2 "Really delete this notification task?"
+            Comp.YesNoDimmer.defaultSettings2 texts.reallyDeleteTask
 
         startOnceBtn =
             MB.SecondaryButton
                 { tagger = StartOnce
-                , label = "Start Once"
-                , title = "Start this task now"
+                , label = texts.startOnce
+                , title = texts.startTaskNow
                 , icon = Just "fa fa-play"
                 }
 
         connectionCfg =
             { makeOption = \a -> { text = a, additional = "" }
-            , placeholder = "Select connection..."
+            , placeholder = texts.selectConnection
             , labelColor = \_ -> \_ -> ""
             , style = DS.mainStyle
             }
@@ -509,14 +511,14 @@ view2 extraClasses settings model =
             { start =
                 [ MB.PrimaryButton
                     { tagger = Submit
-                    , label = "Submit"
-                    , title = "Save"
+                    , label = texts.basics.submit
+                    , title = texts.basics.submitThisForm
                     , icon = Just "fa fa-save"
                     }
                 , MB.SecondaryButton
                     { tagger = Cancel
-                    , label = "Cancel"
-                    , title = "Back to list"
+                    , label = texts.basics.cancel
+                    , title = texts.basics.backToList
                     , icon = Just "fa fa-arrow-left"
                     }
                 ]
@@ -525,8 +527,8 @@ view2 extraClasses settings model =
                     [ startOnceBtn
                     , MB.DeleteButton
                         { tagger = RequestDelete
-                        , label = "Delete"
-                        , title = "Delete this task"
+                        , label = texts.basics.delete
+                        , title = texts.deleteThisTask
                         , icon = Just "fa fa-trash"
                         }
                     ]
@@ -552,14 +554,14 @@ view2 extraClasses settings model =
             [ MB.viewItem <|
                 MB.Checkbox
                     { tagger = \_ -> ToggleEnabled
-                    , label = "Enable or disable this task."
+                    , label = texts.enableDisable
                     , value = model.enabled
                     , id = "notify-enabled"
                     }
             ]
         , div [ class "mb-4" ]
             [ label [ class S.inputLabel ]
-                [ text "Summary"
+                [ text texts.summary
                 ]
             , input
                 [ type_ "text"
@@ -570,12 +572,12 @@ view2 extraClasses settings model =
                 ]
                 []
             , span [ class "opacity-50 text-sm" ]
-                [ text "Some human readable name, only for displaying"
+                [ text texts.summaryInfo
                 ]
             ]
         , div [ class "mb-4" ]
             [ label [ class S.inputLabel ]
-                [ text "Send via"
+                [ text texts.sendVia
                 , B.inputRequired
                 ]
             , Html.map ConnMsg
@@ -585,29 +587,29 @@ view2 extraClasses settings model =
                     model.connectionModel
                 )
             , span [ class "opacity-50 text-sm" ]
-                [ text "The SMTP connection to use when sending notification mails."
+                [ text texts.sendViaInfo
                 ]
             ]
         , div [ class "mb-4" ]
             [ label
                 [ class S.inputLabel
                 ]
-                [ text "Recipient(s)"
+                [ text texts.recipients
                 , B.inputRequired
                 ]
             , Html.map RecipientMsg
                 (Comp.EmailInput.view2
-                    DS.mainStyle
+                    { style = DS.mainStyle, placeholder = texts.recipients }
                     model.recipients
                     model.recipientsModel
                 )
             , span [ class "opacity-50 text-sm" ]
-                [ text "One or more mail addresses, confirm each by pressing 'Return'."
+                [ text texts.recipientsInfo
                 ]
             ]
         , div [ class "mb-4" ]
             [ label [ class S.inputLabel ]
-                [ text "Tags Include (and)" ]
+                [ text texts.tagsInclude ]
             , Html.map TagIncMsg
                 (Comp.Dropdown.view2
                     (Util.Tag.tagSettings DS.mainStyle)
@@ -615,12 +617,12 @@ view2 extraClasses settings model =
                     model.tagInclModel
                 )
             , span [ class "opacity-50 text-sm" ]
-                [ text "Items must have all the tags specified here."
+                [ text texts.tagsIncludeInfo
                 ]
             ]
         , div [ class "mb-4" ]
             [ label [ class S.inputLabel ]
-                [ text "Tags Exclude (or)" ]
+                [ text texts.tagsExclude ]
             , Html.map TagExcMsg
                 (Comp.Dropdown.view2
                     (Util.Tag.tagSettings DS.mainStyle)
@@ -628,12 +630,12 @@ view2 extraClasses settings model =
                     model.tagExclModel
                 )
             , span [ class "small-info" ]
-                [ text "Items must not have any tag specified here."
+                [ text texts.tagsExcludeInfo
                 ]
             ]
         , Html.map RemindDaysMsg
             (Comp.IntField.viewWithInfo2
-                "Select items with a due date *lower than* `today+remindDays`"
+                texts.remindDaysInfo
                 model.remindDays
                 "mb-4"
                 model.remindDaysModel
@@ -644,20 +646,15 @@ view2 extraClasses settings model =
                     { tagger = \_ -> ToggleCapOverdue
                     , id = "notify-toggle-cap-overdue"
                     , value = model.capOverdue
-                    , label = "Cap overdue items"
+                    , label = texts.capOverdue
                     }
             , div [ class "opacity-50 text-sm" ]
-                [ text "If checked, only items with a due date"
-                , em [ class "font-italic" ]
-                    [ text " greater than " ]
-                , code [ class "font-mono" ]
-                    [ text "today-remindDays" ]
-                , text " are considered."
+                [ Markdown.toHtml [] texts.capOverdueInfo
                 ]
             ]
         , div [ class "mb-4" ]
             [ label [ class S.inputLabel ]
-                [ text "Schedule"
+                [ text texts.schedule
                 , a
                     [ class "float-right"
                     , class S.link
@@ -666,7 +663,7 @@ view2 extraClasses settings model =
                     ]
                     [ i [ class "fa fa-question" ] []
                     , span [ class "pl-2" ]
-                        [ text "Click here for help"
+                        [ text texts.scheduleClickForHelp
                         ]
                     ]
                 ]
@@ -676,10 +673,7 @@ view2 extraClasses settings model =
                     model.scheduleModel
                 )
             , span [ class "opacity-50 text-sm" ]
-                [ text "Specify how often and when this task should run. "
-                , text "Use English 3-letter weekdays. Either a single value, "
-                , text "a list (ex. 1,2,3), a range (ex. 1..3) or a '*' (meaning all) "
-                , text "is allowed for each part."
+                [ text texts.scheduleInfo
                 ]
             ]
         ]
