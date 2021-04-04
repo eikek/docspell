@@ -17,8 +17,8 @@ import Comp.MenuBar as MB
 import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick, onInput)
 import Http
+import Messages.CustomFieldManageComp exposing (Texts)
 import Styles as S
 import Util.CustomField
 
@@ -135,18 +135,18 @@ update flags msg model =
 --- View2
 
 
-view2 : Flags -> Model -> Html Msg
-view2 flags model =
+view2 : Texts -> Flags -> Model -> Html Msg
+view2 texts flags model =
     case model.detailModel of
         Just dm ->
-            viewDetail2 flags dm
+            viewDetail2 texts flags dm
 
         Nothing ->
-            viewTable2 model
+            viewTable2 texts model
 
 
-viewDetail2 : Flags -> Comp.CustomFieldForm.Model -> Html Msg
-viewDetail2 _ detailModel =
+viewDetail2 : Texts -> Flags -> Comp.CustomFieldForm.Model -> Html Msg
+viewDetail2 texts _ detailModel =
     let
         viewSettings =
             { showControls = True
@@ -156,44 +156,52 @@ viewDetail2 _ detailModel =
     div []
         ((if detailModel.field.id == "" then
             h3 [ class S.header2 ]
-                [ text "Create new custom field"
+                [ text texts.newCustomField
                 ]
 
           else
             h3 [ class S.header2 ]
                 [ Util.CustomField.nameOrLabel detailModel.field |> text
                 , div [ class "opacity-50 text-sm" ]
-                    [ text "Id: "
+                    [ text (texts.basics.id ++ ": ")
                     , text detailModel.field.id
                     ]
                 ]
          )
-            :: List.map (Html.map DetailMsg) (Comp.CustomFieldForm.view2 viewSettings detailModel)
+            :: List.map (Html.map DetailMsg)
+                (Comp.CustomFieldForm.view2 texts.fieldForm
+                    viewSettings
+                    detailModel
+                )
         )
 
 
-viewTable2 : Model -> Html Msg
-viewTable2 model =
+viewTable2 : Texts -> Model -> Html Msg
+viewTable2 texts model =
     div [ class "flex flex-col md:relative" ]
         [ MB.view
             { start =
                 [ MB.TextInput
                     { tagger = SetQuery
                     , value = model.query
-                    , placeholder = "Search…"
+                    , placeholder = texts.basics.searchPlaceholder
                     , icon = Just "fa fa-search"
                     }
                 ]
             , end =
                 [ MB.PrimaryButton
                     { tagger = InitNewCustomField
-                    , title = "Add a new custom field"
+                    , title = texts.addCustomField
                     , icon = Just "fa fa-plus"
-                    , label = "New custom field"
+                    , label = texts.newCustomField
                     }
                 ]
             , rootClasses = "mb-4"
             }
-        , Html.map TableMsg (Comp.CustomFieldTable.view2 model.tableModel model.fields)
+        , Html.map TableMsg
+            (Comp.CustomFieldTable.view2 texts.fieldTable
+                model.tableModel
+                model.fields
+            )
         , B.loadingDimmer model.loading
         ]

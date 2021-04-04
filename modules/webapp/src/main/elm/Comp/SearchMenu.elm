@@ -1138,7 +1138,7 @@ searchTabs ddd flags settings model =
                     [ text "Organization" ]
                 , Html.map OrgMsg
                     (Comp.Dropdown.view2
-                        (Comp.Dropdown.orgFormViewSettings DS.sidebarStyle)
+                        (Comp.Dropdown.orgFormViewSettings "Choose an organization" DS.sidebarStyle)
                         settings
                         model.orgModel
                     )

@@ -11,6 +11,7 @@ import Api.Model.FolderItem exposing (FolderItem)
 import Comp.Basic as B
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Messages.FolderTableComp exposing (Texts)
 import Styles as S
 import Util.Time
 
@@ -44,23 +45,27 @@ update msg model =
 --- View2
 
 
-view2 : Model -> List FolderItem -> Html Msg
-view2 _ items =
+view2 : Texts -> Model -> List FolderItem -> Html Msg
+view2 texts _ items =
     table [ class S.tableMain ]
         [ thead []
             [ tr []
                 [ th [ class "w-px whitespace-nowrap pr-1 md:pr-3" ] []
-                , th [ class "text-left" ] [ text "Name" ]
+                , th [ class "text-left" ]
+                    [ text texts.name
+                    ]
                 , th [ class "text-left hidden sm:table-cell" ] [ text "Owner" ]
                 , th [ class "text-center" ]
                     [ span [ class "hidden sm:inline" ]
-                        [ text "#Member"
+                        [ text texts.memberCount
                         ]
                     , span [ class "sm:hidden" ]
                         [ text "#"
                         ]
                     ]
-                , th [ class "text-center" ] [ text "Created" ]
+                , th [ class "text-center" ]
+                    [ text texts.basics.created
+                    ]
                 ]
             ]
         , tbody []

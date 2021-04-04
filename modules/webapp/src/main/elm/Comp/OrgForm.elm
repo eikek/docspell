@@ -20,6 +20,7 @@ import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)
+import Messages.OrgFormComp exposing (Texts)
 import Styles as S
 import Util.Maybe
 
@@ -146,13 +147,18 @@ update flags msg model =
 --- View2
 
 
-view2 : Bool -> UiSettings -> Model -> Html Msg
-view2 mobile settings model =
+view2 : Texts -> Bool -> UiSettings -> Model -> Html Msg
+view2 texts mobile settings model =
     let
         orgUseCfg =
-            { display = Data.OrgUse.label
+            { display = texts.orgUseLabel
             , icon = \_ -> Nothing
             , style = DS.mainStyle
+            }
+
+        contactTypeCfg =
+            { mobile = mobile
+            , contactTypeLabel = texts.contactTypeLabel
             }
     in
     div [ class "flex flex-col" ]
@@ -162,13 +168,13 @@ view2 mobile settings model =
                 [ for "orgname"
                 , class S.inputLabel
                 ]
-                [ text "Name"
+                [ text texts.name
                 , B.inputRequired
                 ]
             , input
                 [ type_ "text"
                 , onInput SetName
-                , placeholder "Name"
+                , placeholder texts.name
                 , value model.name
                 , name "orgname"
                 , class S.textInput
@@ -184,12 +190,12 @@ view2 mobile settings model =
                 [ for "org-short-name"
                 , class S.inputLabel
                 ]
-                [ text "Short Name"
+                [ text texts.shortName
                 ]
             , input
                 [ type_ "text"
                 , onInput SetShortName
-                , placeholder "Abbreviation"
+                , placeholder texts.shortName
                 , Maybe.withDefault "" model.shortName
                     |> value
                 , name "org-short-name"
@@ -201,7 +207,8 @@ view2 mobile settings model =
             [ label
                 [ class S.inputLabel
                 ]
-                [ text "Use" ]
+                [ text texts.use
+                ]
             , Html.map UseDropdownMsg
                 (Comp.FixedDropdown.viewStyled2 orgUseCfg
                     False
@@ -211,29 +218,29 @@ view2 mobile settings model =
             , span [ class "opacity-50 text-sm" ]
                 [ case model.use of
                     Data.OrgUse.Correspondent ->
-                        text "Use as correspondent"
+                        text texts.useAsCorrespondent
 
                     Data.OrgUse.Disabled ->
-                        text "Do not use for suggestions."
+                        text texts.dontUseForSuggestions
                 ]
             ]
         , div [ class "mb-4" ]
             [ h3 [ class S.header3 ]
-                [ text "Address"
+                [ text texts.address
                 ]
             , Html.map AddressMsg
-                (Comp.AddressForm.view2 settings model.addressModel)
+                (Comp.AddressForm.view2 texts.addressForm settings model.addressModel)
             ]
         , div [ class "mb-4" ]
             [ h3 [ class S.header3 ]
-                [ text "Contacts"
+                [ text texts.contacts
                 ]
             , Html.map ContactMsg
-                (Comp.ContactField.view2 mobile settings model.contactModel)
+                (Comp.ContactField.view2 contactTypeCfg settings model.contactModel)
             ]
         , div [ class "mb-4" ]
             [ h3 [ class S.header3 ]
-                [ text "Notes"
+                [ text texts.notes
                 ]
             , div [ class "" ]
                 [ textarea

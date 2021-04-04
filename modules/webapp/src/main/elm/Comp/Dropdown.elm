@@ -410,11 +410,11 @@ type alias ViewSettings a =
     }
 
 
-orgFormViewSettings : DS.DropdownStyle -> ViewSettings IdName
-orgFormViewSettings ds =
+orgFormViewSettings : String -> DS.DropdownStyle -> ViewSettings IdName
+orgFormViewSettings placeholder ds =
     { makeOption = \e -> { text = e.name, additional = "" }
     , labelColor = \_ -> \_ -> ""
-    , placeholder = "Choose an organization"
+    , placeholder = placeholder
     , style = ds
     }
 

@@ -12,7 +12,7 @@ import Data.EquipmentUse
 import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick)
+import Messages.EquipmentTableComp exposing (Texts)
 import Styles as S
 
 
@@ -52,25 +52,25 @@ update _ msg model =
 --- View2
 
 
-view2 : Model -> Html Msg
-view2 model =
+view2 : Texts -> Model -> Html Msg
+view2 texts model =
     table [ class S.tableMain ]
         [ thead []
             [ tr []
                 [ th [ class "" ] []
                 , th [ class "text-left pr-1 md:px-2 w-20" ]
-                    [ text "Use"
+                    [ text texts.use
                     ]
-                , th [ class "text-left" ] [ text "Name" ]
+                , th [ class "text-left" ] [ text texts.name ]
                 ]
             ]
         , tbody []
-            (List.map (renderEquipmentLine2 model) model.equips)
+            (List.map (renderEquipmentLine2 texts model) model.equips)
         ]
 
 
-renderEquipmentLine2 : Model -> Equipment -> Html Msg
-renderEquipmentLine2 model equip =
+renderEquipmentLine2 : Texts -> Model -> Equipment -> Html Msg
+renderEquipmentLine2 texts model equip =
     tr
         [ classList [ ( "active", model.selected == Just equip ) ]
         , class S.tableRow
@@ -80,7 +80,7 @@ renderEquipmentLine2 model equip =
             [ div [ class "label inline-flex text-sm" ]
                 [ Data.EquipmentUse.fromString equip.use
                     |> Maybe.withDefault Data.EquipmentUse.Concerning
-                    |> Data.EquipmentUse.label
+                    |> texts.equipmentUseLabel
                     |> text
                 ]
             ]

@@ -20,6 +20,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onSubmit)
 import Http
+import Messages.TagManageComp exposing (Texts)
 import Styles as S
 import Util.Http
 import Util.Maybe
@@ -213,38 +214,38 @@ update flags msg model =
 --- View2
 
 
-view2 : Model -> Html Msg
-view2 model =
+view2 : Texts -> Model -> Html Msg
+view2 texts model =
     if model.viewMode == Table then
-        viewTable2 model
+        viewTable2 texts model
 
     else
-        viewForm2 model
+        viewForm2 texts model
 
 
-viewTable2 : Model -> Html Msg
-viewTable2 model =
+viewTable2 : Texts -> Model -> Html Msg
+viewTable2 texts model =
     div [ class "flex flex-col" ]
         [ MB.view
             { start =
                 [ MB.TextInput
                     { tagger = SetQuery
                     , value = model.query
-                    , placeholder = "Search…"
+                    , placeholder = texts.basics.searchPlaceholder
                     , icon = Just "fa fa-search"
                     }
                 ]
             , end =
                 [ MB.PrimaryButton
                     { tagger = InitNewTag
-                    , title = "Create a new tag"
+                    , title = texts.createNewTag
                     , icon = Just "fa fa-plus"
-                    , label = "New Tag"
+                    , label = texts.newTag
                     }
                 ]
             , rootClasses = "mb-4"
             }
-        , Html.map TableMsg (Comp.TagTable.view2 model.tagTableModel)
+        , Html.map TableMsg (Comp.TagTable.view2 texts.tagTable model.tagTableModel)
         , div
             [ classList
                 [ ( "ui dimmer", True )
@@ -256,14 +257,14 @@ viewTable2 model =
         ]
 
 
-viewForm2 : Model -> Html Msg
-viewForm2 model =
+viewForm2 : Texts -> Model -> Html Msg
+viewForm2 texts model =
     let
         newTag =
             model.tagFormModel.tag.id == ""
 
         dimmerSettings2 =
-            Comp.YesNoDimmer.defaultSettings2 "Really delete this tag?"
+            Comp.YesNoDimmer.defaultSettings2 texts.reallyDeleteTag
     in
     Html.form
         [ class "relative flex flex-col"
@@ -277,7 +278,7 @@ viewForm2 model =
             )
         , if newTag then
             h1 [ class S.header2 ]
-                [ text "Create new tag"
+                [ text texts.createNewTag
                 ]
 
           else
@@ -294,22 +295,22 @@ viewForm2 model =
                     { tagger = Submit
                     , title = "Submit this form"
                     , icon = Just "fa fa-save"
-                    , label = "Submit"
+                    , label = texts.basics.submit
                     }
                 , MB.SecondaryButton
                     { tagger = SetViewMode Table
-                    , title = "Back to list"
+                    , title = texts.basics.backToList
                     , icon = Just "fa fa-arrow-left"
-                    , label = "Cancel"
+                    , label = texts.basics.cancel
                     }
                 ]
             , end =
                 if not newTag then
                     [ MB.DeleteButton
                         { tagger = RequestDelete
-                        , title = "Delete this tag"
+                        , title = texts.deleteThisTag
                         , icon = Just "fa fa-trash"
-                        , label = "Delete"
+                        , label = texts.basics.delete
                         }
                     ]
 
@@ -326,6 +327,6 @@ viewForm2 model =
             ]
             [ Maybe.withDefault "" model.formError |> text
             ]
-        , Html.map FormMsg (Comp.TagForm.view2 model.tagFormModel)
+        , Html.map FormMsg (Comp.TagForm.view2 texts.tagForm model.tagFormModel)
         , B.loadingDimmer model.loading
         ]

@@ -47,6 +47,11 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Http
+import Messages.CustomFieldFormComp
+import Messages.EquipmentFormComp
+import Messages.OrgFormComp
+import Messages.PersonFormComp
+import Messages.TagFormComp
 import Styles as S
 import Util.Http
 
@@ -766,24 +771,25 @@ viewIntern2 settings withButtons model =
         ]
     , case model.form of
         TM tm ->
-            Html.map TagMsg (Comp.TagForm.view2 tm)
+            Html.map TagMsg (Comp.TagForm.view2 Messages.TagFormComp.gb tm)
 
         PMR pm ->
-            Html.map PersonMsg (Comp.PersonForm.view2 True settings pm)
+            Html.map PersonMsg (Comp.PersonForm.view2 Messages.PersonFormComp.gb True settings pm)
 
         PMC pm ->
-            Html.map PersonMsg (Comp.PersonForm.view2 True settings pm)
+            Html.map PersonMsg (Comp.PersonForm.view2 Messages.PersonFormComp.gb True settings pm)
 
         OM om ->
-            Html.map OrgMsg (Comp.OrgForm.view2 True settings om)
+            Html.map OrgMsg (Comp.OrgForm.view2 Messages.OrgFormComp.gb True settings om)
 
         EM em ->
-            Html.map EquipMsg (Comp.EquipmentForm.view2 em)
+            Html.map EquipMsg (Comp.EquipmentForm.view2 Messages.EquipmentFormComp.gb em)
 
         CFM fm ->
             div []
                 (List.map (Html.map CustomFieldMsg)
                     (Comp.CustomFieldForm.view2
+                        Messages.CustomFieldFormComp.gb
                         { classes = ""
                         , showControls = False
                         }

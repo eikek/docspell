@@ -1,6 +1,7 @@
 module Comp.ContactField exposing
     ( Model
     , Msg(..)
+    , ViewSettings
     , emptyModel
     , getContacts
     , update
@@ -115,11 +116,17 @@ update msg model =
 --- View2
 
 
-view2 : Bool -> UiSettings -> Model -> Html Msg
-view2 mobile _ model =
+type alias ViewSettings =
+    { contactTypeLabel : ContactType -> String
+    , mobile : Bool
+    }
+
+
+view2 : ViewSettings -> UiSettings -> Model -> Html Msg
+view2 cfg _ model =
     let
         kindCfg =
-            { display = Data.ContactType.toString
+            { display = cfg.contactTypeLabel
             , icon = \_ -> Nothing
             , style = DS.mainStyle
             }
@@ -127,10 +134,10 @@ view2 mobile _ model =
     div [ class "flex flex-col" ]
         [ div
             [ class "flex flex-col space-y-2"
-            , classList [ ( " md:flex-row md:space-y-0 md:space-x-2", not mobile ) ]
+            , classList [ ( " md:flex-row md:space-y-0 md:space-x-2", not cfg.mobile ) ]
             ]
             [ div
-                [ classList [ ( "flex-none md:w-1/6", not mobile ) ]
+                [ classList [ ( "flex-none md:w-1/6", not cfg.mobile ) ]
                 ]
                 [ Html.map TypeMsg
                     (Comp.FixedDropdown.viewStyled2
@@ -163,7 +170,7 @@ view2 mobile _ model =
                 ]
             , class "flex flex-col space-y-2 mt-2 px-2 border-0 border-l dark:border-bluegray-600 "
             ]
-            (List.map (renderItem2 mobile) model.items)
+            (List.map (renderItem2 cfg.mobile) model.items)
         ]
 
 

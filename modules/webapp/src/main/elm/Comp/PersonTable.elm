@@ -12,6 +12,7 @@ import Data.Flags exposing (Flags)
 import Data.PersonUse
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Messages.PersonTableComp exposing (Texts)
 import Styles as S
 import Util.Contact
 
@@ -52,8 +53,8 @@ update _ msg model =
 --- View2
 
 
-view2 : Model -> Html Msg
-view2 model =
+view2 : Texts -> Model -> Html Msg
+view2 texts model =
     table [ class S.tableMain ]
         [ thead []
             [ tr []
@@ -67,12 +68,12 @@ view2 model =
                 ]
             ]
         , tbody []
-            (List.map (renderPersonLine2 model) model.equips)
+            (List.map (renderPersonLine2 texts model) model.equips)
         ]
 
 
-renderPersonLine2 : Model -> Person -> Html Msg
-renderPersonLine2 model person =
+renderPersonLine2 : Texts -> Model -> Person -> Html Msg
+renderPersonLine2 texts model person =
     tr
         [ classList [ ( "active", model.selected == Just person ) ]
         , class S.tableRow
@@ -82,7 +83,7 @@ renderPersonLine2 model person =
             [ div [ class "label inline-flex text-sm" ]
                 [ Data.PersonUse.fromString person.use
                     |> Maybe.withDefault Data.PersonUse.Both
-                    |> Data.PersonUse.label
+                    |> texts.personUseLabel
                     |> text
                 ]
             ]

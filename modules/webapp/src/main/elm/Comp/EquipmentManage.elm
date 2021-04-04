@@ -20,6 +20,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onSubmit)
 import Http
+import Messages.EquipmentManageComp exposing (Texts)
 import Styles as S
 import Util.Http
 import Util.Maybe
@@ -204,38 +205,41 @@ update flags msg model =
 --- View2
 
 
-view2 : Model -> Html Msg
-view2 model =
+view2 : Texts -> Model -> Html Msg
+view2 texts model =
     if model.viewMode == Table then
-        viewTable2 model
+        viewTable2 texts model
 
     else
-        viewForm2 model
+        viewForm2 texts model
 
 
-viewTable2 : Model -> Html Msg
-viewTable2 model =
+viewTable2 : Texts -> Model -> Html Msg
+viewTable2 texts model =
     div [ class "flex flex-col" ]
         [ MB.view
             { start =
                 [ MB.TextInput
                     { tagger = SetQuery
                     , value = model.query
-                    , placeholder = "Search…"
+                    , placeholder = texts.basics.searchPlaceholder
                     , icon = Just "fa fa-search"
                     }
                 ]
             , end =
                 [ MB.PrimaryButton
                     { tagger = InitNewEquipment
-                    , title = "Create a new equipment"
+                    , title = texts.createNewEquipment
                     , icon = Just "fa fa-plus"
-                    , label = "New Equipment"
+                    , label = texts.newEquipment
                     }
                 ]
             , rootClasses = "mb-4"
             }
-        , Html.map TableMsg (Comp.EquipmentTable.view2 model.tableModel)
+        , Html.map TableMsg
+            (Comp.EquipmentTable.view2 texts.equipmentTable
+                model.tableModel
+            )
         , div
             [ classList
                 [ ( "ui dimmer", True )
@@ -247,14 +251,14 @@ viewTable2 model =
         ]
 
 
-viewForm2 : Model -> Html Msg
-viewForm2 model =
+viewForm2 : Texts -> Model -> Html Msg
+viewForm2 texts model =
     let
         newEquipment =
             model.formModel.equipment.id == ""
 
         dimmerSettings2 =
-            Comp.YesNoDimmer.defaultSettings2 "Really delete this equipment?"
+            Comp.YesNoDimmer.defaultSettings2 texts.reallyDeleteEquipment
     in
     Html.form
         [ class "relative flex flex-col"
@@ -268,14 +272,14 @@ viewForm2 model =
             )
         , if newEquipment then
             h1 [ class S.header2 ]
-                [ text "Create new equipment"
+                [ text texts.createNewEquipment
                 ]
 
           else
             h1 [ class S.header2 ]
                 [ text model.formModel.equipment.name
                 , div [ class "opacity-50 text-sm" ]
-                    [ text "Id: "
+                    [ text (texts.basics.id ++ ": ")
                     , text model.formModel.equipment.id
                     ]
                 ]
@@ -283,24 +287,24 @@ viewForm2 model =
             { start =
                 [ MB.PrimaryButton
                     { tagger = Submit
-                    , title = "Submit this form"
+                    , title = texts.basics.submitThisForm
                     , icon = Just "fa fa-save"
-                    , label = "Submit"
+                    , label = texts.basics.submit
                     }
                 , MB.SecondaryButton
                     { tagger = SetViewMode Table
-                    , title = "Back to list"
+                    , title = texts.basics.backToList
                     , icon = Just "fa fa-arrow-left"
-                    , label = "Cancel"
+                    , label = texts.basics.cancel
                     }
                 ]
             , end =
                 if not newEquipment then
                     [ MB.DeleteButton
                         { tagger = RequestDelete
-                        , title = "Delete this equipment"
+                        , title = texts.deleteThisEquipment
                         , icon = Just "fa fa-trash"
-                        , label = "Delete"
+                        , label = texts.basics.delete
                         }
                     ]
 
@@ -317,6 +321,6 @@ viewForm2 model =
             ]
             [ Maybe.withDefault "" model.formError |> text
             ]
-        , Html.map FormMsg (Comp.EquipmentForm.view2 model.formModel)
+        , Html.map FormMsg (Comp.EquipmentForm.view2 texts.equipmentForm model.formModel)
         , B.loadingDimmer model.loading
         ]

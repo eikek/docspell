@@ -22,6 +22,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onSubmit)
 import Http
+import Messages.PersonManageComp exposing (Texts)
 import Styles as S
 import Util.Http
 import Util.Maybe
@@ -242,50 +243,50 @@ isLoading model =
 --- View2
 
 
-view2 : UiSettings -> Model -> Html Msg
-view2 settings model =
+view2 : Texts -> UiSettings -> Model -> Html Msg
+view2 texts settings model =
     if model.viewMode == Table then
-        viewTable2 model
+        viewTable2 texts model
 
     else
-        viewForm2 settings model
+        viewForm2 texts settings model
 
 
-viewTable2 : Model -> Html Msg
-viewTable2 model =
+viewTable2 : Texts -> Model -> Html Msg
+viewTable2 texts model =
     div [ class "flex flex-col" ]
         [ MB.view
             { start =
                 [ MB.TextInput
                     { tagger = SetQuery
                     , value = model.query
-                    , placeholder = "Search…"
+                    , placeholder = texts.basics.searchPlaceholder
                     , icon = Just "fa fa-search"
                     }
                 ]
             , end =
                 [ MB.PrimaryButton
                     { tagger = InitNewPerson
-                    , title = "Create a new person"
+                    , title = texts.createNewPerson
                     , icon = Just "fa fa-plus"
-                    , label = "New Person"
+                    , label = texts.newPerson
                     }
                 ]
             , rootClasses = "mb-4"
             }
-        , Html.map TableMsg (Comp.PersonTable.view2 model.tableModel)
+        , Html.map TableMsg (Comp.PersonTable.view2 texts.personTable model.tableModel)
         , B.loadingDimmer (isLoading model)
         ]
 
 
-viewForm2 : UiSettings -> Model -> Html Msg
-viewForm2 settings model =
+viewForm2 : Texts -> UiSettings -> Model -> Html Msg
+viewForm2 texts settings model =
     let
         newPerson =
             model.formModel.person.id == ""
 
         dimmerSettings2 =
-            Comp.YesNoDimmer.defaultSettings2 "Really delete this person?"
+            Comp.YesNoDimmer.defaultSettings2 texts.reallyDeletePerson
     in
     Html.form
         [ class "md:relative flex flex-col"
@@ -299,14 +300,14 @@ viewForm2 settings model =
             )
         , if newPerson then
             h3 [ class S.header2 ]
-                [ text "Create new person"
+                [ text texts.createNewPerson
                 ]
 
           else
             h3 [ class S.header2 ]
                 [ text model.formModel.person.name
                 , div [ class "opacity-50 text-sm" ]
-                    [ text "Id: "
+                    [ text (texts.basics.id ++ ": ")
                     , text model.formModel.person.id
                     ]
                 ]
@@ -314,24 +315,24 @@ viewForm2 settings model =
             { start =
                 [ MB.PrimaryButton
                     { tagger = Submit
-                    , title = "Submit this form"
+                    , title = texts.basics.submitThisForm
                     , icon = Just "fa fa-save"
-                    , label = "Submit"
+                    , label = texts.basics.submit
                     }
                 , MB.SecondaryButton
                     { tagger = SetViewMode Table
-                    , title = "Back to list"
+                    , title = texts.basics.backToList
                     , icon = Just "fa fa-arrow-left"
-                    , label = "Cancel"
+                    , label = texts.basics.cancel
                     }
                 ]
             , end =
                 if not newPerson then
                     [ MB.DeleteButton
                         { tagger = RequestDelete
-                        , title = "Delete this person"
+                        , title = texts.deleteThisPerson
                         , icon = Just "fa fa-trash"
-                        , label = "Delete"
+                        , label = texts.basics.delete
                         }
                     ]
 
@@ -348,6 +349,11 @@ viewForm2 settings model =
             ]
             [ Maybe.withDefault "" model.formError |> text
             ]
-        , Html.map FormMsg (Comp.PersonForm.view2 False settings model.formModel)
+        , Html.map FormMsg
+            (Comp.PersonForm.view2 texts.personForm
+                False
+                settings
+                model.formModel
+            )
         , B.loadingDimmer (isLoading model)
         ]

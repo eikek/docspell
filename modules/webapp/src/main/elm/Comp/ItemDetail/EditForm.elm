@@ -296,7 +296,7 @@ item visible. This message will disappear then.
                         ]
                     , Html.map OrgDropdownMsg
                         (Comp.Dropdown.view2
-                            (Comp.Dropdown.orgFormViewSettings dds)
+                            (Comp.Dropdown.orgFormViewSettings "Choose an organization" dds)
                             settings
                             model.corrOrgModel
                         )

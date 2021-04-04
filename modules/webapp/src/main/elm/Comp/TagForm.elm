@@ -16,6 +16,7 @@ import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)
+import Messages.TagFormComp exposing (Texts)
 import Styles as S
 import Util.Maybe
 
@@ -118,12 +119,12 @@ update _ msg model =
 --- View2
 
 
-view2 : Model -> Html Msg
-view2 model =
+view2 : Texts -> Model -> Html Msg
+view2 texts model =
     let
         categoryCfg =
             { makeOption = \s -> Comp.Dropdown.mkOption s
-            , placeholder = "Select or define category..."
+            , placeholder = texts.selectDefineCategory
             , labelColor = \_ -> \_ -> ""
             , style = DS.mainStyle
             }
@@ -135,13 +136,13 @@ view2 model =
                 [ for "tagname"
                 , class S.inputLabel
                 ]
-                [ text "Name"
+                [ text texts.name
                 , B.inputRequired
                 ]
             , input
                 [ type_ "text"
                 , onInput SetName
-                , placeholder "Name"
+                , placeholder texts.name
                 , value model.name
                 , id "tagname"
                 , class S.textInput
@@ -157,7 +158,7 @@ view2 model =
             [ label
                 [ class S.inputLabel
                 ]
-                [ text "Category"
+                [ text texts.category
                 ]
             , Html.map CatMsg
                 (Comp.Dropdown.viewSingle2

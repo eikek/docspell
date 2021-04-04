@@ -11,6 +11,7 @@ import Comp.Basic as B
 import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Messages.TagTableComp exposing (Texts)
 import Styles as S
 
 
@@ -50,14 +51,14 @@ update _ msg model =
 --- View2
 
 
-view2 : Model -> Html Msg
-view2 model =
+view2 : Texts -> Model -> Html Msg
+view2 texts model =
     table [ class S.tableMain ]
         [ thead []
             [ tr []
                 [ th [ class "" ] []
-                , th [ class "text-left" ] [ text "Name" ]
-                , th [ class "text-left" ] [ text "Category" ]
+                , th [ class "text-left" ] [ text texts.name ]
+                , th [ class "text-left" ] [ text texts.category ]
                 ]
             ]
         , tbody []

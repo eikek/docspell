@@ -12,6 +12,7 @@ import Data.Flags exposing (Flags)
 import Data.OrgUse
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Messages.OrgTableComp exposing (Texts)
 import Styles as S
 import Util.Address
 import Util.Contact
@@ -53,8 +54,8 @@ update _ msg model =
 --- View2
 
 
-view2 : Model -> Html Msg
-view2 model =
+view2 : Texts -> Model -> Html Msg
+view2 texts model =
     table [ class S.tableMain ]
         [ thead []
             [ tr []
@@ -62,18 +63,24 @@ view2 model =
                 , th [ class "text-left pr-1 md:px-2" ]
                     [ text "Use"
                     ]
-                , th [ class "text-left" ] [ text "Name" ]
-                , th [ class "text-left hidden md:table-cell" ] [ text "Address" ]
-                , th [ class "text-left hidden sm:table-cell" ] [ text "Contact" ]
+                , th [ class "text-left" ]
+                    [ text texts.name
+                    ]
+                , th [ class "text-left hidden md:table-cell" ]
+                    [ text texts.address
+                    ]
+                , th [ class "text-left hidden sm:table-cell" ]
+                    [ text texts.contact
+                    ]
                 ]
             ]
         , tbody []
-            (List.map (renderOrgLine2 model) model.orgs)
+            (List.map (renderOrgLine2 texts model) model.orgs)
         ]
 
 
-renderOrgLine2 : Model -> Organization -> Html Msg
-renderOrgLine2 model org =
+renderOrgLine2 : Texts -> Model -> Organization -> Html Msg
+renderOrgLine2 texts model org =
     tr
         [ classList [ ( "active", model.selected == Just org ) ]
         , class S.tableRow
@@ -83,7 +90,7 @@ renderOrgLine2 model org =
             [ div [ class "label inline-flex text-sm" ]
                 [ Data.OrgUse.fromString org.use
                     |> Maybe.withDefault Data.OrgUse.Correspondent
-                    |> Data.OrgUse.label
+                    |> texts.orgUseLabel
                     |> text
                 ]
             ]

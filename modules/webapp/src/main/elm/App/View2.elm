@@ -127,7 +127,7 @@ mainContent model =
                 viewLogin texts model
 
             ManageDataPage ->
-                viewManageData model
+                viewManageData texts model
 
             UserSettingPage ->
                 viewUserSettings texts model
@@ -431,12 +431,21 @@ viewLogin texts model =
     ]
 
 
-viewManageData : Model -> List (Html Msg)
-viewManageData model =
+viewManageData : Messages -> Model -> List (Html Msg)
+viewManageData texts model =
     [ Html.map ManageDataMsg
-        (ManageData.viewSidebar model.sidebarVisible model.flags model.uiSettings model.manageDataModel)
+        (ManageData.viewSidebar texts.manageData
+            model.sidebarVisible
+            model.flags
+            model.uiSettings
+            model.manageDataModel
+        )
     , Html.map ManageDataMsg
-        (ManageData.viewContent model.flags model.uiSettings model.manageDataModel)
+        (ManageData.viewContent texts.manageData
+            model.flags
+            model.uiSettings
+            model.manageDataModel
+        )
     ]
 
 

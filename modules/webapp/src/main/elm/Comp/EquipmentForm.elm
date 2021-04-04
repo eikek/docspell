@@ -17,6 +17,7 @@ import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)
+import Messages.EquipmentFormComp exposing (Texts)
 import Styles as S
 import Util.Maybe
 
@@ -99,11 +100,11 @@ update _ msg model =
 --- View2
 
 
-view2 : Model -> Html Msg
-view2 model =
+view2 : Texts -> Model -> Html Msg
+view2 texts model =
     let
         equipUseCfg =
-            { display = Data.EquipmentUse.label
+            { display = texts.equipmentUseLabel
             , icon = \_ -> Nothing
             , style = DS.mainStyle
             }

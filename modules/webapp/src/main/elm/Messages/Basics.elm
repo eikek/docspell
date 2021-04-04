@@ -14,6 +14,8 @@ type alias Texts =
     , edit : String
     , back : String
     , backToList : String
+    , searchPlaceholder : String
+    , id : String
     }
 
 
@@ -31,6 +33,8 @@ gb =
     , edit = "Edit"
     , back = "Back"
     , backToList = "Back to list"
+    , searchPlaceholder = "Search…"
+    , id = "Id"
     }
 
 

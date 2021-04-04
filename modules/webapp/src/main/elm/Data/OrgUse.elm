@@ -3,7 +3,6 @@ module Data.OrgUse exposing
     , all
     , asString
     , fromString
-    , label
     )
 
 
@@ -33,16 +32,6 @@ asString pu =
 
         Disabled ->
             "disabled"
-
-
-label : OrgUse -> String
-label pu =
-    case pu of
-        Correspondent ->
-            "Correspondent"
-
-        Disabled ->
-            "Disabled"
 
 
 all : List OrgUse

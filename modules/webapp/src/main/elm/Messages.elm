@@ -9,6 +9,7 @@ import Messages.App
 import Messages.CollectiveSettingsPage
 import Messages.ItemDetailPage
 import Messages.LoginPage
+import Messages.ManageDataPage
 import Messages.NewInvitePage
 import Messages.QueuePage
 import Messages.RegisterPage
@@ -33,6 +34,7 @@ type alias Messages =
     , itemDetail : Messages.ItemDetailPage.Texts
     , queue : Messages.QueuePage.Texts
     , userSettings : Messages.UserSettingsPage.Texts
+    , manageData : Messages.ManageDataPage.Texts
     }
 
 
@@ -94,6 +96,7 @@ gb =
     , itemDetail = Messages.ItemDetailPage.gb
     , queue = Messages.QueuePage.gb
     , userSettings = Messages.UserSettingsPage.gb
+    , manageData = Messages.ManageDataPage.gb
     }
 
 
@@ -112,4 +115,5 @@ de =
     , itemDetail = Messages.ItemDetailPage.de
     , queue = Messages.QueuePage.de
     , userSettings = Messages.UserSettingsPage.de
+    , manageData = Messages.ManageDataPage.de
     }

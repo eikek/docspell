@@ -3,7 +3,6 @@ module Data.PersonUse exposing
     , all
     , asString
     , fromString
-    , label
     , spanPersonList
     )
 
@@ -50,22 +49,6 @@ asString pu =
 
         Disabled ->
             "disabled"
-
-
-label : PersonUse -> String
-label pu =
-    case pu of
-        Correspondent ->
-            "Correspondent"
-
-        Concerning ->
-            "Concerning"
-
-        Both ->
-            "Both"
-
-        Disabled ->
-            "Disabled"
 
 
 all : List PersonUse

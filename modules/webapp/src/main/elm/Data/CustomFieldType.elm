@@ -3,7 +3,6 @@ module Data.CustomFieldType exposing
     , all
     , asString
     , fromString
-    , label
     )
 
 
@@ -37,25 +36,6 @@ asString ft =
 
         Money ->
             "money"
-
-
-label : CustomFieldType -> String
-label ft =
-    case ft of
-        Text ->
-            "Text"
-
-        Numeric ->
-            "Numeric"
-
-        Date ->
-            "Date"
-
-        Boolean ->
-            "Boolean"
-
-        Money ->
-            "Money"
 
 
 fromString : String -> Maybe CustomFieldType
