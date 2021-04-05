@@ -2,6 +2,7 @@ module Comp.PowerSearchInput exposing
     ( Action(..)
     , Model
     , Msg
+    , ViewSettings
     , init
     , update
     , viewInput
@@ -133,12 +134,18 @@ throttleUpdate model =
 --- View
 
 
-viewInput : List (Attribute Msg) -> Model -> Html Msg
-viewInput attrs model =
+type alias ViewSettings =
+    { placeholder : String
+    , extraAttrs : List (Attribute Msg)
+    }
+
+
+viewInput : ViewSettings -> Model -> Html Msg
+viewInput cfg model =
     input
-        (attrs
+        (cfg.extraAttrs
             ++ [ type_ "text"
-               , placeholder "Search query …"
+               , placeholder cfg.placeholder
                , onInput SetSearch
                , Util.Html.onKeyUpCode KeyUpMsg
                , Maybe.map value model.input

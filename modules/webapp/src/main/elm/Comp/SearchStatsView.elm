@@ -11,6 +11,7 @@ import Data.Icons as Icons
 import Data.Money
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Messages.SearchStatsViewComp exposing (Texts)
 import Styles as S
 
 
@@ -28,8 +29,8 @@ sortFields fields =
 --- View2
 
 
-view2 : String -> SearchStats -> Html msg
-view2 classes stats =
+view2 : Texts -> String -> SearchStats -> Html msg
+view2 texts classes stats =
     let
         isNumField f =
             f.sum > 0
@@ -75,7 +76,7 @@ view2 classes stats =
                     { rootClass = ""
                     , valueClass = "text-4xl"
                     , value = String.fromInt stats.count
-                    , label = "Items"
+                    , label = texts.items
                     }
                 ]
             , div [ class "flex-grow" ]
@@ -87,15 +88,15 @@ view2 classes stats =
                         [ tr [ class "" ]
                             [ th [ class "py-2 text-left" ] []
                             , th [ class "py-2 text-center" ]
-                                [ text "Count" ]
+                                [ text texts.count ]
                             , th [ class "py-2 text-center" ]
-                                [ text "Sum" ]
+                                [ text texts.sum ]
                             , th [ class "py-2 text-center hidden md:table-cell" ]
-                                [ text "Avg" ]
+                                [ text texts.avg ]
                             , th [ class "py-2 text-center hidden md:table-cell" ]
-                                [ text "Min" ]
+                                [ text texts.min ]
                             , th [ class "py-2 text-center hidden md:table-cell" ]
-                                [ text "Max" ]
+                                [ text texts.max ]
                             ]
                         ]
                     , tbody []

@@ -96,10 +96,12 @@ formTabs flags settings model =
             Data.UiSettings.fieldVisible settings field
 
         customFieldSettings =
-            Comp.CustomFieldMultiInput.ViewSettings
-                True
-                "field"
-                (\f -> Dict.get f.id model.customFieldSavingIcon)
+            { showAddButton = True
+            , classes = ""
+            , fieldIcon = \f -> Dict.get f.id model.customFieldSavingIcon
+            , style = dds
+            , createCustomFieldTitle = "Create new custom field"
+            }
 
         optional fields html =
             if
@@ -255,7 +257,6 @@ item visible. This message will disappear then.
             [ div [ class "mb-4" ]
                 [ Html.map CustomFieldMsg
                     (Comp.CustomFieldMultiInput.view2
-                        dds
                         customFieldSettings
                         model.customFieldsModel
                     )

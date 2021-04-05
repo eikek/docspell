@@ -39,6 +39,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Http
 import Markdown
+import Messages.MultiEditComp exposing (Texts)
 import Page exposing (Page(..))
 import Set exposing (Set)
 import Styles as S
@@ -601,13 +602,13 @@ defaultViewConfig =
 --- View2
 
 
-view2 : Flags -> ViewConfig -> UiSettings -> Model -> Html Msg
+view2 : Texts -> Flags -> ViewConfig -> UiSettings -> Model -> Html Msg
 view2 =
     renderEditForm2
 
 
-renderEditForm2 : Flags -> ViewConfig -> UiSettings -> Model -> Html Msg
-renderEditForm2 flags cfg settings model =
+renderEditForm2 : Texts -> Flags -> ViewConfig -> UiSettings -> Model -> Html Msg
+renderEditForm2 texts flags cfg settings model =
     let
         fieldVisible field =
             Data.UiSettings.fieldVisible settings field
@@ -636,13 +637,13 @@ renderEditForm2 flags cfg settings model =
         tagModeMsg =
             case model.tagEditMode of
                 AddTags ->
-                    "Tags chosen here are *added* to all selected items."
+                    texts.tagModeAddInfo
 
                 RemoveTags ->
-                    "Tags chosen here are *removed* from all selected items."
+                    texts.tagModeRemoveInfo
 
                 ReplaceTags ->
-                    "Tags chosen here *replace* those on selected items."
+                    texts.tagModeReplaceInfo
 
         customFieldIcon field =
             case cfg.customFieldState field.id of
@@ -656,10 +657,12 @@ renderEditForm2 flags cfg settings model =
                     Just "fa fa-sync-alt animate-spin"
 
         customFieldSettings =
-            Comp.CustomFieldMultiInput.ViewSettings
-                False
-                "mb-4"
-                customFieldIcon
+            { showAddButton = False
+            , classes = "mb-4"
+            , fieldIcon = customFieldIcon
+            , style = dds
+            , createCustomFieldTitle = ""
+            }
 
         dds =
             Data.DropdownStyle.sidebarStyle
@@ -677,7 +680,7 @@ renderEditForm2 flags cfg settings model =
         idNameCfg =
             { makeOption = \e -> { text = e.name, additional = "" }
             , labelColor = \_ -> \_ -> ""
-            , placeholder = "Select…"
+            , placeholder = texts.selectPlaceholder
             , style = dds
             }
 
@@ -687,7 +690,7 @@ renderEditForm2 flags cfg settings model =
                     { text = Data.Direction.toString entry
                     , additional = ""
                     }
-            , placeholder = "Choose a direction…"
+            , placeholder = texts.chooseDirection
             , labelColor = \_ -> \_ -> ""
             , style = dds
             }
@@ -697,7 +700,7 @@ renderEditForm2 flags cfg settings model =
             tabStyle
             (tabState settings model)
             [ { name = tabName TabConfirmUnconfirm
-              , title = "Confirm/Unconfirm item metadata"
+              , title = texts.confirmUnconfirm
               , titleRight = []
               , info = Nothing
               , body =
@@ -709,32 +712,32 @@ renderEditForm2 flags cfg settings model =
                             , class "flex-grow"
                             , onClick (ConfirmMsg True)
                             ]
-                            [ text "Confirm"
+                            [ text texts.confirm
                             ]
                         , button
                             [ class S.secondaryButton
                             , class "flex-grow"
                             , onClick (ConfirmMsg False)
                             ]
-                            [ text "Unconfirm"
+                            [ text texts.unconfirm
                             ]
                         ]
                     ]
               }
             , { name = tabName TabTags
-              , title = "Tags"
+              , title = texts.basics.tags
               , titleRight = []
               , info = Nothing
               , body =
                     [ div [ class "field" ]
                         [ label [ class S.inputLabel ]
                             [ Icons.tagsIcon2 ""
-                            , text "Tags"
+                            , text texts.basics.tags
                             , a
                                 [ class "float-right"
                                 , class S.link
                                 , href "#"
-                                , title "Change tag edit mode"
+                                , title texts.changeTagMode
                                 , onClick ToggleTagEditMode
                                 ]
                                 [ tagModeIcon
@@ -750,7 +753,7 @@ renderEditForm2 flags cfg settings model =
                     ]
               }
             , { name = tabName TabFolder
-              , title = "Folder"
+              , title = texts.folderTab
               , titleRight = []
               , info = Nothing
               , body =
@@ -761,25 +764,24 @@ renderEditForm2 flags cfg settings model =
                             , ( "hidden", isFolderMember model )
                             ]
                         ]
-                        [ Markdown.toHtml [] """
-You are **not a member** of this folder. This item will be **hidden**
-from any search now. Use a folder where you are a member of to make this
-item visible. This message will disappear then.
-                      """
+                        [ Markdown.toHtml [] texts.folderNotOwnerWarning
                         ]
                     ]
               }
             , { name = tabName TabCustomFields
-              , title = "Custom Fields"
+              , title = texts.customFieldsTab
               , titleRight = []
               , info = Nothing
               , body =
                     [ Html.map CustomFieldMsg
-                        (Comp.CustomFieldMultiInput.view2 dds customFieldSettings model.customFieldModel)
+                        (Comp.CustomFieldMultiInput.view2
+                            customFieldSettings
+                            model.customFieldModel
+                        )
                     ]
               }
             , { name = tabName TabDate
-              , title = "Date"
+              , title = texts.dateTab
               , titleRight = []
               , info = Nothing
               , body =
@@ -802,7 +804,7 @@ item visible. This message will disappear then.
                     ]
               }
             , { name = tabName TabDueDate
-              , title = "Due Date"
+              , title = texts.dueDateTab
               , titleRight = []
               , info = Nothing
               , body =
@@ -825,7 +827,7 @@ item visible. This message will disappear then.
                     ]
               }
             , { name = tabName TabCorrespondent
-              , title = "Correspondent"
+              , title = texts.correspondentTab
               , titleRight = []
               , info = Nothing
               , body =
@@ -834,25 +836,35 @@ item visible. This message will disappear then.
                             [ label [ class S.inputLabel ]
                                 [ Icons.organizationIcon2 ""
                                 , span [ class "ml-2" ]
-                                    [ text "Organization"
+                                    [ text texts.organization
                                     ]
                                 ]
-                            , Html.map OrgDropdownMsg (Comp.Dropdown.view2 idNameCfg settings model.corrOrgModel)
+                            , Html.map OrgDropdownMsg
+                                (Comp.Dropdown.view2
+                                    idNameCfg
+                                    settings
+                                    model.corrOrgModel
+                                )
                             ]
                     , optional [ Data.Fields.CorrPerson ] <|
                         div [ class "mb-4" ]
                             [ label [ class S.inputLabel ]
                                 [ Icons.personIcon2 ""
                                 , span [ class "ml-2" ]
-                                    [ text "Person"
+                                    [ text texts.person
                                     ]
                                 ]
-                            , Html.map CorrPersonMsg (Comp.Dropdown.view2 idNameCfg settings model.corrPersonModel)
+                            , Html.map CorrPersonMsg
+                                (Comp.Dropdown.view2
+                                    idNameCfg
+                                    settings
+                                    model.corrPersonModel
+                                )
                             ]
                     ]
               }
             , { name = tabName TabConcerning
-              , title = "Concerning"
+              , title = texts.concerningTab
               , titleRight = []
               , info = Nothing
               , body =
@@ -861,7 +873,7 @@ item visible. This message will disappear then.
                             [ label [ class S.inputLabel ]
                                 [ Icons.personIcon2 ""
                                 , span [ class "ml-2" ]
-                                    [ text "Person" ]
+                                    [ text texts.person ]
                                 ]
                             , Html.map ConcPersonMsg (Comp.Dropdown.view2 idNameCfg settings model.concPersonModel)
                             ]
@@ -870,7 +882,7 @@ item visible. This message will disappear then.
                             [ label [ class S.inputLabel ]
                                 [ Icons.equipmentIcon2 ""
                                 , span [ class "ml-2" ]
-                                    [ text "Equipment" ]
+                                    [ text texts.equipment ]
                                 ]
                             , Html.map ConcEquipMsg
                                 (Comp.Dropdown.view2 idNameCfg
@@ -881,7 +893,7 @@ item visible. This message will disappear then.
                     ]
               }
             , { name = tabName TabDirection
-              , title = "Direction"
+              , title = texts.directionTab
               , titleRight = []
               , info = Nothing
               , body =
@@ -889,7 +901,7 @@ item visible. This message will disappear then.
                     ]
               }
             , { name = tabName TabName
-              , title = "Name"
+              , title = texts.nameTab
               , titleRight = []
               , info = Nothing
               , body =
@@ -904,9 +916,15 @@ item visible. This message will disappear then.
                         , span [ class S.inputLeftIconOnly ]
                             [ i
                                 [ classList
-                                    [ ( "text-green-500 fa fa-check", cfg.nameState == SaveSuccess )
-                                    , ( "text-red-500 fa fa-exclamation-triangle", cfg.nameState == SaveFailed )
-                                    , ( "sync fa fa-circle-notch animate-spin", cfg.nameState == Saving )
+                                    [ ( "text-green-500 fa fa-check"
+                                      , cfg.nameState == SaveSuccess
+                                      )
+                                    , ( "text-red-500 fa fa-exclamation-triangle"
+                                      , cfg.nameState == SaveFailed
+                                      )
+                                    , ( "sync fa fa-circle-notch animate-spin"
+                                      , cfg.nameState == Saving
+                                      )
                                     ]
                                 ]
                                 []
@@ -923,7 +941,7 @@ tabState settings model tab =
     FTabState.tabState settings
         model.openTabs
         (Just model.customFieldModel)
-        (.title >> ToggleAkkordionTab)
+        (.name >> ToggleAkkordionTab)
         tab
 
 

@@ -118,7 +118,7 @@ mainContent model =
         ]
         (case model.page of
             HomePage ->
-                viewHome model
+                viewHome texts model
 
             CollectiveSettingPage ->
                 viewCollectiveSettings texts model
@@ -397,10 +397,21 @@ dropdownMenu =
     " absolute right-0 bg-white dark:bg-bluegray-800 border dark:border-bluegray-700 dark:text-bluegray-300 shadow-lg opacity-1 transition duration-200 min-w-max "
 
 
-viewHome : Model -> List (Html Msg)
-viewHome model =
-    [ Html.map HomeMsg (Home.viewSidebar model.sidebarVisible model.flags model.uiSettings model.homeModel)
-    , Html.map HomeMsg (Home.viewContent model.flags model.uiSettings model.homeModel)
+viewHome : Messages -> Model -> List (Html Msg)
+viewHome texts model =
+    [ Html.map HomeMsg
+        (Home.viewSidebar texts.home
+            model.sidebarVisible
+            model.flags
+            model.uiSettings
+            model.homeModel
+        )
+    , Html.map HomeMsg
+        (Home.viewContent texts.home
+            model.flags
+            model.uiSettings
+            model.homeModel
+        )
     ]
 
 

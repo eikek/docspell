@@ -13,6 +13,7 @@ import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
+import Messages.HomePage exposing (Texts)
 import Page exposing (Page(..))
 import Page.Home.Data exposing (..)
 import Page.Home.SideMenu
@@ -21,28 +22,28 @@ import Styles as S
 import Util.Html
 
 
-viewSidebar : Bool -> Flags -> UiSettings -> Model -> Html Msg
-viewSidebar visible flags settings model =
+viewSidebar : Texts -> Bool -> Flags -> UiSettings -> Model -> Html Msg
+viewSidebar texts visible flags settings model =
     div
         [ id "sidebar"
         , class S.sidebar
         , class S.sidebarBg
         , classList [ ( "hidden", not visible ) ]
         ]
-        [ Page.Home.SideMenu.view flags settings model
+        [ Page.Home.SideMenu.view texts.sideMenu flags settings model
         ]
 
 
-viewContent : Flags -> UiSettings -> Model -> Html Msg
-viewContent flags settings model =
+viewContent : Texts -> Flags -> UiSettings -> Model -> Html Msg
+viewContent texts flags settings model =
     div
         [ id "item-card-list" -- this id is used in scroll-to-card
         , class S.content
         ]
-        (searchStats flags settings model
-            ++ itemsBar flags settings model
-            ++ itemCardList flags settings model
-            ++ deleteSelectedDimmer model
+        (searchStats texts flags settings model
+            ++ itemsBar texts flags settings model
+            ++ itemCardList texts flags settings model
+            ++ confirmModal texts model
         )
 
 
@@ -50,13 +51,32 @@ viewContent flags settings model =
 --- Helpers
 
 
-deleteSelectedDimmer : Model -> List (Html Msg)
-deleteSelectedDimmer model =
+confirmModal : Texts -> Model -> List (Html Msg)
+confirmModal texts model =
+    let
+        settings modalValue =
+            case modalValue of
+                ConfirmReprocessItems ->
+                    Comp.ConfirmModal.defaultSettings
+                        ReprocessSelectedConfirmed
+                        CloseConfirmModal
+                        texts.basics.yes
+                        texts.basics.no
+                        texts.reallyReprocessQuestion
+
+                ConfirmDelete ->
+                    Comp.ConfirmModal.defaultSettings
+                        DeleteSelectedConfirmed
+                        CloseConfirmModal
+                        texts.basics.yes
+                        texts.basics.no
+                        texts.reallyDeleteQuestion
+    in
     case model.viewMode of
         SelectView svm ->
             case svm.confirmModal of
                 Just confirm ->
-                    [ Comp.ConfirmModal.view confirm
+                    [ Comp.ConfirmModal.view (settings confirm)
                     ]
 
                 Nothing ->
@@ -66,21 +86,21 @@ deleteSelectedDimmer model =
             []
 
 
-itemsBar : Flags -> UiSettings -> Model -> List (Html Msg)
-itemsBar flags settings model =
+itemsBar : Texts -> Flags -> UiSettings -> Model -> List (Html Msg)
+itemsBar texts flags settings model =
     case model.viewMode of
         SimpleView ->
-            [ defaultMenuBar flags settings model ]
+            [ defaultMenuBar texts flags settings model ]
 
         SearchView ->
-            [ defaultMenuBar flags settings model ]
+            [ defaultMenuBar texts flags settings model ]
 
         SelectView svm ->
-            [ editMenuBar model svm ]
+            [ editMenuBar texts model svm ]
 
 
-defaultMenuBar : Flags -> UiSettings -> Model -> Html Msg
-defaultMenuBar _ settings model =
+defaultMenuBar : Texts -> Flags -> UiSettings -> Model -> Html Msg
+defaultMenuBar texts _ settings model =
     let
         btnStyle =
             S.secondaryBasicButton ++ " text-sm"
@@ -97,10 +117,10 @@ defaultMenuBar _ settings model =
                     , placeholder
                         (case model.searchTypeDropdownValue of
                             ContentOnlySearch ->
-                                "Content search…"
+                                texts.contentSearch
 
                             BasicSearch ->
-                                "Search in names…"
+                                texts.searchInNames
                         )
                     , onInput SetBasicSearch
                     , Util.Html.onKeyUpCode KeyUpSearchbarMsg
@@ -124,7 +144,10 @@ defaultMenuBar _ settings model =
             div
                 [ class "relative flex flex-grow flex-row" ]
                 [ Html.map PowerSearchMsg
-                    (Comp.PowerSearchInput.viewInput []
+                    (Comp.PowerSearchInput.viewInput
+                        { placeholder = texts.powerSearchPlaceholder
+                        , extraAttrs = []
+                        }
                         model.powerSearchInput
                     )
                 , Html.map PowerSearchMsg
@@ -150,7 +173,7 @@ defaultMenuBar _ settings model =
                 { tagger = ToggleSelectView
                 , label = ""
                 , icon = Just "fa fa-tasks"
-                , title = "Select Mode"
+                , title = texts.selectModeTitle
                 , inputClass =
                     [ ( btnStyle, True )
                     , ( "bg-gray-200 dark:bg-bluegray-600", selectActive model )
@@ -170,10 +193,10 @@ defaultMenuBar _ settings model =
                 , icon = Just "fa fa-expand"
                 , title =
                     if settings.cardPreviewFullWidth then
-                        "Full height preview"
+                        texts.fullHeightPreviewTitle
 
                     else
-                        "Full width preview"
+                        texts.fullHeightPreviewTitle
                 , inputClass =
                     [ ( btnStyle, True )
                     , ( "hidden sm:inline-block", False )
@@ -185,11 +208,11 @@ defaultMenuBar _ settings model =
         }
 
 
-editMenuBar : Model -> SelectViewModel -> Html Msg
-editMenuBar model svm =
+editMenuBar : Texts -> Model -> SelectViewModel -> Html Msg
+editMenuBar texts model svm =
     let
         selectCount =
-            Set.size svm.ids |> String.fromInt
+            Set.size svm.ids
 
         btnStyle =
             S.secondaryBasicButton ++ " text-sm"
@@ -200,7 +223,7 @@ editMenuBar model svm =
                 { tagger = EditSelectedItems
                 , label = ""
                 , icon = Just "fa fa-edit"
-                , title = "Edit " ++ selectCount ++ " selected items"
+                , title = texts.editSelectedItems selectCount
                 , inputClass =
                     [ ( btnStyle, True )
                     , ( "bg-gray-200 dark:bg-bluegray-600", svm.action == EditSelected )
@@ -210,7 +233,7 @@ editMenuBar model svm =
                 { tagger = RequestReprocessSelected
                 , label = ""
                 , icon = Just "fa fa-redo"
-                , title = "Reprocess " ++ selectCount ++ " selected items"
+                , title = texts.reprocessSelectedItems selectCount
                 , inputClass =
                     [ ( btnStyle, True )
                     , ( "bg-gray-200 dark:bg-bluegray-600", svm.action == ReprocessSelected )
@@ -220,7 +243,7 @@ editMenuBar model svm =
                 { tagger = RequestDeleteSelected
                 , label = ""
                 , icon = Just "fa fa-trash"
-                , title = "Delete " ++ selectCount ++ " selected items"
+                , title = texts.deleteSelectedItems selectCount
                 , inputClass =
                     [ ( btnStyle, True )
                     , ( "bg-gray-200 dark:bg-bluegray-600", svm.action == DeleteSelected )
@@ -232,7 +255,7 @@ editMenuBar model svm =
                 { tagger = SelectAllItems
                 , label = ""
                 , icon = Just "fa fa-check-square font-thin"
-                , title = "Select all visible"
+                , title = texts.selectAllVisible
                 , inputClass =
                     [ ( btnStyle, True )
                     ]
@@ -241,21 +264,21 @@ editMenuBar model svm =
                 { tagger = SelectNoItems
                 , label = ""
                 , icon = Just "fa fa-square font-thin"
-                , title = "Select none"
+                , title = texts.selectNone
                 , inputClass =
                     [ ( btnStyle, True )
                     ]
                 }
             , MB.TextLabel
                 { icon = ""
-                , label = selectCount
+                , label = String.fromInt selectCount
                 , class = "px-4 py-2 w-10 rounded-full font-bold bg-blue-100 dark:bg-lightblue-600 "
                 }
             , MB.CustomButton
                 { tagger = ResetSearch
                 , label = ""
                 , icon = Just "fa fa-sync"
-                , title = "Reset search form"
+                , title = texts.resetSearchForm
                 , inputClass =
                     [ ( btnStyle, True )
                     , ( "hidden sm:block", True )
@@ -265,7 +288,7 @@ editMenuBar model svm =
                 { tagger = ToggleSelectView
                 , label = ""
                 , icon = Just "fa fa-tasks"
-                , title = "Exit Select Mode"
+                , title = texts.exitSelectMode
                 , inputClass =
                     [ ( btnStyle, True )
                     , ( "bg-gray-200 dark:bg-bluegray-600", selectActive model )
@@ -276,18 +299,18 @@ editMenuBar model svm =
         }
 
 
-searchStats : Flags -> UiSettings -> Model -> List (Html Msg)
-searchStats _ settings model =
+searchStats : Texts -> Flags -> UiSettings -> Model -> List (Html Msg)
+searchStats texts _ settings model =
     if settings.searchStatsVisible then
-        [ Comp.SearchStatsView.view2 "my-2" model.searchStats
+        [ Comp.SearchStatsView.view2 texts.searchStatsView "my-2" model.searchStats
         ]
 
     else
         []
 
 
-itemCardList : Flags -> UiSettings -> Model -> List (Html Msg)
-itemCardList _ settings model =
+itemCardList : Texts -> Flags -> UiSettings -> Model -> List (Html Msg)
+itemCardList texts _ settings model =
     let
         itemViewCfg =
             case model.viewMode of
@@ -302,7 +325,11 @@ itemCardList _ settings model =
                         Data.ItemSelection.Inactive
     in
     [ Html.map ItemCardListMsg
-        (Comp.ItemCardList.view2 itemViewCfg settings model.itemListModel)
+        (Comp.ItemCardList.view2 texts.itemCardList
+            itemViewCfg
+            settings
+            model.itemListModel
+        )
     , loadMore settings model
     ]
 

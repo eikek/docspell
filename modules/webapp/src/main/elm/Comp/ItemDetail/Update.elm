@@ -550,6 +550,8 @@ update key flags inav settings msg model =
                     Comp.ConfirmModal.defaultSettings
                         DeleteItemConfirmed
                         ItemModalCancelled
+                        "Ok"
+                        "Cancel"
                         confirmMsg
             in
             resultModel { model | itemModal = Just confirm }
@@ -923,6 +925,8 @@ update key flags inav settings msg model =
                     Comp.ConfirmModal.defaultSettings
                         (DeleteAttachConfirmed id)
                         AttachModalCancelled
+                        "Ok"
+                        "Cancel"
                         "Really delete this file?"
 
                 model_ =
@@ -1511,6 +1515,8 @@ update key flags inav settings msg model =
                     Comp.ConfirmModal.defaultSettings
                         (ReprocessFileConfirmed id)
                         AttachModalCancelled
+                        "Ok"
+                        "Cancel"
                         confirmMsg
 
                 model_ =
@@ -1546,6 +1552,8 @@ update key flags inav settings msg model =
                     Comp.ConfirmModal.defaultSettings
                         ReprocessItemConfirmed
                         ItemModalCancelled
+                        "Ok"
+                        "Cancel"
                         confirmMsg
 
                 model_ =

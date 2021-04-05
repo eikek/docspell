@@ -44,6 +44,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Http
+import Messages.SearchMenuComp exposing (Texts)
 import Set exposing (Set)
 import Styles as S
 import Util.Html exposing (KeyCode(..))
@@ -902,8 +903,7 @@ updateDrop ddm flags settings msg model =
         ToggleOpenAllAkkordionTabs ->
             let
                 allNames =
-                    searchTabs (DD.DragDropData ddm Nothing) flags settings model
-                        |> List.map .title
+                    List.map tabName allTabs
                         |> Set.fromList
 
                 next =
@@ -924,8 +924,8 @@ updateDrop ddm flags settings msg model =
 --- View2
 
 
-viewDrop2 : DD.DragDropData -> Flags -> UiSettings -> Model -> Html Msg
-viewDrop2 ddd flags settings model =
+viewDrop2 : Texts -> DD.DragDropData -> Flags -> UiSettings -> Model -> Html Msg
+viewDrop2 texts ddd flags settings model =
     let
         akkordionStyle =
             Comp.Tabs.searchMenuStyle
@@ -933,7 +933,7 @@ viewDrop2 ddd flags settings model =
     Comp.Tabs.akkordion
         akkordionStyle
         (searchTabState settings model)
-        (searchTabs ddd flags settings model)
+        (searchTabs texts ddd flags settings model)
 
 
 type SearchTab
@@ -948,6 +948,22 @@ type SearchTab
     | TabDueDate
     | TabSource
     | TabDirection
+
+
+allTabs : List SearchTab
+allTabs =
+    [ TabInbox
+    , TabTags
+    , TabTagCategories
+    , TabFolder
+    , TabCorrespondent
+    , TabConcerning
+    , TabCustomFields
+    , TabDate
+    , TabDueDate
+    , TabSource
+    , TabDirection
+    ]
 
 
 tabName : SearchTab -> String
@@ -1085,8 +1101,8 @@ searchTabState settings model tab =
     ( state, ToggleAkkordionTab tab.name )
 
 
-searchTabs : DD.DragDropData -> Flags -> UiSettings -> Model -> List (Comp.Tabs.Tab Msg)
-searchTabs ddd flags settings model =
+searchTabs : Texts -> DD.DragDropData -> Flags -> UiSettings -> Model -> List (Comp.Tabs.Tab Msg)
+searchTabs texts ddd flags settings model =
     let
         isHidden f =
             Data.UiSettings.fieldHidden settings f
@@ -1100,21 +1116,14 @@ searchTabs ddd flags settings model =
                     { text = Data.Direction.toString entry
                     , additional = ""
                     }
-            , placeholder = "Choose a direction…"
+            , placeholder = texts.chooseDirection
             , labelColor = \_ -> \_ -> ""
             , style = DS.sidebarStyle
             }
 
-        corrPersonCfg =
+        personCfg =
             { makeOption = \e -> { text = e.name, additional = "" }
-            , placeholder = "Choose a person"
-            , labelColor = \_ -> \_ -> ""
-            , style = DS.sidebarStyle
-            }
-
-        concPersonCfg =
-            { makeOption = \e -> { text = e.name, additional = "" }
-            , placeholder = "Choose a person"
+            , placeholder = texts.choosePerson
             , labelColor = \_ -> \_ -> ""
             , style = DS.sidebarStyle
             }
@@ -1122,12 +1131,12 @@ searchTabs ddd flags settings model =
         concEquipCfg =
             { makeOption = \e -> { text = e.name, additional = "" }
             , labelColor = \_ -> \_ -> ""
-            , placeholder = "Choose an equipment"
+            , placeholder = texts.chooseEquipment
             , style = DS.sidebarStyle
             }
     in
     [ { name = tabName TabInbox
-      , title = "Inbox"
+      , title = texts.inbox
       , info = Nothing
       , titleRight = []
       , body =
@@ -1135,7 +1144,7 @@ searchTabs ddd flags settings model =
                 MB.Checkbox
                     { id = "search-inbox"
                     , value = model.inboxCheckbox
-                    , label = "Inbox"
+                    , label = texts.inbox
                     , tagger = \_ -> ToggleInbox
                     }
             , div [ class "mt-2 hidden" ]
@@ -1143,10 +1152,10 @@ searchTabs ddd flags settings model =
                     [ text
                         (case model.textSearchModel of
                             Fulltext _ ->
-                                "Fulltext Search"
+                                texts.fulltextSearch
 
                             Names _ ->
-                                "Search in names"
+                                texts.searchInNames
                         )
                     , a
                         [ classList
@@ -1156,7 +1165,7 @@ searchTabs ddd flags settings model =
                         , class S.link
                         , href "#"
                         , onClick SwapTextSearch
-                        , title "Switch between text search modes"
+                        , title texts.switchSearchModes
                         ]
                         [ i [ class "fa fa-exchange-alt" ] []
                         ]
@@ -1168,26 +1177,26 @@ searchTabs ddd flags settings model =
                     , textSearchString model.textSearchModel |> Maybe.withDefault "" |> value
                     , case model.textSearchModel of
                         Fulltext _ ->
-                            placeholder "Content search…"
+                            placeholder texts.contentSearch
 
                         Names _ ->
-                            placeholder "Search in various names…"
+                            placeholder texts.searchInNamesPlaceholder
                     , class S.textInputSidebar
                     ]
                     []
                 , span [ class "opacity-50 text-sm" ]
                     [ case model.textSearchModel of
                         Fulltext _ ->
-                            text "Fulltext search in document contents and notes."
+                            text texts.fulltextSearchInfo
 
                         Names _ ->
-                            text "Looks in correspondents, concerned entities, item name and notes."
+                            text texts.nameSearchInfo
                     ]
                 ]
             ]
       }
     , { name = tabName TabTags
-      , title = "Tags"
+      , title = texts.basics.tags
       , titleRight = []
       , info = Nothing
       , body =
@@ -1200,7 +1209,7 @@ searchTabs ddd flags settings model =
                 )
       }
     , { name = tabName TabTagCategories
-      , title = "Tag Categories"
+      , title = texts.tagCategoryTab
       , titleRight = []
       , info = Nothing
       , body =
@@ -1213,7 +1222,7 @@ searchTabs ddd flags settings model =
             ]
       }
     , { name = tabName TabFolder
-      , title = "Folder"
+      , title = texts.folderTab
       , titleRight = []
       , info = Nothing
       , body =
@@ -1225,7 +1234,7 @@ searchTabs ddd flags settings model =
             ]
       }
     , { name = tabName TabCorrespondent
-      , title = "Correspondent"
+      , title = texts.correspondentTab
       , titleRight = []
       , info = Nothing
       , body =
@@ -1234,10 +1243,10 @@ searchTabs ddd flags settings model =
                 , classList [ ( "hidden", isHidden Data.Fields.CorrOrg ) ]
                 ]
                 [ label [ class S.inputLabel ]
-                    [ text "Organization" ]
+                    [ text texts.organization ]
                 , Html.map OrgMsg
                     (Comp.Dropdown.view2
-                        (Comp.Dropdown.orgFormViewSettings "Choose an organization" DS.sidebarStyle)
+                        (Comp.Dropdown.orgFormViewSettings texts.chooseOrganization DS.sidebarStyle)
                         settings
                         model.orgModel
                     )
@@ -1246,10 +1255,10 @@ searchTabs ddd flags settings model =
                 [ class "mb-4"
                 , classList [ ( "hidden", isHidden Data.Fields.CorrPerson ) ]
                 ]
-                [ label [ class S.inputLabel ] [ text "Person" ]
+                [ label [ class S.inputLabel ] [ text texts.person ]
                 , Html.map CorrPersonMsg
                     (Comp.Dropdown.view2
-                        corrPersonCfg
+                        personCfg
                         settings
                         model.corrPersonModel
                     )
@@ -1257,7 +1266,7 @@ searchTabs ddd flags settings model =
             ]
       }
     , { name = tabName TabConcerning
-      , title = "Concerning"
+      , title = texts.concerningTab
       , titleRight = []
       , info = Nothing
       , body =
@@ -1265,10 +1274,10 @@ searchTabs ddd flags settings model =
                 [ class "mb-4"
                 , classList [ ( "hidden", isHidden Data.Fields.ConcPerson ) ]
                 ]
-                [ label [ class S.inputLabel ] [ text "Person" ]
+                [ label [ class S.inputLabel ] [ text texts.person ]
                 , Html.map ConcPersonMsg
                     (Comp.Dropdown.view2
-                        concPersonCfg
+                        personCfg
                         settings
                         model.concPersonModel
                     )
@@ -1277,7 +1286,7 @@ searchTabs ddd flags settings model =
                 [ class "mb-4"
                 , classList [ ( "hidden", isHidden Data.Fields.ConcEquip ) ]
                 ]
-                [ label [ class S.inputLabel ] [ text "Equipment" ]
+                [ label [ class S.inputLabel ] [ text texts.equipment ]
                 , Html.map ConcEquipmentMsg
                     (Comp.Dropdown.view2
                         concEquipCfg
@@ -1288,20 +1297,24 @@ searchTabs ddd flags settings model =
             ]
       }
     , { name = tabName TabCustomFields
-      , title = "Custom Fields"
+      , title = texts.customFieldsTab
       , titleRight = []
       , info = Nothing
       , body =
             [ Html.map CustomFieldMsg
                 (Comp.CustomFieldMultiInput.view2
-                    DS.sidebarStyle
-                    (Comp.CustomFieldMultiInput.ViewSettings False "field" (\_ -> Nothing))
+                    { showAddButton = False
+                    , classes = ""
+                    , fieldIcon = \_ -> Nothing
+                    , style = DS.sidebarStyle
+                    , createCustomFieldTitle = texts.createCustomFieldTitle
+                    }
                     model.customFieldModel
                 )
             ]
       }
     , { name = tabName TabDate
-      , title = "Date"
+      , title = texts.dateTab
       , titleRight = []
       , info = Nothing
       , body =
@@ -1309,7 +1322,7 @@ searchTabs ddd flags settings model =
                 [ class "flex flex-col" ]
                 [ div [ class "mb-2" ]
                     [ label [ class S.inputLabel ]
-                        [ text "From"
+                        [ text texts.from
                         ]
                     , div [ class "relative" ]
                         [ Html.map FromDateMsg
@@ -1326,7 +1339,7 @@ searchTabs ddd flags settings model =
                     ]
                 , div [ class "mb-2" ]
                     [ label [ class S.inputLabel ]
-                        [ text "To"
+                        [ text texts.to
                         ]
                     , div [ class "relative" ]
                         [ Html.map UntilDateMsg
@@ -1341,7 +1354,7 @@ searchTabs ddd flags settings model =
             ]
       }
     , { name = tabName TabDueDate
-      , title = "Due Date"
+      , title = texts.dueDateTab
       , titleRight = []
       , info = Nothing
       , body =
@@ -1349,7 +1362,7 @@ searchTabs ddd flags settings model =
                 [ class "flex flex-col" ]
                 [ div [ class "mb-2" ]
                     [ label [ class S.inputLabel ]
-                        [ text "Due From"
+                        [ text texts.dueFrom
                         ]
                     , div [ class "relative" ]
                         [ Html.map FromDueDateMsg
@@ -1366,7 +1379,7 @@ searchTabs ddd flags settings model =
                     ]
                 , div [ class "mb-2" ]
                     [ label [ class S.inputLabel ]
-                        [ text "Due To"
+                        [ text texts.dueTo
                         ]
                     , div [ class "relative" ]
                         [ Html.map UntilDueDateMsg
@@ -1385,7 +1398,7 @@ searchTabs ddd flags settings model =
             ]
       }
     , { name = tabName TabSource
-      , title = "Source"
+      , title = texts.sourceTab
       , titleRight = []
       , info = Nothing
       , body =
@@ -1395,7 +1408,7 @@ searchTabs ddd flags settings model =
                     , onInput SetSource
                     , Util.Html.onKeyUpCode KeyUpMsg
                     , model.sourceModel |> Maybe.withDefault "" |> value
-                    , placeholder "Search in item source…"
+                    , placeholder texts.searchInItemSource
                     , class S.textInputSidebar
                     ]
                     []
@@ -1403,7 +1416,7 @@ searchTabs ddd flags settings model =
             ]
       }
     , { name = tabName TabDirection
-      , title = "Direction"
+      , title = texts.directionTab
       , titleRight = []
       , info = Nothing
       , body =

@@ -1,5 +1,6 @@
 module Page.Home.Data exposing
-    ( Model
+    ( ConfirmModalValue(..)
+    , Model
     , Msg(..)
     , SearchParam
     , SearchType(..)
@@ -21,7 +22,6 @@ import Api.Model.BasicResult exposing (BasicResult)
 import Api.Model.ItemLightList exposing (ItemLightList)
 import Api.Model.SearchStats exposing (SearchStats)
 import Browser.Dom as Dom
-import Comp.ConfirmModal
 import Comp.ItemCardList
 import Comp.ItemDetail.FormChange exposing (FormChange)
 import Comp.ItemDetail.MultiEditMenu exposing (SaveNameState(..))
@@ -58,10 +58,15 @@ type alias Model =
     }
 
 
+type ConfirmModalValue
+    = ConfirmReprocessItems
+    | ConfirmDelete
+
+
 type alias SelectViewModel =
     { ids : Set String
     , action : SelectActionMode
-    , confirmModal : Maybe (Comp.ConfirmModal.Settings Msg)
+    , confirmModal : Maybe ConfirmModalValue
     , editModel : Comp.ItemDetail.MultiEditMenu.Model
     , saveNameState : SaveNameState
     , saveCustomFieldState : Set String

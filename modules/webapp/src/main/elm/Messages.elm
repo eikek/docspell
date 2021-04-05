@@ -7,6 +7,7 @@ module Messages exposing
 
 import Messages.App
 import Messages.CollectiveSettingsPage
+import Messages.HomePage
 import Messages.ItemDetailPage
 import Messages.LoginPage
 import Messages.ManageDataPage
@@ -35,6 +36,7 @@ type alias Messages =
     , queue : Messages.QueuePage.Texts
     , userSettings : Messages.UserSettingsPage.Texts
     , manageData : Messages.ManageDataPage.Texts
+    , home : Messages.HomePage.Texts
     }
 
 
@@ -97,6 +99,7 @@ gb =
     , queue = Messages.QueuePage.gb
     , userSettings = Messages.UserSettingsPage.gb
     , manageData = Messages.ManageDataPage.gb
+    , home = Messages.HomePage.gb
     }
 
 
@@ -116,4 +119,5 @@ de =
     , queue = Messages.QueuePage.de
     , userSettings = Messages.UserSettingsPage.de
     , manageData = Messages.ManageDataPage.de
+    , home = Messages.HomePage.de
     }
