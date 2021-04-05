@@ -34,7 +34,7 @@ object Dependencies {
   val PoiVersion              = "4.1.2"
   val PostgresVersion         = "42.2.19"
   val PureConfigVersion       = "0.14.1"
-  val ScalaJavaTimeVersion    = "2.2.0"
+  val ScalaJavaTimeVersion    = "2.2.1"
   val Slf4jVersion            = "1.7.30"
   val StanfordNlpVersion      = "4.2.0"
   val TikaVersion             = "1.26"
