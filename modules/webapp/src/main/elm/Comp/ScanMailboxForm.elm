@@ -1108,7 +1108,7 @@ viewMetadata2 texts flags settings model =
             [ text texts.basics.tags ]
         , Html.map TagDropdownMsg
             (Comp.Dropdown.view2
-                (Util.Tag.tagSettings DS.mainStyle)
+                (Util.Tag.tagSettings texts.basics.chooseTag DS.mainStyle)
                 settings
                 model.tagModel
             )

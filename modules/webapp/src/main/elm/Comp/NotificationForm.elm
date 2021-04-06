@@ -612,7 +612,7 @@ view2 texts extraClasses settings model =
                 [ text texts.tagsInclude ]
             , Html.map TagIncMsg
                 (Comp.Dropdown.view2
-                    (Util.Tag.tagSettings DS.mainStyle)
+                    (Util.Tag.tagSettings texts.basics.chooseTag DS.mainStyle)
                     settings
                     model.tagInclModel
                 )
@@ -625,7 +625,7 @@ view2 texts extraClasses settings model =
                 [ text texts.tagsExclude ]
             , Html.map TagExcMsg
                 (Comp.Dropdown.view2
-                    (Util.Tag.tagSettings DS.mainStyle)
+                    (Util.Tag.tagSettings texts.basics.chooseTag DS.mainStyle)
                     settings
                     model.tagExclModel
                 )

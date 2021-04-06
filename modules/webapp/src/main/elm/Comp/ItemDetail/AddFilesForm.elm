@@ -25,7 +25,7 @@ view texts model =
         , class S.box
         ]
         [ div [ class "text-lg font-bold" ]
-            [ text "Add more files to this item"
+            [ text texts.addMoreFilesToItem
             ]
         , Html.map AddFilesMsg
             (Comp.Dropzone.view2 texts.dropzone model.addFilesModel)
@@ -35,14 +35,14 @@ view texts model =
                 , href "#"
                 , onClick AddFilesSubmitUpload
                 ]
-                [ text "Submit"
+                [ text texts.basics.submit
                 ]
             , button
                 [ class S.secondaryButton
                 , href "#"
                 , onClick AddFilesReset
                 ]
-                [ text "Reset"
+                [ text texts.reset
                 ]
             ]
         , div
@@ -52,14 +52,13 @@ view texts model =
                 ]
             , class "mt-2"
             ]
-            [ text "All files have been uploaded. They are being processed, some data "
-            , text "may not be available immediately. "
+            [ text texts.filesSubmittedInfo
             , a
                 [ class S.successMessageLink
                 , href "#"
                 , onClick ReloadItem
                 ]
-                [ text "Refresh now"
+                [ text texts.refreshNow
                 ]
             ]
         , div

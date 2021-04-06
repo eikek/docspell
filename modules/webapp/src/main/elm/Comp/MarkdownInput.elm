@@ -68,48 +68,48 @@ viewContent2 txt model =
             splitDisplay2 txt
 
 
-viewEditLink2 : (Bool -> Attribute Msg) -> Model -> Html Msg
-viewEditLink2 classes model =
+viewEditLink2 : String -> (Bool -> Attribute Msg) -> Model -> Html Msg
+viewEditLink2 label classes model =
     a
         [ onClick (SetDisplay Edit)
         , classes (model.display == Edit)
         , href "#"
         ]
-        [ text "Edit"
+        [ text label
         ]
 
 
-viewPreviewLink2 : (Bool -> Attribute Msg) -> Model -> Html Msg
-viewPreviewLink2 classes model =
+viewPreviewLink2 : String -> (Bool -> Attribute Msg) -> Model -> Html Msg
+viewPreviewLink2 label classes model =
     a
         [ onClick (SetDisplay Preview)
         , classes (model.display == Preview)
         , href "#"
         ]
-        [ text "Preview"
+        [ text label
         ]
 
 
-viewSplitLink2 : (Bool -> Attribute Msg) -> Model -> Html Msg
-viewSplitLink2 classes model =
+viewSplitLink2 : String -> (Bool -> Attribute Msg) -> Model -> Html Msg
+viewSplitLink2 label classes model =
     a
         [ onClick (SetDisplay Split)
         , classes (model.display == Split)
         , href "#"
         ]
-        [ text "Split"
+        [ text label
         ]
 
 
-viewCheatLink2 : String -> Model -> Html msg
-viewCheatLink2 classes model =
+viewCheatLink2 : String -> String -> Model -> Html msg
+viewCheatLink2 label classes model =
     a
         [ class classes
         , target "_new"
         , href model.cheatSheetUrl
         ]
         [ i [ class "fa fa-question mr-2" ] []
-        , text "Supports Markdown"
+        , text label
         ]
 
 

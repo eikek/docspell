@@ -1,4 +1,4 @@
-module Comp.ItemDetail.FieldTabState exposing (EditTab(..), findTab, tabName, tabState)
+module Comp.ItemDetail.FieldTabState exposing (EditTab(..), allTabs, findTab, tabName, tabState)
 
 import Comp.CustomFieldMultiInput
 import Comp.Tabs as TB
@@ -18,6 +18,21 @@ type EditTab
     | TabConcerning
     | TabDirection
     | TabConfirmUnconfirm
+
+
+allTabs : List EditTab
+allTabs =
+    [ TabName
+    , TabDate
+    , TabTags
+    , TabFolder
+    , TabCustomFields
+    , TabDueDate
+    , TabCorrespondent
+    , TabConcerning
+    , TabDirection
+    , TabConfirmUnconfirm
+    ]
 
 
 tabName : EditTab -> String

@@ -32,8 +32,8 @@ import Util.Time
 view : Texts -> ItemNav -> UiSettings -> Model -> Html Msg
 view texts inav settings model =
     div [ class "flex flex-col h-full" ]
-        [ header settings model
-        , menuBar inav settings model
+        [ header texts settings model
+        , menuBar texts inav settings model
         , body texts inav settings model
         , itemModal model
         ]
@@ -49,18 +49,18 @@ itemModal model =
             span [ class "hidden" ] []
 
 
-header : UiSettings -> Model -> Html Msg
-header settings model =
+header : Texts -> UiSettings -> Model -> Html Msg
+header texts settings model =
     div [ class "my-3" ]
-        [ Comp.ItemDetail.ItemInfoHeader.view settings model ]
+        [ Comp.ItemDetail.ItemInfoHeader.view texts.itemInfoHeader settings model ]
 
 
-menuBar : ItemNav -> UiSettings -> Model -> Html Msg
-menuBar inav settings model =
+menuBar : Texts -> ItemNav -> UiSettings -> Model -> Html Msg
+menuBar texts inav settings model =
     let
         keyDescr name =
             if settings.itemDetailShortcuts && model.menuOpen then
-                " Key '" ++ name ++ "'."
+                " " ++ texts.key ++ "'" ++ name ++ "'."
 
             else
                 ""
@@ -71,7 +71,7 @@ menuBar inav settings model =
                 a
                     [ class S.secondaryBasicButton
                     , Page.href HomePage
-                    , title "Back to search results"
+                    , title texts.backToSearchResults
                     ]
                     [ i [ class "fa fa-arrow-left" ] []
                     ]
@@ -88,7 +88,7 @@ menuBar inav settings model =
                                 |> Maybe.withDefault (href "#")
                         , disabled = inav.prev == Nothing
                         , attrs =
-                            [ title ("Previous item." ++ keyDescr "Ctrl-,")
+                            [ title (texts.previousItem ++ keyDescr "Ctrl-,")
                             ]
                         }
                     , div
@@ -117,7 +117,7 @@ menuBar inav settings model =
                                 |> Maybe.withDefault (href "#")
                         , disabled = inav.next == Nothing
                         , attrs =
-                            [ title ("Next item." ++ keyDescr "Ctrl-.")
+                            [ title (texts.nextItem ++ keyDescr "Ctrl-.")
                             ]
                         }
                     ]
@@ -126,7 +126,7 @@ menuBar inav settings model =
                     [ classList
                         [ ( "bg-gray-200 dark:bg-bluegray-600", model.mailOpen )
                         ]
-                    , title "Send Mail"
+                    , title texts.sendMail
                     , onClick ToggleMail
                     , class S.secondaryBasicButton
                     , href "#"
@@ -142,7 +142,7 @@ menuBar inav settings model =
                         title "Close"
 
                       else
-                        title "Add more files to this item"
+                        title texts.addMoreFiles
                     , onClick AddFilesToggle
                     , class S.secondaryBasicButton
                     , href "#"
@@ -154,11 +154,11 @@ menuBar inav settings model =
                     [ class S.primaryButton
                     , href "#"
                     , onClick ConfirmItem
-                    , title "Confirm item metadata"
+                    , title texts.confirmItemMetadata
                     , classList [ ( "hidden", model.item.state /= "created" ) ]
                     ]
                     [ i [ class "fa fa-check mr-2" ] []
-                    , text "Confirm"
+                    , text texts.confirm
                     ]
             ]
         , end =
@@ -167,7 +167,7 @@ menuBar inav settings model =
                     [ class S.secondaryBasicButton
                     , href "#"
                     , onClick UnconfirmItem
-                    , title "Un-confirm item metadata"
+                    , title texts.unconfirmItemMetadata
                     , classList [ ( "hidden", model.item.state == "created" ) ]
                     ]
                     [ i [ class "fa fa-eye-slash font-thin" ] []
@@ -177,7 +177,7 @@ menuBar inav settings model =
                     [ class S.secondaryBasicButton
                     , href "#"
                     , onClick RequestReprocessItem
-                    , title "Reprocess this item"
+                    , title texts.reprocessItem
                     ]
                     [ i [ class "fa fa-redo" ] []
                     ]
@@ -186,7 +186,7 @@ menuBar inav settings model =
                     [ class S.deleteButton
                     , href "#"
                     , onClick RequestDelete
-                    , title "Delete this item"
+                    , title texts.deleteThisItem
                     ]
                     [ i [ class "fa fa-trash" ] []
                     ]
@@ -199,17 +199,17 @@ body : Texts -> ItemNav -> UiSettings -> Model -> Html Msg
 body texts _ settings model =
     div [ class "grid gap-2 grid-cols-1 md:grid-cols-3 h-full" ]
         [ leftArea texts settings model
-        , rightArea settings model
+        , rightArea texts settings model
         ]
 
 
 leftArea : Texts -> UiSettings -> Model -> Html Msg
 leftArea texts settings model =
     div [ class "w-full md:order-first md:mr-2 flex flex-col" ]
-        [ addDetailForm settings model
-        , sendMailForm settings model
+        [ addDetailForm texts settings model
+        , sendMailForm texts settings model
         , Comp.ItemDetail.AddFilesForm.view texts.addFilesForm model
-        , Comp.ItemDetail.Notes.view model
+        , Comp.ItemDetail.Notes.view texts.notes model
         , div
             [ classList
                 [ ( "hidden", Comp.SentMails.isEmpty model.sentMails )
@@ -217,29 +217,29 @@ leftArea texts settings model =
             , class "mt-4 "
             ]
             [ h3 [ class "flex flex-row items-center border-b dark:border-bluegray-600 font-bold text-lg" ]
-                [ text "Sent E-Mails"
+                [ text texts.sentEmails
                 ]
-            , Html.map SentMailsMsg (Comp.SentMails.view2 model.sentMails)
+            , Html.map SentMailsMsg (Comp.SentMails.view2 texts.sentMails model.sentMails)
             ]
         , div [ class "flex-grow" ] []
-        , itemIdInfo model
+        , itemIdInfo texts model
         ]
 
 
-rightArea : UiSettings -> Model -> Html Msg
-rightArea settings model =
+rightArea : Texts -> UiSettings -> Model -> Html Msg
+rightArea texts settings model =
     div [ class "md:col-span-2 h-full" ]
-        (attachmentsBody settings model)
+        (attachmentsBody texts settings model)
 
 
-attachmentsBody : UiSettings -> Model -> List (Html Msg)
-attachmentsBody settings model =
-    List.indexedMap (Comp.ItemDetail.SingleAttachment.view settings model)
+attachmentsBody : Texts -> UiSettings -> Model -> List (Html Msg)
+attachmentsBody texts settings model =
+    List.indexedMap (Comp.ItemDetail.SingleAttachment.view texts.singleAttachment settings model)
         model.item.attachments
 
 
-sendMailForm : UiSettings -> Model -> Html Msg
-sendMailForm settings model =
+sendMailForm : Texts -> UiSettings -> Model -> Html Msg
+sendMailForm texts settings model =
     div
         [ classList
             [ ( "hidden", not model.mailOpen )
@@ -248,10 +248,10 @@ sendMailForm settings model =
         , class "mb-4 px-2 py-2"
         ]
         [ div [ class "text-lg font-bold" ]
-            [ text "Send this item via E-Mail"
+            [ text texts.sendThisItemViaEmail
             ]
         , B.loadingDimmer model.mailSending
-        , Html.map ItemMailMsg (Comp.ItemMail.view2 settings model.itemMail)
+        , Html.map ItemMailMsg (Comp.ItemMail.view2 texts.itemMail settings model.itemMail)
         , div
             [ classList
                 [ ( S.errorMessage
@@ -274,26 +274,26 @@ sendMailForm settings model =
         ]
 
 
-itemIdInfo : Model -> Html msg
-itemIdInfo model =
+itemIdInfo : Texts -> Model -> Html msg
+itemIdInfo texts model =
     div [ class "flex flex-col opacity-50 text-xs pb-1 mt-3 border-t dark:border-bluegray-600" ]
         [ div
             [ class "inline-flex items-center"
-            , title "Item ID"
+            , title texts.itemId
             ]
             [ i [ class "fa fa-bullseye mr-2" ] []
             , text model.item.id
             ]
         , div
             [ class "inline-flex items-center"
-            , title "Created on"
+            , title texts.createdOn
             ]
             [ i [ class "fa fa-sun font-thin mr-2" ] []
             , Util.Time.formatDateTime model.item.created |> text
             ]
         , div
             [ class "inline-flex items-center"
-            , title "Last update on"
+            , title texts.lastUpdateOn
             ]
             [ i [ class "fa fa-pencil-alt mr-2" ] []
             , Util.Time.formatDateTime model.item.updated |> text
@@ -301,8 +301,8 @@ itemIdInfo model =
         ]
 
 
-addDetailForm : UiSettings -> Model -> Html Msg
-addDetailForm settings model =
+addDetailForm : Texts -> UiSettings -> Model -> Html Msg
+addDetailForm texts settings model =
     case model.modalEdit of
         Just mm ->
             div
@@ -310,7 +310,7 @@ addDetailForm settings model =
                 , class S.box
                 ]
                 [ Comp.DetailEdit.formHeading S.header3 mm
-                , Html.map ModalEditMsg (Comp.DetailEdit.view2 [] settings mm)
+                , Html.map ModalEditMsg (Comp.DetailEdit.view2 texts.detailEdit [] settings mm)
                 ]
 
         Nothing ->

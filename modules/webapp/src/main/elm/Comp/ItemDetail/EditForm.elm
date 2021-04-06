@@ -25,6 +25,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Markdown
+import Messages.EditFormComp exposing (Texts)
 import Page exposing (Page(..))
 import Set exposing (Set)
 import Styles as S
@@ -34,8 +35,8 @@ import Util.Tag
 import Util.Time
 
 
-view2 : Flags -> UiSettings -> Model -> Html Msg
-view2 flags settings model =
+view2 : Texts -> Flags -> UiSettings -> Model -> Html Msg
+view2 texts flags settings model =
     let
         keyAttr =
             if settings.itemDetailShortcuts then
@@ -48,7 +49,7 @@ view2 flags settings model =
             TB.searchMenuStyle
 
         tabs =
-            formTabs flags settings model
+            formTabs texts flags settings model
 
         allTabNames =
             List.map .title tabs
@@ -61,8 +62,8 @@ view2 flags settings model =
         ]
 
 
-formTabs : Flags -> UiSettings -> Model -> List (TB.Tab Msg)
-formTabs flags settings model =
+formTabs : Texts -> Flags -> UiSettings -> Model -> List (TB.Tab Msg)
+formTabs texts flags settings model =
     let
         dds =
             Data.DropdownStyle.sidebarStyle
@@ -100,7 +101,7 @@ formTabs flags settings model =
             , classes = ""
             , fieldIcon = \f -> Dict.get f.id model.customFieldSavingIcon
             , style = dds
-            , createCustomFieldTitle = "Create new custom field"
+            , createCustomFieldTitle = texts.createNewCustomField
             }
 
         optional fields html =
@@ -119,7 +120,7 @@ formTabs flags settings model =
                     { text = Data.Direction.toString entry
                     , additional = ""
                     }
-            , placeholder = "Choose a direction…"
+            , placeholder = texts.chooseDirection
             , labelColor = \_ -> \_ -> ""
             , style = dds
             }
@@ -134,19 +135,19 @@ formTabs flags settings model =
         idNameCfg =
             { makeOption = \e -> { text = e.name, additional = "" }
             , labelColor = \_ -> \_ -> ""
-            , placeholder = "Select…"
+            , placeholder = texts.selectPlaceholder
             , style = dds
             }
 
         personCfg =
             { makeOption = \p -> Util.Person.mkPersonOption p model.allPersons
             , labelColor = \_ -> \_ -> ""
-            , placeholder = "Select…"
+            , placeholder = texts.selectPlaceholder
             , style = dds
             }
     in
     [ { name = FTabState.tabName TabName
-      , title = "Name"
+      , title = texts.nameTab
       , titleRight = []
       , info = Nothing
       , body =
@@ -173,7 +174,7 @@ formTabs flags settings model =
             ]
       }
     , { name = FTabState.tabName TabDate
-      , title = "Date"
+      , title = texts.dateTab
       , titleRight = []
       , info = Nothing
       , body =
@@ -194,18 +195,18 @@ formTabs flags settings model =
                         ]
                     , Icons.dateIcon2 S.dateInputIcon
                     ]
-                , renderItemDateSuggestions model
+                , renderItemDateSuggestions texts model
                 ]
             ]
       }
     , { name = FTabState.tabName TabTags
-      , title = "Tags"
+      , title = texts.basics.tags
       , titleRight = []
       , info = Nothing
       , body =
             [ div [ class "mb-4 flex flex-col" ]
                 [ Html.map TagDropdownMsg
-                    (Comp.Dropdown.view2 (Util.Tag.tagSettings dds)
+                    (Comp.Dropdown.view2 (Util.Tag.tagSettings texts.basics.chooseTag dds)
                         settings
                         model.tagModel
                     )
@@ -223,7 +224,7 @@ formTabs flags settings model =
             ]
       }
     , { name = FTabState.tabName TabFolder
-      , title = "Folder"
+      , title = texts.folderTab
       , titleRight = []
       , info = Nothing
       , body =
@@ -240,17 +241,13 @@ formTabs flags settings model =
                         , ( "hidden", isFolderMember model )
                         ]
                     ]
-                    [ Markdown.toHtml [] """
-You are **not a member** of this folder. This item will be **hidden**
-from any search now. Use a folder where you are a member of to make this
-item visible. This message will disappear then.
-                      """
+                    [ Markdown.toHtml [] texts.folderNotOwnerWarning
                     ]
                 ]
             ]
       }
     , { name = FTabState.tabName TabCustomFields
-      , title = "Custom Fields"
+      , title = texts.customFieldsTab
       , titleRight = []
       , info = Nothing
       , body =
@@ -264,7 +261,7 @@ item visible. This message will disappear then.
             ]
       }
     , { name = FTabState.tabName TabDueDate
-      , title = "Due Date"
+      , title = texts.dueDateTab
       , titleRight = []
       , info = Nothing
       , body =
@@ -285,12 +282,12 @@ item visible. This message will disappear then.
                         ]
                     , Icons.dueDateIcon2 S.dateInputIcon
                     ]
-                , renderDueDateSuggestions model
+                , renderDueDateSuggestions texts model
                 ]
             ]
       }
     , { name = FTabState.tabName TabCorrespondent
-      , title = "Correspondent"
+      , title = texts.correspondentTab
       , titleRight = []
       , info = Nothing
       , body =
@@ -298,25 +295,25 @@ item visible. This message will disappear then.
                 div [ class "mb-4" ]
                     [ label [ class S.inputLabel ]
                         [ Icons.organizationIcon2 "mr-2"
-                        , text "Organization"
-                        , addIconLink "Add new organization" StartCorrOrgModal
-                        , editIconLink "Edit organization" model.corrOrgModel StartEditCorrOrgModal
+                        , text texts.organization
+                        , addIconLink texts.addNewOrg StartCorrOrgModal
+                        , editIconLink texts.editOrg model.corrOrgModel StartEditCorrOrgModal
                         ]
                     , Html.map OrgDropdownMsg
                         (Comp.Dropdown.view2
-                            (Comp.Dropdown.orgFormViewSettings "Choose an organization" dds)
+                            (Comp.Dropdown.orgFormViewSettings texts.chooseOrg dds)
                             settings
                             model.corrOrgModel
                         )
-                    , renderOrgSuggestions model
+                    , renderOrgSuggestions texts model
                     ]
             , optional [ Data.Fields.CorrPerson ] <|
                 div [ class "mb-4" ]
                     [ label [ class S.inputLabel ]
                         [ Icons.personIcon2 "mr-2"
                         , text "Person"
-                        , addIconLink "Add new correspondent person" StartCorrPersonModal
-                        , editIconLink "Edit person"
+                        , addIconLink texts.addNewCorrespondentPerson StartCorrPersonModal
+                        , editIconLink texts.editPerson
                             model.corrPersonModel
                             (StartEditPersonModal model.corrPersonModel)
                         ]
@@ -325,7 +322,7 @@ item visible. This message will disappear then.
                             settings
                             model.corrPersonModel
                         )
-                    , renderCorrPersonSuggestions model
+                    , renderCorrPersonSuggestions texts model
                     , div
                         [ classList
                             [ ( "hidden", personMatchesOrg model )
@@ -334,13 +331,13 @@ item visible. This message will disappear then.
                         , class "my-2"
                         ]
                         [ i [ class "fa fa-info mr-2 " ] []
-                        , text "The selected person doesn't belong to the selected organization."
+                        , text texts.personOrgInfo
                         ]
                     ]
             ]
       }
     , { name = FTabState.tabName TabConcerning
-      , title = "Concerning"
+      , title = texts.concerningTab
       , titleRight = []
       , info = Nothing
       , body =
@@ -349,8 +346,8 @@ item visible. This message will disappear then.
                     [ label [ class S.inputLabel ]
                         [ Icons.personIcon2 "mr-2"
                         , text "Person"
-                        , addIconLink "Add new concerning person" StartConcPersonModal
-                        , editIconLink "Edit person"
+                        , addIconLink texts.addNewConcerningPerson StartConcPersonModal
+                        , editIconLink texts.editPerson
                             model.concPersonModel
                             (StartEditPersonModal model.concPersonModel)
                         ]
@@ -360,15 +357,15 @@ item visible. This message will disappear then.
                             settings
                             model.concPersonModel
                         )
-                    , renderConcPersonSuggestions model
+                    , renderConcPersonSuggestions texts model
                     ]
             , optional [ Data.Fields.ConcEquip ] <|
                 div [ class "mb-4" ]
                     [ label [ class S.inputLabel ]
                         [ Icons.equipmentIcon2 "mr-2"
                         , text "Equipment"
-                        , addIconLink "Add new equipment" StartEquipModal
-                        , editIconLink "Edit equipment"
+                        , addIconLink texts.addNewEquipment StartEquipModal
+                        , editIconLink texts.editEquipment
                             model.concEquipModel
                             StartEditEquipModal
                         ]
@@ -378,12 +375,12 @@ item visible. This message will disappear then.
                             settings
                             model.concEquipModel
                         )
-                    , renderConcEquipSuggestions model
+                    , renderConcEquipSuggestions texts model
                     ]
             ]
       }
     , { name = FTabState.tabName TabDirection
-      , title = "Direction"
+      , title = texts.directionTab
       , titleRight = []
       , info = Nothing
       , body =
@@ -400,8 +397,8 @@ item visible. This message will disappear then.
     ]
 
 
-renderSuggestions : Model -> (a -> String) -> List a -> (a -> Msg) -> Html Msg
-renderSuggestions model mkName idnames tagger =
+renderSuggestions : Texts -> Model -> (a -> String) -> List a -> (a -> Msg) -> Html Msg
+renderSuggestions texts model mkName idnames tagger =
     div
         [ classList
             [ ( "hidden", model.item.state /= "created" )
@@ -409,7 +406,7 @@ renderSuggestions model mkName idnames tagger =
         , class "flex flex-col text-sm"
         ]
         [ div [ class "font-bold my-1" ]
-            [ text "Suggestions"
+            [ text texts.suggestions
             ]
         , ul [ class "list-disc ml-6" ] <|
             (idnames
@@ -428,49 +425,55 @@ renderSuggestions model mkName idnames tagger =
         ]
 
 
-renderOrgSuggestions : Model -> Html Msg
-renderOrgSuggestions model =
-    renderSuggestions model
+renderOrgSuggestions : Texts -> Model -> Html Msg
+renderOrgSuggestions texts model =
+    renderSuggestions texts
+        model
         .name
         (List.take 6 model.itemProposals.corrOrg)
         SetCorrOrgSuggestion
 
 
-renderCorrPersonSuggestions : Model -> Html Msg
-renderCorrPersonSuggestions model =
-    renderSuggestions model
+renderCorrPersonSuggestions : Texts -> Model -> Html Msg
+renderCorrPersonSuggestions texts model =
+    renderSuggestions texts
+        model
         .name
         (List.take 6 model.itemProposals.corrPerson)
         SetCorrPersonSuggestion
 
 
-renderConcPersonSuggestions : Model -> Html Msg
-renderConcPersonSuggestions model =
-    renderSuggestions model
+renderConcPersonSuggestions : Texts -> Model -> Html Msg
+renderConcPersonSuggestions texts model =
+    renderSuggestions texts
+        model
         .name
         (List.take 6 model.itemProposals.concPerson)
         SetConcPersonSuggestion
 
 
-renderConcEquipSuggestions : Model -> Html Msg
-renderConcEquipSuggestions model =
-    renderSuggestions model
+renderConcEquipSuggestions : Texts -> Model -> Html Msg
+renderConcEquipSuggestions texts model =
+    renderSuggestions texts
+        model
         .name
         (List.take 6 model.itemProposals.concEquipment)
         SetConcEquipSuggestion
 
 
-renderItemDateSuggestions : Model -> Html Msg
-renderItemDateSuggestions model =
-    renderSuggestions model
+renderItemDateSuggestions : Texts -> Model -> Html Msg
+renderItemDateSuggestions texts model =
+    renderSuggestions texts
+        model
         Util.Time.formatDate
         (List.take 6 model.itemProposals.itemDate)
         SetItemDateSuggestion
 
 
-renderDueDateSuggestions : Model -> Html Msg
-renderDueDateSuggestions model =
-    renderSuggestions model
+renderDueDateSuggestions : Texts -> Model -> Html Msg
+renderDueDateSuggestions texts model =
+    renderSuggestions texts
+        model
         Util.Time.formatDate
         (List.take 6 model.itemProposals.dueDate)
         SetDueDateSuggestion

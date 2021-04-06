@@ -744,7 +744,7 @@ renderEditForm2 texts flags cfg settings model =
                                 ]
                             ]
                         , Html.map TagDropdownMsg
-                            (Comp.Dropdown.view2 (Util.Tag.tagSettings dds)
+                            (Comp.Dropdown.view2 (Util.Tag.tagSettings texts.basics.chooseTag dds)
                                 settings
                                 model.tagModel
                             )

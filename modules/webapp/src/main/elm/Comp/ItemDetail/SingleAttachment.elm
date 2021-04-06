@@ -18,6 +18,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Html5.DragDrop as DD
+import Messages.SingleAttachmentComp exposing (Texts)
 import Page exposing (Page(..))
 import Styles as S
 import Util.Maybe
@@ -25,8 +26,8 @@ import Util.Size
 import Util.String
 
 
-view : UiSettings -> Model -> Int -> Attachment -> Html Msg
-view settings model pos attach =
+view : Texts -> UiSettings -> Model -> Int -> Attachment -> Html Msg
+view texts settings model pos attach =
     let
         fileUrl =
             Api.fileURL attach.id
@@ -42,10 +43,10 @@ view settings model pos attach =
             [ class "flex flex-row px-2 py-2 text-sm"
             , class S.border
             ]
-            [ attachHeader settings model pos attach
+            [ attachHeader texts settings model pos attach
             ]
         , editAttachmentName model attach
-        , attachmentSelect model pos attach
+        , attachmentSelect texts model pos attach
         , if isAttachMetaOpen model attach.id then
             case Dict.get attach.id model.attachMeta of
                 Just am ->
@@ -94,11 +95,11 @@ view settings model pos attach =
       - native view
 
 -}
-attachHeader : UiSettings -> Model -> Int -> Attachment -> Html Msg
-attachHeader settings model _ attach =
+attachHeader : Texts -> UiSettings -> Model -> Int -> Attachment -> Html Msg
+attachHeader texts settings model _ attach =
     let
         attachName =
-            Maybe.withDefault "No name" attach.name
+            Maybe.withDefault texts.noName attach.name
 
         fileUrl =
             Api.fileURL attach.id
@@ -138,7 +139,7 @@ attachHeader settings model _ attach =
             , a
                 [ href fileUrl
                 , target "_new"
-                , title "Open file in new tab"
+                , title texts.openFileInNewTab
                 , class S.secondaryBasicButton
                 , class "ml-2"
                 ]
@@ -155,21 +156,21 @@ attachHeader settings model _ attach =
                     , menuOpen = model.attachmentDropdownOpen
                     , items =
                         [ { icon = "fa fa-download"
-                          , label = "Download file"
+                          , label = texts.downloadFile
                           , attrs =
                                 [ download attachName
                                 , href fileUrl
                                 ]
                           }
                         , { icon = "fa fa-file"
-                          , label = "Rename file"
+                          , label = texts.renameFile
                           , attrs =
                                 [ href "#"
                                 , onClick (EditAttachNameStart attach.id)
                                 ]
                           }
                         , { icon = "fa fa-file-archive"
-                          , label = "Download original archive"
+                          , label = texts.downloadOriginalArchiveFile
                           , attrs =
                                 [ href (fileUrl ++ "/archive")
                                 , target "_new"
@@ -177,7 +178,7 @@ attachHeader settings model _ attach =
                                 ]
                           }
                         , { icon = "fa fa-external-link-alt"
-                          , label = "Original file"
+                          , label = texts.originalFile
                           , attrs =
                                 [ href (fileUrl ++ "/original")
                                 , target "_new"
@@ -190,7 +191,7 @@ attachHeader settings model _ attach =
 
                                 else
                                     "fa fa-toggle-off"
-                          , label = "Render pdf by browser"
+                          , label = texts.renderPdfByBrowser
                           , attrs =
                                 [ onClick (TogglePdfNativeView settings.nativePdfPreview)
                                 , href "#"
@@ -202,21 +203,21 @@ attachHeader settings model _ attach =
 
                                 else
                                     "fa fa-toggle-off"
-                          , label = "View extracted data"
+                          , label = texts.viewExtractedData
                           , attrs =
                                 [ onClick (AttachMetaClick attach.id)
                                 , href "#"
                                 ]
                           }
                         , { icon = "fa fa-redo-alt"
-                          , label = "Re-process this file"
+                          , label = texts.reprocessFile
                           , attrs =
                                 [ onClick (RequestReprocessFile attach.id)
                                 , href "#"
                                 ]
                           }
                         , { icon = "fa fa-trash"
-                          , label = "Delete this file"
+                          , label = texts.deleteThisFile
                           , attrs =
                                 [ onClick (RequestDeleteAttachment attach.id)
                                 , href "#"
@@ -279,8 +280,8 @@ editAttachmentName model attach =
             span [ class "hidden" ] []
 
 
-attachmentSelect : Model -> Int -> Attachment -> Html Msg
-attachmentSelect model _ _ =
+attachmentSelect : Texts -> Model -> Int -> Attachment -> Html Msg
+attachmentSelect texts model _ _ =
     div
         [ class "flex flex-row border-l border-r px-2 py-2 dark:border-bluegray-600 "
         , class "overflow-x-auto overflow-y-none"
@@ -288,11 +289,11 @@ attachmentSelect model _ _ =
             [ ( "hidden", not model.attachMenuOpen )
             ]
         ]
-        (List.indexedMap (menuItem model) model.item.attachments)
+        (List.indexedMap (menuItem texts model) model.item.attachments)
 
 
-menuItem : Model -> Int -> Attachment -> Html Msg
-menuItem model pos attach =
+menuItem : Texts -> Model -> Int -> Attachment -> Html Msg
+menuItem texts model pos attach =
     let
         highlight =
             let
@@ -342,7 +343,7 @@ menuItem model pos attach =
             ]
         , div [ class "mt-1 text-sm break-all w-28 text-center" ]
             [ Maybe.map (Util.String.ellipsis 36) attach.name
-                |> Maybe.withDefault "No Name"
+                |> Maybe.withDefault texts.noName
                 |> text
             ]
         ]

@@ -40,7 +40,7 @@ viewSidebar texts visible flags settings model =
                         , disabled = model.detail.item.state == "created"
                         , handler = onClick (ItemDetailMsg Comp.ItemDetail.Model.ToggleOpenAllAkkordionTabs)
                         , attrs =
-                            [ title "Collapse/Expand"
+                            [ title texts.collapseExpand
                             , href "#"
                             ]
                         }
@@ -49,7 +49,7 @@ viewSidebar texts visible flags settings model =
             , rootClasses = "text-sm mb-3 "
             }
         , Html.map ItemDetailMsg
-            (Comp.ItemDetail.EditForm.view2 flags settings model.detail)
+            (Comp.ItemDetail.EditForm.view2 texts.editForm flags settings model.detail)
         ]
 
 

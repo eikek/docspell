@@ -322,7 +322,7 @@ view2 flags texts settings model =
             }
 
         tagCfg =
-            Util.Tag.tagSettings DS.mainStyle
+            Util.Tag.tagSettings texts.basics.chooseTag DS.mainStyle
 
         languageCfg =
             { makeOption =

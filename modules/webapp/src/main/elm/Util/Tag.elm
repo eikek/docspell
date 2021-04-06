@@ -21,14 +21,14 @@ makeDropdownModel =
         }
 
 
-tagSettings : DS.DropdownStyle -> Comp.Dropdown.ViewSettings Tag
-tagSettings ds =
+tagSettings : String -> DS.DropdownStyle -> Comp.Dropdown.ViewSettings Tag
+tagSettings placeholder ds =
     { makeOption = \tag -> { text = tag.name, additional = "" }
     , labelColor =
         \tag ->
             \settings ->
                 Data.UiSettings.tagColorString2 tag settings
-    , placeholder = "Choose a tag…"
+    , placeholder = placeholder
     , style = ds
     }
 
@@ -41,11 +41,11 @@ makeCatDropdownModel =
         }
 
 
-catSettings : DS.DropdownStyle -> Comp.Dropdown.ViewSettings String
-catSettings ds =
+catSettings : String -> DS.DropdownStyle -> Comp.Dropdown.ViewSettings String
+catSettings placeholder ds =
     { makeOption = \cat -> { text = cat, additional = "" }
     , labelColor = \_ -> \_ -> ""
-    , placeholder = "Choose a tag category…"
+    , placeholder = placeholder
     , style = ds
     }
 

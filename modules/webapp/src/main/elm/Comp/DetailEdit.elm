@@ -47,11 +47,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Http
-import Messages.CustomFieldFormComp
-import Messages.EquipmentFormComp
-import Messages.OrgFormComp
-import Messages.PersonFormComp
-import Messages.TagFormComp
+import Messages.DetailEditComp exposing (Texts)
 import Styles as S
 import Util.Http
 
@@ -644,10 +640,10 @@ update flags msg model =
 --- View2
 
 
-view2 : List (Attribute Msg) -> UiSettings -> Model -> Html Msg
-view2 attr settings model =
+view2 : Texts -> List (Attribute Msg) -> UiSettings -> Model -> Html Msg
+view2 texts attr settings model =
     div attr
-        (viewIntern2 settings True model)
+        (viewIntern2 texts settings True model)
 
 
 formHeading : String -> Model -> Html msg
@@ -673,8 +669,8 @@ formHeading classes model =
         ]
 
 
-viewModal2 : UiSettings -> Maybe Model -> Html Msg
-viewModal2 settings mm =
+viewModal2 : Texts -> UiSettings -> Maybe Model -> Html Msg
+viewModal2 texts settings mm =
     let
         hidden =
             mm == Nothing
@@ -715,7 +711,7 @@ viewModal2 settings mm =
             , div [ class "scrolling content" ]
                 (case mm of
                     Just model ->
-                        viewIntern2 settings False model
+                        viewIntern2 texts settings False model
 
                     Nothing ->
                         []
@@ -723,7 +719,7 @@ viewModal2 settings mm =
             , div [ class "flex flex-row space-x-2" ]
                 (case mm of
                     Just model ->
-                        viewButtons2 model
+                        viewButtons2 texts model
 
                     Nothing ->
                         []
@@ -732,10 +728,10 @@ viewModal2 settings mm =
         ]
 
 
-viewButtons2 : Model -> List (Html Msg)
-viewButtons2 model =
+viewButtons2 : Texts -> Model -> List (Html Msg)
+viewButtons2 texts model =
     [ B.primaryButton
-        { label = "Submit"
+        { label = texts.basics.submit
         , icon =
             if model.submitting || model.loading then
                 "fa fa-circle-notch animate-spin"
@@ -747,7 +743,7 @@ viewButtons2 model =
         , attrs = [ href "#" ]
         }
     , B.secondaryButton
-        { label = "Cancel"
+        { label = texts.basics.cancel
         , handler = onClick Cancel
         , disabled = False
         , icon = "fa fa-times"
@@ -756,8 +752,8 @@ viewButtons2 model =
     ]
 
 
-viewIntern2 : UiSettings -> Bool -> Model -> List (Html Msg)
-viewIntern2 settings withButtons model =
+viewIntern2 : Texts -> UiSettings -> Bool -> Model -> List (Html Msg)
+viewIntern2 texts settings withButtons model =
     [ div
         [ classList
             [ ( S.errorMessage, Maybe.map .success model.result == Just False )
@@ -771,25 +767,25 @@ viewIntern2 settings withButtons model =
         ]
     , case model.form of
         TM tm ->
-            Html.map TagMsg (Comp.TagForm.view2 Messages.TagFormComp.gb tm)
+            Html.map TagMsg (Comp.TagForm.view2 texts.tagForm tm)
 
         PMR pm ->
-            Html.map PersonMsg (Comp.PersonForm.view2 Messages.PersonFormComp.gb True settings pm)
+            Html.map PersonMsg (Comp.PersonForm.view2 texts.personForm True settings pm)
 
         PMC pm ->
-            Html.map PersonMsg (Comp.PersonForm.view2 Messages.PersonFormComp.gb True settings pm)
+            Html.map PersonMsg (Comp.PersonForm.view2 texts.personForm True settings pm)
 
         OM om ->
-            Html.map OrgMsg (Comp.OrgForm.view2 Messages.OrgFormComp.gb True settings om)
+            Html.map OrgMsg (Comp.OrgForm.view2 texts.orgForm True settings om)
 
         EM em ->
-            Html.map EquipMsg (Comp.EquipmentForm.view2 Messages.EquipmentFormComp.gb em)
+            Html.map EquipMsg (Comp.EquipmentForm.view2 texts.equipmentForm em)
 
         CFM fm ->
             div []
                 (List.map (Html.map CustomFieldMsg)
                     (Comp.CustomFieldForm.view2
-                        Messages.CustomFieldFormComp.gb
+                        texts.customFieldForm
                         { classes = ""
                         , showControls = False
                         }
@@ -799,7 +795,7 @@ viewIntern2 settings withButtons model =
     ]
         ++ (if withButtons then
                 [ div [ class "flex flex-row space-x-2" ]
-                    (viewButtons2 model)
+                    (viewButtons2 texts model)
                 ]
 
             else

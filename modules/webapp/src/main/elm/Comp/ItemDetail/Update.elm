@@ -24,6 +24,7 @@ import Comp.Dropdown exposing (isDropdownChangeMsg)
 import Comp.Dropzone
 import Comp.EquipmentForm
 import Comp.ItemDetail.EditForm
+import Comp.ItemDetail.FieldTabState as FTabState
 import Comp.ItemDetail.Model
     exposing
         ( AttachmentRename
@@ -1487,8 +1488,7 @@ update key flags inav settings msg model =
         ToggleOpenAllAkkordionTabs ->
             let
                 allNames =
-                    Comp.ItemDetail.EditForm.formTabs flags settings model
-                        |> List.map .title
+                    List.map FTabState.tabName FTabState.allTabs
                         |> Set.fromList
 
                 next =
