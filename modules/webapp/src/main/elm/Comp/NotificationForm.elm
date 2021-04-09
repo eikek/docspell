@@ -152,7 +152,7 @@ init flags =
       , recipients = []
       , recipientsModel = Comp.EmailInput.init
       , remindDays = Just 1
-      , remindDaysModel = Comp.IntField.init (Just 1) Nothing True "Remind Days"
+      , remindDaysModel = Comp.IntField.init (Just 1) Nothing True
       , enabled = False
       , capOverdue = False
       , schedule = initialSchedule
@@ -480,7 +480,9 @@ view2 : Texts -> String -> UiSettings -> Model -> Html Msg
 view2 texts extraClasses settings model =
     let
         dimmerSettings =
-            Comp.YesNoDimmer.defaultSettings2 texts.reallyDeleteTask
+            Comp.YesNoDimmer.defaultSettings texts.reallyDeleteTask
+                texts.basics.yes
+                texts.basics.no
 
         startOnceBtn =
             MB.SecondaryButton
@@ -506,7 +508,10 @@ view2 texts extraClasses settings model =
                 dimmerSettings
                 model.yesNoDelete
             )
-        , B.loadingDimmer (model.loading > 0)
+        , B.loadingDimmer
+            { active = model.loading > 0
+            , label = texts.basics.loading
+            }
         , MB.view
             { start =
                 [ MB.PrimaryButton
@@ -634,10 +639,12 @@ view2 texts extraClasses settings model =
                 ]
             ]
         , Html.map RemindDaysMsg
-            (Comp.IntField.viewWithInfo2
-                texts.remindDaysInfo
-                model.remindDays
-                "mb-4"
+            (Comp.IntField.view
+                { label = texts.remindDaysLabel
+                , info = texts.remindDaysInfo
+                , number = model.remindDays
+                , classes = "mb-4"
+                }
                 model.remindDaysModel
             )
         , div [ class "mb-4" ]
@@ -668,7 +675,9 @@ view2 texts extraClasses settings model =
                     ]
                 ]
             , Html.map CalEventMsg
-                (Comp.CalEventInput.view2 ""
+                (Comp.CalEventInput.view2
+                    texts.calEventInput
+                    ""
                     (Data.Validated.value model.schedule)
                     model.scheduleModel
                 )

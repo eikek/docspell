@@ -267,5 +267,8 @@ view2 texts model =
                 [ text "Submit"
                 ]
             ]
-        , B.loadingDimmer model.loading
+        , B.loadingDimmer
+            { active = model.loading
+            , label = texts.basics.loading
+            }
         ]

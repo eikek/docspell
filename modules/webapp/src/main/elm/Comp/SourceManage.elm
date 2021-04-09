@@ -249,7 +249,10 @@ viewTable2 texts model =
             , rootClasses = "mb-4"
             }
         , Html.map TableMsg (Comp.SourceTable.view2 texts.sourceTable model.sources)
-        , B.loadingDimmer model.loading
+        , B.loadingDimmer
+            { active = model.loading
+            , label = texts.basics.loading
+            }
         ]
 
 
@@ -386,7 +389,9 @@ viewForm2 texts flags settings model =
             model.formModel.source.source.id == ""
 
         dimmerSettings =
-            Comp.YesNoDimmer.defaultSettings2 texts.reallyDeleteSource
+            Comp.YesNoDimmer.defaultSettings texts.reallyDeleteSource
+                texts.basics.yes
+                texts.basics.no
     in
     [ if newSource then
         h3 [ class S.header2 ]
@@ -449,6 +454,9 @@ viewForm2 texts flags settings model =
                 dimmerSettings
                 model.deleteConfirm
             )
-        , B.loadingDimmer model.loading
+        , B.loadingDimmer
+            { active = model.loading
+            , label = texts.basics.loading
+            }
         ]
     ]

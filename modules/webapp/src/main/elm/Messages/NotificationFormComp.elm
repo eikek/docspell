@@ -1,10 +1,12 @@
 module Messages.NotificationFormComp exposing (..)
 
 import Messages.Basics
+import Messages.CalEventInputComp
 
 
 type alias Texts =
     { basics : Messages.Basics.Texts
+    , calEventInput : Messages.CalEventInputComp.Texts
     , reallyDeleteTask : String
     , startOnce : String
     , startTaskNow : String
@@ -22,6 +24,7 @@ type alias Texts =
     , tagsExclude : String
     , tagsExcludeInfo : String
     , remindDaysInfo : String
+    , remindDaysLabel : String
     , capOverdue : String
     , capOverdueInfo : String
     , schedule : String
@@ -33,6 +36,7 @@ type alias Texts =
 gb : Texts
 gb =
     { basics = Messages.Basics.gb
+    , calEventInput = Messages.CalEventInputComp.gb
     , reallyDeleteTask = "Really delete this notification task?"
     , startOnce = "Start Once"
     , startTaskNow = "Start this task now"
@@ -49,6 +53,7 @@ gb =
     , tagsIncludeInfo = "Items must have all the tags specified here."
     , tagsExclude = "Tags Exclude (or)"
     , tagsExcludeInfo = "Items must not have any tag specified here."
+    , remindDaysLabel = "Remind Days"
     , remindDaysInfo = "Select items with a due date *lower than* `today+remindDays`"
     , capOverdue = "Cap overdue items"
     , capOverdueInfo = "If checked, only items with a due date *greater than* `today - remindDays` are considered."

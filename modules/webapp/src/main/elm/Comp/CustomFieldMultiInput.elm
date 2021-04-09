@@ -29,6 +29,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Http
+import Messages.CustomFieldMultiInputComp exposing (Texts)
 import Styles as S
 import Util.CustomField
 import Util.Maybe
@@ -318,11 +319,11 @@ type alias ViewSettings =
     }
 
 
-view2 : ViewSettings -> Model -> Html Msg
-view2 viewSettings model =
+view2 : Texts -> ViewSettings -> Model -> Html Msg
+view2 texts viewSettings model =
     div [ class viewSettings.classes ]
         (viewMenuBar2 viewSettings model
-            :: List.map (viewCustomField2 viewSettings model) (visibleFields model)
+            :: List.map (viewCustomField2 texts viewSettings model) (visibleFields model)
         )
 
 
@@ -364,8 +365,8 @@ viewMenuBar2 viewSettings model =
         )
 
 
-viewCustomField2 : ViewSettings -> Model -> CustomField -> Html Msg
-viewCustomField2 viewSettings model field =
+viewCustomField2 : Texts -> ViewSettings -> Model -> CustomField -> Html Msg
+viewCustomField2 texts viewSettings model field =
     let
         visibleField =
             Dict.get field.name model.visibleFields
@@ -373,7 +374,8 @@ viewCustomField2 viewSettings model field =
     case visibleField of
         Just vf ->
             Html.map (CustomFieldInputMsg field)
-                (Comp.CustomFieldInput.view2 "mt-2"
+                (Comp.CustomFieldInput.view2 texts.customFieldInput
+                    "mt-2"
                     (viewSettings.fieldIcon vf.field)
                     vf.inputModel
                 )

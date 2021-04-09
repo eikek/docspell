@@ -109,7 +109,6 @@ init flags settings =
                 (Just 10)
                 (Just flags.config.maxPageSize)
                 False
-                "Page size"
       , tagColors = settings.tagCategoryColors
       , tagColorModel =
             Comp.ColorTagger.init
@@ -122,28 +121,24 @@ init flags settings =
                 (Just 0)
                 (Just flags.config.maxNoteLength)
                 False
-                "Max. Note Length"
       , searchMenuFolderCount = Just settings.searchMenuFolderCount
       , searchMenuFolderCountModel =
             Comp.IntField.init
                 (Just 0)
                 (Just 2000)
                 False
-                "Number of folders in search menu"
       , searchMenuTagCount = Just settings.searchMenuTagCount
       , searchMenuTagCountModel =
             Comp.IntField.init
                 (Just 0)
                 (Just 2000)
                 False
-                "Number of tags in search menu"
       , searchMenuTagCatCount = Just settings.searchMenuTagCatCount
       , searchMenuTagCatCountModel =
             Comp.IntField.init
                 (Just 0)
                 (Just 2000)
                 False
-                "Number of categories in search menu"
       , formFields = settings.formFields
       , itemDetailShortcuts = settings.itemDetailShortcuts
       , cardPreviewSize = settings.cardPreviewSize
@@ -535,10 +530,12 @@ settingFormTabs texts flags _ model =
       , info = Nothing
       , body =
             [ Html.map SearchPageSizeMsg
-                (Comp.IntField.viewWithInfo2
-                    (texts.maxResultsPerPageInfo flags.config.maxPageSize)
-                    model.itemSearchPageSize
-                    "mb-4"
+                (Comp.IntField.view
+                    { label = texts.maxResultsPerPage
+                    , info = texts.maxResultsPerPageInfo flags.config.maxPageSize
+                    , number = model.itemSearchPageSize
+                    , classes = "mb-4"
+                    }
                     model.searchPageSizeModel
                 )
             , div [ class "mb-4" ]
@@ -567,10 +564,12 @@ settingFormTabs texts flags _ model =
       , info = Nothing
       , body =
             [ Html.map NoteLengthMsg
-                (Comp.IntField.viewWithInfo2
-                    (texts.maxNoteSizeInfo flags.config.maxNoteLength)
-                    model.itemSearchNoteLength
-                    "mb-4"
+                (Comp.IntField.view
+                    { label = texts.maxNoteSize
+                    , info = texts.maxNoteSizeInfo flags.config.maxNoteLength
+                    , number = model.itemSearchNoteLength
+                    , classes = "mb-4"
+                    }
                     model.searchNoteLengthModel
                 )
             , Html.map CardPreviewSizeMsg
@@ -636,24 +635,30 @@ settingFormTabs texts flags _ model =
       , info = Nothing
       , body =
             [ Html.map SearchMenuTagMsg
-                (Comp.IntField.viewWithInfo2
-                    texts.searchMenuTagCountInfo
-                    model.searchMenuTagCount
-                    "mb-4"
+                (Comp.IntField.view
+                    { label = texts.searchMenuTagCount
+                    , info = texts.searchMenuTagCountInfo
+                    , number = model.searchMenuTagCount
+                    , classes = "mb-4"
+                    }
                     model.searchMenuTagCountModel
                 )
             , Html.map SearchMenuTagCatMsg
-                (Comp.IntField.viewWithInfo2
-                    texts.searchMenuCatCountInfo
-                    model.searchMenuTagCatCount
-                    "mb-4"
+                (Comp.IntField.view
+                    { label = texts.searchMenuCatCount
+                    , info = texts.searchMenuCatCountInfo
+                    , number = model.searchMenuTagCatCount
+                    , classes = "mb-4"
+                    }
                     model.searchMenuTagCatCountModel
                 )
             , Html.map SearchMenuFolderMsg
-                (Comp.IntField.viewWithInfo2
-                    texts.searchMenuFolderCountInfo
-                    model.searchMenuFolderCount
-                    "mb-4"
+                (Comp.IntField.view
+                    { label = texts.searchMenuFolderCount
+                    , info = texts.searchMenuFolderCountInfo
+                    , number = model.searchMenuFolderCount
+                    , classes = "mb-4"
+                    }
                     model.searchMenuFolderCountModel
                 )
             ]

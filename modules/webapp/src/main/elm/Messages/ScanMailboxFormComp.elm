@@ -1,10 +1,12 @@
 module Messages.ScanMailboxFormComp exposing (..)
 
 import Messages.Basics
+import Messages.CalEventInputComp
 
 
 type alias Texts =
     { basics : Messages.Basics.Texts
+    , calEventInput : Messages.CalEventInputComp.Texts
     , reallyDeleteTask : String
     , startOnce : String
     , startNow : String
@@ -29,6 +31,7 @@ type alias Texts =
     , folders : String
     , foldersInfo : String
     , receivedHoursInfo : String
+    , receivedHoursLabel : String
     , fileFilter : String
     , fileFilterInfo : String
     , subjectFilter : String
@@ -57,6 +60,7 @@ type alias Texts =
 gb : Texts
 gb =
     { basics = Messages.Basics.gb
+    , calEventInput = Messages.CalEventInputComp.gb
     , reallyDeleteTask = "Really delete this scan mailbox task?"
     , startOnce = "Start Once"
     , startNow = "Start this task now"
@@ -81,6 +85,7 @@ gb =
     , folders = "Folders"
     , foldersInfo = "The folders to look for mails."
     , receivedHoursInfo = "Select mails newer than `now - receivedHours`"
+    , receivedHoursLabel = "Received Since Hours"
     , fileFilter = "File Filter"
     , fileFilterInfo =
         "Specify a file glob to filter attachments. For example, to only extract pdf files: "

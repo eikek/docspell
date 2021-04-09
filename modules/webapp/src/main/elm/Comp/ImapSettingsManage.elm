@@ -251,7 +251,9 @@ viewForm2 : Texts -> UiSettings -> Model -> Html Msg
 viewForm2 texts settings model =
     let
         dimmerSettings =
-            Comp.YesNoDimmer.defaultSettings2 texts.reallyDeleteSettings
+            Comp.YesNoDimmer.defaultSettings texts.reallyDeleteSettings
+                texts.basics.yes
+                texts.basics.no
     in
     div [ class "flex flex-col md:relative" ]
         [ MB.view
@@ -304,5 +306,8 @@ viewForm2 texts settings model =
                 dimmerSettings
                 model.deleteConfirm
             )
-        , B.loadingDimmer model.loading
+        , B.loadingDimmer
+            { active = model.loading
+            , label = texts.basics.loading
+            }
         ]

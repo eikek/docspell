@@ -239,7 +239,10 @@ viewTable2 texts model =
             , rootClasses = "mb-4"
             }
         , Html.map TableMsg (Comp.UserTable.view2 texts.userTable model.tableModel)
-        , B.loadingDimmer model.loading
+        , B.loadingDimmer
+            { active = model.loading
+            , label = texts.basics.loading
+            }
         ]
 
 
@@ -251,7 +254,9 @@ viewForm2 texts settings model =
 
         dimmerSettings : Comp.YesNoDimmer.Settings
         dimmerSettings =
-            Comp.YesNoDimmer.defaultSettings2 texts.reallyDeleteUser
+            Comp.YesNoDimmer.defaultSettings texts.reallyDeleteUser
+                texts.basics.yes
+                texts.basics.no
     in
     Html.form
         [ class "flex flex-col md:relative"
@@ -317,5 +322,8 @@ viewForm2 texts settings model =
                 FormErrorInvalid ->
                     text texts.pleaseCorrectErrors
             ]
-        , B.loadingDimmer model.loading
+        , B.loadingDimmer
+            { active = model.loading
+            , label = texts.basics.loading
+            }
         ]

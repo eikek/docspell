@@ -1,12 +1,12 @@
 module Messages.HomeSideMenu exposing (..)
 
-import Messages.MultiEditComp
+import Messages.MultiEditMenuComp
 import Messages.SearchMenuComp
 
 
 type alias Texts =
     { searchMenu : Messages.SearchMenuComp.Texts
-    , multiEdit : Messages.MultiEditComp.Texts
+    , multiEdit : Messages.MultiEditMenuComp.Texts
     , editMode : String
     , resetSearchForm : String
     , multiEditHeader : String
@@ -18,7 +18,7 @@ type alias Texts =
 gb : Texts
 gb =
     { searchMenu = Messages.SearchMenuComp.gb
-    , multiEdit = Messages.MultiEditComp.gb
+    , multiEdit = Messages.MultiEditMenuComp.gb
     , editMode = "Edit Mode"
     , resetSearchForm = "Reset search form"
     , multiEditHeader = "Multi-Edit"

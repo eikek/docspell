@@ -1202,6 +1202,7 @@ searchTabs texts ddd flags settings model =
       , body =
             List.map (Html.map TagSelectMsg)
                 (Comp.TagSelect.viewTagsDrop2
+                    texts.tagSelect
                     ddd.model
                     tagSelectWM
                     settings
@@ -1303,6 +1304,7 @@ searchTabs texts ddd flags settings model =
       , body =
             [ Html.map CustomFieldMsg
                 (Comp.CustomFieldMultiInput.view2
+                    texts.customFieldMultiInput
                     { showAddButton = False
                     , classes = ""
                     , fieldIcon = \_ -> Nothing

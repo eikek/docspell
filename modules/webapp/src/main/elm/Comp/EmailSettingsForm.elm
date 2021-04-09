@@ -47,7 +47,7 @@ emptyModel =
     { settings = Api.Model.EmailSettings.empty
     , name = ""
     , host = ""
-    , portField = Comp.IntField.init (Just 0) Nothing True "SMTP Port"
+    , portField = Comp.IntField.init (Just 0) Nothing True
     , portNum = Nothing
     , user = Nothing
     , passField = Comp.PasswordInput.init
@@ -68,7 +68,7 @@ init ems =
     { settings = ems
     , name = ems.name
     , host = ems.smtpHost
-    , portField = Comp.IntField.init (Just 0) Nothing True "SMTP Port"
+    , portField = Comp.IntField.init (Just 0) Nothing True
     , portNum = ems.smtpPort
     , user = ems.smtpUser
     , passField = Comp.PasswordInput.init
@@ -225,9 +225,12 @@ view2 texts settings model =
                 []
             ]
         , Html.map PortMsg
-            (Comp.IntField.viewWithInfo2 ""
-                model.portNum
-                ""
+            (Comp.IntField.view
+                { label = texts.smtpPort
+                , info = ""
+                , number = model.portNum
+                , classes = ""
+                }
                 model.portField
             )
         , div [ class "col-span-4 sm:col-span-2" ]

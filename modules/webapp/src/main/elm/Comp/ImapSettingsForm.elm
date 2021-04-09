@@ -46,7 +46,7 @@ emptyModel =
     { settings = Api.Model.ImapSettings.empty
     , name = ""
     , host = ""
-    , portField = Comp.IntField.init (Just 0) Nothing True "IMAP Port"
+    , portField = Comp.IntField.init (Just 0) Nothing True
     , portNum = Nothing
     , user = Nothing
     , passField = Comp.PasswordInput.init
@@ -66,7 +66,7 @@ init ems =
     { settings = ems
     , name = ems.name
     , host = ems.imapHost
-    , portField = Comp.IntField.init (Just 0) Nothing True "IMAP Port"
+    , portField = Comp.IntField.init (Just 0) Nothing True
     , portNum = ems.imapPort
     , user = ems.imapUser
     , passField = Comp.PasswordInput.init
@@ -216,9 +216,12 @@ view2 texts settings model =
                 []
             ]
         , Html.map PortMsg
-            (Comp.IntField.viewWithInfo2 ""
-                model.portNum
-                ""
+            (Comp.IntField.view
+                { label = texts.imapPort
+                , info = ""
+                , number = model.portNum
+                , classes = ""
+                }
                 model.portField
             )
         , div [ class "col-span-4 sm:col-span-2" ]

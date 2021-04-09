@@ -1,8 +1,11 @@
 module Messages.ClassifierSettingsFormComp exposing (..)
 
+import Messages.CalEventInputComp
+
 
 type alias Texts =
-    { autoTaggingText : String
+    { calEventInput : Messages.CalEventInputComp.Texts
+    , autoTaggingText : String
     , blacklistOrWhitelist : String
     , whitelistLabel : String
     , blacklistLabel : String
@@ -14,7 +17,8 @@ type alias Texts =
 
 gb : Texts
 gb =
-    { autoTaggingText =
+    { calEventInput = Messages.CalEventInputComp.gb
+    , autoTaggingText =
         """
 
 Auto-tagging works by learning from existing documents. The more

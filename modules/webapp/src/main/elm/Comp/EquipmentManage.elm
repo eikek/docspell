@@ -258,7 +258,9 @@ viewForm2 texts model =
             model.formModel.equipment.id == ""
 
         dimmerSettings2 =
-            Comp.YesNoDimmer.defaultSettings2 texts.reallyDeleteEquipment
+            Comp.YesNoDimmer.defaultSettings texts.reallyDeleteEquipment
+                texts.basics.yes
+                texts.basics.no
     in
     Html.form
         [ class "relative flex flex-col"
@@ -322,5 +324,8 @@ viewForm2 texts model =
             [ Maybe.withDefault "" model.formError |> text
             ]
         , Html.map FormMsg (Comp.EquipmentForm.view2 texts.equipmentForm model.formModel)
-        , B.loadingDimmer model.loading
+        , B.loadingDimmer
+            { active = model.loading
+            , label = texts.basics.loading
+            }
         ]

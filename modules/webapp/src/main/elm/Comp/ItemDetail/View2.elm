@@ -250,7 +250,10 @@ sendMailForm texts settings model =
         [ div [ class "text-lg font-bold" ]
             [ text texts.sendThisItemViaEmail
             ]
-        , B.loadingDimmer model.mailSending
+        , B.loadingDimmer
+            { active = model.mailSending
+            , label = texts.sendingMailNow
+            }
         , Html.map ItemMailMsg (Comp.ItemMail.view2 texts.itemMail settings model.itemMail)
         , div
             [ classList

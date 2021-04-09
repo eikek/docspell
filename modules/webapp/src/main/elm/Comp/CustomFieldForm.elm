@@ -201,7 +201,9 @@ view2 : Texts -> ViewSettings -> Model -> List (Html Msg)
 view2 texts viewSettings model =
     let
         dimmerSettings =
-            Comp.YesNoDimmer.defaultSettings2 texts.reallyDeleteField
+            Comp.YesNoDimmer.defaultSettings texts.reallyDeleteField
+                texts.basics.yes
+                texts.basics.no
 
         ftypeCfg =
             { display = texts.fieldTypeLabel

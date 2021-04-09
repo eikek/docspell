@@ -33,6 +33,7 @@ type alias Texts =
     , itemId : String
     , createdOn : String
     , lastUpdateOn : String
+    , sendingMailNow : String
     }
 
 
@@ -61,4 +62,5 @@ gb =
     , itemId = "Item ID"
     , createdOn = "Created on"
     , lastUpdateOn = "Last update on"
+    , sendingMailNow = "Sending e-mail…"
     }

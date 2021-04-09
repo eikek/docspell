@@ -15,6 +15,7 @@ import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Http
+import Messages.AttachmentMetaComp exposing (Texts)
 import Styles as S
 import Util.Http
 import Util.Time
@@ -64,15 +65,18 @@ update msg model =
 --- View2
 
 
-view2 : List (Attribute Msg) -> Model -> Html Msg
-view2 attrs model =
+view2 : Texts -> List (Attribute Msg) -> Model -> Html Msg
+view2 texts attrs model =
     div attrs
         [ h3 [ class S.header3 ]
-            [ text "Extracted Meta Data"
+            [ text texts.extractedMetadata
             ]
         , case model.meta of
             NotAvailable ->
-                B.loadingDimmer True
+                B.loadingDimmer
+                    { active = True
+                    , label = texts.basics.loading
+                    }
 
             Failure msg ->
                 div [ class S.errorMessage ]
@@ -80,33 +84,33 @@ view2 attrs model =
                     ]
 
             Success data ->
-                viewData2 data
+                viewData2 texts data
         ]
 
 
-viewData2 : AttachmentMeta -> Html Msg
-viewData2 meta =
+viewData2 : Texts -> AttachmentMeta -> Html Msg
+viewData2 texts meta =
     div [ class "flex flex-col" ]
         [ div [ class "text-lg font-bold" ]
-            [ text "Content"
+            [ text texts.content
             ]
         , div [ class "px-2 py-2 text-sm bg-yellow-50 dark:bg-warmgray-800 break-words whitespace-pre max-h-80 overflow-auto" ]
             [ text meta.content
             ]
         , div [ class "text-lg font-bold mt-2" ]
-            [ text "Labels"
+            [ text texts.labels
             ]
         , div [ class "flex fex-row flex-wrap" ]
             (List.map renderLabelItem2 meta.labels)
         , div [ class "text-lg font-bold mt-2" ]
-            [ text "Proposals"
+            [ text texts.proposals
             ]
-        , viewProposals2 meta.proposals
+        , viewProposals2 texts meta.proposals
         ]
 
 
-viewProposals2 : ItemProposals -> Html Msg
-viewProposals2 props =
+viewProposals2 : Texts -> ItemProposals -> Html Msg
+viewProposals2 texts props =
     let
         mkItem n lbl =
             div
@@ -130,32 +134,32 @@ viewProposals2 props =
     in
     div [ class "flex flex-col" ]
         [ div [ class "font-bold mb-2" ]
-            [ text "Correspondent Organization"
+            [ text texts.correspondentOrg
             ]
         , div [ class "flex flex-row flex-wrap space-x-2" ]
             (List.indexedMap mkItem props.corrOrg)
         , div [ class "font-bold mt-3 mb-2" ]
-            [ text "Correspondent Person"
+            [ text texts.correspondentPerson
             ]
         , div [ class "flex flex-row flex-wrap space-x-2" ]
             (List.indexedMap mkItem props.corrPerson)
         , div [ class "font-bold mt-3 mb-2" ]
-            [ text "Concerning Person"
+            [ text texts.concerningPerson
             ]
         , div [ class "flex flex-row flex-wrap space-x-2" ]
             (List.indexedMap mkItem props.concPerson)
         , div [ class "font-bold mt-3 mb-2" ]
-            [ text "Concerning Equipment"
+            [ text texts.concerningEquipment
             ]
         , div [ class "flex flex-row flex-wrap space-x-2" ]
             (List.indexedMap mkItem props.concEquipment)
         , div [ class "font-bold mb-2 mt-3" ]
-            [ text "Item Date"
+            [ text texts.itemDate
             ]
         , div [ class "flex flex-row flex-wrap space-x-2" ]
             (List.map mkTimeItem props.itemDate)
         , div [ class "font-bold mt-3 mb-2" ]
-            [ text "Item Due Date"
+            [ text texts.itemDueDate
             ]
         , div [ class "flex flex-row flex-wrap space-x-2 mb-2" ]
             (List.map mkTimeItem props.dueDate)

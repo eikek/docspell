@@ -203,5 +203,8 @@ viewTable2 texts model =
                 model.tableModel
                 model.fields
             )
-        , B.loadingDimmer model.loading
+        , B.loadingDimmer
+            { active = model.loading
+            , label = texts.basics.loading
+            }
         ]

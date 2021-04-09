@@ -1,10 +1,14 @@
 module Messages.SearchMenuComp exposing (..)
 
 import Messages.Basics
+import Messages.CustomFieldMultiInputComp
+import Messages.TagSelectComp
 
 
 type alias Texts =
     { basics : Messages.Basics.Texts
+    , customFieldMultiInput : Messages.CustomFieldMultiInputComp.Texts
+    , tagSelect : Messages.TagSelectComp.Texts
     , chooseDirection : String
     , choosePerson : String
     , chooseEquipment : String
@@ -41,6 +45,8 @@ type alias Texts =
 gb : Texts
 gb =
     { basics = Messages.Basics.gb
+    , customFieldMultiInput = Messages.CustomFieldMultiInputComp.gb
+    , tagSelect = Messages.TagSelectComp.gb
     , chooseDirection = "Choose a direction…"
     , choosePerson = "Choose a person"
     , chooseEquipment = "Choose an equipment"

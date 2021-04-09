@@ -39,7 +39,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Http
 import Markdown
-import Messages.MultiEditComp exposing (Texts)
+import Messages.MultiEditMenuComp exposing (Texts)
 import Page exposing (Page(..))
 import Set exposing (Set)
 import Styles as S
@@ -775,6 +775,7 @@ renderEditForm2 texts flags cfg settings model =
               , body =
                     [ Html.map CustomFieldMsg
                         (Comp.CustomFieldMultiInput.view2
+                            texts.customFieldMultiInput
                             customFieldSettings
                             model.customFieldModel
                         )

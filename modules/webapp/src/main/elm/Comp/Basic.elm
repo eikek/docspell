@@ -12,7 +12,6 @@ module Comp.Basic exposing
     , secondaryBasicButton
     , secondaryButton
     , stats
-    , tooltipRight
     )
 
 import Html exposing (..)
@@ -176,18 +175,18 @@ linkLabel model =
     genericLink model.icon model.label attrs
 
 
-loadingDimmer : Bool -> Html msg
-loadingDimmer active =
+loadingDimmer : { label : String, active : Bool } -> Html msg
+loadingDimmer cfg =
     div
         [ classList
-            [ ( "hidden", not active )
+            [ ( "hidden", not cfg.active )
             ]
         , class S.dimmer
         ]
         [ div [ class "text-gray-200" ]
             [ i [ class "fa fa-circle-notch animate-spin" ] []
             , span [ class "ml-2" ]
-                [ text "Loading…"
+                [ text cfg.label
                 ]
             ]
         ]
@@ -276,17 +275,6 @@ inputRequired : Html msg
 inputRequired =
     span [ class "ml-1 text-red-700" ]
         [ text "*"
-        ]
-
-
-tooltipRight : Bool -> String -> Html msg
-tooltipRight show msg =
-    div
-        [ class "absolute bottom-0 right-5 px-2 py-2 rounded-lg z-50 w-40"
-        , class "bg-white border"
-        , class "text-sm font-thin"
-        ]
-        [ text msg
         ]
 
 

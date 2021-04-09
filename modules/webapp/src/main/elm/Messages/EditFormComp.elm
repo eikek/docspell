@@ -1,10 +1,12 @@
 module Messages.EditFormComp exposing (..)
 
 import Messages.Basics
+import Messages.CustomFieldMultiInputComp
 
 
 type alias Texts =
     { basics : Messages.Basics.Texts
+    , customFieldInput : Messages.CustomFieldMultiInputComp.Texts
     , createNewCustomField : String
     , chooseDirection : String
     , selectPlaceholder : String
@@ -34,6 +36,7 @@ type alias Texts =
 gb : Texts
 gb =
     { basics = Messages.Basics.gb
+    , customFieldInput = Messages.CustomFieldMultiInputComp.gb
     , createNewCustomField = "Create new custom field"
     , chooseDirection = "Choose a direction…"
     , selectPlaceholder = "Select…"

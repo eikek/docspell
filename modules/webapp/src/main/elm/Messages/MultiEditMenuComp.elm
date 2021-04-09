@@ -1,10 +1,12 @@
-module Messages.MultiEditComp exposing (..)
+module Messages.MultiEditMenuComp exposing (..)
 
 import Messages.Basics
+import Messages.CustomFieldMultiInputComp
 
 
 type alias Texts =
     { basics : Messages.Basics.Texts
+    , customFieldMultiInput : Messages.CustomFieldMultiInputComp.Texts
     , tagModeAddInfo : String
     , tagModeRemoveInfo : String
     , tagModeReplaceInfo : String
@@ -32,6 +34,7 @@ type alias Texts =
 gb : Texts
 gb =
     { basics = Messages.Basics.gb
+    , customFieldMultiInput = Messages.CustomFieldMultiInputComp.gb
     , tagModeAddInfo = "Tags chosen here are *added* to all selected items."
     , tagModeRemoveInfo = "Tags chosen here are *removed* from all selected items."
     , tagModeReplaceInfo = "Tags chosen here *replace* those on selected items."

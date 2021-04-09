@@ -5,10 +5,7 @@ module Comp.IntField exposing
     , init
     , update
     , view
-    , viewWithInfo2
     )
-
---- L10N TODO
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -20,7 +17,6 @@ import Styles as S
 type alias Model =
     { min : Maybe Int
     , max : Maybe Int
-    , label : String
     , error : Maybe String
     , lastInput : String
     , optional : Bool
@@ -31,11 +27,10 @@ type Msg
     = SetValue String
 
 
-init : Maybe Int -> Maybe Int -> Bool -> String -> Model
-init min max opt label =
+init : Maybe Int -> Maybe Int -> Bool -> Model
+init min max opt =
     { min = min
     , max = max
-    , label = label
     , error = Nothing
     , lastInput = ""
     , optional = opt
@@ -149,11 +144,11 @@ view cfg model =
         ]
 
 
-viewWithInfo2 : String -> Maybe Int -> String -> Model -> Html Msg
-viewWithInfo2 info nval classes model =
+viewWithInfo2 : String -> String -> Maybe Int -> String -> Model -> Html Msg
+viewWithInfo2 label info nval classes model =
     let
         cfg =
-            { label = model.label
+            { label = label
             , info = info
             , number = nval
             , classes = classes

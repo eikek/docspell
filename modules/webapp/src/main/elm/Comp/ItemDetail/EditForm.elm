@@ -52,7 +52,7 @@ view2 texts flags settings model =
             formTabs texts flags settings model
 
         allTabNames =
-            List.map .title tabs
+            List.map .name tabs
                 |> Set.fromList
     in
     div (class "flex flex-col relative" :: keyAttr)
@@ -127,7 +127,7 @@ formTabs texts flags settings model =
 
         folderCfg =
             { makeOption = Util.Folder.mkFolderOption flags model.allFolders
-            , placeholder = ""
+            , placeholder = texts.selectPlaceholder
             , labelColor = \_ -> \_ -> ""
             , style = dds
             }
@@ -254,6 +254,7 @@ formTabs texts flags settings model =
             [ div [ class "mb-4" ]
                 [ Html.map CustomFieldMsg
                     (Comp.CustomFieldMultiInput.view2
+                        texts.customFieldInput
                         customFieldSettings
                         model.customFieldsModel
                     )

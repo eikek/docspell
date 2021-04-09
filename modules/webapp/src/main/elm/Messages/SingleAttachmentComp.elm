@@ -1,8 +1,11 @@
 module Messages.SingleAttachmentComp exposing (..)
 
+import Messages.AttachmentMetaComp
+
 
 type alias Texts =
-    { noName : String
+    { attachmentMeta : Messages.AttachmentMetaComp.Texts
+    , noName : String
     , openFileInNewTab : String
     , downloadFile : String
     , renameFile : String
@@ -17,7 +20,8 @@ type alias Texts =
 
 gb : Texts
 gb =
-    { noName = "No name"
+    { attachmentMeta = Messages.AttachmentMetaComp.gb
+    , noName = "No name"
     , openFileInNewTab = "Open file in new tab"
     , downloadFile = "Download file"
     , renameFile = "Rename file"

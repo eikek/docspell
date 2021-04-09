@@ -26,6 +26,7 @@ import Dict exposing (Dict)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
+import Messages.TagSelectComp exposing (Texts)
 import Set
 import Simple.Fuzzy
 import String as S
@@ -422,17 +423,17 @@ catState model name =
 --- View2
 
 
-viewAll2 : DD.Model -> UiSettings -> Selection -> Model -> List (Html Msg)
-viewAll2 ddm settings sel model =
+viewAll2 : Texts -> DD.Model -> UiSettings -> Selection -> Model -> List (Html Msg)
+viewAll2 texts ddm settings sel model =
     let
         wm =
             makeWorkModel sel model
     in
-    viewTagsDrop2 ddm wm settings model ++ [ viewCats2 settings wm model ]
+    viewTagsDrop2 texts ddm wm settings model ++ [ viewCats2 settings wm model ]
 
 
-viewTagsDrop2 : DD.Model -> WorkModel -> UiSettings -> Model -> List (Html Msg)
-viewTagsDrop2 ddm wm settings model =
+viewTagsDrop2 : Texts -> DD.Model -> WorkModel -> UiSettings -> Model -> List (Html Msg)
+viewTagsDrop2 texts ddm wm settings model =
     [ div [ class "flex flex-col" ]
         [ div [ class "flex flex-row h-6 items-center text-xs mb-2" ]
             [ a
@@ -442,16 +443,16 @@ viewTagsDrop2 ddm wm settings model =
                 , onClick ToggleShowEmpty
                 ]
                 [ if model.showEmpty then
-                    text " Hide empty"
+                    text (" " ++ texts.hideEmpty)
 
                   else
-                    text " Show empty"
+                    text (" " ++ texts.showEmpty)
                 ]
             , div [ class "flex-grow" ] []
             , div [ class " relative h-6" ]
                 [ input
                     [ type_ "text"
-                    , placeholder "Filter …"
+                    , placeholder texts.filterPlaceholder
                     , onInput Search
                     , class "bg-blue-50 w-30 h-6 px-0 py-0 text-xs"
                     , class "border-0 border-b border-gray-200 focus:ring-0 focus:border-black"

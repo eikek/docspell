@@ -60,7 +60,7 @@ init flags sett =
     in
     ( { scheduleModel = cem
       , schedule = Data.Validated.Unknown newSchedule
-      , itemCountModel = Comp.IntField.init (Just 0) Nothing True ""
+      , itemCountModel = Comp.IntField.init (Just 0) Nothing True
       , itemCount = Just sett.itemCount
       , categoryListModel =
             let
@@ -237,6 +237,7 @@ view2 texts settings model =
                 [ text texts.schedule ]
             , Html.map ScheduleMsg
                 (Comp.CalEventInput.view2
+                    texts.calEventInput
                     ""
                     (Data.Validated.value model.schedule)
                     model.scheduleModel

@@ -1,5 +1,6 @@
 module Data.Money exposing
     ( Money
+    , MoneyParseError(..)
     , format
     , fromString
     , normalizeInput
@@ -11,7 +12,12 @@ type alias Money =
     Float
 
 
-fromString : String -> Result String Money
+type MoneyParseError
+    = RequireTwoDigitsAfterDot String
+    | NoOrTooManyPoints String
+
+
+fromString : String -> Result MoneyParseError Money
 fromString str =
     let
         input =
@@ -28,13 +34,13 @@ fromString str =
             if index == (len - 3) then
                 String.toFloat input
                     |> Maybe.map Ok
-                    |> Maybe.withDefault (Err "Two digits required after the dot.")
+                    |> Maybe.withDefault (Err (RequireTwoDigitsAfterDot str))
 
             else
-                Err ("Two digits required after the dot: " ++ str)
+                Err (RequireTwoDigitsAfterDot str)
 
         _ ->
-            Err "One single dot + digits required for money."
+            Err (NoOrTooManyPoints str)
 
 
 format : Float -> String

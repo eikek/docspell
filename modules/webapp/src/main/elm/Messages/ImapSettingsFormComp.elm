@@ -11,6 +11,7 @@ type alias Texts =
     , connectionNameInfo : String
     , imapHost : String
     , imapHostPlaceholder : String
+    , imapPort : String
     , imapUser : String
     , imapUserPlaceholder : String
     , imapPassword : String
@@ -30,6 +31,7 @@ gb =
     , connectionNameInfo = "The connection name must not contain whitespace or special characters."
     , imapHost = "IMAP Host"
     , imapHostPlaceholder = "IMAP host name, e.g. 'mail.gmail.com'"
+    , imapPort = "IMAP Port"
     , imapUser = "IMAP User"
     , imapUserPlaceholder = "IMAP Username, e.g. 'your.name@gmail.com'"
     , imapPassword = "IMAP Password"

@@ -11,6 +11,7 @@ type alias Texts =
     , connectionNameInfo : String
     , smtpHost : String
     , smtpHostPlaceholder : String
+    , smtpPort : String
     , smtpUser : String
     , smtpUserPlaceholder : String
     , smtpPassword : String
@@ -32,6 +33,7 @@ gb =
     , connectionNameInfo = "The connection name must not contain whitespace or special characters."
     , smtpHost = "SMTP Host"
     , smtpHostPlaceholder = "SMTP host name, e.g. 'mail.gmail.com'"
+    , smtpPort = "SMTP Port"
     , smtpUser = "SMTP User"
     , smtpUserPlaceholder = "SMTP Username, e.g. 'your.name@gmail.com'"
     , smtpPassword = "SMTP Password"

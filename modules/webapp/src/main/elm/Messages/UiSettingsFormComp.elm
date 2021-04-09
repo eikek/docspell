@@ -12,17 +12,22 @@ type alias Texts =
     , uiLanguage : String
     , itemSearch : String
     , maxResultsPerPageInfo : Int -> String
+    , maxResultsPerPage : String
     , showBasicSearchStatsByDefault : String
     , enablePowerSearch : String
     , itemCards : String
+    , maxNoteSize : String
     , maxNoteSizeInfo : Int -> String
     , sizeOfItemPreview : String
     , cardTitlePattern : String
     , togglePatternHelpText : String
     , cardSubtitlePattern : String
     , searchMenu : String
+    , searchMenuTagCount : String
     , searchMenuTagCountInfo : String
+    , searchMenuCatCount : String
     , searchMenuCatCountInfo : String
+    , searchMenuFolderCount : String
     , searchMenuFolderCountInfo : String
     , itemDetail : String
     , browserNativePdfView : String
@@ -48,9 +53,11 @@ gb =
             "Maximum results in one page when searching items. At most "
                 ++ String.fromInt max
                 ++ "."
+    , maxResultsPerPage = "Page size"
     , showBasicSearchStatsByDefault = "Show basic search statistics by default"
     , enablePowerSearch = "Enable power-user search bar"
     , itemCards = "Item Cards"
+    , maxNoteSize = "Max. Note Length"
     , maxNoteSizeInfo =
         \max ->
             "Maximum size of the item notes to display in card view. Between 0 - "
@@ -61,8 +68,11 @@ gb =
     , togglePatternHelpText = "Toggle pattern help text"
     , cardSubtitlePattern = "Card Subtitle Pattern"
     , searchMenu = "Search Menu"
+    , searchMenuTagCount = "Number of tags in search menu"
     , searchMenuTagCountInfo = "How many tags to display in search menu at once. Others can be expanded. Use 0 to always show all."
+    , searchMenuCatCount = "Number of categories in search menu"
     , searchMenuCatCountInfo = "How many categories to display in search menu at once. Others can be expanded. Use 0 to always show all."
+    , searchMenuFolderCount = "Number of folders in search menu"
     , searchMenuFolderCountInfo = "How many folders to display in search menu at once. Other folders can be expanded. Use 0 to always show all."
     , itemDetail = "Item Detail"
     , browserNativePdfView = "Browser-native PDF preview"

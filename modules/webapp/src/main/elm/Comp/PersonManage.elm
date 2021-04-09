@@ -275,7 +275,10 @@ viewTable2 texts model =
             , rootClasses = "mb-4"
             }
         , Html.map TableMsg (Comp.PersonTable.view2 texts.personTable model.tableModel)
-        , B.loadingDimmer (isLoading model)
+        , B.loadingDimmer
+            { active = isLoading model
+            , label = texts.basics.loading
+            }
         ]
 
 
@@ -286,7 +289,9 @@ viewForm2 texts settings model =
             model.formModel.person.id == ""
 
         dimmerSettings2 =
-            Comp.YesNoDimmer.defaultSettings2 texts.reallyDeletePerson
+            Comp.YesNoDimmer.defaultSettings texts.reallyDeletePerson
+                texts.basics.yes
+                texts.basics.no
     in
     Html.form
         [ class "md:relative flex flex-col"
@@ -355,5 +360,8 @@ viewForm2 texts settings model =
                 settings
                 model.formModel
             )
-        , B.loadingDimmer (isLoading model)
+        , B.loadingDimmer
+            { active = isLoading model
+            , label = texts.basics.loading
+            }
         ]

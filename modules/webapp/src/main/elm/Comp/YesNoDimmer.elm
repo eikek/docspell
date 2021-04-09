@@ -4,7 +4,6 @@ module Comp.YesNoDimmer exposing
     , Settings
     , activate
     , defaultSettings
-    , defaultSettings2
     , disable
     , emptyModel
     , initActive
@@ -58,24 +57,13 @@ type alias Settings =
     }
 
 
-defaultSettings : Settings
-defaultSettings =
-    { message = "Delete this item permanently?"
-    , headerIcon = "exclamation icon"
-    , headerClass = "ui inverted icon header"
-    , confirmButton = "Yes, do it!"
-    , cancelButton = "No"
-    , extraClass = ""
-    }
-
-
-defaultSettings2 : String -> Settings
-defaultSettings2 msg =
+defaultSettings : String -> String -> String -> Settings
+defaultSettings msg yesLabel noLabel =
     { message = msg
     , headerIcon = "fa fa-exclamation-circle mr-3"
     , headerClass = "text-2xl font-bold text-center w-full"
-    , confirmButton = "Yes, do it!"
-    , cancelButton = "No"
+    , confirmButton = yesLabel
+    , cancelButton = noLabel
     , extraClass = ""
     }
 

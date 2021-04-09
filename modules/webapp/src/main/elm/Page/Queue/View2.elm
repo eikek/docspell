@@ -287,13 +287,12 @@ dimmerSettings : Texts -> Comp.YesNoDimmer.Settings
 dimmerSettings texts =
     let
         defaults =
-            Comp.YesNoDimmer.defaultSettings
+            Comp.YesNoDimmer.defaultSettings texts.deleteThisJob texts.basics.yes texts.basics.no
     in
     { defaults
         | headerClass = "text-lg text-white"
         , headerIcon = ""
         , extraClass = "rounded"
-        , message = texts.deleteThisJob
     }
 
 

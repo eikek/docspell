@@ -156,25 +156,20 @@ viewDrop2 dropModel constr model =
         highlightDrop =
             DD.getDropId dropModel == Just DD.FolderRemove
     in
-    div [ class "ui list" ]
-        [ div [ class "item" ]
-            [ i [ class "folder open icon" ] []
-            , div [ class "content" ]
-                [ div
-                    (classList
-                        [ ( "hidden", True )
-                        , ( "current-drop-target", highlightDrop )
-                        ]
-                        :: DD.droppable FolderDDMsg DD.FolderRemove
-                     -- note: re-enable this when adding a "no-folder selection"
-                     -- this enables a drop target that removes a folder
-                    )
-                    [ text "Folders"
-                    ]
-                , div [ class "flex flex-col space-y-2 md:space-y-1" ]
-                    (renderItems2 dropModel constr model)
+    div []
+        [ div
+            (classList
+                [ ( "hidden", True )
+                , ( "current-drop-target", highlightDrop )
                 ]
+                :: DD.droppable FolderDDMsg DD.FolderRemove
+             -- note: re-enable this when adding a "no-folder selection"
+             -- this enables a drop target that removes a folder
+            )
+            [ text "Folders"
             ]
+        , div [ class "flex flex-col space-y-2 md:space-y-1" ]
+            (renderItems2 dropModel constr model)
         ]
 
 

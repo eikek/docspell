@@ -286,7 +286,9 @@ view2 texts flags model =
 
         dimmerSettings : Comp.YesNoDimmer.Settings
         dimmerSettings =
-            Comp.YesNoDimmer.defaultSettings2 texts.reallyDeleteThisFolder
+            Comp.YesNoDimmer.defaultSettings texts.reallyDeleteThisFolder
+                texts.basics.yes
+                texts.basics.no
     in
     div [ class "flex flex-col md:relative" ]
         (viewButtons2 texts model

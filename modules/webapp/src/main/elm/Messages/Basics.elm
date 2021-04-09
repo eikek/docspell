@@ -20,6 +20,7 @@ type alias Texts =
     , yes : String
     , no : String
     , chooseTag : String
+    , loading : String
     }
 
 
@@ -43,6 +44,7 @@ gb =
     , yes = "Yes"
     , no = "No"
     , chooseTag = "Choose a tag…"
+    , loading = "Loading…"
     }
 
 

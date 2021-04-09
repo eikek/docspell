@@ -221,7 +221,7 @@ init flags =
       , enabled = False
       , deleteMail = False
       , receivedHours = Nothing
-      , receivedHoursModel = Comp.IntField.init (Just 1) Nothing True "Received Since Hours"
+      , receivedHoursModel = Comp.IntField.init (Just 1) Nothing True
       , foldersModel = Comp.StringListInput.init
       , folders = []
       , targetFolder = Nothing
@@ -740,7 +740,7 @@ view2 : Texts -> Flags -> String -> UiSettings -> Model -> Html Msg
 view2 texts flags extraClasses settings model =
     let
         dimmerSettings =
-            Comp.YesNoDimmer.defaultSettings2 texts.reallyDeleteTask
+            Comp.YesNoDimmer.defaultSettings texts.reallyDeleteTask texts.basics.yes texts.basics.no
 
         startOnceBtn =
             MB.SecondaryButton
@@ -813,7 +813,10 @@ view2 texts flags extraClasses settings model =
                 dimmerSettings
                 model.yesNoDelete
             )
-        , B.loadingDimmer (model.loading > 0)
+        , B.loadingDimmer
+            { active = model.loading > 0
+            , label = texts.basics.loading
+            }
         ]
 
 
@@ -926,10 +929,12 @@ viewProcessing2 texts model =
             ]
         ]
     , Html.map ReceivedHoursMsg
-        (Comp.IntField.viewWithInfo2
-            texts.receivedHoursInfo
-            model.receivedHours
-            "mb-4"
+        (Comp.IntField.view
+            { label = texts.receivedHoursLabel
+            , info = texts.receivedHoursInfo
+            , number = model.receivedHours
+            , classes = "mb-4"
+            }
             model.receivedHoursModel
         )
     ]
@@ -1163,7 +1168,9 @@ viewSchedule2 texts model =
                 ]
             ]
         , Html.map CalEventMsg
-            (Comp.CalEventInput.view2 ""
+            (Comp.CalEventInput.view2
+                texts.calEventInput
+                ""
                 (Data.Validated.value model.schedule)
                 model.scheduleModel
             )
