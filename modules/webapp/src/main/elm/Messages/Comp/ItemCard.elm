@@ -1,0 +1,12 @@
+module Messages.Comp.ItemCard exposing (..)
+
+
+type alias Texts =
+    { folder : String
+    }
+
+
+gb : Texts
+gb =
+    { folder = "Folder"
+    }

@@ -11,7 +11,7 @@ import Comp.Basic as B
 import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Messages.TagTableComp exposing (Texts)
+import Messages.Comp.TagTable exposing (Texts)
 import Styles as S
 
 

@@ -18,7 +18,7 @@ import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Http
-import Messages.CustomFieldManageComp exposing (Texts)
+import Messages.Comp.CustomFieldManage exposing (Texts)
 import Styles as S
 import Util.CustomField
 

@@ -47,7 +47,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Http
-import Messages.DetailEditComp exposing (Texts)
+import Messages.Comp.DetailEdit exposing (Texts)
 import Styles as S
 import Util.Http
 

@@ -11,7 +11,7 @@ import Api.Model.EmailSettings exposing (EmailSettings)
 import Comp.Basic as B
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Messages.EmailSettingsTableComp exposing (Texts)
+import Messages.Comp.EmailSettingsTable exposing (Texts)
 import Styles as S
 
 

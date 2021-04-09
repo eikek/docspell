@@ -21,7 +21,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onSubmit)
 import Http
-import Messages.SourceManageComp exposing (Texts)
+import Messages.Comp.SourceManage exposing (Texts)
 import Ports
 import QRCode
 import Styles as S

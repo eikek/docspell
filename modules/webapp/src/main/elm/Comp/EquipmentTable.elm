@@ -12,7 +12,7 @@ import Data.EquipmentUse
 import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Messages.EquipmentTableComp exposing (Texts)
+import Messages.Comp.EquipmentTable exposing (Texts)
 import Styles as S
 
 

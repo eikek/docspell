@@ -13,7 +13,7 @@ import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
-import Messages.HomePage exposing (Texts)
+import Messages.Page.Home exposing (Texts)
 import Page exposing (Page(..))
 import Page.Home.Data exposing (..)
 import Page.Home.SideMenu

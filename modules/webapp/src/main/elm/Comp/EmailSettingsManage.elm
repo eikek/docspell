@@ -21,7 +21,7 @@ import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Http
-import Messages.EmailSettingsManageComp exposing (Texts)
+import Messages.Comp.EmailSettingsManage exposing (Texts)
 import Styles as S
 import Util.Http
 

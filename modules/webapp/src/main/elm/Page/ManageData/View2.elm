@@ -13,7 +13,7 @@ import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Messages.ManageDataPage exposing (Texts)
+import Messages.Page.ManageData exposing (Texts)
 import Page.ManageData.Data exposing (..)
 import Styles as S
 

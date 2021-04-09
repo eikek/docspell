@@ -9,7 +9,7 @@ import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Messages.HomeSideMenu exposing (Texts)
+import Messages.Page.HomeSideMenu exposing (Texts)
 import Page.Home.Data exposing (..)
 import Set
 import Styles as S

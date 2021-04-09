@@ -29,7 +29,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Http
-import Messages.CustomFieldMultiInputComp exposing (Texts)
+import Messages.Comp.CustomFieldMultiInput exposing (Texts)
 import Styles as S
 import Util.CustomField
 import Util.Maybe

@@ -21,7 +21,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onSubmit)
 import Http
-import Messages.UserManageComp exposing (Texts)
+import Messages.Comp.UserManage exposing (Texts)
 import Styles as S
 import Util.Http
 import Util.Maybe

@@ -24,7 +24,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Http
-import Messages.FolderDetailComp exposing (Texts)
+import Messages.Comp.FolderDetail exposing (Texts)
 import Styles as S
 import Util.Http
 import Util.Maybe

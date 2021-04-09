@@ -12,7 +12,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Markdown
-import Messages.UserSettingsPage exposing (Texts)
+import Messages.Page.UserSettings exposing (Texts)
 import Page.UserSettings.Data exposing (..)
 import Styles as S
 

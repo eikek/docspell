@@ -12,7 +12,7 @@ import Data.Flags exposing (Flags)
 import Data.Priority
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Messages.SourceTableComp exposing (Texts)
+import Messages.Comp.SourceTable exposing (Texts)
 import Styles as S
 import Util.Html
 

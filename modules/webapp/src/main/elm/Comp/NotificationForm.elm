@@ -31,7 +31,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)
 import Http
 import Markdown
-import Messages.NotificationFormComp exposing (Texts)
+import Messages.Comp.NotificationForm exposing (Texts)
 import Styles as S
 import Util.Http
 import Util.Maybe

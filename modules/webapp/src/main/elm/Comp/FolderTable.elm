@@ -11,7 +11,7 @@ import Api.Model.FolderItem exposing (FolderItem)
 import Comp.Basic as B
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Messages.FolderTableComp exposing (Texts)
+import Messages.Comp.FolderTable exposing (Texts)
 import Styles as S
 import Util.Time
 

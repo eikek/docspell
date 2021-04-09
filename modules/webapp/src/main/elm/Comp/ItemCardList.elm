@@ -22,7 +22,7 @@ import Data.UiSettings exposing (UiSettings)
 import Dict exposing (Dict)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Messages.ItemCardListComp exposing (Texts)
+import Messages.Comp.ItemCardList exposing (Texts)
 import Page exposing (Page(..))
 import Styles as S
 import Util.ItemDragDrop as DD

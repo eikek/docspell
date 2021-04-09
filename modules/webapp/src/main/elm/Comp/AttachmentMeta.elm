@@ -15,7 +15,7 @@ import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Http
-import Messages.AttachmentMetaComp exposing (Texts)
+import Messages.Comp.AttachmentMeta exposing (Texts)
 import Styles as S
 import Util.Http
 import Util.Time

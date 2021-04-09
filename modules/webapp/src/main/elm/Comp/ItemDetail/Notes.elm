@@ -12,7 +12,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Markdown
-import Messages.NotesComp exposing (Texts)
+import Messages.Comp.ItemDetail.Notes exposing (Texts)
 import Page exposing (Page(..))
 import Styles as S
 import Util.String

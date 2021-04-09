@@ -11,7 +11,7 @@ import Comp.Basic as B
 import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Messages.UserTableComp exposing (Texts)
+import Messages.Comp.UserTable exposing (Texts)
 import Styles as S
 import Util.Time exposing (formatDateTime)
 

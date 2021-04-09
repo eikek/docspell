@@ -10,7 +10,7 @@ import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Messages.QueuePage exposing (Texts)
+import Messages.Page.Queue exposing (Texts)
 import Page.Queue.Data exposing (..)
 import Styles as S
 import Util.Time exposing (formatDateTime, formatIsoDateTime)

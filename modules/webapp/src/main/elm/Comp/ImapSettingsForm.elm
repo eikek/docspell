@@ -21,7 +21,7 @@ import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)
-import Messages.ImapSettingsFormComp exposing (Texts)
+import Messages.Comp.ImapSettingsForm exposing (Texts)
 import Styles as S
 import Util.Maybe
 

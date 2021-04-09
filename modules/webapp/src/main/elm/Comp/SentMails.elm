@@ -13,7 +13,7 @@ import Comp.Basic as B
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Messages.SentMailsComp exposing (Texts)
+import Messages.Comp.SentMails exposing (Texts)
 import Styles as S
 import Util.Time
 

@@ -11,7 +11,7 @@ import Api.Model.CustomField exposing (CustomField)
 import Comp.Basic as B
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Messages.CustomFieldTableComp exposing (Texts)
+import Messages.Comp.CustomFieldTable exposing (Texts)
 import Styles as S
 import Util.Time
 

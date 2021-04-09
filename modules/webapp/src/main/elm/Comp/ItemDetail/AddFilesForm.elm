@@ -8,7 +8,7 @@ import File exposing (File)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Messages.ItemDetail.AddFilesForm exposing (Texts)
+import Messages.Comp.ItemDetail.AddFilesForm exposing (Texts)
 import Set
 import Styles as S
 import Util.File exposing (makeFileId)

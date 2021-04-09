@@ -6,16 +6,16 @@ module Messages exposing
     )
 
 import Messages.App
-import Messages.CollectiveSettingsPage
-import Messages.HomePage
-import Messages.ItemDetailPage
-import Messages.LoginPage
-import Messages.ManageDataPage
-import Messages.NewInvitePage
-import Messages.QueuePage
-import Messages.RegisterPage
-import Messages.UploadPage
-import Messages.UserSettingsPage
+import Messages.Page.CollectiveSettings
+import Messages.Page.Home
+import Messages.Page.ItemDetail
+import Messages.Page.Login
+import Messages.Page.ManageData
+import Messages.Page.NewInvite
+import Messages.Page.Queue
+import Messages.Page.Register
+import Messages.Page.Upload
+import Messages.Page.UserSettings
 import UiLanguage exposing (UiLanguage(..))
 
 
@@ -27,16 +27,16 @@ type alias Messages =
     , label : String
     , flagIcon : String
     , app : Messages.App.Texts
-    , collectiveSettings : Messages.CollectiveSettingsPage.Texts
-    , login : Messages.LoginPage.Texts
-    , register : Messages.RegisterPage.Texts
-    , newInvite : Messages.NewInvitePage.Texts
-    , upload : Messages.UploadPage.Texts
-    , itemDetail : Messages.ItemDetailPage.Texts
-    , queue : Messages.QueuePage.Texts
-    , userSettings : Messages.UserSettingsPage.Texts
-    , manageData : Messages.ManageDataPage.Texts
-    , home : Messages.HomePage.Texts
+    , collectiveSettings : Messages.Page.CollectiveSettings.Texts
+    , login : Messages.Page.Login.Texts
+    , register : Messages.Page.Register.Texts
+    , newInvite : Messages.Page.NewInvite.Texts
+    , upload : Messages.Page.Upload.Texts
+    , itemDetail : Messages.Page.ItemDetail.Texts
+    , queue : Messages.Page.Queue.Texts
+    , userSettings : Messages.Page.UserSettings.Texts
+    , manageData : Messages.Page.ManageData.Texts
+    , home : Messages.Page.Home.Texts
     }
 
 
@@ -90,16 +90,16 @@ gb =
     , label = "English"
     , flagIcon = "flag-icon flag-icon-gb"
     , app = Messages.App.gb
-    , collectiveSettings = Messages.CollectiveSettingsPage.gb
-    , login = Messages.LoginPage.gb
-    , register = Messages.RegisterPage.gb
-    , newInvite = Messages.NewInvitePage.gb
-    , upload = Messages.UploadPage.gb
-    , itemDetail = Messages.ItemDetailPage.gb
-    , queue = Messages.QueuePage.gb
-    , userSettings = Messages.UserSettingsPage.gb
-    , manageData = Messages.ManageDataPage.gb
-    , home = Messages.HomePage.gb
+    , collectiveSettings = Messages.Page.CollectiveSettings.gb
+    , login = Messages.Page.Login.gb
+    , register = Messages.Page.Register.gb
+    , newInvite = Messages.Page.NewInvite.gb
+    , upload = Messages.Page.Upload.gb
+    , itemDetail = Messages.Page.ItemDetail.gb
+    , queue = Messages.Page.Queue.gb
+    , userSettings = Messages.Page.UserSettings.gb
+    , manageData = Messages.Page.ManageData.gb
+    , home = Messages.Page.Home.gb
     }
 
 
@@ -110,14 +110,14 @@ de =
     , label = "Deutsch"
     , flagIcon = "flag-icon flag-icon-de"
     , app = Messages.App.de
-    , collectiveSettings = Messages.CollectiveSettingsPage.de
-    , login = Messages.LoginPage.de
-    , register = Messages.RegisterPage.de
-    , newInvite = Messages.NewInvitePage.de
-    , upload = Messages.UploadPage.de
-    , itemDetail = Messages.ItemDetailPage.de
-    , queue = Messages.QueuePage.de
-    , userSettings = Messages.UserSettingsPage.de
-    , manageData = Messages.ManageDataPage.de
-    , home = Messages.HomePage.de
+    , collectiveSettings = Messages.Page.CollectiveSettings.de
+    , login = Messages.Page.Login.de
+    , register = Messages.Page.Register.de
+    , newInvite = Messages.Page.NewInvite.de
+    , upload = Messages.Page.Upload.de
+    , itemDetail = Messages.Page.ItemDetail.de
+    , queue = Messages.Page.Queue.de
+    , userSettings = Messages.Page.UserSettings.de
+    , manageData = Messages.Page.ManageData.de
+    , home = Messages.Page.Home.de
     }

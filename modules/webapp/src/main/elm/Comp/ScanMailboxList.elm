@@ -11,7 +11,7 @@ import Api.Model.ScanMailboxSettings exposing (ScanMailboxSettings)
 import Comp.Basic as B
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Messages.ScanMailboxTableComp exposing (Texts)
+import Messages.Comp.ScanMailboxTable exposing (Texts)
 import Styles as S
 import Util.Html
 

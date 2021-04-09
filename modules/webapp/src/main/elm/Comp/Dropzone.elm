@@ -18,7 +18,7 @@ import File.Select
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
-import Messages.DropzoneComp exposing (Texts)
+import Messages.Comp.Dropzone exposing (Texts)
 import Styles as S
 import Util.Html exposing (onDragEnter, onDragLeave, onDragOver, onDropFiles)
 

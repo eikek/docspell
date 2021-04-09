@@ -14,7 +14,7 @@ import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Messages.UiSettingsManageComp exposing (Texts)
+import Messages.Comp.UiSettingsManage exposing (Texts)
 import Ports
 import Styles as S
 

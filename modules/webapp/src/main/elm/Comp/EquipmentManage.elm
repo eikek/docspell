@@ -20,7 +20,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onSubmit)
 import Http
-import Messages.EquipmentManageComp exposing (Texts)
+import Messages.Comp.EquipmentManage exposing (Texts)
 import Styles as S
 import Util.Http
 import Util.Maybe

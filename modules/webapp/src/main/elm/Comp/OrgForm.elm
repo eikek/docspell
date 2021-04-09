@@ -20,7 +20,7 @@ import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)
-import Messages.OrgFormComp exposing (Texts)
+import Messages.Comp.OrgForm exposing (Texts)
 import Styles as S
 import Util.Maybe
 

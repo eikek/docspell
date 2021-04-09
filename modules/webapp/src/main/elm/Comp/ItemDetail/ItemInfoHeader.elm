@@ -15,7 +15,7 @@ import Data.Icons as Icons
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Messages.ItemInfoHeaderComp exposing (Texts)
+import Messages.Comp.ItemDetail.ItemInfoHeader exposing (Texts)
 import Page exposing (Page(..))
 import Styles as S
 import Util.Maybe

@@ -25,7 +25,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Markdown
-import Messages.EditFormComp exposing (Texts)
+import Messages.Comp.ItemDetail.EditForm exposing (Texts)
 import Page exposing (Page(..))
 import Set exposing (Set)
 import Styles as S

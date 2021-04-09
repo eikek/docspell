@@ -6,7 +6,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput, onSubmit)
 import Markdown
-import Messages.NewInvitePage exposing (Texts)
+import Messages.Page.NewInvite exposing (Texts)
 import Page.NewInvite.Data exposing (..)
 import Styles as S
 

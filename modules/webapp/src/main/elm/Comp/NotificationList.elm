@@ -11,7 +11,7 @@ import Api.Model.NotificationSettings exposing (NotificationSettings)
 import Comp.Basic as B
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Messages.NotificationTableComp exposing (Texts)
+import Messages.Comp.NotificationTable exposing (Texts)
 import Styles as S
 import Util.Html
 

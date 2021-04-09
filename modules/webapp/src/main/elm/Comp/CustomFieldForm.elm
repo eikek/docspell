@@ -25,7 +25,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)
 import Http
-import Messages.CustomFieldFormComp exposing (Texts)
+import Messages.Comp.CustomFieldForm exposing (Texts)
 import Styles as S
 import Util.Http
 import Util.Maybe

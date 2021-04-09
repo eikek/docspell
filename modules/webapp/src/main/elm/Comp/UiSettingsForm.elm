@@ -29,7 +29,7 @@ import Html.Events exposing (onClick, onInput)
 import Http
 import Markdown
 import Messages
-import Messages.UiSettingsFormComp exposing (Texts)
+import Messages.Comp.UiSettingsForm exposing (Texts)
 import Set exposing (Set)
 import Styles as S
 import UiLanguage exposing (UiLanguage)

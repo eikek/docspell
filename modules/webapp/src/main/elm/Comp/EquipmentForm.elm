@@ -17,7 +17,7 @@ import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)
-import Messages.EquipmentFormComp exposing (Texts)
+import Messages.Comp.EquipmentForm exposing (Texts)
 import Styles as S
 import Util.Maybe
 

@@ -11,7 +11,7 @@ import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Messages.ItemDetailPage exposing (Texts)
+import Messages.Page.ItemDetail exposing (Texts)
 import Page.ItemDetail.Data exposing (..)
 import Styles as S
 

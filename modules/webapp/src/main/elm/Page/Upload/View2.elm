@@ -5,14 +5,13 @@ import Comp.FixedDropdown
 import Comp.Progress
 import Data.DropdownStyle as DS
 import Data.Flags exposing (Flags)
-import Data.Language
 import Data.UiSettings exposing (UiSettings)
 import Dict
 import File exposing (File)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onCheck, onClick)
-import Messages.UploadPage exposing (Texts)
+import Messages.Page.Upload exposing (Texts)
 import Page exposing (Page(..))
 import Page.Upload.Data exposing (..)
 import Styles as S

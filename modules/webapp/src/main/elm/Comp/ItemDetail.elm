@@ -13,7 +13,7 @@ import Data.Flags exposing (Flags)
 import Data.ItemNav exposing (ItemNav)
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
-import Messages.ItemDetailComp exposing (Texts)
+import Messages.Comp.ItemDetail exposing (Texts)
 import Page exposing (Page(..))
 
 

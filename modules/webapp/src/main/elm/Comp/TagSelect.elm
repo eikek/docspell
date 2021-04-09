@@ -26,7 +26,7 @@ import Dict exposing (Dict)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
-import Messages.TagSelectComp exposing (Texts)
+import Messages.Comp.TagSelect exposing (Texts)
 import Set
 import Simple.Fuzzy
 import String as S

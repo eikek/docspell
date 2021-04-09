@@ -12,7 +12,7 @@ import Data.Flags exposing (Flags)
 import Data.PersonUse
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Messages.PersonTableComp exposing (Texts)
+import Messages.Comp.PersonTable exposing (Texts)
 import Styles as S
 import Util.Contact
 

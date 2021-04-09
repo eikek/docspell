@@ -22,7 +22,7 @@ import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)
-import Messages.PersonFormComp exposing (Texts)
+import Messages.Comp.PersonForm exposing (Texts)
 import Styles as S
 
 

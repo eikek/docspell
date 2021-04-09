@@ -22,7 +22,7 @@ import DatePicker exposing (DatePicker)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
-import Messages.CustomFieldInputComp exposing (Texts)
+import Messages.Comp.CustomFieldInput exposing (Texts)
 import Styles as S
 import Util.Maybe
 

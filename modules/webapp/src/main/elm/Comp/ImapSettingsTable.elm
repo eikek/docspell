@@ -11,7 +11,7 @@ import Api.Model.ImapSettings exposing (ImapSettings)
 import Comp.Basic as B
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Messages.ImapSettingsTableComp exposing (Texts)
+import Messages.Comp.ImapSettingsTable exposing (Texts)
 import Styles as S
 
 

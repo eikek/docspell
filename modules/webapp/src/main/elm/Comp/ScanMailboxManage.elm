@@ -18,7 +18,7 @@ import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Http
-import Messages.ScanMailboxManageComp exposing (Texts)
+import Messages.Comp.ScanMailboxManage exposing (Texts)
 import Styles as S
 import Util.Http
 

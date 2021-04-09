@@ -16,7 +16,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Http
-import Messages.ChangePasswordFormComp exposing (Texts)
+import Messages.Comp.ChangePasswordForm exposing (Texts)
 import Styles as S
 import Util.Http
 

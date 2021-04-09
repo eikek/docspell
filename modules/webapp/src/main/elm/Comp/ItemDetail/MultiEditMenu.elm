@@ -39,7 +39,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Http
 import Markdown
-import Messages.MultiEditMenuComp exposing (Texts)
+import Messages.Comp.ItemDetail.MultiEditMenu exposing (Texts)
 import Page exposing (Page(..))
 import Set exposing (Set)
 import Styles as S

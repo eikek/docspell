@@ -39,8 +39,8 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onCheck, onClick, onInput)
 import Http
 import Markdown
-import Messages.LanguageData
-import Messages.ScanMailboxFormComp exposing (Texts)
+import Messages.Comp.ScanMailboxForm exposing (Texts)
+import Messages.Data.Language
 import Set exposing (Set)
 import Styles as S
 import Util.Folder exposing (mkFolderOption)
@@ -1040,7 +1040,7 @@ viewMetadata2 texts flags settings model =
             }
 
         languageCfg =
-            { display = Messages.LanguageData.gb
+            { display = Messages.Data.Language.gb
             , icon = \_ -> Nothing
             , style = DS.mainStyleWith "flex-grow mr-2"
             }

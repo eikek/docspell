@@ -24,7 +24,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Http
 import Markdown
-import Messages.ClassifierSettingsFormComp exposing (Texts)
+import Messages.Comp.ClassifierSettingsForm exposing (Texts)
 import Styles as S
 import Util.Tag
 

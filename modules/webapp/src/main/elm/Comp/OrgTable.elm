@@ -12,7 +12,7 @@ import Data.Flags exposing (Flags)
 import Data.OrgUse
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Messages.OrgTableComp exposing (Texts)
+import Messages.Comp.OrgTable exposing (Texts)
 import Styles as S
 import Util.Address
 import Util.Contact

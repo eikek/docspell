@@ -18,7 +18,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Html5.DragDrop as DD
-import Messages.SingleAttachmentComp exposing (Texts)
+import Messages.Comp.ItemDetail.SingleAttachment exposing (Texts)
 import Page exposing (Page(..))
 import Styles as S
 import Util.Maybe

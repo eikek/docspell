@@ -23,7 +23,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onCheck, onClick, onInput)
 import Http
-import Messages.CollectiveSettingsFormComp exposing (Texts)
+import Messages.Comp.CollectiveSettingsForm exposing (Texts)
 import Styles as S
 import Util.Http
 

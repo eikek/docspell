@@ -23,7 +23,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Markdown
-import Messages.ItemCardComp exposing (Texts)
+import Messages.Comp.ItemCard exposing (Texts)
 import Page exposing (Page(..))
 import Set exposing (Set)
 import Styles as S

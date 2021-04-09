@@ -28,7 +28,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onCheck, onInput)
 import Http
 import Markdown
-import Messages.SourceFormComp exposing (Texts)
+import Messages.Comp.SourceForm exposing (Texts)
 import Styles as S
 import Util.Folder exposing (mkFolderOption)
 import Util.Maybe

@@ -17,7 +17,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)
 import Http
-import Messages.CalEventInputComp exposing (Texts)
+import Messages.Comp.CalEventInput exposing (Texts)
 import Styles as S
 import Util.Http
 import Util.Maybe

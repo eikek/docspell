@@ -23,7 +23,7 @@ import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Messages.ItemDetailComp exposing (Texts)
+import Messages.Comp.ItemDetail exposing (Texts)
 import Page exposing (Page(..))
 import Styles as S
 import Util.Time

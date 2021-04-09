@@ -22,7 +22,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onSubmit)
 import Http
-import Messages.PersonManageComp exposing (Texts)
+import Messages.Comp.PersonManage exposing (Texts)
 import Styles as S
 import Util.Http
 import Util.Maybe

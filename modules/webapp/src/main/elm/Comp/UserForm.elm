@@ -19,7 +19,7 @@ import Data.UserState exposing (UserState)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)
-import Messages.UserFormComp exposing (Texts)
+import Messages.Comp.UserForm exposing (Texts)
 import Styles as S
 import Util.Maybe
 

@@ -6,7 +6,7 @@ import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onCheck, onInput, onSubmit)
-import Messages.LoginPage exposing (Texts)
+import Messages.Page.Login exposing (Texts)
 import Page exposing (Page(..))
 import Page.Login.Data exposing (..)
 import Styles as S

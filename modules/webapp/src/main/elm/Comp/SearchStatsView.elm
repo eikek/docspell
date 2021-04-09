@@ -11,7 +11,7 @@ import Data.Icons as Icons
 import Data.Money
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Messages.SearchStatsViewComp exposing (Texts)
+import Messages.Comp.SearchStatsView exposing (Texts)
 import Styles as S
 
 

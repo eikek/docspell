@@ -23,7 +23,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Http
-import Messages.ItemMailComp exposing (Texts)
+import Messages.Comp.ItemMail exposing (Texts)
 import Styles as S
 import Util.Http
 

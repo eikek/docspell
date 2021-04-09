@@ -44,7 +44,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Http
-import Messages.SearchMenuComp exposing (Texts)
+import Messages.Comp.SearchMenu exposing (Texts)
 import Set exposing (Set)
 import Styles as S
 import Util.Html exposing (KeyCode(..))

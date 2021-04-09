@@ -14,7 +14,7 @@ import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)
-import Messages.AddressFormComp exposing (Texts)
+import Messages.Comp.AddressForm exposing (Texts)
 import Styles as S
 import Util.List
 

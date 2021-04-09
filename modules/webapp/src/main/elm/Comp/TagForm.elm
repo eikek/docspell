@@ -16,7 +16,7 @@ import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)
-import Messages.TagFormComp exposing (Texts)
+import Messages.Comp.TagForm exposing (Texts)
 import Styles as S
 import Util.Maybe
 
