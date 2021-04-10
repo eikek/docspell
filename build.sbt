@@ -39,9 +39,9 @@ val sharedSettings = Seq(
     val dir    = (LocalRootProject / baseDirectory).value / "tools"
     packageTools(logger, dir, v)
   },
-  scalacOptions in (Compile, console) :=
+  Compile / console / scalacOptions :=
     (scalacOptions.value.filter(o => !o.contains("-Xlint") && !o.contains("-W"))),
-  scalacOptions in (Test, console) :=
+  Test / console / scalacOptions :=
     (scalacOptions.value.filter(o => !o.contains("-Xlint") && !o.contains("-W")))
 ) ++ scalafixSettings
 
@@ -83,7 +83,7 @@ val stylesSettings = Seq(
 def webjarSettings(queryJS: Project) = Seq(
   Compile / resourceGenerators += Def.task {
     copyWebjarResources(
-      Seq((sourceDirectory in Compile).value / "webjar"),
+      Seq((Compile / sourceDirectory).value / "webjar"),
       (Compile / resourceManaged).value,
       name.value,
       version.value,
@@ -112,7 +112,7 @@ def webjarSettings(queryJS: Project) = Seq(
 def debianSettings(cfgFile: String) =
   Seq(
     maintainer := "Eike Kettner <eike.kettner@posteo.de>",
-    mappings in Universal += {
+    Universal / mappings += {
       val conf = (Compile / resourceDirectory).value / "reference.conf"
       if (!conf.exists)
         sys.error(s"File $conf not found")
@@ -570,11 +570,11 @@ val website = project
   .settings(
     name := "docspell-website",
     publishArtifact := false,
-    skip in publish := true,
+    publish / skip := true,
     ghpagesNoJekyll := true,
     // the ghpages plugins works together with the site plugin (its a dependency)
     // to make it publish the zola generated site, override their mappings with the zola output
-    mappings in SitePlugin.autoImport.makeSite :=
+    SitePlugin.autoImport.makeSite / mappings :=
       Path.selectSubpaths(zolaOutputDir.value, _ => true).toSeq,
     git.remoteRepo := "git@github.com:eikek/docspell",
     Compile / resourceGenerators += Def.task {
@@ -584,10 +584,10 @@ val website = project
       val logger = streams.value.log
 
       val files = Seq(
-        (resourceDirectory in (restserver, Compile)).value / "reference.conf"     -> templateOut / "server.conf",
-        (resourceDirectory in (joex, Compile)).value / "reference.conf"           -> templateOut / "joex.conf",
+        (restserver / Compile / resourceDirectory).value / "reference.conf"       -> templateOut / "server.conf",
+        (joex / Compile / resourceDirectory).value / "reference.conf"             -> templateOut / "joex.conf",
         (LocalRootProject / baseDirectory).value / "tools" / "exim" / "exim.conf" -> templateOut / "sample-exim.conf",
-        (resourceDirectory in (restapi, Compile)).value / "docspell-openapi.yml"  -> staticOut / "docspell-openapi.yml",
+        (restapi / Compile / resourceDirectory).value / "docspell-openapi.yml"    -> staticOut / "docspell-openapi.yml",
         (restapi / Compile / openapiStaticDoc).value                              -> staticOut / "docspell-openapi.html"
       )
       IO.copy(files)
@@ -777,4 +777,10 @@ addCommandAlias("make-zip", ";restserver/universal:packageBin ;joex/universal:pa
 addCommandAlias("make-deb", ";restserver/debian:packageBin ;joex/debian:packageBin")
 addCommandAlias("make-tools", ";root/toolsPackage")
 addCommandAlias("make-pkg", ";clean ;make ;make-zip ;make-deb ;make-tools")
-addCommandAlias("reformatAll", ";project root ;scalafix ;scalafmtAll")
+
+addCommandAlias("ci", "make; lint; test")
+addCommandAlias(
+  "lint",
+  "scalafmtSbtCheck; scalafmtCheckAll; Compile/scalafix --check; Test/scalafix --check"
+)
+addCommandAlias("fix", "Compile/scalafix; Test/scalafix; scalafmtSbt; scalafmtAll")
