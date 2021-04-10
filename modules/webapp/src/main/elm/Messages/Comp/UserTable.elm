@@ -10,7 +10,6 @@ type alias Texts =
     , email : String
     , logins : String
     , lastLogin : String
-    , created : String
     }
 
 
@@ -22,5 +21,4 @@ gb =
     , email = "E-Mail"
     , logins = "Logins"
     , lastLogin = "Last Login"
-    , created = "Created"
     }

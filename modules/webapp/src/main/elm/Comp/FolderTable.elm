@@ -52,7 +52,7 @@ view2 texts _ items =
             [ tr []
                 [ th [ class "w-px whitespace-nowrap pr-1 md:pr-3" ] []
                 , th [ class "text-left" ]
-                    [ text texts.name
+                    [ text texts.basics.name
                     ]
                 , th [ class "text-left hidden sm:table-cell" ] [ text "Owner" ]
                 , th [ class "text-center" ]

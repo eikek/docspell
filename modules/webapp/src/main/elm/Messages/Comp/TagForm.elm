@@ -1,16 +1,18 @@
 module Messages.Comp.TagForm exposing (..)
 
+import Messages.Basics
+
 
 type alias Texts =
-    { selectDefineCategory : String
-    , name : String
+    { basics : Messages.Basics.Texts
+    , selectDefineCategory : String
     , category : String
     }
 
 
 gb : Texts
 gb =
-    { selectDefineCategory = "Select or define category..."
-    , name = "Name"
+    { basics = Messages.Basics.gb
+    , selectDefineCategory = "Select or define category..."
     , category = "Category"
     }

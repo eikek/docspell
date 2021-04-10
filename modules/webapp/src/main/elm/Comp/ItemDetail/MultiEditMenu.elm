@@ -753,7 +753,7 @@ renderEditForm2 texts flags cfg settings model =
                     ]
               }
             , { name = tabName TabFolder
-              , title = texts.folderTab
+              , title = texts.basics.folder
               , titleRight = []
               , info = Nothing
               , body =
@@ -769,7 +769,7 @@ renderEditForm2 texts flags cfg settings model =
                     ]
               }
             , { name = tabName TabCustomFields
-              , title = texts.customFieldsTab
+              , title = texts.basics.customFields
               , titleRight = []
               , info = Nothing
               , body =
@@ -782,7 +782,7 @@ renderEditForm2 texts flags cfg settings model =
                     ]
               }
             , { name = tabName TabDate
-              , title = texts.dateTab
+              , title = texts.basics.date
               , titleRight = []
               , info = Nothing
               , body =
@@ -828,7 +828,7 @@ renderEditForm2 texts flags cfg settings model =
                     ]
               }
             , { name = tabName TabCorrespondent
-              , title = texts.correspondentTab
+              , title = texts.basics.correspondent
               , titleRight = []
               , info = Nothing
               , body =
@@ -837,7 +837,7 @@ renderEditForm2 texts flags cfg settings model =
                             [ label [ class S.inputLabel ]
                                 [ Icons.organizationIcon2 ""
                                 , span [ class "ml-2" ]
-                                    [ text texts.organization
+                                    [ text texts.basics.organization
                                     ]
                                 ]
                             , Html.map OrgDropdownMsg
@@ -852,7 +852,7 @@ renderEditForm2 texts flags cfg settings model =
                             [ label [ class S.inputLabel ]
                                 [ Icons.personIcon2 ""
                                 , span [ class "ml-2" ]
-                                    [ text texts.person
+                                    [ text texts.basics.person
                                     ]
                                 ]
                             , Html.map CorrPersonMsg
@@ -865,7 +865,7 @@ renderEditForm2 texts flags cfg settings model =
                     ]
               }
             , { name = tabName TabConcerning
-              , title = texts.concerningTab
+              , title = texts.basics.concerning
               , titleRight = []
               , info = Nothing
               , body =
@@ -874,7 +874,7 @@ renderEditForm2 texts flags cfg settings model =
                             [ label [ class S.inputLabel ]
                                 [ Icons.personIcon2 ""
                                 , span [ class "ml-2" ]
-                                    [ text texts.person ]
+                                    [ text texts.basics.person ]
                                 ]
                             , Html.map ConcPersonMsg (Comp.Dropdown.view2 idNameCfg settings model.concPersonModel)
                             ]
@@ -883,7 +883,7 @@ renderEditForm2 texts flags cfg settings model =
                             [ label [ class S.inputLabel ]
                                 [ Icons.equipmentIcon2 ""
                                 , span [ class "ml-2" ]
-                                    [ text texts.equipment ]
+                                    [ text texts.basics.equipment ]
                                 ]
                             , Html.map ConcEquipMsg
                                 (Comp.Dropdown.view2 idNameCfg
@@ -894,7 +894,7 @@ renderEditForm2 texts flags cfg settings model =
                     ]
               }
             , { name = tabName TabDirection
-              , title = texts.directionTab
+              , title = texts.basics.direction
               , titleRight = []
               , info = Nothing
               , body =
@@ -902,7 +902,7 @@ renderEditForm2 texts flags cfg settings model =
                     ]
               }
             , { name = tabName TabName
-              , title = texts.nameTab
+              , title = texts.basics.name
               , titleRight = []
               , info = Nothing
               , body =

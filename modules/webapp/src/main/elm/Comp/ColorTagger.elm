@@ -90,6 +90,7 @@ update msg model =
 
 type alias ViewOpts =
     { renderItem : ( String, Color ) -> Html Msg
+    , colorLabel : Color -> String
     , label : String
     , description : Maybe String
     }
@@ -116,6 +117,7 @@ view2 data opts model =
             )
         , div [ class "field" ]
             [ chooseColor2
+                opts.colorLabel
                 (AddPair data)
                 Data.Color.all
                 Nothing
@@ -169,8 +171,8 @@ renderFormData2 opts data =
         (List.map valueItem values)
 
 
-chooseColor2 : (Color -> msg) -> List Color -> Maybe String -> Html msg
-chooseColor2 tagger colors mtext =
+chooseColor2 : (Color -> String) -> (Color -> msg) -> List Color -> Maybe String -> Html msg
+chooseColor2 colorLabel tagger colors mtext =
     let
         renderLabel color =
             a
@@ -180,7 +182,7 @@ chooseColor2 tagger colors mtext =
                 , onClick (tagger color)
                 ]
                 [ Maybe.withDefault
-                    (Data.Color.toString color)
+                    (colorLabel color)
                     mtext
                     |> text
                 ]

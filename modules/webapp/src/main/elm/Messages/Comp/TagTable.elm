@@ -1,14 +1,16 @@
 module Messages.Comp.TagTable exposing (..)
 
+import Messages.Basics
+
 
 type alias Texts =
-    { name : String
+    { basics : Messages.Basics.Texts
     , category : String
     }
 
 
 gb : Texts
 gb =
-    { name = "Name"
+    { basics = Messages.Basics.gb
     , category = "Category"
     }

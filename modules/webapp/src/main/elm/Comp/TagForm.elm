@@ -136,13 +136,13 @@ view2 texts model =
                 [ for "tagname"
                 , class S.inputLabel
                 ]
-                [ text texts.name
+                [ text texts.basics.name
                 , B.inputRequired
                 ]
             , input
                 [ type_ "text"
                 , onInput SetName
-                , placeholder texts.name
+                , placeholder texts.basics.name
                 , value model.name
                 , id "tagname"
                 , class S.textInput

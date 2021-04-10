@@ -2,15 +2,16 @@ module Messages.Comp.OrgForm exposing (..)
 
 import Data.ContactType exposing (ContactType)
 import Data.OrgUse exposing (OrgUse)
+import Messages.Basics
 import Messages.Comp.AddressForm
 import Messages.Data.ContactType
 import Messages.Data.OrgUse
 
 
 type alias Texts =
-    { addressForm : Messages.Comp.AddressForm.Texts
+    { basics : Messages.Basics.Texts
+    , addressForm : Messages.Comp.AddressForm.Texts
     , orgUseLabel : OrgUse -> String
-    , name : String
     , shortName : String
     , use : String
     , useAsCorrespondent : String
@@ -24,9 +25,9 @@ type alias Texts =
 
 gb : Texts
 gb =
-    { addressForm = Messages.Comp.AddressForm.gb
+    { basics = Messages.Basics.gb
+    , addressForm = Messages.Comp.AddressForm.gb
     , orgUseLabel = Messages.Data.OrgUse.gb
-    , name = "Name"
     , shortName = "Short Name"
     , use = "Use"
     , useAsCorrespondent = "Use as correspondent"

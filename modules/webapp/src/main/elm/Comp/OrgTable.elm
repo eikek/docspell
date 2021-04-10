@@ -64,7 +64,7 @@ view2 texts model =
                     [ text "Use"
                     ]
                 , th [ class "text-left" ]
-                    [ text texts.name
+                    [ text texts.basics.name
                     ]
                 , th [ class "text-left hidden md:table-cell" ]
                     [ text texts.address

@@ -18,11 +18,6 @@ type alias Texts =
     , folderManage : Messages.Comp.FolderManage.Texts
     , customFieldManage : Messages.Comp.CustomFieldManage.Texts
     , manageData : String
-    , equipment : String
-    , organization : String
-    , person : String
-    , folder : String
-    , customFields : String
     }
 
 
@@ -36,11 +31,6 @@ gb =
     , folderManage = Messages.Comp.FolderManage.gb
     , customFieldManage = Messages.Comp.CustomFieldManage.gb
     , manageData = "Manage Data"
-    , equipment = "Equipment"
-    , organization = "Organization"
-    , person = "Person"
-    , folder = "Folder"
-    , customFields = "Custom Fields"
     }
 
 

@@ -54,7 +54,7 @@ view2 texts model =
         [ thead []
             [ tr []
                 [ th [] []
-                , th [ class "text-left mr-2" ] [ text texts.name ]
+                , th [ class "text-left mr-2" ] [ text texts.basics.name ]
                 , th [ class "text-left mr-2" ] [ text texts.hostPort ]
                 ]
             ]

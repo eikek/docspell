@@ -1223,7 +1223,7 @@ searchTabs texts ddd flags settings model =
             ]
       }
     , { name = tabName TabFolder
-      , title = texts.folderTab
+      , title = texts.basics.folder
       , titleRight = []
       , info = Nothing
       , body =
@@ -1235,7 +1235,7 @@ searchTabs texts ddd flags settings model =
             ]
       }
     , { name = tabName TabCorrespondent
-      , title = texts.correspondentTab
+      , title = texts.basics.correspondent
       , titleRight = []
       , info = Nothing
       , body =
@@ -1244,7 +1244,7 @@ searchTabs texts ddd flags settings model =
                 , classList [ ( "hidden", isHidden Data.Fields.CorrOrg ) ]
                 ]
                 [ label [ class S.inputLabel ]
-                    [ text texts.organization ]
+                    [ text texts.basics.organization ]
                 , Html.map OrgMsg
                     (Comp.Dropdown.view2
                         (Comp.Dropdown.orgFormViewSettings texts.chooseOrganization DS.sidebarStyle)
@@ -1256,7 +1256,7 @@ searchTabs texts ddd flags settings model =
                 [ class "mb-4"
                 , classList [ ( "hidden", isHidden Data.Fields.CorrPerson ) ]
                 ]
-                [ label [ class S.inputLabel ] [ text texts.person ]
+                [ label [ class S.inputLabel ] [ text texts.basics.person ]
                 , Html.map CorrPersonMsg
                     (Comp.Dropdown.view2
                         personCfg
@@ -1267,7 +1267,7 @@ searchTabs texts ddd flags settings model =
             ]
       }
     , { name = tabName TabConcerning
-      , title = texts.concerningTab
+      , title = texts.basics.concerning
       , titleRight = []
       , info = Nothing
       , body =
@@ -1275,7 +1275,7 @@ searchTabs texts ddd flags settings model =
                 [ class "mb-4"
                 , classList [ ( "hidden", isHidden Data.Fields.ConcPerson ) ]
                 ]
-                [ label [ class S.inputLabel ] [ text texts.person ]
+                [ label [ class S.inputLabel ] [ text texts.basics.person ]
                 , Html.map ConcPersonMsg
                     (Comp.Dropdown.view2
                         personCfg
@@ -1287,7 +1287,7 @@ searchTabs texts ddd flags settings model =
                 [ class "mb-4"
                 , classList [ ( "hidden", isHidden Data.Fields.ConcEquip ) ]
                 ]
-                [ label [ class S.inputLabel ] [ text texts.equipment ]
+                [ label [ class S.inputLabel ] [ text texts.basics.equipment ]
                 , Html.map ConcEquipmentMsg
                     (Comp.Dropdown.view2
                         concEquipCfg
@@ -1298,7 +1298,7 @@ searchTabs texts ddd flags settings model =
             ]
       }
     , { name = tabName TabCustomFields
-      , title = texts.customFieldsTab
+      , title = texts.basics.customFields
       , titleRight = []
       , info = Nothing
       , body =
@@ -1316,7 +1316,7 @@ searchTabs texts ddd flags settings model =
             ]
       }
     , { name = tabName TabDate
-      , title = texts.dateTab
+      , title = texts.basics.date
       , titleRight = []
       , info = Nothing
       , body =
@@ -1418,7 +1418,7 @@ searchTabs texts ddd flags settings model =
             ]
       }
     , { name = tabName TabDirection
-      , title = texts.directionTab
+      , title = texts.basics.direction
       , titleRight = []
       , info = Nothing
       , body =

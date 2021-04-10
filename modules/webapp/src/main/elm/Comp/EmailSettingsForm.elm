@@ -190,7 +190,7 @@ view2 texts settings model =
             [ label
                 [ class S.inputLabel
                 ]
-                [ text texts.name
+                [ text texts.basics.name
                 , B.inputRequired
                 ]
             , input

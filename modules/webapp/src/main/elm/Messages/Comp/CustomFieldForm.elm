@@ -11,7 +11,6 @@ type alias Texts =
     , fieldTypeLabel : CustomFieldType -> String
     , createCustomField : String
     , modifyTypeWarning : String
-    , name : String
     , nameInfo : String
     , fieldFormat : String
     , fieldFormatInfo : String
@@ -30,7 +29,6 @@ gb =
     , modifyTypeWarning =
         "Note that changing the format may "
             ++ "result in invisible values in the ui, if they don't comply to the new format!"
-    , name = "Name"
     , nameInfo =
         "The name uniquely identifies this field. It must be a valid "
             ++ "identifier, not contain spaces or weird characters."

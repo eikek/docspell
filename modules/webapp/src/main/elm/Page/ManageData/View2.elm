@@ -53,7 +53,7 @@ viewSidebar texts visible _ settings model =
                 [ Icons.equipmentIcon2 ""
                 , span
                     [ class "ml-3" ]
-                    [ text texts.equipment
+                    [ text texts.basics.equipment
                     ]
                 ]
             , a
@@ -65,7 +65,7 @@ viewSidebar texts visible _ settings model =
                 [ Icons.organizationIcon2 ""
                 , span
                     [ class "ml-3" ]
-                    [ text texts.organization
+                    [ text texts.basics.organization
                     ]
                 ]
             , a
@@ -77,7 +77,7 @@ viewSidebar texts visible _ settings model =
                 [ Icons.personIcon2 ""
                 , span
                     [ class "ml-3" ]
-                    [ text texts.person
+                    [ text texts.basics.person
                     ]
                 ]
             , a
@@ -94,7 +94,7 @@ viewSidebar texts visible _ settings model =
                 [ Icons.folderIcon2 ""
                 , span
                     [ class "ml-3" ]
-                    [ text texts.folder
+                    [ text texts.basics.folder
                     ]
                 ]
             , a
@@ -111,7 +111,7 @@ viewSidebar texts visible _ settings model =
                 [ Icons.customFieldIcon2 ""
                 , span
                     [ class "ml-3" ]
-                    [ text texts.customFields
+                    [ text texts.basics.customFields
                     ]
                 ]
             ]
@@ -184,7 +184,7 @@ viewEquip texts model =
         ]
         [ Icons.equipmentIcon2 ""
         , div [ class "ml-2" ]
-            [ text texts.equipment
+            [ text texts.basics.equipment
             ]
         ]
     , Html.map EquipManageMsg
@@ -202,7 +202,7 @@ viewOrg texts settings model =
         ]
         [ Icons.organizationIcon2 ""
         , div [ class "ml-2" ]
-            [ text "Organizations"
+            [ text texts.basics.organization
             ]
         ]
     , Html.map OrgManageMsg
@@ -221,7 +221,7 @@ viewPerson texts settings model =
         ]
         [ Icons.personIcon2 ""
         , div [ class "ml-2" ]
-            [ text "Person"
+            [ text texts.basics.person
             ]
         ]
     , Html.map PersonManageMsg
@@ -242,7 +242,7 @@ viewFolder texts flags _ model =
         , div
             [ class "ml-2"
             ]
-            [ text texts.folder
+            [ text texts.basics.folder
             ]
         ]
     , Html.map FolderMsg
@@ -258,7 +258,7 @@ viewCustomFields texts flags _ model =
         ]
         [ Icons.customFieldIcon2 ""
         , div [ class "ml-2" ]
-            [ text texts.customFields
+            [ text texts.basics.customFields
             ]
         ]
     , Html.map CustomFieldMsg

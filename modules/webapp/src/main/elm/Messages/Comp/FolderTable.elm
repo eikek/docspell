@@ -5,7 +5,6 @@ import Messages.Basics
 
 type alias Texts =
     { basics : Messages.Basics.Texts
-    , name : String
     , memberCount : String
     }
 
@@ -13,6 +12,5 @@ type alias Texts =
 gb : Texts
 gb =
     { basics = Messages.Basics.gb
-    , name = "Name"
     , memberCount = "#Member"
     }

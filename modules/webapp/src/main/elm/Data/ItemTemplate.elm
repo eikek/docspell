@@ -17,7 +17,6 @@ module Data.ItemTemplate exposing
     , folder
     , from
     , fromMaybe
-    , helpMessage
     , isEmpty
     , literal
     , map
@@ -238,37 +237,6 @@ getName =
 
 
 --- Parse pattern
-
-
-helpMessage : String
-helpMessage =
-    """
-A pattern allows to customize the title and subtitle of each card.
-Variables expressions are enclosed in `{{` and `}}`, other text is
-used as-is. The following variables are available:
-
-- `{{name}}` the item name
-- `{{source}}` the source the item was created from
-- `{{folder}}` the items folder
-- `{{corrOrg}}` the correspondent organization
-- `{{corrPerson}}` the correspondent person
-- `{{correspondent}}` both organization and person separated by a comma
-- `{{concPerson}}` the concerning person
-- `{{concEquip}}` the concerning equipment
-- `{{concerning}}` both person and equipment separated by a comma
-- `{{fileCount}}` the number of attachments of this item
-- `{{dateLong}}` the item date as full formatted date
-- `{{dateShort}}` the item date as short formatted date (yyyy/mm/dd)
-- `{{dueDateLong}}` the item due date as full formatted date
-- `{{dueDateShort}}` the item due date as short formatted date (yyyy/mm/dd)
-- `{{direction}}` the items direction values as string
-
-If some variable is not present, an empty string is rendered. You can
-combine multiple variables with `|` to use the first non-empty one,
-for example `{{corrOrg|corrPerson|-}}` would render the organization
-and if that is not present the person. If both are absent a dash `-`
-is rendered.
-"""
 
 
 knownPattern : String -> Maybe ItemTemplate

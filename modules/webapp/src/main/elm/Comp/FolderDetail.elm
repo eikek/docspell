@@ -321,7 +321,7 @@ view2 texts flags model =
                         [ class S.inputLabel
                         , for "folder-name"
                         ]
-                        [ text texts.name
+                        [ text texts.basics.name
                         , B.inputRequired
                         ]
                     , div [ class "flex flex-row space-x-2" ]

@@ -57,7 +57,7 @@ view2 texts model =
         [ thead []
             [ tr []
                 [ th [ class "" ] []
-                , th [ class "text-left" ] [ text texts.name ]
+                , th [ class "text-left" ] [ text texts.basics.name ]
                 , th [ class "text-left" ] [ text texts.category ]
                 ]
             ]

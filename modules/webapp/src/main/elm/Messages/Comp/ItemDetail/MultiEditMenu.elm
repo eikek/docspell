@@ -16,18 +16,8 @@ type alias Texts =
     , confirm : String
     , unconfirm : String
     , changeTagMode : String
-    , folderTab : String
     , folderNotOwnerWarning : String
-    , customFieldsTab : String
-    , dateTab : String
     , dueDateTab : String
-    , correspondentTab : String
-    , organization : String
-    , person : String
-    , concerningTab : String
-    , equipment : String
-    , directionTab : String
-    , nameTab : String
     }
 
 
@@ -44,21 +34,11 @@ gb =
     , confirm = "Confirm"
     , unconfirm = "Unconfirm"
     , changeTagMode = "Change tag edit mode"
-    , folderTab = "Folder"
     , folderNotOwnerWarning =
         """
 You are **not a member** of this folder. This item will be **hidden**
 from any search now. Use a folder where you are a member of to make this
 item visible. This message will disappear then.
                       """
-    , customFieldsTab = "Custom Fields"
-    , dateTab = "Date"
     , dueDateTab = "Due Date"
-    , correspondentTab = "Correspondent"
-    , organization = "Organization"
-    , person = "Person"
-    , concerningTab = "Concerning"
-    , equipment = "Equipment"
-    , directionTab = "Direction"
-    , nameTab = "Name"
     }

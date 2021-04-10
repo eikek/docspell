@@ -61,7 +61,7 @@ view2 texts model =
                 , th [ class "text-left pr-1 md:px-2 w-20" ]
                     [ text texts.use
                     ]
-                , th [ class "text-left" ] [ text texts.name ]
+                , th [ class "text-left" ] [ text texts.basics.name ]
                 ]
             ]
         , tbody []

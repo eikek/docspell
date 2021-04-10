@@ -1,11 +1,12 @@
 module Messages.Comp.EquipmentTable exposing (..)
 
 import Data.EquipmentUse exposing (EquipmentUse)
+import Messages.Basics
 import Messages.Data.EquipmentUse
 
 
 type alias Texts =
-    { name : String
+    { basics : Messages.Basics.Texts
     , use : String
     , equipmentUseLabel : EquipmentUse -> String
     }
@@ -13,7 +14,7 @@ type alias Texts =
 
 gb : Texts
 gb =
-    { name = "Name"
+    { basics = Messages.Basics.gb
     , use = "Use"
     , equipmentUseLabel = Messages.Data.EquipmentUse.gb
     }

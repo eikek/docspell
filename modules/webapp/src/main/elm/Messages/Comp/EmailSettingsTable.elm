@@ -1,8 +1,10 @@
 module Messages.Comp.EmailSettingsTable exposing (..)
 
+import Messages.Basics
+
 
 type alias Texts =
-    { name : String
+    { basics : Messages.Basics.Texts
     , hostPort : String
     , from : String
     }
@@ -10,7 +12,7 @@ type alias Texts =
 
 gb : Texts
 gb =
-    { name = "Name"
+    { basics = Messages.Basics.gb
     , hostPort = "Host/Port"
     , from = "From"
     }

@@ -7,9 +7,9 @@ import Messages.Data.PersonUse
 
 type alias Texts =
     { basics : Messages.Basics.Texts
-    , name : String
     , address : String
     , contact : String
+    , use : String
     , personUseLabel : PersonUse -> String
     }
 
@@ -17,8 +17,8 @@ type alias Texts =
 gb : Texts
 gb =
     { basics = Messages.Basics.gb
-    , name = "Name"
     , address = "Address"
     , contact = "Contact"
+    , use = "Use"
     , personUseLabel = Messages.Data.PersonUse.gb
     }

@@ -21,6 +21,16 @@ type alias Texts =
     , no : String
     , chooseTag : String
     , loading : String
+    , name : String
+    , organization : String
+    , person : String
+    , equipment : String
+    , folder : String
+    , date : String
+    , correspondent : String
+    , concerning : String
+    , customFields : String
+    , direction : String
     }
 
 
@@ -45,6 +55,16 @@ gb =
     , no = "No"
     , chooseTag = "Choose a tag…"
     , loading = "Loading…"
+    , name = "Name"
+    , organization = "Organization"
+    , person = "Person"
+    , equipment = "Equipment"
+    , folder = "Folder"
+    , date = "Date"
+    , correspondent = "Correspondent"
+    , concerning = "Concerning"
+    , customFields = "Custom Fields"
+    , direction = "Direction"
     }
 
 

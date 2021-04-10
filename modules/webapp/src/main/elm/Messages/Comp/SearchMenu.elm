@@ -21,16 +21,8 @@ type alias Texts =
     , fulltextSearchInfo : String
     , nameSearchInfo : String
     , tagCategoryTab : String
-    , folderTab : String
-    , correspondentTab : String
-    , organization : String
     , chooseOrganization : String
-    , person : String
-    , concerningTab : String
-    , equipment : String
-    , customFieldsTab : String
     , createCustomFieldTitle : String
-    , dateTab : String
     , from : String
     , to : String
     , dueDateTab : String
@@ -38,7 +30,6 @@ type alias Texts =
     , dueTo : String
     , sourceTab : String
     , searchInItemSource : String
-    , directionTab : String
     }
 
 
@@ -59,16 +50,8 @@ gb =
     , fulltextSearchInfo = "Fulltext search in document contents and notes."
     , nameSearchInfo = "Looks in correspondents, concerned entities, item name and notes."
     , tagCategoryTab = "Tag Categories"
-    , folderTab = "Folder"
-    , correspondentTab = "Correspondent"
-    , organization = "Organization"
     , chooseOrganization = "Choose an organization"
-    , person = "Person"
-    , concerningTab = "Concerning"
-    , equipment = "Equipment"
-    , customFieldsTab = "Custom Fields"
     , createCustomFieldTitle = "Create a new custom field"
-    , dateTab = "Date"
     , from = "From"
     , to = "To"
     , dueDateTab = "Due Date"
@@ -76,5 +59,4 @@ gb =
     , dueTo = "Due To"
     , sourceTab = "Source"
     , searchInItemSource = "Search in item source…"
-    , directionTab = "Direction"
     }

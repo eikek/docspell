@@ -115,13 +115,13 @@ view2 texts model =
                 [ for "equipname"
                 , class S.inputLabel
                 ]
-                [ text "Name"
+                [ text texts.basics.name
                 , B.inputRequired
                 ]
             , input
                 [ type_ "text"
                 , onInput SetName
-                , placeholder "Name"
+                , placeholder texts.basics.name
                 , value model.name
                 , name "equipname"
                 , class S.textInput
@@ -137,21 +137,21 @@ view2 texts model =
             [ label
                 [ class S.inputLabel
                 ]
-                [ text "Use" ]
+                [ text texts.use ]
             , Html.map UseDropdownMsg
                 (Comp.FixedDropdown.viewStyled2 equipUseCfg False (Just model.use) model.useModel)
             , span [ class "opacity-50 text-sm" ]
                 [ case model.use of
                     Data.EquipmentUse.Concerning ->
-                        text "Use as concerning equipment"
+                        text texts.useAsConcerning
 
                     Data.EquipmentUse.Disabled ->
-                        text "Do not use for suggestions."
+                        text texts.useNotSuggestions
                 ]
             ]
         , div [ class "mb-4" ]
             [ h3 [ class S.header3 ]
-                [ text "Notes"
+                [ text texts.notes
                 ]
             , div [ class "" ]
                 [ textarea

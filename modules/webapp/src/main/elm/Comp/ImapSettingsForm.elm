@@ -181,7 +181,7 @@ view2 texts settings model =
         [ class "grid grid-cols-4 gap-y-4 gap-x-2" ]
         [ div [ class "col-span-4" ]
             [ label [ class S.inputLabel ]
-                [ text texts.name
+                [ text texts.basics.name
                 , B.inputRequired
                 ]
             , input

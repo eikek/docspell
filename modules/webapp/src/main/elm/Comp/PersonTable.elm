@@ -60,11 +60,11 @@ view2 texts model =
             [ tr []
                 [ th [ class "w-px whitespace-nowrap" ] []
                 , th [ class "text-left pr-1 md:px-2" ]
-                    [ text "Use"
+                    [ text texts.use
                     ]
-                , th [ class "text-left" ] [ text "Name" ]
-                , th [ class "text-left hidden sm:table-cell" ] [ text "Organization" ]
-                , th [ class "text-left hidden md:table-cell" ] [ text "Contact" ]
+                , th [ class "text-left" ] [ text texts.basics.name ]
+                , th [ class "text-left hidden sm:table-cell" ] [ text texts.basics.organization ]
+                , th [ class "text-left hidden md:table-cell" ] [ text texts.contact ]
                 ]
             ]
         , tbody []

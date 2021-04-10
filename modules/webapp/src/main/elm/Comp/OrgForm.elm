@@ -168,13 +168,13 @@ view2 texts mobile settings model =
                 [ for "orgname"
                 , class S.inputLabel
                 ]
-                [ text texts.name
+                [ text texts.basics.name
                 , B.inputRequired
                 ]
             , input
                 [ type_ "text"
                 , onInput SetName
-                , placeholder texts.name
+                , placeholder texts.basics.name
                 , value model.name
                 , name "orgname"
                 , class S.textInput

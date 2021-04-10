@@ -1,14 +1,16 @@
 module Messages.Comp.ImapSettingsTable exposing (..)
 
+import Messages.Basics
+
 
 type alias Texts =
-    { name : String
+    { basics : Messages.Basics.Texts
     , hostPort : String
     }
 
 
 gb : Texts
 gb =
-    { name = "Name"
+    { basics = Messages.Basics.gb
     , hostPort = "Host/Port"
     }

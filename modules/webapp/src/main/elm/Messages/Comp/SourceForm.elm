@@ -7,14 +7,12 @@ import Messages.Data.Language
 
 type alias Texts =
     { basics : Messages.Basics.Texts
-    , name : String
     , description : String
     , enabled : String
     , priority : String
     , priorityInfo : String
     , metadata : String
     , metadataInfoText : String
-    , folder : String
     , folderInfo : String
     , folderForbiddenText : String
     , tagsInfo : String
@@ -30,7 +28,6 @@ type alias Texts =
 gb : Texts
 gb =
     { basics = Messages.Basics.gb
-    , name = "Name"
     , description = "Description"
     , enabled = "Enabled"
     , priority = "Priority"
@@ -40,7 +37,6 @@ gb =
         "Metadata specified here is automatically attached to each item uploaded "
             ++ "through this source, unless it is overriden in the upload request meta data. "
             ++ "Tags from the request are added to those defined here."
-    , folder = "Folder"
     , folderInfo = "Choose a folder to automatically put items into."
     , folderForbiddenText =
         """

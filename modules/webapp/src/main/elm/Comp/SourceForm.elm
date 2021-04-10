@@ -347,14 +347,14 @@ view2 flags texts settings model =
                 [ for "source-abbrev"
                 , class S.inputLabel
                 ]
-                [ text texts.name
+                [ text texts.basics.name
                 , B.inputRequired
                 ]
             , input
                 [ type_ "text"
                 , id "source-abbrev"
                 , onInput SetAbbrev
-                , placeholder texts.name
+                , placeholder texts.basics.name
                 , value model.abbrev
                 , class S.textInput
                 , classList [ ( S.inputErrorBorder, not (isValid model) ) ]
@@ -424,7 +424,7 @@ view2 flags texts settings model =
             ]
         , div [ class "mb-4" ]
             [ label [ class S.inputLabel ]
-                [ text texts.folder
+                [ text texts.basics.folder
                 ]
             , Html.map FolderDropdownMsg
                 (Comp.Dropdown.view2

@@ -201,13 +201,13 @@ view2 texts mobile settings model =
                 [ class S.inputLabel
                 , for "personname"
                 ]
-                [ text texts.name
+                [ text texts.basics.name
                 , B.inputRequired
                 ]
             , input
                 [ type_ "text"
                 , onInput SetName
-                , placeholder texts.name
+                , placeholder texts.basics.name
                 , value model.name
                 , class S.textInput
                 , classList
@@ -244,7 +244,7 @@ view2 texts mobile settings model =
             [ label
                 [ class S.inputLabel
                 ]
-                [ text texts.organization
+                [ text texts.basics.organization
                 ]
             , Html.map OrgDropdownMsg
                 (Comp.Dropdown.view2

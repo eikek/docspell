@@ -62,7 +62,7 @@ view texts settings model =
         corr =
             ( div
                 [ class itemStyle
-                , title texts.correspondent
+                , title texts.basics.correspondent
                 ]
                 (Icons.correspondentIcon2 "mr-2"
                     :: Comp.LinkTarget.makeCorrLink model.item
@@ -76,7 +76,7 @@ view texts settings model =
         conc =
             ( div
                 [ class itemStyle
-                , title texts.concerning
+                , title texts.basics.concerning
                 ]
                 (Icons.concernedIcon2 "mr-2"
                     :: Comp.LinkTarget.makeConcLink model.item
@@ -90,7 +90,7 @@ view texts settings model =
         itemfolder =
             ( div
                 [ class itemStyle
-                , title texts.folder
+                , title texts.basics.folder
                 ]
                 [ Icons.folderIcon2 "mr-2"
                 , Comp.LinkTarget.makeFolderLink model.item

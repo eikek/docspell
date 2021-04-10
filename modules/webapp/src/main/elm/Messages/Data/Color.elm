@@ -7,7 +7,7 @@ gb : Color -> String
 gb color =
     case color of
         Red ->
-            "Rot"
+            "Red"
 
         Orange ->
             "Orange"

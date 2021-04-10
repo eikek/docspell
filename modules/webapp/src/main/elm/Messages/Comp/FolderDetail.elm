@@ -9,7 +9,6 @@ type alias Texts =
     , autoOwnerInfo : String
     , modifyInfo : String
     , notOwnerInfo : String
-    , name : String
     , members : String
     , addMember : String
     , add : String
@@ -25,7 +24,6 @@ gb =
     , autoOwnerInfo = "You are automatically set as owner of this new folder."
     , modifyInfo = "Modify this folder by changing the name or add/remove members."
     , notOwnerInfo = "You are not the owner of this folder and therefore are not allowed to edit it."
-    , name = "Name"
     , members = "Members"
     , addMember = "Add a new member"
     , add = "Add"

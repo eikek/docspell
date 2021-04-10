@@ -1,12 +1,13 @@
 module Messages.Comp.ImapSettingsForm exposing (..)
 
 import Data.SSLType exposing (SSLType)
+import Messages.Basics
 import Messages.Data.SSLType
 
 
 type alias Texts =
-    { sslTypeLabel : SSLType -> String
-    , name : String
+    { basics : Messages.Basics.Texts
+    , sslTypeLabel : SSLType -> String
     , connectionNamePlaceholder : String
     , connectionNameInfo : String
     , imapHost : String
@@ -25,8 +26,8 @@ type alias Texts =
 
 gb : Texts
 gb =
-    { sslTypeLabel = Messages.Data.SSLType.gb
-    , name = "Name"
+    { basics = Messages.Basics.gb
+    , sslTypeLabel = Messages.Data.SSLType.gb
     , connectionNamePlaceholder = "Connection name, e.g. 'gmail.com'"
     , connectionNameInfo = "The connection name must not contain whitespace or special characters."
     , imapHost = "IMAP Host"

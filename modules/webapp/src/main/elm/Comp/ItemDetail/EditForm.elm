@@ -147,7 +147,7 @@ formTabs texts flags settings model =
             }
     in
     [ { name = FTabState.tabName TabName
-      , title = texts.nameTab
+      , title = texts.basics.name
       , titleRight = []
       , info = Nothing
       , body =
@@ -174,7 +174,7 @@ formTabs texts flags settings model =
             ]
       }
     , { name = FTabState.tabName TabDate
-      , title = texts.dateTab
+      , title = texts.basics.date
       , titleRight = []
       , info = Nothing
       , body =
@@ -224,7 +224,7 @@ formTabs texts flags settings model =
             ]
       }
     , { name = FTabState.tabName TabFolder
-      , title = texts.folderTab
+      , title = texts.basics.folder
       , titleRight = []
       , info = Nothing
       , body =
@@ -247,7 +247,7 @@ formTabs texts flags settings model =
             ]
       }
     , { name = FTabState.tabName TabCustomFields
-      , title = texts.customFieldsTab
+      , title = texts.basics.customFields
       , titleRight = []
       , info = Nothing
       , body =
@@ -288,7 +288,7 @@ formTabs texts flags settings model =
             ]
       }
     , { name = FTabState.tabName TabCorrespondent
-      , title = texts.correspondentTab
+      , title = texts.basics.correspondent
       , titleRight = []
       , info = Nothing
       , body =
@@ -296,7 +296,7 @@ formTabs texts flags settings model =
                 div [ class "mb-4" ]
                     [ label [ class S.inputLabel ]
                         [ Icons.organizationIcon2 "mr-2"
-                        , text texts.organization
+                        , text texts.basics.organization
                         , addIconLink texts.addNewOrg StartCorrOrgModal
                         , editIconLink texts.editOrg model.corrOrgModel StartEditCorrOrgModal
                         ]
@@ -312,7 +312,7 @@ formTabs texts flags settings model =
                 div [ class "mb-4" ]
                     [ label [ class S.inputLabel ]
                         [ Icons.personIcon2 "mr-2"
-                        , text "Person"
+                        , text texts.basics.person
                         , addIconLink texts.addNewCorrespondentPerson StartCorrPersonModal
                         , editIconLink texts.editPerson
                             model.corrPersonModel
@@ -338,7 +338,7 @@ formTabs texts flags settings model =
             ]
       }
     , { name = FTabState.tabName TabConcerning
-      , title = texts.concerningTab
+      , title = texts.basics.concerning
       , titleRight = []
       , info = Nothing
       , body =
@@ -346,7 +346,7 @@ formTabs texts flags settings model =
                 div [ class "mb-4" ]
                     [ label [ class S.inputLabel ]
                         [ Icons.personIcon2 "mr-2"
-                        , text "Person"
+                        , text texts.basics.person
                         , addIconLink texts.addNewConcerningPerson StartConcPersonModal
                         , editIconLink texts.editPerson
                             model.concPersonModel
@@ -364,7 +364,7 @@ formTabs texts flags settings model =
                 div [ class "mb-4" ]
                     [ label [ class S.inputLabel ]
                         [ Icons.equipmentIcon2 "mr-2"
-                        , text "Equipment"
+                        , text texts.basics.equipment
                         , addIconLink texts.addNewEquipment StartEquipModal
                         , editIconLink texts.editEquipment
                             model.concEquipModel
@@ -381,7 +381,7 @@ formTabs texts flags settings model =
             ]
       }
     , { name = FTabState.tabName TabDirection
-      , title = texts.directionTab
+      , title = texts.basics.direction
       , titleRight = []
       , info = Nothing
       , body =

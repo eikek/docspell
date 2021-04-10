@@ -466,6 +466,7 @@ tagColorViewOpts2 texts =
         \( _, v ) ->
             span [ class (" label " ++ Data.Color.toString2 v) ]
                 [ text (texts.colorLabel v) ]
+    , colorLabel = texts.colorLabel
     , label = texts.chooseTagColorLabel
     , description = Just texts.tagColorDescription
     }
@@ -626,7 +627,7 @@ settingFormTabs texts flags _ model =
                     , ( "hidden", not model.showPatternHelp )
                     ]
                 ]
-                IT.helpMessage
+                texts.templateHelpMessage
             ]
       }
     , { name = "search-menu"

@@ -253,7 +253,7 @@ view2 texts viewSettings model =
                         [ class S.inputLabel
                         , for "fieldname"
                         ]
-                        [ text texts.name
+                        [ text texts.basics.name
                         , B.inputRequired
                         ]
                     , input
