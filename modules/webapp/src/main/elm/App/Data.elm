@@ -14,6 +14,7 @@ import Data.Flags exposing (Flags)
 import Data.UiSettings exposing (UiSettings)
 import Data.UiTheme exposing (UiTheme)
 import Http
+import Messages.UiLanguage exposing (UiLanguage)
 import Page exposing (Page(..))
 import Page.CollectiveSettings.Data
 import Page.Home.Data
@@ -25,7 +26,6 @@ import Page.Queue.Data
 import Page.Register.Data
 import Page.Upload.Data
 import Page.UserSettings.Data
-import UiLanguage exposing (UiLanguage)
 import Url exposing (Url)
 
 
@@ -101,7 +101,7 @@ init key url flags_ settings =
       , uiSettings = settings
       , sidebarVisible = settings.sideMenuVisible
       , anonymousTheme = Data.UiTheme.Light
-      , anonymousUiLang = UiLanguage.English
+      , anonymousUiLang = Messages.UiLanguage.English
       , langMenuOpen = False
       }
     , Cmd.batch
@@ -163,7 +163,7 @@ type Msg
 
 
 defaultPage : Flags -> Page
-defaultPage flags =
+defaultPage _ =
     HomePage
 
 

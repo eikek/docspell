@@ -30,9 +30,9 @@ import Http
 import Markdown
 import Messages
 import Messages.Comp.UiSettingsForm exposing (Texts)
+import Messages.UiLanguage exposing (UiLanguage)
 import Set exposing (Set)
 import Styles as S
-import UiLanguage exposing (UiLanguage)
 import Util.Maybe
 import Util.Tag
 
@@ -150,7 +150,7 @@ init flags settings =
       , powerSearchEnabled = settings.powerSearchEnabled
       , uiLang = settings.uiLang
       , uiLangModel =
-            Comp.FixedDropdown.init UiLanguage.all
+            Comp.FixedDropdown.init Messages.UiLanguage.all
       , openTabs = Set.empty
       }
     , Api.getTags flags "" GetTagsResp

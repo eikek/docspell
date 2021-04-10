@@ -9,6 +9,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Messages exposing (Messages)
 import Messages.App exposing (Texts)
+import Messages.UiLanguage
 import Page exposing (Page(..))
 import Page.CollectiveSettings.View2 as CollectiveSettings
 import Page.Home.Data
@@ -22,7 +23,6 @@ import Page.Register.View2 as Register
 import Page.Upload.View2 as Upload
 import Page.UserSettings.View2 as UserSettings
 import Styles as S
-import UiLanguage
 
 
 view : Model -> List (Html Msg)
@@ -198,7 +198,7 @@ langMenu model =
             [ class dropdownMenu
             , classList [ ( "hidden", not model.langMenuOpen ) ]
             ]
-            (List.map langItem UiLanguage.all)
+            (List.map langItem Messages.UiLanguage.all)
         ]
 
 

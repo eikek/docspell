@@ -1,7 +1,10 @@
-module UiLanguage exposing
+module Messages.UiLanguage exposing
     ( UiLanguage(..)
     , all
     )
+
+{-| This module defines the languages supported in the web app.
+-}
 
 
 type UiLanguage

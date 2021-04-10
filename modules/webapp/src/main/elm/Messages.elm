@@ -16,7 +16,7 @@ import Messages.Page.Queue
 import Messages.Page.Register
 import Messages.Page.Upload
 import Messages.Page.UserSettings
-import UiLanguage exposing (UiLanguage(..))
+import Messages.UiLanguage exposing (UiLanguage(..))
 
 
 {-| The messages record contains all strings used in the application.
@@ -66,7 +66,7 @@ readIso2 iso =
         isIso lang =
             iso == toIso2 lang
     in
-    List.filter isIso UiLanguage.all
+    List.filter isIso Messages.UiLanguage.all
         |> List.head
 
 
@@ -81,6 +81,8 @@ fromIso2 iso =
 
 
 --- Messages Definitions
+-- for flag icons, see https://github.com/lipis/flag-icon-css
+-- use two classes: flag-icon flag-icon-xx where xx is the two-letter country code
 
 
 gb : Messages

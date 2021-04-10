@@ -31,7 +31,7 @@ import Dict exposing (Dict)
 import Html exposing (Attribute)
 import Html.Attributes as HA
 import Messages
-import UiLanguage exposing (UiLanguage)
+import Messages.UiLanguage exposing (UiLanguage)
 
 
 {-| Settings for the web ui. All fields should be optional, since it
@@ -167,7 +167,7 @@ defaults =
     , uiTheme = Data.UiTheme.Light
     , sideMenuVisible = True
     , powerSearchEnabled = False
-    , uiLang = UiLanguage.English
+    , uiLang = Messages.UiLanguage.English
     }
 
 
@@ -222,7 +222,7 @@ merge given fallback =
     , powerSearchEnabled = given.powerSearchEnabled
     , uiLang =
         Maybe.map Messages.fromIso2 given.uiLang
-            |> Maybe.withDefault UiLanguage.English
+            |> Maybe.withDefault Messages.UiLanguage.English
     }
 
 
