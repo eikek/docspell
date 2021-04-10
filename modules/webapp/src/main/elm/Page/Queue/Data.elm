@@ -38,6 +38,7 @@ type QueueView
     | QueueWaiting
     | QueueError
     | QueueSuccess
+    | QueueCancelled
 
 
 emptyModel : Model

@@ -39,6 +39,10 @@ viewSidebar texts visible _ _ model =
                     filterJobDetails model.state.completed "failed"
                         |> List.length
 
+                QueueCancelled ->
+                    filterJobDetails model.state.completed "cancelled"
+                        |> List.length
+
         tabLink cls v icon label =
             a
                 [ href "#"
@@ -74,6 +78,7 @@ viewSidebar texts visible _ _ model =
             , tabLink "ml-8" QueueWaiting "fa fa-clock" texts.waiting
             , tabLink "ml-8" QueueError "fa fa-bolt" texts.errored
             , tabLink "ml-8" QueueSuccess "fa fa-check" texts.success
+            , tabLink "ml-8" QueueCancelled "fa fa-times-circle" texts.cancelled
             ]
         ]
 
@@ -147,6 +152,18 @@ viewContent texts _ _ model =
                 in
                 if List.isEmpty items then
                     message texts.noJobsSuccess
+
+                else
+                    div [ class gridStyle ]
+                        (List.map (renderInfoCard texts model) items)
+
+            QueueCancelled ->
+                let
+                    items =
+                        filterJobDetails model.state.completed "cancelled"
+                in
+                if List.isEmpty items then
+                    message texts.noJobsCancelled
 
                 else
                     div [ class gridStyle ]
