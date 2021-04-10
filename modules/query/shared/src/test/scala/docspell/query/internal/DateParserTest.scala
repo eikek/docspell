@@ -1,8 +1,10 @@
 package docspell.query.internal
 
-import munit._
-import docspell.query.Date
 import java.time.Period
+
+import docspell.query.Date
+
+import munit._
 
 class DateParserTest extends FunSuite with ValueHelper {
 

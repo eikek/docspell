@@ -1,6 +1,7 @@
 package docspell.store.qb.model
 
 import cats.data.NonEmptyList
+
 import docspell.store.qb._
 
 case class CourseRecord(

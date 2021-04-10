@@ -1,8 +1,9 @@
 package docspell.store.qb
 
-import munit._
-import docspell.store.qb.model._
 import docspell.store.qb.DSL._
+import docspell.store.qb.model._
+
+import munit._
 
 class QueryBuilderTest extends FunSuite {
 

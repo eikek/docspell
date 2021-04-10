@@ -3,16 +3,18 @@ package docspell.convert
 import java.nio.file.Paths
 
 import cats.data.Kleisli
-import cats.implicits._
 import cats.effect.IO
+import cats.implicits._
 import fs2.Stream
+
 import docspell.common._
 import docspell.convert.ConversionResult.Handler
+import docspell.convert.extern.OcrMyPdfConfig
 import docspell.convert.extern.{TesseractConfig, UnoconvConfig, WkHtmlPdfConfig}
 import docspell.convert.flexmark.MarkdownConfig
 import docspell.files.{ExampleFiles, TestFiles}
+
 import munit._
-import docspell.convert.extern.OcrMyPdfConfig
 
 class ConversionTest extends FunSuite with FileChecks {
   val blocker     = TestFiles.blocker

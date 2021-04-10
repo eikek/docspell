@@ -2,9 +2,10 @@ package docspell.query.internal
 
 import cats.implicits._
 
-import munit._
-import docspell.query.ItemQueryParser
 import docspell.query.ItemQuery
+import docspell.query.ItemQueryParser
+
+import munit._
 
 class ItemQueryParserTest extends FunSuite {
 

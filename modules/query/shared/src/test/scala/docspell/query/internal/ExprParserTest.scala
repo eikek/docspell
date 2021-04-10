@@ -1,8 +1,10 @@
 package docspell.query.internal
 
-import docspell.query.ItemQuery._
-import munit._
 import cats.data.{NonEmptyList => Nel}
+
+import docspell.query.ItemQuery._
+
+import munit._
 
 class ExprParserTest extends FunSuite with ValueHelper {
 

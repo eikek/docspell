@@ -2,13 +2,14 @@ package docspell.store.generator
 
 import java.time.LocalDate
 
-import docspell.store.records._
-import munit._
 import docspell.common._
 import docspell.query.ItemQueryParser
-import docspell.store.queries.AttachCountTable
 import docspell.store.qb.DSL._
 import docspell.store.qb.generator.{ItemQueryGenerator, Tables}
+import docspell.store.queries.AttachCountTable
+import docspell.store.records._
+
+import munit._
 
 class ItemQueryGeneratorTest extends FunSuite {
   import docspell.store.impl.DoobieMeta._

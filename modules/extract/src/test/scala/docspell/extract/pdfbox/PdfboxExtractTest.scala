@@ -1,7 +1,9 @@
 package docspell.extract.pdfbox
 
 import cats.effect._
+
 import docspell.files.{ExampleFiles, TestFiles}
+
 import munit._
 
 class PdfboxExtractTest extends FunSuite {

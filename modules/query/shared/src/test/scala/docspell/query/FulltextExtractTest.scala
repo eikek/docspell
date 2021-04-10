@@ -1,8 +1,10 @@
 package docspell.query
 
 import cats.implicits._
-import munit._
+
 import docspell.query.FulltextExtract.Result
+
+import munit._
 
 class FulltextExtractTest extends FunSuite {
 

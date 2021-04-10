@@ -1,10 +1,13 @@
 package docspell.extract.pdfbox
 
-import cats.effect._
-import docspell.files.{ExampleFiles, TestFiles}
-import munit._
 import java.nio.file.Path
+
+import cats.effect._
 import fs2.Stream
+
+import docspell.files.{ExampleFiles, TestFiles}
+
+import munit._
 
 class PdfboxPreviewTest extends FunSuite {
   val blocker     = TestFiles.blocker

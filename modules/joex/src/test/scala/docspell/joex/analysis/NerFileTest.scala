@@ -1,8 +1,10 @@
 package docspell.joex.analysis
 
-import munit._
-import NerFile.Pattern
 import java.{util => ju}
+
+import docspell.joex.analysis.NerFile.Pattern
+
+import munit._
 
 class NerFileTest extends FunSuite {
 

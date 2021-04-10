@@ -1,6 +1,7 @@
 package docspell.analysis.contact
 
 import docspell.common.{NerLabel, NerTag}
+
 import munit._
 
 class ContactAnnotateSpec extends FunSuite {

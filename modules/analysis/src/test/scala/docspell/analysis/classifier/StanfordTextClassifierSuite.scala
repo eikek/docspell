@@ -1,14 +1,18 @@
 package docspell.analysis.classifier
 
-import munit._
-import cats.effect._
-import scala.concurrent.ExecutionContext
 import java.nio.file.Paths
-import cats.data.NonEmptyList
-import docspell.common._
-import fs2.Stream
+
+import scala.concurrent.ExecutionContext
+
 import cats.data.Kleisli
-import TextClassifier.Data
+import cats.data.NonEmptyList
+import cats.effect._
+import fs2.Stream
+
+import docspell.analysis.classifier.TextClassifier.Data
+import docspell.common._
+
+import munit._
 
 class StanfordTextClassifierSuite extends FunSuite {
   val logger = Logger.log4s[IO](org.log4s.getLogger)

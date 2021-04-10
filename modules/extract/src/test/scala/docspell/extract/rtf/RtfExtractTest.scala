@@ -1,6 +1,7 @@
 package docspell.extract.rtf
 
 import docspell.files.ExampleFiles
+
 import munit._
 
 class RtfExtractTest extends FunSuite {

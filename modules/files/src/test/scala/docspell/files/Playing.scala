@@ -1,9 +1,10 @@
 package docspell.files
 
-import cats.effect.{Blocker, ExitCode, IO, IOApp}
-import docspell.common.MimeTypeHint
-
 import scala.concurrent.ExecutionContext
+
+import cats.effect._
+
+import docspell.common.MimeTypeHint
 
 object Playing extends IOApp {
   val blocker = Blocker.liftExecutionContext(ExecutionContext.global)

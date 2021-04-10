@@ -1,8 +1,8 @@
 package docspell.query.internal
 
-import munit._
-//import cats.parse.{Parser => P}
 import docspell.query.ItemQuery.Expr
+
+import munit._
 
 class MacroParserTest extends FunSuite {
 

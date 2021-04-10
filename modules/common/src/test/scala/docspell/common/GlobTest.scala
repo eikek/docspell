@@ -1,7 +1,8 @@
 package docspell.common
 
+import docspell.common.Glob._
+
 import munit._
-import Glob._
 
 class GlobTest extends FunSuite {
 

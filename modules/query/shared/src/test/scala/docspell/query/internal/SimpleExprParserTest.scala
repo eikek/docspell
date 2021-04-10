@@ -1,10 +1,13 @@
 package docspell.query.internal
 
-import cats.data.{NonEmptyList => Nel}
-import docspell.query.ItemQuery._
-import munit._
-import docspell.query.Date
 import java.time.Period
+
+import cats.data.{NonEmptyList => Nel}
+
+import docspell.query.Date
+import docspell.query.ItemQuery._
+
+import munit._
 
 class SimpleExprParserTest extends FunSuite with ValueHelper {
 

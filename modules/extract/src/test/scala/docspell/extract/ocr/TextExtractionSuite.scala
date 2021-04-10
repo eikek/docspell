@@ -1,8 +1,10 @@
 package docspell.extract.ocr
 
 import cats.effect.IO
+
 import docspell.common.Logger
 import docspell.files.TestFiles
+
 import munit._
 
 class TextExtractionSuite extends FunSuite {
