@@ -1,0 +1,33 @@
+name: CI
+on:
+  pull_request:
+jobs:
+  ci-matrix:
+    runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: false
+      matrix:
+        java: [ 'openjdk@1.11' ]
+    steps:
+      - uses: actions/checkout@v2.3.4
+        with:
+          fetch-depth: 100
+      - uses: jorelali/setup-elm@v3
+        with:
+          elm-version: 0.19.1
+      - uses: bahmutov/npm-install@v1
+      - name: Fetch tags
+        run: git fetch --depth=100 origin +refs/tags/*:refs/tags/*
+      - uses: olafurpg/setup-scala@v10
+        with:
+          java-version: ${{ matrix.java }}
+      - name: Coursier cache
+        uses: coursier/cache-action@v6
+      - name: sbt ci ${{ github.ref }}
+        run: sbt ci
+  ci:
+    runs-on: ubuntu-20.04
+    needs: [ci-matrix]
+    steps:
+      - name: Aggregate of lint, and all tests
+        run: echo "ci passed"
