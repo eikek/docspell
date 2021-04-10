@@ -1,12 +1,14 @@
 module Util.Tag exposing
-    ( getCategories
+    ( catSettings
+    , getCategories
     , makeCatDropdownModel
     , makeDropdownModel
-    , makeDropdownModel2
+    , tagSettings
     )
 
 import Api.Model.Tag exposing (Tag)
 import Comp.Dropdown
+import Data.DropdownStyle as DS
 import Data.UiSettings
 import Util.List
 
@@ -16,30 +18,19 @@ makeDropdownModel =
     Comp.Dropdown.makeModel
         { multiple = True
         , searchable = \n -> n > 0
-        , makeOption = \tag -> { value = tag.id, text = tag.name, additional = "" }
-        , labelColor =
-            \tag ->
-                \settings ->
-                    "basic " ++ Data.UiSettings.tagColorString tag settings
-        , placeholder = "Choose a tag…"
         }
 
 
-makeDropdownModel2 : Comp.Dropdown.Model Tag
-makeDropdownModel2 =
-    Comp.Dropdown.makeModel
-        { multiple = True
-        , searchable = \n -> n > 0
-        , makeOption = \tag -> { value = tag.id, text = tag.name, additional = "" }
-        , labelColor =
-            \tag ->
-                \settings ->
-                    Data.UiSettings.tagColorString2 tag settings
-                        ++ -- legacy colors
-                           " basic "
-                        ++ Data.UiSettings.tagColorString tag settings
-        , placeholder = "Choose a tag…"
-        }
+tagSettings : String -> DS.DropdownStyle -> Comp.Dropdown.ViewSettings Tag
+tagSettings placeholder ds =
+    { makeOption = \tag -> { text = tag.name, additional = "" }
+    , labelColor =
+        \tag ->
+            \settings ->
+                Data.UiSettings.tagColorString2 tag settings
+    , placeholder = placeholder
+    , style = ds
+    }
 
 
 makeCatDropdownModel : Comp.Dropdown.Model String
@@ -47,10 +38,16 @@ makeCatDropdownModel =
     Comp.Dropdown.makeModel
         { multiple = True
         , searchable = \n -> n > 0
-        , makeOption = \cat -> { value = cat, text = cat, additional = "" }
-        , labelColor = \_ -> \_ -> ""
-        , placeholder = "Choose a tag category…"
         }
+
+
+catSettings : String -> DS.DropdownStyle -> Comp.Dropdown.ViewSettings String
+catSettings placeholder ds =
+    { makeOption = \cat -> { text = cat, additional = "" }
+    , labelColor = \_ -> \_ -> ""
+    , placeholder = placeholder
+    , style = ds
+    }
 
 
 getCategories : List Tag -> List String

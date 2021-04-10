@@ -13,12 +13,13 @@ import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
+import Messages.Page.ManageData exposing (Texts)
 import Page.ManageData.Data exposing (..)
 import Styles as S
 
 
-viewSidebar : Bool -> Flags -> UiSettings -> Model -> Html Msg
-viewSidebar visible _ settings model =
+viewSidebar : Texts -> Bool -> Flags -> UiSettings -> Model -> Html Msg
+viewSidebar texts visible _ settings model =
     div
         [ id "sidebar"
         , class S.sidebar
@@ -27,7 +28,7 @@ viewSidebar visible _ settings model =
         ]
         [ div [ class "" ]
             [ h1 [ class S.header1 ]
-                [ text "Manage Data"
+                [ text texts.manageData
                 ]
             ]
         , div [ class "flex flex-col my-2" ]
@@ -40,7 +41,8 @@ viewSidebar visible _ settings model =
                 [ Icons.tagIcon2 ""
                 , span
                     [ class "ml-3" ]
-                    [ text "Tags" ]
+                    [ text texts.basics.tags
+                    ]
                 ]
             , a
                 [ href "#"
@@ -51,7 +53,8 @@ viewSidebar visible _ settings model =
                 [ Icons.equipmentIcon2 ""
                 , span
                     [ class "ml-3" ]
-                    [ text "Equipment" ]
+                    [ text texts.basics.equipment
+                    ]
                 ]
             , a
                 [ href "#"
@@ -62,7 +65,8 @@ viewSidebar visible _ settings model =
                 [ Icons.organizationIcon2 ""
                 , span
                     [ class "ml-3" ]
-                    [ text "Organization" ]
+                    [ text texts.basics.organization
+                    ]
                 ]
             , a
                 [ href "#"
@@ -73,7 +77,8 @@ viewSidebar visible _ settings model =
                 [ Icons.personIcon2 ""
                 , span
                     [ class "ml-3" ]
-                    [ text "Person" ]
+                    [ text texts.basics.person
+                    ]
                 ]
             , a
                 [ href "#"
@@ -89,7 +94,8 @@ viewSidebar visible _ settings model =
                 [ Icons.folderIcon2 ""
                 , span
                     [ class "ml-3" ]
-                    [ text "Folder" ]
+                    [ text texts.basics.folder
+                    ]
                 ]
             , a
                 [ href "#"
@@ -105,36 +111,37 @@ viewSidebar visible _ settings model =
                 [ Icons.customFieldIcon2 ""
                 , span
                     [ class "ml-3" ]
-                    [ text "Custom Fields" ]
+                    [ text texts.basics.customFields
+                    ]
                 ]
             ]
         ]
 
 
-viewContent : Flags -> UiSettings -> Model -> Html Msg
-viewContent flags settings model =
+viewContent : Texts -> Flags -> UiSettings -> Model -> Html Msg
+viewContent texts flags settings model =
     div
         [ id "content"
         , class S.content
         ]
         (case model.currentTab of
             Just TagTab ->
-                viewTags model
+                viewTags texts model
 
             Just EquipTab ->
-                viewEquip model
+                viewEquip texts model
 
             Just OrgTab ->
-                viewOrg settings model
+                viewOrg texts settings model
 
             Just PersonTab ->
-                viewPerson settings model
+                viewPerson texts settings model
 
             Just FolderTab ->
-                viewFolder flags settings model
+                viewFolder texts flags settings model
 
             Just CustomFieldTab ->
-                viewCustomFields flags settings model
+                viewCustomFields texts flags settings model
 
             Nothing ->
                 []
@@ -150,69 +157,83 @@ menuEntryActive model tab =
         class ""
 
 
-viewTags : Model -> List (Html Msg)
-viewTags model =
+viewTags : Texts -> Model -> List (Html Msg)
+viewTags texts model =
     [ h2
         [ class S.header1
         , class "inline-flex items-center"
         ]
         [ Icons.tagIcon2 ""
         , div [ class "ml-2" ]
-            [ text "Tags"
+            [ text texts.basics.tags
             ]
         ]
-    , Html.map TagManageMsg (Comp.TagManage.view2 model.tagManageModel)
+    , Html.map TagManageMsg
+        (Comp.TagManage.view2
+            texts.tagManage
+            model.tagManageModel
+        )
     ]
 
 
-viewEquip : Model -> List (Html Msg)
-viewEquip model =
+viewEquip : Texts -> Model -> List (Html Msg)
+viewEquip texts model =
     [ h2
         [ class S.header1
         , class "inline-flex items-center"
         ]
         [ Icons.equipmentIcon2 ""
         , div [ class "ml-2" ]
-            [ text "Equipment"
+            [ text texts.basics.equipment
             ]
         ]
-    , Html.map EquipManageMsg (Comp.EquipmentManage.view2 model.equipManageModel)
+    , Html.map EquipManageMsg
+        (Comp.EquipmentManage.view2 texts.equipmentManage
+            model.equipManageModel
+        )
     ]
 
 
-viewOrg : UiSettings -> Model -> List (Html Msg)
-viewOrg settings model =
+viewOrg : Texts -> UiSettings -> Model -> List (Html Msg)
+viewOrg texts settings model =
     [ h2
         [ class S.header1
         , class "inline-flex items-center"
         ]
         [ Icons.organizationIcon2 ""
         , div [ class "ml-2" ]
-            [ text "Organizations"
+            [ text texts.basics.organization
             ]
         ]
-    , Html.map OrgManageMsg (Comp.OrgManage.view2 settings model.orgManageModel)
+    , Html.map OrgManageMsg
+        (Comp.OrgManage.view2 texts.orgManage
+            settings
+            model.orgManageModel
+        )
     ]
 
 
-viewPerson : UiSettings -> Model -> List (Html Msg)
-viewPerson settings model =
+viewPerson : Texts -> UiSettings -> Model -> List (Html Msg)
+viewPerson texts settings model =
     [ h2
         [ class S.header1
         , class "inline-flex items-center"
         ]
         [ Icons.personIcon2 ""
         , div [ class "ml-2" ]
-            [ text "Person"
+            [ text texts.basics.person
             ]
         ]
     , Html.map PersonManageMsg
-        (Comp.PersonManage.view2 settings model.personManageModel)
+        (Comp.PersonManage.view2 texts.personManage
+            settings
+            model.personManageModel
+        )
     ]
 
 
-viewFolder : Flags -> UiSettings -> Model -> List (Html Msg)
-viewFolder flags _ model =
+viewFolder : Texts -> Flags -> UiSettings -> Model -> List (Html Msg)
+viewFolder texts flags _ model =
     [ h2
         [ class S.header1
         , class "inline-flex items-center"
@@ -221,25 +242,28 @@ viewFolder flags _ model =
         , div
             [ class "ml-2"
             ]
-            [ text "Folder"
+            [ text texts.basics.folder
             ]
         ]
     , Html.map FolderMsg
-        (Comp.FolderManage.view2 flags model.folderManageModel)
+        (Comp.FolderManage.view2 texts.folderManage flags model.folderManageModel)
     ]
 
 
-viewCustomFields : Flags -> UiSettings -> Model -> List (Html Msg)
-viewCustomFields flags _ model =
+viewCustomFields : Texts -> Flags -> UiSettings -> Model -> List (Html Msg)
+viewCustomFields texts flags _ model =
     [ h2
         [ class S.header1
         , class "inline-flex items-center"
         ]
         [ Icons.customFieldIcon2 ""
         , div [ class "ml-2" ]
-            [ text "Custom Fields"
+            [ text texts.basics.customFields
             ]
         ]
     , Html.map CustomFieldMsg
-        (Comp.CustomFieldManage.view2 flags model.fieldManageModel)
+        (Comp.CustomFieldManage.view2 texts.customFieldManage
+            flags
+            model.fieldManageModel
+        )
     ]

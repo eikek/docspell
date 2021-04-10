@@ -12,19 +12,20 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Markdown
+import Messages.Comp.ItemDetail.Notes exposing (Texts)
 import Page exposing (Page(..))
 import Styles as S
 import Util.String
 
 
-view : Model -> Html Msg
-view model =
+view : Texts -> Model -> Html Msg
+view texts model =
     case model.notesField of
         ViewNotes ->
             div [ class "flex flex-col ds-item-detail-notes" ]
                 [ div [ class "flex flex-row items-center border-b dark:border-bluegray-600" ]
                     [ div [ class "flex-grow font-bold text-lg" ]
-                        [ text "Notes"
+                        [ text texts.notes
                         ]
                     , div [ class "" ]
                         [ a
@@ -33,7 +34,7 @@ view model =
                             , href "#"
                             ]
                             [ i [ class "fa fa-edit mr-2" ] []
-                            , text "Edit"
+                            , text texts.basics.edit
                             ]
                         ]
                     ]
@@ -55,14 +56,14 @@ view model =
                 [ div [ class "flex flex-col" ]
                     [ div [ class "flex flex-row items-center" ]
                         [ div [ class "font-bold text-lg" ]
-                            [ text "Notes"
+                            [ text texts.notes
                             ]
                         , div [ class "flex flex-grow justify-end text-sm" ]
                             [ Html.map NotesEditMsg
-                                (Comp.MarkdownInput.viewEditLink2 classes mm)
+                                (Comp.MarkdownInput.viewEditLink2 texts.basics.edit classes mm)
                             , span [ class "px-3" ] [ text "•" ]
                             , Html.map NotesEditMsg
-                                (Comp.MarkdownInput.viewPreviewLink2 classes mm)
+                                (Comp.MarkdownInput.viewPreviewLink2 texts.preview classes mm)
                             ]
                         ]
                     ]
@@ -73,7 +74,9 @@ view model =
                             mm
                         )
                     , div [ class "text-sm flex justify-end" ]
-                        [ Comp.MarkdownInput.viewCheatLink2 S.link mm
+                        [ Comp.MarkdownInput.viewCheatLink2 texts.supportsMarkdown
+                            S.link
+                            mm
                         ]
                     , div [ class "flex flex-row mt-1" ]
                         [ a
@@ -82,7 +85,7 @@ view model =
                             , onClick SaveNotes
                             ]
                             [ i [ class "fa fa-save font-thin mr-2" ] []
-                            , text "Save"
+                            , text texts.basics.submit
                             ]
                         , a
                             [ classList
@@ -94,7 +97,7 @@ view model =
                             , onClick ToggleEditNotes
                             ]
                             [ i [ class "fa fa-times mr-2" ] []
-                            , text "Cancel"
+                            , text texts.basics.cancel
                             ]
                         ]
                     ]

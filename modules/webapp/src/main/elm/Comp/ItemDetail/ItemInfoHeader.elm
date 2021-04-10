@@ -15,19 +15,20 @@ import Data.Icons as Icons
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Messages.Comp.ItemDetail.ItemInfoHeader exposing (Texts)
 import Page exposing (Page(..))
 import Styles as S
 import Util.Maybe
 import Util.Time
 
 
-view : UiSettings -> Model -> Html Msg
-view settings model =
+view : Texts -> UiSettings -> Model -> Html Msg
+view texts settings model =
     let
         date =
             ( div
                 [ class "ml-2 sm:ml-0 whitespace-nowrap py-1 whitespace-nowrap opacity-75"
-                , title "Item Date"
+                , title texts.itemDate
                 ]
                 [ Icons.dateIcon2 "mr-2"
                 , Maybe.withDefault model.item.created model.item.itemDate
@@ -47,7 +48,7 @@ view settings model =
             ( div
                 [ class "ml-2 sm:ml-4 py-1 max-w-min whitespace-nowrap opacity-100"
                 , class S.basicLabel
-                , title "Due Date"
+                , title texts.dueDate
                 ]
                 [ Icons.dueDateIcon2 "mr-2"
                 , Maybe.map Util.Time.formatDate model.item.dueDate
@@ -61,7 +62,7 @@ view settings model =
         corr =
             ( div
                 [ class itemStyle
-                , title "Correspondent"
+                , title texts.basics.correspondent
                 ]
                 (Icons.correspondentIcon2 "mr-2"
                     :: Comp.LinkTarget.makeCorrLink model.item
@@ -75,7 +76,7 @@ view settings model =
         conc =
             ( div
                 [ class itemStyle
-                , title "Concerning"
+                , title texts.basics.concerning
                 ]
                 (Icons.concernedIcon2 "mr-2"
                     :: Comp.LinkTarget.makeConcLink model.item
@@ -89,7 +90,7 @@ view settings model =
         itemfolder =
             ( div
                 [ class itemStyle
-                , title "Folder"
+                , title texts.basics.folder
                 ]
                 [ Icons.folderIcon2 "mr-2"
                 , Comp.LinkTarget.makeFolderLink model.item
@@ -102,7 +103,7 @@ view settings model =
         src =
             ( div
                 [ class itemStyle
-                , title "Source"
+                , title texts.source
                 ]
                 [ Icons.sourceIcon2 "mr-2"
                 , Comp.LinkTarget.makeSourceLink [ ( linkStyle, True ) ]
@@ -132,7 +133,7 @@ view settings model =
                             ]
                         , class "ml-3 text-base label bg-blue-500 dark:bg-lightblue-500 text-white rounded-lg"
                         ]
-                        [ text "New"
+                        [ text texts.new
                         , i [ class "fa fa-exclamation ml-2" ] []
                         ]
                     ]

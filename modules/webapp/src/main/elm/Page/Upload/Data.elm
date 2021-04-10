@@ -9,7 +9,6 @@ module Page.Upload.Data exposing
     , isIdle
     , isLoading
     , isSuccessAll
-    , mkLanguageItem
     , uploadAllTracker
     )
 
@@ -38,11 +37,6 @@ type alias Model =
     }
 
 
-mkLanguageItem : Language -> Comp.FixedDropdown.Item Language
-mkLanguageItem lang =
-    Comp.FixedDropdown.Item lang (Data.Language.toName lang)
-
-
 emptyModel : Model
 emptyModel =
     { incoming = True
@@ -54,8 +48,7 @@ emptyModel =
     , dropzone = Comp.Dropzone.init []
     , skipDuplicates = True
     , languageModel =
-        Comp.FixedDropdown.init
-            (List.map mkLanguageItem Data.Language.all)
+        Comp.FixedDropdown.init Data.Language.all
     , language = Nothing
     }
 

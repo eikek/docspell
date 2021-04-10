@@ -2,9 +2,10 @@ package docspell.analysis.nlp
 
 import docspell.analysis.Env
 import docspell.common.Language.NLPLanguage
-import munit._
-import docspell.files.TestFiles
 import docspell.common._
+import docspell.files.TestFiles
+
+import munit._
 
 class BaseCRFAnnotatorSuite extends FunSuite {
 

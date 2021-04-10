@@ -9,6 +9,7 @@ module Comp.ColorTagger exposing
 
 import Comp.FixedDropdown
 import Data.Color exposing (Color)
+import Data.DropdownStyle as DS
 import Dict exposing (Dict)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -37,7 +38,7 @@ type Msg
 
 init : List String -> List Color -> Model
 init leftSel colors =
-    { leftDropdown = Comp.FixedDropdown.initString leftSel
+    { leftDropdown = Comp.FixedDropdown.init leftSel
     , colors = colors
     , leftSelect = Nothing
     }
@@ -89,6 +90,7 @@ update msg model =
 
 type alias ViewOpts =
     { renderItem : ( String, Color ) -> Html Msg
+    , colorLabel : Color -> String
     , label : String
     , description : Maybe String
     }
@@ -96,16 +98,26 @@ type alias ViewOpts =
 
 view2 : FormData -> ViewOpts -> Model -> Html Msg
 view2 data opts model =
+    let
+        colorLabelCfg =
+            { display = identity
+            , icon = \_ -> Nothing
+            , style = DS.mainStyle
+            }
+    in
     div [ class "flex flex-col" ]
         [ label [ class S.inputLabel ]
             [ text opts.label ]
         , Html.map LeftMsg
-            (Comp.FixedDropdown.view2
-                (Maybe.map (\s -> Comp.FixedDropdown.Item s s) model.leftSelect)
+            (Comp.FixedDropdown.viewStyled2
+                colorLabelCfg
+                False
+                model.leftSelect
                 model.leftDropdown
             )
         , div [ class "field" ]
             [ chooseColor2
+                opts.colorLabel
                 (AddPair data)
                 Data.Color.all
                 Nothing
@@ -159,8 +171,8 @@ renderFormData2 opts data =
         (List.map valueItem values)
 
 
-chooseColor2 : (Color -> msg) -> List Color -> Maybe String -> Html msg
-chooseColor2 tagger colors mtext =
+chooseColor2 : (Color -> String) -> (Color -> msg) -> List Color -> Maybe String -> Html msg
+chooseColor2 colorLabel tagger colors mtext =
     let
         renderLabel color =
             a
@@ -170,7 +182,7 @@ chooseColor2 tagger colors mtext =
                 , onClick (tagger color)
                 ]
                 [ Maybe.withDefault
-                    (Data.Color.toString color)
+                    (colorLabel color)
                     mtext
                     |> text
                 ]

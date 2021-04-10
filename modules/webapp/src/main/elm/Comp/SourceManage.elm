@@ -21,6 +21,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onSubmit)
 import Http
+import Messages.Comp.SourceManage exposing (Texts)
 import Ports
 import QRCode
 import Styles as S
@@ -211,49 +212,52 @@ update flags msg model =
 --- View2
 
 
-qrCodeView : String -> Html msg
-qrCodeView message =
+qrCodeView : Texts -> String -> Html msg
+qrCodeView texts message =
     QRCode.encode message
         |> Result.map QRCode.toSvg
         |> Result.withDefault
-            (Html.text "Error generating QR-Code")
+            (Html.text texts.errorGeneratingQR)
 
 
-view2 : Flags -> UiSettings -> Model -> Html Msg
-view2 flags settings model =
+view2 : Texts -> Flags -> UiSettings -> Model -> Html Msg
+view2 texts flags settings model =
     case model.viewMode of
         None ->
-            viewTable2 model
+            viewTable2 texts model
 
         Edit _ ->
-            div [] (viewForm2 flags settings model)
+            div [] (viewForm2 texts flags settings model)
 
         Display source ->
-            viewLinks2 flags settings source
+            viewLinks2 texts flags settings source
 
 
-viewTable2 : Model -> Html Msg
-viewTable2 model =
+viewTable2 : Texts -> Model -> Html Msg
+viewTable2 texts model =
     div [ class "relative flex flex-col" ]
         [ MB.view
             { start = []
             , end =
                 [ MB.PrimaryButton
                     { tagger = InitNewSource
-                    , title = "Add a source url"
+                    , title = texts.addSourceUrl
                     , icon = Just "fa fa-plus"
-                    , label = "New source"
+                    , label = texts.newSource
                     }
                 ]
             , rootClasses = "mb-4"
             }
-        , Html.map TableMsg (Comp.SourceTable.view2 model.sources)
-        , B.loadingDimmer model.loading
+        , Html.map TableMsg (Comp.SourceTable.view2 texts.sourceTable model.sources)
+        , B.loadingDimmer
+            { active = model.loading
+            , label = texts.basics.loading
+            }
         ]
 
 
-viewLinks2 : Flags -> UiSettings -> SourceAndTags -> Html Msg
-viewLinks2 flags _ source =
+viewLinks2 : Texts -> Flags -> UiSettings -> SourceAndTags -> Html Msg
+viewLinks2 texts flags _ source =
     let
         appUrl =
             flags.config.baseUrl ++ "/app/upload/" ++ source.source.id
@@ -270,7 +274,7 @@ viewLinks2 flags _ source =
     div
         []
         [ h2 [ class S.header2 ]
-            [ text "Public Uploads: "
+            [ text (texts.publicUploads ++ ": ")
             , text source.source.abbrev
             , div [ class "opacity-50 text-sm" ]
                 [ text source.source.id
@@ -279,37 +283,33 @@ viewLinks2 flags _ source =
         , MB.view
             { start =
                 [ MB.SecondaryButton
-                    { label = "Back"
+                    { label = texts.basics.back
                     , icon = Just "fa fa-arrow-left"
                     , tagger = SetTableView
-                    , title = "Back to list"
+                    , title = texts.basics.backToList
                     }
                 ]
             , end = []
             , rootClasses = "mb-4"
             }
         , p [ class "text-lg pt-2 opacity-75" ]
-            [ text "This source defines URLs that can be used by anyone to send files to "
-            , text "you. There is a web page that you can share or the API url can be used "
-            , text "with other clients."
+            [ text texts.sourceInfoText
             ]
         , p [ class "text-lg py-2 opacity-75" ]
-            [ text "There have been "
-            , String.fromInt source.source.counter |> text
-            , text " items created through this source."
+            [ text (texts.itemsCreatedInfo source.source.counter)
             ]
         , h3
             [ class S.header3
             , class "mt-2"
             ]
-            [ text "Public Upload Page"
+            [ text texts.publicUploadPage
             ]
         , div [ class "" ]
             [ div [ class "flex flex-row" ]
                 [ a
                     [ class S.secondaryBasicButtonPlain
                     , class "rounded-l border text-sm px-4 py-2"
-                    , title "Copy to clipboard"
+                    , title texts.copyToClipboard
                     , href "#"
                     , Tuple.second appClipboardData
                         |> String.dropLeft 1
@@ -323,7 +323,7 @@ viewLinks2 flags _ source =
                     , class "px-4 py-2 border-0 border-t border-b border-r text-sm"
                     , href appUrl
                     , target "_blank"
-                    , title "Open in new tab/window"
+                    , title texts.openInNewTab
                     ]
                     [ i [ class "fa fa-external-link-alt" ] []
                     ]
@@ -340,21 +340,21 @@ viewLinks2 flags _ source =
                 [ class S.border
                 , class styleQr
                 ]
-                [ qrCodeView appUrl
+                [ qrCodeView texts appUrl
                 ]
             ]
         , h3
             [ class S.header3
             , class "mt-4"
             ]
-            [ text "Public API Upload URL"
+            [ text texts.publicUploadUrl
             ]
         , div [ class "" ]
             [ div [ class "flex flex-row" ]
                 [ a
                     [ class S.secondaryBasicButtonPlain
                     , class "px-4 py-2 rounded-l border text-sm"
-                    , title "Copy to clipboard"
+                    , title texts.copyToClipboard
                     , href "#"
                     , Tuple.second apiClipboardData
                         |> String.dropLeft 1
@@ -376,24 +376,26 @@ viewLinks2 flags _ source =
                 [ class S.border
                 , class styleQr
                 ]
-                [ qrCodeView apiUrl
+                [ qrCodeView texts apiUrl
                 ]
             ]
         ]
 
 
-viewForm2 : Flags -> UiSettings -> Model -> List (Html Msg)
-viewForm2 flags settings model =
+viewForm2 : Texts -> Flags -> UiSettings -> Model -> List (Html Msg)
+viewForm2 texts flags settings model =
     let
         newSource =
             model.formModel.source.source.id == ""
 
         dimmerSettings =
-            Comp.YesNoDimmer.defaultSettings2 "Really delete this source?"
+            Comp.YesNoDimmer.defaultSettings texts.reallyDeleteSource
+                texts.basics.yes
+                texts.basics.no
     in
     [ if newSource then
         h3 [ class S.header2 ]
-            [ text "Create new source"
+            [ text texts.createNewSource
             ]
 
       else
@@ -412,24 +414,24 @@ viewForm2 flags settings model =
             { start =
                 [ MB.PrimaryButton
                     { tagger = Submit
-                    , title = "Submit this form"
+                    , title = texts.basics.submitThisForm
                     , icon = Just "fa fa-save"
-                    , label = "Submit"
+                    , label = texts.basics.submit
                     }
                 , MB.SecondaryButton
                     { tagger = SetTableView
-                    , title = "Back to list"
+                    , title = texts.basics.backToList
                     , icon = Just "fa fa-arrow-left"
-                    , label = "Cancel"
+                    , label = texts.basics.cancel
                     }
                 ]
             , end =
                 if not newSource then
                     [ MB.DeleteButton
                         { tagger = RequestDelete
-                        , title = "Delete this settings entry"
+                        , title = texts.deleteThisSource
                         , icon = Just "fa fa-trash"
-                        , label = "Delete"
+                        , label = texts.basics.delete
                         }
                     ]
 
@@ -438,7 +440,7 @@ viewForm2 flags settings model =
             , rootClasses = "mb-4"
             }
         , Html.map FormMsg
-            (Comp.SourceForm.view2 flags settings model.formModel)
+            (Comp.SourceForm.view2 flags texts.sourceForm settings model.formModel)
         , div
             [ classList
                 [ ( S.errorMessage, True )
@@ -452,6 +454,9 @@ viewForm2 flags settings model =
                 dimmerSettings
                 model.deleteConfirm
             )
-        , B.loadingDimmer model.loading
+        , B.loadingDimmer
+            { active = model.loading
+            , label = texts.basics.loading
+            }
         ]
     ]

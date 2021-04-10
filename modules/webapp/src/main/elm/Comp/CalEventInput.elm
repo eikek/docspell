@@ -17,6 +17,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)
 import Http
+import Messages.Comp.CalEventInput exposing (Texts)
 import Styles as S
 import Util.Http
 import Util.Maybe
@@ -129,8 +130,8 @@ update flags ev msg model =
 --- View2
 
 
-view2 : String -> CalEvent -> Model -> Html Msg
-view2 extraClasses ev model =
+view2 : Texts -> String -> CalEvent -> Model -> Html Msg
+view2 texts extraClasses ev model =
     let
         yearLen =
             Basics.max 4 (String.length ev.year)
@@ -155,7 +156,7 @@ view2 extraClasses ev model =
                 [ label
                     [ class S.inputLabel
                     ]
-                    [ text "Weekday" ]
+                    [ text texts.weekday ]
                 , input
                     [ type_ "text"
                     , class S.textInput
@@ -172,7 +173,7 @@ view2 extraClasses ev model =
                 ]
             , div [ class "flex flex-col space-y-2 mr-2" ]
                 [ label [ class S.inputLabel ]
-                    [ text "Year" ]
+                    [ text texts.year ]
                 , input
                     [ type_ "text"
                     , class S.textInput
@@ -188,7 +189,7 @@ view2 extraClasses ev model =
                 ]
             , div [ class "flex flex-col space-y-2 mr-2" ]
                 [ label [ class S.inputLabel ]
-                    [ text "Month" ]
+                    [ text texts.month ]
                 , input
                     [ type_ "text"
                     , class styleInput
@@ -204,7 +205,7 @@ view2 extraClasses ev model =
                 ]
             , div [ class "flex flex-col space-y-2 mr-4 mr-2" ]
                 [ label [ class S.inputLabel ]
-                    [ text "Day"
+                    [ text texts.day
                     ]
                 , input
                     [ type_ "text"
@@ -218,7 +219,8 @@ view2 extraClasses ev model =
                 ]
             , div [ class "flex flex-col space-y-2 mr-2" ]
                 [ label [ class S.inputLabel ]
-                    [ text "Hour" ]
+                    [ text texts.hour
+                    ]
                 , input
                     [ type_ "text"
                     , class styleInput
@@ -234,7 +236,7 @@ view2 extraClasses ev model =
                 ]
             , div [ class "flex flex-col space-y-2" ]
                 [ label [ class S.inputLabel ]
-                    [ text "Minute"
+                    [ text texts.minute
                     ]
                 , input
                     [ type_ "text"
@@ -253,7 +255,7 @@ view2 extraClasses ev model =
                 ]
             , class S.errorMessage
             ]
-            [ text "Error: "
+            [ text (texts.error ++ ": ")
             , Maybe.map .message model.checkResult
                 |> Maybe.withDefault ""
                 |> text
@@ -269,7 +271,7 @@ view2 extraClasses ev model =
             ]
             [ div []
                 [ div [ class S.inputLabel ]
-                    [ text "Schedule: "
+                    [ text (texts.schedule ++ ": ")
                     ]
                 , div [ class "px-12 font-mono " ]
                     [ Maybe.andThen .event model.checkResult
@@ -277,7 +279,7 @@ view2 extraClasses ev model =
                         |> text
                     ]
                 , div [ class S.inputLabel ]
-                    [ text "Next: "
+                    [ text (texts.next ++ ": ")
                     ]
                 , ul [ class "list-decimal list-inside text-sm" ]
                     (Maybe.map .next model.checkResult

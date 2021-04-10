@@ -19,6 +19,7 @@ import Data.UserState exposing (UserState)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)
+import Messages.Comp.UserForm exposing (Texts)
 import Styles as S
 import Util.Maybe
 
@@ -40,14 +41,7 @@ emptyModel =
     , password = Nothing
     , state =
         Comp.Dropdown.makeSingleList
-            { makeOption =
-                \s ->
-                    { value = Data.UserState.toString s
-                    , text = Data.UserState.toString s
-                    , additional = ""
-                    }
-            , placeholder = ""
-            , options = Data.UserState.all
+            { options = Data.UserState.all
             , selected = List.head Data.UserState.all
             }
     }
@@ -102,14 +96,7 @@ update _ msg model =
             let
                 state =
                     Comp.Dropdown.makeSingleList
-                        { makeOption =
-                            \s ->
-                                { value = Data.UserState.toString s
-                                , text = Data.UserState.toString s
-                                , additional = ""
-                                }
-                        , placeholder = ""
-                        , options = Data.UserState.all
+                        { options = Data.UserState.all
                         , selected =
                             Data.UserState.fromString t.state
                                 |> Maybe.map (\u -> List.filter ((==) u) Data.UserState.all)
@@ -166,19 +153,31 @@ update _ msg model =
 --- View2
 
 
-view2 : UiSettings -> Model -> Html Msg
-view2 settings model =
+view2 : Texts -> UiSettings -> Model -> Html Msg
+view2 texts settings model =
+    let
+        stateCfg =
+            { makeOption =
+                \s ->
+                    { text = Data.UserState.toString s
+                    , additional = ""
+                    }
+            , placeholder = ""
+            , style = DS.mainStyle
+            , labelColor = \_ -> \_ -> ""
+            }
+    in
     div [ class "flex flex-col" ]
         [ div
             [ class "mb-4" ]
             [ label [ class S.inputLabel ]
-                [ text "Login"
+                [ text texts.login
                 , B.inputRequired
                 ]
             , input
                 [ type_ "text"
                 , onInput SetLogin
-                , placeholder "Login"
+                , placeholder texts.login
                 , value model.login
                 , class S.textInput
                 , classList [ ( S.inputErrorBorder, model.login == "" ) ]
@@ -187,24 +186,24 @@ view2 settings model =
             ]
         , div [ class "mb-4" ]
             [ label [ class S.inputLabel ]
-                [ text "E-Mail"
+                [ text texts.email
                 ]
             , input
                 [ onInput SetEmail
                 , type_ "text"
                 , model.email |> Maybe.withDefault "" |> value
-                , placeholder "E-Mail"
+                , placeholder texts.email
                 , class S.textInput
                 ]
                 []
             ]
         , div [ class "mb-4" ]
             [ label [ class S.inputLabel ]
-                [ text "State"
+                [ text texts.state
                 ]
             , Html.map StateMsg
                 (Comp.Dropdown.view2
-                    DS.mainStyle
+                    stateCfg
                     settings
                     model.state
                 )
@@ -214,13 +213,13 @@ view2 settings model =
             , classList [ ( "hidden", model.user.login /= "" ) ]
             ]
             [ label [ class S.inputLabel ]
-                [ text "Password"
+                [ text texts.password
                 , B.inputRequired
                 ]
             , input
                 [ type_ "text"
                 , onInput SetPassword
-                , placeholder "Password"
+                , placeholder texts.password
                 , Maybe.withDefault "" model.password |> value
                 , class S.textInput
                 , classList [ ( S.inputErrorBorder, Util.Maybe.isEmpty model.password ) ]

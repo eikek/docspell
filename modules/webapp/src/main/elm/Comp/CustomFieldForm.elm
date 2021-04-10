@@ -23,8 +23,9 @@ import Data.Flags exposing (Flags)
 import Data.Validated exposing (Validated)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick, onInput)
+import Html.Events exposing (onInput)
 import Http
+import Messages.Comp.CustomFieldForm exposing (Texts)
 import Styles as S
 import Util.Http
 import Util.Maybe
@@ -61,8 +62,7 @@ init field =
     , label = field.label
     , ftype = Data.CustomFieldType.fromString field.ftype
     , ftypeModel =
-        Comp.FixedDropdown.initMap Data.CustomFieldType.label
-            Data.CustomFieldType.all
+        Comp.FixedDropdown.init Data.CustomFieldType.all
     , loading = False
     , deleteDimmer = Comp.YesNoDimmer.emptyModel
     }
@@ -197,17 +197,22 @@ type alias ViewSettings =
 --- View2
 
 
-view2 : ViewSettings -> Model -> List (Html Msg)
-view2 viewSettings model =
+view2 : Texts -> ViewSettings -> Model -> List (Html Msg)
+view2 texts viewSettings model =
     let
-        mkItem cft =
-            Comp.FixedDropdown.Item cft (Data.CustomFieldType.label cft)
-
         dimmerSettings =
-            Comp.YesNoDimmer.defaultSettings2 "Really delete this custom field?"
+            Comp.YesNoDimmer.defaultSettings texts.reallyDeleteField
+                texts.basics.yes
+                texts.basics.no
+
+        ftypeCfg =
+            { display = texts.fieldTypeLabel
+            , icon = \_ -> Nothing
+            , style = DS.mainStyle
+            }
     in
     (if viewSettings.showControls then
-        [ viewButtons2 model ]
+        [ viewButtons2 texts model ]
 
      else
         []
@@ -236,20 +241,19 @@ view2 viewSettings model =
                     ]
                 , if model.field.id == "" then
                     div [ class "py-2 text-lg opacity-75" ]
-                        [ text "Create a new custom field."
+                        [ text texts.createCustomField
                         ]
 
                   else
                     div [ class "py-2 text-lg opacity-75" ]
-                        [ text "Note that changing the format may "
-                        , text "result in invisible values in the ui, if they don't comply to the new format!"
+                        [ text texts.modifyTypeWarning
                         ]
                 , div [ class "mb-4" ]
                     [ label
                         [ class S.inputLabel
                         , for "fieldname"
                         ]
-                        [ text "Name"
+                        [ text texts.basics.name
                         , B.inputRequired
                         ]
                     , input
@@ -266,27 +270,25 @@ view2 viewSettings model =
                         ]
                         []
                     , div [ class "opacity-75 text-sm" ]
-                        [ text "The name uniquely identifies this field. It must be a valid "
-                        , text "identifier, not contain spaces or weird characters."
+                        [ text texts.nameInfo
                         ]
                     ]
                 , div
                     [ class "mb-4"
                     ]
                     [ label [ class S.inputLabel ]
-                        [ text "Field Format"
+                        [ text texts.fieldFormat
                         , B.inputRequired
                         ]
                     , Html.map FTypeMsg
                         (Comp.FixedDropdown.viewStyled2
-                            DS.mainStyle
+                            ftypeCfg
                             (model.ftype == Nothing)
-                            (Maybe.map mkItem model.ftype)
+                            model.ftype
                             model.ftypeModel
                         )
                     , div [ class "opacity-75 text-sm" ]
-                        [ text "A field must have a format. Values are validated "
-                        , text "according to this format."
+                        [ text texts.fieldFormatInfo
                         ]
                     ]
                 , div [ class "mb-4" ]
@@ -294,7 +296,7 @@ view2 viewSettings model =
                         [ class S.inputLabel
                         , for "fieldlabel"
                         ]
-                        [ text "Label" ]
+                        [ text texts.label ]
                     , input
                         [ type_ "text"
                         , onInput SetLabel
@@ -306,38 +308,37 @@ view2 viewSettings model =
                         ]
                         []
                     , div [ class "opacity-75 text-sm" ]
-                        [ text "The user defined label for this field. This is used to represent "
-                        , text "this field in the ui. If not present, the name is used."
+                        [ text texts.labelInfo
                         ]
                     ]
                 ]
            ]
 
 
-viewButtons2 : Model -> Html Msg
-viewButtons2 model =
+viewButtons2 : Texts -> Model -> Html Msg
+viewButtons2 texts model =
     MB.view
         { start =
             [ MB.PrimaryButton
                 { tagger = SubmitForm
-                , title = "Submit this form"
+                , title = texts.basics.submitThisForm
                 , icon = Just "fa fa-save"
-                , label = "Submit"
+                , label = texts.basics.submit
                 }
             , MB.SecondaryButton
                 { tagger = GoBack
-                , title = "Back to list"
+                , title = texts.basics.backToList
                 , icon = Just "fa fa-arrow-left"
-                , label = "Cancel"
+                , label = texts.basics.cancel
                 }
             ]
         , end =
             if model.field.id /= "" then
                 [ MB.DeleteButton
                     { tagger = RequestDelete
-                    , title = "Delete this field"
+                    , title = texts.deleteThisField
                     , icon = Just "fa fa-trash"
-                    , label = "Delete"
+                    , label = texts.basics.delete
                     }
                 ]
 

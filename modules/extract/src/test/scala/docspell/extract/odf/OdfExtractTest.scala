@@ -1,7 +1,9 @@
 package docspell.extract.odf
 
 import cats.effect._
+
 import docspell.files.{ExampleFiles, TestFiles}
+
 import munit._
 
 class OdfExtractTest extends FunSuite {

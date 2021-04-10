@@ -92,11 +92,11 @@ def webjarSettings(queryJS: Project) = Seq(
   }.taskValue,
   Compile / resourceGenerators += Def.task {
     val logger = streams.value.log
-    val out = (queryJS/Compile/fullOptJS).value
+    val out    = (queryJS / Compile / fullOptJS).value
     logger.info(s"Produced query js file: ${out.data}")
     copyWebjarResources(
       Seq(out.data),
-      (Compile/resourceManaged).value,
+      (Compile / resourceManaged).value,
       name.value,
       version.value,
       logger
@@ -218,7 +218,9 @@ val openapiScalaSettings = Seq(
           field.copy(typeDef = TypeDef("OrgUse", Imports("docspell.common.OrgUse")))
       case "equipmentuse" =>
         field =>
-          field.copy(typeDef = TypeDef("EquipmentUse", Imports("docspell.common.EquipmentUse")))
+          field.copy(typeDef =
+            TypeDef("EquipmentUse", Imports("docspell.common.EquipmentUse"))
+          )
     }))
 )
 

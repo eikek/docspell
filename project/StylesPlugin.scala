@@ -54,7 +54,8 @@ object StylesPlugin extends AutoPlugin {
         val mode   = stylesMode.value
         npmInstall(npm, wd, logger)
         val files = postCss(npx, inDir, outDir, wd, mode, logger) ++
-          copyWebfonts(wd, outDir, logger)
+          copyWebfonts(wd, outDir, logger) ++
+          copyFlags(wd, outDir, logger)
         logger.info("Styles built")
         files
       },
@@ -63,6 +64,7 @@ object StylesPlugin extends AutoPlugin {
         val npm    = stylesNpmCommand.value
         val wd     = (LocalRootProject / baseDirectory).value
         npmInstall(npm, wd, logger)
+
       }
     )
 
@@ -117,5 +119,21 @@ object StylesPlugin extends AutoPlugin {
     IO.createDirectory(targetDir)
     IO.copy(fontDir.listFiles().map(f => f -> targetDir / f.name).toSeq)
     IO.listFiles(targetDir).toSeq
+  }
+
+  def copyFlags(baseDir: File, outDir: File, logger: Logger): Seq[File] = {
+    val flagDir =
+      baseDir / "node_modules" / "flag-icon-css" / "flags"
+    val targetDir = outDir / "flags"
+    IO.createDirectory(targetDir)
+
+    val files = (flagDir ** "*")
+      .filter(_.isFile)
+      .get
+      .pair(Path.relativeTo(flagDir))
+      .map(t => (t._1, targetDir / t._2))
+
+    IO.copy(files)
+    (targetDir ** "*.svg").get()
   }
 }

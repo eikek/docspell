@@ -5,6 +5,8 @@ import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput, onSubmit)
+import Markdown
+import Messages.Page.NewInvite exposing (Texts)
 import Page.NewInvite.Data exposing (..)
 import Styles as S
 
@@ -18,15 +20,15 @@ viewSidebar _ _ _ _ =
         []
 
 
-viewContent : Flags -> UiSettings -> Model -> Html Msg
-viewContent flags _ model =
+viewContent : Texts -> Flags -> UiSettings -> Model -> Html Msg
+viewContent texts flags _ model =
     div
         [ id "content"
         , class "flex flex-col md:w-3/5 px-2"
         , class S.content
         ]
-        [ h1 [ class S.header1 ] [ text "Create new invitations" ]
-        , inviteMessage flags
+        [ h1 [ class S.header1 ] [ text texts.createNewInvitations ]
+        , inviteMessage texts flags
         , div [ class " py-2 mt-6 rounded" ]
             [ Html.form
                 [ action "#"
@@ -38,7 +40,7 @@ viewContent flags _ model =
                         [ for "invitekey"
                         , class "mb-1 text-xs sm:text-sm tracking-wide "
                         ]
-                        [ text "Invitation key"
+                        [ text texts.invitationKey
                         ]
                     , div [ class "relative" ]
                         [ div [ class "inline-flex items-center justify-center absolute left-0 top-0 h-full w-10 text-gray-400 dark:text-bluegray-400  " ]
@@ -53,7 +55,7 @@ viewContent flags _ model =
                             , value model.password
                             , autofocus True
                             , class ("pl-10 pr-4 py-2 rounded-lg" ++ S.textInput)
-                            , placeholder "Password"
+                            , placeholder texts.password
                             ]
                             []
                         ]
@@ -64,25 +66,25 @@ viewContent flags _ model =
                             [ type_ "submit"
                             , class (S.primaryButton ++ "inline-flex")
                             ]
-                            [ text "Submit"
+                            [ text texts.basics.submit
                             ]
                         , a
                             [ class S.secondaryButton
                             , href "#"
                             , onClick Reset
                             ]
-                            [ text "Reset"
+                            [ text texts.reset
                             ]
                         ]
                     ]
-                , resultMessage model
+                , resultMessage texts model
                 ]
             ]
         ]
 
 
-resultMessage : Model -> Html Msg
-resultMessage model =
+resultMessage : Texts -> Model -> Html Msg
+resultMessage texts model =
     div
         [ classList
             [ ( S.errorMessage, isFailed model.result )
@@ -98,7 +100,7 @@ resultMessage model =
                 div [ class "" ]
                     [ p []
                         [ text r.message
-                        , text " Invitation Key:"
+                        , text (" " ++ texts.invitationKey ++ ":")
                         ]
                     , pre [ class "text-center font-mono mt-4" ]
                         [ Maybe.withDefault "" r.key |> text
@@ -110,28 +112,13 @@ resultMessage model =
         ]
 
 
-inviteMessage : Flags -> Html Msg
-inviteMessage flags =
+inviteMessage : Texts -> Flags -> Html Msg
+inviteMessage texts flags =
     div
         [ class (S.message ++ "text-sm")
         , classList
             [ ( "hidden", flags.config.signupMode /= "invite" )
             ]
         ]
-        [ p []
-            [ text
-                """Docspell requires an invite when signing up. You can
-             create these invites here and send them to friends so
-             they can signup with docspell."""
-            ]
-        , p []
-            [ text
-                """Each invite can only be used once. You'll need to
-             create one key for each person you want to invite."""
-            ]
-        , p []
-            [ text
-                """Creating an invite requires providing the password
-             from the configuration."""
-            ]
+        [ Markdown.toHtml [] texts.inviteInfo
         ]

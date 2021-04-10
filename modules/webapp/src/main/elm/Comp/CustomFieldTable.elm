@@ -11,7 +11,7 @@ import Api.Model.CustomField exposing (CustomField)
 import Comp.Basic as B
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick)
+import Messages.Comp.CustomFieldTable exposing (Texts)
 import Styles as S
 import Util.Time
 
@@ -45,17 +45,17 @@ update msg model =
 --- View2
 
 
-view2 : Model -> List CustomField -> Html Msg
-view2 _ items =
+view2 : Texts -> Model -> List CustomField -> Html Msg
+view2 texts _ items =
     div []
         [ table [ class S.tableMain ]
             [ thead []
                 [ tr []
                     [ th [] []
-                    , th [ class "text-left" ] [ text "Name/Label" ]
-                    , th [ class "text-left" ] [ text "Format" ]
-                    , th [ class "text-center hidden sm:table-cell" ] [ text "#Usage" ]
-                    , th [ class "text-center hidden sm:table-cell" ] [ text "Created" ]
+                    , th [ class "text-left" ] [ text texts.nameLabel ]
+                    , th [ class "text-left" ] [ text texts.format ]
+                    , th [ class "text-center hidden sm:table-cell" ] [ text texts.usageCount ]
+                    , th [ class "text-center hidden sm:table-cell" ] [ text texts.basics.created ]
                     ]
                 ]
             , tbody []

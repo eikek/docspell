@@ -272,7 +272,7 @@ object Dependencies {
   ).map(_ % Test)
 
   val munit = Seq(
-    "org.scalameta" %% "munit" % MUnitVersion,
+    "org.scalameta" %% "munit"            % MUnitVersion,
     "org.scalameta" %% "munit-scalacheck" % MUnitVersion
   )
 
@@ -280,9 +280,9 @@ object Dependencies {
   val betterMonadicFor    = "com.olegpy"    %% "better-monadic-for" % BetterMonadicForVersion
 
   val webjars = Seq(
-    "org.webjars"      % "swagger-ui"            % SwaggerUIVersion,
-    "org.webjars"      % "viewerjs"              % ViewerJSVersion,
-    "org.webjars"      % "clipboard.js"          % ClipboardJsVersion
+    "org.webjars" % "swagger-ui"   % SwaggerUIVersion,
+    "org.webjars" % "viewerjs"     % ViewerJSVersion,
+    "org.webjars" % "clipboard.js" % ClipboardJsVersion
   )
 
   val icu4j = Seq(

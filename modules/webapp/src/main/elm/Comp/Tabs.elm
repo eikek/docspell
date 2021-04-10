@@ -11,11 +11,11 @@ module Comp.Tabs exposing
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Styles as S
 
 
 type alias Tab msg =
-    { title : String
+    { name : String
+    , title : String
     , titleRight : List (Html msg)
     , info : Maybe String
     , body : List (Html msg)
@@ -79,7 +79,7 @@ akkordionTab style state toggle tab =
                 [ class "flex flex-row"
                 , class style.titleClasses
                 ]
-                ([ a
+                (a
                     [ class "flex flex-row items-center flex-grow"
                     , href "#"
                     , onClick toggle
@@ -100,8 +100,7 @@ akkordionTab style state toggle tab =
                             ]
                         ]
                     ]
-                 ]
-                    ++ tab.titleRight
+                    :: tab.titleRight
                 )
 
         tabContent =

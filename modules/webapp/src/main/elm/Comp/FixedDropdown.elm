@@ -2,12 +2,9 @@ module Comp.FixedDropdown exposing
     ( Item
     , Model
     , Msg
+    , ViewSettings
     , init
-    , initMap
-    , initString
-    , initTuple
     , update
-    , view2
     , viewStyled2
     )
 
@@ -22,7 +19,6 @@ import Util.List
 
 type alias Item a =
     { id : a
-    , display : String
     }
 
 
@@ -39,31 +35,17 @@ type Msg a
     | KeyPress (Maybe KeyCode)
 
 
-init : List (Item a) -> Model a
-init options =
+initItems : List (Item a) -> Model a
+initItems options =
     { options = options
     , menuOpen = False
     , selected = Nothing
     }
 
 
-initString : List String -> Model String
-initString strings =
-    init <| List.map (\s -> Item s s) strings
-
-
-initMap : (a -> String) -> List a -> Model a
-initMap elToString els =
-    init <| List.map (\a -> Item a (elToString a)) els
-
-
-initTuple : List ( String, a ) -> Model a
-initTuple tuples =
-    let
-        mkItem ( txt, id ) =
-            Item id txt
-    in
-    init <| List.map mkItem tuples
+init : List a -> Model a
+init els =
+    List.map Item els |> initItems
 
 
 isSelected : Model a -> Item a -> Bool
@@ -167,28 +149,48 @@ update msg model =
 --- View2
 
 
-viewStyled2 : DS.DropdownStyle -> Bool -> Maybe (Item a) -> Model a -> Html (Msg a)
-viewStyled2 style error sel model =
+type alias ViewSettings a =
+    { display : a -> String
+    , icon : a -> Maybe String
+    , style : DS.DropdownStyle
+    }
+
+
+viewStyled2 : ViewSettings a -> Bool -> Maybe a -> Model a -> Html (Msg a)
+viewStyled2 cfg error sel model =
     let
+        iconItem id =
+            span
+                [ classList [ ( "hidden", cfg.icon id == Nothing ) ]
+                , class (Maybe.withDefault "" (cfg.icon id))
+                , class "mr-2"
+                ]
+                []
+
         renderItem item =
             a
                 [ href "#"
-                , class style.item
+                , class cfg.style.item
                 , classList
-                    [ ( style.itemActive, isSelected model item )
-                    , ( "font-semibold", Just item == sel )
+                    [ ( cfg.style.itemActive, isSelected model item )
+                    , ( "font-semibold", Just item.id == sel )
                     ]
                 , onClick (SelectItem2 item)
                 ]
-                [ text item.display
+                [ iconItem item.id
+                , text (cfg.display item.id)
                 ]
+
+        selIcon =
+            Maybe.map iconItem sel
+                |> Maybe.withDefault (span [ class "hidden" ] [])
     in
     div
-        [ class ("relative " ++ style.root)
+        [ class ("relative " ++ cfg.style.root)
         , onKeyUpCode KeyPress
         ]
         [ a
-            [ class style.link
+            [ class cfg.style.link
             , classList [ ( S.inputErrorBorder, error ) ]
             , tabindex 0
             , onClick ToggleMenu
@@ -200,7 +202,8 @@ viewStyled2 style error sel model =
                     [ ( "opacity-50", sel == Nothing )
                     ]
                 ]
-                [ Maybe.map .display sel
+                [ selIcon
+                , Maybe.map cfg.display sel
                     |> Maybe.withDefault "Select…"
                     |> text
                 ]
@@ -211,13 +214,8 @@ viewStyled2 style error sel model =
                 ]
             ]
         , div
-            [ class style.menu
+            [ class cfg.style.menu
             , classList [ ( "hidden", not model.menuOpen ) ]
             ]
             (List.map renderItem model.options)
         ]
-
-
-view2 : Maybe (Item a) -> Model a -> Html (Msg a)
-view2 =
-    viewStyled2 DS.mainStyle False

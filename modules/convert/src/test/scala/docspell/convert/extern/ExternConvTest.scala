@@ -1,13 +1,15 @@
 package docspell.convert.extern
 
+import java.nio.charset.StandardCharsets
 import java.nio.file.{Path, Paths}
 
 import cats.effect._
+
 import docspell.common._
 import docspell.convert._
 import docspell.files.{ExampleFiles, TestFiles}
+
 import munit._
-import java.nio.charset.StandardCharsets
 
 class ExternConvTest extends FunSuite with FileChecks {
   val blocker     = TestFiles.blocker

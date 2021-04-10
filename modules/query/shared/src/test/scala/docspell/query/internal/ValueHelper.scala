@@ -1,8 +1,9 @@
 package docspell.query.internal
 
+import java.time.Period
+
 import docspell.query.Date
 import docspell.query.ItemQuery._
-import java.time.Period
 
 trait ValueHelper {
 

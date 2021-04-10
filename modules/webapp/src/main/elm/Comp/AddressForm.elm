@@ -14,6 +14,7 @@ import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)
+import Messages.Comp.AddressForm exposing (Texts)
 import Styles as S
 import Util.List
 
@@ -51,9 +52,7 @@ emptyModel =
     , city = ""
     , country =
         Comp.Dropdown.makeSingleList
-            { makeOption = \c -> { value = c.code, text = c.label, additional = "" }
-            , placeholder = "Select Country"
-            , options = countries
+            { options = countries
             , selected = Nothing
             }
     }
@@ -112,8 +111,16 @@ update msg model =
 --- View2
 
 
-view2 : UiSettings -> Model -> Html Msg
-view2 settings model =
+view2 : Texts -> UiSettings -> Model -> Html Msg
+view2 texts settings model =
+    let
+        countryCfg =
+            { makeOption = \c -> { text = c.label, additional = "" }
+            , placeholder = texts.selectCountry
+            , labelColor = \_ -> \_ -> ""
+            , style = DS.mainStyle
+            }
+    in
     div [ class "flex flex-col" ]
         [ div
             [ class "mb-2"
@@ -122,12 +129,12 @@ view2 settings model =
                 [ for "street"
                 , class S.inputLabel
                 ]
-                [ text "Street"
+                [ text texts.street
                 ]
             , input
                 [ type_ "text"
                 , onInput SetStreet
-                , placeholder "Street"
+                , placeholder texts.street
                 , value model.street
                 , name "street"
                 , class S.textInput
@@ -141,12 +148,12 @@ view2 settings model =
                 [ for "zip"
                 , class S.inputLabel
                 ]
-                [ text "Zip Code"
+                [ text texts.zipCode
                 ]
             , input
                 [ type_ "text"
                 , onInput SetZip
-                , placeholder "Zip"
+                , placeholder texts.zipCode
                 , value model.zip
                 , name "zip"
                 , class S.textInput
@@ -160,12 +167,12 @@ view2 settings model =
                 [ for "city"
                 , class S.inputLabel
                 ]
-                [ text "City"
+                [ text texts.city
                 ]
             , input
                 [ type_ "text"
                 , onInput SetCity
-                , placeholder "City"
+                , placeholder texts.city
                 , value model.city
                 , name "city"
                 , class S.textInput
@@ -174,11 +181,11 @@ view2 settings model =
             ]
         , div [ class "" ]
             [ label [ class S.inputLabel ]
-                [ text "Country"
+                [ text texts.country
                 ]
             , Html.map CountryMsg
                 (Comp.Dropdown.view2
-                    DS.mainStyle
+                    countryCfg
                     settings
                     model.country
                 )

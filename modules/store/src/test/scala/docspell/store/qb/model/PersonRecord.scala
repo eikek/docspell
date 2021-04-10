@@ -1,8 +1,9 @@
 package docspell.store.qb.model
 
 import cats.data.NonEmptyList
-import docspell.store.qb._
+
 import docspell.common._
+import docspell.store.qb._
 
 case class PersonRecord(id: Long, name: String, created: Timestamp)
 

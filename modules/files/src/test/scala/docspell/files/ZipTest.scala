@@ -1,10 +1,13 @@
 package docspell.files
 
-import munit._
+import scala.concurrent.ExecutionContext
+
 import cats.effect._
 import cats.implicits._
-import scala.concurrent.ExecutionContext
+
 import docspell.common.Glob
+
+import munit._
 
 class ZipTest extends FunSuite {
 

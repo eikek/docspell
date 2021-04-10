@@ -23,6 +23,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Markdown
+import Messages.Comp.ItemCard exposing (Texts)
 import Page exposing (Page(..))
 import Set exposing (Set)
 import Styles as S
@@ -135,12 +136,11 @@ update ddm msg model =
 
 
 
---- View
 --- View2
 
 
-view2 : ViewConfig -> UiSettings -> Model -> ItemLight -> Html Msg
-view2 cfg settings model item =
+view2 : Texts -> ViewConfig -> UiSettings -> Model -> ItemLight -> Html Msg
+view2 texts cfg settings model item =
     let
         isConfirmed =
             item.state /= "created"
@@ -200,11 +200,11 @@ view2 cfg settings model item =
             [ previewImage2 settings cardAction model item
             ]
          )
-            ++ [ mainContent2 cardAction cardColor isConfirmed settings cfg item
-               , metaDataContent2 settings item
+            ++ [ mainContent2 texts cardAction cardColor isConfirmed settings cfg item
+               , metaDataContent2 texts settings item
                , notesContent2 settings item
                , fulltextResultsContent2 item
-               , previewMenu2 settings model item (currentAttachment model item)
+               , previewMenu2 texts settings model item (currentAttachment model item)
                , selectedDimmer
                ]
         )
@@ -221,8 +221,8 @@ fulltextResultsContent2 item =
         (List.map renderHighlightEntry2 item.highlighting)
 
 
-metaDataContent2 : UiSettings -> ItemLight -> Html Msg
-metaDataContent2 settings item =
+metaDataContent2 : Texts -> UiSettings -> ItemLight -> Html Msg
+metaDataContent2 texts settings item =
     let
         fieldHidden f =
             Data.UiSettings.fieldHidden settings f
@@ -234,7 +234,7 @@ metaDataContent2 settings item =
                     [ ( "hidden", fieldHidden Data.Fields.Folder )
                     ]
                 , class "hover:opacity-60"
-                , title "Folder"
+                , title texts.basics.folder
                 ]
                 [ Icons.folderIcon2 "mr-2"
                 , Comp.LinkTarget.makeFolderLink item
@@ -273,8 +273,16 @@ notesContent2 settings item =
         ]
 
 
-mainContent2 : List (Attribute Msg) -> String -> Bool -> UiSettings -> ViewConfig -> ItemLight -> Html Msg
-mainContent2 cardAction cardColor isConfirmed settings _ item =
+mainContent2 :
+    Texts
+    -> List (Attribute Msg)
+    -> String
+    -> Bool
+    -> UiSettings
+    -> ViewConfig
+    -> ItemLight
+    -> Html Msg
+mainContent2 texts cardAction cardColor isConfirmed settings _ item =
     let
         dirIcon =
             i
@@ -303,7 +311,7 @@ mainContent2 cardAction cardColor isConfirmed settings _ item =
                         && fieldHidden Data.Fields.CorrPerson
                   )
                 ]
-            , title "Correspondent"
+            , title texts.basics.correspondent
             ]
             (Icons.correspondentIcon2 "mr-2 w-4 text-center"
                 :: Comp.LinkTarget.makeCorrLink item [ ( "hover:opacity-75", True ) ] SetLinkTarget
@@ -315,7 +323,7 @@ mainContent2 cardAction cardColor isConfirmed settings _ item =
                         && fieldHidden Data.Fields.ConcEquip
                   )
                 ]
-            , title "Concerning"
+            , title texts.basics.concerning
             ]
             (Icons.concernedIcon2 "mr-2 w-4 text-center"
                 :: Comp.LinkTarget.makeConcLink item [ ( "hover:opacity-75", True ) ] SetLinkTarget
@@ -332,7 +340,7 @@ mainContent2 cardAction cardColor isConfirmed settings _ item =
                 , ( cardColor, True )
                 , ( "hidden", isConfirmed )
                 ]
-            , title "New"
+            , title texts.new
             ]
             [ i [ class "ml-2 fa fa-exclamation-circle" ] []
             ]
@@ -432,8 +440,8 @@ previewImage2 settings cardAction model item =
         ]
 
 
-previewMenu2 : UiSettings -> Model -> ItemLight -> Maybe AttachmentLight -> Html Msg
-previewMenu2 settings model item mainAttach =
+previewMenu2 : Texts -> UiSettings -> Model -> ItemLight -> Maybe AttachmentLight -> Html Msg
+previewMenu2 texts settings model item mainAttach =
     let
         pageCount =
             Maybe.andThen .pageCount mainAttach
@@ -470,7 +478,7 @@ previewMenu2 settings model item mainAttach =
                       )
                     ]
                 , class "label font-semibold text-sm border-gray-300 dark:border-bluegray-600"
-                , title ("Due on " ++ dueDate)
+                , title (texts.dueOn ++ " " ++ dueDate)
                 ]
                 [ Icons.dueDateIcon2 "mr-2"
                 , text (" " ++ dueDate)
@@ -482,7 +490,7 @@ previewMenu2 settings model item mainAttach =
             , class "px-2 py-1 border rounded "
             , href attachUrl
             , target "_self"
-            , title "Open attachment file"
+            , title texts.openAttachmentFile
             ]
             [ i [ class "fa fa-eye" ] []
             ]
@@ -490,7 +498,7 @@ previewMenu2 settings model item mainAttach =
             [ class S.secondaryBasicButtonPlain
             , class "px-2 py-1 border rounded ml-2"
             , Page.href (ItemDetailPage item.id)
-            , title "Go to detail view"
+            , title texts.gotoDetail
             ]
             [ i [ class "fa fa-edit" ] []
             ]
@@ -510,7 +518,7 @@ previewMenu2 settings model item mainAttach =
             [ a
                 [ class S.secondaryBasicButtonPlain
                 , class "px-2 py-1 border rounded-l block"
-                , title "Cycle attachments"
+                , title texts.cycleAttachments
                 , href "#"
                 , onClick (CyclePreview item)
                 ]

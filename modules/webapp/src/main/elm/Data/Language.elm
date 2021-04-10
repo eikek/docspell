@@ -3,7 +3,6 @@ module Data.Language exposing
     , all
     , fromString
     , toIso3
-    , toName
     )
 
 
@@ -123,55 +122,6 @@ toIso3 lang =
 
         Latvian ->
             "lav"
-
-
-toName : Language -> String
-toName lang =
-    case lang of
-        German ->
-            "German"
-
-        English ->
-            "English"
-
-        French ->
-            "French"
-
-        Italian ->
-            "Italian"
-
-        Spanish ->
-            "Spanish"
-
-        Portuguese ->
-            "Portuguese"
-
-        Czech ->
-            "Czech"
-
-        Danish ->
-            "Danish"
-
-        Finnish ->
-            "Finnish"
-
-        Norwegian ->
-            "Norwegian"
-
-        Swedish ->
-            "Swedish"
-
-        Russian ->
-            "Russian"
-
-        Romanian ->
-            "Romanian"
-
-        Dutch ->
-            "Dutch"
-
-        Latvian ->
-            "Latvian"
 
 
 all : List Language

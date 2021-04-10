@@ -6,6 +6,7 @@ import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onCheck, onInput, onSubmit)
+import Messages.Page.Login exposing (Texts)
 import Page exposing (Page(..))
 import Page.Login.Data exposing (..)
 import Styles as S
@@ -20,8 +21,8 @@ viewSidebar _ _ _ _ =
         []
 
 
-viewContent : Flags -> VersionInfo -> UiSettings -> Model -> Html Msg
-viewContent flags versionInfo _ model =
+viewContent : Texts -> Flags -> VersionInfo -> UiSettings -> Model -> Html Msg
+viewContent texts flags versionInfo _ model =
     div
         [ id "content"
         , class "h-full flex flex-col items-center justify-center w-full"
@@ -36,7 +37,7 @@ viewContent flags versionInfo _ model =
                     []
                 ]
             , div [ class "font-medium self-center text-xl sm:text-2xl" ]
-                [ text "Login to Docspell"
+                [ text texts.loginToDocspell
                 ]
             , Html.form
                 [ action "#"
@@ -48,7 +49,7 @@ viewContent flags versionInfo _ model =
                         [ for "username"
                         , class S.inputLabel
                         ]
-                        [ text "Username"
+                        [ text texts.username
                         ]
                     , div [ class "relative" ]
                         [ div [ class S.inputIcon ]
@@ -62,7 +63,7 @@ viewContent flags versionInfo _ model =
                             , value model.username
                             , autofocus True
                             , class ("pl-10 pr-4 py-2 rounded-lg" ++ S.textInput)
-                            , placeholder "Collective / Login"
+                            , placeholder texts.collectiveSlashLogin
                             ]
                             []
                         ]
@@ -72,7 +73,7 @@ viewContent flags versionInfo _ model =
                         [ for "password"
                         , class S.inputLabel
                         ]
-                        [ text "Password"
+                        [ text texts.password
                         ]
                     , div [ class "relative" ]
                         [ div [ class S.inputIcon ]
@@ -85,7 +86,7 @@ viewContent flags versionInfo _ model =
                             , onInput SetPassword
                             , value model.password
                             , class ("pl-10 pr-4 py-2 rounded-lg" ++ S.textInput)
-                            , placeholder "Password"
+                            , placeholder texts.password
                             ]
                             []
                         ]
@@ -107,7 +108,7 @@ viewContent flags versionInfo _ model =
                         , span
                             [ class "mb-1 ml-2 text-xs sm:text-sm tracking-wide my-1"
                             ]
-                            [ text "Remember Me"
+                            [ text texts.rememberMe
                             ]
                         ]
                     ]
@@ -116,23 +117,23 @@ viewContent flags versionInfo _ model =
                         [ type_ "submit"
                         , class S.primaryButton
                         ]
-                        [ text "Login"
+                        [ text texts.loginButton
                         ]
                     ]
-                , resultMessage model
+                , resultMessage texts model
                 , div
                     [ class "flex justify-end text-sm pt-4"
                     , classList [ ( "hidden", flags.config.signupMode == "closed" ) ]
                     ]
                     [ span []
-                        [ text "No account?"
+                        [ text texts.noAccount
                         ]
                     , a
                         [ Page.href RegisterPage
                         , class ("ml-2" ++ S.link)
                         ]
                         [ i [ class "fa fa-user-plus mr-1" ] []
-                        , text "Sign up"
+                        , text texts.signupLink
                         ]
                     ]
                 ]
@@ -155,13 +156,13 @@ viewContent flags versionInfo _ model =
         ]
 
 
-resultMessage : Model -> Html Msg
-resultMessage model =
+resultMessage : Texts -> Model -> Html Msg
+resultMessage texts model =
     case model.result of
         Just r ->
             if r.success then
                 div [ class ("my-2" ++ S.successMessage) ]
-                    [ text "Login successful."
+                    [ text texts.loginSuccessful
                     ]
 
             else

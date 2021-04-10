@@ -29,6 +29,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Http
+import Messages.Comp.CustomFieldMultiInput exposing (Texts)
 import Styles as S
 import Util.CustomField
 import Util.Maybe
@@ -130,7 +131,7 @@ reset model =
 mkFieldSelect : List CustomField -> FieldSelect
 mkFieldSelect fields =
     { selected = Nothing
-    , dropdown = Comp.FixedDropdown.init (List.map mkItem fields)
+    , dropdown = Comp.FixedDropdown.init fields
     }
 
 
@@ -143,11 +144,6 @@ type alias UpdateResult =
     , cmd : Cmd Msg
     , result : CustomFieldChange
     }
-
-
-mkItem : CustomField -> Comp.FixedDropdown.Item CustomField
-mkItem f =
-    Comp.FixedDropdown.Item f (Maybe.withDefault f.name f.label)
 
 
 update : Flags -> Msg -> Model -> UpdateResult
@@ -318,25 +314,33 @@ type alias ViewSettings =
     { showAddButton : Bool
     , classes : String
     , fieldIcon : CustomField -> Maybe String
+    , style : DS.DropdownStyle
+    , createCustomFieldTitle : String
     }
 
 
-view2 : DS.DropdownStyle -> ViewSettings -> Model -> Html Msg
-view2 ddstyle viewSettings model =
+view2 : Texts -> ViewSettings -> Model -> Html Msg
+view2 texts viewSettings model =
     div [ class viewSettings.classes ]
-        (viewMenuBar2 ddstyle viewSettings model
-            :: List.map (viewCustomField2 viewSettings model) (visibleFields model)
+        (viewMenuBar2 viewSettings model
+            :: List.map (viewCustomField2 texts viewSettings model) (visibleFields model)
         )
 
 
-viewMenuBar2 : DS.DropdownStyle -> ViewSettings -> Model -> Html Msg
-viewMenuBar2 ddstyle viewSettings model =
+viewMenuBar2 : ViewSettings -> Model -> Html Msg
+viewMenuBar2 viewSettings model =
     let
         { dropdown, selected } =
             model.fieldSelect
 
+        ddstyle =
+            viewSettings.style
+
         ddstyleFlex =
-            { ddstyle | root = ddstyle.root ++ " flex-grow" }
+            { display = \f -> Maybe.withDefault f.name f.label
+            , icon = \_ -> Nothing
+            , style = { ddstyle | root = ddstyle.root ++ " flex-grow" }
+            }
     in
     div
         [ classList
@@ -348,11 +352,11 @@ viewMenuBar2 ddstyle viewSettings model =
             (Comp.FixedDropdown.viewStyled2
                 ddstyleFlex
                 False
-                (Maybe.map mkItem selected)
+                selected
                 dropdown
             )
             :: (if viewSettings.showAddButton then
-                    [ addFieldLink2 "ml-1" model
+                    [ addFieldLink2 viewSettings.createCustomFieldTitle "ml-1" model
                     ]
 
                 else
@@ -361,8 +365,8 @@ viewMenuBar2 ddstyle viewSettings model =
         )
 
 
-viewCustomField2 : ViewSettings -> Model -> CustomField -> Html Msg
-viewCustomField2 viewSettings model field =
+viewCustomField2 : Texts -> ViewSettings -> Model -> CustomField -> Html Msg
+viewCustomField2 texts viewSettings model field =
     let
         visibleField =
             Dict.get field.name model.visibleFields
@@ -370,7 +374,8 @@ viewCustomField2 viewSettings model field =
     case visibleField of
         Just vf ->
             Html.map (CustomFieldInputMsg field)
-                (Comp.CustomFieldInput.view2 "mt-2"
+                (Comp.CustomFieldInput.view2 texts.customFieldInput
+                    "mt-2"
                     (viewSettings.fieldIcon vf.field)
                     vf.inputModel
                 )
@@ -379,8 +384,8 @@ viewCustomField2 viewSettings model field =
             span [] []
 
 
-addFieldLink2 : String -> Model -> Html Msg
-addFieldLink2 classes _ =
+addFieldLink2 : String -> String -> Model -> Html Msg
+addFieldLink2 titleStr classes _ =
     a
         [ class classes
         , class S.secondaryButton
@@ -388,7 +393,7 @@ addFieldLink2 classes _ =
         --        , class "absolute -right-12 top-0"
         , href "#"
         , onClick CreateNewField
-        , title "Create a new custom field"
+        , title titleStr
         ]
         [ i [ class "fa fa-plus" ] []
         ]

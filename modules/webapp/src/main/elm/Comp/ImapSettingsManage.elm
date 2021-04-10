@@ -21,6 +21,7 @@ import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Http
+import Messages.Comp.ImapSettingsManage exposing (Texts)
 import Styles as S
 import Util.Http
 
@@ -206,74 +207,77 @@ update flags msg model =
 --- View2
 
 
-view2 : UiSettings -> Model -> Html Msg
-view2 settings model =
+view2 : Texts -> UiSettings -> Model -> Html Msg
+view2 texts settings model =
     case model.viewMode of
         Table ->
-            viewTable2 model
+            viewTable2 texts model
 
         Form ->
-            viewForm2 settings model
+            viewForm2 texts settings model
 
 
-viewTable2 : Model -> Html Msg
-viewTable2 model =
+viewTable2 : Texts -> Model -> Html Msg
+viewTable2 texts model =
     div []
         [ MB.view
             { start =
                 [ MB.TextInput
                     { tagger = SetQuery
                     , value = model.query
-                    , placeholder = "Search…"
+                    , placeholder = texts.basics.searchPlaceholder
                     , icon = Just "fa fa-search"
                     }
                 ]
             , end =
                 [ MB.PrimaryButton
                     { tagger = InitNew
-                    , title = "Add new SMTP settings"
+                    , title = texts.addNewImapSettings
                     , icon = Just "fa fa-plus"
-                    , label = "New Settings"
+                    , label = texts.newSettings
                     }
                 ]
             , rootClasses = "mb-4"
             }
         , Html.map TableMsg
             (Comp.ImapSettingsTable.view2
+                texts.imapTable
                 model.tableModel
             )
         ]
 
 
-viewForm2 : UiSettings -> Model -> Html Msg
-viewForm2 settings model =
+viewForm2 : Texts -> UiSettings -> Model -> Html Msg
+viewForm2 texts settings model =
     let
         dimmerSettings =
-            Comp.YesNoDimmer.defaultSettings2 "Really delete this mail-box connection?"
+            Comp.YesNoDimmer.defaultSettings texts.reallyDeleteSettings
+                texts.basics.yes
+                texts.basics.no
     in
     div [ class "flex flex-col md:relative" ]
         [ MB.view
             { start =
                 [ MB.PrimaryButton
                     { tagger = Submit
-                    , title = "Submit this form"
+                    , title = texts.basics.submitThisForm
                     , icon = Just "fa fa-save"
-                    , label = "Submit"
+                    , label = texts.basics.submit
                     }
                 , MB.SecondaryButton
                     { tagger = SetViewMode Table
-                    , title = "Back to list"
+                    , title = texts.basics.backToList
                     , icon = Just "fa fa-arrow-left"
-                    , label = "Cancel"
+                    , label = texts.basics.cancel
                     }
                 ]
             , end =
                 if model.formModel.settings.name /= "" then
                     [ MB.DeleteButton
                         { tagger = RequestDelete
-                        , title = "Delete this settings entry"
+                        , title = texts.deleteThisEntry
                         , icon = Just "fa fa-trash"
-                        , label = "Delete"
+                        , label = texts.basics.delete
                         }
                     ]
 
@@ -292,6 +296,7 @@ viewForm2 settings model =
             ]
         , Html.map FormMsg
             (Comp.ImapSettingsForm.view2
+                texts.imapForm
                 settings
                 model.formModel
             )
@@ -301,5 +306,8 @@ viewForm2 settings model =
                 dimmerSettings
                 model.deleteConfirm
             )
-        , B.loadingDimmer model.loading
+        , B.loadingDimmer
+            { active = model.loading
+            , label = texts.basics.loading
+            }
         ]

@@ -1,9 +1,9 @@
 package docspell.files
 
+import scala.concurrent.ExecutionContext
+
 import cats.effect.{Blocker, IO}
 import fs2.Stream
-
-import scala.concurrent.ExecutionContext
 
 object TestFiles {
   val blocker     = Blocker.liftExecutionContext(ExecutionContext.global)

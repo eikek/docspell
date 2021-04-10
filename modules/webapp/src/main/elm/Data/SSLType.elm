@@ -2,7 +2,6 @@ module Data.SSLType exposing
     ( SSLType(..)
     , all
     , fromString
-    , label
     , toString
     )
 
@@ -45,16 +44,3 @@ fromString str =
 
         _ ->
             Nothing
-
-
-label : SSLType -> String
-label st =
-    case st of
-        None ->
-            "None"
-
-        SSL ->
-            "SSL/TLS"
-
-        StartTLS ->
-            "StartTLS"

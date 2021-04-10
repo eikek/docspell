@@ -23,6 +23,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Http
+import Messages.Comp.ItemMail exposing (Texts)
 import Styles as S
 import Util.Http
 
@@ -69,11 +70,7 @@ type FormAction
 
 emptyModel : Model
 emptyModel =
-    { connectionModel =
-        Comp.Dropdown.makeSingle
-            { makeOption = \a -> { value = a, text = a, additional = "" }
-            , placeholder = "Select connection..."
-            }
+    { connectionModel = Comp.Dropdown.makeSingle
     , subject = ""
     , recipients = []
     , recipientsModel = Comp.EmailInput.init
@@ -160,9 +157,7 @@ update flags msg model =
 
                 cm =
                     Comp.Dropdown.makeSingleList
-                        { makeOption = \a -> { value = a, text = a, additional = "" }
-                        , placeholder = "Select Connection..."
-                        , options = names
+                        { options = names
                         , selected = List.head names
                         }
             in
@@ -224,21 +219,33 @@ isValid model =
 --- View2
 
 
-view2 : UiSettings -> Model -> Html Msg
-view2 settings model =
+view2 : Texts -> UiSettings -> Model -> Html Msg
+view2 texts settings model =
     let
         dds =
             Data.DropdownStyle.mainStyle
+
+        connectionCfg =
+            { makeOption = \a -> { text = a, additional = "" }
+            , placeholder = texts.selectConnection
+            , labelColor = \_ -> \_ -> ""
+            , style = dds
+            }
     in
     div
         [ class "flex flex-col"
         ]
         [ div [ class "mb-4" ]
             [ label [ class S.inputLabel ]
-                [ text "Send via"
+                [ text texts.sendVia
                 , B.inputRequired
                 ]
-            , Html.map ConnMsg (Comp.Dropdown.view2 dds settings model.connectionModel)
+            , Html.map ConnMsg
+                (Comp.Dropdown.view2
+                    connectionCfg
+                    settings
+                    model.connectionModel
+                )
             ]
         , div
             [ class S.errorMessage
@@ -250,29 +257,38 @@ view2 settings model =
             [ label
                 [ class S.inputLabel
                 ]
-                [ text "Recipient(s)"
+                [ text texts.recipients
                 , B.inputRequired
                 ]
             , Html.map RecipientMsg
-                (Comp.EmailInput.view2 dds model.recipients model.recipientsModel)
+                (Comp.EmailInput.view2 { style = dds, placeholder = appendDots texts.recipients }
+                    model.recipients
+                    model.recipientsModel
+                )
             ]
         , div [ class "mb-4" ]
             [ label [ class S.inputLabel ]
-                [ text "CC(s)"
+                [ text texts.ccRecipients
                 ]
             , Html.map CCRecipientMsg
-                (Comp.EmailInput.view2 dds model.ccRecipients model.ccRecipientsModel)
+                (Comp.EmailInput.view2 { style = dds, placeholder = appendDots texts.ccRecipients }
+                    model.ccRecipients
+                    model.ccRecipientsModel
+                )
             ]
         , div [ class "mb-4" ]
             [ label [ class S.inputLabel ]
-                [ text "BCC(s)"
+                [ text texts.bccRecipients
                 ]
             , Html.map BCCRecipientMsg
-                (Comp.EmailInput.view2 dds model.bccRecipients model.bccRecipientsModel)
+                (Comp.EmailInput.view2 { style = dds, placeholder = appendDots texts.bccRecipients }
+                    model.bccRecipients
+                    model.bccRecipientsModel
+                )
             ]
         , div [ class "mb-4" ]
             [ label [ class S.inputLabel ]
-                [ text "Subject"
+                [ text texts.subject
                 , B.inputRequired
                 ]
             , input
@@ -285,7 +301,7 @@ view2 settings model =
             ]
         , div [ class "mb-4" ]
             [ label [ class S.inputLabel ]
-                [ text "Body"
+                [ text texts.body
                 , B.inputRequired
                 ]
             , textarea
@@ -298,7 +314,7 @@ view2 settings model =
         , MB.viewItem <|
             MB.Checkbox
                 { tagger = \_ -> ToggleAttachAll
-                , label = "Include all item attachments"
+                , label = texts.includeAllAttachments
                 , value = model.attachAll
                 , id = "item-send-mail-attach-all"
                 }
@@ -311,7 +327,7 @@ view2 settings model =
                 , disabled = not (isValid model)
                 }
             , B.secondaryButton
-                { label = "Cancel"
+                { label = texts.basics.cancel
                 , icon = "fa fa-times"
                 , handler = onClick Cancel
                 , attrs = [ href "#" ]
@@ -319,3 +335,8 @@ view2 settings model =
                 }
             ]
         ]
+
+
+appendDots : String -> String
+appendDots name =
+    name ++ "…"

@@ -24,6 +24,7 @@ import Comp.Dropdown exposing (isDropdownChangeMsg)
 import Comp.Dropzone
 import Comp.EquipmentForm
 import Comp.ItemDetail.EditForm
+import Comp.ItemDetail.FieldTabState as FTabState
 import Comp.ItemDetail.Model
     exposing
         ( AttachmentRename
@@ -62,7 +63,6 @@ import Set exposing (Set)
 import Throttle
 import Time
 import Util.File exposing (makeFileId)
-import Util.Folder exposing (mkFolderOption)
 import Util.Http
 import Util.List
 import Util.Maybe
@@ -551,6 +551,8 @@ update key flags inav settings msg model =
                     Comp.ConfirmModal.defaultSettings
                         DeleteItemConfirmed
                         ItemModalCancelled
+                        "Ok"
+                        "Cancel"
                         confirmMsg
             in
             resultModel { model | itemModal = Just confirm }
@@ -576,13 +578,7 @@ update key flags inav settings msg model =
         GetFolderResp (Ok fs) ->
             let
                 model_ =
-                    { model
-                        | allFolders = fs.items
-                        , folderModel =
-                            Comp.Dropdown.setMkOption
-                                (mkFolderOption flags fs.items)
-                                model.folderModel
-                    }
+                    { model | allFolders = fs.items }
 
                 mkIdName fitem =
                     IdName fitem.id fitem.name
@@ -645,23 +641,8 @@ update key flags inav settings msg model =
                     List.filter personFilter correspondent
                         |> List.map (\e -> IdName e.id e.name)
 
-                mkPersonOption idref =
-                    let
-                        org =
-                            Dict.get idref.id personDict
-                                |> Maybe.andThen .organization
-                                |> Maybe.map .name
-                                |> Maybe.map (Util.String.ellipsis 15)
-                                |> Maybe.withDefault ""
-                    in
-                    Comp.Dropdown.Option idref.id idref.name org
-
                 model_ =
-                    { model
-                        | corrPersonModel = Comp.Dropdown.setMkOption mkPersonOption model.corrPersonModel
-                        , concPersonModel = Comp.Dropdown.setMkOption mkPersonOption model.concPersonModel
-                        , allPersons = personDict
-                    }
+                    { model | allPersons = personDict }
 
                 res1 =
                     update key
@@ -945,6 +926,8 @@ update key flags inav settings msg model =
                     Comp.ConfirmModal.defaultSettings
                         (DeleteAttachConfirmed id)
                         AttachModalCancelled
+                        "Ok"
+                        "Cancel"
                         "Really delete this file?"
 
                 model_ =
@@ -1491,22 +1474,21 @@ update key flags inav settings msg model =
         ToggleAttachmentDropdown ->
             resultModel { model | attachmentDropdownOpen = not model.attachmentDropdownOpen }
 
-        ToggleAkkordionTab title ->
+        ToggleAkkordionTab name ->
             let
                 tabs =
-                    if Set.member title model.editMenuTabsOpen then
-                        Set.remove title model.editMenuTabsOpen
+                    if Set.member name model.editMenuTabsOpen then
+                        Set.remove name model.editMenuTabsOpen
 
                     else
-                        Set.insert title model.editMenuTabsOpen
+                        Set.insert name model.editMenuTabsOpen
             in
             resultModel { model | editMenuTabsOpen = tabs }
 
         ToggleOpenAllAkkordionTabs ->
             let
                 allNames =
-                    Comp.ItemDetail.EditForm.formTabs settings model
-                        |> List.map .title
+                    List.map FTabState.tabName FTabState.allTabs
                         |> Set.fromList
 
                 next =
@@ -1533,6 +1515,8 @@ update key flags inav settings msg model =
                     Comp.ConfirmModal.defaultSettings
                         (ReprocessFileConfirmed id)
                         AttachModalCancelled
+                        "Ok"
+                        "Cancel"
                         confirmMsg
 
                 model_ =
@@ -1568,6 +1552,8 @@ update key flags inav settings msg model =
                     Comp.ConfirmModal.defaultSettings
                         ReprocessItemConfirmed
                         ItemModalCancelled
+                        "Ok"
+                        "Cancel"
                         confirmMsg
 
                 model_ =

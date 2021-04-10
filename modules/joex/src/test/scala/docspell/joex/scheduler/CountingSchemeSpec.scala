@@ -1,6 +1,7 @@
 package docspell.joex.scheduler
 
 import docspell.common.Priority
+
 import munit._
 
 class CountingSchemeSpec extends FunSuite {

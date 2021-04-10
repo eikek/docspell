@@ -13,6 +13,7 @@ import Comp.Basic as B
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
+import Messages.Comp.SentMails exposing (Texts)
 import Styles as S
 import Util.Time
 
@@ -59,15 +60,15 @@ update msg model =
 --- View2
 
 
-view2 : Model -> Html Msg
-view2 model =
+view2 : Texts -> Model -> Html Msg
+view2 texts model =
     case model.selected of
         Just mail ->
             div [ class "flex flex-col" ]
                 [ div [ class "text-sm flex-flex-col" ]
                     [ div [ class "flex flex-row" ]
                         [ span [ class "font-bold" ]
-                            [ text "From:"
+                            [ text (texts.from ++ ":")
                             ]
                         , div [ class "ml-2" ]
                             [ text mail.sender
@@ -78,7 +79,7 @@ view2 model =
                         ]
                     , div [ class "flex flex-row" ]
                         [ span [ class "font-bold" ]
-                            [ text "Date:"
+                            [ text (texts.date ++ ":")
                             ]
                         , div [ class "ml-2" ]
                             [ Util.Time.formatDateTime mail.created |> text
@@ -86,7 +87,7 @@ view2 model =
                         ]
                     , div [ class "flex flex-row" ]
                         [ span [ class "font-bold" ]
-                            [ text "Recipients:"
+                            [ text (texts.recipients ++ ":")
                             ]
                         , div [ class "ml-2" ]
                             [ String.join ", " mail.recipients |> text
@@ -94,7 +95,7 @@ view2 model =
                         ]
                     , div [ class "flex flex-row" ]
                         [ span [ class "font-bold" ]
-                            [ text "Subject:"
+                            [ text (texts.subject ++ ":")
                             ]
                         , div [ class "ml-2" ]
                             [ text mail.subject
@@ -122,10 +123,10 @@ view2 model =
                 [ thead []
                     [ tr []
                         [ th [] []
-                        , th [ class "text-left" ] [ text "Recipients" ]
-                        , th [ class "hidden" ] [ text "Subject" ]
-                        , th [ class "hidden text-center xl:table-cell" ] [ text "Sent" ]
-                        , th [ class "hidden" ] [ text "Sender" ]
+                        , th [ class "text-left" ] [ text texts.recipients ]
+                        , th [ class "hidden" ] [ text texts.subject ]
+                        , th [ class "hidden text-center xl:table-cell" ] [ text texts.sent ]
+                        , th [ class "hidden" ] [ text texts.sender ]
                         ]
                     ]
                 , tbody [] <|

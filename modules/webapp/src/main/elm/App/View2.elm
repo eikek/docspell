@@ -7,6 +7,9 @@ import Data.Flags
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
+import Messages exposing (Messages)
+import Messages.App exposing (Texts)
+import Messages.UiLanguage
 import Page exposing (Page(..))
 import Page.CollectiveSettings.View2 as CollectiveSettings
 import Page.Home.Data
@@ -41,6 +44,10 @@ topNavbar model =
 
 topNavUser : AuthResult -> Model -> Html Msg
 topNavUser auth model =
+    let
+        texts =
+            Messages.get <| App.Data.getUiLanguage model
+    in
     nav
         [ id "top-nav"
         , class styleTopNav
@@ -56,8 +63,8 @@ topNavUser auth model =
             }
         , headerNavItem model
         , div [ class "flex flex-grow justify-end" ]
-            [ userMenu auth model
-            , dataMenu auth model
+            [ userMenu texts.app auth model
+            , dataMenu texts.app auth model
             ]
         ]
 
@@ -70,7 +77,8 @@ topNavAnon model =
         ]
         [ headerNavItem model
         , div [ class "flex flex-grow justify-end" ]
-            [ a
+            [ langMenu model
+            , a
                 [ href "#"
                 , onClick ToggleDarkMode
                 , class dropdownLink
@@ -100,40 +108,44 @@ headerNavItem model =
 
 mainContent : Model -> Html Msg
 mainContent model =
+    let
+        texts =
+            Messages.get <| App.Data.getUiLanguage model
+    in
     div
         [ id "main"
         , class styleMain
         ]
         (case model.page of
             HomePage ->
-                viewHome model
+                viewHome texts model
 
             CollectiveSettingPage ->
-                viewCollectiveSettings model
+                viewCollectiveSettings texts model
 
             LoginPage _ ->
-                viewLogin model
+                viewLogin texts model
 
             ManageDataPage ->
-                viewManageData model
+                viewManageData texts model
 
             UserSettingPage ->
-                viewUserSettings model
+                viewUserSettings texts model
 
             QueuePage ->
-                viewQueue model
+                viewQueue texts model
 
             RegisterPage ->
-                viewRegister model
+                viewRegister texts model
 
             UploadPage mid ->
-                viewUpload mid model
+                viewUpload texts mid model
 
             NewInvitePage ->
-                viewNewInvite model
+                viewNewInvite texts model
 
             ItemDetailPage id ->
-                viewItemDetail id model
+                viewItemDetail texts id model
         )
 
 
@@ -151,8 +163,47 @@ styleMain =
     "mt-12 flex md:flex-row flex-col w-full h-screen-12 overflow-y-hidden bg-white dark:bg-bluegray-800 text-gray-800 dark:text-bluegray-300 antialiased"
 
 
-dataMenu : AuthResult -> Model -> Html Msg
-dataMenu _ model =
+langMenu : Model -> Html Msg
+langMenu model =
+    let
+        texts =
+            Messages.get <| App.Data.getUiLanguage model
+
+        langItem lang =
+            let
+                langMsg =
+                    Messages.get lang
+            in
+            a
+                [ classList
+                    [ ( dropdownItem, True )
+                    , ( "bg-gray-200 dark:bg-bluegray-700", lang == texts.lang )
+                    ]
+                , onClick (SetLanguage lang)
+                , href "#"
+                ]
+                [ i [ langMsg |> .flagIcon |> class ] []
+                , span [ class "ml-2" ] [ text langMsg.label ]
+                ]
+    in
+    div [ class "relative" ]
+        [ a
+            [ class dropdownLink
+            , onClick ToggleLangMenu
+            , href "#"
+            ]
+            [ i [ class texts.flagIcon ] []
+            ]
+        , div
+            [ class dropdownMenu
+            , classList [ ( "hidden", not model.langMenuOpen ) ]
+            ]
+            (List.map langItem Messages.UiLanguage.all)
+        ]
+
+
+dataMenu : Texts -> AuthResult -> Model -> Html Msg
+dataMenu texts _ model =
     div [ class "relative" ]
         [ a
             [ class dropdownLink
@@ -174,7 +225,7 @@ dataMenu _ model =
                     ]
                     []
                 , div [ class "inline-block ml-2" ]
-                    [ text "Items"
+                    [ text texts.items
                     ]
                 ]
             , div [ class "py-1" ] [ hr [ class S.border ] [] ]
@@ -183,7 +234,7 @@ dataMenu _ model =
                 []
                 [ i [ class "fa fa-cubes w-6" ] []
                 , span [ class "ml-1" ]
-                    [ text "Manage Data"
+                    [ text texts.manageData
                     ]
                 ]
             , div [ class "divider" ] []
@@ -192,7 +243,7 @@ dataMenu _ model =
                 []
                 [ i [ class "fa fa-upload w-6" ] []
                 , span [ class "ml-1" ]
-                    [ text "Upload files"
+                    [ text texts.uploadFiles
                     ]
                 ]
             , dataPageLink model
@@ -200,7 +251,7 @@ dataMenu _ model =
                 []
                 [ i [ class "fa fa-tachometer-alt w-6" ] []
                 , span [ class "ml-1" ]
-                    [ text "Processing Queue"
+                    [ text texts.processingQueue
                     ]
                 ]
             , div
@@ -215,7 +266,7 @@ dataMenu _ model =
                 [ ( "hidden", model.flags.config.signupMode /= "invite" ) ]
                 [ i [ class "fa fa-key w-6" ] []
                 , span [ class "ml-1" ]
-                    [ text "New Invites"
+                    [ text texts.newInvites
                     ]
                 ]
             , div [ class "py-1" ]
@@ -229,7 +280,7 @@ dataMenu _ model =
                 , title "Opens https://docspell.org/docs"
                 ]
                 [ i [ class "fa fa-question-circle w-6" ] []
-                , span [ class "ml-1" ] [ text "Help" ]
+                , span [ class "ml-1" ] [ text texts.help ]
                 , span [ class "float-right" ]
                     [ i [ class "fa fa-external-link-alt w-6" ] []
                     ]
@@ -238,8 +289,8 @@ dataMenu _ model =
         ]
 
 
-userMenu : AuthResult -> Model -> Html Msg
-userMenu acc model =
+userMenu : Texts -> AuthResult -> Model -> Html Msg
+userMenu texts acc model =
     div [ class "relative" ]
         [ a
             [ class dropdownLink
@@ -263,14 +314,14 @@ userMenu acc model =
                 CollectiveSettingPage
                 [ i [ class "fa fa-users w-6" ] []
                 , span [ class "ml-1" ]
-                    [ text "Collective Profile"
+                    [ text texts.collectiveProfile
                     ]
                 ]
             , userPageLink model
                 UserSettingPage
                 [ i [ class "fa fa-user-circle w-6" ] []
                 , span [ class "ml-1" ]
-                    [ text "User Profile"
+                    [ text texts.userProfile
                     ]
                 ]
             , a
@@ -280,7 +331,7 @@ userMenu acc model =
                 ]
                 [ i [ class "fa fa-adjust w-6" ] []
                 , span [ class "ml-1" ]
-                    [ text "Light/Dark"
+                    [ text texts.lightDark
                     ]
                 ]
             , div [ class "py-1" ] [ hr [ class S.border ] [] ]
@@ -291,7 +342,7 @@ userMenu acc model =
                 ]
                 [ i [ class "fa fa-sign-out-alt w-6" ] []
                 , span [ class "ml-1" ]
-                    [ text "Logout"
+                    [ text texts.logout
                     ]
                 ]
             ]
@@ -346,85 +397,121 @@ dropdownMenu =
     " absolute right-0 bg-white dark:bg-bluegray-800 border dark:border-bluegray-700 dark:text-bluegray-300 shadow-lg opacity-1 transition duration-200 min-w-max "
 
 
-viewHome : Model -> List (Html Msg)
-viewHome model =
-    [ Html.map HomeMsg (Home.viewSidebar model.sidebarVisible model.flags model.uiSettings model.homeModel)
-    , Html.map HomeMsg (Home.viewContent model.flags model.uiSettings model.homeModel)
+viewHome : Messages -> Model -> List (Html Msg)
+viewHome texts model =
+    [ Html.map HomeMsg
+        (Home.viewSidebar texts.home
+            model.sidebarVisible
+            model.flags
+            model.uiSettings
+            model.homeModel
+        )
+    , Html.map HomeMsg
+        (Home.viewContent texts.home
+            model.flags
+            model.uiSettings
+            model.homeModel
+        )
     ]
 
 
-viewCollectiveSettings : Model -> List (Html Msg)
-viewCollectiveSettings model =
+viewCollectiveSettings : Messages -> Model -> List (Html Msg)
+viewCollectiveSettings texts model =
     [ Html.map CollSettingsMsg
-        (CollectiveSettings.viewSidebar model.sidebarVisible
+        (CollectiveSettings.viewSidebar texts.collectiveSettings
+            model.sidebarVisible
             model.flags
             model.uiSettings
             model.collSettingsModel
         )
     , Html.map CollSettingsMsg
-        (CollectiveSettings.viewContent model.flags
+        (CollectiveSettings.viewContent texts.collectiveSettings
+            model.flags
             model.uiSettings
             model.collSettingsModel
         )
     ]
 
 
-viewLogin : Model -> List (Html Msg)
-viewLogin model =
+viewLogin : Messages -> Model -> List (Html Msg)
+viewLogin texts model =
     [ Html.map LoginMsg
         (Login.viewSidebar model.sidebarVisible model.flags model.uiSettings model.loginModel)
     , Html.map LoginMsg
-        (Login.viewContent model.flags model.version model.uiSettings model.loginModel)
+        (Login.viewContent texts.login model.flags model.version model.uiSettings model.loginModel)
     ]
 
 
-viewManageData : Model -> List (Html Msg)
-viewManageData model =
+viewManageData : Messages -> Model -> List (Html Msg)
+viewManageData texts model =
     [ Html.map ManageDataMsg
-        (ManageData.viewSidebar model.sidebarVisible model.flags model.uiSettings model.manageDataModel)
+        (ManageData.viewSidebar texts.manageData
+            model.sidebarVisible
+            model.flags
+            model.uiSettings
+            model.manageDataModel
+        )
     , Html.map ManageDataMsg
-        (ManageData.viewContent model.flags model.uiSettings model.manageDataModel)
+        (ManageData.viewContent texts.manageData
+            model.flags
+            model.uiSettings
+            model.manageDataModel
+        )
     ]
 
 
-viewUserSettings : Model -> List (Html Msg)
-viewUserSettings model =
+viewUserSettings : Messages -> Model -> List (Html Msg)
+viewUserSettings texts model =
     [ Html.map UserSettingsMsg
-        (UserSettings.viewSidebar model.sidebarVisible model.flags model.uiSettings model.userSettingsModel)
+        (UserSettings.viewSidebar texts.userSettings
+            model.sidebarVisible
+            model.flags
+            model.uiSettings
+            model.userSettingsModel
+        )
     , Html.map UserSettingsMsg
-        (UserSettings.viewContent model.flags model.uiSettings model.userSettingsModel)
+        (UserSettings.viewContent texts.userSettings
+            model.flags
+            model.uiSettings
+            model.userSettingsModel
+        )
     ]
 
 
-viewQueue : Model -> List (Html Msg)
-viewQueue model =
+viewQueue : Messages -> Model -> List (Html Msg)
+viewQueue texts model =
     [ Html.map QueueMsg
-        (Queue.viewSidebar model.sidebarVisible model.flags model.uiSettings model.queueModel)
+        (Queue.viewSidebar texts.queue
+            model.sidebarVisible
+            model.flags
+            model.uiSettings
+            model.queueModel
+        )
     , Html.map QueueMsg
-        (Queue.viewContent model.flags model.uiSettings model.queueModel)
+        (Queue.viewContent texts.queue model.flags model.uiSettings model.queueModel)
     ]
 
 
-viewRegister : Model -> List (Html Msg)
-viewRegister model =
+viewRegister : Messages -> Model -> List (Html Msg)
+viewRegister texts model =
     [ Html.map RegisterMsg
         (Register.viewSidebar model.sidebarVisible model.flags model.uiSettings model.registerModel)
     , Html.map RegisterMsg
-        (Register.viewContent model.flags model.uiSettings model.registerModel)
+        (Register.viewContent texts.register model.flags model.uiSettings model.registerModel)
     ]
 
 
-viewNewInvite : Model -> List (Html Msg)
-viewNewInvite model =
+viewNewInvite : Messages -> Model -> List (Html Msg)
+viewNewInvite texts model =
     [ Html.map NewInviteMsg
         (NewInvite.viewSidebar model.sidebarVisible model.flags model.uiSettings model.newInviteModel)
     , Html.map NewInviteMsg
-        (NewInvite.viewContent model.flags model.uiSettings model.newInviteModel)
+        (NewInvite.viewContent texts.newInvite model.flags model.uiSettings model.newInviteModel)
     ]
 
 
-viewUpload : Maybe String -> Model -> List (Html Msg)
-viewUpload mid model =
+viewUpload : Messages -> Maybe String -> Model -> List (Html Msg)
+viewUpload texts mid model =
     [ Html.map UploadMsg
         (Upload.viewSidebar
             mid
@@ -434,7 +521,8 @@ viewUpload mid model =
             model.uploadModel
         )
     , Html.map UploadMsg
-        (Upload.viewContent mid
+        (Upload.viewContent texts.upload
+            mid
             model.flags
             model.uiSettings
             model.uploadModel
@@ -442,21 +530,21 @@ viewUpload mid model =
     ]
 
 
-viewItemDetail : String -> Model -> List (Html Msg)
-viewItemDetail id model =
+viewItemDetail : Messages -> String -> Model -> List (Html Msg)
+viewItemDetail texts id model =
     let
         inav =
             Page.Home.Data.itemNav id model.homeModel
     in
     [ Html.map ItemDetailMsg
-        (ItemDetail.viewSidebar
+        (ItemDetail.viewSidebar texts.itemDetail
             model.sidebarVisible
             model.flags
             model.uiSettings
             model.itemDetailModel
         )
     , Html.map ItemDetailMsg
-        (ItemDetail.viewContent
+        (ItemDetail.viewContent texts.itemDetail
             inav
             model.flags
             model.uiSettings

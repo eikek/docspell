@@ -16,6 +16,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Http
+import Messages.Comp.ChangePasswordForm exposing (Texts)
 import Styles as S
 import Util.Http
 
@@ -179,8 +180,8 @@ update flags msg model =
 --- View2
 
 
-view2 : Model -> Html Msg
-view2 model =
+view2 : Texts -> Model -> Html Msg
+view2 texts model =
     let
         currentEmpty =
             model.current == Nothing
@@ -195,11 +196,12 @@ view2 model =
         [ class "flex flex-col space-y-4 relative" ]
         [ div []
             [ label [ class S.inputLabel ]
-                [ text "Current Password"
+                [ text texts.currentPassword
                 , B.inputRequired
                 ]
             , Html.map SetCurrent
                 (Comp.PasswordInput.view2
+                    { placeholder = texts.currentPasswordPlaceholder }
                     model.current
                     currentEmpty
                     model.currentModel
@@ -209,11 +211,12 @@ view2 model =
             [ label
                 [ class S.inputLabel
                 ]
-                [ text "New Password"
+                [ text texts.newPassword
                 , B.inputRequired
                 ]
             , Html.map SetNew1
                 (Comp.PasswordInput.view2
+                    { placeholder = texts.newPasswordPlaceholder }
                     model.newPass1
                     pass1Empty
                     model.pass1Model
@@ -221,11 +224,12 @@ view2 model =
             ]
         , div []
             [ label [ class S.inputLabel ]
-                [ text "New Password (repeat)"
+                [ text texts.repeatPassword
                 , B.inputRequired
                 ]
             , Html.map SetNew2
                 (Comp.PasswordInput.view2
+                    { placeholder = texts.repeatPasswordPlaceholder }
                     model.newPass2
                     pass2Empty
                     model.pass2Model
@@ -263,5 +267,8 @@ view2 model =
                 [ text "Submit"
                 ]
             ]
-        , B.loadingDimmer model.loading
+        , B.loadingDimmer
+            { active = model.loading
+            , label = texts.basics.loading
+            }
         ]

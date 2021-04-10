@@ -1,6 +1,7 @@
 module Comp.FieldListSelect exposing
     ( Model
     , Msg
+    , ViewSettings
     , update
     , view2
     )
@@ -49,17 +50,23 @@ addField selected field =
 --- View2
 
 
-view2 : String -> Model -> Html Msg
-view2 classes selected =
+type alias ViewSettings =
+    { fieldLabel : Field -> String
+    , classes : String
+    }
+
+
+view2 : ViewSettings -> Model -> Html Msg
+view2 cfg selected =
     div
         [ class "flex flex-col space-y-4 md:space-y-2"
-        , class classes
+        , class cfg.classes
         ]
-        (List.map (fieldCheckbox2 selected) Data.Fields.all)
+        (List.map (fieldCheckbox2 cfg selected) Data.Fields.all)
 
 
-fieldCheckbox2 : Model -> Field -> Html Msg
-fieldCheckbox2 selected field =
+fieldCheckbox2 : ViewSettings -> Model -> Field -> Html Msg
+fieldCheckbox2 cfg selected field =
     let
         isChecked =
             List.member field selected
@@ -69,5 +76,5 @@ fieldCheckbox2 selected field =
             { id = "field-toggle-" ++ Data.Fields.toString field
             , value = isChecked
             , tagger = \_ -> Toggle field
-            , label = Data.Fields.label field
+            , label = cfg.fieldLabel field
             }

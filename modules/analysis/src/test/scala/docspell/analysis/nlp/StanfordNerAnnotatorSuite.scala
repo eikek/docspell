@@ -3,12 +3,14 @@ package docspell.analysis.nlp
 import java.nio.file.Paths
 
 import cats.effect.IO
+
 import docspell.analysis.Env
-import munit._
-import docspell.files.TestFiles
 import docspell.common._
 import docspell.common.syntax.FileSyntax._
+import docspell.files.TestFiles
+
 import edu.stanford.nlp.pipeline.StanfordCoreNLP
+import munit._
 
 class StanfordNerAnnotatorSuite extends FunSuite {
   lazy val germanClassifier =

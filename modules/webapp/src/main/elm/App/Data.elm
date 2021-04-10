@@ -2,6 +2,7 @@ module App.Data exposing
     ( Model
     , Msg(..)
     , defaultPage
+    , getUiLanguage
     , init
     )
 
@@ -13,6 +14,7 @@ import Data.Flags exposing (Flags)
 import Data.UiSettings exposing (UiSettings)
 import Data.UiTheme exposing (UiTheme)
 import Http
+import Messages.UiLanguage exposing (UiLanguage)
 import Page exposing (Page(..))
 import Page.CollectiveSettings.Data
 import Page.Home.Data
@@ -48,6 +50,8 @@ type alias Model =
     , uiSettings : UiSettings
     , sidebarVisible : Bool
     , anonymousTheme : UiTheme
+    , anonymousUiLang : UiLanguage
+    , langMenuOpen : Bool
     }
 
 
@@ -97,6 +101,8 @@ init key url flags_ settings =
       , uiSettings = settings
       , sidebarVisible = settings.sideMenuVisible
       , anonymousTheme = Data.UiTheme.Light
+      , anonymousUiLang = Messages.UiLanguage.English
+      , langMenuOpen = False
       }
     , Cmd.batch
         [ Cmd.map UserSettingsMsg uc
@@ -152,8 +158,20 @@ type Msg
     | GetUiSettings UiSettings
     | ToggleSidebar
     | ToggleDarkMode
+    | ToggleLangMenu
+    | SetLanguage UiLanguage
 
 
 defaultPage : Flags -> Page
-defaultPage flags =
+defaultPage _ =
     HomePage
+
+
+getUiLanguage : Model -> UiLanguage
+getUiLanguage model =
+    case model.flags.account of
+        Just _ ->
+            model.uiSettings.uiLang
+
+        Nothing ->
+            model.anonymousUiLang

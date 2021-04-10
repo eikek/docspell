@@ -1,6 +1,7 @@
 module Comp.Basic exposing
     ( editLinkLabel
     , editLinkTableCell
+    , editLinkTableCell2
     , genericButton
     , horizontalDivider
     , inputRequired
@@ -11,12 +12,12 @@ module Comp.Basic exposing
     , secondaryBasicButton
     , secondaryButton
     , stats
-    , tooltipRight
     )
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
+import Messages.Basics
 import Styles as S
 
 
@@ -174,27 +175,32 @@ linkLabel model =
     genericLink model.icon model.label attrs
 
 
-loadingDimmer : Bool -> Html msg
-loadingDimmer active =
+loadingDimmer : { label : String, active : Bool } -> Html msg
+loadingDimmer cfg =
     div
         [ classList
-            [ ( "hidden", not active )
+            [ ( "hidden", not cfg.active )
             ]
         , class S.dimmer
         ]
         [ div [ class "text-gray-200" ]
             [ i [ class "fa fa-circle-notch animate-spin" ] []
             , span [ class "ml-2" ]
-                [ text "Loading…"
+                [ text cfg.label
                 ]
             ]
         ]
 
 
 editLinkLabel : msg -> Html msg
-editLinkLabel click =
+editLinkLabel =
+    editLinkLabel2 Messages.Basics.gb
+
+
+editLinkLabel2 : Messages.Basics.Texts -> msg -> Html msg
+editLinkLabel2 texts click =
     linkLabel
-        { label = "Edit"
+        { label = texts.edit
         , icon = "fa fa-edit"
         , handler = click
         , disabled = False
@@ -204,7 +210,14 @@ editLinkLabel click =
 editLinkTableCell : msg -> Html msg
 editLinkTableCell m =
     td [ class S.editLinkTableCellStyle ]
-        [ editLinkLabel m
+        [ editLinkLabel2 Messages.Basics.gb m
+        ]
+
+
+editLinkTableCell2 : Messages.Basics.Texts -> msg -> Html msg
+editLinkTableCell2 texts m =
+    td [ class S.editLinkTableCellStyle ]
+        [ editLinkLabel2 texts m
         ]
 
 
@@ -262,17 +275,6 @@ inputRequired : Html msg
 inputRequired =
     span [ class "ml-1 text-red-700" ]
         [ text "*"
-        ]
-
-
-tooltipRight : Bool -> String -> Html msg
-tooltipRight show msg =
-    div
-        [ class "absolute bottom-0 right-5 px-2 py-2 rounded-lg z-50 w-40"
-        , class "bg-white border"
-        , class "text-sm font-thin"
-        ]
-        [ text msg
         ]
 
 

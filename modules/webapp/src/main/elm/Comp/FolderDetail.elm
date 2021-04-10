@@ -18,11 +18,13 @@ import Comp.Basic as B
 import Comp.FixedDropdown
 import Comp.MenuBar as MB
 import Comp.YesNoDimmer
+import Data.DropdownStyle as DS
 import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Http
+import Messages.Comp.FolderDetail exposing (Texts)
 import Styles as S
 import Util.Http
 import Util.Maybe
@@ -65,8 +67,7 @@ init users folder =
     , members = folder.members
     , users = users
     , memberDropdown =
-        Comp.FixedDropdown.initMap .name
-            (makeOptions users folder)
+        Comp.FixedDropdown.init (makeOptions users folder)
     , selectedMember = Nothing
     , loading = False
     , deleteDimmer = Comp.YesNoDimmer.emptyModel
@@ -275,13 +276,8 @@ update flags msg model =
 --- View2
 
 
-makeItem : IdName -> Comp.FixedDropdown.Item IdName
-makeItem idn =
-    Comp.FixedDropdown.Item idn idn.name
-
-
-view2 : Flags -> Model -> Html Msg
-view2 flags model =
+view2 : Texts -> Flags -> Model -> Html Msg
+view2 texts flags model =
     let
         isOwner =
             Maybe.map .user flags.account
@@ -290,10 +286,12 @@ view2 flags model =
 
         dimmerSettings : Comp.YesNoDimmer.Settings
         dimmerSettings =
-            Comp.YesNoDimmer.defaultSettings2 "Really delete this folder?"
+            Comp.YesNoDimmer.defaultSettings texts.reallyDeleteThisFolder
+                texts.basics.yes
+                texts.basics.no
     in
     div [ class "flex flex-col md:relative" ]
-        (viewButtons2 model
+        (viewButtons2 texts model
             :: [ Html.map DeleteMsg
                     (Comp.YesNoDimmer.viewN
                         True
@@ -304,26 +302,26 @@ view2 flags model =
                     [ class "py-2 text-lg opacity-75"
                     , classList [ ( "hidden", model.folder.id /= "" ) ]
                     ]
-                    [ text "You are automatically set as owner of this new folder."
+                    [ text texts.autoOwnerInfo
                     ]
                , div
                     [ class "py-2 text-lg opacity-75"
                     , classList [ ( "hidden", model.folder.id == "" ) ]
                     ]
-                    [ text "Modify this folder by changing the name or add/remove members."
+                    [ text texts.modifyInfo
                     ]
                , div
                     [ class S.message
                     , classList [ ( "hidden", model.folder.id == "" || isOwner ) ]
                     ]
-                    [ text "You are not the owner of this folder and therefore are not allowed to edit it."
+                    [ text texts.notOwnerInfo
                     ]
                , div [ class "mb-4 flex flex-col" ]
                     [ label
                         [ class S.inputLabel
                         , for "folder-name"
                         ]
-                        [ text "Name"
+                        [ text texts.basics.name
                         , B.inputRequired
                         ]
                     , div [ class "flex flex-row space-x-2" ]
@@ -345,7 +343,7 @@ view2 flags model =
                             ]
                             [ i [ class "fa fa-save" ] []
                             , span [ class "ml-2 hidden sm:inline" ]
-                                [ text "Save"
+                                [ text texts.basics.submit
                                 ]
                             ]
                         ]
@@ -363,12 +361,19 @@ view2 flags model =
                         |> text
                     ]
                ]
-            ++ viewMembers2 model
+            ++ viewMembers2 texts model
         )
 
 
-viewMembers2 : Model -> List (Html Msg)
-viewMembers2 model =
+viewMembers2 : Texts -> Model -> List (Html Msg)
+viewMembers2 texts model =
+    let
+        folderCfg =
+            { display = .name
+            , icon = \_ -> Nothing
+            , style = DS.mainStyle
+            }
+    in
     if model.folder.id == "" then
         []
 
@@ -377,19 +382,21 @@ viewMembers2 model =
             [ class S.header3
             , class "mt-4"
             ]
-            [ text "Members"
+            [ text texts.members
             ]
         , div [ class "flex flex-col space-y-2" ]
             [ div [ class "flex flex-row space-x-2" ]
                 [ div [ class "flex-grow" ]
                     [ Html.map MemberDropdownMsg
-                        (Comp.FixedDropdown.view2
-                            (Maybe.map makeItem model.selectedMember)
+                        (Comp.FixedDropdown.viewStyled2
+                            folderCfg
+                            False
+                            model.selectedMember
                             model.memberDropdown
                         )
                     ]
                 , a
-                    [ title "Add a new member"
+                    [ title texts.addMember
                     , onClick AddMember
                     , class S.primaryButton
                     , href "#"
@@ -397,7 +404,7 @@ viewMembers2 model =
                     ]
                     [ i [ class "fa fa-plus" ] []
                     , span [ class "ml-2 hidden sm:inline" ]
-                        [ text "Add"
+                        [ text texts.add
                         ]
                     ]
                 ]
@@ -406,19 +413,19 @@ viewMembers2 model =
             [ class "flex flex-col space-y-4 md:space-y-2 mt-2"
             , class "px-2 border-0 border-l dark:border-bluegray-600"
             ]
-            (List.map viewMember2 model.members)
+            (List.map (viewMember2 texts) model.members)
         ]
 
 
-viewMember2 : IdName -> Html Msg
-viewMember2 member =
+viewMember2 : Texts -> IdName -> Html Msg
+viewMember2 texts member =
     div
         [ class "flex flex-row space-x-2 items-center"
         ]
         [ a
             [ class S.deleteLabel
             , href "#"
-            , title "Remove this member"
+            , title texts.removeMember
             , onClick (RemoveMember member)
             ]
             [ i [ class "fa fa-trash " ] []
@@ -429,23 +436,23 @@ viewMember2 member =
         ]
 
 
-viewButtons2 : Model -> Html Msg
-viewButtons2 model =
+viewButtons2 : Texts -> Model -> Html Msg
+viewButtons2 texts model =
     MB.view
         { start =
             [ MB.SecondaryButton
                 { tagger = GoBack
-                , label = "Back"
+                , label = texts.basics.cancel
                 , icon = Just "fa fa-arrow-left"
-                , title = "Back to list"
+                , title = texts.basics.backToList
                 }
             ]
         , end =
             [ MB.CustomButton
                 { tagger = RequestDelete
-                , label = "Delete"
+                , label = texts.basics.delete
                 , icon = Just "fa fa-trash"
-                , title = "Delete this folder"
+                , title = texts.deleteThisFolder
                 , inputClass =
                     [ ( S.deleteButton, True )
                     , ( "hidden", model.folder.id == "" )

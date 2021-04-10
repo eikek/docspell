@@ -6,6 +6,7 @@ import java.nio.file.{Files, Path}
 import cats.data.Kleisli
 import cats.effect.IO
 import fs2.{Pipe, Stream}
+
 import docspell.common.MimeType
 import docspell.convert.ConversionResult.Handler
 import docspell.files.TikaMimetype

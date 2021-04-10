@@ -7,7 +7,6 @@ module Data.UiSettings exposing
     , cardPreviewSize2
     , catColor
     , catColorFg2
-    , catColorString
     , catColorString2
     , defaults
     , fieldHidden
@@ -18,7 +17,6 @@ module Data.UiSettings exposing
     , posToString
     , tagColor
     , tagColorFg2
-    , tagColorString
     , tagColorString2
     , toStoredUiSettings
     )
@@ -32,6 +30,8 @@ import Data.UiTheme exposing (UiTheme)
 import Dict exposing (Dict)
 import Html exposing (Attribute)
 import Html.Attributes as HA
+import Messages
+import Messages.UiLanguage exposing (UiLanguage)
 
 
 {-| Settings for the web ui. All fields should be optional, since it
@@ -63,6 +63,7 @@ type alias StoredUiSettings =
     , uiTheme : Maybe String
     , sideMenuVisible : Bool
     , powerSearchEnabled : Bool
+    , uiLang : Maybe String
     }
 
 
@@ -94,6 +95,7 @@ type alias UiSettings =
     , uiTheme : UiTheme
     , sideMenuVisible : Bool
     , powerSearchEnabled : Bool
+    , uiLang : UiLanguage
     }
 
 
@@ -165,6 +167,7 @@ defaults =
     , uiTheme = Data.UiTheme.Light
     , sideMenuVisible = True
     , powerSearchEnabled = False
+    , uiLang = Messages.UiLanguage.English
     }
 
 
@@ -217,6 +220,9 @@ merge given fallback =
             |> Maybe.withDefault fallback.uiTheme
     , sideMenuVisible = given.sideMenuVisible
     , powerSearchEnabled = given.powerSearchEnabled
+    , uiLang =
+        Maybe.map Messages.fromIso2 given.uiLang
+            |> Maybe.withDefault Messages.UiLanguage.English
     }
 
 
@@ -254,6 +260,7 @@ toStoredUiSettings settings =
     , uiTheme = Just (Data.UiTheme.toString settings.uiTheme)
     , sideMenuVisible = settings.sideMenuVisible
     , powerSearchEnabled = settings.powerSearchEnabled
+    , uiLang = Just <| Messages.toIso2 settings.uiLang
     }
 
 
@@ -267,13 +274,6 @@ tagColor tag settings =
     Maybe.andThen (catColor settings) tag.category
 
 
-catColorString : UiSettings -> String -> String
-catColorString settings name =
-    catColor settings name
-        |> Maybe.map Data.Color.toString
-        |> Maybe.withDefault ""
-
-
 catColorString2 : UiSettings -> String -> String
 catColorString2 settings name =
     catColor settings name
@@ -285,13 +285,6 @@ catColorFg2 : UiSettings -> String -> String
 catColorFg2 settings name =
     catColor settings name
         |> Maybe.map Data.Color.toStringFg2
-        |> Maybe.withDefault ""
-
-
-tagColorString : Tag -> UiSettings -> String
-tagColorString tag settings =
-    tagColor tag settings
-        |> Maybe.map Data.Color.toString
         |> Maybe.withDefault ""
 
 

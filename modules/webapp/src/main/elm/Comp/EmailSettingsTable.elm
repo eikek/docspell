@@ -11,6 +11,7 @@ import Api.Model.EmailSettings exposing (EmailSettings)
 import Comp.Basic as B
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Messages.Comp.EmailSettingsTable exposing (Texts)
 import Styles as S
 
 
@@ -47,15 +48,15 @@ update msg model =
 --- View2
 
 
-view2 : Model -> Html Msg
-view2 model =
+view2 : Texts -> Model -> Html Msg
+view2 texts model =
     table [ class S.tableMain ]
         [ thead []
             [ tr []
                 [ th [ class "" ] []
-                , th [ class "text-left mr-2" ] [ text "Name" ]
-                , th [ class "text-left mr-2" ] [ text "Host/Port" ]
-                , th [ class "text-left mr-2 hidden sm:table-cell" ] [ text "From" ]
+                , th [ class "text-left mr-2" ] [ text texts.basics.name ]
+                , th [ class "text-left mr-2" ] [ text texts.hostPort ]
+                , th [ class "text-left mr-2 hidden sm:table-cell" ] [ text texts.from ]
                 ]
             ]
         , tbody []

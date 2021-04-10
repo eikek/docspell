@@ -2,6 +2,7 @@ module Comp.Dropdown exposing
     ( Model
     , Msg(..)
     , Option
+    , ViewSettings
     , getSelected
     , isDropdownChangeMsg
     , makeModel
@@ -10,15 +11,12 @@ module Comp.Dropdown exposing
     , makeSingleList
     , mkOption
     , notSelected
-    , orgDropdown
+    , orgFormViewSettings
     , setMkOption
     , update
     , view2
     , viewSingle2
     )
-
-{-| This needs to be rewritten from scratch!
--}
 
 import Api.Model.IdName exposing (IdName)
 import Data.DropdownStyle as DS
@@ -31,32 +29,8 @@ import Util.Html exposing (onKeyUp)
 import Util.List
 
 
-orgDropdown : Model IdName
-orgDropdown =
-    makeModel
-        { multiple = False
-        , searchable = \n -> n > 0
-        , makeOption = \e -> { value = e.id, text = e.name, additional = "" }
-        , labelColor = \_ -> \_ -> ""
-        , placeholder = "Choose an organization"
-        }
-
-
-type alias Option =
-    { value : String
-    , text : String
-    , additional : String
-    }
-
-
-mkOption : String -> String -> Option
-mkOption value text =
-    Option value text ""
-
-
 type alias Item a =
     { value : a
-    , option : Option
     , visible : Bool
     , selected : Bool
     , active : Bool
@@ -66,7 +40,6 @@ type alias Item a =
 makeItem : Model a -> a -> Item a
 makeItem model val =
     { value = val
-    , option = model.makeOption val
     , visible = True
     , selected =
         List.any (\i -> i.value == val) model.selected
@@ -78,26 +51,15 @@ type alias Model a =
     { multiple : Bool
     , selected : List (Item a)
     , available : List (Item a)
-    , makeOption : a -> Option
     , menuOpen : Bool
     , filterString : String
-    , labelColor : a -> UiSettings -> String
     , searchable : Int -> Bool
-    , placeholder : String
     }
-
-
-setMkOption : (a -> Option) -> Model a -> Model a
-setMkOption mkopt model =
-    { model | makeOption = mkopt }
 
 
 makeModel :
     { multiple : Bool
     , searchable : Int -> Bool
-    , makeOption : a -> Option
-    , labelColor : a -> UiSettings -> String
-    , placeholder : String
     }
     -> Model a
 makeModel input =
@@ -105,45 +67,28 @@ makeModel input =
     , searchable = input.searchable
     , selected = []
     , available = []
-    , makeOption = input.makeOption
     , menuOpen = False
     , filterString = ""
-    , labelColor = input.labelColor
-    , placeholder = input.placeholder
     }
 
 
-makeSingle :
-    { makeOption : a -> Option
-    , placeholder : String
-    }
-    -> Model a
-makeSingle opts =
+makeSingle : Model a
+makeSingle =
     makeModel
         { multiple = False
         , searchable = \n -> n > 0
-        , makeOption = opts.makeOption
-        , labelColor = \_ -> \_ -> ""
-        , placeholder =
-            if opts.placeholder == "" then
-                "Select…"
-
-            else
-                opts.placeholder
         }
 
 
 makeSingleList :
-    { makeOption : a -> Option
-    , placeholder : String
-    , options : List a
+    { options : List a
     , selected : Maybe a
     }
     -> Model a
 makeSingleList opts =
     let
         m =
-            makeSingle { makeOption = opts.makeOption, placeholder = opts.placeholder }
+            makeSingle
 
         m2 =
             { m | available = List.map (makeItem m) opts.options }
@@ -156,18 +101,11 @@ makeSingleList opts =
     m3
 
 
-makeMultiple :
-    { makeOption : a -> Option
-    , labelColor : a -> UiSettings -> String
-    }
-    -> Model a
-makeMultiple opts =
+makeMultiple : Model a
+makeMultiple =
     makeModel
         { multiple = True
         , searchable = \n -> n > 0
-        , makeOption = opts.makeOption
-        , labelColor = opts.labelColor
-        , placeholder = ""
         }
 
 
@@ -186,9 +124,8 @@ type Msg a
     | SetSelection (List a)
     | ToggleMenu
     | AddItem (Item a)
-    | RemoveItem (Item a)
     | RemoveItem2 (Item a)
-    | Filter String
+    | Filter (a -> String) String
     | ShowMenu Bool
     | KeyPress Int
 
@@ -215,17 +152,17 @@ deselectItem : Model a -> Item a -> Model a
 deselectItem model item =
     let
         value =
-            item.option.value
+            item.value
 
         sel =
             if model.multiple then
-                List.filter (\e -> e.option.value /= value) model.selected
+                List.filter (\e -> e.value /= value) model.selected
 
             else
                 []
 
         show e =
-            if e.option.value == value then
+            if e.value == value then
                 { e | selected = False }
 
             else
@@ -241,7 +178,7 @@ selectItem : Model a -> Item a -> Model a
 selectItem model item =
     let
         value =
-            item.option.value
+            item.value
 
         sel =
             if model.multiple then
@@ -251,7 +188,7 @@ selectItem model item =
                 [ item ]
 
         hide e =
-            if e.option.value == value then
+            if e.value == value then
                 { e | selected = True }
 
             else if model.multiple then
@@ -266,13 +203,13 @@ selectItem model item =
     { model | selected = sel, available = avail }
 
 
-filterOptions : String -> List (Item a) -> List (Item a)
-filterOptions str list =
-    List.map (\e -> { e | visible = Simple.Fuzzy.match str e.option.text, active = False }) list
+filterOptions : String -> (a -> String) -> List (Item a) -> List (Item a)
+filterOptions str mkText list =
+    List.map (\e -> { e | visible = Simple.Fuzzy.match str (mkText e.value), active = False }) list
 
 
-applyFilter : String -> Model a -> Model a
-applyFilter str model =
+applyFilter : String -> (a -> String) -> Model a -> Model a
+applyFilter str mkText model =
     let
         selected =
             if str /= "" && not model.multiple then
@@ -281,7 +218,12 @@ applyFilter str model =
             else
                 model.selected
     in
-    { model | filterString = str, available = filterOptions str model.available, selected = selected }
+    { model | filterString = str, available = filterOptions str mkText model.available, selected = selected }
+
+
+clearFilter : Model a -> Model a
+clearFilter model =
+    { model | filterString = "" }
 
 
 makeNextActive : (Int -> Int) -> Model a -> Model a
@@ -299,7 +241,7 @@ makeNextActive nextEl model =
                 |> Maybe.andThen (Util.List.get opts)
 
         merge item1 item2 =
-            { item2 | active = item1.option.value == item2.option.value }
+            { item2 | active = item1.value == item2.value }
 
         updateModel item =
             { model | available = List.map (merge item) model.available, menuOpen = True }
@@ -325,7 +267,7 @@ selectActive model =
     in
     case current of
         Just item ->
-            selectItem model item |> applyFilter ""
+            selectItem model item |> clearFilter
 
         Nothing ->
             model
@@ -335,9 +277,6 @@ isDropdownChangeMsg : Msg a -> Bool
 isDropdownChangeMsg cm =
     case cm of
         AddItem _ ->
-            True
-
-        RemoveItem _ ->
             True
 
         RemoveItem2 _ ->
@@ -375,34 +314,23 @@ update msg model =
         AddItem e ->
             let
                 m =
-                    selectItem model e |> applyFilter ""
+                    selectItem model e |> clearFilter
             in
             ( { m | menuOpen = False }, Cmd.none )
-
-        RemoveItem e ->
-            let
-                m =
-                    deselectItem model e |> applyFilter ""
-            in
-            ( -- Setting to True, because parent click sets it to False… ugly
-              { m | menuOpen = True }
-            , Cmd.none
-            )
 
         RemoveItem2 e ->
             let
                 m =
-                    deselectItem model e |> applyFilter ""
+                    deselectItem model e |> clearFilter
             in
-            ( -- Hack above only needed with semanticui
-              m
+            ( m
             , Cmd.none
             )
 
-        Filter str ->
+        Filter f str ->
             let
                 m =
-                    applyFilter str model
+                    applyFilter str f model
             in
             ( { m | menuOpen = True }, Cmd.none )
 
@@ -438,7 +366,7 @@ update msg model =
                             [ e ] ->
                                 let
                                     ( m_, c_ ) =
-                                        update (RemoveItem e) model
+                                        update (RemoveItem2 e) model
                                 in
                                 ( { m_ | menuOpen = False }, c_ )
 
@@ -463,32 +391,65 @@ update msg model =
 -- View2
 
 
-view2 : DS.DropdownStyle -> UiSettings -> Model a -> Html (Msg a)
-view2 style settings model =
+type alias Option =
+    { text : String
+    , additional : String
+    }
+
+
+mkOption : String -> Option
+mkOption text =
+    Option text ""
+
+
+type alias ViewSettings a =
+    { makeOption : a -> Option
+    , placeholder : String
+    , labelColor : a -> UiSettings -> String
+    , style : DS.DropdownStyle
+    }
+
+
+orgFormViewSettings : String -> DS.DropdownStyle -> ViewSettings IdName
+orgFormViewSettings placeholder ds =
+    { makeOption = \e -> { text = e.name, additional = "" }
+    , labelColor = \_ -> \_ -> ""
+    , placeholder = placeholder
+    , style = ds
+    }
+
+
+setMkOption : (a -> Option) -> ViewSettings a -> ViewSettings a
+setMkOption mkopt model =
+    { model | makeOption = mkopt }
+
+
+view2 : ViewSettings a -> UiSettings -> Model a -> Html (Msg a)
+view2 cfg settings model =
     if model.multiple then
-        viewMultiple2 style settings model
+        viewMultiple2 cfg settings model
 
     else
-        viewSingle2 style model
+        viewSingle2 cfg model
 
 
-viewSingle2 : DS.DropdownStyle -> Model a -> Html (Msg a)
-viewSingle2 style model =
+viewSingle2 : ViewSettings a -> Model a -> Html (Msg a)
+viewSingle2 cfg model =
     let
         renderItem item =
             a
                 [ href "#"
-                , class style.item
+                , class cfg.style.item
                 , classList
-                    [ ( style.itemActive, item.active )
+                    [ ( cfg.style.itemActive, item.active )
                     , ( "font-semibold", item.selected )
                     ]
                 , onClick (AddItem item)
                 , onKeyUp KeyPress
                 ]
-                [ text item.option.text
+                [ text <| (.value >> cfg.makeOption >> .text) item
                 , span [ class "text-gray-400 float-right" ]
-                    [ text item.option.additional
+                    [ text <| (.value >> cfg.makeOption >> .additional) item
                     ]
                 ]
 
@@ -500,7 +461,7 @@ viewSingle2 style model =
         , onKeyUp KeyPress
         ]
         [ div
-            [ class style.link
+            [ class cfg.style.link
             ]
             [ a
                 [ class "flex-grow"
@@ -514,8 +475,8 @@ viewSingle2 style model =
                 , onClick ToggleMenu
                 , href "#"
                 ]
-                [ Maybe.map (.option >> .text) sel
-                    |> Maybe.withDefault model.placeholder
+                [ Maybe.map (.value >> cfg.makeOption >> .text) sel
+                    |> Maybe.withDefault cfg.placeholder
                     |> text
                 ]
             , a
@@ -532,11 +493,11 @@ viewSingle2 style model =
                 ]
             , input
                 [ type_ "text"
-                , placeholder model.placeholder
-                , onInput Filter
+                , placeholder cfg.placeholder
+                , onInput (Filter (cfg.makeOption >> .text))
                 , value model.filterString
                 , class "inline-block border-0 px-0 w-full py-0 focus:ring-0 "
-                , class style.input
+                , class cfg.style.input
                 , classList [ ( "hidden", not (model.menuOpen && isSearchable model) ) ]
                 ]
                 []
@@ -550,43 +511,43 @@ viewSingle2 style model =
                 ]
             ]
         , div
-            [ class style.menu
+            [ class cfg.style.menu
             , classList [ ( "hidden", not model.menuOpen ) ]
             ]
             (getOptions model |> List.map renderItem)
         ]
 
 
-viewMultiple2 : DS.DropdownStyle -> UiSettings -> Model a -> Html (Msg a)
-viewMultiple2 style settings model =
+viewMultiple2 : ViewSettings a -> UiSettings -> Model a -> Html (Msg a)
+viewMultiple2 cfg settings model =
     let
         renderItem item =
             a
                 [ href "#"
-                , class style.item
+                , class cfg.style.item
                 , classList
-                    [ ( style.itemActive, item.active )
+                    [ ( cfg.style.itemActive, item.active )
                     , ( "font-semibold", item.selected )
                     ]
                 , onClick (AddItem item)
                 , onKeyUp KeyPress
                 ]
-                [ text item.option.text
+                [ text <| (.value >> cfg.makeOption >> .text) item
                 , span [ class "text-gray-400 float-right" ]
-                    [ text item.option.additional
+                    [ text <| (.value >> cfg.makeOption >> .additional) item
                     ]
                 ]
 
         renderSelectMultiple : Item a -> Html (Msg a)
         renderSelectMultiple item =
             a
-                [ class (model.labelColor item.value settings)
+                [ class (cfg.labelColor item.value settings)
                 , class "label font-medium inline-flex relative items-center hover:shadow-md mt-1 mr-1"
-                , onClick (RemoveItem item)
+                , onClick (RemoveItem2 item)
                 , href "#"
                 ]
                 [ span [ class "pl-4" ]
-                    [ text item.option.text
+                    [ text <| (.value >> cfg.makeOption >> .text) item
                     ]
                 , span [ class "opacity-75 absolute left-2 my-auto" ]
                     [ i [ class "fa fa-times" ] []
@@ -598,7 +559,7 @@ viewMultiple2 style settings model =
         , onKeyUp KeyPress
         ]
         [ div
-            [ class style.link
+            [ class cfg.style.link
             , class "flex inline-flex flex-wrap items-center"
             ]
             [ div
@@ -609,10 +570,10 @@ viewMultiple2 style settings model =
             , input
                 [ type_ "text"
                 , placeholder "Search…"
-                , onInput Filter
+                , onInput (Filter (cfg.makeOption >> .text))
                 , value model.filterString
                 , class "inline-flex w-16 border-0 px-0 focus:ring-0 h-6"
-                , class style.input
+                , class cfg.style.input
                 ]
                 []
             , a
@@ -629,7 +590,7 @@ viewMultiple2 style settings model =
                 ]
             ]
         , div
-            [ class style.menu
+            [ class cfg.style.menu
             , classList [ ( "hidden", not model.menuOpen ) ]
             ]
             (getOptions model |> List.map renderItem)

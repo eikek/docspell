@@ -1,12 +1,14 @@
 package docspell.store
 
+import scala.concurrent.ExecutionContext
+
 import cats.effect._
+
 import docspell.common.LenientUri
 import docspell.store.impl.StoreImpl
+
 import doobie._
 import org.h2.jdbcx.JdbcConnectionPool
-
-import scala.concurrent.ExecutionContext
 
 trait StoreFixture {
   def withStore(db: String)(code: Store[IO] => IO[Unit]): Unit = {

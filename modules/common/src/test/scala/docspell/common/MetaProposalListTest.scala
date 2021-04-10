@@ -1,8 +1,10 @@
 package docspell.common
 
-import munit._
 import cats.data.NonEmptyList
+
 import docspell.common.MetaProposal.Candidate
+
+import munit._
 
 class MetaProposalListTest extends FunSuite {
 

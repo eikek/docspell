@@ -23,14 +23,14 @@ type alias Settings msg =
     }
 
 
-defaultSettings : msg -> msg -> String -> Settings msg
-defaultSettings confirm cancel confirmMsg =
+defaultSettings : msg -> msg -> String -> String -> String -> Settings msg
+defaultSettings confirm cancel okLabel cancelLabel confirmMsg =
     { enabled = True
     , extraClass = ""
     , headerIcon = "fa fa-exclamation-circle mr-3"
     , headerClass = "text-2xl font-bold text-center w-full"
-    , confirmText = "Ok"
-    , cancelText = "Cancel"
+    , confirmText = okLabel
+    , cancelText = cancelLabel
     , message = confirmMsg
     , confirm = confirm
     , cancel = cancel

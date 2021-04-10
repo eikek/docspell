@@ -3,7 +3,6 @@ module Data.EquipmentUse exposing
     , all
     , asString
     , fromString
-    , label
     )
 
 import Api.Model.Equipment exposing (Equipment)
@@ -35,16 +34,6 @@ asString pu =
 
         Disabled ->
             "disabled"
-
-
-label : EquipmentUse -> String
-label pu =
-    case pu of
-        Concerning ->
-            "Concerning"
-
-        Disabled ->
-            "Disabled"
 
 
 all : List EquipmentUse

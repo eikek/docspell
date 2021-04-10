@@ -11,14 +11,15 @@ import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
+import Messages.Page.CollectiveSettings exposing (Texts)
 import Page.CollectiveSettings.Data exposing (..)
 import Styles as S
 import Util.Maybe
 import Util.Size
 
 
-viewSidebar : Bool -> Flags -> UiSettings -> Model -> Html Msg
-viewSidebar visible _ _ model =
+viewSidebar : Texts -> Bool -> Flags -> UiSettings -> Model -> Html Msg
+viewSidebar texts visible _ _ model =
     div
         [ id "sidebar"
         , class S.sidebar
@@ -27,7 +28,7 @@ viewSidebar visible _ _ model =
         ]
         [ div [ class "" ]
             [ h1 [ class S.header1 ]
-                [ text "Collective Settings"
+                [ text texts.collectiveSettings
                 ]
             ]
         , div [ class "flex flex-col my-2" ]
@@ -40,7 +41,7 @@ viewSidebar visible _ _ model =
                 [ i [ class "fa fa-chart-bar" ] []
                 , span
                     [ class "ml-3" ]
-                    [ text "Insights" ]
+                    [ text texts.insights ]
                 ]
             , a
                 [ href "#"
@@ -51,7 +52,7 @@ viewSidebar visible _ _ model =
                 [ Icons.sourceIcon2 ""
                 , span
                     [ class "ml-3" ]
-                    [ text "Sources" ]
+                    [ text texts.sources ]
                 ]
             , a
                 [ href "#"
@@ -62,7 +63,7 @@ viewSidebar visible _ _ model =
                 [ i [ class "fa fa-cog" ] []
                 , span
                     [ class "ml-3" ]
-                    [ text "Settings" ]
+                    [ text texts.settings ]
                 ]
             , a
                 [ href "#"
@@ -73,30 +74,30 @@ viewSidebar visible _ _ model =
                 [ i [ class "fa fa-user" ] []
                 , span
                     [ class "ml-3" ]
-                    [ text "Users" ]
+                    [ text texts.users ]
                 ]
             ]
         ]
 
 
-viewContent : Flags -> UiSettings -> Model -> Html Msg
-viewContent flags settings model =
+viewContent : Texts -> Flags -> UiSettings -> Model -> Html Msg
+viewContent texts flags settings model =
     div
         [ id "content"
         , class S.content
         ]
         (case model.currentTab of
             Just UserTab ->
-                viewUsers settings model
+                viewUsers texts settings model
 
             Just SettingsTab ->
-                viewSettings flags settings model
+                viewSettings texts flags settings model
 
             Just InsightsTab ->
-                viewInsights flags model
+                viewInsights texts flags model
 
             Just SourceTab ->
-                viewSources flags settings model
+                viewSources texts flags settings model
 
             Nothing ->
                 []
@@ -116,8 +117,8 @@ menuEntryActive model tab =
         class ""
 
 
-viewInsights : Flags -> Model -> List (Html Msg)
-viewInsights flags model =
+viewInsights : Texts -> Flags -> Model -> List (Html Msg)
+viewInsights texts flags model =
     let
         ( coll, user ) =
             Maybe.map (\a -> ( a.collective, a.user )) flags.account
@@ -126,7 +127,7 @@ viewInsights flags model =
     [ h1 [ class S.header1 ]
         [ i [ class "fa fa-chart-bar font-thin" ] []
         , span [ class "ml-2" ]
-            [ text "Insights"
+            [ text texts.insights
             ]
         ]
     , div [ class "mb-4" ]
@@ -136,7 +137,7 @@ viewInsights flags model =
         [ div [ class "flex flex-row space-x-6" ]
             [ div
                 [ class ""
-                , title "Collective"
+                , title texts.collective
                 ]
                 [ i [ class "fa fa-users" ] []
                 , span [ class "ml-2" ]
@@ -145,7 +146,7 @@ viewInsights flags model =
                 ]
             , div
                 [ class ""
-                , title "User"
+                , title texts.user
                 ]
                 [ i [ class "fa fa-user font-thin" ] []
                 , span [ class "ml-2" ]
@@ -161,26 +162,26 @@ viewInsights flags model =
             [ text "Items"
             ]
         , div [ class "flex px-4 flex-wrap" ]
-            [ stats (String.fromInt (model.insights.incomingCount + model.insights.outgoingCount)) "Items"
-            , stats (String.fromInt model.insights.incomingCount) "Incoming"
-            , stats (String.fromInt model.insights.outgoingCount) "Outgoing"
+            [ stats (String.fromInt (model.insights.incomingCount + model.insights.outgoingCount)) texts.basics.items
+            , stats (String.fromInt model.insights.incomingCount) texts.basics.incoming
+            , stats (String.fromInt model.insights.outgoingCount) texts.basics.outgoing
             ]
         ]
     , div
         [ class "py-2"
         ]
         [ h4 [ class S.header3 ]
-            [ text "Size"
+            [ text texts.size
             ]
         , div [ class "flex px-4 flex-wrap" ]
-            [ stats (toFloat model.insights.itemSize |> Util.Size.bytesReadable Util.Size.B) "Size"
+            [ stats (toFloat model.insights.itemSize |> Util.Size.bytesReadable Util.Size.B) texts.size
             ]
         ]
     , div
         [ class "py-2"
         ]
         [ h4 [ class S.header3 ]
-            [ text "Tags"
+            [ text texts.basics.tags
             ]
         , div [ class "flex px-4 flex-wrap" ]
             (List.map makeTagStats
@@ -207,54 +208,66 @@ makeTagStats nc =
     stats (String.fromInt nc.count) nc.tag.name
 
 
-viewSources : Flags -> UiSettings -> Model -> List (Html Msg)
-viewSources flags settings model =
+viewSources : Texts -> Flags -> UiSettings -> Model -> List (Html Msg)
+viewSources texts flags settings model =
     [ h1
         [ class S.header1
         , class "inline-flex items-center"
         ]
         [ Icons.sourceIcon2 ""
         , div [ class "ml-3" ]
-            [ text "Sources"
+            [ text texts.sources
             ]
         ]
-    , Html.map SourceMsg (Comp.SourceManage.view2 flags settings model.sourceModel)
+    , Html.map SourceMsg (Comp.SourceManage.view2 texts.sourceManage flags settings model.sourceModel)
     ]
 
 
-viewUsers : UiSettings -> Model -> List (Html Msg)
-viewUsers settings model =
+viewUsers : Texts -> UiSettings -> Model -> List (Html Msg)
+viewUsers texts settings model =
     [ h1
         [ class S.header1
         , class "inline-flex items-center"
         ]
         [ i [ class "fa fa-user" ] []
         , div [ class "ml-3" ]
-            [ text "Users"
+            [ text texts.users
             ]
         ]
-    , Html.map UserMsg (Comp.UserManage.view2 settings model.userModel)
+    , Html.map UserMsg (Comp.UserManage.view2 texts.userManage settings model.userModel)
     ]
 
 
-viewSettings : Flags -> UiSettings -> Model -> List (Html Msg)
-viewSettings flags settings model =
+viewSettings : Texts -> Flags -> UiSettings -> Model -> List (Html Msg)
+viewSettings texts flags settings model =
     [ h2
         [ class S.header1
         , class "inline-flex items-center"
         ]
         [ i [ class "fa fa-cog" ] []
         , span [ class "ml-3" ]
-            [ text "Collective Settings"
+            [ text texts.collectiveSettings
             ]
         ]
     , Html.map SettingsFormMsg
-        (Comp.CollectiveSettingsForm.view2 flags settings model.settingsModel)
+        (Comp.CollectiveSettingsForm.view2
+            flags
+            texts.collectiveSettingsForm
+            settings
+            model.settingsModel
+        )
     , div
         [ classList
             [ ( "hidden", Util.Maybe.isEmpty model.submitResult )
-            , ( S.successMessage, Maybe.map .success model.submitResult |> Maybe.withDefault False )
-            , ( S.errorMessage, Maybe.map .success model.submitResult |> Maybe.map not |> Maybe.withDefault False )
+            , ( S.successMessage
+              , Maybe.map .success model.submitResult
+                    |> Maybe.withDefault False
+              )
+            , ( S.errorMessage
+              , Maybe.map .success model.submitResult
+                    |> Maybe.map not
+                    |> Maybe.withDefault False
+              )
             ]
         , class "mt-2"
         ]

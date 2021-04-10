@@ -3,8 +3,6 @@ module Page.Home.Update exposing (update)
 import Api
 import Api.Model.ItemLightList exposing (ItemLightList)
 import Browser.Navigation as Nav
-import Comp.ConfirmModal
-import Comp.FixedDropdown
 import Comp.ItemCardList
 import Comp.ItemDetail.FormChange exposing (FormChange(..))
 import Comp.ItemDetail.MultiEditMenu exposing (SaveNameState(..))
@@ -27,7 +25,6 @@ import Throttle
 import Time
 import Util.Html exposing (KeyCode(..))
 import Util.ItemDragDrop as DD
-import Util.Maybe
 import Util.Update
 
 
@@ -277,38 +274,6 @@ update mId key flags settings msg model =
                 ContentOnlySearch ->
                     update mId key flags settings (SearchMenuMsg Comp.SearchMenu.SetNamesSearch) model
 
-        SearchTypeMsg lm ->
-            let
-                ( sm, mv ) =
-                    Comp.FixedDropdown.update lm model.searchTypeDropdown
-
-                mvChange =
-                    Util.Maybe.filter (\a -> a /= model.searchTypeDropdownValue) mv
-
-                m0 =
-                    { model
-                        | searchTypeDropdown = sm
-                        , searchTypeDropdownValue = Maybe.withDefault model.searchTypeDropdownValue mv
-                    }
-
-                next =
-                    case mvChange of
-                        Just BasicSearch ->
-                            Just Comp.SearchMenu.SetNamesSearch
-
-                        Just ContentOnlySearch ->
-                            Just Comp.SearchMenu.SetFulltextSearch
-
-                        _ ->
-                            Nothing
-            in
-            case next of
-                Just lm_ ->
-                    update mId key flags settings (SearchMenuMsg lm_) m0
-
-                Nothing ->
-                    withSub ( m0, Cmd.none )
-
         KeyUpSearchbarMsg (Just Enter) ->
             update mId key flags settings (DoSearch model.searchTypeDropdownValue) model
 
@@ -410,19 +375,13 @@ update mId key flags settings msg model =
 
                     else
                         let
-                            lmsg =
-                                Comp.ConfirmModal.defaultSettings
-                                    ReprocessSelectedConfirmed
-                                    CloseConfirmModal
-                                    "Really reprocess all selected items? Metadata of unconfirmed items may change."
-
                             model_ =
                                 { model
                                     | viewMode =
                                         SelectView
                                             { svm
                                                 | action = ReprocessSelected
-                                                , confirmModal = Just lmsg
+                                                , confirmModal = Just ConfirmReprocessItems
                                             }
                                 }
                         in
@@ -478,19 +437,13 @@ update mId key flags settings msg model =
 
                     else
                         let
-                            lmsg =
-                                Comp.ConfirmModal.defaultSettings
-                                    DeleteSelectedConfirmed
-                                    CloseConfirmModal
-                                    "Really delete all selected items?"
-
                             model_ =
                                 { model
                                     | viewMode =
                                         SelectView
                                             { svm
                                                 | action = DeleteSelected
-                                                , confirmModal = Just lmsg
+                                                , confirmModal = Just ConfirmDelete
                                             }
                                 }
                         in

@@ -9,13 +9,14 @@ import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
+import Messages.Page.HomeSideMenu exposing (Texts)
 import Page.Home.Data exposing (..)
 import Set
 import Styles as S
 
 
-view : Flags -> UiSettings -> Model -> Html Msg
-view flags settings model =
+view : Texts -> Flags -> UiSettings -> Model -> Html Msg
+view texts flags settings model =
     div
         [ class "flex flex-col"
         ]
@@ -25,7 +26,7 @@ view flags settings model =
                     { tagger = ToggleSelectView
                     , label = ""
                     , icon = Just "fa fa-tasks"
-                    , title = "Edit Mode"
+                    , title = texts.editMode
                     , inputClass =
                         [ ( S.secondaryBasicButton, True )
                         , ( "bg-gray-200 dark:bg-bluegray-600", selectActive model )
@@ -35,7 +36,7 @@ view flags settings model =
                     { tagger = ResetSearch
                     , label = ""
                     , icon = Just "fa fa-sync"
-                    , title = "Reset search form"
+                    , title = texts.resetSearchForm
                     , inputClass = [ ( S.secondaryBasicButton, True ) ]
                     }
                 ]
@@ -47,19 +48,19 @@ view flags settings model =
                 SelectView svm ->
                     case svm.action of
                         EditSelected ->
-                            viewEditMenu svm settings
+                            viewEditMenu texts flags svm settings
 
                         _ ->
-                            viewSearch flags settings model
+                            viewSearch texts flags settings model
 
                 _ ->
-                    viewSearch flags settings model
+                    viewSearch texts flags settings model
             )
         ]
 
 
-viewSearch : Flags -> UiSettings -> Model -> List (Html Msg)
-viewSearch flags settings model =
+viewSearch : Texts -> Flags -> UiSettings -> Model -> List (Html Msg)
+viewSearch texts flags settings model =
     [ MB.viewSide
         { start =
             [ MB.CustomElement <|
@@ -75,7 +76,8 @@ viewSearch flags settings model =
         , rootClasses = "my-1 text-xs hidden sm:flex"
         }
     , Html.map SearchMenuMsg
-        (Comp.SearchMenu.viewDrop2 model.dragDropData
+        (Comp.SearchMenu.viewDrop2 texts.searchMenu
+            model.dragDropData
             flags
             settings
             model.searchMenuModel
@@ -83,8 +85,8 @@ viewSearch flags settings model =
     ]
 
 
-viewEditMenu : SelectViewModel -> UiSettings -> List (Html Msg)
-viewEditMenu svm settings =
+viewEditMenu : Texts -> Flags -> SelectViewModel -> UiSettings -> List (Html Msg)
+viewEditMenu texts flags svm settings =
     let
         cfg_ =
             Comp.ItemDetail.MultiEditMenu.defaultViewConfig
@@ -104,17 +106,17 @@ viewEditMenu svm settings =
     [ div [ class S.header2 ]
         [ i [ class "fa fa-edit" ] []
         , span [ class "ml-2" ]
-            [ text "Multi-Edit"
+            [ text texts.multiEditHeader
             ]
         ]
     , div [ class S.infoMessage ]
-        [ text "Note that a change here immediatly affects all selected items on the right!"
+        [ text texts.multiEditInfo
         ]
     , MB.viewSide
         { start =
             [ MB.CustomElement <|
                 B.secondaryButton
-                    { label = "Close"
+                    { label = texts.close
                     , disabled = False
                     , icon = "fa fa-times"
                     , handler = onClick ToggleSelectView
@@ -127,5 +129,11 @@ viewEditMenu svm settings =
         , rootClasses = "mt-2 text-sm"
         }
     , Html.map EditMenuMsg
-        (Comp.ItemDetail.MultiEditMenu.view2 cfg settings svm.editModel)
+        (Comp.ItemDetail.MultiEditMenu.view2
+            texts.multiEdit
+            flags
+            cfg
+            settings
+            svm.editModel
+        )
     ]

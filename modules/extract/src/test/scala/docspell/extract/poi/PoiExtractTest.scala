@@ -1,8 +1,10 @@
 package docspell.extract.poi
 
 import cats.effect._
+
 import docspell.common.MimeTypeHint
 import docspell.files.{ExampleFiles, TestFiles}
+
 import munit._
 
 class PoiExtractTest extends FunSuite {

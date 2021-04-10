@@ -11,6 +11,7 @@ import Api.Model.ScanMailboxSettings exposing (ScanMailboxSettings)
 import Comp.Basic as B
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Messages.Comp.ScanMailboxTable exposing (Texts)
 import Styles as S
 import Util.Html
 
@@ -44,8 +45,8 @@ update msg model =
 --- View2
 
 
-view2 : Model -> List ScanMailboxSettings -> Html Msg
-view2 _ items =
+view2 : Texts -> Model -> List ScanMailboxSettings -> Html Msg
+view2 texts _ items =
     div []
         [ table [ class S.tableMain ]
             [ thead []
@@ -54,11 +55,11 @@ view2 _ items =
                     , th [ class "" ]
                         [ i [ class "fa fa-check" ] []
                         ]
-                    , th [ class "text-left" ] [ text "Summary" ]
+                    , th [ class "text-left" ] [ text texts.summary ]
                     , th [ class "text-left mr-2" ] [ text "Schedule" ]
-                    , th [ class "text-left mr-2 hidden md:table-cell" ] [ text "Connection" ]
-                    , th [ class "text-left mr-2 hidden md:table-cell" ] [ text "Folders" ]
-                    , th [ class "text-left mr-2 hidden lg:table-cell" ] [ text "Received Since" ]
+                    , th [ class "text-left mr-2 hidden md:table-cell" ] [ text texts.connection ]
+                    , th [ class "text-left mr-2 hidden md:table-cell" ] [ text texts.folders ]
+                    , th [ class "text-left mr-2 hidden lg:table-cell" ] [ text texts.receivedSince ]
                     ]
                 ]
             , tbody []

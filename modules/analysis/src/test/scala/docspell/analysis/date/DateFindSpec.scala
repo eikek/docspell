@@ -1,9 +1,11 @@
 package docspell.analysis.date
 
-import docspell.files.TestFiles
-import munit._
-import docspell.common._
 import java.time._
+
+import docspell.common._
+import docspell.files.TestFiles
+
+import munit._
 
 class DateFindSpec extends FunSuite {
 

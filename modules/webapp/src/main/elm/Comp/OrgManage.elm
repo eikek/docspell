@@ -21,6 +21,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onSubmit)
 import Http
+import Messages.Comp.OrgManage exposing (Texts)
 import Styles as S
 import Util.Http
 import Util.Maybe
@@ -205,50 +206,55 @@ update flags msg model =
 --- View2
 
 
-view2 : UiSettings -> Model -> Html Msg
-view2 settings model =
+view2 : Texts -> UiSettings -> Model -> Html Msg
+view2 texts settings model =
     if model.viewMode == Table then
-        viewTable2 model
+        viewTable2 texts model
 
     else
-        viewForm2 settings model
+        viewForm2 texts settings model
 
 
-viewTable2 : Model -> Html Msg
-viewTable2 model =
+viewTable2 : Texts -> Model -> Html Msg
+viewTable2 texts model =
     div [ class "flex flex-col relative" ]
         [ MB.view
             { start =
                 [ MB.TextInput
                     { tagger = SetQuery
                     , value = model.query
-                    , placeholder = "Search…"
+                    , placeholder = texts.basics.searchPlaceholder
                     , icon = Just "fa fa-search"
                     }
                 ]
             , end =
                 [ MB.PrimaryButton
                     { tagger = InitNewOrg
-                    , title = "Create a new organization"
+                    , title = texts.createNewOrganization
                     , icon = Just "fa fa-plus"
-                    , label = "New Organization"
+                    , label = texts.newOrganization
                     }
                 ]
             , rootClasses = "mb-4"
             }
-        , Html.map TableMsg (Comp.OrgTable.view2 model.tableModel)
-        , B.loadingDimmer model.loading
+        , Html.map TableMsg (Comp.OrgTable.view2 texts.orgTable model.tableModel)
+        , B.loadingDimmer
+            { active = model.loading
+            , label = texts.basics.loading
+            }
         ]
 
 
-viewForm2 : UiSettings -> Model -> Html Msg
-viewForm2 settings model =
+viewForm2 : Texts -> UiSettings -> Model -> Html Msg
+viewForm2 texts settings model =
     let
         newOrg =
             model.formModel.org.id == ""
 
         dimmerSettings2 =
-            Comp.YesNoDimmer.defaultSettings2 "Really delete this organization?"
+            Comp.YesNoDimmer.defaultSettings texts.reallyDeleteOrg
+                texts.basics.yes
+                texts.basics.no
     in
     Html.form
         [ class "md:relative flex flex-col"
@@ -262,14 +268,14 @@ viewForm2 settings model =
             )
         , if newOrg then
             h3 [ class S.header2 ]
-                [ text "Create new organization"
+                [ text texts.createNewOrganization
                 ]
 
           else
             h3 [ class S.header2 ]
                 [ text model.formModel.org.name
                 , div [ class "opacity-50 text-sm" ]
-                    [ text "Id: "
+                    [ text (texts.basics.id ++ ": ")
                     , text model.formModel.org.id
                     ]
                 ]
@@ -277,24 +283,24 @@ viewForm2 settings model =
             { start =
                 [ MB.PrimaryButton
                     { tagger = Submit
-                    , title = "Submit this form"
+                    , title = texts.basics.submitThisForm
                     , icon = Just "fa fa-save"
-                    , label = "Submit"
+                    , label = texts.basics.submit
                     }
                 , MB.SecondaryButton
                     { tagger = SetViewMode Table
-                    , title = "Back to list"
+                    , title = texts.basics.backToList
                     , icon = Just "fa fa-arrow-left"
-                    , label = "Cancel"
+                    , label = texts.basics.cancel
                     }
                 ]
             , end =
                 if not newOrg then
                     [ MB.DeleteButton
                         { tagger = RequestDelete
-                        , title = "Delete this organization"
+                        , title = texts.deleteThisOrg
                         , icon = Just "fa fa-trash"
-                        , label = "Delete"
+                        , label = texts.basics.delete
                         }
                     ]
 
@@ -311,6 +317,15 @@ viewForm2 settings model =
             ]
             [ Maybe.withDefault "" model.formError |> text
             ]
-        , Html.map FormMsg (Comp.OrgForm.view2 False settings model.formModel)
-        , B.loadingDimmer model.loading
+        , Html.map FormMsg
+            (Comp.OrgForm.view2
+                texts.orgForm
+                False
+                settings
+                model.formModel
+            )
+        , B.loadingDimmer
+            { active = model.loading
+            , label = texts.basics.loading
+            }
         ]

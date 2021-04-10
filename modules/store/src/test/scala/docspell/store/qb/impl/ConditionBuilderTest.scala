@@ -1,9 +1,10 @@
 package docspell.store.qb.impl
 
-import munit._
-import docspell.store.qb._
 import docspell.store.qb.DSL._
+import docspell.store.qb._
 import docspell.store.qb.model.{CourseRecord, PersonRecord}
+
+import munit._
 
 class ConditionBuilderTest extends FunSuite {
 

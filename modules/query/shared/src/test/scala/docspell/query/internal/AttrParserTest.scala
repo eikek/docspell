@@ -2,6 +2,7 @@ package docspell.query.internal
 
 import docspell.query.ItemQuery.Attr
 import docspell.query.internal.AttrParser
+
 import munit._
 
 class AttrParserTest extends FunSuite {

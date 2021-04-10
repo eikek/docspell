@@ -13,12 +13,14 @@ import Comp.AddressForm
 import Comp.Basic as B
 import Comp.ContactField
 import Comp.FixedDropdown
+import Data.DropdownStyle as DS
 import Data.Flags exposing (Flags)
 import Data.OrgUse exposing (OrgUse)
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)
+import Messages.Comp.OrgForm exposing (Texts)
 import Styles as S
 import Util.Maybe
 
@@ -45,9 +47,7 @@ emptyModel =
     , shortName = Nothing
     , use = Data.OrgUse.Correspondent
     , useModel =
-        Comp.FixedDropdown.initMap
-            Data.OrgUse.label
-            Data.OrgUse.all
+        Comp.FixedDropdown.init Data.OrgUse.all
     }
 
 
@@ -147,14 +147,20 @@ update flags msg model =
 --- View2
 
 
-makeUseItem : Model -> Maybe (Comp.FixedDropdown.Item OrgUse)
-makeUseItem model =
-    Just <|
-        Comp.FixedDropdown.Item model.use (Data.OrgUse.label model.use)
+view2 : Texts -> Bool -> UiSettings -> Model -> Html Msg
+view2 texts mobile settings model =
+    let
+        orgUseCfg =
+            { display = texts.orgUseLabel
+            , icon = \_ -> Nothing
+            , style = DS.mainStyle
+            }
 
-
-view2 : Bool -> UiSettings -> Model -> Html Msg
-view2 mobile settings model =
+        contactTypeCfg =
+            { mobile = mobile
+            , contactTypeLabel = texts.contactTypeLabel
+            }
+    in
     div [ class "flex flex-col" ]
         [ div
             [ class "mb-4" ]
@@ -162,13 +168,13 @@ view2 mobile settings model =
                 [ for "orgname"
                 , class S.inputLabel
                 ]
-                [ text "Name"
+                [ text texts.basics.name
                 , B.inputRequired
                 ]
             , input
                 [ type_ "text"
                 , onInput SetName
-                , placeholder "Name"
+                , placeholder texts.basics.name
                 , value model.name
                 , name "orgname"
                 , class S.textInput
@@ -184,12 +190,12 @@ view2 mobile settings model =
                 [ for "org-short-name"
                 , class S.inputLabel
                 ]
-                [ text "Short Name"
+                [ text texts.shortName
                 ]
             , input
                 [ type_ "text"
                 , onInput SetShortName
-                , placeholder "Abbreviation"
+                , placeholder texts.shortName
                 , Maybe.withDefault "" model.shortName
                     |> value
                 , name "org-short-name"
@@ -201,35 +207,40 @@ view2 mobile settings model =
             [ label
                 [ class S.inputLabel
                 ]
-                [ text "Use" ]
+                [ text texts.use
+                ]
             , Html.map UseDropdownMsg
-                (Comp.FixedDropdown.view2 (makeUseItem model) model.useModel)
+                (Comp.FixedDropdown.viewStyled2 orgUseCfg
+                    False
+                    (Just model.use)
+                    model.useModel
+                )
             , span [ class "opacity-50 text-sm" ]
                 [ case model.use of
                     Data.OrgUse.Correspondent ->
-                        text "Use as correspondent"
+                        text texts.useAsCorrespondent
 
                     Data.OrgUse.Disabled ->
-                        text "Do not use for suggestions."
+                        text texts.dontUseForSuggestions
                 ]
             ]
         , div [ class "mb-4" ]
             [ h3 [ class S.header3 ]
-                [ text "Address"
+                [ text texts.address
                 ]
             , Html.map AddressMsg
-                (Comp.AddressForm.view2 settings model.addressModel)
+                (Comp.AddressForm.view2 texts.addressForm settings model.addressModel)
             ]
         , div [ class "mb-4" ]
             [ h3 [ class S.header3 ]
-                [ text "Contacts"
+                [ text texts.contacts
                 ]
             , Html.map ContactMsg
-                (Comp.ContactField.view2 mobile settings model.contactModel)
+                (Comp.ContactField.view2 contactTypeCfg settings model.contactModel)
             ]
         , div [ class "mb-4" ]
             [ h3 [ class S.header3 ]
-                [ text "Notes"
+                [ text texts.notes
                 ]
             , div [ class "" ]
                 [ textarea

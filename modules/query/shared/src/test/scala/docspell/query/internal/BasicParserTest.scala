@@ -1,8 +1,10 @@
 package docspell.query.internal
 
-import munit._
 import cats.data.{NonEmptyList => Nel}
+
 import docspell.query.internal.BasicParser
+
+import munit._
 
 class BasicParserTest extends FunSuite {
   test("single string values") {

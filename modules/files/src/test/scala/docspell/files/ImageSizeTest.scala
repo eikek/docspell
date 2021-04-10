@@ -1,11 +1,12 @@
 package docspell.files
 
-import cats.implicits._
-import cats.effect.{Blocker, IO}
-import munit._
-
 import scala.concurrent.ExecutionContext
 import scala.util.Using
+
+import cats.effect.{Blocker, IO}
+import cats.implicits._
+
+import munit._
 
 class ImageSizeTest extends FunSuite {
   val blocker     = Blocker.liftExecutionContext(ExecutionContext.global)

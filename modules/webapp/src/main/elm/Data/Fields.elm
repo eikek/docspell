@@ -3,7 +3,6 @@ module Data.Fields exposing
     , all
     , fromList
     , fromString
-    , label
     , sort
     , toString
     )
@@ -128,46 +127,6 @@ toString field =
 
         SourceName ->
             "sourcename"
-
-
-label : Field -> String
-label field =
-    case field of
-        Tag ->
-            "Tag"
-
-        Folder ->
-            "Folder"
-
-        CorrOrg ->
-            "Correspondent Organization"
-
-        CorrPerson ->
-            "Correspondent Person"
-
-        ConcPerson ->
-            "Concerning Person"
-
-        ConcEquip ->
-            "Concerned Equipment"
-
-        Date ->
-            "Date"
-
-        DueDate ->
-            "Due Date"
-
-        Direction ->
-            "Direction"
-
-        PreviewImage ->
-            "Preview Image"
-
-        CustomFields ->
-            "Custom Fields"
-
-        SourceName ->
-            "Item Source"
 
 
 fromList : List String -> List Field

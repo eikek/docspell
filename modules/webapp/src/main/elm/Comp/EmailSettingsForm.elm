@@ -21,6 +21,7 @@ import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)
+import Messages.Comp.EmailSettingsForm exposing (Texts)
 import Styles as S
 import Util.Maybe
 
@@ -46,7 +47,7 @@ emptyModel =
     { settings = Api.Model.EmailSettings.empty
     , name = ""
     , host = ""
-    , portField = Comp.IntField.init (Just 0) Nothing True "SMTP Port"
+    , portField = Comp.IntField.init (Just 0) Nothing True
     , portNum = Nothing
     , user = Nothing
     , passField = Comp.PasswordInput.init
@@ -55,14 +56,7 @@ emptyModel =
     , replyTo = Nothing
     , sslType =
         Comp.Dropdown.makeSingleList
-            { makeOption =
-                \s ->
-                    { value = Data.SSLType.toString s
-                    , text = Data.SSLType.label s
-                    , additional = ""
-                    }
-            , placeholder = ""
-            , options = Data.SSLType.all
+            { options = Data.SSLType.all
             , selected = Just Data.SSLType.None
             }
     , ignoreCertificates = False
@@ -74,7 +68,7 @@ init ems =
     { settings = ems
     , name = ems.name
     , host = ems.smtpHost
-    , portField = Comp.IntField.init (Just 0) Nothing True "SMTP Port"
+    , portField = Comp.IntField.init (Just 0) Nothing True
     , portNum = ems.smtpPort
     , user = ems.smtpUser
     , passField = Comp.PasswordInput.init
@@ -83,14 +77,7 @@ init ems =
     , replyTo = ems.replyTo
     , sslType =
         Comp.Dropdown.makeSingleList
-            { makeOption =
-                \s ->
-                    { value = Data.SSLType.toString s
-                    , text = Data.SSLType.label s
-                    , additional = ""
-                    }
-            , placeholder = ""
-            , options = Data.SSLType.all
+            { options = Data.SSLType.all
             , selected =
                 Data.SSLType.fromString ems.sslType
                     |> Maybe.withDefault Data.SSLType.None
@@ -184,21 +171,33 @@ update msg model =
 --- View2
 
 
-view2 : UiSettings -> Model -> Html Msg
-view2 settings model =
+view2 : Texts -> UiSettings -> Model -> Html Msg
+view2 texts settings model =
+    let
+        sslCfg =
+            { makeOption =
+                \s ->
+                    { text = texts.sslTypeLabel s
+                    , additional = ""
+                    }
+            , placeholder = ""
+            , labelColor = \_ -> \_ -> ""
+            , style = DS.mainStyle
+            }
+    in
     div [ class "grid grid-cols-4 gap-y-4 gap-x-2" ]
         [ div [ class "col-span-4" ]
             [ label
                 [ class S.inputLabel
                 ]
-                [ text "Name"
+                [ text texts.basics.name
                 , B.inputRequired
                 ]
             , input
                 [ type_ "text"
                 , value model.name
                 , onInput SetName
-                , placeholder "Connection name, e.g. 'gmail.com'"
+                , placeholder texts.connectionPlaceholder
                 , class S.textInput
                 , classList [ ( S.inputErrorBorder, model.name == "" ) ]
                 ]
@@ -207,17 +206,17 @@ view2 settings model =
                 [ class S.message
                 , class "mt-2"
                 ]
-                [ text "The connection name must not contain whitespace or special characters."
+                [ text texts.connectionNameInfo
                 ]
             ]
         , div [ class "col-span-3" ]
             [ label [ class S.inputLabel ]
-                [ text "SMTP Host"
+                [ text texts.smtpHost
                 , B.inputRequired
                 ]
             , input
                 [ type_ "text"
-                , placeholder "SMTP host name, e.g. 'mail.gmail.com'"
+                , placeholder texts.smtpHostPlaceholder
                 , value model.host
                 , onInput SetHost
                 , class S.textInput
@@ -226,20 +225,23 @@ view2 settings model =
                 []
             ]
         , Html.map PortMsg
-            (Comp.IntField.viewWithInfo2 ""
-                model.portNum
-                ""
+            (Comp.IntField.view
+                { label = texts.smtpPort
+                , info = ""
+                , number = model.portNum
+                , classes = ""
+                }
                 model.portField
             )
         , div [ class "col-span-4 sm:col-span-2" ]
             [ label
                 [ class S.inputLabel
                 ]
-                [ text "SMTP User"
+                [ text texts.smtpUser
                 ]
             , input
                 [ type_ "text"
-                , placeholder "SMTP Username, e.g. 'your.name@gmail.com'"
+                , placeholder texts.smtpUserPlaceholder
                 , Maybe.withDefault "" model.user |> value
                 , onInput SetUser
                 , class S.textInput
@@ -248,10 +250,11 @@ view2 settings model =
             ]
         , div [ class "col-span-4 sm:col-span-2" ]
             [ label [ class S.inputLabel ]
-                [ text "SMTP Password"
+                [ text texts.smtpPassword
                 ]
             , Html.map PassMsg
                 (Comp.PasswordInput.view2
+                    { placeholder = texts.smtpPasswordPlaceholder }
                     model.password
                     False
                     model.passField
@@ -259,12 +262,12 @@ view2 settings model =
             ]
         , div [ class "col-span-4 sm:col-span-2" ]
             [ label [ class S.inputLabel ]
-                [ text "From Address"
+                [ text texts.fromAddress
                 , B.inputRequired
                 ]
             , input
                 [ type_ "text"
-                , placeholder "Sender E-Mail address"
+                , placeholder texts.fromAddressPlaceholder
                 , value model.from
                 , onInput SetFrom
                 , class S.textInput
@@ -274,11 +277,11 @@ view2 settings model =
             ]
         , div [ class "col-span-4 sm:col-span-2" ]
             [ label [ class S.inputLabel ]
-                [ text "Reply-To"
+                [ text texts.replyTo
                 ]
             , input
                 [ type_ "text"
-                , placeholder "Optional reply-to E-Mail address"
+                , placeholder texts.replyToPlaceholder
                 , Maybe.withDefault "" model.replyTo |> value
                 , onInput SetReplyTo
                 , class S.textInput
@@ -287,11 +290,11 @@ view2 settings model =
             ]
         , div [ class "col-span-4 sm:col-span-2" ]
             [ label [ class S.inputLabel ]
-                [ text "SSL"
+                [ text texts.ssl
                 ]
             , Html.map SSLTypeMsg
                 (Comp.Dropdown.view2
-                    DS.mainStyle
+                    sslCfg
                     settings
                     model.sslType
                 )
@@ -300,7 +303,7 @@ view2 settings model =
             [ MB.viewItem <|
                 MB.Checkbox
                     { tagger = \_ -> ToggleCheckCert
-                    , label = "Ignore certificate check"
+                    , label = texts.ignoreCertCheck
                     , value = model.ignoreCertificates
                     , id = "smpt-no-cert-check"
                     }

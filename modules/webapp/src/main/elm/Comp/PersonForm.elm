@@ -22,6 +22,7 @@ import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)
+import Messages.Comp.PersonForm exposing (Texts)
 import Styles as S
 
 
@@ -46,10 +47,8 @@ emptyModel =
     , notes = Nothing
     , use = Data.PersonUse.Both
     , useModel =
-        Comp.FixedDropdown.initMap
-            Data.PersonUse.label
-            Data.PersonUse.all
-    , orgModel = Comp.Dropdown.orgDropdown
+        Comp.FixedDropdown.init Data.PersonUse.all
+    , orgModel = Comp.Dropdown.makeSingle
     }
 
 
@@ -176,18 +175,24 @@ update flags msg model =
             )
 
 
-makeUseItem : Model -> Maybe (Comp.FixedDropdown.Item PersonUse)
-makeUseItem model =
-    Just <|
-        Comp.FixedDropdown.Item model.use (Data.PersonUse.label model.use)
-
-
 
 --- View2
 
 
-view2 : Bool -> UiSettings -> Model -> Html Msg
-view2 mobile settings model =
+view2 : Texts -> Bool -> UiSettings -> Model -> Html Msg
+view2 texts mobile settings model =
+    let
+        personUseCfg =
+            { display = texts.personUseLabel
+            , icon = \_ -> Nothing
+            , style = DS.mainStyle
+            }
+
+        contactCfg =
+            { mobile = mobile
+            , contactTypeLabel = texts.contactTypeLabel
+            }
+    in
     div [ class "flex flex-col" ]
         [ div
             [ class "mb-4"
@@ -196,13 +201,13 @@ view2 mobile settings model =
                 [ class S.inputLabel
                 , for "personname"
                 ]
-                [ text "Name"
+                [ text texts.basics.name
                 , B.inputRequired
                 ]
             , input
                 [ type_ "text"
                 , onInput SetName
-                , placeholder "Name"
+                , placeholder texts.basics.name
                 , value model.name
                 , class S.textInput
                 , classList
@@ -216,53 +221,58 @@ view2 mobile settings model =
             [ label
                 [ class S.inputLabel
                 ]
-                [ text "Use of this person" ]
+                [ text texts.useOfPerson
+                ]
             , Html.map UseDropdownMsg
-                (Comp.FixedDropdown.view2 (makeUseItem model) model.useModel)
+                (Comp.FixedDropdown.viewStyled2 personUseCfg False (Just model.use) model.useModel)
             , span [ class "opacity-50 text-sm" ]
                 [ case model.use of
                     Data.PersonUse.Concerning ->
-                        text "Use as concerning person only"
+                        text texts.useAsConcerningOnly
 
                     Data.PersonUse.Correspondent ->
-                        text "Use as correspondent person only"
+                        text texts.useAsCorrespondentOnly
 
                     Data.PersonUse.Both ->
-                        text "Use as both concerning or correspondent person"
+                        text texts.useAsBoth
 
                     Data.PersonUse.Disabled ->
-                        text "Do not use for suggestions."
+                        text texts.dontUseForSuggestions
                 ]
             ]
         , div [ class "mb-4" ]
             [ label
                 [ class S.inputLabel
                 ]
-                [ text "Organization"
+                [ text texts.basics.organization
                 ]
             , Html.map OrgDropdownMsg
                 (Comp.Dropdown.view2
-                    DS.mainStyle
+                    (Comp.Dropdown.orgFormViewSettings texts.chooseAnOrg DS.mainStyle)
                     settings
                     model.orgModel
                 )
             ]
         , div [ class "mb-4" ]
             [ h3 [ class "ui dividing header" ]
-                [ text "Address"
+                [ text texts.address
                 ]
-            , Html.map AddressMsg (Comp.AddressForm.view2 settings model.addressModel)
+            , Html.map AddressMsg
+                (Comp.AddressForm.view2 texts.addressForm
+                    settings
+                    model.addressModel
+                )
             ]
         , div [ class "mb-4" ]
             [ h3 [ class S.header3 ]
-                [ text "Contacts"
+                [ text texts.contacts
                 ]
             , Html.map ContactMsg
-                (Comp.ContactField.view2 mobile settings model.contactModel)
+                (Comp.ContactField.view2 contactCfg settings model.contactModel)
             ]
         , div [ class "mb-4" ]
             [ h3 [ class S.header3 ]
-                [ text "Notes"
+                [ text texts.notes
                 ]
             , div [ class "" ]
                 [ textarea

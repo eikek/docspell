@@ -12,6 +12,7 @@ import Data.Flags exposing (Flags)
 import Data.PersonUse
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Messages.Comp.PersonTable exposing (Texts)
 import Styles as S
 import Util.Contact
 
@@ -52,27 +53,27 @@ update _ msg model =
 --- View2
 
 
-view2 : Model -> Html Msg
-view2 model =
+view2 : Texts -> Model -> Html Msg
+view2 texts model =
     table [ class S.tableMain ]
         [ thead []
             [ tr []
                 [ th [ class "w-px whitespace-nowrap" ] []
                 , th [ class "text-left pr-1 md:px-2" ]
-                    [ text "Use"
+                    [ text texts.use
                     ]
-                , th [ class "text-left" ] [ text "Name" ]
-                , th [ class "text-left hidden sm:table-cell" ] [ text "Organization" ]
-                , th [ class "text-left hidden md:table-cell" ] [ text "Contact" ]
+                , th [ class "text-left" ] [ text texts.basics.name ]
+                , th [ class "text-left hidden sm:table-cell" ] [ text texts.basics.organization ]
+                , th [ class "text-left hidden md:table-cell" ] [ text texts.contact ]
                 ]
             ]
         , tbody []
-            (List.map (renderPersonLine2 model) model.equips)
+            (List.map (renderPersonLine2 texts model) model.equips)
         ]
 
 
-renderPersonLine2 : Model -> Person -> Html Msg
-renderPersonLine2 model person =
+renderPersonLine2 : Texts -> Model -> Person -> Html Msg
+renderPersonLine2 texts model person =
     tr
         [ classList [ ( "active", model.selected == Just person ) ]
         , class S.tableRow
@@ -82,7 +83,7 @@ renderPersonLine2 model person =
             [ div [ class "label inline-flex text-sm" ]
                 [ Data.PersonUse.fromString person.use
                     |> Maybe.withDefault Data.PersonUse.Both
-                    |> Data.PersonUse.label
+                    |> texts.personUseLabel
                     |> text
                 ]
             ]

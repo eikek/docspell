@@ -16,12 +16,13 @@ import Comp.DatePicker
 import Comp.MenuBar as MB
 import Data.CustomFieldType exposing (CustomFieldType)
 import Data.Icons as Icons
-import Data.Money
+import Data.Money exposing (MoneyParseError(..))
 import Date exposing (Date)
 import DatePicker exposing (DatePicker)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onCheck, onClick, onInput)
+import Html.Events exposing (onClick, onInput)
+import Messages.Comp.CustomFieldInput exposing (Texts)
 import Styles as S
 import Util.Maybe
 
@@ -32,9 +33,15 @@ type alias Model =
     }
 
 
+type FieldError
+    = NoValue
+    | NotANumber String
+    | NotMoney MoneyParseError
+
+
 type alias FloatModel =
     { input : String
-    , result : Result String Float
+    , result : Result FieldError Float
     }
 
 
@@ -61,27 +68,47 @@ fieldType field =
         |> Maybe.withDefault Data.CustomFieldType.Text
 
 
-errorMsg : Model -> Maybe String
-errorMsg model =
+errorMsg : Texts -> Model -> Maybe String
+errorMsg texts model =
     let
-        getMsg res =
-            case res of
-                Ok _ ->
-                    Nothing
+        parseMsg isMoneyField perr =
+            case perr of
+                NoValue ->
+                    if isMoneyField then
+                        Just <| texts.errorNoAmount
 
-                Err m ->
-                    Just m
+                    else
+                        Just <| texts.errorNoNumber
+
+                NotANumber str ->
+                    Just <| texts.errorNotANumber str
+
+                NotMoney (RequireTwoDigitsAfterDot _) ->
+                    Just "Two digits required after the dot."
+
+                NotMoney (NoOrTooManyPoints _) ->
+                    Just "One single dot + digits required for money."
     in
     case model.fieldModel of
         NumberField fm ->
-            getMsg fm.result
+            case fm.result of
+                Ok _ ->
+                    Nothing
+
+                Err parseError ->
+                    parseMsg False parseError
 
         MoneyField fm ->
-            getMsg fm.result
+            case fm.result of
+                Ok _ ->
+                    Nothing
+
+                Err parseError ->
+                    parseMsg True parseError
 
         TextField mt ->
             if mt == Nothing then
-                Just "Please fill in some value"
+                Just texts.errorNoValue
 
             else
                 Nothing
@@ -103,10 +130,10 @@ init field =
                     TextField Nothing
 
                 Data.CustomFieldType.Numeric ->
-                    NumberField (FloatModel "" (Err "No number given"))
+                    NumberField (FloatModel "" (Err NoValue))
 
                 Data.CustomFieldType.Money ->
-                    MoneyField (FloatModel "" (Err "No amount given"))
+                    MoneyField (FloatModel "" (Err NoValue))
 
                 Data.CustomFieldType.Boolean ->
                     BoolField False
@@ -150,7 +177,7 @@ initWith value =
                             updateFloatModel
                                 False
                                 value.value
-                                Data.Money.fromString
+                                (Data.Money.fromString >> Result.mapError NotMoney)
                                 Data.Money.normalizeInput
                     in
                     MoneyField fm
@@ -230,7 +257,7 @@ update1 forSearch msg model =
                     updateFloatModel
                         forSearch
                         str
-                        Data.Money.fromString
+                        (Data.Money.fromString >> Result.mapError NotMoney)
                         Data.Money.normalizeInput
 
                 model_ =
@@ -294,7 +321,7 @@ update1 forSearch msg model =
 updateFloatModel :
     Bool
     -> String
-    -> (String -> Result String Float)
+    -> (String -> Result FieldError Float)
     -> (String -> String)
     -> ( FloatModel, FieldResult )
 updateFloatModel forSearch msg parse normalize =
@@ -331,11 +358,11 @@ hasWildCards msg =
 --- View2
 
 
-view2 : String -> Maybe String -> Model -> Html Msg
-view2 classes icon model =
+view2 : Texts -> String -> Maybe String -> Model -> Html Msg
+view2 texts classes icon model =
     let
         error =
-            errorMsg model
+            errorMsg texts model
     in
     div
         [ class classes
@@ -473,11 +500,11 @@ mkLabel model =
     Maybe.withDefault model.field.name model.field.label
 
 
-string2Float : String -> Result String Float
+string2Float : String -> Result FieldError Float
 string2Float str =
     case String.toFloat str of
         Just n ->
             Ok n
 
         Nothing ->
-            Err ("Not a number: " ++ str)
+            Err (NotANumber str)

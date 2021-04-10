@@ -16,6 +16,7 @@ import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)
+import Messages.Comp.TagForm exposing (Texts)
 import Styles as S
 import Util.Maybe
 
@@ -37,9 +38,7 @@ emptyModel categories =
         let
             cm =
                 Comp.Dropdown.makeSingleList
-                    { makeOption = \s -> Comp.Dropdown.mkOption s s
-                    , placeholder = "Select or define category..."
-                    , options = categories
+                    { options = categories
                     , selected = Nothing
                     }
         in
@@ -120,8 +119,16 @@ update _ msg model =
 --- View2
 
 
-view2 : Model -> Html Msg
-view2 model =
+view2 : Texts -> Model -> Html Msg
+view2 texts model =
+    let
+        categoryCfg =
+            { makeOption = \s -> Comp.Dropdown.mkOption s
+            , placeholder = texts.selectDefineCategory
+            , labelColor = \_ -> \_ -> ""
+            , style = DS.mainStyle
+            }
+    in
     div
         [ class "flex flex-col" ]
         [ div [ class "mb-4" ]
@@ -129,13 +136,13 @@ view2 model =
                 [ for "tagname"
                 , class S.inputLabel
                 ]
-                [ text "Name"
+                [ text texts.basics.name
                 , B.inputRequired
                 ]
             , input
                 [ type_ "text"
                 , onInput SetName
-                , placeholder "Name"
+                , placeholder texts.basics.name
                 , value model.name
                 , id "tagname"
                 , class S.textInput
@@ -151,11 +158,11 @@ view2 model =
             [ label
                 [ class S.inputLabel
                 ]
-                [ text "Category"
+                [ text texts.category
                 ]
             , Html.map CatMsg
                 (Comp.Dropdown.viewSingle2
-                    DS.mainStyle
+                    categoryCfg
                     model.catDropdown
                 )
             ]

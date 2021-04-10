@@ -3,20 +3,20 @@ module Comp.ItemDetail.AddFilesForm exposing (view)
 import Comp.Dropzone
 import Comp.ItemDetail.Model exposing (..)
 import Comp.Progress
-import Data.DropdownStyle
 import Dict
 import File exposing (File)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onCheck, onClick, onInput)
+import Html.Events exposing (onClick)
+import Messages.Comp.ItemDetail.AddFilesForm exposing (Texts)
 import Set
 import Styles as S
 import Util.File exposing (makeFileId)
 import Util.Size
 
 
-view : Model -> Html Msg
-view model =
+view : Texts -> Model -> Html Msg
+view texts model =
     div
         [ classList
             [ ( "hidden", not model.addFilesOpen )
@@ -25,24 +25,24 @@ view model =
         , class S.box
         ]
         [ div [ class "text-lg font-bold" ]
-            [ text "Add more files to this item"
+            [ text texts.addMoreFilesToItem
             ]
         , Html.map AddFilesMsg
-            (Comp.Dropzone.view2 model.addFilesModel)
+            (Comp.Dropzone.view2 texts.dropzone model.addFilesModel)
         , div [ class "flex flex-row space-x-2 mt-2" ]
             [ button
                 [ class S.primaryButton
                 , href "#"
                 , onClick AddFilesSubmitUpload
                 ]
-                [ text "Submit"
+                [ text texts.basics.submit
                 ]
             , button
                 [ class S.secondaryButton
                 , href "#"
                 , onClick AddFilesReset
                 ]
-                [ text "Reset"
+                [ text texts.reset
                 ]
             ]
         , div
@@ -52,14 +52,13 @@ view model =
                 ]
             , class "mt-2"
             ]
-            [ text "All files have been uploaded. They are being processed, some data "
-            , text "may not be available immediately. "
+            [ text texts.filesSubmittedInfo
             , a
                 [ class S.successMessageLink
                 , href "#"
                 , onClick ReloadItem
                 ]
-                [ text "Refresh now"
+                [ text texts.refreshNow
                 ]
             ]
         , div

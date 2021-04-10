@@ -22,7 +22,7 @@ import Comp.CustomFieldMultiInput
 import Comp.DatePicker
 import Comp.DetailEdit
 import Comp.Dropdown exposing (isDropdownChangeMsg)
-import Comp.ItemDetail.FieldTabState as FTabState
+import Comp.ItemDetail.FieldTabState as FTabState exposing (EditTab(..), tabName)
 import Comp.ItemDetail.FormChange exposing (FormChange(..))
 import Comp.Tabs as TB
 import Data.CustomFieldChange exposing (CustomFieldChange(..))
@@ -39,6 +39,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Http
 import Markdown
+import Messages.Comp.ItemDetail.MultiEditMenu exposing (Texts)
 import Page exposing (Page(..))
 import Set exposing (Set)
 import Styles as S
@@ -117,45 +118,17 @@ type Msg
 
 init : Model
 init =
-    { tagModel =
-        Util.Tag.makeDropdownModel2
+    { tagModel = Util.Tag.makeDropdownModel
     , directionModel =
         Comp.Dropdown.makeSingleList
-            { makeOption =
-                \entry ->
-                    { value = Data.Direction.toString entry
-                    , text = Data.Direction.toString entry
-                    , additional = ""
-                    }
-            , options = Data.Direction.all
-            , placeholder = "Choose a direction…"
+            { options = Data.Direction.all
             , selected = Nothing
             }
-    , corrOrgModel =
-        Comp.Dropdown.makeSingle
-            { makeOption = \e -> { value = e.id, text = e.name, additional = "" }
-            , placeholder = ""
-            }
-    , corrPersonModel =
-        Comp.Dropdown.makeSingle
-            { makeOption = \e -> { value = e.id, text = e.name, additional = "" }
-            , placeholder = ""
-            }
-    , concPersonModel =
-        Comp.Dropdown.makeSingle
-            { makeOption = \e -> { value = e.id, text = e.name, additional = "" }
-            , placeholder = ""
-            }
-    , concEquipModel =
-        Comp.Dropdown.makeSingle
-            { makeOption = \e -> { value = e.id, text = e.name, additional = "" }
-            , placeholder = ""
-            }
-    , folderModel =
-        Comp.Dropdown.makeSingle
-            { makeOption = \e -> { value = e.id, text = e.name, additional = "" }
-            , placeholder = ""
-            }
+    , corrOrgModel = Comp.Dropdown.makeSingle
+    , corrPersonModel = Comp.Dropdown.makeSingle
+    , concPersonModel = Comp.Dropdown.makeSingle
+    , concEquipModel = Comp.Dropdown.makeSingle
+    , folderModel = Comp.Dropdown.makeSingle
     , allFolders = []
     , nameModel = ""
     , nameSaveThrottle = Throttle.create 1
@@ -310,13 +283,7 @@ update flags msg model =
         GetFolderResp (Ok fs) ->
             let
                 model_ =
-                    { model
-                        | allFolders = fs.items
-                        , folderModel =
-                            Comp.Dropdown.setMkOption
-                                (mkFolderOption flags fs.items)
-                                model.folderModel
-                    }
+                    { model | allFolders = fs.items }
 
                 mkIdName fitem =
                     IdName fitem.id fitem.name
@@ -593,14 +560,14 @@ update flags msg model =
             in
             UpdateResult model_ cmd_ Sub.none change
 
-        ToggleAkkordionTab title ->
+        ToggleAkkordionTab name ->
             let
                 tabs =
-                    if Set.member title model.openTabs then
-                        Set.remove title model.openTabs
+                    if Set.member name model.openTabs then
+                        Set.remove name model.openTabs
 
                     else
-                        Set.insert title model.openTabs
+                        Set.insert name model.openTabs
             in
             UpdateResult { model | openTabs = tabs } Cmd.none Sub.none NoFormChange
 
@@ -635,13 +602,13 @@ defaultViewConfig =
 --- View2
 
 
-view2 : ViewConfig -> UiSettings -> Model -> Html Msg
+view2 : Texts -> Flags -> ViewConfig -> UiSettings -> Model -> Html Msg
 view2 =
     renderEditForm2
 
 
-renderEditForm2 : ViewConfig -> UiSettings -> Model -> Html Msg
-renderEditForm2 cfg settings model =
+renderEditForm2 : Texts -> Flags -> ViewConfig -> UiSettings -> Model -> Html Msg
+renderEditForm2 texts flags cfg settings model =
     let
         fieldVisible field =
             Data.UiSettings.fieldVisible settings field
@@ -670,13 +637,13 @@ renderEditForm2 cfg settings model =
         tagModeMsg =
             case model.tagEditMode of
                 AddTags ->
-                    "Tags chosen here are *added* to all selected items."
+                    texts.tagModeAddInfo
 
                 RemoveTags ->
-                    "Tags chosen here are *removed* from all selected items."
+                    texts.tagModeRemoveInfo
 
                 ReplaceTags ->
-                    "Tags chosen here *replace* those on selected items."
+                    texts.tagModeReplaceInfo
 
         customFieldIcon field =
             case cfg.customFieldState field.id of
@@ -690,22 +657,50 @@ renderEditForm2 cfg settings model =
                     Just "fa fa-sync-alt animate-spin"
 
         customFieldSettings =
-            Comp.CustomFieldMultiInput.ViewSettings
-                False
-                "mb-4"
-                customFieldIcon
+            { showAddButton = False
+            , classes = "mb-4"
+            , fieldIcon = customFieldIcon
+            , style = dds
+            , createCustomFieldTitle = ""
+            }
 
         dds =
             Data.DropdownStyle.sidebarStyle
 
         tabStyle =
             TB.searchMenuStyle
+
+        folderCfg =
+            { makeOption = Util.Folder.mkFolderOption flags model.allFolders
+            , placeholder = ""
+            , labelColor = \_ -> \_ -> ""
+            , style = dds
+            }
+
+        idNameCfg =
+            { makeOption = \e -> { text = e.name, additional = "" }
+            , labelColor = \_ -> \_ -> ""
+            , placeholder = texts.selectPlaceholder
+            , style = dds
+            }
+
+        directionCfg =
+            { makeOption =
+                \entry ->
+                    { text = Data.Direction.toString entry
+                    , additional = ""
+                    }
+            , placeholder = texts.chooseDirection
+            , labelColor = \_ -> \_ -> ""
+            , style = dds
+            }
     in
     div [ class cfg.menuClass, class "mt-2" ]
         [ TB.akkordion
             tabStyle
             (tabState settings model)
-            [ { title = "Confirm/Unconfirm item metadata"
+            [ { name = tabName TabConfirmUnconfirm
+              , title = texts.confirmUnconfirm
               , titleRight = []
               , info = Nothing
               , body =
@@ -717,69 +712,77 @@ renderEditForm2 cfg settings model =
                             , class "flex-grow"
                             , onClick (ConfirmMsg True)
                             ]
-                            [ text "Confirm"
+                            [ text texts.confirm
                             ]
                         , button
                             [ class S.secondaryButton
                             , class "flex-grow"
                             , onClick (ConfirmMsg False)
                             ]
-                            [ text "Unconfirm"
+                            [ text texts.unconfirm
                             ]
                         ]
                     ]
               }
-            , { title = "Tags"
+            , { name = tabName TabTags
+              , title = texts.basics.tags
               , titleRight = []
               , info = Nothing
               , body =
                     [ div [ class "field" ]
                         [ label [ class S.inputLabel ]
                             [ Icons.tagsIcon2 ""
-                            , text "Tags"
+                            , text texts.basics.tags
                             , a
                                 [ class "float-right"
                                 , class S.link
                                 , href "#"
-                                , title "Change tag edit mode"
+                                , title texts.changeTagMode
                                 , onClick ToggleTagEditMode
                                 ]
                                 [ tagModeIcon
                                 ]
                             ]
-                        , Html.map TagDropdownMsg (Comp.Dropdown.view2 dds settings model.tagModel)
+                        , Html.map TagDropdownMsg
+                            (Comp.Dropdown.view2 (Util.Tag.tagSettings texts.basics.chooseTag dds)
+                                settings
+                                model.tagModel
+                            )
                         , Markdown.toHtml [ class "opacity-50 text-sm" ] tagModeMsg
                         ]
                     ]
               }
-            , { title = "Folder"
+            , { name = tabName TabFolder
+              , title = texts.basics.folder
               , titleRight = []
               , info = Nothing
               , body =
-                    [ Html.map FolderDropdownMsg (Comp.Dropdown.view2 dds settings model.folderModel)
+                    [ Html.map FolderDropdownMsg (Comp.Dropdown.view2 folderCfg settings model.folderModel)
                     , div
                         [ classList
                             [ ( S.message, True )
                             , ( "hidden", isFolderMember model )
                             ]
                         ]
-                        [ Markdown.toHtml [] """
-You are **not a member** of this folder. This item will be **hidden**
-from any search now. Use a folder where you are a member of to make this
-item visible. This message will disappear then.
-                      """
+                        [ Markdown.toHtml [] texts.folderNotOwnerWarning
                         ]
                     ]
               }
-            , { title = "Custom Fields"
+            , { name = tabName TabCustomFields
+              , title = texts.basics.customFields
               , titleRight = []
               , info = Nothing
               , body =
                     [ Html.map CustomFieldMsg
-                        (Comp.CustomFieldMultiInput.view2 dds customFieldSettings model.customFieldModel)
+                        (Comp.CustomFieldMultiInput.view2
+                            texts.customFieldMultiInput
+                            customFieldSettings
+                            model.customFieldModel
+                        )
                     ]
               }
-            , { title = "Date"
+            , { name = tabName TabDate
+              , title = texts.basics.date
               , titleRight = []
               , info = Nothing
               , body =
@@ -801,7 +804,8 @@ item visible. This message will disappear then.
                         ]
                     ]
               }
-            , { title = "Due Date"
+            , { name = tabName TabDueDate
+              , title = texts.dueDateTab
               , titleRight = []
               , info = Nothing
               , body =
@@ -823,7 +827,8 @@ item visible. This message will disappear then.
                         ]
                     ]
               }
-            , { title = "Correspondent"
+            , { name = tabName TabCorrespondent
+              , title = texts.basics.correspondent
               , titleRight = []
               , info = Nothing
               , body =
@@ -832,24 +837,35 @@ item visible. This message will disappear then.
                             [ label [ class S.inputLabel ]
                                 [ Icons.organizationIcon2 ""
                                 , span [ class "ml-2" ]
-                                    [ text "Organization"
+                                    [ text texts.basics.organization
                                     ]
                                 ]
-                            , Html.map OrgDropdownMsg (Comp.Dropdown.view2 dds settings model.corrOrgModel)
+                            , Html.map OrgDropdownMsg
+                                (Comp.Dropdown.view2
+                                    idNameCfg
+                                    settings
+                                    model.corrOrgModel
+                                )
                             ]
                     , optional [ Data.Fields.CorrPerson ] <|
                         div [ class "mb-4" ]
                             [ label [ class S.inputLabel ]
                                 [ Icons.personIcon2 ""
                                 , span [ class "ml-2" ]
-                                    [ text "Person"
+                                    [ text texts.basics.person
                                     ]
                                 ]
-                            , Html.map CorrPersonMsg (Comp.Dropdown.view2 dds settings model.corrPersonModel)
+                            , Html.map CorrPersonMsg
+                                (Comp.Dropdown.view2
+                                    idNameCfg
+                                    settings
+                                    model.corrPersonModel
+                                )
                             ]
                     ]
               }
-            , { title = "Concerning"
+            , { name = tabName TabConcerning
+              , title = texts.basics.concerning
               , titleRight = []
               , info = Nothing
               , body =
@@ -858,29 +874,35 @@ item visible. This message will disappear then.
                             [ label [ class S.inputLabel ]
                                 [ Icons.personIcon2 ""
                                 , span [ class "ml-2" ]
-                                    [ text "Person" ]
+                                    [ text texts.basics.person ]
                                 ]
-                            , Html.map ConcPersonMsg (Comp.Dropdown.view2 dds settings model.concPersonModel)
+                            , Html.map ConcPersonMsg (Comp.Dropdown.view2 idNameCfg settings model.concPersonModel)
                             ]
                     , optional [ Data.Fields.ConcEquip ] <|
                         div [ class "mb-4" ]
                             [ label [ class S.inputLabel ]
                                 [ Icons.equipmentIcon2 ""
                                 , span [ class "ml-2" ]
-                                    [ text "Equipment" ]
+                                    [ text texts.basics.equipment ]
                                 ]
-                            , Html.map ConcEquipMsg (Comp.Dropdown.view2 dds settings model.concEquipModel)
+                            , Html.map ConcEquipMsg
+                                (Comp.Dropdown.view2 idNameCfg
+                                    settings
+                                    model.concEquipModel
+                                )
                             ]
                     ]
               }
-            , { title = "Direction"
+            , { name = tabName TabDirection
+              , title = texts.basics.direction
               , titleRight = []
               , info = Nothing
               , body =
-                    [ Html.map DirDropdownMsg (Comp.Dropdown.view2 dds settings model.directionModel)
+                    [ Html.map DirDropdownMsg (Comp.Dropdown.view2 directionCfg settings model.directionModel)
                     ]
               }
-            , { title = "Name"
+            , { name = tabName TabName
+              , title = texts.basics.name
               , titleRight = []
               , info = Nothing
               , body =
@@ -895,9 +917,15 @@ item visible. This message will disappear then.
                         , span [ class S.inputLeftIconOnly ]
                             [ i
                                 [ classList
-                                    [ ( "text-green-500 fa fa-check", cfg.nameState == SaveSuccess )
-                                    , ( "text-red-500 fa fa-exclamation-triangle", cfg.nameState == SaveFailed )
-                                    , ( "sync fa fa-circle-notch animate-spin", cfg.nameState == Saving )
+                                    [ ( "text-green-500 fa fa-check"
+                                      , cfg.nameState == SaveSuccess
+                                      )
+                                    , ( "text-red-500 fa fa-exclamation-triangle"
+                                      , cfg.nameState == SaveFailed
+                                      )
+                                    , ( "sync fa fa-circle-notch animate-spin"
+                                      , cfg.nameState == Saving
+                                      )
                                     ]
                                 ]
                                 []
@@ -914,7 +942,7 @@ tabState settings model tab =
     FTabState.tabState settings
         model.openTabs
         (Just model.customFieldModel)
-        (.title >> ToggleAkkordionTab)
+        (.name >> ToggleAkkordionTab)
         tab
 
 

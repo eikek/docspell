@@ -1,8 +1,9 @@
 package docspell.query.internal
 
-import munit._
 import docspell.query.ItemQuery.{Operator, TagOperator}
 import docspell.query.internal.OperatorParser
+
+import munit._
 
 class OperatorParserTest extends FunSuite {
   test("operator values") {

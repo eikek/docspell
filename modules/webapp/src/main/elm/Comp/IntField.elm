@@ -1,9 +1,10 @@
 module Comp.IntField exposing
     ( Model
     , Msg
+    , ViewSettings
     , init
     , update
-    , viewWithInfo2
+    , view
     )
 
 import Html exposing (..)
@@ -16,7 +17,6 @@ import Styles as S
 type alias Model =
     { min : Maybe Int
     , max : Maybe Int
-    , label : String
     , error : Maybe String
     , lastInput : String
     , optional : Bool
@@ -27,11 +27,10 @@ type Msg
     = SetValue String
 
 
-init : Maybe Int -> Maybe Int -> Bool -> String -> Model
-init min max opt label =
+init : Maybe Int -> Maybe Int -> Bool -> Model
+init min max opt =
     { min = min
     , max = max
-    , label = label
     , error = Nothing
     , lastInput = ""
     , optional = opt
@@ -98,20 +97,28 @@ update msg model =
 --- View2
 
 
-viewWithInfo2 : String -> Maybe Int -> String -> Model -> Html Msg
-viewWithInfo2 info nval classes model =
+type alias ViewSettings =
+    { label : String
+    , info : String
+    , number : Maybe Int
+    , classes : String
+    }
+
+
+view : ViewSettings -> Model -> Html Msg
+view cfg model =
     div
         [ classList
-            [ ( classes, True )
+            [ ( cfg.classes, True )
             , ( "error", model.error /= Nothing )
             ]
         ]
         [ label [ class S.inputLabel ]
-            [ text model.label
+            [ text cfg.label
             ]
         , input
             [ type_ "text"
-            , Maybe.map String.fromInt nval
+            , Maybe.map String.fromInt cfg.number
                 |> Maybe.withDefault model.lastInput
                 |> value
             , onInput SetValue
@@ -120,11 +127,11 @@ viewWithInfo2 info nval classes model =
             []
         , span
             [ classList
-                [ ( "hidden", info == "" )
+                [ ( "hidden", cfg.info == "" )
                 ]
             , class "opacity-50 text-sm"
             ]
-            [ Markdown.toHtml [] info
+            [ Markdown.toHtml [] cfg.info
             ]
         , div
             [ classList
@@ -135,3 +142,16 @@ viewWithInfo2 info nval classes model =
             [ Maybe.withDefault "" model.error |> text
             ]
         ]
+
+
+viewWithInfo2 : String -> String -> Maybe Int -> String -> Model -> Html Msg
+viewWithInfo2 label info nval classes model =
+    let
+        cfg =
+            { label = label
+            , info = info
+            , number = nval
+            , classes = classes
+            }
+    in
+    view cfg model

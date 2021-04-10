@@ -1,6 +1,7 @@
 package docspell.common
 
 import cats.implicits._
+
 import munit._
 
 class LenientUriTest extends FunSuite {

@@ -13,6 +13,7 @@ import Data.Flags exposing (Flags)
 import Data.ItemNav exposing (ItemNav)
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
+import Messages.Comp.ItemDetail exposing (Texts)
 import Page exposing (Page(..))
 
 
@@ -30,6 +31,6 @@ update =
     Comp.ItemDetail.Update.update
 
 
-view2 : ItemNav -> UiSettings -> Model -> Html Msg
+view2 : Texts -> ItemNav -> UiSettings -> Model -> Html Msg
 view2 =
     Comp.ItemDetail.View2.view

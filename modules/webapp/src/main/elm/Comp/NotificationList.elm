@@ -11,6 +11,7 @@ import Api.Model.NotificationSettings exposing (NotificationSettings)
 import Comp.Basic as B
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Messages.Comp.NotificationTable exposing (Texts)
 import Styles as S
 import Util.Html
 
@@ -44,8 +45,8 @@ update msg model =
 --- View2
 
 
-view2 : Model -> List NotificationSettings -> Html Msg
-view2 _ items =
+view2 : Texts -> Model -> List NotificationSettings -> Html Msg
+view2 texts _ items =
     div []
         [ table [ class S.tableMain ]
             [ thead []
@@ -54,13 +55,13 @@ view2 _ items =
                     , th [ class "text-center mr-2" ]
                         [ i [ class "fa fa-check" ] []
                         ]
-                    , th [ class "text-left " ] [ text "Summary" ]
+                    , th [ class "text-left " ] [ text texts.summary ]
                     , th [ class "text-left hidden sm:table-cell mr-2" ]
-                        [ text "Schedule" ]
+                        [ text texts.schedule ]
                     , th [ class "text-left mr-2" ]
-                        [ text "Connection" ]
+                        [ text texts.connection ]
                     , th [ class "text-left hidden sm:table-cell mr-2" ]
-                        [ text "Recipients" ]
+                        [ text texts.recipients ]
                     ]
                 ]
             , tbody []

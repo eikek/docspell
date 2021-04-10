@@ -1,6 +1,7 @@
 module Comp.EmailInput exposing
     ( Model
     , Msg
+    , ViewSettings
     , init
     , update
     , view2
@@ -137,10 +138,16 @@ update flags current msg model =
 --- View2
 
 
-view2 : DS.DropdownStyle -> List String -> Model -> Html Msg
-view2 style values model =
+type alias ViewSettings =
+    { placeholder : String
+    , style : DS.DropdownStyle
+    }
+
+
+view2 : ViewSettings -> List String -> Model -> Html Msg
+view2 cfg values model =
     div [ class "text-sm flex-row space-x-2 relative" ]
-        [ div [ class style.link ]
+        [ div [ class cfg.style.link ]
             [ div
                 [ class "flex flex-row space-x-2 mr-2"
                 , classList [ ( "hidden", List.isEmpty values ) ]
@@ -149,7 +156,7 @@ view2 style values model =
             , input
                 [ type_ "text"
                 , value model.input
-                , placeholder "Recipients…"
+                , placeholder cfg.placeholder
                 , onKeyUp KeyPress
                 , onInput SetInput
                 , class "inline-flex w-24 border-0 px-0 focus:ring-0 h-6 text-sm"
@@ -157,7 +164,7 @@ view2 style values model =
                 ]
                 []
             ]
-        , renderMenu2 style model
+        , renderMenu2 cfg.style model
         ]
 
 

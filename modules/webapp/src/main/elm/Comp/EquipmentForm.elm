@@ -11,11 +11,13 @@ module Comp.EquipmentForm exposing
 import Api.Model.Equipment exposing (Equipment)
 import Comp.Basic as B
 import Comp.FixedDropdown
+import Data.DropdownStyle as DS
 import Data.EquipmentUse exposing (EquipmentUse)
 import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)
+import Messages.Comp.EquipmentForm exposing (Texts)
 import Styles as S
 import Util.Maybe
 
@@ -36,9 +38,7 @@ emptyModel =
     , notes = Nothing
     , use = Data.EquipmentUse.Concerning
     , useModel =
-        Comp.FixedDropdown.initMap
-            Data.EquipmentUse.label
-            Data.EquipmentUse.all
+        Comp.FixedDropdown.init Data.EquipmentUse.all
     }
 
 
@@ -100,21 +100,28 @@ update _ msg model =
 --- View2
 
 
-view2 : Model -> Html Msg
-view2 model =
+view2 : Texts -> Model -> Html Msg
+view2 texts model =
+    let
+        equipUseCfg =
+            { display = texts.equipmentUseLabel
+            , icon = \_ -> Nothing
+            , style = DS.mainStyle
+            }
+    in
     div [ class "flex flex-col" ]
         [ div [ class "mb-4" ]
             [ label
                 [ for "equipname"
                 , class S.inputLabel
                 ]
-                [ text "Name"
+                [ text texts.basics.name
                 , B.inputRequired
                 ]
             , input
                 [ type_ "text"
                 , onInput SetName
-                , placeholder "Name"
+                , placeholder texts.basics.name
                 , value model.name
                 , name "equipname"
                 , class S.textInput
@@ -130,21 +137,21 @@ view2 model =
             [ label
                 [ class S.inputLabel
                 ]
-                [ text "Use" ]
+                [ text texts.use ]
             , Html.map UseDropdownMsg
-                (Comp.FixedDropdown.view2 (makeUseItem model) model.useModel)
+                (Comp.FixedDropdown.viewStyled2 equipUseCfg False (Just model.use) model.useModel)
             , span [ class "opacity-50 text-sm" ]
                 [ case model.use of
                     Data.EquipmentUse.Concerning ->
-                        text "Use as concerning equipment"
+                        text texts.useAsConcerning
 
                     Data.EquipmentUse.Disabled ->
-                        text "Do not use for suggestions."
+                        text texts.useNotSuggestions
                 ]
             ]
         , div [ class "mb-4" ]
             [ h3 [ class S.header3 ]
-                [ text "Notes"
+                [ text texts.notes
                 ]
             , div [ class "" ]
                 [ textarea
@@ -156,9 +163,3 @@ view2 model =
                 ]
             ]
         ]
-
-
-makeUseItem : Model -> Maybe (Comp.FixedDropdown.Item EquipmentUse)
-makeUseItem model =
-    Just <|
-        Comp.FixedDropdown.Item model.use (Data.EquipmentUse.label model.use)
