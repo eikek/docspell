@@ -92,7 +92,7 @@ type TextSearchModel
 
 init : Flags -> Model
 init flags =
-    { tagSelectModel = Comp.TagSelect.init [] []
+    { tagSelectModel = Comp.TagSelect.init [] [] [] []
     , tagSelection = Comp.TagSelect.emptySelection
     , directionModel =
         Comp.Dropdown.makeSingleList
@@ -483,7 +483,9 @@ updateDrop ddm flags settings msg model =
         GetAllTagsResp (Ok stats) ->
             let
                 tagSel =
-                    Comp.TagSelect.modifyAll stats.tagCloud.items model.tagSelectModel
+                    Comp.TagSelect.modifyAll stats.tagCloud.items
+                        stats.tagCategoryCloud.items
+                        model.tagSelectModel
             in
             { model = { model | tagSelectModel = tagSel }
             , cmd = Cmd.none
@@ -500,9 +502,14 @@ updateDrop ddm flags settings msg model =
 
         GetStatsResp (Ok stats) ->
             let
-                selectModel =
+                tagCount =
                     List.sortBy .count stats.tagCloud.items
-                        |> Comp.TagSelect.modifyCount model.tagSelectModel
+
+                catCount =
+                    List.sortBy .count stats.tagCategoryCloud.items
+
+                selectModel =
+                    Comp.TagSelect.modifyCount model.tagSelectModel tagCount catCount
 
                 model_ =
                     { model
