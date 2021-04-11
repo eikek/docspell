@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Eike Kettner">
+<meta name="description" content="Docspell is a Document Management System (DMS), a system that asists in organizing your piles of documents, resulting from scanners, e-mails and other sources with miminal effort.">
+<meta name="keywords" content="document management system dms organizer ocr open source free scan pdf word doc archive gpl machine learning nlp auto tagging"/>
+<meta name="robots" content="index,follow"/>
+<meta name="image" property="og:image" content="/img/poster.png">
+<meta name="title" property="og:title" content="Docspell – Simple Document Organizer">
+<meta name="og:image" content="/img/poster.png">
+<meta name="og:title" content="Docspell – Simple Document Organizer">
+<meta name="og:site_name" content="Translating Web-UI - Docspell">
+<meta name="og:url" content="">
+<meta name="og:type" content="website">
+<meta name="og:description" content="Simple Document Organizer">
+<meta name="twitter:title" content="Docspell">
+<meta name="twitter:image" content="/img/poster.png">
+<meta name="twitter:description" content="Simple Document Organizer">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="shortcut icon" href="/favicon-mc.ico" type="image/x-icon">
+<link rel="icon" href="/favicon-mc.ico" type="image/x-icon">
+
+        <title>Translating Web-UI – Docspell Documentation</title>
+        <link rel="stylesheet" href="/styles.css">
+        <script type="application/javascript" src="/search_index.en.js"></script>
+<script type="application/javascript" src="/elasticlunr.min.js"></script>
+<script type="application/javascript" src="/js/bundle.js"></script>
+<script type="application/javascript" src="/js/searchhelper.js"></script>
+
+    </head>
+    <body>
+        <section class="hero is-info is-small">
+            <div class="hero-head">
+                <nav class="navbar">
+    <div class="navbar-brand">
+        <a class="navbar-item" href="/">
+            <span class="icon">
+                <img src="/icons/logo-only-36.svg">
+            </span>
+            <span>
+                Docspell
+            </span>
+        </a>
+    </div>
+    <div class="navbar-start">
+        <a target="_blank"
+           href="https://github.com/eikek/docspell"
+           class="navbar-item">
+            <span class="icon">
+                <img src="/icons/github-40.svg">
+            </span>
+            <span>
+                Github
+            </span>
+        </a>
+    </div>
+</nav>
+
+            </div>
+            <div class="hero-body">
+                <div class="columns is-vcentered">
+                    <div class="column is-8">
+                        <h1 class="title">
+                            Translating Web-UI
+                        </h1>
+                        <h2 class="subtitle">
+                            Docspell Documentation
+                        </h2>
+                    </div>
+                    <div class="column">
+                        <id id="search"></id>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <nav class="breadcrumb has-succeeds-separator" aria-label="breadcrumbs"
+             style="position:sticky; top: 0; z-index:10;">
+            <ul>
+                
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;"></a>
+                </li>
+                
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;">Overview</a>
+                </li>
+                
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;">Development</a>
+                </li>
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;translation&#x2F;">Translating Web-UI</a>
+                </li>
+            </ul>
+        </nav>
+
+        <section class="section pt-2">
+            <div class="columns is-desktop">
+                <div class="column is-3">
+                    <div class="menu"
+                         style="position:sticky; top:2rem; z-index:10;">
+                        <ul class="menu-list">
+                            
+                            
+
+                            <p class="menu-label">
+                                Development
+                            </p>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/building/"
+                                   >
+                                    Building Docspell
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/translation/"
+                                   class="is-active">
+                                    Translating Web-Ui
+                                </a>
+                                
+                                <ul class="menu-list">
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;translation&#x2F;#tl-dr">
+                                            TL;DR
+                                        </a>
+                                        <ul>
+                                            
+                                        </ul>
+                                    </li>
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;translation&#x2F;#prepare">
+                                            Prepare
+                                        </a>
+                                        <ul>
+                                            
+                                            <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;translation&#x2F;#checkout-the-source-code">
+                                                    Checkout the source code
+                                                </a>
+                                            </li>
+                                            
+                                            <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;translation&#x2F;#start-the-application">
+                                                    Start the application
+                                                </a>
+                                            </li>
+                                            
+                                            <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;translation&#x2F;#make-webui-updates-faster">
+                                                    Make webui updates faster
+                                                </a>
+                                            </li>
+                                            
+                                            <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;translation&#x2F;#find-the-webapp-sources">
+                                                    Find the webapp sources
+                                                </a>
+                                            </li>
+                                            
+                                        </ul>
+                                    </li>
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;translation&#x2F;#example-add-german">
+                                            Example: Add German
+                                        </a>
+                                        <ul>
+                                            
+                                            <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;translation&#x2F;#add-the-new-language">
+                                                    Add the new language
+                                                </a>
+                                            </li>
+                                            
+                                            <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;translation&#x2F;#translating">
+                                                    Translating
+                                                </a>
+                                            </li>
+                                            
+                                        </ul>
+                                    </li>
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;translation&#x2F;#publishing">
+                                            Publishing
+                                        </a>
+                                        <ul>
+                                            
+                                            <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;translation&#x2F;#github-pr">
+                                                    Github PR
+                                                </a>
+                                            </li>
+                                            
+                                            <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;translation&#x2F;#e-mail">
+                                                    E-Mail
+                                                </a>
+                                            </li>
+                                            
+                                            <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;translation&#x2F;#any-other">
+                                                    Any other
+                                                </a>
+                                            </li>
+                                            
+                                        </ul>
+                                    </li>
+                                    
+                                </ul>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/dev/development/"
+                                   >
+                                    Tips &amp; Setup
+                                </a>
+                                
+                            </li>
+                            
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="column is-9">
+                    <div class="container">
+                        <div class="content doc">
+                            <p>Help with translating the web-ui is greatly appreciated. I can only
+provide translations for English and German, and these may be wrong -
+so pointing out mistakes is also appreciated :).</p>
+<p>Here is a detailed walkthrough for adding a new language. It requires
+to code in <a href="https://elm-lang.org">Elm</a>. But even if you're not a
+programmer, you will be comfortable as it's not difficult for this
+task. Elm is also a nice and friendly language, provding helpful error
+messages.</p>
+<p>This guide assumes no knowledge about Elm at all.</p>
+<h1 id="tl-dr">TL;DR<a class="zola-anchor" href="#tl-dr" aria-label="Anchor link for: tl-dr">🔗</a></h1>
+<p>If you are already familiar with Elm, here is the TL;DR:</p>
+<ol>
+<li>Goto <code>Messages.UiLanguage</code> in <code>modules/webapp/src/main/elm</code> and add
+another language to the union type and also to the <code>all</code> list.</li>
+<li>Fix all compile errors by providing a different <code>Texts</code> value for
+the new language.</li>
+</ol>
+<h1 id="prepare">Prepare<a class="zola-anchor" href="#prepare" aria-label="Anchor link for: prepare">🔗</a></h1>
+<p>You need to install <a href="https://git-scm.org">git</a>,
+<a href="https://scala-sbt.org">sbt</a>, <a href="https://elm-lang.org">Elm</a> and
+<a href="https://www.npmjs.com/get-npm">nodejs</a> (for the <code>npm</code> command) to
+compile and run the project.</p>
+<p>It is also recommended to install <code>elm-format</code> as it will help you to
+format the elm source code. Look
+<a href="https://github.com/avh4/elm-format">here</a> for how to install it with
+your editor of choice.</p>
+<h2 id="checkout-the-source-code">Checkout the source code<a class="zola-anchor" href="#checkout-the-source-code" aria-label="Anchor link for: checkout-the-source-code">🔗</a></h2>
+<p>Note: These steps are only required to do once. If you come back to
+translating, just start the application.</p>
+<p>Use git to clone the docspell repository to your machine. In a
+terminal type:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1;">❯ git clone https://github.com/eikek/docspell.git
+Cloning into </span><span style="color:#b8bb26;">&#39;docspell&#39;</span><span style="color:#fdf4c1;">...
+remote: Enumerating objects: 1861, done.
+remote: Counting objects: 100% (1861/1861</span><span style="color:#fdf4c1aa;">)</span><span style="color:#fdf4c1;">, done.
+remote: Compressing objects: 100% (861/861</span><span style="color:#fdf4c1aa;">)</span><span style="color:#fdf4c1;">, done.
+remote: Total 30276 (delta 821</span><span style="color:#fdf4c1aa;">)</span><span style="color:#fdf4c1;">, reused 1604 (delta 668</span><span style="color:#fdf4c1aa;">)</span><span style="color:#fdf4c1;">, pack-reused 28415
+Receiving objects: 100% (30276/30276</span><span style="color:#fdf4c1aa;">)</span><span style="color:#fdf4c1;">, 60.89 MiB </span><span style="color:#fe8019;">| </span><span style="color:#fdf4c1;">23.62 MiB/s, done.
+Resolving deltas: 100% (14658/14658</span><span style="color:#fdf4c1aa;">)</span><span style="color:#fdf4c1;">, done.
+
+/tmp took 4s
+❯
+</span></code></pre>
+<p>This creates a new directory <code>docspell</code>. Change into it, create a
+<code>DOCSPELL_ENV</code> environment variable and run sbt:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1;">❯ cd docspell
+docspell on  master via 🌳 v0.19.1 via ☕ v11.0.9 via ⬢ v12.21.0
+❯ export DOCSPELL_ENV=dev
+❯ sbt
+[info] welcome to sbt 1.5.0 (Oracle Corporation Java 1.8.0_212</span><span style="color:#fdf4c1aa;">)
+</span><span style="color:#fdf4c1;">[info] loading settings for project global-plugins from plugins.sbt ...
+[info] loading settings for project docspell-build from plugins.sbt ...
+[info] loading project definition from /tmp/docspell/project
+[info] compiling 6 Scala sources to /tmp/docspell/project/target/scala-2.12/sbt-1.0/classes ...
+[info] loading settings for project root from build.sbt,version.sbt ...
+[info] resolving key references (24191 settings</span><span style="color:#fdf4c1aa;">) </span><span style="color:#fdf4c1;">...
+[info] set current project to docspell-root (in build file:/tmp/docspell/</span><span style="color:#fdf4c1aa;">)
+</span><span style="color:#fdf4c1;">[info] sbt server started at local:///home/eike/.sbt/1.0/server/3cf61b9ad9af43ee6032/sock
+[info] started sbt server
+sbt:docspell-root</span><span style="color:#fe8019;">&gt;
+</span></code></pre>
+<p>This downloads some stuff and puts you in the sbt shell. Now compile
+everything (only needed the first time after checkout):</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">sbt:</span><span style="color:#fabd2f;">docspell-root&gt; make
+</span></code></pre>
+<p>This will take a while, you need to wait until this is finished.</p>
+<h2 id="start-the-application">Start the application<a class="zola-anchor" href="#start-the-application" aria-label="Anchor link for: start-the-application">🔗</a></h2>
+<p>If sbt is not started, start sbt from within the source root. Also
+export the <code>DOCSPELL_ENV</code> variable <em>before</em> starting sbt:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fe8019;">&gt;</span><span style="color:#fdf4c1aa;"> export </span><span style="color:#fdf4c1;">DOCSPELL_ENV</span><span style="color:#fe8019;">=</span><span style="color:#b8bb26;">dev
+</span><span style="color:#fe8019;">&gt;</span><span style="color:#fdf4c1aa;"> sbt
+</span></code></pre>
+<p>Then start the application:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">sbt:</span><span style="color:#fabd2f;">docspell-root&gt; reStart
+</span></code></pre>
+<p>This starts docspell (joex and the restserver). Once the output gets a
+bit quiter, open a browser and navigate to <code>http://localhost:7880</code>.
+You can create a new account (if not already done so) and login.</p>
+<p>Note that the database is created in your <code>/tmp</code> directory, so it
+might be cleared once you restart your machine. For translating this
+should not be a problem.</p>
+<h2 id="make-webui-updates-faster">Make webui updates faster<a class="zola-anchor" href="#make-webui-updates-faster" aria-label="Anchor link for: make-webui-updates-faster">🔗</a></h2>
+<p>The sbt build tool could be used to watch the elm sources and
+re-compile everything on change. This however also restarts the server
+and takes quite long. When only coding on the webui the server can be
+just left as is. Only the new compiled webapp must be made available
+to the running server. For this, a script is provided in the
+<code>project/</code> folder.</p>
+<p>Now open another terminal and <code>cd</code> into the docspell folder as before
+and run the following:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1;">❯ ./project/dev-ui-build.sh watch
+Compile elm to js …
+Success!
+
+    Main ───</span><span style="color:#fe8019;">&gt;</span><span style="color:#fdf4c1;"> /tmp/docspell/modules/webapp/target/scala-2.13/classes/META-INF/resources/webjars/docspell-webapp/0.22.0-SNAPSHOT/docspell-app.js
+
+Building css …
+/tmp/docspell
+Watching css and elm sources. C-c to quit.
+Setting up watches.  Beware: since -r was given, this may take a while!
+Watches established.
+</span></code></pre>
+<p>Once you see this, you're all set. The docspell application is running
+and changes to elm files are detected, the webapp is compiled and the
+resulting javascript file is copied to the correct location. To see
+your changes, a refresh in the browser is necessary.</p>
+<p>If this script is not working, install inotify-tools. The
+<code>inotifywait</code> command is required.</p>
+<p>You'll notice that compiling elm files is very fast!</p>
+<h2 id="find-the-webapp-sources">Find the webapp sources<a class="zola-anchor" href="#find-the-webapp-sources" aria-label="Anchor link for: find-the-webapp-sources">🔗</a></h2>
+<p>The web-ui is implemented in the <code>webapp</code> module. The sources can be
+found in the folder <code>modules/webapp/src/main/elm</code>.</p>
+<p>All translated strings are in the files below <code>Messages</code> directory.
+You should start with the file <code>UiLanguage.elm</code> to add a new language
+to the list. Then start with <code>App.elm</code> to provide transalations. See
+below for details.</p>
+<h1 id="example-add-german">Example: Add German<a class="zola-anchor" href="#example-add-german" aria-label="Anchor link for: example-add-german">🔗</a></h1>
+<h2 id="add-the-new-language">Add the new language<a class="zola-anchor" href="#add-the-new-language" aria-label="Anchor link for: add-the-new-language">🔗</a></h2>
+<p>Start by editing <code>UiLanguage.elm</code> and add another language to the
+list:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fa5c4b;">type </span><span style="color:#8ec07c;">UiLanguage
+    </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">English
+    </span><span style="color:#fe8019;">| </span><span style="color:#fdf4c1;">German
+</span></code></pre>
+<p>More languaes are simply appended using the <code>|</code> symbol. Use the
+English name here, because this is source code.</p>
+<p>Also add it to the list of all languages below. Simply add the new
+language separated by a comma <code>,</code>.</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#8ec07c;">all </span><span style="color:#fa5c4b;">: List UiLanguage
+</span><span style="color:#8ec07c;">all </span><span style="color:#fe8019;">=
+    </span><span style="color:#fabd2f;">[ </span><span style="color:#fdf4c1;">English
+    </span><span style="color:#fabd2f;">, </span><span style="color:#fdf4c1;">German
+    </span><span style="color:#fabd2f;">]
+</span></code></pre>
+<p>If you make a mistake, the elm compiler will tell you with usually
+quite helpful messages. Now, after adding this, there will be errors
+when compiling the elm files. You should see something like this:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">Detected problems in 1 module.
+-- MISSING PATTERNS ------------------- modules/webapp/src/main/elm/Messages.elm
+
+This `case` does not have branches for all possibilities:
+
+45|&gt;    case lang of
+46|&gt;        English -&gt;
+47|&gt;            gb
+
+Missing possibilities include:
+
+    German
+
+I would have to crash if I saw one of those. Add branches for them!
+
+Hint: If you want to write the code for each branch later, use `Debug.todo` as a
+placeholder. Read &lt;https://elm-lang.org/0.19.1/missing-patterns&gt; for more
+guidance on this workflow.
+</span></code></pre>
+<p>So around line 45 in <code>Messages.elm</code> there is something wrong. This is
+the place where a record of all strings is returned given some
+lanugage. Currently, there is only one set of strings for English.
+Open this file, you see at the and a value of name <code>gb</code> for English.
+Copy it to another name, <code>de</code> for this example (it's good practice to
+stick to the two letter country code).</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#8ec07c;">de </span><span style="color:#fa5c4b;">: Messages
+</span><span style="color:#8ec07c;">de </span><span style="color:#fe8019;">=
+    </span><span style="color:#fabd2f;">{</span><span style="color:#fdf4c1aa;"> lang </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">German
+    </span><span style="color:#fabd2f;">,</span><span style="color:#fdf4c1aa;"> iso2 </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;de&quot;
+    </span><span style="color:#fabd2f;">,</span><span style="color:#fdf4c1aa;"> label </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;Deutsch&quot;
+    </span><span style="color:#fabd2f;">,</span><span style="color:#fdf4c1aa;"> flagIcon </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;flag-icon flag-icon-de&quot;
+    </span><span style="color:#fabd2f;">,</span><span style="color:#fdf4c1aa;"> app </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">Messages</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">App</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">gb
+    </span><span style="color:#fabd2f;">,</span><span style="color:#fdf4c1aa;"> collectiveSettings </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">Messages</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">Page</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">CollectiveSettings</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">gb
+    </span><span style="color:#fabd2f;">,</span><span style="color:#fdf4c1aa;"> login </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">Messages</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">Page</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">Login</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">gb
+    </span><span style="color:#fabd2f;">,</span><span style="color:#fdf4c1aa;"> register </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">Messages</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">Page</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">Register</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">gb
+    </span><span style="color:#fabd2f;">,</span><span style="color:#fdf4c1aa;"> newInvite </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">Messages</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">Page</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">NewInvite</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">gb
+    </span><span style="color:#fabd2f;">,</span><span style="color:#fdf4c1aa;"> upload </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">Messages</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">Page</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">Upload</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">gb
+    </span><span style="color:#fabd2f;">,</span><span style="color:#fdf4c1aa;"> itemDetail </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">Messages</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">Page</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">ItemDetail</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">gb
+    </span><span style="color:#fabd2f;">,</span><span style="color:#fdf4c1aa;"> queue </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">Messages</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">Page</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">Queue</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">gb
+    </span><span style="color:#fabd2f;">,</span><span style="color:#fdf4c1aa;"> userSettings </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">Messages</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">Page</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">UserSettings</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">gb
+    </span><span style="color:#fabd2f;">,</span><span style="color:#fdf4c1aa;"> manageData </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">Messages</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">Page</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">ManageData</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">gb
+    </span><span style="color:#fabd2f;">,</span><span style="color:#fdf4c1aa;"> home </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">Messages</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">Page</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">Home</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">gb
+    </span><span style="color:#fabd2f;">}
+</span></code></pre>
+<p>Change <code>lang</code>, <code>iso2</code>, <code>label</code> and <code>flagIcon</code> appropriately. For the
+<code>label</code> use the native language name (not English), as this is the
+label shown to users when selecting a language. The flag icon can be
+copied and only the last two letters need to be changed to the country
+code. You may look <a href="https://github.com/lipis/flag-icon-css">here</a> for
+additional information.</p>
+<p>Now the error can be fixed. Go to line 45 and add another branch to
+the <code>case</code> expression:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#8ec07c;">get </span><span style="color:#fa5c4b;">: UiLanguage -&gt; Messages
+</span><span style="color:#8ec07c;">get </span><span style="color:#fdf4c1aa;">lang </span><span style="color:#fe8019;">=
+    </span><span style="color:#fa5c4b;">case </span><span style="color:#fdf4c1aa;">lang </span><span style="color:#fa5c4b;">of
+        </span><span style="color:#fdf4c1;">English </span><span style="color:#fe8019;">-&gt;</span><span style="color:#fdf4c1aa;">
+            gb
+
+        </span><span style="color:#fdf4c1;">German </span><span style="color:#fe8019;">-&gt;</span><span style="color:#fdf4c1aa;">
+            de
+</span></code></pre>
+<p>This makes the compiler happy again. If you refresh the browser, you
+should see the new language in the dropdown menu. You can already
+choose the new language, but nothing happens in the application. Of
+course, we just copied the English strings for now. So now begins the
+translation process.</p>
+<h2 id="translating">Translating<a class="zola-anchor" href="#translating" aria-label="Anchor link for: translating">🔗</a></h2>
+<p>Now translation can begin. If you look at the newly created value
+<code>de</code>, you'll see some entries in the record. Each corresponds to a
+page: <code>login</code> is for the login page, <code>home</code> for the &quot;home page&quot; etc;
+and <code>app</code> is for the top menu.</p>
+<p>Take one of them and start translating. For the example, I use the
+first one which is <code>Messages.App</code>. The file to this is
+<code>Messages/App.em</code>. You can always replace the dots with slashes to
+find a file to an elm module. Open this file and you'll see again a
+<code>gb</code> value at the end. Copy it to <code>de</code> and start translating:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#8ec07c;">de </span><span style="color:#fa5c4b;">: Texts
+</span><span style="color:#8ec07c;">de </span><span style="color:#fe8019;">=
+    </span><span style="color:#fabd2f;">{</span><span style="color:#fdf4c1aa;"> collectiveProfile </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;Kollektiv-Profil&quot;
+    </span><span style="color:#fabd2f;">,</span><span style="color:#fdf4c1aa;"> userProfile </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;Benutzer-Profil&quot;
+    </span><span style="color:#fabd2f;">,</span><span style="color:#fdf4c1aa;"> lightDark </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;Hell/Dunkel&quot;
+    </span><span style="color:#fabd2f;">,</span><span style="color:#fdf4c1aa;"> logout </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;Abmelden&quot;
+    </span><span style="color:#fabd2f;">,</span><span style="color:#fdf4c1aa;"> items </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;Dokumente&quot;
+    </span><span style="color:#fabd2f;">,</span><span style="color:#fdf4c1aa;"> manageData </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;Daten verwalten&quot;
+    </span><span style="color:#fabd2f;">,</span><span style="color:#fdf4c1aa;"> uploadFiles </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;Dateien hochladen&quot;
+    </span><span style="color:#fabd2f;">,</span><span style="color:#fdf4c1aa;"> processingQueue </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;Verarbeitung&quot;
+    </span><span style="color:#fabd2f;">,</span><span style="color:#fdf4c1aa;"> newInvites </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;Neue Einladung&quot;
+    </span><span style="color:#fabd2f;">,</span><span style="color:#fdf4c1aa;"> help </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;Hilfe (English)&quot;
+    </span><span style="color:#fabd2f;">}
+</span></code></pre>
+<p>Then go to the beginning of the file and add the new <code>de</code> value to the
+list of &quot;exposed&quot; values. This is necessary so it can be used from
+within the <code>Messages.elm</code> module.</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fa5c4b;">module </span><span style="color:#fabd2f;">Messages.App </span><span style="color:#fa5c4b;">exposing
+    ( </span><span style="color:#fdf4c1;">Texts
+    </span><span style="color:#fabd2f;">,</span><span style="color:#fdf4c1aa;"> de </span><span style="font-style:italic;color:#928374;">{- the new value -}
+    </span><span style="color:#fabd2f;">,</span><span style="color:#fdf4c1aa;"> gb
+    </span><span style="color:#fa5c4b;">)
+</span></code></pre>
+<p>Now you can go back to <code>Messages.elm</code> and exchange <code>Messages.App.gb</code>
+with <code>Messages.App.de</code>.</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#8ec07c;">de </span><span style="color:#fa5c4b;">: Messages
+</span><span style="color:#8ec07c;">de </span><span style="color:#fe8019;">=
+    </span><span style="color:#fabd2f;">{</span><span style="color:#fdf4c1aa;"> lang </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">German
+    </span><span style="color:#fabd2f;">,</span><span style="color:#fdf4c1aa;"> iso2 </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;de&quot;
+    </span><span style="color:#fabd2f;">,</span><span style="color:#fdf4c1aa;"> label </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;Deutsch&quot;
+    </span><span style="color:#fabd2f;">,</span><span style="color:#fdf4c1aa;"> flagIcon </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;flag-icon flag-icon-de&quot;
+    </span><span style="color:#fabd2f;">,</span><span style="color:#fdf4c1aa;"> app </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">Messages</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">App</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">de
+    </span><span style="color:#fabd2f;">,</span><span style="color:#fdf4c1aa;"> collectiveSettings </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">Messages</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">Page</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">CollectiveSettings</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">gb
+    </span><span style="color:#fabd2f;">,</span><span style="color:#fdf4c1aa;"> login </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">Messages</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">Page</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">Login</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">gb
+    </span><span style="color:#fabd2f;">,</span><span style="color:#fdf4c1aa;"> register </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">Messages</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">Page</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">Register</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">gb
+    </span><span style="color:#fabd2f;">,</span><span style="color:#fdf4c1aa;"> newInvite </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">Messages</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">Page</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">NewInvite</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">gb
+    </span><span style="color:#fabd2f;">,</span><span style="color:#fdf4c1aa;"> upload </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">Messages</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">Page</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">Upload</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">gb
+    </span><span style="color:#fabd2f;">,</span><span style="color:#fdf4c1aa;"> itemDetail </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">Messages</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">Page</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">ItemDetail</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">gb
+    </span><span style="color:#fabd2f;">,</span><span style="color:#fdf4c1aa;"> queue </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">Messages</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">Page</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">Queue</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">gb
+    </span><span style="color:#fabd2f;">,</span><span style="color:#fdf4c1aa;"> userSettings </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">Messages</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">Page</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">UserSettings</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">gb
+    </span><span style="color:#fabd2f;">,</span><span style="color:#fdf4c1aa;"> manageData </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">Messages</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">Page</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">ManageData</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">gb
+    </span><span style="color:#fabd2f;">,</span><span style="color:#fdf4c1aa;"> home </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">Messages</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">Page</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">Home</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">gb
+    </span><span style="color:#fabd2f;">}
+</span></code></pre>
+<p>If you refresh the browser, you should now see the new values. Then
+take the next entry and start over. It happens that some files contain
+other string-sets of certain components. Then just follow this guide
+recursively.</p>
+<h1 id="publishing">Publishing<a class="zola-anchor" href="#publishing" aria-label="Anchor link for: publishing">🔗</a></h1>
+<p>You can publish your work to this repo in various ways:</p>
+<h2 id="github-pr">Github PR<a class="zola-anchor" href="#github-pr" aria-label="Anchor link for: github-pr">🔗</a></h2>
+<p>This is the preferred way, because it means less work for me :). If
+you have a github account, you can create a pull request. Here is a
+quick walk-through. There is a thorough help <a href="https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/proposing-changes-to-your-work-with-pull-requests">at
+github</a>.</p>
+<ol>
+<li>Fork this repository in the github webapp</li>
+<li>Go to the docspell source root you checked out in the terminal. Run:<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">git remote rename origin upstream
+</span><span style="color:#fdf4c1aa;">git remote add origin git@github.com:&lt;your-github-name&gt;/docspell.git
+</span><span style="color:#fdf4c1aa;">git fetch --all
+</span></code></pre></li>
+<li>Create a new git branch:<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">git checkout -b translate origin/master
+</span></code></pre></li>
+<li>Make a commit of your changes:<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">git config user.name &quot;Your Name&quot;
+</span><span style="color:#fdf4c1aa;">git config user.email &quot;Your Email&quot; #(note that this email will be publicly viewable! a dummy address is fine, too)
+</span><span style="color:#fdf4c1aa;">git commit -am &#39;Add translation for German&#39;
+</span></code></pre>Modify the message to your needs.</li>
+<li>Push the change to your fork:<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">git push origin translate
+</span></code></pre></li>
+<li>Go to the github webapp and create a pull request from your branch.</li>
+</ol>
+<h2 id="e-mail">E-Mail<a class="zola-anchor" href="#e-mail" aria-label="Anchor link for: e-mail">🔗</a></h2>
+<p>You can send me the patch via e-mail. You can use <code>git send-email</code> or
+your favorite e-mail client. For this do step 4 from above and then:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">git bundle create translation.bundle origin/master..HEAD
+</span></code></pre>
+<p>Then send the created <code>translate.bundle</code> file. If this command doesn't
+work, try:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">git format-patch origin/master..HEAD
+</span></code></pre>
+<p>This results in one or more <code>0001-…</code> files that you can send.</p>
+<h2 id="any-other">Any other<a class="zola-anchor" href="#any-other" aria-label="Anchor link for: any-other">🔗</a></h2>
+<p>Contact me by mail or create an issue.</p>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="footer">
+    <div class="container">
+        <div class="content has-text-centered">
+            <span>
+                Docspell, 0.22.0
+            </span>
+            <span class="ml-1 mr-1">•</span>
+            <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>
+            <span class="ml-1 mr-1">•</span>
+            <a href="https://github.com/eikek/docspell" target="_blank">
+                Source Code
+            </a>
+            <span class="ml-1 mr-1">•</span>
+            <span>
+                <a href="https://gitter.im/eikek/docspell">Chat on Gitter</a>
+            </span>
+        </div>
+    </div>
+    
+</footer>
+
+        <script>
+ var initSearch = function() {
+     var elmSearch = Elm.Search.init({
+         node: document.getElementById("search"),
+         flags: {}
+     });
+     initElmSearch(elmSearch);
+ }
+ if (document.readyState === "complete" ||
+     (document.readyState !== "loading" && !document.documentElement.doScroll)
+ ) {
+     initSearch();
+ } else {
+     document.addEventListener("DOMContentLoaded", initSearch);
+ }
+</script>
+
+        <!-- Fathom - simple website analytics - https://github.com/usefathom/fathom -->
+<script>
+ (function(f, a, t, h, o, m){
+     a[h]=a[h]||function(){
+         (a[h].q=a[h].q||[]).push(arguments)
+     };
+     o=f.createElement('script'),
+     m=f.getElementsByTagName('script')[0];
+     o.async=1; o.src=t; o.id='fathom-script';
+     m.parentNode.insertBefore(o,m)
+ })(document, window, '//webstats.daheim.site/tracker.js', 'fathom');
+ fathom('set', 'siteId', 'OGJDF');
+ fathom('trackPageview');
+</script>
+<!-- / Fathom -->
+
+    </body>
+</html>
