@@ -13,8 +13,9 @@ object DBFunctionBuilder extends CommonBuilder {
       case DBFunction.CountAll =>
         sql"COUNT(*)"
 
-      case DBFunction.Count(col) =>
-        sql"COUNT(" ++ column(col) ++ fr")"
+      case DBFunction.Count(col, distinct) =>
+        if (distinct) sql"COUNT(DISTINCT " ++ column(col) ++ fr")"
+        else sql"COUNT(" ++ column(col) ++ fr")"
 
       case DBFunction.Max(expr) =>
         sql"MAX(" ++ SelectExprBuilder.build(expr) ++ fr")"
