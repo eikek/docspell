@@ -1,5 +1,37 @@
 # Changelog
 
+## v0.22.0
+
+*Soon*
+
+This release fixes some annoying bugs and prepares the web-ui to be
+translated into other languages. For actual translating them, I ask
+for your help. There is a detailed post about how to start with it [in
+the docs](https://docspell.org/docs/dev/translation/).
+
+- Refactor webui to prepare for localisation (#726)
+- Add names to user defined tasks for better documentation (#712)
+- Fixes some ui bugs:
+  - scrollbar position (#722)
+  - other minor ui related fixes (#746)
+- Removed deprecated api endpoints, fixing #482
+- Fixes bug where items are already shown in the ui, although still in
+  processing (#719)
+- Switch to github actions for ci (#748)
+- Fixes a bug in the new query language (#754)
+- Fix counters for categories in the search menu (#755)
+
+### REST Api Changes
+
+- remove deprecated endpoints: `sec/item/searchForm`,
+  `sec/item/searchFormWithTags`, `sec/item/searchFormStats`
+- adds category-count data to `SearchSummary`
+
+### Configuration Changes
+
+- none
+
+
 ## v0.21.0
 
 *Mar 13, 2021*
