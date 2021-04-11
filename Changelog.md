@@ -2,7 +2,7 @@
 
 ## v0.22.0
 
-*Soon*
+*Apr 11, 2021*
 
 This release fixes some annoying bugs and prepares the web-ui to be
 translated into other languages. For actual translating them, I ask
