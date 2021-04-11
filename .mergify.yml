@@ -3,7 +3,7 @@ pull_request_rules:
     conditions:
       - author=scala-steward
       - base=master
-      - status-success=continuous-integration/travis-ci/pr
+      - status-success=ci
     actions:
       merge:
         method: merge
@@ -11,7 +11,7 @@ pull_request_rules:
     conditions:
       - author=eikek
       - base=master
-      - status-success=continuous-integration/travis-ci/pr
+      - status-success=ci
     actions:
       merge:
         method: merge
