@@ -1,4 +1,4 @@
-module Messages.Comp.ScanMailboxForm exposing (..)
+module Messages.Comp.ScanMailboxForm exposing (Texts, gb)
 
 import Messages.Basics
 import Messages.Comp.CalEventInput

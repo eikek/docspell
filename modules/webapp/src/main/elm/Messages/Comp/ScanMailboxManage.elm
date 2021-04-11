@@ -1,4 +1,4 @@
-module Messages.Comp.ScanMailboxManage exposing (..)
+module Messages.Comp.ScanMailboxManage exposing (Texts, gb)
 
 import Messages.Basics
 import Messages.Comp.ScanMailboxForm

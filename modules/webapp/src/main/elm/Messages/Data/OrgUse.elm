@@ -1,4 +1,4 @@
-module Messages.Data.OrgUse exposing (..)
+module Messages.Data.OrgUse exposing (gb)
 
 import Data.OrgUse exposing (OrgUse(..))
 

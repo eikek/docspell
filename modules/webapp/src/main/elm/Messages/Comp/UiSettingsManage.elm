@@ -1,4 +1,4 @@
-module Messages.Comp.UiSettingsManage exposing (..)
+module Messages.Comp.UiSettingsManage exposing (Texts, gb)
 
 import Messages.Basics
 import Messages.Comp.UiSettingsForm

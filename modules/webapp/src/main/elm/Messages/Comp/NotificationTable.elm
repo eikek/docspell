@@ -1,4 +1,4 @@
-module Messages.Comp.NotificationTable exposing (..)
+module Messages.Comp.NotificationTable exposing (Texts, gb)
 
 
 type alias Texts =

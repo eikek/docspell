@@ -1,4 +1,4 @@
-module Messages.Page.NewInvite exposing (..)
+module Messages.Page.NewInvite exposing (Texts, gb)
 
 import Messages.Basics
 
@@ -31,8 +31,3 @@ gb =
          Creating an invite requires providing the password
          from the configuration."""
     }
-
-
-de : Texts
-de =
-    gb

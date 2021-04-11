@@ -1,4 +1,4 @@
-module Messages.Basics exposing (..)
+module Messages.Basics exposing (Texts, gb)
 
 
 type alias Texts =
@@ -66,8 +66,3 @@ gb =
     , customFields = "Custom Fields"
     , direction = "Direction"
     }
-
-
-de : Texts
-de =
-    gb

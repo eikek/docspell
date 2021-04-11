@@ -1,4 +1,4 @@
-module Messages.Comp.ItemDetail.ItemInfoHeader exposing (..)
+module Messages.Comp.ItemDetail.ItemInfoHeader exposing (Texts, gb)
 
 import Messages.Basics
 

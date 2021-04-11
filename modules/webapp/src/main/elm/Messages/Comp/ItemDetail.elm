@@ -1,4 +1,4 @@
-module Messages.Comp.ItemDetail exposing (..)
+module Messages.Comp.ItemDetail exposing (Texts, gb)
 
 import Messages.Comp.DetailEdit
 import Messages.Comp.ItemDetail.AddFilesForm

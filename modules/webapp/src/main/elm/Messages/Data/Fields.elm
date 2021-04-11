@@ -1,4 +1,4 @@
-module Messages.Data.Fields exposing (..)
+module Messages.Data.Fields exposing (gb)
 
 import Data.Fields exposing (Field(..))
 

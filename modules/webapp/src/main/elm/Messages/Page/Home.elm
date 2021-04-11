@@ -1,4 +1,4 @@
-module Messages.Page.Home exposing (..)
+module Messages.Page.Home exposing (Texts, gb)
 
 import Messages.Basics
 import Messages.Comp.ItemCardList
@@ -51,8 +51,3 @@ gb =
     , resetSearchForm = "Reset search form"
     , exitSelectMode = "Exit Select Mode"
     }
-
-
-de : Texts
-de =
-    gb

@@ -1,4 +1,4 @@
-module Messages.Comp.NotificationManage exposing (..)
+module Messages.Comp.NotificationManage exposing (Texts, gb)
 
 import Messages.Basics
 import Messages.Comp.NotificationForm

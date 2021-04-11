@@ -1,4 +1,4 @@
-module Messages.Comp.CalEventInput exposing (..)
+module Messages.Comp.CalEventInput exposing (Texts, gb)
 
 
 type alias Texts =

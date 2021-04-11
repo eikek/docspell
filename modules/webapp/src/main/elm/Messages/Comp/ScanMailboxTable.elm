@@ -1,4 +1,4 @@
-module Messages.Comp.ScanMailboxTable exposing (..)
+module Messages.Comp.ScanMailboxTable exposing (Texts, gb)
 
 
 type alias Texts =

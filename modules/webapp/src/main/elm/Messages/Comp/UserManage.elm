@@ -1,4 +1,4 @@
-module Messages.Comp.UserManage exposing (..)
+module Messages.Comp.UserManage exposing (Texts, gb)
 
 import Messages.Basics
 import Messages.Comp.UserForm

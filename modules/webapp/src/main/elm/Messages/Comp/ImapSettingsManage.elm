@@ -1,4 +1,4 @@
-module Messages.Comp.ImapSettingsManage exposing (..)
+module Messages.Comp.ImapSettingsManage exposing (Texts, gb)
 
 import Messages.Basics
 import Messages.Comp.ImapSettingsForm

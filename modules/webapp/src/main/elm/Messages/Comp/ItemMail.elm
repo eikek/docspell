@@ -1,4 +1,4 @@
-module Messages.Comp.ItemMail exposing (..)
+module Messages.Comp.ItemMail exposing (Texts, gb)
 
 import Messages.Basics
 

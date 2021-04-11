@@ -1,4 +1,4 @@
-module Messages.Comp.UserForm exposing (..)
+module Messages.Comp.UserForm exposing (Texts, gb)
 
 
 type alias Texts =

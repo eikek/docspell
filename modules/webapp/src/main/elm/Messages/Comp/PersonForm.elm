@@ -1,4 +1,4 @@
-module Messages.Comp.PersonForm exposing (..)
+module Messages.Comp.PersonForm exposing (Texts, gb)
 
 import Data.ContactType exposing (ContactType)
 import Data.PersonUse exposing (PersonUse)

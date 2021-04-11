@@ -1,4 +1,4 @@
-module Messages.Comp.PersonTable exposing (..)
+module Messages.Comp.PersonTable exposing (Texts, gb)
 
 import Data.PersonUse exposing (PersonUse)
 import Messages.Basics

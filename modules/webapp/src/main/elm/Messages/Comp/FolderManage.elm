@@ -1,4 +1,4 @@
-module Messages.Comp.FolderManage exposing (..)
+module Messages.Comp.FolderManage exposing (Texts, gb)
 
 import Messages.Basics
 import Messages.Comp.FolderDetail

@@ -1,4 +1,4 @@
-module Messages.Comp.CustomFieldManage exposing (..)
+module Messages.Comp.CustomFieldManage exposing (Texts, gb)
 
 import Messages.Basics
 import Messages.Comp.CustomFieldForm

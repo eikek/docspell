@@ -1,4 +1,4 @@
-module Messages.Data.CustomFieldType exposing (..)
+module Messages.Data.CustomFieldType exposing (gb)
 
 import Data.CustomFieldType exposing (CustomFieldType(..))
 

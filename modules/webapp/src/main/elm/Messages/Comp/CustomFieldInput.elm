@@ -1,4 +1,4 @@
-module Messages.Comp.CustomFieldInput exposing (..)
+module Messages.Comp.CustomFieldInput exposing (Texts, gb)
 
 
 type alias Texts =

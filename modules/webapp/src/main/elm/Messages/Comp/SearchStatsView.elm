@@ -1,4 +1,4 @@
-module Messages.Comp.SearchStatsView exposing (..)
+module Messages.Comp.SearchStatsView exposing (Texts, gb)
 
 
 type alias Texts =

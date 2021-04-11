@@ -1,4 +1,4 @@
-module Messages.Page.UserSettings exposing (..)
+module Messages.Page.UserSettings exposing (Texts, gb)
 
 import Messages.Comp.ChangePasswordForm
 import Messages.Comp.EmailSettingsManage
@@ -70,8 +70,3 @@ gb =
             adjust the schedule to avoid reading over the same mails
             again."""
     }
-
-
-de : Texts
-de =
-    gb

@@ -1,4 +1,4 @@
-module Messages.Comp.OrgManage exposing (..)
+module Messages.Comp.OrgManage exposing (Texts, gb)
 
 import Messages.Basics
 import Messages.Comp.OrgForm

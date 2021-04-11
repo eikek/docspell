@@ -1,4 +1,4 @@
-module Messages.Comp.ItemDetail.AddFilesForm exposing (..)
+module Messages.Comp.ItemDetail.AddFilesForm exposing (Texts, gb)
 
 import Messages.Basics
 import Messages.Comp.Dropzone

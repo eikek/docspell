@@ -1,4 +1,4 @@
-module Messages.Comp.CollectiveSettingsForm exposing (..)
+module Messages.Comp.CollectiveSettingsForm exposing (Texts, gb)
 
 import Data.Language exposing (Language)
 import Messages.Comp.ClassifierSettingsForm

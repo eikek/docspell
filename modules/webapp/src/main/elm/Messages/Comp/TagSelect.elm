@@ -1,4 +1,4 @@
-module Messages.Comp.TagSelect exposing (..)
+module Messages.Comp.TagSelect exposing (Texts, gb)
 
 
 type alias Texts =

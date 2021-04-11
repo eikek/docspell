@@ -186,7 +186,10 @@ langMenu model =
                 , span [ class "ml-2" ] [ text langMsg.label ]
                 ]
     in
-    div [ class "relative" ]
+    div
+        [ class "relative"
+        , classList [ ( "hidden", List.length Messages.UiLanguage.all == 1 ) ]
+        ]
         [ a
             [ class dropdownLink
             , onClick ToggleLangMenu

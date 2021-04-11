@@ -1,4 +1,4 @@
-module Messages.Comp.TagManage exposing (..)
+module Messages.Comp.TagManage exposing (Texts, gb)
 
 import Messages.Basics
 import Messages.Comp.TagForm

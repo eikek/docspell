@@ -4,7 +4,9 @@ weight = 0
 +++
 
 
-You must install [sbt](https://scala-sbt.org) and [Elm](https://elm-lang.org).
+You must install [sbt](https://scala-sbt.org),
+[nodejs](https://www.npmjs.com/get-npm) (for the `npm` command) and
+[Elm](https://elm-lang.org).
 
 Clone the sources and run:
 

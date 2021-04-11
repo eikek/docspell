@@ -9,11 +9,9 @@ module Messages.UiLanguage exposing
 
 type UiLanguage
     = English
-    | German
 
 
 all : List UiLanguage
 all =
     [ English
-    , German
     ]

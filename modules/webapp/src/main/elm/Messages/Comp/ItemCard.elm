@@ -1,4 +1,4 @@
-module Messages.Comp.ItemCard exposing (..)
+module Messages.Comp.ItemCard exposing (Texts, gb)
 
 import Messages.Basics
 
