@@ -883,22 +883,6 @@ viewGeneral2 texts settings model =
             [ text texts.mailbox
             , B.inputRequired
             ]
-        , div [ class "mb-4" ]
-            [ label [ class S.inputLabel ]
-                [ text texts.summary
-                ]
-            , input
-                [ type_ "text"
-                , onInput SetSummary
-                , class S.textInput
-                , Maybe.withDefault "" model.summary
-                    |> value
-                ]
-                []
-            , span [ class "opacity-50 text-sm" ]
-                [ text texts.summaryInfo
-                ]
-            ]
         , Html.map ConnMsg
             (Comp.Dropdown.view2
                 connectionCfg
@@ -907,6 +891,22 @@ viewGeneral2 texts settings model =
             )
         , span [ class "opacity-50 text-sm" ]
             [ text texts.connectionInfo
+            ]
+        ]
+    , div [ class "mb-4" ]
+        [ label [ class S.inputLabel ]
+            [ text texts.summary
+            ]
+        , input
+            [ type_ "text"
+            , onInput SetSummary
+            , class S.textInput
+            , Maybe.withDefault "" model.summary
+                |> value
+            ]
+            []
+        , span [ class "opacity-50 text-sm" ]
+            [ text texts.summaryInfo
             ]
         ]
     ]
@@ -924,7 +924,7 @@ viewProcessing2 texts model =
                 model.folders
                 model.foldersModel
             )
-        , span [ class "opacity-50 text-sm mt-1" ]
+        , span [ class "opacity-50 text-sm" ]
             [ text texts.foldersInfo
             ]
         ]
@@ -1034,7 +1034,7 @@ viewMetadata2 texts flags settings model =
     let
         folderCfg =
             { makeOption = Util.Folder.mkFolderOption flags model.allFolders
-            , placeholder = ""
+            , placeholder = texts.basics.selectPlaceholder
             , labelColor = \_ -> \_ -> ""
             , style = DS.mainStyle
             }
@@ -1043,6 +1043,7 @@ viewMetadata2 texts flags settings model =
             { display = Messages.Data.Language.gb
             , icon = \_ -> Nothing
             , style = DS.mainStyleWith "flex-grow mr-2"
+            , selectPlaceholder = texts.basics.selectPlaceholder
             }
     in
     [ div [ class "mb-4" ]

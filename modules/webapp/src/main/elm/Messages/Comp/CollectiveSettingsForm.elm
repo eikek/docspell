@@ -1,12 +1,14 @@
 module Messages.Comp.CollectiveSettingsForm exposing (Texts, gb)
 
 import Data.Language exposing (Language)
+import Messages.Basics
 import Messages.Comp.ClassifierSettingsForm
 import Messages.Data.Language
 
 
 type alias Texts =
-    { classifierSettingsForm : Messages.Comp.ClassifierSettingsForm.Texts
+    { basics : Messages.Basics.Texts
+    , classifierSettingsForm : Messages.Comp.ClassifierSettingsForm.Texts
     , save : String
     , saveSettings : String
     , documentLanguage : String
@@ -25,7 +27,8 @@ type alias Texts =
 
 gb : Texts
 gb =
-    { classifierSettingsForm = Messages.Comp.ClassifierSettingsForm.gb
+    { basics = Messages.Basics.gb
+    , classifierSettingsForm = Messages.Comp.ClassifierSettingsForm.gb
     , save = "Save"
     , saveSettings = "Save Settings"
     , documentLanguage = "Document Language"

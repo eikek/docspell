@@ -93,6 +93,7 @@ type alias ViewOpts =
     , colorLabel : Color -> String
     , label : String
     , description : Maybe String
+    , selectPlaceholder : String
     }
 
 
@@ -103,6 +104,7 @@ view2 data opts model =
             { display = identity
             , icon = \_ -> Nothing
             , style = DS.mainStyle
+            , selectPlaceholder = opts.selectPlaceholder
             }
     in
     div [ class "flex flex-col" ]

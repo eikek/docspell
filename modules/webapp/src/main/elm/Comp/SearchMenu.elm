@@ -1317,6 +1317,7 @@ searchTabs texts ddd flags settings model =
                     , fieldIcon = \_ -> Nothing
                     , style = DS.sidebarStyle
                     , createCustomFieldTitle = texts.createCustomFieldTitle
+                    , selectPlaceholder = texts.basics.selectPlaceholder
                     }
                     model.customFieldModel
                 )

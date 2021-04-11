@@ -155,7 +155,7 @@ view2 texts model =
             , lineColor = "bg-gray-300 dark:bg-bluegray-600"
             }
         , B.primaryBasicButton
-            { label = texts.select
+            { label = texts.basics.selectPlaceholder
             , icon = "fa fa-folder-open font-thin"
             , handler = onClick PickFiles
             , attrs = [ href "#" ]

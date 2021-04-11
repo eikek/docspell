@@ -172,7 +172,7 @@ view2 texts settings model =
                     { text = texts.sslTypeLabel s
                     , additional = ""
                     }
-            , placeholder = ""
+            , placeholder = texts.basics.selectPlaceholder
             , labelColor = \_ -> \_ -> ""
             , style = DS.mainStyle
             }

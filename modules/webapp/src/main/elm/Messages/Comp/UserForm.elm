@@ -1,8 +1,11 @@
 module Messages.Comp.UserForm exposing (Texts, gb)
 
+import Messages.Basics
+
 
 type alias Texts =
-    { login : String
+    { basics : Messages.Basics.Texts
+    , login : String
     , state : String
     , email : String
     , password : String
@@ -11,7 +14,8 @@ type alias Texts =
 
 gb : Texts
 gb =
-    { login = "Login"
+    { basics = Messages.Basics.gb
+    , login = "Login"
     , state = "State"
     , email = "E-Mail"
     , password = "Password"

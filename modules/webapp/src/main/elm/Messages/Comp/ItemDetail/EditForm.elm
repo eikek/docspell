@@ -9,7 +9,6 @@ type alias Texts =
     , customFieldInput : Messages.Comp.CustomFieldMultiInput.Texts
     , createNewCustomField : String
     , chooseDirection : String
-    , selectPlaceholder : String
     , folderNotOwnerWarning : String
     , dueDateTab : String
     , addNewOrg : String
@@ -31,7 +30,6 @@ gb =
     , customFieldInput = Messages.Comp.CustomFieldMultiInput.gb
     , createNewCustomField = "Create new custom field"
     , chooseDirection = "Choose a direction…"
-    , selectPlaceholder = "Select…"
     , folderNotOwnerWarning =
         """
 You are **not a member** of this folder. This item will be **hidden**

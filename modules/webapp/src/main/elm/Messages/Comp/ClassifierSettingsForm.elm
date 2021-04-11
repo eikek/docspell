@@ -1,10 +1,12 @@
 module Messages.Comp.ClassifierSettingsForm exposing (Texts, gb)
 
+import Messages.Basics
 import Messages.Comp.CalEventInput
 
 
 type alias Texts =
-    { calEventInput : Messages.Comp.CalEventInput.Texts
+    { basics : Messages.Basics.Texts
+    , calEventInput : Messages.Comp.CalEventInput.Texts
     , autoTaggingText : String
     , blacklistOrWhitelist : String
     , whitelistLabel : String
@@ -17,7 +19,8 @@ type alias Texts =
 
 gb : Texts
 gb =
-    { calEventInput = Messages.Comp.CalEventInput.gb
+    { basics = Messages.Basics.gb
+    , calEventInput = Messages.Comp.CalEventInput.gb
     , autoTaggingText =
         """
 

@@ -372,6 +372,7 @@ viewMembers2 texts model =
             { display = .name
             , icon = \_ -> Nothing
             , style = DS.mainStyle
+            , selectPlaceholder = texts.basics.selectPlaceholder
             }
     in
     if model.folder.id == "" then

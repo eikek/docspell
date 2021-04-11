@@ -76,6 +76,7 @@ renderForm texts model =
             { display = texts.languageLabel
             , icon = \_ -> Nothing
             , style = DS.mainStyleWith "w-40"
+            , selectPlaceholder = texts.basics.selectPlaceholder
             }
     in
     div [ class "row" ]

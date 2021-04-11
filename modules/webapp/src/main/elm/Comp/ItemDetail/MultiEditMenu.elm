@@ -662,6 +662,7 @@ renderEditForm2 texts flags cfg settings model =
             , fieldIcon = customFieldIcon
             , style = dds
             , createCustomFieldTitle = ""
+            , selectPlaceholder = texts.basics.selectPlaceholder
             }
 
         dds =
@@ -672,7 +673,7 @@ renderEditForm2 texts flags cfg settings model =
 
         folderCfg =
             { makeOption = Util.Folder.mkFolderOption flags model.allFolders
-            , placeholder = ""
+            , placeholder = texts.basics.selectPlaceholder
             , labelColor = \_ -> \_ -> ""
             , style = dds
             }
@@ -680,7 +681,7 @@ renderEditForm2 texts flags cfg settings model =
         idNameCfg =
             { makeOption = \e -> { text = e.name, additional = "" }
             , labelColor = \_ -> \_ -> ""
-            , placeholder = texts.selectPlaceholder
+            , placeholder = texts.basics.selectPlaceholder
             , style = dds
             }
 

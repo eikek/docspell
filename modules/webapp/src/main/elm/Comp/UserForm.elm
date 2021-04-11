@@ -162,7 +162,7 @@ view2 texts settings model =
                     { text = Data.UserState.toString s
                     , additional = ""
                     }
-            , placeholder = ""
+            , placeholder = texts.basics.selectPlaceholder
             , style = DS.mainStyle
             , labelColor = \_ -> \_ -> ""
             }

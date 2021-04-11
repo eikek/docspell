@@ -2,12 +2,14 @@ module Messages.Comp.UiSettingsForm exposing (Texts, gb)
 
 import Data.Color exposing (Color)
 import Data.Fields exposing (Field)
+import Messages.Basics
 import Messages.Data.Color
 import Messages.Data.Fields
 
 
 type alias Texts =
-    { general : String
+    { basics : Messages.Basics.Texts
+    , general : String
     , showSideMenuByDefault : String
     , uiLanguage : String
     , itemSearch : String
@@ -45,7 +47,8 @@ type alias Texts =
 
 gb : Texts
 gb =
-    { general = "General"
+    { basics = Messages.Basics.gb
+    , general = "General"
     , showSideMenuByDefault = "Show side menu by default"
     , uiLanguage = "UI Language"
     , itemSearch = "Item Search"

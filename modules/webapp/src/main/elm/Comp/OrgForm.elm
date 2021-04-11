@@ -154,11 +154,13 @@ view2 texts mobile settings model =
             { display = texts.orgUseLabel
             , icon = \_ -> Nothing
             , style = DS.mainStyle
+            , selectPlaceholder = texts.basics.selectPlaceholder
             }
 
         contactTypeCfg =
             { mobile = mobile
             , contactTypeLabel = texts.contactTypeLabel
+            , selectPlaceholder = texts.basics.selectPlaceholder
             }
     in
     div [ class "flex flex-col" ]

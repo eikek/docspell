@@ -10,7 +10,6 @@ type alias Texts =
     , tagModeAddInfo : String
     , tagModeRemoveInfo : String
     , tagModeReplaceInfo : String
-    , selectPlaceholder : String
     , chooseDirection : String
     , confirmUnconfirm : String
     , confirm : String
@@ -28,7 +27,6 @@ gb =
     , tagModeAddInfo = "Tags chosen here are *added* to all selected items."
     , tagModeRemoveInfo = "Tags chosen here are *removed* from all selected items."
     , tagModeReplaceInfo = "Tags chosen here *replace* those on selected items."
-    , selectPlaceholder = "Select…"
     , chooseDirection = "Choose a direction…"
     , confirmUnconfirm = "Confirm/Unconfirm item metadata"
     , confirm = "Confirm"

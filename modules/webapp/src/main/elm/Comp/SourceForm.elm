@@ -316,7 +316,7 @@ view2 flags texts settings model =
     let
         folderCfg =
             { makeOption = mkFolderOption flags model.allFolders
-            , placeholder = ""
+            , placeholder = texts.basics.selectPlaceholder
             , labelColor = \_ -> \_ -> ""
             , style = DS.mainStyle
             }
@@ -330,7 +330,7 @@ view2 flags texts settings model =
                     { text = texts.languageLabel a
                     , additional = ""
                     }
-            , placeholder = texts.selectPlaceholder
+            , placeholder = texts.basics.selectPlaceholder
             , labelColor = \_ -> \_ -> ""
             , style = DS.mainStyle
             }
@@ -339,6 +339,7 @@ view2 flags texts settings model =
             { display = Data.Priority.toName
             , icon = \_ -> Nothing
             , style = DS.mainStyle
+            , selectPlaceholder = texts.basics.selectPlaceholder
             }
     in
     div [ class "flex flex-col" ]
