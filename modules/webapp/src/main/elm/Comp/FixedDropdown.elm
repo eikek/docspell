@@ -152,6 +152,7 @@ update msg model =
 type alias ViewSettings a =
     { display : a -> String
     , icon : a -> Maybe String
+    , selectPlaceholder : String
     , style : DS.DropdownStyle
     }
 
@@ -204,7 +205,7 @@ viewStyled2 cfg error sel model =
                 ]
                 [ selIcon
                 , Maybe.map cfg.display sel
-                    |> Maybe.withDefault "Select…"
+                    |> Maybe.withDefault cfg.selectPlaceholder
                     |> text
                 ]
             , div

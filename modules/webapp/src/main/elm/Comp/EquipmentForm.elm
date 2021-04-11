@@ -107,6 +107,7 @@ view2 texts model =
             { display = texts.equipmentUseLabel
             , icon = \_ -> Nothing
             , style = DS.mainStyle
+            , selectPlaceholder = texts.basics.selectPlaceholder
             }
     in
     div [ class "flex flex-col" ]

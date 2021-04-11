@@ -1,19 +1,21 @@
 module Messages.Comp.Dropzone exposing (Texts, gb)
 
+import Messages.Basics
+
 
 type alias Texts =
-    { dropFilesHere : String
+    { basics : Messages.Basics.Texts
+    , dropFilesHere : String
     , or : String
-    , select : String
     , selectInfo : String
     }
 
 
 gb : Texts
 gb =
-    { dropFilesHere = "Drop files here"
+    { basics = Messages.Basics.gb
+    , dropFilesHere = "Drop files here"
     , or = "Or"
-    , select = "Select ..."
     , selectInfo =
         "Choose document files (pdf, docx, txt, html, …). "
             ++ "Archives (zip and eml) are extracted."

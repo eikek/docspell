@@ -192,6 +192,7 @@ view2 texts settings model =
             { display = Data.ListType.label
             , icon = \_ -> Nothing
             , style = DS.mainStyle
+            , selectPlaceholder = texts.basics.selectPlaceholder
             }
     in
     div []

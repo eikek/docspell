@@ -21,7 +21,6 @@ type alias Texts =
     , language : String
     , languageInfo : String
     , languageLabel : Language -> String
-    , selectPlaceholder : String
     }
 
 
@@ -59,5 +58,4 @@ Specify a file glob to filter files when uploading archives
         "Used for text extraction and analysis. The collective's "
             ++ "default language is used if not specified here."
     , languageLabel = Messages.Data.Language.gb
-    , selectPlaceholder = "Select…"
     }

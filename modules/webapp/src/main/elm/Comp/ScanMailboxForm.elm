@@ -1034,7 +1034,7 @@ viewMetadata2 texts flags settings model =
     let
         folderCfg =
             { makeOption = Util.Folder.mkFolderOption flags model.allFolders
-            , placeholder = ""
+            , placeholder = texts.basics.selectPlaceholder
             , labelColor = \_ -> \_ -> ""
             , style = DS.mainStyle
             }
@@ -1043,6 +1043,7 @@ viewMetadata2 texts flags settings model =
             { display = Messages.Data.Language.gb
             , icon = \_ -> Nothing
             , style = DS.mainStyleWith "flex-grow mr-2"
+            , selectPlaceholder = texts.basics.selectPlaceholder
             }
     in
     [ div [ class "mb-4" ]

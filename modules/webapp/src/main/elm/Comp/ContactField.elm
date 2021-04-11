@@ -119,6 +119,7 @@ update msg model =
 type alias ViewSettings =
     { contactTypeLabel : ContactType -> String
     , mobile : Bool
+    , selectPlaceholder : String
     }
 
 
@@ -129,6 +130,7 @@ view2 cfg _ model =
             { display = cfg.contactTypeLabel
             , icon = \_ -> Nothing
             , style = DS.mainStyle
+            , selectPlaceholder = cfg.selectPlaceholder
             }
     in
     div [ class "flex flex-col" ]

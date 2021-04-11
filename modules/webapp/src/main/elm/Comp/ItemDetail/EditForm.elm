@@ -102,6 +102,7 @@ formTabs texts flags settings model =
             , fieldIcon = \f -> Dict.get f.id model.customFieldSavingIcon
             , style = dds
             , createCustomFieldTitle = texts.createNewCustomField
+            , selectPlaceholder = texts.basics.selectPlaceholder
             }
 
         optional fields html =
@@ -127,7 +128,7 @@ formTabs texts flags settings model =
 
         folderCfg =
             { makeOption = Util.Folder.mkFolderOption flags model.allFolders
-            , placeholder = texts.selectPlaceholder
+            , placeholder = texts.basics.selectPlaceholder
             , labelColor = \_ -> \_ -> ""
             , style = dds
             }
@@ -135,14 +136,14 @@ formTabs texts flags settings model =
         idNameCfg =
             { makeOption = \e -> { text = e.name, additional = "" }
             , labelColor = \_ -> \_ -> ""
-            , placeholder = texts.selectPlaceholder
+            , placeholder = texts.basics.selectPlaceholder
             , style = dds
             }
 
         personCfg =
             { makeOption = \p -> Util.Person.mkPersonOption p model.allPersons
             , labelColor = \_ -> \_ -> ""
-            , placeholder = texts.selectPlaceholder
+            , placeholder = texts.basics.selectPlaceholder
             , style = dds
             }
     in

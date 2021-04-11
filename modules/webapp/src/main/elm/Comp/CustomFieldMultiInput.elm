@@ -316,6 +316,7 @@ type alias ViewSettings =
     , fieldIcon : CustomField -> Maybe String
     , style : DS.DropdownStyle
     , createCustomFieldTitle : String
+    , selectPlaceholder : String
     }
 
 
@@ -340,6 +341,7 @@ viewMenuBar2 viewSettings model =
             { display = \f -> Maybe.withDefault f.name f.label
             , icon = \_ -> Nothing
             , style = { ddstyle | root = ddstyle.root ++ " flex-grow" }
+            , selectPlaceholder = viewSettings.selectPlaceholder
             }
     in
     div

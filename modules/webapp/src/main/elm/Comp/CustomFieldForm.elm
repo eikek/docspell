@@ -209,6 +209,7 @@ view2 texts viewSettings model =
             { display = texts.fieldTypeLabel
             , icon = \_ -> Nothing
             , style = DS.mainStyle
+            , selectPlaceholder = texts.basics.selectPlaceholder
             }
     in
     (if viewSettings.showControls then

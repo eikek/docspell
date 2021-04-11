@@ -469,6 +469,7 @@ tagColorViewOpts2 texts =
     , colorLabel = texts.colorLabel
     , label = texts.chooseTagColorLabel
     , description = Just texts.tagColorDescription
+    , selectPlaceholder = texts.basics.selectPlaceholder
     }
 
 
@@ -497,6 +498,7 @@ settingFormTabs texts flags _ model =
             { display = \lang -> Messages.get lang |> .label
             , icon = \lang -> Just (Messages.get lang |> .flagIcon)
             , style = DS.mainStyle
+            , selectPlaceholder = texts.basics.selectPlaceholder
             }
     in
     [ { name = "general"

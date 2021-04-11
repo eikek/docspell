@@ -203,7 +203,7 @@ view2 flags texts settings model =
                     { text = texts.languageLabel l
                     , additional = ""
                     }
-            , placeholder = ""
+            , placeholder = texts.basics.selectPlaceholder
             , labelColor = \_ -> \_ -> ""
             , style = DS.mainStyle
             }
