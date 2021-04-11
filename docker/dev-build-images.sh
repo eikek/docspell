@@ -5,12 +5,8 @@ if [ $# -eq 1 ]; then
   REPO=$1
 fi
 
-SBT_VERSION=$(grep sbt.version ../project/build.properties)
-SBT_VERSION=${SBT_VERSION:12:99}
-
-TMP_VERSION=$(cat ../version.sbt)
-TMP_VERSION=${TMP_VERSION:25:99}
-VERSION=${TMP_VERSION%\"}
+SBT_VERSION=$(grep sbt.version ../project/build.properties|cut -d'=' -f2|xargs)
+VERSION=$(cat ../version.sbt | cut -d'=' -f2 | tr -d '"'|xargs)
 
 if [[ $VERSION == *"SNAPSHOT" ]]; then
   VERSION=SNAPSHOT
