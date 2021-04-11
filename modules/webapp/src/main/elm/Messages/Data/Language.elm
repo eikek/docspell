@@ -1,4 +1,4 @@
-module Messages.Data.Language exposing (..)
+module Messages.Data.Language exposing (gb)
 
 import Data.Language exposing (Language(..))
 

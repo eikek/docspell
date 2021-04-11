@@ -1,4 +1,4 @@
-module Messages.Comp.CustomFieldTable exposing (..)
+module Messages.Comp.CustomFieldTable exposing (Texts, gb)
 
 import Messages.Basics
 

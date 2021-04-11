@@ -1,4 +1,4 @@
-module Messages.Page.Queue exposing (..)
+module Messages.Page.Queue exposing (Texts, gb)
 
 import Messages.Basics
 
@@ -48,8 +48,3 @@ gb =
     , changePriority = "Change priority of this job"
     , prio = "Prio"
     }
-
-
-de : Texts
-de =
-    gb

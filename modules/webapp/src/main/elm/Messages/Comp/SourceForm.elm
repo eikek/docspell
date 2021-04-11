@@ -1,4 +1,4 @@
-module Messages.Comp.SourceForm exposing (..)
+module Messages.Comp.SourceForm exposing (Texts, gb)
 
 import Data.Language exposing (Language)
 import Messages.Basics

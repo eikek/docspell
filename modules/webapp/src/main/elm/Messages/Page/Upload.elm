@@ -1,4 +1,4 @@
-module Messages.Page.Upload exposing (..)
+module Messages.Page.Upload exposing (Texts, gb)
 
 import Data.Language exposing (Language)
 import Messages.Basics
@@ -59,8 +59,3 @@ gb =
     , selectedFiles = "Selected Files"
     , languageLabel = Messages.Data.Language.gb
     }
-
-
-de : Texts
-de =
-    gb

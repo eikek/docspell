@@ -1,4 +1,4 @@
-module Messages.Comp.SourceTable exposing (..)
+module Messages.Comp.SourceTable exposing (Texts, gb)
 
 
 type alias Texts =

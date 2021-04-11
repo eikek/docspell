@@ -1,4 +1,4 @@
-module Messages.Comp.Dropzone exposing (..)
+module Messages.Comp.Dropzone exposing (Texts, gb)
 
 
 type alias Texts =

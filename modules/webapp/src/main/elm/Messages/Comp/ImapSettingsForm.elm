@@ -1,4 +1,4 @@
-module Messages.Comp.ImapSettingsForm exposing (..)
+module Messages.Comp.ImapSettingsForm exposing (Texts, gb)
 
 import Data.SSLType exposing (SSLType)
 import Messages.Basics

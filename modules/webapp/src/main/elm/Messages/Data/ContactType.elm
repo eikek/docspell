@@ -1,4 +1,4 @@
-module Messages.Data.ContactType exposing (..)
+module Messages.Data.ContactType exposing (gb)
 
 import Data.ContactType exposing (ContactType(..))
 

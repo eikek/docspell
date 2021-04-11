@@ -1,4 +1,4 @@
-module Messages.Page.HomeSideMenu exposing (..)
+module Messages.Page.HomeSideMenu exposing (Texts, gb)
 
 import Messages.Comp.ItemDetail.MultiEditMenu
 import Messages.Comp.SearchMenu

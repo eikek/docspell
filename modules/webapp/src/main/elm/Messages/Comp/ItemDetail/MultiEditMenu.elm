@@ -1,4 +1,4 @@
-module Messages.Comp.ItemDetail.MultiEditMenu exposing (..)
+module Messages.Comp.ItemDetail.MultiEditMenu exposing (Texts, gb)
 
 import Messages.Basics
 import Messages.Comp.CustomFieldMultiInput

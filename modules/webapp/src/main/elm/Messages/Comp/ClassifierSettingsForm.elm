@@ -1,4 +1,4 @@
-module Messages.Comp.ClassifierSettingsForm exposing (..)
+module Messages.Comp.ClassifierSettingsForm exposing (Texts, gb)
 
 import Messages.Comp.CalEventInput
 

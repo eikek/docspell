@@ -1,4 +1,4 @@
-module Messages.Comp.ImapSettingsTable exposing (..)
+module Messages.Comp.ImapSettingsTable exposing (Texts, gb)
 
 import Messages.Basics
 

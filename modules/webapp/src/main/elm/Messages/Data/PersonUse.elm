@@ -1,4 +1,4 @@
-module Messages.Data.PersonUse exposing (..)
+module Messages.Data.PersonUse exposing (gb)
 
 import Data.PersonUse exposing (PersonUse(..))
 

@@ -1,4 +1,4 @@
-module Messages.Comp.ItemDetail.Notes exposing (..)
+module Messages.Comp.ItemDetail.Notes exposing (Texts, gb)
 
 import Messages.Basics
 

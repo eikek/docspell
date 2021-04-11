@@ -1,4 +1,4 @@
-module Messages.Comp.TagTable exposing (..)
+module Messages.Comp.TagTable exposing (Texts, gb)
 
 import Messages.Basics
 

@@ -1,4 +1,4 @@
-module Messages.Comp.SentMails exposing (..)
+module Messages.Comp.SentMails exposing (Texts, gb)
 
 
 type alias Texts =

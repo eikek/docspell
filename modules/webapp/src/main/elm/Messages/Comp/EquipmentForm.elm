@@ -1,4 +1,4 @@
-module Messages.Comp.EquipmentForm exposing (..)
+module Messages.Comp.EquipmentForm exposing (Texts, gb)
 
 import Data.EquipmentUse exposing (EquipmentUse)
 import Messages.Basics

@@ -1,4 +1,4 @@
-module Messages.Comp.ChangePasswordForm exposing (..)
+module Messages.Comp.ChangePasswordForm exposing (Texts, gb)
 
 import Messages.Basics
 

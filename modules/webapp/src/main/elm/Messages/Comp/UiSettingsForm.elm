@@ -1,4 +1,4 @@
-module Messages.Comp.UiSettingsForm exposing (..)
+module Messages.Comp.UiSettingsForm exposing (Texts, gb)
 
 import Data.Color exposing (Color)
 import Data.Fields exposing (Field)

@@ -1,4 +1,4 @@
-module Messages.Comp.OrgForm exposing (..)
+module Messages.Comp.OrgForm exposing (Texts, gb)
 
 import Data.ContactType exposing (ContactType)
 import Data.OrgUse exposing (OrgUse)

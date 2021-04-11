@@ -1,4 +1,4 @@
-module Messages.Data.SSLType exposing (..)
+module Messages.Data.SSLType exposing (gb)
 
 import Data.SSLType exposing (SSLType(..))
 

@@ -1,4 +1,4 @@
-module Messages.Comp.EmailSettingsManage exposing (..)
+module Messages.Comp.EmailSettingsManage exposing (Texts, gb)
 
 import Messages.Basics
 import Messages.Comp.EmailSettingsForm

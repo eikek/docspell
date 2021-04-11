@@ -1,4 +1,4 @@
-module Messages.Comp.UserTable exposing (..)
+module Messages.Comp.UserTable exposing (Texts, gb)
 
 import Messages.Basics
 

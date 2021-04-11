@@ -1,4 +1,4 @@
-module Messages.Page.ItemDetail exposing (..)
+module Messages.Page.ItemDetail exposing (Texts, gb)
 
 import Messages.Comp.ItemDetail
 import Messages.Comp.ItemDetail.EditForm
@@ -19,8 +19,3 @@ gb =
     , editMetadata = "Edit Metadata"
     , collapseExpand = "Collapse/Expand"
     }
-
-
-de : Texts
-de =
-    gb

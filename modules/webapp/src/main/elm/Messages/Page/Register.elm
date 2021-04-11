@@ -1,4 +1,4 @@
-module Messages.Page.Register exposing (..)
+module Messages.Page.Register exposing (Texts, gb)
 
 import Messages.Basics
 
@@ -34,8 +34,3 @@ gb =
     , signIn = "Sign in"
     , registrationSuccessful = "Registration successful."
     }
-
-
-de : Texts
-de =
-    gb

@@ -1,4 +1,4 @@
-module Messages.Comp.NotificationForm exposing (..)
+module Messages.Comp.NotificationForm exposing (Texts, gb)
 
 import Messages.Basics
 import Messages.Comp.CalEventInput

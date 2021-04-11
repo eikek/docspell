@@ -1,4 +1,4 @@
-module Messages.Data.EquipmentUse exposing (..)
+module Messages.Data.EquipmentUse exposing (gb)
 
 import Data.EquipmentUse exposing (EquipmentUse(..))
 

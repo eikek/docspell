@@ -1,4 +1,4 @@
-module Messages.Comp.OrgTable exposing (..)
+module Messages.Comp.OrgTable exposing (Texts, gb)
 
 import Data.OrgUse exposing (OrgUse)
 import Messages.Basics

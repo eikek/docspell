@@ -1,4 +1,4 @@
-module Messages.Page.CollectiveSettings exposing (..)
+module Messages.Page.CollectiveSettings exposing (Texts, gb)
 
 import Messages.Basics
 import Messages.Comp.CollectiveSettingsForm
@@ -37,8 +37,3 @@ gb =
     , collective = "Collective"
     , size = "Size"
     }
-
-
-de : Texts
-de =
-    gb

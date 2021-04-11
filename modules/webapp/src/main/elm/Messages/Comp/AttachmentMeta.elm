@@ -1,4 +1,4 @@
-module Messages.Comp.AttachmentMeta exposing (..)
+module Messages.Comp.AttachmentMeta exposing (Texts, gb)
 
 import Messages.Basics
 

@@ -1,4 +1,4 @@
-module Messages.Comp.SearchMenu exposing (..)
+module Messages.Comp.SearchMenu exposing (Texts, gb)
 
 import Messages.Basics
 import Messages.Comp.CustomFieldMultiInput

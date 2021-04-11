@@ -1,4 +1,4 @@
-module Messages.Comp.DetailEdit exposing (..)
+module Messages.Comp.DetailEdit exposing (Texts, gb)
 
 import Messages.Basics
 import Messages.Comp.CustomFieldForm

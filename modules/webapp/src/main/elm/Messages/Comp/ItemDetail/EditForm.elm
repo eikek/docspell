@@ -1,4 +1,4 @@
-module Messages.Comp.ItemDetail.EditForm exposing (..)
+module Messages.Comp.ItemDetail.EditForm exposing (Texts, gb)
 
 import Messages.Basics
 import Messages.Comp.CustomFieldMultiInput

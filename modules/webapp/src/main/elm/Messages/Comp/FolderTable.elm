@@ -1,4 +1,4 @@
-module Messages.Comp.FolderTable exposing (..)
+module Messages.Comp.FolderTable exposing (Texts, gb)
 
 import Messages.Basics
 

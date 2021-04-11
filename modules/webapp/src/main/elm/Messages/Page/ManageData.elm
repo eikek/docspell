@@ -1,4 +1,4 @@
-module Messages.Page.ManageData exposing (..)
+module Messages.Page.ManageData exposing (Texts, gb)
 
 import Messages.Basics
 import Messages.Comp.CustomFieldManage
@@ -32,8 +32,3 @@ gb =
     , customFieldManage = Messages.Comp.CustomFieldManage.gb
     , manageData = "Manage Data"
     }
-
-
-de : Texts
-de =
-    gb

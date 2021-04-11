@@ -1,4 +1,4 @@
-module Messages.Comp.EmailSettingsTable exposing (..)
+module Messages.Comp.EmailSettingsTable exposing (Texts, gb)
 
 import Messages.Basics
 

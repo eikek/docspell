@@ -1,8 +1,4 @@
-module Messages.Page.Login exposing
-    ( Texts
-    , de
-    , gb
-    )
+module Messages.Page.Login exposing (Texts, gb)
 
 
 type alias Texts =
@@ -36,17 +32,18 @@ gb =
     }
 
 
-de : Texts
-de =
-    { loginToDocspell = "Docspell Anmeldung"
-    , username = "Benutzer"
-    , collectiveSlashLogin = "Kollektiv / Benutzer"
-    , password = "Passwort"
-    , rememberMe = "Anmeldung speichern"
-    , loginPlaceholder = "Benutzer"
-    , passwordPlaceholder = "Passwort"
-    , loginButton = "Anmelden"
-    , loginSuccessful = "Anmeldung erfolgreich"
-    , noAccount = "Kein Konto?"
-    , signupLink = "Hier registrieren!"
-    }
+
+-- de : Texts
+-- de =
+--     { loginToDocspell = "Docspell Anmeldung"
+--     , username = "Benutzer"
+--     , collectiveSlashLogin = "Kollektiv / Benutzer"
+--     , password = "Passwort"
+--     , rememberMe = "Anmeldung speichern"
+--     , loginPlaceholder = "Benutzer"
+--     , passwordPlaceholder = "Passwort"
+--     , loginButton = "Anmelden"
+--     , loginSuccessful = "Anmeldung erfolgreich"
+--     , noAccount = "Kein Konto?"
+--     , signupLink = "Hier registrieren!"
+--     }

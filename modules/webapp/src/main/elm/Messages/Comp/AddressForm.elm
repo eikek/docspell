@@ -1,4 +1,4 @@
-module Messages.Comp.AddressForm exposing (..)
+module Messages.Comp.AddressForm exposing (Texts, gb)
 
 
 type alias Texts =

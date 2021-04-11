@@ -1,4 +1,4 @@
-module Messages.Data.Color exposing (..)
+module Messages.Data.Color exposing (gb)
 
 import Data.Color exposing (Color(..))
 

@@ -1,4 +1,4 @@
-module Messages.Comp.CustomFieldMultiInput exposing (..)
+module Messages.Comp.CustomFieldMultiInput exposing (Texts, gb)
 
 import Messages.Comp.CustomFieldInput
 
