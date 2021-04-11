@@ -31,7 +31,7 @@ object ExprUtil {
           case DirectionExpr(flag) =>
             DirectionExpr(!flag)
           case _ =>
-            expr
+            NotExpr(reduce(inner))
         }
 
       case m: MacroExpr =>

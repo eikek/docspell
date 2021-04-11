@@ -43,4 +43,11 @@ class ItemQueryGeneratorTest extends FunSuite {
     assertEquals(cond, expect)
   }
 
+  test("!conc:*") {
+    val q      = ItemQueryParser.parseUnsafe("!conc:*")
+    val cond   = ItemQueryGenerator(now, tables, Ident.unsafe("coll"))(q)
+    val expect = not(tables.concPers.name.like("%") || tables.concEquip.name.like("%"))
+    assertEquals(cond, expect)
+  }
+
 }
