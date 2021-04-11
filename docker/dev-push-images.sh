@@ -5,9 +5,7 @@ if [ $# -eq 1 ]; then
   REPO=$1
 fi
 
-TMP_VERSION=$(cat ../version.sbt)
-TMP_VERSION=${TMP_VERSION:25:99}
-VERSION=${TMP_VERSION%\"}
+VERSION=$(cat ../version.sbt | cut -d'=' -f2 | tr -d '"'|xargs)
 
 if [[ $VERSION == *"SNAPSHOT" ]]; then
   VERSION=SNAPSHOT
