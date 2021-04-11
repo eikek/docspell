@@ -190,9 +190,38 @@ object QItem {
     for {
       count   <- searchCountSummary(today)(q)
       tags    <- searchTagSummary(today)(q)
+      cats    <- searchTagCategorySummary(today)(q)
       fields  <- searchFieldSummary(today)(q)
       folders <- searchFolderSummary(today)(q)
-    } yield SearchSummary(count, tags, fields, folders)
+    } yield SearchSummary(count, tags, cats, fields, folders)
+
+  def searchTagCategorySummary(
+      today: LocalDate
+  )(q: Query): ConnectionIO[List[CategoryCount]] = {
+    val tagFrom =
+      from(ti)
+        .innerJoin(tag, tag.tid === ti.tagId)
+        .innerJoin(i, i.id === ti.itemId)
+
+    val tagCloud =
+      findItemsBase(q.fix, today, 0).unwrap
+        .withSelect(select(tag.category).append(countDistinct(i.id).as("num")))
+        .changeFrom(_.prepend(tagFrom))
+        .changeWhere(c => c && queryCondition(today, q.fix.account.collective, q.cond))
+        .groupBy(tag.category)
+        .build
+        .query[CategoryCount]
+        .to[List]
+
+    // the previous query starts from tags, so items with tag-count=0
+    // are not included they are fetched separately
+    for {
+      existing <- tagCloud
+      allCats  <- RTag.listCategories(q.fix.account.collective)
+      other = allCats.diff(existing.map(_.category))
+    } yield existing ++ other.map(CategoryCount(_, 0))
+
+  }
 
   def searchTagSummary(today: LocalDate)(q: Query): ConnectionIO[List[TagCount]] = {
     val tagFrom =

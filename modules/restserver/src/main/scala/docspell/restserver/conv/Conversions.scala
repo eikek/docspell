@@ -31,6 +31,7 @@ trait Conversions {
     SearchStats(
       sum.count,
       mkTagCloud(sum.tags),
+      mkTagCategoryCloud(sum.cats),
       sum.fields.map(mkFieldStats),
       sum.folders.map(mkFolderStats)
     )
@@ -62,6 +63,9 @@ trait Conversions {
 
   def mkTagCloud(tags: List[OCollective.TagCount]) =
     TagCloud(tags.map(tc => TagCount(mkTag(tc.tag), tc.count)))
+
+  def mkTagCategoryCloud(tags: List[OCollective.CategoryCount]) =
+    NameCloud(tags.map(tc => NameCount(tc.category, tc.count)))
 
   // attachment meta
   def mkAttachmentMeta(rm: RAttachmentMeta): AttachmentMeta =

@@ -71,6 +71,9 @@ object OCollective {
   type TagCount = docspell.store.queries.TagCount
   val TagCount = docspell.store.queries.TagCount
 
+  type CategoryCount = docspell.store.queries.CategoryCount
+  val CategoryCount = docspell.store.queries.CategoryCount
+
   type InsightData = QCollective.InsightData
   val insightData = QCollective.InsightData
 

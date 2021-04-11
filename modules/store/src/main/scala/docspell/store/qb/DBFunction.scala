@@ -9,11 +9,11 @@ object DBFunction {
   val countAll: DBFunction = CountAll
 
   def countAs[A](column: Column[A]): DBFunction =
-    Count(column)
+    Count(column, false)
 
   case object CountAll extends DBFunction
 
-  case class Count(column: Column[_]) extends DBFunction
+  case class Count(column: Column[_], distinct: Boolean) extends DBFunction
 
   case class Max(expr: SelectExpr) extends DBFunction
 

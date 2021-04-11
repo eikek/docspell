@@ -63,7 +63,10 @@ trait DSL extends DoobieMeta {
     FromExpr.From(sel, alias)
 
   def count(c: Column[_]): DBFunction =
-    DBFunction.Count(c)
+    DBFunction.Count(c, false)
+
+  def countDistinct(c: Column[_]): DBFunction =
+    DBFunction.Count(c, true)
 
   def countAll: DBFunction =
     DBFunction.CountAll

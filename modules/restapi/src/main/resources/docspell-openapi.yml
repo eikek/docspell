@@ -4242,6 +4242,7 @@ components:
       required:
         - count
         - tagCloud
+        - tagCategoryCloud
         - fieldStats
         - folderStats
       properties:
@@ -4250,6 +4251,8 @@ components:
           format: int32
         tagCloud:
           $ref: "#/components/schemas/TagCloud"
+        tagCategoryCloud:
+          $ref: "#/components/schemas/NameCloud"
         fieldStats:
           type: array
           items:
@@ -4354,7 +4357,7 @@ components:
             $ref: "#/components/schemas/TagCount"
     TagCount:
       description: |
-        Generic structure for counting something.
+        Structure for counting tags.
       required:
         - tag
         - count
@@ -4364,6 +4367,30 @@ components:
         count:
           type: integer
           format: int32
+
+    NameCloud:
+      description: |
+        A set of counters.
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/NameCount"
+    NameCount:
+      description: |
+        Generic structure for counting something.
+      required:
+        - name
+        - count
+      properties:
+        name:
+          type: string
+        count:
+          type: integer
+          format: int32
+
     AttachmentMeta:
       description: |
         Extracted meta data of an attachment.
