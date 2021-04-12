@@ -4382,7 +4382,6 @@ components:
       description: |
         Generic structure for counting something.
       required:
-        - name
         - count
       properties:
         name:
