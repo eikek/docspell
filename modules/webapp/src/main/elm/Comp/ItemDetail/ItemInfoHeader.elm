@@ -19,7 +19,6 @@ import Messages.Comp.ItemDetail.ItemInfoHeader exposing (Texts)
 import Page exposing (Page(..))
 import Styles as S
 import Util.Maybe
-import Util.Time
 
 
 view : Texts -> UiSettings -> Model -> Html Msg
@@ -32,7 +31,7 @@ view texts settings model =
                 ]
                 [ Icons.dateIcon2 "mr-2"
                 , Maybe.withDefault model.item.created model.item.itemDate
-                    |> Util.Time.formatDate
+                    |> texts.formatDate
                     |> text
                 ]
             , Data.UiSettings.fieldVisible settings Data.Fields.Date
@@ -51,7 +50,7 @@ view texts settings model =
                 , title texts.dueDate
                 ]
                 [ Icons.dueDateIcon2 "mr-2"
-                , Maybe.map Util.Time.formatDate model.item.dueDate
+                , Maybe.map texts.formatDate model.item.dueDate
                     |> Maybe.withDefault ""
                     |> text
                 ]

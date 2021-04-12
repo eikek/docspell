@@ -2,6 +2,8 @@ module Messages.Comp.ItemDetail.EditForm exposing (Texts, gb)
 
 import Messages.Basics
 import Messages.Comp.CustomFieldMultiInput
+import Messages.DateFormat as DF
+import Messages.UiLanguage
 
 
 type alias Texts =
@@ -21,6 +23,7 @@ type alias Texts =
     , addNewEquipment : String
     , editEquipment : String
     , suggestions : String
+    , formatDate : Int -> String
     }
 
 
@@ -47,4 +50,5 @@ item visible. This message will disappear then.
     , addNewEquipment = "Add new equipment"
     , editEquipment = "Edit equipment"
     , suggestions = "Suggestions"
+    , formatDate = DF.formatDateLong Messages.UiLanguage.English
     }

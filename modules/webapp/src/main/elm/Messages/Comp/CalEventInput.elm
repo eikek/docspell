@@ -1,5 +1,8 @@
 module Messages.Comp.CalEventInput exposing (Texts, gb)
 
+import Messages.DateFormat as DF
+import Messages.UiLanguage
+
 
 type alias Texts =
     { weekday : String
@@ -11,6 +14,7 @@ type alias Texts =
     , error : String
     , schedule : String
     , next : String
+    , formatDateTime : Int -> String
     }
 
 
@@ -25,4 +29,5 @@ gb =
     , error = "Error"
     , schedule = "Schedule"
     , next = "Next"
+    , formatDateTime = DF.formatDateTimeLong Messages.UiLanguage.English
     }

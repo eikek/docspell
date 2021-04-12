@@ -1,6 +1,8 @@
 module Messages.Page.Queue exposing (Texts, gb)
 
 import Messages.Basics
+import Messages.DateFormat as DF
+import Messages.UiLanguage
 
 
 type alias Texts =
@@ -23,6 +25,7 @@ type alias Texts =
     , retries : String
     , changePriority : String
     , prio : String
+    , formatDateTime : Int -> String
     }
 
 
@@ -47,4 +50,5 @@ gb =
     , retries = "Retries"
     , changePriority = "Change priority of this job"
     , prio = "Prio"
+    , formatDateTime = DF.formatDateTimeLong Messages.UiLanguage.English
     }

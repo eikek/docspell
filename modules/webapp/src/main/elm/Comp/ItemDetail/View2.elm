@@ -292,14 +292,14 @@ itemIdInfo texts model =
             , title texts.createdOn
             ]
             [ i [ class "fa fa-sun font-thin mr-2" ] []
-            , Util.Time.formatDateTime model.item.created |> text
+            , texts.formatDateTime model.item.created |> text
             ]
         , div
             [ class "inline-flex items-center"
             , title texts.lastUpdateOn
             ]
             [ i [ class "fa fa-pencil-alt mr-2" ] []
-            , Util.Time.formatDateTime model.item.updated |> text
+            , texts.formatDateTime model.item.updated |> text
             ]
         ]
 

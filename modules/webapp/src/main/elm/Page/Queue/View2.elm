@@ -13,7 +13,7 @@ import Html.Events exposing (onClick)
 import Messages.Page.Queue exposing (Texts)
 import Page.Queue.Data exposing (..)
 import Styles as S
-import Util.Time exposing (formatDateTime, formatIsoDateTime)
+import Util.Time exposing (formatIsoDateTime)
 
 
 viewSidebar : Texts -> Bool -> Flags -> UiSettings -> Model -> Html Msg
@@ -397,7 +397,7 @@ renderInfoCard texts model job =
         , div [ class "flex flex-row space-x-2 items-center flex-wrap" ]
             [ div [ class "flex flex-row justify-start " ]
                 [ div [ class "text-xs font-semibold" ]
-                    [ Util.Time.formatDateTime job.submitted |> text
+                    [ texts.formatDateTime job.submitted |> text
                     ]
                 ]
             , div [ class "flex-grow flex flex-row justify-end space-x-2 flex-wrap" ]

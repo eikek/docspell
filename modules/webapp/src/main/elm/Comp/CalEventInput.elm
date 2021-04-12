@@ -21,7 +21,6 @@ import Messages.Comp.CalEventInput exposing (Texts)
 import Styles as S
 import Util.Http
 import Util.Maybe
-import Util.Time
 
 
 type alias Model =
@@ -284,7 +283,7 @@ view2 texts extraClasses ev model =
                 , ul [ class "list-decimal list-inside text-sm" ]
                     (Maybe.map .next model.checkResult
                         |> Maybe.withDefault []
-                        |> List.map Util.Time.formatDateTime
+                        |> List.map texts.formatDateTime
                         |> List.map (\s -> li [ class "" ] [ text s ])
                     )
                 ]

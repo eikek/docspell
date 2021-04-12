@@ -13,7 +13,6 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Messages.Comp.UserTable exposing (Texts)
 import Styles as S
-import Util.Time exposing (formatDateTime)
 
 
 type alias Model =
@@ -93,9 +92,9 @@ renderUserLine2 texts model user =
             [ String.fromInt user.loginCount |> text
             ]
         , td [ class "hidden sm:table-cell text-center" ]
-            [ Maybe.map formatDateTime user.lastLogin |> Maybe.withDefault "" |> text
+            [ Maybe.map texts.formatDateTime user.lastLogin |> Maybe.withDefault "" |> text
             ]
         , td [ class "hidden md:table-cell text-center" ]
-            [ formatDateTime user.created |> text
+            [ texts.formatDateTime user.created |> text
             ]
         ]

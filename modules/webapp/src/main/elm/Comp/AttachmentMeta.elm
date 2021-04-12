@@ -18,7 +18,6 @@ import Http
 import Messages.Comp.AttachmentMeta exposing (Texts)
 import Styles as S
 import Util.Http
-import Util.Time
 
 
 type alias Model =
@@ -129,7 +128,7 @@ viewProposals2 texts props =
                 [ class S.basicLabel
                 , class "text-sm"
                 ]
-                [ Util.Time.formatDateShort ms |> text
+                [ texts.formatDateShort ms |> text
                 ]
     in
     div [ class "flex flex-col" ]

@@ -221,6 +221,14 @@ fulltextResultsContent2 item =
         (List.map renderHighlightEntry2 item.highlighting)
 
 
+templateCtx : Texts -> IT.TemplateContext
+templateCtx texts =
+    { dateFormatLong = texts.formatDateLong
+    , dateFormatShort = texts.formatDateShort
+    , directionLabel = texts.directionLabel
+    }
+
+
 metaDataContent2 : Texts -> UiSettings -> ItemLight -> Html Msg
 metaDataContent2 texts settings item =
     let
@@ -249,7 +257,7 @@ metaDataContent2 texts settings item =
                 , Comp.LinkTarget.makeSourceLink
                     [ ( "hover:opacity-60", True ) ]
                     SetLinkTarget
-                    (IT.render IT.source item)
+                    (IT.render IT.source (templateCtx texts) item)
                 ]
             ]
         ]
@@ -289,7 +297,7 @@ mainContent2 texts cardAction cardColor isConfirmed settings _ item =
                 [ class (Data.Direction.iconFromMaybe2 item.direction)
                 , class "mr-2 w-4 text-center"
                 , classList [ ( "hidden", fieldHidden Data.Fields.Direction ) ]
-                , IT.render IT.direction item |> title
+                , IT.render IT.direction (templateCtx texts) item |> title
                 ]
                 []
 
@@ -330,9 +338,9 @@ mainContent2 texts cardAction cardColor isConfirmed settings _ item =
             )
         , div
             [ class "font-bold py-1 text-lg"
-            , classList [ ( "hidden", IT.render titlePattern item == "" ) ]
+            , classList [ ( "hidden", IT.render titlePattern (templateCtx texts) item == "" ) ]
             ]
-            [ IT.render titlePattern item |> text
+            [ IT.render titlePattern (templateCtx texts) item |> text
             ]
         , div
             [ classList
@@ -347,11 +355,11 @@ mainContent2 texts cardAction cardColor isConfirmed settings _ item =
         , div
             [ classList
                 [ ( "opacity-75", True )
-                , ( "hidden", IT.render subtitlePattern item == "" )
+                , ( "hidden", IT.render subtitlePattern (templateCtx texts) item == "" )
                 ]
             ]
             [ dirIcon
-            , IT.render subtitlePattern item |> text
+            , IT.render subtitlePattern (templateCtx texts) item |> text
             ]
         , div [ class "" ]
             [ mainTagsAndFields2 settings item
@@ -466,7 +474,7 @@ previewMenu2 texts settings model item mainAttach =
                 |> Maybe.withDefault "/api/v1/sec/attachment/none"
 
         dueDate =
-            IT.render IT.dueDateShort item
+            IT.render IT.dueDateShort (templateCtx texts) item
 
         dueDateLabel =
             div

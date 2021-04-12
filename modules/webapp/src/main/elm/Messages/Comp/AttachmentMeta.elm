@@ -1,6 +1,8 @@
 module Messages.Comp.AttachmentMeta exposing (Texts, gb)
 
 import Messages.Basics
+import Messages.DateFormat as DF
+import Messages.UiLanguage
 
 
 type alias Texts =
@@ -15,6 +17,7 @@ type alias Texts =
     , concerningEquipment : String
     , itemDate : String
     , itemDueDate : String
+    , formatDateShort : Int -> String
     }
 
 
@@ -31,4 +34,5 @@ gb =
     , concerningEquipment = "Concerning Equipment"
     , itemDate = "Item Date"
     , itemDueDate = "Item Due Date"
+    , formatDateShort = DF.formatDateShort Messages.UiLanguage.English
     }
