@@ -15,7 +15,6 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Messages.Comp.SentMails exposing (Texts)
 import Styles as S
-import Util.Time
 
 
 type alias Model =
@@ -82,7 +81,7 @@ view2 texts model =
                             [ text (texts.date ++ ":")
                             ]
                         , div [ class "ml-2" ]
-                            [ Util.Time.formatDateTime mail.created |> text
+                            [ texts.formatDateTime mail.created |> text
                             ]
                         ]
                     , div [ class "flex flex-row" ]
@@ -131,13 +130,13 @@ view2 texts model =
                     ]
                 , tbody [] <|
                     List.map
-                        renderLine2
+                        (renderLine2 texts)
                         model.mails
                 ]
 
 
-renderLine2 : SentMail -> Html Msg
-renderLine2 mail =
+renderLine2 : Texts -> SentMail -> Html Msg
+renderLine2 texts mail =
     tr [ class S.tableRow ]
         [ td []
             [ B.linkLabel
@@ -152,7 +151,7 @@ renderLine2 mail =
             ]
         , td [ class "hidden" ] [ text mail.subject ]
         , td [ class "hidden text-center xl:table-cell" ]
-            [ Util.Time.formatDateTime mail.created |> text
+            [ texts.formatDateTime mail.created |> text
             ]
         , td [ class "hidden" ] [ text mail.sender ]
         ]

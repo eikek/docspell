@@ -1,6 +1,8 @@
 module Messages.Comp.ItemDetail.ItemInfoHeader exposing (Texts, gb)
 
 import Messages.Basics
+import Messages.DateFormat as DF
+import Messages.UiLanguage
 
 
 type alias Texts =
@@ -9,6 +11,7 @@ type alias Texts =
     , dueDate : String
     , source : String
     , new : String
+    , formatDate : Int -> String
     }
 
 
@@ -19,4 +22,5 @@ gb =
     , dueDate = "Due Date"
     , source = "Source"
     , new = "New"
+    , formatDate = DF.formatDateLong Messages.UiLanguage.English
     }

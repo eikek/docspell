@@ -1,5 +1,8 @@
 module Messages.Comp.SentMails exposing (Texts, gb)
 
+import Messages.DateFormat as DF
+import Messages.UiLanguage
+
 
 type alias Texts =
     { from : String
@@ -8,6 +11,7 @@ type alias Texts =
     , subject : String
     , sent : String
     , sender : String
+    , formatDateTime : Int -> String
     }
 
 
@@ -19,4 +23,5 @@ gb =
     , subject = "Subject"
     , sent = "Sent"
     , sender = "Sender"
+    , formatDateTime = DF.formatDateTimeLong Messages.UiLanguage.English
     }

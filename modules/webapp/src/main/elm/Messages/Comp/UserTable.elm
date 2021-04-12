@@ -1,6 +1,8 @@
 module Messages.Comp.UserTable exposing (Texts, gb)
 
 import Messages.Basics
+import Messages.DateFormat as DF
+import Messages.UiLanguage
 
 
 type alias Texts =
@@ -10,6 +12,7 @@ type alias Texts =
     , email : String
     , logins : String
     , lastLogin : String
+    , formatDateTime : Int -> String
     }
 
 
@@ -21,4 +24,5 @@ gb =
     , email = "E-Mail"
     , logins = "Logins"
     , lastLogin = "Last Login"
+    , formatDateTime = DF.formatDateTimeLong Messages.UiLanguage.English
     }

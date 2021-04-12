@@ -1,5 +1,6 @@
 module Data.ItemTemplate exposing
     ( ItemTemplate
+    , TemplateContext
     , concEquip
     , concPerson
     , concat
@@ -30,15 +31,21 @@ module Data.ItemTemplate exposing
 
 import Api.Model.IdName exposing (IdName)
 import Api.Model.ItemLight exposing (ItemLight)
-import Data.Direction
+import Data.Direction exposing (Direction)
 import Set
 import Util.List
 import Util.String
-import Util.Time
+
+
+type alias TemplateContext =
+    { dateFormatLong : Int -> String
+    , dateFormatShort : Int -> String
+    , directionLabel : Direction -> String
+    }
 
 
 type ItemTemplate
-    = ItemTemplate (ItemLight -> String)
+    = ItemTemplate (TemplateContext -> ItemLight -> String)
 
 
 readTemplate : String -> Maybe ItemTemplate
@@ -55,16 +62,23 @@ readTemplate str =
         Maybe.map read (splitTokens str)
 
 
-render : ItemTemplate -> ItemLight -> String
-render pattern item =
+render : ItemTemplate -> TemplateContext -> ItemLight -> String
+render pattern ctx item =
     case pattern of
         ItemTemplate f ->
-            f item
+            f ctx item
 
 
 isEmpty : ItemTemplate -> ItemLight -> Bool
 isEmpty pattern item =
-    render pattern item |> String.isEmpty
+    let
+        ctx =
+            { dateFormatLong = \_ -> "non-empty"
+            , dateFormatShort = \_ -> "non-empty"
+            , directionLabel = \_ -> "non-empty"
+            }
+    in
+    render pattern ctx item |> String.isEmpty
 
 
 nonEmpty : ItemTemplate -> ItemLight -> Bool
@@ -80,14 +94,14 @@ map : (String -> String) -> ItemTemplate -> ItemTemplate
 map f pattern =
     case pattern of
         ItemTemplate p ->
-            from (p >> f)
+            ItemTemplate (\ctx -> p ctx >> f)
 
 
 map2 : (String -> String -> String) -> ItemTemplate -> ItemTemplate -> ItemTemplate
 map2 f pattern1 pattern2 =
     case ( pattern1, pattern2 ) of
         ( ItemTemplate p1, ItemTemplate p2 ) ->
-            from (\i -> f (p1 i) (p2 i))
+            ItemTemplate (\ctx -> \i -> f (p1 ctx i) (p2 ctx i))
 
 
 combine : String -> ItemTemplate -> ItemTemplate -> ItemTemplate
@@ -104,21 +118,23 @@ combine sep p1 p2 =
 
 concat : List ItemTemplate -> ItemTemplate
 concat patterns =
-    from
-        (\i ->
-            List.map (\p -> render p i) patterns
-                |> String.join ""
+    ItemTemplate
+        (\ctx ->
+            \i ->
+                List.map (\p -> render p ctx i) patterns
+                    |> String.join ""
         )
 
 
 firstNonEmpty : List ItemTemplate -> ItemTemplate
 firstNonEmpty patterns =
-    from
-        (\i ->
-            List.map (\p -> render p i) patterns
-                |> List.filter (String.isEmpty >> not)
-                |> List.head
-                |> Maybe.withDefault ""
+    ItemTemplate
+        (\ctx ->
+            \i ->
+                List.map (\p -> render p ctx i) patterns
+                    |> List.filter (String.isEmpty >> not)
+                    |> List.head
+                    |> Maybe.withDefault ""
         )
 
 
@@ -128,17 +144,17 @@ firstNonEmpty patterns =
 
 from : (ItemLight -> String) -> ItemTemplate
 from f =
-    ItemTemplate f
+    ItemTemplate (\_ -> f)
 
 
-fromMaybe : (ItemLight -> Maybe String) -> ItemTemplate
+fromMaybe : (TemplateContext -> ItemLight -> Maybe String) -> ItemTemplate
 fromMaybe f =
-    ItemTemplate (f >> Maybe.withDefault "")
+    ItemTemplate (\ctx -> f ctx >> Maybe.withDefault "")
 
 
 literal : String -> ItemTemplate
 literal str =
-    ItemTemplate (\_ -> str)
+    ItemTemplate (\_ -> \_ -> str)
 
 
 empty : ItemTemplate
@@ -148,57 +164,57 @@ empty =
 
 name : ItemTemplate
 name =
-    ItemTemplate (.name >> Util.String.underscoreToSpace)
+    from (.name >> Util.String.underscoreToSpace)
 
 
 direction : ItemTemplate
 direction =
     let
-        dirStr ms =
+        dirStr ctx ms =
             Maybe.andThen Data.Direction.fromString ms
-                |> Maybe.map Data.Direction.toString
+                |> Maybe.map ctx.directionLabel
     in
-    fromMaybe (.direction >> dirStr)
+    fromMaybe (\ctx -> .direction >> dirStr ctx)
 
 
 dateLong : ItemTemplate
 dateLong =
-    ItemTemplate (.date >> Util.Time.formatDate)
+    ItemTemplate (\ctx -> .date >> ctx.dateFormatLong)
 
 
 dateShort : ItemTemplate
 dateShort =
-    ItemTemplate (.date >> Util.Time.formatDateShort)
+    ItemTemplate (\ctx -> .date >> ctx.dateFormatShort)
 
 
 dueDateLong : ItemTemplate
 dueDateLong =
-    fromMaybe (.dueDate >> Maybe.map Util.Time.formatDate)
+    fromMaybe (\ctx -> .dueDate >> Maybe.map ctx.dateFormatLong)
 
 
 dueDateShort : ItemTemplate
 dueDateShort =
-    fromMaybe (.dueDate >> Maybe.map Util.Time.formatDateShort)
+    fromMaybe (\ctx -> .dueDate >> Maybe.map ctx.dateFormatShort)
 
 
 source : ItemTemplate
 source =
-    ItemTemplate .source
+    from .source
 
 
 folder : ItemTemplate
 folder =
-    ItemTemplate (.folder >> getName)
+    from (.folder >> getName)
 
 
 corrOrg : ItemTemplate
 corrOrg =
-    ItemTemplate (.corrOrg >> getName)
+    from (.corrOrg >> getName)
 
 
 corrPerson : ItemTemplate
 corrPerson =
-    ItemTemplate (.corrPerson >> getName)
+    from (.corrPerson >> getName)
 
 
 correspondent : ItemTemplate
@@ -208,12 +224,12 @@ correspondent =
 
 concPerson : ItemTemplate
 concPerson =
-    ItemTemplate (.concPerson >> getName)
+    from (.concPerson >> getName)
 
 
 concEquip : ItemTemplate
 concEquip =
-    ItemTemplate (.concEquipment >> getName)
+    from (.concEquipment >> getName)
 
 
 concerning : ItemTemplate
@@ -223,7 +239,7 @@ concerning =
 
 fileCount : ItemTemplate
 fileCount =
-    ItemTemplate (.attachments >> List.length >> String.fromInt)
+    from (.attachments >> List.length >> String.fromInt)
 
 
 

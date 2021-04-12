@@ -7,6 +7,8 @@ import Messages.Comp.ItemDetail.Notes
 import Messages.Comp.ItemDetail.SingleAttachment
 import Messages.Comp.ItemMail
 import Messages.Comp.SentMails
+import Messages.DateFormat as DF
+import Messages.UiLanguage
 
 
 type alias Texts =
@@ -34,6 +36,7 @@ type alias Texts =
     , createdOn : String
     , lastUpdateOn : String
     , sendingMailNow : String
+    , formatDateTime : Int -> String
     }
 
 
@@ -63,4 +66,5 @@ gb =
     , createdOn = "Created on"
     , lastUpdateOn = "Last update on"
     , sendingMailNow = "Sending e-mail…"
+    , formatDateTime = DF.formatDateTimeLong Messages.UiLanguage.English
     }

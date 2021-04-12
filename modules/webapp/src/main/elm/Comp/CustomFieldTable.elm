@@ -13,7 +13,6 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Messages.Comp.CustomFieldTable exposing (Texts)
 import Styles as S
-import Util.Time
 
 
 type alias Model =
@@ -59,13 +58,13 @@ view2 texts _ items =
                     ]
                 ]
             , tbody []
-                (List.map viewItem2 items)
+                (List.map (viewItem2 texts) items)
             ]
         ]
 
 
-viewItem2 : CustomField -> Html Msg
-viewItem2 item =
+viewItem2 : Texts -> CustomField -> Html Msg
+viewItem2 texts item =
     tr [ class S.tableRow ]
         [ B.editLinkTableCell (EditItem item)
         , td [ class "text-left py-4 md:py-2 pr-2" ]
@@ -79,7 +78,7 @@ viewItem2 item =
                 |> text
             ]
         , td [ class "text-center py-4 md:py-2 hidden sm:table-cell" ]
-            [ Util.Time.formatDateShort item.created
+            [ texts.formatDateShort item.created
                 |> text
             ]
         ]

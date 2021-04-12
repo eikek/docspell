@@ -13,7 +13,6 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Messages.Comp.FolderTable exposing (Texts)
 import Styles as S
-import Util.Time
 
 
 type alias Model =
@@ -69,12 +68,12 @@ view2 texts _ items =
                 ]
             ]
         , tbody []
-            (List.map viewItem2 items)
+            (List.map (viewItem2 texts) items)
         ]
 
 
-viewItem2 : FolderItem -> Html Msg
-viewItem2 item =
+viewItem2 : Texts -> FolderItem -> Html Msg
+viewItem2 texts item =
     tr
         [ class S.tableRow
         ]
@@ -97,7 +96,7 @@ viewItem2 item =
                 |> text
             ]
         , td [ class "text-center  py-4 md:py-2" ]
-            [ Util.Time.formatDateShort item.created
+            [ texts.formatDateShort item.created
                 |> text
             ]
         ]

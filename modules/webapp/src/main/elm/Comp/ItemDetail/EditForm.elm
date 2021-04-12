@@ -32,7 +32,6 @@ import Styles as S
 import Util.Folder
 import Util.Person
 import Util.Tag
-import Util.Time
 
 
 view2 : Texts -> Flags -> UiSettings -> Model -> Html Msg
@@ -467,7 +466,7 @@ renderItemDateSuggestions : Texts -> Model -> Html Msg
 renderItemDateSuggestions texts model =
     renderSuggestions texts
         model
-        Util.Time.formatDate
+        texts.formatDate
         (List.take 6 model.itemProposals.itemDate)
         SetItemDateSuggestion
 
@@ -476,7 +475,7 @@ renderDueDateSuggestions : Texts -> Model -> Html Msg
 renderDueDateSuggestions texts model =
     renderSuggestions texts
         model
-        Util.Time.formatDate
+        texts.formatDate
         (List.take 6 model.itemProposals.dueDate)
         SetDueDateSuggestion
 
