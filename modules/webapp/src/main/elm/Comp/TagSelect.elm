@@ -1,5 +1,6 @@
 module Comp.TagSelect exposing
-    ( Model
+    ( CategoryCount
+    , Model
     , Msg
     , Selection
     , WorkModel
@@ -38,13 +39,19 @@ import Util.Maybe
 
 type alias Model =
     { availableTags : Dict String TagCount
-    , availableCats : Dict String NameCount
+    , availableCats : Dict String CategoryCount
     , tagCounts : List TagCount
-    , categoryCounts : List NameCount
+    , categoryCounts : List CategoryCount
     , filterTerm : Maybe String
     , expandedTags : Bool
     , expandedCats : Bool
     , showEmpty : Bool
+    }
+
+
+type alias CategoryCount =
+    { name : String
+    , count : Int
     }
 
 
@@ -54,10 +61,10 @@ init allTags allCats tags cats =
         List.map (\e -> ( e.tag.id, e )) allTags
             |> Dict.fromList
     , availableCats =
-        List.map (\e -> ( e.name, e )) allCats
+        List.filterMap (\e -> Maybe.map (\k -> ( k, CategoryCount k e.count )) e.name) allCats
             |> Dict.fromList
     , tagCounts = tags
-    , categoryCounts = cats
+    , categoryCounts = List.filterMap (\e -> Maybe.map (\k -> CategoryCount k e.count) e.name) cats
     , filterTerm = Nothing
     , expandedTags = False
     , expandedCats = False
@@ -72,7 +79,7 @@ modifyAll allTags allCats model =
             List.map (\e -> ( e.tag.id, e )) allTags
                 |> Dict.fromList
         , availableCats =
-            List.map (\e -> ( e.name, e )) allCats
+            List.filterMap (\e -> Maybe.map (\k -> ( k, CategoryCount k e.count )) e.name) allCats
                 |> Dict.fromList
     }
 
@@ -81,7 +88,7 @@ modifyCount : Model -> List TagCount -> List NameCount -> Model
 modifyCount model tags cats =
     { model
         | tagCounts = tags
-        , categoryCounts = cats
+        , categoryCounts = List.filterMap (\e -> Maybe.map (\k -> CategoryCount k e.count) e.name) cats
     }
 
 
@@ -103,8 +110,8 @@ toggleTag id =
 type alias Selection =
     { includeTags : List TagCount
     , excludeTags : List TagCount
-    , includeCats : List NameCount
-    , excludeCats : List NameCount
+    , includeCats : List CategoryCount
+    , excludeCats : List CategoryCount
     }
 
 
@@ -114,7 +121,7 @@ emptySelection =
 
 
 type alias WorkModel =
-    { filteredCats : List NameCount
+    { filteredCats : List CategoryCount
     , filteredTags : List TagCount
     , selectedTags : Dict String Bool
     , selectedCats : Dict String Bool
@@ -135,7 +142,7 @@ orderTagCountStable model tagCounts =
     List.sortBy order tagCounts
 
 
-orderCatCountStable : Model -> List NameCount -> List NameCount
+orderCatCountStable : Model -> List CategoryCount -> List CategoryCount
 orderCatCountStable model catCounts =
     let
         order cat =
@@ -162,7 +169,7 @@ removeEmptyTagCounts sel tagCounts =
     List.filter (\tc -> isSelected tc || tc.count > 0) tagCounts
 
 
-removeEmptyCatCounts : Selection -> List NameCount -> List NameCount
+removeEmptyCatCounts : Selection -> List CategoryCount -> List CategoryCount
 removeEmptyCatCounts sel catCounts =
     let
         selected =
@@ -517,7 +524,7 @@ viewTagItem2 ddm settings model tag =
         ]
 
 
-viewCategoryItem2 : UiSettings -> WorkModel -> NameCount -> Html Msg
+viewCategoryItem2 : UiSettings -> WorkModel -> CategoryCount -> Html Msg
 viewCategoryItem2 settings model cat =
     let
         state =
