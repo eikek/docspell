@@ -1,8 +1,11 @@
 module Messages.Comp.SourceTable exposing (Texts, gb)
 
+import Messages.Basics
+
 
 type alias Texts =
-    { abbrev : String
+    { basics : Messages.Basics.Texts
+    , abbrev : String
     , enabled : String
     , counter : String
     , priority : String
@@ -13,7 +16,8 @@ type alias Texts =
 
 gb : Texts
 gb =
-    { abbrev = "Abbrev"
+    { basics = Messages.Basics.gb
+    , abbrev = "Abbrev"
     , enabled = "Enabled"
     , counter = "Counter"
     , priority = "Priority"

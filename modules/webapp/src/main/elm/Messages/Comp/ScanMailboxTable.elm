@@ -1,8 +1,11 @@
 module Messages.Comp.ScanMailboxTable exposing (Texts, gb)
 
+import Messages.Basics
+
 
 type alias Texts =
-    { summary : String
+    { basics : Messages.Basics.Texts
+    , summary : String
     , connection : String
     , folders : String
     , receivedSince : String
@@ -11,7 +14,8 @@ type alias Texts =
 
 gb : Texts
 gb =
-    { summary = "Summary"
+    { basics = Messages.Basics.gb
+    , summary = "Summary"
     , connection = "Connection"
     , folders = "Folders"
     , receivedSince = "Received Since"

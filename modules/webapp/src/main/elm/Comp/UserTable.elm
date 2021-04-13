@@ -78,7 +78,7 @@ renderUserLine2 texts model user =
         [ classList [ ( "active", model.selected == Just user ) ]
         , class S.tableRow
         ]
-        [ B.editLinkTableCell2 texts.basics (Select user)
+        [ B.editLinkTableCell texts.basics.edit (Select user)
         , td [ class "text-left" ]
             [ text user.login
             ]

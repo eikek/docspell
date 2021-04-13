@@ -77,7 +77,7 @@ viewItem2 texts item =
     tr
         [ class S.tableRow
         ]
-        [ B.editLinkTableCell (EditItem item)
+        [ B.editLinkTableCell texts.basics.edit (EditItem item)
         , td [ class " py-4 md:py-2" ]
             [ text item.name
             , span

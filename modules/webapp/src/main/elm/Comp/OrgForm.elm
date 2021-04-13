@@ -160,6 +160,7 @@ view2 texts mobile settings model =
         contactTypeCfg =
             { mobile = mobile
             , contactTypeLabel = texts.contactTypeLabel
+            , editLabel = texts.basics.edit
             , selectPlaceholder = texts.basics.selectPlaceholder
             }
     in

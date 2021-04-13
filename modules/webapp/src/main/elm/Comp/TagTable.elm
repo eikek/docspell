@@ -62,17 +62,17 @@ view2 texts model =
                 ]
             ]
         , tbody []
-            (List.map (renderTagLine2 model) model.tags)
+            (List.map (renderTagLine2 texts model) model.tags)
         ]
 
 
-renderTagLine2 : Model -> Tag -> Html Msg
-renderTagLine2 model tag =
+renderTagLine2 : Texts -> Model -> Tag -> Html Msg
+renderTagLine2 texts model tag =
     tr
         [ classList [ ( "active", model.selected == Just tag ) ]
         , class S.tableRow
         ]
-        [ B.editLinkTableCell (Select tag)
+        [ B.editLinkTableCell texts.basics.edit (Select tag)
         , td [ class "text-left py-4 md:py-2" ]
             [ text tag.name
             ]
