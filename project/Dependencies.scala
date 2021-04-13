@@ -22,7 +22,7 @@ object Dependencies {
   val Icu4jVersion            = "69.1"
   val JsoupVersion            = "1.13.1"
   val KindProjectorVersion    = "0.10.3"
-  val KittensVersion          = "2.2.1"
+  val KittensVersion          = "2.2.2"
   val LevigoJbig2Version      = "2.0"
   val Log4sVersion            = "1.9.0"
   val LogbackVersion          = "1.2.3"
