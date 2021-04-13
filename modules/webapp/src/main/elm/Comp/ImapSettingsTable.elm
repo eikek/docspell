@@ -59,12 +59,12 @@ view2 texts model =
                 ]
             ]
         , tbody []
-            (List.map (renderLine2 model) model.emailSettings)
+            (List.map (renderLine2 texts model) model.emailSettings)
         ]
 
 
-renderLine2 : Model -> ImapSettings -> Html Msg
-renderLine2 _ ems =
+renderLine2 : Texts -> Model -> ImapSettings -> Html Msg
+renderLine2 texts _ ems =
     let
         hostport =
             case ems.imapPort of
@@ -76,7 +76,7 @@ renderLine2 _ ems =
     in
     tr
         [ class S.tableRow ]
-        [ B.editLinkTableCell (Select ems)
+        [ B.editLinkTableCell texts.basics.edit (Select ems)
         , td [ class "text-left mr-2" ] [ text ems.name ]
         , td [ class "text-left" ] [ text hostport ]
         ]

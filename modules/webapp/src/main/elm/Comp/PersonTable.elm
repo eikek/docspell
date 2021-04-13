@@ -78,7 +78,7 @@ renderPersonLine2 texts model person =
         [ classList [ ( "active", model.selected == Just person ) ]
         , class S.tableRow
         ]
-        [ B.editLinkTableCell (Select person)
+        [ B.editLinkTableCell texts.basics.edit (Select person)
         , td [ class "text-left pr-1 md:px-2" ]
             [ div [ class "label inline-flex text-sm" ]
                 [ Data.PersonUse.fromString person.use

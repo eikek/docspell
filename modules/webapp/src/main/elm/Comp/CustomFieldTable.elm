@@ -66,7 +66,7 @@ view2 texts _ items =
 viewItem2 : Texts -> CustomField -> Html Msg
 viewItem2 texts item =
     tr [ class S.tableRow ]
-        [ B.editLinkTableCell (EditItem item)
+        [ B.editLinkTableCell texts.basics.edit (EditItem item)
         , td [ class "text-left py-4 md:py-2 pr-2" ]
             [ text <| Maybe.withDefault item.name item.label
             ]

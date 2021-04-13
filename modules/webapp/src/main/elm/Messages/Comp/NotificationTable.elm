@@ -1,8 +1,11 @@
 module Messages.Comp.NotificationTable exposing (Texts, gb)
 
+import Messages.Basics
+
 
 type alias Texts =
-    { summary : String
+    { basics : Messages.Basics.Texts
+    , summary : String
     , schedule : String
     , connection : String
     , recipients : String
@@ -11,7 +14,8 @@ type alias Texts =
 
 gb : Texts
 gb =
-    { summary = "Summary"
+    { basics = Messages.Basics.gb
+    , summary = "Summary"
     , schedule = "Schedule"
     , connection = "Connection"
     , recipients = "Recipients"

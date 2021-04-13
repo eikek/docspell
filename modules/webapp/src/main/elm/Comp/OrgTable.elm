@@ -85,7 +85,7 @@ renderOrgLine2 texts model org =
         [ classList [ ( "active", model.selected == Just org ) ]
         , class S.tableRow
         ]
-        [ B.editLinkTableCell (Select org)
+        [ B.editLinkTableCell texts.basics.edit (Select org)
         , td [ class "text-left pr-1 md:px-2" ]
             [ div [ class "label inline-flex text-sm" ]
                 [ Data.OrgUse.fromString org.use

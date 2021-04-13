@@ -65,15 +65,15 @@ view2 texts _ items =
                     ]
                 ]
             , tbody []
-                (List.map viewItem2 items)
+                (List.map (viewItem2 texts) items)
             ]
         ]
 
 
-viewItem2 : NotificationSettings -> Html Msg
-viewItem2 item =
+viewItem2 : Texts -> NotificationSettings -> Html Msg
+viewItem2 texts item =
     tr []
-        [ B.editLinkTableCell (EditSettings item)
+        [ B.editLinkTableCell texts.basics.edit (EditSettings item)
         , td [ class "w-px whitespace-nowrap px-2 text-center" ]
             [ Util.Html.checkbox2 item.enabled
             ]

@@ -118,6 +118,7 @@ update msg model =
 
 type alias ViewSettings =
     { contactTypeLabel : ContactType -> String
+    , editLabel : String
     , mobile : Bool
     , selectPlaceholder : String
     }
@@ -172,23 +173,23 @@ view2 cfg _ model =
                 ]
             , class "flex flex-col space-y-2 mt-2 px-2 border-0 border-l dark:border-bluegray-600 "
             ]
-            (List.map (renderItem2 cfg.mobile) model.items)
+            (List.map (renderItem2 cfg) model.items)
         ]
 
 
-renderItem2 : Bool -> Contact -> Html Msg
-renderItem2 mobile contact =
+renderItem2 : ViewSettings -> Contact -> Html Msg
+renderItem2 cfg contact =
     div
         [ class "flex flex-row space-x-2 items-center"
         ]
         [ div [ class "mr-2 flex-nowrap" ]
-            [ B.editLinkLabel (Select contact)
+            [ B.editLinkLabel cfg.editLabel (Select contact)
             ]
         , div
             [ class "inline-flex items-center" ]
             [ div
                 [ class "label inline-block mr-2 hidden text-sm "
-                , classList [ ( " sm:inline-block", not mobile ) ]
+                , classList [ ( " sm:inline-block", not cfg.mobile ) ]
                 ]
                 [ text contact.kind
                 ]

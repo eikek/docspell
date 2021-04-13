@@ -81,7 +81,7 @@ renderSourceLine2 texts source =
             [ div
                 [ class "inline-flex space-x-2"
                 ]
-                [ B.editLinkLabel (Select source)
+                [ B.editLinkLabel texts.basics.edit (Select source)
                 , B.linkLabel
                     { label = texts.show
                     , icon = "fa fa-eye"

@@ -75,7 +75,7 @@ renderEquipmentLine2 texts model equip =
         [ classList [ ( "active", model.selected == Just equip ) ]
         , class S.tableRow
         ]
-        [ B.editLinkTableCell (Select equip)
+        [ B.editLinkTableCell texts.basics.edit (Select equip)
         , td [ class "text-left pr-1 md:px-2" ]
             [ div [ class "label inline-flex text-sm" ]
                 [ Data.EquipmentUse.fromString equip.use
