@@ -2789,6 +2789,28 @@ paths:
               schema:
                 $ref: "#/components/schemas/BasicResult"
 
+  /sec/attachments/delete:
+    post:
+      tags:
+        - Attachment (Multi Edit)
+      summary: Delete multiple attachments.
+      description: |
+        Given a list of attachment ids, deletes all of them.
+      security:
+        - authTokenHeader: [ ]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/IdList"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
   /sec/queue/state:
     get:
       tags: [ Job Queue ]
