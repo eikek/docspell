@@ -1,25 +1,19 @@
 package docspell.restserver.routes
 
-import cats.ApplicativeError
-import cats.MonadError
-import cats.data.NonEmptyList
 import cats.effect._
 import cats.implicits._
-
 import docspell.backend.BackendApp
 import docspell.backend.auth.AuthToken
 import docspell.backend.ops.OCustomFields.{RemoveValue, SetValue}
-import docspell.common.{Ident, ItemState}
+import docspell.common.ItemState
 import docspell.restapi.model._
-import docspell.restserver.conv.Conversions
-
-import io.circe.DecodingFailure
+import docspell.restserver.conv.{Conversions, MultiIdSupport}
 import org.http4s.HttpRoutes
 import org.http4s.circe.CirceEntityDecoder._
 import org.http4s.circe.CirceEntityEncoder._
 import org.http4s.dsl.Http4sDsl
 
-object ItemMultiRoutes {
+object ItemMultiRoutes extends MultiIdSupport {
 
   def apply[F[_]: Effect](
       backend: BackendApp[F],
@@ -215,25 +209,4 @@ object ItemMultiRoutes {
     def notEmpty: Option[String] =
       Option(str).notEmpty
   }
-
-  private def readId[F[_]](
-      id: String
-  )(implicit F: ApplicativeError[F, Throwable]): F[Ident] =
-    Ident
-      .fromString(id)
-      .fold(
-        err => F.raiseError(DecodingFailure(err, Nil)),
-        F.pure
-      )
-
-  private def readIds[F[_]](ids: List[String])(implicit
-      F: MonadError[F, Throwable]
-  ): F[NonEmptyList[Ident]] =
-    ids.traverse(readId[F]).map(NonEmptyList.fromList).flatMap {
-      case Some(nel) => nel.pure[F]
-      case None =>
-        F.raiseError(
-          DecodingFailure("Empty list found, at least one element required", Nil)
-        )
-    }
 }
